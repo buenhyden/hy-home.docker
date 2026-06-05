@@ -57,12 +57,13 @@ locust/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Locust.
+- Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect Locust.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Runtime rendering must include root `infra_net`, `influxdb`, and `influxdb_api_token` context because the root include is optional/commented.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Locust network, port, and mounted test references render.
+- Start with the hardening check to confirm Locust network, port, and mounted test references stay declared.
 - Check Locust logs and the linked runbook before changing test runners or target URLs.
 
 ## Related Documents
@@ -92,8 +93,8 @@ Copyright (c) 2026. Licensed under the MIT License.
 | Secret refs | names: `influxdb_api_token`; mounts: `/run/secrets/influxdb_api_token` |
 | Healthcheck | Compose healthcheck declared for `locust-master`, `locust-worker` |
 | Operations | [Guide](../../../docs/05.operations/guides/09-tooling/locust.md), [Policy](../../../docs/05.operations/policies/09-tooling/locust.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/locust.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area
 

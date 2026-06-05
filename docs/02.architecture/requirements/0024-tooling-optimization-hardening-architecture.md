@@ -73,7 +73,7 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 - **Deployment Model**:
   - 서비스별 독립 compose + 공통 template(`common-optimizations.yml`)
 - **Operational Evidence**:
-  - compose static checks
+  - optional root-context compose rendering when runtime evidence is approved
   - `scripts/hardening/check-all-hardening.sh 09-tooling`
   - CI `infrastructure-hardening` job
 
@@ -94,6 +94,6 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 - **Plan**: [../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/policies/09-tooling/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/guides/09-tooling/optimization-hardening.md)
 - **Operation**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/policies/09-tooling/optimization-hardening.md)
-- **Runbook**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/policies/09-tooling/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/runbooks/09-tooling/optimization-hardening.md)

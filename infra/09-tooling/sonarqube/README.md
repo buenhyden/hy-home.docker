@@ -43,7 +43,7 @@ sonarqube/
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Service** | SonarQube Community | v10.7.0 |
+| **Service** | SonarQube Community | `sonarqube:26.5.0.122743-community` |
 | **Database** | PostgreSQL | Management Cluster |
 | **Network** | Traefik | SSL termination |
 | **Storage** | Bind Mount | `${DEFAULT_TOOLING_DIR}/sonarqube` |
@@ -67,12 +67,12 @@ sonarqube/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect SonarQube.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking SonarQube documentation ready.
+- Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect SonarQube.
+- Run `bash scripts/validation/check-repo-contracts.sh` before marking SonarQube documentation ready.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm SonarQube DB, network, and secret references render.
+- Start with the hardening check to confirm SonarQube DB, network, and secret references stay declared.
 - Check SonarQube logs and the linked runbook before changing database or quality-gate settings.
 
 ## Related Documents
@@ -98,8 +98,8 @@ sonarqube/
 | Secret refs | names: `sonarqube_db_password`; mounts: `/run/secrets/sonarqube_db_password` |
 | Healthcheck | Compose healthcheck declared for `sonarqube` |
 | Operations | [Guide](../../../docs/05.operations/guides/09-tooling/sonarqube.md), [Policy](../../../docs/05.operations/policies/09-tooling/sonarqube.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/sonarqube.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area
 

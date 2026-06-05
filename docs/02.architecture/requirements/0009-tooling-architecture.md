@@ -13,7 +13,7 @@ status: active
 
 ## Summary
 
-`09-tooling` 계층은 프로젝트의 '운영 효율성'과 '품질 보증'을 담당하는 보조 계층이다. IaC 엔진, 분석 서버, 테스트 워커 등으로 구성되며, 프로젝트의 표준 인증(SSO) 및 데이터 저장소(MinIO/DB)를 공유하여 일관된 관리 경험을 제공한다.
+`09-tooling` 계층은 프로젝트의 '운영 효율성'과 '품질 보증'을 담당하는 보조 계층이다. IaC 엔진, 분석 서버, 테스트 워커 등으로 구성되며, 공개 관리 UI가 있는 서비스는 gateway/SSO 경계를 사용하고, 필요한 서비스만 PostgreSQL, MinIO, Valkey, InfluxDB 같은 data tier backend와 연동한다.
 
 ## Boundaries & Non-goals
 
@@ -24,7 +24,7 @@ status: active
   - 사설 패키지/이미지 스토리지 (`Registry`)
   - P2P 데이터 동기화 서비스 (`Syncthing`)
 - **Consumes**:
-  - 데이터 지속성 서비스 (`04-data` / PostgreSQL, MinIO)
+  - 데이터 지속성 서비스 (`04-data` / PostgreSQL, MinIO, Valkey, InfluxDB)
   - 공통 인증 서비스 (`02-auth` / Keycloak)
   - 네트워크 리소스 (`infra_net`)
 - **Does Not Own**:
@@ -36,7 +36,7 @@ status: active
 ## Quality Attributes
 
 - **Scalability**: Locust 워커 및 Terrakube 실행기의 필요 시 유동적 스케일링 지원.
-- **Security**: 모든 UI 서비스에 대한 Keycloak 기반 SSO 강제 적용.
+- **Security**: SonarQube/Terrakube/Syncthing 같은 공개 관리 UI에 gateway+SSO 체인 적용.
 - **Reliability**: 상태 정보(Terraform state)를 MinIO에 보관하여 노드 장애 시에도 연속성 보장.
 - **Operability**: 중앙 집중식 대시보드 및 API를 통한 통합 제어 환경 제공.
 
@@ -50,14 +50,14 @@ status: active
 ## Data Architecture
 
 - **Key Entities / Flows**: Source Code → SonarQube Scan → Quality Result / Terraform Script → Terrakube Plan → Deployment.
-- **Storage Strategy**: 대용량 바이너리(이미지, 아티팩트)는 MinIO를 활용하며, 메타데이터는 PostgreSQL 관리형 클러스터에 저장한다.
+- **Storage Strategy**: Terrakube state/object data는 MinIO 호환 backend를 사용하고, SonarQube/Terrakube metadata는 management PostgreSQL을 사용한다. Registry와 Syncthing은 현재 bind mount 기반 local persistence를 사용한다.
 - **Data Boundaries**: 각 도구는 별도의 데이터베이스 또는 스키마를 사용하여 데이터 간섭을 방지한다.
 
 ## Infrastructure & Deployment
 
 - **Runtime / Platform**: Docker Compose v3.8+ 기반의 컨테이너 오케스트레이션.
-- **Deployment Model**: `tooling` 프로필로 그룹화되어 있으며, 필요에 따라 개별 서비스별 배포 가능.
-- **Operational Evidence**: 컨테이너 헬스체크 및 각 서비스의 `/health` 엔드포인트를 통한 상태 모니터링.
+- **Deployment Model**: `tooling` 프로필로 그룹화되어 있으나, root `docker-compose.yml`의 09-tooling includes는 현재 optional/commented 상태다.
+- **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-tooling`, service healthcheck, approved root-context runtime evidence.
 
 ## Related Documents
 

@@ -9,15 +9,11 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 Locust를 사용하여 플랫폼의 서비스를 벤치마킹하는 방법을 설명합니다. 특히, `influxdb-client`를 통한 성능 지표의 영구 저장 및 분산 워커 노드 환경 구성에 초점을 맞춥니다.
->
-> `hy-home.docker` 환경에서 Locust를 사용한 부하 테스트 시나리오 작성 및 실행 가이드입니다.
-
----
+이 문서는 `infra/09-tooling/locust`의 현재 Locust master/worker 부하 테스트 구성을 설명한다. 현재 compose는 `locust-master`, `locust-worker`를 빌드하고, InfluxDB Docker Secret과 `locust-data:/mnt/locust:rw` 볼륨을 사용한다.
 
 ### Usage Type
 
-`system-guide | troubleshooting-guide`
+`system-guide | performance-guide | troubleshooting-guide`
 
 ### Target Audience
 
@@ -27,57 +23,48 @@ status: active
 
 ### Purpose
 
-플랫폼 서비스의 가용성 임계치를 식별하고, 인프라 증설 또는 성능 최적화의 정량적 근거를 확보하기 위한 로드 테스팅 절차를 안내합니다.
+분산 Locust 실행 시 실제 서비스명, root optional include 경계, UI 접근 포트, worker 복제본 기준을 현재 compose와 일치하게 안내한다.
 
 ### Prerequisites
 
-- **Python 지식**: 테스트 시나리오 작성을 위한 기초적인 Python 문법 이해.
-- **네트워크 연결**: `infra_net` 내에서 `locust-master`와 `influxdb` 간의 가시성 확보.
-- **Secrets**: InfluxDB 전송을 위한 API 토큰이 `secrets/influxdb_api_token`에 준비되어 있어야 함.
+- `infra/09-tooling/locust/docker-compose.yml`와 root [docker-compose.yml](../../../../docker-compose.yml)의 선택 include 상태 확인.
+- InfluxDB service와 Docker Secret `influxdb_api_token`이 root context에서 제공되는지 확인.
+- 테스트 시나리오 작성을 위한 Python/Locust 문법 이해.
 
 ### Step-by-step Instructions
 
-#### 1. 테스트 시나리오 작성 (Scripting)
+1. 테스트 시나리오는 `infra/09-tooling/locust/locustfile.py` 기준으로 작성한다.
 
-`locustfile.py` 파일을 생성하고 테스트 로직을 정의합니다.
+   ```python
+   from locust import HttpUser, task, between
 
-```python
-from locust import HttpUser, task, between
+   class BenchmarkUser(HttpUser):
+       wait_time = between(1, 2)
 
-class BenchmarkUser(HttpUser):
-    wait_time = between(1, 2)
+       @task
+       def test_endpoint(self):
+           self.client.get("/api/v1/health")
+   ```
 
-    @task
-    def test_endpoint(self):
-        self.client.get("/api/v1/health")
-```
-
-#### 2. 인프라 실행 (Deployment)
-
-1. `infra/09-tooling/locust` 디렉토리로 이동합니다.
-2. 서비스 시작: `docker-compose --profile tooling up -d`
-3. 워커 확장 (최대 부하 시): `docker compose up --scale locust-worker=5 -d`
-
-#### 3. 테스트 실행 및 UI 관리 (Execution)
-
-1. 브라우저에서 `https://locust.${DEFAULT_URL}` (또는 `18089` 포트)로 접속합니다.
-2. **Setup**: 수행할 가상 사용자 수(Users)와 초당 증가율(Spawn rate)을 입력합니다.
-3. **Run**: `Start swarming`을 클릭하여 시나리오를 가동합니다.
-
-#### 4. 지표 수집 확인 (Monitoring)
-
-- 지표는 실시간으로 InfluxDB에 전송됩니다.
-- Grafana의 `Load Testing Dashboard`를 연동하여 시계열 추이를 확인하십시오.
+2. 실행 전 정적 기준선을 확인한다.
+   - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+   - `bash scripts/validation/check-repo-contracts.sh`
+3. 실행이 승인된 환경에서 root compose와 leaf compose를 함께 렌더링해 `infra_net`, `influxdb`, `influxdb_api_token`이 모두 해석되는지 확인한다.
+4. 승인된 테스트 윈도우에서 `locust-master`와 `locust-worker`를 기동한다. worker 확장이 필요하면 `locust-worker`만 scale 대상이다.
+5. UI는 host port `http://localhost:${LOCUST_HOST_PORT:-18089}` 경계에서 확인한다.
+6. Users, spawn rate, target host를 입력하고 테스트 중 target SLI와 InfluxDB 전송 상태를 기록한다.
 
 ### Common Pitfalls
 
-- **Token 인식 실패**: `docker-compose.yml`의 `secrets` 경로 및 `locust-master`의 환경 변수 매핑을 확인하십시오.
-- **Worker 미연결**: 워커는 `locust-master` 컨테이너 명칭을 호스트로 인식해야 하므로, 네트워크 설정에 유의하십시오.
-- **InfluxDB v2 연동**: `influxdb-client` 라이브러리가 포함된 커스텀 이미지를 사용하는지 확인하십시오.
+- service-local compose 파일만 단독으로 렌더링하면 root `infra_net`/secret/dependency context가 없어 실패할 수 있다.
+- 현재 compose에는 Traefik Locust route가 없다. UI 접근은 host port mapping 기준이다.
+- `locust-worker`는 `locust-master` health 이후 연결되므로 master healthcheck 실패를 먼저 확인한다.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `bash scripts/validation/check-repo-contracts.sh`
+- 실행 승인 시 rendered service list에 `locust-master`, `locust-worker`가 포함되는지 확인한다.
 
 ## Runbook Handoff
 

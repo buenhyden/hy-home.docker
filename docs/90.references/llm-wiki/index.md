@@ -594,7 +594,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/08-ai/ollama.md](../../05.operations/guides/08-ai/ollama.md) | Markdown reference |
 | [docs/05.operations/guides/08-ai/open-webui.md](../../05.operations/guides/08-ai/open-webui.md) | Markdown reference |
 | [docs/05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/guides/08-ai/optimization-hardening.md) | Markdown reference |
-| [docs/05.operations/guides/09-tooling/01.iac-automation.md](../../05.operations/guides/09-tooling/01.iac-automation.md) | Markdown reference |
 | [docs/05.operations/guides/09-tooling/README.md](../../05.operations/guides/09-tooling/README.md) | folder index |
 | [docs/05.operations/guides/09-tooling/k6.md](../../05.operations/guides/09-tooling/k6.md) | Markdown reference |
 | [docs/05.operations/guides/09-tooling/locust.md](../../05.operations/guides/09-tooling/locust.md) | Markdown reference |
@@ -1162,6 +1161,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/05.operations/guides/07-workflow/airbyte.md](../../98.archive/05.operations/guides/07-workflow/airbyte.md) | Markdown reference |
 | [docs/98.archive/05.operations/guides/08-ai/01.llm-inference.md](../../98.archive/05.operations/guides/08-ai/01.llm-inference.md) | Markdown reference |
 | [docs/98.archive/05.operations/guides/08-ai/local-llm-setup.md](../../98.archive/05.operations/guides/08-ai/local-llm-setup.md) | Markdown reference |
+| [docs/98.archive/05.operations/guides/09-tooling/01.iac-automation.md](../../98.archive/05.operations/guides/09-tooling/01.iac-automation.md) | Markdown reference |
 | [docs/98.archive/05.operations/policies/07-workflow/airbyte.md](../../98.archive/05.operations/policies/07-workflow/airbyte.md) | Markdown reference |
 | [docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md](../../98.archive/05.operations/runbooks/07-workflow/airbyte.md) | Markdown reference |
 | [docs/98.archive/README.md](../../98.archive/README.md) | folder index |

@@ -42,10 +42,11 @@ status: active
 
 ## Verification
 
-- `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
+- `bash scripts/validation/check-repo-contracts.sh`
+- Runtime compose rendering for optional tooling services must use root network/secret/dependency context, not service-local compose files alone.
 
 ## Review Cadence
 

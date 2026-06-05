@@ -54,7 +54,7 @@ status: completed
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-TLG-001 | Structural | tooling compose 정적 검증 | `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done` | 오류 없음 |
+| VAL-TLG-001 | Structural | tooling optional compose boundary 검증 | `bash scripts/hardening/check-all-hardening.sh 09-tooling`; approved runtime rehearsal uses root network/secret/dependency context | 실패 0건 및 service-local 단독 config를 성공 기준으로 삼지 않음 |
 | VAL-TLG-002 | Compliance | tooling 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 09-tooling` | 실패 0건 |
 | VAL-TLG-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-TLG-004 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |

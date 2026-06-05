@@ -5,7 +5,7 @@
 
 ## Overview
 
-`infra/09-tooling/terrakube/` defines the Terrakube service stack for centralized Terraform workflows. The stack includes API, UI, and executor services using Terrakube 2.29.0 images, integrates with Keycloak for identity, stores metadata in the management PostgreSQL service, and uses MinIO-compatible S3 storage for Terraform state.
+`infra/09-tooling/terrakube/` defines the Terrakube service stack for centralized Terraform workflows. The stack includes API, UI, and executor services using Terrakube 2.31.2 images, integrates with Keycloak for identity, stores metadata in the management PostgreSQL service, and uses MinIO-compatible S3 storage for Terraform state.
 
 This README is the service-level entrypoint. It summarizes the Compose surface and links to the canonical guide, operations policy, and runbook.
 
@@ -57,8 +57,8 @@ terrakube/
 | Secret refs | names: `terrakube_db_password`, `minio_app_user_password`, `terrakube_valkey_password`, `terrakube_pat_secret`, `terrakube_internal_secret`; mounts: `/run/secrets/terrakube_db_password`, `/run/secrets/minio_app_user_password`, `/run/secrets/terrakube_valkey_password`, `/run/secrets/terrakube_pat_secret`, `/run/secrets/terrakube_internal_secret` |
 | Healthcheck | Compose healthcheck declared for `terrakube-api`, `terrakube-ui`, `terrakube-executor` |
 | Operations | [Guide](../../../docs/05.operations/guides/09-tooling/terrakube.md), [Policy](../../../docs/05.operations/policies/09-tooling/terrakube.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/terrakube.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area
 
@@ -71,9 +71,9 @@ terrakube/
 
 | Component | Image / Source | Role |
 | --- | --- | --- |
-| `terrakube-api` | `azbuilder/api-server:2.29.0` | API server and metadata orchestration |
-| `terrakube-ui` | `azbuilder/terrakube-ui:2.29.0` | Web management UI |
-| `terrakube-executor` | `azbuilder/executor:2.29.0` | Terraform job execution |
+| `terrakube-api` | `azbuilder/api-server:2.31.2` | API server and metadata orchestration |
+| `terrakube-ui` | `azbuilder/terrakube-ui:2.31.2` | Web management UI |
+| `terrakube-executor` | `azbuilder/executor:2.31.2` | Terraform job execution |
 | Metadata | Management PostgreSQL | Terrakube database |
 | State storage | MinIO S3-compatible bucket `tfstate` | Terraform state and output storage |
 | Identity | Keycloak / DEX validation | SSO integration |
@@ -88,15 +88,15 @@ After the stack is enabled with the `tooling` or `iac` profile, use these routed
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after any Compose or config reference changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` before marking documentation ready.
 - Verify workspace configuration by checking the Terrakube UI and confirming Terraform workspaces are registered with correct provider credentials.
-- Confirm API connectivity by checking `docker logs terrakube | grep -i 'error\|warn'` after config changes.
+- Confirm API connectivity by checking `terrakube-api`, `terrakube-ui`, and `terrakube-executor` logs after config changes.
 - Verify OIDC authentication by confirming the Keycloak client configuration matches Terrakube's auth settings.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Terrakube network, database, and secret references render.
+- Start with the hardening check to confirm Terrakube network, database, and secret references stay declared.
 - Check Terrakube logs and the linked runbook before changing executor, PAT, or persistence settings.
 
 ## Related Documents

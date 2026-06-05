@@ -15,7 +15,10 @@ status: active
 
 ## Policy Scope
 
-This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
+- `infra/09-tooling/locust/docker-compose.yml`
+- `infra/09-tooling/k6/docker-compose.yml`
+- InfluxDB metric sink and Docker Secret `influxdb_api_token`
+- Approved local, development, and homelab performance-test windows
 
 ## Target Audience
 
@@ -43,12 +46,12 @@ This policy applies to the service, workflow, or operational control surface des
 
 ### 3. 지표 관리 및 보존 (Retention)
 
-- **이력 관리**: 모든 공식 테스트 결과는 InfluxDB에 타임스탬프와 함께 보관하며, Grafana 대시보드를 통해 보고서 형태로 아카이빙함.
-- **정기 백업**: InfluxDB의 데이터는 주기적으로 백업되어야 하며, 특히 릴리스 전 공식 벤치마킹 데이터는 삭제되지 않도록 보호해야 함.
+- **이력 관리**: 공식 테스트 결과는 실행 시간, target, users, spawn rate, 시나리오, InfluxDB bucket, 결과 요약을 evidence로 남긴다.
+- **보존 경계**: InfluxDB 보존/백업은 data/observability 정책을 따른다. 이 정책에서 별도 백업 주기를 단정하지 않는다.
 
 ## Security Controls
 
-- **UI 접근 제어**: Locust 마스터 UI는 내부 어드민 도메인(`/locust`)을 통해서만 접근 가능하며, 필요시 기본 인증을 적용함.
+- **UI 접근 제어**: 현재 Locust/k6 leaf에는 Traefik route가 없다. UI 접근은 승인된 host port 경계에서만 수행한다.
 - **데이터 무결성**: 테스트 중 주입되는 가상 데이터가 실제 사용자 데이터와 혼용되지 않도록 프리픽스(e.g., `test_user_`)를 사용해야 함.
 
 ## Governance & Compliance

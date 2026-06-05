@@ -65,12 +65,12 @@ registry/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect the registry.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking registry documentation ready.
+- Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect the registry.
+- Run `bash scripts/validation/check-repo-contracts.sh` before marking registry documentation ready.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm registry network, volume, and label references render.
+- Start with the hardening check to confirm registry network, volume, and label references stay declared.
 - Check registry logs and the linked runbook before changing storage or access settings.
 
 ## Related Documents
@@ -96,8 +96,8 @@ registry/
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `registry` |
 | Operations | [Guide](../../../docs/05.operations/guides/09-tooling/registry.md), [Policy](../../../docs/05.operations/policies/09-tooling/registry.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/registry.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area
 

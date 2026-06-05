@@ -3,137 +3,104 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/09-tooling/performance-testing.md -->
 
-# Performance Testing Runbook
+# Performance Testing Incident Runbook
 
-## Overview (KR)
+## Performance Testing Incident Procedure
 
-이 문서는 Locust 마스터/워커 노드의 연결 끊김, InfluxDB 지표 수집 장애 또는 성능 테스트로 인한 타 서비스 과부하 발생 시의 긴급 조치 방법을 안내합니다.
+> Scope: stop and triage Locust/k6-wrapper performance tests that affect shared services.
 
-## Performance Testing Recovery Procedure
+### Overview (KR)
 
-> Locust 부하 테스트 인프라 장애 시 대응 및 복구 절차를 정의합니다.
-
----
-
-### Target Audience
-
-- Operator
-- Performance Engineer
-- SRE
-
-### Alerting & Monitoring
-
-- **Locust UI Error**: 웹 인터페이스에서 `Worker disconnected` 경고 발생 시.
-- **Metric Loss**: InfluxDB로의 데이터 전송 실패가 Locust 콘솔에 출력될 때.
-- **Target Down**: 부하 테스트 시작 후 대상 서비스의 가용성 지표(SLI)가 급격히 하락할 때.
-
-### Recovery Procedures
-
-#### 1. 테스트 강제 중단 (Emergency Stop)
-
-가장 우선적으로 부하 생성을 즉시 중단합니다.
-
-- **Locust UI**: UI에서 `Stop` 버튼을 클릭합니다.
-- **CLI**: `docker-compose -f infra/09-tooling/k6/docker-compose.yml stop` 명령을 실행합니다.
-
-#### 2. 마스터-워커 연결 복구 (Master-Worker Sync)
-
-워커 노드가 마스터를 찾지 못하는 경우:
-
-1. 마스터 활성 상태 확인: `docker-compose ps locust-master`
-2. 환경 변수 확인: 워커의 `LOCUST_MASTER_NODE_HOST`가 올바른지 확인합니다.
-3. 서비스 재시작: `docker-compose restart locust-master locust-worker`
-
-#### 3. InfluxDB 데이터 전송 오류 (Data Link Recovery)
-
-1. InfluxDB 서비스 상태 확인: `docker-compose ps influxdb`
-2. 네트워크 가시성 확인: `docker-compose exec locust-master ping influxdb`
-3. Locust 설정 확인: `locustfile.py` 내의 InfluxDB 엔드포인트 설정을 점검합니다.
-
-#### 4. 타 서비스 영향 복구 (Cascading Failure Clean-up)
-
-부하 테스트로 인해 다른 서비스가 마비된 경우:
-
-- Gateway 캐시를 플러시하거나 서비스를 재시작하여 정상 상태로 돌려놓습니다.
-- 테스트 결과 데이터를 분석하여 어느 지점에서 연쇄 장애가 시작되었는지 파악합니다.
-
-### Post-Mortem Tasks
-
-- 장애 원인이 테스트 시나리오 설계 오류인지, 인프라 용량 부족인지 분석하여 보고서를 작성합니다.
-- 재발 방지를 위해 테스트 스케일링 정책을 조정합니다.
+이 런북은 성능 테스트 실행 중 target service 또는 shared gateway/auth/data tier에 영향이 발생했을 때 사용하는 공통 절차다.
 
 ### Purpose
 
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
+테스트 부하를 우선 중단하고, 어떤 leaf(`locust` 또는 `k6`)가 실행 중인지 확인한 뒤, target 회복과 evidence capture를 완료한다.
 
 ### Canonical References
 
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
+- **Spec**: [09-tooling spec](../../../03.specs/09-tooling/spec.md)
+- **Policy**: [Performance testing policy](../../policies/09-tooling/performance-testing.md)
+- **Guide**: [Performance testing guide](../../guides/09-tooling/performance-testing.md)
 
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
+- 테스트 중 target SLI가 승인된 한계 아래로 떨어진다.
+- Gateway/Auth/Data tier가 부하 테스트 영향으로 degraded 상태가 된다.
+- InfluxDB 지표 전송 실패로 테스트 결과 신뢰도가 떨어진다.
+- 실행 leaf가 `locust`인지 `k6` wrapper인지 불명확하다.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+- [ ] 테스트 owner, target service owner, platform operator에게 중단 결정을 알린다.
+- [ ] 실행 중인 leaf와 service name을 확인한다.
+- [ ] users, spawn rate, target, scenario file, 시작 시각을 기록한다.
 
 ### Steps
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+1. 실행 중인 performance service를 확인한다.
+
+   ```bash
+   docker ps --format '{{.Names}}\t{{.Status}}' | rg '^(locust-master|locust-worker|k6-master)\b'
+   ```
+
+2. Locust leaf가 실행 중이면 Locust runbook의 stop 절차를 따른다.
+
+3. k6 wrapper leaf가 실행 중이면 k6 runbook의 stop 절차를 따른다.
+
+4. target service 회복 상태를 확인한다.
+
+   ```bash
+   bash scripts/hardening/check-all-hardening.sh 09-tooling
+   bash scripts/validation/check-repo-contracts.sh
+   ```
+
+5. target SLI, error rate, latency, affected time window를 evidence에 기록한다.
 
 ### Verification Steps
 
-- [ ] 관련 validation script를 실행한다.
-- [ ] 문서 변경이면 template/heading audit를 확인한다.
-- [ ] runtime 변경이 있었다면 compose validation을 확인한다.
+- 실행 중이던 load generator가 stopped 또는 healthy-idle 상태다.
+- target SLI와 shared tier health가 정상 범위로 회복됐다.
+- 관련 guide/policy/runbook이 현재 service names와 root optional boundary를 유지한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: load generator logs, target logs, gateway/auth/data tier logs
+- **Metrics**: target SLI, request error rate, response latency, InfluxDB write status
+- **Evidence to Capture**: service names, test parameters, stop time, recovery time, failed checks
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+1. load generator를 중단한 상태로 유지한다.
+2. target service recovery는 해당 target의 runbook으로 전환한다.
+3. 재실행은 target owner 승인과 conservative ramp-up plan이 있을 때만 수행한다.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
 - **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `check-repo-contracts.sh`
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- Capture command output, timestamps, service names, test parameters, target SLI summary, and final recovery state.
+- Record whether Locust or k6 wrapper procedures were used.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+Use the leaf-specific stop procedure and target-specific recovery runbook. No verified procedure is documented here for restarting target services or mutating InfluxDB data.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate to the platform operator and target service owner when stopping load does not restore service health, root compose context is broken, or secret exposure risk appears.
 
 ## Related Documents
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/09-tooling/performance-testing.md)
 - [Operations policy](../../policies/09-tooling/performance-testing.md)
+- [Locust runbook](./locust.md)
+- [k6 runbook](./k6.md)

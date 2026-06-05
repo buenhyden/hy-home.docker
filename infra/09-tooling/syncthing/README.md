@@ -43,7 +43,7 @@ syncthing/
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Service** | Syncthing | v2.0.13 |
+| **Service** | Syncthing | `syncthing/syncthing:2.1.1` |
 | **Protocol** | BEP (Block Exchange Protocol) | P2P Sync |
 | **Network** | Traefik | SSL GUI termination |
 | **Data Storage** | Bind Mount | `${DEFAULT_RESOURCES_DIR}` |
@@ -75,12 +75,12 @@ syncthing/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Syncthing.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking Syncthing documentation ready.
+- Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect Syncthing.
+- Run `bash scripts/validation/check-repo-contracts.sh` before marking Syncthing documentation ready.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Syncthing network, volume, and secret references render.
+- Start with the hardening check to confirm Syncthing network, volume, and secret references stay declared.
 - Check Syncthing logs and the linked runbook before changing sync folder or credential settings.
 
 ## Related Documents
@@ -106,8 +106,8 @@ syncthing/
 | Secret refs | names: `syncthing_password`; mounts: `/run/secrets/syncthing_password` |
 | Healthcheck | Compose healthcheck declared for `syncthing` |
 | Operations | [Guide](../../../docs/05.operations/guides/09-tooling/syncthing.md), [Policy](../../../docs/05.operations/policies/09-tooling/syncthing.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/syncthing.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area
 

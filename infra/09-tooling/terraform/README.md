@@ -5,7 +5,7 @@
 
 ## Overview
 
-`infra/09-tooling/terraform/` provides a standardized Terraform execution container. The service uses `hashicorp/terraform:1.14.4`, mounts a local `workspace/` directory, and exposes host cloud credential directories as read-only mounts for local IaC workflows.
+`infra/09-tooling/terraform/` provides a standardized Terraform execution container. The service uses `hashicorp/terraform:1.15.5`, mounts a local `workspace/` directory, and exposes host cloud credential directories as read-only mounts for local IaC workflows.
 
 This README is the service-level entrypoint. It describes the Compose surface and links to the canonical guide, operations policy, and runbook.
 
@@ -57,8 +57,8 @@ terraform/
 | Secret refs | Not declared |
 | Healthcheck | Not declared in compose; use service logs and dependent checks |
 | Operations | [Guide](../../../docs/05.operations/guides/09-tooling/terraform.md), [Policy](../../../docs/05.operations/policies/09-tooling/terraform.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/terraform.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect Terraform command output and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area
 
@@ -71,7 +71,7 @@ terraform/
 
 | Component | Technology | Version / Source | Role |
 | --- | --- | --- | --- |
-| Engine | HashiCorp Terraform | `hashicorp/terraform:1.14.4` | IaC CLI |
+| Engine | HashiCorp Terraform | `hashicorp/terraform:1.15.5` | IaC CLI |
 | Runtime | Docker Compose | `tooling`, `iac` profiles | Containerized execution |
 | Workspace | Bind mount | `./workspace:/workspace:rw` | Terraform working directory |
 | Credentials | Host bind mounts | `$HOME/.aws`, `$HOME/.azure` read-only | Cloud provider access |
@@ -79,21 +79,21 @@ terraform/
 ## Usage Instructions
 
 ```bash
-cd infra/09-tooling/terraform
-docker compose run --rm terraform init
-docker compose run --rm terraform plan
-docker compose run --rm terraform apply
+TERRAFORM_COMPOSE_FILES="-f docker-compose.yml -f infra/09-tooling/terraform/docker-compose.yml"
+docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform init
+docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform plan
+docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform apply
 ```
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Terraform.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking Terraform documentation ready.
+- Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect Terraform.
+- Run `bash scripts/validation/check-repo-contracts.sh` before marking Terraform documentation ready.
 - Healthcheck decision: this service extends `template-job-low`, sets `restart: 'no'`, and uses a CLI `terraform` entrypoint, so a long-running healthcheck is not applicable unless the service is redesigned as a daemon.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm workspace and cloud-credential mounts render as expected.
+- Start with the hardening check to confirm workspace and cloud-credential mounts stay declared.
 - Check Terraform command output from the job container before changing provider credentials or mounted workspace paths.
 
 ## Related Documents

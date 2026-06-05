@@ -35,7 +35,6 @@
 
 ```text
 guides/09-tooling/
-├── 01.iac-automation.md
 ├── k6.md
 ├── locust.md
 ├── optimization-hardening.md
@@ -58,7 +57,6 @@ guides/09-tooling/
 
 | Path | Purpose |
 | --- | --- |
-| [01.iac-automation.md](./01.iac-automation.md) | 01.Iac Automation guide 문서 |
 | [k6.md](./k6.md) | K6 guide 문서 |
 | [locust.md](./locust.md) | Locust guide 문서 |
 | [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening guide 문서 |

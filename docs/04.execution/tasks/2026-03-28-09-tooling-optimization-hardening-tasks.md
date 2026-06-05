@@ -16,7 +16,7 @@ status: completed
 
 ## Working Rules
 
-- tooling 구성 변경은 compose static validation + hardening script 결과를 남긴다.
+- tooling 구성 변경은 hardening script 결과와 optional root-context compose 경계를 남긴다.
 - gateway/auth 영향 변경은 접근 경계 영향도를 기록한다.
 - 문서 변경은 PRD~Runbook 링크와 README 인덱스를 동시 갱신한다.
 
@@ -71,10 +71,10 @@ status: completed
 ## Verification Summary
 
 - **Test Commands**:
-  - `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
   - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
+  - `bash scripts/validation/check-repo-contracts.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
 - **Deferred Runtime Evidence**: T-TLG-014 remains a live rehearsal item, not an unimplemented static hardening task.

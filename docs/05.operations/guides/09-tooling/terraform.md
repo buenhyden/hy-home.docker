@@ -67,8 +67,8 @@ Terraform is used in `hy-home.docker` to provision and manage cloud resources (A
 
 Instead of a long-running service, Terraform is treated as a **job**.
 
-- Always use `docker compose run --rm terraform` to clean up containers after execution.
-- Profiles: Ensure the `tooling` profile is active or specified if needed.
+- Use root compose plus the Terraform leaf compose so the optional `infra_net` context is present.
+- Profiles: specify `tooling` and `iac` when rendering or running the helper.
 
 #### 2. State Management
 
@@ -87,8 +87,8 @@ Credentials are not stored in the container. They are mounted from the host:
 #### Initializing a Project
 
 ```bash
-cd infra/09-tooling/terraform
-docker compose run --rm terraform init
+TERRAFORM_COMPOSE_FILES="-f docker-compose.yml -f infra/09-tooling/terraform/docker-compose.yml"
+docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform init
 ```
 
 #### Resource Provisioning (Plan & Apply)
@@ -97,11 +97,12 @@ Always generate a plan file before applying to prevent accidental changes.
 
 ```bash
 ## 1. Generate plan
-docker compose run --rm terraform plan -out=tfplan
+TERRAFORM_COMPOSE_FILES="-f docker-compose.yml -f infra/09-tooling/terraform/docker-compose.yml"
+docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform plan -out=tfplan
 
 ## 2. Review the plan
 ## 3. Apply the plan
-docker compose run --rm terraform apply tfplan
+docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform apply tfplan
 ```
 
 ### Formatting and Validation
@@ -109,8 +110,9 @@ docker compose run --rm terraform apply tfplan
 Maintain code quality by using built-in tools.
 
 ```bash
-docker compose run --rm terraform fmt
-docker compose run --rm terraform validate
+TERRAFORM_COMPOSE_FILES="-f docker-compose.yml -f infra/09-tooling/terraform/docker-compose.yml"
+docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform fmt
+docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform validate
 ```
 
 ### Troubleshooting
@@ -121,11 +123,12 @@ If Terraform fails with "Error acquiring the state lock", ensure no other group 
 
 #### Network Connectivity
 
-The container uses `infra_net`. If you cannot reach local services (like MinIO), verify the network labels in `docker-compose.yml`.
+The container uses `infra_net`. If local services are unreachable, verify that runtime rendering uses root network/secret/dependency context rather than the Terraform leaf compose file alone.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `bash scripts/validation/check-repo-contracts.sh`
 
 ## Runbook Handoff
 

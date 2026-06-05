@@ -5,31 +5,23 @@ status: active
 
 # IaC Deployment Policy
 
-This policy defines the standards for Infrastructure as Code (IaC) deployments using Terraform and Terrakube.
-
-## Standards
-
-- All changes must go through PR review.
-- State files must be stored in the remote backend.
-- Plan verification is required before apply.
-
 ## Overview (KR)
 
-이 문서는 `docs/05.operations/policies/09-tooling/iac-deployment-policy.md` 주제의 운영 정책을 정의한다. 기존 운영 내용을 유지하면서 적용 범위, 통제, 검증 기준을 명시한다.
+이 정책은 `09-tooling`의 Terraform CLI helper와 Terrakube API/UI/executor를 이용한 IaC 변경의 승인, state, secret, evidence 기준을 정의한다.
 
 ## Policy Scope
 
-이 정책은 관련 서비스의 운영 기준, 변경 통제, 검증 방법을 다룬다.
-
-- **Systems**: 관련 Docker Compose 서비스와 문서화된 운영 자산
+- **Systems**: `infra/09-tooling/terraform/docker-compose.yml`, `infra/09-tooling/terrakube/docker-compose.yml`
 - **Agents**: repo-local governance를 따르는 AI agents
 - **Environments**: local, development, homelab operations
 
 ## Controls
 
-- **Required**: 변경 전 관련 README, guide, runbook 확인
-- **Allowed**: 문서와 검증 절차의 in-place 보강
-- **Disallowed**: secret 값 노출, 승인 없는 runtime 변경, 정책과 절차의 중복 SSoT 생성
+- **Required**: IaC 변경은 PR review, plan evidence, apply approval, state backend boundary 기록을 거친다.
+- **Required**: Terraform helper는 `$HOME/.aws`, `$HOME/.azure` read-only mount와 `workspace/` scope를 벗어나지 않는다.
+- **Required**: Terrakube secret material은 Docker Secret names만 문서화하고 값은 노출하지 않는다.
+- **Allowed**: 문서/검증 절차의 in-place 보강, state/backend 정책의 보수적 강화, approval gate 추가.
+- **Disallowed**: secret 값 노출, 승인 없는 apply, Docker socket 권한 확대, 정책과 절차의 중복 SSoT 생성.
 
 ## Exceptions
 
@@ -37,7 +29,9 @@ This policy defines the standards for Infrastructure as Code (IaC) deployments u
 
 ## Verification
 
-- 관련 repository validation script와 문서 heading audit로 준수 여부를 확인한다.
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `bash scripts/validation/check-repo-contracts.sh`
+- Terraform/Terrakube guide/runbook과 compose service names가 일치하는지 검토한다.
 
 ## Review Cadence
 
@@ -55,3 +49,7 @@ This policy defines the standards for Infrastructure as Code (IaC) deployments u
 ## Related Documents
 
 - [Operations index](../../README.md)
+- [Terraform guide](../../guides/09-tooling/terraform.md)
+- [Terrakube guide](../../guides/09-tooling/terrakube.md)
+- [Terraform runbook](../../runbooks/09-tooling/terraform.md)
+- [Terrakube runbook](../../runbooks/09-tooling/terrakube.md)

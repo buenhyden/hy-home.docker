@@ -20,9 +20,9 @@
 
 ### In Scope
 
-- **Benchmark Orchestration**: 마스터 노드를 통한 분산 부하 생성 시나리오 관리.
+- **Benchmark Orchestration**: `k6-master`를 통한 Locust-wrapper 부하 생성 시나리오 관리.
 - **Metric Exporting**: InfluxDB 연동을 통한 성능 지표 실시간 전송.
-- **Worker Scaling**: `k6-worker`(Locust 기반) 노드의 동적 확장.
+- **Scenario Mount**: `k6-data:/mnt/locust:rw` volume 계약 유지.
 
 ### Out of Scope
 
@@ -43,9 +43,9 @@ k6/
 
 | Command                                                    | Description                      |
 | ---------------------------------------------------------- | -------------------------------- |
-| `docker compose --profile tooling up -d`                   | 테스팅 인프라 전체 시작          |
-| `docker compose up --scale k6-worker=N -d`                | 워커 노드 수 확장 (N개 지정)     |
-| `docker compose logs -f k6-master`                        | 마스터 노드 로그 및 상태 모니터링 |
+| `bash scripts/hardening/check-all-hardening.sh 09-tooling` | Static hardening contract check |
+| `bash scripts/validation/check-repo-contracts.sh` | Documentation and stale-literal guard |
+| `docker compose ... logs -f k6-master` | Approved runtime context에서 마스터 노드 로그 확인 |
 
 ## Configuration
 
@@ -59,12 +59,13 @@ k6/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect k6.
+- Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect k6.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Root `docker-compose.yml` does not currently include this leaf; runtime rendering must provide root `infra_net`, `influxdb`, and `influxdb_api_token` context.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm k6 network, volume, and metric sink references render.
+- Start with the hardening check to confirm k6 network, volume, and metric sink references stay declared.
 - Check k6 run output and the linked runbook before changing test scripts or metric destinations.
 
 ## Related Documents
@@ -72,12 +73,6 @@ k6/
 - **Guide**: [k6 Performance Testing Guide](../../../docs/05.operations/guides/09-tooling/k6.md)
 - **Policy**: [k6 Operations Policy](../../../docs/05.operations/policies/09-tooling/k6.md)
 - **Runbook**: [k6 Recovery Runbook](../../../docs/05.operations/runbooks/09-tooling/k6.md)
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
-
----
 
 ## Service Readiness
 
@@ -94,8 +89,8 @@ Copyright (c) 2026. Licensed under the MIT License.
 | Secret refs | names: `influxdb_api_token`; mounts: `/run/secrets/influxdb_api_token` |
 | Healthcheck | Compose healthcheck declared for `k6-master` |
 | Operations | [Guide](../../../docs/05.operations/guides/09-tooling/k6.md), [Policy](../../../docs/05.operations/policies/09-tooling/k6.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/k6.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
 ## How to Work in This Area
 

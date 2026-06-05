@@ -4,7 +4,7 @@
 
 ## Overview (KR)
 
-`09-tooling` 계층은 개발 주기 전반에 걸친 보조 서비스를 제공하는 인프라 계층이다. 인프라 자동화(Terrakube), 코드 품질 분석(SonarQube), 성능 테스트(Locust), 컨테이너 이미지 저장소(Registry), 파일 동기화(Syncthing) 등을 포함하며, 모든 서비스는 표준 인증(Keycloak) 및 데이터(PostgreSQL, MinIO) 계층과 통합되어 운영된다.
+`09-tooling` 계층은 개발 주기 전반에 걸친 보조 서비스를 제공하는 인프라 계층이다. 인프라 자동화(Terrakube/Terraform), 코드 품질 분석(SonarQube), 성능 테스트(Locust 및 k6 leaf의 Locust wrapper), 컨테이너 이미지 저장소(Registry), 파일 동기화(Syncthing)를 포함한다. 현재 root `docker-compose.yml`에서는 대부분 선택 include로 주석 처리되어 있으므로, 운영 문서는 optional root context와 service-local compose 경계를 구분한다.
 
 ## Audience
 
@@ -19,7 +19,7 @@
 ### In Scope
 
 - Tooling tier service index and high-level integration map
-- Terrakube, SonarQube, Locust, Registry, Syncthing, Terraform, and k6 service routing
+- Terrakube, SonarQube, Locust, Registry, Syncthing, Terraform, and k6 service boundaries
 - Links to canonical tooling guide, policy, runbooks, and specs
 
 ### Out of Scope
@@ -46,7 +46,7 @@
 
 ![Tooling Architecture](https://img.shields.io/badge/Architecture-Tooling_Tier-blue)
 
-본 계층은 서비스별로 독립된 컨테이너 환경을 가지며, `04-data` 계층을 영구 저장소로 활용한다.
+본 계층은 서비스별로 독립된 컨테이너 환경을 가지며, 필요한 경우 `04-data` 계층의 PostgreSQL, MinIO, Valkey, InfluxDB와 연동한다.
 
 - **IaC Engine**: Terrakube를 통한 Terraform 상태 관리 및 자동화.
 - **Analysis Engine**: SonarQube를 통한 정적 코드 분석 및 품질 게이트 적용.
@@ -60,14 +60,17 @@
 | **Terrakube** | IaC Automation | TF State Management, API-driven Infra | PostgreSQL, MinIO |
 | **SonarQube** | Code Quality | Static Analysis, Security Hotspots | PostgreSQL |
 | **Locust** | Performance | Python-based Load Testing | Distributed Workers |
-| **Registry** | Cont. Storage | Private OCI Registry | MinIO (S3 Backend) |
+| **k6** | Performance | Current Locust-wrapper `k6-master` leaf | InfluxDB |
+| **Registry** | Cont. Storage | Private OCI Registry | Bind mount `${DEFAULT_REGISTRY_DIR}` |
 | **Syncthing** | Data Sync | P2P File Synchronization | Local Storage |
+| **Terraform** | IaC CLI | Containerized Terraform helper | Local workspace |
 
 ## Operational Governance
 
 - **Manual Approval**: Production 인프라 변경 시 Terrakube에서의 수동 승인 필수.
 - **Quality Gates**: SonarQube 분석 결과가 'Passed'인 경우에만 배포 추진 권장.
 - **Clean-up**: Registry의 테스트 이미지는 주기적으로 정리(GC 수행).
+- **Validation Boundary**: `bash scripts/hardening/check-all-hardening.sh 09-tooling` is the static hardening gate; optional runtime rendering must include root network/secret/dependency context.
 
 ## How to Work in This Area
 

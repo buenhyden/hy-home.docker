@@ -38,14 +38,15 @@ status: active
 ### Step-by-step Instructions
 
 1. 정적 구성 점검
-   - `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
+   - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+   - `bash scripts/validation/check-repo-contracts.sh`
 2. Gateway/SSO 경계 정렬
    - SonarQube/Terrakube/Syncthing 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
 3. 네트워크 경계 표준화
-   - tooling compose에 `infra_net` external 선언을 명시한다.
+   - tooling compose에 `infra_net` external 선언을 명시한다. service-local compose 파일은 root network/secret context 없이 단독 config 대상으로 취급하지 않는다.
 4. 테스트 런타임 안정화
    - locust-worker healthcheck를 확인한다.
-   - k6 volume 참조가 `k6-data:/mnt/locust:rw`로 정렬되었는지 확인한다.
+   - k6 leaf는 현재 `k6-master` 단일 Locust wrapper이며, `k6-data:/mnt/locust:rw` volume 계약을 유지한다.
 5. 기준선 검증 실행
    - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
    - `bash scripts/validation/check-template-security-baseline.sh`
@@ -56,9 +57,9 @@ status: active
 ### Common Pitfalls
 
 - 공개 라우터에 SSO 체인을 누락하는 실수
-- compose별 네트워크 선언 편차를 방치하는 실수
+- service-local compose 단독 config 실패를 root optional context와 구분하지 못하는 실수
 - locust worker health 상태를 확인하지 않는 실수
-- k6/locust 구성 드리프트를 문서 없이 방치하는 실수
+- k6 leaf에 존재하지 않는 worker 또는 Traefik route를 문서화하는 실수
 
 ## Common Checks
 

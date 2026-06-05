@@ -38,7 +38,8 @@ status: active
   - locust-worker는 worker 프로세스 healthcheck를 가진다.
   - k6는 `k6-data` 볼륨을 기준 경로(`/mnt/locust`)에 마운트한다.
 - **Data / Interface Contract**:
-  - tooling 서비스는 기존 PostgreSQL/Valkey/MinIO/InfluxDB 연계를 유지한다.
+  - tooling 서비스는 필요한 경우 기존 PostgreSQL/Valkey/MinIO/InfluxDB 연계를 유지한다.
+  - root `docker-compose.yml`에서 09-tooling includes는 optional/commented 상태이므로 service-local compose files require root network/secret/dependency context for runtime rendering.
 - **Governance Contract**:
   - `scripts/hardening/check-all-hardening.sh 09-tooling` 통과가 tooling tier 하드닝 기준선이다.
   - CI `infrastructure-hardening` job이 전체 hardening baseline으로 PR 단계에서 회귀를 차단한다.
@@ -100,21 +101,15 @@ tooling_hardening_controls:
 ## Verification
 
 ```bash
-docker compose -f infra/09-tooling/registry/docker-compose.yml config
-docker compose -f infra/09-tooling/sonarqube/docker-compose.yml config
-docker compose -f infra/09-tooling/terrakube/docker-compose.yml config
-docker compose -f infra/09-tooling/syncthing/docker-compose.yml config
-docker compose -f infra/09-tooling/locust/docker-compose.yml config
-docker compose -f infra/09-tooling/k6/docker-compose.yml config
-docker compose -f infra/09-tooling/terraform/docker-compose.yml config
 bash scripts/hardening/check-all-hardening.sh 09-tooling
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-doc-traceability.sh
+bash scripts/validation/check-repo-contracts.sh
 ```
 
 ## Success Criteria & Verification Plan
 
-- **VAL-TLG-001**: tooling compose static validation 통과
+- **VAL-TLG-001**: tooling hardening check and documented optional root-context validation boundary 통과
 - **VAL-TLG-002**: tooling hardening baseline script 실패 0건
 - **VAL-TLG-003**: PRD~Runbook optimization-hardening 문서 링크 정합성 유지
 - **VAL-TLG-004**: 카탈로그 `09-tooling` 확장 항목이 Plan/Tasks/Operations에 반영

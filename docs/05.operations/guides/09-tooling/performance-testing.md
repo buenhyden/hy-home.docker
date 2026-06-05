@@ -9,15 +9,11 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 플랫폼의 엔드포인트를 벤치마킹하고 성능 병목 지점을 식별하기 위한 성능 테스트 워크플로우를 설명합니다. **Locust**(Python 기반)를 사용하여 시나리오를 작성하고, **InfluxDB**와 **Grafana**를 연동하여 지표를 분석하는 방법을 다룹니다.
->
-> `hy-home.docker` 환경에서 Locust를 활용한 분산 부하 테스트 및 성능 벤치마킹 통합 가이드입니다.
-
----
+이 문서는 `09-tooling` 성능 테스트 워크플로우의 공통 사용 기준을 설명한다. 현재 구현은 `locust` leaf의 master/worker 구성과 `k6` leaf의 단일 `k6-master` Locust wrapper를 제공하며, 둘 다 InfluxDB 지표 전송과 host port UI 경계를 사용한다.
 
 ### Usage Type
 
-`system-guide | troubleshooting-guide`
+`system-guide | performance-guide | operational-reference`
 
 ### Target Audience
 
@@ -27,57 +23,51 @@ status: active
 
 ### Purpose
 
-이 가이드는 사용자가 초당 수천 명의 가상 사용자를 시뮬레이션하여 시스템의 임계치를 확인하고, 인프라 최적화의 근거 데이터를 확보할 수 있도록 돕는 것을 목적으로 합니다.
+성능 테스트를 실행하기 전에 어떤 leaf를 선택해야 하는지, root optional compose 경계와 승인/검증 절차를 어떻게 적용해야 하는지 안내한다.
 
 ### Prerequisites
 
-- **Python 지식**: 테스트 시나리오 작성을 위한 기초적인 Python 문법 이해.
-- **네트워크 연결**: 테스트 대상 서비스가 `infra_net` 내에서 `locust-master/worker`와 통신 가능해야 함.
-- **InfluxDB**: 지표 저장을 위해 InfluxDB 서비스가 실행 중이어야 함.
+- `locust` leaf는 `locust-master`, `locust-worker` 분산 실행에 사용한다.
+- `k6` leaf는 현재 단일 `k6-master` Locust wrapper이며 별도 worker service가 없다.
+- InfluxDB service, Docker Secret `influxdb_api_token`, root `infra_net` context가 필요하다.
+- 대규모 테스트는 승인된 테스트 윈도우와 대상 서비스 owner 승인이 필요하다.
 
 ### Step-by-step Instructions
 
-#### 1. 테스트 시나리오 작성 (Scripting)
+1. 테스트 목적에 맞는 leaf를 선택한다.
+   - 분산 worker가 필요하면 [Locust guide](./locust.md)를 사용한다.
+   - `k6` leaf의 현재 wrapper 계약을 확인하려면 [k6 guide](./k6.md)를 사용한다.
+2. 테스트 시나리오는 해당 leaf의 `locustfile.py`에 맞춰 작성한다.
 
-성능 테스트 시나리오는 `locustfile.py`에 정의합니다.
+   ```python
+   from locust import HttpUser, task, between
 
-```python
-from locust import HttpUser, task, between
+   class WebsiteUser(HttpUser):
+       wait_time = between(1, 5)
 
-class WebsiteUser(HttpUser):
-    wait_time = between(1, 5) # 초 단위 대기 시간
+       @task
+       def index_page(self):
+           self.client.get("/")
+   ```
 
-    @task
-    def index_page(self):
-        self.client.get("/")
-```
-
-#### 2. 분산 환경 실행 (Orchestration)
-
-1. `infra/09-tooling/k6` 디렉토리로 이동합니다.
-2. 서비스를 시작합니다: `docker-compose --profile tooling up -d`
-3. 부하량에 따라 워커를 확장합니다: `docker-compose up --scale locust-worker=5 -d`
-
-#### 3. 부하 가동 및 모니터링 (Execution)
-
-1. `https://locust.${DEFAULT_URL}` 웹 UI에 접속합니다.
-2. **Number of users**(가상 사용자 수)와 **Ramp-up**(초당 증가 수)를 설정하고 `Start swarming`을 클릭합니다.
-3. 실시간 통계 및 차트를 확인합니다.
-
-#### 4. 결과 분석 (Analysis)
-
-- Locust UI에서 실시간 데이터를 확인하거나,
-- **Grafana**의 `Load Testing Dashboard`를 통해 InfluxDB에 저장된 이력 데이터를 심도 있게 분석합니다.
+3. 실행 전 공통 검증을 수행한다.
+   - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+   - `bash scripts/validation/check-repo-contracts.sh`
+4. 실행이 승인된 환경에서 root compose와 선택 leaf compose를 함께 렌더링한다.
+5. UI는 host port `http://localhost:${LOCUST_HOST_PORT:-18089}` 경계에서 접근한다.
+6. Users, spawn rate, target host를 기록하고, 테스트 결과와 target SLI 변화를 evidence로 남긴다.
 
 ### Common Pitfalls
 
-- **Ramp-up 설정 미흡**: 순간적인 대량 요청은 운영 시스템에 서지(Surge)를 발생시켜 의도치 않은 장애를 유발할 수 있습니다. 반드시 서서히 부하를 늘리십시오.
-- **Worker 연결 실패**: 마스터 컨테이너 명칭(`locust-master`) 및 Docker 네트워크 가시성을 확인하십시오.
-- **마스터 노드 과부하**: 마스터 노드는 데이터 수집 역할만 수행하도록 하고, 실제 부하 발생은 전적으로 워커 노드에서 담당해야 합니다.
+- 순간적인 대량 요청은 공유 gateway/auth/data tier에 영향을 줄 수 있으므로 ramp-up을 보수적으로 설정한다.
+- host port UI를 공개 route처럼 문서화하지 않는다. 현재 Locust/k6 leaf에는 Traefik route가 없다.
+- service-local compose 단독 config 실패를 구현 결함으로 해석하지 않는다. root context가 필요한 선택 leaf다.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `bash scripts/validation/check-repo-contracts.sh`
+- 실행 승인 시 root+leaf overlay가 선택 leaf service와 InfluxDB dependency를 함께 렌더링하는지 확인한다.
 
 ## Runbook Handoff
 

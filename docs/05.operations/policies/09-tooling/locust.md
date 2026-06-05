@@ -43,13 +43,13 @@ This policy applies to the service, workflow, or operational control surface des
 
 ### 3. 데이터 보존 및 보안 (Data & Security)
 
-- **지표 보존**: InfluxDB 내의 부하 테스트 데이터는 90일간 보존하며, 이후 아카이빙함.
+- **지표 보존**: InfluxDB 지표 보존 기간과 백업 정책은 data/observability 계층 정책을 따른다. 이 정책에서 보존 기간을 단정하지 않는다.
 - **접근 통제**: 외부 부하 생성(External Load) 시, 반드시 인증 토큰 및 레이트 리밋 설정을 적용하여 무단 접근을 방지함.
 
 ## Security Controls
 
 - **Secret Management**: InfluxDB API 토큰은 Docker Secret으로만 주입하며, 환경 변수에 평문 노출을 금지함.
-- **Endpoint Protection**: Locust UI는 내부 어드민 망 또는 VPN 환경에서만 노출되도록 Gateway에서 제어함.
+- **Endpoint Protection**: 현재 compose에는 Locust Traefik route가 없다. UI 접근은 승인된 host port 경계에서만 수행한다.
 
 ## Controls
 
