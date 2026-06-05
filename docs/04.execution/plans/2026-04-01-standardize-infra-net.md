@@ -7,47 +7,47 @@ status: completed
 
 ## Overview
 
-이 문서는 모든 인프라 서비스에 `infra_net` 네트워크를 적용하고 서브넷을 `172.19.0.0/16`으로 표준화하기 위한 구체적인 실행 계획을 정의한다. 문서화, 구현, 검증의 3단계로 진행한다.
+This document defines the concrete implementation plan for applying the `infra_net` network to all infrastructure services and standardizing the subnet as `172.19.0.0/16`. Work proceeds in three phases: documentation, implementation, and verification.
 
 ## Context
 
-인프라 서비스 간의 통신 표준을 확립하고, IP 관리의 복잡도를 낮추기 위해 개별적으로 운영되던 네트워크 설정을 `infra_net`으로 통합한다.
+To establish a communication standard between infrastructure services and reduce IP management complexity, previously separate network settings are consolidated into `infra_net`.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - 모든 활성 인프라 서비스의 `infra_net` 연결.
-  - `172.19.0.0/16` 서브넷 강제.
-  - 기존 `k3d-hyhome` 설정 유지.
-- **In Scope**: `docker-compose.yml` 및 하위 21개 `include` 파일 수정.
+  - Connect all active infrastructure services to `infra_net`.
+  - Enforce the `172.19.0.0/16` subnet.
+  - Preserve the existing `k3d-hyhome` settings.
+- **In Scope**: Modify `docker-compose.yml` and 21 lower-level `include` files.
 
 ## Non-Goals & Out-of-Scope
 
-- **Non-goals**: 서비스 포트 변경이나 내부 로직 수정.
-- **Out of Scope**: 클러스터 외부(Host) 네트워크 설정 변경.
+- **Non-goals**: Service port changes or internal logic changes.
+- **Out of Scope**: Network setting changes outside the cluster on the host.
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-001 | SSoT 문서 작성 (9개 폴더) | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/` | REQ-GOV | 모든 템플릿 준수 및 링크 완료 |
-| PLN-002 | 루트 Compose 네트워크 정의 수정 | `docker-compose.yml` | REQ-FUN-02 | `docker compose config` 서브넷 확인 |
-| PLN-003 | 개별 서비스 네트워크 할당 수정 | `infra/**/docker-compose.yml` | REQ-FUN-01 | 서비스별 `infra_net` 존재 여부 |
+| PLN-001 | Write SSoT documents (9 folders) | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/` | REQ-GOV | All templates comply and links are complete |
+| PLN-002 | Update root Compose network definition | `docker-compose.yml` | REQ-FUN-02 | `docker compose config` confirms the subnet |
+| PLN-003 | Update individual service network assignments | `infra/**/docker-compose.yml` | REQ-FUN-01 | Each service has `infra_net` |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Structural | Merge 결과 검증 | `docker compose config` | 에러 없이 유효한 YAML 출력 |
-| VAL-PLN-002 | Network | Subnet/IP 검증 | `docker compose config \| grep -E "subnet\|infra_net"` | `172.19.0.0/16` 확인 |
-| VAL-PLN-003 | Persistence | k3d-hyhome 유지 검증 | `grep "k3d-hyhome" infra/**/docker-compose.yml` | 기존 설정 보존 확인 |
+| VAL-PLN-001 | Structural | Verify merge result | `docker compose config` | Valid YAML output without errors |
+| VAL-PLN-002 | Network | Verify subnet/IP | `docker compose config \| grep -E "subnet\|infra_net"` | `172.19.0.0/16` is confirmed |
+| VAL-PLN-003 | Persistence | Verify `k3d-hyhome` preservation | `grep "k3d-hyhome" infra/**/docker-compose.yml` | Existing settings are preserved |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| YAML 문법 오류 | High | 각 파일 수정 후 개별적으로 `docker compose config` 실행 |
-| IP 대역 충돌 | Medium | 기존에 수동 할당된 IP 리스트를 먼저 스캔하여 확인 |
+| YAML syntax errors | High | Run `docker compose config` individually after editing each file |
+| IP range conflicts | Medium | First scan and confirm the list of existing manually assigned IPs |
 
 ## Completion Criteria
 

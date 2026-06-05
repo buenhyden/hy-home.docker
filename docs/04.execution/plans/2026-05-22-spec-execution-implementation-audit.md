@@ -9,32 +9,32 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/03.specs`와 `docs/04.execution`의 spec, plan, task가 실제 구현 및 검증 evidence와 연결되어 있는지 조사하고, 확인된 미구현 또는 추적성 gap을 단계적으로 해소하기 위한 active 실행 계획이다.
+This document is the active implementation plan for investigating whether specs, plans, and tasks in `docs/03.specs` and `docs/04.execution` are connected to actual implementation and validation evidence, then resolving confirmed unimplemented or traceability gaps in stages.
 
 ## Context
 
-현재 stage 문서 세트는 크고 오래된 historical evidence를 포함한다. 따라서 `status: active` 또는 unchecked checklist만으로 미구현을 단정하지 않는다. 구현 여부는 spec의 실행 plan/task 링크, infra 또는 docs evidence, operations handoff, repository validator 결과를 함께 대조해 판단한다.
+The current stage document set is large and includes old historical evidence. Therefore, `status: active` or unchecked checklist items alone are not enough to conclude that something is unimplemented. Implementation status is determined by comparing spec execution plan/task links, infra or docs evidence, operations handoff, and repository validator results together.
 
-초기 인벤토리 기준은 다음과 같다.
+The initial inventory baseline is as follows.
 
-- `docs/03.specs`: non-README spec/design documents 19개
-- `docs/04.execution/plans`: plan documents 39개
-- `docs/04.execution/tasks`: task documents 34개
+- `docs/03.specs`: 19 non-README spec/design documents
+- `docs/04.execution/plans`: 39 plan documents
+- `docs/04.execution/tasks`: 34 task documents
 - Graphify health: advisory due to `surprising_cross_root_inferred_edges=3`; navigation aid only
 
-첫 번째 concrete gap은 `docs/03.specs/04-data-analytics/spec.md`가 active spec이지만 `docs/04.execution` plan/task 링크가 없다는 점이다. 관련 infra와 operations 문서는 존재하므로 execution traceability evidence를 추가한다.
+The first concrete gap is that `docs/03.specs/04-data-analytics/spec.md` is an active spec but lacks `docs/04.execution` plan/task links. Related infra and operations documents exist, so execution traceability evidence is added.
 
-두 번째 concrete gap은 `docs/03.specs/07-workflow/agent-design.md`와 `docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md`가 현재 런타임 구현과 progress evidence상 완료된 cross-validation 체계를 설명하지만, 문서 상태가 draft로 남아 있고 task evidence가 없다는 점이다.
+The second concrete gap is that `docs/03.specs/07-workflow/agent-design.md` and `docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md` describe a cross-validation system completed by current runtime implementation and progress evidence, but their document status remains draft and task evidence is missing.
 
-추가 stale-state gap은 2026-05-17/18 execution plan 일부가 이미 progress log와 task evidence상 완료되었지만 `draft` 또는 `active`로 남아 있던 항목이다. 이 계획은 해당 항목을 retrospective task evidence와 함께 completed 상태로 맞추고, 런타임 evidence가 부족한 오래된 2026-03 service rollout plan/task는 active로 유지한다.
+Additional stale-state gaps are some 2026-05-17/18 execution plans that were already completed by progress log and task evidence but still remained `draft` or `active`. This plan aligns those items to completed status with retrospective task evidence and keeps older 2026-03 service rollout plan/task items active when runtime evidence is insufficient.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - `G-SPEC-EXEC-001`: `docs/03.specs`의 spec/design 문서가 plan/task evidence와 연결되어 있는지 조사한다.
-  - `G-SPEC-EXEC-002`: `docs/04.execution` plan/task의 status, checklist, evidence가 현재 구현 상태와 충돌하는지 분류한다.
-  - `G-SPEC-EXEC-003`: 확인된 미구현 또는 추적성 gap을 bounded remediation으로 해소한다.
-  - `G-SPEC-EXEC-004`: 새 evidence와 README index를 동기화한다.
+  - `G-SPEC-EXEC-001`: Investigate whether spec/design documents in `docs/03.specs` are connected to plan/task evidence.
+  - `G-SPEC-EXEC-002`: Classify whether status, checklists, and evidence in `docs/04.execution` plans/tasks conflict with the current implementation state.
+  - `G-SPEC-EXEC-003`: Resolve confirmed unimplemented or traceability gaps through bounded remediation.
+  - `G-SPEC-EXEC-004`: Synchronize new evidence and README indexes.
 - **In Scope**:
   - `docs/03.specs/**`
   - `docs/04.execution/plans/**`
@@ -45,9 +45,9 @@ status: completed
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - historical plan/task content를 template style만을 이유로 대량 재작성하지 않는다.
-  - Docker runtime 배포, 서비스 기동, secret 값 확인을 수행하지 않는다.
-  - unchecked runtime rehearsal 항목을 실제 운영 evidence 없이 completed로 바꾸지 않는다.
+  - Do not bulk-rewrite historical plan/task content solely for template style.
+  - Do not deploy Docker runtime, start services, or inspect secret values.
+  - Do not mark unchecked runtime rehearsal items completed without actual operations evidence.
 - **Out of Scope**:
   - secret values, credentials, private keys, shell history, raw logs
   - unrelated untracked `projects/storybook/mcp/`

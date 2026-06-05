@@ -7,23 +7,23 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/01.requirements` PRD 문서 세트를 `docs/99.templates/prd.template.md` 계약에 맞게 정리하는 실행 계획이다. 요구사항의 제품 의미는 변경하지 않고 문서 구조, 링크 추적성, canonical docs taxonomy, 검증 evidence를 복구한다.
+This document is the implementation plan for aligning the `docs/01.requirements` PRD document set with the `docs/99.templates/prd.template.md` contract. It restores document structure, link traceability, canonical docs taxonomy, and validation evidence without changing the product meaning of the requirements.
 
 ## Context
 
-`docs/01.requirements`는 전체 설계와 구현의 시작점이지만 일부 PRD가 템플릿 섹션명, H1 형식, Related Documents 링크 형식을 벗어나 있다. 또한 기존 `docs/superpowers/` 산출물이 tracked 상태로 남아 repo top-level docs taxonomy를 깨고 있으며, LLM Wiki index도 path 변경 전 상태로 stale 상태다.
+`docs/01.requirements` is the starting point for overall design and implementation, but some PRDs deviate from template section names, H1 format, and Related Documents link format. Existing `docs/superpowers/` artifacts also remain tracked and break the repo top-level docs taxonomy, while the LLM Wiki index is stale from before path changes.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - PRD 23개와 `docs/01.requirements/README.md`가 PRD stage 목적과 템플릿 규칙을 따르게 한다.
-  - Related Documents 링크를 클릭 가능한 target-relative Markdown 링크로 통일한다.
-  - `docs/superpowers/` tracked legacy artifacts를 제거해 canonical docs taxonomy를 복구한다.
-  - LLM Wiki index와 governance progress log를 현재 문서 상태와 동기화한다.
+  - Make 23 PRDs and `docs/01.requirements/README.md` follow the PRD stage purpose and template rules.
+  - Standardize Related Documents links as clickable target-relative Markdown links.
+  - Remove tracked legacy artifacts under `docs/superpowers/` to restore the canonical docs taxonomy.
+  - Synchronize the LLM Wiki index and governance progress log with the current documentation state.
 - **In Scope**:
   - `docs/01.requirements/`
   - `docs/99.templates/prd.template.md`
-  - `docs/02.architecture/requirements/0002-auth-architecture.md`의 adjacent auth traceability link
+  - adjacent auth traceability link in `docs/02.architecture/requirements/0002-auth-architecture.md`
   - `docs/04.execution/plans/README.md`
   - `docs/00.agent-governance/memory/progress.md`
   - `docs/90.references/llm-wiki/index.md`
@@ -31,23 +31,23 @@ status: completed
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - PRD의 제품 요구사항, 우선순위, 성공 지표, 서비스 동작을 새로 정의하지 않는다.
-  - 신규 PRD, ARD, ADR, Spec, Task, Operations 문서를 만들지 않는다.
-  - gateway와 communication hardening PRD 부재를 새 TODO나 요구사항으로 발명하지 않는다.
+  - Do not newly define PRD product requirements, priorities, success metrics, or service behavior.
+  - Do not create new PRD, ARD, ADR, Spec, Task, or Operations documents.
+  - Do not invent the absence of gateway and communication hardening PRDs as new TODOs or requirements.
 - **Out of Scope**:
-  - 런타임 구성, Docker Compose 동작, 서비스 설정, public API 변경
+  - Runtime configuration, Docker Compose behavior, service settings, and public API changes
   - unrelated untracked `projects/storybook/mcp/`
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-001 | `docs/superpowers/` tracked legacy artifacts 제거 | `docs/superpowers/**` | REQ-PRD-DOC-001 | `test ! -d docs/superpowers` |
-| PLN-002 | PRD template Related Documents 예시를 클릭 가능한 Markdown 링크로 수정 | `docs/99.templates/prd.template.md` | REQ-PRD-DOC-002 | Template keeps target-relative guidance and has no backticked pseudo-links |
-| PLN-003 | PRD H1과 필수 섹션을 템플릿 계약에 맞게 정규화 | `docs/01.requirements/*.md` | REQ-PRD-DOC-003 | PRD scan: exactly one H1, required sections present |
-| PLN-004 | Related Documents 링크와 auth ADR placeholder 수정 | `docs/01.requirements/*.md`, `docs/02.architecture/requirements/0002-auth-architecture.md` | REQ-PRD-DOC-004 | No backticked pseudo-links, no `####-` placeholder paths, local links resolve |
-| PLN-005 | Execution plan index와 governance progress 갱신 | `docs/04.execution/plans/README.md`, `docs/00.agent-governance/memory/progress.md` | REQ-PRD-DOC-005 | Parent README references this plan, progress log records evidence |
-| PLN-006 | LLM Wiki index 재생성 | `docs/90.references/llm-wiki/index.md` | REQ-PRD-DOC-006 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` passes |
+| PLN-001 | Remove tracked legacy artifacts under `docs/superpowers/` | `docs/superpowers/**` | REQ-PRD-DOC-001 | `test ! -d docs/superpowers` |
+| PLN-002 | Update PRD template Related Documents examples to clickable Markdown links | `docs/99.templates/prd.template.md` | REQ-PRD-DOC-002 | Template keeps target-relative guidance and has no backticked pseudo-links |
+| PLN-003 | Normalize PRD H1s and required sections to the template contract | `docs/01.requirements/*.md` | REQ-PRD-DOC-003 | PRD scan: exactly one H1, required sections present |
+| PLN-004 | Fix Related Documents links and auth ADR placeholder | `docs/01.requirements/*.md`, `docs/02.architecture/requirements/0002-auth-architecture.md` | REQ-PRD-DOC-004 | No backticked pseudo-links, no `####-` placeholder paths, local links resolve |
+| PLN-005 | Update execution plan index and governance progress | `docs/04.execution/plans/README.md`, `docs/00.agent-governance/memory/progress.md` | REQ-PRD-DOC-005 | Parent README references this plan, progress log records evidence |
+| PLN-006 | Regenerate LLM Wiki index | `docs/90.references/llm-wiki/index.md` | REQ-PRD-DOC-006 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` passes |
 
 ## Verification Plan
 

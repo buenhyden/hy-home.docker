@@ -7,39 +7,39 @@ status: completed
 
 ## Overview
 
-이 계획서는 `09-tooling` 계층의 인프라 도구들에 대한 문서화 표준화 작업을 정의한다. IaC, 품질 분석, 성능 테스트 도구들의 운영 및 기술 사양을 명확히 함으로써, 개발자가 도구들을 즉각적으로 활용하고 유지보수할 수 있는 환경을 조성하는 것을 목표로 한다.
+This plan defines documentation standardization work for infrastructure tools in the `09-tooling` tier. Its goal is to clarify the operational and technical specifications for IaC, quality analysis, and performance testing tools so developers can use and maintain them immediately.
 
 ## Work Breakdown
 
 ### Phase 1: Governance Documentation
 
-- [x] PRD 작성: 서비스 가치 및 주요 요구사항 정의.
-- [x] ARD 작성: 참조 아키텍처 및 품질 속성 정의.
-- [x] ADR 작성: Terrakube, SonarQube 등 도구 선정 근거 기록.
-- [x] 기술 사양서(Spec) 작성: 포트, 데이터 흐름, 보안 요건 상세화.
+- [x] Write the PRD: define service value and key requirements.
+- [x] Write the ARD: define reference architecture and quality attributes.
+- [x] Write the ADR: record the rationale for selecting tools such as Terrakube and SonarQube.
+- [x] Write the technical specification (Spec): detail ports, data flows, and security requirements.
 
 ### Phase 2: Operational Documentation
 
-- [x] 사용자 가이드 작성 (`docs/05.operations/`): Terrakube 워크스페이스 생성, SonarQube 프로젝트 연동 등.
-- [x] 운영 정책 작성 (`docs/05.operations/`): 성능 테스트 주기, IaC 승인 프로세스, 이미지 보관 정책.
-- [x] 런북 작성 (`docs/05.operations/`): Terrakube 상태 복구, SonarQube DB 마이그레이션 등.
+- [x] Write user guides (`docs/05.operations/`): Terrakube workspace creation, SonarQube project integration, and related procedures.
+- [x] Write operations policies (`docs/05.operations/`): performance test cadence, IaC approval process, and image retention policy.
+- [x] Write runbooks (`docs/05.operations/`): Terrakube state recovery, SonarQube DB migration, and related procedures.
 
 ### Phase 3: Infrastructure README Refactoring
 
-- [x] `infra/09-tooling/README.md`를 [Golden 5] 패턴으로 리팩토링.
-- [x] 계층 내 하부 서비스 README(SonarQube, Terrakube 등) 표준화.
+- [x] Refactor `infra/09-tooling/README.md` to the [Golden 5] pattern.
+- [x] Standardize lower-level service READMEs in the tier, including SonarQube and Terrakube.
 
 ## Verification Plan
 
 ### Automated Tests
 
-- [x] 모든 문서의 마운트 링크 및 상대 경로 무결성 검사.
-- [x] Markdown Lint (`markdownlint`)를 통한 스타일 및 문법 검증.
+- [x] Check mount links and relative path integrity across all documents.
+- [x] Verify style and syntax with Markdown Lint (`markdownlint`).
 
 ### Manual Verification
 
-- [ ] 가이드라인에 따라 Terrakube 워크스페이스가 정상적으로 생성되는지 확인.
-- [ ] SonarQube 품질 게이트가 파이프라인에서 정상 작동하는지 재검증.
+- [ ] Confirm that Terrakube workspaces are created correctly according to the guidelines.
+- [ ] Revalidate that SonarQube quality gates work correctly in the pipeline.
 
 Runtime rehearsal remains deferred because it can affect live tooling state and needs a separate operator-approved runtime window.
 
