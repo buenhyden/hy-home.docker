@@ -5,9 +5,9 @@ status: completed
 
 # LLM Wiki Agent-first Completion Specification
 
-## Overview (KR)
+## Overview
 
-이 문서는 `hy-home.docker`의 LLM Wiki를 static reference map에서 검증 가능한 repo-local index contract로 보강하는 기술 명세다. 기존 agent-first/Harness-first 구조는 유지하고, 미완료 범위였던 generator, generated index, `wiki-curator`, 운영 가이드, validator 강제력을 추가한다.
+This specification strengthens the `hy-home.docker` LLM Wiki from a static reference map into a verifiable repo-local index contract. It preserves the existing agent-first/Harness-first structure while adding the previously missing generator, generated index, `wiki-curator`, operations guide, and validator enforcement.
 
 ## Strategic Boundaries & Non-goals
 

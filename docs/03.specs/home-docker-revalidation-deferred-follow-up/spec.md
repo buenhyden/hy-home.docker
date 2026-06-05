@@ -5,23 +5,23 @@ status: completed
 
 # Home Docker Revalidation Deferred Follow-up Specification
 
-## Overview (KR)
+## Overview
 
-이 문서는 2026-05-25 `hy-home.docker` workspace audit 결과를 재검증하고, 기존 감사에서 남은 deferred 항목을 값·런타임 변경 없이 추적 가능하게 고정하는 명세다. 구현 대상은 문서 산출물, 검증 evidence, metadata-only 비교 결과이며 Compose runtime, secret value, actual `.env` value, remote GitHub 설정은 변경하지 않는다.
+This specification revalidates the 2026-05-25 `hy-home.docker` workspace audit results and makes the deferred items from the prior audit traceable without changing values or runtime state. The implementation scope is documentation artifacts, validation evidence, and metadata-only comparison results; it does not change Compose runtime, secret values, actual `.env` values, or remote GitHub settings.
 
 ## Strategic Boundaries & Non-goals
 
-- 이 명세는 current local `main` 기반 감사 결과의 revalidation과 deferred register를 소유한다.
-- 기존 2026-05-25 audit improvement 문서는 baseline evidence로 취급하고 다시 쓰지 않는다.
-- `projects/storybook/mcp/`는 pre-existing untracked no-touch 범위로 보존한다.
-- Docker start/stop, deployment, port/network/volume/permission mutation, secret value work, actual `.env` sync, remote GitHub branch protection, CI required-check enforcement는 범위 밖이다.
-- Broad ARD/ADR cleanup, `.agents/skills` compatibility mirroring, file deletion candidates는 별도 승인 전까지 deferred 상태로 남긴다.
+- This specification owns revalidation of the audit results from the current local `main` baseline and the deferred register.
+- The existing 2026-05-25 audit improvement documents are treated as baseline evidence and are not rewritten.
+- `projects/storybook/mcp/` remains a pre-existing untracked no-touch surface.
+- Docker start/stop, deployment, port/network/volume/permission mutation, secret value work, actual `.env` synchronization, remote GitHub branch protection, and CI required-check enforcement are out of scope.
+- Broad ARD/ADR cleanup, `.agents/skills` compatibility mirroring, and file deletion candidates remain deferred until separately approved.
 
 ## Related Inputs
 
-- **PRD**: 명시적 PRD 없음. 이 작업은 approved audit follow-up and governance evidence closure다.
-- **ARD**: 명시적 신규 ARD 없음. 기존 `hy-home.docker` modular Compose and agent-governance architecture를 따른다.
-- **Related ADRs**: 신규 ADR 없음. 런타임 또는 아키텍처 결정 변경이 없다.
+- **PRD**: No explicit PRD. This work is an approved audit follow-up and governance evidence closure.
+- **ARD**: No explicit new ARD. It follows the existing `hy-home.docker` modular Compose and agent-governance architecture.
+- **Related ADRs**: No new ADR. There is no runtime or architecture decision change.
 - **Baseline Plan**: [2026-05-25 home docker workspace audit improvement plan](../../04.execution/plans/2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Baseline Task**: [2026-05-25 home docker workspace audit improvement task](../../04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Release Runbook**: [release-management.md](../../05.operations/runbooks/00-workspace/release-management.md)

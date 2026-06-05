@@ -9,14 +9,14 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
-이 문서는 `04-data/analytics` 티어의 시계열(InfluxDB), 스트림 처리(ksqlDB), 로그 검색(OpenSearch), OLAP 분석(StarRocks) 엔진들의 기술 설계 및 인터페이스 계약을 정의한다. 본 명세는 PRD-2026-03-26-04-data-analytics의 요구사항을 기술적으로 구체화하며, 인프라 계층과의 연동 및 데이터 처리 규약을 설명한다. 현재 root `docker-compose.yml`에서 일부 analytics include는 주석 처리되어 있으므로, 이 명세는 보유 구현과 optional integration boundary를 설명한다.
+This document defines the technical design and interface contracts for the `04-data/analytics` tier engines: time-series storage (InfluxDB), stream processing (ksqlDB), log search (OpenSearch), and OLAP analytics (StarRocks). This specification translates PRD-2026-03-26-04-data-analytics requirements into technical details and describes integration with the infrastructure tier and data-processing rules. Because some analytics includes are currently commented out in the root `docker-compose.yml`, this specification describes the owned implementation and optional integration boundary.
 
 ## Strategic Boundaries & Non-goals
 
-- **Owns**: 개별 분석 엔진의 설정 계약, 데이터 보존 정책(Retention), 엔진 간 데이터 흐름 설계.
-- **Non-goals**: 개별 비즈니스 로직에 종속된 쿼리 상세 설계 (Application 계층 담당), BI 도구의 시각화 레이아웃.
+- **Owns**: Per-engine analytics configuration contracts, data retention policy boundaries, and cross-engine data-flow design.
+- **Non-goals**: Query-detail design tied to individual business logic (owned by the application tier) and BI visualization layouts.
 
 ## Related Inputs
 
@@ -29,15 +29,15 @@ status: active
 - **Infrastructure Contract**:
   - Analytics compose files are present under `infra/04-data/analytics/`, while root compose includes for InfluxDB, ksqlDB, and OpenSearch are currently optional/commented.
   - StarRocks warehouses compose is standalone and not included by the root compose.
-  - 모든 엔진은 `infra_net` 브리지 네트워크에 배치되어야 한다.
-  - 영구 데이터는 bind-backed named volume으로 마운트되며, current compose device paths are service-specific under `${DEFAULT_DATA_DIR}` rather than a shared `analytics/` prefix.
+  - Every engine must be attached to the `infra_net` bridge network.
+  - Persistent data is mounted through bind-backed named volumes, and current compose device paths are service-specific under `${DEFAULT_DATA_DIR}` rather than a shared `analytics/` prefix.
 - **Data / Interface Contract**:
   - InfluxDB: primary InfluxDB 3.x HTTP/Line Protocol + SQL query interface; legacy InfluxDB 2.x compose preserves Flux compatibility.
-  - ksqlDB: Kafka Topic 기반의 SQL 스트림 처리 인터페이스.
-  - OpenSearch: REST API (Port 9200) 및 Lucene 기반 검색 인터페이스.
-  - StarRocks: MySQL Protocol 호환 인터페이스 (Port 9030).
+  - ksqlDB: SQL stream-processing interface based on Kafka topics.
+  - OpenSearch: REST API on port `9200` and Lucene-based search interface.
+  - StarRocks: MySQL Protocol-compatible interface on port `9030`.
 - **Governance Contract**:
-  - 데이터 보존 기간과 cleanup 기준은 operations policy/runbook에서 관리한다.
+  - Data retention periods and cleanup criteria are managed in operations policy/runbook documents.
   - Retention is compose-enforced only when the linked service config declares it; otherwise it is an operational control requiring runtime evidence.
 
 ## Core Design
@@ -48,18 +48,18 @@ status: active
   - OpenSearch: Logging & full-text search engine.
   - StarRocks: Unified OLAP engine for complex analytical queries.
 - **Key Dependencies**:
-  - `04-data/operational` and `04-data/relational`: 원본 스냅샷/트랜잭션 데이터 소스.
+  - `04-data/operational` and `04-data/relational`: source snapshot and transactional data sources.
   - `05-messaging/kafka`: ksqlDB upstream broker, Schema Registry, and Kafka Connect dependency.
 - **Tech Stack**: Docker, InfluxDB 3.x Core primary with InfluxDB 2.x legacy compose, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
 
 ## Data Modeling & Storage Strategy
 
 - **Schema Strategy**:
-  - InfluxDB: Tag 기반 인덱싱 및 필드 중심 저장.
-  - OpenSearch: 도메인별 인덱스 패턴 (e.g., `logs-*-*`).
-  - StarRocks: OLAP 최적화를 위한 Star Schema 또는 Flat Table 모델 권장.
+  - InfluxDB: tag-based indexing and field-oriented storage.
+  - OpenSearch: domain-specific index patterns (for example, `logs-*-*`).
+  - StarRocks: star schema or flat table models are recommended for OLAP optimization.
 - **Retention Plan**:
-  - 시계열, 로그, stream state, and OLAP data retention targets must be recorded per service before production-like use.
+  - Time-series, log, stream state, and OLAP data retention targets must be recorded per service before production-like use.
   - Automatic deletion or cold-storage movement is not assumed unless the current service config declares it.
 
 ## Interfaces & Data Structures
@@ -93,8 +93,8 @@ mysql -h starrocks-fe -P 9030 -u root -e "SHOW FRONTENDS;"
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-04-ANA-01**: 모든 분석 엔진이 `infra_net` 내에서 상호 통신 가능해야 함.
-- **VAL-SPC-04-ANA-02**: 영구 볼륨 마운트 후 컨테이너 재시작 시 데이터 무결성이 유지되어야 함.
+- **VAL-SPC-04-ANA-01**: All analytics engines can communicate with each other inside `infra_net`.
+- **VAL-SPC-04-ANA-02**: Data integrity is preserved across container restarts after persistent volumes are mounted.
 
 ## Agent Role & IO Contract (If Applicable)
 

@@ -6,19 +6,19 @@ status: completed
 
 # Standardize `infra_net` Technical Specification
 
-## Overview (KR)
+## Overview
 
-이 문서는 모든 인프라 서비스에 `infra_net` 네트워크를 적용하고 서브넷을 `172.19.0.0/16`으로 고정하기 위한 상세 지침을 정의한다. 이는 PRD의 요구사항을 구체적인 Docker Compose 설정값으로 변환한 명세다.
+This document defines detailed instructions for applying the `infra_net` network to all infrastructure services and fixing the subnet to `172.19.0.0/16`. It translates PRD requirements into concrete Docker Compose configuration values.
 
 ## Strategic Boundaries & Non-goals
 
 - **SPEC Owns**:
-  - 루트 `docker-compose.yml`의 `networks` IPAM 설정.
-  - 각 서비스별 `networks` 블록에 `infra_net` 추가.
-  - 기존 서비스의 고정 IP 할당값 유지.
+  - `networks` IPAM settings in the root `docker-compose.yml`.
+  - Adding `infra_net` to each service-level `networks` block.
+  - Preserving existing static IP assignments for existing services.
 - **SPEC Does Not Own**:
-  - `project_net` 등 다른 네트워크의 IPAM 변경.
-  - 컨테이너 내부의 `/etc/hosts` 직접 수정 (Docker DNS 활용 권장).
+  - IPAM changes for other networks such as `project_net`.
+  - Direct edits to `/etc/hosts` inside containers; Docker DNS is recommended instead.
 
 ## Related Inputs
 
@@ -32,22 +32,22 @@ status: completed
   - `networks.infra_net.ipam.config.subnet` == `172.19.0.0/16`
   - `services.*.networks` list must contain `infra_net`.
 - **Governance Contract**:
-  - `include`된 파일의 모든 서비스는 전역 `infra_net`을 참조해야 함.
-  - `k3d-hyhome` 설정이 있는 경우 절대 삭제하지 않음.
+  - Every service in included files must reference the global `infra_net`.
+  - Existing `k3d-hyhome` settings must never be removed when present.
 
 ## Core Design
 
-- **Component Boundary**: Docker Compose 런타임 환경.
-- **Key Dependencies**: Docker Compose V2.20+ (`include` 지원).
+- **Component Boundary**: Docker Compose runtime environment.
+- **Key Dependencies**: Docker Compose V2.20+ with `include` support.
 - **Tech Stack**: YAML, Docker Engine.
 
 ## Data Modeling & Storage Strategy
 
-- **Schema / Entity Strategy**: Docker Compose `networks` 및 `services.networks` 스키마 준수.
+- **Schema / Entity Strategy**: Follow the Docker Compose `networks` and `services.networks` schemas.
 - **Transition Plan**:
-  1. 루트 파일의 IPAM 설정 확인/수정.
-  2. 개별 서비스 파일 순차 수정.
-  3. `docker compose config`로 병합 결과 검증.
+  1. Check and adjust the IPAM settings in the root file.
+  2. Update individual service files in sequence.
+  3. Verify the merged result with `docker compose config`.
 
 ## Interfaces & Data Structures
 
@@ -116,17 +116,17 @@ its existing value verbatim while adding or normalizing the `infra_net` block.
 
 ## Edge Cases & Error Handling
 
-- **Error 1: IP Conflict**: 이미 할당된 정적 IP가 새 서브넷 범위를 벗어날 경우 수정 필요.
-- **Error 2: Multiple Default Networks**: 네트워크를 명시적으로 지정하지 않은 서비스가 `infra_net`에 합류할 때 기존 default 네트워크와의 통신 확인.
+- **Error 1: IP Conflict**: Already-assigned static IPs must be adjusted if they fall outside the new subnet range.
+- **Error 2: Multiple Default Networks**: When services without explicit network settings join `infra_net`, verify communication with any existing default network.
 
 ## Verification
 
 ```bash
-# 전체 설정의 무결성 검사
+# Check overall configuration integrity
 docker compose config
-# infra_net 서브넷 확인
+# Check the infra_net subnet
 docker compose config | grep -A 5 "infra_net:"
-# k3d-hyhome 유지 확인
+# Confirm k3d-hyhome preservation
 docker compose config | grep "k3d-hyhome"
 ```
 

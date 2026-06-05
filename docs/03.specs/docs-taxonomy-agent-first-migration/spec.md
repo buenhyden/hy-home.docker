@@ -5,15 +5,15 @@ status: completed
 
 # Docs Taxonomy and AI Agent-first Contract Migration Specification
 
-## Overview (KR)
+## Overview
 
-이 문서는 `hy-home.docker`의 문서 taxonomy를 `01.requirements`부터 `05.operations`까지의 새 canonical 구조로 이관하고, AI Agent-first Engineering 계약을 같은 경로 체계에 맞추는 작업의 기술 명세다.
+This specification defines the migration of the `hy-home.docker` documentation taxonomy into the new canonical structure from `01.requirements` through `05.operations`, and aligns the AI Agent-first Engineering contract with the same path system.
 
 ## Strategic Boundaries & Non-goals
 
-- 이 명세는 문서 경로, governance routing, validator 계약, runtime catalog 용어를 다룬다.
-- Docker Compose runtime 동작, secret 값, credential, 배포 절차는 변경하지 않는다.
-- 구 경로 redirect 문서는 만들지 않는다.
+- This specification covers documentation paths, governance routing, validator contracts, and runtime catalog terminology.
+- It does not change Docker Compose runtime behavior, secret values, credentials, or deployment procedures.
+- It does not create legacy path redirect documents.
 
 ## Related Inputs
 
@@ -23,17 +23,17 @@ status: completed
 
 ## Contracts
 
-- **Docs Taxonomy Contract**: active stage 문서는 `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, `docs/99.templates` 아래에만 둔다.
-- **Operations Contract**: guide, policy, runbook, incident 문서는 `docs/05.operations/{guides,policies,runbooks,incidents}`로 분리한다.
-- **Agent Governance Contract**: root shim은 thin하게 유지하고 세부 정책은 `docs/00.agent-governance/`와 runtime mirror에 둔다.
-- **Validation Contract**: `check-repo-contracts.sh`와 `check-doc-traceability.sh`가 새 taxonomy와 runtime agent/function catalog를 강제한다.
+- **Docs Taxonomy Contract**: Active stage documents may live only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`.
+- **Operations Contract**: Guide, policy, runbook, and incident documents are separated under `docs/05.operations/{guides,policies,runbooks,incidents}`.
+- **Agent Governance Contract**: Root shims stay thin, with detailed policy kept in `docs/00.agent-governance/` and the runtime mirror.
+- **Validation Contract**: `check-repo-contracts.sh` and `check-doc-traceability.sh` enforce the new taxonomy and runtime agent/function catalog.
 
 ## Core Design
 
-- 기존 stage 파일은 새 경로로 이동한다.
-- legacy consolidated operations 문서는 소비 목적에 따라 `guides`, `policies`, `runbooks`로 나눈다.
-- `docs/README.md`는 새 taxonomy SSOT이며, 과거 경로는 migration map으로만 설명한다.
-- `docs/99.templates`는 기존 template 파일명을 유지하되 target examples를 새 경로로 맞춘다.
+- Existing stage files move to the new paths.
+- Legacy consolidated operations documents are split into `guides`, `policies`, and `runbooks` according to their consumption purpose.
+- `docs/README.md` is the new taxonomy SSoT, and old paths are described only in the migration map.
+- `docs/99.templates` keeps the existing template filenames while updating target examples to the new paths.
 
 ## Data Modeling & Storage Strategy
 

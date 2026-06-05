@@ -5,40 +5,40 @@ status: active
 
 # Workflow Cross-Validation Agent Design
 
-## Overview (KR)
+## Overview
 
-이 문서는 인프라 변경 직후 `security-auditor`와 `iac-reviewer`를 순차 호출하는 workflow cross-validation 에이전트 설계를 정의한다. 목적은 infra 변경 검증을 canonical stage 문서로 관리하고, 보안·드리프트·성능 검증 결과를 일관된 메시지 계약과 메모리 규칙으로 기록하는 것이다.
+This document defines the workflow cross-validation agent design that sequentially calls `security-auditor` and `iac-reviewer` immediately after infrastructure changes. Its purpose is to manage infrastructure-change validation through canonical stage documents and record security, drift, and performance validation results through a consistent message contract and memory rule.
 
 ## Parent Documents
 
 - **Spec**: [./spec.md](./spec.md)
-- **PRD**: 전용 PRD는 없으며 workflow 계층의 상위 맥락은 [../../01.requirements/2026-03-28-07-workflow-optimization-hardening.md](../../01.requirements/2026-03-28-07-workflow-optimization-hardening.md)를 따른다.
-- **ARD**: 전용 ARD는 없으며 구조적 상위 맥락은 [../../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md](../../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md)를 따른다.
-- **Related ADRs**: 전용 ADR은 없으며 agent governance는 [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)와 [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/subagent-protocol.md)를 따른다.
+- **PRD**: There is no dedicated PRD; the upper-level workflow tier context follows [../../01.requirements/2026-03-28-07-workflow-optimization-hardening.md](../../01.requirements/2026-03-28-07-workflow-optimization-hardening.md).
+- **ARD**: There is no dedicated ARD; the structural upper-level context follows [../../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md](../../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md).
+- **Related ADRs**: There is no dedicated ADR; agent governance follows [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md) and [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/subagent-protocol.md).
 
 ## Scope & Non-goals
 
 - **Covers**:
-  - infra 변경 후 cross-validation orchestration
+  - cross-validation orchestration after infrastructure changes
   - agent-to-agent handoff contract
   - audit result persistence and reporting rules
   - memory/context strategy for the workflow
 - **Does Not Cover**:
-  - 개별 infra 서비스 구현 세부
-  - 새로운 PRD/ARD/ADR stage 생성
-  - 글로벌 스킬 저장소 수정
+  - individual infrastructure service implementation details
+  - creation of new PRD/ARD/ADR stage artifacts
+  - global skill repository changes
 
 ## Agent Role
 
-- **Primary Role**: infra 변경 후 독립 검증 체인을 안전하게 오케스트레이션하는 cross-validation coordinator
-- **Primary User / Caller**: `infra-implementer` 또는 이를 라우팅하는 `workflow-supervisor`
-- **Success Definition**: post-flight 이후 `security-auditor`와 `iac-reviewer`가 정해진 순서와 메시지 계약으로 실행되고, 결과가 `_workspace/` 및 `docs/00.agent-governance/memory/progress.md`에 일관되게 기록된다.
+- **Primary Role**: cross-validation coordinator that safely orchestrates the independent validation chain after infrastructure changes
+- **Primary User / Caller**: `infra-implementer` or the routing `workflow-supervisor`
+- **Success Definition**: after post-flight checks, `security-auditor` and `iac-reviewer` run in the defined order and message contract, and results are recorded consistently in `_workspace/` and `docs/00.agent-governance/memory/progress.md`.
 
 ## Inputs / Outputs
 
 - **Inputs**:
-  - 변경된 파일 목록
-  - `infra-validate` pre/post 결과
+  - changed file list
+  - `infra-validate` pre/post results
   - active governance context (`AGENTS.md`, `documentation-protocol.md`, relevant scopes)
   - downstream agent responses
 - **Outputs**:
@@ -55,14 +55,14 @@ status: active
 
 - `handoff`
 - **Why this model**:
-  - 기존 agent catalog가 이미 역할별 책임을 분리하고 있어 중앙 orchestrator보다 ordered handoff가 더 작고 명확하다.
-  - `security-auditor`와 `iac-reviewer`는 서로 다른 검증 책임을 가지므로 단계적 위임이 적합하다.
+  - The existing agent catalog already separates role-level responsibilities, so ordered handoff is smaller and clearer than a central orchestrator.
+  - `security-auditor` and `iac-reviewer` own different validation responsibilities, so phased delegation is appropriate.
 - **Escalation / Handoff rules**:
-  - `infra-implementer` → `security-auditor`: post-flight 성공 후 `"audit-request"`
-  - `security-auditor` → `infra-implementer`: critical finding 시 `"BLOCK"`
-  - `security-auditor` → `iac-reviewer`: critical clear 시 `"validate-request"`
+  - `infra-implementer` → `security-auditor`: `"audit-request"` after post-flight success
+  - `security-auditor` → `infra-implementer`: `"BLOCK"` on critical findings
+  - `security-auditor` → `iac-reviewer`: `"validate-request"` after critical findings are clear
   - `iac-reviewer` → `infra-implementer`: `"validate-complete: PASS|WARN <summary>"`
-  - `BLOCK`는 즉시 사용자 escalation 대상이다.
+  - `BLOCK` immediately escalates to the user.
 
 ## Tools & Permissions
 

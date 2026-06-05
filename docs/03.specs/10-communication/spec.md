@@ -5,9 +5,9 @@ status: active
 
 # Communication Tier Technical Specification
 
-## Overview (KR)
+## Overview
 
-이 문서는 `10-communication` 계층의 기술 사양을 정의한다. SMTP 트래핑 아키텍처, 메일 서버 구성 요소, 데이터 지속성 프로토콜 및 보안 통제 사항을 포함한다. 현재 root `docker-compose.yml`에서 `infra/10-communication/mail/docker-compose.yml`은 주석 처리된 optional include이므로, 이 명세는 보유 구현과 root optional 실행 계약을 설명한다.
+This document defines the technical specification for the `10-communication` tier. It covers the SMTP trapping architecture, mail server components, data persistence protocols, and security controls. Because `infra/10-communication/mail/docker-compose.yml` is currently a commented optional include in the root `docker-compose.yml`, this specification describes the owned implementation and root-optional execution contract.
 
 ## Strategic Boundaries & Non-goals
 
@@ -48,15 +48,15 @@ status: active
 
 ### 1. MailHog (Development Sandbox)
 
-- **SMTP Server**: 1025 포트에서 메일을 수신하며 외부로 전달하지 않음.
-- **Web UI**: 소모성 서버(Stateless)로 작동하며 8025 포트에서 캡처된 메일 전시.
-- **Storage**: In-memory (기본 설정).
+- **SMTP Server**: Receives mail on port `1025` and does not relay it externally.
+- **Web UI**: Runs as a stateless disposable service and displays captured mail on port `8025`.
+- **Storage**: In-memory by default.
 
 ### 2. Stalwart (Production Backend)
 
-- **SMTP/Submit**: 메일 발송 및 수신용 서비스 (25, 465, 587 포트).
-- **IMAP/JMAP**: 메일 클라이언트 접근 프로토콜 (993, 8080 포트).
-- **Admin UI**: 웹 기반 서버 관리 및 도메인 설정 도구.
+- **SMTP/Submit**: Service for mail sending and receiving on ports `25`, `465`, and `587`.
+- **IMAP/JMAP**: Mail client access protocols on ports `993` and `8080`.
+- **Admin UI**: Web-based server administration and domain configuration tool.
 - **Dependency**: Local persistent volume backed by `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`; no PostgreSQL sidecar is declared by the current compose.
 
 ### Key Dependencies
@@ -134,8 +134,8 @@ sequenceDiagram
 
 ## Edge Cases & Error Handling
 
-- **Connectivity**: 운영 서버(Stalwart)는 ISP로부터 25번 포트 차단 해제 및 정적 IP 할당이 필요함.
-- **Resources**: Stalwart는 메일 보관량에 따라 디스크 공간 확장이 용이해야 함.
+- **Connectivity**: The production server (Stalwart) requires port `25` to be unblocked by the ISP and requires a static IP assignment.
+- **Resources**: Stalwart must support easy disk expansion as retained mail volume grows.
 - **Development Queue Reset**: MailHog restart clears captured mail because storage is in-memory.
 - **Certificate Expiry**: Expired certificate material causes SMTP/IMAP client failures.
 
