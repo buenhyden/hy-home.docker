@@ -56,7 +56,7 @@ status: draft
 ## Required Validation
 
 ```bash
-bash scripts/validation/run-local-qa-gates.sh --harness
+bash scripts/validation/validate-harness.sh
 ```
 
 ## Secret Handling

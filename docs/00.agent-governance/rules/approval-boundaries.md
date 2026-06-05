@@ -29,9 +29,9 @@ points to existing policy; it does not redefine it.
 | `infra/**/README.md`                       | Read-only                         | Service contract or readiness evidence change                   | Doc link integrity                                                     | PR Validation Evidence                              | `git revert`                      |
 | `secrets/**`                               | Protected (values read-forbidden) | Path, registry, or secret mapping change (never values)         | `validate-docker-compose.sh --preflight` (path-only)                   | PR (redacted) + runbook link                        | `git revert` of mapping only      |
 | `.env.example`                             | Guarded                           | Variable name, default, or comparison-doc change                | `check-repo-contracts.sh`                                              | PR Validation Evidence                              | `git revert`                      |
-| `scripts/**`                               | Guarded                           | Validation, hardening, hook, or operation behavior change       | `run-local-qa-gates.sh --harness`                                      | PR Validation Evidence                              | `git revert`                      |
+| `scripts/**`                               | Guarded                           | Validation, hardening, hook, or operation behavior change       | `validate-harness.sh`                                                  | PR Validation Evidence                              | `git revert`                      |
 | `.github/workflows/**`                     | Protected                         | Any permission expansion, `pull_request_target`, or `write-all` | `check-repo-contracts.sh` + workflow security review                   | PR Validation Evidence                              | `git revert`                      |
-| `docs/00.agent-governance/**`              | Governance SSOT                   | Policy text, agent/skill catalog, or provider parity change     | `run-local-qa-gates.sh --harness`                                      | PR + `memory/progress.md`                           | `git revert`                      |
+| `docs/00.agent-governance/**`              | Governance SSOT                   | Policy text, agent/skill catalog, or provider parity change     | `validate-harness.sh`                                                  | PR + `memory/progress.md`                           | `git revert`                      |
 | `docs/05.operations/**`                    | Operations SSOT                   | Guide, policy, runbook, or incident change                      | `check-doc-traceability.sh`                                            | PR + runbook                                        | `git revert`                      |
 | `docs/99.templates/**`                     | Template SSOT                     | Template add, remove, or contract change                        | `check-repo-contracts.sh` template loop                                | PR Validation Evidence                              | `git revert`                      |
 
@@ -54,7 +54,7 @@ Stop and record an approval request when work requires any of:
 For harness-surface work, run the harness-scoped gate:
 
 ```bash
-bash scripts/validation/run-local-qa-gates.sh --harness
+bash scripts/validation/validate-harness.sh
 ```
 
 ## Related Documents

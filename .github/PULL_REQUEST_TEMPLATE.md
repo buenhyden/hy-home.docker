@@ -63,7 +63,7 @@ List exact commands used and outcome.
 If any harness surface changed, list exact validation evidence:
 
 ```bash
-bash scripts/validation/run-local-qa-gates.sh --harness
+bash scripts/validation/validate-harness.sh
 bash scripts/validation/run-local-qa-gates.sh --script-backed
 # Compose-affecting changes only:
 bash scripts/validation/validate-docker-compose.sh --preflight
