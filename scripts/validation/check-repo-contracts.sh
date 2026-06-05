@@ -223,6 +223,17 @@ PY
   failures=$((failures + 1))
 fi
 
+section "English-only closed doc surfaces"
+if rg -n '[가-힣]' \
+  docs/03.specs docs/04.execution/plans docs/04.execution/tasks docs/90.references \
+  --glob '*.md' \
+  --glob '!**/README.md' \
+  --glob '!docs/90.references/llm-wiki/index.md' >/tmp/check-repo-contracts-english-only-surfaces.txt; then
+  fail "closed English-only doc surfaces contain Korean text"
+  cat /tmp/check-repo-contracts-english-only-surfaces.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-english-only-surfaces.txt
+
 section "Banned stale references"
 if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)|(^|[^[:alnum:]_/-])(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)([^[:alnum:]_/-]|$)|harness catalog|Runtime harness catalog' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \

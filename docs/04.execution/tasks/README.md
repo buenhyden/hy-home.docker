@@ -194,3 +194,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Language Policy Task Normalization Batch 6 Task**: [2026-06-05-language-policy-task-normalization-batch-6.md](./2026-06-05-language-policy-task-normalization-batch-6.md) — active task language normalization evidence
 - **Language Policy Task Normalization Batch 7 Task**: [2026-06-05-language-policy-task-normalization-batch-7.md](./2026-06-05-language-policy-task-normalization-batch-7.md) — active final task language normalization evidence
 - **Language Policy Reference Normalization Task**: [2026-06-05-language-policy-reference-normalization.md](./2026-06-05-language-policy-reference-normalization.md) — active reference language normalization evidence
+- **Language Policy Hard Enforcement Task**: [2026-06-05-language-policy-hard-enforcement.md](./2026-06-05-language-policy-hard-enforcement.md) — active language validation hardening evidence
