@@ -535,6 +535,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-6.md](../../04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-6.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-7.md](../../04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-7.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-8.md](../../04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-8.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-1.md](../../04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-1.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
