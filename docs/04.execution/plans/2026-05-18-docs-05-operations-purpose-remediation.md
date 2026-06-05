@@ -7,20 +7,20 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/05.operations`를 guide, policy, runbook 목적에 맞게 정리하고, 같은 drift를 repository contract로 막기 위한 실행 계획이다.
+This document is the implementation plan for organizing `docs/05.operations` around guide, policy, and runbook purposes, and for preventing the same drift through repository contracts.
 
 ## Context
 
-`docs/05.operations`는 guide, policy, runbook, incident를 분리해 관리하는 canonical operations stage다. 2026-05-18 audit에서 일부 leaf 문서가 wrong bucket heading을 유지하거나, policy/runbook profile 필수 heading을 빠뜨린 상태가 확인되었다.
+`docs/05.operations` is the canonical operations stage that manages guides, policies, runbooks, and incidents separately. The 2026-05-18 audit found that some leaf documents still had wrong-bucket headings or were missing required headings for policy/runbook profiles.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - operations leaf 문서를 guide/policy/runbook 목적 profile에 맞춘다.
-  - DAG deployment policy를 guide bucket에서 policy bucket으로 이동한다.
-  - LLM Wiki maintenance guide/policy/runbook을 목적별 profile로 분리한다.
-  - repo contract에 operations purpose profile 검증을 추가한다.
-  - LLM Wiki generated index를 최신화한다.
+  - Align operations leaf documents with guide/policy/runbook purpose profiles.
+  - Move DAG deployment policy from the guide bucket to the policy bucket.
+  - Split LLM Wiki maintenance guide/policy/runbook documents by purpose profile.
+  - Add operations purpose profile validation to repo contracts.
+  - Refresh the generated LLM Wiki index.
 - **In Scope**:
   - `docs/05.operations/**`
   - `scripts/validation/check-repo-contracts.sh`

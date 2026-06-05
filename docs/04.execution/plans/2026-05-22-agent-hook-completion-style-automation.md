@@ -9,18 +9,18 @@ status: completed
 
 ## Overview
 
-이 문서는 AI Agent가 repository-modifying 작업을 완료할 때 논리 단위별 커밋을 남기고, 파일 편집 후 자동 포맷팅과 코드 스타일 검증을 거치도록 hook and Hookify guidance를 보강하는 완료 계획이다.
+This document is the completion plan for strengthening hook and Hookify guidance so AI Agents leave logical-unit commits when finishing repository-modifying work and run automatic formatting plus code-style validation after file edits.
 
 ## Context
 
-기존 hook surface는 post-edit 기본 포맷팅과 repository validator를 실행했지만, logical commit guidance는 reminder에 가까웠다. 이번 변경은 Stop 단계에서 작업 소유 변경분이 남아 있으면 완료를 막고, shell/YAML style validation을 post-edit 경로에 추가한다.
+The existing hook surface ran basic post-edit formatting and repository validators, but logical commit guidance was closer to a reminder. This change blocks completion at Stop when task-owned changes remain and adds shell/YAML style validation to the post-edit path.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - `G-HOOK-AUTO-001`: Stop hook이 task-owned uncommitted changes를 감지해 logical commit completion을 요구한다.
-  - `G-HOOK-AUTO-002`: PostToolUse hook이 changed shell/YAML files에 대해 style validation을 수행한다.
-  - `G-HOOK-AUTO-003`: 파일 편집 후 안전한 기본 포맷팅 계약을 provider docs and Hookify rules에 문서화한다.
+  - `G-HOOK-AUTO-001`: Stop hook detects task-owned uncommitted changes and requires logical commit completion.
+  - `G-HOOK-AUTO-002`: PostToolUse hook performs style validation for changed shell/YAML files.
+  - `G-HOOK-AUTO-003`: Document the safe default formatting contract after file edits in provider docs and Hookify rules.
 - **In Scope**:
   - `scripts/hooks/agent-event-hook.sh`
   - `scripts/hooks/post-tool-validate.sh`
@@ -30,9 +30,9 @@ status: completed
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - 자동 커밋을 hook script 내부에서 실행하지 않는다.
-  - `--no-verify`, force push, rebase, reset을 자동화하지 않는다.
-  - user-global Claude/Codex settings를 수정하지 않는다.
+  - Do not run automatic commits inside hook scripts.
+  - Do not automate `--no-verify`, force push, rebase, or reset.
+  - Do not modify user-global Claude/Codex settings.
 - **Out of Scope**:
   - deployment, Docker runtime mutation, secret values, shell history, or personal settings
   - unrelated untracked `projects/storybook/mcp/`

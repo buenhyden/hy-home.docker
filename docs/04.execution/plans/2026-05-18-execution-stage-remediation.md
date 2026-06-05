@@ -7,22 +7,22 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/04.execution` stage를 목적에 맞게 정리하는 bounded remediation 실행 계획이다. Historical execution evidence는 대량 재작성하지 않고, entrypoint README, template examples, current active artifacts, deferred debt 기록을 정리한다.
+This document is the bounded remediation implementation plan for organizing the `docs/04.execution` stage around its purpose. It cleans up entrypoint READMEs, template examples, current active artifacts, and deferred debt records without bulk-rewriting historical execution evidence.
 
 ## Context
 
-`docs/04.execution`은 plan과 task evidence를 관리하는 stage다. 현재 repository validators는 통과하지만, 2026-05-18 audit에서 오래된 execution artifacts의 template drift가 발견되었다.
+`docs/04.execution` is the stage that manages plan and task evidence. Current repository validators pass, but the 2026-05-18 audit found template drift in older execution artifacts.
 
-이 계획은 오래된 plan/task의 의미를 바꾸지 않는 범위에서 현재 agent와 maintainer가 안전하게 사용할 entrypoint와 template contract를 복구한다.
+This plan restores entrypoints and template contracts that current agents and maintainers can use safely, without changing the meaning of older plan/task documents.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - `docs/04.execution` README entrypoints를 현재 stage purpose에 맞게 정리한다.
-  - plan/task template의 Related Documents 예시를 real Markdown links로 바꾼다.
-  - current/recent execution docs에 target path guidance를 추가한다.
-  - active scripts cleanup plan의 missing section drift를 template-aligned heading으로 정리한다.
-  - legacy execution drift는 governance memory note로 기록한다.
+  - Organize `docs/04.execution` README entrypoints around the current stage purpose.
+  - Replace Related Documents examples in plan/task templates with real Markdown links.
+  - Add target path guidance to current/recent execution docs.
+  - Resolve missing section drift in the active scripts cleanup plan with template-aligned headings.
+  - Record legacy execution drift in a governance memory note.
 - **In Scope**:
   - `docs/04.execution/README.md`
   - `docs/04.execution/plans/README.md`

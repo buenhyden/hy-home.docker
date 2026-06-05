@@ -7,15 +7,15 @@ status: completed
 
 ## Overview
 
-이 문서는 Agent Governance Stage 01/02/04 정렬 이후 남은 결정 항목과 현재 구현 불일치 정리 기준을 실행 가능한 후속 로드맵으로 정리한다.
+This document organizes the remaining decision items after Agent Governance Stage 01/02/04 alignment, along with the criteria for resolving current implementation mismatches, into an actionable follow-up roadmap.
 
-현재 구현과 상충하는 과거 Phase 실행 문서는 active chain에서 제거하고 `docs/98.archive/` tombstone으로 보존한다. 이 plan은 현재 tracked repository state 기준의 보정, 인덱싱, 정책 경계 정리, 검증 기준을 continuation plan으로 고정한다.
+Past Phase execution documents that conflict with the current implementation are removed from the active chain and preserved as `docs/98.archive/` tombstones. This plan fixes correction, indexing, policy-boundary cleanup, and verification criteria against the current tracked repository state as the continuation plan.
 
 ## Context
 
 Earlier governance diagnostics identified the Stage 00 canonical adapter model, provider runtime surfaces, Docker/QA/CI/CD scopes, Graphify advisory boundary, and `/home/hy/.local/bin` Node/npm/rtk facts. Current active evidence is this continuation plan plus the paired missing-items implementation task.
 
-이번 plan은 남은 결정 항목을 구현 단계로 넘기기 위한 실행 설계다. 즉시 Stage 00 policy, templates, validators, Docker runtime, Codex adapter, remote GitHub state, or user-global Codex settings를 변경하지 않는다.
+This plan is the execution design for moving the remaining decision items into implementation. It does not immediately change Stage 00 policy, templates, validators, Docker runtime, Codex adapter, remote GitHub state, or user-global Codex settings.
 
 Graphify remains advisory when `report-graphify-health.sh` reports `surprising_cross_root_inferred_edges`; architecture and completion claims must be corroborated against tracked Stage 00 docs, stage docs, and repository validators.
 

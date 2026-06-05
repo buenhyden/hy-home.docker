@@ -7,21 +7,21 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, 루트 `README.md`의 bounded consistency audit 실행 계획이다. 범위는 사실 불일치, stale inventory, README 진입성, Related Documents, 검증 스크립트로 확인 가능한 drift에 한정한다.
+This document is the implementation plan for a bounded consistency audit of `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, and the root `README.md`. Scope is limited to factual mismatches, stale inventory, README entrypoint quality, Related Documents, and drift that can be checked by validation scripts.
 
 ## Context
 
-최근 stage별 문서 보정 작업으로 repository validators는 통과하고 있다. 다만 루트 `README.md`의 현재 인벤토리 수치와 canonical README 상태값처럼 validator가 직접 잡지 못하는 entrypoint drift가 남아 있다.
+Recent stage-by-stage documentation remediation means repository validators are passing. However, entrypoint drift remains where validators do not directly check it, such as current inventory counts in the root `README.md` and canonical README status values.
 
-이 계획은 broad rewrite나 historical evidence 재작성을 하지 않고, 사람이 첫 화면에서 보는 문서 진입점과 재현 가능한 inventory만 정리한다.
+This plan cleans up only the documentation entrypoints that humans see first and reproducible inventory, without broad rewrites or historical evidence rewrites.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - 루트 `README.md`의 현재 인벤토리를 재현 가능한 command 기준으로 갱신한다.
-  - canonical stage README가 실제 entrypoint 역할과 충돌하지 않도록 상태를 정규화한다.
-  - `docs/04.execution`의 plan/task index에 이 audit 작업을 연결한다.
-  - focused scans와 repository validators로 변경 범위를 검증한다.
+  - Refresh current inventory in the root `README.md` using reproducible commands.
+  - Normalize canonical stage README status so it does not conflict with actual entrypoint roles.
+  - Link this audit work into the `docs/04.execution` plan/task indexes.
+  - Verify the change scope with focused scans and repository validators.
 - **In Scope**:
   - `README.md`
   - `docs/01.requirements/README.md`

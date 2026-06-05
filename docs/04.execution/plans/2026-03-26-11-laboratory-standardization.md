@@ -7,16 +7,16 @@ status: completed
 
 ## Overview
 
-이 문서는 `11-laboratory` 계층의 표준화 및 문서화 실행 계획서다. 작업 분해, 검증, 완료 기준을 정의한다.
+This document is the implementation plan for standardizing and documenting the `11-laboratory` tier. It defines work breakdown, verification, and completion criteria.
 
 ## Context
 
-`11-laboratory` 서비스들(Homer, Dozzle, Portainer, RedisInsight)에 대한 파편화된 정보를 통합하고, 리포지토리의 "Thin Root" 아키텍처 및 "Golden 5" 택소노미 표준에 정렬하기 위함이다.
+This work consolidates fragmented information about `11-laboratory` services (Homer, Dozzle, Portainer, RedisInsight) and aligns it with the repository's "Thin Root" architecture and "Golden 5" taxonomy standard.
 
 ## Goals & In-Scope
 
-- **Goals**: 11-laboratory 계층의 문서 표준화 및 최신화.
-- **In Scope**: PRD, ARD, ADR, Spec, Plan, Task 문서 작성 및 README 연동.
+- **Goals**: Standardize and refresh documentation for the 11-laboratory tier.
+- **In Scope**: Create PRD, ARD, ADR, Spec, Plan, and Task documents, and link them with READMEs.
 
 ## Work Breakdown
 

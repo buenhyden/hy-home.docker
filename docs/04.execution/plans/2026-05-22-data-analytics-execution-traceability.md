@@ -9,18 +9,18 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/03.specs/04-data-analytics/spec.md`가 실제 infra와 operations 문서에 구현되어 있음에도 `docs/04.execution` plan/task evidence와 직접 연결되지 않은 gap을 닫기 위한 실행 계획이다.
+This document is the implementation plan for closing the gap where `docs/03.specs/04-data-analytics/spec.md` is implemented in real infra and operations documents but is not directly connected to `docs/04.execution` plan/task evidence.
 
 ## Context
 
-`04-data-analytics` spec은 InfluxDB, ksqlDB, OpenSearch, analytics warehouse 계층의 interface/storage/verification 계약을 정의한다. 현재 tracked source에는 관련 compose files, infra README, operations guides, policies, runbooks가 존재한다. 그러나 spec의 `## Related Documents`에는 plan/task 링크가 없어 실행 추적성이 다른 spec과 다르게 끊겨 있었다.
+The `04-data-analytics` spec defines interface/storage/verification contracts for the InfluxDB, ksqlDB, OpenSearch, and analytics warehouse tiers. Current tracked source contains the related compose files, infra README, operations guides, policies, and runbooks. However, the spec's `## Related Documents` lacked plan/task links, so execution traceability was broken differently from other specs.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - `DATA-ANA-TRACE-001`: data analytics spec에서 execution plan/task로 이어지는 traceability를 복구한다.
-  - `DATA-ANA-TRACE-002`: analytics compose files의 current validation boundary를 기록한다.
-  - `DATA-ANA-TRACE-003`: parent README index에서 새 evidence를 발견 가능하게 한다.
+  - `DATA-ANA-TRACE-001`: restore traceability from the data analytics spec to execution plan/task evidence.
+  - `DATA-ANA-TRACE-002`: record the current validation boundary for analytics compose files.
+  - `DATA-ANA-TRACE-003`: make the new evidence discoverable from parent README indexes.
 - **In Scope**:
   - `docs/03.specs/04-data-analytics/spec.md`
   - `docs/03.specs/04-data-analytics/README.md`

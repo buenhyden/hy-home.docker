@@ -7,7 +7,7 @@ status: completed
 
 ## Goal Description
 
-`10-communication` 계층의 문서 체계를 "Thin Root" 아키텍처 및 "Golden 5" 택소노미에 맞춰 표준화한다.
+Standardize the documentation system for the `10-communication` tier according to the "Thin Root" architecture and "Golden 5" taxonomy.
 
 ## Proposed Changes
 
@@ -27,23 +27,23 @@ status: completed
 
 #### [MODIFY] [README.md](../../../infra/10-communication/README.md)
 
-- "Golden 5" 패턴(Overview, Architecture, Integration, Operations, Governance)으로 리팩토링.
+- Refactor into the "Golden 5" pattern (Overview, Architecture, Integration, Operations, Governance).
 
 ## Verification Plan
 
 ### Automated Tests
 
-- `markdownlint`를 통한 문서 규격 검증.
-- 모든 상대 경로 링크의 유효성 점검.
-- `bash scripts/hardening/check-all-hardening.sh 10-communication`로 mail compose hardening baseline 확인.
+- Validate documentation conventions with `markdownlint`.
+- Check validity for all relative-path links.
+- Confirm the mail compose hardening baseline with `bash scripts/hardening/check-all-hardening.sh 10-communication`.
 
 ### Manual Verification
 
-- AI Agent 브레인(`task.md`)과의 일관성 확인.
+- Confirm consistency with the AI Agent brain (`task.md`).
 
 ## Overview
 
-이 문서는 해당 표준화 또는 이전 작업의 실행 계획이다. 기존 목표, 변경 목록, 검증 내용은 그대로 유지하며 현재 plan template 필수 heading에 맞춘다.
+This document is the implementation plan for the corresponding standardization or previous work. It preserves existing goals, change lists, and verification content while aligning with the current plan template's required headings.
 
 ## Context
 
@@ -68,7 +68,7 @@ The existing proposed changes, documentation layer, infrastructure layer, or roa
 - Existing completion state remains as recorded in this historical plan.
 - Verification evidence remains in existing verification notes or linked tasks.
 - Related documentation links remain valid.
-- 2026-06-05 current-truth reconciliation 기준으로 optional mail compose, hardening tier, operations guide/policy/runbook이 구현과 일치한다.
+- As of the 2026-06-05 current-truth reconciliation, optional mail compose, hardening tier, and operations guide/policy/runbook content match the implementation.
 
 ## Related Documents
 

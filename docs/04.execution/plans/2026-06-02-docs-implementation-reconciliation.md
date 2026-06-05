@@ -7,23 +7,23 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/01.requirements`부터 `docs/05.operations`까지의 active Stage 문서를 현재 tracked 구현과 대조해 stale, legacy, deprecated-only, implementation-conflicting 내용을 정리하는 실행 계획서다.
+This document is the implementation plan for comparing active Stage documents from `docs/01.requirements` through `docs/05.operations` against the current tracked implementation and resolving stale, legacy, deprecated-only, and implementation-conflicting content.
 
-이번 작업의 완료 기준은 단순 링크 검증 통과가 아니다. Root `docker-compose.yml`, `infra/**`, `scripts/**`, `.github/workflows/**`, `docs/99.templates/**`, Stage 00 governance, provider/agent adapter surfaces와 active 문서의 current-truth 주장이 일치해야 한다.
+Completion for this work is not merely passing link validation. Current-truth claims in active documents must align with the root `docker-compose.yml`, `infra/**`, `scripts/**`, `.github/workflows/**`, `docs/99.templates/**`, Stage 00 governance, and provider/agent adapter surfaces.
 
 ## Context
 
-기존 repository validators는 template shape, traceability, provider sync, LLM Wiki freshness, hardening, script ownership, GitHub workflow security를 이미 강하게 검증한다. 그러나 active Stage 문서가 현재 구현과 충돌하는지를 직접 확인하는 전용 gate는 없었다.
+Existing repository validators already strongly check template shape, traceability, provider sync, LLM Wiki freshness, hardening, script ownership, and GitHub workflow security. However, there was no dedicated gate that directly checked whether active Stage documents conflict with the current implementation.
 
-Graphify는 `surprising_cross_root_inferred_edges=3` 때문에 advisory 상태다. 따라서 Graphify는 탐색 보조로만 사용하고, 구현 정합성 판단은 tracked source files, Stage 00 governance, Stage 01-05 docs, validators로 corroborate한다.
+Graphify is advisory because of `surprising_cross_root_inferred_edges=3`. Therefore, use Graphify only as an exploration aid, and corroborate implementation-alignment judgments with tracked source files, Stage 00 governance, Stage 01-05 docs, and validators.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - 기준선 498개 active Stage 01-05 문서를 구현 truth 기준으로 대조하고, 이 계획/작업 evidence 추가 후의 전체 Stage 01-05 문서도 같은 gate로 확인한다.
-  - 처리 결과를 `keep`, `update`, `integrate`, `archive` disposition으로 기록한다.
-  - 제거된 operations template명, archive direct link, Stage 05 service-doc-to-`infra/**` mismatch를 재발 방지하는 validator를 추가한다.
-  - CI, governance, scripts catalog, Stage README, progress evidence를 현재 검증 체계에 맞춘다.
+  - Compare the baseline 498 active Stage 01-05 documents against implementation truth, then run the same gate against the full Stage 01-05 set after this plan/task evidence is added.
+  - Record results with `keep`, `update`, `integrate`, or `archive` dispositions.
+  - Add validators that prevent recurrence of removed operations template names, archive direct links, and Stage 05 service-doc-to-`infra/**` mismatches.
+  - Align CI, governance, scripts catalog, Stage README, and progress evidence with the current validation system.
 - **In Scope**:
   - Stage 04 plan/task evidence.
   - `scripts/validation/check-doc-implementation-alignment.sh`.
