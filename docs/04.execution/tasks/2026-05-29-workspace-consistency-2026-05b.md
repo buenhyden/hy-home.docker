@@ -56,13 +56,13 @@ This document is the implementation and verification task list for the workspace
 - **Test Commands**:
 
   ```bash
-	  # R4/R5 rules exist
+   # R4/R5 rules exist
   grep -c "R4\|R5" docs/00.agent-governance/rules/documentation-protocol.md
 
-	  # CI/CD taxonomy section exists
+   # CI/CD taxonomy section exists
   grep "CI/CD" docs/00.agent-governance/rules/github-governance.md
 
-	  # Guide profile checks strengthened
+   # Guide profile checks strengthened
   grep "Common Checks" scripts/validation/check-repo-contracts.sh
 
   # repo contracts
