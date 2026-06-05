@@ -7,83 +7,83 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra/03-security/vault` 최적화/하드닝 실행 계획서다. 즉시 적용 가능한 하드닝 구현과 검증 자동화를 우선 적용하고, auto-unseal/원격 audit는 정책/전환 절차로 고정한다.
+This document is the optimization/hardening implementation plan for `infra/03-security/vault`. It prioritizes immediately applicable hardening implementation and validation automation, while fixing auto-unseal and remote audit as policy and transition procedures.
 
 ## Context
 
-- 기준 카탈로그: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
-- 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 적용 전략: Phase 적용(즉시 하드닝 -> 정책/전환 설계 -> 문서 추적성 동기화)
+- Baseline catalog: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
+- Parent priority plan: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
+- Application strategy: phased application (immediate hardening -> policy/transition design -> documentation traceability synchronization)
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - Vault Agent 템플릿/헬스/볼륨 계약을 안정화한다.
-  - 03-security 하드닝 검증을 CI 게이트로 강제한다.
-  - Stage 01~05 문서 체계를 optimization/hardening 목적에 맞게 동기화한다.
-  - root `security`/`core` profile validation 경계를 current implementation 기준으로 고정한다.
+  - Stabilize the Vault Agent template, health, and volume contracts.
+  - Enforce 03-security hardening validation through a CI gate.
+  - Synchronize the Stage 01 through 05 document system for the optimization/hardening purpose.
+  - Fix the root `security`/`core` profile validation boundary against current implementation.
 - **In Scope**:
   - `infra/03-security/vault/docker-compose.yml`
   - `infra/03-security/vault/config/templates/*.ctmpl`
   - `scripts/hardening/check-all-hardening.sh 03-security`
   - `.github/workflows/ci-quality.yml`
   - `scripts/README.md`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 및 README 인덱스
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` and README indexes
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - 즉시 auto-unseal(KMS/HSM) 구현
-  - 즉시 원격 audit sink 구현
+  - Immediate auto-unseal (KMS/HSM) implementation
+  - Immediate remote audit sink implementation
 - **Out of Scope**:
-  - 내부 TLS 모델 변경
-  - 타 티어 애플리케이션 설정 변경
+  - Changing the internal TLS model
+  - Changing application settings in other tiers
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-SEC-001 | `vault-agent` healthcheck + `/vault/out` 볼륨 + cap 정리 | `infra/03-security/vault/docker-compose.yml` | REQ-PRD-FUN-02,03 | compose config + healthcheck contract 확인 |
-| PLN-SEC-002 | Vault Agent 템플릿 placeholder 제거 및 경로/키 정규화 | `infra/03-security/vault/config/templates/*.ctmpl` | REQ-PRD-FUN-01 | placeholder 0건, source/destination 무결성 |
-| PLN-SEC-003 | 03-security 하드닝 검증 스크립트 추가 | `scripts/hardening/check-all-hardening.sh 03-security` | REQ-PRD-FUN-04 | 스크립트 pass/fail 동작 검증 |
-| PLN-SEC-004 | CI `infrastructure-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-FUN-04 | PR/Push job 실행 |
-| PLN-SEC-005 | scripts README 인벤토리 반영 | `scripts/README.md` | REQ-PRD-FUN-04 | README 항목/예시 존재 |
-| PLN-SEC-006 | root security profile validation 경계 정리 | `docs/03.specs/03-security/spec.md`, operations docs | REQ-PRD-FUN-04 | root profile validation 통과 |
-| PLN-SEC-007 | PRD~Runbook 문서 생성/갱신 + README 인덱스 동기화 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-FUN-05 | 상호 링크/인덱스 반영 |
+| PLN-SEC-001 | Normalize `vault-agent` healthcheck, `/vault/out` volume, and capabilities | `infra/03-security/vault/docker-compose.yml` | REQ-PRD-FUN-02,03 | Compose config and healthcheck contract confirmed |
+| PLN-SEC-002 | Remove Vault Agent template placeholders and normalize paths/keys | `infra/03-security/vault/config/templates/*.ctmpl` | REQ-PRD-FUN-01 | 0 placeholders; source/destination integrity preserved |
+| PLN-SEC-003 | Add 03-security hardening validation script coverage | `scripts/hardening/check-all-hardening.sh 03-security` | REQ-PRD-FUN-04 | Script pass/fail behavior verified |
+| PLN-SEC-004 | Add CI `infrastructure-hardening` job | `.github/workflows/ci-quality.yml` | REQ-PRD-FUN-04 | Job runs on PR/push |
+| PLN-SEC-005 | Reflect scripts README inventory | `scripts/README.md` | REQ-PRD-FUN-04 | README entry and example exist |
+| PLN-SEC-006 | Clarify root security profile validation boundary | `docs/03.specs/03-security/spec.md`, operations docs | REQ-PRD-FUN-04 | Root profile validation passes |
+| PLN-SEC-007 | Create/update PRD-to-Runbook documents and synchronize README indexes | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-FUN-05 | Cross-links and indexes reflected |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-SEC-001 | Root Compose | root security profile 정적 검증 | `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh` | 실패 0건 |
-| VAL-SEC-002 | Compliance | 03-security 하드닝 검증 | `bash scripts/hardening/check-all-hardening.sh 03-security` | 실패 0건 |
-| VAL-SEC-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-SEC-004 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
-| VAL-SEC-005 | Dependency Compose | root core profile 해석 검증 | `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` | 실패 0건 |
+| VAL-SEC-001 | Root Compose | Static root security profile validation | `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh` | 0 failures |
+| VAL-SEC-002 | Compliance | 03-security hardening validation | `bash scripts/hardening/check-all-hardening.sh 03-security` | 0 failures |
+| VAL-SEC-003 | Baseline | Template/security baseline | `bash scripts/validation/check-template-security-baseline.sh` | 0 failures |
+| VAL-SEC-004 | Traceability | Document traceability validation | `bash scripts/validation/check-doc-traceability.sh` | 0 failures |
+| VAL-SEC-005 | Dependency Compose | Root core profile resolution validation | `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` | 0 failures |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| Vault 내부 시크릿 경로/키 미정합 | High | 템플릿 계약 문서화 + runbook 복구 절차 제공 |
-| 단일 노드 유지로 인한 가용성 리스크 | Medium | HA 확장(raft 3-node) 전환 절차를 ops/runbook에 명시 |
-| CI 게이트 추가로 초기 실패 증가 | Medium | 스크립트 계약을 현재 구성과 동기화 후 적용 |
-| 문서 링크 회귀 | Medium | README 인덱스/상호 링크를 동일 변경 세트에서 갱신 |
+| Vault internal secret paths/keys diverge | High | Document the template contract and provide runbook recovery procedures |
+| Single-node retention creates availability risk | Medium | Document the HA expansion (raft 3-node) transition procedure in ops/runbook |
+| Adding a CI gate increases initial failures | Medium | Synchronize the script contract with current configuration before applying it |
+| Document links regress | Medium | Refresh README indexes and cross-links in the same change set |
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
-- **Offline Eval Gate**: `check-all-hardening.sh 03-security`, root profile validation, `check-doc-traceability` 통과
-- **Sandbox / Canary Rollout**: vault compose 검증 후 단계 반영
-- **Human Approval Gate**: auto-unseal/원격 audit 전환은 운영 승인 필수
-- **Rollback Trigger**: vault-agent health fail 지속, template render 실패 지속
+- **Offline Eval Gate**: Pass `check-all-hardening.sh 03-security`, root profile validation, and `check-doc-traceability`.
+- **Sandbox / Canary Rollout**: Apply changes in stages after vault compose validation.
+- **Human Approval Gate**: Operations approval is required for auto-unseal and remote audit transition.
+- **Rollback Trigger**: Sustained vault-agent health failure or sustained template render failure.
 - **Prompt / Model Promotion Criteria**: N/A
 
 ## Completion Criteria
 
-- [x] 03-security 구성 하드닝 반영
-- [x] security-hardening 검증/CI 게이트 반영
-- [x] Stage 01~05 문서/README 인덱스 동기화
-- [ ] runtime 검증(환경 가능 시) 증적 확보
+- [x] 03-security configuration hardening reflected
+- [x] security-hardening validation and CI gate reflected
+- [x] Stage 01 through 05 documents and README indexes synchronized
+- [ ] Runtime validation evidence secured when the environment allows
 
 ## Related Documents
 

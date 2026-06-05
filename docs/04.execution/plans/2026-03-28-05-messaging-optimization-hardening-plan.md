@@ -7,84 +7,84 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra/05-messaging` 최적화/하드닝 실행 계획서다. 게이트웨이 경계 제어 강화, 이미지 태그/경로 정합성 보강, CI 하드닝 게이트 도입, 문서 계층 동기화를 단계적으로 수행한다.
+This document is the optimization/hardening implementation plan for `infra/05-messaging`. It stages stronger gateway boundary controls, image tag/path consistency, CI hardening gate introduction, and document hierarchy synchronization.
 
 ## Context
 
-- 기준 카탈로그: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
-- 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 대상 구성: `kafka`, `rabbitmq` compose + 관련 docs/ci/scripts
+- Baseline catalog: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
+- Parent priority plan: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
+- Target configuration: `kafka`, `rabbitmq` compose plus related docs/CI/scripts
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - 메시징 관리 경로를 게이트웨이 표준 체인 및 SSO 정책에 정렬한다.
-  - 부동 태그/경로 정합성 리스크를 제거한다.
-  - 메시징 전용 하드닝 게이트를 CI에 추가한다.
-  - PRD~Runbook 문서를 optimization-hardening 기준으로 동기화한다.
+  - Align messaging management paths with the gateway standard chain and SSO policy.
+  - Remove floating-tag and path-consistency risks.
+  - Add a messaging-specific hardening gate to CI.
+  - Synchronize PRD-to-Runbook documents against the optimization-hardening baseline.
 - **In Scope**:
   - `infra/05-messaging/kafka/docker-compose.yml`
   - `infra/05-messaging/kafka/docker-compose.dev.yml`
   - `infra/05-messaging/rabbitmq/docker-compose.yml`
   - `scripts/hardening/check-all-hardening.sh 05-messaging`
   - `.github/workflows/ci-quality.yml`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 메시징 optimization-hardening 문서/README
+  - Messaging optimization-hardening documents and READMEs under `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - Kafka/RabbitMQ 신규 토폴로지 구축
-  - 애플리케이션 재처리 코드 구현
+  - Building a new Kafka/RabbitMQ topology
+  - Implementing application reprocessing code
 - **Out of Scope**:
-  - 비메시징 티어 구성 변경
-  - 클라우드 managed messaging 도입
+  - Changing non-messaging tier configuration
+  - Introducing cloud-managed messaging
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-MSG-001 | Kafka UI 이미지 태그 고정 및 gateway chain 적용 | `infra/05-messaging/kafka/docker-compose.yml` | REQ-PRD-MSG-FUN-01,03 | compose config + grep 체크 |
-| PLN-MSG-002 | Kafka dev compose 경로 정합성 및 chain 적용 | `infra/05-messaging/kafka/docker-compose.dev.yml` | REQ-PRD-MSG-FUN-01,04 | compose config 통과 |
-| PLN-MSG-003 | RabbitMQ 관리 경로 middleware chain 강화 | `infra/05-messaging/rabbitmq/docker-compose.yml` | REQ-PRD-MSG-FUN-01,02 | router label 확인 |
-| PLN-MSG-004 | 메시징 하드닝 기준선 스크립트 작성 | `scripts/hardening/check-all-hardening.sh 05-messaging` | REQ-PRD-MSG-FUN-05 | script pass/fail 동작 |
-| PLN-MSG-005 | CI `infrastructure-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-MSG-FUN-05 | workflow 정의 확인 |
-| PLN-MSG-006 | scripts 인덱스 갱신 | `scripts/README.md` | REQ-PRD-MSG-FUN-05 | README 항목/예시 반영 |
-| PLN-MSG-007 | PRD~Runbook optimization 문서 세트 생성/갱신 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-MSG-FUN-06 | 상호 링크/README 반영 |
+| PLN-MSG-001 | Pin Kafka UI image tag and apply gateway chain | `infra/05-messaging/kafka/docker-compose.yml` | REQ-PRD-MSG-FUN-01,03 | Compose config and grep checks |
+| PLN-MSG-002 | Align Kafka dev compose paths and apply chain | `infra/05-messaging/kafka/docker-compose.dev.yml` | REQ-PRD-MSG-FUN-01,04 | Compose config passes |
+| PLN-MSG-003 | Strengthen RabbitMQ management-path middleware chain | `infra/05-messaging/rabbitmq/docker-compose.yml` | REQ-PRD-MSG-FUN-01,02 | Router labels confirmed |
+| PLN-MSG-004 | Write messaging hardening baseline script coverage | `scripts/hardening/check-all-hardening.sh 05-messaging` | REQ-PRD-MSG-FUN-05 | Script pass/fail behavior |
+| PLN-MSG-005 | Add CI `infrastructure-hardening` job | `.github/workflows/ci-quality.yml` | REQ-PRD-MSG-FUN-05 | Workflow definition confirmed |
+| PLN-MSG-006 | Refresh scripts index | `scripts/README.md` | REQ-PRD-MSG-FUN-05 | README entry and example reflected |
+| PLN-MSG-007 | Create/update PRD-to-Runbook optimization document set | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-MSG-FUN-06 | Cross-links and README entries reflected |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-MSG-001 | Structural | root-included messaging compose 정적 검증 | `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
-| VAL-MSG-002 | Structural | root-included messaging+dev compose 정적 검증 | `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
-| VAL-MSG-003 | Structural | service-local compose context boundary | `docker compose --env-file .env.example -f infra/05-messaging/rabbitmq/docker-compose.yml --profile messaging config --services` | root `infra_net` context 없이 `undefined network infra_net`가 발생하므로 root profile 또는 overlay 필요 |
-| VAL-MSG-004 | Compliance | 메시징 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 05-messaging` | 실패 0건 |
-| VAL-MSG-005 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-MSG-006 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
+| VAL-MSG-001 | Structural | Static root-included messaging compose validation | `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh` | No errors |
+| VAL-MSG-002 | Structural | Static root-included messaging+dev compose validation | `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh` | No errors |
+| VAL-MSG-003 | Structural | service-local compose context boundary | `docker compose --env-file .env.example -f infra/05-messaging/rabbitmq/docker-compose.yml --profile messaging config --services` | Because `undefined network infra_net` occurs without root `infra_net` context, the root profile or overlay is required |
+| VAL-MSG-004 | Compliance | Verify messaging hardening baseline | `bash scripts/hardening/check-all-hardening.sh 05-messaging` | 0 failures |
+| VAL-MSG-005 | Baseline | Template/security baseline | `bash scripts/validation/check-template-security-baseline.sh` | 0 failures |
+| VAL-MSG-006 | Traceability | Document traceability validation | `bash scripts/validation/check-doc-traceability.sh` | 0 failures |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| SSO 체인 강화로 운영 자동화 API 접근 영향 | Medium | 내부 포트 기반 운영 경로와 예외 절차를 runbook에 명시 |
-| 라우터 미들웨어 오적용으로 관리 UI 장애 | High | 변경 즉시 compose 정적 검증 + 롤백 절차 제공 |
-| 카탈로그 확장 미완료 | Medium | 운영 정책/가이드/태스크에 단계 확장 로드맵 명시 |
-| 문서 인덱스 누락 | Medium | 수정 폴더 README를 동일 변경 세트에서 동기화 |
+| SSO chain hardening affects operations automation API access | Medium | Document internal-port operations paths and exception procedures in the runbook |
+| Incorrect router middleware application breaks management UI | High | Run compose static validation immediately after changes and provide rollback procedures |
+| Catalog expansion remains incomplete | Medium | Document the staged expansion roadmap in operations policy, guide, and task records |
+| Document indexes are omitted | Medium | Synchronize modified folder READMEs in the same change set |
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
 - **Offline Eval Gate**: `check-all-hardening.sh 05-messaging`, `check-template-security-baseline`, `check-doc-traceability`
-- **Sandbox / Canary Rollout**: 메시징 프로필 단위 단계 기동 후 헬스 확인
-- **Human Approval Gate**: 외부 노출 정책/SSO 우회/HA 토폴로지 확장 변경 시 승인 필수
-- **Rollback Trigger**: 관리 UI 접근 실패, compose 검증 오류, CI 게이트 실패
+- **Sandbox / Canary Rollout**: Start by messaging profile stage and then check health.
+- **Human Approval Gate**: Approval is required for external exposure policy, SSO bypass, or HA topology expansion changes.
+- **Rollback Trigger**: Management UI access failure, compose validation error, or CI gate failure.
 - **Prompt / Model Promotion Criteria**: N/A
 
 ## Completion Criteria
 
-- [x] 메시징 compose 하드닝 항목 반영
-- [x] check-all-hardening.sh 05-messaging 및 CI 게이트 반영
-- [x] Stage 01-05 optimization-hardening 문서 및 README 인덱스 동기화
-- [ ] runtime 검증 증적 확보(환경 가능 시)
+- [x] Messaging compose hardening items reflected
+- [x] `check-all-hardening.sh 05-messaging` and CI gate reflected
+- [x] Stage 01 through 05 optimization-hardening documents and README indexes synchronized
+- [ ] Runtime validation evidence secured when the environment allows
 
 ## Related Documents
 

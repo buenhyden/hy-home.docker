@@ -7,13 +7,13 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra/01-gateway`의 Traefik/Nginx를 `Traefik Primary, Balanced Hardening` 기준으로 최적화하는 실행 계획서다. 설정 변경, 검증 자동화, CI 게이트, 문서 추적성(`04.execution/plans ↔ 05.operations/{guides,policies,runbooks}`) 동기화를 포함한다.
+This document is the implementation plan for optimizing `infra/01-gateway` Traefik/Nginx against the `Traefik Primary, Balanced Hardening` baseline. It includes configuration changes, validation automation, CI gates, and documentation traceability synchronization across `04.execution/plans` and `05.operations/{guides,policies,runbooks}`.
 
 ## Context
 
-- 기준 카탈로그: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
-- 기준 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 범위 결정:
+- Baseline catalog: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
+- Baseline plan: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
+- Scope decisions:
   - Scope: `Config+Docs`
   - Runtime model: `Traefik Primary`
   - Hardening level: `Balanced`
@@ -23,10 +23,10 @@ status: completed
 ## Goals & In-Scope
 
 - **Goals**:
-  - Traefik 미들웨어 표준 체인(`rate-limit/retry/circuit-breaker`)을 01-gateway 소유 라우터에 적용한다.
-  - Nginx를 readonly 운영 모델과 명시적 failover/timeout 정책으로 하드닝한다.
-  - 01-gateway 변경을 CI 자동 검증으로 강제한다.
-  - 계획/운영정책/런북/가이드 문서를 상호 링크와 인덱스로 동기화한다.
+  - Apply the Traefik standard middleware chain (`rate-limit/retry/circuit-breaker`) to routers owned by 01-gateway.
+  - Harden Nginx with a readonly operations model and explicit failover/timeout policy.
+  - Enforce 01-gateway changes through automated CI validation.
+  - Synchronize plan, operations policy, runbook, and guide documents through cross-links and indexes.
 - **In Scope**:
   - `infra/01-gateway/traefik/**`, `infra/01-gateway/nginx/**`
   - `scripts/hardening/check-all-hardening.sh 01-gateway`, `.github/workflows/ci-quality.yml`
@@ -35,58 +35,58 @@ status: completed
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - 02~11 티어 전역 라우터 라벨 일괄 변경
-  - 인증/비즈니스 로직 변경
+  - Bulk-changing router labels across tiers 02 through 11
+  - Changing authentication or business logic
 - **Out of Scope**:
-  - 신규 외부 포트/서비스 추가
-  - API/타입/스키마 변경
+  - Adding new external ports or services
+  - Changing APIs, types, or schemas
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-GW-001 | Traefik middleware 표준 체인 정의 | `infra/01-gateway/traefik/dynamic/middleware.yml` | REQ-GW-TRAEFIK-CHAIN | `req-rate-limit/retry/circuit-breaker/gateway-standard-chain` 존재 |
-| PLN-GW-002 | Dashboard router 체인 적용 | `infra/01-gateway/traefik/docker-compose.yml` | REQ-GW-TRAEFIK-ROUTER | `dashboard-auth@file,gateway-standard-chain@file` 적용 |
-| PLN-GW-003 | Nginx readonly 템플릿+tmpfs 전환 | `infra/01-gateway/nginx/docker-compose.yml` | REQ-GW-NGINX-READONLY | readonly 템플릿 + 필수 tmpfs + `/ping` healthcheck |
-| PLN-GW-004 | Nginx timeout/failover/cache 하드닝 | `infra/01-gateway/nginx/config/nginx.conf` | REQ-GW-NGINX-HARDEN | `server_tokens`, timeout, upstream fail params, `proxy_next_upstream`, static cache 정책 적용 |
-| PLN-GW-005 | Gateway hardening 검증 스크립트 추가 | `scripts/hardening/check-all-hardening.sh 01-gateway`, `scripts/README.md` | REQ-GW-VERIFY-AUTO | 스크립트 non-zero fail/zero pass 동작 |
-| PLN-GW-006 | CI Strict Gate 연결 | `.github/workflows/ci-quality.yml` | REQ-GW-CI-GATE | `infrastructure-hardening` job 필수 실행 |
-| PLN-GW-007 | 문서 추적성 동기화 | `docs/04.execution/plans/**`, `docs/04.execution/tasks/**`, `docs/05.operations/{guides,policies,runbooks}/01-gateway/**` | REQ-GW-DOC-TRACE | 상호 링크/README 인덱스 반영 |
+| PLN-GW-001 | Define the Traefik standard middleware chain | `infra/01-gateway/traefik/dynamic/middleware.yml` | REQ-GW-TRAEFIK-CHAIN | `req-rate-limit/retry/circuit-breaker/gateway-standard-chain` exists |
+| PLN-GW-002 | Apply the chain to the dashboard router | `infra/01-gateway/traefik/docker-compose.yml` | REQ-GW-TRAEFIK-ROUTER | `dashboard-auth@file,gateway-standard-chain@file` is applied |
+| PLN-GW-003 | Convert Nginx to a readonly template plus tmpfs | `infra/01-gateway/nginx/docker-compose.yml` | REQ-GW-NGINX-READONLY | Readonly template, required tmpfs entries, and `/ping` healthcheck exist |
+| PLN-GW-004 | Harden Nginx timeout/failover/cache policy | `infra/01-gateway/nginx/config/nginx.conf` | REQ-GW-NGINX-HARDEN | `server_tokens`, timeout, upstream fail params, `proxy_next_upstream`, and static cache policy are applied |
+| PLN-GW-005 | Add Gateway hardening validation script coverage | `scripts/hardening/check-all-hardening.sh 01-gateway`, `scripts/README.md` | REQ-GW-VERIFY-AUTO | Script returns non-zero on failure and zero on pass |
+| PLN-GW-006 | Connect the CI Strict Gate | `.github/workflows/ci-quality.yml` | REQ-GW-CI-GATE | `infrastructure-hardening` job runs as required |
+| PLN-GW-007 | Synchronize document traceability | `docs/04.execution/plans/**`, `docs/04.execution/tasks/**`, `docs/05.operations/{guides,policies,runbooks}/01-gateway/**` | REQ-GW-DOC-TRACE | Cross-links and README indexes are reflected |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-GW-001 | Structural | Gateway 하드닝 정책 정적 검증 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | 실패 0건 |
-| VAL-GW-002 | Compliance | 템플릿/보안 기준선 검증 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-GW-003 | Traceability | execution/operations 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
-| VAL-GW-004 | Compose | root-active Traefik compose 해석 검증 | `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` | 오류 없이 출력 |
-| VAL-GW-005 | Runtime lint | Nginx 설정 구문 검증 | approved Nginx runtime context에서 `docker compose exec nginx nginx -t` | `syntax is ok`; standalone service-local compose는 readiness evidence로 사용하지 않음 |
+| VAL-GW-001 | Structural | Static Gateway hardening policy validation | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | 0 failures |
+| VAL-GW-002 | Compliance | Template/security baseline validation | `bash scripts/validation/check-template-security-baseline.sh` | 0 failures |
+| VAL-GW-003 | Traceability | Execution/operations document traceability validation | `bash scripts/validation/check-doc-traceability.sh` | 0 failures |
+| VAL-GW-004 | Compose | root-active Traefik compose resolution validation | `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` | Output without errors |
+| VAL-GW-005 | Runtime lint | Nginx configuration syntax validation | `docker compose exec nginx nginx -t` in the approved Nginx runtime context | `syntax is ok`; standalone service-local compose is not used as readiness evidence |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| 대시보드 요청 429 증가 | Medium | `req-rate-limit` 현행값(100/50) 유지, 관측 후 조정 |
-| retry/circuit-breaker로 비정상 응답 패턴 변화 | Medium | 적용 범위를 gateway-owned router로 한정 |
-| readonly 전환 후 쓰기 경로 오류 | High | `/var/cache/nginx`, `/var/log/nginx`, `/var/run` tmpfs 명시 |
-| nginx.conf 실수로 리로드 실패 | High | `nginx -t` 선검증 + 런북 롤백 절차 제공 |
+| Dashboard requests return more 429 responses | Medium | Keep current `req-rate-limit` values (100/50), observe, then tune |
+| retry/circuit-breaker changes abnormal response patterns | Medium | Limit application scope to gateway-owned routers |
+| Write path errors occur after readonly conversion | High | Declare tmpfs for `/var/cache/nginx`, `/var/log/nginx`, and `/var/run` |
+| An nginx.conf mistake blocks reload | High | Pre-validate with `nginx -t` and provide runbook rollback procedures |
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
-- **Offline Eval Gate**: 정적 체크 3종(`infrastructure-hardening`, `template-security`, `doc-traceability`) 통과
-- **Sandbox / Canary Rollout**: Traefik 반영 후 Nginx 반영 순서 고정
-- **Human Approval Gate**: Infra/Ops reviewer 승인 후 병합
-- **Rollback Trigger**: 인증 루프, 대량 429, `/ping` 실패 발생 시 직전 커밋 복구
+- **Offline Eval Gate**: Pass three static checks: `infrastructure-hardening`, `template-security`, and `doc-traceability`.
+- **Sandbox / Canary Rollout**: Apply Traefik first, then Nginx.
+- **Human Approval Gate**: Merge after Infra/Ops reviewer approval.
+- **Rollback Trigger**: Restore the previous commit if authentication loops, large-scale 429 responses, or `/ping` failures occur.
 - **Prompt / Model Promotion Criteria**: N/A
 
 ## Completion Criteria
 
-- [x] Traefik/Nginx 설정 변경 반영
-- [x] Gateway hardening 스크립트 및 CI 게이트 추가
-- [x] Plan/Task/Operation/Runbook/Guide 문서 동기화 완료
-- [x] 관련 README 인덱스 갱신 완료
-- [x] 검증 명령(VAL-GW-001~004) 통과
+- [x] Traefik/Nginx configuration changes reflected
+- [x] Gateway hardening script and CI gate added
+- [x] Plan/Task/Operation/Runbook/Guide documents synchronized
+- [x] Related README indexes refreshed
+- [x] Verification commands VAL-GW-001 through VAL-GW-004 passed
 
 ## Related Documents
 

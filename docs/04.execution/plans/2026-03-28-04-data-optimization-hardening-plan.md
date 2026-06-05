@@ -7,20 +7,20 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra/04-data` 최적화/하드닝 실행 계획서다. 즉시 회귀 위험이 큰 구성 정합성 항목을 우선 반영하고, 카탈로그 확장 항목은 운영 정책/런북 기반으로 단계적 이행 계획을 정의한다.
+This document is the optimization/hardening implementation plan for `infra/04-data`. It first reflects configuration-consistency items with high immediate regression risk, then defines a staged implementation plan for catalog expansion items through operations policy and runbooks.
 
 ## Context
 
-- 기준 카탈로그: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
-- 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 즉시 하드닝 대상: `supabase`, `valkey-cluster`, `seaweedfs`, `ksql`
+- Baseline catalog: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
+- Parent priority plan: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
+- Immediate hardening targets: `supabase`, `valkey-cluster`, `seaweedfs`, `ksql`
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - 04-data compose 구성 정합성(healthcheck/시크릿/라벨/토큰)을 고정한다.
-  - 04-data 전용 CI 하드닝 게이트를 도입한다.
-  - Stage 01-05 문서 체계를 optimization/hardening 문맥으로 동기화한다.
+  - Fix 04-data compose configuration consistency for healthchecks, secrets, labels, and tokens.
+  - Introduce a 04-data-specific CI hardening gate.
+  - Synchronize the Stage 01 through 05 document system in the optimization/hardening context.
 - **In Scope**:
   - `infra/04-data/operational/supabase/docker-compose.yml`
   - `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`
@@ -29,65 +29,65 @@ status: completed
   - `scripts/hardening/check-all-hardening.sh 04-data`
   - `.github/workflows/ci-quality.yml`
   - `scripts/README.md`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` + 관련 README 인덱스
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` and related README indexes
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - 카탈로그 확장 항목의 즉시 실구현(전 서비스 동시)
-  - 앱 레벨 성능 튜닝/쿼리 리팩터링
+  - Immediate implementation of catalog expansion items across all services at once
+  - App-level performance tuning or query refactoring
 - **Out of Scope**:
-  - 신규 데이터 엔진 도입
-  - 클라우드 매니지드 데이터 플랫폼 전환
+  - Introducing a new data engine
+  - Migrating to a cloud-managed data platform
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-DATA-001 | `supabase` 핵심 서비스 healthcheck 보강 | `infra/04-data/operational/supabase/docker-compose.yml` | REQ-PRD-DATA-FUN-01 | compose config + 서비스 블록 healthcheck 확인 |
-| PLN-DATA-002 | Valkey exporter 시크릿 경로 계약 정합화 | `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml` | REQ-PRD-DATA-FUN-02 | stale secret path 0건 |
-| PLN-DATA-003 | SeaweedFS expose 토큰 오타 제거 | `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` | REQ-PRD-DATA-FUN-03 | malformed expose 토큰 0건 |
-| PLN-DATA-004 | ksql tier 라벨 정규화 | `infra/04-data/analytics/ksql/docker-compose.yml` | REQ-PRD-DATA-FUN-04 | `hy-home.tier: data` 확인 |
-| PLN-DATA-005 | 04-data 하드닝 검증 스크립트 추가 | `scripts/hardening/check-all-hardening.sh 04-data` | REQ-PRD-DATA-FUN-05 | 스크립트 pass/fail 정상 동작 |
-| PLN-DATA-006 | CI `infrastructure-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-DATA-FUN-05 | workflow 정적 점검 |
-| PLN-DATA-007 | scripts 인덱스 갱신 | `scripts/README.md` | REQ-PRD-DATA-FUN-05 | README 항목/사용 예시 반영 |
-| PLN-DATA-008 | PRD~Runbook 문서 생성/갱신 + 상호 링크 정합화 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-DATA-FUN-06 | 링크/인덱스 반영 확인 |
+| PLN-DATA-001 | Strengthen core `supabase` service healthchecks | `infra/04-data/operational/supabase/docker-compose.yml` | REQ-PRD-DATA-FUN-01 | Compose config and service-block healthchecks confirmed |
+| PLN-DATA-002 | Align the Valkey exporter secret-path contract | `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml` | REQ-PRD-DATA-FUN-02 | 0 stale secret paths |
+| PLN-DATA-003 | Remove the SeaweedFS expose token typo | `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` | REQ-PRD-DATA-FUN-03 | 0 malformed expose tokens |
+| PLN-DATA-004 | Normalize ksql tier labels | `infra/04-data/analytics/ksql/docker-compose.yml` | REQ-PRD-DATA-FUN-04 | `hy-home.tier: data` confirmed |
+| PLN-DATA-005 | Add 04-data hardening validation script coverage | `scripts/hardening/check-all-hardening.sh 04-data` | REQ-PRD-DATA-FUN-05 | Script pass/fail behavior works normally |
+| PLN-DATA-006 | Add CI `infrastructure-hardening` job | `.github/workflows/ci-quality.yml` | REQ-PRD-DATA-FUN-05 | Workflow static check passes |
+| PLN-DATA-007 | Refresh scripts index | `scripts/README.md` | REQ-PRD-DATA-FUN-05 | README entry and usage example reflected |
+| PLN-DATA-008 | Create/update PRD-to-Runbook documents and align cross-links | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-DATA-FUN-06 | Links and indexes reflected |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-DATA-001 | Structural | Supabase compose 정적 검증 | `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config` | 오류 없음 |
-| VAL-DATA-002 | Structural | Valkey compose 정적 검증 | `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml config` | 오류 없음 |
-| VAL-DATA-003 | Structural | SeaweedFS compose 정적 검증 | `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config` | 오류 없음 |
-| VAL-DATA-004 | Structural | ksql compose 정적 검증 | `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config` | 오류 없음 |
-| VAL-DATA-005 | Compliance | 04-data 하드닝 검증 | `bash scripts/hardening/check-all-hardening.sh 04-data` | 실패 0건 |
-| VAL-DATA-006 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-DATA-007 | Traceability | 문서 추적성 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
+| VAL-DATA-001 | Structural | Static Supabase compose validation | `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config` | No errors |
+| VAL-DATA-002 | Structural | Static Valkey compose validation | `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml config` | No errors |
+| VAL-DATA-003 | Structural | Static SeaweedFS compose validation | `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config` | No errors |
+| VAL-DATA-004 | Structural | Static ksql compose validation | `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config` | No errors |
+| VAL-DATA-005 | Compliance | 04-data hardening validation | `bash scripts/hardening/check-all-hardening.sh 04-data` | 0 failures |
+| VAL-DATA-006 | Baseline | Template/security baseline | `bash scripts/validation/check-template-security-baseline.sh` | 0 failures |
+| VAL-DATA-007 | Traceability | Document traceability | `bash scripts/validation/check-doc-traceability.sh` | 0 failures |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| liveness 기반 healthcheck 한계 | Medium | 후속 단계에서 readiness endpoint 기반으로 고도화 |
-| 다중 서비스 동시 변경으로 인한 파급 | High | 즉시 하드닝 범위를 정합성 항목으로 제한 |
-| 카탈로그 확장 미완료 | Medium | 정책/런북에 승인 조건과 전환 절차를 선반영 |
-| 문서 링크 회귀 | Medium | README 인덱스와 상호 링크를 동일 변경 세트에서 갱신 |
+| Liveness-based healthcheck limitations | Medium | Improve with readiness endpoint coverage in a later phase |
+| Simultaneous multi-service changes create broad impact | High | Limit immediate hardening scope to consistency items |
+| Catalog expansion remains incomplete | Medium | Pre-reflect approval conditions and transition procedures in policy/runbook documents |
+| Document links regress | Medium | Refresh README indexes and cross-links in the same change set |
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
 - **Offline Eval Gate**: `check-all-hardening.sh 04-data`, `check-template-security-baseline`, `check-doc-traceability`
-- **Sandbox / Canary Rollout**: 04-data 서비스별 compose config 검증 후 단계 반영
-- **Human Approval Gate**: HA 확장/보존 정책/외부 노출 정책 변경 시 운영 승인 필수
-- **Rollback Trigger**: healthcheck fail 지속, exporter 인증 실패, compose 파싱 오류
+- **Sandbox / Canary Rollout**: Apply by stage after validating compose config for each 04-data service.
+- **Human Approval Gate**: Operations approval is required for HA expansion, retention policy changes, or external exposure policy changes.
+- **Rollback Trigger**: Sustained healthcheck failure, exporter authentication failure, or compose parsing error.
 - **Prompt / Model Promotion Criteria**: N/A
 
 ## Completion Criteria
 
-- [x] 04-data 즉시 하드닝 항목 반영
-- [x] data-hardening 검증/CI 게이트 반영
-- [x] Stage 01-05 문서 및 README 인덱스 동기화
-- [ ] runtime 검증 증적 확보(환경 가능 시)
+- [x] Immediate 04-data hardening items reflected
+- [x] data-hardening validation and CI gate reflected
+- [x] Stage 01 through 05 documents and README indexes synchronized
+- [ ] Runtime validation evidence secured when the environment allows
 
 ## Related Documents
 

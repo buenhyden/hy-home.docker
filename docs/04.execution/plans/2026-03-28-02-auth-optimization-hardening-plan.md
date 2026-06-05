@@ -7,13 +7,13 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra/02-auth`(Keycloak, OAuth2 Proxy)의 최적화/하드닝 실행 계획서다. 설정 개선, CI 검증 게이트, 그리고 `01.requirements~05.operations` 문서 추적성 동기화를 포함한다.
+This document is the optimization/hardening implementation plan for `infra/02-auth` (Keycloak, OAuth2 Proxy). It includes configuration improvements, CI validation gates, and documentation traceability synchronization across `01.requirements` through `05.operations`.
 
 ## Context
 
-- 기준 카탈로그: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
-- 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 적용 원칙:
+- Baseline catalog: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
+- Parent priority plan: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
+- Application principles:
   - Scope: `Config+Docs`
   - Security posture: `Fail-closed`
   - Hardening level: `Balanced`
@@ -22,70 +22,70 @@ status: completed
 ## Goals & In-Scope
 
 - **Goals**:
-  - OAuth2 Proxy 시크릿 주입/런타임 권한을 표준 하드닝으로 정리한다.
-  - Keycloak/OAuth2 Proxy의 인증 경로 운영 기준을 문서와 자동 검증으로 고정한다.
-  - Plan/Task/Guide/Operation/Runbook 상호 링크를 일관화한다.
+  - Align OAuth2 Proxy secret injection and runtime permissions with the standard hardening model.
+  - Fix Keycloak/OAuth2 Proxy authentication path operations criteria in documents and automated validation.
+  - Make Plan/Task/Guide/Operation/Runbook cross-links consistent.
 - **In Scope**:
   - `infra/02-auth/keycloak/docker-compose.yml`
   - `infra/02-auth/oauth2-proxy/{docker-compose.dev.yml,docker-compose.yml,Dockerfile,dev.Dockerfile,docker-entrypoint.sh,docker-entrypoint.dev.sh,config/oauth2-proxy.cfg}`
   - `scripts/hardening/check-all-hardening.sh 02-auth`, `.github/workflows/ci-quality.yml`, `scripts/README.md`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`의 02-auth 관련 문서/README
+  - 02-auth related documents and READMEs under `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - Keycloak realm/business RBAC 구조 재설계
-  - 타 티어(01, 03~11) 설정 일괄 변경
+  - Redesigning Keycloak realm or business RBAC structure
+  - Bulk-changing settings for other tiers (01, 03 through 11)
 - **Out of Scope**:
-  - 신규 외부 노출 포트 추가
-  - 신규 IdP/인증 프로토콜 도입
+  - Adding new externally exposed ports
+  - Introducing new IdPs or authentication protocols
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-AUTH-001 | OAuth2 Proxy 시크릿 주입을 엔트리포인트 중심으로 정리 | `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`, `docker-compose.yml` | REQ-PRD-FUN-01 | 시크릿 파일 기반 export 확인 |
-| PLN-AUTH-002 | OAuth2 Proxy 이미지 non-root 하드닝 | `infra/02-auth/oauth2-proxy/Dockerfile` | REQ-PRD-FUN-02 | `USER oauth2proxy:oauth2proxy` 존재 |
-| PLN-AUTH-003 | Keycloak 시크릿 로그 노출 최소화 | `infra/02-auth/keycloak/docker-compose.yml` | REQ-PRD-FUN-01 | 시크릿 길이 echo 제거 |
-| PLN-AUTH-004 | 02-auth 하드닝 검증 스크립트 추가 | `scripts/hardening/check-all-hardening.sh 02-auth` | REQ-PRD-FUN-03 | 실패시 non-zero, 통과시 zero |
-| PLN-AUTH-005 | CI에 `infrastructure-hardening` 게이트 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-FUN-03 | PR/Push 시 job 실행 |
-| PLN-AUTH-006 | PRD~Runbook 문서 세트 생성/정비 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 관련 파일 | REQ-PRD-FUN-04 | 양방향 링크 및 README 인덱스 반영 |
-| PLN-AUTH-007 | degraded-mode 운영/복구 절차 명문화 | `docs/05.operations/{policies,runbooks}/02-auth/*.md` | REQ-PRD-FUN-05 | 정책+절차 문서 일치 |
+| PLN-AUTH-001 | Recenter OAuth2 Proxy secret injection on the entrypoint | `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`, `docker-compose.yml` | REQ-PRD-FUN-01 | Secret-file-based export confirmed |
+| PLN-AUTH-002 | Harden the OAuth2 Proxy image as non-root | `infra/02-auth/oauth2-proxy/Dockerfile` | REQ-PRD-FUN-02 | `USER oauth2proxy:oauth2proxy` exists |
+| PLN-AUTH-003 | Minimize Keycloak secret exposure in logs | `infra/02-auth/keycloak/docker-compose.yml` | REQ-PRD-FUN-01 | Secret length echo removed |
+| PLN-AUTH-004 | Add 02-auth hardening validation script coverage | `scripts/hardening/check-all-hardening.sh 02-auth` | REQ-PRD-FUN-03 | Non-zero on failure, zero on pass |
+| PLN-AUTH-005 | Add the `infrastructure-hardening` gate to CI | `.github/workflows/ci-quality.yml` | REQ-PRD-FUN-03 | Job runs on PR/push |
+| PLN-AUTH-006 | Create and maintain the PRD-to-Runbook document set | 02-auth related files under `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` | REQ-PRD-FUN-04 | Bidirectional links and README indexes reflected |
+| PLN-AUTH-007 | Codify degraded-mode operations and recovery procedures | `docs/05.operations/{policies,runbooks}/02-auth/*.md` | REQ-PRD-FUN-05 | Policy and procedure documents match |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-AUTH-001 | Structural | 02-auth 하드닝 정적 검증 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | 실패 0건 |
-| VAL-AUTH-002 | Compliance | 템플릿/보안 기준선 검증 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-AUTH-003 | Traceability | execution/operations 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
-| VAL-AUTH-004 | Root Compose | root auth profile 해석 검증 | `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` | 실패 0건 |
-| VAL-AUTH-005 | Dependency Compose | root core profile 해석 검증 | `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` | 실패 0건 |
+| VAL-AUTH-001 | Structural | Static 02-auth hardening validation | `bash scripts/hardening/check-all-hardening.sh 02-auth` | 0 failures |
+| VAL-AUTH-002 | Compliance | Template/security baseline validation | `bash scripts/validation/check-template-security-baseline.sh` | 0 failures |
+| VAL-AUTH-003 | Traceability | Execution/operations traceability validation | `bash scripts/validation/check-doc-traceability.sh` | 0 failures |
+| VAL-AUTH-004 | Root Compose | Root auth profile resolution validation | `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` | 0 failures |
+| VAL-AUTH-005 | Dependency Compose | Root core profile resolution validation | `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` | 0 failures |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| 도메인 환경 변수 불일치로 OIDC 리다이렉션 실패 | High | 운영 가이드에 도메인/Redirect 동기화 체크리스트 추가 |
-| non-root 전환 후 런타임 권한 문제 | Medium | 엔트리포인트/바이너리 소유권을 명시적으로 설정 |
-| 인증 장애 시 서비스 접근 영향 확대 | Medium | fail-closed 유지 + degraded-mode 절차를 제한적으로 문서화 |
-| 문서 링크 회귀 | Medium | README 인덱스/상호 참조를 동일 커밋에서 동기화 |
+| Domain environment-variable mismatch breaks OIDC redirects | High | Add a domain/Redirect synchronization checklist to the operations guide |
+| Runtime permission issues after non-root conversion | Medium | Explicitly set entrypoint and binary ownership |
+| Authentication outage broadens service access impact | Medium | Keep fail-closed behavior and document degraded-mode procedures narrowly |
+| Document links regress | Medium | Synchronize README indexes and cross-references in the same commit |
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
-- **Offline Eval Gate**: `check-all-hardening.sh 02-auth`, `check-template-security-baseline`, `check-doc-traceability` 통과
-- **Sandbox / Canary Rollout**: OAuth2 Proxy 반영 후 Keycloak 변경 반영
-- **Human Approval Gate**: Infra/Ops reviewer 승인 후 병합
-- **Rollback Trigger**: 인증 루프 지속, `/ping` 실패 지속, OIDC 콜백 장애 증가
+- **Offline Eval Gate**: Pass `check-all-hardening.sh 02-auth`, `check-template-security-baseline`, and `check-doc-traceability`.
+- **Sandbox / Canary Rollout**: Apply OAuth2 Proxy changes before Keycloak changes.
+- **Human Approval Gate**: Merge after Infra/Ops reviewer approval.
+- **Rollback Trigger**: Sustained authentication loops, sustained `/ping` failure, or increased OIDC callback failures.
 - **Prompt / Model Promotion Criteria**: N/A
 
 ## Completion Criteria
 
-- [x] 02-auth 설정 하드닝 반영
-- [x] CI 게이트와 스크립트 추가
-- [x] PRD~Runbook 문서 세트 동기화
-- [x] README 인덱스 갱신
-- [x] 검증 커맨드 통과
+- [x] 02-auth configuration hardening reflected
+- [x] CI gate and script added
+- [x] PRD-to-Runbook document set synchronized
+- [x] README indexes refreshed
+- [x] Verification commands passed
 
 ## Related Documents
 

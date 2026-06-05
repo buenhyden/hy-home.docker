@@ -7,77 +7,77 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra/08-ai` 최적화/하드닝 실행 계획서다. gateway 경계 보안 정렬, GPU concurrency 보호, Open WebUI stateful 일관성, exporter health 계약, CI 정책 게이트, 카탈로그 확장 정책을 단계적으로 수행한다.
+This document is the optimization/hardening implementation plan for `infra/08-ai`. It stages gateway boundary security alignment, GPU concurrency protection, Open WebUI stateful consistency, exporter health contracts, CI policy gates, and catalog expansion policy work.
 
 ## Context
 
-- 기준 카탈로그: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
-- 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 대상 구성: `infra/08-ai/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
+- Baseline catalog: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
+- Parent priority plan: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
+- Target configuration: `infra/08-ai/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - Ollama/Open WebUI 공개 경로를 gateway 표준+SSO 정책으로 정렬한다.
-  - Ollama GPU 자원 보호를 위한 concurrency/queue 상한을 명시한다.
-  - Open WebUI를 stateful 운영 템플릿으로 정렬한다.
-  - exporter를 health-gated startup으로 안정화한다.
-  - AI 하드닝 회귀를 script/CI로 조기 차단한다.
-  - 카탈로그 확장 항목(모델 승격/접근 분리/로그 정책)을 문서/태스크로 실행 가능하게 한다.
+  - Align Ollama/Open WebUI public paths with gateway standard and SSO policy.
+  - Declare concurrency/queue limits to protect Ollama GPU resources.
+  - Align Open WebUI with the stateful operations template.
+  - Stabilize the exporter through health-gated startup.
+  - Catch AI hardening regressions early through script/CI coverage.
+  - Make catalog expansion items (model promotion, access separation, log policy) executable through documents and tasks.
 - **In Scope**:
   - `infra/08-ai/ollama/docker-compose.yml`
   - `infra/08-ai/open-webui/docker-compose.yml`
   - `scripts/hardening/check-all-hardening.sh 08-ai`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` AI optimization-hardening 문서/README
+  - AI optimization-hardening documents and READMEs under `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - 즉시 다중 노드/다중 리전 AI 추론 아키텍처 전환
-  - 외부 LLM provider 표준화
+  - Immediate migration to multi-node or multi-region AI inference architecture
+  - Standardizing external LLM providers
 - **Out of Scope**:
-  - Qdrant 내부 데이터 모델 변경
-  - 모델 학습/파인튜닝 파이프라인 구축
+  - Changing the Qdrant internal data model
+  - Building model training or fine-tuning pipelines
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-AI-001 | Ollama/Open WebUI gateway+SSO middleware 정렬 | `infra/08-ai/*/docker-compose.yml` | REQ-PRD-AI-FUN-01 | compose labels 확인 |
-| PLN-AI-002 | Ollama concurrency/queue/resource 상한 명시 | `infra/08-ai/ollama/docker-compose.yml` | REQ-PRD-AI-FUN-02 | env contract 확인 |
-| PLN-AI-003 | Open WebUI stateful 템플릿 정렬 | `infra/08-ai/open-webui/docker-compose.yml` | REQ-PRD-AI-FUN-03 | `template-stateful-med` 확인 |
-| PLN-AI-004 | exporter health-gated dependency 및 healthcheck 보강 | `infra/08-ai/ollama/docker-compose.yml` | REQ-PRD-AI-FUN-04 | `depends_on`/healthcheck 확인 |
-| PLN-AI-005 | AI hardening script + CI 게이트 추가 | `scripts/hardening/check-all-hardening.sh 08-ai`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-AI-FUN-05 | script/CI job 확인 |
-| PLN-AI-006 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-AI-FUN-06 | 링크 정합성 확인 |
-| PLN-AI-007 | 카탈로그 확장 정책 작업 분해(모델 승격/접근 분리/로그 정책) | Plan/Task/Ops/Guide docs | REQ-PRD-AI-FUN-07 | 태스크/정책 반영 확인 |
+| PLN-AI-001 | Align Ollama/Open WebUI gateway+SSO middleware | `infra/08-ai/*/docker-compose.yml` | REQ-PRD-AI-FUN-01 | Compose labels confirmed |
+| PLN-AI-002 | Declare Ollama concurrency/queue/resource limits | `infra/08-ai/ollama/docker-compose.yml` | REQ-PRD-AI-FUN-02 | env contract confirmed |
+| PLN-AI-003 | Align Open WebUI stateful template | `infra/08-ai/open-webui/docker-compose.yml` | REQ-PRD-AI-FUN-03 | `template-stateful-med` confirmed |
+| PLN-AI-004 | Strengthen exporter health-gated dependency and healthcheck | `infra/08-ai/ollama/docker-compose.yml` | REQ-PRD-AI-FUN-04 | `depends_on`/healthcheck confirmed |
+| PLN-AI-005 | Add AI hardening script and CI gate | `scripts/hardening/check-all-hardening.sh 08-ai`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-AI-FUN-05 | Script/CI job confirmed |
+| PLN-AI-006 | Create PRD-to-Runbook document system and cross-links | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-AI-FUN-06 | Link consistency confirmed |
+| PLN-AI-007 | Break down catalog expansion policy work (model promotion, access separation, log policy) | Plan/Task/Ops/Guide docs | REQ-PRD-AI-FUN-07 | Task/policy reflection confirmed |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-AI-001 | Structural | AI optional compose contract 정적 검증 | `bash scripts/hardening/check-all-hardening.sh 08-ai` | 실패 0건 |
-| VAL-AI-002 | Structural | root-active compose profile 검증 | `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
-| VAL-AI-003 | Compliance | AI 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 08-ai` | 실패 0건 |
-| VAL-AI-004 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-AI-005 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
+| VAL-AI-001 | Structural | Static AI optional compose contract validation | `bash scripts/hardening/check-all-hardening.sh 08-ai` | 0 failures |
+| VAL-AI-002 | Structural | root-active compose profile validation | `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh` | No errors |
+| VAL-AI-003 | Compliance | Verify AI hardening baseline | `bash scripts/hardening/check-all-hardening.sh 08-ai` | 0 failures |
+| VAL-AI-004 | Baseline | Template/security baseline | `bash scripts/validation/check-template-security-baseline.sh` | 0 failures |
+| VAL-AI-005 | Traceability | Document traceability validation | `bash scripts/validation/check-doc-traceability.sh` | 0 failures |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| concurrency 상한 설정 부적합으로 처리량 저하 | Medium | 단계적 튜닝 + exporter 지표 기반 재조정 |
-| SSO 강화로 기존 테스트 경로 차단 | Medium | runbook에 예외/복구 절차 반영 |
-| 로그 보존/마스킹 정책 미정으로 운영 편차 | Medium | operations/task에 승인 게이트 명시 |
-| stateful 템플릿 drift 재발 | Low | AI hardening script로 정책 강제 |
+| Incorrect concurrency limits reduce throughput | Medium | Tune in stages and readjust based on exporter metrics |
+| SSO hardening blocks existing test paths | Medium | Reflect exceptions and recovery procedures in the runbook |
+| Undefined log retention/masking policy causes operations variance | Medium | Specify approval gates in operations/task documents |
+| Stateful template drift recurs | Low | Enforce policy with the AI hardening script |
 
 ## Completion Criteria
 
-- [x] AI compose/script/ci 하드닝 반영
-- [x] AI optimization-hardening 문서 세트 생성
-- [x] Stage 01-05 README 인덱스 반영
-- [ ] runtime 기동/리허설 증적 확보 (환경 허용 시)
+- [x] AI compose/script/CI hardening reflected
+- [x] AI optimization-hardening document set created
+- [x] Stage 01 through 05 README indexes reflected
+- [ ] Runtime startup/rehearsal evidence secured when the environment allows
 
 ## Related Documents
 
