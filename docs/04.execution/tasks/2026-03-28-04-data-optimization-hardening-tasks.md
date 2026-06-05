@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `04-data` 최적화/하드닝 구현 태스크를 추적한다. compose 정합성 보강, 하드닝 검증 자동화, 문서 추적성 동기화를 작업 단위로 관리한다.
+This document tracks the `04-data` optimization and hardening implementation tasks. It manages compose consistency improvements, hardening validation automation, and documentation traceability synchronization as task units.
 
 ## Inputs
 
@@ -16,24 +16,24 @@ status: completed
 
 ## Working Rules
 
-- 04-data 하드닝은 카탈로그 우선순위에 맞춰 즉시 적용 항목부터 수행한다.
-- 모든 compose 변경은 정적 검증(`docker compose config`)과 스크립트 증빙을 남긴다.
-- 문서 변경은 PRD~Runbook 상호 링크를 유지한다.
+- 04-data hardening starts with immediately applicable items according to catalog priority.
+- Every compose change leaves static validation (`docker compose config`) and script evidence.
+- Documentation changes maintain PRD-to-Runbook cross-links.
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-DATA-001 | `supabase` 핵심 서비스 healthcheck 추가 | impl | 04-data/spec.md / Contracts | PLN-DATA-001 | `docker compose ...supabase... config` | DevOps | Done |
-| T-DATA-002 | Valkey exporter 시크릿 경로 정합화 | impl | 04-data/spec.md / Contracts | PLN-DATA-002 | `rg mng_valkey_password` 미검출 | DevOps | Done |
-| T-DATA-003 | SeaweedFS expose 오타 제거 | impl | 04-data/spec.md / Contracts | PLN-DATA-003 | `rg ':-19333}]\|:-18085}]\|:-18888}]'` 미검출 | DevOps | Done |
-| T-DATA-004 | ksql tier 라벨 정규화 | impl | 04-data/spec.md / Contracts | PLN-DATA-004 | `hy-home.tier: data` 확인 | DevOps | Done |
-| T-DATA-005 | `check-all-hardening.sh 04-data` 신규 작성 | ops | 04-data/spec.md / Governance | PLN-DATA-005 | `bash scripts/hardening/check-all-hardening.sh 04-data` | DevOps | Done |
-| T-DATA-006 | CI `infrastructure-hardening` job 추가 | ops | 04-data/spec.md / Governance | PLN-DATA-006 | workflow 변경 확인 | DevOps | Done |
-| T-DATA-007 | scripts README 인덱스/예시 갱신 | doc | 04-data/spec.md / Related Docs | PLN-DATA-007 | README 항목 확인 | Docs | Done |
-| T-DATA-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 반영 | doc | 04-data/spec.md / Related Docs | PLN-DATA-008 | 문서 링크/인덱스 확인 | Docs | Done |
-| T-DATA-009 | 정적 검증 실행 및 결과 기록 | test | 04-data/spec.md / Verification | PLN-DATA-001~008 | compose + hardening + traceability 점검 | DevOps | Done |
-| T-DATA-010 | runtime 검증(가능 환경) 증적 수집 | test | 04-data/spec.md / Verification | PLN-DATA-001~008 | Live service health evidence is collected only in an approved runtime session | DevOps | Deferred |
+| T-DATA-001 | Add healthchecks for core `supabase` services | impl | 04-data/spec.md / Contracts | PLN-DATA-001 | `docker compose ...supabase... config` | DevOps | Done |
+| T-DATA-002 | Align the Valkey exporter secret path | impl | 04-data/spec.md / Contracts | PLN-DATA-002 | No `rg mng_valkey_password` matches | DevOps | Done |
+| T-DATA-003 | Remove SeaweedFS expose typos | impl | 04-data/spec.md / Contracts | PLN-DATA-003 | No `rg ':-19333}]\|:-18085}]\|:-18888}]'` matches | DevOps | Done |
+| T-DATA-004 | Normalize the ksql tier label | impl | 04-data/spec.md / Contracts | PLN-DATA-004 | Confirm `hy-home.tier: data` | DevOps | Done |
+| T-DATA-005 | Create `check-all-hardening.sh 04-data` | ops | 04-data/spec.md / Governance | PLN-DATA-005 | `bash scripts/hardening/check-all-hardening.sh 04-data` | DevOps | Done |
+| T-DATA-006 | Add the CI `infrastructure-hardening` job | ops | 04-data/spec.md / Governance | PLN-DATA-006 | Confirm workflow changes | DevOps | Done |
+| T-DATA-007 | Refresh the scripts README index/examples | doc | 04-data/spec.md / Related Docs | PLN-DATA-007 | Confirm README entries | Docs | Done |
+| T-DATA-008 | Reflect PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook docs | doc | 04-data/spec.md / Related Docs | PLN-DATA-008 | Confirm document links/indexes | Docs | Done |
+| T-DATA-009 | Run static validation and record results | test | 04-data/spec.md / Verification | PLN-DATA-001~008 | Check compose + hardening + traceability | DevOps | Done |
+| T-DATA-010 | Collect runtime validation evidence where available | test | 04-data/spec.md / Verification | PLN-DATA-001~008 | Live service health evidence is collected only in an approved runtime session | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -71,7 +71,7 @@ status: completed
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Logs / Evidence Location**: Local validation logs + CI `infrastructure-hardening` job
 - **Deferred Runtime Evidence**: T-DATA-010 is outside the static implementation pass and requires approved live services.
 
 ## Related Documents

@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `01-gateway` 최적화/하드닝 실행 태스크를 추적한다. 상위 Plan을 기준으로 설정 변경, 검증 자동화, CI 게이트, 문서 동기화를 작업 단위로 관리한다.
+This document tracks the `01-gateway` optimization and hardening execution tasks. Based on the parent Plan, it manages configuration changes, validation automation, CI gates, and documentation synchronization as task units.
 
 ## Inputs
 
@@ -16,22 +16,22 @@ status: completed
 
 ## Working Rules
 
-- 핵심 동작 변경은 정적 검증 커맨드로 증적을 남긴다.
-- 모든 태스크는 변경 파일과 검증 명령을 연결한다.
-- 문서 변경 시 해당 폴더 README 인덱스를 같은 변경에 포함한다.
+- Core behavior changes leave evidence through static validation commands.
+- Every task links the changed files to validation commands.
+- Documentation changes include the relevant folder README index in the same change set.
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-GW-001 | Traefik middleware에 `req-retry`, `req-circuit-breaker`, `gateway-standard-chain` 추가 | impl | 01-gateway/spec.md / Gateway | PLN-GW-001 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Infra | Done |
-| T-GW-002 | Traefik dashboard router에 `gateway-standard-chain@file` 적용 | impl | 01-gateway/spec.md / Gateway | PLN-GW-002 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Infra | Done |
-| T-GW-003 | Nginx compose를 `template-infra-readonly-low` + 필수 tmpfs + `/ping` healthcheck로 전환 | impl | 01-gateway/spec.md / Gateway | PLN-GW-003 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Infra | Done |
-| T-GW-004 | Nginx config에 timeout/failover/cache/server_tokens 하드닝 반영 | impl | 01-gateway/spec.md / Gateway | PLN-GW-004 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Infra | Done |
-| T-GW-005 | `scripts/hardening/check-all-hardening.sh 01-gateway` 추가 및 문서화 | ops | 01-gateway/spec.md / Verification | PLN-GW-005 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | DevOps | Done |
-| T-GW-006 | CI workflow에 `infrastructure-hardening` job 추가 | ops | 01-gateway/spec.md / CI | PLN-GW-006 | PR CI run | DevOps | Done |
-| T-GW-007 | Plan/Task/Operation/Runbook/Guide 문서 및 README 인덱스 동기화 | doc | 01-gateway/spec.md / Docs | PLN-GW-007 | `bash scripts/validation/check-doc-traceability.sh` | Docs | Done |
-| T-GW-008 | Compose/기본 검증 커맨드 실행 결과 기록 | test | 01-gateway/spec.md / Validation | PLN-GW-001~007 | root profile validator, hardening checks, runtime lint boundary | Infra | Done |
+| T-GW-001 | Add `req-retry`, `req-circuit-breaker`, and `gateway-standard-chain` to Traefik middleware | impl | 01-gateway/spec.md / Gateway | PLN-GW-001 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Infra | Done |
+| T-GW-002 | Apply `gateway-standard-chain@file` to the Traefik dashboard router | impl | 01-gateway/spec.md / Gateway | PLN-GW-002 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Infra | Done |
+| T-GW-003 | Convert Nginx compose to `template-infra-readonly-low` with required tmpfs and `/ping` healthcheck | impl | 01-gateway/spec.md / Gateway | PLN-GW-003 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Infra | Done |
+| T-GW-004 | Apply timeout/failover/cache/server_tokens hardening to Nginx config | impl | 01-gateway/spec.md / Gateway | PLN-GW-004 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Infra | Done |
+| T-GW-005 | Add and document `scripts/hardening/check-all-hardening.sh 01-gateway` | ops | 01-gateway/spec.md / Verification | PLN-GW-005 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | DevOps | Done |
+| T-GW-006 | Add the `infrastructure-hardening` job to the CI workflow | ops | 01-gateway/spec.md / CI | PLN-GW-006 | PR CI run | DevOps | Done |
+| T-GW-007 | Synchronize Plan/Task/Operation/Runbook/Guide documents and README indexes | doc | 01-gateway/spec.md / Docs | PLN-GW-007 | `bash scripts/validation/check-doc-traceability.sh` | Docs | Done |
+| T-GW-008 | Record Compose and baseline validation command results | test | 01-gateway/spec.md / Validation | PLN-GW-001~007 | root profile validator, hardening checks, runtime lint boundary | Infra | Done |
 
 ## Suggested Types
 
@@ -68,4 +68,4 @@ status: completed
 
 ## Related Documents
 
-- (참조 문서 없음)
+- (No reference documents)

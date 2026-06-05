@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `06-observability` 최적화/하드닝 구현 태스크를 추적한다. gateway 경계 강화, health 기반 의존성 보강, 컨테이너 하드닝, CI 기준선 자동화, 문서 추적성 동기화를 작업 단위로 관리한다.
+This document tracks the `06-observability` optimization and hardening implementation tasks. It manages gateway boundary strengthening, health-based dependency improvements, container hardening, CI baseline automation, and documentation traceability synchronization as task units.
 
 ## Inputs
 
@@ -16,25 +16,25 @@ status: completed
 
 ## Working Rules
 
-- 관측성 compose 변경은 정적 검증 + 하드닝 스크립트 증빙을 남긴다.
-- 라우팅/인증 정책 변경은 gateway/auth 영향 범위를 기록한다.
-- 문서 변경은 PRD~Runbook 상호 링크와 README 인덱스를 동시 갱신한다.
+- Observability compose changes leave static validation plus hardening script evidence.
+- Routing/authentication policy changes record the gateway/auth impact boundary.
+- Documentation changes update PRD-to-Runbook cross-links and README indexes together.
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-OBS-001 | 공개 라우터 middleware 계약 정렬 | impl | 06-observability/spec.md / Contracts | PLN-OBS-001 | 라벨 문자열 확인 | DevOps | Done |
-| T-OBS-002 | Loki/Tempo/Pyroscope/cAdvisor Traefik 라우팅 경계 정렬 | impl | 06-observability/spec.md / Core Design | PLN-OBS-002 | 라우터/서비스 라벨 확인 | DevOps | Done |
-| T-OBS-003 | Alloy/Grafana depends_on health 계약 강화 | impl | 06-observability/spec.md / Core Design | PLN-OBS-003 | compose config 통과 | DevOps | Done |
-| T-OBS-004 | cAdvisor healthcheck 추가 | impl | 06-observability/spec.md / Verification | PLN-OBS-003 | healthcheck 정의 확인 | DevOps | Done |
-| T-OBS-005 | Loki/Tempo 커스텀 이미지 비루트/secret guard 보강 | impl | 06-observability/spec.md / Contracts | PLN-OBS-004 | Dockerfile/entrypoint 확인 | DevOps | Done |
-| T-OBS-006 | observability 하드닝 검증 스크립트 추가 | ops | 06-observability/spec.md / Governance | PLN-OBS-005 | `bash scripts/hardening/check-all-hardening.sh 06-observability` | DevOps | Done |
-| T-OBS-007 | CI `infrastructure-hardening` job 추가 | ops | 06-observability/spec.md / Governance | PLN-OBS-006 | workflow 정의 확인 | DevOps | Done |
-| T-OBS-008 | scripts README 인덱스 갱신 | doc | 06-observability/spec.md / Related Docs | PLN-OBS-006 | README 항목/예시 반영 | Docs | Done |
-| T-OBS-009 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 반영 | doc | 06-observability/spec.md / Related Docs | PLN-OBS-007 | 문서 링크/README 동기화 확인 | Docs | Done |
-| T-OBS-010 | 정적 검증 실행 및 결과 기록 | test | 06-observability/spec.md / Verification | PLN-OBS-001~007 | compose + hardening + traceability 점검 | DevOps | Done |
-| T-OBS-011 | runtime/복구 리허설 증적 수집 | test | 06-observability/spec.md / Verification | PLN-OBS-001~007 | Live health/recovery logs require an approved runtime rehearsal | DevOps | Deferred |
+| T-OBS-001 | Align the public router middleware contract | impl | 06-observability/spec.md / Contracts | PLN-OBS-001 | Confirm label strings | DevOps | Done |
+| T-OBS-002 | Align Loki/Tempo/Pyroscope/cAdvisor Traefik routing boundaries | impl | 06-observability/spec.md / Core Design | PLN-OBS-002 | Confirm router/service labels | DevOps | Done |
+| T-OBS-003 | Strengthen the Alloy/Grafana depends_on health contract | impl | 06-observability/spec.md / Core Design | PLN-OBS-003 | compose config passes | DevOps | Done |
+| T-OBS-004 | Add cAdvisor healthcheck | impl | 06-observability/spec.md / Verification | PLN-OBS-003 | Confirm healthcheck definition | DevOps | Done |
+| T-OBS-005 | Improve non-root and secret-guard handling for Loki/Tempo custom images | impl | 06-observability/spec.md / Contracts | PLN-OBS-004 | Confirm Dockerfile/entrypoint | DevOps | Done |
+| T-OBS-006 | Add the observability hardening validation script | ops | 06-observability/spec.md / Governance | PLN-OBS-005 | `bash scripts/hardening/check-all-hardening.sh 06-observability` | DevOps | Done |
+| T-OBS-007 | Add the CI `infrastructure-hardening` job | ops | 06-observability/spec.md / Governance | PLN-OBS-006 | Confirm workflow definition | DevOps | Done |
+| T-OBS-008 | Refresh the scripts README index | doc | 06-observability/spec.md / Related Docs | PLN-OBS-006 | Reflect README entries/examples | Docs | Done |
+| T-OBS-009 | Reflect PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook docs | doc | 06-observability/spec.md / Related Docs | PLN-OBS-007 | Confirm document links/README sync | Docs | Done |
+| T-OBS-010 | Run static validation and record results | test | 06-observability/spec.md / Verification | PLN-OBS-001~007 | Check compose + hardening + traceability | DevOps | Done |
+| T-OBS-011 | Collect runtime/recovery rehearsal evidence | test | 06-observability/spec.md / Verification | PLN-OBS-001~007 | Live health/recovery logs require an approved runtime rehearsal | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -71,7 +71,7 @@ status: completed
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Logs / Evidence Location**: Local validation logs + CI `infrastructure-hardening` job
 - **Deferred Runtime Evidence**: T-OBS-011 remains a live rehearsal item, not an unimplemented static hardening task.
 
 ## Related Documents

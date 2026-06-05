@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `07-workflow` 최적화/하드닝 실행 태스크를 추적한다. compose/image hardening, CI 게이트, 문서 추적성, 카탈로그 확장 로드맵을 작업 단위로 관리한다.
+This document tracks the `07-workflow` optimization and hardening execution tasks. It manages compose/image hardening, CI gates, documentation traceability, and catalog expansion roadmap work as task units.
 
 ## Inputs
 
@@ -16,26 +16,26 @@ status: completed
 
 ## Working Rules
 
-- workflow 구성 변경은 compose static validation + hardening script 결과를 남긴다.
-- 보안 경계 변경은 gateway/auth 영향 범위를 기록한다.
-- 문서 변경은 PRD~Runbook 링크와 README 인덱스를 동시 갱신한다.
+- Workflow configuration changes leave compose static validation plus hardening script results.
+- Security-boundary changes record the gateway/auth impact boundary.
+- Documentation changes update PRD-to-Runbook links and README indexes together.
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-WRK-001 | Airflow/n8n middleware를 gateway+SSO 체인으로 정렬 | impl | Contracts / Config | PLN-WRK-001 | compose label 확인 | DevOps | Done |
-| T-WRK-002 | Airflow service dependency를 valkey health 기반으로 강화 | impl | Contracts / Config | PLN-WRK-002 | compose `service_healthy` 확인 | DevOps | Done |
-| T-WRK-003 | n8n worker/task-runner healthcheck 및 dependency gating 추가 | impl | Contracts / Config | PLN-WRK-003 | healthcheck/depends_on 확인 | DevOps | Done |
-| T-WRK-004 | n8n custom image compose 승격 + entrypoint secret guard 적용 | impl | Core Design / Image Hardening | PLN-WRK-004 | Dockerfile/entrypoint 확인 | DevOps | Done |
-| T-WRK-005 | workflow hardening command 정렬 | ops | Governance Contract | PLN-WRK-005 | `bash scripts/hardening/check-all-hardening.sh 07-workflow` | DevOps | Done |
-| T-WRK-006 | CI `infrastructure-hardening` job 추가 | ops | Governance Contract | PLN-WRK-005 | workflow job 확인 | DevOps | Done |
-| T-WRK-007 | scripts inventory/usage README 갱신 | doc | Related Docs | PLN-WRK-005 | README 항목 반영 | Docs | Done |
-| T-WRK-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 생성 | doc | Related Docs | PLN-WRK-006 | 링크/인덱스 동기화 | Docs | Done |
-| T-WRK-009 | Airflow DAG quality gate/worker autoscale 기준 문서화 | doc | Catalog Expansion Targets | PLN-WRK-007 | ops/guide/task 반영 | DevOps | Done |
-| T-WRK-010 | n8n Git backup/Vault credential 연계 기준 문서화 | doc | Catalog Expansion Targets | PLN-WRK-007 | ops/guide/task 반영 | DevOps | Done |
-| T-WRK-012 | 정적 검증 실행 및 결과 기록 | test | Verification | PLN-WRK-001~007 | compose/script/baseline/traceability 체크 | DevOps | Done |
-| T-WRK-013 | runtime 기동 및 복구 리허설 증적 수집 | test | Verification | PLN-WRK-001~007 | Live health/recovery logs require an approved runtime rehearsal | DevOps | Deferred |
+| T-WRK-001 | Align Airflow/n8n middleware with the gateway+SSO chain | impl | Contracts / Config | PLN-WRK-001 | Confirm compose labels | DevOps | Done |
+| T-WRK-002 | Strengthen Airflow service dependencies based on Valkey health | impl | Contracts / Config | PLN-WRK-002 | Confirm compose `service_healthy` | DevOps | Done |
+| T-WRK-003 | Add n8n worker/task-runner healthchecks and dependency gating | impl | Contracts / Config | PLN-WRK-003 | Confirm healthcheck/depends_on | DevOps | Done |
+| T-WRK-004 | Promote n8n custom image compose and apply entrypoint secret guard | impl | Core Design / Image Hardening | PLN-WRK-004 | Confirm Dockerfile/entrypoint | DevOps | Done |
+| T-WRK-005 | Align the workflow hardening command | ops | Governance Contract | PLN-WRK-005 | `bash scripts/hardening/check-all-hardening.sh 07-workflow` | DevOps | Done |
+| T-WRK-006 | Add the CI `infrastructure-hardening` job | ops | Governance Contract | PLN-WRK-005 | Confirm workflow job | DevOps | Done |
+| T-WRK-007 | Refresh scripts inventory/usage README | doc | Related Docs | PLN-WRK-005 | Reflect README entries | Docs | Done |
+| T-WRK-008 | Create PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook docs | doc | Related Docs | PLN-WRK-006 | Synchronize links/indexes | Docs | Done |
+| T-WRK-009 | Document Airflow DAG quality gate and worker autoscale criteria | doc | Catalog Expansion Targets | PLN-WRK-007 | Reflect ops/guide/task updates | DevOps | Done |
+| T-WRK-010 | Document n8n Git backup/Vault credential integration criteria | doc | Catalog Expansion Targets | PLN-WRK-007 | Reflect ops/guide/task updates | DevOps | Done |
+| T-WRK-012 | Run static validation and record results | test | Verification | PLN-WRK-001~007 | Check compose/script/baseline/traceability | DevOps | Done |
+| T-WRK-013 | Collect runtime startup and recovery rehearsal evidence | test | Verification | PLN-WRK-001~007 | Live health/recovery logs require an approved runtime rehearsal | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -73,7 +73,7 @@ status: completed
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Logs / Evidence Location**: Local validation logs + CI `infrastructure-hardening` job
 - **Deferred Runtime Evidence**: T-WRK-013 remains a live rehearsal item, not an unimplemented static hardening task.
 
 ## Related Documents

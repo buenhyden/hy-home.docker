@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `02-auth` 최적화/하드닝 구현 태스크를 추적한다. Keycloak/OAuth2 Proxy 설정 변경, CI 게이트, 문서 추적성 정비를 작업 단위로 관리한다.
+This document tracks the `02-auth` optimization and hardening implementation tasks. It manages Keycloak/OAuth2 Proxy configuration changes, CI gates, and documentation traceability cleanup as task units.
 
 ## Inputs
 
@@ -16,23 +16,23 @@ status: completed
 
 ## Working Rules
 
-- 시크릿은 파일 기반(`/run/secrets`) 계약을 유지한다.
-- fail-open 변경은 금지하며, degraded-mode는 문서화된 절차로만 수행한다.
-- 문서 수정 시 폴더 README 인덱스를 같은 변경 세트에서 갱신한다.
+- Secrets keep the file-based (`/run/secrets`) contract.
+- Fail-open changes are prohibited, and degraded mode is performed only through documented procedures.
+- Documentation changes update the folder README index in the same change set.
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-AUTH-001 | OAuth2 Proxy compose 인라인 셸 제거, 엔트리포인트 기반 실행으로 전환 | impl | 02-auth/spec.md / Contracts | PLN-AUTH-001 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | Infra | Done |
-| T-AUTH-002 | OAuth2 Proxy 엔트리포인트에서 cookie/client/redis secret 파일 주입 처리 | impl | 02-auth/spec.md / Core Design | PLN-AUTH-001 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | Infra | Done |
-| T-AUTH-003 | OAuth2 Proxy Dockerfile non-root 사용자 생성 및 USER 적용 | impl | 02-auth/spec.md / Security | PLN-AUTH-002 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | DevOps | Done |
-| T-AUTH-004 | Keycloak compose에서 시크릿 길이 출력 제거 | impl | 02-auth/spec.md / Security | PLN-AUTH-003 | 코드 리뷰 + `docker compose config` | Infra | Done |
-| T-AUTH-005 | `scripts/hardening/check-all-hardening.sh 02-auth` 추가 | ops | 02-auth/spec.md / Verification | PLN-AUTH-004 | 스크립트 pass/fail 동작 확인 | DevOps | Done |
-| T-AUTH-006 | CI workflow에 `infrastructure-hardening` job 추가 | ops | 02-auth/spec.md / CI | PLN-AUTH-005 | PR CI logs | DevOps | Done |
-| T-AUTH-007 | PRD/ARD/ADR/Plan/Task 문서 생성 및 링크 연결 | doc | 02-auth/spec.md / Traceability | PLN-AUTH-006 | 상대경로 양방향 링크 확인 | Docs | Done |
-| T-AUTH-008 | 02-auth Guide/Operation/Runbook 재정비 및 README 인덱스 갱신 | doc | 02-auth/spec.md / Traceability | PLN-AUTH-006, PLN-AUTH-007 | `bash scripts/validation/check-doc-traceability.sh` | Docs | Done |
-| T-AUTH-009 | 02-auth 관련 검증 명령 실행 및 결과 기록 | test | 02-auth/spec.md / Verification | PLN-AUTH-004~005 | 실행 결과 수집 | Infra | Done |
+| T-AUTH-001 | Remove inline shell from OAuth2 Proxy compose and switch to entrypoint-based execution | impl | 02-auth/spec.md / Contracts | PLN-AUTH-001 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | Infra | Done |
+| T-AUTH-002 | Handle cookie/client/redis secret file injection in the OAuth2 Proxy entrypoint | impl | 02-auth/spec.md / Core Design | PLN-AUTH-001 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | Infra | Done |
+| T-AUTH-003 | Create a non-root user in the OAuth2 Proxy Dockerfile and apply `USER` | impl | 02-auth/spec.md / Security | PLN-AUTH-002 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | DevOps | Done |
+| T-AUTH-004 | Remove secret length output from Keycloak compose | impl | 02-auth/spec.md / Security | PLN-AUTH-003 | Code review + `docker compose config` | Infra | Done |
+| T-AUTH-005 | Add `scripts/hardening/check-all-hardening.sh 02-auth` | ops | 02-auth/spec.md / Verification | PLN-AUTH-004 | Confirm script pass/fail behavior | DevOps | Done |
+| T-AUTH-006 | Add the `infrastructure-hardening` job to the CI workflow | ops | 02-auth/spec.md / CI | PLN-AUTH-005 | PR CI logs | DevOps | Done |
+| T-AUTH-007 | Create PRD/ARD/ADR/Plan/Task documents and connect links | doc | 02-auth/spec.md / Traceability | PLN-AUTH-006 | Confirm bidirectional relative-path links | Docs | Done |
+| T-AUTH-008 | Rework the 02-auth Guide/Operation/Runbook and update README indexes | doc | 02-auth/spec.md / Traceability | PLN-AUTH-006, PLN-AUTH-007 | `bash scripts/validation/check-doc-traceability.sh` | Docs | Done |
+| T-AUTH-009 | Run 02-auth validation commands and record results | test | 02-auth/spec.md / Verification | PLN-AUTH-004~005 | Collect execution results | Infra | Done |
 
 ## Suggested Types
 
@@ -71,4 +71,4 @@ status: completed
 
 ## Related Documents
 
-- (참조 문서 없음)
+- (No reference documents)
