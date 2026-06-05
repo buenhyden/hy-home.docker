@@ -3,143 +3,80 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/11-laboratory/portainer.md -->
 
-# Portainer Runbook
+# Portainer Recovery Runbook
 
-## Overview (KR)
+## Portainer Recovery Procedure
 
-이 런북은 Portainer 관리 계정 접근 불능 사유 발생 시 비밀번호를 초기화하거나, 서비스 시작 불능 상황을 복구하는 절차를 제공한다.
+> Scope: optional Portainer route hardening, Docker socket boundary, and access evidence.
 
-## Portainer Procedure
+### Overview (KR)
 
-> 관리자 비밀번호 복구 및 서비스 장애 해결 절차.
+이 런북은 optional Portainer UI 접속 실패, route hardening drift, Docker socket 연결 문제를 진단하는 절차를 정의한다. 관리자 비밀번호 초기화나 데이터 삭제는 이 런북의 검증된 자동 복구 범위가 아니다.
 
----
+### Purpose
+
+Portainer의 optional root include 상태와 write-capable Docker socket 위험을 명확히 기록하고, 비파괴적 evidence를 확보한 뒤 필요한 경우 승인 절차로 에스컬레이션한다.
+
+### Canonical References
+
+- **Spec**: [Laboratory spec](../../../03.specs/11-laboratory/spec.md)
+- **Policy**: [Portainer policy](../../policies/11-laboratory/portainer.md)
+- **Guide**: [Portainer guide](../../guides/11-laboratory/portainer.md)
+
+## When to Use
+
+- `portainer.${DEFAULT_URL}` UI 접속이 실패할 때.
+- hardening check에서 Portainer route, image, static IP, healthcheck drift가 감지될 때.
+- Portainer가 local Docker endpoint를 표시하지 못할 때.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 policy, guide, runbook handoff를 확인한다.
-- [ ] 현재 상태와 변경 범위를 기록한다.
-
-### 1. Admin Password Reset
-
-Portainer 내부 DB의 관리자 비밀번호를 수동으로 재설정해야 하는 경우 다음을 수행한다.
-
-1. Portainer 컨테이너 중지:
-
-   ```bash
-   docker compose down
-   ```
-
-2. 비밀번호 초기화 헬퍼 도구 실행 (데이터 볼륨 사용):
-
-   ```bash
-   docker run --rm -v portainer_data:/data portainer/helper-reset-password
-   ```
-
-   *참고: 출력되는 임시 비밀번호를 기록한다.*
-
-#### 3. Stack Deployment
-
-1. 'Stacks' 메뉴에서 Docker Compose 파일을 직접 업로드하거나 붙여넣어 배포할 수 있다.
-
-#### Implementation Snippet
-
-#### Service Configuration
-
- Issues
-
-Portainer가 로컬 Docker 환경에 연결하지 못하는 경우:
-
-1. `docker-compose.yml`의 볼륨 섹션에서 `/var/run/docker.sock` 매핑 여부를 확인한다.
-2. 호스트의 socket 권한 확인: `ls -l /var/run/docker.sock`.
-3. Portainer 로그 확인: `docker| Storage |`portainer_data` | Persistent volume for config |
-
-#### Traefik Integration
-
-데이터베이스 오염으로 인해 실행되지 않는 경우:
-
-1. 백업된 `${DEFAULT_MANAGEMENT_DIR}/portainer` 데이터를 복원한다.
-2. 기존 볼륨을 삭제하고 새 데이터를 배치한 뒤 재시작한다.
+- [ ] Portainer root include가 optional/commented인지 또는 승인되어 활성화됐는지 기록한다.
+- [ ] Docker socket mount와 Portainer data path 변경 내역을 기록한다.
+- [ ] 관리자 계정 reset, data restore, endpoint 등록 변경은 승인 필요 작업으로 분리한다.
 
 ### Steps
 
-1. 이 runbook의 trigger와 checklist를 확인한다.
-2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
-3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
-4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
+1. static hardening을 확인한다: `bash scripts/hardening/check-all-hardening.sh 11-laboratory`.
+2. optional service가 실행 중이면 상태와 로그를 기록한다: `docker ps --format '{{.Names}}\t{{.Status}}'`, `docker logs --tail 100 portainer`.
+3. Docker socket 존재 여부를 확인한다: `test -S /var/run/docker.sock`.
+4. route drift가 있으면 `gateway-standard-chain@file,portainer-admin-ip@docker,sso-errors@file,sso-auth@file`로 복구한다.
+5. 관리자 비밀번호 reset, helper container 실행, data volume restore/delete가 필요하면 중단하고 `## Escalation`으로 이동한다.
 
 ### Verification Steps
 
-- [ ] `https://portainer.${DEFAULT_URL}` 로그인 후 'Home' 대시보드에 로컬 환경이 'Active' 상태인지 확인.
-- [ ] 'Containers' 목록이 정상적으로 업데이트되는지 확인.
-
-### Purpose
-
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
-
-### Canonical References
-
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
+- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
+- optional include가 활성화된 runtime에서 `portainer.${DEFAULT_URL}` 접속과 local endpoint evidence를 기록한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: `docker logs --tail 100 portainer`
+- **Static config**: [Portainer compose](../../../../infra/11-laboratory/portainer/docker-compose.yml)
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 runbook 범위를 벗어난 별도 승인 절차로 분리한다.
+N/A — no verified password reset, helper-container, data restore, or data deletion procedure is documented for autonomous execution.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
-
-## When to Use
-
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
-
-### Observability and Evidence Sources
-
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
-
-### Safe Rollback or Recovery Procedure
-
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: stop if secret, token, or temporary password output may be exposed.
+- **Eval Re-run**: hardening, doc traceability.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- Record hardening output, optional include state, container status/log tail, and whether escalation was required.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+If password reset, endpoint mutation, Docker socket permission expansion, volume restore, or data deletion is required, stop and escalate.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate to the owning operator for password reset, helper container execution, endpoint authorization, data restore/delete, or any runtime mutation outside static boundary correction.
 
 ## Related Documents
 

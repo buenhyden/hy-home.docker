@@ -7,7 +7,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `infra/11-laboratory`(dashboard, dozzle, portainer, redisinsight) 계층의 최적화/하드닝 요구사항을 정의한다. 목표는 관리 UI를 기본적으로 안전한 경계(TLS+SSO+IP allowlist) 뒤에 배치하고, 실험성 서비스의 운영 드리프트를 CI 단계에서 차단하며, 카탈로그 기반 확장 정책을 실행 로드맵으로 정착시키는 것이다.
+이 문서는 `infra/11-laboratory`(dashboard, dozzle, portainer, redisinsight, open-notebook) 계층의 최적화/하드닝 요구사항을 정의한다. 목표는 관리 UI를 기본적으로 안전한 경계(TLS+SSO+IP allowlist) 뒤에 배치하고, 실험성 서비스의 운영 드리프트를 CI 단계에서 차단하며, 카탈로그 기반 확장 정책을 실행 로드맵으로 정착시키는 것이다.
 
 ## Vision
 
@@ -30,7 +30,7 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 ## Key Use Cases
 
 - **STORY-LAB-01**: 운영자는 Laboratory UI가 gateway+SSO+allowlist 정책을 준수하는지 점검한다.
-- **STORY-LAB-02**: 팀은 dashboard/dozzle/portainer/redisinsight 변경 회귀를 PR 단계에서 차단한다.
+- **STORY-LAB-02**: 팀은 dashboard/dozzle/portainer/redisinsight/open-notebook 변경 회귀를 PR 단계에서 차단한다.
 - **STORY-LAB-03**: 실험성 서비스 만료/승인/접근제어 정책을 문서 기반으로 운영한다.
 
 ## Functional Requirements
@@ -38,16 +38,17 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 - **REQ-PRD-LAB-FUN-01**: 모든 Laboratory 라우터는 `gateway-standard-chain@file` + SSO 체인을 적용해야 한다.
 - **REQ-PRD-LAB-FUN-02**: 모든 Laboratory 라우터는 서비스별 IP allowlist middleware를 적용해야 한다.
 - **REQ-PRD-LAB-FUN-03**: dashboard는 direct host `ports` 노출을 제거하고 Traefik 경유 노출만 허용해야 한다.
-- **REQ-PRD-LAB-FUN-04**: `infra/11-laboratory` compose는 `infra_net` external 경계를 명시해야 한다.
+- **REQ-PRD-LAB-FUN-04**: `infra/11-laboratory` compose는 root `infra_net` context에 합류하는 static IP network block을 유지해야 한다.
 - **REQ-PRD-LAB-FUN-05**: dozzle은 `docker.sock`을 read-only로 마운트해야 한다.
 - **REQ-PRD-LAB-FUN-06**: `scripts/hardening/check-all-hardening.sh 11-laboratory` 및 CI `infrastructure-hardening` job을 제공해야 한다.
 - **REQ-PRD-LAB-FUN-07**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
 - **REQ-PRD-LAB-FUN-08**: 카탈로그 기반 확장 항목을 운영 로드맵에 반영해야 한다.
+- **REQ-PRD-LAB-FUN-09**: open-notebook UI route는 gateway+allowlist+large-body+SSO 경계를 적용하고, Docker Secret 기반 credential 주입을 유지해야 한다.
 
 ## Success Criteria
 
 - **REQ-PRD-LAB-MET-01**: `bash scripts/hardening/check-all-hardening.sh 11-laboratory` 실패 0건.
-- **REQ-PRD-LAB-MET-02**: `infra/11-laboratory` compose 정적 검증 통과.
+- **REQ-PRD-LAB-MET-02**: root `admin` profile compose 정적 검증과 optional service hardening checks가 통과.
 - **REQ-PRD-LAB-MET-03**: PRD~Runbook optimization 문서 간 양방향 링크 정합성 확보.
 - **REQ-PRD-LAB-MET-04**: 카탈로그 `11-laboratory` 항목이 Plan/Tasks/Operations에 반영.
 
@@ -86,6 +87,6 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 - **Plan**: [../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)
-- **Guide**: [../05.operations/policies/11-laboratory/optimization-hardening.md](../05.operations/policies/11-laboratory/optimization-hardening.md)
-- **Operation**: [../05.operations/policies/11-laboratory/optimization-hardening.md](../05.operations/policies/11-laboratory/optimization-hardening.md)
-- **Runbook**: [../05.operations/policies/11-laboratory/optimization-hardening.md](../05.operations/policies/11-laboratory/optimization-hardening.md)
+- **Guide**: [../05.operations/guides/11-laboratory/optimization-hardening.md](../05.operations/guides/11-laboratory/optimization-hardening.md)
+- **Policy**: [../05.operations/policies/11-laboratory/optimization-hardening.md](../05.operations/policies/11-laboratory/optimization-hardening.md)
+- **Runbook**: [../05.operations/runbooks/11-laboratory/optimization-hardening.md](../05.operations/runbooks/11-laboratory/optimization-hardening.md)

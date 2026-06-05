@@ -16,6 +16,7 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
 - Dashboard: homer
 - Container/Log Admin UI: portainer, dozzle
 - Data Admin UI: redisinsight
+- Local notebook lab: open-notebook, surrealdb
 
 ## Boundaries & Non-goals
 
@@ -24,6 +25,7 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
   - `infra_net` external 네트워크 경계 계약
   - dashboard direct host exposure 금지 계약
   - dozzle 최소권한(socket read-only) 계약
+  - open-notebook UI route SSO/allowlist/large-body 경계와 Docker Secret 주입 계약
   - laboratory hardening CI 정책 게이트
 - **Consumes**:
   - `01-gateway` Traefik middleware
@@ -46,14 +48,15 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
 ## System Overview & Context
 
 - **Ingress path**:
-  - Operator -> Traefik(websecure) -> homer/dozzle/portainer/redisinsight
+  - Operator -> Traefik(websecure) -> homer/dozzle/portainer/redisinsight/open-notebook
 - **Control path**:
   - dozzle/portainer -> Docker socket
   - redisinsight -> valkey/redis endpoints
+  - open-notebook -> surrealdb
 
 ## Data Architecture
 
-This hardening ARD does not introduce primary data ownership for the laboratory tier. Data access remains limited to management metadata, Docker socket visibility, log streams, and Valkey/Redis endpoint inspection described in the control path.
+This hardening ARD does not introduce production data ownership for the laboratory tier. Data access remains limited to management metadata, Docker socket visibility, log streams, Valkey/Redis endpoint inspection, and Open Notebook local laboratory state described in the control path.
 
 ## Infrastructure & Deployment
 
@@ -71,6 +74,7 @@ This hardening ARD does not introduce primary data ownership for the laboratory 
 - **dozzle**: 로그 열람 범위 제한(운영 로그 접근 차단 규칙), 권한 최소화 지속 점검
 - **portainer**: 관리자 계정/세션 정책 강화, 엔드포인트 등록 승인 절차 문서화
 - **redisinsight**: 접근권한 최소화, 운영 캐시 직접 변경 금지와 감사로그 정책 강화
+- **open-notebook**: secret-file credential 주입 유지, notebook data retention/expiration policy, direct API/DB host-port exposure review before production promotion
 
 ## Related Documents
 

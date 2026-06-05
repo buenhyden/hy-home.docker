@@ -7,7 +7,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `infra/11-laboratory` 계층(dashboard, dozzle, portainer, redisinsight)의 최적화/하드닝 기술 명세다. 관리 UI ingress 경계 강화, 네트워크 격리 표준화, 최소권한 강화, 정책 게이트 도입, 카탈로그 기반 확장 항목을 구현 계약으로 정의한다.
+이 문서는 `infra/11-laboratory` 계층(dashboard, dozzle, portainer, redisinsight, open-notebook)의 최적화/하드닝 기술 명세다. 관리 UI ingress 경계 강화, 네트워크 격리 표준화, 최소권한 강화, 정책 게이트 도입, 카탈로그 기반 확장 항목을 구현 계약으로 정의한다.
 
 ## Strategic Boundaries & Non-goals
 
@@ -16,6 +16,7 @@ status: active
   - compose 네트워크 경계(`infra_net` external) 계약
   - dashboard direct 노출 제거 계약
   - dozzle socket 최소권한(read-only) 계약
+  - open-notebook UI route SSO/allowlist/large-body 경계와 Docker Secret 주입 계약
   - `check-all-hardening.sh 11-laboratory` 정책 게이트 계약
 - **Does Not Own**:
   - Keycloak realm 상세 정책
@@ -33,11 +34,12 @@ status: active
 ## Contracts
 
 - **Config Contract**:
-  - 모든 Laboratory compose는 `infra_net` external 경계를 명시한다.
-  - 모든 Laboratory 라우터는 `gateway-standard-chain@file,<service>-admin-ip@docker,sso-errors@file,sso-auth@file`를 적용한다.
+  - 모든 Laboratory compose는 root `infra_net` context에 합류하는 static IP network block을 유지한다.
+  - 모든 Laboratory UI 라우터는 `gateway-standard-chain@file,<service>-admin-ip@docker,sso-errors@file,sso-auth@file`를 적용한다. Open Notebook은 large upload support를 위해 `large-body@file`을 추가한다.
   - dashboard는 direct host `ports`를 사용하지 않고 `expose`만 사용한다.
   - dozzle docker socket은 `:ro`로 마운트한다.
-  - service mount 기반 healthcheck를 제공한다.
+  - service mount 또는 readiness 기반 healthcheck를 제공한다.
+  - root-active Laboratory includes are Dozzle, RedisInsight, Open Notebook, and SurrealDB. Homer Dashboard and Portainer are optional/commented root includes until explicitly promoted.
 - **Governance Contract**:
   - `scripts/hardening/check-all-hardening.sh 11-laboratory` 통과가 hardening 기준선이다.
   - CI `infrastructure-hardening` job이 PR 회귀를 차단한다.
@@ -47,7 +49,7 @@ status: active
 - **Ingress Security Plane**:
   - Traefik TLS 종료 후 gateway 체인 + allowlist + SSO 체인을 강제한다.
 - **Network Isolation Plane**:
-  - `infra_net` external 경계를 서비스별 compose에 명시적으로 선언한다.
+  - root `infra_net` context에 합류하는 service network block을 유지한다.
 - **Least Privilege Plane**:
   - dozzle socket read-only
   - dashboard direct host 노출 제거
@@ -74,11 +76,20 @@ laboratory_hardening_controls:
     dozzle: gateway-standard-chain + dozzle-admin-ip + sso-errors + sso-auth
     portainer: gateway-standard-chain + portainer-admin-ip + sso-errors + sso-auth
     redisinsight: gateway-standard-chain + redisinsight-admin-ip + sso-errors + sso-auth
+    open_notebook: gateway-standard-chain + open-notebook-admin-ip + large-body + sso-errors + sso-auth
   network_boundary:
-    compose_network: infra_net (external)
+    compose_network: root infra_net context
   least_privilege:
     dashboard_direct_port_exposure: forbidden
     dozzle_docker_socket: read-only
+  active_root_admin_services:
+    - dozzle
+    - redisinsight
+    - surrealdb
+    - open_notebook
+  optional_root_admin_services:
+    - homer
+    - portainer
 ```
 
 ## Edge Cases & Error Handling
@@ -98,13 +109,14 @@ laboratory_hardening_controls:
 
 ## Verification
 
-```bash
-for f in infra/11-laboratory/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done
-for f in infra/11-laboratory/dozzle/docker-compose.yml infra/11-laboratory/redisinsight/docker-compose.yml; do docker compose --profile admin -f "$f" config >/dev/null; done
-bash scripts/hardening/check-all-hardening.sh 11-laboratory
-bash scripts/validation/check-template-security-baseline.sh
-bash scripts/validation/check-doc-traceability.sh
-```
+- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
+- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
+
+Service-local standalone compose rendering is not readiness evidence for these
+leaves because the compose files depend on the root `infra_net`, secret, and
+common template context.
 
 ## Success Criteria & Verification Plan
 

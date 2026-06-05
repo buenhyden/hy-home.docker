@@ -53,12 +53,12 @@ guides/11-laboratory/
 
 | Path | Purpose |
 | --- | --- |
-| [dashboard.md](./dashboard.md) | Dashboard guide 문서 |
-| [dozzle.md](./dozzle.md) | Dozzle guide 문서 |
-| [open-notebook.md](./open-notebook.md) | Open Notebook guide 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening guide 문서 |
-| [portainer.md](./portainer.md) | Portainer guide 문서 |
-| [redisinsight.md](./redisinsight.md) | Redisinsight guide 문서 |
+| [dashboard.md](./dashboard.md) | Optional Homer dashboard usage and config validation guide |
+| [dozzle.md](./dozzle.md) | Root-active Dozzle log viewer usage guide |
+| [open-notebook.md](./open-notebook.md) | Root-active Open Notebook and SurrealDB usage guide |
+| [optimization-hardening.md](./optimization-hardening.md) | Laboratory route, network, secret, and hardening usage guide |
+| [portainer.md](./portainer.md) | Optional Portainer management UI usage guide |
+| [redisinsight.md](./redisinsight.md) | Root-active RedisInsight usage guide |
 
 ## Related Documents
 

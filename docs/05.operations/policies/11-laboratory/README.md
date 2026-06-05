@@ -53,12 +53,12 @@ policies/11-laboratory/
 
 | Path | Purpose |
 | --- | --- |
-| [dashboard.md](./dashboard.md) | Dashboard policy 문서 |
-| [dozzle.md](./dozzle.md) | Dozzle policy 문서 |
-| [open-notebook.md](./open-notebook.md) | Open Notebook policy 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening policy 문서 |
-| [portainer.md](./portainer.md) | Portainer policy 문서 |
-| [redisinsight.md](./redisinsight.md) | Redisinsight policy 문서 |
+| [dashboard.md](./dashboard.md) | Optional Homer dashboard access and config policy |
+| [dozzle.md](./dozzle.md) | Dozzle log access and socket-boundary policy |
+| [open-notebook.md](./open-notebook.md) | Open Notebook secret, route, and data-boundary policy |
+| [optimization-hardening.md](./optimization-hardening.md) | Laboratory hardening and expansion approval policy |
+| [portainer.md](./portainer.md) | Portainer access, RBAC, and Docker socket policy |
+| [redisinsight.md](./redisinsight.md) | RedisInsight access and cache-safety policy |
 
 ## Related Documents
 

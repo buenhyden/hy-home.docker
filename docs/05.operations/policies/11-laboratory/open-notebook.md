@@ -25,7 +25,7 @@ status: active
 
 - **Required**:
   - `open_notebook_password`, `open_notebook_encryption_key`, `surreal_db_password`는 Docker Secrets로만 주입해야 한다.
-  - UI 접근은 `open-notebook.${DEFAULT_URL}` Traefik route와 표준 gateway middleware chain 뒤에 둔다.
+  - UI 접근은 `open-notebook.${DEFAULT_URL}` Traefik route와 `gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file,sso-errors@file,sso-auth@file` chain 뒤에 둔다.
   - `OPEN_NOTEBOOK_ENCRYPTION_KEY`는 컨테이너 시작 시 `/run/secrets/open_notebook_encryption_key`에서만 export한다.
   - Open Notebook 데이터와 SurrealDB 데이터는 `DEFAULT_MANAGEMENT_DIR` 하위 bind-backed named volume에 저장한다.
 - **Allowed**:
@@ -34,7 +34,7 @@ status: active
 - **Disallowed**:
   - password, encryption key, SurrealDB credential을 문서, 로그, PR 설명, commit message에 노출하지 않는다.
   - Traefik 인증/allowlist 경계 없이 공개 인터넷에 직접 노출하지 않는다.
-  - 운영 데이터 볼륨을 임의 삭제하거나 `docker compose down -v`로 제거하지 않는다.
+  - 운영 데이터 볼륨을 승인 없이 삭제하거나 volume-removal 옵션으로 제거하지 않는다.
 
 ## Exceptions
 
@@ -45,8 +45,8 @@ status: active
 
 - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
 - `bash scripts/validation/check-template-security-baseline.sh`
-- `docker compose --profile admin config`
-- `docker compose --profile admin ps open_notebook surrealdb`
+- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
+- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
 
 ## Review Cadence
 

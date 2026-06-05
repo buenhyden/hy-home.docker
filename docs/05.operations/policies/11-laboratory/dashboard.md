@@ -26,7 +26,7 @@ status: active
 ## Controls
 
 - **Required**:
-  - 모든 대시보드 접근은 Traefik `sso-auth` 미들웨어를 통해 인증되어야 한다.
+  - 모든 대시보드 접근은 Traefik `gateway-standard-chain@file,homer-admin-ip@docker,sso-errors@file,sso-auth@file` 미들웨어 체인을 통해 인증되어야 한다.
   - `config.yml` 변경 전 반드시 로컬에서 구문 검증(`yq` 등)을 거쳐야 한다.
   - 대시보드에 신규 관리 도구 추가 시 해당 도구의 인증 설정 여부를 선제적으로 확인해야 한다.
 - **Allowed**:
@@ -43,7 +43,7 @@ status: active
 ## Verification
 
 - `yq eval . config/config.yml` 명령을 통한 설정 파일 무결성 확인.
-- Traefik 라우터 설정에서 `sso-auth` 적용 여부 교차 검증.
+- Traefik 라우터 설정에서 gateway+allowlist+SSO chain 적용 여부 교차 검증.
 
 ## Review Cadence
 

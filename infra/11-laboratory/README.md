@@ -2,7 +2,7 @@
 
 ## Overview
 
-`11-laboratory` 계층은 시스템 관리, 리소스 시각화 및 실험적 도구들을 위한 통합 관리 환경을 제공한다. Homer 대시보드를 기반으로 모든 인프라 서비스에 대한 직관적인 접근 성능과 Portainer/RedisInsight를 통한 강력한 제어 기능을 제공한다.
+`11-laboratory` 계층은 시스템 관리, 리소스 시각화 및 실험적 도구들을 위한 통합 관리 환경을 제공한다. 현재 root-active 서비스는 Dozzle, RedisInsight, Open Notebook, SurrealDB이며 Homer Dashboard와 Portainer는 optional/commented root include로 유지된다.
 
 ## Architecture
 
@@ -19,6 +19,9 @@ graph TD
         Dash[Homer Dashboard]
         Port[Portainer]
         RI[RedisInsight]
+        Doz[Dozzle]
+        ON[Open Notebook]
+        SDB[SurrealDB]
     end
 
     subgraph "Downstream Infrastructure"
@@ -27,24 +30,29 @@ graph TD
     end
 
     User --> TF
-    TF -- "sso-auth" --> Dash
-    TF -- "sso-auth" --> Port
-    TF -- "sso-auth" --> RI
+    TF -- "gateway+allowlist+SSO" --> Dash
+    TF -- "gateway+allowlist+SSO" --> Port
+    TF -- "gateway+allowlist+SSO" --> RI
+    TF -- "gateway+allowlist+SSO" --> Doz
+    TF -- "gateway+allowlist+SSO" --> ON
 
     Port -.-> DockerPool
+    Doz -.-> DockerPool
     RI -.-> RedisPool
+    ON -.-> SDB
 ```
 
 - **Homer**: 인프라 전용 서비스 진입점 대시보드.
 - **Portainer**: 시각적 컨테이너 오케스트레이션 및 상태 관리.
 - **RedisInsight**: 데이터 저장소(Valkey/Redis)의 데이터 탐색 및 성능 분석.
 - **Dozzle**: 실시간 컨테이너 로그 스트리밍 및 모니터링.
+- **Open Notebook**: 로컬 지식 작업과 SurrealDB-backed 실험성 노트북 환경.
 
 ## Integration
 
 ### Upstream Dependencies
 
-- **02-auth**: Keycloak SSO 연동을 통한 통합 인증 및 접근 제어.
+- **02-auth**: Traefik SSO middleware를 통한 통합 인증 및 접근 제어.
 - **01-gateway**: Traefik 리버스 프록시를 이용한 보안 라우팅.
 
 ### Downstream Consumers
@@ -57,23 +65,26 @@ graph TD
 ### Deployment
 
 ```bash
-# 개별 서비스 실행 (Homer 예시)
-cd infra/11-laboratory/dashboard
-docker compose up -d
+HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh
+bash scripts/hardening/check-all-hardening.sh 11-laboratory
 ```
+
+Runtime start/stop은 root include 활성 상태와 운영자 승인 범위를 확인한 뒤 수행한다. Service-local standalone compose rendering은 root `infra_net`, secret, common template context를 보존하지 못하므로 readiness evidence로 사용하지 않는다.
 
 ### Key Ports
 
-- **Dashboard**: `homer.${DEFAULT_URL}` (Port: 8080)
-- **Container UI**: `portainer.${DEFAULT_URL}` (Port: 9443)
-- **Data UI**: `redisinsight.${DEFAULT_URL}` (Port: 5540)
+- **Dashboard**: `homer.${DEFAULT_URL}` -> Homer internal `${HOMER_PORT:-8080}` (optional root include)
+- **Container UI**: `portainer.${DEFAULT_URL}` -> Portainer internal `${PORTAINER_PORT:-9443}` (optional root include)
+- **Logs UI**: `dozzle.${DEFAULT_URL}` -> Dozzle internal `${DOZZLE_PORT:-8080}` (root-active)
+- **Data UI**: `redisinsight.${DEFAULT_URL}` -> RedisInsight internal `${REDIS_INSIGHT_PORT:-5540}` (root-active)
+- **Notebook UI**: `open-notebook.${DEFAULT_URL}` -> Open Notebook web internal `${OPEN_NOTEBOOK_WEB_URL:-8502}` (root-active)
 
 ## Governance
 
 ### Standard Compliance
 
 - **Architecture**: March 2026 "Thin Root" 규격을 준수한다.
-- **Documentation**: [docs/README.md](../../docs/README.md) 기반의 Stage-Gate Taxonomy를 따른자.
+- **Documentation**: [docs/README.md](../../docs/README.md) 기반의 Stage-Gate Taxonomy를 따른다.
 
 ### Related Documents
 
@@ -81,6 +92,9 @@ docker compose up -d
 - [ARD](../../docs/02.architecture/requirements/0011-laboratory-architecture.md)
 - [ADR](../../docs/02.architecture/decisions/0011-laboratory-services.md)
 - [Technical Spec](../../docs/03.specs/11-laboratory/spec.md)
+- [Operations guide](../../docs/05.operations/guides/11-laboratory/README.md)
+- [Operations policy](../../docs/05.operations/policies/11-laboratory/README.md)
+- [Operations runbook](../../docs/05.operations/runbooks/11-laboratory/README.md)
 
 ---
 
@@ -130,5 +144,6 @@ infra/11-laboratory/
 
 - [infra/README.md](../README.md)
 - [docs/05.operations/README.md](../../docs/05.operations/README.md)
-- [docs/05.operations/README.md](../../docs/05.operations/README.md)
-- [docs/05.operations/README.md](../../docs/05.operations/README.md)
+- [Laboratory guides](../../docs/05.operations/guides/11-laboratory/README.md)
+- [Laboratory policies](../../docs/05.operations/policies/11-laboratory/README.md)
+- [Laboratory runbooks](../../docs/05.operations/runbooks/11-laboratory/README.md)

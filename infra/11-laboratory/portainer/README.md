@@ -40,16 +40,16 @@ Portainer is a lightweight management UI which allows you to easily manage your 
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `portainer` |
 | Operations | [Guide](../../../docs/05.operations/guides/11-laboratory/portainer.md), [Policy](../../../docs/05.operations/policies/11-laboratory/portainer.md), [Runbook](../../../docs/05.operations/runbooks/11-laboratory/portainer.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) after root include promotion; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
 ### 1. Initial Setup
 
-1. Deploy the stack: `docker compose up -d`.
-2. Access `https://portainer.${DEFAULT_URL}`.
-3. Set the initial admin password.
+1. Confirm the root Portainer include is intentionally enabled; it is optional/commented by default.
+2. Validate the static boundary with `bash scripts/hardening/check-all-hardening.sh 11-laboratory`.
+3. Access `https://portainer.${DEFAULT_URL}` only after approved runtime promotion and set the initial admin password.
 
 ### 2. Environment Management
 
@@ -64,7 +64,7 @@ Portainer is a lightweight management UI which allows you to easily manage your 
 | :--- | :--- | :--- |
 | Image | `portainer/portainer-ce:sts` | Short Term Support version |
 | Port | `9443` (Internal) | Managed by Traefik |
-| Storage | `portainer_data` | Persistent volume for config |
+| Storage | `portainer-data` | Persistent volume for config |
 
 ### Traefik Integration
 
@@ -72,14 +72,13 @@ Portainer is a lightweight management UI which allows you to easily manage your 
 labels:
   traefik.enable: 'true'
   traefik.http.routers.portainer.rule: Host(`portainer.${DEFAULT_URL}`)
-  traefik.http.routers.portainer.middlewares: sso-auth@file
+  traefik.http.routers.portainer.middlewares: gateway-standard-chain@file,portainer-admin-ip@docker,sso-errors@file,sso-auth@file
 ```
 
 ## Available Scripts
 
-- `docker compose up -d`: Start the service.
-- `docker compose down`: Stop the service.
-- `docker compose logs -f`: View service logs.
+- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`: validate Portainer static boundary with the rest of the laboratory tier.
+- `docker logs --tail 100 portainer`: inspect logs when the optional service is running.
 
 ## Validation
 
@@ -88,7 +87,7 @@ labels:
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Portainer socket, volume, and label references render.
+- Start with the hardening check to confirm Portainer socket, volume, and label references.
 - Check Portainer logs and the linked runbook before changing admin routing or Docker access settings.
 
 ## Related Documents

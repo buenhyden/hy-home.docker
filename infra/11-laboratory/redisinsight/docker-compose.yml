@@ -36,6 +36,7 @@ services:
       traefik.http.routers.redisinsight-static.tls: true
       traefik.http.routers.redisinsight-static.priority: 200
       traefik.http.routers.redisinsight-static.service: redisinsight-svc
+      traefik.http.routers.redisinsight-static.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file
       # 2) 일반 앱 라우터
       traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
       traefik.http.routers.redisinsight.entrypoints: websecure

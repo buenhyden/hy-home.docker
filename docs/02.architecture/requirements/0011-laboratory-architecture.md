@@ -15,8 +15,8 @@ status: active
 
 ## Boundaries & Non-goals
 
-- **Owns**: Dashboard (Homer), Container UI (Portainer), Data UI (RedisInsight), Log UI (Dozzle).
-- **Consumes**: Docker Engine API, Redis/Valkey network endpoints, Keycloak SSO.
+- **Owns**: Dashboard (Homer), Container UI (Portainer), Data UI (RedisInsight), Log UI (Dozzle), Open Notebook and local SurrealDB laboratory datastore.
+- **Consumes**: Docker Engine API, Redis/Valkey network endpoints, Traefik gateway and SSO middleware.
 - **Does Not Own**: Business application UIs, hardware-level hypervisors.
 - **Non-goals**: Replacing CLI-based troubleshooting for advanced operators.
 
@@ -40,34 +40,38 @@ graph TD
         Port[Portainer]
         RI[RedisInsight]
         Doz[Dozzle]
+        ON[Open Notebook]
+        SDB[SurrealDB]
     end
 
     subgraph "Core Infrastructure"
         DockerPool[Docker Engine]
         RedisPool[Valkey/Redis Cluster]
-        Auth[Keycloak SSO]
+        Auth[Traefik SSO Middleware]
     end
 
     User --> TF
-    TF -- "sso-auth" --> Dash
-    TF -- "sso-auth" --> Port
-    TF -- "sso-auth" --> RI
-    TF -- "sso-auth" --> Doz
+    TF -- "gateway+allowlist+SSO" --> Dash
+    TF -- "gateway+allowlist+SSO" --> Port
+    TF -- "gateway+allowlist+SSO" --> RI
+    TF -- "gateway+allowlist+SSO" --> Doz
+    TF -- "gateway+allowlist+SSO" --> ON
 
     Port -.-> DockerPool
     Doz -.-> DockerPool
     RI -.-> RedisPool
+    ON -.-> SDB
     Dash -.-> TF
 ```
 
 ## Data Architecture
 
-`11-laboratory` does not own primary application data. It consumes Docker Engine, Valkey/Redis, and dashboard metadata endpoints for management visibility, while persistence remains owned by the underlying service tiers.
+`11-laboratory` does not own primary application data. It consumes Docker Engine, Valkey/Redis, and dashboard metadata endpoints for management visibility. The exception is Open Notebook local laboratory state, which is stored under the `open-notebook` service boundary with its SurrealDB dependency and remains outside production workload data ownership.
 
 ## Infrastructure & Deployment
 
 - **Runtime / Platform**: Docker Compose.
-- **Deployment Model**: Multi-container stack in `infra/11-laboratory`.
+- **Deployment Model**: root-active includes render Dozzle, RedisInsight, Open Notebook, and SurrealDB through the `admin` profile; Homer Dashboard and Portainer remain optional/commented root includes that are checked by the hardening script until promoted.
 
 ## Related Documents
 

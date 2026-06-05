@@ -81,6 +81,7 @@ networks:
 | `172.19.0.90-100`  | Airflow Workflow          | `infra/07-workflow/airflow`                   |
 | `172.19.0.120`     | Terraform / Atlantis      | `infra/09-tooling/terraform`                  |
 | `172.19.0.121`     | RedisInsight              | `infra/11-laboratory/redisinsight`            |
+| `172.19.0.122-123` | SurrealDB / Open Notebook | `infra/11-laboratory/open-notebook`           |
 | `172.19.0.150-151` | Cassandra                 | `infra/04-data/nosql/cassandra`               |
 | `172.19.0.160-163` | CouchDB                   | `infra/04-data/nosql/couchdb`                 |
 | `172.19.0.170-175` | MongoDB                   | `infra/04-data/nosql/mongodb`                 |

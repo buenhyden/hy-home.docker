@@ -24,7 +24,7 @@ Dozzle 서비스의 노출 범위, 인증 방식 및 리소스 접근 통제.
 ## Controls
 
 - **Required**:
-  - 모든 UI 접근은 Traefik `sso-auth` 미들웨어를 통해 승인된 관리자만 가능해야 한다.
+  - 모든 UI 접근은 Traefik `gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file` 미들웨어 체인을 통해 승인된 관리자만 가능해야 한다.
   - `/var/run/docker.sock`은 읽기 전용으로 연결하거나 내부 네트워크에서만 통제된 방식으로 사용되어야 한다 (Dozzle 설정 준수).
 - **Allowed**:
   - 개발 및 트러블슈팅 목적의 실시간 로그 스트리밍.
@@ -38,7 +38,7 @@ Dozzle 서비스의 노출 범위, 인증 방식 및 리소스 접근 통제.
 
 ## Verification
 
-- Traefik `Host` 룰 및 미들웨어 설정(`sso-auth`)이 `docker-compose.yml`에 올바르게 적용되었는지 정기적으로 검토한다.
+- Traefik `Host` 룰 및 gateway+allowlist+SSO 미들웨어 체인이 `docker-compose.yml`에 올바르게 적용되었는지 정기적으로 검토한다.
 
 ## Review Cadence
 

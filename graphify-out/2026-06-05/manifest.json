@@ -800,18 +800,18 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/10-communication/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "98bf45bdbb87c5754a90e0d4d33e2cac",
+    "mtime": 1780624749.8737082,
+    "ast_hash": "f843ca2f62ba042fc0caf1cdfb08c4ba",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/10-communication/mail/docker-compose.yml": {
-    "mtime": 1780478383.8849835,
-    "ast_hash": "acc09abd863ce57af52d2211ddde8111",
+    "mtime": 1780624749.8737082,
+    "ast_hash": "60538374f38a0cbbe7f0a74819992a7a",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/10-communication/mail/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "e9a8020ba67197507684b1084a699320",
+    "mtime": 1780624749.8737082,
+    "ast_hash": "377136aa1aecd0424c5f48b01f18e5a8",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/02-auth/README.md": {
@@ -940,8 +940,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/standardize-infra-net/spec.md": {
-    "mtime": 1780555949.6081965,
-    "ast_hash": "86acacb713b44e47bf975187d10435be",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "f4269928dca6dcd8a2d1eeb5e8fc327c",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/06-observability/README.md": {
@@ -1035,8 +1035,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/10-communication/spec.md": {
-    "mtime": 1780371233.59925,
-    "ast_hash": "f401fa08512482c7b81ba2d191800cf9",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "449c7be04e3e924715a2c8ed5d5738a7",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/workspace-audit-2026-05/README.md": {
@@ -1085,8 +1085,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0010-communication-architecture.md": {
-    "mtime": 1780371233.5872502,
-    "ast_hash": "9e69aa4a2efb28e52ed3add062a16452",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "be2a2ff2420ba617d9ed305133c24db1",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0020-messaging-optimization-hardening-architecture.md": {
@@ -1260,8 +1260,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/decisions/0010-communication-services.md": {
-    "mtime": 1780371233.5912502,
-    "ast_hash": "c80151f906181a2026233475e2644e61",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "2aa6883fb2076ea1af303d0648d1db72",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md": {
@@ -1330,8 +1330,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-26-10-communication.md": {
-    "mtime": 1780553719.360904,
-    "ast_hash": "1d6f15c179a7487f451504fd49ad0671",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "10390a50e08cec1360ef9fc32efc7399",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-26-09-tooling.md": {
@@ -1910,13 +1910,13 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/10-communication/mail.md": {
-    "mtime": 1780371233.63525,
-    "ast_hash": "0b5a4d68857075fa619a224f1af7edd3",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "0d07d9ae421a5d260c5604f302da9834",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/10-communication/README.md": {
-    "mtime": 1780554617.8985877,
-    "ast_hash": "cfb8de065c51a0f30cb505a1536b0097",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "3b2cdb449e68d6adeaf1201d8d904760",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/02-auth/keycloak.md": {
@@ -2290,13 +2290,13 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/10-communication/mail.md": {
-    "mtime": 1780371233.6512501,
-    "ast_hash": "0e1808fcab61ac1444f48bffb33eb617",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "51e8afe271ed36b430b30b4bd3e30abf",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/10-communication/README.md": {
-    "mtime": 1780554617.9029799,
-    "ast_hash": "d9b44f36c208f8093018ca0c4091d0a1",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "7d29cf21d8fb98a4aae05f9cfaccd867",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/02-auth/keycloak.md": {
@@ -2670,13 +2670,13 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/10-communication/mail.md": {
-    "mtime": 1780553719.3730674,
-    "ast_hash": "cf14a530742684453171809eea3349ad",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "3b4da30358a3776f2a66611f98e212b9",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/10-communication/README.md": {
-    "mtime": 1780554617.9029799,
-    "ast_hash": "3ffa2ebdc4b04ea1bf9426445883d59e",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "00f2f9478d8838bb76596d8e0843870f",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/02-auth/keycloak.md": {
@@ -3380,8 +3380,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780623610.3776226,
-    "ast_hash": "1a8afac3ec69b1c882bdade2c41ef326",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "e28bd944072a041baf894fcf53d5c1bc",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -3540,8 +3540,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-03-26-10-communication-tasks.md": {
-    "mtime": 1780371601.3433022,
-    "ast_hash": "580096d3ce32364abfc9ec211854c061",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "0030ec3abb169e2e1de33bb2b63c8e32",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-05-22-workspace-docs-agent-governance-remediation.md": {
@@ -3915,8 +3915,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-26-10-communication-standardization.md": {
-    "mtime": 1780371601.2993023,
-    "ast_hash": "c636577d9a30b88032708a166c9091f0",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "9d15c6b477af8a25b65d9b1e6c240184",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/README.md": {
@@ -4375,8 +4375,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/hardening/check-all-hardening.sh": {
-    "mtime": 1780553719.4298291,
-    "ast_hash": "2b022fbc498bf0950300f4e2283f292a",
+    "mtime": 1780624749.8737082,
+    "ast_hash": "383c98eb4385f30844baad5d76baf626",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/hooks/agent-event-hook.sh": {
@@ -4435,8 +4435,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-repo-contracts.sh": {
-    "mtime": 1780623610.4296227,
-    "ast_hash": "7ea021eb53e8f92a3f74ed946f85b709",
+    "mtime": 1780624749.8737082,
+    "ast_hash": "4bd048f3706d9051a4d2b5f70d93bee4",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-storybook-contract.sh": {
@@ -4490,8 +4490,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md": {
-    "mtime": 1780623610.3816226,
-    "ast_hash": "650811d85d2220644a0cdc3a0e28f502",
+    "mtime": 1780624749.8337083,
+    "ast_hash": "3d7e6a6d2565e55c24c29553531f3c55",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/00-workspace/README.md": {

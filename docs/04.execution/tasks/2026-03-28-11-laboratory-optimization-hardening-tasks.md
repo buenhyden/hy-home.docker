@@ -25,7 +25,7 @@ status: completed
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-LAB-001 | 모든 Laboratory 라우터 middleware를 gateway+allowlist+SSO 체인으로 정렬 | impl | Contracts / Config | PLN-LAB-001 | compose label 확인 | DevOps | Done |
-| T-LAB-002 | compose `infra_net` external 선언 정렬 | impl | Network Boundary | PLN-LAB-002 | network contract 확인 | DevOps | Done |
+| T-LAB-002 | root `infra_net` service network block 정렬 | impl | Network Boundary | PLN-LAB-002 | network contract 확인 | DevOps | Done |
 | T-LAB-003 | dashboard direct host `ports` 제거 및 `expose` 전환 | impl | Least Privilege | PLN-LAB-003 | ports 제거 확인 | DevOps | Done |
 | T-LAB-004 | dozzle docker socket read-only 적용 | impl | Least Privilege | PLN-LAB-004 | `docker.sock:ro` 확인 | DevOps | Done |
 | T-LAB-005 | service mount 기반 healthcheck 추가 | impl | Runtime Stability | PLN-LAB-001~004 | healthcheck block 확인 | DevOps | Done |
@@ -39,6 +39,7 @@ status: completed
 | T-LAB-013 | redisinsight 최소권한/감사 정책 로드맵 정의 | doc | Catalog Expansion Targets | PLN-LAB-007 | operations/tasks 반영 | Security/DevOps | Done |
 | T-LAB-014 | 정적 검증 실행 및 결과 기록 | test | Verification | PLN-LAB-001~007 | compose/script/baseline/traceability 체크 | DevOps | Done |
 | T-LAB-015 | runtime 리허설 및 운영 증적 수집 | test | Verification | PLN-LAB-001~007 | Live health/access evidence requires an approved runtime rehearsal | DevOps | Deferred |
+| T-LAB-016 | Open Notebook route/secret/readiness hardening current-truth 보정 | impl | Contracts / Config | PLN-LAB-008 | open-notebook middleware, secret file, healthcheck 확인 | DevOps | Done |
 
 ## Suggested Types
 
@@ -69,11 +70,12 @@ status: completed
 - [x] T-LAB-013
 - [x] T-LAB-014
 - [x] T-LAB-015 (Deferred runtime evidence recorded)
+- [x] T-LAB-016
 
 ## Verification Summary
 
 - **Test Commands**:
-  - `for f in infra/11-laboratory/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
+  - `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
   - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
@@ -87,6 +89,6 @@ status: completed
 - **ARD**: [../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Plan**: [../plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
-- **Guide**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
-- **Runbook**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/11-laboratory/optimization-hardening.md](../../05.operations/guides/11-laboratory/optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/11-laboratory/optimization-hardening.md](../../05.operations/runbooks/11-laboratory/optimization-hardening.md)

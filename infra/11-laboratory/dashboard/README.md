@@ -47,13 +47,13 @@ dashboard/
 | Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dashboard/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `./config:/www/assets` |
-| Ports | `${HOMER_PORT:-8080}` |
+| Ports | No host `ports`; Traefik targets internal `${HOMER_PORT:-8080}` via `expose` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.homer.rule`, `traefik.http.routers.homer.entrypoints`, `traefik.http.routers.homer.tls`, `traefik.http.middlewares.homer-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.homer.middlewares`, `traefik.http.services.homer.loadbalancer.server.port` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `homer` |
 | Operations | [Guide](../../../docs/05.operations/guides/11-laboratory/dashboard.md), [Policy](../../../docs/05.operations/policies/11-laboratory/dashboard.md), [Runbook](../../../docs/05.operations/runbooks/11-laboratory/dashboard.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `admin` profile for active includes; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
@@ -66,10 +66,8 @@ dashboard/
 
 | Tool   | Command                                | Description      |
 | ------ | -------------------------------------- | ---------------- |
-| Docker | `docker compose up -d`                 | 서비스 시작      |
-| Docker | `docker compose down`                  | 서비스 중단      |
-| Docker | `docker compose restart homer`         | 설정 재로드      |
 | Lint   | `yq eval . config/config.yml`          | YAML 구문 검증   |
+| Hardening | `bash scripts/hardening/check-all-hardening.sh 11-laboratory` | 라우터/포트/healthcheck 기준 확인 |
 
 ## Configuration
 
@@ -78,7 +76,6 @@ dashboard/
 | Variable            | Required | Description                     |
 | ------------------- | :------: | ------------------------------- |
 | `DEFAULT_URL`       |   Yes    | 기본 도메인 (homer.xxxx.xxx)    |
-| `HOMER_HOST_PORT`   |    No    | 호스트 접속 포트 (기본: 8080)   |
 | `HOMER_PORT`        |    No    | 컨테이너 내부 포트 (기본: 8080) |
 
 ## Change Impact
@@ -88,15 +85,15 @@ dashboard/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Run `bash scripts/hardening/check-all-hardening.sh 11-laboratory` after any Compose or config reference changes.
+- Run `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh` for root-active laboratory profile validation.
 - Verify UI connectivity by accessing the dashboard URL and confirming all service links resolve correctly.
-- Confirm service health indicators by checking `docker logs dashboard | grep -i 'error\|warn'` after config changes.
+- Confirm service health indicators by checking `docker logs homer --tail 100` after config changes when the optional service is running.
 - Verify that all referenced service endpoints are reachable from the dashboard container.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm dashboard network, label, and mounted config references render.
+- Start with the hardening check to confirm dashboard network, label, and mounted config references.
 - Check dashboard logs and the linked runbook before changing admin routing or service discovery settings.
 
 ## Related Documents

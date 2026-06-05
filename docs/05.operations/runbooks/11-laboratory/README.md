@@ -54,12 +54,12 @@ runbooks/11-laboratory/
 
 | Path | Purpose |
 | --- | --- |
-| [dashboard.md](./dashboard.md) | Dashboard runbook 문서 |
-| [dozzle.md](./dozzle.md) | Dozzle runbook 문서 |
-| [open-notebook.md](./open-notebook.md) | Open Notebook runbook 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening runbook 문서 |
-| [portainer.md](./portainer.md) | Portainer runbook 문서 |
-| [redisinsight.md](./redisinsight.md) | Redisinsight runbook 문서 |
+| [dashboard.md](./dashboard.md) | Homer dashboard config and route recovery runbook |
+| [dozzle.md](./dozzle.md) | Dozzle log stream, socket, and route recovery runbook |
+| [open-notebook.md](./open-notebook.md) | Open Notebook and SurrealDB recovery runbook |
+| [optimization-hardening.md](./optimization-hardening.md) | Laboratory hardening regression recovery runbook |
+| [portainer.md](./portainer.md) | Optional Portainer access and socket-boundary recovery runbook |
+| [redisinsight.md](./redisinsight.md) | RedisInsight route and connection diagnosis runbook |
 
 ## Related Documents
 

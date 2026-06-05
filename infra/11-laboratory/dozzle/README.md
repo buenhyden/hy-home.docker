@@ -51,15 +51,15 @@ dozzle/
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `dozzle` |
 | Operations | [Guide](../../../docs/05.operations/guides/11-laboratory/dozzle.md), [Policy](../../../docs/05.operations/policies/11-laboratory/dozzle.md), [Runbook](../../../docs/05.operations/runbooks/11-laboratory/dozzle.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `admin` profile; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
 1. [docker-compose.yml](./docker-compose.yml)을 통해 서비스 구성을 확인한다.
-2. 가이드 문서는 [docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)를 참조한다.
-3. 운영 정책은 [docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/policies/11-laboratory/dozzle.md)를 확인한다.
-4. 장애 조치 지침은 [docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)를 따른다.
+2. 가이드 문서는 [Dozzle guide](../../../docs/05.operations/guides/11-laboratory/dozzle.md)를 참조한다.
+3. 운영 정책은 [Dozzle policy](../../../docs/05.operations/policies/11-laboratory/dozzle.md)를 확인한다.
+4. 장애 조치 지침은 [Dozzle runbook](../../../docs/05.operations/runbooks/11-laboratory/dozzle.md)를 따른다.
 
 ## Tech Stack
 
@@ -81,20 +81,20 @@ dozzle/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Run `bash scripts/hardening/check-all-hardening.sh 11-laboratory` after any Compose or config reference changes.
+- Run `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh` for root-active laboratory profile validation.
 - Verify log streaming by checking `docker logs dozzle` and confirming the Docker socket mount is accessible.
 - Confirm service visibility by verifying target containers appear in the Dozzle UI after startup.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Start with the hardening check to confirm network, volume, socket, and label references.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For Docker socket errors: confirm the socket path (`/var/run/docker.sock`) is correctly mounted and Dozzle has read access.
 - For missing containers: verify Dozzle's filter configuration and that target containers share the same Docker host.
 
 ## Related Documents
 
-- **Guide**: [../docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)
+- **Guide**: [docs/05.operations/guides/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)
 - **Policy**: [docs/05.operations/policies/11-laboratory/dozzle.md](../../../docs/05.operations/policies/11-laboratory/dozzle.md)
 - **Runbook**: [docs/05.operations/runbooks/11-laboratory/dozzle.md](../../../docs/05.operations/runbooks/11-laboratory/dozzle.md)

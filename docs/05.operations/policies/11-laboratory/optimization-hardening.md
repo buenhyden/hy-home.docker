@@ -15,7 +15,7 @@ status: active
 - `.env.example` (`LAB_ALLOWED_CIDRS`)
 - `scripts/hardening/check-all-hardening.sh 11-laboratory`
 
-- **Systems**: dashboard, dozzle, portainer, redisinsight
+- **Systems**: dashboard, dozzle, portainer, redisinsight, open-notebook, surrealdb
 - **Agents**: Infra/DevOps/Operations agents
 - **Environments**: Local, Dev, Stage, Production-like management plane
 
@@ -23,9 +23,11 @@ status: active
 
 - **Required**:
   - 모든 Laboratory 라우터는 `gateway-standard-chain@file` + service별 IP allowlist + `sso-errors@file,sso-auth@file`를 적용한다.
-  - 모든 compose는 `infra_net` external 경계를 유지한다.
+  - 모든 compose는 root `infra_net` context에 합류하는 service network block을 유지한다.
   - dashboard direct host `ports` 노출을 금지한다.
   - dozzle docker socket은 read-only로 유지한다.
+  - open-notebook UI route는 allowlist+large-body+SSO 경계를 유지하고, credential은 Docker Secret file로만 주입한다.
+  - Open Notebook API와 SurrealDB host-bound ports는 현재 구현 경계로 기록하되, production-like promotion 전 direct exposure review를 수행해야 한다.
   - laboratory 변경은 `check-all-hardening.sh 11-laboratory` 및 CI `infrastructure-hardening` 통과가 필수다.
   - optimization-hardening 문서(PRD~Procedure)와 README 인덱스를 동기화한다.
 - **Allowed**:
@@ -42,7 +44,7 @@ status: active
 
 ## Verification
 
-- `for f in infra/11-laboratory/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
+- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
@@ -66,6 +68,9 @@ status: active
 - **redisinsight 승인 조건**:
   - 최소권한 접근정책 문서화
   - 운영 캐시 직접 수정 금지 + 감사로그 절차 정의
+- **open-notebook 승인 조건**:
+  - notebook data retention/expiration 기준 문서화
+  - API/SurrealDB host-bound port 노출 필요성, 방화벽, 접근 경계 evidence 기록
 
 ## Related Documents
 

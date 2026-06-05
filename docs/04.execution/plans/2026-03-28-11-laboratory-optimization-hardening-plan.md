@@ -20,7 +20,7 @@ status: completed
 - **Goals**:
   - Laboratory UI 라우터를 gateway+allowlist+SSO 경계로 정렬한다.
   - dashboard direct host 노출을 제거한다.
-  - `infra_net` external 선언을 표준화한다.
+  - root `infra_net` context에 합류하는 service network block을 표준화한다.
   - dozzle socket 최소권한(read-only)을 적용한다.
   - laboratory hardening baseline을 `scripts/hardening/check-all-hardening.sh 11-laboratory` 및 통합 `infrastructure-hardening` CI gate로 정렬한다.
   - 카탈로그 확장 항목을 정책/작업 로드맵으로 반영한다.
@@ -30,6 +30,7 @@ status: completed
   - `scripts/hardening/check-all-hardening.sh 11-laboratory`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서/README
+  - root-active Open Notebook/SurrealDB hardening boundary
 
 ## Non-Goals & Out-of-Scope
 
@@ -45,18 +46,19 @@ status: completed
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
 | PLN-LAB-001 | 라우터 middleware를 gateway+allowlist+SSO 체인으로 정렬 | `infra/11-laboratory/*/docker-compose.yml` | REQ-PRD-LAB-FUN-01/02 | compose label 확인 |
-| PLN-LAB-002 | `infra_net` external 네트워크 선언 표준화 | `infra/11-laboratory/*/docker-compose.yml` | REQ-PRD-LAB-FUN-04 | network contract 확인 |
+| PLN-LAB-002 | root `infra_net` service network block 표준화 | `infra/11-laboratory/*/docker-compose.yml` | REQ-PRD-LAB-FUN-04 | network contract 확인 |
 | PLN-LAB-003 | dashboard direct host 노출 제거 | `infra/11-laboratory/dashboard/docker-compose.yml` | REQ-PRD-LAB-FUN-03 | `ports:` 제거/`expose` 확인 |
 | PLN-LAB-004 | dozzle socket 최소권한 적용 | `infra/11-laboratory/dozzle/docker-compose.yml` | REQ-PRD-LAB-FUN-05 | `docker.sock:ro` 확인 |
 | PLN-LAB-005 | lab hardening script + CI gate 추가 | `scripts/hardening/check-all-hardening.sh 11-laboratory`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-LAB-FUN-06 | script/CI job 확인 |
 | PLN-LAB-006 | PRD~Runbook 문서 세트/README 인덱스 동기화 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-LAB-FUN-07 | 링크 정합성 확인 |
 | PLN-LAB-007 | 카탈로그 확장 항목 roadmap 문서화 | Plan/Task/Ops/Guide docs | REQ-PRD-LAB-FUN-08 | 정책/태스크 반영 확인 |
+| PLN-LAB-008 | Open Notebook route/secret/readiness hardening 반영 | `infra/11-laboratory/open-notebook/docker-compose.yml` | REQ-PRD-LAB-FUN-09 | SSO/allowlist/secret/healthcheck 확인 |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-LAB-001 | Structural | laboratory compose 정적 검증 | `for f in infra/11-laboratory/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done` | 오류 없음 |
+| VAL-LAB-001 | Structural | root-active laboratory compose 정적 검증 | `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
 | VAL-LAB-002 | Compliance | laboratory 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 11-laboratory` | 실패 0건 |
 | VAL-LAB-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-LAB-004 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
@@ -73,7 +75,7 @@ status: completed
 
 - [x] compose/script/ci hardening 반영
 - [x] optimization-hardening 문서 세트 생성
-- [x] docs `01~09` README 인덱스 반영
+- [x] docs `01~05` README 인덱스 반영
 - [ ] runtime 리허설/운영 증적 확보 (환경 허용 시)
 
 ## Related Documents
@@ -83,6 +85,6 @@ status: completed
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/11-laboratory/spec.md](../../03.specs/11-laboratory/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md](../tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
-- **Operations**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
-- **Runbooks**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/11-laboratory/optimization-hardening.md](../../05.operations/guides/11-laboratory/optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
+- **Runbooks**: [../../05.operations/runbooks/11-laboratory/optimization-hardening.md](../../05.operations/runbooks/11-laboratory/optimization-hardening.md)

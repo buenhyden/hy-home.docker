@@ -22,6 +22,7 @@ status: active
 2. **Container Management (Portainer)**: 직관적인 컨테이너 리소스 제어 및 상태 모니터링.
 3. **Data Inspection (RedisInsight)**: Redis/Valkey 데이터 구조 시각화 및 분석.
 4. **Log Viewer (Dozzle)**: 다중 컨테이너 실시간 로그 스트리밍.
+5. **Local Notebook Lab (Open Notebook + SurrealDB)**: 로컬 지식 작업과 실험성 노트북 상태를 관리.
 
 ## Consequences
 

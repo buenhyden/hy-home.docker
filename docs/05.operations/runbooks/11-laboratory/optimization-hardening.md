@@ -26,7 +26,7 @@ status: active
 ## When to Use
 
 - `infrastructure-hardening` CI가 실패할 때
-- dashboard/dozzle/portainer/redisinsight 접근 경계가 비정상일 때
+- dashboard/dozzle/portainer/redisinsight/open-notebook 접근 경계가 비정상일 때
 - dashboard direct 접근 경로가 재노출되었을 때
 - dozzle socket 권한 드리프트가 발생했을 때
 
@@ -41,18 +41,21 @@ status: active
 ### Steps
 
 1. 정적 구성 점검
-   - `for f in infra/11-laboratory/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
+   - `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
 2. 하드닝 기준 점검
    - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
 3. 증상별 복구
    - middleware/allowlist 회귀:
      - 각 서비스 라우터 체인을 `gateway-standard-chain + <service>-admin-ip + sso-errors + sso-auth`로 복원
    - 네트워크 드리프트:
-     - compose에 `infra_net` external 선언 복원
+     - root `infra_net` context에 합류하는 service network block 복원
    - dashboard direct 노출:
      - `ports` 제거, `expose`만 유지
    - dozzle 권한 드리프트:
      - `/var/run/docker.sock` 마운트를 `:ro`로 복원
+   - open-notebook route/secret 드리프트:
+     - route chain을 `gateway-standard-chain + open-notebook-admin-ip + large-body + sso-errors + sso-auth`로 복원
+     - `OPEN_NOTEBOOK_PASSWORD_FILE`과 `OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE` secret-file 주입을 복원
 4. 재검증
    - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
    - `bash scripts/validation/check-template-security-baseline.sh`
@@ -76,10 +79,10 @@ status: active
 
 - [ ] 롤백 대상 파일
   - `infra/11-laboratory/*/docker-compose.yml`
-  - `.env.example`
   - `scripts/hardening/check-all-hardening.sh 11-laboratory`
   - `.github/workflows/ci-quality.yml`
-- [ ] 롤백 후 정적 검증 재실행
+- [ ] 파일 되돌림이나 runtime 재시작이 필요하면 승인자와 영향 범위를 기록한 뒤 수행
+- [ ] 복구 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인
 
 ### Agent Operations (If Applicable)
