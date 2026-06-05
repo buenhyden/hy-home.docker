@@ -116,6 +116,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/agents/functions/task-breakdown-agent.md](../../00.agent-governance/agents/functions/task-breakdown-agent.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/test-automator.md](../../00.agent-governance/agents/functions/test-automator.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md](../../00.agent-governance/agents/functions/workspace-audit-revalidation.md) | Markdown reference |
+| [docs/00.agent-governance/harness-implementation-map.md](../../00.agent-governance/harness-implementation-map.md) | Markdown reference |
 | [docs/00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md](../../00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md) | Markdown reference |
 | [docs/00.agent-governance/memory/README.md](../../00.agent-governance/memory/README.md) | folder index |
 | [docs/00.agent-governance/memory/agentic-harness-contract-hardening.md](../../00.agent-governance/memory/agentic-harness-contract-hardening.md) | Markdown reference |
@@ -132,6 +133,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/providers/codex.md](../../00.agent-governance/providers/codex.md) | Markdown reference |
 | [docs/00.agent-governance/providers/gemini.md](../../00.agent-governance/providers/gemini.md) | Markdown reference |
 | [docs/00.agent-governance/rules/agentic.md](../../00.agent-governance/rules/agentic.md) | Markdown reference |
+| [docs/00.agent-governance/rules/approval-boundaries.md](../../00.agent-governance/rules/approval-boundaries.md) | Markdown reference |
 | [docs/00.agent-governance/rules/bootstrap.md](../../00.agent-governance/rules/bootstrap.md) | Markdown reference |
 | [docs/00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md) | Markdown reference |
 | [docs/00.agent-governance/rules/environment-constraints.md](../../00.agent-governance/rules/environment-constraints.md) | Markdown reference |
@@ -520,6 +522,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-06-02-governance-optimization.md](../../04.execution/tasks/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-03-governance-surgical-reverification.md](../../04.execution/tasks/2026-06-03-governance-surgical-reverification.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md](../../04.execution/tasks/2026-06-04-docs-implementation-audit.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-06-05-harness-engineering.md](../../04.execution/tasks/2026-06-05-harness-engineering.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -818,6 +821,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/ard.template.md](../../99.templates/ard.template.md) | Markdown reference |
 | [docs/99.templates/data-model.template.md](../../99.templates/data-model.template.md) | Markdown reference |
 | [docs/99.templates/guide.template.md](../../99.templates/guide.template.md) | Markdown reference |
+| [docs/99.templates/harness-task-contract.template.md](../../99.templates/harness-task-contract.template.md) | Markdown reference |
 | [docs/99.templates/incident.template.md](../../99.templates/incident.template.md) | Markdown reference |
 | [docs/99.templates/memory.template.md](../../99.templates/memory.template.md) | Markdown reference |
 | [docs/99.templates/openapi.template.yaml](../../99.templates/openapi.template.yaml) | YAML config |
@@ -1114,6 +1118,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/check-template-security-baseline.sh](../../../scripts/validation/check-template-security-baseline.sh) | script |
 | [scripts/validation/run-local-qa-gates.sh](../../../scripts/validation/run-local-qa-gates.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) | script |
+| [scripts/validation/validate-harness.sh](../../../scripts/validation/validate-harness.sh) | script |
 
 ### GitHub workflow surface
 
