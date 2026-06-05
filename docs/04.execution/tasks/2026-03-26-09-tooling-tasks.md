@@ -8,7 +8,7 @@ status: completed
 
 ## Overview
 
-`09-tooling` 계층 문서화 표준화와 관련된 세부 작업 항목을 추적한다.
+Tracks detailed work items related to `09-tooling` tier documentation standardization.
 
 ## Task List
 

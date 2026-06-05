@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 작업 문서는 하네스 엔지니어링과 Agent-first Engineering 분석 결과를 공식 stage 문서로 구현하고 검증한 증거를 기록한다.
+This task document records evidence that the harness engineering and Agent-first Engineering analysis results were implemented and verified as official stage documents.
 
 ## Inputs
 

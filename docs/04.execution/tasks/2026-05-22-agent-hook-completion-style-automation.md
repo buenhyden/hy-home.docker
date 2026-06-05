@@ -9,7 +9,7 @@ status: completed
 
 ## Overview
 
-이 문서는 Hook Development and Hookify rule guidance를 적용해 AI Agent 완료 흐름의 logical commit gate, code style validation, post-edit formatting behavior를 보강한 evidence다.
+This document is evidence that Hook Development and Hookify rule guidance were applied to strengthen logical commit gates, code style validation, and post-edit formatting behavior in the AI Agent completion flow.
 
 ## Inputs
 

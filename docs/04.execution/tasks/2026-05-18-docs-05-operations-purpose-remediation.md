@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/05.operations` purpose-profile remediation의 실행 작업과 검증 evidence를 추적한다.
+This document tracks execution work and verification evidence for `docs/05.operations` purpose-profile remediation.
 
 ## Inputs
 

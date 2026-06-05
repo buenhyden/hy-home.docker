@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 targeted documentation precision remediation의 실행 상태와 검증 evidence를 기록한다. 작업은 concrete failing condition이 확인된 문서에만 적용한다.
+This document records execution status and verification evidence for targeted documentation precision remediation. The work applies only to documents with confirmed concrete failing conditions.
 
 ## Inputs
 

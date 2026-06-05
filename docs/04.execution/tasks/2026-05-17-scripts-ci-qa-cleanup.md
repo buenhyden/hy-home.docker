@@ -9,7 +9,7 @@ status: completed
 
 ## Overview
 
-이 문서는 root `scripts/` cleanup과 QA/CI tooling setup이 완료되었음을 현재 script inventory, progress log, and validation evidence에 연결한다.
+This document connects completion of root `scripts/` cleanup and QA/CI tooling setup to the current script inventory, progress log, and validation evidence.
 
 ## Inputs
 

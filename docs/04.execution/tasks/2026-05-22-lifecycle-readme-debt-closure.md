@@ -9,7 +9,7 @@ status: completed
 
 ## Overview
 
-이 문서는 lifecycle README debt closure 작업의 실제 수행 상태와 검증 evidence를 기록한다.
+This document records actual execution status and verification evidence for lifecycle README debt closure work.
 
 ## Inputs
 

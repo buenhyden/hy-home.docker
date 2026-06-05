@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/04.execution` bounded remediation의 구현 상태와 검증 evidence를 기록한다.
+This document records implementation status and verification evidence for `docs/04.execution` bounded remediation.
 
 ## Inputs
 

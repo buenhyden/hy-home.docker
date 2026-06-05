@@ -9,7 +9,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra-implementer` 이후 `security-auditor`와 `iac-reviewer`를 연결하는 cross-validation 체계가 canonical stage 문서와 런타임 카탈로그에 구현되었는지 확인한 완료 evidence다.
+This document is completion evidence confirming that the cross-validation system connecting `security-auditor` and `iac-reviewer` after `infra-implementer` is implemented in canonical stage documents and the runtime catalog.
 
 ## Inputs
 

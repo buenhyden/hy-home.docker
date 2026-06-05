@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `11-laboratory` 계층의 구현·검증 작업 목록이다. Spec과 Plan에서 파생된 작업을 추적 가능하게 기록한다.
+This document is the implementation and verification task list for the `11-laboratory` tier. It records work derived from the Spec and Plan in a traceable form.
 
 ## Inputs
 

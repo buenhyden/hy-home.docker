@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md`의 누락된 sibling task evidence를 보완하는 retrospective task record다. 원 plan의 완료 상태와 현재 repo truth를 연결하기 위한 문서-only 보강이며, script CLI, CI 동작, hook behavior, runtime state는 이 문서에서 변경하지 않는다.
+This document is a retrospective task record that supplies missing sibling task evidence for `docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md`. It is a docs-only strengthening step that connects the original plan completion state to current repo truth; this document does not change script CLI, CI behavior, hook behavior, or runtime state.
 
 ## Inputs
 

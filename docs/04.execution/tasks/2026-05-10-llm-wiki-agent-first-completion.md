@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 LLM Wiki generator, generated index, `wiki-curator`, 운영 가이드, validator 강제력 구현 작업을 추적한다.
+This document tracks implementation work for the LLM Wiki generator, generated index, `wiki-curator`, operations guide, and validator enforcement.
 
 ## Inputs
 

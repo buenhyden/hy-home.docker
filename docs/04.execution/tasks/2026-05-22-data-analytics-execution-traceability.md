@@ -9,7 +9,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `04-data-analytics` spec의 실행 plan/task 부재를 보완한 작업 증거다. 변경은 문서 추적성에 한정하며, runtime 서비스 기동이나 데이터 변경은 수행하지 않았다.
+This document is work evidence that fills the missing execution plan/task coverage for the `04-data-analytics` spec. Changes are limited to documentation traceability; no runtime service startup or data changes were performed.
 
 ## Inputs
 

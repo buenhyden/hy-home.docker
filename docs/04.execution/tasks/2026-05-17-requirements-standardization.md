@@ -9,7 +9,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `docs/01.requirements` PRD 문서 세트와 PRD template, taxonomy cleanup 작업이 완료되었음을 현재 progress log와 validator evidence로 연결한다.
+This document connects completion of the `docs/01.requirements` PRD document set, PRD template, and taxonomy cleanup work to the current progress log and validator evidence.
 
 ## Inputs
 
