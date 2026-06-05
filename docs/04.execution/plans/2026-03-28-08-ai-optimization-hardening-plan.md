@@ -76,7 +76,7 @@ status: completed
 
 - [x] AI compose/script/ci 하드닝 반영
 - [x] AI optimization-hardening 문서 세트 생성
-- [x] docs `01~09` README 인덱스 반영
+- [x] Stage 01-05 README 인덱스 반영
 - [ ] runtime 기동/리허설 증적 확보 (환경 허용 시)
 
 ## Related Documents

@@ -19,7 +19,7 @@ status: active
   - `kafka-ui` 계열 이미지 태그를 고정 버전으로 핀
   - `docker-compose.dev.yml` 경로 정합성 수정
   - 메시징 하드닝 전용 검사 스크립트 + CI job 추가
-  - optimization-hardening 문서 세트(01~09) 생성 및 링크 동기화
+  - optimization-hardening Stage 01-05 문서 세트 생성 및 링크 동기화
 - RabbitMQ는 현행 `messaging-option` 운영 모델(선택 활성화)을 유지한다.
 - 카탈로그 확장 항목은 정책/가이드/런북 기반 승인 절차로 단계 적용한다.
 

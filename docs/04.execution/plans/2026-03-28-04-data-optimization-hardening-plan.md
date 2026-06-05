@@ -20,7 +20,7 @@ status: completed
 - **Goals**:
   - 04-data compose 구성 정합성(healthcheck/시크릿/라벨/토큰)을 고정한다.
   - 04-data 전용 CI 하드닝 게이트를 도입한다.
-  - 01~09 문서 체계를 optimization/hardening 문맥으로 동기화한다.
+  - Stage 01-05 문서 체계를 optimization/hardening 문맥으로 동기화한다.
 - **In Scope**:
   - `infra/04-data/operational/supabase/docker-compose.yml`
   - `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`
@@ -86,7 +86,7 @@ status: completed
 
 - [x] 04-data 즉시 하드닝 항목 반영
 - [x] data-hardening 검증/CI 게이트 반영
-- [x] 01~09 문서 및 README 인덱스 동기화
+- [x] Stage 01-05 문서 및 README 인덱스 동기화
 - [ ] runtime 검증 증적 확보(환경 가능 시)
 
 ## Related Documents

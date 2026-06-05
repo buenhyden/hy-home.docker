@@ -17,7 +17,7 @@ status: active
 - **Owns**:
   - `infra/04-data/*` compose 구성 계약
   - 데이터 서비스 런타임 하드닝 기준과 검증 자동화
-  - 04-data 문서 추적성(01~09) 정합성
+  - 04-data Stage 01-05 문서 추적성 정합성
 - **Consumes**:
   - `01-gateway` 라우팅/TLS 종료 정책
   - `03-security` 시크릿 관리 정책

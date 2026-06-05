@@ -83,7 +83,7 @@ status: completed
 
 - [x] 메시징 compose 하드닝 항목 반영
 - [x] check-all-hardening.sh 05-messaging 및 CI 게이트 반영
-- [x] 01~09 optimization-hardening 문서 및 README 인덱스 동기화
+- [x] Stage 01-05 optimization-hardening 문서 및 README 인덱스 동기화
 - [ ] runtime 검증 증적 확보(환경 가능 시)
 
 ## Related Documents

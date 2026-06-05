@@ -40,7 +40,7 @@ status: active
 - **REQ-PRD-MSG-FUN-03**: Kafka UI 이미지는 부동 태그를 금지하고 고정 버전을 사용해야 한다.
 - **REQ-PRD-MSG-FUN-04**: `docker-compose.dev.yml` 경로 정합성을 보장해야 한다.
 - **REQ-PRD-MSG-FUN-05**: `scripts/hardening/check-all-hardening.sh 05-messaging`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-PRD-MSG-FUN-06**: 01~09 문서 계층에서 메시징 최적화/하드닝 문서 상호 링크를 유지해야 한다.
+- **REQ-PRD-MSG-FUN-06**: Stage 01-05 문서 체계에서 메시징 최적화/하드닝 문서 상호 링크를 유지해야 한다.
 
 ## Success Criteria
 

@@ -19,7 +19,7 @@ status: active
 - `depends_on` 조건이 `service_started`에 머물러 초기 기동 시 race condition과 장애 전파 가능성이 있다.
 - cAdvisor healthcheck가 부재해 호스트 수집기 이상 탐지가 느리다.
 - Loki/Tempo 커스텀 이미지의 런타임 하드닝(비루트 강제, secret guard)이 충분히 명시되지 않았다.
-- 06-observability 최적화/하드닝 문서 체계(01~09)가 부재해 실행 추적성이 약하다.
+- 06-observability 최적화/하드닝 Stage 01-05 문서 체계가 부재해 실행 추적성이 약하다.
 
 ## Personas
 
@@ -41,7 +41,7 @@ status: active
 - **REQ-PRD-OBS-FUN-04**: cAdvisor는 healthcheck를 제공해야 한다.
 - **REQ-PRD-OBS-FUN-05**: Loki/Tempo 커스텀 이미지와 entrypoint는 비루트 실행 및 secret 존재 검증을 포함해야 한다.
 - **REQ-PRD-OBS-FUN-06**: `scripts/hardening/check-all-hardening.sh 06-observability`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-PRD-OBS-FUN-07**: PRD~Runbook(01~09) 최적화/하드닝 문서를 상호 링크로 동기화해야 한다.
+- **REQ-PRD-OBS-FUN-07**: PRD/ARD/ADR/Spec/Plan/Task와 Guide/Policy/Runbook 최적화/하드닝 문서를 상호 링크로 동기화해야 한다.
 
 ## Success Criteria
 

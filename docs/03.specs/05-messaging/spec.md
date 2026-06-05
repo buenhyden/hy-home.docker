@@ -34,7 +34,7 @@ status: active
   - TLS 종료는 Traefik에서 수행하고 내부 `infra_net` 통신은 서비스 내부 프로토콜을 사용한다.
 - **Governance Contract**:
   - `scripts/hardening/check-all-hardening.sh 05-messaging`를 CI `infrastructure-hardening` job으로 강제한다.
-  - 문서 계층(01~09)은 optimization-hardening 문서 세트로 상호 링크를 유지한다.
+  - Stage 01-05 문서 체계는 optimization-hardening 문서 세트로 상호 링크를 유지한다.
 
 ## Core Design
 
@@ -137,7 +137,7 @@ docker inspect --format '{{json .State.Health}}' rabbitmq
 - **VAL-SPC-MSG-001**: `check-all-hardening.sh 05-messaging` 실패 0건
 - **VAL-SPC-MSG-002**: root profile 메시징 compose 정적 검증 통과 및 service-local compose context boundary 기록
 - **VAL-SPC-MSG-003**: 외부 노출 라우터의 middleware 체인 계약 충족
-- **VAL-SPC-MSG-004**: 01~09 optimization-hardening 문서 상호 링크 동기화
+- **VAL-SPC-MSG-004**: Stage 01-05 optimization-hardening 문서 상호 링크 동기화
 
 ## Agent Role & IO Contract (If Applicable)
 

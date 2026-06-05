@@ -18,7 +18,7 @@ status: active
 - 일부 04-data 구성에 계약 불일치(시크릿 파일 경로, tier 라벨, malformed expose 토큰)가 존재해 운영 위험을 유발한다.
 - `supabase` 스택은 `service_healthy` 의존 관계 대비 healthcheck 계약이 부족해 시작 순서/장애 탐지가 불안정하다.
 - 04-data 전용 하드닝 검증 게이트가 없어 회귀가 PR 단계에서 누락될 수 있다.
-- 문서 계층(01~09)에서 04-data 최적화/하드닝 기준과 실행 절차의 추적성이 약하다.
+- Stage 01-05 문서 체계에서 04-data 최적화/하드닝 기준과 실행 절차의 추적성이 약하다.
 
 ## Personas
 
@@ -39,7 +39,7 @@ status: active
 - **REQ-PRD-DATA-FUN-03**: `seaweedfs` compose의 malformed expose 토큰(`]`)을 제거해야 한다.
 - **REQ-PRD-DATA-FUN-04**: `ksql`의 tier 라벨은 `data`로 정규화해야 한다.
 - **REQ-PRD-DATA-FUN-05**: 04-data 하드닝 검증 스크립트(`scripts/hardening/check-all-hardening.sh 04-data`)와 CI job(`infrastructure-hardening`)을 제공해야 한다.
-- **REQ-PRD-DATA-FUN-06**: 01~09 문서 계층에서 04-data 최적화/하드닝 기준, 정책, 절차를 상호 링크로 동기화해야 한다.
+- **REQ-PRD-DATA-FUN-06**: Stage 01-05 문서 체계에서 04-data 최적화/하드닝 기준, 정책, 절차를 상호 링크로 동기화해야 한다.
 
 ## Success Criteria
 
@@ -56,7 +56,7 @@ status: active
   - `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` expose 정합화
   - `infra/04-data/analytics/ksql/docker-compose.yml` tier 라벨 정규화
   - 04-data 하드닝 검증 스크립트/CI 게이트 추가
-  - 01~09 문서 및 README 인덱스 갱신
+  - Stage 01-05 문서 및 README 인덱스 갱신
 - **Out of Scope**:
   - 각 데이터 엔진의 즉시 HA 토폴로지 확장(예: Cassandra multi-node 신규 구축)
   - 애플리케이션 비즈니스 로직/SQL 튜닝 구현

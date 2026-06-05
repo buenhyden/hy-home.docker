@@ -235,7 +235,7 @@ fi
 rm -f /tmp/check-repo-contracts-banned.txt
 
 section "Active docs taxonomy shorthand"
-if rg -n 'docs/(0[1-9]~0?9|01~09|01~10|01-03|01-09)|docs/01[[:space:]]*[–-][[:space:]]*docs/10|docs/01.?to.?docs/10|Stage (06|07|10)|docs/07([^[:alnum:]_.-]|$)|docs/08([^[:alnum:]_.-]|$)|docs/09([^[:alnum:]_.-]|$)|05/08/09|07/08/09' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
+if rg -n 'docs/(0[1-9]~0?9|01~09|01~10|01-03|01-09)|(^|[^[:alnum:]_/.-])01~09([^[:alnum:]_/.-]|$)|PRD~Runbook[[:space:]]*\(01~09\)|문서 계층[[:space:]]*\(01~09\)|문서 체계[[:space:]]*\(01~09\)|optimization-hardening 문서 세트[[:space:]]*\(01~09\)|docs/01[[:space:]]*[–-][[:space:]]*docs/10|docs/01.?to.?docs/10|Stage (06|07|10)|docs/07([^[:alnum:]_.-]|$)|docs/08([^[:alnum:]_.-]|$)|docs/09([^[:alnum:]_.-]|$)|05/08/09|07/08/09' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
   --glob '!docs/README.md' \
   --glob '!docs/00.agent-governance/memory/**' \
