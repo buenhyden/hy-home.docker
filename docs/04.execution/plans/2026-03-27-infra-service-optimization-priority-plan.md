@@ -5,68 +5,68 @@ status: active
 
 # Infra Service Optimization Priority Plan (Quick Wins + Quarterly) Implementation Plan
 
-> 기준 문서: `docs/05.operations/policies/00-workspace/infra-service-optimization-catalog.md`
+> Baseline document: `docs/05.operations/policies/00-workspace/infra-service-optimization-catalog.md`
 
 ---
 
 ## Overview
 
-이 문서는 인프라 서비스 최적화 카탈로그를 기준으로 `docs/04.execution/plans` 레이어에서 실행 우선순위를 고정하는 통합 실행 계획서다.
-범위는 문서 기반 실행계획 수립이며, 실제 Compose 변경은 후속 `docs/04.execution/tasks` 단계에서 수행한다.
-계획 구조는 Quick Wins(30일) + Quarterly(향후 2개 분기: 2026 Q2, 2026 Q3)로 구성한다.
+This document is the integrated implementation plan that fixes execution priorities in the `docs/04.execution/plans` layer based on the infrastructure service optimization catalog.
+The scope is documentation-based implementation planning; actual Compose changes are performed in the later `docs/04.execution/tasks` stage.
+The plan structure is Quick Wins (30 days) plus Quarterly work for the next two quarters: 2026 Q2 and 2026 Q3.
 
 ## Context
 
-- 기준 문서: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
-- 기준 데이터(39개 서비스 스냅샷):
-  - `healthcheck` 미구성: 6
-  - `restart` 미구성: 21
-  - `no-new-privileges` 미구성: 37
-  - `limits(cpus/memory)` 미구성: 37
-  - `secrets` 미구성: 16
-- `common-optimizations.yml` 기반 커버리지 스냅샷(2026-03-28):
-  - 서비스 디렉터리 기준: `39/39 (100%)` 적용
-  - Compose 파일 기준: `43/43 (100%)` 적용
-  - 미적용 서비스: 없음 (서비스 기준 `0건`)
-  - 보조 Compose: `04-data/analytics/opensearch/docker-compose.cluster.yml` 적용 완료
-  - 의도된 템플릿 예외 SSoT: `infra/common-optimizations.exceptions.json`
-- `PLN-QW-001~005` 기준선 강제 적용 상태(2026-03-28):
-  - 검증 명령: `bash scripts/validation/check-quickwin-baseline.sh`
-  - 템플릿/보안 검증 명령: `bash scripts/validation/check-template-security-baseline.sh`
-  - 결과: `restart/healthcheck/no-new-privileges/cpus/mem_limit/secrets` 누락 `0` (승인 예외 반영)
-  - 승인 예외 SSoT: `infra/common-optimizations.exceptions.json`
-- 일정 고정:
-  - Quick Wins 기준일: 2026-03-27
-  - Quick Wins 목표 완료일: 2026-04-26
-  - Quarterly 범위: 2026 Q2, 2026 Q3
+- Baseline document: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
+- Baseline data (39-service snapshot):
+  - `healthcheck` not configured: 6
+  - `restart` not configured: 21
+  - `no-new-privileges` not configured: 37
+  - `limits(cpus/memory)` not configured: 37
+  - `secrets` not configured: 16
+- `common-optimizations.yml` coverage snapshot (2026-03-28):
+  - Service directory basis: `39/39 (100%)` applied
+  - Compose file basis: `43/43 (100%)` applied
+  - Unapplied services: none (`0` on a service basis)
+  - Auxiliary Compose: `04-data/analytics/opensearch/docker-compose.cluster.yml` applied
+  - Intentional template exception SSoT: `infra/common-optimizations.exceptions.json`
+- `PLN-QW-001~005` baseline enforcement status (2026-03-28):
+  - Validation command: `bash scripts/validation/check-quickwin-baseline.sh`
+  - Template/security validation command: `bash scripts/validation/check-template-security-baseline.sh`
+  - Result: `0` missing `restart/healthcheck/no-new-privileges/cpus/mem_limit/secrets` after approved exceptions
+  - Approved exception SSoT: `infra/common-optimizations.exceptions.json`
+- Fixed schedule:
+  - Quick Wins baseline date: 2026-03-27
+  - Quick Wins target completion date: 2026-04-26
+  - Quarterly scope: 2026 Q2, 2026 Q3
 
 ## Public Interfaces Impact
 
-- 런타임 API/스키마/코드 인터페이스 변경 없음
-- 문서 인터페이스 변경만 발생:
-  - `docs/04.execution/plans/README.md` 인덱스 항목 추가
-  - 본 계획서의 상대경로 기반 추적 링크 추가
+- No runtime API, schema, or code interface changes.
+- Only documentation interface changes occur:
+  - Add an index entry to `docs/04.execution/plans/README.md`.
+  - Add relative-path traceability links in this plan.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - 카탈로그 기반의 실행 우선순위를 의사결정 완료 상태로 고정
-  - 30일 내 즉시 위험 저감이 가능한 Quick Wins 백로그 확정
-  - 2026 Q2/Q3 분기별 운영 고도화 목표와 완료조건 정의
+  - Fix catalog-based execution priorities as completed decisions.
+  - Confirm a Quick Wins backlog that can reduce immediate risk within 30 days.
+  - Define operating-improvement goals and completion criteria for 2026 Q2/Q3.
 - **In Scope**:
-  - 우선순위 모델 정의 및 티어 가중치 고정
-  - Quick Wins 작업 항목(PLN-QW-001 ~ PLN-QW-007) 정의
-  - Quarterly 로드맵(분기별 목표/산출물/완료조건) 정의
-  - 검증 계획 및 테스트 시나리오 정의
+  - Define the priority model and fix tier weights.
+  - Define Quick Wins work items (PLN-QW-001 through PLN-QW-007).
+  - Define the Quarterly roadmap (quarterly goals, deliverables, and completion criteria).
+  - Define verification plan and test scenarios.
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - 실제 `infra/*/docker-compose*` 파일 변경
-  - 런타임 서비스 스케일링/배포 수행
+  - Changing actual `infra/*/docker-compose*` files
+  - Performing runtime service scaling or deployment
 - **Out of Scope**:
-  - 코드 레벨 성능 튜닝 구현
-  - 서비스별 세부 런북 절차 작성/수정
+  - Implementing code-level performance tuning
+  - Writing or editing detailed per-service runbook procedures
 
 ## Priority Model
 
@@ -80,61 +80,61 @@ status: active
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-QW-001 | Tier A/B 장기 실행 서비스 `restart` 정책 표준화 | `infra/**/docker-compose*.yml`, `docs/04.execution/tasks/*` | REQ-OPS-BASE-001 | Tier A/B 대상 서비스 `restart` 누락 0건 |
-| PLN-QW-002 | `healthcheck` 누락 서비스 보강 우선 적용 (운영 핵심 우선, lab 후순위) | `infra/**/docker-compose*.yml`, `docs/05.operations/**` | REQ-OPS-BASE-002 | Tier A/B 핵심 서비스 `healthcheck` 누락 0건 |
-| PLN-QW-003 | `no-new-privileges` 기본 적용 원칙 도입 및 예외 목록화 | `infra/**/docker-compose*.yml`, `docs/05.operations/**` | REQ-SEC-BASE-003 | 예외 목록 명시 + 기본 적용률 100% |
-| PLN-QW-004 | 리소스 최소 상한(`cpus`, `memory`) 정책 초안 확정 | `docs/05.operations/policies/00-workspace/infra-service-optimization-catalog.md`, `docs/04.execution/tasks/*` | REQ-OPS-CAP-004 | 티어별 최소 상한 정책 문서화 완료 |
-| PLN-QW-005 | 민감정보 주입 경로 표준화(`secrets`/Vault 우선) | `infra/**/docker-compose*.yml`, `infra/03-security/vault/**`, `docs/05.operations/**` | REQ-SEC-SECRETS-005 | 평문 비밀 주입 경로 감축 및 표준 경로 명시 |
-| PLN-QW-006 | workflow tier 신규 서비스 실체 정의 갭 처리 기준 수립 | `docs/98.archive/README.md`, `docs/05.operations/**/07-workflow/README.md` | REQ-WF-GAP-006 | 미구현 workflow service는 active chain에서 제거되고 archive ledger로만 추적 |
-| PLN-QW-007 | 문서 추적성 정리 (`04.execution/plans` ↔ `05.operations/{guides,policies,runbooks}`) | `docs/04.execution/plans/**`, `docs/05.operations/**` | REQ-DOC-TRACE-007 | 교차 링크 무결성 100% |
+| PLN-QW-001 | Standardize `restart` policy for long-running Tier A/B services | `infra/**/docker-compose*.yml`, `docs/04.execution/tasks/*` | REQ-OPS-BASE-001 | 0 missing `restart` entries for target Tier A/B services |
+| PLN-QW-002 | Prioritize strengthening services missing `healthcheck` coverage, with operations-critical services first and lab services later | `infra/**/docker-compose*.yml`, `docs/05.operations/**` | REQ-OPS-BASE-002 | 0 missing `healthcheck` entries for core Tier A/B services |
+| PLN-QW-003 | Introduce default `no-new-privileges` application principle and list exceptions | `infra/**/docker-compose*.yml`, `docs/05.operations/**` | REQ-SEC-BASE-003 | Exception list documented and default application rate is 100% |
+| PLN-QW-004 | Confirm resource minimum cap (`cpus`, `memory`) policy draft | `docs/05.operations/policies/00-workspace/infra-service-optimization-catalog.md`, `docs/04.execution/tasks/*` | REQ-OPS-CAP-004 | Tier-specific minimum cap policy documented |
+| PLN-QW-005 | Standardize sensitive-data injection paths with `secrets`/Vault first | `infra/**/docker-compose*.yml`, `infra/03-security/vault/**`, `docs/05.operations/**` | REQ-SEC-SECRETS-005 | Plaintext secret injection paths reduced and standard paths documented |
+| PLN-QW-006 | Establish criteria for handling workflow tier new-service definition gaps | `docs/98.archive/README.md`, `docs/05.operations/**/07-workflow/README.md` | REQ-WF-GAP-006 | Unimplemented workflow services are removed from the active chain and tracked only in the archive ledger |
+| PLN-QW-007 | Clean up document traceability (`04.execution/plans` to `05.operations/{guides,policies,runbooks}`) | `docs/04.execution/plans/**`, `docs/05.operations/**` | REQ-DOC-TRACE-007 | Cross-link integrity is 100% |
 
 ## Quarterly Roadmap
 
 | Quarter | Goals | Deliverables | Completion Criteria |
 | --- | --- | --- | --- |
-| 2026 Q2 (2026-04-01 ~ 2026-06-30) | 운영 기준 코드화(Compose lint/gate), 백업·복구 리허설 정례화, SLO/Alert 정합성 강화 | Compose policy gate 초안, 복구 리허설 캘린더, SLO/Alert 정합성 리포트 | Tier A 핵심 서비스 운영 기준선 100% 충족 |
-| 2026 Q3 (2026-07-01 ~ 2026-09-30) | 확장성/성능 최적화(메시징·데이터·AI), 정책 자동검증 CI, 보안 하드닝 고도화 | 성능 최적화 백로그 완료 리포트, 정책 검증 CI 파이프라인, 보안 하드닝 체크리스트 | 분기 성능 회귀 및 장애 복구 리드타임 목표 달성 |
+| 2026 Q2 (2026-04-01 ~ 2026-06-30) | Codify operations criteria (Compose lint/gate), regularize backup/recovery rehearsals, and strengthen SLO/Alert alignment | Compose policy gate draft, recovery rehearsal calendar, SLO/Alert alignment report | Tier A core services meet 100% of the operations baseline |
+| 2026 Q3 (2026-07-01 ~ 2026-09-30) | Optimize scalability/performance for messaging, data, and AI; add policy auto-validation CI; improve security hardening | Performance optimization backlog completion report, policy validation CI pipeline, security hardening checklist | Quarterly performance regression and incident recovery lead-time targets are met |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Structural | 링크 무결성 (`04.execution/plans` 신규 문서 상대경로 점검) | 상대경로 링크 점검 스크립트 또는 수동 검증 | 모든 링크 대상 파일 존재 |
-| VAL-PLN-002 | Compliance | 템플릿 필수 섹션 준수 (`Overview`, `Work Breakdown`, `Verification`, `Completion`) | 문서 섹션 체크리스트 검토 | 필수 섹션 누락 0건 |
-| VAL-PLN-003 | Traceability | 기준 카탈로그와 항목 일치성(Quick Wins/Quarterly 매핑) | 카탈로그 대비 항목 매핑 리뷰 | 누락/중복 없이 1:1 매핑 |
-| VAL-PLN-004 | Indexing | `docs/04.execution/plans/README.md` 인덱스 반영 확인 | README Structure 섹션 검토 | 신규 계획서 항목 존재 |
-| VAL-PLN-005 | Automation | `04.execution/plans ↔ 05.operations/{guides,policies,runbooks}` 링크 동기화 자동 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
+| VAL-PLN-001 | Structural | Link integrity for new `04.execution/plans` document relative paths | Relative-path link check script or manual validation | Every link target file exists |
+| VAL-PLN-002 | Compliance | Required template section compliance (`Overview`, `Work Breakdown`, `Verification`, `Completion`) | Document section checklist review | 0 missing required sections |
+| VAL-PLN-003 | Traceability | Item consistency against the baseline catalog (Quick Wins/Quarterly mapping) | Review item mapping against the catalog | 1:1 mapping with no omissions or duplicates |
+| VAL-PLN-004 | Indexing | Confirm reflection in `docs/04.execution/plans/README.md` index | Review README Structure section | New plan entry exists |
+| VAL-PLN-005 | Automation | Automated verification for `04.execution/plans` to `05.operations/{guides,policies,runbooks}` link synchronization | `bash scripts/validation/check-doc-traceability.sh` | 0 failures |
 
 ## Test Cases / Scenarios
 
 | ID | Scenario | Expected Result |
 | --- | --- | --- |
-| TST-PLN-001 | 신규 계획서 단독 열람 | Quick Wins/Quarterly/검증 기준/완료 조건이 한 문서에서 의사결정 가능 |
-| TST-PLN-002 | 운영자가 카탈로그와 계획서 교차 확인 | 카탈로그 권고가 누락 없이 계획 Task로 매핑됨 |
-| TST-PLN-003 | 문서 인덱스 탐색 | `docs/04.execution/plans/README.md`에서 신규 계획서로 즉시 이동 가능 |
+| TST-PLN-001 | Read the new plan in isolation | Quick Wins, Quarterly work, verification criteria, and completion criteria support decisions in one document |
+| TST-PLN-002 | Operator cross-checks the catalog and plan | Catalog recommendations map to plan tasks without omissions |
+| TST-PLN-003 | Navigate the document index | The new plan is immediately reachable from `docs/04.execution/plans/README.md` |
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
-- **Offline Eval Gate**: 문서 정책/카탈로그/런북 간 링크 및 요구사항 매핑 완전성 검토
-- **Sandbox / Canary Rollout**: 후속 `docs/04.execution/tasks` 단계에서 Tier A부터 점진 적용
-- **Human Approval Gate**: Infra Lead + Security Reviewer 승인 후 Compose 변경 착수
-- **Rollback Trigger**: 계획-카탈로그 불일치 또는 운영 영향 리스크 증가 시 작업 중지/재계획
-- **Prompt / Model Promotion Criteria**: N/A (문서 계획 단계)
+- **Offline Eval Gate**: Review link and requirement mapping completeness across document policy, catalog, and runbooks.
+- **Sandbox / Canary Rollout**: Apply progressively from Tier A in the later `docs/04.execution/tasks` stage.
+- **Human Approval Gate**: Start Compose changes after Infra Lead and Security Reviewer approval.
+- **Rollback Trigger**: Stop and replan if plan-catalog mismatch or operations impact risk increases.
+- **Prompt / Model Promotion Criteria**: N/A for the documentation planning stage.
 
 ## Completion Criteria
 
-- [x] 단일 통합 계획서 작성 완료 (Quick Wins + Quarterly 포함)
-- [x] 우선순위 모델 및 티어 가중치 고정
-- [x] Quick Wins 7개 작업 항목 정의 완료
-- [x] 2026 Q2/Q3 분기 로드맵 정의 완료
-- [x] 검증 계획(VAL-PLN-001~005) 및 테스트 시나리오 정의 완료
-- [x] `docs/04.execution/plans/README.md` 인덱스 갱신 완료
+- [x] Single integrated plan completed, including Quick Wins and Quarterly work
+- [x] Priority model and tier weights fixed
+- [x] 7 Quick Wins work items defined
+- [x] 2026 Q2/Q3 quarterly roadmap defined
+- [x] Verification plan (VAL-PLN-001 through VAL-PLN-005) and test scenarios defined
+- [x] `docs/04.execution/plans/README.md` index refreshed
 
 ## Assumptions & Defaults
 
-- 실행 담당자 표기는 개인명 대신 역할(Infra Lead, DevOps, SRE, Security) 기준으로 유지한다.
-- 본 산출물은 계획 수립 및 인덱싱까지 포함하며, 실제 Compose 수정은 후속 Task 단계에서 수행한다.
-- 분기 로드맵 기준일은 2026-03-27로 고정한다.
+- Execution owner labels remain role-based (Infra Lead, DevOps, SRE, Security) instead of personal names.
+- This deliverable includes planning and indexing; actual Compose edits happen in the later Task stage.
+- The quarterly roadmap baseline date is fixed at 2026-03-27.
 
 ## Related Documents
 
