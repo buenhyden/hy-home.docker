@@ -9,7 +9,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `06-observability` 티어의 문서화 표준화 작업을 위한 실행 및 검증 태스크 목록이다. PRD, ARD, Spec, Plan에서 정의된 요구사항의 이행 여부를 추적한다.
+This document lists the execution and verification tasks for standardizing documentation in the `06-observability` tier. It tracks whether the requirements defined in the PRD, ARD, Spec, and Plan have been implemented.
 
 ## Inputs
 
@@ -18,9 +18,9 @@ status: completed
 
 ## Working Rules
 
-- 모든 문서는 `docs/99.templates`의 최신 양식을 준수한다.
-- 모든 상대 경로 링크는 로컬 파일 탐색기에서 동작 확인이 필수적이다.
-- 단계별 완료 시마다 해당 README의 인덱스를 최신화한다.
+- All documents follow the latest forms in `docs/99.templates`.
+- All relative-path links must be checked in the local file explorer.
+- Update the relevant README index whenever a phase is completed.
 
 ## Task Table
 
@@ -35,9 +35,9 @@ status: completed
 
 ## Verification Summary
 
-- **Link Check**: 모든 문서 간의 상대 경로 링크 작동 확인.
-- **Lint Check**: `markdownlint`를 통한 서석 및 공백 오류 제거.
-- **Index Check**: 각 레이어 README에 신규 문서 노출 확인.
+- **Link Check**: Confirmed that relative-path links work across all documents.
+- **Lint Check**: Removed formatting and whitespace errors through `markdownlint`.
+- **Index Check**: Confirmed that new documents appear in each layer README.
 
 ## Related Documents
 

@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 Gateway 티어(`01-gateway`)의 문서 체계를 표준화하는 작업의 구현·검증 작업 목록이다. PRD, ARD, ADR, Spec, Plan의 생성 및 리팩토링 작업을 추적 가능하게 기록한다.
+This document lists the implementation and verification tasks for standardizing the Gateway tier (`01-gateway`) documentation system. It records the creation and refactoring work for the PRD, ARD, ADR, Spec, and Plan so they can be traced.
 
 ## Inputs
 
@@ -16,20 +16,20 @@ status: completed
 
 ## Working Rules
 
-- 모든 문서는 `docs/99.templates/`의 표준 템플릿을 준수해야 한다.
-- 모든 문서 작업 후에는 상대 경로 링크의 무결성을 검증한다.
-- 레이어별 `README.md`는 `readme.template.md`를 기반으로 리팩토링한다.
+- All documents must follow the standard templates in `docs/99.templates/`.
+- Verify relative-path link integrity after every documentation task.
+- Refactor each layer-level `README.md` from `readme.template.md`.
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| T-001 | Gateway PRD 생성 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/01.requirements/` | Done |
-| T-002 | Gateway ARD 생성 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/02.architecture/requirements/` | Done |
-| T-003 | Gateway ADR 생성 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/02.architecture/decisions/` | Done |
-| T-004 | Gateway Spec 생성 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/03.specs/01-gateway/` | Done |
-| T-005 | Gateway Plan 리팩토링 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/04.execution/plans/` | Done |
-| T-006 | Gateway Task 문서 생성 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/04.execution/tasks/` | Completed |
+| T-001 | Create the Gateway PRD and refactor the level README | doc | §1 | Phase 1 | `ls docs/01.requirements/` | Done |
+| T-002 | Create the Gateway ARD and refactor the level README | doc | §1 | Phase 1 | `ls docs/02.architecture/requirements/` | Done |
+| T-003 | Create the Gateway ADR and refactor the level README | doc | §1 | Phase 1 | `ls docs/02.architecture/decisions/` | Done |
+| T-004 | Create the Gateway Spec and refactor the level README | doc | §1 | Phase 1 | `ls docs/03.specs/01-gateway/` | Done |
+| T-005 | Refactor the Gateway Plan and level README | doc | §1 | Phase 1 | `ls docs/04.execution/plans/` | Done |
+| T-006 | Create the Gateway Task document and refactor the level README | doc | §1 | Phase 1 | `ls docs/04.execution/tasks/` | Completed |
 
 ## Verification Summary
 
