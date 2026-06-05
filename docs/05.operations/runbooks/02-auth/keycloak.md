@@ -34,18 +34,18 @@ status: active
 
 ### Checklist
 
-- [ ] `docker compose -f infra/02-auth/keycloak/docker-compose.yml config` 성공
+- [ ] `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 결과 확인
 - [ ] `docker compose ps`에서 `keycloak`, `mng-pg` 상태 확인
 
 ### Steps
 
 1. 설정/로그 확인
-   - `docker logs keycloak --tail=200`
-   - `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
+   - `docker compose --profile auth logs keycloak --tail=200`
+   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
 2. readiness 실패 대응
    - DB 연결 상태 확인(`mng-pg` 로그/상태)
-   - Keycloak 재기동: `docker compose -f infra/02-auth/keycloak/docker-compose.yml up -d keycloak`
+   - Keycloak 재기동: `docker compose --profile auth up -d keycloak`
 3. 시크릿 회전 장애 대응
    - `/run/secrets/keycloak_admin_password`, `/run/secrets/keycloak_db_password` 파일 존재와 mount 상태 확인
    - secret 값은 출력하지 않고 환경 변수/secret 파일 매핑 오타, rotation timestamp, 관련 서비스 재시작 여부 점검
@@ -56,19 +56,19 @@ status: active
 ### Verification Steps
 
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
-- [ ] `docker exec keycloak sh -c 'exec 3<>/dev/tcp/127.0.0.1/9000; printf \"GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3; cat <&3'`에서 `\"status\":\"UP\"` 확인
+- [ ] `docker compose --profile auth exec keycloak sh -c 'exec 3<>/dev/tcp/127.0.0.1/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'`에서 `"status":"UP"` 확인
 
 ### Observability and Evidence Sources
 
 - **Signals**: readiness 상태, Keycloak 로그의 DB/OIDC 오류
 - **Evidence to Capture**:
-  - `docker logs keycloak --tail=200`
+  - `docker compose --profile auth logs keycloak --tail=200`
   - `check-all-hardening.sh 02-auth` 실행 결과
 
 ### Safe Rollback or Recovery Procedure
 
 - [ ] 직전 정상 커밋으로 `infra/02-auth/keycloak/docker-compose.yml` 복원
-- [ ] `docker compose -f infra/02-auth/keycloak/docker-compose.yml up -d keycloak`
+- [ ] `docker compose --profile auth up -d keycloak`
 - [ ] readiness 및 로그인 플로우 재검증
 
 ### Agent Operations (If Applicable)

@@ -22,7 +22,7 @@ status: active
 ## Controls
 
 - **Required**:
-  - Keycloak은 `template-infra-med`를 사용한다.
+  - Keycloak은 `template-infra-high`를 사용한다.
   - DB/Admin 비밀은 `/run/secrets` 파일에서 읽어 환경 변수로 주입한다.
   - readiness healthcheck(`/health/ready`)를 유지한다.
   - 시크릿 길이/값 등 민감한 디버그 출력은 금지한다.
@@ -40,7 +40,8 @@ status: active
 ## Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
-- `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
+- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 
 ## Review Cadence
 

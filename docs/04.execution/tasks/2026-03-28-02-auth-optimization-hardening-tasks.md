@@ -62,13 +62,12 @@ status: completed
 
 - **Test Commands**:
   - `bash scripts/hardening/check-all-hardening.sh 02-auth`
+  - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+  - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
-  - `docker compose config`
-  - `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
-  - `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: PR CI logs + local command output (`infrastructure-hardening/template-security/doc-traceability/config`)
+- **Logs / Evidence Location**: PR CI logs + local command output (`infrastructure-hardening/root-profile/template-security/doc-traceability`)
 
 ## Related Documents
 

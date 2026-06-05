@@ -25,12 +25,13 @@ status: active
 ## Contracts
 
 - **Config Contract**:
-  - Keycloak: `template-infra-med`, `/run/secrets/*` 기반 DB/Admin secret 주입 유지
-  - OAuth2 Proxy: `template-infra-readonly-med`, 엔트리포인트 기반 시크릿 주입
+  - Keycloak: `template-infra-high`, `/run/secrets/*` 기반 DB/Admin secret 주입 유지
+  - OAuth2 Proxy root-active dev leaf: `template-infra-readonly-med`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, `mng-valkey` 세션 저장소
+  - OAuth2 Proxy local/full leaf: `template-infra-readonly-med`, `Dockerfile`, `docker-entrypoint.sh`, `oauth2-proxy-valkey` 세션 저장소
 - **Data / Interface Contract**:
   - OIDC issuer: `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`
   - Callback: `https://auth.${DEFAULT_URL}/oauth2/callback`
-  - Session store: `redis://...@mng-valkey:6379`
+  - Session store: root-active dev leaf는 `redis://mng-valkey:6379`, local/full leaf는 `redis://oauth2-proxy-valkey:6379`
 - **Governance Contract**:
   - `scripts/hardening/check-all-hardening.sh 02-auth` 통과가 CI merge gate 조건
   - Guide/Operation/Runbook 문서는 상호 링크를 유지
@@ -98,17 +99,16 @@ interface AuthHardeningContract {
 
 ```bash
 bash scripts/hardening/check-all-hardening.sh 02-auth
+HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
+HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-doc-traceability.sh
-docker compose config
-docker compose -f infra/02-auth/keycloak/docker-compose.yml config
-docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config
 ```
 
 ## Success Criteria & Verification Plan
 
 - **VAL-SPC-AUTH-001**: check-all-hardening.sh 02-auth 실패 0건
-- **VAL-SPC-AUTH-002**: CI에 `infrastructure-hardening` job이 존재하고 실행됨
+- **VAL-SPC-AUTH-002**: root `auth`/`core` profile compose validation과 CI `infrastructure-hardening` job이 실행됨
 - **VAL-SPC-AUTH-003**: 02-auth Guide/Operation/Runbook이 상호 링크로 연결됨
 
 ## Agent Role & IO Contract (If Applicable)

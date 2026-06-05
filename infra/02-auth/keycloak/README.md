@@ -6,7 +6,7 @@
 
 ## Overview (KR)
 
-Keycloak은 `hy-home.docker` 생태계의 중앙 ID 제공자(IdP)이다. 사용자 인증, 세션 관리, OIDC/SAML 토큰 발행을 처리하며, Quarkus 기반 배포판(v26.5.4)을 인프라망 내에서 컨테이너 환경에 최적화하여 운영한다.
+Keycloak은 `hy-home.docker` 생태계의 중앙 ID 제공자(IdP)이다. 사용자 인증, 세션 관리, OIDC/SAML 토큰 발행을 처리하며, Quarkus 기반 배포판(`quay.io/keycloak/keycloak:26.6.2-2`)을 인프라망 내에서 컨테이너 환경에 최적화하여 운영한다.
 
 ## Audience
 
@@ -70,7 +70,7 @@ keycloak/
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Platform   | Keycloak (Quarkus)             | V26.5.4 (quay.io)         |
+| Platform   | Keycloak (Quarkus)             | `quay.io/keycloak/keycloak:26.6.2-2` |
 | Database   | PostgreSQL                     | Identity Persistence      |
 | Networking | Traefik                        | ForwardAuth/OIDC Ingress  |
 
@@ -96,15 +96,15 @@ healthcheck:
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Run `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh 02-auth` before marking documentation ready.
 - Verify realm and client configuration by logging into the Keycloak admin console and confirming OIDC client settings match dependent services.
-- Confirm OIDC discovery by checking `docker logs keycloak | grep -i 'error\|warn'` after config changes.
+- Confirm OIDC discovery by checking `docker compose --profile auth logs keycloak --tail=200 | grep -i 'error\|warn'` after config changes.
 - Verify admin credentials and database connectivity before declaring the service ready.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Keycloak DB, secret, and Traefik label wiring.
+- Start with `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` to confirm root-context DB, secret, and Traefik label wiring.
 - Check the `keycloak` container health endpoint and logs before changing realm, client, or secret references.
 
 ## Related Documents

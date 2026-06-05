@@ -37,14 +37,14 @@ status: active
 
 ### Checklist
 
-- [ ] `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config` 성공
+- [ ] `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 실행
-- [ ] `docker logs oauth2-proxy --tail=200` 오류 패턴 확인
+- [ ] `docker compose --profile auth logs oauth2-proxy --tail=200` 오류 패턴 확인
 
 ### Steps
 
 1. 기본 진단
-   - `/ping` 확인: `docker exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
+   - `/ping` 확인: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
    - OIDC issuer 확인: `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`
 2. 로그인 루프 대응
    - `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS`, `redirect_url` 정합성 확인
@@ -63,25 +63,28 @@ status: active
 ### Verification Steps
 
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
-- [ ] `docker exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping` 성공
+- [ ] `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping` 성공
 - [ ] 인증 콜백(`/oauth2/callback`) 정상 동작
 
 ### Observability and Evidence Sources
 
 - **Signals**: `/ping`, oauth2-proxy 로그, Keycloak 연결 오류율
 - **Evidence to Capture**:
-  - `docker logs oauth2-proxy --tail=200`
-  - `docker logs keycloak --tail=200`
+  - `docker compose --profile auth logs oauth2-proxy --tail=200`
+  - `docker compose --profile auth logs keycloak --tail=200`
   - check-all-hardening.sh 02-auth 출력
 
 ### Safe Rollback or Recovery Procedure
 
 - [ ] 아래 파일을 직전 정상 커밋으로 복원
+  - `infra/02-auth/oauth2-proxy/docker-compose.dev.yml`
   - `infra/02-auth/oauth2-proxy/docker-compose.yml`
   - `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
+  - `infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh`
   - `infra/02-auth/oauth2-proxy/Dockerfile`
+  - `infra/02-auth/oauth2-proxy/dev.Dockerfile`
   - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
-- [ ] `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml up -d oauth2-proxy`
+- [ ] `docker compose --profile auth up -d oauth2-proxy`
 - [ ] `/ping` + 로그인 시나리오 재검증
 
 ### Agent Operations (If Applicable)

@@ -30,20 +30,23 @@ status: active
 
 - `infra/02-auth/keycloak` 정상 동작
 - `infra/02-auth/oauth2-proxy` 구성 파일 접근
-- `mng-valkey` 세션 저장소 준비
+- root-active dev leaf의 `mng-valkey` 또는 local/full leaf의 `oauth2-proxy-valkey` 세션 저장소 준비
 
 ### Step-by-step Instructions
 
 1. Compose 런타임 계약 확인
    - `template-infra-readonly-med` 사용
+   - root-active leaf는 `docker-compose.dev.yml`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, `mng-valkey`를 사용
+   - local/full leaf는 `docker-compose.yml`, `Dockerfile`, `docker-entrypoint.sh`, `oauth2-proxy-valkey`를 사용
    - command가 `--config /etc/oauth2-proxy.cfg`인지 확인
    - `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS` 확인
 2. 엔트리포인트 시크릿 주입 확인
-   - `docker-entrypoint.sh`에서 `oauth2_proxy_cookie_secret`, `oauth2_proxy_client_secret`, `mng_valkey_password`를 읽어 환경 변수에 export하는지 확인
+   - root-active `docker-entrypoint.dev.sh`에서 `mng_valkey_password`를 읽어 환경 변수에 export하는지 확인
+   - local/full `docker-entrypoint.sh`에서 `oauth2_valkey_password`를 읽어 환경 변수에 export하는지 확인
 3. 이미지 권한 모델 확인
    - Dockerfile의 `USER oauth2proxy:oauth2proxy` 적용 확인
 4. 정적 검증
-   - `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
+   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
    - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
 ### Common Pitfalls
@@ -54,7 +57,8 @@ status: active
 
 ## Common Checks
 
-- `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
+- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
 ## Runbook Handoff

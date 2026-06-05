@@ -35,14 +35,14 @@ status: active
 ### Step-by-step Instructions
 
 1. Compose 설정 확인
-   - `service: template-infra-med` 적용 여부 확인
+   - `service: template-infra-high` 적용 여부 확인
    - `KC_DB_PASSWORD_FILE`, `keycloak_db_password`, `keycloak_admin_password` 연결 확인
 2. 헬스체크 계약 확인
    - 관리 포트 readiness 체크(`/health/ready`) 설정 확인
 3. OIDC 발급자 URL 확인
    - Realm issuer와 OAuth2 Proxy `OAUTH2_PROXY_OIDC_ISSUER_URL`가 동일한 도메인 규칙을 따르는지 확인
 4. 정적 검증
-   - `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
+   - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
    - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
 ### Common Pitfalls
@@ -53,7 +53,8 @@ status: active
 
 ## Common Checks
 
-- `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
+- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
 ## Runbook Handoff

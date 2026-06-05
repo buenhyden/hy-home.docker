@@ -42,7 +42,7 @@ status: active
 - Client Request → Traefik (`01-gateway`) → OAuth2 Proxy ForwardAuth
 - OAuth2 Proxy ↔ Keycloak (OIDC issuer/callback)
 - Keycloak ↔ PostgreSQL (`mng-pg`)
-- OAuth2 Proxy ↔ Valkey (`mng-valkey`) 세션 저장
+- OAuth2 Proxy ↔ Valkey 세션 저장: root-active dev leaf는 `mng-valkey`, local/full leaf는 `oauth2-proxy-valkey` 사용
 
 핵심 아키텍처 원칙:
 
@@ -64,13 +64,15 @@ status: active
 
 - **Runtime / Platform**:
   - Docker Compose 기반 운영
-  - OAuth2 Proxy: custom image + non-root 사용자
+  - Keycloak: `template-infra-high` + `/run/secrets` 기반 DB/Admin secret 주입
+  - OAuth2 Proxy: custom Alpine image + non-root 사용자
 - **Deployment Model**:
-  - 정적 검증 후 단계적 반영(인증 계층 단위)
+  - root compose profile 정적 검증 후 단계적 반영(인증 계층 단위)
   - CI에서 `infrastructure-hardening` 필수 게이트 적용
 - **Operational Evidence**:
   - `scripts/hardening/check-all-hardening.sh 02-auth`
-  - `docker compose config`
+  - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+  - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
   - 서비스별 healthcheck 결과
 
 ## AI Agent Architecture Requirements (If Applicable)

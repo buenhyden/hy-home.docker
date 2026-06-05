@@ -3549,6 +3549,68 @@ PY
   failures=$((failures + 1))
 fi
 
+section "02-auth current-truth drift"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import sys
+
+auth_stage_files: list[pathlib.Path] = []
+for root in [
+    pathlib.Path("docs/01.requirements"),
+    pathlib.Path("docs/02.architecture"),
+    pathlib.Path("docs/03.specs"),
+    pathlib.Path("docs/04.execution"),
+    pathlib.Path("docs/05.operations"),
+]:
+    if not root.exists():
+        continue
+    for path in sorted(root.rglob("*.md")):
+        normalized = path.as_posix()
+        if "/02-auth/" in normalized or "02-auth" in path.name or "auth-" in path.name:
+            auth_stage_files.append(path)
+
+auth_files = auth_stage_files + sorted(pathlib.Path("infra/02-auth").rglob("*"))
+allowed_suffixes = {".md", ".yml", ".yaml", ".sh", ".cfg", ".Dockerfile", ""}
+auth_files = [path for path in auth_files if path.is_file() and path.suffix in allowed_suffixes]
+
+stale_literals = {
+    "26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.6.2-2",
+    "v26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.6.2-2",
+    "7.14.2": "OAuth2 Proxy source image is quay.io/oauth2-proxy/oauth2-proxy:v7.15.2",
+    "v7.14.2": "OAuth2 Proxy source image is quay.io/oauth2-proxy/oauth2-proxy:v7.15.2",
+    "Keycloak: `template-infra-med`": "Keycloak current compose extends template-infra-high",
+    "Keycloak은 `template-infra-med`": "Keycloak current compose extends template-infra-high",
+    "`service: template-infra-med` 적용 여부": "Keycloak current guide must check template-infra-high",
+    "docker compose -f infra/02-auth/keycloak/docker-compose.yml config": "02-auth validation must use root profile validator",
+    "docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config": "02-auth validation must use root profile validator",
+    "docker compose -f infra/02-auth/keycloak/docker-compose.yml up -d keycloak": "runtime starts must use root compose context",
+    "docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml up -d oauth2-proxy": "runtime starts must use root compose context",
+    "docker exec keycloak": "runtime checks must use root compose exec context",
+    "docker exec oauth2-proxy": "runtime checks must use root compose exec context",
+    "docker logs keycloak": "log checks must use root compose logs context",
+    "docker logs oauth2-proxy": "log checks must use root compose logs context",
+}
+
+failures: list[str] = []
+for path in auth_files:
+    try:
+        text = path.read_text(errors="ignore")
+    except Exception:
+        continue
+    for literal, guidance in stale_literals.items():
+        if literal in text:
+            failures.append(f"{path}: stale 02-auth literal {literal!r}; {guidance}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
 section "Gateway current-truth drift"
 if ! python3 - <<'PY'; then
 from __future__ import annotations

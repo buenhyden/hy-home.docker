@@ -67,12 +67,18 @@ The `02-auth` tier provides the security foundation for the `hy-home.docker` eco
 
 ## Testing
 
-```bash
-# Verify Keycloak health
-docker exec keycloak curl -f http://localhost:9000/health/ready
+Static validation is the primary local/CI boundary. Runtime checks require the
+root compose context so shared networks, secrets, and included dependencies are
+available.
 
-# Verify OAuth2 Proxy health
-docker exec oauth2-proxy wget -qO- http://localhost:4180/ping
+```bash
+# Validate the root auth profile and 02-auth hardening contract
+HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
+bash scripts/hardening/check-all-hardening.sh 02-auth
+
+# Runtime-only checks after the auth profile is already running
+docker compose --profile auth exec keycloak sh -c 'exec 3<>/dev/tcp/127.0.0.1/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'
+docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping
 ```
 
 ## Change Impact

@@ -18,7 +18,6 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med
-    # image: quay.io/oauth2-proxy/oauth2-proxy:v7.14.2
     build:
       context: .
       dockerfile: Dockerfile

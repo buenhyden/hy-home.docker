@@ -18,7 +18,7 @@ status: active
 - OAuth2 Proxy 컨테이너는 non-root 사용자(`oauth2proxy`)로 실행한다.
 - 인증 장애 기본 동작은 fail-closed를 유지한다.
 - degraded-mode는 정책/런북 절차에 의해 제한적으로만 수행하고, 사후 원복을 필수화한다.
-- Keycloak은 상태 저장 특성을 고려해 `template-infra-med`를 유지한다(readonly 강제 전환하지 않음).
+- Keycloak은 상태 저장 특성과 현재 리소스 기준을 고려해 `template-infra-high`를 유지한다(readonly 강제 전환하지 않음).
 
 ## Explicit Non-goals
 

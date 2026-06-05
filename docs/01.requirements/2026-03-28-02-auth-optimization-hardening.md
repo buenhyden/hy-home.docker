@@ -35,13 +35,13 @@ status: active
 
 - **REQ-PRD-FUN-01**: OAuth2 Proxy 시크릿 주입은 엔트리포인트 스크립트 기반으로 표준화해야 한다.
 - **REQ-PRD-FUN-02**: OAuth2 Proxy 컨테이너는 비루트(non-root) 실행을 기본값으로 해야 한다.
-- **REQ-PRD-FUN-03**: Keycloak/OAuth2 Proxy 하드닝 정적 검증 스크립트를 제공하고 CI 필수 게이트로 적용해야 한다.
+- **REQ-PRD-FUN-03**: Keycloak, root-active OAuth2 Proxy dev leaf, local/full OAuth2 Proxy leaf의 하드닝 정적 검증 스크립트를 제공하고 CI 필수 게이트로 적용해야 한다.
 - **REQ-PRD-FUN-04**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 문서 레이어는 상호 참조 링크를 통해 양방향 추적성을 보장해야 한다.
 - **REQ-PRD-FUN-05**: OIDC 장애 시 degraded-mode 운영 판단 및 복구 절차를 문서화해야 한다.
 
 ## Success Criteria
 
-- **REQ-PRD-MET-01**: `bash scripts/hardening/check-all-hardening.sh 02-auth`가 로컬/CI에서 모두 성공한다.
+- **REQ-PRD-MET-01**: `bash scripts/hardening/check-all-hardening.sh 02-auth`와 `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`가 로컬/CI에서 모두 성공한다.
 - **REQ-PRD-MET-02**: `docs/04.execution/plans`, `docs/05.operations`, `docs/05.operations` 추적성 검증이 성공한다.
 - **REQ-PRD-MET-03**: 인증 경로 주요 장애 유형(세션 루프, OIDC 연결 실패, 설정 회귀)에 대한 실행 가능한 런북이 최신 상태다.
 
@@ -49,6 +49,7 @@ status: active
 
 - **In Scope**:
   - `infra/02-auth/keycloak/*`, `infra/02-auth/oauth2-proxy/*` 하드닝
+  - root-active `infra/02-auth/oauth2-proxy/docker-compose.dev.yml`와 local/full `infra/02-auth/oauth2-proxy/docker-compose.yml`의 세션 저장소 경계 검증
   - `scripts/hardening/check-all-hardening.sh 02-auth`, CI 게이트 추가
   - PRD~Runbook 문서 동기화 및 README 인덱스 갱신
 - **Out of Scope**:
@@ -61,7 +62,7 @@ status: active
 
 ## Risks, Dependencies, and Assumptions
 
-- Keycloak은 상태 저장 특성으로 readonly 템플릿 전환 대상이 아니다(현행 `template-infra-med` 유지).
+- Keycloak은 상태 저장 특성과 현재 리소스 기준에 따라 `template-infra-high`를 유지하며 readonly 강제 전환 대상은 아니다.
 - OAuth2 Proxy는 fail-open이 아닌 fail-closed를 기본으로 유지한다.
 - 상위 의존성(`mng-pg`, `mng-valkey`, `01-gateway`)의 가용성을 전제로 한다.
 

@@ -12,8 +12,11 @@ status: active
 ## Policy Scope
 
 - `infra/02-auth/oauth2-proxy/docker-compose.yml`
+- `infra/02-auth/oauth2-proxy/docker-compose.dev.yml`
 - `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
+- `infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh`
 - `infra/02-auth/oauth2-proxy/Dockerfile`
+- `infra/02-auth/oauth2-proxy/dev.Dockerfile`
 - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
 
 - **Systems**: OAuth2 Proxy ForwardAuth gateway
@@ -25,6 +28,7 @@ status: active
 - **Required**:
   - 서비스는 `template-infra-readonly-med`를 사용해야 한다.
   - 런타임 시크릿 주입은 엔트리포인트 스크립트에서 `/run/secrets` 파일로 처리한다.
+  - root-active dev leaf는 `mng-valkey`, local/full leaf는 `oauth2-proxy-valkey` 세션 저장소를 사용한다.
   - 이미지 실행 계정은 non-root(`oauth2proxy`)여야 한다.
   - 세션 정책은 `cookie_secure=true`, `cookie_httponly=true`, `cookie_samesite=lax`, `cookie_refresh=1h`, `cookie_expire=12h`를 유지한다.
   - 기본 운영 모드는 fail-closed다.
@@ -43,8 +47,9 @@ status: active
 ## Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
-- `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
-- `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
+- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
+- Runtime-only: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
 
 ## Review Cadence
 

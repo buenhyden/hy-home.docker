@@ -27,7 +27,7 @@ status: completed
   - Plan/Task/Guide/Operation/Runbook 상호 링크를 일관화한다.
 - **In Scope**:
   - `infra/02-auth/keycloak/docker-compose.yml`
-  - `infra/02-auth/oauth2-proxy/{docker-compose.yml,Dockerfile,docker-entrypoint.sh,config/oauth2-proxy.cfg}`
+  - `infra/02-auth/oauth2-proxy/{docker-compose.dev.yml,docker-compose.yml,Dockerfile,dev.Dockerfile,docker-entrypoint.sh,docker-entrypoint.dev.sh,config/oauth2-proxy.cfg}`
   - `scripts/hardening/check-all-hardening.sh 02-auth`, `.github/workflows/ci-quality.yml`, `scripts/README.md`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`의 02-auth 관련 문서/README
 
@@ -59,8 +59,8 @@ status: completed
 | VAL-AUTH-001 | Structural | 02-auth 하드닝 정적 검증 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | 실패 0건 |
 | VAL-AUTH-002 | Compliance | 템플릿/보안 기준선 검증 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-AUTH-003 | Traceability | execution/operations 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
-| VAL-AUTH-004 | Compose | Compose 해석 검증 | `docker compose config` | 오류 없이 출력 |
-| VAL-AUTH-005 | Service Compose | 서비스별 compose 검증 | `docker compose -f infra/02-auth/keycloak/docker-compose.yml config` and `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config` | 오류 없이 출력 |
+| VAL-AUTH-004 | Root Compose | root auth profile 해석 검증 | `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` | 실패 0건 |
+| VAL-AUTH-005 | Dependency Compose | root core profile 해석 검증 | `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` | 실패 0건 |
 
 ## Risks & Mitigations
 
