@@ -6,7 +6,10 @@
 
 ## Overview
 
-`policies`는 `docs/05.operations`의 policy 문서를 관리합니다. 필수/허용/금지 상태, 예외 승인, 검증 기준, 검토 주기를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`policies`는 `docs/05.operations`의 운영 정책 문서를 관리합니다.
+필수/허용/금지 상태, 예외 승인 기준, 검증 기준, 검토 주기를 제공합니다.
+guide, policy, runbook의 목적을 섞지 않고, 운영자가 적용해야 할 통제 기준을
+빠르게 확인하도록 돕습니다.
 
 ## Audience
 
@@ -24,6 +27,8 @@
 - 운영 controls, allowed/disallowed 상태, exception, review cadence
 - 이 bucket에 속한 policy 문서 인덱스
 - 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
+- 사람이 읽는 한국어 통제 설명과 원형을 유지해야 하는 control name,
+  evidence ID, 명령, 경로, 서비스명, 환경 변수, secret ID
 
 ### Out of Scope
 
@@ -57,6 +62,8 @@ policies/
 1. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
 2. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
 3. policy leaf 문서는 `docs/99.templates/policy.template.md`의 단일 `## Policy Scope` 섹션에 시스템, 구성 파일, agent, environment 범위를 함께 기록합니다.
+4. 본문은 한국어로 쓰되 control name, evidence ID, 명령, 경로, 서비스명,
+   환경 변수, Docker profile, secret ID는 원형을 유지합니다.
 
 ## Contents
 

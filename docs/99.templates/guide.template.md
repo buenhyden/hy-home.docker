@@ -11,6 +11,9 @@ status: draft
 > Rules:
 >
 > - This document explains how to use, configure, or understand a service.
+> - Write the human-facing body in Korean. Preserve command names, paths,
+>   service names, Docker profiles, environment variables, secret IDs, and
+>   quoted upstream terms exactly.
 > - This document is not an operations policy and must not contain `## Policy Scope`, `## Controls`, or `## Review Cadence`.
 > - This document is not a step-by-step recovery procedure. If the primary purpose is rollback, recovery, or ordered remediation, write a Runbook instead.
 > - Target-relative links are calculated from the copied target path, not from `docs/99.templates/`.
@@ -19,7 +22,7 @@ status: draft
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 {이 문서가 다루는 서비스/컴포넌트와 이 가이드를 언제 참조해야 하는지 설명한다.}
 

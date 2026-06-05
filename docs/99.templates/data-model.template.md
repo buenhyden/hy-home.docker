@@ -12,13 +12,17 @@ status: draft
 > - This document captures logical/physical data structures for the feature.
 > - Keep API surface details in `api-spec.md`.
 > - Keep migration execution steps in Plan or Runbook, not here.
+> - Write this document in English. Preserve code identifiers, command names,
+>   service names, environment variables, and quoted upstream terms exactly.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 
-## Overview (KR)
+## Overview
 
-이 문서는 [기능명]의 데이터 모델과 저장 전략을 정의한다. 엔터티, 관계, 식별자, 무결성 규칙, 보존 정책, 변경 전략을 설명한다.
+This document defines the data model and storage strategy for [feature name]. It
+describes entities, relationships, identifiers, integrity rules, retention
+policy, and change strategy.
 
 ## Parent Documents
 

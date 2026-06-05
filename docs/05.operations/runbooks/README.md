@@ -7,7 +7,10 @@
 
 ## Overview
 
-`runbooks`는 `docs/05.operations`의 runbook 문서를 관리합니다. 트리거 조건, 순서 있는 절차, evidence, rollback/recovery, escalation을 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`runbooks`는 `docs/05.operations`의 실행 절차 문서를 관리합니다. 트리거
+조건, 순서 있는 절차, evidence capture, rollback/recovery, escalation 기준을
+제공합니다. guide, policy, runbook의 목적을 섞지 않고, 장애 대응이나 반복
+점검 중 바로 실행할 수 있는 절차를 빠르게 찾도록 돕습니다.
 
 ## Audience
 
@@ -25,6 +28,8 @@
 - 장애 복구, 정기 점검, rollback, escalation, evidence capture
 - 이 bucket에 속한 runbook 문서 인덱스
 - 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
+- 사람이 읽는 한국어 절차와 원형을 유지해야 하는 명령, expected output,
+  evidence label, 경로, 서비스명, 환경 변수, secret ID
 
 ### Out of Scope
 
@@ -58,6 +63,8 @@ runbooks/
 1. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
 2. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
 3. 명령 예시는 현재 구현에 맞는 실제 compose 경로, 이미지 태그, 고정 IP를 사용하고, 실행 가능한 절차에 복사 가능한 placeholder를 남기지 않습니다.
+4. 본문은 한국어로 쓰되 실행 명령, expected output, evidence label, 경로,
+   서비스명, 환경 변수, Docker profile, secret ID는 원형을 유지합니다.
 
 ## Contents
 

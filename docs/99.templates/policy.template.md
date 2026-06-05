@@ -10,12 +10,15 @@ status: draft
 > Rules:
 >
 > - This document is an operations policy and must contain `## Policy Scope`, `## Controls`, and `## Review Cadence`.
+> - Write the human-facing body in Korean. Preserve control names, command names,
+>   service names, Docker profiles, environment variables, secret IDs, evidence
+>   IDs, and quoted upstream terms exactly.
 > - This document is not a step-by-step guide or recovery procedure. If the primary purpose is how-to usage or recovery, write a Guide or Runbook instead.
 > - Target-relative links are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 
-## Overview (KR)
+## Overview
 
 {이 문서가 규정하는 정책의 목적과 대상, 언제 이 정책을 적용해야 하는지 설명한다.}
 

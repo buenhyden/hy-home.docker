@@ -163,9 +163,22 @@ docker compose --profile core up -d
 이 저장소의 문서는 다음 기준을 따릅니다.
 
 - Agent 전용 규칙 문서는 영어를 사용합니다.
-- 사람이 읽는 README, 가이드, 운영 문서는 한국어를 기본으로 사용합니다.
+- 루트 `README.md`, 사람이 읽는 폴더 README, 가이드, 운영 문서는 한국어를 기본으로 사용합니다.
 - 문서 작성 작업은 가능한 경우 [`docs/99.templates/`](./docs/99.templates)의 템플릿을 출발점으로 사용합니다.
 - 상위 문서와 하위 산출물 사이의 추적성을 유지하고, 중복된 SSoT 문서를 만들지 않습니다.
+
+| Surface | Language Rule |
+| --- | --- |
+| `docs/00.agent-governance/**` | English-only agent governance and policy contracts |
+| `docs/01.requirements/**` | 한국어 기본, technical identifier와 acceptance criteria 구조 보존 |
+| `docs/02.architecture/**` | 한국어 설명과 English decision ID/title/quality attribute를 함께 보존 |
+| `docs/03.specs/**` | English-only technical contracts |
+| `docs/04.execution/plans/**` | English-only implementation plans |
+| `docs/04.execution/tasks/**` | English-only task evidence |
+| `docs/05.operations/{guides,policies,runbooks,incidents}/**` | 한국어 기본, command/path/service/env/evidence label 원문 보존 |
+| `docs/90.references/**` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
+| `docs/98.archive/**` | 간결한 tombstone 기록, original path/date/title/replacement 원문 보존 |
+| `docs/99.templates/**` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |
 
 ## Documentation Lifecycle
 

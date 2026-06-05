@@ -20,7 +20,36 @@ Protocol for maintaining documentation consistency and governance traceability.
   `docs/90.references/`, and `docs/98.archive/`.
 - Use only relative links; never use absolute `file://` links.
 - Keep `docs/00.agent-governance/` English-only.
-- Keep human-facing docs in Korean unless interoperability requires English terms.
+- Keep root `README.md` and human-facing folder READMEs Korean by default,
+  while preserving commands, paths, service names, environment variables, stage
+  names, and upstream terms exactly.
+- Keep `docs/01.requirements/**` Korean by default for human-facing product
+  intent and scope. Preserve technical identifiers and write formal acceptance
+  criteria in the template's required structure.
+- Keep `docs/02.architecture/**` mixed-audience: use Korean for explanatory
+  rationale and human review context, while preserving English decision IDs,
+  quality-attribute names, system terms, and required H1 title formats.
+- Keep `docs/03.specs/**`, `docs/04.execution/plans/**`, and
+  `docs/04.execution/tasks/**` English-only. These documents are technical
+  contracts, implementation plans, and execution evidence for agents,
+  reviewers, and CI checks.
+- Keep `docs/05.operations/{guides,policies,runbooks,incidents}/**`
+  human-facing and Korean by default. Preserve code identifiers, service names,
+  command names, environment variables, Docker profiles, secret IDs, evidence
+  labels, and quoted upstream terms in their original form.
+- In mixed-audience documents, keep policy, contracts, validation criteria,
+  and machine-checkable instructions in English; use Korean only for
+  human-facing usage context, operational explanation, or incident narrative.
+- Keep `docs/90.references/**` audience-specific: generated LLM navigation,
+  source-backed inventories, and machine-readable reference indexes may stay
+  English; human learning/reference notes are Korean by default with quoted
+  upstream terms preserved.
+- Keep `docs/98.archive/**` as concise tombstone evidence. Use Korean for
+  human-facing archive rationale unless the replacement/original artifact is an
+  English-only contract; always preserve original paths, IDs, titles, and dates.
+- Keep `docs/99.templates/**` aligned with the target folder language boundary.
+  Template READMEs are human-facing and Korean by default; template source for
+  English-only targets must not introduce Korean placeholders.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user approval.
 - Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/05`, `docs/90`, `docs/99`). Archive tombstones live under `docs/98.archive` and are not active artifacts.
 - Non-stage `docs/*` paths such as `docs/superpowers/` must not contain active specs or plans.
@@ -78,6 +107,25 @@ under `contracts/`. Parent Markdown Spec or API Spec documents own the
 cross-links for YAML, GraphQL, and Proto files.
 
 See `docs/99.templates/README.md` for the full catalog and usage rules.
+
+## 3.1 Language Boundary by Stage
+
+| Stage / Surface | Language Boundary | Rationale |
+| --- | --- | --- |
+| `docs/00.agent-governance/**` | English-only | Agent governance, policy, provider, and validation contracts must be stable across providers. |
+| `docs/01.requirements/**` | Korean human-facing intent; technical identifiers unchanged | Requirements capture user value, scope, and acceptance criteria for human review. |
+| `docs/02.architecture/**` | Mixed: Korean rationale with English IDs, titles, and technical terms preserved | Architecture documents are reviewed by humans and agents and must preserve decision/contracts. |
+| `docs/03.specs/**` | English-only | Specs define technical contracts, interfaces, and verification criteria. |
+| `docs/04.execution/plans/**` | English-only | Plans define implementation sequencing, risk controls, and validation gates. |
+| `docs/04.execution/tasks/**` | English-only | Tasks are audit evidence and must stay machine-reviewable. |
+| `docs/05.operations/guides/**` | Korean human-facing body; technical identifiers unchanged | Guides help operators and developers understand and use services. |
+| `docs/05.operations/policies/**` | Korean human-facing body; control names and evidence identifiers unchanged | Policies define allowed/disallowed operational states for human review. |
+| `docs/05.operations/runbooks/**` | Korean human-facing procedure; commands and expected evidence unchanged | Runbooks support incidents, recovery, rollback, and escalation. |
+| `docs/05.operations/incidents/**` | Korean incident narrative; technical evidence unchanged | Incident records and postmortems preserve operator-readable timelines and actions. |
+| `docs/90.references/**` | Audience-specific: LLM/generated indexes may be English; human references Korean by default | References support active docs without replacing policy or runtime truth. |
+| `docs/98.archive/**` | Concise tombstone language; preserve original paths, IDs, dates, and titles | Archive docs preserve migration traceability, not active current truth. |
+| `docs/99.templates/**` | Match target stage; template READMEs Korean by default | Templates must not contradict the language contract of copied target documents. |
+| Root `README.md`, service READMEs, and mixed docs | Korean by default with English identifiers preserved | These are human-facing entrypoints that still reference implementation artifacts. |
 
 ## 4. Authoring Protocol
 

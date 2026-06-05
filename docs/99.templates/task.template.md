@@ -13,6 +13,8 @@ status: draft
 > - Core behavior should default to TDD.
 > - Agent work must include eval tasks where applicable.
 > - This is the canonical execution-tracking location; feature-local task notes under `03.specs/` are secondary.
+> - Write this document in English. Preserve code identifiers, command names,
+>   service names, environment variables, and quoted upstream terms exactly.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 > - Replace example links with real target-relative links, or delete unused examples before saving.
 >
@@ -26,9 +28,11 @@ status: draft
 
 ---
 
-## Overview (KR)
+## Overview
 
-이 문서는 [기능 또는 작업 흐름명]의 구현·검증 작업 목록이다. Spec과 Plan에서 파생된 작업을 추적 가능하게 기록한다.
+This document tracks implementation and verification work for [feature or work
+stream name]. It records tasks derived from the parent Spec and Plan in an
+auditable form.
 
 ## Inputs
 

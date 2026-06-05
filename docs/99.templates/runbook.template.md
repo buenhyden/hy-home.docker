@@ -11,6 +11,9 @@ status: draft
 > Rules:
 >
 > - This document exists for immediate execution — ordered steps, evidence capture, rollback, and escalation.
+> - Write the human-facing procedure in Korean. Preserve commands, paths,
+>   service names, Docker profiles, environment variables, secret IDs, expected
+>   evidence labels, and quoted upstream terms exactly.
 > - This document is not a policy definition and must not contain `## Policy Scope`, `## Controls`, or `## Review Cadence`.
 > - This document is not a tutorial-first guide. Usage context belongs in the paired Guide.
 > - If the primary purpose is post-incident analysis, write a Postmortem instead.
@@ -23,7 +26,7 @@ status: draft
 
 > Scope: {one-line scope statement}
 
-### Overview (KR)
+### Overview
 
 {이 런북이 다루는 범위와 언제 사용해야 하는지 설명한다.}
 

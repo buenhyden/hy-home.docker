@@ -13,13 +13,17 @@ status: draft
 > - Do not create a parallel `docs/api/` tree for this document.
 > - Use this for REST, GraphQL, or gRPC contracts.
 > - Link the parent Spec near the top.
+> - Write this document in English. Preserve code identifiers, command names,
+>   service names, environment variables, and quoted upstream terms exactly.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 
-## Overview (KR)
+## Overview
 
-이 문서는 [기능명]이 외부에 노출하는 API 계약을 정의한다. 엔드포인트, 인증, 요청/응답 스키마, 에러, 버저닝, 비기능 요구를 상세히 기술한다.
+This document defines the API contract exposed by [feature name]. It describes
+endpoints, authentication, request and response schemas, errors, versioning, and
+non-functional requirements.
 
 ## Parent Spec
 

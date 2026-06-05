@@ -6,7 +6,10 @@
 
 ## Overview
 
-`guides`는 `docs/05.operations`의 guide 문서를 관리합니다. 사용 맥락, 전제 조건, 일반 점검, 관련 runbook handoff를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`guides`는 `docs/05.operations`의 사용 가이드 문서를 관리합니다. 서비스
+사용 맥락, 전제 조건, 설정 방법, 일반 점검, 관련 runbook handoff를
+제공합니다. guide, policy, runbook의 목적을 섞지 않고, 운영자가 필요한
+지식을 빠르게 찾도록 돕습니다.
 
 ## Audience
 
@@ -24,6 +27,8 @@
 - 서비스 사용 맥락, 설정 방법, 온보딩, 일반 점검
 - 이 bucket에 속한 guide 문서 인덱스
 - 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
+- 사람이 읽는 한국어 설명과 원형을 유지해야 하는 명령, 경로, 서비스명,
+  Docker profile, 환경 변수, secret ID
 
 ### Out of Scope
 
@@ -58,6 +63,8 @@ guides/
 2. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
 3. guide leaf 문서는 `docs/99.templates/guide.template.md`의 `## Usage` profile을 하나의 primary wrapper로 사용하고, `### Usage Type` 같은 profile heading을 중복 작성하지 않습니다.
 4. 이미지 태그, 고정 IP, 포트 같은 구현값 예시는 tracked compose와 `infra/tech-stack.versions.json`에 맞는 실제 값을 사용하고, 복사 가능한 placeholder를 남기지 않습니다.
+5. 본문은 한국어로 쓰되 명령, 경로, 서비스명, 환경 변수, Docker profile,
+   secret ID는 원형을 유지합니다.
 
 ## Contents
 

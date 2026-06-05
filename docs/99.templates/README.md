@@ -67,29 +67,35 @@ layer: agentic
 2. Placeholder는 모두 제거한다.
 3. 상대 경로만 사용한다.
 4. PRD/ARD/ADR/Spec/Plan/Task의 추적성을 유지한다.
-5. Agent 기능은 Role, Tool, Guardrail, Eval, Fallback을 빠뜨리지 않는다.
-6. `## Related Documents` 예시는 템플릿 파일 위치가 아니라 복사된 대상 파일 위치에서 해석되어야 하며, Markdown 템플릿에서는 가능한 경우 클릭 가능한 Markdown 링크 예시를 사용한다.
-7. 운영 문서는 대상 bucket에 맞게 `guide.template.md`, `policy.template.md`, `runbook.template.md` 중 하나를 사용한다.
-8. infra service README는 목적, config, compose linkage, network, volume, port, label, secret ref, healthcheck, operations, validation, troubleshooting evidence를 포함한다.
+5. `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`
+   문서는 영어로 작성한다. 코드 식별자, 명령, 서비스명, 환경 변수,
+   secret ID, upstream 용어는 원형을 유지한다.
+6. `docs/05.operations/{guides,policies,runbooks,incidents}` 문서는 사람이
+   읽는 한국어를 기본으로 한다. 다만 명령, 경로, 서비스명, Docker profile,
+   환경 변수, secret ID, evidence label은 원형을 유지한다.
+7. Agent 기능은 Role, Tool, Guardrail, Eval, Fallback을 빠뜨리지 않는다.
+8. `## Related Documents` 예시는 템플릿 파일 위치가 아니라 복사된 대상 파일 위치에서 해석되어야 하며, Markdown 템플릿에서는 가능한 경우 클릭 가능한 Markdown 링크 예시를 사용한다.
+9. 운영 문서는 대상 bucket에 맞게 `guide.template.md`, `policy.template.md`, `runbook.template.md` 중 하나를 사용한다.
+10. infra service README는 목적, config, compose linkage, network, volume, port, label, secret ref, healthcheck, operations, validation, troubleshooting evidence를 포함한다.
    Folder index README는 service readiness evidence를 억지로 복제하지 않고 하위 문서 routing과 lifecycle만 설명한다.
-9. scripts README는 `scripts/validation/`, `scripts/hardening/`, `scripts/hooks/`, `scripts/knowledge/`, `scripts/operations/`, `scripts/lib/` 목적 폴더를 보존하고 root-level wrapper를 만들지 않는다.
-10. Markdown 템플릿의 cross-link 예시는 복사된 Target 위치 기준으로 계산하고, YAML/GraphQL/Proto 계약 파일의 cross-link는 parent Markdown Spec 또는 API Spec에서 관리한다.
-11. `docs/99.templates/*.template.md` 원본은 `status: draft` frontmatter를 사용한다. 복사된 Target 문서는 대상 stage의 lifecycle에 맞게 `status: draft`, `status: active`, `status: completed`, `status: superseded`, archive tombstone의 `status: archived`, generated metadata, 또는 repository README처럼 no-frontmatter 형태로 조정한다.
-12. Template source에 있는 placeholder는 최종 문서에 남기지 않는다. 실제 링크처럼 렌더링되는 placeholder Markdown link와 placeholder command는 target 문서로 복사하기 전에 반드시 삭제하거나 실제 target-relative 값으로 교체한다.
-13. README template의 `<!-- Target: ... -->` 주석은 작성 보조 정보다. Target 문서에서 필수 metadata로 취급하지 않으며, 리뷰에 도움이 되는 경우에만 남긴다.
-14. Historical evidence 문서는 사실을 재해석하지 않는다. 현재 템플릿 heading과 Related Documents만 최소 보강하고, 검증되지 않은 실행 결과나 원인을 새로 쓰지 않는다.
-15. Duplicate 또는 noncanonical 문서는 canonical target, 참조 검색 결과, 보존할 고유 evidence 유무가 확인된 뒤에만 삭제한다. 고유 evidence가 있으면 canonical 문서로 이관하거나 `docs/90.references/`로 이동할 사유를 남긴다.
-16. `## Rollback or Recovery`는 factual-only 원칙을 따른다. 검증된 rollback/recovery 단계가 없으면 임의 절차를 만들지 말고, 안전한 `N/A` 사유와 `## Escalation`의 담당 경로를 명시한다.
-17. **링크 작성 기준:** 템플릿 내 Markdown 링크는 템플릿 파일 위치
+11. scripts README는 `scripts/validation/`, `scripts/hardening/`, `scripts/hooks/`, `scripts/knowledge/`, `scripts/operations/`, `scripts/lib/` 목적 폴더를 보존하고 root-level wrapper를 만들지 않는다.
+12. Markdown 템플릿의 cross-link 예시는 복사된 Target 위치 기준으로 계산하고, YAML/GraphQL/Proto 계약 파일의 cross-link는 parent Markdown Spec 또는 API Spec에서 관리한다.
+13. `docs/99.templates/*.template.md` 원본은 `status: draft` frontmatter를 사용한다. 복사된 Target 문서는 대상 stage의 lifecycle에 맞게 `status: draft`, `status: active`, `status: completed`, `status: superseded`, archive tombstone의 `status: archived`, generated metadata, 또는 repository README처럼 no-frontmatter 형태로 조정한다.
+14. Template source에 있는 placeholder는 최종 문서에 남기지 않는다. 실제 링크처럼 렌더링되는 placeholder Markdown link와 placeholder command는 target 문서로 복사하기 전에 반드시 삭제하거나 실제 target-relative 값으로 교체한다.
+15. README template의 `<!-- Target: ... -->` 주석은 작성 보조 정보다. Target 문서에서 필수 metadata로 취급하지 않으며, 리뷰에 도움이 되는 경우에만 남긴다.
+16. Historical evidence 문서는 사실을 재해석하지 않는다. 현재 템플릿 heading과 Related Documents만 최소 보강하고, 검증되지 않은 실행 결과나 원인을 새로 쓰지 않는다.
+17. Duplicate 또는 noncanonical 문서는 canonical target, 참조 검색 결과, 보존할 고유 evidence 유무가 확인된 뒤에만 삭제한다. 고유 evidence가 있으면 canonical 문서로 이관하거나 `docs/90.references/`로 이동할 사유를 남긴다.
+18. `## Rollback or Recovery`는 factual-only 원칙을 따른다. 검증된 rollback/recovery 단계가 없으면 임의 절차를 만들지 말고, 안전한 `N/A` 사유와 `## Escalation`의 담당 경로를 명시한다.
+19. **링크 작성 기준:** 템플릿 내 Markdown 링크는 템플릿 파일 위치
     (`docs/99.templates/`)가 아니라 **복사된 대상 경로**를 기준으로 계산된다.
     예: `spec.template.md` 내 `./api-spec.md`는 `docs/03.specs/<feature>/`를
     기준으로 해석된다. 링크 검증 도구는 이 설계 원칙을 인지하고 템플릿 소스
     파일의 링크를 단순 나이브 검사로 깨진 링크로 표시하면 안 된다.
-18. Template deviation은 silent cleanup 대상이 아니다. 대상 문서가 매핑된
+20. Template deviation은 silent cleanup 대상이 아니다. 대상 문서가 매핑된
     템플릿을 의도적으로 벗어나야 하면 관련 task evidence에 파일, 기대
     템플릿, deviation 요약, 사유, 승인 또는 evidence owner, 검증 결과를
     남긴다.
-19. `docs/90.references/hads/` 아래의 non-README reference 문서는 HADS
+21. `docs/90.references/hads/` 아래의 non-README reference 문서는 HADS
     profile을 함께 따른다. 즉 `reference.template.md`의 reference 책임 섹션을
     유지하면서 HADS `**Version X.Y.Z**`, `## AI READING INSTRUCTION`, bold block
     tag를 포함해야 한다.

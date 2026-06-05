@@ -13,13 +13,16 @@ status: draft
 > - Core behavior defaults to TDD.
 > - Agent functionality must include both software tests and eval coverage when applicable.
 > - Execution-tracking remains in `04.execution/tasks/`.
+> - Write this document in English. Preserve code identifiers, command names,
+>   service names, environment variables, and quoted upstream terms exactly.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 
-## Overview (KR)
+## Overview
 
-단위, 통합, 계약, 성능 테스트 및 Agent Eval 기준을 정리한다.
+This document defines unit, integration, contract, performance, and Agent Eval
+criteria for the feature.
 
 ## Parent Documents
 

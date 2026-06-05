@@ -109,7 +109,25 @@ docs/
 - 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성합니다.
 - 상위 문서와 하위 산출물 간 추적성을 유지합니다.
 - Agent 전용 문서(`docs/00.agent-governance/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/operations/reference 문서는 한국어를 기본으로 합니다.
+- `docs/03.specs/**`, `docs/04.execution/plans/**`, `docs/04.execution/tasks/**`의 leaf 문서는 영어로 작성합니다.
+- `docs/05.operations/{guides,policies,runbooks,incidents}/**`는 한국어 본문을 기본으로 하되 command, path, service name, Docker profile, environment variable, secret ID, evidence label은 원문을 보존합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
+
+| Surface | Language Rule |
+| --- | --- |
+| `00.agent-governance/` | English-only governance, provider, rule, scope, and memory contracts |
+| `01.requirements/` | 한국어 기본, technical identifier와 acceptance criteria 구조 보존 |
+| `02.architecture/` | 한국어 설명과 English decision ID/title/quality attribute를 함께 보존 |
+| `03.specs/` | English-only technical specifications and contracts |
+| `04.execution/plans/` | English-only implementation plans |
+| `04.execution/tasks/` | English-only task evidence |
+| `05.operations/guides/` | 한국어 usage guidance, commands/paths/service names 원문 보존 |
+| `05.operations/policies/` | 한국어 operational controls, control/evidence identifiers 원문 보존 |
+| `05.operations/runbooks/` | 한국어 procedures, commands/expected outputs/escalation evidence 원문 보존 |
+| `05.operations/incidents/` | 한국어 incident narrative, timestamps/IDs/commands/evidence labels 원문 보존 |
+| `90.references/` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
+| `98.archive/` | 간결한 tombstone 기록, original path/date/title/replacement 원문 보존 |
+| `99.templates/` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |
 
 ## Documentation Contract
 

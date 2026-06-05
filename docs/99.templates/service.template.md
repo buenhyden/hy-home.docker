@@ -16,14 +16,17 @@ status: draft
 > - Keep product intent in PRD, system-wide constraints in ARD, and ordered
 >   recovery steps in a Runbook.
 > - A concrete, copyable instance lives under `examples/sample-web-service/`.
+> - Write this document in English. Preserve code identifiers, command names,
+>   service names, environment variables, and quoted upstream terms exactly.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 
-## Overview (KR)
+## Overview
 
-이 문서는 [서비스명]의 컨테이너 런타임 계약을 정의한다. 이미지/빌드, 보안 하드닝,
-네트워크, 볼륨, secret 참조, healthcheck, 검증 절차를 구체화한다.
+This document defines the container runtime contract for [service name]. It
+specifies image/build behavior, security hardening, networks, volumes, secret
+references, health checks, and verification procedures.
 
 ## Parent Documents
 

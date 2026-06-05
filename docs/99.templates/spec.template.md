@@ -12,7 +12,9 @@ status: draft
 > - Every active spec must declare PRD and ARD references or make the absence explicit.
 > - Verification is mandatory.
 > - If this feature exposes an external API, link a dedicated API Spec.
-> - Keep one `Overview (KR)` summary near the top.
+> - Write this document in English. Preserve code identifiers, command names,
+>   service names, environment variables, and quoted upstream terms exactly.
+> - Keep one `Overview` summary near the top.
 > - This document is the parent design doc; API contracts live in `api-spec.md` under the same feature directory.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 > - Replace example links with real target-relative links, or delete unused examples before saving.
@@ -31,9 +33,11 @@ status: draft
 
 ---
 
-## Overview (KR)
+## Overview
 
-이 문서는 [기능명]의 기술 설계와 구현 계약을 정의하는 명세서다. PRD 요구를 기술적으로 구체화하고, 구현과 검증의 직접 기준이 된다.
+This document defines the technical design and implementation contract for
+[feature name]. It turns PRD requirements into implementation-ready contracts
+and verification criteria.
 
 ## Strategic Boundaries & Non-goals
 
@@ -75,10 +79,12 @@ interface ExampleContract {
 
 ## API Contract (If Applicable)
 
-Contract-first 원칙: 이 기능이 외부 API를 제공하는 경우, 상세 API 계약은 별도 API Spec 문서에서 정의한다.
+Contract-first rule: if this feature exposes an external API, define the
+detailed API contract in a dedicated API Spec document.
 
 - **API Spec**: [./api-spec.md](./api-spec.md)
-- **Policy**: API Spec은 `docs/api/` 같은 별도 최상위 경로가 아니라 현재 feature 디렉터리 아래에 둔다.
+- **Policy**: Keep the API Spec under the current feature directory, not under a
+  separate top-level path such as `docs/api/`.
 - **Machine-readable Contract**:
   - `./contracts/openapi.yaml`
   - `./contracts/service.proto`

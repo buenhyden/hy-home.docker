@@ -14,13 +14,17 @@ status: draft
 > - Keep product intent in PRD and system-wide constraints in ARD.
 > - Keep implementation tasks in `04.execution/tasks/`.
 > - This document focuses on AI Agent behavior, orchestration, safety, and evaluation.
+> - Write this document in English. Preserve code identifiers, command names,
+>   service names, environment variables, and quoted upstream terms exactly.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 
-## Overview (KR)
+## Overview
 
-이 문서는 [기능명]의 AI Agent 설계를 정의한다. Agent 역할, 입력/출력 계약, 도구 사용, 컨텍스트 관리, 안전 장치, 평가 전략을 구체화한다.
+This document defines the AI Agent design for [feature name]. It specifies the
+agent role, input and output contract, tool use, context management, safeguards,
+and evaluation strategy.
 
 ## Parent Documents
 

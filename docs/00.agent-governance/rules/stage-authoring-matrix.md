@@ -29,6 +29,25 @@ Single source of truth for stage-level authoring expectations.
 | 98    | Archive tombstones for old, deprecated, legacy, or implementation-conflicting documents removed from active chains. This stage preserves migration traceability, not historical current-truth.                                                       | `docs/99.templates/archive.template.md`                    |
 | 99    | Source templates for all stages                                                                                                                                                                                                                      | `docs/99.templates/readme.template.md` and stage templates |
 
+## 3. Language Boundary by Stage
+
+| Stage / Folder | Language Boundary |
+| :------------- | :---------------- |
+| `docs/00.agent-governance/**` | English-only governance, policy, and provider contracts |
+| `docs/01.requirements/**` | Korean human-facing requirements and scope; preserve technical identifiers and acceptance-criteria structure |
+| `docs/02.architecture/**` | Mixed-audience architecture docs: Korean rationale, English IDs/titles/quality attributes/technical terms preserved |
+| `docs/03.specs/**` | English-only technical specifications and contracts |
+| `docs/04.execution/plans/**` | English-only implementation plans |
+| `docs/04.execution/tasks/**` | English-only task evidence |
+| `docs/05.operations/guides/**` | Korean human-facing usage guidance; preserve commands, paths, identifiers, and service names |
+| `docs/05.operations/policies/**` | Korean human-facing controls; preserve control names, evidence IDs, and technical identifiers |
+| `docs/05.operations/runbooks/**` | Korean human-facing procedures; preserve commands, expected output names, and escalation evidence |
+| `docs/05.operations/incidents/**` | Korean incident narrative; preserve timestamps, IDs, commands, and evidence labels |
+| `docs/90.references/**` | Audience-specific reference docs: LLM/generated indexes may be English; human references Korean by default |
+| `docs/98.archive/**` | Concise tombstone language; preserve original paths, IDs, dates, titles, and replacement links |
+| `docs/99.templates/**` | Match the target stage language boundary; template READMEs are Korean by default |
+| Root `README.md` and human-facing folder READMEs | Korean by default; preserve commands, paths, service names, environment variables, and upstream terms |
+
 ## 4. Agent Skills by Stage
 
 The following `.claude/skills/` skills are recommended for each stage. Load a skill when its domain matches the active task.
@@ -45,7 +64,7 @@ The following `.claude/skills/` skills are recommended for each stage. Load a sk
 
 Skills are available in `.claude/skills/<skill>/skill.md`. Load using the `Skill` tool in Claude Code.
 
-## 3. Usage Rules
+## 5. Usage Rules
 
 1. Load this matrix for any documentation authoring/refactoring task.
 2. Use the row for the target stage as a mandatory authoring contract.

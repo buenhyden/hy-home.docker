@@ -11,6 +11,8 @@ status: draft
 >
 > - Every active plan must include explicit verification criteria.
 > - Plan explains execution order, risk control, and rollout strategy.
+> - Write this document in English. Preserve code identifiers, command names,
+>   service names, environment variables, and quoted upstream terms exactly.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 > - Replace example links with real target-relative links, or delete unused examples before saving.
 >
@@ -25,9 +27,11 @@ status: draft
 
 ---
 
-## Overview (KR)
+## Overview
 
-이 문서는 [기능 또는 컴포넌트명]의 실행 계획서다. 작업 분해, 검증, 롤아웃, 위험 관리, 완료 기준을 정의한다.
+This document is the implementation plan for [feature or component name]. It
+defines work breakdown, verification, rollout, risk control, and completion
+criteria.
 
 ## Context
 
