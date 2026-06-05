@@ -3,112 +3,88 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/10-communication/mail.md -->
 
-# Mail Runbook
-
-## Overview (KR)
-
-이 런북은 Stalwart 메일 서버와 MailHog 개발 트랩에 장애가 발생했을 때 운영자가 즉시 따라 할 수 있는 단계별 절차와 검증 기준을 정의합니다.
+# Mail Recovery Runbook
 
 ## Mail Recovery Procedure
 
-> Scope: Stalwart Mail Server & MailHog
+> Scope: Stalwart and MailHog static/runtime recovery for the optional `10-communication` mail compose.
 
-> 메일 서비스 장애 시 즉각적으로 대응하여 서비스를 복구하기 위한 수동 실행 지침입니다.
+### Overview (KR)
 
----
+이 런북은 Stalwart 메일 서버와 MailHog 개발 트랩의 검증 실패, UI 접근 실패, SMTP/IMAP 연결 실패가 발생했을 때 운영자가 증거를 보존하고 안전하게 복구 또는 에스컬레이션하기 위한 절차를 정의한다.
 
 ### Purpose
 
-메일 서버 서비스 불능(P2), 메일 발송/수신 실패, 인증서 만료 등의 운영 문제를 해결하는 데 목적이 있습니다.
+메일 서비스 장애 원인을 확인하되, secret 노출, 데이터 삭제, 검증되지 않은 rollback 명령을 피하고 현재 root optional compose 경계에 맞는 evidence를 남긴다.
 
 ### Canonical References
 
-- **ARD**: [Communication Infrastructure](../../../02.architecture/requirements/0010-communication-architecture.md) (If exists)
-- **Operation**: [Mail Operations Policy](../../policies/10-communication/mail.md)
+- **Spec**: [Communication tier spec](../../../03.specs/10-communication/spec.md)
+- **Policy**: [Mail operations policy](../../policies/10-communication/mail.md)
+- **Guide**: [Mail usage guide](../../guides/10-communication/mail.md)
 
 ## When to Use
 
-- 사용자가 메일을 보내거나 받을 수 없을 때.
-- 메일 서버 UI(Stalwart/MailHog)에 접속할 수 없을 때.
-- SMTP/IMAP 포트가 응답하지 않을 때.
+- `bash scripts/hardening/check-all-hardening.sh 10-communication`이 실패할 때.
+- Stalwart Admin/JMAP UI(`mail.${DEFAULT_URL}`) 또는 MailHog UI(`mailhog.${DEFAULT_URL}`)가 응답하지 않을 때.
+- 운영 승격 후 SMTP/Submission/SMTPS/IMAPS 포트가 응답하지 않을 때.
+- MailHog가 개발 테스트 메일을 캡처하지 않을 때.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 policy, guide, runbook handoff를 확인한다.
-- [ ] 현재 상태와 변경 범위를 기록한다.
-
-### 1. 서비스 상태 확인 Checklist
-
-- [ ] 컨테이너 실행 여부 확인: `docker ps | grep -E 'stalwart|mailhog'`
-- [ ] 호스트 네트워크 포트 가용성 확인: `nc -zv localhost 25 465 587 993`
-- [ ] 호스트 디스크 여유 공간 확인: `df -h`
-
-#### 2. 일반 장애 복구 Procedure
-
-##### 서비스 불능 시 (Hang or Crash)
-
-1. 메일 서비스 티어 디렉토리로 이동: `cd infra/10-communication/mail`
-2. 서비스 상태 확인: `docker-compose ps`
-3. 로그 분석: `docker-compose logs -f stalwart` (인증 오류, DB 오류 확인)
-4. 재시작 시도: `docker-compose restart stalwart`
-
-##### 메일 발송/수신 실패 시 (Delivery Issues)
-
-1. Stalwart 로그에서 "Delivery Error" 또는 "Spam filter" 관련 키워드를 검색합니다.
-2. 외부 DNS 전파 상태 및 SPF/DKIM 유효성을 확인합니다.
-3. 인증서 만료 여부를 확인합니다: `ls -l ../../../secrets/certs`
-
-##### MailHog 성능 저하 시
-
-1. MailHog는 인메모리 저장소를 사용하여 큐가 포화될 경우 UI가 느려질 수 있습니다.
-2. 서비스를 재시작하여 큐를 비웁니다: `docker-compose restart mailhog`
+- [ ] root mail include가 optional/commented인지 또는 운영 승격으로 활성화됐는지 기록한다.
+- [ ] 최근 compose, `.env*`, secret reference, DNS, 인증서 변경 내역을 기록한다.
+- [ ] secret 값 원문은 열람하거나 로그에 남기지 않는다.
 
 ### Steps
 
-1. 이 runbook의 trigger와 checklist를 확인한다.
-2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
-3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
-4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
+1. static baseline을 확인한다: `bash scripts/hardening/check-all-hardening.sh 10-communication`.
+2. repo stale guard를 확인한다: `bash scripts/validation/check-repo-contracts.sh`.
+3. 컨테이너가 실행 중이면 상태를 기록한다: `docker ps --format '{{.Names}}\t{{.Status}}'`.
+4. 실행 중인 컨테이너 로그를 확인한다: `docker logs --tail 100 stalwart`, `docker logs --tail 100 mailhog`.
+5. 운영 승격 상태에서만 host port를 확인한다: `nc -zv localhost 25 465 587 993 4190`.
+6. MailHog 캡처 실패는 애플리케이션 SMTP host가 `mailhog`, port가 `1025`인지 확인한다.
+7. Stalwart 외부 전송 실패는 DNS(MX/SPF/DKIM/DMARC), 인증서, ISP/hosting provider의 port 25 정책 evidence를 확인한다.
 
 ### Verification Steps
 
-- [ ] `telnet mail.${DEFAULT_URL} 25` 를 통해 SMTP 배너 응답을 확인합니다.
-- [ ] 캡처 UI(`https://mailhog.${DEFAULT_URL}`)에 접속하여 테스트 메일이 들어오는지 확인합니다.
-
-### Safe Rollback or Recovery Procedure
-
-- [ ] 설정 변경 후 실패 시 Git checkout을 통해 `infra/10-communication/mail` 내의 설정을 이전 상태로 되돌립니다.
-- [ ] 주요 서비스 재시작 전 `docker-compose stop`을 권장합니다.
+- `bash scripts/hardening/check-all-hardening.sh 10-communication`
+- `bash scripts/validation/check-repo-contracts.sh`
+- 운영 승격 시 UI route, TLS, DNS, host port evidence가 incident/task 기록에 남아 있어야 한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: `docker logs --tail 100 stalwart`, `docker logs --tail 100 mailhog`
+- **Static config**: [mail compose](../../../../infra/10-communication/mail/docker-compose.yml), [infra_net spec](../../../03.specs/standardize-infra-net/spec.md)
+- **Runtime signals**: container status, host port probe output, Traefik route response, DNS/TLS probe output
+
+### Safe Rollback or Recovery Procedure
+
+1. static config drift는 current branch에서 compose/doc diff를 되돌리기 전에 변경 원인과 검증 실패를 기록한다.
+2. 운영 승격 후 재시작이 필요하면 사전 승인과 영향 범위를 기록한 뒤 Stalwart 또는 MailHog 단위로만 수행한다.
+3. MailHog queue 초기화는 개발 캡처 데이터 손실을 의미하므로 관련 개발자에게 알린 뒤 승인된 경우에만 재시작한다.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: secret exposure risk가 있으면 secret 파일 열람과 로그 공유를 중단한다.
+- **Eval Re-run**: hardening, repo contracts, documentation alignment checks를 재실행한다.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- 실행한 명령, 성공/실패 요약, 컨테이너 상태, 관련 로그 tail, DNS/TLS/port probe 결과를 task 또는 incident evidence에 기록한다.
+- secret 값, private key, 인증서 원문은 evidence에 포함하지 않는다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A — no verified broad rollback or data restore procedure is documented yet. Static config correction, approved service restart, and MailHog development queue reset만 이 runbook의 검증된 복구 범위다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+verification이 실패하거나, 데이터 삭제/복구, production mail delivery 변경, DNS 변경, secret rotation, host firewall 변경이 필요하면 owning operator에게 에스컬레이션한다. 에스컬레이션에는 captured evidence, 최근 변경 내역, optional include 활성화 여부, 현재 rollback/recovery 상태를 포함한다.
 
 ## Related Documents
 

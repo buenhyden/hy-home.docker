@@ -48,7 +48,7 @@ policies/10-communication/
 
 | Path | Purpose |
 | --- | --- |
-| [mail.md](./mail.md) | Mail policy 문서 |
+| [mail.md](./mail.md) | Stalwart/MailHog security, secret, SSO, DNS/TLS promotion, and validation policy |
 
 ## Related Documents
 

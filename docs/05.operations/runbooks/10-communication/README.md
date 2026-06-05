@@ -48,7 +48,7 @@ runbooks/10-communication/
 
 | Path | Purpose |
 | --- | --- |
-| [mail.md](./mail.md) | Mail runbook 문서 |
+| [mail.md](./mail.md) | Stalwart/MailHog hardening failure, UI outage, SMTP/IMAP, and MailHog capture recovery runbook |
 
 ## Related Documents
 

@@ -41,11 +41,12 @@ mail/
 
 ## Available Scripts
 
-| Command                                        | Description                |
-| ---------------------------------------------- | -------------------------- |
-| `docker compose --profile communication up -d` | 통신 티어 서비스 전체 시작 |
-| `docker compose logs -f stalwart`              | Stalwart 로그 모니터링     |
-| `docker compose restart mailhog`               | MailHog 큐 초기화 및 재시작 |
+| Command | Description |
+| --- | --- |
+| `bash scripts/hardening/check-all-hardening.sh 10-communication` | mail leaf hardening baseline 확인 |
+| `bash scripts/validation/check-repo-contracts.sh` | stale 문서/계약 재유입 방지 확인 |
+| `docker logs --tail 100 stalwart` | 실행 중인 Stalwart 컨테이너 로그 tail 확인 |
+| `docker logs --tail 100 mailhog` | 실행 중인 MailHog 컨테이너 로그 tail 확인 |
 
 ## Configuration
 
@@ -53,20 +54,26 @@ mail/
 
 | Variable                | Required | Description                                  |
 | ----------------------- | -------- | -------------------------------------------- |
-| `DEFAULT_URL`           | Yes      | 서비스 접속 주소 베이스 도메인               |
-| `DEFAULT_COMMUNICATION_DIR` | Yes  | Stalwart 데이터 저장을 위한 호스트 경로      |
-| `SMTP_HOST_PORT`        | No       | 외부 SMTP 수신 포트 (기본: 25)               |
-| `STALWART_PORT`         | No       | Stalwart 관리 UI 내부 포트 (기본: 8080)       |
+| `DEFAULT_URL` | Yes | 서비스 접속 주소 베이스 도메인 |
+| `DEFAULT_COMMUNICATION_DIR` | Yes | Stalwart 데이터 저장을 위한 호스트 경로 |
+| `SMTP_HOST_PORT` | No | 외부 SMTP 수신 포트 (기본: 25) |
+| `SUBMISSION_HOST_PORT` | No | 외부 Submission 포트 (기본: 587) |
+| `SMTPS_HOST_PORT` | No | 외부 SMTPS 포트 (기본: 465) |
+| `IMAPS_HOST_PORT` | No | 외부 IMAPS 포트 (기본: 993) |
+| `MANAGESIEVE_HOST_PORT` | No | 외부 ManageSieve 포트 (기본: 4190) |
+| `STALWART_PORT` | No | Stalwart 관리/JMAP UI 내부 포트 (기본: 8080) |
+| `MAILHOG_UI_PORT` | No | MailHog UI 내부 포트 (기본: 8025) |
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect mail services.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking mail documentation ready.
+- Run `bash scripts/hardening/check-all-hardening.sh 10-communication` after Compose reference changes that affect mail services.
+- Run `bash scripts/validation/check-repo-contracts.sh` before marking mail documentation ready.
+- Service-local standalone `docker compose config` is not readiness evidence because this leaf depends on root `infra_net`, Docker Secrets, and common template context.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm mail service ports, volumes, and secret references render.
-- Check mail service logs and the linked runbook before changing SMTP, IMAP, JMAP, or credential settings.
+- Start with the hardening check to confirm static IPs, SSO middleware, healthchecks, and template inheritance.
+- Check mail service logs and the linked runbook before changing SMTP, IMAP, JMAP, route, or credential settings.
 
 ## Related Documents
 
@@ -74,29 +81,23 @@ mail/
 - **Policy**: [Mail Operations Policy](../../../docs/05.operations/policies/10-communication/mail.md)
 - **Runbook**: [Mail Recovery Runbook](../../../docs/05.operations/runbooks/10-communication/mail.md)
 
----
-
-Copyright (c) 2026. Licensed under the MIT License.
-
----
-
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | ✉️ Mail Infrastructure (mail) service leaf in `10-communication`; services: `stalwart`, `mailhog`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/10-communication/mail/docker-compose.yml` |
+| Purpose | Mail Infrastructure service leaf in `10-communication`; services: `stalwart`, `mailhog`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/10-communication/mail/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `STALWART_ADMIN_USER`; profiles: `communication` |
 | Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/10-communication/mail/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `infra_net` static IPs `172.19.0.228` (Stalwart), `172.19.0.229` (MailHog) |
 | Volumes | `stalwart-data:/opt/stalwart:rw`, `../../../secrets/certs:/opt/stalwart/certs:ro`, `stalwart-data` |
 | Ports | `${SMTP_HOST_PORT:-25}:${SMTP_PORT:-25}`, `${SUBMISSION_HOST_PORT:-587}:${SUBMISSION_PORT:-587}`, `${SMTPS_HOST_PORT:-465}:${SMTPS_PORT:-465}`, `${IMAPS_HOST_PORT:-993}:${IMAPS_PORT:-993}`, `${MANAGESIEVE_HOST_PORT:-4190}:${MANAGESIEVE_PORT:-4190}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.stalwart-ui.rule`, `traefik.http.routers.stalwart-ui.entrypoints`, `traefik.http.routers.stalwart-ui.tls`, `traefik.http.routers.stalwart-ui.middlewares`, `traefik.http.services.stalwart-ui.loadbalancer.server.port`, `traefik.http.routers.mailhog.rule`, plus 4 more |
 | Secret refs | names: `stalwart_password`; mounts: `/run/secrets/stalwart_password` |
 | Healthcheck | Compose healthcheck declared for `stalwart`, `mailhog` |
 | Operations | [Guide](../../../docs/05.operations/guides/10-communication/mail.md), [Policy](../../../docs/05.operations/policies/10-communication/mail.md), [Runbook](../../../docs/05.operations/runbooks/10-communication/mail.md) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `10-communication`; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 

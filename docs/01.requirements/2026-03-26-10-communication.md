@@ -8,7 +8,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `10-communication` 계층의 제품 요구사항을 정의한다. 이 계층은 시스템의 모든 메일 및 메시지 통신 인프라를 담당하며, 개발용 SMTP 샌드박스와 운영용 메일 서버를 통합하여 안전하고 신뢰할 수 있는 메시징 환경을 구축하는 것을 목표로 한다.
+이 문서는 `10-communication` 계층의 제품 요구사항을 정의한다. 이 계층은 현재 구현된 메일 통신 인프라를 담당하며, 개발용 SMTP 샌드박스와 운영용 메일 서버를 통합하여 안전하고 신뢰할 수 있는 메일 환경을 구축하는 것을 목표로 한다.
 
 ## Vision
 
@@ -41,8 +41,8 @@ status: active
 ## Success Criteria
 
 - **REQ-PRD-MET-01**: 개발 환경에서의 운영 메일 오발송 제로(Zero).
-- **REQ-PRD-MET-02**: 외부 메일 서버로의 전송 성공률 99.9% 이상 유지.
-- **REQ-PRD-MET-03**: 모든 메일 통신의 TLS 1.3 적용률 100%.
+- **REQ-PRD-MET-02**: optional mail compose가 valid `infra_net` 주소, Docker Secret 참조, SSO 보호 UI route를 갖춘 상태로 hardening 검증을 통과.
+- **REQ-PRD-MET-03**: 외부 전송 성공률, TLS 버전, DNS deliverability 지표는 운영 승격 시 별도 evidence로 검증하며 현재 optional compose의 완료 기준으로 간주하지 않음.
 
 ## Scope and Non-goals
 

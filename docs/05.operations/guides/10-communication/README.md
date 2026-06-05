@@ -48,7 +48,7 @@ guides/10-communication/
 
 | Path | Purpose |
 | --- | --- |
-| [mail.md](./mail.md) | Mail guide 문서 |
+| [mail.md](./mail.md) | Stalwart/MailHog optional compose usage, development trap, and promotion-readiness guide |
 
 ## Related Documents
 

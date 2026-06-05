@@ -35,6 +35,7 @@ status: completed
 
 - `markdownlint`를 통한 문서 규격 검증.
 - 모든 상대 경로 링크의 유효성 점검.
+- `bash scripts/hardening/check-all-hardening.sh 10-communication`로 mail compose hardening baseline 확인.
 
 ### Manual Verification
 
@@ -67,6 +68,7 @@ The existing proposed changes, documentation layer, infrastructure layer, or roa
 - Existing completion state remains as recorded in this historical plan.
 - Verification evidence remains in existing verification notes or linked tasks.
 - Related documentation links remain valid.
+- 2026-06-05 current-truth reconciliation 기준으로 optional mail compose, hardening tier, operations guide/policy/runbook이 구현과 일치한다.
 
 ## Related Documents
 

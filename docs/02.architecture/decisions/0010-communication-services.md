@@ -21,15 +21,15 @@ status: active
 
 ## Rationale
 
-- **격리 정책**: 개발용 `mailhog`는 1025 포트를, 운영용 `stalwart`는 표준 25/465/587 포트를 사용하여 논리적으로 명확히 분리한다.
-- **보안 프로토콜**: 모든 통신에 TLS 1.3을 적용하며, Stalwart는 Keycloak OIDC를 통해 관리 권한을 위임받는다.
+- **격리 정책**: 개발용 `mailhog`는 내부 SMTP 1025 포트를, 운영용 `stalwart`는 표준 25/465/587/993 포트를 사용하여 논리적으로 명확히 분리한다.
+- **보안 프로토콜**: Stalwart와 MailHog의 웹 UI는 Traefik SSO 미들웨어 체인으로 보호한다. TLS/DNS deliverability evidence는 운영 승격 전 별도 검증한다.
 - **데이터 신뢰성**: Stalwart의 메일 저장소는 영구 볼륨으로 관리되어 시스템 재시작 후에도 데이터를 유지한다.
 
 ## Consequences
 
 - **Positive**:
   - 개발 단계에서의 메일 오발송 리스크가 완전히 제거된다.
-  - 표준화된 메일 서버 구성을 통해 SPF/DKIM 등 복잡한 스팸 방지 정책을 일관되게 적용할 수 있다.
+  - 표준화된 메일 서버 구성을 통해 SPF/DKIM 등 스팸 방지 정책의 운영 승격 기준을 일관되게 적용할 수 있다.
 - **Negative**:
   - Stalwart의 초기 설정(도메인 인증 등)이 다소 복잡할 수 있다.
   - 메일 서버 운영에 필요한 고정 IP 및 DNS 레코드 관리가 수반된다.

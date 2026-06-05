@@ -7,7 +7,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `10-communication` 계층의 기술 사양을 정의한다. SMTP 트래핑 아키텍처, 메일 서버 구성 요소, 데이터 지속성 프로토콜 및 보안 통제 사항을 포함한다. 현재 root `docker-compose.yml`에서 `infra/10-communication/mail/docker-compose.yml`은 주석 처리된 optional include이므로, 이 명세는 보유 구현과 standalone/root-commented optional 실행 계약을 설명한다.
+이 문서는 `10-communication` 계층의 기술 사양을 정의한다. SMTP 트래핑 아키텍처, 메일 서버 구성 요소, 데이터 지속성 프로토콜 및 보안 통제 사항을 포함한다. 현재 root `docker-compose.yml`에서 `infra/10-communication/mail/docker-compose.yml`은 주석 처리된 optional include이므로, 이 명세는 보유 구현과 root optional 실행 계약을 설명한다.
 
 ## Strategic Boundaries & Non-goals
 
@@ -30,13 +30,12 @@ status: active
 
 - **Config Contract**:
   - Communication mail compose exists under `infra/10-communication/mail/`, but it is not root-active in the current root compose.
+  - The service-local compose file depends on root-level `infra_net`, secrets, and common template context; direct standalone service-local config rendering is not a valid readiness proof.
   - MailHog receives development SMTP traffic on internal port `1025` and exposes its web UI on internal port `8025`.
   - Stalwart exposes SMTP/Submit on `25`, `465`, `587`, IMAPS on `993`, and JMAP/Admin UI on `8080`.
-  - `DEFAULT_MAIL_DOMAIN` defines the default system mail domain.
-  - `MAIL_SENDER_NAME` defines the default sender display name.
 - **Data / Interface Contract**:
   - MailHog stores captured development messages in memory and does not relay mail to the internet.
-  - Stalwart persists production mail data to encrypted local persistent volumes.
+  - Stalwart persists production mail data to `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` through the `stalwart-data` bind-backed volume.
   - Production clients use TLS-protected SMTP/IMAP endpoints.
 - **Governance Contract**:
   - Admin passwords and mail service secrets must use Docker Secrets.
@@ -58,7 +57,7 @@ status: active
 - **SMTP/Submit**: 메일 발송 및 수신용 서비스 (25, 465, 587 포트).
 - **IMAP/JMAP**: 메일 클라이언트 접근 프로토콜 (993, 8080 포트).
 - **Admin UI**: 웹 기반 서버 관리 및 도메인 설정 도구.
-- **Dependency**: PostgreSQL (Optional metadata), Local Persistent Volumes (Encrypted).
+- **Dependency**: Local persistent volume backed by `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`; no PostgreSQL sidecar is declared by the current compose.
 
 ### Key Dependencies
 
@@ -88,16 +87,19 @@ status: active
 
 | Service | Internal Port | External Port | Protocol | Auth Required |
 | :--- | :--- | :--- | :--- | :--- |
-| MailHog SMTP | 1025 | 1025 | SMTP | No (Whitelist) |
-| MailHog HTTP | 8025 | 18025 | HTTP | SSO (Traefik) |
+| MailHog SMTP | 1025 | Internal only | SMTP | No (development trap) |
+| MailHog HTTP | 8025 | Traefik route `mailhog.${DEFAULT_URL}` | HTTP | SSO (Traefik) |
 | Stalwart SMTP | 25 | 25 | SMTP | Opportunistic TLS |
 | Stalwart Secure | 465 / 587 | 465 / 587 | SMTPS | Mandatory Auth |
 | Stalwart IMAP | 993 | 993 | IMAPS | Mandatory Auth |
+| Stalwart Admin/JMAP | 8080 | Traefik route `mail.${DEFAULT_URL}` | HTTP | SSO (Traefik) |
 
 ### Common Variables
 
-- `DEFAULT_MAIL_DOMAIN`: 시스템 대표 메일 도메인.
-- `MAIL_SENDER_NAME`: 기본 발신자 명칭.
+- `DEFAULT_URL`: Traefik virtual-host base domain.
+- `DEFAULT_COMMUNICATION_DIR`: host data root for Stalwart persistent storage.
+- `SMTP_HOST_PORT`, `SUBMISSION_HOST_PORT`, `SMTPS_HOST_PORT`, `IMAPS_HOST_PORT`, `MANAGESIEVE_HOST_PORT`: host port overrides for Stalwart mail protocols.
+- `STALWART_PORT`, `MAILHOG_UI_PORT`: internal web service port overrides for Traefik service targets.
 
 ## API Contract (If Applicable)
 
@@ -122,9 +124,9 @@ sequenceDiagram
 
 ## Guardrails
 
-- **Authentication**: Stalwart는 Keycloak LDAP/OIDC를 통해 시스템 사용자 계정과 통합 가능.
-- **Encryption**: `secrets/certs` 내의 인증서를 사용하여 STARTTLS 및 SSL/TLS 암호화 강제.
-- **Deliverability**: Stalwart 내에서 SPF, DKIM, DMARC 서명을 자동 처리하여 스팸 필터링 방지.
+- **Authentication**: Stalwart Admin/JMAP UI and MailHog UI are protected by the Traefik `gateway-standard-chain@file,sso-errors@file,sso-auth@file` middleware chain.
+- **Encryption**: `secrets/certs` is mounted read-only for Stalwart certificate material; TLS protocol readiness must be verified during service promotion.
+- **Deliverability**: SPF, DKIM, and DMARC remain production readiness requirements, but DNS records and signing evidence are external to the tracked compose.
 - **Blocked Conditions**:
   - Open relay behavior.
   - Plaintext secret values in documentation.
@@ -149,11 +151,13 @@ sequenceDiagram
 ## Verification
 
 ```bash
-docker compose -f infra/10-communication/mail/docker-compose.yml config
-docker compose ps mailhog stalwart
-docker logs --tail 100 mailhog
-docker logs --tail 100 stalwart
+bash scripts/hardening/check-all-hardening.sh 10-communication
+bash scripts/validation/check-repo-contracts.sh
 ```
+
+Root-context render checks may be run after the optional root include is enabled
+or through an explicit validation overlay that preserves the root network,
+secret, and template context.
 
 Production readiness checks:
 

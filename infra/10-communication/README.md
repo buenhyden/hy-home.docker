@@ -2,7 +2,7 @@
 
 ## Overview
 
-`10-communication` 계층은 시스템의 고성능 전자우편 수발신 및 개발 단계의 안전한 메일 트래핑(Trapping) 환경을 제공한다. Rust 기반의 현대적인 메일 서버인 Stalwart와 개발용 샌드박스인 MailHog를 핵심 구성 요소로 사용한다.
+`10-communication` 계층은 시스템의 전자우편 수발신 및 개발 단계의 안전한 메일 트래핑(Trapping) 환경을 제공한다. 현재 구현은 root optional/commented include인 `mail` leaf로 구성되며 Stalwart와 MailHog를 핵심 구성 요소로 사용한다.
 
 ## Architecture
 
@@ -29,7 +29,7 @@ graph TD
 
     TF --- MH
     TF --- SW
-    SW --- KC
+    TF --- KC
     SW --- Internet
 ```
 
@@ -40,8 +40,8 @@ graph TD
 
 ### Upstream Dependencies
 
-- **02-auth**: Keycloak을 통한 관리자 및 사용자 계정 통합 인증 (OIDC/LDAP).
-- **01-gateway**: Traefik을 통한 SSL/TLS 종단 및 가상 호스트 라우팅.
+- **02-auth**: Traefik SSO 미들웨어를 통한 관리 UI 접근 제어.
+- **01-gateway**: Traefik을 통한 가상 호스트 라우팅.
 
 ### Downstream Consumers
 
@@ -52,19 +52,19 @@ graph TD
 
 ### Deployment
 
-```bash
-# 서비스 시작
-docker compose up -d
+이 tier의 root include는 현재 optional/commented 상태다. static readiness는 다음 기준으로 확인한다.
 
-# 로그 확인
-docker compose logs -f
+```bash
+bash scripts/hardening/check-all-hardening.sh 10-communication
 ```
+
+runtime 시작/중지는 root include 활성화와 운영 승격 evidence가 준비된 뒤 승인된 절차로 수행한다.
 
 ### Key Ports
 
-- **SMTP (Dev)**: 1025
-- **SMTP (Prod)**: 25, 465, 587
-- **Web UI**: 8025 (MailHog), 8080 (Stalwart Admin)
+- **MailHog SMTP (internal)**: 1025
+- **Stalwart Mail Ports (host-bound)**: 25, 465, 587, 993, 4190
+- **Web UI (Traefik route)**: 8025 target for MailHog, 8080 target for Stalwart Admin/JMAP
 
 ## Governance
 
@@ -79,6 +79,9 @@ docker compose logs -f
 - [ARD](../../docs/02.architecture/requirements/0010-communication-architecture.md)
 - [ADR](../../docs/02.architecture/decisions/0010-communication-services.md)
 - [Technical Spec](../../docs/03.specs/10-communication/spec.md)
+- [Guide](../../docs/05.operations/guides/10-communication/mail.md)
+- [Policy](../../docs/05.operations/policies/10-communication/mail.md)
+- [Runbook](../../docs/05.operations/runbooks/10-communication/mail.md)
 
 ---
 
@@ -124,5 +127,6 @@ infra/10-communication/
 
 - [infra/README.md](../README.md)
 - [docs/05.operations/README.md](../../docs/05.operations/README.md)
-- [docs/05.operations/README.md](../../docs/05.operations/README.md)
-- [docs/05.operations/README.md](../../docs/05.operations/README.md)
+- [Mail operations guide](../../docs/05.operations/guides/10-communication/mail.md)
+- [Mail operations policy](../../docs/05.operations/policies/10-communication/mail.md)
+- [Mail recovery runbook](../../docs/05.operations/runbooks/10-communication/mail.md)

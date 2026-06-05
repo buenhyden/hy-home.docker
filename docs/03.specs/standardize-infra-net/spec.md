@@ -98,7 +98,7 @@ networks:
 | `172.19.0.250`     | Locust Master             | `infra/09-tooling/locust`                     |
 | `172.19.0.251`     | Open-WebUI                | `infra/08-ai/open-webui`                      |
 | `172.19.0.253`     | Locust Worker             | `infra/09-tooling/locust`                     |
-| `172.19.0.260-261` | Stalwart Mail / MailHog   | `infra/10-communication/mail`                 |
+| `172.19.0.228-229` | Stalwart Mail / MailHog   | `infra/10-communication/mail`                 |
 
 ### Service Assignment Example
 

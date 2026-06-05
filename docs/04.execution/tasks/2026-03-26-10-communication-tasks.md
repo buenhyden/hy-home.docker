@@ -9,12 +9,12 @@ status: completed
 ## Status Summary
 
 - **Target**: 10-communication
-- **Progress**: 60%
-- **Last Updated**: 2026-03-26
+- **Progress**: 100%
+- **Last Updated**: 2026-06-05
 
 ## Task List
 
-### 1. Analysis & Core Docs [/]
+### 1. Analysis & Core Docs [x]
 
 - [x] Service Analysis (MailHog, Stalwart)
 - [x] PRD Creation
@@ -22,22 +22,22 @@ status: completed
 - [x] ADR Creation
 - [x] Technical Specification Creation
 
-### 2. Operational Docs [ ]
+### 2. Operational Docs [x]
 
-- [ ] User Guide (Email Client Setup)
-- [ ] Operational Policy
-- [ ] Maintenance Runbook
+- [x] User Guide (Email Client Setup)
+- [x] Operational Policy
+- [x] Maintenance Runbook
 
-### 3. Refactoring & Integration [ ]
+### 3. Refactoring & Integration [x]
 
-- [ ] `infra/10-communication/README.md` Refactoring
-- [ ] Cross-layer Link Verification
-- [ ] Implementation Plan Finalization
+- [x] `infra/10-communication/README.md` Refactoring
+- [x] Cross-layer Link Verification
+- [x] Implementation Plan Finalization
 
-### 4. Quality Assurance [ ]
+### 4. Quality Assurance [x]
 
-- [ ] Markdown Linting Fix
-- [ ] AI Discoverability Audit
+- [x] Markdown Linting Fix
+- [x] AI Discoverability Audit
 
 ## Overview (KR)
 
@@ -59,8 +59,8 @@ Existing task bullets and verification notes in this document remain the task li
 
 ## Verification Summary
 
-- **Test Commands**: Use existing verification notes in this task file.
-- **Logs / Evidence Location**: Existing task evidence remains authoritative.
+- **Test Commands**: `bash scripts/hardening/check-all-hardening.sh 10-communication`; `bash scripts/validation/check-repo-contracts.sh`; linked audit task verification.
+- **Logs / Evidence Location**: [docs/01-05 implementation audit](./2026-06-04-docs-implementation-audit.md) and [progress log](../../00.agent-governance/memory/progress.md).
 
 ## Related Documents
 

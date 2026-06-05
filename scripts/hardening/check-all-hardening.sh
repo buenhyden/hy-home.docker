@@ -27,7 +27,8 @@ requested tiers are checked.
 
 Supported tiers:
   01-gateway, 02-auth, 03-security, 04-data, 05-messaging,
-  06-observability, 07-workflow, 08-ai, 09-tooling, 11-laboratory
+  06-observability, 07-workflow, 08-ai, 09-tooling,
+  10-communication, 11-laboratory
 EOF
 }
 
@@ -180,6 +181,25 @@ check_09_tooling() {
   check_contains "$sonarqube_compose" "sso-auth@file" "sonarqube sso missing"
 }
 
+# --- Tier 10: Communication ---
+check_10_communication() {
+  local tier="10-communication"
+  start_tier "$tier"
+
+  local mail_compose="infra/10-communication/mail/docker-compose.yml"
+  check_file "$mail_compose"
+
+  check_contains "$mail_compose" "service: template-stateful-med" "stalwart template inheritance missing"
+  check_contains "$mail_compose" "service: template-infra-low" "mailhog template inheritance missing"
+  check_contains "$mail_compose" "traefik.http.routers.stalwart-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "stalwart admin route sso middleware mismatch"
+  check_contains "$mail_compose" "traefik.http.routers.mailhog.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "mailhog route sso middleware mismatch"
+  check_contains "$mail_compose" "ipv4_address: 172.19.0.228" "stalwart infra_net IP mismatch"
+  check_contains "$mail_compose" "ipv4_address: 172.19.0.229" "mailhog infra_net IP mismatch"
+
+  check_service_healthcheck "$mail_compose" "stalwart"
+  check_service_healthcheck "$mail_compose" "mailhog"
+}
+
 # --- Tier 11: Laboratory ---
 check_11_laboratory() {
   local tier="11-laboratory"
@@ -222,6 +242,9 @@ run_tier() {
   09-tooling | tooling)
     check_09_tooling
     ;;
+  10-communication | communication | comm)
+    check_10_communication
+    ;;
   11-laboratory | laboratory | lab)
     check_11_laboratory
     ;;
@@ -250,6 +273,7 @@ main() {
     run_tier 07-workflow
     run_tier 08-ai
     run_tier 09-tooling
+    run_tier 10-communication
     run_tier 11-laboratory
   else
     local tier
