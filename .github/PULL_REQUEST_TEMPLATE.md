@@ -48,6 +48,34 @@ List exact commands used and outcome.
 - Coverage rationale: [Explain coverage result or why this PR is docs/infra/config-only]
 - Fix/Refactor evidence: [For bug fixes, list regression evidence. For refactors, state behavior-preserving checks.]
 
+## Harness Impact
+
+- [ ] No harness surface changed
+- [ ] `docker-compose.yml` or `infra/**` changed
+- [ ] `secrets/**` path, registry, or secret mapping changed
+- [ ] `.env.example` changed
+- [ ] `scripts/**` validation, hardening, hook, or operation command changed
+- [ ] `.github/workflows/**` changed
+- [ ] `docs/00.agent-governance/**` changed
+- [ ] `docs/05.operations/**` changed
+- [ ] `docs/99.templates/**` changed
+
+If any harness surface changed, list exact validation evidence:
+
+```bash
+bash scripts/validation/run-local-qa-gates.sh --harness
+bash scripts/validation/run-local-qa-gates.sh --script-backed
+# Compose-affecting changes only:
+bash scripts/validation/validate-docker-compose.sh --preflight
+```
+
+Secret handling:
+
+- [ ] No secret values, tokens, private keys, or certificate contents are included
+- [ ] Secret-related changes record only path, ID, registry, and redacted evidence
+
+See [Approval Boundaries](../docs/00.agent-governance/rules/approval-boundaries.md) for protected surfaces.
+
 ## Risk Assessment
 
 - Risk Level: [Low/Medium/High]

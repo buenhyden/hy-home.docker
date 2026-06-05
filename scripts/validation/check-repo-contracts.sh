@@ -71,6 +71,7 @@ required_templates=(
   "ard.template.md"
   "data-model.template.md"
   "guide.template.md"
+  "harness-task-contract.template.md"
   "incident.template.md"
   "memory.template.md"
   "openapi.template.yaml"
@@ -277,8 +278,8 @@ fi
 
 sensitive_comparison_doc="docs/05.operations/guides/00-workspace/sensitive-env-vars-comparison.md"
 if [[ -f "secrets/SENSITIVE_ENV_VARS.md.example" && -f "secrets/SENSITIVE_ENV_VARS.md" && -f "$sensitive_comparison_doc" ]]; then
-  sensitive_example_lines="$(wc -l < secrets/SENSITIVE_ENV_VARS.md.example | tr -d '[:space:]')"
-  sensitive_actual_lines="$(wc -l < secrets/SENSITIVE_ENV_VARS.md | tr -d '[:space:]')"
+  sensitive_example_lines="$(wc -l <secrets/SENSITIVE_ENV_VARS.md.example | tr -d '[:space:]')"
+  sensitive_actual_lines="$(wc -l <secrets/SENSITIVE_ENV_VARS.md | tr -d '[:space:]')"
   sensitive_example_ids="$(rg -o '\b[A-Z]+-[0-9]{3}\b' secrets/SENSITIVE_ENV_VARS.md.example | sort -u | wc -l | tr -d '[:space:]')"
   if ! grep -Eq "\\| Example 파일 라인 수[[:space:]]*\\|[[:space:]]*${sensitive_example_lines}[[:space:]]*\\|" "$sensitive_comparison_doc"; then
     fail "$sensitive_comparison_doc does not record current sensitive example line count: $sensitive_example_lines"
@@ -3717,6 +3718,24 @@ if failures:
     sys.exit(1)
 PY
   failures=$((failures + 1))
+fi
+
+section "Harness surface contracts"
+harness_map="docs/00.agent-governance/harness-implementation-map.md"
+approval_boundaries="docs/00.agent-governance/rules/approval-boundaries.md"
+[[ -f "$harness_map" ]] || fail "missing harness implementation map: $harness_map"
+[[ -f "$approval_boundaries" ]] || fail "missing approval boundaries rule: $approval_boundaries"
+if ! grep -q -- "--harness" scripts/validation/run-local-qa-gates.sh; then
+  fail "run-local-qa-gates.sh missing --harness mode"
+fi
+if ! grep -q "run-local-qa-gates.sh --harness" scripts/README.md; then
+  fail "scripts/README.md missing reference to the harness gate (run-local-qa-gates.sh --harness)"
+fi
+if ! grep -q "## Harness Impact" .github/PULL_REQUEST_TEMPLATE.md; then
+  fail "PR template missing Harness Impact section"
+fi
+if ! grep -q "harness-implementation-map.md" docs/00.agent-governance/README.md; then
+  fail "governance README missing harness implementation map reference"
 fi
 
 echo

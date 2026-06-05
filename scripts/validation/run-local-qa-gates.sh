@@ -6,7 +6,7 @@ cd "$BASE_DIR"
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/validation/run-local-qa-gates.sh [--help|--list|--script-backed|--all-profiles]
+Usage: bash scripts/validation/run-local-qa-gates.sh [--help|--list|--script-backed|--all-profiles|--harness]
 
 Run the repository QA gates that are safe and meaningful in a local shell.
 
@@ -16,6 +16,12 @@ Modes:
   --all-profiles   Run the same gates, but validate Docker Compose with the
                    governed all-profile set unless HYHOME_COMPOSE_PROFILES is
                    already set.
+  --harness        Run only the harness-change-scoped subset of script-backed
+                   gates (diff hygiene, shell syntax, doc traceability and
+                   implementation alignment, Docker Compose, hardening,
+                   template/security baseline, repository contracts). Use this
+                   as a fast gate when changing harness surfaces such as
+                   governance docs, scripts, templates, or the PR template.
   --list           Print local and remote-only QA/CI responsibilities.
 
 Remote-only gates such as SARIF upload, protected-branch enforcement, and
@@ -34,6 +40,9 @@ case "${1:-}" in
   ;;
 --all-profiles)
   MODE="all-profiles"
+  ;;
+--harness)
+  MODE="harness"
   ;;
 --list)
   MODE="list"
@@ -122,6 +131,17 @@ run_script_backed_gates() {
   run_step "Repository contracts" bash scripts/validation/check-repo-contracts.sh
 }
 
+run_harness_gates() {
+  run_step "Diff whitespace hygiene" git diff --check
+  run_step "Shell syntax" run_bash_syntax
+  run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
+  run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
+  run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
+  run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh
+  run_step "Template/security baseline" bash scripts/validation/check-template-security-baseline.sh
+  run_step "Repository contracts" bash scripts/validation/check-repo-contracts.sh
+}
+
 case "$MODE" in
 list)
   list_gates
@@ -132,6 +152,9 @@ script-backed)
 all-profiles)
   export HYHOME_COMPOSE_PROFILES="${HYHOME_COMPOSE_PROFILES:-$ALL_COMPOSE_PROFILES}"
   run_script_backed_gates
+  ;;
+harness)
+  run_harness_gates
   ;;
 *)
   usage >&2
