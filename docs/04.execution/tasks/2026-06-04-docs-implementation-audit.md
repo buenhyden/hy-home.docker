@@ -29,21 +29,28 @@ tracked `infra/**` 구현과 의미 단위로 대조한 감사 리포트다. 판
 ## Methodology & Coverage
 
 - **Structural mapping (100%)**: Stage 01-05 문서를 stage/tier/service로 인벤토리하고 40개
-  compose-bearing implementation root, tier-level compose 서비스 문서, 거버넌스 표면에 매핑.
-- **Deep content read**: 후보군(03 프로세스 스펙, 04 stale active 플랜, 05 draft) + tier 대표 샘플.
-- **Signal scans**: frontmatter status 분포, legacy/deprecated 용어, operations↔infra 커버리지.
-- **한계**: 모든 Stage 01-05 문서의 1:1 전수 정독은 수행하지 않음. 아래 "Open decision"에서 심층
-  전수 패스 여부를 확인한다.
+  compose-bearing implementation root, tier-level compose 서비스 문서, 거버넌스 표면에 매핑했다.
+- **Implementation reconciliation**: candidate status/lifecycle groups, Stage 05 structure, and every implemented
+  service/tier current-truth pass from `01-gateway` through `11-laboratory` were compared against tracked
+  `infra/**`, scripts, compose profile validators, hardening checks, and service READMEs.
+- **Signal scans**: frontmatter status 분포, legacy/deprecated 용어, operations↔infra 커버리지,
+  runtime version literals, service-local compose proof drift, archive links, stage taxonomy shorthand, and
+  stale command/control literals.
+- **Coverage closure**: unresolved active-doc current-truth blockers are 0건. Runtime-only live rehearsals that
+  need a running local environment remain explicitly scoped as future evidence, not active documentation drift.
 
 ## Key Finding
 
 2026-06-02 reconciliation이 **구현과 총체적으로 충돌하는 문서를 이미 아카이브**했다(Airbyte
-미구현, Codex Markdown/HADS 상충 등). 이번 pass에서는 추가로 `05-messaging`의 misplaced ksqlDB
+미구현, Codex Markdown/HADS 상충 등). 이 continuation에서는 추가로 `05-messaging`의 misplaced ksqlDB
 guide, `07-workflow`의 duplicate Airflow DAG guide, `08-ai`의 duplicate Ollama setup/inference guides,
-`09-tooling`의 duplicate IaC automation guide를
-archive tombstone으로 이동했다. 추가로 `10-communication`은 invalid static IP와 누락된 Stalwart
-SSO route guard를 구현에서 보정하고 hardening tier에 편입했다. `11-laboratory`는 root-active Open Notebook/SurrealDB를 hardening scope에 포함하고 stale recovery/runbook guidance를 정리했다. 나머지 실질 드리프트는 대부분 구현된 서비스 문서의 current-truth
-mismatch, frontmatter status metadata, 완료된 일회성 프로세스 문서의 라이프사이클 처리다.
+`09-tooling`의 duplicate IaC automation guide, `03-security`의 duplicate Vault setup guide를
+archive tombstone으로 이동했다. `01-gateway`, `10-communication`, `11-laboratory`에서는 문서 기준과
+구현 간 mismatch가 실제 compose/hardening gap까지 드러나 tracked implementation을 함께 보정했다.
+`02-auth`, `03-security`, `04-data`, `05-messaging`, `06-observability`, `07-workflow`, `08-ai`, and
+`09-tooling`은 구현된 서비스 문서의 current-truth mismatch, service-local validation boundary,
+runtime version/control literal drift, and active taxonomy shorthand drift를 in-place correction과
+repo-contract guard로 닫았다.
 
 ## Verdict Summary (by stage)
 

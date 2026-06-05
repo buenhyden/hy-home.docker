@@ -930,7 +930,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/05-messaging/spec.md": {
-    "mtime": 1780629987.7300558,
+    "mtime": 1780630336.550175,
     "ast_hash": "159ad850c5e20a1739c9c4e02e500aab",
     "semantic_hash": ""
   },
@@ -950,7 +950,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/06-observability/spec.md": {
-    "mtime": 1780629987.9300559,
+    "mtime": 1780630336.550175,
     "ast_hash": "5711d812d53c3c9f1da6bc979f1df2e7",
     "semantic_hash": ""
   },
@@ -1130,7 +1130,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0019-data-optimization-hardening-architecture.md": {
-    "mtime": 1780629987.3140557,
+    "mtime": 1780630336.550175,
     "ast_hash": "19e166afd2a31f4ce1a9abbcf34a4c6b",
     "semantic_hash": ""
   },
@@ -1265,7 +1265,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md": {
-    "mtime": 1780629987.5140557,
+    "mtime": 1780630336.550175,
     "ast_hash": "899e773048b1843ce0ec214a9aeeda2f",
     "semantic_hash": ""
   },
@@ -1365,12 +1365,12 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-28-05-messaging-optimization-hardening.md": {
-    "mtime": 1780629986.9140556,
+    "mtime": 1780630336.550175,
     "ast_hash": "7884fb4ce626bad1667799d311a550d2",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-28-04-data-optimization-hardening.md": {
-    "mtime": 1780629986.7100554,
+    "mtime": 1780630336.550175,
     "ast_hash": "0b8ca781f3589da86c6075e30b346388",
     "semantic_hash": ""
   },
@@ -1430,7 +1430,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-28-06-observability-optimization-hardening.md": {
-    "mtime": 1780629987.1220555,
+    "mtime": 1780630336.550175,
     "ast_hash": "589b225a1e078d2ce1acca0cf665ba71",
     "semantic_hash": ""
   },
@@ -3375,8 +3375,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780629499.642028,
-    "ast_hash": "4477cc9a3f953a0e03660f88faeb852a",
+    "mtime": 1780630336.550175,
+    "ast_hash": "9a8057e335858184ee3f4c1c3e83faa4",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -3740,7 +3740,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md": {
-    "mtime": 1780629988.7420561,
+    "mtime": 1780630336.550175,
     "ast_hash": "fc919e50499ba54d2c8f62712751f514",
     "semantic_hash": ""
   },
@@ -3805,12 +3805,12 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md": {
-    "mtime": 1780629988.338056,
+    "mtime": 1780630336.550175,
     "ast_hash": "daebda7454cc6d868763abad903d7305",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md": {
-    "mtime": 1780629988.138056,
+    "mtime": 1780630336.550175,
     "ast_hash": "a8232d91a7f96d656c52d2101865bea6",
     "semantic_hash": ""
   },
@@ -3830,7 +3830,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md": {
-    "mtime": 1780629989.162056,
+    "mtime": 1780630336.550175,
     "ast_hash": "b135e118d0d082071d03d90bb5329eb0",
     "semantic_hash": ""
   },
@@ -3885,7 +3885,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md": {
-    "mtime": 1780629988.526056,
+    "mtime": 1780630336.550175,
     "ast_hash": "bb632a000cc19fcdede6a109bc2684c2",
     "semantic_hash": ""
   },
@@ -3975,7 +3975,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md": {
-    "mtime": 1780629988.938056,
+    "mtime": 1780630336.550175,
     "ast_hash": "acfb8a4d6c1998c2d94fc48943c8f97f",
     "semantic_hash": ""
   },
@@ -4430,7 +4430,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-repo-contracts.sh": {
-    "mtime": 1780630008.6860578,
+    "mtime": 1780630336.5941746,
     "ast_hash": "022263144a7b23389978ac39ae59dfd3",
     "semantic_hash": ""
   },
@@ -4485,7 +4485,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md": {
-    "mtime": 1780630066.862056,
+    "mtime": 1780630336.550175,
     "ast_hash": "d2afb1db3170de119a43a95e0ff86a05",
     "semantic_hash": ""
   },
