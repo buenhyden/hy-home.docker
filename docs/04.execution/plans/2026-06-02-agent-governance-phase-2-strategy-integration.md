@@ -7,9 +7,9 @@ status: completed
 
 ## Overview
 
-이 문서는 Agent Governance Phase 1 revalidation에서 확인한 후속 항목을 Phase 2 실행 evidence로 닫는 계획서다.
+This document is the plan for closing follow-up items found during Agent Governance Phase 1 revalidation as Phase 2 execution evidence.
 
-Phase 2는 새 정책 체계나 adapter 모델을 만들지 않는다. 현행 Stage 00 canonical adapter, skill lifecycle, QA/CI matrix, Codex tooling shim, Docker hard/manual gate 경계가 이미 구현되어 있으므로, Phase 1 backlog를 현재 구현 사실에 맞게 disposition하고 Stage 04 evidence로 정리한다.
+Phase 2 does not create a new policy system or adapter model. Because the current Stage 00 canonical adapter, skill lifecycle, QA/CI matrix, Codex tooling shim, and Docker hard/manual gate boundaries are already implemented, Phase 2 dispositions the Phase 1 backlog against current implementation facts and records it as Stage 04 evidence.
 
 ## Context
 

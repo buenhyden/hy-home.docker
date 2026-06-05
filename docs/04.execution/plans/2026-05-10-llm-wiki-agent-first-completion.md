@@ -7,11 +7,11 @@ status: completed
 
 ## Overview
 
-이 문서는 `hy-home.docker` LLM Wiki를 생성·검증 가능한 repo-local path index로 보강하기 위한 실행 계획이다.
+This document is the implementation plan for strengthening the `hy-home.docker` LLM Wiki into a generatable and verifiable repo-local path index.
 
 ## Context
 
-기존 agent-first/Harness-first 구조와 docs taxonomy migration은 완료되어 있다. 남은 gap은 LLM Wiki가 static entrypoint와 curated map에 머물러 있어 generator, generated index, explicit curator ownership, operations guide, validator freshness check를 제공하지 않는 점이다.
+The existing agent-first/Harness-first structure and docs taxonomy migration are complete. The remaining gap is that the LLM Wiki still stops at a static entrypoint and curated map, without providing a generator, generated index, explicit curator ownership, operations guide, or validator freshness check.
 
 ## Goals & In-Scope
 

@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 2026-05-25 `hy-home.docker` workspace audit 결과를 current local branch에서 재검증하고, deferred 항목을 값·런타임 변경 없이 별도 follow-up 산출물로 고정하는 실행 계획서다.
+This document is the implementation plan for revalidating the 2026-05-25 `hy-home.docker` workspace audit results on the current local branch and fixing deferred items into separate follow-up deliverables without value or runtime changes.
 
 ## Context
 

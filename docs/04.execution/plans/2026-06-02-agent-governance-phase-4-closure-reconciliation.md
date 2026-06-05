@@ -7,9 +7,9 @@ status: completed
 
 ## Overview
 
-이 문서는 Agent Governance Phase 1 through Phase 3 실행 흐름을 Phase 4에서 최종 reconciliation하는 계획서다.
+This document is the plan for final Phase 4 reconciliation of the Agent Governance Phase 1 through Phase 3 execution flow.
 
-Phase 4는 새 정책, 런타임, CI, 템플릿, secret, remote GitHub, model, provider adapter 변경을 추가하지 않는다. 대신 Phase 1 revalidation, Phase 2 strategy integration, Phase 3 approved-surface activation이 현재 active evidence chain, Stage 00 governance, template contract, validator, generated knowledge surfaces에 일관되게 반영됐는지 확인한다.
+Phase 4 does not add new policy, runtime, CI, template, secret, remote GitHub, model, or provider adapter changes. Instead, it confirms that Phase 1 revalidation, Phase 2 strategy integration, and Phase 3 approved-surface activation are consistently reflected in the current active evidence chain, Stage 00 governance, template contract, validators, and generated knowledge surfaces.
 
 ## Context
 

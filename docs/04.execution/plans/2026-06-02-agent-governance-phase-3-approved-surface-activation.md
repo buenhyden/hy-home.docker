@@ -7,9 +7,9 @@ status: completed
 
 ## Overview
 
-이 문서는 Phase 2 strategy integration 이후 사용자가 승인한 고위험 표면을 Stage 00, template, CI validator, and Stage 04 evidence 계약으로 승격하는 실행 계획서다.
+This document is the implementation plan for promoting user-approved high-risk surfaces after Phase 2 strategy integration into Stage 00, template, CI validator, and Stage 04 evidence contracts.
 
-사용자는 기존에 approval-gated였던 policy, runtime, CI, templates, secrets, remote GitHub, model policy, and provider adapter 변경을 승인했다. Phase 3는 이 승인을 무제한 예외로 쓰지 않고, 각 표면에 필요한 evidence, redaction, rollback, provider sync, remote verification boundary를 명문화한다.
+The user approved changes to policy, runtime, CI, templates, secrets, remote GitHub, model policy, and provider adapters that had previously been approval-gated. Phase 3 does not treat this approval as an unlimited exception; it codifies the evidence, redaction, rollback, provider sync, and remote verification boundaries required for each surface.
 
 ## Context
 

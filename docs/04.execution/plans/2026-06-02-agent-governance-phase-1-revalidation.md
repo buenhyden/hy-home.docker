@@ -7,9 +7,9 @@ status: completed
 
 ## Overview
 
-이 문서는 Agent Governance Phase 1 진단을 현행 repository state 기준으로 재검증하고, 이후 개선·보완·재설계 후보를 Stage 04 evidence로 정리하는 실행 계획서다.
+This document is the implementation plan for revalidating the Agent Governance Phase 1 diagnostic against the current repository state and organizing later improvement, supplementation, and redesign candidates as Stage 04 evidence.
 
-이번 작업은 구현이 아니라 조사·분석·설계 정리다. 기존 2026-06-01 Phase 1 diagnostic과 2026-06-02 governance follow-up artifacts를 baseline으로 삼고, 현재 문서·환경·체계·구조·규칙이 워크스페이스 목적에 맞게 정렬되어 있는지 확인한다.
+This work is not implementation; it is investigation, analysis, and design organization. It uses the existing 2026-06-01 Phase 1 diagnostic and 2026-06-02 governance follow-up artifacts as the baseline, then checks whether the current documents, environment, systems, structure, and rules align with the workspace purpose.
 
 ## Context
 

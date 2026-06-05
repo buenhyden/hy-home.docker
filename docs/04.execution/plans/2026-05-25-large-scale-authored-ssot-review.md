@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `대규모 개선 실행` 전에 authored SSoT가 실제 실행 권위를 감당할 수 있는지 검토하고, 실행 전 gap/deferred registry를 현재 repo truth 기준으로 고정하는 실행 계획서다.
+This document is the implementation plan for reviewing whether the authored SSoT can carry real execution authority before `large-scale improvement execution`, and for fixing the pre-execution gap/deferred registry against current repo truth.
 
 ## Context
 
