@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md -->
 # ADR-0005: Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 플랫폼에서 Apache Kafka와 RabbitMQ를 모두 채택한 폴리글랏 메시징 전략에 대한 의사 결정 기록이다. 스트리밍 데이터와 비동기 태스크 큐의 서로 다른 요구사항을 충족하기 위한 선택이다.
 

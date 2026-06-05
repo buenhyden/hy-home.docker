@@ -5,7 +5,7 @@ status: completed
 
 # Task: Agent Governance Missing Items Implementation
 
-## Overview (KR)
+## Overview
 
 이 문서는 `2026-06-02-agent-governance-decision-items-plan.md`에 대한 첨부 문서 대비 누락 항목 보강과 단계적 구현 evidence를 기록한다.
 

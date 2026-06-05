@@ -6,7 +6,7 @@ status: completed
 
 # Claude Harness Governance Verification Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 공유 거버넌스(Stage 00)와 Claude 하네스의 정합성을 검증하고, 확인된 실제 드리프트만 외과적으로
 수정하는 실행 계획서다. 모델 정책을 웹으로 재검증하고, 비집행(non-enforced) 갭은 거버넌스 메모리에 기록한다.

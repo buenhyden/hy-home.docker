@@ -7,7 +7,7 @@ status: completed
 
 > Implementation Roadmap for 06-observability Documentation.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `06-observability` 티어의 문서화 표준화 작업을 위한 상세 실행 계획서다. PRD, ARD, ADR, Spec을 바탕으로 작업 분해와 검증 방식을 정의한다.
 
@@ -43,7 +43,7 @@ status: completed
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Structural | Template Compliance Check | `grep "Overview (KR)" <files>` | All files contain summary |
+| VAL-PLN-001 | Structural | Template Compliance Check | `grep "Overview" <files>` | All files contain summary |
 | VAL-PLN-002 | Consistency | Cross-layer Link Check | Manual verification of relative paths | Links are clickable & accurate |
 
 ## Risks & Mitigations

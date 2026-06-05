@@ -6,7 +6,7 @@ status: completed
 
 # Task: Governance Surgical Re-Verification + Tech-Stack Drift Closure
 
-## Overview (KR)
+## Overview
 
 이 문서는 공유 거버넌스·Claude 하네스 외과적 재검증과, 그 과정에서 드러난 Dependabot發
 tech-stack 버전 드리프트의 종결 및 재발 방지 자동화 작업의 수행·검증 audit trail이다. 본

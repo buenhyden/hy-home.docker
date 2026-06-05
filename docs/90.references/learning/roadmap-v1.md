@@ -5,7 +5,7 @@ status: superseded
 
 # Reference: CS, CE & SE Self-Learning Roadmap (v1)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 인프라 학습 로드맵의 초기 버전을 보존하는 reference 문서다. 현재 기준은 `roadmap.md`를 우선한다.
 

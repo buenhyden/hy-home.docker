@@ -7,7 +7,7 @@ status: completed
 
 > Completed plan for the approved Home Docker Workspace Audit and Improvement workflow.
 
-## Overview (KR)
+## Overview
 
 This document defines the execution plan for a full `hy-home.docker` workspace audit and improvement pass. It keeps audit evidence, gap analysis, low-risk remediation, and final reporting traceable without expanding into runtime, secret, deployment, or remote GitHub work.
 

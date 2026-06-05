@@ -6,7 +6,7 @@ status: active
 
 # Communication Tier (10-communication) Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `10-communication` 계층의 제품 요구사항을 정의한다. 이 계층은 현재 구현된 메일 통신 인프라를 담당하며, 개발용 SMTP 샌드박스와 운영용 메일 서버를 통합하여 안전하고 신뢰할 수 있는 메일 환경을 구축하는 것을 목표로 한다.
 

@@ -5,7 +5,7 @@ status: active
 
 # 02-Auth OAuth2 Proxy Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 OAuth2 Proxy 인증 루프, OIDC 장애, readonly/tmpfs 관련 오류, 설정 검증 실패 상황에 대한 복구 절차를 정의한다.
 

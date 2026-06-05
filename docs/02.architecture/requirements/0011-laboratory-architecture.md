@@ -5,7 +5,7 @@ status: active
 
 # 11-laboratory Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `11-laboratory` 계층의 참조 아키텍처와 품질 속성을 정의한다. 시스템의 관리 및 관측을 위한 비침습적(Non-intrusive) 관리 레이어로 설계되었다.
 

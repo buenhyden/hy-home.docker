@@ -6,7 +6,7 @@ status: completed
 
 # Workspace Audit 2026-05 Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 2026년 5월 워크스페이스 전체 감사 및 개선 세션의 실행 계획서다. 저위험 변경 항목의 실행 순서, 검증 기준, 완료 조건을 정의한다.
 

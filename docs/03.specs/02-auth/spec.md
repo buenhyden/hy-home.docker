@@ -5,7 +5,7 @@ status: active
 
 # 02-Auth Optimization Hardening Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/02-auth`의 최적화/하드닝 구현 계약을 정의한다. Keycloak/OAuth2 Proxy 런타임 구성, 시크릿 주입 방식, fail-closed 운영 원칙, 그리고 검증/문서 추적성 기준을 명시한다.
 

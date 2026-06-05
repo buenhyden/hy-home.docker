@@ -7,7 +7,7 @@ status: completed
 
 > Execution evidence for the approved Home Docker Workspace Audit and Improvement workflow.
 
-## Overview (KR)
+## Overview
 
 This document records the 2026-05-24 workspace audit and low-risk remediation pass for `hy-home.docker`. It keeps evidence compact, records full-scope coverage, and stores env/secrets comparison results as metadata only. No secret values are included.
 

@@ -5,7 +5,7 @@ status: completed
 
 # Harness / Agent-first Engineering Plan
 
-## Overview (KR)
+## Overview
 
 이 계획은 현재 `hy-home.docker`에 구현된 하네스 엔지니어링과 Agent-first Engineering 계약을 파일 내용 기준으로 분석하고, 실제 gap을 최소 수정으로 보완하는 실행 계획이다.
 

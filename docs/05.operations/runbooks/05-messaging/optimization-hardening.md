@@ -5,7 +5,7 @@ status: active
 
 # 05-Messaging Optimization Hardening Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 05-messaging 하드닝 항목에서 발생할 수 있는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. 관리 경로 middleware/SSO 누락, 이미지 태그 회귀, dev 경로 오류, CI 하드닝 실패를 중심으로 점검/복구 절차를 정의한다.
 

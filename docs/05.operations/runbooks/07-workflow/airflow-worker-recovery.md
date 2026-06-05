@@ -5,7 +5,7 @@ status: active
 
 # Airflow Worker Recovery Operations
 
-## Overview (KR)
+## Overview
 
 이 런북은 응답하지 않거나 `queued` 상태가 장기화된 Airflow worker를 복구하는 절차를 정의합니다. 현재 구현은 `airflow-worker`, `airflow-apiserver`, root-included dev `mng-valkey`, service-local `airflow-valkey` 경계를 기준으로 합니다.
 

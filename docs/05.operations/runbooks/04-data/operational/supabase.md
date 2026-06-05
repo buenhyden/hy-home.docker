@@ -11,7 +11,7 @@ status: active
 
 ## Supabase Stack Health Procedure
 
-### Overview (KR)
+### Overview
 
 이 런북은 Supabase stack이 기동되지 않거나 Kong/API 접근, Auth, REST, Realtime, Storage, DB, pooler 상태를 즉시 확인해야 할 때 사용한다. 파괴적 DB 복구, storage 삭제, credential rotation 실행 절차는 이 런북의 범위가 아니다.
 

@@ -5,7 +5,7 @@ status: active
 
 # Agent Governance Canonical Adapter Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 AI Agent 거버넌스와 provider adapter 표준화를 위한 참조 아키텍처를 정의한다. 핵심 구조는 Stage 00을 canonical policy/catalog layer로 두고, Claude, Codex, Gemini runtime surface는 같은 catalog를 각 provider 형식으로 노출하는 adapter layer로 제한하는 것이다.
 

@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md -->
 # ADR-0017: 02-Auth Runtime Hardening and Fail-closed Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `02-auth` 계층의 런타임 하드닝 방식과 인증 장애 시 fail-closed 정책을 결정한 기록이다.
 

@@ -6,7 +6,7 @@ status: active
 
 # ADR-0011: Laboratory Services Selection and Configuration
 
-## Overview (KR)
+## Overview
 
 이 문서는 `11-laboratory` 티어의 주요 관리 도구 선정에 대한 아키텍처 결정 기록이다.
 

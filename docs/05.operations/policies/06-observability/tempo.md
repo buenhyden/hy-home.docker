@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 Tempo 운영 정책을 정의한다. 분산 추적 데이터의 보관 주기(Retention), 스토리지 백엔드(MinIO) 관리, 그리고 메트릭 생성부(Metrics Generator) 운영 기준을 규정한다.
 

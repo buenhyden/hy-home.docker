@@ -7,7 +7,7 @@ status: completed
 
 ## Messaging Tier (05-messaging) Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 메시징 계층(`05-messaging`)의 문서화 및 인프라 표준화 실행 계획서다. `01-11` 단계별 게이트 프로세스에 따라 기존 Kafka/RabbitMQ 구성을 검증하고 문서 자산을 최신화한다.
 

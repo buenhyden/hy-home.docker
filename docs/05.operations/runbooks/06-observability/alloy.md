@@ -5,7 +5,7 @@ status: active
 
 # Alloy Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 `hy-home.docker`의 텔레메트리 수집 엔진인 Grafana Alloy의 장애 복구 절차를 정의한다. 데이터 수집 중단이나 파이프라인 지연 발생 시 신속하게 대응하기 위한 가이드라인이다.
 

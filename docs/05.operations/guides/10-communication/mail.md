@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `10-communication` 메일 구현을 사용하는 방법을 설명한다. 현재 구현은 optional/commented root include인 `infra/10-communication/mail/docker-compose.yml`에 있으며, Stalwart 운영 메일 서버와 MailHog 개발 SMTP 트랩을 제공한다.
 

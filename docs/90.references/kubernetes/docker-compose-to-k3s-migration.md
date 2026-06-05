@@ -5,7 +5,7 @@ status: active
 
 # Reference: Docker Compose to k3s/k3d Migration
 
-## Overview (KR)
+## Overview
 
 이 문서는 Docker Compose 기반 `hy-home.docker` 인프라를 k3s/k3d 기반 Kubernetes 환경으로 이전할 때 참고할 수 있는 migration suitability snapshot이다. 실행 계획이나 승인된 아키텍처 결정이 아니라, 서비스별 이전 적합성과 판단 기준을 보존하는 reference다.
 

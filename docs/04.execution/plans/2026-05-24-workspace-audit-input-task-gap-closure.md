@@ -8,7 +8,7 @@ status: completed
 > Follow-up implementation plan for closing input-task evidence gaps in the
 > completed Home Docker Workspace Audit and Improvement artifacts.
 
-## Overview (KR)
+## Overview
 
 This plan audits the completed workspace audit artifacts against the original
 user-provided audit task list, identifies input tasks that were weakly reflected,

@@ -5,7 +5,7 @@ status: completed
 
 # Task: docs/05.operations Purpose Remediation
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/05.operations` purpose-profile remediation의 실행 작업과 검증 evidence를 추적한다.
 

@@ -13,7 +13,7 @@ status: draft
 > - Use relative links only.
 > - Remove every placeholder before saving.
 > - Keep implementation detail out of the PRD.
-> - Keep one `Overview (KR)` summary near the top.
+> - Keep one `Overview` summary near the top.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 > - Replace example links with real target-relative links, or delete unused examples before saving.
 >
@@ -25,7 +25,7 @@ status: draft
 > - Plan: `../04.execution/plans/YYYY-MM-DD-feature.md`
 > - Task: `../04.execution/tasks/YYYY-MM-DD-feature-or-stream.md`
 
-## Overview (KR)
+## Overview
 
 이 문서는 [기능 또는 시스템명]의 제품 요구사항을 정의한다. 사용자 가치, 문제 정의, 성공 기준을 명확히 하여 후속 설계와 구현의 기준으로 사용한다.
 

@@ -5,7 +5,7 @@ status: completed
 
 # Infra / Secrets / Docs Refresh Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/`, `secrets/`, `docs/05.operations/guides/`, `docs/05.operations/policies/`, `docs/05.operations/runbooks/`, `docs/90.references/`의 실제 파일 내용을 기준으로 운영 문서와 README를 최신화하기 위한 명세다. 목표는 Docker Compose 런타임이나 secret 값 파일을 변경하지 않고, 구현 요소와 운영 문서가 `docs/99.templates/`의 계약을 따르도록 보강하는 것이다.
 

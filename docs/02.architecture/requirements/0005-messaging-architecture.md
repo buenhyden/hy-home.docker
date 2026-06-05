@@ -6,7 +6,7 @@ status: active
 
 ## Messaging Tier (05-messaging) Architecture Reference Document
 
-## Overview (KR)
+## Overview
 
 이 문서는 메시징 계층(`05-messaging`)의 참조 아키텍처와 품질 속성을 정의한다. 고가용성 Apache Kafka (KRaft mode) 클러스터와 경량 RabbitMQ 브로커가 결합된 폴리글랏 메시징 구조를 다룬다.
 

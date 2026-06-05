@@ -5,7 +5,7 @@ status: active
 
 # 04-Data Backup Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `04-data` 계층의 백업 주기, 보존 기준, 검증 책임을 정의한다. 데이터 엔진별 중요도와 현재 운영 계약에 맞춰 백업을 적용하고, 복구 가능성은 정기 검증 evidence로 관리한다.
 

@@ -6,7 +6,7 @@ status: active
 
 > Selection of Grafana LGTM Stack and Alloy for Unified Observability.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 플랫폼의 관측성 도구로 현재 구현된 Grafana LGTM 스택(Loki, Grafana, Tempo, Prometheus)과 Grafana Alloy 수집기를 선정한 배경과 이유를 기록한다. 장기 메트릭 저장소는 현재 tracked compose에 구현되어 있지 않은 별도 확장 후보로만 다룬다.
 

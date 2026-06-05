@@ -12,7 +12,7 @@ status: active
 
 ## Analytics Tier Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 본 문서는 `04-data/analytics` 서브 티어의 기술적 뼈대와 시스템 아키텍처를 정의한다. 핵심 데이터 티어로부터 분리된 분석 전용 하이퍼스케일 엔진들(InfluxDB, ksqlDB, OpenSearch, StarRocks)의 배치 전략, 데이터 흐름, 그리고 플랫폼 통합 방식을 상세히 기술한다.
 

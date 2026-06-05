@@ -11,7 +11,7 @@ status: active
 
 ## SeaweedFS Stack Health Procedure
 
-### Overview (KR)
+### Overview
 
 이 런북은 SeaweedFS data-profile stack의 compose render, master/volume/filer/S3 health, mount service 상태를 확인할 때 사용한다. master metadata restore, volume deletion, forced unmount, reshard operations are not verified recovery steps in this runbook.
 

@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 Pyroscope 운영 정책을 정의한다. 지속적 프로파일링 데이터의 보관 주기(Retention), 수집 오버헤드 관리, 그리고 분석 권한 및 보안 기준을 규정한다.
 

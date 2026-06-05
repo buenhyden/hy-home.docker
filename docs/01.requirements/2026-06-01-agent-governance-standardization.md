@@ -5,7 +5,7 @@ status: active
 
 # Agent Governance Standardization Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 AI Agent 거버넌스 표준화 요구사항을 정의한다. 목표는 Stage 00을 공통 정책과 catalog의 SSoT로 유지하면서 Claude, Codex, Gemini 및 호환 agent surface가 같은 규칙, 작업 흐름, 검증 기준을 따르도록 하는 것이다.
 

@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 정책은 SeaweedFS data-profile stack의 master, volume, filer, S3 gateway, mount service 운영 통제를 정의한다. 정책 기준은 현재 compose에 실제로 선언된 image, route, healthcheck, volume, mount privilege, and network surface다.
 

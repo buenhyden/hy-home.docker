@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 Pushgateway에 대한 가이드다. Pushgateway는 프로메테우스의 Pull 모델이 직접 적용되기 어려운 단기 실행 작업(Ephemeral jobs)이나 배치 스크립트의 메트릭을 일시적으로 보관하고 프로메테우스가 이를 스크랩할 수 있게 하는 버퍼 역할을 한다.
 >

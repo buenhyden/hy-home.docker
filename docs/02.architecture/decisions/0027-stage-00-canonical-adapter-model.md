@@ -5,7 +5,7 @@ status: active
 
 # ADR-0027: Stage 00 Canonical Adapter Model
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 AI Agent 거버넌스에서 Stage 00을 유일한 canonical policy/catalog source로 유지하고, `.claude/`, `.codex/`, `.agents/`를 provider-specific adapter로 제한한다는 결정을 기록한다.
 

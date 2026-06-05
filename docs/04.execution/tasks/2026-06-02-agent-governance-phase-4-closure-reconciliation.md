@@ -5,7 +5,7 @@ status: completed
 
 # Task: Agent Governance Phase 4 Closure Reconciliation
 
-## Overview (KR)
+## Overview
 
 이 문서는 Agent Governance Phase 1 through Phase 3 실행 흐름을 Phase 4에서 최종 reconciliation한 실제 작업 evidence를 기록한다. 작업 범위는 Stage 04 closure plan/task 작성, Stage 04 index 반영, progress log 갱신, generated documentation/Graphify freshness, and repository validation으로 제한했다.
 

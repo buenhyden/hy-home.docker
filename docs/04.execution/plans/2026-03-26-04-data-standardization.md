@@ -5,7 +5,7 @@ status: completed
 
 # Data Tier Documentation Standardization (04-data) Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `04-data` 티어의 다중 모델 영속성 계층에 대한 문서 체계를 표준화하는 실행 계획서다. 작업 분해, 검증, 롤아웃, 위험 관리, 완료 기준을 정의한다.
 
@@ -37,7 +37,7 @@ status: completed
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Structural | 모든 문서의 `Overview (KR)` 존재 확인 | `grep -r "Overview (KR)" docs/` | 전 문서 포함 |
+| VAL-PLN-001 | Structural | 모든 문서의 `Overview` 존재 확인 | `grep -r "Overview" docs/` | 전 문서 포함 |
 | VAL-PLN-002 | Traceability | 문서 간 상호 참조 링크 유효성 검사 | `bash scripts/validation/check-repo-contracts.sh` | 깨진 링크 없음 |
 
 ## Risks & Mitigations

@@ -5,7 +5,7 @@ status: active
 
 # 01-Gateway Traefik Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `01-gateway`의 Traefik 운영 정책을 정의한다. 런타임 모델은 `Traefik Primary`이며, 표준 하드닝 강도는 `Balanced`다.
 

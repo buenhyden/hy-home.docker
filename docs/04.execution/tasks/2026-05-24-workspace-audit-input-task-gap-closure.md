@@ -8,7 +8,7 @@ status: completed
 > Execution evidence for reviewing the completed Home Docker Workspace Audit
 > and Improvement artifacts against the original input task list.
 
-## Overview (KR)
+## Overview
 
 This task records the follow-up audit requested after the completed workspace
 audit was merged locally into `main`. It identifies input tasks that were only

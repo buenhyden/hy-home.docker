@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 인프라 서비스 최적화 카탈로그를 기준으로 `docs/04.execution/plans` 레이어에서 실행 우선순위를 고정하는 통합 실행 계획서다.
 범위는 문서 기반 실행계획 수립이며, 실제 Compose 변경은 후속 `docs/04.execution/tasks` 단계에서 수행한다.
@@ -100,7 +100,7 @@ status: active
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-PLN-001 | Structural | 링크 무결성 (`04.execution/plans` 신규 문서 상대경로 점검) | 상대경로 링크 점검 스크립트 또는 수동 검증 | 모든 링크 대상 파일 존재 |
-| VAL-PLN-002 | Compliance | 템플릿 필수 섹션 준수 (`Overview (KR)`, `Work Breakdown`, `Verification`, `Completion`) | 문서 섹션 체크리스트 검토 | 필수 섹션 누락 0건 |
+| VAL-PLN-002 | Compliance | 템플릿 필수 섹션 준수 (`Overview`, `Work Breakdown`, `Verification`, `Completion`) | 문서 섹션 체크리스트 검토 | 필수 섹션 누락 0건 |
 | VAL-PLN-003 | Traceability | 기준 카탈로그와 항목 일치성(Quick Wins/Quarterly 매핑) | 카탈로그 대비 항목 매핑 리뷰 | 누락/중복 없이 1:1 매핑 |
 | VAL-PLN-004 | Indexing | `docs/04.execution/plans/README.md` 인덱스 반영 확인 | README Structure 섹션 검토 | 신규 계획서 항목 존재 |
 | VAL-PLN-005 | Automation | `04.execution/plans ↔ 05.operations/{guides,policies,runbooks}` 링크 동기화 자동 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |

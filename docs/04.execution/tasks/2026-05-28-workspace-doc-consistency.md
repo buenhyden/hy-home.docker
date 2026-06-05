@@ -5,7 +5,7 @@ status: completed
 
 # Task: Workspace Documentation Consistency 2026-05
 
-## Overview (KR)
+## Overview
 
 이 문서는 워크스페이스 문서 일관성·통일성 개선 작업의 구현·검증 작업 목록이다. `workspace-doc-consistency-2026-05` Spec과 Plan에서 파생된 16개 태스크를 추적 가능하게 기록한다. 각 태스크는 독립 커밋으로 완료되며, Validation Evidence로 검증 명령 결과를 기록한다.
 

@@ -7,7 +7,7 @@ status: completed
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 Open WebUI의 구현·검증 작업 목록이다. Spec과 Plan에서 파생된 작업을 추적 가능하게 기록하여 실질적인 운영 준비 상태를 관리한다.
 

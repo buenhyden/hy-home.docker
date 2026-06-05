@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 정책은 `hy-home.docker` 가시성 플랫폼의 핵심 수집기인 Grafana Alloy의 운영 기준을 정의한다. 파이프라인 안정성과 데이터 무결성을 유지하기 위한 가이드라인을 제공한다.
 

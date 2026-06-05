@@ -5,7 +5,7 @@ status: completed
 
 # 11-laboratory Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `11-laboratory` 계층의 표준화 및 문서화 실행 계획서다. 작업 분해, 검증, 완료 기준을 정의한다.
 

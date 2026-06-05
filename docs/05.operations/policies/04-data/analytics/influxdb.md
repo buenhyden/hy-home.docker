@@ -5,7 +5,7 @@ status: active
 
 # InfluxDB Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/04-data/analytics/influxdb`의 InfluxDB 운영 정책을 정의한다. current implementation은 InfluxDB 3.x Core primary compose와 InfluxDB 2.x legacy compose를 분리하고, API token/password는 Docker Secrets로 주입한다.
 

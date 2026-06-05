@@ -5,7 +5,7 @@ status: completed
 
 # Infra / Secrets / Docs Refresh Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra`, `secrets`, `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references`의 분석 결과를 바탕으로 README와 stage 문서를 템플릿에 맞춰 최신화하는 실행 계획서다.
 

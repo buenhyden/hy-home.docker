@@ -5,7 +5,7 @@ status: active
 
 # Open WebUI Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 Open WebUI 장애 및 성능 저하 상황에서 즉시 실행 가능한 복구 절차를 제공한다. SQLite 데이터 복구, RAG 인덱스 재동기화, Ollama/Qdrant 연결 복구를 표준화한다.
 

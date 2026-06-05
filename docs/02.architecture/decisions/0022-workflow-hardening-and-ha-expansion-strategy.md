@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md -->
 # ADR-0022: Workflow Hardening and HA Expansion Strategy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `07-workflow` 계층에 대해 즉시 적용 가능한 하드닝(경계 보안, health 기반 의존성, n8n 이미지 하드닝, CI 게이트)을 우선 시행하고, 카탈로그 확장 항목은 단계적으로 추진하는 결정을 기록한다.
 

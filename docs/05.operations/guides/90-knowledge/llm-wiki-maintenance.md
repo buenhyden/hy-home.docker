@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 가이드는 `guides/90-knowledge/llm-wiki-maintenance.md` 대상의 사용 맥락, 설정 확인 방법, 안전한 운영 진입점을 설명한다.
 

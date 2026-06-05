@@ -7,7 +7,7 @@ status: active
 
 > Centralized telemetry, monitoring, and debugging hub.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 플랫폼의 관측성(Observability) 계층인 `06-observability`의 제품 요구사항을 정의한다. 현재 구현된 LGTM 스택(Loki, Grafana, Tempo, Prometheus), Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope를 통합하여 시스템 전반의 상태를 실시간으로 모니터링하고 가시화하는 것을 목표로 한다.
 

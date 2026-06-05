@@ -5,7 +5,7 @@ status: active
 
 # 07-Workflow Optimization Hardening Technical Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/07-workflow`(Airflow, n8n) 계층의 최적화/하드닝 기술 명세다. 게이트웨이 경계 보안, health 기반 기동 안정성, n8n 컨테이너 하드닝, CI 정책 게이트, 카탈로그 기반 확장 요구를 구현 계약으로 정의한다.
 

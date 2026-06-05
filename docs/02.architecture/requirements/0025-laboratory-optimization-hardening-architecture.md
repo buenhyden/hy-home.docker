@@ -5,7 +5,7 @@ status: active
 
 # 11-Laboratory Optimization Hardening Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `11-laboratory` 계층 최적화/하드닝 참조 아키텍처를 정의한다. 관리 UI를 gateway 보안 체인, SSO 인증, IP allowlist 경계 뒤에 배치하고 실험성 서비스 운영 드리프트를 CI 게이트로 통제하는 아키텍처 계약을 명시한다.
 

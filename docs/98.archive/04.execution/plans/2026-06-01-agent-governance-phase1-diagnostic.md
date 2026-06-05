@@ -10,7 +10,7 @@ current_replacement: docs/04.execution/plans/2026-06-02-agent-governance-decisio
 
 # Archived Tombstone: Agent Governance Phase 1 Diagnostic
 
-## Overview (KR)
+## Overview
 
 이 문서는 현재 구현과 상충하는 과거 Stage 04 진단 계획을 active chain에서 제거했다는 tombstone이다. 원문 본문은 현재 truth로 재사용되지 않도록 보존하지 않는다.
 

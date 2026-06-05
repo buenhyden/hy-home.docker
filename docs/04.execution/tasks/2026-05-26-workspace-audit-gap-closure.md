@@ -6,7 +6,7 @@ status: completed
 
 # Task: Workspace Audit Gap Closure
 
-## Overview (KR)
+## Overview
 
 이 문서는 2026-05-26 워크스페이스 감사(2~3차 세션)의 갭 클로저 작업 목록이다. 저위험 갭의 구현 증거와 deferred→승인 전환 항목의 기록을 추적한다.
 

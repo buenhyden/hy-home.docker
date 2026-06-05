@@ -5,7 +5,7 @@ status: completed
 
 # Home Docker Revalidation Deferred Follow-up Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 2026-05-25 `hy-home.docker` workspace audit 결과를 current local branch에서 재검증하고, deferred 항목을 값·런타임 변경 없이 별도 follow-up 산출물로 고정하는 실행 계획서다.
 

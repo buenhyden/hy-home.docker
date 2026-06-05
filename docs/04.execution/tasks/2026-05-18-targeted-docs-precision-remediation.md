@@ -5,7 +5,7 @@ status: completed
 
 # Task: Targeted Documentation Precision Remediation
 
-## Overview (KR)
+## Overview
 
 이 문서는 targeted documentation precision remediation의 실행 상태와 검증 evidence를 기록한다. 작업은 concrete failing condition이 확인된 문서에만 적용한다.
 

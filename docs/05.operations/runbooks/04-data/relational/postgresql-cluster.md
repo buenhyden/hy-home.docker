@@ -9,7 +9,7 @@ status: active
 
 > Scope: Triage optional PostgreSQL HA cluster health, etcd quorum symptoms, HAProxy routing, Patroni leadership, init job state, and exporter readiness without destructive data actions.
 
-### Overview (KR)
+### Overview
 
 이 런북은 `postgresql-cluster` 선택 스택의 etcd, Patroni/Spilo, HAProxy, init job, exporter 상태 이상을 현재 compose 기준으로 점검하는 절차다. DCS destructive recovery, forced cluster bootstrap, leadership mutation, backup restore, volume replacement는 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션 대상으로 분리한다.
 

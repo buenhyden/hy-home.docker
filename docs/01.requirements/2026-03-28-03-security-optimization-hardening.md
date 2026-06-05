@@ -5,7 +5,7 @@ status: active
 
 # 03-Security (Vault) Optimization & Hardening Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/03-security` Vault 계층의 최적화/하드닝 요구사항을 정의한다. 즉시 적용 가능한 구성 하드닝과 검증 자동화를 구현하고, auto-unseal 및 원격 audit 적재는 운영 정책/전환 절차로 설계 고정한다.
 

@@ -7,7 +7,7 @@ status: completed
 
 > Plan for closing the remaining lifecycle, README readiness, and agent governance debt after the workspace remediation baseline.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 문서 lifecycle과 agent governance 잔여 debt를 닫기 위한 실행 계획이다. 기존 workspace docs and agent governance remediation을 기준선으로 삼고, 남은 legacy-shape 문서와 infra service README readiness gap을 정리한다.
 

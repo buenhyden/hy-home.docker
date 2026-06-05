@@ -5,7 +5,7 @@ status: active
 
 # 09-Tooling Optimization Hardening Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `09-tooling` 계층의 최적화/하드닝 운영 정책을 정의한다. 관리 경로 보안, 네트워크 경계, 테스트 도구 안정성, 카탈로그 확장 승인 게이트를 통제한다.
 

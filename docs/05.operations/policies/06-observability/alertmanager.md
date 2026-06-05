@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 Alertmanager(06-observability)의 운영 정책을 정의한다. 알림의 중요도(Severity)에 따른 대응 기준, 통지 방식, 그리고 알림 피로도를 관리하기 위한 통제 기준을 포함한다.
 

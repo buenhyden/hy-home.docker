@@ -6,7 +6,7 @@ status: completed
 
 # Task: Claude Harness Governance Verification
 
-## Overview (KR)
+## Overview
 
 이 문서는 공유 거버넌스와 Claude 하네스 정합성 검증 작업의 수행·검증 audit trail이다. 짝 Plan에서 파생된
 작업을 추적 가능하게 기록한다. 본 작업은 cross-cutting 거버넌스 작업으로, parent Spec 대신 거버넌스 문서를

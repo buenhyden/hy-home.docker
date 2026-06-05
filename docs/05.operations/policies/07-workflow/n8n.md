@@ -5,7 +5,7 @@ status: active
 
 # n8n Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 n8n 서비스의 안정적인 운영을 위한 정책과 통제 항목을 정의한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue-mode 구성을 기준으로 하며, root-included dev compose는 `mng-valkey`, service-local compose는 `n8n-valkey`를 사용한다.
 

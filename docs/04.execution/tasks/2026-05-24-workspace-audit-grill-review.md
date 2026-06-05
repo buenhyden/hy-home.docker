@@ -8,7 +8,7 @@ status: completed
 > Execution evidence for applying `$grill-with-docs` to the original Home
 > Docker Workspace Audit and Improvement input.
 
-## Overview (KR)
+## Overview
 
 This task records the `$grill-with-docs` stress review requested after the
 completed audit and input-task gap closure. It uses repo evidence to answer the

@@ -5,7 +5,7 @@ status: active
 
 # 02-Auth Keycloak Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `02-auth` Keycloak 운영 정책을 정의한다. DB/관리자 시크릿 처리, readiness 검증, 변경 통제 기준을 명시한다.
 

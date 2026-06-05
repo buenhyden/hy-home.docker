@@ -5,7 +5,7 @@ status: completed
 
 # Task: Docs Bounded Consistency Audit
 
-## Overview (KR)
+## Overview
 
 이 문서는 repository documentation bounded consistency audit의 구현 상태와 검증 evidence를 기록한다. 변경은 재현 가능한 inventory, canonical README entrypoint 상태, 실행 stage index 동기화에 한정한다.
 

@@ -5,7 +5,7 @@ status: completed
 
 # Standardize `infra_net` Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 모든 인프라 서비스에 `infra_net` 네트워크를 적용하고 서브넷을 `172.19.0.0/16`으로 표준화하기 위한 구체적인 실행 계획을 정의한다. 문서화, 구현, 검증의 3단계로 진행한다.
 

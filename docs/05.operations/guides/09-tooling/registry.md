@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `hy-home.docker`에서 운영하는 프라이빗 도커 레지스트리(Docker Registry v2)에 대한 가이드다. 내부 이미지를 저장하고 배포하는 절차와 주의사항을 제공한다.
 >

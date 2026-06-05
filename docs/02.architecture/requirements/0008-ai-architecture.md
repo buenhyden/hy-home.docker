@@ -7,7 +7,7 @@ status: active
 
 ## AI Infrastructure Reference Document
 
-## Overview (KR)
+## Overview
 
 이 문서는 `08-ai` 계층의 참조 아키텍처와 품질 속성을 정의한다. 로컬 환경에서의 고성능 LLM 추론 및 RAG 시스템을 위한 GPU 자원 할당, 서비스 경계, 그리고 데이터 흐름에 대한 구조적 가이드라인을 제공한다.
 

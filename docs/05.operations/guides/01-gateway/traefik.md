@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다.
 

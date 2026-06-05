@@ -5,7 +5,7 @@ status: active
 
 # 05-Messaging Optimization Hardening Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `05-messaging` 계층의 최적화/하드닝 운영 정책을 정의한다. 게이트웨이 경계 제어, 관리 경로 보호, 이미지 태그 통제, CI 기준선 검증, 카탈로그 확장 승인 조건을 필수 통제로 규정한다.
 

@@ -6,7 +6,7 @@ policy_state: enforced
 
 # Harness / Agent-first Engineering Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 운영 정책은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약을 유지하기 위한 통제 기준을 정의한다.
 

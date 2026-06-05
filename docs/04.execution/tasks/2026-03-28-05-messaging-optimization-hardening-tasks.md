@@ -5,7 +5,7 @@ status: completed
 
 # Task: 05-Messaging Optimization Hardening
 
-## Overview (KR)
+## Overview
 
 이 문서는 `05-messaging` 최적화/하드닝 구현 태스크를 추적한다. compose 하드닝, CI 기준선 자동화, 문서 추적성 동기화를 작업 단위로 관리한다.
 

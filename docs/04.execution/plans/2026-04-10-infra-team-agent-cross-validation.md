@@ -5,7 +5,7 @@ status: completed
 
 # Infra Team Agent Cross-Validation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 infra 변경 직후 실행되는 team-agent cross-validation 설계를 canonical stage 경로로 정착시키기 위한 실행 계획서다. 기존 `docs/superpowers` 문서의 내용을 `docs/03.specs/07-workflow/agent-design.md` 및 본 계획 문서로 이관하고, 비표준 경로 재발을 막는 로컬 거버넌스 규칙까지 함께 정비한다.
 

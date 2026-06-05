@@ -9,7 +9,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `docs/05.operations/guides/09-tooling/syncthing.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
 >

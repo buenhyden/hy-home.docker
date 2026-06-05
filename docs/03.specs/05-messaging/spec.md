@@ -5,7 +5,7 @@ status: active
 
 # 05-Messaging Optimization Hardening Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/05-messaging` 계층의 최적화/하드닝 구현 계약을 정의한다. Kafka/RabbitMQ 관리 경로의 게이트웨이 제어(레이트리밋/재시도/회로차단), 이미지 태그 고정, 개발 Compose 정합성, CI 기준선 검증을 핵심 범위로 다룬다.
 

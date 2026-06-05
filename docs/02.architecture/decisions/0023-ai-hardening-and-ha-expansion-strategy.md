@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md -->
 # ADR-0023: AI Hardening and HA Expansion Strategy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `08-ai` 계층에 대해 즉시 적용 가능한 하드닝(경계 보안, GPU concurrency 상한, stateful 템플릿 정렬, exporter health-gating, CI 게이트)을 우선 시행하고, 카탈로그 확장 항목(모델 승격/접근 분리/로그 정책)은 단계적으로 추진하는 결정을 기록한다.
 

@@ -8,7 +8,7 @@ status: active
 <!-- [ID:09-tooling:syncthing] -->
 > Governance for P2P data synchronization and integrity.
 
-## Overview (KR)
+## Overview
 
 This policy defines the operational standards for the Syncthing service. It ensures that decentralized data synchronization is reliable, secure, and performs optimally across all paired devices.
 

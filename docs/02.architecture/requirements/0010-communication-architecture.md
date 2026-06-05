@@ -7,7 +7,7 @@ status: active
 
 ## Communication Tier Reference Document
 
-## Overview (KR)
+## Overview
 
 이 문서는 `10-communication` 계층의 참조 아키텍처와 품질 속성을 정의한다. 개발용 샌드박스와 실운영용 메일 서버 간의 격리, 보안 프로토콜, 그리고 데이터 지속성 전략을 다룬다.
 

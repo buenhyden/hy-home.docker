@@ -5,7 +5,7 @@ status: completed
 
 # 07-Workflow Optimization Hardening Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/07-workflow` 최적화/하드닝 실행 계획서다. gateway 경계 보안 정렬, health 기반 기동 안정화, n8n custom image 하드닝, CI 정책 게이트, 카탈로그 확장 로드맵을 단계적으로 수행한다.
 

@@ -5,7 +5,7 @@ status: completed
 
 # Task: 02-Auth Optimization Hardening
 
-## Overview (KR)
+## Overview
 
 이 문서는 `02-auth` 최적화/하드닝 구현 태스크를 추적한다. Keycloak/OAuth2 Proxy 설정 변경, CI 게이트, 문서 추적성 정비를 작업 단위로 관리한다.
 

@@ -5,7 +5,7 @@ status: active
 
 # Ollama Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 Ollama 추론 계층 장애에 대한 즉시 실행 절차를 제공한다. GPU 미인식, VRAM OOM, API 장애를 신속히 진단·복구하고 상위 서비스(Open WebUI) 영향도를 최소화한다.
 

@@ -5,7 +5,7 @@ status: completed
 
 # Agent Governance Phase 3 Approved Surface Activation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 Phase 2 strategy integration 이후 사용자가 승인한 고위험 표면을 Stage 00, template, CI validator, and Stage 04 evidence 계약으로 승격하는 실행 계획서다.
 

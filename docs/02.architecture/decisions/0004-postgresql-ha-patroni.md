@@ -5,7 +5,7 @@ status: active
 
 # ADR-0004: Choice of Spilo/Patroni for PostgreSQL HA
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 데이터 무결성과 가동률을 보장하기 위해, 단일 PostgreSQL 인스턴스 대신 Patroni 및 Etcd 기반의 고가용성(HA) 클러스터 솔루션을 채택하는 아키텍처 결정 기록이다.
 

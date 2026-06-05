@@ -6,7 +6,7 @@ status: completed
 
 # Workspace Doc & Governance Consistency (2026-05b) Technical Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 PR #89(`workspace-doc-consistency-2026-05`) 후속 작업의 기술 명세다. 거버넌스 규칙 형식화(R4 Operations Profile Compliance, R5 Frontmatter Status), 유효성 검증 스크립트 확장, 템플릿 및 소규모 문서 수정을 통해 워크스페이스 일관성을 완성한다. 이 명세의 구현 결과로 `documentation-protocol.md`와 검증 스크립트가 실제 파일 기준과 완전히 일치하게 된다.
 

@@ -11,7 +11,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 `valkey-cluster`는 `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`에 선언된 6-node Valkey cache/kv cluster다. 현재 구현은 `data` 및 `service` profile에서 `valkey-node-0`부터 `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter`를 실행하고, 모든 runtime credential은 Docker Secret `service_valkey_password`로 주입한다.
 

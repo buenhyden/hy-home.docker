@@ -39,7 +39,7 @@ status: completed
 - [x] Markdown Linting Fix
 - [x] AI Discoverability Audit
 
-## Overview (KR)
+## Overview
 
 이 문서는 해당 계층 표준화 작업의 구현 및 검증 task 기록이다. 기존 task 내용은 그대로 유지한다.
 

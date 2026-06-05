@@ -6,7 +6,7 @@ status: completed
 
 # Workspace Audit 2026-05 Technical Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 2026년 5월 워크스페이스 전체 감사 및 개선 세션의 기술 명세다. 거버넌스 규칙, 문서 라이프사이클, 스크립트, Docker Compose 인프라, env/secrets 계약, QA/CI/CD, 훅, 스킬셋을 대상으로 저위험 변경을 구현하고 중/고위험 변경을 deferred 항목으로 기록한다.
 

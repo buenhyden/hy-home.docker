@@ -5,7 +5,7 @@ status: active
 
 # Tempo Runbook
 
-## Overview (KR)
+## Overview
 
 이 문서는 Tempo 서비스 장애 발생 시 복구 절차를 정의한다. 트레이스 인입 안 됨, MinIO 연결 실패, WAL 손상, 쿼리 엔진 지연 등의 일반적인 시나리오를 다룬다.
 

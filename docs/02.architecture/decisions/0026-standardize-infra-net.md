@@ -6,7 +6,7 @@ status: active
 
 # ADR-0026: Standardize infra_net Subnet and Static IP Assignment
 
-## Overview (KR)
+## Overview
 
 이 문서는 모든 인프라 서비스용 네트워크(`infra_net`)의 서브넷을 `172.19.0.0/16`으로 표준화하고, Compose 서비스의 `infra_net` 연결을 dictionary 기반 고정 IP 할당으로 관리하기로 한 결정에 대한 기록이다.
 

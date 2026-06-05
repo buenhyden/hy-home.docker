@@ -9,7 +9,7 @@ status: active
 
 > Scope: RedisInsight route hardening, root-active admin profile evidence, and non-destructive connection diagnosis.
 
-### Overview (KR)
+### Overview
 
 이 런북은 RedisInsight UI 접속 실패, Redis/Valkey connection failure, route hardening drift를 진단하고 비파괴적 evidence를 남기는 절차를 정의한다.
 

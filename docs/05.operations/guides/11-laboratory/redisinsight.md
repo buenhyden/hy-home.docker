@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 RedisInsight를 사용하여 Redis 데이터를 탐색하고 분석하는 방법을 설명한다. 키 브라우징, 메모리 분석기, 그리고 웹 기반 CLI 사용 절차를 포함한다.
 >

@@ -10,7 +10,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `.env.example`과 `.env`의 환경변수 키 일관성을 확인하는 운영 참조 문서다. 키셋 동기화 여부, 순서 차이, 누락·추가·deprecated 키를 기록한다.
 

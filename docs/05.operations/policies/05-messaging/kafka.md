@@ -7,7 +7,7 @@ status: active
 
 > Governance, topic safety, secret boundary, and reliability standards for Kafka.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `05-messaging` Kafka 운영 정책을 정의한다. Root-included dev Kafka, service-local full Kafka compose, Schema Registry, Kafka Connect, Kafka REST Proxy, Kafbat UI, Kafka Exporter에 대한 필수 통제 기준을 포함한다.
 

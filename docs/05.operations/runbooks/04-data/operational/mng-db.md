@@ -11,7 +11,7 @@ status: active
 
 ## Management Database Health and Init Procedure
 
-### Overview (KR)
+### Overview
 
 이 런북은 `mng-db`의 compose render, 서비스 상태, PostgreSQL readiness, Valkey readiness, `mng-pg-init` 재실행을 즉시 점검해야 할 때 사용한다. 파괴적 데이터 복구나 HA failover 절차는 이 런북의 범위가 아니다.
 

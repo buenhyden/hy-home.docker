@@ -7,7 +7,7 @@ status: completed
 
 > Plan for a full workspace governance re-audit with bounded, evidence-backed remediation.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 문서 lifecycle, 템플릿 계약, cross-link, AI Agent runtime, hook, subagent, memory, rule, scope를 전수 재감사하되 검증 가능한 drift만 수정하기 위한 실행 계획이다.
 

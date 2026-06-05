@@ -5,7 +5,7 @@ status: completed
 
 # Task: Docs Taxonomy and AI Agent-first Contract Migration
 
-## Overview (KR)
+## Overview
 
 이 문서는 새 docs taxonomy와 AI Agent-first 계약 정렬 작업의 구현 및 검증 evidence를 추적한다.
 

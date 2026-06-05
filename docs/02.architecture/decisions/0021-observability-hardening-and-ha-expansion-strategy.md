@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md -->
 # ADR-0021: Observability Hardening and HA Expansion Strategy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `06-observability` 계층에 대해 즉시 적용 가능한 하드닝(게이트웨이 체인+SSO, health 의존성 강화, 컨테이너 런타임 하드닝, CI 기준선)을 우선 적용하고, 카탈로그 기반 HA 확장은 단계적으로 추진하는 결정을 기록한다.
 

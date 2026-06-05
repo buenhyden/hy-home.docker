@@ -9,7 +9,7 @@ status: active
 
 > Scope: Dozzle route hardening, Docker socket read-only access, and log-stream evidence.
 
-### Overview (KR)
+### Overview
 
 이 런북은 Dozzle UI 접속 실패, 로그 스트림 중단, Docker socket 접근 오류가 발생했을 때 비파괴적으로 상태를 확인하고 복구 범위를 판단하는 절차를 정의한다.
 

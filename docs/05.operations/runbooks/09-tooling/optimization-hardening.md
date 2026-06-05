@@ -9,7 +9,7 @@ status: active
 
 > Scope: restore the documented hardening baseline for optional `09-tooling` compose leaves.
 
-### Overview (KR)
+### Overview
 
 이 런북은 `09-tooling` 하드닝 회귀가 의심될 때 사용한다. 공개 경계 SSO 체인, `infra_net` external 경계, Locust worker healthcheck, k6 wrapper volume 계약, 문서/검증 링크를 current-truth 기준으로 복구한다.
 

@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `05-messaging` Kafka 사용 가이드다. 현재 root `docker-compose.yml`은 `infra/05-messaging/kafka/docker-compose.dev.yml`를 include해 단일 broker 개발 구성을 렌더링하고, `infra/05-messaging/kafka/docker-compose.yml`은 root network/secret context가 필요한 3 broker full compose로 유지한다.
 

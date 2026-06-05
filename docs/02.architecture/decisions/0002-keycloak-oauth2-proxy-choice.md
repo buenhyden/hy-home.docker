@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 인증 체계로 Keycloak과 OAuth2 Proxy를 선정한 기술적 결정 배경을 다룬다. 표준 OIDC 프로토콜 준수, 다양한 인증 수단 지원, 그리고 클라이언트 사이드 코드 수정 없이 기존 서비스를 보호할 수 있는 ForwardAuth 아키텍처 구현을 위한 선택이다.
 

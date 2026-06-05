@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `infra/04-data/relational/postgresql-cluster/docker-compose.yml`에 정의된 PostgreSQL HA cluster 사용 기준을 설명한다. 현재 루트 compose에서는 `postgresql-cluster` include가 주석 처리된 선택 서비스이며, 활성화 시 etcd 3노드, Spilo/Patroni PostgreSQL 3노드, `pg-router`, `pg-cluster-init`, per-node postgres exporter가 `data`/`service` 프로파일에서 동작한다.
 

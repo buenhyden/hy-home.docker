@@ -9,7 +9,7 @@ status: active
 
 > Scope: emergency response when `04-data` persistent volumes or the host data root approach full capacity.
 
-### Overview (KR)
+### Overview
 
 이 런북은 데이터 볼륨이 포화되어 write failure, service crash, healthcheck failure가 발생할 때 사용하는 실행 절차다. 용량 확인, 증거 확보, 승인된 정리, 장기 복구 계획으로 절차를 분리한다.
 

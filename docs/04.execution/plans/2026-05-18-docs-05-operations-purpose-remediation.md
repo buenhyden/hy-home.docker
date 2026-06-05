@@ -5,7 +5,7 @@ status: completed
 
 # docs/05.operations Purpose Remediation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/05.operations`를 guide, policy, runbook 목적에 맞게 정리하고, 같은 drift를 repository contract로 막기 위한 실행 계획이다.
 

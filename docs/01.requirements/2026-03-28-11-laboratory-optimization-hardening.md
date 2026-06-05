@@ -5,7 +5,7 @@ status: active
 
 # 11-Laboratory Optimization & Hardening Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/11-laboratory`(dashboard, dozzle, portainer, redisinsight, open-notebook) 계층의 최적화/하드닝 요구사항을 정의한다. 목표는 관리 UI를 기본적으로 안전한 경계(TLS+SSO+IP allowlist) 뒤에 배치하고, 실험성 서비스의 운영 드리프트를 CI 단계에서 차단하며, 카탈로그 기반 확장 정책을 실행 로드맵으로 정착시키는 것이다.
 

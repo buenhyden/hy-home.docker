@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 Portainer를 사용하여 로컬 및 원격 Docker 환경을 관리하는 방법을 설명한다. 웹 인터페이스를 통한 실시간 모니터링, 로그 분석, 볼륨/네트워크 관리 절차를 포함한다.
 >

@@ -5,7 +5,7 @@ status: active
 
 # 02-Auth Optimization & Hardening Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/02-auth`(Keycloak, OAuth2 Proxy)의 최적화/하드닝 요구사항을 정의한다. 인증 경로의 안정성과 보안 기준을 강화하고, 운영 문서/실행 절차의 추적성을 일관되게 유지하는 것을 목표로 한다.
 

@@ -5,7 +5,7 @@ status: active
 
 # Data Tier (04-data) Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `04-data` 티어의 참조 아키텍처와 품질 속성을 정의한다. 시스템 경계, 책임, 데이터 흐름, 운영 관점을 정리하는 기준 문서다. 본 아키텍처는 다중 모델 영속성 계층을 지향하며, 고가용성(HA)과 보안 격리를 핵심 설계 원칙으로 한다.
 

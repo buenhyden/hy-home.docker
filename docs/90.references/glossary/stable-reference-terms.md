@@ -5,7 +5,7 @@ status: active
 
 # Reference: Stable Reference Terms
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/90.references`와 문서 governance에서 반복해서 쓰는 stable reference 용어를 정리한다. 용어의 의미를 맞추기 위한 reference이며, active policy를 새로 정의하지 않는다.
 

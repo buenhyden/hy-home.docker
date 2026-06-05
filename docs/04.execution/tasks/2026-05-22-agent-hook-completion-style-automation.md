@@ -7,7 +7,7 @@ status: completed
 
 > Execution evidence for logical commit Stop gating, post-edit style validation, and file formatting automation.
 
-## Overview (KR)
+## Overview
 
 이 문서는 Hook Development and Hookify rule guidance를 적용해 AI Agent 완료 흐름의 logical commit gate, code style validation, post-edit formatting behavior를 보강한 evidence다.
 

@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `09-tooling` 성능 테스트 워크플로우의 공통 사용 기준을 설명한다. 현재 구현은 `locust` leaf의 master/worker 구성과 `k6` leaf의 단일 `k6-master` Locust wrapper를 제공하며, 둘 다 InfluxDB 지표 전송과 host port UI 경계를 사용한다.
 

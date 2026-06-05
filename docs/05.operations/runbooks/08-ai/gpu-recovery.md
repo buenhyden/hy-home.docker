@@ -9,7 +9,7 @@ status: active
 
 > Scope: NVIDIA GPU acceleration for `ollama` in `infra/08-ai`.
 
-### Overview (KR)
+### Overview
 
 이 런북은 Ollama 컨테이너가 NVIDIA GPU를 인식하지 못하거나 CPU fallback으로 동작할 때 실행한다. 호스트 드라이버, NVIDIA Container Toolkit, compose device reservation을 순서대로 확인하고 복구한다.
 

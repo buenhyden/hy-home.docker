@@ -11,7 +11,7 @@ status: active
 
 ## MinIO Object Storage Health Procedure
 
-### Overview (KR)
+### Overview
 
 이 런북은 root-active MinIO 단일 service와 `minio-create-buckets` job의 compose render, health, bucket bootstrap 상태를 확인할 때 사용한다. optional cluster node recovery, credential rotation, bucket deletion, volume restore는 이 런북의 검증된 복구 범위가 아니다.
 

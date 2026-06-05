@@ -9,7 +9,7 @@ status: active
 
 > Scope: optional Portainer route hardening, Docker socket boundary, and access evidence.
 
-### Overview (KR)
+### Overview
 
 이 런북은 optional Portainer UI 접속 실패, route hardening drift, Docker socket 연결 문제를 진단하는 절차를 정의한다. 관리자 비밀번호 초기화나 데이터 삭제는 이 런북의 검증된 자동 복구 범위가 아니다.
 

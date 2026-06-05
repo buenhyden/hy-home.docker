@@ -6,7 +6,7 @@ status: completed
 
 # Governance Surgical Re-Verification + Tech-Stack Drift Closure Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 공유 거버넌스(Stage 00)·Claude 하네스·Model Policy·Template Contract의 외과적
 재검증과, 그 과정에서 드러난 단일 비(非)거버넌스 블로커(Dependabot發 tech-stack 버전

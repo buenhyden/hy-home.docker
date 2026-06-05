@@ -5,7 +5,7 @@ status: completed
 
 # LLM Wiki Agent-first Completion Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` LLM Wiki를 생성·검증 가능한 repo-local path index로 보강하기 위한 실행 계획이다.
 

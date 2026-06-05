@@ -8,7 +8,7 @@ status: active
 <!-- [ID:09-tooling:sonarqube] -->
 > Governance for code quality, security standards, and SonarQube lifecycle.
 
-## Overview (KR)
+## Overview
 
 This policy defines the operational standards for the SonarQube service. It ensures that code quality scanning is consistent across all platform components and that the infrastructure remains healthy and high-performing.
 

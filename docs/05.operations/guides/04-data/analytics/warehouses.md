@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `infra/04-data/analytics/warehouses`의 StarRocks 사용 가이드다. 현재 compose는 `starrocks-fe`와 `starrocks-be` 단일 pair를 제공하고, BE는 FE에 `ALTER SYSTEM ADD BACKEND "starrocks-be:9050"` 명령으로 등록된다.
 

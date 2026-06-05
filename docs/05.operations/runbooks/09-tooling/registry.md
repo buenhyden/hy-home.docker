@@ -5,7 +5,7 @@ status: active
 
 # Docker Registry Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 `docs/05.operations/runbooks/09-tooling/registry.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 

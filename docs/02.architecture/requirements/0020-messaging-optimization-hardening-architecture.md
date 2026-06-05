@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/requirements/0020-messaging-optimization-hardening-architecture.md -->
 # 05-Messaging Optimization Hardening Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `05-messaging` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. Kafka/RabbitMQ의 관리 트래픽 경로를 게이트웨이 표준 체인과 SSO 경계로 정렬하고, 운영 회귀를 CI 기준선 검증으로 차단하는 구조를 설명한다.
 

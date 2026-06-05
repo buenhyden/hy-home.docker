@@ -5,7 +5,7 @@ status: completed
 
 # Task: 08-AI Optimization Hardening
 
-## Overview (KR)
+## Overview
 
 이 문서는 `08-ai` 최적화/하드닝 실행 태스크를 추적한다. compose hardening, CI 게이트, 문서 추적성, 카탈로그 확장 정책(모델 승격/접근 분리/로그 마스킹)을 작업 단위로 관리한다.
 

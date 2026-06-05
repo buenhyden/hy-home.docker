@@ -9,7 +9,7 @@ status: completed
 > Home Docker Workspace Audit and Improvement input and closing any remaining
 > reflection gaps.
 
-## Overview (KR)
+## Overview
 
 This plan records a `$grill-with-docs` stress review of the completed workspace
 audit artifacts. It checks whether the original input requirements are reflected

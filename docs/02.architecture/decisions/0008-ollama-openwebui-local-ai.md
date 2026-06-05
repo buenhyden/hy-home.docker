@@ -5,7 +5,7 @@ status: active
 
 # ADR-0008: Ollama and Open WebUI for Local AI Infrastructure
 
-## Overview (KR)
+## Overview
 
 이 문서는 AI 인프라 구축을 위한 핵심 기술 스택으로 Ollama와 Open WebUI를 선택한 결정 사항을 기록한다. 로컬 리소스 활용, 데이터 프라이버시, 그리고 RAG 확장성을 최우선으로 고려하였다.
 

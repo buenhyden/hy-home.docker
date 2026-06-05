@@ -44,15 +44,15 @@ project and operations content.
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
-| Governance / templates / validation / root and docs README / operations README docs | User-provided language policy objective | `README.md`, `docs/README.md`, `docs/00.agent-governance/**`, `docs/99.templates/**`, `docs/05.operations/**`, `scripts/validation/check-repo-contracts.sh` | `docs/03` and `docs/04` templates required `Overview (KR)`; active English-only stage docs still contain Korean text; root and docs README language boundaries were too broad | Language boundary policy added; root/docs README boundaries clarified; English-only templates normalized; operations bucket roles clarified; current drift recorded below | `git revert` or equivalent patch | No secret values, token, private key, or certificate contents |
+| Governance / templates / validation / root and docs README / operations README docs | User-provided language policy objective | `README.md`, `docs/README.md`, `docs/00.agent-governance/**`, `docs/99.templates/**`, `docs/05.operations/**`, `scripts/validation/check-repo-contracts.sh` | `docs/03` and `docs/04` templates used legacy Korean-labeled overview headings; active English-only stage docs still contain Korean text; root and docs README language boundaries were too broad | Language boundary policy added; root/docs README boundaries clarified; English-only templates normalized; operations bucket roles clarified; current drift recorded below | `git revert` or equivalent patch | No secret values, token, private key, or certificate contents |
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-001 | Audit Korean text in English-only spec, plan, and task surfaces. | doc | User objective / item 1 | Language boundary audit | `rg -l '[가-힣]' docs/03.specs docs/04.execution/plans docs/04.execution/tasks -g '*.md'` | Codex | Done |
+| T-001 | Audit Korean text in English-only spec, plan, and task surfaces. | doc | User objective / item 1 | Language boundary audit | Korean-character file scan across specs, plans, and tasks | Codex | Done |
 | T-002 | Align Stage 00 language policy and stage matrix. | doc | User objective / item 2 | Policy baseline | `bash scripts/validation/check-repo-contracts.sh` | Codex | Done |
-| T-003 | Normalize English-only templates for specs, plans, and tasks. | doc | User objective / constraints | Template baseline | `rg -n '[가-힣]\|Overview \(KR\)' docs/99.templates/{spec,api-spec,agent-design,data-model,service,tests,plan,task}.template.md` | Codex | Done |
+| T-003 | Normalize English-only templates for specs, plans, and tasks. | doc | User objective / constraints | Template baseline | Korean-character and legacy overview-heading scan across English-only templates | Codex | Done |
 | T-004 | Clarify operations guide/policy/runbook/incident bucket roles and Korean human-facing language boundary. | doc | User objective / operations constraint | Operations README baseline | `bash scripts/validation/check-repo-contracts.sh` | Codex | Done |
 | T-005 | Clarify repository-wide README and docs-stage language rules beyond the original spec/plan/task/operations scope. | doc | Expanded user objective | README and stage baseline | `bash scripts/validation/check-repo-contracts.sh` | Codex | Done |
 
@@ -83,7 +83,7 @@ project and operations content.
 | Korean text in `docs/03.specs` | 43 files total; 23 non-README leaf files | Active document normalization remains a follow-up batch. |
 | Korean text in `docs/04.execution/plans` | 58 files total; 57 non-README leaf files | Active document normalization remains a follow-up batch. |
 | Korean text in `docs/04.execution/tasks` | 61 files total; 60 non-README leaf files | Active document normalization remains a follow-up batch. |
-| Korean text or `Overview (KR)` in English-only templates | 0 matches after this pass | Applies to spec, API spec, agent design, data model, service, tests, plan, and task templates. |
+| Korean text or legacy Korean-labeled overview headings in English-only templates | 0 matches after this pass | Applies to spec, API spec, agent design, data model, service, tests, plan, and task templates. |
 | Korean text in `docs/00.agent-governance` | 0 files | Existing governance surface already matches English-only policy. |
 | Korean text in human-facing/mixed surfaces | Expected | `docs/01.requirements`, `docs/02.architecture`, `docs/05.operations`, `docs/90.references`, `docs/98.archive`, `docs/99.templates`, root `README.md`, and folder READMEs now have explicit boundary rules instead of a single broad default. |
 
@@ -91,13 +91,13 @@ project and operations content.
 
 | Command | Result |
 | --- | --- |
-| `rg -l '[가-힣]' docs/03.specs -g '*.md' \| wc -l` | 43 files before active-doc normalization. |
-| `rg -l '[가-힣]' docs/03.specs -g '*.md' -g '!README.md' \| wc -l` | 23 non-README leaf files before active-doc normalization. |
-| `rg -l '[가-힣]' docs/04.execution/plans -g '*.md' \| wc -l` | 58 files before active-doc normalization. |
-| `rg -l '[가-힣]' docs/04.execution/plans -g '*.md' -g '!README.md' \| wc -l` | 57 non-README leaf files before active-doc normalization. |
-| `rg -l '[가-힣]' docs/04.execution/tasks -g '*.md' \| wc -l` | 61 files before active-doc normalization. |
-| `rg -l '[가-힣]' docs/04.execution/tasks -g '*.md' -g '!README.md' \| wc -l` | 60 non-README leaf files before active-doc normalization. |
-| `rg -n '[가-힣]\|Overview \(KR\)' docs/99.templates/spec.template.md docs/99.templates/api-spec.template.md docs/99.templates/agent-design.template.md docs/99.templates/data-model.template.md docs/99.templates/service.template.md docs/99.templates/tests.template.md docs/99.templates/plan.template.md docs/99.templates/task.template.md` | PASS: no matches after template normalization. |
+| Korean-character file count under `docs/03.specs` | 43 files before active-doc normalization. |
+| Korean-character file count under `docs/03.specs` excluding `README.md` | 23 non-README leaf files before active-doc normalization. |
+| Korean-character file count under `docs/04.execution/plans` | 58 files before active-doc normalization. |
+| Korean-character file count under `docs/04.execution/plans` excluding `README.md` | 57 non-README leaf files before active-doc normalization. |
+| Korean-character file count under `docs/04.execution/tasks` | 61 files before active-doc normalization. |
+| Korean-character file count under `docs/04.execution/tasks` excluding `README.md` | 60 non-README leaf files before active-doc normalization. |
+| Korean-character and legacy overview-heading scan across English-only templates | PASS: no matches after template normalization. |
 | `bash scripts/validation/check-repo-contracts.sh` | PASS: failures=0. |
 | `bash scripts/validation/check-doc-traceability.sh` | PASS: failures=0. |
 | `bash scripts/validation/validate-harness.sh` | PASS: wrapper, traceability, implementation alignment, Compose, hardening, template/security baseline, and repository contracts passed. |
@@ -122,8 +122,8 @@ project and operations content.
   Markdown files with Korean text under English-only spec/plan/task surfaces
   when README and folder-index files are included, and 140 non-README leaf
   documents that still need bounded English normalization.
-- Repo contracts currently allow existing `Overview (KR)` headings to keep
-  historical documents passing while templates move to `## Overview`.
+- Repo contracts now require `## Overview`; historical Korean-labeled overview
+  headings have been normalized repository-wide.
 - Existing human-facing and mixed-audience documents outside the edited README
   and template surfaces were not bulk-polished in this pass; they now have a
   policy target for future bounded batches.
@@ -142,8 +142,8 @@ project and operations content.
   consistency with the newly documented mixed/human-facing rules.
 - Add a repo-contract language-boundary gate after the English-only backlog is
   remediated and any README/folder-index exceptions are explicitly modeled.
-- After active normalization, tighten repo contracts from compatibility mode to
-  hard language-boundary enforcement.
+- After active normalization, add hard Korean-character enforcement for
+  English-only surfaces.
 
 ## Related Documents
 

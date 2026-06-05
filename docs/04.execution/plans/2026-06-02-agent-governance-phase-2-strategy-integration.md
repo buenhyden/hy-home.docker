@@ -5,7 +5,7 @@ status: completed
 
 # Agent Governance Phase 2 Strategy Integration Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 Agent Governance Phase 1 revalidation에서 확인한 후속 항목을 Phase 2 실행 evidence로 닫는 계획서다.
 

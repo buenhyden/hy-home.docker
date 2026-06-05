@@ -9,7 +9,7 @@ status: active
 
 > Scope: StarRocks FE/BE readiness, BE registration evidence, and load retry boundaries.
 
-### Overview (KR)
+### Overview
 
 이 런북은 `starrocks-fe` 또는 `starrocks-be` healthcheck가 실패하거나 BE registration/load job 상태 확인이 필요할 때 사용한다. 현재 compose는 단일 FE/BE pair를 제공한다.
 

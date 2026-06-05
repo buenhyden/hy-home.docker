@@ -6,7 +6,7 @@ status: completed
 
 # Task: Workspace Audit 2026-05
 
-## Overview (KR)
+## Overview
 
 이 문서는 2026년 5월 워크스페이스 감사 세션의 구현·검증 작업 목록이다. Gap Registry의 저위험 항목 구현과 중/고위험 항목 deferred 기록의 실행 증거를 추적한다.
 

@@ -5,7 +5,7 @@ status: active
 
 # 07-Workflow Optimization Hardening Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 `07-workflow` 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. gateway/SSO 체인 누락, health dependency 회귀, n8n image/entrypoint drift, CI 게이트 실패를 중심으로 점검/복구한다.
 

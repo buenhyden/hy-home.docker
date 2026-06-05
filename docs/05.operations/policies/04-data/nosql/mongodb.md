@@ -5,7 +5,7 @@ status: active
 
 # MongoDB Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 MongoDB replica set 운영 기준을 정의한다. 기준은 현재 tracked compose의 `mongo:8.2.9-noble`, `mongo-express:1-18-alpine3.19`, `percona/mongodb_exporter:2.37`, `MyReplicaSet`, `mongo-key` named volume, Docker Secret 기반 root/admin credential 구성이다.
 

@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `infra/09-tooling/locust`의 현재 Locust master/worker 부하 테스트 구성을 설명한다. 현재 compose는 `locust-master`, `locust-worker`를 빌드하고, InfluxDB Docker Secret과 `locust-data:/mnt/locust:rw` 볼륨을 사용한다.
 

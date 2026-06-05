@@ -6,7 +6,7 @@ status: active
 
 # 01-Gateway Nginx Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `01-gateway`의 Nginx 운영 정책을 정의한다. Nginx는 특수 경로(`/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/`) 프록시 역할을 수행하며, `Balanced` 하드닝 기준을 준수한다.
 

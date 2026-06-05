@@ -5,7 +5,7 @@ status: active
 
 # Reference: CS, CE & SE Self-Learning Roadmap (v2)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 인프라를 CS, CE, SE 관점으로 학습하기 위한 로드맵 참고 문서다. 느리게 변하는 이론 배경과 repo-local 예시를 연결한다.
 

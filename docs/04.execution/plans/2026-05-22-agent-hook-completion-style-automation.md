@@ -7,7 +7,7 @@ status: completed
 
 > Bounded plan for strengthening logical commit completion, code style validation, and post-edit formatting hooks.
 
-## Overview (KR)
+## Overview
 
 이 문서는 AI Agent가 repository-modifying 작업을 완료할 때 논리 단위별 커밋을 남기고, 파일 편집 후 자동 포맷팅과 코드 스타일 검증을 거치도록 hook and Hookify guidance를 보강하는 완료 계획이다.
 

@@ -6,7 +6,7 @@ status: completed
 
 # Gateway Documentation Standardization Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 Gateway 티어의 문서 체계를 March 2026 "Thin Root" 아키텍처 및 표준 템플릿에 맞게 표준화하는 실행 계획서다. PRD, ARD, ADR의 생성 및 관련 디렉터리 README의 최신화를 포함한다.
 

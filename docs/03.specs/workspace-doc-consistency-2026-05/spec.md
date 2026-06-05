@@ -6,7 +6,7 @@ status: completed
 
 # Workspace Documentation Consistency 2026-05 Technical Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 2026년 5월 워크스페이스 문서 일관성·통일성 개선 작업의 기술 명세다. `workspace-audit-2026-05` 감사 결과에서 식별된 docs/01~05 계층, scripts/, .github/workflows/ 전반의 구조적 불일치를 체계적으로 수정하고, 거버넌스 파일을 현행화한다. 이 명세의 구현 결과로 AI Agent가 작업할 때 참조하는 모든 문서가 템플릿 기준과 일치하게 된다.
 

@@ -9,7 +9,7 @@ status: active
 
 > Scope: stop and triage Locust/k6-wrapper performance tests that affect shared services.
 
-### Overview (KR)
+### Overview
 
 이 런북은 성능 테스트 실행 중 target service 또는 shared gateway/auth/data tier에 영향이 발생했을 때 사용하는 공통 절차다.
 

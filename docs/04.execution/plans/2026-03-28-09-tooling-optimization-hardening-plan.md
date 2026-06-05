@@ -5,7 +5,7 @@ status: completed
 
 # 09-Tooling Optimization Hardening Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/09-tooling` 최적화/하드닝 실행 계획서다. gateway+SSO 경계 정렬, 네트워크 격리 명시, 테스트 도구 런타임 안정화, CI 정책 게이트 도입, 카탈로그 확장 로드맵을 단계적으로 수행한다.
 

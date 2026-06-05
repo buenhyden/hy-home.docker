@@ -7,7 +7,7 @@ status: active
 
 <!-- [ID:09-tooling:terraform] -->
 
-## Overview (KR)
+## Overview
 
 이 런북은 `infra/09-tooling/terraform`의 컨테이너 기반 Terraform 실행 중 state lock,
 state 손상, provider credential 오류가 발생했을 때 사용하는 복구 절차다. 정상 사용 배경은

@@ -5,7 +5,7 @@ status: completed
 
 # 05-Messaging Optimization Hardening Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/05-messaging` 최적화/하드닝 실행 계획서다. 게이트웨이 경계 제어 강화, 이미지 태그/경로 정합성 보강, CI 하드닝 게이트 도입, 문서 계층 동기화를 단계적으로 수행한다.
 

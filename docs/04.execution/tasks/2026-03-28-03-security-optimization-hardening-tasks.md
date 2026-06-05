@@ -5,7 +5,7 @@ status: completed
 
 # Task: 03-Security (Vault) Optimization Hardening
 
-## Overview (KR)
+## Overview
 
 이 문서는 `03-security` 최적화/하드닝 구현 태스크를 추적한다. Vault 구성 하드닝, 검증 자동화, 문서 동기화, auth 검증 회귀 복구를 작업 단위로 관리한다.
 

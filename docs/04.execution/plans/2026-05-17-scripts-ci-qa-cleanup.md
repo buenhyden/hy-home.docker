@@ -5,7 +5,7 @@ status: completed
 
 # Scripts CI/CD & QA Cleanup Plan
 
-## Overview (KR)
+## Overview
 
 This plan implements the approved root `scripts/` cleanup for CI/CD, QA, hook,
 knowledge, and manual-operation entrypoints.

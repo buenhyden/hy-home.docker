@@ -7,7 +7,7 @@ status: completed
 
 > Execution plan for auditing `docs/03.specs` and `docs/04.execution` implementation coverage and closing evidence-backed gaps.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/03.specs`와 `docs/04.execution`의 spec, plan, task가 실제 구현 및 검증 evidence와 연결되어 있는지 조사하고, 확인된 미구현 또는 추적성 gap을 단계적으로 해소하기 위한 active 실행 계획이다.
 

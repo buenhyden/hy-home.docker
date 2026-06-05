@@ -11,7 +11,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 `mng-db`는 플랫폼 관리 서비스가 공유하는 PostgreSQL/Valkey 운영 데이터 계층이다. 현재 구현은 `infra/04-data/operational/mng-db/docker-compose.yml`의 `mng` 및 `dev` profile로 선언되며, Keycloak, n8n, Airflow, Terrakube, SonarQube, 기본 service DB를 위한 PostgreSQL role/database와 Valkey cache를 제공한다.
 

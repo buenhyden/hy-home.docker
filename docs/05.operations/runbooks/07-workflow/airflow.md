@@ -5,7 +5,7 @@ status: active
 
 # Airflow Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 하며, root-included dev compose는 shared `mng-valkey`, service-local compose는 `airflow-valkey`를 사용한다.
 

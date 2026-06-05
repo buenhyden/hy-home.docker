@@ -5,7 +5,7 @@ status: active
 
 # 11-Laboratory Optimization Hardening Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `11-laboratory` 계층 최적화/하드닝 운영 정책을 정의한다. 관리 UI 보안 경계, 실험성 서비스 운영 통제, 카탈로그 확장 승인 게이트를 명문화한다.
 

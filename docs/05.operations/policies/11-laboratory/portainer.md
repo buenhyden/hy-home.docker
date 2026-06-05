@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 정책은 Portainer 관리 UI의 접근 제어, 데이터 보존, 리소스 관리 기준을 정의한다.
 

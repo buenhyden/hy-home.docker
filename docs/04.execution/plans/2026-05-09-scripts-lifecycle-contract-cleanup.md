@@ -5,7 +5,7 @@ status: completed
 
 # Scripts Lifecycle Contract Cleanup Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `scripts/` 디렉터리의 live audit 결과를 바탕으로 script lifecycle, README template alignment, repository contract 표현을 정리하는 실행 계획이다. 현재 근거로 삭제가 정당화되는 스크립트는 없으므로, 이번 작업은 삭제가 아니라 문서와 검증 계약의 의미를 명확히 하는 cleanup이다.
 

@@ -11,7 +11,7 @@ status: active
 
 > Scope: recover or stop `locust-master` and `locust-worker` under `infra/09-tooling/locust`.
 
-### Overview (KR)
+### Overview
 
 이 런북은 Locust master/worker 연결 끊김, InfluxDB 지표 전송 실패, 또는 테스트 부하로 인한 target service 영향이 발생했을 때 사용한다.
 

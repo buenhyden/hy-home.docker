@@ -9,7 +9,7 @@ status: active
 
 > Scope: InfluxDB service readiness, token mount verification, and primary/legacy compose selection.
 
-### Overview (KR)
+### Overview
 
 이 런북은 InfluxDB primary v3 service가 unhealthy이거나 token mount/readiness 문제가 의심될 때 사용한다. Legacy v2 절차는 `docker-compose.v2.yml`을 명시한 경우에만 적용한다.
 

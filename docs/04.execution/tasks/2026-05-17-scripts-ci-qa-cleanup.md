@@ -7,7 +7,7 @@ status: completed
 
 > Retrospective completion evidence for root `scripts/` cleanup, QA/CI tooling exposure, and hook routing alignment.
 
-## Overview (KR)
+## Overview
 
 이 문서는 root `scripts/` cleanup과 QA/CI tooling setup이 완료되었음을 현재 script inventory, progress log, and validation evidence에 연결한다.
 

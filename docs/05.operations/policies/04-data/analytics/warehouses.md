@@ -5,7 +5,7 @@ status: active
 
 # StarRocks Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/04-data/analytics/warehouses`의 StarRocks 운영 정책을 정의한다. current implementation은 `starrocks-fe`와 `starrocks-be` 단일 pair를 `data` profile로 제공하고, FE/BE bind-backed named volumes와 compose healthchecks를 사용한다.
 

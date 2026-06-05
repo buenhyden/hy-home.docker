@@ -7,7 +7,7 @@ generated_by: scripts/knowledge/generate-llm-wiki-index.sh
 
 # Reference: LLM Wiki Generated Index
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 LLM Wiki가 사용하는 generated tracked repo-local index다. LLM 에이전트가 먼저 확인할 수 있는 안전한 경로 목록을 제공하되, 각 파일의 내용이나 runtime truth를 복제하지 않는다.
 

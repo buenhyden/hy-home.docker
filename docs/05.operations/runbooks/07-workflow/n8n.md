@@ -5,7 +5,7 @@ status: active
 
 # n8n Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 n8n 서비스 장애 발생 시 운영자가 신속하게 서비스를 복구하기 위한 단계별 절차를 제공한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`를 기준으로 하며 root-included dev compose와 service-local compose의 broker 경계를 먼저 식별한다.
 

@@ -6,7 +6,7 @@ status: active
 
 # infra_net Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 프로젝트의 인프라 네트워크(`infra_net`)에 대한 참조 아키텍처와 품질 속성을 정의한다. 시스템 내 각 서비스가 어떻게 네트워크적으로 격리되거나 연결되는지, 그리고 IP 관리 전략은 무엇인지 정리한다.
 

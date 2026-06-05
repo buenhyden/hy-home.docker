@@ -5,7 +5,7 @@ status: active
 
 # 0012 Standardize Infra Net Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 `infra_net` 서브넷 내 신규 서비스 추가 및 기존 서비스 IP 변경 시의 운영 절차를 정의한다. 서브넷 정합성 유지와 충돌 방지가 주 목적이다.
 

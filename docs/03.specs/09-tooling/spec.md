@@ -5,7 +5,7 @@ status: active
 
 # 09-Tooling Optimization Hardening Technical Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/09-tooling` 계층(terraform, terrakube, registry, sonarqube, k6, locust, syncthing)의 최적화/하드닝 기술 명세다. 공개 경계 보안, 네트워크 격리, 테스트 런타임 안정성, CI 정책 게이트, 카탈로그 기반 확장 항목을 구현 계약으로 정의한다. 현재 root `docker-compose.yml`에서 tooling compose includes는 주석 처리되어 있으므로, 이 명세는 보유 구현과 standalone/root-commented optional 실행 계약을 설명한다.
 

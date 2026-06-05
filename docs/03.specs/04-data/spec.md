@@ -5,7 +5,7 @@ status: active
 
 # 04-Data Optimization Hardening Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/04-data` 계층의 최적화/하드닝 구현 계약을 정의한다. 즉시 적용 가능한 compose 정합성, healthcheck, 시크릿 경로 계약, 검증 자동화를 우선 반영하고, 카탈로그 기반 확장 항목은 운영 정책/런북과 연결한다.
 

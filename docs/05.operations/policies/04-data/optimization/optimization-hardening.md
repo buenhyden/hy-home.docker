@@ -5,7 +5,7 @@ status: active
 
 # 04-Data Optimization Hardening Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `04-data` 계층의 최적화/하드닝 운영 정책을 정의한다. 즉시 적용 가능한 구성 정합성/healthcheck/검증 자동화를 Required 통제로 고정하고, 카탈로그 확장 항목은 승인 기반 전환 정책으로 관리한다.
 

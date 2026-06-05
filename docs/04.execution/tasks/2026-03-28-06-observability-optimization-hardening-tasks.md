@@ -5,7 +5,7 @@ status: completed
 
 # Task: 06-Observability Optimization Hardening
 
-## Overview (KR)
+## Overview
 
 이 문서는 `06-observability` 최적화/하드닝 구현 태스크를 추적한다. gateway 경계 강화, health 기반 의존성 보강, 컨테이너 하드닝, CI 기준선 자동화, 문서 추적성 동기화를 작업 단위로 관리한다.
 

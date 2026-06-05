@@ -5,7 +5,7 @@ status: completed
 
 # docs/01.requirements Remediation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/01.requirements` PRD 문서 세트를 `docs/99.templates/prd.template.md` 계약에 맞게 정리하는 실행 계획이다. 요구사항의 제품 의미는 변경하지 않고 문서 구조, 링크 추적성, canonical docs taxonomy, 검증 evidence를 복구한다.
 

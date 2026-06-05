@@ -5,7 +5,7 @@ status: active
 
 # 01-Gateway Traefik Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다.
 

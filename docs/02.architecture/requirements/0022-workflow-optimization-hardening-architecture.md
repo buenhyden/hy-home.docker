@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md -->
 # 07-Workflow Optimization Hardening Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `07-workflow` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. gateway 경계 보안, health 기반 의존성, n8n 이미지 하드닝, 카탈로그 기반 확장 로드맵을 아키텍처 관점에서 정리한다.
 

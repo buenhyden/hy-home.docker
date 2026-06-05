@@ -11,7 +11,7 @@ status: active
 
 ## Valkey Cluster Health Procedure
 
-### Overview (KR)
+### Overview
 
 이 런북은 Valkey cluster의 compose render, 6개 노드 상태, init job, exporter 상태, cluster info를 즉시 확인해야 할 때 사용한다. 데이터 볼륨 삭제, 강제 cluster recreation, RDB/AOF restore는 이 런북의 검증된 복구 범위가 아니다.
 

@@ -5,7 +5,7 @@ status: completed
 
 # Task: 09-Tooling Optimization Hardening
 
-## Overview (KR)
+## Overview
 
 이 문서는 `09-tooling` 최적화/하드닝 실행 태스크를 추적한다. compose hardening, CI 정책 게이트, 문서 추적성, 카탈로그 확장 항목을 작업 단위로 관리한다.
 

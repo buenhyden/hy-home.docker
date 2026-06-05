@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 정책은 root-active MinIO 단일 service와 bucket bootstrap job의 운영 통제를 정의한다. 정책 기준은 `infra/04-data/lake-and-object/minio/docker-compose.yml`의 실제 service, profile, network, secret, bucket initialization surface다.
 

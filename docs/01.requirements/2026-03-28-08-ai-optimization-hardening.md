@@ -5,7 +5,7 @@ status: active
 
 # 08-AI Optimization & Hardening Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/08-ai` 계층(Ollama, Open WebUI)의 최적화/하드닝 요구사항을 정의한다. 목표는 gateway 경계 보안 표준화, GPU 자원 보호를 위한 동시성 제어, health 기반 안정성 강화, 그리고 카탈로그 기반 확장 정책(모델 승격, 접근 통제, 로그 보존/마스킹)의 실행 로드맵 수립이다.
 

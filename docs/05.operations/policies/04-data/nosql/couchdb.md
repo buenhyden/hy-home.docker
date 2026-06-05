@@ -5,7 +5,7 @@ status: active
 
 # CouchDB Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 `couchdb:3.5.2`, `curlimages/curl:8.20.0`, `couchdb-cluster-init`, Traefik sticky route, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
 

@@ -41,7 +41,7 @@ status: completed
 
 - AI Agent 브레인(`task.md`)과의 일관성 확인.
 
-## Overview (KR)
+## Overview
 
 이 문서는 해당 표준화 또는 이전 작업의 실행 계획이다. 기존 목표, 변경 목록, 검증 내용은 그대로 유지하며 현재 plan template 필수 heading에 맞춘다.
 

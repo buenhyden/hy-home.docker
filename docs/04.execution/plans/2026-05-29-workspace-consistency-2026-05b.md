@@ -6,7 +6,7 @@ status: completed
 
 # Workspace Doc & Governance Consistency (2026-05b) Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 워크스페이스 거버넌스 일관성 후속 작업(2026-05b)의 실행 계획서다. PR #89 이후 식별된 거버넌스 규칙 형식화, 검증 스크립트 확장, 템플릿 정규화, 소규모 문서 수정을 단계별로 수행하고 완료 기준을 정의한다.
 

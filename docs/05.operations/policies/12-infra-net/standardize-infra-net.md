@@ -6,7 +6,7 @@ status: active
 
 # infra_net IP Management Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 시스템의 네트워크 레이어인 `infra_net` 내 IP 할당 및 관리 정책을 정의한다. IP 충돌 방지 및 일관성 유지를 위한 통제 기준을 제공한다.
 

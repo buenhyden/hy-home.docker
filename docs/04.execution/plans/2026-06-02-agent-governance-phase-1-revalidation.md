@@ -5,7 +5,7 @@ status: completed
 
 # Agent Governance Phase 1 Revalidation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 Agent Governance Phase 1 진단을 현행 repository state 기준으로 재검증하고, 이후 개선·보완·재설계 후보를 Stage 04 evidence로 정리하는 실행 계획서다.
 

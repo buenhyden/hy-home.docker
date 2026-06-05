@@ -5,7 +5,7 @@ status: completed
 
 # Task: Security Documentation Standardization
 
-## Overview (KR)
+## Overview
 
 이 문서는 Security 티어(`03-security`)의 문서 체계를 표준화하는 작업의 구현·검증 작업 목록이다. Vault 서버 및 에이전트 구성을 포함한 PRD, ARD, ADR, Spec, Plan의 생성 및 리팩토링 작업을 추적 가능하게 기록한다.
 

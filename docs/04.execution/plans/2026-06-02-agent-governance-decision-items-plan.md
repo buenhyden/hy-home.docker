@@ -5,7 +5,7 @@ status: completed
 
 # Agent Governance Decision Items Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 Agent Governance Stage 01/02/04 정렬 이후 남은 결정 항목과 현재 구현 불일치 정리 기준을 실행 가능한 후속 로드맵으로 정리한다.
 

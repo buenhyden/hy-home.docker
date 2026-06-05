@@ -7,7 +7,7 @@ status: completed
 
 > 2026-05-25 workspace audit update plan for low-risk documentation, index, and governance-discoverability fixes.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` workspace audit/update workflow의 실행 계획서다. Runtime API, Compose port, Docker network, secret value, `.env` value, deployment behavior는 변경하지 않고, stale generated index와 audit evidence/discoverability gap만 낮은 위험 범위에서 정리한다.
 

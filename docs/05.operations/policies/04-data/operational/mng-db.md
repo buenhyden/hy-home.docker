@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 정책은 `infra/04-data/operational/mng-db`의 PostgreSQL, Valkey, init job, exporter 운영 기준을 정의한다. 정책 목적은 플랫폼 관리 메타데이터를 안전하게 유지하고, 문서와 compose의 서비스/네트워크/secret 경계가 서로 어긋나지 않도록 하는 것이다.
 

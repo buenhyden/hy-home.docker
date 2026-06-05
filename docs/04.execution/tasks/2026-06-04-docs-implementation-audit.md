@@ -6,7 +6,7 @@ status: active
 
 # Task: docs/01-05 Content-vs-Implementation Audit
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/01.requirements`~`docs/05.operations`의 **작성된 내용**을
 tracked `infra/**` 구현과 의미 단위로 대조한 감사 리포트다. 판정 기준은 링크/거버넌스/체인

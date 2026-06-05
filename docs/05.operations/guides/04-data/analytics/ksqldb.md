@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `infra/04-data/analytics/ksql`의 ksqlDB 사용 가이드다. 현재 compose는 `ksqldb-server`를 `data` profile로 실행하고, `ksqldb-cli`와 `ksql-datagen`은 `ksql` profile의 보조 job/tooling service로 유지한다.
 

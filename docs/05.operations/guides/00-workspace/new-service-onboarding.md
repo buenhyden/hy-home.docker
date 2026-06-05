@@ -10,7 +10,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 가이드는 새 컨테이너 서비스를 `hy-home.docker`에 추가할 때 참조한다.
 복사 가능한 시드(`examples/sample-web-service/`)와 service scaffold 템플릿

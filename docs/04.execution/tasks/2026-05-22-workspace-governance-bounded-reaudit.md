@@ -7,7 +7,7 @@ status: completed
 
 > Execution evidence for the workspace governance bounded re-audit and agent improvement pass.
 
-## Overview (KR)
+## Overview
 
 이 문서는 workspace governance bounded re-audit 작업의 실제 수행 상태와 검증 evidence를 기록한다.
 

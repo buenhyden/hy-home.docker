@@ -5,7 +5,7 @@ status: active
 
 # ADR-0001: Traefik & Nginx Hybrid Gateway Architecture
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 진입점(Ingress)으로 Traefik과 Nginx를 혼합하여 사용하는 결정에 대한 아키텍처 결정 기록이다.
 

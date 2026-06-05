@@ -7,7 +7,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 Open WebUI를 `hy-home.docker` 에코시스템의 기본 AI 인터페이스 및 RAG(Retrieval-Augmented Generation) 오케스트레이터로 선정함에 따른 아키텍처 결정 기록이다.
 

@@ -5,7 +5,7 @@ status: active
 
 # 07-Workflow Optimization Hardening Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `07-workflow` 계층의 최적화/하드닝 운영 정책을 정의한다. gateway 경계 보안, health 기반 의존성, n8n 컨테이너 하드닝, 카탈로그 기반 확장 승인 기준을 통제한다.
 

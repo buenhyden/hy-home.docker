@@ -7,7 +7,7 @@ status: completed
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 Open WebUI의 실행 계획서다. 작업 분해, 검증, 롤아웃, 완료 기준을 정의하여 시스템의 안정적인 구축과 운영을 보장한다.
 

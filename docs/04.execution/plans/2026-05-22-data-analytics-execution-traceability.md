@@ -7,7 +7,7 @@ status: completed
 
 > Bounded plan for closing the missing execution evidence link for the active data analytics spec.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/03.specs/04-data-analytics/spec.md`가 실제 infra와 operations 문서에 구현되어 있음에도 `docs/04.execution` plan/task evidence와 직접 연결되지 않은 gap을 닫기 위한 실행 계획이다.
 

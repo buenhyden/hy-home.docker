@@ -9,7 +9,7 @@ current_replacement: docs/03.specs/07-workflow/spec.md
 
 # Archive Tombstone: Airbyte Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 현재 구현과 상충해 active operations chain에서 제거된 Airbyte policy tombstone입니다.
 원문 운영 정책은 stale current-truth로 재노출하지 않습니다.

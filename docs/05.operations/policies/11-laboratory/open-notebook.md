@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 `open-notebook` 서비스의 운영 정책을 정의한다. Open Notebook은 노트북형 지식 작업과 로컬 실험을 지원하지만 인증, secret, 데이터 볼륨, Traefik 노출 경계를 지켜야 하는 관리 계층 서비스다.
 

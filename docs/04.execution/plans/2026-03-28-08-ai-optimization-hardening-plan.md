@@ -5,7 +5,7 @@ status: completed
 
 # 08-AI Optimization Hardening Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/08-ai` 최적화/하드닝 실행 계획서다. gateway 경계 보안 정렬, GPU concurrency 보호, Open WebUI stateful 일관성, exporter health 계약, CI 정책 게이트, 카탈로그 확장 정책을 단계적으로 수행한다.
 

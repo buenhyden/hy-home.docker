@@ -5,7 +5,7 @@ status: active
 
 # RabbitMQ Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 RabbitMQ 서비스 장애 시 비파괴 점검, evidence capture, 서비스 재시작, escalation 절차를 정의한다. Queue purge/delete/rebind 같은 메시지 손실 가능 작업은 일반 복구 단계가 아니라 승인된 escalation으로만 처리한다.
 

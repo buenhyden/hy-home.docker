@@ -5,7 +5,7 @@ status: active
 
 # Neo4j Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 정책은 root-active specialized data service인 Neo4j 운영 기준을 정의한다. 기준은 현재 tracked compose의 `neo4j:5.26.26-community`, 단일 `neo4j` service, `data`/`graph` profiles, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route다.
 

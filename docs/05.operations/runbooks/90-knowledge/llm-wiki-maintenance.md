@@ -5,7 +5,7 @@ status: active
 
 # LLM Wiki Maintenance Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 `runbooks/90-knowledge/llm-wiki-maintenance.md` 대상의 반복 실행 절차, 검증 evidence, 실패 시 중단 기준을 정의한다.
 

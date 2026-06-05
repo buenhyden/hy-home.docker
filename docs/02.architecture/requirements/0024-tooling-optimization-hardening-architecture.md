@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/requirements/0024-tooling-optimization-hardening-architecture.md -->
 # 09-Tooling Optimization Hardening Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `09-tooling` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. 관리 경로의 gateway+SSO 경계, tooling 네트워크 격리, 테스트 도구 runtime 안정성, 카탈로그 기반 확장 정책을 아키텍처 관점으로 정리한다.
 

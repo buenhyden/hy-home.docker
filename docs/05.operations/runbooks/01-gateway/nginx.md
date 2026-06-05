@@ -5,7 +5,7 @@ status: active
 
 # 01-Gateway Nginx Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 Nginx readonly/tmpfs 전환 이후 발생 가능한 장애, `nginx -t` 실패, `/ping` 헬스체크 실패 상황의 복구 절차를 정의한다.
 

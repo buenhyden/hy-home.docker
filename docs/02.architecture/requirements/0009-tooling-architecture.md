@@ -7,7 +7,7 @@ status: active
 
 ## Tooling Tier Reference Document
 
-## Overview (KR)
+## Overview
 
 이 문서는 `09-tooling` 계층의 참조 아키텍처와 품질 속성을 정의한다. 인프라 자동화, 품질 분석, 성능 테스트 도구들의 시스템 경계, 책임, 그리고 공통 인프라와의 연동 구조를 제공한다.
 

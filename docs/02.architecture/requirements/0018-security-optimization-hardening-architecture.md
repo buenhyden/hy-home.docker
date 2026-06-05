@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/requirements/0018-security-optimization-hardening-architecture.md -->
 # 03-Security Optimization Hardening Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 Vault 기반 `03-security` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. 현재 단일 노드 운영 모델을 안정화하고, 향후 raft 3-node + auto-unseal 확장 경로를 아키텍처 계약으로 명시한다.
 

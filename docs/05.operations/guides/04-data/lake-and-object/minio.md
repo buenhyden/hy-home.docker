@@ -11,7 +11,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 MinIO는 `infra/04-data/lake-and-object/minio/docker-compose.yml`에 선언된 S3-compatible object storage다. 현재 root-active compose path는 단일 `minio` service와 bucket/bootstrap job `minio-create-buckets`를 실행하며, optional `docker-compose.cluster.yaml`은 root include에 포함되지 않은 별도 cluster variant다.
 

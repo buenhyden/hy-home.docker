@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 정책은 `infra/04-data/operational/supabase`의 data profile stack 운영 기준을 정의한다. 핵심 통제는 Kong 중심의 공개 접근, Docker Secrets 기반 credential 관리, `${DEFAULT_DATA_DIR}/supabase/...` runtime mount 관리, 그리고 guide/policy/runbook 간 현재 구현 정합성 유지이다.
 

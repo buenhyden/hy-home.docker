@@ -10,7 +10,7 @@ status: completed
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 `02-auth` 티어의 문서 체계를 전사 표준(Thin Root & Golden 5)으로 전환하기 위한 단계별 실행 계획을 정의한다. 인프라 분석, 상위 요구사항(PRD) 정의, 아키텍처(ARD) 구체화, 그리고 실제 작업(Task) 생성 및 검증 단계를 포함한다.
 

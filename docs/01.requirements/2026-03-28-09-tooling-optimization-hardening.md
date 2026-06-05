@@ -5,7 +5,7 @@ status: active
 
 # 09-Tooling Optimization & Hardening Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/09-tooling` 계층(terraform, terrakube, registry, sonarqube, k6, locust, syncthing)의 최적화/하드닝 요구사항을 정의한다. 목표는 관리 경로 보안 강화, 네트워크 경계 명확화, 테스트/운영 도구 안정성 향상, 그리고 카탈로그 기반 확장 항목의 실행 로드맵 수립이다.
 

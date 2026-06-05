@@ -5,7 +5,7 @@ status: completed
 
 # Task: Messaging Infrastructure Documentation Standardization
 
-## Overview (KR)
+## Overview
 
 이 문서는 메시징 계층(`05-messaging`)의 문서화 및 표준 인프라 가이드라인 적용을 위한 작업 목록이다. Spec과 Plan에서 도출된 작업을 추적한다.
 

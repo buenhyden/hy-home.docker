@@ -6,7 +6,7 @@ status: completed
 
 # Task: 09-tooling Documentation Tasks
 
-## Overview (KR)
+## Overview
 
 `09-tooling` 계층 문서화 표준화와 관련된 세부 작업 항목을 추적한다.
 

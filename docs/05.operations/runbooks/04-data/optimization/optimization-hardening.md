@@ -5,7 +5,7 @@ status: active
 
 # 04-Data Optimization Hardening Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 04-data 하드닝 항목에서 발생 가능한 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. `supabase` healthcheck 이상, `valkey` exporter 인증 실패, `seaweedfs` compose 파싱 오류, `ksql` 라벨 회귀를 중심으로 점검/복구 절차를 정의한다.
 

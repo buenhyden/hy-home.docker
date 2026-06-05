@@ -5,7 +5,7 @@ status: completed
 
 # Targeted Documentation Precision Remediation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `README.md`, `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`를 대상으로 한 정밀 문서 보정 계획이다. 범위는 validator가 통과한 이후에도 남을 수 있는 discoverability, target-relative link, stage ownership, current evidence drift에 한정한다.
 

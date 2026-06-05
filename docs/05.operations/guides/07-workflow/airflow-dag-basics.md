@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `hy-home.docker` 환경에서 Airflow DAG를 작성하는 기본 방법과 권장 패턴을 설명합니다. 현재 compose는 DAG 파일을 repo 내부 Airflow 하위 경로가 아니라 `${DEFAULT_WORKFLOW_DIR}/airflow/dags`에서 bind mount합니다.
 

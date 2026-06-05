@@ -5,7 +5,7 @@ status: completed
 
 # Task: Home Docker Revalidation Deferred Follow-up
 
-## Overview (KR)
+## Overview
 
 이 문서는 2026-05-25 `hy-home.docker` workspace audit baseline을 재검증하고 deferred 항목을 추적 가능한 evidence로 고정한 실행 기록이다. 이 작업은 문서와 metadata-only evidence에 한정되며 runtime, secret value, actual `.env`, remote GitHub, deployment, Docker start/stop, permission, port, deletion work는 수행하지 않는다.
 

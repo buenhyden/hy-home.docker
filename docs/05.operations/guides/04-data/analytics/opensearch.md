@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 사용 가이드다. 현재 primary compose는 `opensearch`와 `opensearch-dashboards`를 제공하며, `docker-compose.cluster.yml`은 optional cluster variant로 별도 검증한다.
 

@@ -9,7 +9,7 @@ status: active
 
 > Scope: Triage CouchDB 3-node cluster health, cluster-init results, membership, and Traefik route assumptions.
 
-### Overview (KR)
+### Overview
 
 이 런북은 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` 상태 이상이 발생했을 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. 수동 재조인, 데이터베이스 compaction, shard 변경, cookie 교체는 현재 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션한다.
 

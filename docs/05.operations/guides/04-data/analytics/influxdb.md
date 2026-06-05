@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `infra/04-data/analytics/influxdb`의 InfluxDB 사용 가이드다. 현재 primary compose는 InfluxDB 3.x Core이며, `docker-compose.v2.yml`은 InfluxDB 2.x legacy Flux 호환 경로로만 유지된다.
 

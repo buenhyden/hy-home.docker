@@ -5,7 +5,7 @@ status: active
 
 # Infra Service Optimization & Expansion Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/01-gateway` 부터 `infra/11-laboratory` 까지 운영 중인 서비스에 대해, 현재 구성 기준의 운영 갭을 점검하고 서비스별 최적화 및 추가 권장사항을 정리한다.
 범위는 Docker Compose 기반 운영 표준(가용성, 보안, 관측성, 복구 용이성)이며, 구현 절차는 각 Procedure에서 관리한다.

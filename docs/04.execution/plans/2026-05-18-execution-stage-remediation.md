@@ -5,7 +5,7 @@ status: completed
 
 # Execution Stage Remediation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/04.execution` stage를 목적에 맞게 정리하는 bounded remediation 실행 계획이다. Historical execution evidence는 대량 재작성하지 않고, entrypoint README, template examples, current active artifacts, deferred debt 기록을 정리한다.
 

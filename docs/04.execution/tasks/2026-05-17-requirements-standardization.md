@@ -7,7 +7,7 @@ status: completed
 
 > Retrospective completion evidence for the `docs/01.requirements` PRD contract remediation.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/01.requirements` PRD 문서 세트와 PRD template, taxonomy cleanup 작업이 완료되었음을 현재 progress log와 validator evidence로 연결한다.
 

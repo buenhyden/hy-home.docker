@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 정책은 `infra/04-data/cache-and-kv/valkey-cluster`의 6-node Valkey cluster, init job, exporter 운영 통제를 정의한다. 정책 기준은 현재 compose와 `infra/04-data/cache-and-kv/valkey-cluster/config/valkey.conf`, `infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-start.sh`, `infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-cluster-init.sh`에 실제로 선언된 service, network, secret, persistence surface다.
 

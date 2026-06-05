@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 root compose에 active include된 `infra/04-data/specialized/qdrant/docker-compose.yml` 기준으로 Qdrant vector database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 `qdrant/qdrant:v1.18.1-unprivileged`, 단일 `qdrant` 서비스, `ai`/`data`/`dev` 프로파일, `infra_net`, REST route, gRPC TCP route, `/readyz` healthcheck를 사용한다.
 

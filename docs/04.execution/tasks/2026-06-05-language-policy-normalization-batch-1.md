@@ -38,20 +38,20 @@ English and adds explicit category-level purpose/language rules for
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
-| `docs/03.specs` bounded leaf batch and `docs/90.references` README/category rules | User-provided language policy objective | 9 spec/agent-design files; 7 reference README files | `docs/03.specs` leaf backlog was 23 files; reference category READMEs had roles but not explicit language rules | 9 `docs/03.specs` leaf files have no Korean/`Overview (KR)`; reference category roles now include language rules | `git revert` or equivalent patch | No secret values, token, private key, certificate contents, or `.env` values |
+| `docs/03.specs` bounded leaf batch and `docs/90.references` README/category rules | User-provided language policy objective | 9 spec/agent-design files; 7 reference README files | `docs/03.specs` leaf backlog was 23 files; reference category READMEs had roles but not explicit language rules | 9 `docs/03.specs` leaf files have no Korean text or legacy Korean-labeled overview headings; reference category roles now include language rules | `git revert` or equivalent patch | No secret values, token, private key, certificate contents, or `.env` values |
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-001 | Normalize a bounded `docs/03.specs` leaf batch to English. | doc | User constraint / specs English-only | Language normalization batch 1 | `rg -n '[가-힣]\|Overview \(KR\)' <9 target files>` | Codex | Done |
+| T-001 | Normalize a bounded `docs/03.specs` leaf batch to English. | doc | User constraint / specs English-only | Language normalization batch 1 | Korean-character scan and legacy overview-heading scan against 9 target files | Codex | Done |
 | T-002 | Add `docs/90.references` purpose/language rules at repository and category levels. | doc | User constraint / references purpose and language rules | Reference language boundary | `bash scripts/validation/check-repo-contracts.sh` | Codex | Done |
 | T-003 | Update progress and generated indexes after adding this task evidence. | doc | Documentation release workflow | Evidence closure | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | Codex | Done |
 
 ## Normalized Spec Files
 
 The following English-only target files now have no Korean text and no
-`Overview (KR)` heading:
+legacy Korean-labeled overview heading:
 
 - [Open WebUI Spec](../../03.specs/08-ai/open-webui.md)
 - [LLM Wiki Spec](../../03.specs/llm-wiki-agent-first-completion/spec.md)
@@ -79,10 +79,11 @@ The following English-only target files now have no Korean text and no
 
 | Command | Result |
 | --- | --- |
-| `rg -n '[가-힣]\|Overview \(KR\)' docs/03.specs/08-ai/open-webui.md docs/03.specs/llm-wiki-agent-first-completion/spec.md docs/03.specs/docs-taxonomy-agent-first-migration/spec.md docs/03.specs/10-communication/spec.md docs/03.specs/home-docker-revalidation-deferred-follow-up/spec.md docs/03.specs/04-data-analytics/spec.md docs/03.specs/01-gateway/spec.md docs/03.specs/standardize-infra-net/spec.md docs/03.specs/07-workflow/agent-design.md` | PASS: no matches after normalization. |
-| `rg -l '[가-힣]' docs/03.specs -g '*.md' -g '!README.md' \| wc -l` | 14 leaf files remain after this batch. |
-| `rg -l '[가-힣]' docs/04.execution/plans -g '*.md' -g '!README.md' \| wc -l` | 57 leaf files remain before plan normalization. |
-| `rg -l '[가-힣]' docs/04.execution/tasks -g '*.md' -g '!README.md' \| wc -l` | 60 leaf files remain before task normalization. |
+| Korean-character and legacy overview-heading scan against the 9 normalized target files | PASS: no matches after normalization. |
+| Korean-character file count under `docs/03.specs` excluding `README.md` | 14 leaf files remain after this batch. |
+| Korean-character file count under `docs/04.execution/plans` excluding `README.md` | 57 leaf files remain before plan normalization. |
+| Korean-character file count under `docs/04.execution/tasks` excluding `README.md` | 59 leaf files remain before task normalization. |
+| Repository-wide legacy overview-heading scan | PASS: no legacy overview-heading matches remain after heading normalization. |
 | `bash scripts/validation/check-repo-contracts.sh` | PASS: failures=0. |
 | `bash scripts/validation/check-doc-traceability.sh` | PASS: failures=0. |
 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS after regenerating `docs/90.references/llm-wiki/index.md` for the new task path. |
@@ -102,11 +103,11 @@ The following English-only target files now have no Korean text and no
 ## Remaining Risks
 
 - Full English-only normalization remains incomplete: 14 `docs/03.specs` leaf
-  files, 57 plan leaf files, and 60 task leaf files still contain Korean text.
+  files, 57 plan leaf files, and 59 task leaf files still contain Korean text.
 - `docs/90.references` now has category language rules, but non-README
   reference documents were not bulk-polished in this batch.
-- The repository still uses compatibility mode for historical `Overview (KR)`
-  headings until all English-only backlog is remediated.
+- Repository-wide legacy overview headings were normalized to `Overview`, and
+  the validator now uses `## Overview` as the required heading.
 
 ## Follow-up Tasks
 
@@ -116,8 +117,8 @@ The following English-only target files now have no Korean text and no
   preserving historical evidence meaning.
 - Review non-README `docs/90.references/**` documents for category language-rule
   consistency.
-- After active normalization, replace compatibility-mode heading acceptance with
-  hard language-boundary enforcement.
+- After active normalization, add hard Korean-character enforcement for
+  English-only surfaces.
 
 ## Related Documents
 

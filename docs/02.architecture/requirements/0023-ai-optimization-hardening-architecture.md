@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/requirements/0023-ai-optimization-hardening-architecture.md -->
 # 08-AI Optimization Hardening Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `08-ai` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. gateway 경계 보안, GPU concurrency 제어, stateful 운영 일관성, health 기반 관측 안정성, 카탈로그 기반 운영 확장 정책을 아키텍처 관점에서 정리한다.
 

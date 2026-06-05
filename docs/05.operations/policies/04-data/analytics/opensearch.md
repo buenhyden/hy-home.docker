@@ -5,7 +5,7 @@ status: active
 
 # OpenSearch Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 운영 정책을 정의한다. current implementation은 OpenSearch 3.x custom build primary stack과 OpenSearch Dashboards 3.6.0을 사용하며, three-node cluster compose는 optional variant다.
 

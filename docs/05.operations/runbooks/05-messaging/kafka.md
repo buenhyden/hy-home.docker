@@ -5,7 +5,7 @@ status: active
 
 # Kafka Cluster Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 `hy-home.docker`의 Kafka 인프라(05-messaging)에서 발생할 수 있는 주요 장애 상황의 비파괴 점검, evidence capture, escalation 절차를 정의한다. Root-included dev Kafka는 단일 broker이며, full 3 broker Kafka compose는 root network/secret context가 필요한 service-local compose다.
 

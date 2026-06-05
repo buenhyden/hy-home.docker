@@ -5,7 +5,7 @@ status: active
 
 # LLM Wiki Maintenance Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 repo-local LLM Wiki를 갱신하고 검증하는 운영 가이드다. LLM Wiki는 source contents를 합치는 문서가 아니라, LLM 에이전트가 안전하게 canonical path를 찾도록 돕는 index layer다.
 

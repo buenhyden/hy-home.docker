@@ -6,7 +6,7 @@ status: completed
 
 # Workspace Documentation Consistency 2026-05 Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 워크스페이스 문서 일관성·통일성 개선 작업의 실행 계획서다. `workspace-audit-2026-05` 감사에서 식별된 불일치를 5개 Phase로 단계적으로 수정하고, 각 Phase를 독립 커밋으로 분리하여 추적성과 롤백 가능성을 보장한다.
 

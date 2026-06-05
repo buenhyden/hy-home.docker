@@ -5,7 +5,7 @@ status: active
 
 # Release Management Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 `hy-home.docker`의 수동 release/tag readiness, evidence capture, rollback evidence 확인 절차를 정의한다. 이 문서는 배포 자동화, GitHub branch protection, required check, Docker runtime, secret, `.env`, port, permission 동작을 변경하지 않는다.
 

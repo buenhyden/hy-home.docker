@@ -5,7 +5,7 @@ status: active
 
 # 05-Messaging Optimization & Hardening Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/05-messaging` 계층(Kafka, RabbitMQ)의 최적화/하드닝 요구사항을 정의한다. 게이트웨이 경계에서의 트래픽 제어, 관리 경로 보호, 이미지 버전 고정, 구성 정합성, CI 기반 회귀 차단을 목표로 한다.
 

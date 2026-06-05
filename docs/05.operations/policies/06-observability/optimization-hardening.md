@@ -5,7 +5,7 @@ status: active
 
 # 06-Observability Optimization Hardening Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `06-observability` 계층의 최적화/하드닝 운영 정책을 정의한다. 게이트웨이 경계 보안, health 기반 의존성, 커스텀 이미지 런타임 하드닝, CI 기준선 검증, 카탈로그 확장 승인 조건을 통제한다.
 

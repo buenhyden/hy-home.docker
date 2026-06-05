@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `infra/04-data/nosql/cassandra/docker-compose.yml`에 정의된 Cassandra 단일 노드와 `cassandra-exporter`를 기준으로 사용 맥락, 접속 방식, 일반 점검 방법을 설명한다. 현재 루트 compose에서는 Cassandra include가 주석 처리된 선택 서비스이며, 활성화 시 `data` 프로파일의 `cassandra-node1`과 `data`/`obs` 프로파일의 `cassandra-exporter`가 `infra_net`에서 동작한다.
 

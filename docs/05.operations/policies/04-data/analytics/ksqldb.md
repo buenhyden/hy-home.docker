@@ -5,7 +5,7 @@ status: active
 
 # ksqlDB Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/04-data/analytics/ksql`의 ksqlDB 운영 정책을 정의한다. current implementation은 `ksqldb-server`를 `data` profile로 제공하고, `ksqldb-cli` 및 `ksql-datagen`을 `ksql` profile 보조 서비스로 분리한다.
 

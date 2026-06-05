@@ -9,7 +9,7 @@ status: active
 
 > Scope: ksqlDB server readiness, Kafka dependency checks, and query lifecycle evidence.
 
-### Overview (KR)
+### Overview
 
 이 런북은 `ksqldb-server`가 unhealthy이거나 Kafka/Schema Registry dependency 문제로 stream processing이 실패할 때 사용한다. CLI/datagen 절차는 `ksql` profile을 명시한 경우에만 적용한다.
 

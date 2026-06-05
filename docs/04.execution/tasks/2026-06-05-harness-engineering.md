@@ -6,7 +6,7 @@ status: completed
 
 # Task: Workspace Harness Engineering
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 워크스페이스의 하네스 엔지니어링 구현과
 검증 evidence를 기록한다. 기존 Stage 00, Compose, secrets, scripts, CI,

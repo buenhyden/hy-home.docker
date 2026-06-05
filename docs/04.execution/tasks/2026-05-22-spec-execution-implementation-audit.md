@@ -7,7 +7,7 @@ status: completed
 
 > Active execution evidence for auditing and remediating implementation coverage across `docs/03.specs` and `docs/04.execution`.
 
-## Overview (KR)
+## Overview
 
 이 문서는 spec, plan, task 구현 여부 조사의 실제 진행 상태와 검증 evidence를 기록한다. 이번 작업은 한 번에 모든 historical runtime evidence를 완료 처리하지 않고, 현재 파일과 명령으로 증명 가능한 gap부터 닫는다.
 

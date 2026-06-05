@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 정책은 RedisInsight 관리 UI의 접근 권한, 연결 메타데이터, 운영 가드레일을 정의한다.
 

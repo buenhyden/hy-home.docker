@@ -9,7 +9,7 @@ status: active
 
 > Scope: Stalwart and MailHog static/runtime recovery for the optional `10-communication` mail compose.
 
-### Overview (KR)
+### Overview
 
 이 런북은 Stalwart 메일 서버와 MailHog 개발 트랩의 검증 실패, UI 접근 실패, SMTP/IMAP 연결 실패가 발생했을 때 운영자가 증거를 보존하고 안전하게 복구 또는 에스컬레이션하기 위한 절차를 정의한다.
 

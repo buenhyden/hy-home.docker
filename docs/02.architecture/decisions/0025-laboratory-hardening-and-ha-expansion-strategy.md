@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md -->
 # ADR-0025: Laboratory Hardening and HA Expansion Strategy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `11-laboratory` 계층에서 즉시 적용 가능한 하드닝(ingress 경계 강화, direct 노출 제거, 네트워크 계약 정렬, 최소권한 개선, CI 게이트 도입)을 우선 시행하고, 카탈로그 확장 항목은 단계적으로 도입하는 결정을 기록한다.
 

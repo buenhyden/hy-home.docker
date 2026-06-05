@@ -6,7 +6,7 @@ status: active
 
 # ADR-0003: HashiCorp Vault as Centralized Secrets Manager
 
-## Overview (KR)
+## Overview
 
 플랫폼 전체의 민감한 정보(비밀번호, API 키, 인증서 등)를 관리하기 위해 전용 비밀 정보 관리 솔루션이 필요하다. 이에 대한 결정으로 HashiCorp Vault를 채택하며, 구체적인 이유와 대안을 기록한다.
 

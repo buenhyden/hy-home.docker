@@ -5,7 +5,7 @@ status: completed
 
 # 08-ai Documentation Standardization Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `08-ai` 계층의 문서 표준화 작업을 위한 실행 계획서다. 프로젝트의 "Thin Root" 아키텍처 및 "Golden 5" 태조노미에 따라 거버넌스 문서군을 생성하고 정렬한다.
 
@@ -36,7 +36,7 @@ status: completed
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-PLN-01 | Linkage | 모든 상대 경로 링크 유효성 확인 | `ls -l [path]` | 모든 링크 대상 파일 실제 존재 |
-| VAL-PLN-02 | Format | 템플릿 필수 섹션 포함 여부 확인 | `grep "Overview (KR)" [file]` | 모든 파일에 섹션 포함됨 |
+| VAL-PLN-02 | Format | 템플릿 필수 섹션 포함 여부 확인 | `grep "Overview" [file]` | 모든 파일에 섹션 포함됨 |
 
 ## Completion Criteria
 

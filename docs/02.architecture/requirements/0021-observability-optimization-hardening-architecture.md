@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/requirements/0021-observability-optimization-hardening-architecture.md -->
 # 06-Observability Optimization Hardening Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `06-observability` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. 게이트웨이 경계 보안, health 기반 의존성, 커스텀 이미지 런타임 하드닝, 카탈로그 기반 확장 전략을 아키텍처 관점에서 정리한다.
 

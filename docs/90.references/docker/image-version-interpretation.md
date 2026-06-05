@@ -5,7 +5,7 @@ status: active
 
 # Reference: Docker Image and Version Interpretation
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`에서 Docker image와 version 정보를 어떻게 해석해야 하는지 정리한 reference다. 최신 image 값이나 rollout 절차를 복제하지 않고, Compose 선언과 registry 파일을 읽는 기준만 설명한다.
 

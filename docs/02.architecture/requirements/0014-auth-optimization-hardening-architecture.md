@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/requirements/0014-auth-optimization-hardening-architecture.md -->
 # 02-Auth Optimization Hardening Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `02-auth` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. Keycloak과 OAuth2 Proxy의 책임 경계를 유지하면서, 시크릿 주입 표준화와 fail-closed 운영 모델을 아키텍처 기준으로 고정한다.
 

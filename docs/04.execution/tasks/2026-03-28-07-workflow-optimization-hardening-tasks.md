@@ -5,7 +5,7 @@ status: completed
 
 # Task: 07-Workflow Optimization Hardening
 
-## Overview (KR)
+## Overview
 
 이 문서는 `07-workflow` 최적화/하드닝 실행 태스크를 추적한다. compose/image hardening, CI 게이트, 문서 추적성, 카탈로그 확장 로드맵을 작업 단위로 관리한다.
 

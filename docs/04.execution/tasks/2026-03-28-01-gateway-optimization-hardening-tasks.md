@@ -5,7 +5,7 @@ status: completed
 
 # Task: 01-Gateway Optimization Hardening
 
-## Overview (KR)
+## Overview
 
 이 문서는 `01-gateway` 최적화/하드닝 실행 태스크를 추적한다. 상위 Plan을 기준으로 설정 변경, 검증 자동화, CI 게이트, 문서 동기화를 작업 단위로 관리한다.
 

@@ -5,7 +5,7 @@ status: active
 
 # Gateway Tier Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 시스템의 통합 진입점인 Gateway 티어의 아키텍처를 정의한다. Traefik과 Nginx의 하이브리드 구성을 통해 동적 서비스 발견과 정교한 경로 라우팅을 동시에 달성하는 구조를 설명한다.
 

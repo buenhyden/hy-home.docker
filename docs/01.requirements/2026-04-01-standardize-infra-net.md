@@ -6,7 +6,7 @@ status: active
 
 # Standardize infra_net Network Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 프로젝트 내 모든 인프라 서비스들을 `infra_net` 네트워크에 통합하고 구체적인 서브넷(`172.19.0.0/16`)을 보장하기 위한 제품 요구사항을 정의한다. 이를 통해 서비스 간 통신의 표준화와 예측 가능한 IP 관리를 실현한다.
 

@@ -8,7 +8,7 @@ status: active
 
 > Integrated Telemetry Pipeline with LGTM Stack and Grafana Alloy.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 플랫폼의 관측성(Observability) 계층인 `06-observability`의 참조 아키텍처를 정의한다. 로컬 환경에서 클라우드 수준의 관측성을 확보하기 위해 현재 구현된 LGTM 스택(Loki, Grafana, Tempo, Prometheus)을 Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope와 통합하여 구축한다.
 

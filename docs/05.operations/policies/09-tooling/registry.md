@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 도커 레지스트리 운영 정책을 정의한다. 이미지의 생명주기 관리, 보안 통제 기준, 그리고 저장 용량 최적화 방법을 규정한다.
 

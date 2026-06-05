@@ -38,7 +38,7 @@ status: active
 
 Accepted (2026-03-26)
 
-## Overview (KR)
+## Overview
 
 이 문서는 해당 아키텍처 결정의 배경, 선택, 결과를 추적하기 위한 ADR이다. 이 정렬 섹션은 기존 결정 내용을 바꾸지 않는다.
 

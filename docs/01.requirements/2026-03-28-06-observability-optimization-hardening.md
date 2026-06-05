@@ -5,7 +5,7 @@ status: active
 
 # 06-Observability Optimization & Hardening Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/06-observability` 계층(Prometheus, Grafana, Loki, Tempo, Alloy, Alertmanager, Pushgateway, Pyroscope)의 최적화/하드닝 요구사항을 정의한다. 게이트웨이 경계 보안, 관리 경로 인증, 서비스 헬스 기반 의존성, 컨테이너 런타임 하드닝, 단계적 HA 확장을 목표로 한다.
 

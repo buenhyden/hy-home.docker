@@ -6,7 +6,7 @@ status: completed
 
 # Security Tier Documentation Standardization (03-security) Implementation Plan
 
-## Overview (KR)
+## Overview
 
 `03-security` 티어의 문서 체계를 표준화하여 아키텍처 가시성과 운영성을 확보한다. Vault 서버 및 에이전트 구성을 반영한 PRD, ARD, ADR, Spec 문서를 기반으로 실제 검증이 가능한 작업 기반의 문서를 구축한다.
 
@@ -48,7 +48,7 @@ status: completed
 ### Automated Verification
 
 - 모든 문서의 상호 참조 링크(`[../...]`) 유효성 검사.
-- 템플릿 준수 여부 확인 (`Overview (KR)` 섹션 존재 등).
+- 템플릿 준수 여부 확인 (`Overview` 섹션 존재 등).
 
 ### Manual Verification
 

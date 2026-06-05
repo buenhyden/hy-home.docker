@@ -9,7 +9,7 @@ status: active
 
 > Scope: Homer dashboard static config, route hardening, and optional runtime evidence.
 
-### Overview (KR)
+### Overview
 
 이 런북은 optional Homer dashboard의 설정 오류, route hardening drift, UI 렌더링 실패를 진단하고 증거를 남기는 절차를 정의한다.
 

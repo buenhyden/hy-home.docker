@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md -->
 # ADR-0020: Messaging Hardening and HA Expansion Strategy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `05-messaging` 계층에 대해 즉시 적용 가능한 하드닝(게이트웨이 체인, 이미지 태그 고정, 구성 정합성, CI 게이트)을 우선 도입하고, 카탈로그 확장 항목(DLQ/재처리/quorum queue/HA 확장)은 단계적으로 진행하는 결정을 기록한다.
 

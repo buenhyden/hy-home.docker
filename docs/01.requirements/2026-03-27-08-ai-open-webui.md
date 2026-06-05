@@ -5,7 +5,7 @@ status: active
 
 # Open WebUI Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 Open WebUI의 제품 요구사항을 정의한다. Open WebUI는 로컬 LLM과의 상호작용 및 RAG(Retrieval-Augmented Generation) 오케스트레이션을 위한 종합적인 웹 인터페이스를 제공한다. 사용자 가치, 문제 정의, 성공 기준을 명확히 하여 후속 설계와 구현의 기준으로 사용한다.
 

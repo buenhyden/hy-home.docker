@@ -5,7 +5,7 @@ status: completed
 
 # Harness / Agent-first Engineering Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker` 워크스페이스의 목적, 규칙, 환경, 하네스 구성, Agent-first Engineering 구성을 파일 내용 기준으로 분석하고, 현재 구현이 충족하는 계약과 구현 보완이 필요한 gap을 명세한다.
 

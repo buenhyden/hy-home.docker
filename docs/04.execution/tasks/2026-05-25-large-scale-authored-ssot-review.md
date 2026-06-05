@@ -5,7 +5,7 @@ status: completed
 
 # Task: Large-Scale Authored SSoT Review
 
-## Overview (KR)
+## Overview
 
 이 문서는 `대규모 개선 실행` 전에 authored SSoT 전반을 검토하고, 후속 실행 전에 필요한 gap/deferred registry를 현재 repo truth 기준으로 고정한 실행 기록이다. 최초 작업은 Stage 04 문서와 governance progress 갱신에 한정되었고, 이후 사용자 승인에 따라 approval-gated deferred 항목 중 repo-tracked static/runtime-authoring, non-secret `.env` key sync, approved Open Notebook secret-file migration, remote required-check read-back, validation hardening, and Storybook threshold enforcement closure evidence를 이 같은 canonical task에 추가 기록한다. Secret values are not printed or committed; secret generation/rotation, Docker start/stop, deployment, destructive deletion, and unverified live service behavior remain out of this closure.
 

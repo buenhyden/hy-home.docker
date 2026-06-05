@@ -5,7 +5,7 @@ status: completed
 
 # Task: Docs Implementation Reconciliation
 
-## Overview (KR)
+## Overview
 
 이 문서는 Stage 01-05 active 문서를 현재 tracked 구현과 대조하고, 구현 정합성 gate를 추가한 실제 작업 evidence를 기록한다.
 

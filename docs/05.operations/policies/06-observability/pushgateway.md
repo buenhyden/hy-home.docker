@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 Pushgateway 운영 정책을 정의한다. 단기 실행 작업의 메트릭 수집을 위한 가이드라인, 데이터 정리(Cleanup) 기준, 그리고 남용 방지를 위한 통제 항목을 규정한다.
 

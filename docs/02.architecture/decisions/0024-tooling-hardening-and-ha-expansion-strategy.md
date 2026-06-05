@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md -->
 # ADR-0024: Tooling Hardening and HA Expansion Strategy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `09-tooling` 계층에 대해 즉시 적용 가능한 하드닝(공개 경로 SSO 체인 정렬, 네트워크 경계 명시, locust/k6 runtime 계약 보강, CI 게이트 도입)을 우선 시행하고, 카탈로그 확장 항목은 단계적으로 추진하는 결정을 기록한다.
 

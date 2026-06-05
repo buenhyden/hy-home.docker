@@ -5,7 +5,7 @@ status: completed
 
 # Docs Taxonomy and AI Agent-first Contract Migration Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 문서 taxonomy와 AI Agent-first 계약을 새 canonical 경로로 이관하는 실행 계획이다. 목표는 Docker runtime을 바꾸지 않고 docs SSOT, validator, runtime mirror 용어를 한 번에 맞추는 것이다.
 

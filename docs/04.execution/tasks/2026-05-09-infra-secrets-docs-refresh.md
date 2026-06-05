@@ -5,7 +5,7 @@ status: completed
 
 # Task: Infra / Secrets / Docs Refresh
 
-## Overview (KR)
+## Overview
 
 이 문서는 infra/secrets/docs 운영 문서 최신화 작업의 실행 단위와 검증 증거를 기록한다. 작업은 문서 보강에 한정하며 Docker Compose runtime과 secret 값 파일은 변경하지 않는다.
 

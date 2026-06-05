@@ -5,7 +5,7 @@ status: active
 
 # 02-Auth OAuth2 Proxy Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `02-auth` OAuth2 Proxy 운영 정책을 정의한다. 시크릿 주입 경로, 세션/쿠키 표준, fail-closed 및 degraded-mode 운영 통제를 명시한다.
 

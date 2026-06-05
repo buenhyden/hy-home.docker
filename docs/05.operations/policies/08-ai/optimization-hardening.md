@@ -5,7 +5,7 @@ status: active
 
 # 08-AI Optimization Hardening Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `08-ai` 계층의 최적화/하드닝 운영 정책을 정의한다. gateway 경계 보안, Ollama GPU 보호, Open WebUI stateful 운영, 모델 승격/접근 통제/로그 보존 정책을 통제한다.
 

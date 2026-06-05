@@ -5,7 +5,7 @@ status: active
 
 # Reference: LLM Wiki Repository Map
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`를 읽는 LLM 에이전트가 먼저 확인해야 할 canonical tracked source files를 정리한 reference다. 저장소의 문서, 거버넌스, 인프라, script, secret-handling 경계를 빠르게 찾도록 돕는다.
 

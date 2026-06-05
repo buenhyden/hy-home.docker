@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md -->
 # ADR-0019: 04-Data Hardening and HA Expansion Strategy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `04-data` 계층에 대해 즉시 적용 가능한 구성 하드닝을 우선 반영하고, 카탈로그 기반 확장 항목은 정책/절차 중심의 단계적 도입으로 관리하는 결정을 기록한다.
 

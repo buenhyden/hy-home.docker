@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md -->
 # ADR-0018: Vault Hardening and HA Expansion Strategy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `03-security` Vault 계층에 대해 즉시 하드닝 항목을 우선 적용하고, auto-unseal/원격 audit는 단계적 전환으로 관리하는 의사결정을 기록한다.
 

@@ -5,7 +5,7 @@ status: active
 
 # 07-Workflow Optimization & Hardening Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/07-workflow` 계층(Airflow, n8n)의 최적화/하드닝 요구사항을 정의한다. 목표는 관리 경로 보안 강화, health 기반 안정성 확보, 컨테이너 런타임 하드닝, 그리고 카탈로그 기반 확장 항목의 실행 로드맵 수립이다.
 

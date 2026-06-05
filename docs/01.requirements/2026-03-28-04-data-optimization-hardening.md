@@ -5,7 +5,7 @@ status: active
 
 # 04-Data Optimization & Hardening Product Requirements
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/04-data` 전 계층(analytics, cache-and-kv, lake-and-object, nosql, operational, relational, specialized)의 최적화/하드닝 요구사항을 정의한다. 즉시 적용 가능한 구성 하드닝을 우선 반영하고, 서비스별 확장 항목은 운영 정책과 단계별 전환 계획으로 관리한다.
 

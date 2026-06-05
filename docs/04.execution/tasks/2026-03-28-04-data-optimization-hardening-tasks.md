@@ -5,7 +5,7 @@ status: completed
 
 # Task: 04-Data Optimization Hardening
 
-## Overview (KR)
+## Overview
 
 이 문서는 `04-data` 최적화/하드닝 구현 태스크를 추적한다. compose 정합성 보강, 하드닝 검증 자동화, 문서 추적성 동기화를 작업 단위로 관리한다.
 

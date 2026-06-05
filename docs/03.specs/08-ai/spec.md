@@ -5,7 +5,7 @@ status: active
 
 # 08-AI Optimization Hardening Technical Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/08-ai`(Ollama, Open WebUI) 계층의 최적화/하드닝 기술 명세다. gateway 경계 보안, GPU concurrency 제어, exporter health-gating, stateful 운영 일관성, CI 정책 게이트, 카탈로그 기반 확장 요구를 구현 계약으로 정의한다. 현재 root `docker-compose.yml`에서는 AI compose include가 주석 처리되어 있으므로, 이 명세는 보유 구현과 standalone/root-commented optional 실행 계약을 설명한다.
 

@@ -5,7 +5,7 @@ status: active
 
 # 06-Observability Optimization Hardening Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/06-observability` 계층의 최적화/하드닝 구현 계약을 정의한다. 게이트웨이 경계(보안 헤더/SSO), health 기반 의존성, 호스트 수집기 헬스 신호, 커스텀 이미지 런타임 하드닝, CI 기준선 검증을 핵심 범위로 다룬다.
 

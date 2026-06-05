@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 Alloy는 `hy-home.docker` 플랫폼의 모든 텔레메트리(지표, 로그, 트레이스)를 수집하여 적절한 백엔드로 전달하는 통합 에이전트이다. 이 가이드는 Alloy의 파이프라인 구조와 데이터 흐름을 설명한다.
 >

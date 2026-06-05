@@ -26,7 +26,7 @@ INC-YYYYMMDD-XXX / [Short Incident Title]
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 사고의 영향, 현재 상태, 주요 대응 흐름을 기록하는 Incident 문서다. 사실 기록과 대응 로그에 집중한다.
 

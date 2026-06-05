@@ -5,7 +5,7 @@ status: active
 
 # ADR-0007: Airflow & n8n Hybrid Workflow Strategy
 
-## Overview (KR)
+## Overview
 
 이 문서는 워크플로 엔진으로 Apache Airflow와 n8n을 동시에 채택한 배경과 하이브리드 운영 전략에 대한 아키텍처 결정 기록이다.
 

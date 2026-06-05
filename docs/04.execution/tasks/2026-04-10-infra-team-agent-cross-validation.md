@@ -7,7 +7,7 @@ status: completed
 
 > Retrospective completion evidence for the infra team agent cross-validation migration and runtime catalog alignment.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra-implementer` 이후 `security-auditor`와 `iac-reviewer`를 연결하는 cross-validation 체계가 canonical stage 문서와 런타임 카탈로그에 구현되었는지 확인한 완료 evidence다.
 

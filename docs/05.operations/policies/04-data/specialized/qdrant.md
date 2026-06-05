@@ -5,7 +5,7 @@ status: active
 
 # Qdrant Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 정책은 root-active specialized data service인 Qdrant 운영 기준을 정의한다. 기준은 현재 tracked compose의 `qdrant/qdrant:v1.18.1-unprivileged`, 단일 `qdrant` service, `ai`/`data`/`dev` profiles, `infra_net`, no-secret state, REST Traefik route, gRPC TCP route, `/readyz` healthcheck다.
 

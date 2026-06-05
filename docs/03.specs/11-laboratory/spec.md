@@ -5,7 +5,7 @@ status: active
 
 # 11-Laboratory Optimization Hardening Technical Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/11-laboratory` 계층(dashboard, dozzle, portainer, redisinsight, open-notebook)의 최적화/하드닝 기술 명세다. 관리 UI ingress 경계 강화, 네트워크 격리 표준화, 최소권한 강화, 정책 게이트 도입, 카탈로그 기반 확장 항목을 구현 계약으로 정의한다.
 

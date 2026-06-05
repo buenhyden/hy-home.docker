@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 가이드는 Harness / Agent-first Engineering Usage Guide의 사용 맥락, 전제 조건, 일반 점검, runbook handoff 기준을 설명한다.
 
@@ -47,7 +47,7 @@ status: active
 - target-relative link를 템플릿 위치 기준으로 계산하는 경우
 - 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
-## Overview (KR)
+## Overview
 
 이 가이드는 `hy-home.docker`에서 하네스 엔지니어링과 Agent-first Engineering 상태를 다시 조사하거나 보완할 때 따라야 할 절차를 설명한다.
 

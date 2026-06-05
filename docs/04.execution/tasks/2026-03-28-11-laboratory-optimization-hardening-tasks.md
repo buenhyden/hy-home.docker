@@ -5,7 +5,7 @@ status: completed
 
 # Task: 11-Laboratory Optimization Hardening
 
-## Overview (KR)
+## Overview
 
 이 문서는 `11-laboratory` 최적화/하드닝 실행 태스크를 추적한다. ingress 경계 강화, direct 노출 제거, 최소권한 개선, CI 정책 게이트, 카탈로그 확장 로드맵을 작업 단위로 관리한다.
 

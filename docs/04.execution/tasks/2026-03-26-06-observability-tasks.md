@@ -7,7 +7,7 @@ status: completed
 
 > Execution tracking for 06-observability documentation tier.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `06-observability` 티어의 문서화 표준화 작업을 위한 실행 및 검증 태스크 목록이다. PRD, ARD, Spec, Plan에서 정의된 요구사항의 이행 여부를 추적한다.
 

@@ -9,7 +9,7 @@ status: active
 
 > Scope: root-active Open Notebook and SurrealDB service evidence, route hardening, secret-file boundary, and non-destructive diagnosis.
 
-### Overview (KR)
+### Overview
 
 이 런북은 `open-notebook` UI 접속 실패, SurrealDB 의존성 장애, secret-file 주입 오류, 데이터 볼륨 경계 문제를 진단하고 복구 범위를 판단하는 절차를 정의한다.
 

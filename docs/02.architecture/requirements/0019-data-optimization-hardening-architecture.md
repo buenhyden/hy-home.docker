@@ -4,7 +4,7 @@ status: active
 <!-- Target: docs/02.architecture/requirements/0019-data-optimization-hardening-architecture.md -->
 # 04-Data Optimization Hardening Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `04-data` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. 현재 서비스별 단일/소규모 클러스터 운영 구조를 안정화하고, 카탈로그 기반 확장 항목(HA, lifecycle, recovery drill)을 단계적으로 수용하는 경계를 명시한다.
 

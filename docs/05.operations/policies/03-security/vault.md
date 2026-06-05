@@ -5,7 +5,7 @@ status: active
 
 # 03-Security Vault Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 문서는 `03-security` Vault 운영 정책을 정의한다. 즉시 적용 하드닝 기준(템플릿 계약, healthcheck, 검증 자동화)과 단계적 확장 정책(auto-unseal, 원격 audit)을 명시한다.
 

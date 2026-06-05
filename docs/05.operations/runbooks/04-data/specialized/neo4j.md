@@ -9,7 +9,7 @@ status: active
 
 > Scope: Triage root-active Neo4j service health, route assumptions, secret-backed authentication, and evidence capture without destructive data actions.
 
-### Overview (KR)
+### Overview
 
 이 런북은 `neo4j` 서비스가 unhealthy, stopped, route failure, or authentication failure 상태일 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. offline dump/load, password rotation, data volume replacement는 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션 대상으로 분리한다.
 

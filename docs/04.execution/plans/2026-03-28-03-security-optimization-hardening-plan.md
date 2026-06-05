@@ -5,7 +5,7 @@ status: completed
 
 # 03-Security (Vault) Optimization Hardening Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/03-security/vault` 최적화/하드닝 실행 계획서다. 즉시 적용 가능한 하드닝 구현과 검증 자동화를 우선 적용하고, auto-unseal/원격 audit는 정책/전환 절차로 고정한다.
 

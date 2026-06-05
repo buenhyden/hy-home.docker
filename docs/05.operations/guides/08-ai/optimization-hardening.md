@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `08-ai` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 경계 보안, GPU concurrency 제어, stateful 템플릿 일관성, health 기반 검증 절차를 제공한다.
 

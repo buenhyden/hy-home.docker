@@ -5,7 +5,7 @@ status: completed
 
 # 06-Observability Optimization Hardening Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/06-observability` 최적화/하드닝 실행 계획서다. 게이트웨이 경계 강화, health 기반 기동 안정화, 커스텀 이미지 하드닝, CI 기준선 도입, 문서 계층 동기화를 단계적으로 수행한다.
 

@@ -5,7 +5,7 @@ status: completed
 
 # 11-Laboratory Optimization Hardening Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/11-laboratory` 최적화/하드닝 실행 계획서다. ingress 보안 경계 강화, direct 노출 제거, 최소권한 개선, CI 정책 게이트 도입, 카탈로그 확장 항목의 단계적 운영 적용을 수행한다.
 

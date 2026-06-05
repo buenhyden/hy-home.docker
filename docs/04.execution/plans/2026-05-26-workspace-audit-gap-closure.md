@@ -6,7 +6,7 @@ status: completed
 
 # Workspace Audit Gap Closure Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 2026-05-26 워크스페이스 감사(2차 세션)의 실행 계획서다. 이전 감사 세션(`2026-05-26-workspace-audit.md`)에서 식별된 신규 갭(GAP-NEW-03~10)을 클로저하기 위한 저위험 변경 목록, 검증 기준, 지연 항목을 정의한다.
 

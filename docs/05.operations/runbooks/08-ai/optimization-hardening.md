@@ -5,7 +5,7 @@ status: active
 
 # 08-AI Optimization Hardening Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 `08-ai` 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. gateway/SSO 체인 누락, Ollama concurrency 설정 누락, Open WebUI stateful 드리프트, exporter health 계약 실패, CI 게이트 실패를 중심으로 점검/복구한다.
 

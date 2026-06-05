@@ -5,7 +5,7 @@ status: completed
 
 # Docs Implementation Reconciliation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/01.requirements`부터 `docs/05.operations`까지의 active Stage 문서를 현재 tracked 구현과 대조해 stale, legacy, deprecated-only, implementation-conflicting 내용을 정리하는 실행 계획서다.
 

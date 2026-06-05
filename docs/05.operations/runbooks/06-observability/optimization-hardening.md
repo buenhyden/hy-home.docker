@@ -5,7 +5,7 @@ status: active
 
 # 06-Observability Optimization Hardening Runbook
 
-## Overview (KR)
+## Overview
 
 이 런북은 `06-observability` 하드닝 항목에서 발생할 수 있는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. gateway/SSO 체인 누락, health 의존성 회귀, 커스텀 이미지 런타임 하드닝 누락, CI 기준선 실패를 중심으로 점검/복구한다.
 

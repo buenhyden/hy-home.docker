@@ -5,7 +5,7 @@ status: completed
 
 # Task: 11-laboratory Standardization
 
-## Overview (KR)
+## Overview
 
 이 문서는 `11-laboratory` 계층의 구현·검증 작업 목록이다. Spec과 Plan에서 파생된 작업을 추적 가능하게 기록한다.
 

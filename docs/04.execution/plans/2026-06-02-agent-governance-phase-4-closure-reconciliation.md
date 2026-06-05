@@ -5,7 +5,7 @@ status: completed
 
 # Agent Governance Phase 4 Closure Reconciliation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 Agent Governance Phase 1 through Phase 3 실행 흐름을 Phase 4에서 최종 reconciliation하는 계획서다.
 

@@ -5,7 +5,7 @@ status: completed
 
 # 09-tooling Documentation Standardization Plan
 
-## Overview (KR)
+## Overview
 
 이 계획서는 `09-tooling` 계층의 인프라 도구들에 대한 문서화 표준화 작업을 정의한다. IaC, 품질 분석, 성능 테스트 도구들의 운영 및 기술 사양을 명확히 함으로써, 개발자가 도구들을 즉각적으로 활용하고 유지보수할 수 있는 환경을 조성하는 것을 목표로 한다.
 

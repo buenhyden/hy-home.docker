@@ -7,7 +7,7 @@ layer: archive
 
 # Archive Tombstone: ksqlDB Streaming Operations
 
-## Overview (KR)
+## Overview
 
 이 문서는 현재 구현과 상충하거나 active chain에서 제거된 문서의 tombstone입니다.
 원문 본문은 stale current-truth로 재노출하지 않습니다.

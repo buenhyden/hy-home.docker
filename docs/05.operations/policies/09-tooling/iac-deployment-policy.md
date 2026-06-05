@@ -5,7 +5,7 @@ status: active
 
 # IaC Deployment Policy
 
-## Overview (KR)
+## Overview
 
 이 정책은 `09-tooling`의 Terraform CLI helper와 Terrakube API/UI/executor를 이용한 IaC 변경의 승인, state, secret, evidence 기준을 정의한다.
 

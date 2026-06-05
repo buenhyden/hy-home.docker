@@ -5,7 +5,7 @@ status: active
 
 # Workflow Tier (07-workflow) Architecture Reference Document (ARD)
 
-## Overview (KR)
+## Overview
 
 이 문서는 `07-workflow` 계층의 참조 아키텍처를 정의한다. 이 계층은 상이한 요구사항을 가진 두 가지 엔진(Airflow, n8n)을 하이브리드 방식으로 운영하며, root-included dev compose와 service-local compose의 broker 경계를 명확히 분리한다.
 

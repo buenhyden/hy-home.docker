@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 현재 구현은 `infra/08-ai/ollama/docker-compose.yml`에 보유되어 있으며 root `docker-compose.yml`에서는 optional include로 주석 처리되어 있다. 모델 라이프사이클, GPU 가속 확인, Open WebUI 연동, exporter 관측 흐름은 root include가 승인되어 활성화된 런타임을 기준으로 수행한다.
 

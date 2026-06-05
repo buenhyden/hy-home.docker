@@ -5,7 +5,7 @@ status: completed
 
 # 02-Auth Optimization Hardening Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/02-auth`(Keycloak, OAuth2 Proxy)의 최적화/하드닝 실행 계획서다. 설정 개선, CI 검증 게이트, 그리고 `01.requirements~05.operations` 문서 추적성 동기화를 포함한다.
 

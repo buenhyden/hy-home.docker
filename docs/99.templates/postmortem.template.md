@@ -24,7 +24,7 @@ status: draft
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 사고의 구조적 원인과 재발 방지 조치를 분석하는 Postmortem 문서다. 비난 없는 분석과 시스템 개선에 집중한다.
 

@@ -7,7 +7,7 @@ status: completed
 
 > Workspace documentation lifecycle, template contract, and agent runtime governance remediation plan.
 
-## Overview (KR)
+## Overview
 
 이 문서는 `hy-home.docker`의 문서 lifecycle, 템플릿 계약, cross-link, AI Agent governance, hook/runtime surface를 현재 워크스페이스 목적에 맞게 정리하기 위한 실행 계획이다.
 

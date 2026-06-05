@@ -11,7 +11,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선언된 distributed file/object storage stack이다. 현재 구현은 `data` profile에서 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`를 실행하며, all services use `infra_net` and image `chrislusf/seaweedfs:4.31`.
 

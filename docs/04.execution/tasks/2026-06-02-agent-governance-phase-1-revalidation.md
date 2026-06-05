@@ -5,7 +5,7 @@ status: completed
 
 # Task: Agent Governance Phase 1 Revalidation
 
-## Overview (KR)
+## Overview
 
 이 문서는 Agent Governance Phase 1 revalidation의 실제 수행 결과와 검증 evidence를 기록한다. 작업 범위는 Stage 04 진단/설계 산출물 작성, Stage 04 index 반영, progress log 갱신, generated documentation index freshness, repository policy gate 검증으로 제한했다.
 

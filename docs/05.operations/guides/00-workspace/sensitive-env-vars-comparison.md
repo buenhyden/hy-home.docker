@@ -10,7 +10,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `secrets/SENSITIVE_ENV_VARS.md.example`과 `secrets/SENSITIVE_ENV_VARS.md`의 카테고리 및 항목 수 일관성을 확인하는 운영 참조 문서다. 실제 파일은 mode 600의 operator-owned 파일이므로 값 열람 없이 라인 수와 구조 비교만 수행한다.
 

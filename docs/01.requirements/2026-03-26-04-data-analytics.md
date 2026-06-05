@@ -7,7 +7,7 @@ status: active
 
 > This document defines the product requirements for the specialized analytics data engines within the `04-data/analytics` sub-tier.
 
-## Overview (KR)
+## Overview
 
 본 문서는 `04-data/analytics` 서브 티어의 전문화된 데이터 분석 엔진들(InfluxDB, ksqlDB, OpenSearch, StarRocks)에 대한 제품 요구사항을 정의한다. 시계열 데이터, 스트림 처리, 로그 검색, 그리고 대규모 OLAP 분석 환경을 통합적으로 구축하여 플랫폼의 데이터 인사이트 추출 능력을 극대화하는 것을 목표로 한다.
 

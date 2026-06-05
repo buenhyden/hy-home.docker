@@ -5,7 +5,7 @@ status: completed
 
 # Docs Bounded Consistency Audit Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, 루트 `README.md`의 bounded consistency audit 실행 계획이다. 범위는 사실 불일치, stale inventory, README 진입성, Related Documents, 검증 스크립트로 확인 가능한 drift에 한정한다.
 

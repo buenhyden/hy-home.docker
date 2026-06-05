@@ -11,7 +11,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 `supabase`는 `infra/04-data/operational/supabase/docker-compose.yml`에 선언된 `data` profile 기반의 통합 백엔드 플랫폼이다. 현재 구현은 PostgreSQL, Kong Gateway, Auth, REST, Realtime, Storage, Studio, Edge Functions, analytics/logging, pooler를 `infra_net` 안에서 구성하고, 외부 접근은 compose에 선언된 Kong 및 일부 관리 포트를 통해 제한한다.
 

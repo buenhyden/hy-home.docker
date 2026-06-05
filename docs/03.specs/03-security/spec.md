@@ -5,7 +5,7 @@ status: active
 
 # 03-Security Optimization Hardening Specification
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/03-security/vault`의 최적화/하드닝 구현 계약을 정의한다. 템플릿 시크릿 경로 정규화, `vault-agent` 헬스체크/출력 볼륨, 하드닝 검증 자동화, 단계적 HA 확장 정책을 명시한다.
 

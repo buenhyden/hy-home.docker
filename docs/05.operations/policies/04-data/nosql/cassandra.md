@@ -5,7 +5,7 @@ status: active
 
 # Cassandra Operations Policy
 
-## Overview (KR)
+## Overview
 
 이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 Cassandra 단일 노드와 `cassandra-exporter` 운영 기준을 정의한다. 기준은 현재 tracked compose의 `cassandra:5.0.8`, `bitnami/cassandra-exporter:2.3.11`, `infra_net`, Docker Secret, `${DEFAULT_DATA_DIR}/cassandra/node1` 볼륨 구성이다.
 

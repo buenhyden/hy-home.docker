@@ -5,7 +5,7 @@ status: completed
 
 # 01-Gateway Optimization Hardening Implementation Plan
 
-## Overview (KR)
+## Overview
 
 이 문서는 `infra/01-gateway`의 Traefik/Nginx를 `Traefik Primary, Balanced Hardening` 기준으로 최적화하는 실행 계획서다. 설정 변경, 검증 자동화, CI 게이트, 문서 추적성(`04.execution/plans ↔ 05.operations/{guides,policies,runbooks}`) 동기화를 포함한다.
 

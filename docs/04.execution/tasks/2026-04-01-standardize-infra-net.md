@@ -6,7 +6,7 @@ status: completed
 
 # Task: Standardize `infra_net` Implementation
 
-## Overview (KR)
+## Overview
 
 이 문서는 모든 인프라 서비스에 `infra_net` 네트워크를 적용하기 위한 구역이다. Spec과 Plan에서 정의된 각 단계를 추적 가능한 태스크 단위로 분할하여 관리하며, 현재 모든 작업이 완료되었다.
 

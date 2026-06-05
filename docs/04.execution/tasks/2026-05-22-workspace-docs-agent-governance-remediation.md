@@ -7,7 +7,7 @@ status: completed
 
 > Execution evidence for workspace documentation lifecycle, template contract, and agent governance remediation.
 
-## Overview (KR)
+## Overview
 
 이 문서는 workspace docs and agent governance remediation 작업의 실제 수행 상태와 검증 evidence를 기록한다.
 

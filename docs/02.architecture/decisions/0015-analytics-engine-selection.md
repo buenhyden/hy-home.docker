@@ -8,7 +8,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 `04-data/analytics` 티어에서 InfluxDB, ksqlDB, OpenSearch, StarRocks를 개별 분석 엔진으로 채택한 배경과 결정 사항을 기록한다. 대규모 시계열, 스트림, 로그, OLAP 데이터를 단일 범용 DB에서 처리할 때의 한계를 극복하고 각 도메인별 최적의 성능을 보장하기 위한 전략이다.
 

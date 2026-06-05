@@ -7,7 +7,7 @@ status: active
 
 ## Usage
 
-### Overview (KR)
+### Overview
 
 이 문서는 `05-messaging` RabbitMQ 사용 가이드다. AMQP 데이터 평면, Management UI 접근 경계, Docker Secrets 기반 인증 주입, 일반 점검 방법을 설명한다.
 

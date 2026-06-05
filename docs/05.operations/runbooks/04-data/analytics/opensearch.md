@@ -9,7 +9,7 @@ status: active
 
 > Scope: OpenSearch primary stack readiness, HTTPS health checks, and optional cluster variant evidence.
 
-### Overview (KR)
+### Overview
 
 이 런북은 OpenSearch primary stack 또는 optional cluster variant의 health/readiness 문제가 있을 때 사용한다. Primary stack은 `opensearch`; cluster variant는 `opensearch-node1..3` service names를 사용한다.
 

@@ -9,7 +9,7 @@ status: active
 
 ---
 
-## Overview (KR)
+## Overview
 
 이 문서는 `05-messaging` RabbitMQ 서비스의 운영 정책을 정의한다. Docker Secrets 기반 인증, AMQP/Management 경계, queue mutation 승인, 정적 검증 기준을 규정한다.
 

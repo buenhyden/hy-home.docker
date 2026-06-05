@@ -9,7 +9,7 @@ status: active
 
 > Scope: Triage MongoDB replica set health, init job results, Mongo Express route, and exporter readiness without destructive data actions.
 
-### Overview (KR)
+### Overview
 
 이 런북은 `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` 상태 이상이 발생했을 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. 강제 선출, secondary data wipe, keyfile rotation, restore는 현재 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션한다.
 
