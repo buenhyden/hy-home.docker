@@ -7,95 +7,95 @@ status: active
 
 ## Overview
 
-이 문서는 Docker Compose 기반 `hy-home.docker` 인프라를 k3s/k3d 기반 Kubernetes 환경으로 이전할 때 참고할 수 있는 migration suitability snapshot이다. 실행 계획이나 승인된 아키텍처 결정이 아니라, 서비스별 이전 적합성과 판단 기준을 보존하는 reference다.
+This document is a migration suitability snapshot for moving Docker Compose-based `hy-home.docker` infrastructure toward k3s/k3d-based Kubernetes environments. It is not an execution plan or an approved architecture decision; it preserves service-level suitability notes and decision criteria as reference context.
 
 ## Purpose
 
-Kubernetes 이전 논의를 시작할 때 어떤 서비스가 이전 후보인지, 어떤 판단 기준을 사용했는지, 어떤 후속 결정이 필요한지 빠르게 확인할 수 있도록 한다.
+Provide a quick reference for Kubernetes migration discussions: which services are migration candidates, which criteria were used, and which follow-up decisions remain open.
 
 ## Repository Role
 
-이 reference는 migration planning의 배경 자료다. 최신 runtime truth는 `infra/`, root `docker-compose.yml`, validation scripts가 담당한다. 실제 migration 결정은 ARD/ADR로 승격해야 하며, 실행 순서와 evidence는 `docs/04.execution/`에 별도로 작성해야 한다.
+This reference is background material for migration planning. Current runtime truth stays in `infra/`, the root `docker-compose.yml`, and validation scripts. Real migration decisions must be promoted to an ARD/ADR, and execution order plus evidence must be recorded separately under `docs/04.execution/`.
 
 ## Scope
 
 ### In Scope
 
-- Docker Compose to k3s/k3d migration 평가 기준
-- 서비스 계층별 이전 적합성 snapshot
-- 단계별 migration 방향성
-- 후속 검토 질문
+- Docker Compose to k3s/k3d migration evaluation criteria
+- Service-tier migration suitability snapshot
+- Staged migration direction
+- Follow-up review questions
 
 ### Out of Scope
 
-- 승인된 migration decision
-- active rollout plan 또는 task evidence
-- Kubernetes manifest, Helm chart, Operator 설정 원문
-- 운영 runbook 또는 incident recovery 절차
-- secret 값, credential, token, private key
+- Approved migration decision
+- Active rollout plan or task evidence
+- Kubernetes manifests, Helm charts, or Operator configuration source text
+- Operations runbook or incident recovery procedure
+- Secret values, credentials, tokens, or private keys
 
 ## Definitions / Facts
 
 ### Migration Evaluation Criteria
 
-각 서비스의 Kubernetes 이전 적합성은 다음 기준으로 평가한다.
+Service-level Kubernetes migration suitability is evaluated with these criteria.
 
-1. **오케스트레이션 이점**: 자동 확장, 자가 치유, 롤아웃 전략이 필요한가?
-2. **에코시스템 성숙도**: 성숙한 Kubernetes Operator 또는 Helm chart가 존재하는가?
-3. **연결성 및 통합**: Kubernetes-native workload와 밀접하게 통합되어야 하는가?
-4. **상태 관리 난이도**: CSI 기반 데이터 영속성 관리가 가능한가?
-5. **운영 복잡도**: 이전 후 현재 Docker Compose 운영보다 단순해지는가?
+1. **Orchestration benefit**: Does the service need autoscaling, self-healing, or rollout strategies?
+2. **Ecosystem maturity**: Is there a mature Kubernetes Operator or Helm chart?
+3. **Connectivity and integration**: Does the service need close integration with Kubernetes-native workloads?
+4. **State management difficulty**: Can CSI-based data persistence be managed reliably?
+5. **Operational complexity**: Does the migration make operations simpler than the current Docker Compose model?
 
 ### Tier 01-03: Gateway, Auth, Security
 
 | Service | Migration Snapshot | Recommendation | Rationale |
 | :--- | :--- | :--- | :--- |
-| Traefik | Shim 유지 후보 | Docker 유지 | Docker와 k3d 전체 진입점 역할을 하므로 전체 전환 전까지 현재 위치가 안정적이다. |
-| Keycloak | 이전 대상 후보 | Kubernetes HA 배포 검토 | Quarkus 기반 Keycloak은 Kubernetes 운영과 HA 구성에 적합하다. |
-| Vault | 이전 대상 후보 | Kubernetes 통합 검토 | Sidecar injection과 Kubernetes auth method를 활용할 수 있다. |
+| Traefik | Shim-retention candidate | Keep on Docker | It serves as the shared entrypoint for Docker and k3d, so its current position is stable until a full transition is accepted. |
+| Keycloak | Migration candidate | Review Kubernetes HA deployment | Quarkus-based Keycloak fits Kubernetes operations and HA patterns. |
+| Vault | Migration candidate | Review Kubernetes integration | Sidecar injection and the Kubernetes auth method may be useful. |
 
 ### Tier 04: Data
 
 | Service | Migration Snapshot | Recommendation | Rationale |
 | :--- | :--- | :--- | :--- |
-| PostgreSQL / MongoDB | 낮은 우선순위 | Docker 또는 외부 유지 | 데이터베이스 이전은 안정적인 CSI/storage 검증이 선행되어야 한다. |
-| Valkey / Redis | 낮은 우선순위 | Docker 유지 | 단일 노드 운영에서는 Docker가 더 단순할 수 있다. |
-| MinIO | 이전 대상 후보 | StatefulSet 배포 검토 | Kubernetes storage orchestration과 맞지만 디스크 성능과 CSI 안정성에 의존한다. |
+| PostgreSQL / MongoDB | Lower priority | Keep on Docker or externalize | Database migration needs stable CSI/storage validation first. |
+| Valkey / Redis | Lower priority | Keep on Docker | Docker can remain simpler for single-node operation. |
+| MinIO | Migration candidate | Review StatefulSet deployment | It fits Kubernetes storage orchestration but depends on disk performance and CSI stability. |
 
 ### Tier 05-06: Messaging and Observability
 
 | Service | Migration Snapshot | Recommendation | Rationale |
 | :--- | :--- | :--- | :--- |
-| Prometheus / Grafana | 높은 우선순위 후보 | Kubernetes Operator 검토 | Kubernetes monitoring 표준 경로와 잘 맞는다. |
-| Kafka / RabbitMQ | 이전 대상 후보 | Strimzi 또는 Operator 검토 | 복잡한 broker 운영을 Operator로 줄일 수 있다. |
-| Loki / Tempo | 높은 우선순위 후보 | Kubernetes 배포 검토 | Kubernetes logs/traces 수집기와 긴밀하게 통합된다. |
+| Prometheus / Grafana | Higher-priority candidate | Review Kubernetes Operator path | They align well with standard Kubernetes monitoring paths. |
+| Kafka / RabbitMQ | Migration candidate | Review Strimzi or Operator path | Operators may reduce complex broker operations. |
+| Loki / Tempo | Higher-priority candidate | Review Kubernetes deployment | They integrate closely with Kubernetes log and trace collectors. |
 
 ### Tier 07-08: Workflow and AI
 
 | Service | Migration Snapshot | Recommendation | Rationale |
 | :--- | :--- | :--- | :--- |
-| Airflow | 높은 우선순위 후보 | Kubernetes Executor 검토 | task별 pod 실행으로 자원 격리와 확장성을 얻을 수 있다. |
-| n8n | 이전 대상 후보 | queue mode 검토 | 대규모 workflow 처리 시 Kubernetes 자원 관리 이점을 활용할 수 있다. |
-| Ollama / Open WebUI | 이전 대상 후보 | GPU orchestration 검토 | NVIDIA Device Plugin 기반 GPU scheduling을 검토할 수 있다. |
+| Airflow | Higher-priority candidate | Review Kubernetes Executor | Per-task pod execution can improve resource isolation and scalability. |
+| n8n | Migration candidate | Review queue mode | Kubernetes resource management may help with larger workflow throughput. |
+| Ollama / Open WebUI | Migration candidate | Review GPU orchestration | NVIDIA Device Plugin-based GPU scheduling may be relevant. |
 
 ### Migration Roadmap Snapshot
 
-1. **관찰성 및 워크플로우**: Prometheus, Grafana, Loki, Alloy, Airflow를 먼저 검토한다.
-2. **ID 관리 및 메시징**: Keycloak, Kafka, RabbitMQ의 Operator/HA 전환 비용을 평가한다.
-3. **보안 및 AI 하드웨어 가속**: Vault와 Ollama의 보안/GPU 운영 경계를 평가한다.
+1. **Observability and workflow**: Review Prometheus, Grafana, Loki, Alloy, and Airflow first.
+2. **Identity and messaging**: Evaluate Operator/HA transition cost for Keycloak, Kafka, and RabbitMQ.
+3. **Security and AI hardware acceleration**: Evaluate security and GPU operation boundaries for Vault and Ollama.
 
 ### Open Questions
 
-1. 현재 host 환경에서 Longhorn, OpenEBS 같은 Kubernetes storage solution을 안정적으로 도입할 수 있는가?
-2. Traefik을 Kubernetes Ingress Controller로 완전히 이전할지, Docker-side shim으로 유지할지 결정이 필요한가?
-3. k3d cluster 안에서 NVIDIA Container Toolkit과 GPU device plugin이 필요한 서비스 요구를 충족하는가?
+1. Can Kubernetes storage solutions such as Longhorn or OpenEBS be introduced reliably in the current host environment?
+2. Should Traefik move fully to a Kubernetes Ingress Controller role, or remain as a Docker-side shim?
+3. Can NVIDIA Container Toolkit and the GPU device plugin satisfy service requirements inside the k3d cluster?
 
 ## Source Rules
 
-- 현재 runtime 상태는 `infra/`와 root `docker-compose.yml`에서 다시 확인한다.
-- migration 판단을 실행으로 바꾸려면 관련 ARD/ADR과 plan/task 문서를 새로 작성한다.
-- external chart, Operator, vendor status는 현재 시점에 다시 확인한다.
-- 이 문서는 active policy나 runbook을 대체하지 않는다.
+- Reconfirm current runtime state in `infra/` and the root `docker-compose.yml`.
+- Create the relevant ARD/ADR and plan/task documents before turning migration judgment into execution.
+- Recheck external chart, Operator, and vendor status at the time of use.
+- This document does not replace active policy or runbooks.
 
 ## Sources
 

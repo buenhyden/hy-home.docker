@@ -7,44 +7,44 @@ status: superseded
 
 ## Overview
 
-이 문서는 `hy-home.docker` 인프라 학습 로드맵의 초기 버전을 보존하는 reference 문서다. 현재 기준은 `roadmap.md`를 우선한다.
+This reference preserves the initial version of the `hy-home.docker` infrastructure learning roadmap. The current baseline is `roadmap.md`.
 
 ## Purpose
 
-초기 학습 로드맵과 이후 로드맵 변화의 맥락을 보존한다.
+Preserve context for the initial learning roadmap and later roadmap changes.
 
 ## Repository Role
 
-이 archived reference는 초기 학습 분류와 현재 roadmap의 변화 맥락을 비교하기 위한 history/context로 사용한다. 현재 학습 기준, 운영 절차, runtime truth를 대체하지 않는다.
+This archived reference is history/context for comparing the initial learning categories with changes in the current roadmap. It does not replace current learning criteria, operations procedures, or runtime truth.
 
 ## Scope
 
 ### In Scope
 
-- 초기 CS/CE/SE 학습 주제
-- 초기 repo-local infrastructure mapping
-- 현재 roadmap과 비교할 수 있는 reference history
+- Initial CS/CE/SE learning topics
+- Initial repo-local infrastructure mapping
+- Reference history that can be compared with the current roadmap
 
 ### Out of Scope
 
-- active learning 기준의 SSoT
-- 실시간 운영 절차
-- incident timeline 또는 postmortem
-- secret 값, credential, token
+- SSoT for active learning criteria
+- live operations procedures
+- incident timeline or postmortem
+- secret values, credentials, tokens
 
 ## Definitions / Facts
 
-- 이 문서는 archived reference이며 active policy나 runbook을 대체하지 않는다.
-- active learning roadmap은 `roadmap.md`다.
-- 외부 링크는 archive 시점의 학습 출처이며, 현재 의사결정에 사용하기 전에는 다시 확인해야 한다.
-- Repository analysis와 exercise 항목은 2026-03-30 snapshot history다. 현재 runtime 상태, 지원 범위, 운영 절차, 학습 기준으로 사용하지 않는다.
+- This document is an archived reference and does not replace active policy or runbooks.
+- The active learning roadmap is `roadmap.md`.
+- External links are learning sources from the archive point and must be rechecked before current decisions.
+- Repository analysis and exercise items are 2026-03-30 snapshot history. Do not use them as current runtime state, support scope, operations procedures, or learning criteria.
 
 ## Source Rules
 
-- 이 문서는 archive history로만 사용하고 현재 학습 기준은 `roadmap.md`에서 확인한다.
-- repo-local 예시는 초기 mapping context이며, runtime 판단은 `infra/`, registry 파일, validators에서 확인한다.
-- 외부 논문과 표준 링크는 이론적 배경을 보존하기 위한 source다.
-- release 상태, 가격, 지원 정책처럼 변하기 쉬운 외부 사실은 이 archived 문서에서 live fact로 주장하지 않는다.
+- Use this document only as archive history and check current learning criteria in `roadmap.md`.
+- Repo-local examples are initial mapping context; runtime decisions are checked in `infra/`, registry files, and validators.
+- External paper and standard links are sources for preserving theoretical background.
+- Volatile external facts such as release status, pricing, and support policy are not asserted as live facts in this archived document.
 
 ## Reference Body
 

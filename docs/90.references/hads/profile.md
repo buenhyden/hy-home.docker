@@ -16,10 +16,10 @@ Read `[NOTE]` only if additional context is needed.
 ## Overview
 
 **[SPEC]**
-이 문서는 `hy-home.docker`에서 HADS를 적용하는 승인된 reference profile과 validator 경계를 정리한다.
+This document records the approved reference profile and validator boundaries for applying HADS in `hy-home.docker`.
 
 **[NOTE]**
-HADS는 전체 문서 체계를 한 번에 재작성하기 위한 형식이 아니다. 이 repository에서는 먼저 `docs/90.references/hads/`에 한정해 mandatory profile로 운영한다.
+HADS is not a format for rewriting the entire documentation system at once. In this repository, it first operates as a mandatory profile limited to `docs/90.references/hads/`.
 
 ## Purpose
 

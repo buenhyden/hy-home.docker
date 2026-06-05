@@ -7,47 +7,47 @@ status: active
 
 ## Overview
 
-이 문서는 `hy-home.docker`에서 Docker image와 version 정보를 어떻게 해석해야 하는지 정리한 reference다. 최신 image 값이나 rollout 절차를 복제하지 않고, Compose 선언과 registry 파일을 읽는 기준만 설명한다.
+This reference explains how Docker image and version information should be interpreted in `hy-home.docker`. It does not duplicate current image values or rollout procedures; it only explains how to read Compose declarations and registry files.
 
 ## Purpose
 
-Docker image/version 관련 문서와 검증 결과를 읽을 때 어떤 파일을 source로 삼아야 하는지 명확히 한다.
+Clarify which files should be treated as sources when reading Docker image/version documents and validation results.
 
 ## Repository Role
 
-이 reference는 Docker image drift, floating tag 예외, tech-stack registry를 해석하는 stable context로 사용한다. 최신 runtime truth는 `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json`, `infra/image-tag-policy.exceptions.json`, 그리고 validation scripts가 담당한다.
+This reference provides stable context for interpreting Docker image drift, floating tag exceptions, and the tech-stack registry. Current runtime truth lives in `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json`, `infra/image-tag-policy.exceptions.json`, and validation scripts.
 
 ## Scope
 
 ### In Scope
 
-- Compose image declaration 해석 기준
-- tech-stack registry와 Compose source의 역할 구분
-- floating tag exception의 reference 경계
-- Docker image/version 문서 작성 시 source 우선순위
+- Interpretation rules for Compose image declarations
+- Role separation between the tech-stack registry and Compose sources
+- Reference boundary for floating tag exceptions
+- Source priority when writing Docker image/version documents
 
 ### Out of Scope
 
-- 현재 image tag inventory 복사본
+- Copy of the current image tag inventory
 - image upgrade rollout plan
-- deployment procedure 또는 rollback runbook
-- secret 값, credential, token
-- 최신 외부 registry release 상태의 무검증 복사본
+- deployment procedure or rollback runbook
+- secret values, credentials, tokens
+- unverified copy of the latest external registry release status
 
 ## Definitions / Facts
 
-- **Compose image declaration**: Docker Compose 파일에 선언된 service image 값이다. 현재 실행 구성의 1차 source다.
-- **Tech-stack registry**: `infra/tech-stack.versions.json`에 있는 검증 대상 image registry다. 주요 image가 Compose에 남아 있는지 확인하는 기준으로 사용한다.
-- **Floating tag exception**: `latest`, branch tag, mutable tag처럼 고정되지 않은 tag가 의도적으로 허용된 경우다. 허용 근거는 `infra/image-tag-policy.exceptions.json`에 둔다.
-- **Version drift**: registry나 policy가 기대하는 image 선언과 Compose source가 달라진 상태다. drift 판단은 validator 결과와 tracked source 파일을 함께 확인한다.
+- **Compose image declaration**: Service image value declared in Docker Compose files. It is the primary source for current runtime configuration.
+- **Tech-stack registry**: Validation-target image registry in `infra/tech-stack.versions.json`. It is used to confirm that important images remain present in Compose.
+- **Floating tag exception**: An intentionally allowed non-pinned tag such as `latest`, a branch tag, or a mutable tag. The allowance rationale lives in `infra/image-tag-policy.exceptions.json`.
+- **Version drift**: A state where image declarations expected by the registry or policy differ from Compose sources. Drift decisions must check both validator results and tracked source files.
 
 ## Source Rules
 
-- Docker image의 현재 선언은 Compose 파일에서 확인한다.
-- 중요한 image의 검증 등록 여부는 `infra/tech-stack.versions.json`에서 확인한다.
-- floating tag 허용 여부는 `infra/image-tag-policy.exceptions.json`에서 확인한다.
-- validator 결과는 해석을 돕는 evidence이며, 원문 source 파일을 대체하지 않는다.
-- 외부 registry, release note, vendor page의 최신 상태가 필요한 경우에는 현재 시점에 다시 확인한다.
+- Check current Docker image declarations in Compose files.
+- Check whether important images are registered for validation in `infra/tech-stack.versions.json`.
+- Check floating tag allowances in `infra/image-tag-policy.exceptions.json`.
+- Validator results are evidence that helps interpretation; they do not replace original source files.
+- Recheck current external registry, release note, or vendor page status when that latest status is needed.
 
 ## Sources
 

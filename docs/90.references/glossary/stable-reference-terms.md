@@ -7,47 +7,47 @@ status: active
 
 ## Overview
 
-이 문서는 `docs/90.references`와 문서 governance에서 반복해서 쓰는 stable reference 용어를 정리한다. 용어의 의미를 맞추기 위한 reference이며, active policy를 새로 정의하지 않는다.
+This document defines stable reference terms repeatedly used in `docs/90.references` and documentation governance. It is a reference for aligning term meaning and does not define new active policy.
 
 ## Purpose
 
-문서 작성자와 AI Agent가 reference stage, runtime truth, generated evidence의 경계를 같은 방식으로 해석하도록 돕는다.
+Help document authors and AI Agents interpret reference stage, runtime truth, and generated evidence boundaries consistently.
 
 ## Repository Role
 
-이 reference는 문서 stage 간 역할 구분을 설명하는 shared vocabulary다. 정책의 source of truth는 `docs/00.agent-governance/`, 운영 절차의 source of truth는 `docs/05.operations/`, runtime 구성의 source of truth는 `infra/`, `scripts/`, registry 파일이다.
+This reference is shared vocabulary for explaining role boundaries between document stages. The source of truth for policy is `docs/00.agent-governance/`; the source of truth for operations procedures is `docs/05.operations/`; the source of truth for runtime configuration is `infra/`, `scripts/`, and registry files.
 
 ## Scope
 
 ### In Scope
 
-- reference stage에서 반복되는 용어 정의
-- source-backed reference와 runtime truth의 구분
-- advisory graph context와 generated index의 사용 경계
+- terms repeatedly used in the reference stage
+- distinction between source-backed reference and runtime truth
+- usage boundaries for advisory graph context and generated indexes
 
 ### Out of Scope
 
-- active governance policy 개정
-- 운영 절차나 runbook steps
-- implementation plan 또는 task evidence
-- secret 값, credential, token
+- active governance policy revisions
+- operations procedures or runbook steps
+- implementation plans or task evidence
+- secret values, credentials, tokens
 
 ## Definitions / Facts
 
-- **Stable reference**: 느리게 변하는 배경 지식, 표준, 용어, source-backed fact를 담는 문서다. 요구사항, 결정, 실행 계획, 운영 절차를 대체하지 않는다.
-- **Stable context**: 여러 active stage 문서가 반복해서 참조할 수 있는 배경 정보다. 현재 실행 상태보다 변경 속도가 느려야 한다.
-- **Source-backed reference**: repo-local canonical 파일이나 외부 primary source가 어떤 사실을 뒷받침하는지 짧게 연결한 reference다.
-- **Runtime truth**: 현재 실행 설정이나 검증 기준을 직접 정의하는 source다. 이 저장소에서는 주로 `infra/`, `scripts/`, registry JSON 파일, Docker Compose 파일, `docs/00.agent-governance/`가 해당한다.
-- **Active stage document**: 요구사항, 아키텍처, 명세, 실행, 운영, incident처럼 현재 작업과 판단을 직접 이끄는 문서다.
-- **Advisory graph context**: Graphify 산출물처럼 탐색을 돕지만 canonical evidence로 승격하지 않는 보조 자료다.
-- **Generated tracked index**: script로 갱신되는 tracked Markdown index다. 수동 편집보다 generator와 freshness check를 우선한다.
+- **Stable reference**: Document containing slowly changing background knowledge, standards, terms, and source-backed facts. It does not replace requirements, decisions, execution plans, or operations procedures.
+- **Stable context**: Background information that multiple active stage documents can repeatedly reference. It should change more slowly than current runtime state.
+- **Source-backed reference**: Reference that briefly connects a fact to a repo-local canonical file or external primary source.
+- **Runtime truth**: Source that directly defines current runtime configuration or validation criteria. In this repository, this usually means `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/`.
+- **Active stage document**: Document that directly drives current work and judgment, such as requirements, architecture, specs, execution, operations, or incidents.
+- **Advisory graph context**: Supporting material such as Graphify output that helps exploration but is not promoted to canonical evidence.
+- **Generated tracked index**: Tracked Markdown index refreshed by script. Prefer the generator and freshness check over manual editing.
 
 ## Source Rules
 
-- 용어가 active policy를 바꾸는 순간 이 문서가 아니라 governance rule이나 scope 문서를 수정한다.
-- 운영 절차가 필요하면 `docs/05.operations/`로 연결한다.
-- runtime 값이나 current config는 `infra/`, `scripts/`, registry 파일로 연결하고 본문에 복제하지 않는다.
-- Graphify, generated index, validator output은 navigation/evidence로만 사용하고 canonical source와 함께 확인한다.
+- When a term changes active policy, update the governance rule or scope document instead of this reference.
+- When operations procedures are needed, link to `docs/05.operations/`.
+- Link runtime values or current config to `infra/`, `scripts/`, and registry files instead of copying them into the body.
+- Use Graphify, generated indexes, and validator output only as navigation/evidence and confirm them with canonical sources.
 
 ## Sources
 

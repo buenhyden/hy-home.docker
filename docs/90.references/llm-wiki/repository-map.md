@@ -7,50 +7,50 @@ status: active
 
 ## Overview
 
-이 문서는 `hy-home.docker`를 읽는 LLM 에이전트가 먼저 확인해야 할 canonical tracked source files를 정리한 reference다. 저장소의 문서, 거버넌스, 인프라, script, secret-handling 경계를 빠르게 찾도록 돕는다.
+This reference lists the canonical tracked source files that LLM agents should check first when reading `hy-home.docker`. It helps agents quickly find repository documentation, governance, infrastructure, script, and secret-handling boundaries.
 
 ## Purpose
 
-LLM 에이전트가 runtime truth와 reference context를 혼동하지 않도록 repo-local 탐색 순서를 제공한다. 루트 [`llms.txt`](../../../llms.txt)는 이 문서를 가리키는 thin entrypoint이며, 이 문서는 active policy나 runtime 설정 원문을 대체하지 않는다.
+Provide a repo-local exploration order so LLM agents do not confuse runtime truth with reference context. Root [`llms.txt`](../../../llms.txt) is a thin entrypoint to this document, and this document does not replace active policy or original runtime configuration.
 
 ## Repository Role
 
-이 reference는 LLM Wiki의 curated repository map이다. 추적 파일을 기준으로 탐색 경로를 제공하며, 정책 판단은 `docs/00.agent-governance/`, 운영 판단은 `docs/05.operations/`, 최신 runtime truth는 `infra/`, `scripts/`, registry JSON 파일, Docker Compose 파일에서 확인한다.
+This reference is the curated repository map for the LLM Wiki. It provides exploration paths based on tracked files. Policy decisions are checked in `docs/00.agent-governance/`, operations decisions in `docs/05.operations/`, and latest runtime truth in `infra/`, `scripts/`, registry JSON files, and Docker Compose files.
 
-Graphify 산출물은 navigation aid일 뿐이다. `graphify-out/`이 존재하더라도 authoritative source로 사용하지 않고, `bash scripts/knowledge/report-graphify-health.sh` 결과가 `status=advisory`이면 모든 구조 판단을 canonical tracked source files로 재확인한다.
+Graphify output is only a navigation aid. Even when `graphify-out/` exists, do not treat it as an authoritative source. If `bash scripts/knowledge/report-graphify-health.sh` reports `status=advisory`, recheck all structural judgments against canonical tracked source files.
 
 ## Scope
 
 ### In Scope
 
-- LLM 에이전트가 먼저 읽을 tracked source files 목록
-- docs taxonomy, agent governance, infrastructure, scripts, secret-handling 진입점
-- `secrets/`, `volumes/`, `graphify-out/` 경계
-- repo-local LLM Wiki 산출물의 유지 규칙
+- tracked source files that LLM agents should read first
+- docs taxonomy, agent governance, infrastructure, scripts, and secret-handling entrypoints
+- boundaries for `secrets/`, `volumes/`, and `graphify-out/`
+- maintenance rules for repo-local LLM Wiki outputs
 
 ### Out of Scope
 
 - public wiki site, deployed wiki, full-content bundle, `llms-full.txt`
 - Graphify publication wiring or regeneration policy
-- Docker Compose runtime 변경
-- 외부 모델 호출, 네트워크 게시, deployment workflow
+- Docker Compose runtime changes
+- external model calls, network publishing, deployment workflows
 - secret values, credentials, private keys, tokens, shell history, raw logs
 
 ## Definitions / Facts
 
-- **LLM Wiki**: 루트 `llms.txt`와 `docs/90.references/llm-wiki/`로 구성된 repo-local 탐색 reference다.
-- **Generated tracked repo-local index**: `scripts/knowledge/generate-llm-wiki-index.sh`가 갱신하는 path-only index다.
-- **Tracked source files**: Git이 추적하는 README, governance docs, operations docs, Compose files, scripts, registry JSON 파일을 뜻한다.
-- **Runtime truth**: 현재 실행 설정과 검증 기준을 직접 정의하는 `infra/`, `scripts/`, registry JSON 파일, Docker Compose 파일, `docs/00.agent-governance/` 문서를 뜻한다.
-- **Advisory graph context**: `graphify-out/` 산출물처럼 탐색 힌트로만 사용할 수 있고 canonical evidence로 승격하지 않는 보조 자료를 뜻한다.
+- **LLM Wiki**: Repo-local exploration reference made of root `llms.txt` and `docs/90.references/llm-wiki/`.
+- **Generated tracked repo-local index**: Path-only index refreshed by `scripts/knowledge/generate-llm-wiki-index.sh`.
+- **Tracked source files**: README files, governance docs, operations docs, Compose files, scripts, and registry JSON files tracked by Git.
+- **Runtime truth**: `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/` documents that directly define current runtime configuration and validation criteria.
+- **Advisory graph context**: Supporting material such as `graphify-out/` output that may be used only as exploration hints and must not be promoted to canonical evidence.
 
 ## Repository Map
 
 | Need | Canonical Source | Notes |
 | --- | --- | --- |
-| 저장소 개요 | [README.md](../../../README.md) | human-facing root hub |
-| Agent 실행 규칙 | [AGENTS.md](../../../AGENTS.md) | provider-neutral entry shim |
-| 문서 taxonomy | [docs/README.md](../../README.md) | active stage routing |
+| Repository overview | [README.md](../../../README.md) | human-facing root hub |
+| Agent execution rules | [AGENTS.md](../../../AGENTS.md) | provider-neutral entry shim |
+| Documentation taxonomy | [docs/README.md](../../README.md) | active stage routing |
 | Agent governance | [docs/00.agent-governance/README.md](../../00.agent-governance/README.md) | repo-local governance SSOT |
 | Infrastructure layout | [infra/README.md](../../../infra/README.md) | Compose tier and service map |
 | Script inventory | [scripts/README.md](../../../scripts/README.md) | validator and automation map |
