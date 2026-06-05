@@ -523,6 +523,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-06-03-governance-surgical-reverification.md](../../04.execution/tasks/2026-06-03-governance-surgical-reverification.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md](../../04.execution/tasks/2026-06-04-docs-implementation-audit.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-05-harness-engineering.md](../../04.execution/tasks/2026-06-05-harness-engineering.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-06-05-language-policy-boundary-audit.md](../../04.execution/tasks/2026-06-05-language-policy-boundary-audit.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs

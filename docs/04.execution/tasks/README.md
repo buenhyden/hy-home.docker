@@ -75,6 +75,7 @@ docs/04.execution/tasks/
 ├── 2026-06-03-governance-surgical-reverification.md # Completed governance surgical re-verification and tech-stack drift closure task record
 ├── 2026-06-04-docs-implementation-audit.md # Active docs 01-05 content-vs-implementation audit and continuation evidence
 ├── 2026-06-05-harness-engineering.md # Completed workspace harness engineering implementation task record
+├── 2026-06-05-language-policy-boundary-audit.md # Active language policy boundary audit and template normalization evidence
 └── README.md                                # This file
 ```
 
@@ -155,3 +156,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Governance Surgical Re-Verification Task**: [2026-06-03-governance-surgical-reverification.md](./2026-06-03-governance-surgical-reverification.md)
 - **Docs 01-05 Content-vs-Implementation Audit Task**: [2026-06-04-docs-implementation-audit.md](./2026-06-04-docs-implementation-audit.md) — active audit and continuation evidence
 - **Workspace Harness Engineering Task**: [2026-06-05-harness-engineering.md](./2026-06-05-harness-engineering.md) — completed harness validation wrapper and contract alignment evidence
+- **Language Policy Boundary Audit Task**: [2026-06-05-language-policy-boundary-audit.md](./2026-06-05-language-policy-boundary-audit.md) — active language boundary audit and template normalization evidence
