@@ -1,3 +1,5 @@
+<!-- Target: docs/90.references/glossary/README.md -->
+
 # Glossary References
 
 > reference stage의 stable vocabulary와 문서 경계 용어를 관리하는 category
@@ -9,6 +11,10 @@
 ## Category Role
 
 `docs/90.references/glossary`는 `docs/90.references`의 stage boundary와 source 해석 용어를 설명합니다. 실제 정책은 `docs/00.agent-governance/`, 운영 절차는 `docs/05.operations/`, runtime truth는 `infra/`, `scripts/`, registry 파일이 담당합니다.
+
+## Language Rule
+
+이 category는 한국어 정의를 기본으로 작성합니다. 다만 canonical stage name, validation term, Graphify/generated index 같은 technical term은 원문을 보존하고, 용어가 machine-readable contract에 쓰이면 해당 영어 표기를 함께 유지합니다.
 
 ## Audience
 

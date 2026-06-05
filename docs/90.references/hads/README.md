@@ -20,6 +20,10 @@ This folder defines how HADS reference documents are written and validated in
 the reference-stage contract and the HADS profile enforced by
 `scripts/validation/check-repo-contracts.sh`.
 
+## Language Rule
+
+HADS profile terms, block tags, validator wording, and AI-readable instructions may remain English. Korean explanatory notes are allowed when they help human readers, but they must not replace required HADS labels, source-backed facts, or validation terminology.
+
 ## Audience
 
 이 README의 주요 독자:

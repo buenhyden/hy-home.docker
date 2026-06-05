@@ -1,3 +1,5 @@
+<!-- Target: docs/90.references/docker/README.md -->
+
 # Docker References
 
 > Docker image, version drift, registry, and runtime-reference rules
@@ -13,6 +15,10 @@ This folder does not replace Compose files or registry JSON files. Runtime truth
 `docs/90.references/docker` explains durable Docker image and version-reference rules. It helps readers understand how Compose image declarations, registry JSON files, and floating-tag exceptions relate to each other without replacing those runtime files.
 
 Use this category for stable interpretation rules and inventory context. Use `docs/05.operations/` for operational procedures and `infra/` for the current runtime source of truth.
+
+## Language Rule
+
+이 category README와 사람 대상 reference 설명은 한국어를 기본으로 작성하되, Docker image name/tag, Compose path, registry JSON key, validator command는 원문을 보존합니다. Generated 또는 machine-readable registry data는 해당 파일 형식을 우선합니다.
 
 ## Audience
 

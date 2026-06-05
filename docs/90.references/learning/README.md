@@ -1,3 +1,5 @@
+<!-- Target: docs/90.references/learning/README.md -->
+
 # Learning References
 
 > Docker 기반 홈 인프라를 CS, CE, SE 관점으로 학습하기 위한 stable roadmap reference
@@ -11,6 +13,10 @@
 `docs/90.references/learning` connects repo-local infrastructure concepts to durable CS, CE, and SE learning topics. It is a learning map and theory index, not a service setup guide, curriculum task tracker, or operations runbook.
 
 Use this category to preserve source-backed learning context and roadmap history. Use active stage docs for implementation decisions, operations procedures, and verification evidence.
+
+## Language Rule
+
+이 category는 한국어 학습 설명을 기본으로 작성합니다. CS/CE/SE 용어, 논문·책·표준명, protocol name, upstream project name은 원문을 보존하고, 외부 자료는 현재 작업에서 재검증한 경우에만 최신 상태처럼 표현합니다.
 
 ## Audience
 

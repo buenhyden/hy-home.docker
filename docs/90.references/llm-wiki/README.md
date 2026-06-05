@@ -16,6 +16,10 @@
 
 Graphify 산출물은 corpus health가 clean일 때도 navigation aid로만 사용합니다. `graphify-out/` health가 advisory이면 이유가 runtime volume, gitlink/submodule, generated/minified artifact, meaningless god node, cross-root inferred edge 중 무엇이든 advisory evidence로 낮추고, 모든 판단은 추적 파일과 canonical docs로 재확인합니다.
 
+## Language Rule
+
+이 category README는 한국어를 기본으로 작성합니다. Generated `index.md`, repo-local navigation labels, machine-readable path lists, and LLM-facing map text may use English when that improves provider-neutral parsing. Paths, commands, file names, agent names, and evidence labels must remain unchanged.
+
 ## Audience
 
 이 README의 주요 독자:

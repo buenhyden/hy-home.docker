@@ -13,6 +13,10 @@ This folder is not the source of truth for current deployment state. Runtime tru
 
 Use this category for slow-changing Kubernetes migration context, k3s/k3d evaluation notes, and source-backed background facts. Do not use it for rollout steps, task evidence, or incident recovery.
 
+## Language Rule
+
+이 category README와 사람 대상 reference 설명은 한국어를 기본으로 작성하되, Kubernetes, k3s/k3d, resource kind, manifest field, command, runtime path는 원문을 보존합니다. Active migration decision이나 rollout step처럼 보이는 문장은 `docs/02.architecture/` 또는 `docs/04.execution/`로 분리합니다.
+
 ## Audience
 
 이 README의 주요 독자:
