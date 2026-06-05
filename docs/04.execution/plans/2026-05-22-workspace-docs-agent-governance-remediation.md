@@ -9,28 +9,28 @@ status: completed
 
 ## Overview
 
-이 문서는 `hy-home.docker`의 문서 lifecycle, 템플릿 계약, cross-link, AI Agent governance, hook/runtime surface를 현재 워크스페이스 목적에 맞게 정리하기 위한 실행 계획이다.
+This document is the implementation plan for aligning the `hy-home.docker` documentation lifecycle, template contract, cross-links, AI Agent governance, and hook/runtime surfaces with the current workspace purpose.
 
-핵심 방향은 계약 우선 단계형 작업이다. 먼저 `docs/99.templates`, validator, canonical path 기준을 정리한 뒤, 그 기준으로 stage 문서와 agent runtime 문서를 정규화한다.
+The core direction is a contract-first staged workflow. First align `docs/99.templates`, validators, and canonical path criteria, then use that basis to normalize stage documents and agent runtime documents.
 
 ## Context
 
-이 저장소는 Docker Compose 기반 홈 서버와 개인 개발 인프라를 계층별로 분리하고, 요구사항부터 운영 지식까지 `docs/01`~`docs/05` lifecycle로 연결하는 것을 목표로 한다. 현재 governance hub, templates, runtime hook, agent/function mirror는 이미 존재하지만 다음 drift가 남아 있다.
+This repository aims to separate a Docker Compose-based home server and personal development infrastructure into layers, connecting requirements through operations knowledge via the `docs/01` through `docs/05` lifecycle. The governance hub, templates, runtime hook, and agent/function mirror already exist, but the following drift remains.
 
-- `check-repo-contracts.sh`가 stale LLM Wiki index 때문에 실패한다.
-- historical stage 문서 중 일부가 현재 template metadata나 heading contract를 완전히 따르지 않는다.
-- `docs/02.architecture`에는 canonical `0026-standardize-infra-net.md`와 충돌하는 dated duplicate ARD/ADR 후보가 남아 있다.
-- 일부 README와 operations leaf 문서가 `readme.template.md`, `guide.template.md`,
-  `policy.template.md`, 또는 `runbook.template.md`의 현재 계약과 어긋난다.
-- agent runtime 문서에는 stale section reference, unavailable `rtk` guidance, Hookify `.local.md` tracking convention drift가 있다.
+- `check-repo-contracts.sh` fails because of a stale LLM Wiki index.
+- Some historical stage documents do not fully follow the current template metadata or heading contract.
+- `docs/02.architecture` contains dated duplicate ARD/ADR candidates that conflict with the canonical `0026-standardize-infra-net.md`.
+- Some README and operations leaf documents diverge from the current contract in `readme.template.md`, `guide.template.md`,
+  `policy.template.md`, or `runbook.template.md`.
+- Agent runtime documents contain stale section references, unavailable `rtk` guidance, and Hookify `.local.md` tracking convention drift.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - `docs/01`~`docs/05`, `docs/90`, `docs/99`의 lifecycle와 template contract를 검증 가능한 상태로 맞춘다.
-  - duplicate/non-canonical 문서는 canonical target으로 참조를 이관한 뒤 삭제한다.
-  - historical evidence 문서는 삭제하지 않고 현재 template 필수 형식과 규칙을 만족하게 한다.
-  - Claude/Codex hook parity와 `.agents` compatibility boundary를 유지한다.
+  - Bring the lifecycle and template contract for `docs/01` through `docs/05`, `docs/90`, and `docs/99` into a verifiable state.
+  - Migrate references from duplicate/non-canonical documents to the canonical targets, then delete the duplicate/non-canonical documents.
+  - Keep historical evidence documents while making them satisfy the current required template shape and rules.
+  - Preserve Claude/Codex hook parity and the `.agents` compatibility boundary.
 - **In Scope**:
   - `docs/99.templates`, stage README, selected stage leaf docs, generated LLM Wiki index
   - `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `RTK.md`, `docs/00.agent-governance/**`

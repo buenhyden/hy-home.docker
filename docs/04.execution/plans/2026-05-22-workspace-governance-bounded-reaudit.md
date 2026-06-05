@@ -9,29 +9,29 @@ status: completed
 
 ## Overview
 
-이 문서는 `hy-home.docker`의 문서 lifecycle, 템플릿 계약, cross-link, AI Agent runtime, hook, subagent, memory, rule, scope를 전수 재감사하되 검증 가능한 drift만 수정하기 위한 실행 계획이다.
+This document is the implementation plan for a full re-audit of the `hy-home.docker` documentation lifecycle, template contract, cross-links, AI Agent runtime, hooks, subagents, memory, rules, and scope while correcting only verifiable drift.
 
-이번 작업은 새 체계를 다시 만드는 작업이 아니다. 현재 validator 기준선이 통과 중이므로, 완료된 작업을 active로 설명하는 상태 drift, 최신 검증 결과와 충돌하는 memory note, memory edit hook guidance처럼 근거가 확인된 부분만 고친다.
+This work does not create a new system. Because the current validator baseline passes, it fixes only evidence-backed items such as state drift that describes completed work as active, memory notes that conflict with the latest validation results, and missing memory edit hook guidance.
 
 ## Context
 
-현재 기준선은 안정적이다.
+The current baseline is stable.
 
-- `bash scripts/validation/check-repo-contracts.sh`는 `failures=0`으로 통과한다.
-- `bash scripts/validation/check-doc-traceability.sh`는 operations/execution traceability 동기화를 통과한다.
-- `bash scripts/knowledge/generate-llm-wiki-index.sh --check`는 generated LLM Wiki index가 fresh라고 보고한다.
-- `bash scripts/knowledge/report-graphify-health.sh`는 오염은 없지만 `surprising_cross_root_inferred_edges=3` 때문에 advisory 상태다.
+- `bash scripts/validation/check-repo-contracts.sh` passes with `failures=0`.
+- `bash scripts/validation/check-doc-traceability.sh` passes operations/execution traceability synchronization.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` reports that the generated LLM Wiki index is fresh.
+- `bash scripts/knowledge/report-graphify-health.sh` reports no contamination, but remains advisory because `surprising_cross_root_inferred_edges=3`.
 
-감사에서 확인된 실제 drift는 작다. 2026-05-22 완료 plan/task가 parent README에서 `Active`로 설명되고, 일부 memory note가 최신 validator 지표와 충돌하는 legacy debt를 현재 backlog처럼 설명한다. 또한 target-stage docs와 README edits에는 PreToolUse guidance가 있지만 governance memory note edits에는 같은 수준의 guidance가 없다.
+The actual drift found in the audit is small. Completed 2026-05-22 plan/task artifacts are described as `Active` in parent READMEs, and some memory notes describe legacy debt that conflicts with the latest validator metrics as if it were current backlog. Target-stage docs and README edits also have PreToolUse guidance, but governance memory note edits do not have guidance at the same level.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - `GOV-RA-001`: docs/01~05, docs/90, docs/99, README, root shims, runtime surfaces, hooks, subagents, memory, rules, scopes를 재감사한다.
-  - `GOV-RA-002`: 완료된 2026-05-22 execution artifacts를 parent README에서 completed/current evidence로 설명한다.
-  - `GOV-RA-003`: stale memory notes를 최신 validator evidence와 맞춘다.
-  - `GOV-RA-004`: memory note edits에 대한 hook/Hookify guidance를 추가한다.
-  - `GOV-RA-005`: completed execution artifact를 active로 설명하는 README drift를 repository contract에서 잡는다.
+  - `GOV-RA-001`: Re-audit docs/01~05, docs/90, docs/99, README, root shims, runtime surfaces, hooks, subagents, memory, rules, and scopes.
+  - `GOV-RA-002`: Describe completed 2026-05-22 execution artifacts as completed/current evidence in parent READMEs.
+  - `GOV-RA-003`: Align stale memory notes with the latest validator evidence.
+  - `GOV-RA-004`: Add hook/Hookify guidance for memory note edits.
+  - `GOV-RA-005`: Make the repository contract catch README drift that describes completed execution artifacts as active.
 - **In Scope**:
   - `docs/04.execution/**` plan/task evidence and indexes
   - `docs/00.agent-governance/memory/**`

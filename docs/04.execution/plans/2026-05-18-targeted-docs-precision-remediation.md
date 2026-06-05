@@ -7,19 +7,19 @@ status: completed
 
 ## Overview
 
-이 문서는 `README.md`, `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`를 대상으로 한 정밀 문서 보정 계획이다. 범위는 validator가 통과한 이후에도 남을 수 있는 discoverability, target-relative link, stage ownership, current evidence drift에 한정한다.
+This document is the targeted documentation precision remediation plan for `README.md`, `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, and `docs/90.references`. Scope is limited to discoverability, target-relative link, stage ownership, and current evidence drift that can remain after validators pass.
 
 ## Context
 
-최근 stage별 보정 작업과 bounded consistency audit으로 `check-repo-contracts.sh`와 `check-doc-traceability.sh`는 통과한다. 이번 작업은 broad rewrite가 아니라, 각 편집을 구체적인 failing condition에 묶어 불필요한 template churn을 막는 precision remediation이다.
+Recent stage-specific remediation and the bounded consistency audit make `check-repo-contracts.sh` and `check-doc-traceability.sh` pass. This work is precision remediation, not a broad rewrite: each edit is tied to a concrete failing condition to prevent unnecessary template churn.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - 각 편집을 evidence gate에 연결한다.
-  - target-relative link mismatch와 reader-facing discoverability 문제를 고친다.
-  - 새 실행 plan/task evidence를 canonical `docs/04.execution` stage에 남긴다.
-  - 변경된 parent README와 generated path index를 필요한 경우에만 동기화한다.
+  - Tie each edit to an evidence gate.
+  - Fix target-relative link mismatches and reader-facing discoverability issues.
+  - Leave new execution plan/task evidence in the canonical `docs/04.execution` stage.
+  - Synchronize changed parent READMEs and the generated path index only when needed.
 - **In Scope**:
   - `README.md`
   - `docs/01.requirements/**`
@@ -33,13 +33,13 @@ status: completed
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - Historical leaf documents를 current template 모양으로 일괄 재작성하지 않는다.
-  - Style-only prose rewrite를 하지 않는다.
-  - Runtime Docker Compose, service config, API behavior, secret structure를 바꾸지 않는다.
-  - Graphify inferred edge를 새 remediation scope로 사용하지 않는다.
+  - Do not bulk-rewrite historical leaf documents into the current template shape.
+  - Do not perform style-only prose rewrites.
+  - Do not change runtime Docker Compose, service config, API behavior, or secret structure.
+  - Do not use Graphify inferred edges as new remediation scope.
 - **Out of Scope**:
-  - secret 값, credential, token, 인증서 본문, shell history, raw logs 열람.
-  - 기존 untracked `projects/storybook/mcp/`.
+  - Reading secret values, credentials, tokens, certificate bodies, shell history, or raw logs.
+  - Existing untracked `projects/storybook/mcp/`.
   - branch history cleanup, deployment, external publishing.
 
 ## Work Breakdown

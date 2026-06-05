@@ -9,25 +9,25 @@ status: completed
 
 ## Overview
 
-이 문서는 `06-observability` 티어의 문서화 표준화 작업을 위한 상세 실행 계획서다. PRD, ARD, ADR, Spec을 바탕으로 작업 분해와 검증 방식을 정의한다.
+This document is the detailed implementation plan for standardizing documentation in the `06-observability` tier. It defines work breakdown and verification methods based on the PRD, ARD, ADR, and Spec.
 
 ## Context
 
-`06-observability`는 복잡한 LGTM 스택과 수집기(Alloy) 구성을 포함하고 있어, 기술적 상세와 운영 가이드가 정확히 연동되어야 한다. 이번 작업을 통해 파편화된 정보를 표준 문서 체계로 통합한다.
+`06-observability` includes a complex LGTM stack and collector (Alloy) configuration, so technical details and operations guides must be linked accurately. This work integrates fragmented information into the standard documentation system.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - 06-observability 관련 모든 문서(PRD~Task)의 March 2026 표준 준수.
-  - 리포지토리 전반의 교차 레이어 링크(Cross-layer links) 무결성 확보.
+  - Ensure all 06-observability documents from PRD through Task comply with the March 2026 standard.
+  - Preserve cross-layer link integrity across the repository.
 - **In Scope**:
-  - `docs/01.requirements` ~ `docs/04.execution/tasks` 내 관련 파일 생성 및 수정.
-  - 레이어별 `README.md` 인덱스 업데이트.
+  - Create and modify related files under `docs/01.requirements` through `docs/04.execution/tasks`.
+  - Update each layer `README.md` index.
 
 ## Non-Goals & Out-of-Scope
 
-- **Non-goals**: 실제 인프라 구성(docker-compose.yml) 변경.
-- **Out of Scope**: Grafana 대시보드 JSON 파일 리팩토링.
+- **Non-goals**: Changes to the actual infrastructure configuration (`docker-compose.yml`).
+- **Out of Scope**: Refactoring Grafana dashboard JSON files.
 
 ## Work Breakdown
 
@@ -50,13 +50,13 @@ status: completed
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| 계층 간 링크 오류 | Medium | 표준 템플릿의 상대 경로 가이드를 엄격히 준수 |
+| Cross-layer link errors | Medium | Strictly follow the standard template guidance for relative paths |
 
 ## Completion Criteria
 
-- [ ] 01.requirements ~ 04.execution/tasks 전 계층 문서 작성 완료
-- [ ] 레이어별 README.md 인덱스 동기화 완료
-- [ ] 모든 인프라 서비스(8개)에 대한 Spec 명세 포함
+- [ ] Documentation completed across all layers from 01.requirements through 04.execution/tasks
+- [ ] Each layer README.md index synchronized
+- [ ] Spec details included for all infrastructure services (8)
 
 ## Related Documents
 

@@ -8,12 +8,12 @@ status: completed
 
 ## Overview
 
-`03-security` 티어의 문서 체계를 표준화하여 아키텍처 가시성과 운영성을 확보한다. Vault 서버 및 에이전트 구성을 반영한 PRD, ARD, ADR, Spec 문서를 기반으로 실제 검증이 가능한 작업 기반의 문서를 구축한다.
+Standardize the `03-security` tier documentation system to improve architecture visibility and operability. Build actionable, verifiable documentation based on PRD, ARD, ADR, and Spec documents that reflect the Vault server and agent configuration.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> Vault는 플랫폼의 Root of Trust이므로 문서화 과정에서 Unseal Key나 Root Token 등 실제 비밀 정보가 노출되지 않도록 엄격히 관리해야 한다.
+> Vault is the platform Root of Trust, so documentation work must strictly prevent exposure of real secret information such as Unseal Keys or Root Tokens.
 
 ## Proposed Changes
 
@@ -26,33 +26,33 @@ status: completed
 
 ### 2. README Refactoring
 
-- `01.requirements`, `02.architecture/requirements`, `02.architecture/decisions`, `03.specs`, `04.execution/plans`, `04.execution/tasks` 각 레이어의 `README.md`에 `03-security` 항목 추가 및 구조 최신화.
+- Add a `03-security` entry to each layer `README.md` under `01.requirements`, `02.architecture/requirements`, `02.architecture/decisions`, `03.specs`, `04.execution/plans`, and `04.execution/tasks`, and update their structure.
 
 ## Work Breakdown
 
 ### Phase 1: Research & Planning (Done)
 
-- `infra/03-security` 분석 및 기술 스택 파악.
-- PRD, ARD, ADR 초안 작성 및 구조화.
+- Analyze `infra/03-security` and identify the technical stack.
+- Draft and structure the PRD, ARD, and ADR.
 
 ### Phase 2: Technical Design & Spec (Done)
 
-- 상세 Spec 작성 및 레이어별 README 리팩토링.
+- Write the detailed Spec and refactor each layer README.
 
 ### Phase 3: Execution Tracking (Completed)
 
-- Task 문서 생성 및 최종 검증.
+- Create the Task document and perform final verification.
 
 ## Verification Plan
 
 ### Automated Verification
 
-- 모든 문서의 상호 참조 링크(`[../...]`) 유효성 검사.
-- 템플릿 준수 여부 확인 (`Overview` 섹션 존재 등).
+- Validate cross-reference links (`[../...]`) across all documents.
+- Check template compliance, including the presence of an `Overview` section.
 
 ### Manual Verification
 
-- 에이전트(AI)가 해당 문서를 통해 Vault 구성을 100% 이해하고 설명할 수 있는지 확인.
+- Confirm that an AI agent can fully understand and explain the Vault configuration from the documentation.
 
 ## Context
 

@@ -9,24 +9,24 @@ status: completed
 
 ## Overview
 
-이 문서는 `hy-home.docker`의 문서 lifecycle과 agent governance 잔여 debt를 닫기 위한 실행 계획이다. 기존 workspace docs and agent governance remediation을 기준선으로 삼고, 남은 legacy-shape 문서와 infra service README readiness gap을 정리한다.
+This document is the implementation plan for closing remaining documentation lifecycle and agent governance debt in `hy-home.docker`. It uses the existing workspace docs and agent governance remediation as the baseline, then resolves the remaining legacy-shape documents and infra service README readiness gaps.
 
 ## Context
 
-현재 repository contract와 doc traceability 검증은 통과한다. 다만 `check-repo-contracts.sh`가 report-first 지표로 보여주는 잔여 debt가 남아 있다.
+The current repository contract and doc traceability checks pass. However, residual debt remains in the report-first metrics shown by `check-repo-contracts.sh`.
 
-- target-stage 문서 463개 중 4개가 legacy template-shape로 분류된다.
-- infra service leaf README 42개가 `Service Readiness` 필드 기준으로 partial 상태다.
-- Graphify health는 `surprising_cross_root_inferred_edges=3` 때문에 advisory이며, codebase 결론은 tracked source files와 stage docs로 교차확인해야 한다.
+- 4 of 463 target-stage documents are classified as legacy template-shape.
+- 42 infra service leaf README files are partial by the `Service Readiness` field.
+- Graphify health is advisory because `surprising_cross_root_inferred_edges=3`, so codebase conclusions must be corroborated against tracked source files and stage docs.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - `DOC-LRDC-001`: target-stage legacy-shape 문서 4개를 현재 template contract에 맞춘다.
-  - `DOC-LRDC-002`: infra service leaf README의 `Service Readiness` debt를 닫는다.
-  - `DOC-LRDC-003`: README template과 template catalog가 folder-index/service-leaf 책임을 더 명확히 설명하게 한다.
-  - `DOC-LRDC-004`: stage edit hook guidance와 Hookify stage-doc rule이 relative/absolute path 모두를 다루게 한다.
-  - `DOC-LRDC-005`: validators는 changed/new docs hard-fail과 repository-wide report-first 지표를 유지한다.
+  - `DOC-LRDC-001`: Align the 4 target-stage legacy-shape documents with the current template contract.
+  - `DOC-LRDC-002`: Close `Service Readiness` debt in infra service leaf README files.
+  - `DOC-LRDC-003`: Make the README template and template catalog describe folder-index and service-leaf responsibilities more clearly.
+  - `DOC-LRDC-004`: Make stage edit hook guidance and the Hookify stage-doc rule handle both relative and absolute paths.
+  - `DOC-LRDC-005`: Keep validators hard-failing changed/new docs while retaining repository-wide report-first metrics.
 - **In Scope**:
   - `docs/99.templates/README.md`
   - `docs/99.templates/readme.template.md`

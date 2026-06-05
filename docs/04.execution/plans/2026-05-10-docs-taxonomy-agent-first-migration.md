@@ -7,25 +7,25 @@ status: completed
 
 ## Overview
 
-이 문서는 문서 taxonomy와 AI Agent-first 계약을 새 canonical 경로로 이관하는 실행 계획이다. 목표는 Docker runtime을 바꾸지 않고 docs SSOT, validator, runtime mirror 용어를 한 번에 맞추는 것이다.
+This document is the implementation plan for migrating the documentation taxonomy and AI Agent-first contract to the new canonical paths. The goal is to align docs SSoT, validator, and runtime mirror terminology at once without changing the Docker runtime.
 
 ## Context
 
-기존 저장소 계약은 legacy requirements, execution, operations stage 이름을 문서, templates, validators, runtime docs에 고정하고 있었다. 새 계약은 더 짧은 active stage와 목적별 operations 하위 폴더를 사용한다.
+The previous repository contract pinned legacy requirements, execution, and operations stage names into documents, templates, validators, and runtime docs. The new contract uses shorter active stages and purpose-specific operations subfolders.
 
 ## Goals & In-Scope
 
-- 문서 파일을 새 taxonomy로 이동한다.
-- governance, provider, runtime, template, infra README 링크를 새 경로로 갱신한다.
-- validators를 새 taxonomy와 runtime agent/function catalog 기준으로 갱신한다.
-- migration evidence를 새 taxonomy 안에 남긴다.
+- Move documentation files into the new taxonomy.
+- Update governance, provider, runtime, template, and infra README links to the new paths.
+- Update validators against the new taxonomy and the runtime agent/function catalog.
+- Leave migration evidence inside the new taxonomy.
 
 ## Non-Goals & Out-of-Scope
 
-- Docker Compose runtime 동작 변경
-- secret 값 또는 credential 파일 분석
-- GitHub-native instruction layer 추가
-- Graphify advisory 상태를 hard gate로 승격
+- Docker Compose runtime behavior changes
+- Secret value or credential file analysis
+- Adding a GitHub-native instruction layer
+- Promoting Graphify advisory status to a hard gate
 
 ## Work Breakdown
 
