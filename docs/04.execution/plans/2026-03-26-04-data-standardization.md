@@ -7,51 +7,51 @@ status: completed
 
 ## Overview
 
-이 문서는 `04-data` 티어의 다중 모델 영속성 계층에 대한 문서 체계를 표준화하는 실행 계획서다. 작업 분해, 검증, 롤아웃, 위험 관리, 완료 기준을 정의한다.
+This document is the implementation plan for standardizing the documentation system for the multi-model persistence layer in the `04-data` tier. It defines work breakdown, verification, rollout, risk management, and completion criteria.
 
 ## Context
 
-`04-data` 티어의 인프라 구성은 이미 완료되었으나, 프로젝트 전체의 거버넌스 및 문서 표준에 부합하도록 역설계(Reverse Engineering)를 통한 문서 동기화가 필요하다.
+The infrastructure configuration for the `04-data` tier is already complete, but documentation synchronization through reverse engineering is needed to align with repository-wide governance and documentation standards.
 
 ## Goals & In-Scope
 
-- **Goals**: `04-data` 티어의 PRD, ARD, ADR, Spec 문서를 표준 템플릿으로 갱신.
-- **In Scope**: `docs/01`~`06` 레이어의 데이터 티어 관련 문서 작성 및 인덱스 업데이트.
+- **Goals**: Update the `04-data` tier PRD, ARD, ADR, and Spec documents to standard templates.
+- **In Scope**: Write data-tier-related documents and update indexes across the `docs/01` through `06` layers.
 
 ## Non-Goals & Out-of-Scope
 
-- **Non-goals**: 실제 인프라 구성(Compose 파일 등)의 변경.
-- **Out of Scope**: 데이터베이스 내 데이터 마이그레이션 또는 스키마 변경.
+- **Non-goals**: Changes to the actual infrastructure configuration, including Compose files.
+- **Out of Scope**: Data migration or schema changes inside databases.
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-001 | PRD 갱신 | `docs/01.requirements/2026-03-26-04-data.md` | REQ-PRD-FUN-04 | 템플릿 준수 확인 |
-| PLN-002 | ARD 갱신 | `docs/02.architecture/requirements/0004-data-architecture.md` | - | 다이어그램 포함 여부 |
-| PLN-003 | ADR 갱신 | `docs/02.architecture/decisions/0004-postgresql-ha-patroni.md` | - | 의사결정 맥락 기술 |
-| PLN-004 | Spec 갱신 | `docs/03.specs/04-data/spec.md` | VAL-SPC-001 | 기술 명세 구체성 |
-| PLN-005 | Tasks 생성 | `docs/04.execution/tasks/2026-03-26-04-data-tasks.md` | - | 작업 추적성 확보 |
+| PLN-001 | Update PRD | `docs/01.requirements/2026-03-26-04-data.md` | REQ-PRD-FUN-04 | Template compliance confirmed |
+| PLN-002 | Update ARD | `docs/02.architecture/requirements/0004-data-architecture.md` | - | Diagram presence confirmed |
+| PLN-003 | Update ADR | `docs/02.architecture/decisions/0004-postgresql-ha-patroni.md` | - | Decision context documented |
+| PLN-004 | Update Spec | `docs/03.specs/04-data/spec.md` | VAL-SPC-001 | Technical specification is concrete |
+| PLN-005 | Create Tasks | `docs/04.execution/tasks/2026-03-26-04-data-tasks.md` | - | Work traceability secured |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Structural | 모든 문서의 `Overview` 존재 확인 | `grep -r "Overview" docs/` | 전 문서 포함 |
-| VAL-PLN-002 | Traceability | 문서 간 상호 참조 링크 유효성 검사 | `bash scripts/validation/check-repo-contracts.sh` | 깨진 링크 없음 |
+| VAL-PLN-001 | Structural | Confirm every document has `Overview` | `grep -r "Overview" docs/` | All documents include it |
+| VAL-PLN-002 | Traceability | Validate cross-reference links between documents | `bash scripts/validation/check-repo-contracts.sh` | No broken links |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| 문서와 실제 인프라 설정 불일치 | Medium | `infra/04-data`의 실제 파일을 재검증하여 작성 |
-| 링크 참조 오류 | Low | 상대 경로 규칙 준수 및 교차 검증 |
+| Documentation and actual infrastructure settings diverge | Medium | Reverify against actual files in `infra/04-data` while writing |
+| Link reference errors | Low | Follow relative path rules and cross-check links |
 
 ## Completion Criteria
 
-- [ ] `01.requirements`, `02.architecture/requirements`, `02.architecture/decisions`, `03.specs` 문서 갱신 완료
-- [ ] 각 레이어 README 인덱스 업데이트 완료
-- [ ] 모든 검증 단계 통과
+- [ ] `01.requirements`, `02.architecture/requirements`, `02.architecture/decisions`, and `03.specs` documents updated
+- [ ] Each layer README index updated
+- [ ] All verification steps passed
 
 ## Related Documents
 

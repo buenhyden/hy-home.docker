@@ -6,64 +6,67 @@ status: completed
 
 # Governance Optimization (I1+I2) Implementation Plan
 
-> 거버넌스 고도화 라운드의 실행 계획서다. 범위는 I1(신규 서비스 Project Template)과
-> I2(코드리뷰 요청/수용 루프)로 한정한다.
+> Implementation plan for the governance optimization round. Scope is limited to
+> I1 (new service Project Template) and I2 (code review request/acceptance loop).
 
 ## Overview
 
-이 문서는 워크스페이스 거버넌스 고도화의 실행 계획서다. Phase 1 진단에서 토대가
-견고함(계약 검사 통과)을 확인한 뒤, 실질 가치가 큰 두 항목만 우선 적용한다.
+This document is the implementation plan for workspace governance optimization.
+After Phase 1 diagnosis confirmed that the foundation is solid (contract checks
+pass), it applies only the two highest-value practical items first.
 
 ## Context
 
-Phase 1 조사 결과 Stage 00 거버넌스·QA/CI·Template Contract·Model Policy·Claude 하니스
-패리티는 이미 충족 상태였고, `check-repo-contracts.sh`와 `check-doc-traceability.sh`가
-모두 `failures=0`이었다. 따라서 재구축이 아니라 빈칸 보강이 필요했다. 진단에서 도출된
-실질 갭은 두 가지다. 첫째, 신규 서비스 온보딩용 복사 가능한 표준 시드가 없었다
-(`examples/`는 비어 있었다). 둘째, 코드리뷰의 요청→수용→반영 규율이 명문화되지 않았다.
+Phase 1 investigation found that Stage 00 governance, QA/CI, Template Contract,
+Model Policy, and Claude harness parity were already satisfied, and both
+`check-repo-contracts.sh` and `check-doc-traceability.sh` had `failures=0`.
+Therefore, the need was gap filling rather than rebuilding. The diagnosis found
+two practical gaps. First, there was no copyable standard seed for new service
+onboarding (`examples/` was empty). Second, the code review request to acceptance
+to implementation discipline was not codified.
 
 ## Goals & In-Scope
 
-- **Goals**: 신규 서비스를 보안 하드닝 표준과 함께 시작할 수 있는 시드·템플릿·가이드를 제공하고, 코드리뷰 루프를 거버넌스에 명문화한다.
-- **In Scope**: I1(`examples/sample-web-service/` 시드, `service.template.md`, 온보딩 가이드, 4파일 등록), I2(`workflows.md`·`git-workflow.md` 리뷰 루프).
+- **Goals**: Provide a seed, template, and guide for starting new services with security hardening standards, and codify the code review loop in governance.
+- **In Scope**: I1 (`examples/sample-web-service/` seed, `service.template.md`, onboarding guide, 4-file registration), I2 (`workflows.md` and `git-workflow.md` review loop).
 
 ## Non-Goals & Out-of-Scope
 
-- **Non-goals**: Node 빌드 체계 도입(R1=현행 유지), 서비스 온보딩 워크플로우 승격(R2=단발 템플릿).
-- **Out of Scope**: I3(humanizer 경계)·I4(QA 선제 주석)·I5(중복 Related Documents 가드)·I6(RTK 규약)은 후속 라운드로 이연.
+- **Non-goals**: Introducing a Node build system (R1=current state retained), or promoting service onboarding to a workflow (R2=one-off template).
+- **Out of Scope**: I3 (humanizer boundary), I4 (proactive QA comments), I5 (duplicate Related Documents guard), and I6 (RTK convention) are deferred to a later round.
 
 ## Work Breakdown
 
 | Task    | Description                                                      | Files / Docs Affected                                                                                                                                                                                                                        | Target REQ | Validation Criteria                      |
 | ------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------------------- |
-| PLN-001 | 보안 하드닝 내장 서비스 시드 작성                                | `examples/sample-web-service/`                                                                                                                                                                                                               | I1         | `docker compose config` 파싱, YAML 유효  |
-| PLN-002 | 서비스 스캐폴드 템플릿 신설 및 4파일 등록                        | `docs/99.templates/service.template.md`, `scripts/validation/check-repo-contracts.sh`, `docs/99.templates/README.md`, `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/00.agent-governance/rules/stage-authoring-matrix.md` | I1         | 계약 검사 `failures=0`                   |
-| PLN-003 | 신규 서비스 온보딩 가이드 작성                                   | `docs/05.operations/guides/00-workspace/new-service-onboarding.md`                                                                                                                                                                                        | I1         | guide 프로파일 heading 충족, 정규화 통과 |
-| PLN-004 | 코드리뷰 요청/수용 루프 명문화                                   | `docs/00.agent-governance/rules/workflows.md`, `docs/00.agent-governance/rules/git-workflow.md`                                                                                                                                              | I2         | 계약 검사 `failures=0`                   |
-| PLN-005 | 생성물 freshness 계약(LLM Wiki 인덱스 재생성)을 QA 스코프에 주입 | `docs/00.agent-governance/scopes/qa.md`                                                                                                                                                                                                      | QA         | 계약 검사 `failures=0`                   |
+| PLN-001 | Write service seed with built-in security hardening | `examples/sample-web-service/` | I1 | `docker compose config` parses and YAML is valid |
+| PLN-002 | Create service scaffold template and register it in 4 files | `docs/99.templates/service.template.md`, `scripts/validation/check-repo-contracts.sh`, `docs/99.templates/README.md`, `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/00.agent-governance/rules/stage-authoring-matrix.md` | I1 | Contract check has `failures=0` |
+| PLN-003 | Write new service onboarding guide | `docs/05.operations/guides/00-workspace/new-service-onboarding.md` | I1 | Guide profile headings are satisfied and normalization passes |
+| PLN-004 | Codify code review request/acceptance loop | `docs/00.agent-governance/rules/workflows.md`, `docs/00.agent-governance/rules/git-workflow.md` | I2 | Contract check has `failures=0` |
+| PLN-005 | Add generated-artifact freshness contract (LLM Wiki index regeneration) to QA scope | `docs/00.agent-governance/scopes/qa.md` | QA | Contract check has `failures=0` |
 
 ## Verification Plan
 
 | ID          | Level      | Description         | Command / How to Run                                                                               | Pass Criteria |
 | ----------- | ---------- | ------------------- | -------------------------------------------------------------------------------------------------- | ------------- |
-| VAL-PLN-001 | Structural | 저장소 계약 동기화  | `bash scripts/validation/check-repo-contracts.sh`                                                  | `failures=0`  |
-| VAL-PLN-002 | Structural | 문서 트레이서빌리티 | `bash scripts/validation/check-doc-traceability.sh`                                                | `failures=0`  |
-| VAL-PLN-003 | Structural | 시드 compose 유효성 | `python3 -c "import yaml; yaml.safe_load(open('examples/sample-web-service/docker-compose.yml'))"` | 예외 없음     |
+| VAL-PLN-001 | Structural | Repository contract synchronization | `bash scripts/validation/check-repo-contracts.sh` | `failures=0` |
+| VAL-PLN-002 | Structural | Document traceability | `bash scripts/validation/check-doc-traceability.sh` | `failures=0` |
+| VAL-PLN-003 | Structural | Seed compose validity | `python3 -c "import yaml; yaml.safe_load(open('examples/sample-web-service/docker-compose.yml'))"` | No exception |
 
 ## Risks & Mitigations
 
 | Risk                                       | Impact | Mitigation                                                              |
 | ------------------------------------------ | ------ | ----------------------------------------------------------------------- |
-| 새 템플릿 유형 추가로 4파일 결합 계약 위반 | High   | 등록 직후 계약 검사 재실행, 단계별 검증                                 |
-| 시드 compose가 인프라 게이트에 잡힘        | Medium | 디스커버리 스코프 확인 — 게이트는 `infra/`만 스캔, `examples/`는 비스캔 |
-| 가이드 placeholder 잔존으로 정규화 실패    | Medium | placeholder 패턴 제거 후 재검증                                         |
+| New template type violates the 4-file coupling contract | High | Rerun contract checks immediately after registration and verify step by step |
+| Seed compose is caught by infra gates | Medium | Confirm discovery scope: gates scan only `infra/`, not `examples/` |
+| Guide placeholder remains and breaks normalization | Medium | Remove placeholder patterns and reverify |
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
-- **Offline Eval Gate**: N/A — 거버넌스/문서 변경, 모델 평가 대상 아님.
+- **Offline Eval Gate**: N/A because this is a governance/documentation change, not a model evaluation target.
 - **Sandbox / Canary Rollout**: N/A.
-- **Human Approval Gate**: plan mode 승인 + 구현 중 결정 확인(R1/R2/D3 + I1 착지면).
-- **Rollback Trigger**: 계약 검사 회귀 시 변경 되돌림.
+- **Human Approval Gate**: Plan mode approval plus implementation decision confirmation (R1/R2/D3 and I1 landing surface).
+- **Rollback Trigger**: Revert changes if contract checks regress.
 - **Prompt / Model Promotion Criteria**: N/A.
 
 ## Completion Criteria

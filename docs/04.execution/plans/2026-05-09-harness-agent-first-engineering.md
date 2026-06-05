@@ -7,48 +7,48 @@ status: completed
 
 ## Overview
 
-이 계획은 현재 `hy-home.docker`에 구현된 하네스 엔지니어링과 Agent-first Engineering 계약을 파일 내용 기준으로 분석하고, 실제 gap을 최소 수정으로 보완하는 실행 계획이다.
+This plan analyzes the harness engineering and Agent-first Engineering contracts currently implemented in `hy-home.docker` based on file contents, then fills actual gaps with minimal changes.
 
 ## Context
 
-최근 repository contract는 `.claude` runtime mirror, Codex boundary, source-label leak prevention, graphify fallback, `rg` discovery permission을 이미 검증한다. 이후 확인된 gap은 세 가지다: Claude hooks의 double-quoted Python block이 markdown backtick command substitution을 유발할 수 있음, HAFE evidence가 `core` profile과 supported hardening tiers 범위를 전체 workspace처럼 읽힐 수 있음, Graphify advisory output이 architecture authority처럼 오해될 수 있음.
+Recent repository contracts already verify the `.claude` runtime mirror, Codex boundary, source-label leak prevention, Graphify fallback, and `rg` discovery permission. Three gaps were then confirmed: double-quoted Python blocks in Claude hooks can trigger markdown backtick command substitution, HAFE evidence can read as if the `core` profile and supported hardening tiers cover the entire workspace, and Graphify advisory output can be mistaken for architecture authority.
 
 ## Goals & In-Scope
 
-- 워크스페이스 목적, 규칙, 환경을 관련 파일 기준으로 정리한다.
-- 하네스 엔지니어링 구성 요소를 분석한다.
-- Agent-first Engineering 구성 요소를 분석한다.
-- 현재 gap이 없는 agent/catalog 계약은 no-agent-catalog-change로 명시한다.
-- Claude hook quoting gap을 heredoc/argv 방식으로 보완한다.
-- 기존 stage docs와 parent README traceability를 유지하고, 이번 Graphify 보완은 existing stage docs in-place로 반영한다.
-- Graphify health가 clean이 아니면 advisory context로 낮추는 규칙과 evidence command를 추가한다.
-- `10-communication` Compose include/IP/network 문제는 별도 infra remediation으로 분리한다.
-- 지정 검증 명령으로 완료를 증명한다.
+- Summarize the workspace purpose, rules, and environment based on related files.
+- Analyze harness engineering components.
+- Analyze Agent-first Engineering components.
+- Explicitly mark the agent/catalog contract as no-agent-catalog-change because no current gap exists there.
+- Fill the Claude hook quoting gap with a heredoc/argv approach.
+- Preserve existing stage docs and parent README traceability, and apply this Graphify improvement in place in existing stage docs.
+- Add rules and evidence commands that downgrade Graphify health to advisory context when it is not clean.
+- Split the `10-communication` Compose include/IP/network issue into separate infra remediation.
+- Prove completion with the specified verification commands.
 
 ## Non-Goals & Out-of-Scope
 
-- 새 agent catalog 또는 Codex delegated-agent catalog 생성.
-- Agent catalog, root shim, provider policy, `.codex` delegated-agent behavior 변경.
-- `docs/01.requirements`, `docs/02.architecture/requirements`, `docs/02.architecture/decisions`, `docs/05.operations/incidents` 신규 산출물 생성.
-- `graphify-out` generated artifact hand-edit 또는 regeneration.
-- Graphify health report를 hard validation gate로 승격.
+- Creating a new agent catalog or Codex delegated-agent catalog.
+- Changing the agent catalog, root shim, provider policy, or `.codex` delegated-agent behavior.
+- Creating new artifacts under `docs/01.requirements`, `docs/02.architecture/requirements`, `docs/02.architecture/decisions`, or `docs/05.operations/incidents`.
+- Hand-editing or regenerating the `graphify-out` generated artifact.
+- Promoting the Graphify health report to a hard validation gate.
 - `10-communication` root compose include, network, IP allocation, or hardening tier remediation.
-- `pre-commit` 수동 실행.
-- Docker stack 실행, 배포, 중지, 삭제.
+- Manually running `pre-commit`.
+- Running, deploying, stopping, or deleting the Docker stack.
 
 ## Work Breakdown
 
 | Phase | Work | Output |
 | --- | --- | --- |
-| P1 | Root, docs, infra, scripts README 분석 | 워크스페이스 목적/환경 요약 |
-| P2 | `AGENTS.md`, provider shims, governance rules 분석 | agent entry/rule contract 요약 |
-| P3 | `.claude`, `.codex`, governance agent catalog 분석 | harness component와 runtime mirror 요약 |
-| P4 | templates와 validators 분석 | Agent-first guardrail와 verification map 요약 |
-| P5 | stage docs 작성/갱신 | Spec, Plan, Task, Guide, Policy, Runbook |
-| P6 | parent README traceability 확인 | 문서 링크와 structure 동기화 유지 |
-| P7 | Claude hook quoting 보완 | heredoc/argv 기반 JSON output과 payload simulation |
-| P8 | Graphify/context-quality 및 evidence 범위 보완 | advisory health wording, scoped infra evidence, residual risk |
-| P9 | 검증 실행 | command evidence와 residual risk 보고 |
+| P1 | Analyze root, docs, infra, and scripts READMEs | Workspace purpose/environment summary |
+| P2 | Analyze `AGENTS.md`, provider shims, and governance rules | Agent entry/rule contract summary |
+| P3 | Analyze `.claude`, `.codex`, and governance agent catalog | Harness component and runtime mirror summary |
+| P4 | Analyze templates and validators | Agent-first guardrail and verification map summary |
+| P5 | Write/update stage docs | Spec, Plan, Task, Guide, Policy, Runbook |
+| P6 | Confirm parent README traceability | Keep document links and structure synchronized |
+| P7 | Fill Claude hook quoting gap | heredoc/argv-based JSON output and payload simulation |
+| P8 | Improve Graphify/context-quality and evidence scope | advisory health wording, scoped infra evidence, residual risk |
+| P9 | Run verification | Command evidence and residual risk report |
 
 ## Verification Plan
 

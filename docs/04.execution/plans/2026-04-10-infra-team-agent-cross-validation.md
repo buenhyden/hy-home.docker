@@ -7,46 +7,46 @@ status: completed
 
 ## Overview
 
-이 문서는 infra 변경 직후 실행되는 team-agent cross-validation 설계를 canonical stage 경로로 정착시키기 위한 실행 계획서다. 기존 `docs/superpowers` 문서의 내용을 `docs/03.specs/07-workflow/agent-design.md` 및 본 계획 문서로 이관하고, 비표준 경로 재발을 막는 로컬 거버넌스 규칙까지 함께 정비한다.
+This document is the implementation plan for settling the team-agent cross-validation design that runs immediately after infra changes into canonical stage paths. It migrates the existing `docs/superpowers` content into `docs/03.specs/07-workflow/agent-design.md` and this plan document, while also tightening local governance rules to prevent nonstandard path recurrence.
 
 ## Context
 
-기존 cross-validation 관련 문서는 `docs/superpowers/specs`와 `docs/superpowers/plans`에 위치해 있어 stage taxonomy와 template contract를 우회하고 있었다. 이 상태는 spec/plan 검색 경로를 분산시키고, 향후 스킬이 비표준 위치에 활성 문서를 생성하는 문제를 반복시킬 수 있다.
+Existing cross-validation documents were located under `docs/superpowers/specs` and `docs/superpowers/plans`, bypassing the stage taxonomy and template contract. This state disperses spec/plan search paths and can repeat the problem of future skills creating active documents in nonstandard locations.
 
 ## Goals & In-Scope
 
 - **Goals**:
-- `DOC-AGT-001`: 활성 agent design 문서를 `docs/03.specs/07-workflow/agent-design.md`에만 둔다.
-  - `DOC-AGT-002`: 활성 implementation plan 문서를 `docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md`에 둔다.
-  - `DOC-AGT-003`: repo-local governance가 비표준 `docs/*` 경로의 활성 spec/plan 생성을 금지하도록 만든다.
-  - `DOC-AGT-004`: README와 traceability가 새 canonical 경로를 기준으로 정렬되도록 만든다.
+- `DOC-AGT-001`: Keep the active agent design document only at `docs/03.specs/07-workflow/agent-design.md`.
+  - `DOC-AGT-002`: Keep the active implementation plan document at `docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md`.
+  - `DOC-AGT-003`: Make repo-local governance forbid active spec/plan creation under nonstandard `docs/*` paths.
+  - `DOC-AGT-004`: Align README and traceability against the new canonical paths.
 - **In Scope**:
-  - canonical `agent-design.md` 작성
-  - canonical `plan.md` 작성
+  - Write canonical `agent-design.md`
+  - Write canonical `plan.md`
   - governance rule hardening
   - README sync
-  - `docs/superpowers` 제거
+  - Remove `docs/superpowers`
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - infra-team-agent 전용 PRD/ARD/ADR 신규 생성
-  - 글로벌 스킬 저장소 수정
-  - `.claude/agents/` 및 `.claude/skills/`의 런타임 동작 변경
+  - Creating new PRD/ARD/ADR documents dedicated to infra-team-agent
+  - Modifying the global skills repository
+  - Changing runtime behavior in `.claude/agents/` or `.claude/skills/`
 - **Out of Scope**:
-  - workflow tier의 다른 spec/plan 재구조화
-  - provider overlay (`CLAUDE.md`, `GEMINI.md`) 대규모 재작성
+  - Restructuring other workflow tier specs/plans
+  - Large-scale rewrites of provider overlays (`CLAUDE.md`, `GEMINI.md`)
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-001 | `docs/superpowers` spec 내용을 template-based canonical agent design으로 재작성 | `docs/03.specs/07-workflow/agent-design.md`, `docs/03.specs/07-workflow/spec.md` | `DOC-AGT-001` | 새 agent design이 필수 섹션과 `## Related Documents`를 포함한다. |
-| PLN-002 | `docs/superpowers` plan 내용을 canonical plan 문서로 정규화 | `docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md` | `DOC-AGT-002` | 새 plan이 Work Breakdown, Verification Plan, Risks 섹션을 포함한다. |
-| PLN-003 | non-stage active path 금지 규칙을 로컬 governance에 추가 | `AGENTS.md`, `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/00.agent-governance/scopes/docs.md` | `DOC-AGT-003` | 규칙 문서가 canonical path와 금지 경로를 명시한다. |
-| PLN-004 | stage README를 actual structure 기준으로 동기화 | `docs/README.md`, `docs/03.specs/README.md`, `docs/04.execution/plans/README.md` | `DOC-AGT-004` | README 구조 설명이 실제 파일 상태와 일치한다. |
-| PLN-005 | legacy `docs/superpowers` 문서와 디렉터리를 제거하고 잔여 참조를 청소 | `docs/superpowers/**` | `DOC-AGT-001`, `DOC-AGT-002` | 저장소에 활성 `docs/superpowers` 참조가 남지 않는다. |
-| PLN-006 | 문서 추적성 및 경로 정합성 검증 | changed docs set, validation scripts | `DOC-AGT-001`, `DOC-AGT-002`, `DOC-AGT-003`, `DOC-AGT-004` | `check-doc-traceability.sh` 통과 및 `docs/superpowers` 경로 제거 확인 |
+| PLN-001 | Rewrite `docs/superpowers` spec content into a template-based canonical agent design | `docs/03.specs/07-workflow/agent-design.md`, `docs/03.specs/07-workflow/spec.md` | `DOC-AGT-001` | New agent design includes required sections and `## Related Documents`. |
+| PLN-002 | Normalize `docs/superpowers` plan content into the canonical plan document | `docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md` | `DOC-AGT-002` | New plan includes Work Breakdown, Verification Plan, and Risks sections. |
+| PLN-003 | Add non-stage active path prohibition rules to local governance | `AGENTS.md`, `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/00.agent-governance/scopes/docs.md` | `DOC-AGT-003` | Rule documents specify canonical paths and forbidden paths. |
+| PLN-004 | Sync stage READMEs against the actual structure | `docs/README.md`, `docs/03.specs/README.md`, `docs/04.execution/plans/README.md` | `DOC-AGT-004` | README structure descriptions match the actual file state. |
+| PLN-005 | Remove legacy `docs/superpowers` documents and directories and clean up residual references | `docs/superpowers/**` | `DOC-AGT-001`, `DOC-AGT-002` | No active `docs/superpowers` references remain in the repository. |
+| PLN-006 | Verify document traceability and path consistency | changed docs set, validation scripts | `DOC-AGT-001`, `DOC-AGT-002`, `DOC-AGT-003`, `DOC-AGT-004` | `check-doc-traceability.sh` passes and `docs/superpowers` path removal is confirmed |
 
 ## Verification Plan
 
