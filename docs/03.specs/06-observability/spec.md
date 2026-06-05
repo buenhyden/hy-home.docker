@@ -7,12 +7,12 @@ status: active
 
 ## Overview
 
-이 문서는 `infra/06-observability` 계층의 최적화/하드닝 구현 계약을 정의한다. 게이트웨이 경계(보안 헤더/SSO), health 기반 의존성, 호스트 수집기 헬스 신호, 커스텀 이미지 런타임 하드닝, CI 기준선 검증을 핵심 범위로 다룬다.
+This document defines the optimization/hardening implementation contract for the `infra/06-observability` tier. Its core scope covers gateway boundaries (security headers/SSO), health-based dependencies, host collector health signals, custom image runtime hardening, and CI baseline verification.
 
 ## Strategic Boundaries & Non-goals
 
-- 본 Spec은 관측성 인프라의 관리 경로 하드닝과 운영/문서 추적성 계약을 소유한다.
-- 애플리케이션 코드 계측(OTel SDK) 변경은 범위 밖이다.
+- This specification owns the management-path hardening and operations/documentation traceability contract for observability infrastructure.
+- Application code instrumentation (OTel SDK) changes are out of scope.
 
 ## Related Inputs
 
@@ -25,16 +25,16 @@ status: active
 ## Contracts
 
 - **Config Contract**:
-  - 관측성 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
-  - Alloy/Grafana는 Loki/Tempo를 `service_healthy`로 의존한다.
-  - cAdvisor는 `/healthz` healthcheck와 독립된 `cadvisor` Traefik route/service label을 가진다.
-  - Pyroscope는 root-included dev compose와 local obs compose 모두에서 `pyroscope:4040` service로 렌더되어야 한다.
+  - Observability public routers apply `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
+  - Alloy/Grafana depend on Loki/Tempo with `service_healthy`.
+  - cAdvisor has a `/healthz` healthcheck and independent `cadvisor` Traefik route/service labels.
+  - Pyroscope must render as the `pyroscope:4040` service in both the root-included dev compose and the local obs compose.
 - **Data / Interface Contract**:
-  - 수집/저장/조회 트래픽은 `infra_net` 내부 경계를 기본으로 유지한다.
-  - 관리 경로 외부 접근은 Traefik `websecure` 진입점에서 통제한다.
+  - Collection/storage/query traffic keeps `infra_net` internal boundaries by default.
+  - External access to management paths is controlled through the Traefik `websecure` entrypoint.
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 06-observability`를 CI `infrastructure-hardening` job으로 강제한다.
-  - Stage 01-05 문서 체계는 optimization-hardening 문서 세트로 상호 링크를 유지한다.
+  - Enforce `scripts/hardening/check-all-hardening.sh 06-observability` through the CI `infrastructure-hardening` job.
+  - The Stage 01-05 document set keeps reciprocal links across the optimization-hardening document set.
 
 ## Core Design
 
@@ -53,11 +53,11 @@ status: active
 ## Data Modeling & Storage Strategy
 
 - **Schema / Entity Strategy**:
-  - Metrics/logs/traces/profiles는 서비스별 retention 정책과 연동해 운영한다.
+  - Metrics/logs/traces/profiles operate with service-specific retention policies.
 - **Migration / Transition Plan**:
   - Phase 1: gateway/health/container hardening + CI gate + docs traceability
-  - Phase 2: scrape budget/cardinality/sampling 정책 정교화
-  - Phase 3: 장기 보관/확장형 HA 운영 모델 적용
+  - Phase 2: refine scrape budget/cardinality/sampling policies
+  - Phase 3: apply a long-term retention and scalable HA operating model
 
 ## Interfaces & Data Structures
 
@@ -86,23 +86,23 @@ observability_gateway_contract:
 - Prometheus:
   - scrape budget, evaluation delay budget, remote_write tiering
 - Loki:
-  - label cardinality budget, retention/compactor 분리 운영
+  - label cardinality budget, separated retention/compactor operations
 - Tempo:
-  - service/endpoint별 샘플링 정책, span 폭주 보호
+  - service/endpoint-specific sampling policies and span surge protection
 - Alloy:
-  - 수집 모듈 템플릿화, 신규 서비스 온보딩 표준화
+  - collection module templating and standardized onboarding for new services
 
 ## Edge Cases & Error Handling
 
-- 일부 라우터만 SSO 체인을 적용하면 관리 경로 노출 편차가 발생한다.
-- `service_started` 의존성은 부팅 race로 downstream 서비스 오류를 유발할 수 있다.
-- 커스텀 이미지 root 실행은 보안 기준선 위반과 런타임 위험을 높인다.
+- Applying the SSO chain to only some routers creates inconsistent management-path exposure.
+- `service_started` dependencies can cause boot races and downstream service errors.
+- Running custom images as root increases security baseline violations and runtime risk.
 
 ## Failure Modes & Fallback / Human Escalation
 
-- **Failure Mode**: middleware/depends_on 변경 후 UI/API 접근 실패
-- **Fallback**: 직전 안정 compose 계약으로 롤백 후 하드닝 스크립트 재실행
-- **Human Escalation**: SRE + Gateway Operator 승인 하에 정책 예외 적용
+- **Failure Mode**: UI/API access failure after middleware/depends_on changes
+- **Fallback**: roll back to the previous stable Compose contract, then rerun the hardening script
+- **Human Escalation**: apply a policy exception with SRE and Gateway Operator approval
 
 ## Verification
 
@@ -115,7 +115,7 @@ bash scripts/validation/check-doc-traceability.sh
 
 Service-local `docker compose -f infra/06-observability/docker-compose.yml config` requires the root network and Docker Secret context, or a local validation overlay that declares `infra_net`, `k3d-hyhome`, and the referenced secret files.
 
-가능 환경에서 runtime 검증:
+Runtime verification where the environment allows:
 
 ```bash
 docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d
@@ -126,10 +126,10 @@ docker inspect --format '{{json .State.Health}}' cadvisor
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-OBS-001**: `check-all-hardening.sh 06-observability` 실패 0건
-- **VAL-SPC-OBS-002**: root profile or overlay-backed observability compose 정적 검증 통과
-- **VAL-SPC-OBS-003**: 공개 라우터 middleware 체인 계약 충족
-- **VAL-SPC-OBS-004**: Stage 01-05 optimization-hardening 문서 상호 링크 동기화
+- **VAL-SPC-OBS-001**: `check-all-hardening.sh 06-observability` has zero failures.
+- **VAL-SPC-OBS-002**: root profile or overlay-backed observability Compose static validation passes.
+- **VAL-SPC-OBS-003**: public router middleware chain contract is satisfied.
+- **VAL-SPC-OBS-004**: Stage 01-05 optimization-hardening documents keep reciprocal links synchronized.
 
 ## Agent Role & IO Contract (If Applicable)
 

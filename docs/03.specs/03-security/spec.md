@@ -7,12 +7,12 @@ status: active
 
 ## Overview
 
-이 문서는 `infra/03-security/vault`의 최적화/하드닝 구현 계약을 정의한다. 템플릿 시크릿 경로 정규화, `vault-agent` 헬스체크/출력 볼륨, 하드닝 검증 자동화, 단계적 HA 확장 정책을 명시한다.
+This document defines the optimization/hardening implementation contract for `infra/03-security/vault`. It specifies template secret path normalization, the `vault-agent` healthcheck/output volume, hardening verification automation, and phased HA expansion policy.
 
 ## Strategic Boundaries & Non-goals
 
-- 본 Spec은 Vault/Vault Agent 운영 하드닝 계약을 소유한다.
-- KMS/HSM auto-unseal 및 원격 audit sink 실구현은 다음 단계로 이관한다.
+- This specification owns the Vault/Vault Agent operating hardening contract.
+- KMS/HSM auto-unseal and actual remote audit sink implementation are deferred to the next phase.
 
 ## Related Inputs
 
@@ -25,27 +25,27 @@ status: active
 ## Contracts
 
 - **Config Contract**:
-  - `vault`, `vault-agent`는 `template-stateful-med` 상속을 유지한다.
-  - `vault-agent`는 PID 파일(`/tmp/vault-agent.pid`) 기반 healthcheck를 제공한다.
-  - agent 렌더링 결과는 `/vault/out` persistent volume에 기록한다.
+  - `vault` and `vault-agent` keep inheriting `template-stateful-med`.
+  - `vault-agent` provides a PID file (`/tmp/vault-agent.pid`)-based healthcheck.
+  - Agent rendering output is written to the `/vault/out` persistent volume.
 - **Data / Interface Contract**:
-  - 템플릿 시크릿 경로는 `secret/data/hy-home/<tier>/<service>` 규약을 따른다.
-  - 서비스별 키 계약:
+  - Template secret paths follow the `secret/data/hy-home/<tier>/<service>` convention.
+  - Per-service key contract:
     - `04-data/mng-db`: `password`
     - `02-auth/keycloak`: `db_password`, `admin_username`, `admin_password`
     - `02-auth/oauth2-proxy`: `client_secret`, `cookie_secret`
     - `06-observability/grafana`: `admin_password`, `db_password`, `grafana_client_secret`
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 03-security`를 CI `infrastructure-hardening` job으로 강제한다.
+  - Enforce `scripts/hardening/check-all-hardening.sh 03-security` through the CI `infrastructure-hardening` job.
 
 ## Core Design
 
 - **Component Boundary**:
-  - Vault: KV-v2 시크릿 저장/정책/감사
-  - Vault Agent: AppRole 인증 + template 렌더링
+  - Vault: KV-v2 secret storage, policy, and audit
+  - Vault Agent: AppRole authentication and template rendering
 - **Key Dependencies**:
-  - `01-gateway/traefik` (외부 TLS 종료)
-  - 시크릿 소비 계층(`02-auth`, `04-data`, `06-observability`)
+  - `01-gateway/traefik` (external TLS termination)
+  - Secret-consuming tiers (`02-auth`, `04-data`, `06-observability`)
 - **Tech Stack**:
   - `hashicorp/vault:2.0.1`
   - Docker Compose + `common-optimizations.yml`
@@ -55,8 +55,8 @@ status: active
 - **Schema / Entity Strategy**:
   - KV-v2 path: `secret/data/hy-home/...`
 - **Migration / Transition Plan**:
-  - placeholder 템플릿 제거 후 경로/키 계약 고정
-  - Phase-2에서 auto-unseal/원격 audit 전환 절차 적용
+  - Remove placeholder templates, then lock the path/key contract.
+  - Apply the auto-unseal/remote audit transition procedure in Phase 2.
 
 ## Interfaces & Data Structures
 
@@ -73,15 +73,15 @@ interface VaultTemplateContract {
 
 ## Edge Cases & Error Handling
 
-- AppRole role_id/secret_id 누락 시 agent 렌더 실패
-- path/키 불일치 시 템플릿 빈 출력 또는 오류
-- Vault sealed 상태에서 template refresh 실패
+- Missing AppRole role_id/secret_id causes agent rendering failure.
+- Path/key mismatches cause empty template output or errors.
+- Template refresh fails while Vault is sealed.
 
 ## Failure Modes & Fallback / Human Escalation
 
-- **Failure Mode**: `vault-agent` healthcheck fail 또는 렌더 산출물 미생성
-- **Fallback**: runbook 절차로 seal 상태/AppRole 파일/템플릿 경로 점검 후 재기동
-- **Human Escalation**: Security Operator + Infra on-call 동시 호출
+- **Failure Mode**: `vault-agent` healthcheck failure or missing rendered output
+- **Fallback**: follow the runbook to inspect seal state, AppRole files, and template paths, then restart
+- **Human Escalation**: page Security Operator and Infra on-call together
 
 ## Verification
 
@@ -93,7 +93,7 @@ bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-doc-traceability.sh
 ```
 
-가능 환경에서 runtime 검증:
+Runtime verification where the environment allows:
 
 ```bash
 docker compose --profile security up -d vault vault-agent
@@ -105,11 +105,11 @@ docker compose --profile security exec vault-agent ls -la /vault/out
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-SEC-001**: `check-all-hardening.sh 03-security` 실패 0건
-- **VAL-SPC-SEC-002**: `.ctmpl` placeholder 경로 검출 0건
-- **VAL-SPC-SEC-003**: CI `infrastructure-hardening` job 실행 성공
-- **VAL-SPC-SEC-004**: 문서 추적성 검사 통과
-- **VAL-SPC-SEC-005**: root security/core profile validation 통과
+- **VAL-SPC-SEC-001**: `check-all-hardening.sh 03-security` has zero failures.
+- **VAL-SPC-SEC-002**: `.ctmpl` placeholder path detection returns zero findings.
+- **VAL-SPC-SEC-003**: CI `infrastructure-hardening` job runs successfully.
+- **VAL-SPC-SEC-004**: documentation traceability check passes.
+- **VAL-SPC-SEC-005**: root security/core profile validation passes.
 
 ## Agent Role & IO Contract (If Applicable)
 

@@ -7,16 +7,16 @@ status: completed
 
 ## Overview
 
-이 문서는 `hy-home.docker` 워크스페이스의 목적, 규칙, 환경, 하네스 구성, Agent-first Engineering 구성을 파일 내용 기준으로 분석하고, 현재 구현이 충족하는 계약과 구현 보완이 필요한 gap을 명세한다.
+This document analyzes the `hy-home.docker` workspace purpose, rules, environment, harness configuration, and Agent-first Engineering setup from repository files, then specifies the contracts already satisfied by the current implementation and the gaps that still need implementation work.
 
 ## Strategic Boundaries & Non-goals
 
-- 이 명세는 agent/runtime/governance 계약 분석을 다룬다.
-- 새 agent catalog, parallel Codex catalog, root instruction 확장은 만들지 않는다.
-- `docs/01.requirements`, `docs/02.architecture/requirements`, `docs/02.architecture/decisions`, `docs/05.operations/incidents`에는 새 산출물을 만들지 않는다.
-- PRD/ARD/ADR은 새 product feature, architecture replacement, or durable decision이 아니라 existing harness context-quality fallback 보완이므로 생성하지 않는다.
-- 런타임 변경은 현재 검증에서 gap이 발견된 hook quoting 보완처럼 작고 증명 가능한 변경으로 제한한다.
-- `10-communication` Compose include/IP/network remediation은 별도 infra 작업으로 분리하고 이 HAFE 성공 기준에 포함하지 않는다.
+- This specification covers agent/runtime/governance contract analysis.
+- It does not create a new agent catalog, parallel Codex catalog, or expanded root instructions.
+- It does not create new deliverables under `docs/01.requirements`, `docs/02.architecture/requirements`, `docs/02.architecture/decisions`, or `docs/05.operations/incidents`.
+- It does not create a PRD/ARD/ADR because this work improves an existing harness context-quality fallback rather than adding a new product feature, architecture replacement, or durable decision.
+- Runtime changes are limited to small, provable changes such as hook quoting fixes for gaps found during current validation.
+- `10-communication` Compose include/IP/network remediation is tracked as a separate infrastructure task and is not part of the HAFE success criteria.
 
 ## Related Inputs
 
@@ -43,14 +43,14 @@ status: completed
 
 | Contract | Source | Required Behavior |
 | --- | --- | --- |
-| Workspace purpose | `README.md`, `infra/README.md` | Docker Compose 기반 홈/개발 인프라를 계층형 `infra/`와 stage 문서로 운영한다. |
-| Docs taxonomy | `docs/README.md`, `documentation-protocol.md` | 활성 문서는 `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, `docs/99.templates` 아래에만 둔다. |
-| Thin root shims | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | 루트 파일은 진입과 import만 담당하고 세부 정책은 governance/runtime 문서로 위임한다. |
-| Governance SSOT | `docs/00.agent-governance/` | shared rules, scopes, providers, agents catalog, memory, delegation protocol을 소유한다. |
-| Runtime mirror | `.claude/agents`, `.claude/skills`, `docs/00.agent-governance/agents` | runtime agent/function catalog, model front matter, scope imports, protocol references가 governance catalog와 동기화되어야 한다. 이 검증은 semantic content parity가 아니라 catalog parity를 증명한다. |
-| Codex boundary | `.codex/README.md`, `.codex/hooks.json` | Codex는 hook/context surface이며 parallel delegated-agent catalog를 만들지 않는다. |
-| Graphify context health | `AGENTS.md`, runtime hooks, `scripts/knowledge/report-graphify-health.sh` | Graphify는 clean corpus일 때 navigation aid이며, contamination이 있으면 advisory로 낮추고 tracked source와 canonical docs로 재확인한다. |
-| Verification | `scripts/validation/check-*.sh` and `scripts/hardening/check-all-hardening.sh` | repository contract, docs traceability, default/core Compose profile, supported hardening tiers, hook payload simulation으로 완료를 증명한다. |
+| Workspace purpose | `README.md`, `infra/README.md` | Operate Docker Compose-based home/development infrastructure through layered `infra/` content and stage documents. |
+| Docs taxonomy | `docs/README.md`, `documentation-protocol.md` | Active documents live only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`. |
+| Thin root shims | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | Root files handle entry/import only and delegate detailed policy to governance/runtime documents. |
+| Governance SSOT | `docs/00.agent-governance/` | Owns shared rules, scopes, providers, the agents catalog, memory, and the delegation protocol. |
+| Runtime mirror | `.claude/agents`, `.claude/skills`, `docs/00.agent-governance/agents` | Runtime agent/function catalog entries, model front matter, scope imports, and protocol references must stay synchronized with the governance catalog. This validation proves catalog parity, not semantic content parity. |
+| Codex boundary | `.codex/README.md`, `.codex/hooks.json` | Codex is a hook/context surface and does not create a parallel delegated-agent catalog. |
+| Graphify context health | `AGENTS.md`, runtime hooks, `scripts/knowledge/report-graphify-health.sh` | Graphify is a navigation aid when the corpus is clean; when contamination exists, downgrade it to advisory and re-check against tracked source and canonical docs. |
+| Verification | `scripts/validation/check-*.sh` and `scripts/hardening/check-all-hardening.sh` | Completion is proven through repository contracts, docs traceability, default/core Compose profiles, supported hardening tiers, and hook payload simulation. |
 
 ## Core Design
 
@@ -58,13 +58,13 @@ status: completed
 
 | Area | Files Analyzed | Finding |
 | --- | --- | --- |
-| Workspace purpose and environment | `README.md`, `docs/README.md`, `infra/README.md`, `scripts/README.md` | 목적, docs taxonomy, Compose tiering, validation scripts가 일관된다. |
-| Agent entry and provider routing | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `RTK.md` | provider-neutral entry와 provider shim이 얇게 유지된다. `RTK.md`는 Codex CLI proxy convention을 설명하지만 현재 shell에서는 `rtk`가 없을 수 있다. |
-| Governance rules | `bootstrap.md`, `persona.md`, `task-checklists.md`, `agentic.md`, `documentation-protocol.md`, `stage-authoring-matrix.md`, `scopes/agentic.md` | non-mutating discovery, persona routing, scope loading, template-first docs, completion checks가 명시되어 있다. |
-| Harness runtime | `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `.claude/hooks/*.sh` | supervisor는 `opus`, workers는 `sonnet`, agents는 단일 scope import를 가진다. Claude hooks must preserve JSON output without shell command substitution. |
-| Codex runtime | `.codex/README.md`, `.codex/hooks.json`, `providers/codex.md` | Codex hook은 graphify context와 post-edit validation을 제공하고 policy source가 아니다. |
-| Agent/function catalog | `docs/00.agent-governance/agents/**`, `subagent-protocol.md` | 8 agents와 10 functions가 runtime mirror와 연결되어 있다. |
-| Templates and validators | `docs/99.templates/*.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh` | stage template contract와 runtime drift checks가 repository validation에 포함되어 있다. |
+| Workspace purpose and environment | `README.md`, `docs/README.md`, `infra/README.md`, `scripts/README.md` | Purpose, docs taxonomy, Compose tiering, and validation scripts are consistent. |
+| Agent entry and provider routing | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `RTK.md` | Provider-neutral entry and provider shims remain thin. `RTK.md` describes the Codex CLI proxy convention, though `rtk` may be unavailable in the current shell. |
+| Governance rules | `bootstrap.md`, `persona.md`, `task-checklists.md`, `agentic.md`, `documentation-protocol.md`, `stage-authoring-matrix.md`, `scopes/agentic.md` | Non-mutating discovery, persona routing, scope loading, template-first docs, and completion checks are explicit. |
+| Harness runtime | `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `.claude/hooks/*.sh` | The supervisor uses `opus`, workers use `sonnet`, and agents have exactly one scope import. Claude hooks must preserve JSON output without shell command substitution. |
+| Codex runtime | `.codex/README.md`, `.codex/hooks.json`, `providers/codex.md` | Codex hooks provide graphify context and post-edit validation, not policy authority. |
+| Agent/function catalog | `docs/00.agent-governance/agents/**`, `subagent-protocol.md` | Eight agents and ten functions are connected to the runtime mirror. |
+| Templates and validators | `docs/99.templates/*.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh` | Stage template contracts and runtime drift checks are included in repository validation. |
 
 ### Harness Engineering Components
 

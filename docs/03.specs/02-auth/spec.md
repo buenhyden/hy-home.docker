@@ -7,12 +7,12 @@ status: active
 
 ## Overview
 
-이 문서는 `infra/02-auth`의 최적화/하드닝 구현 계약을 정의한다. Keycloak/OAuth2 Proxy 런타임 구성, 시크릿 주입 방식, fail-closed 운영 원칙, 그리고 검증/문서 추적성 기준을 명시한다.
+This document defines the optimization/hardening implementation contract for `infra/02-auth`. It specifies Keycloak/OAuth2 Proxy runtime configuration, secret injection, fail-closed operating principles, and verification/documentation traceability criteria.
 
 ## Strategic Boundaries & Non-goals
 
-- 본 Spec은 인증 인프라 운영 품질과 보안 하드닝을 소유한다.
-- 애플리케이션별 RBAC 비즈니스 로직, 신규 IdP 도입, 프로토콜 변경은 비범위다.
+- This specification owns authentication infrastructure operating quality and security hardening.
+- Application-specific RBAC business logic, new IdP adoption, and protocol changes are out of scope.
 
 ## Related Inputs
 
@@ -25,22 +25,22 @@ status: active
 ## Contracts
 
 - **Config Contract**:
-  - Keycloak: `template-infra-high`, `/run/secrets/*` 기반 DB/Admin secret 주입 유지
-  - OAuth2 Proxy root-active dev leaf: `template-infra-readonly-med`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, `mng-valkey` 세션 저장소
-  - OAuth2 Proxy local/full leaf: `template-infra-readonly-med`, `Dockerfile`, `docker-entrypoint.sh`, `oauth2-proxy-valkey` 세션 저장소
+  - Keycloak: keep `template-infra-high` and `/run/secrets/*`-based DB/Admin secret injection
+  - OAuth2 Proxy root-active dev leaf: `template-infra-readonly-med`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, `mng-valkey` session store
+  - OAuth2 Proxy local/full leaf: `template-infra-readonly-med`, `Dockerfile`, `docker-entrypoint.sh`, `oauth2-proxy-valkey` session store
 - **Data / Interface Contract**:
   - OIDC issuer: `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`
   - Callback: `https://auth.${DEFAULT_URL}/oauth2/callback`
-  - Session store: root-active dev leaf는 `redis://mng-valkey:6379`, local/full leaf는 `redis://oauth2-proxy-valkey:6379`
+  - Session store: root-active dev leaf uses `redis://mng-valkey:6379`; local/full leaf uses `redis://oauth2-proxy-valkey:6379`
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 02-auth` 통과가 CI merge gate 조건
-  - Guide/Operation/Runbook 문서는 상호 링크를 유지
+  - Passing `scripts/hardening/check-all-hardening.sh 02-auth` is required for the CI merge gate.
+  - Guide/Operation/Runbook documents keep reciprocal links.
 
 ## Core Design
 
 - **Component Boundary**:
-  - Keycloak: 토큰 발급/IdP 관리
-  - OAuth2 Proxy: ForwardAuth 인증 게이트
+  - Keycloak: token issuance and IdP management
+  - OAuth2 Proxy: ForwardAuth authentication gate
 - **Key Dependencies**:
   - `mng-pg` (Keycloak DB)
   - `mng-valkey` (OAuth2 session)
@@ -53,11 +53,11 @@ status: active
 ## Data Modeling & Storage Strategy
 
 - **Schema / Entity Strategy**:
-  - Keycloak realm/user/client는 PostgreSQL에 저장
-  - OAuth2 Proxy 세션은 Valkey 키 공간에 저장
+  - Keycloak realm/user/client state is stored in PostgreSQL.
+  - OAuth2 Proxy sessions are stored in the Valkey keyspace.
 - **Migration / Transition Plan**:
-  - 시크릿 주입 경로를 Compose 인라인 셸에서 엔트리포인트로 이전
-  - 도메인/issuer/callback 값을 환경 변수 기반으로 표준화
+  - Move the secret injection path from Compose inline shell to the entrypoint.
+  - Standardize domain/issuer/callback values through environment variables.
 
 ## Interfaces & Data Structures
 
@@ -74,7 +74,7 @@ interface AuthHardeningContract {
 
 ## API Contract (If Applicable)
 
-인증 계층은 애플리케이션 API를 직접 제공하지 않는다. 외부 노출 계약은 gateway/auth endpoint 동작으로 제한한다.
+The authentication layer does not directly provide application APIs. The external exposure contract is limited to gateway/auth endpoint behavior.
 
 - `/oauth2/auth`
 - `/oauth2/start`
@@ -83,19 +83,19 @@ interface AuthHardeningContract {
 
 ## Edge Cases & Error Handling
 
-- Keycloak issuer 불가용: OAuth2 Proxy 인증 실패(기본 fail-closed)
-- Cookie domain mismatch: 로그인 루프 발생
-- Secret rotation 직후: 기존 세션 무효화
+- Keycloak issuer unavailable: OAuth2 Proxy authentication fails with the default fail-closed behavior.
+- Cookie domain mismatch: login loops occur.
+- Immediately after secret rotation: existing sessions are invalidated.
 
 ## Failure Modes & Fallback / Human Escalation
 
-- **Failure Mode**: OIDC provider timeout/5xx 지속
-- **Fallback**: degraded-mode 판단(정책/런북 절차에 따라 제한적 우회 또는 유지보수 안내)
-- **Human Escalation**: Infra on-call + Security reviewer 동시 호출
+- **Failure Mode**: sustained OIDC provider timeout/5xx responses
+- **Fallback**: decide degraded mode, with limited bypass or maintenance guidance according to policy/runbook procedure
+- **Human Escalation**: page Infra on-call and Security reviewer together
 
 ## Verification
 
-필수 검증 명령:
+Required verification commands:
 
 ```bash
 bash scripts/hardening/check-all-hardening.sh 02-auth
@@ -107,9 +107,9 @@ bash scripts/validation/check-doc-traceability.sh
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-AUTH-001**: check-all-hardening.sh 02-auth 실패 0건
-- **VAL-SPC-AUTH-002**: root `auth`/`core` profile compose validation과 CI `infrastructure-hardening` job이 실행됨
-- **VAL-SPC-AUTH-003**: 02-auth Guide/Operation/Runbook이 상호 링크로 연결됨
+- **VAL-SPC-AUTH-001**: `check-all-hardening.sh 02-auth` has zero failures.
+- **VAL-SPC-AUTH-002**: root `auth`/`core` profile Compose validation and the CI `infrastructure-hardening` job run successfully.
+- **VAL-SPC-AUTH-003**: 02-auth Guide/Operation/Runbook are connected through reciprocal links.
 
 ## Agent Role & IO Contract (If Applicable)
 
