@@ -163,7 +163,7 @@ repo-contract guard에 포함해 현재 구현 자체를 QA 기준에 맞게 보
 
 ## Verification Summary
 
-- Stage 01-05 inventory: `docs/01.requirements=25`, `docs/02.architecture=51`, `docs/03.specs=43`, `docs/04.execution=125`, `docs/05.operations=269`, total `513`.
+- Stage 01-05 inventory: `docs/01.requirements=25`, `docs/02.architecture=51`, `docs/03.specs=43`, `docs/04.execution=125`, `docs/05.operations=267`, total `511`.
 - operations 서비스 커버리지: `check-doc-implementation-alignment.sh` → `operations_service_docs_checked=143`, `failures=0`.
 - operations bucket-root scan: `docs/05.operations/{guides,policies,runbooks}` root에는 각 bucket `README.md`만 남음.
 - stale operations root-path scan: 이전 bucket-root leaf 형태(`guides/<leaf>.md`, `runbooks/<leaf>.md`, `policies/<leaf>.md`) 0건.
