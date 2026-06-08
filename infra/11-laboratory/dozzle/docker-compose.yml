@@ -19,7 +19,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-med
     container_name: dozzle
-    image: amir20/dozzle:v10.6.4
+    image: amir20/dozzle:v10.6.5
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - dozzle-data:/data

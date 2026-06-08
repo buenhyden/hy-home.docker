@@ -30,7 +30,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: hashicorp/vault:2.0.1
+    image: hashicorp/vault:2.0.2
     container_name: vault
     restart: unless-stopped
     cap_add:
@@ -88,7 +88,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: hashicorp/vault:2.0.1
+    image: hashicorp/vault:2.0.2
     container_name: vault-agent
     restart: unless-stopped
     cap_add:

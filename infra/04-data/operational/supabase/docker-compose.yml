@@ -12,7 +12,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-studio
-    image: supabase/studio:2026.06.01-sha-a4334a2
+    image: supabase/studio:2026.06.08-sha-8af2bb0
     restart: unless-stopped
     depends_on:
       analytics:
@@ -52,7 +52,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-kong
-    image: kong:3.9.1
+    image: kong:3.9.2
     tmpfs:
       - /tmp
       - /var/run/kong
@@ -126,7 +126,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-low
     container_name: supabase-rest
-    image: postgrest/postgrest:v14.12
+    image: postgrest/postgrest:v14.13
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -160,7 +160,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: realtime-dev.supabase-realtime
-    image: supabase/realtime:v2.103.1
+    image: supabase/realtime:v2.104.2
     restart: unless-stopped
     depends_on:
       db:
@@ -195,7 +195,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-storage
-    image: supabase/storage-api:v1.60.4
+    image: supabase/storage-api:v1.60.11
     restart: unless-stopped
     read_only: false
     volumes:
@@ -329,7 +329,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-analytics
-    image: supabase/logflare:1.43.3
+    image: supabase/logflare:1.43.4
     restart: unless-stopped
     ports:
       - ${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
@@ -361,7 +361,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-db
-    image: supabase/postgres:17.6.1.132
+    image: supabase/postgres:17.6.1.133
     restart: unless-stopped
     read_only: false
     volumes:
@@ -402,7 +402,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-vector
-    image: timberio/vector:0.55.0-alpine
+    image: timberio/vector:0.56.0-alpine
     restart: unless-stopped
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/logs/vector.yml:/etc/vector/vector.yml:ro

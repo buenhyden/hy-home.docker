@@ -114,7 +114,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: oliver006/redis_exporter:v1.84.0-alpine
+    image: oliver006/redis_exporter:v1.86.0-alpine
     container_name: oauth2-proxy-redis-exporter
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
