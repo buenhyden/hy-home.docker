@@ -25,7 +25,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
-    image: neo4j:5.26.26-community
+    image: neo4j:5.26.27-community
     container_name: neo4j
     hostname: neo4j
     restart: unless-stopped

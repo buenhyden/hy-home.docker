@@ -200,7 +200,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/alloy:v1.16.2
+    image: grafana/alloy:v1.16.3
     container_name: infra-alloy
     tmpfs:
       - /tmp
@@ -401,7 +401,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/pyroscope:2.0.2
+    image: grafana/pyroscope:2.0.3
     container_name: infra-pyroscope
     command:
       - -config.file=/etc/pyroscope/pyroscope.yaml
@@ -436,7 +436,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-low
-    image: prom/alertmanager:v0.32.1
+    image: prom/alertmanager:v0.32.2
     container_name: infra-alertmanager
     tmpfs:
       - /tmp
