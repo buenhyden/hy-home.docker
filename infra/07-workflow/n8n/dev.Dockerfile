@@ -1,6 +1,6 @@
 ARG N8N_VERSION=2.15.0
 
-FROM alpine:3.23.4 AS font-builder
+FROM alpine:3.24.0 AS font-builder
 RUN apk add --no-cache \
   fontconfig \
   font-noto \

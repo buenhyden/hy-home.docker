@@ -2,7 +2,7 @@
 # - https://docs.opensearch.org/latest/install-and-configure/plugins/
 # - https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/
 
-FROM opensearchproject/opensearch:3.6.0
+FROM opensearchproject/opensearch:3.7.0
 
 LABEL version="0.1" description="OpenSearch 3.5 with custom plugins and secret-based internal users injection"
 
