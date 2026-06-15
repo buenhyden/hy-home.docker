@@ -23,7 +23,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-ai-high
-    image: ollama/ollama:0.30.7
+    image: ollama/ollama:0.30.8
     container_name: ollama
     read_only: false
     environment:
@@ -73,7 +73,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
-    image: lucabecker42/ollama-exporter:1.0.1
+    image: lucabecker42/ollama-exporter:1.0.2
     container_name: ollama-exporter
     read_only: true
     tmpfs:
