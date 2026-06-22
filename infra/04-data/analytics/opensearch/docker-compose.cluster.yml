@@ -245,7 +245,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
-    image: opensearchproject/opensearch-dashboards:3.6.0
+    image: opensearchproject/opensearch-dashboards:3.7.0
     container_name: opensearch-dashboards
     networks:
       - infra_net
