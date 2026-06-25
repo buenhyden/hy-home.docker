@@ -23,7 +23,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: rabbitmq:4.3.1-management-alpine
+    image: rabbitmq:4.3.2-management-alpine
     container_name: rabbitmq
     hostname: rabbitmq
     read_only: false

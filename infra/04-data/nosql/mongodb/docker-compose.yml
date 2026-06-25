@@ -14,7 +14,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
-    image: alpine:3.24.0
+    image: alpine:3.24.1
     container_name: mongo-key-generator
     read_only: false
     restart: 'no'
