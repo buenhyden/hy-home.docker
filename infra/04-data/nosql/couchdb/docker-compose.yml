@@ -175,7 +175,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: curlimages/curl:8.20.0
+    image: curlimages/curl:8.21.0
     container_name: couchdb-cluster-init
     read_only: true
     tmpfs:
