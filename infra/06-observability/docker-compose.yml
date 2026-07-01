@@ -250,7 +250,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-med
-    image: grafana/grafana:13.0.2
+    image: grafana/grafana:13.1.0
     container_name: infra-grafana
     environment:
       GF_SERVER_ROOT_URL: https://grafana.${DEFAULT_URL}

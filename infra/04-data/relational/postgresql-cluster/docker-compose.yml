@@ -177,7 +177,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
-    image: haproxy:3.4.0
+    image: haproxy:3.4.1
     container_name: pg-router
     read_only: true
     tmpfs:
@@ -422,7 +422,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
-    image: prometheuscommunity/postgres-exporter:v0.19.1
+    image: prometheuscommunity/postgres-exporter:v0.20.0
     container_name: pg-0-exporter
     read_only: true
     tmpfs:
@@ -465,7 +465,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
-    image: prometheuscommunity/postgres-exporter:v0.19.1
+    image: prometheuscommunity/postgres-exporter:v0.20.0
     container_name: pg-1-exporter
     read_only: true
     tmpfs:
@@ -508,7 +508,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
-    image: prometheuscommunity/postgres-exporter:v0.19.1
+    image: prometheuscommunity/postgres-exporter:v0.20.0
     container_name: pg-2-exporter
     read_only: true
     tmpfs:
