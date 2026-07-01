@@ -135,7 +135,7 @@ This document is the technical specification for the May 2026 workspace document
 ## Verification
 
 ```bash
-BASE=/home/hy/project-infra/hy-home.docker
+BASE=/home/hy/projects/hy-home.docker
 cd "$BASE"
 
 # ADR title format

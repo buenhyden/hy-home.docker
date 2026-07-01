@@ -126,7 +126,7 @@ This document is the technical specification for follow-up work after PR #89 (`w
 ## Verification
 
 ```bash
-cd /home/hy/project-infra/hy-home.docker
+cd /home/hy/projects/hy-home.docker
 
 # Confirm R4/R5 rules exist
 grep -c "R4\|R5" docs/00.agent-governance/rules/documentation-protocol.md

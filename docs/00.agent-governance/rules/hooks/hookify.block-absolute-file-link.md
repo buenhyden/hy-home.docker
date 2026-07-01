@@ -30,7 +30,7 @@ action: block
 
 ```markdown
 <!-- BLOCKED: absolute file URL -->
-[document link](file:///home/hy/project-infra/hy-home.docker/docs/01.requirements/prd.md)
+[document link](file:///home/hy/projects/hy-home.docker/docs/01.requirements/prd.md)
 
 <!-- ALLOWED: relative link -->
 [document link](../01.requirements/prd.md)
