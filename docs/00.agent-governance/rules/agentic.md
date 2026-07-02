@@ -83,7 +83,7 @@ Standard behavior contract for repo-local, auditable agent execution.
   `docs/00.agent-governance/agents/` catalog entries.
 - Record work progress in `docs/00.agent-governance/memory/progress.md`.
 - Record historical notes under `docs/00.agent-governance/memory/` from
-  `docs/99.templates/memory.template.md`; do not use memory notes as active policy.
+  `docs/99.templates/templates/governance/memory.template.md`; do not use memory notes as active policy.
 
 ## Related Documents
 

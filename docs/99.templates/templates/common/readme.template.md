@@ -275,31 +275,6 @@ Historical evidence 또는 legacy README를 정규화할 때는 현재 사실로
 - 템플릿 없이 새 형식을 임의로 추가하기 전에 기존 문서 체계를 먼저 검토한다.
 - 동일 목적의 문서가 이미 존재하면 새 문서를 만들기보다 기존 문서를 확장하는 방식을 우선한다.
 
-## Metadata Expectations
-
-필요한 경우 문서에는 다음 메타데이터를 포함한다.
-
-- `title`
-- `type`
-- `status`
-- `owner`
-- `updated`
-- `links` 또는 관련 상위/하위 문서 정보
-
-예시:
-
-```yaml
----
-title: {title}
-type: {document-type}
-status: draft
-owner: {team-or-person}
-updated: YYYY-MM-DD
-links:
-  - {related-doc}
----
-```
-
 ## SSoT References
 
 - {PRD link}

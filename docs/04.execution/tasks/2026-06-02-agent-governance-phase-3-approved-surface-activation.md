@@ -15,7 +15,7 @@ This document records actual work evidence for reflecting user-approved policy, 
 - **Phase 2 Plan**: [Agent Governance Phase 2 Strategy Integration Plan](../plans/2026-06-02-agent-governance-phase-2-strategy-integration.md)
 - **Phase 2 Task**: [Agent Governance Phase 2 Strategy Integration Task](./2026-06-02-agent-governance-phase-2-strategy-integration.md)
 - **Task Checklist**: [Task Checklists](../../00.agent-governance/rules/task-checklists.md)
-- **Task Template**: [Task template](../../99.templates/task.template.md)
+- **Task Template**: [Task template](../../99.templates/templates/sdlc/task.template.md)
 
 ## Working Rules
 
@@ -126,4 +126,4 @@ This document records actual work evidence for reflecting user-approved policy, 
 - **Infrastructure Scope**: [Infrastructure Operational Scope](../../00.agent-governance/scopes/infra.md)
 - **QA Scope**: [Quality Assurance Scope](../../00.agent-governance/scopes/qa.md)
 - **GitHub Governance**: [GitHub Governance Policy](../../00.agent-governance/rules/github-governance.md)
-- **Task Template**: [Task template](../../99.templates/task.template.md)
+- **Task Template**: [Task template](../../99.templates/templates/sdlc/task.template.md)

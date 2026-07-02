@@ -55,7 +55,7 @@ Always check the highest existing sequence number in `docs/02.architecture/decis
 
 ## MADR-Extended Template (hy-home.docker)
 
-Use `docs/99.templates/adr.template.md` as the base, then add these sections:
+Use `docs/99.templates/templates/sdlc/adr.template.md` as the base, then add these sections:
 
 ```markdown
 ## Status

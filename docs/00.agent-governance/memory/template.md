@@ -2,11 +2,11 @@
 layer: agentic
 ---
 
-<!-- Mirror of docs/99.templates/memory.template.md — do not edit independently -->
+<!-- Mirror of docs/99.templates/templates/governance/memory.template.md — do not edit independently -->
 
 # Memory: {short-title}
 
-> Use `docs/99.templates/memory.template.md` as the canonical template for durable advisory memory notes.
+> Use `docs/99.templates/templates/governance/memory.template.md` as the canonical template for durable advisory memory notes.
 >
 > Rules:
 >

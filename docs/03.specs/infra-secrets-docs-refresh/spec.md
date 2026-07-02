@@ -25,7 +25,7 @@ This specification owns documentation structure, README contracts, stage documen
 
 - **Config Contract**: `infra/**/docker-compose*.yml`, config files, and the root `docker-compose.yml` are analysis targets and are not modified by default.
 - **Data / Interface Contract**: `secrets/**/*.txt` values are not read. Only filenames, directories, READMEs, and `.example` files are used as documentation inputs.
-- **Governance Contract**: new stage documents follow the matching templates. READMEs follow the base structure in `docs/99.templates/readme.template.md`.
+- **Governance Contract**: new stage documents follow the matching templates. READMEs follow the base structure in `docs/99.templates/templates/common/readme.template.md`.
 
 ## Current Baseline
 

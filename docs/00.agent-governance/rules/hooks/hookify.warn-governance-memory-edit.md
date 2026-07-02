@@ -17,7 +17,7 @@ Memory notes are advisory retrieval context, not active policy.
 
 Before finishing:
 
-- Use `docs/99.templates/memory.template.md` for durable notes.
+- Use `docs/99.templates/templates/governance/memory.template.md` for durable notes.
 - Do not store transcripts, raw logs, shell history, credentials, tokens, private keys, or secret values.
 - Update `docs/00.agent-governance/memory/progress.md` when creating or materially changing a memory note.
 

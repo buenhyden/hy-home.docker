@@ -62,5 +62,5 @@ the Parent Plan and the contract-check results that were executed.
 ## Related Documents
 
 - **Parent Plan**: [Execution plan](../plans/2026-06-02-governance-optimization.md)
-- **Service template**: [Service scaffold template](../../99.templates/service.template.md)
+- **Service template**: [Service scaffold template](../../99.templates/templates/spec-contracts/service.template.md)
 - **Operations**: [New-service onboarding guide](../../05.operations/guides/00-workspace/new-service-onboarding.md)

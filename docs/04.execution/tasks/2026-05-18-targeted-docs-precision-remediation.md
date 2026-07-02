@@ -14,7 +14,7 @@ This document records execution status and verification evidence for targeted do
 - **Parent Plan**: [Targeted documentation precision remediation plan](../plans/2026-05-18-targeted-docs-precision-remediation.md)
 - **Documentation Protocol**: [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage Matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- **README Template**: [README template](../../99.templates/readme.template.md)
+- **README Template**: [README template](../../99.templates/templates/common/readme.template.md)
 
 ## Working Rules
 

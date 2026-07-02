@@ -64,31 +64,31 @@ done
 
 section "Template inventory"
 required_templates=(
-  "archive.template.md"
-  "adr.template.md"
-  "agent-design.template.md"
-  "api-spec.template.md"
-  "ard.template.md"
-  "data-model.template.md"
-  "guide.template.md"
-  "harness-task-contract.template.md"
-  "incident.template.md"
-  "memory.template.md"
-  "openapi.template.yaml"
-  "plan.template.md"
-  "policy.template.md"
-  "postmortem.template.md"
-  "prd.template.md"
-  "progress.template.md"
-  "readme.template.md"
-  "reference.template.md"
-  "runbook.template.md"
-  "schema.template.graphql"
-  "service.template.md"
-  "service.template.proto"
-  "spec.template.md"
-  "task.template.md"
-  "tests.template.md"
+  "templates/common/archive.template.md"
+  "templates/common/readme.template.md"
+  "templates/common/reference.template.md"
+  "templates/governance/harness-task-contract.template.md"
+  "templates/governance/memory.template.md"
+  "templates/governance/progress.template.md"
+  "templates/operations/guide.template.md"
+  "templates/operations/incident.template.md"
+  "templates/operations/policy.template.md"
+  "templates/operations/postmortem.template.md"
+  "templates/operations/runbook.template.md"
+  "templates/sdlc/adr.template.md"
+  "templates/sdlc/ard.template.md"
+  "templates/sdlc/plan.template.md"
+  "templates/sdlc/prd.template.md"
+  "templates/sdlc/spec.template.md"
+  "templates/sdlc/task.template.md"
+  "templates/spec-contracts/agent-design.template.md"
+  "templates/spec-contracts/api-spec.template.md"
+  "templates/spec-contracts/data-model.template.md"
+  "templates/spec-contracts/openapi.template.yaml"
+  "templates/spec-contracts/schema.template.graphql"
+  "templates/spec-contracts/service.template.md"
+  "templates/spec-contracts/service.template.proto"
+  "templates/spec-contracts/tests.template.md"
 )
 
 for template in "${required_templates[@]}"; do
@@ -96,21 +96,22 @@ for template in "${required_templates[@]}"; do
 done
 
 mapfile -t misplaced_templates < <(
-  find docs -path docs/99.templates -prune -o -type f \
+  find docs -type f \
     \( -name '*.template.md' -o -name '*.template.yaml' -o -name '*.template.yml' -o -name '*.template.graphql' -o -name '*.template.proto' \) \
+    ! -path 'docs/99.templates/templates/*' \
     -print
 )
 if [[ "${#misplaced_templates[@]}" -gt 0 ]]; then
-  fail "templates found outside docs/99.templates"
+  fail "templates found outside docs/99.templates/templates"
   printf '  %s\n' "${misplaced_templates[@]}" >&2
 fi
 
 section "Approved surface evidence template"
-if ! grep -q "^## Approved Surface Evidence" docs/99.templates/task.template.md; then
-  echo "FAIL: docs/99.templates/task.template.md must include Approved Surface Evidence for high-risk work" >&2
+if ! grep -q "^## Approved Surface Evidence" docs/99.templates/templates/sdlc/task.template.md; then
+  echo "FAIL: docs/99.templates/templates/sdlc/task.template.md must include Approved Surface Evidence for high-risk work" >&2
   failures=$((failures + 1))
 fi
-if ! grep -q "policy, runtime, CI, templates, secrets, remote GitHub, model policy, or provider" docs/99.templates/task.template.md; then
+if ! grep -q "policy, runtime, CI, templates, secrets, remote GitHub, model policy, or provider" docs/99.templates/templates/sdlc/task.template.md; then
   echo "FAIL: task.template.md Approved Surface Evidence must name high-risk surface classes" >&2
   failures=$((failures + 1))
 fi
@@ -1267,7 +1268,7 @@ import re
 import sys
 
 failures: list[str] = []
-for path in sorted(pathlib.Path("docs/99.templates").glob("*.template.md")):
+for path in sorted(pathlib.Path("docs/99.templates/templates").rglob("*.template.md")):
     text = path.read_text(errors="ignore")
     if not text.startswith("---\nstatus: draft\n---"):
         failures.append(f"{path}: Markdown template frontmatter must start with status: draft")
@@ -1541,7 +1542,7 @@ for path in active_markdown_files:
                 if path_like.match(label) and path_like.match(href) and label != href:
                     failures.append(f"{path}:{line_no}: path-like link label and href differ: {label} != {href}")
 
-for path in sorted(template_root.glob("*.template.md")):
+for path in sorted(template_root.rglob("*.template.md")):
     for line_no, line in iter_unfenced_lines(path):
         for match in pseudo_doc_link.finditer(line):
             failures.append(f"{path}:{line_no}: template Related Documents examples must use Markdown links: {match.group(1)}")
@@ -1676,7 +1677,7 @@ import pathlib
 import sys
 
 failures: list[str] = []
-for path in sorted(pathlib.Path("docs/99.templates").glob("*.template.*")):
+for path in sorted(pathlib.Path("docs/99.templates/templates").rglob("*.template.*")):
     if path.suffix == ".md":
         continue
     text = path.read_text(errors="ignore")
@@ -2484,7 +2485,7 @@ required_template_literals = [
     "scripts/validation/",
     "root-level `scripts/*.sh` wrappers",
 ]
-for path in [pathlib.Path("docs/99.templates/readme.template.md"), pathlib.Path("infra/README.md")]:
+for path in [pathlib.Path("docs/99.templates/templates/common/readme.template.md"), pathlib.Path("infra/README.md")]:
     if not path.is_file():
         failures.append(f"missing rubric source: {path}")
         continue
@@ -2581,8 +2582,8 @@ required_files = [
     pathlib.Path("docs/00.agent-governance/memory/README.md"),
     pathlib.Path("docs/00.agent-governance/memory/template.md"),
     pathlib.Path("docs/00.agent-governance/memory/progress.md"),
-    pathlib.Path("docs/99.templates/memory.template.md"),
-    pathlib.Path("docs/99.templates/progress.template.md"),
+    pathlib.Path("docs/99.templates/templates/governance/memory.template.md"),
+    pathlib.Path("docs/99.templates/templates/governance/progress.template.md"),
 ]
 
 for path in required_files:
@@ -2605,13 +2606,13 @@ checks = {
         "Memory is advisory",
         "memory/progress.md",
         "progress logging",
-        "docs/99.templates/memory.template.md",
+        "docs/99.templates/templates/governance/memory.template.md",
     ],
     pathlib.Path("docs/00.agent-governance/rules/agentic.md"): [
         "advisory retrieval context",
         "Memory notes must not",
         "running work log",
-        "docs/99.templates/memory.template.md",
+        "docs/99.templates/templates/governance/memory.template.md",
     ],
     pathlib.Path("docs/00.agent-governance/rules/task-checklists.md"): [
         "progress.md",
@@ -2620,36 +2621,36 @@ checks = {
         "final status",
     ],
     pathlib.Path("docs/00.agent-governance/rules/stage-authoring-matrix.md"): [
-        "docs/99.templates/memory.template.md",
-        "docs/99.templates/progress.template.md",
+        "docs/99.templates/templates/governance/memory.template.md",
+        "docs/99.templates/templates/governance/progress.template.md",
         "progress log updated",
     ],
     pathlib.Path("docs/00.agent-governance/memory/README.md"): [
         "advisory retrieval context",
         "do not define active policy",
         "Retrieve relevant notes",
-        "docs/99.templates/memory.template.md",
+        "docs/99.templates/templates/governance/memory.template.md",
         "mandatory agent progress log",
-        "docs/99.templates/progress.template.md",
+        "docs/99.templates/templates/governance/progress.template.md",
     ],
     pathlib.Path("docs/00.agent-governance/memory/template.md"): [
-        "docs/99.templates/memory.template.md",
+        "docs/99.templates/templates/governance/memory.template.md",
         "Retrieval Keywords",
         "Last Verified",
         "Evidence",
     ],
-    pathlib.Path("docs/99.templates/memory.template.md"): [
+    pathlib.Path("docs/99.templates/templates/governance/memory.template.md"): [
         "Memory notes are advisory retrieval context",
         "Retrieval Keywords",
         "Last Verified",
         "## Evidence",
     ],
     pathlib.Path("docs/00.agent-governance/memory/progress.md"): [
-        "docs/99.templates/progress.template.md",
+        "docs/99.templates/templates/governance/progress.template.md",
         "## Usage Contract",
         "## Current Work Log",
     ],
-    pathlib.Path("docs/99.templates/progress.template.md"): [
+    pathlib.Path("docs/99.templates/templates/governance/progress.template.md"): [
         "AI agents must update",
         "## Current Work Log",
         "## Phase Tracker",
@@ -2706,7 +2707,7 @@ import sys
 
 failures: list[str] = []
 root = pathlib.Path("docs/90.references")
-template = pathlib.Path("docs/99.templates/reference.template.md")
+template = pathlib.Path("docs/99.templates/templates/common/reference.template.md")
 
 if not root.is_dir():
     failures.append("missing reference stage folder: docs/90.references")
@@ -3737,7 +3738,7 @@ harness_map="docs/00.agent-governance/harness-implementation-map.md"
 approval_boundaries="docs/00.agent-governance/rules/approval-boundaries.md"
 [[ -f "$harness_map" ]] || fail "missing harness implementation map: $harness_map"
 [[ -f "$approval_boundaries" ]] || fail "missing approval boundaries rule: $approval_boundaries"
-[[ -f "docs/99.templates/harness-task-contract.template.md" ]] || fail "missing harness task contract template"
+[[ -f "docs/99.templates/templates/governance/harness-task-contract.template.md" ]] || fail "missing harness task contract template"
 [[ -f "scripts/validation/validate-harness.sh" ]] || fail "missing harness validation wrapper: scripts/validation/validate-harness.sh"
 if ! grep -q -- "--harness" scripts/validation/run-local-qa-gates.sh; then
   fail "run-local-qa-gates.sh missing --harness mode"

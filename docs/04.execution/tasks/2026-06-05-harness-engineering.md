@@ -99,7 +99,7 @@ PR, and operations surfaces.
 | `.github/PULL_REQUEST_TEMPLATE.md` | Updated Harness Impact evidence command to use the wrapper. |
 | `docs/00.agent-governance/harness-implementation-map.md` | Added wrapper as the harness gate surface. |
 | `docs/00.agent-governance/rules/approval-boundaries.md` | Updated required harness validation entrypoint. |
-| `docs/99.templates/harness-task-contract.template.md` | Updated required validation command. |
+| `docs/99.templates/templates/governance/harness-task-contract.template.md` | Updated required validation command. |
 
 ## Secret Handling
 
@@ -165,5 +165,5 @@ PR, and operations surfaces.
 
 - **Harness Map**: [Harness implementation map](../../00.agent-governance/harness-implementation-map.md)
 - **Approval Boundaries**: [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md)
-- **Harness Template**: [Harness task contract template](../../99.templates/harness-task-contract.template.md)
+- **Harness Template**: [Harness task contract template](../../99.templates/templates/governance/harness-task-contract.template.md)
 - **Scripts README**: [Scripts README](../../../scripts/README.md)

@@ -95,9 +95,9 @@ docs/03.specs/
 ## How to Work in This Area
 
 1. 새 spec을 만들기 전에 상위 PRD, ARD, ADR이 있는지 확인합니다.
-2. 새 `spec.md`는 [spec template](../99.templates/spec.template.md)을 복사해 작성합니다.
-3. README는 [README template](../99.templates/readme.template.md)을 기준으로 작성하고, 링크는 대상 README 위치 기준으로 계산합니다.
-4. Agent 전용 설계가 필요하면 [agent design template](../99.templates/agent-design.template.md)을 사용해 해당 feature 디렉터리의 `agent-design.md`에 둡니다.
+2. 새 `spec.md`는 [spec template](../99.templates/templates/sdlc/spec.template.md)을 복사해 작성합니다.
+3. README는 [README template](../99.templates/templates/common/readme.template.md)을 기준으로 작성하고, 링크는 대상 README 위치 기준으로 계산합니다.
+4. Agent 전용 설계가 필요하면 [agent design template](../99.templates/templates/spec-contracts/agent-design.template.md)을 사용해 해당 feature 디렉터리의 `agent-design.md`에 둡니다.
 5. API, schema, proto, tests, data model 계약은 같은 feature 디렉터리 아래 child document로 둡니다.
 6. `## Related Documents`는 실제 Markdown 링크로 작성합니다. 문서 경로를 코드 span 안에만 남기지 않습니다.
 7. 운영 링크는 목적별 bucket을 맞춥니다: guide는 `docs/05.operations/guides/`, policy는 `docs/05.operations/policies/`, runbook은 `docs/05.operations/runbooks/`.
@@ -145,8 +145,8 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Plan**: [../04.execution/plans/README.md](../04.execution/plans/README.md)
 - **Tasks**: [../04.execution/tasks/README.md](../04.execution/tasks/README.md)
 - **Operations Stage**: [../05.operations/README.md](../05.operations/README.md)
-- **Spec template**: [../99.templates/spec.template.md](../99.templates/spec.template.md)
-- **README template**: [../99.templates/readme.template.md](../99.templates/readme.template.md)
+- **Spec template**: [../99.templates/templates/sdlc/spec.template.md](../99.templates/templates/sdlc/spec.template.md)
+- **README template**: [../99.templates/templates/common/readme.template.md](../99.templates/templates/common/readme.template.md)
 - **Agentic Engineering Implementation Audit Pack Spec**: [agentic-engineering-implementation-audit-pack/spec.md](./agentic-engineering-implementation-audit-pack/spec.md)
 - **Harness / Agent-first Engineering Spec**: [harness-agent-first-engineering/spec.md](./harness-agent-first-engineering/spec.md)
 - **Home Docker Revalidation Deferred Follow-up Spec**: [home-docker-revalidation-deferred-follow-up/spec.md](./home-docker-revalidation-deferred-follow-up/spec.md)

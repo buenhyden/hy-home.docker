@@ -58,7 +58,7 @@ research/
 ## How to Work in This Area
 
 1. 새 research 문서가 active decision, policy, plan, runbook을 대체하지 않는지 확인합니다.
-2. 새 non-README reference는 [reference.template.md](../../99.templates/reference.template.md)의 필수 섹션을 따릅니다.
+2. 새 non-README reference는 [reference.template.md](../../99.templates/templates/common/reference.template.md)의 필수 섹션을 따릅니다.
 3. 새 non-README reference는 closed-surface contract에 맞춰 영어로 작성합니다.
 4. 외부 자료는 공식 vendor docs, 표준 기관 문서, 원 논문, 공식 repository를 우선합니다.
 5. source가 빠르게 변하는 제품 문서이면 문서 안에 재검증 필요성을 명시합니다.
@@ -69,6 +69,6 @@ research/
 
 - [90.references](../README.md)
 - [docs index](../../README.md)
-- [reference template](../../99.templates/reference.template.md)
+- [reference template](../../99.templates/templates/common/reference.template.md)
 - [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

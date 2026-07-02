@@ -29,7 +29,7 @@ This README is for:
 - Record out-of-scope breakages that should not be fixed during the current task.
 - Record repeated failure patterns, validator pitfalls, and resolved governance conflicts.
 - Retrieve relevant notes before governance, docs, runtime, or repeated-failure tasks.
-- Create or update memory notes from `docs/99.templates/memory.template.md`.
+- Create or update memory notes from `docs/99.templates/templates/governance/memory.template.md`.
 - Write entries in English.
 
 ### Out of Scope
@@ -43,7 +43,7 @@ This README is for:
 ```text
 memory/
 ├── progress.md  # Mandatory agent progress log and memory index
-├── template.md  # Local mirror of docs/99.templates/memory.template.md
+├── template.md  # Local mirror of docs/99.templates/templates/governance/memory.template.md
 ├── *.md         # Durable advisory memory notes
 └── README.md    # This file
 ```
@@ -53,16 +53,16 @@ memory/
 1. During pre-task discovery, open this README and `progress.md` for repository work.
 2. Use targeted `rg` queries over this folder to find at most the relevant memory notes.
 3. Treat memory notes as advisory context and corroborate them against live files before acting.
-4. Create entries from `docs/99.templates/memory.template.md` when a finding is durable, reusable, or intentionally out of scope for the current task.
+4. Create entries from `docs/99.templates/templates/governance/memory.template.md` when a finding is durable, reusable, or intentionally out of scope for the current task.
 5. Link each entry to related stage docs when applicable.
 6. Tag entries by layer and risk type.
-7. Update `progress.md` from `docs/99.templates/progress.template.md` before declaring completion.
+7. Update `progress.md` from `docs/99.templates/templates/governance/progress.template.md` before declaring completion.
 
 ## Operational Procedures
 
 - Add an entry after resolving a complex issue or policy conflict.
 - Add an entry when a read-only or out-of-scope issue should survive the current task.
-- Use `docs/99.templates/memory.template.md` for new notes and keep `template.md` synchronized as the local mirror.
+- Use `docs/99.templates/templates/governance/memory.template.md` for new notes and keep `template.md` synchronized as the local mirror.
 - Update `progress.md` with the current task status, verification evidence, and durable memory note path.
 - Revisit memory entries during planning for similar tasks.
 - Do not copy memory text into active policy without updating the relevant rule, scope, provider, or runtime file.
@@ -79,5 +79,5 @@ memory/
 - [Governance hub](../README.md)
 - [Documentation protocol](../rules/documentation-protocol.md)
 - [Task checklists](../rules/task-checklists.md)
-- [Memory template](../../99.templates/memory.template.md)
+- [Memory template](../../99.templates/templates/governance/memory.template.md)
 - [Local memory template mirror](./template.md)

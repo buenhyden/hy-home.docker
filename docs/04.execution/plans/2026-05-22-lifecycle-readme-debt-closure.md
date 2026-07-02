@@ -29,7 +29,7 @@ The current repository contract and doc traceability checks pass. However, resid
   - `DOC-LRDC-005`: Keep validators hard-failing changed/new docs while retaining repository-wide report-first metrics.
 - **In Scope**:
   - `docs/99.templates/README.md`
-  - `docs/99.templates/readme.template.md`
+  - `docs/99.templates/templates/common/readme.template.md`
   - selected target-stage docs under `docs/03.specs`, `docs/04.execution`, and `docs/05.operations`
   - infra service leaf `README.md` files
   - `.claude/hookify.warn-stage-doc-edit.local.md`
@@ -52,7 +52,7 @@ The current repository contract and doc traceability checks pass. However, resid
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
 | PLN-LRDC-001 | Add plan/task evidence and execution indexes | `docs/04.execution/**` | DOC-LRDC-001 | New plan/task are discoverable from execution READMEs |
-| PLN-LRDC-002 | Clarify README template and template catalog rules | `docs/99.templates/README.md`, `docs/99.templates/readme.template.md` | DOC-LRDC-003 | Template inventory and repo contract checks pass |
+| PLN-LRDC-002 | Clarify README template and template catalog rules | `docs/99.templates/README.md`, `docs/99.templates/templates/common/readme.template.md` | DOC-LRDC-003 | Template inventory and repo contract checks pass |
 | PLN-LRDC-003 | Normalize the 4 legacy target-stage documents | selected `docs/03.specs`, `docs/04.execution`, `docs/05.operations` files | DOC-LRDC-001 | `legacy_target_stage_docs_skipped=0` |
 | PLN-LRDC-004 | Add/align infra service `Service Readiness` tables | `infra/**/README.md` service leaves | DOC-LRDC-002 | `infra_service_readmes_rubric_partial=0` |
 | PLN-LRDC-005 | Improve stage README edit hook guidance | `.claude/hookify.*`, `scripts/hooks/agent-event-hook.sh` | DOC-LRDC-004 | hook smoke tests emit expected guidance |
@@ -105,4 +105,4 @@ The current repository contract and doc traceability checks pass. However, resid
 - **Documentation protocol**: [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage authoring matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **Template catalog**: [Template catalog](../../99.templates/README.md)
-- **README template**: [README template](../../99.templates/readme.template.md)
+- **README template**: [README template](../../99.templates/templates/common/readme.template.md)

@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-This document is the implementation plan for aligning the `docs/01.requirements` PRD document set with the `docs/99.templates/prd.template.md` contract. It restores document structure, link traceability, canonical docs taxonomy, and validation evidence without changing the product meaning of the requirements.
+This document is the implementation plan for aligning the `docs/01.requirements` PRD document set with the `docs/99.templates/templates/sdlc/prd.template.md` contract. It restores document structure, link traceability, canonical docs taxonomy, and validation evidence without changing the product meaning of the requirements.
 
 ## Context
 
@@ -22,7 +22,7 @@ This document is the implementation plan for aligning the `docs/01.requirements`
   - Synchronize the LLM Wiki index and governance progress log with the current documentation state.
 - **In Scope**:
   - `docs/01.requirements/`
-  - `docs/99.templates/prd.template.md`
+  - `docs/99.templates/templates/sdlc/prd.template.md`
   - adjacent auth traceability link in `docs/02.architecture/requirements/0002-auth-architecture.md`
   - `docs/04.execution/plans/README.md`
   - `docs/00.agent-governance/memory/progress.md`
@@ -43,7 +43,7 @@ This document is the implementation plan for aligning the `docs/01.requirements`
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
 | PLN-001 | Remove tracked legacy artifacts under `docs/superpowers/` | `docs/superpowers/**` | REQ-PRD-DOC-001 | `test ! -d docs/superpowers` |
-| PLN-002 | Update PRD template Related Documents examples to clickable Markdown links | `docs/99.templates/prd.template.md` | REQ-PRD-DOC-002 | Template keeps target-relative guidance and has no backticked pseudo-links |
+| PLN-002 | Update PRD template Related Documents examples to clickable Markdown links | `docs/99.templates/templates/sdlc/prd.template.md` | REQ-PRD-DOC-002 | Template keeps target-relative guidance and has no backticked pseudo-links |
 | PLN-003 | Normalize PRD H1s and required sections to the template contract | `docs/01.requirements/*.md` | REQ-PRD-DOC-003 | PRD scan: exactly one H1, required sections present |
 | PLN-004 | Fix Related Documents links and auth ADR placeholder | `docs/01.requirements/*.md`, `docs/02.architecture/requirements/0002-auth-architecture.md` | REQ-PRD-DOC-004 | No backticked pseudo-links, no `####-` placeholder paths, local links resolve |
 | PLN-005 | Update execution plan index and governance progress | `docs/04.execution/plans/README.md`, `docs/00.agent-governance/memory/progress.md` | REQ-PRD-DOC-005 | Parent README references this plan, progress log records evidence |
@@ -90,6 +90,6 @@ This document is the implementation plan for aligning the `docs/01.requirements`
 
 - **PRD README**: [../../01.requirements/README.md](../../01.requirements/README.md)
 - **Execution Task**: [../tasks/2026-05-17-requirements-standardization.md](../tasks/2026-05-17-requirements-standardization.md)
-- **PRD Template**: [../../99.templates/prd.template.md](../../99.templates/prd.template.md)
-- **README Template**: [../../99.templates/readme.template.md](../../99.templates/readme.template.md)
+- **PRD Template**: [../../99.templates/templates/sdlc/prd.template.md](../../99.templates/templates/sdlc/prd.template.md)
+- **README Template**: [../../99.templates/templates/common/readme.template.md](../../99.templates/templates/common/readme.template.md)
 - **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)

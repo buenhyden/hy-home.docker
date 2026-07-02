@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-02-template-system-reorganization.md -->
@@ -122,15 +122,15 @@ The approved design separates responsibilities:
 
 ## Completion Criteria
 
-- [ ] Stage 04 task evidence exists for this migration.
-- [ ] Template files live only under `docs/99.templates/templates/`.
-- [ ] Support governance lives under `docs/99.templates/support/`.
-- [ ] `docs/99.templates/README.md` is a concise catalog and routing entrypoint.
-- [ ] `check-repo-contracts.sh` recognizes the nested template inventory.
-- [ ] Active direct references no longer point at removed flat template paths.
-- [ ] Generated LLM Wiki index is fresh.
-- [ ] Progress log records completion and any unrelated validation gaps.
-- [ ] Logical commits separate plan, task, relocation/support, validator/governance, and fallout/progress work.
+- [x] Stage 04 task evidence exists for this migration.
+- [x] Template files live only under `docs/99.templates/templates/`.
+- [x] Support governance lives under `docs/99.templates/support/`.
+- [x] `docs/99.templates/README.md` is a concise catalog and routing entrypoint.
+- [x] `check-repo-contracts.sh` recognizes the nested template inventory.
+- [x] Active direct references no longer point at removed flat template paths.
+- [x] Generated LLM Wiki index is fresh.
+- [x] Progress log records completion and any unrelated validation gaps.
+- [x] Logical commits separate design, plan, task evidence, and implementation/fallout work.
 
 ## Related Documents
 

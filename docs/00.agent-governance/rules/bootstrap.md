@@ -58,7 +58,7 @@ For structural or cross-cutting changes:
 2. Validate link integrity for changed governance/root files.
 3. Confirm policy text matches current workspace reality.
 4. Update `docs/00.agent-governance/memory/progress.md` with progress, verification evidence, and durable memory pointers.
-5. Record out-of-scope breakages in `docs/00.agent-governance/memory/` from `docs/99.templates/memory.template.md`.
+5. Record out-of-scope breakages in `docs/00.agent-governance/memory/` from `docs/99.templates/templates/governance/memory.template.md`.
 
 ## Related Documents
 

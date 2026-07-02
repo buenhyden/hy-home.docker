@@ -77,7 +77,7 @@ Unified task execution checklists for all agent work.
 - [ ] Confirm QA/CI/CD evidence includes local checks, CI-only gates, and
       skipped-check rationale appropriate to the change type.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` with final status, verification evidence, and memory note links.
-- [ ] Create/update out-of-scope or durable finding reports from `docs/99.templates/memory.template.md` when needed.
+- [ ] Create/update out-of-scope or durable finding reports from `docs/99.templates/templates/governance/memory.template.md` when needed.
 - [ ] For completed repository-modifying agent work, create logical Conventional Commits or record why commits were intentionally skipped.
 - [ ] Summarize what changed, what was verified, and what remains out-of-scope.
 

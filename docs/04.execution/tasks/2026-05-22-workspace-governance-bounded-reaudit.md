@@ -16,7 +16,7 @@ This document records actual execution status and verification evidence for work
 - **Parent Plan**: [Workspace governance bounded re-audit plan](../plans/2026-05-22-workspace-governance-bounded-reaudit.md)
 - **Documentation Protocol**: [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage Matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- **Memory Template**: [Memory template](../../99.templates/memory.template.md)
+- **Memory Template**: [Memory template](../../99.templates/templates/governance/memory.template.md)
 
 ## Working Rules
 

@@ -41,7 +41,7 @@ optimization/
 
 ## How to Work in This Area
 
-1. 새 policy leaf는 `docs/99.templates/policy.template.md`를 따른다.
+1. 새 policy leaf는 `docs/99.templates/templates/operations/policy.template.md`를 따른다.
 2. 문서 이동이나 제목 변경 시 이 README와 `../README.md`를 함께 갱신한다.
 3. paired guide/runbook link를 새 상대 경로 기준으로 검증한다.
 

@@ -28,11 +28,11 @@ The bootstrap sequence, agentic rule, task checklist, governance hub, memory tem
 - Retrieve only relevant notes with targeted search.
 - Treat memory as advisory context.
 - Record task progress, verification evidence, and durable memory pointers in `progress.md`.
-- Record durable out-of-scope or repeated-failure findings back into memory notes created from `docs/99.templates/memory.template.md`.
+- Record durable out-of-scope or repeated-failure findings back into memory notes created from `docs/99.templates/templates/governance/memory.template.md`.
 
 ## Prevention
 
-Keep active policy in `rules/`, `scopes/`, provider overlays, root shims, and runtime files. Use `progress.md` as the running work log and memory index, use `docs/99.templates/memory.template.md` for memory notes that should survive a single task, then validate the memory contract through `scripts/validation/check-repo-contracts.sh`.
+Keep active policy in `rules/`, `scopes/`, provider overlays, root shims, and runtime files. Use `progress.md` as the running work log and memory index, use `docs/99.templates/templates/governance/memory.template.md` for memory notes that should survive a single task, then validate the memory contract through `scripts/validation/check-repo-contracts.sh`.
 
 ## Evidence
 
@@ -41,8 +41,8 @@ Keep active policy in `rules/`, `scopes/`, provider overlays, root shims, and ru
 - `docs/00.agent-governance/rules/bootstrap.md`
 - `docs/00.agent-governance/rules/agentic.md`
 - `docs/00.agent-governance/rules/task-checklists.md`
-- `docs/99.templates/memory.template.md`
-- `docs/99.templates/progress.template.md`
+- `docs/99.templates/templates/governance/memory.template.md`
+- `docs/99.templates/templates/governance/progress.template.md`
 - `scripts/validation/check-repo-contracts.sh`
 
 ## Related Documents

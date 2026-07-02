@@ -29,8 +29,8 @@ This plan restores entrypoints and template contracts that current agents and ma
   - `docs/04.execution/tasks/README.md`
   - `docs/04.execution/plans/2026-05-*.md`
   - `docs/04.execution/tasks/2026-05-*.md`
-  - `docs/99.templates/plan.template.md`
-  - `docs/99.templates/task.template.md`
+  - `docs/99.templates/templates/sdlc/plan.template.md`
+  - `docs/99.templates/templates/sdlc/task.template.md`
   - `docs/00.agent-governance/memory/execution-stage-legacy-debt.md`
   - `docs/00.agent-governance/memory/progress.md`
 
@@ -50,7 +50,7 @@ This plan restores entrypoints and template contracts that current agents and ma
 | --- | --- | --- | --- | --- |
 | PLN-001 | Add bounded remediation plan/task artifacts | `docs/04.execution/plans/2026-05-18-execution-stage-remediation.md`, `docs/04.execution/tasks/2026-05-18-execution-stage-remediation.md` | DOC-EXEC-001 | New docs have frontmatter, Target comments, required sections, and working links |
 | PLN-002 | Refresh execution stage README entrypoints | `docs/04.execution/README.md`, `plans/README.md`, `tasks/README.md` | DOC-EXEC-002 | README structure and Related Documents reflect current stage purpose |
-| PLN-003 | Fix plan/task template Related Documents examples | `docs/99.templates/plan.template.md`, `docs/99.templates/task.template.md` | DOC-EXEC-003 | Template examples use Markdown links instead of backticked pseudo-links |
+| PLN-003 | Fix plan/task template Related Documents examples | `docs/99.templates/templates/sdlc/plan.template.md`, `docs/99.templates/templates/sdlc/task.template.md` | DOC-EXEC-003 | Template examples use Markdown links instead of backticked pseudo-links |
 | PLN-004 | Normalize recent active execution docs only | `docs/04.execution/plans/2026-05-*.md`, `docs/04.execution/tasks/2026-05-*.md` | DOC-EXEC-004 | Current/recent docs include Target guidance and required sections where edited |
 | PLN-005 | Record deferred historical drift | `docs/00.agent-governance/memory/execution-stage-legacy-debt.md`, `progress.md` | DOC-EXEC-005 | Memory note records counts, examples, and bounded disposition |
 | PLN-006 | Verify bounded remediation | validation commands | DOC-EXEC-006 | Custom scans and repository validators pass |
@@ -96,7 +96,7 @@ This plan restores entrypoints and template contracts that current agents and ma
 
 - **Execution README**: [../README.md](../README.md)
 - **Execution Task**: [../tasks/2026-05-18-execution-stage-remediation.md](../tasks/2026-05-18-execution-stage-remediation.md)
-- **Plan Template**: [../../99.templates/plan.template.md](../../99.templates/plan.template.md)
-- **Task Template**: [../../99.templates/task.template.md](../../99.templates/task.template.md)
+- **Plan Template**: [../../99.templates/templates/sdlc/plan.template.md](../../99.templates/templates/sdlc/plan.template.md)
+- **Task Template**: [../../99.templates/templates/sdlc/task.template.md](../../99.templates/templates/sdlc/task.template.md)
 - **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
 - **Legacy Debt Memory**: [../../00.agent-governance/memory/execution-stage-legacy-debt.md](../../00.agent-governance/memory/execution-stage-legacy-debt.md)

@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-07-02-template-system-reorganization.md -->
@@ -40,23 +40,23 @@ template system is enforced by governance rules and repository contract checks.
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
-| Templates | User approved template reorganization, destructive cleanup, and legacy deletion | `docs/99.templates/**` | Flat template files and mixed README governance | Pending implementation | Revert the latest logical template commit | No secrets |
-| Governance | User approved contract and governance changes | `docs/00.agent-governance/rules/**`, hook guidance | Stage 00 rules reference flat template paths | Pending implementation | Revert governance/validator alignment commit | No secrets |
-| Validation | User approved protected-surface changes | `scripts/validation/check-repo-contracts.sh` | Validator hardcodes flat template paths | Pending implementation | Revert validator alignment commit | No secrets |
-| Generated index | Required after docs path changes | `docs/90.references/llm-wiki/index.md` | Index reflects pre-migration paths | Pending regeneration | Regenerate with script or revert index commit | No secrets |
+| Templates | User approved template reorganization, destructive cleanup, and legacy deletion | `docs/99.templates/**` | Flat template files and mixed README governance | Templates moved under `templates/`; support rules split under `support/` | Revert the latest logical template commit | No secrets |
+| Governance | User approved contract and governance changes | `docs/00.agent-governance/rules/**`, hook guidance | Stage 00 rules reference flat template paths | Writable governance references updated to nested paths | Revert governance/validator alignment commit | No secrets |
+| Validation | User approved protected-surface changes | `scripts/validation/check-repo-contracts.sh` | Validator hardcodes flat template paths | Nested template inventory and recursive checks added | Revert validator alignment commit | No secrets |
+| Generated index | Required after docs path changes | `docs/90.references/llm-wiki/index.md` | Index reflects pre-migration paths | Regenerated after moved and added docs | Regenerate with script or revert index commit | No secrets |
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-001 | Create Stage 04 task evidence before implementation starts. | doc | Success Criteria | PLN-TSR-001 | This task file, task README update, progress update, LLM Wiki refresh | Codex | In Progress |
-| T-002 | Move template files into canonical category folders with `git mv`. | doc | Core Design / Proposed Template Inventory | PLN-TSR-002 | `find docs/99.templates -maxdepth 1 -type f -name '*.template.*' -print` returns no output | Codex | Todo |
-| T-003 | Replace mixed template README governance with support documents. | doc | Core Design / Support Document Roles | PLN-TSR-003 | `docs/99.templates/README.md` is routing-only; support docs contain contract/governance rules | Codex | Todo |
-| T-004 | Normalize template-source and target-document frontmatter rules. | doc | Data Modeling / Frontmatter Field Families | PLN-TSR-004 | Support frontmatter contract defines type-specific key sets; templates match source rules | Codex | Todo |
-| T-005 | Update repository contract validation for nested templates. | impl | Validation Interface | PLN-TSR-005 | Template-related sections of `check-repo-contracts.sh` pass with nested inventory | Codex | Todo |
-| T-006 | Update Stage 00 governance, hook guidance, and active direct references. | doc | Contracts / Validator Parity | PLN-TSR-006 | Reference search finds no unreviewed active flat-template guidance | Codex | Todo |
-| T-007 | Refresh generated index and record progress/gaps. | doc | Memory & Context Strategy | PLN-TSR-007 | LLM Wiki index fresh; progress records unrelated infra drift as a gap | Codex | Todo |
-| T-008 | Run final validation and close evidence. | ops | Verification | PLN-TSR-008 | Diff hygiene, LLM Wiki, traceability, implementation alignment pass; repo-contract infra drift documented if still present | Codex | Todo |
+| T-001 | Create Stage 04 task evidence before implementation starts. | doc | Success Criteria | PLN-TSR-001 | Task evidence committed in `c85e8f44`; LLM Wiki refreshed | Codex | Done |
+| T-002 | Move template files into canonical category folders with `git mv`. | doc | Core Design / Proposed Template Inventory | PLN-TSR-002 | `find docs/99.templates -maxdepth 1 -type f -name '*.template.*' -print` returns no output | Codex | Done |
+| T-003 | Replace mixed template README governance with support documents. | doc | Core Design / Support Document Roles | PLN-TSR-003 | `docs/99.templates/README.md` is routing-only; support docs contain contract/governance rules | Codex | Done |
+| T-004 | Normalize template-source and target-document frontmatter rules. | doc | Data Modeling / Frontmatter Field Families | PLN-TSR-004 | Support frontmatter contract defines type-specific key sets; legacy README metadata snippet removed | Codex | Done |
+| T-005 | Update repository contract validation for nested templates. | impl | Validation Interface | PLN-TSR-005 | `check-repo-contracts.sh` template inventory and template globs now use nested template paths | Codex | Done |
+| T-006 | Update Stage 00 governance, hook guidance, and active direct references. | doc | Contracts / Validator Parity | PLN-TSR-006 | Writable active direct references updated; `.codex/skills` remains read-only gap if still stale | Codex | Done |
+| T-007 | Refresh generated index and record progress/gaps. | doc | Memory & Context Strategy | PLN-TSR-007 | LLM Wiki regenerated after new support docs and moved templates; progress updated | Codex | Done |
+| T-008 | Run final validation and close evidence. | ops | Verification | PLN-TSR-008 | Diff hygiene, LLM Wiki, traceability, implementation alignment, and provider sync passed; repo contract has only pre-existing infra drift failures | Codex | Done |
 
 ## Suggested Types
 
@@ -72,28 +72,30 @@ template system is enforced by governance rules and repository contract checks.
 
 ### Phase 2: Template and Support Migration
 
-- [ ] T-002 Move template files
-- [ ] T-003 Create support governance
-- [ ] T-004 Normalize frontmatter contract
+- [x] T-002 Move template files
+- [x] T-003 Create support governance
+- [x] T-004 Normalize frontmatter contract
 
 ### Phase 3: Validator and Governance Alignment
 
-- [ ] T-005 Update repository contract validation
-- [ ] T-006 Update governance and references
+- [x] T-005 Update repository contract validation
+- [x] T-006 Update governance and references
 
 ### Phase 4: Final Fallout and Validation
 
-- [ ] T-007 Refresh generated index and progress
-- [ ] T-008 Run final validation and close evidence
+- [x] T-007 Refresh generated index and progress
+- [x] T-008 Run final validation and close evidence
 
 ## Verification Summary
 
 - **Test Commands**:
-  - `git diff --cached --check`
-  - `bash scripts/knowledge/generate-llm-wiki-index.sh --check`
-  - `bash scripts/validation/check-doc-traceability.sh`
-  - `bash scripts/validation/check-doc-implementation-alignment.sh`
-  - `bash scripts/validation/check-repo-contracts.sh`
+  - `git diff --cached --check` -> pass.
+  - `find docs/99.templates -maxdepth 1 -type f -name '*.template.*' -print` -> no output.
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` -> pass.
+  - `bash scripts/validation/check-doc-traceability.sh` -> pass, `failures=0`.
+  - `bash scripts/validation/check-doc-implementation-alignment.sh` -> pass, `failures=0`.
+  - `bash scripts/operations/sync-provider-surfaces.sh --check` -> `no drift`.
+  - `bash scripts/validation/check-repo-contracts.sh` -> template/governance/provider checks pass; fails only on pre-existing infra hardening and tech-stack image drift.
 - **Eval Commands**: N/A. This is documentation and repository-contract work.
 - **Logs / Evidence Location**: This document's Task Table, progress log, and
   final validation summary.
@@ -103,6 +105,14 @@ template system is enforced by governance rules and repository contract checks.
 - `check-repo-contracts.sh` is known to fail outside this task scope on the
   existing Keycloak hardening image mismatch and `infra/tech-stack.versions.json`
   image drift. Do not patch infra files under this task.
+
+### Deviation Notes
+
+- The implementation combined template relocation, support document creation,
+  validator alignment, provider skill path fallout, and active direct-reference
+  fallout into one implementation commit because moving the template files
+  immediately broke active Markdown link checks and provider mirror parity.
+  The design, plan, and task evidence remain separate commits.
 
 ## Related Documents
 

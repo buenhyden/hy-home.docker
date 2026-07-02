@@ -77,7 +77,7 @@ docs/90.references/
 
 Reference 문서는 다음 조건을 만족해야 합니다.
 
-- `docs/99.templates/reference.template.md`의 필수 섹션을 따른다.
+- `docs/99.templates/templates/common/reference.template.md`의 필수 섹션을 따른다.
 - `status`, `Overview`, `Purpose`, `Repository Role`, `Scope`, `Definitions / Facts`, `Source Rules`, `Sources`, `Maintenance`, `Related Documents`를 포함한다.
 - 제목은 `# Reference: <item name>` 형식을 사용한다.
 - source가 외부 문서라면 링크와 함께 어떤 사실을 가져왔는지 요약한다.
@@ -85,7 +85,7 @@ Reference 문서는 다음 조건을 만족해야 합니다.
 - active policy나 runbook을 대체하는 문장을 쓰지 않는다.
 - 민감값, token, credential, private key, shell history, raw secret log를 쓰지 않는다.
 
-README 파일은 `docs/99.templates/readme.template.md`의 기본 구조를 따르고, 하위 reference 문서를 찾기 위한 index 역할을 합니다.
+README 파일은 `docs/99.templates/templates/common/readme.template.md`의 기본 구조를 따르고, 하위 reference 문서를 찾기 위한 index 역할을 합니다.
 
 ## Naming and Lifecycle Rules
 
@@ -172,7 +172,7 @@ Reference docs do not gate or block any other stage. They are supplementary, not
 ## How to Work in This Area
 
 1. Confirm the content is stable reference material, not active policy or procedure.
-2. Start new non-README reference docs from [reference.template.md](../99.templates/reference.template.md).
+2. Start new non-README reference docs from [reference.template.md](../99.templates/templates/common/reference.template.md).
 3. Link to authoritative sources and related active-stage documents.
 4. Update this README and the category README when adding, moving, or deleting reference docs.
 5. Run `bash scripts/validation/check-repo-contracts.sh` after changing reference docs or templates.
@@ -181,7 +181,7 @@ Reference docs do not gate or block any other stage. They are supplementary, not
 
 - [docs index](../README.md)
 - [glossary references](./glossary/README.md)
-- [reference template](../99.templates/reference.template.md)
-- [README template](../99.templates/readme.template.md)
+- [reference template](../99.templates/templates/common/reference.template.md)
+- [README template](../99.templates/templates/common/readme.template.md)
 - [documentation protocol](../00.agent-governance/rules/documentation-protocol.md)
 - [stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)

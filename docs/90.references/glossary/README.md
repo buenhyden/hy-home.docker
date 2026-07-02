@@ -56,7 +56,7 @@ docs/90.references/glossary/
 
 1. 용어가 여러 stage 문서에서 반복되는지 먼저 확인합니다.
 2. active policy나 절차가 필요하면 glossary가 아니라 canonical stage 문서로 연결합니다.
-3. 새 non-README reference는 [reference.template.md](../../99.templates/reference.template.md)를 기준으로 작성합니다.
+3. 새 non-README reference는 [reference.template.md](../../99.templates/templates/common/reference.template.md)를 기준으로 작성합니다.
 4. 새 glossary 문서를 추가하면 이 README와 [90.references](../README.md)를 함께 갱신합니다.
 5. 변경 후 `bash scripts/validation/check-repo-contracts.sh`를 실행합니다.
 
@@ -65,5 +65,5 @@ docs/90.references/glossary/
 - [90.references](../README.md)
 - [stable reference terms](./stable-reference-terms.md)
 - [docs index](../../README.md)
-- [reference template](../../99.templates/reference.template.md)
+- [reference template](../../99.templates/templates/common/reference.template.md)
 - [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)

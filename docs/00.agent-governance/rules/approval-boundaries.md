@@ -63,4 +63,4 @@ bash scripts/validation/validate-harness.sh
 - `docs/00.agent-governance/rules/agentic.md`
 - `docs/00.agent-governance/harness-implementation-map.md`
 - `docs/00.agent-governance/rules/github-governance.md`
-- `docs/99.templates/harness-task-contract.template.md`
+- `docs/99.templates/templates/governance/harness-task-contract.template.md`

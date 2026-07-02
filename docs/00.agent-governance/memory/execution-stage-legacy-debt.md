@@ -67,8 +67,8 @@ rewrite targets.
 
 ## Prevention
 
-- New execution-stage documents must start from `docs/99.templates/plan.template.md`
-  or `docs/99.templates/task.template.md`.
+- New execution-stage documents must start from `docs/99.templates/templates/sdlc/plan.template.md`
+  or `docs/99.templates/templates/sdlc/task.template.md`.
 - New plan/task documents must include status frontmatter, a `Target:` comment,
   required template sections, and clickable Related Documents links.
 - If future drift appears, use repository validators and a scoped execution plan
@@ -94,7 +94,7 @@ rewrite targets.
 - [Execution tasks README](../../04.execution/tasks/README.md)
 - [Execution stage remediation plan](../../04.execution/plans/2026-05-18-execution-stage-remediation.md)
 - [Execution stage remediation task](../../04.execution/tasks/2026-05-18-execution-stage-remediation.md)
-- [Plan template](../../99.templates/plan.template.md)
-- [Task template](../../99.templates/task.template.md)
+- [Plan template](../../99.templates/templates/sdlc/plan.template.md)
+- [Task template](../../99.templates/templates/sdlc/task.template.md)
 - [Progress log](./progress.md)
 - [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)

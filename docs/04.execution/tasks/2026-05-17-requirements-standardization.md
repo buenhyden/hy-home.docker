@@ -15,7 +15,7 @@ This document connects completion of the `docs/01.requirements` PRD document set
 
 - **Parent Plan**: [docs/01.requirements remediation plan](../plans/2026-05-17-requirements-standardization.md)
 - **PRD README**: [Requirements README](../../01.requirements/README.md)
-- **PRD Template**: [PRD template](../../99.templates/prd.template.md)
+- **PRD Template**: [PRD template](../../99.templates/templates/sdlc/prd.template.md)
 - **Progress Evidence**: [Agent progress log](../../00.agent-governance/memory/progress.md)
 
 ## Working Rules
@@ -67,5 +67,5 @@ This document connects completion of the `docs/01.requirements` PRD document set
 
 - **Parent Plan**: [docs/01.requirements remediation plan](../plans/2026-05-17-requirements-standardization.md)
 - **PRD README**: [Requirements README](../../01.requirements/README.md)
-- **PRD Template**: [PRD template](../../99.templates/prd.template.md)
+- **PRD Template**: [PRD template](../../99.templates/templates/sdlc/prd.template.md)
 - **Progress Evidence**: [Agent progress log](../../00.agent-governance/memory/progress.md)

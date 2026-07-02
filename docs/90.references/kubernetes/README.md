@@ -64,14 +64,14 @@ docs/90.references/kubernetes/
 ## How to Work in This Area
 
 1. Confirm the content is stable reference context, not an active plan or runbook.
-2. Use [reference.template.md](../../99.templates/reference.template.md) for new non-README reference docs.
+2. Use [reference.template.md](../../99.templates/templates/common/reference.template.md) for new non-README reference docs.
 3. Link to active architecture and execution docs instead of duplicating decisions or task status.
 4. Run `bash scripts/validation/check-repo-contracts.sh` after changing Kubernetes reference docs.
 
 ## Related Documents
 
 - [references index](../README.md)
-- [reference template](../../99.templates/reference.template.md)
+- [reference template](../../99.templates/templates/common/reference.template.md)
 - [architecture index](../../02.architecture/README.md)
 - [execution index](../../04.execution/README.md)
 - [operations index](../../05.operations/README.md)

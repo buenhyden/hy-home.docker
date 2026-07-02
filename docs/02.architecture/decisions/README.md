@@ -64,7 +64,7 @@ docs/02.architecture/decisions/
 
 1. 결정을 제안하기 전에 상위 PRD와 관련 ARD를 먼저 읽는다.
 2. 새 ADR을 추가하기 전에 기존 ADR을 확인한다.
-3. 새 ADR은 [`../../99.templates/adr.template.md`](../../99.templates/adr.template.md)에서 시작한다.
+3. 새 ADR은 [`../../99.templates/templates/sdlc/adr.template.md`](../../99.templates/templates/sdlc/adr.template.md)에서 시작한다.
 4. 모든 링크는 이 폴더 아래의 대상 ADR 위치 기준으로 다시 계산한다.
 5. 하나의 ADR은 하나의 결정을 다룬다.
 6. accepted decision은 관련 ARD와 Spec에 반영한다.
@@ -91,4 +91,4 @@ docs/02.architecture/decisions/
 - **Stage 00 Adapter ADR**: [0027-stage-00-canonical-adapter-model](./0027-stage-00-canonical-adapter-model.md)
 - **Spec**: [Technical specifications](../../03.specs/README.md)
 - **Plan**: [Execution plans](../../04.execution/plans/README.md)
-- **Template**: [ADR template](../../99.templates/adr.template.md)
+- **Template**: [ADR template](../../99.templates/templates/sdlc/adr.template.md)

@@ -16,7 +16,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - **Parent Plan**: [Workspace audit improvement plan](../plans/2026-05-24-workspace-audit-improvement.md)
 - **Stage Matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **Documentation Protocol**: [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- **Task Template**: [Task template](../../99.templates/task.template.md)
+- **Task Template**: [Task template](../../99.templates/templates/sdlc/task.template.md)
 - **Graphify Baseline**: [Graph report](../../../graphify-out/GRAPH_REPORT.md)
 - **Related Files / Logs / Issues / Reproduction Steps**: no external issue tracker items, runtime logs, or reproduction artifacts were provided for this audit.
 

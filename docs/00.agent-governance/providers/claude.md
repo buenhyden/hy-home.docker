@@ -57,7 +57,7 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 - Claude `PostToolUse` must delegate changed-file style normalization and style validation to `scripts/hooks/post-tool-validate.sh` before repository contract checks. The shared script trims text-file whitespace/newline drift, runs `shfmt` for changed hook/script shell files when available, and runs optional `shellcheck`/`yamllint` style checks when those tools are available.
 - Claude hooks must surface template-first guidance before target-stage documentation edits, README template/readiness guidance before README edits, and block Stop when changed target-stage docs fail `bash scripts/validation/check-repo-contracts.sh`.
 - Claude Stop/SessionEnd guidance must require agents to create logical Conventional Commits for completed repository-modifying work unless a higher-priority instruction or incomplete verification prevents committing; Stop blocks while task-owned uncommitted paths remain.
-- README guidance must remain provider-neutral: folder-index README edits route to `docs/99.templates/readme.template.md`, and infra service leaf README edits require Service Readiness evidence without reading secret values.
+- README guidance must remain provider-neutral: folder-index README edits route to `docs/99.templates/templates/common/readme.template.md`, and infra service leaf README edits require Service Readiness evidence without reading secret values.
 - Runtime hooks provide advisory context and validation routing only. Policy remains in `docs/00.agent-governance/`.
 
 ## 6. Operational Practices

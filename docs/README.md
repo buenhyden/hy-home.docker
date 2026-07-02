@@ -98,7 +98,7 @@ docs/
 
 1. 새 문서를 만들기 전에 이 README와 대상 stage의 `README.md`를 먼저 읽습니다.
 2. 새 active stage 문서는 반드시 위 Structure에 나열된 canonical 경로 아래에 둡니다.
-3. 새 문서는 [99.templates](99.templates/README.md)의 대응 템플릿을 사용하고, README는 [99.templates/readme.template.md](99.templates/readme.template.md)를 따릅니다.
+3. 새 문서는 [99.templates](99.templates/README.md)의 대응 템플릿을 사용하고, README는 [99.templates/templates/common/readme.template.md](99.templates/templates/common/readme.template.md)를 따릅니다.
 4. 문서 변경 후 상위 README, 관련 stage 문서, traceability 링크를 함께 갱신합니다.
 5. secret 값, token, 인증서 원문은 문서에 쓰지 않습니다.
 
@@ -133,16 +133,16 @@ docs/
 
 | Stage | Responsibility | Template |
 | --- | --- | --- |
-| `01.requirements/` | 문제, 사용자 가치, scope, acceptance criteria | `99.templates/prd.template.md` |
-| `02.architecture/requirements/` | 시스템 경계, 품질 속성, 참조 아키텍처 | `99.templates/ard.template.md` |
-| `02.architecture/decisions/` | 선택, 대안, consequence를 남기는 결정 기록 | `99.templates/adr.template.md` |
-| `03.specs/` | 구현 계약, interface, data/config contract, verification | `99.templates/spec.template.md` |
-| `04.execution/plans/` | 실행 순서, risk control, verification plan | `99.templates/plan.template.md` |
-| `04.execution/tasks/` | 실제 수행 상태, evidence, deviation, completion record | `99.templates/task.template.md` |
-| `05.operations/` | guide, policy, runbook, incident/postmortem | `99.templates/guide.template.md`, `99.templates/policy.template.md`, `99.templates/runbook.template.md`, incident/postmortem templates |
-| `90.references/` | active 판단을 대체하지 않는 stable reference | `99.templates/reference.template.md` |
-| `98.archive/` | active chain에서 제거된 old 문서 tombstone | `99.templates/archive.template.md` |
-| `99.templates/` | canonical template source and target-relative link rules | `99.templates/readme.template.md` |
+| `01.requirements/` | 문제, 사용자 가치, scope, acceptance criteria | `99.templates/templates/sdlc/prd.template.md` |
+| `02.architecture/requirements/` | 시스템 경계, 품질 속성, 참조 아키텍처 | `99.templates/templates/sdlc/ard.template.md` |
+| `02.architecture/decisions/` | 선택, 대안, consequence를 남기는 결정 기록 | `99.templates/templates/sdlc/adr.template.md` |
+| `03.specs/` | 구현 계약, interface, data/config contract, verification | `99.templates/templates/sdlc/spec.template.md` |
+| `04.execution/plans/` | 실행 순서, risk control, verification plan | `99.templates/templates/sdlc/plan.template.md` |
+| `04.execution/tasks/` | 실제 수행 상태, evidence, deviation, completion record | `99.templates/templates/sdlc/task.template.md` |
+| `05.operations/` | guide, policy, runbook, incident/postmortem | `99.templates/templates/operations/guide.template.md`, `99.templates/templates/operations/policy.template.md`, `99.templates/templates/operations/runbook.template.md`, incident/postmortem templates |
+| `90.references/` | active 판단을 대체하지 않는 stable reference | `99.templates/templates/common/reference.template.md` |
+| `98.archive/` | active chain에서 제거된 old 문서 tombstone | `99.templates/templates/common/archive.template.md` |
+| `99.templates/` | canonical template source and target-relative link rules | `99.templates/templates/common/readme.template.md` |
 
 문서 lifecycle은 requirement → architecture → specification → execution → operations 순서로 흐릅니다. Reference는 lifecycle을 보조하고, template은 lifecycle 문서의 구조와 링크 계산 기준을 제공합니다.
 
@@ -159,27 +159,27 @@ docs/
 
 | 문서 유형 | 위치 | 템플릿 |
 | --- | --- | --- |
-| Requirements | `01.requirements/` | `99.templates/prd.template.md` |
-| Architecture Requirements | `02.architecture/requirements/` | `99.templates/ard.template.md` |
-| Architecture Decision | `02.architecture/decisions/` | `99.templates/adr.template.md` |
-| Spec | `03.specs/` | `99.templates/spec.template.md` |
-| API Spec | feature directory `api-spec.md` | `99.templates/api-spec.template.md` |
-| Agent Design | feature directory `agent-design.md` | `99.templates/agent-design.template.md` |
-| Data Model | feature directory `data-model.md` | `99.templates/data-model.template.md` |
-| Test Contract | feature directory `tests.md` | `99.templates/tests.template.md` |
-| OpenAPI Contract | feature directory `contracts/openapi.yaml` | `99.templates/openapi.template.yaml` |
-| GraphQL Contract | feature directory `contracts/schema.graphql` | `99.templates/schema.template.graphql` |
-| Protobuf Contract | feature directory `contracts/service.proto` | `99.templates/service.template.proto` |
-| Plan | `04.execution/plans/` | `99.templates/plan.template.md` |
-| Task | `04.execution/tasks/` | `99.templates/task.template.md` |
-| Operations Guide | `05.operations/guides/` | `99.templates/guide.template.md` |
-| Operations Policy | `05.operations/policies/` | `99.templates/policy.template.md` |
-| Runbook | `05.operations/runbooks/` | `99.templates/runbook.template.md` |
-| Incident | `05.operations/incidents/` | `99.templates/incident.template.md` |
-| Postmortem | `05.operations/incidents/` | `99.templates/postmortem.template.md` |
-| Reference | `90.references/` | `99.templates/reference.template.md` |
-| Archive Tombstone | `98.archive/` | `99.templates/archive.template.md` |
-| README | 각 폴더 | `99.templates/readme.template.md` |
+| Requirements | `01.requirements/` | `99.templates/templates/sdlc/prd.template.md` |
+| Architecture Requirements | `02.architecture/requirements/` | `99.templates/templates/sdlc/ard.template.md` |
+| Architecture Decision | `02.architecture/decisions/` | `99.templates/templates/sdlc/adr.template.md` |
+| Spec | `03.specs/` | `99.templates/templates/sdlc/spec.template.md` |
+| API Spec | feature directory `api-spec.md` | `99.templates/templates/spec-contracts/api-spec.template.md` |
+| Agent Design | feature directory `agent-design.md` | `99.templates/templates/spec-contracts/agent-design.template.md` |
+| Data Model | feature directory `data-model.md` | `99.templates/templates/spec-contracts/data-model.template.md` |
+| Test Contract | feature directory `tests.md` | `99.templates/templates/spec-contracts/tests.template.md` |
+| OpenAPI Contract | feature directory `contracts/openapi.yaml` | `99.templates/templates/spec-contracts/openapi.template.yaml` |
+| GraphQL Contract | feature directory `contracts/schema.graphql` | `99.templates/templates/spec-contracts/schema.template.graphql` |
+| Protobuf Contract | feature directory `contracts/service.proto` | `99.templates/templates/spec-contracts/service.template.proto` |
+| Plan | `04.execution/plans/` | `99.templates/templates/sdlc/plan.template.md` |
+| Task | `04.execution/tasks/` | `99.templates/templates/sdlc/task.template.md` |
+| Operations Guide | `05.operations/guides/` | `99.templates/templates/operations/guide.template.md` |
+| Operations Policy | `05.operations/policies/` | `99.templates/templates/operations/policy.template.md` |
+| Runbook | `05.operations/runbooks/` | `99.templates/templates/operations/runbook.template.md` |
+| Incident | `05.operations/incidents/` | `99.templates/templates/operations/incident.template.md` |
+| Postmortem | `05.operations/incidents/` | `99.templates/templates/operations/postmortem.template.md` |
+| Reference | `90.references/` | `99.templates/templates/common/reference.template.md` |
+| Archive Tombstone | `98.archive/` | `99.templates/templates/common/archive.template.md` |
+| README | 각 폴더 | `99.templates/templates/common/readme.template.md` |
 
 템플릿 없이 새 형식을 임의로 추가하기 전에 기존 문서 체계를 먼저 검토합니다. 동일 목적의 문서가 이미 존재하면 새 문서를 만들기보다 기존 문서를 확장하는 방식을 우선합니다.
 

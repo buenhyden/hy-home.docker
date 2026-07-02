@@ -41,7 +41,7 @@ backup/
 
 ## How to Work in This Area
 
-1. 새 policy leaf는 `docs/99.templates/policy.template.md`를 따른다.
+1. 새 policy leaf는 `docs/99.templates/templates/operations/policy.template.md`를 따른다.
 2. policy 변경 시 `../README.md`와 paired runbook/reference link를 함께 갱신한다.
 3. backup evidence에는 secret 값을 기록하지 않는다.
 

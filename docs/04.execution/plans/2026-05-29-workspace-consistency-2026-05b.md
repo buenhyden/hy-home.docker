@@ -45,7 +45,7 @@ PR #89 (`workspace-doc-consistency-2026-05`) completed large-scale structural co
 | PLN-002 | Add Section 8 CI/CD taxonomy to github-governance.md | `docs/00.agent-governance/rules/github-governance.md` | VAL-SPC-002 | Section 8 exists |
 | PLN-003 | Strengthen check-repo-contracts.sh guide profile checks | `scripts/validation/check-repo-contracts.sh` | VAL-SPC-003 | `## Common Checks` and `## Runbook Handoff` checks are included |
 | PLN-004 | Add docs/99.templates/README.md template list entries | `docs/99.templates/README.md` | VAL-SPC-004 | guide.template.md and runbook.template.md are listed |
-| PLN-005 | Replace agent-design.template.md example filenames | `docs/99.templates/agent-design.template.md` | VAL-SPC-004 | No imaginary filenames; directory links are used |
+| PLN-005 | Replace agent-design.template.md example filenames | `docs/99.templates/templates/spec-contracts/agent-design.template.md` | VAL-SPC-004 | No imaginary filenames; directory links are used |
 | PLN-006 | Remove duplicate Policy Scope heading in nginx.md | `docs/05.operations/policies/01-gateway/nginx.md` | VAL-SPC-005 | 0 duplicate headings |
 
 ## Verification Plan

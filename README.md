@@ -90,7 +90,7 @@ hy-home.docker/
 | Root Compose secret declarations | 69 | 선언된 secret 파일 누락 0개 |
 | `secrets/` value/cert files | 94 | 값은 열람하지 않고 파일명과 경로만 기준으로 분류 |
 | Parent-repo tracked README files | 173 | `git ls-files '*README.md'` 기준의 tracked README inventory |
-| README refresh contract | path-appropriate template coverage | `docs/99.templates/readme.template.md`의 공통 구조와 경로별 snippet을 기준으로 갱신 |
+| README refresh contract | path-appropriate template coverage | `docs/99.templates/templates/common/readme.template.md`의 공통 구조와 경로별 snippet을 기준으로 갱신 |
 
 ## Prerequisites
 
@@ -266,7 +266,7 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 
 1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.
-3. 새 문서나 루트 문서를 갱신할 때는 [`docs/99.templates/readme.template.md`](./docs/99.templates/readme.template.md) 같은 승인된 템플릿과 [`docs/00.agent-governance/rules/documentation-protocol.md`](./docs/00.agent-governance/rules/documentation-protocol.md)을 기준으로 삼습니다.
+3. 새 문서나 루트 문서를 갱신할 때는 [`docs/99.templates/templates/common/readme.template.md`](./docs/99.templates/templates/common/readme.template.md) 같은 승인된 템플릿과 [`docs/00.agent-governance/rules/documentation-protocol.md`](./docs/00.agent-governance/rules/documentation-protocol.md)을 기준으로 삼습니다.
 4. Docker image나 주요 runtime 버전을 바꿀 때는 Compose 선언과 [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)을 함께 점검합니다.
 5. GitHub workflow를 바꿀 때는 [`docs/00.agent-governance/rules/github-governance.md`](./docs/00.agent-governance/rules/github-governance.md)와 [`docs/00.agent-governance/rules/git-workflow.md`](./docs/00.agent-governance/rules/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
 6. 변경 후에는 관련 링크, 검증 명령, 문서 정책, CI 영향 범위를 함께 점검하고 필요한 경우 검증 스크립트를 실행합니다.

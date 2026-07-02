@@ -60,7 +60,7 @@ docs/90.references/learning/
 ## How to Work in This Area
 
 1. Keep learning references stable and source-backed.
-2. Use [reference.template.md](../../99.templates/reference.template.md) for new non-README reference docs.
+2. Use [reference.template.md](../../99.templates/templates/common/reference.template.md) for new non-README reference docs.
 3. Link repo-local examples to active docs or `infra/` paths with relative links.
 4. Preserve archived roadmaps as reference history unless explicitly asked to remove them.
 5. Do not present external links as newly verified unless they were re-checked during the current task.
@@ -71,4 +71,4 @@ docs/90.references/learning/
 - [90.references](../README.md)
 - [stable reference terms](../glossary/stable-reference-terms.md)
 - [docs index](../../README.md)
-- [reference template](../../99.templates/reference.template.md)
+- [reference template](../../99.templates/templates/common/reference.template.md)

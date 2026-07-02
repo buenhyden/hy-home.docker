@@ -64,7 +64,7 @@ llm-wiki/
 ## How to Work in This Area
 
 1. 루트 [`llms.txt`](../../../llms.txt)를 thin entrypoint로 유지하고, 상세 탐색 기준은 이 폴더에 둡니다.
-2. 새 reference를 추가할 때는 [reference.template.md](../../99.templates/reference.template.md)의 필수 섹션을 따릅니다.
+2. 새 reference를 추가할 때는 [reference.template.md](../../99.templates/templates/common/reference.template.md)의 필수 섹션을 따릅니다.
 3. `index.md`는 `bash scripts/knowledge/generate-llm-wiki-index.sh`로 갱신하고 `--check`로 freshness를 확인합니다.
 4. active policy, runbook, task evidence, runtime truth를 복제하지 말고 해당 canonical 문서로 연결합니다.
 5. secret 값, credential, token, private key, shell history, raw log를 쓰지 않습니다.

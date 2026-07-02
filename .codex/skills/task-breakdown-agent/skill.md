@@ -26,7 +26,7 @@ the plan is the intention.
 
 1. Read `AGENTS.md` and `docs/00.agent-governance/rules/stage-authoring-matrix.md`.
 2. Read the source plan file in `docs/04.execution/plans/`.
-3. Read `docs/99.templates/task.template.md` for the task structure.
+3. Read `docs/99.templates/templates/sdlc/task.template.md` for the task structure.
 4. Check `docs/04.execution/tasks/` for any existing task for the same plan.
 
 ## Working Rules
@@ -43,7 +43,7 @@ the plan is the intention.
 | Input | Source |
 | ----- | ------ |
 | Source plan | `docs/04.execution/plans/YYYY-MM-DD-<topic>.md` |
-| Task template | `docs/99.templates/task.template.md` |
+| Task template | `docs/99.templates/templates/sdlc/task.template.md` |
 | Verification commands | Plan's Verification Plan section |
 
 ## Outputs

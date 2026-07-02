@@ -69,7 +69,7 @@ docs/90.references/hads/
 
 ## How to Work in This Area
 
-1. Use [reference.template.md](../../99.templates/reference.template.md) as the
+1. Use [reference.template.md](../../99.templates/templates/common/reference.template.md) as the
    reference-stage base.
 2. Add HADS header, AI reading instruction, and block tags before drafting facts.
 3. Run `bash scripts/validation/check-repo-contracts.sh` after edits.

@@ -74,7 +74,7 @@ stale 본문을 다시 노출하지 않습니다.
 
 1. Archive 전 `rg`로 active 참조를 확인하고 제거합니다.
 2. 원래 문서는 같은 상대 구조로 `docs/98.archive/<original-stage>/...`에 tombstone으로 이동합니다.
-3. Tombstone은 `docs/99.templates/archive.template.md`를 따르고 원문 본문을 보존하지 않습니다.
+3. Tombstone은 `docs/99.templates/templates/common/archive.template.md`를 따르고 원문 본문을 보존하지 않습니다.
 4. Active 문서에서는 archive tombstone으로 역링크하지 않습니다.
 5. 이 README의 Migration Ledger를 갱신합니다.
 
@@ -83,4 +83,4 @@ stale 본문을 다시 노출하지 않습니다.
 - [docs index](../README.md)
 - [stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)
 - [documentation protocol](../00.agent-governance/rules/documentation-protocol.md)
-- [archive template](../99.templates/archive.template.md)
+- [archive template](../99.templates/templates/common/archive.template.md)

@@ -32,7 +32,7 @@ The user approved those gates on 2026-06-02. This plan implements the approval a
   - Record secrets metadata-only evidence and remote GitHub read-only evidence without exposing values or mutating remote state.
 - **In Scope**:
   - Stage 00 policy docs for task checklists, infra, security, QA, GitHub governance, and subagent/model/provider protocol.
-  - `docs/99.templates/task.template.md` and template catalog wording.
+  - `docs/99.templates/templates/sdlc/task.template.md` and template catalog wording.
   - `scripts/validation/check-repo-contracts.sh` template contract check.
   - Stage 04 plan/task artifacts, Stage 04 README indexes, progress log, LLM Wiki, and Graphify evidence.
 
@@ -68,7 +68,7 @@ The user approved those gates on 2026-06-02. This plan implements the approval a
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
 | PLN-P3-001 | Add high-risk approved-surface requirements to Stage 00 policy and scopes. | Task checklists, infra, security, QA, GitHub governance, subagent protocol | REQ-AGG-NFR-01 | Repo contracts pass and no contradictory policy is introduced. |
-| PLN-P3-002 | Extend task template and catalog with approved-surface evidence section. | `docs/99.templates/task.template.md`, `docs/99.templates/README.md` | REQ-AGG-FUN-05 | Template section exists and catalog explains high-risk usage. |
+| PLN-P3-002 | Extend task template and catalog with approved-surface evidence section. | `docs/99.templates/templates/sdlc/task.template.md`, `docs/99.templates/README.md` | REQ-AGG-FUN-05 | Template section exists and catalog explains high-risk usage. |
 | PLN-P3-003 | Add a CI-facing repository contract for the approved-surface template section. | `scripts/validation/check-repo-contracts.sh` | REQ-AGG-FUN-07 | `bash -n` and repo contracts pass. |
 | PLN-P3-004 | Create Phase 3 Stage 04 plan/task evidence with approval matrix and scope safety. | Phase 3 plan/task, Stage 04 READMEs, progress log | REQ-AGG-MET-04 | Task evidence records changed and verified-only surfaces. |
 | PLN-P3-005 | Run local, generated, provider, Graphify, secret-metadata, and remote read-only verification. | Task evidence, LLM Wiki, Graphify | REQ-AGG-MET-02 | Checks pass or advisory status is explicitly recorded. |
@@ -124,4 +124,4 @@ The user approved those gates on 2026-06-02. This plan implements the approval a
 - **Subagent Protocol**: [Subagent Protocol](../../00.agent-governance/subagent-protocol.md)
 - **Security Scope**: [Security Enforcement Scope](../../00.agent-governance/scopes/security.md)
 - **GitHub Governance**: [GitHub Governance Policy](../../00.agent-governance/rules/github-governance.md)
-- **Task Template**: [Task template](../../99.templates/task.template.md)
+- **Task Template**: [Task template](../../99.templates/templates/sdlc/task.template.md)

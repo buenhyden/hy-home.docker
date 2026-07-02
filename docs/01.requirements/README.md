@@ -74,7 +74,7 @@ docs/01.requirements/
 
 ## How to Work in This Area
 
-1. 새 기능 제안 시 [prd.template.md](../99.templates/prd.template.md)를 사용하여 문서를 생성함.
+1. 새 기능 제안 시 [prd.template.md](../99.templates/templates/sdlc/prd.template.md)를 사용하여 문서를 생성함.
 2. 상위 비전이나 비즈니스 목표와 일치하는지 검토함.
 3. 문서 상태(`draft`, `active`, `completed`)를 frontmatter의 `status` 필드로 관리하고, active chain에서 제거된 문서는 `docs/98.archive/` tombstone으로만 추적함.
 4. 승인 후에는 관련 `ARD`, `Spec`, `Plan` 문서를 생성하여 추적성을 유지함.

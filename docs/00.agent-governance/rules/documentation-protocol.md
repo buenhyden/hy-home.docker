@@ -76,30 +76,30 @@ Protocol for maintaining documentation consistency and governance traceability.
 
 | Stage/Folder                                          | Document Type          | Template                                     |
 | ----------------------------------------------------- | ---------------------- | -------------------------------------------- |
-| `docs/01.requirements/`                               | PRD                    | `docs/99.templates/prd.template.md`          |
-| `docs/02.architecture/requirements/`                  | ARD                    | `docs/99.templates/ard.template.md`          |
-| `docs/02.architecture/decisions/`                     | ADR                    | `docs/99.templates/adr.template.md`          |
-| `docs/03.specs/`                                      | Spec                   | `docs/99.templates/spec.template.md`         |
-| `docs/03.specs/<feature-id>/api-spec.md`              | API Spec               | `docs/99.templates/api-spec.template.md`     |
-| `docs/03.specs/<feature-id>/agent-design.md`          | Agent Design           | `docs/99.templates/agent-design.template.md` |
-| `docs/03.specs/<feature-id>/data-model.md`            | Data Model             | `docs/99.templates/data-model.template.md`   |
-| `docs/03.specs/<feature-id>/service.md`               | Service Scaffold       | `docs/99.templates/service.template.md`      |
-| `docs/03.specs/<feature-id>/tests.md`                 | Test Contract          | `docs/99.templates/tests.template.md`        |
-| `docs/03.specs/<feature-id>/contracts/openapi.yaml`   | OpenAPI Contract       | `docs/99.templates/openapi.template.yaml`    |
-| `docs/03.specs/<feature-id>/contracts/schema.graphql` | GraphQL Contract       | `docs/99.templates/schema.template.graphql`  |
-| `docs/03.specs/<feature-id>/contracts/service.proto`  | Protobuf Contract      | `docs/99.templates/service.template.proto`   |
-| `docs/04.execution/plans/`                            | Plan                   | `docs/99.templates/plan.template.md`         |
-| `docs/04.execution/tasks/`                            | Task                   | `docs/99.templates/task.template.md`         |
-| `docs/05.operations/guides/`                          | Operations Guide       | `docs/99.templates/guide.template.md`        |
-| `docs/05.operations/policies/`                        | Operations Policy      | `docs/99.templates/policy.template.md`       |
-| `docs/05.operations/runbooks/`                        | Operations Runbook     | `docs/99.templates/runbook.template.md`      |
-| `docs/05.operations/incidents/YYYY/`                  | Incident               | `docs/99.templates/incident.template.md`     |
-| `docs/05.operations/incidents/YYYY/`                  | Postmortem             | `docs/99.templates/postmortem.template.md`   |
-| `docs/00.agent-governance/memory/<note>.md`           | Governance Memory Note | `docs/99.templates/memory.template.md`       |
-| `docs/00.agent-governance/memory/progress.md`         | Agent Progress Log     | `docs/99.templates/progress.template.md`     |
-| `docs/90.references/`                                 | Reference              | `docs/99.templates/reference.template.md`    |
-| `docs/98.archive/`                                    | Archive Tombstone      | `docs/99.templates/archive.template.md`      |
-| `README.md` (per folder)                              | README                 | `docs/99.templates/readme.template.md`       |
+| `docs/01.requirements/`                               | PRD                    | `docs/99.templates/templates/sdlc/prd.template.md`          |
+| `docs/02.architecture/requirements/`                  | ARD                    | `docs/99.templates/templates/sdlc/ard.template.md`          |
+| `docs/02.architecture/decisions/`                     | ADR                    | `docs/99.templates/templates/sdlc/adr.template.md`          |
+| `docs/03.specs/`                                      | Spec                   | `docs/99.templates/templates/sdlc/spec.template.md`         |
+| `docs/03.specs/<feature-id>/api-spec.md`              | API Spec               | `docs/99.templates/templates/spec-contracts/api-spec.template.md`     |
+| `docs/03.specs/<feature-id>/agent-design.md`          | Agent Design           | `docs/99.templates/templates/spec-contracts/agent-design.template.md` |
+| `docs/03.specs/<feature-id>/data-model.md`            | Data Model             | `docs/99.templates/templates/spec-contracts/data-model.template.md`   |
+| `docs/03.specs/<feature-id>/service.md`               | Service Scaffold       | `docs/99.templates/templates/spec-contracts/service.template.md`      |
+| `docs/03.specs/<feature-id>/tests.md`                 | Test Contract          | `docs/99.templates/templates/spec-contracts/tests.template.md`        |
+| `docs/03.specs/<feature-id>/contracts/openapi.yaml`   | OpenAPI Contract       | `docs/99.templates/templates/spec-contracts/openapi.template.yaml`    |
+| `docs/03.specs/<feature-id>/contracts/schema.graphql` | GraphQL Contract       | `docs/99.templates/templates/spec-contracts/schema.template.graphql`  |
+| `docs/03.specs/<feature-id>/contracts/service.proto`  | Protobuf Contract      | `docs/99.templates/templates/spec-contracts/service.template.proto`   |
+| `docs/04.execution/plans/`                            | Plan                   | `docs/99.templates/templates/sdlc/plan.template.md`         |
+| `docs/04.execution/tasks/`                            | Task                   | `docs/99.templates/templates/sdlc/task.template.md`         |
+| `docs/05.operations/guides/`                          | Operations Guide       | `docs/99.templates/templates/operations/guide.template.md`        |
+| `docs/05.operations/policies/`                        | Operations Policy      | `docs/99.templates/templates/operations/policy.template.md`       |
+| `docs/05.operations/runbooks/`                        | Operations Runbook     | `docs/99.templates/templates/operations/runbook.template.md`      |
+| `docs/05.operations/incidents/YYYY/`                  | Incident               | `docs/99.templates/templates/operations/incident.template.md`     |
+| `docs/05.operations/incidents/YYYY/`                  | Postmortem             | `docs/99.templates/templates/operations/postmortem.template.md`   |
+| `docs/00.agent-governance/memory/<note>.md`           | Governance Memory Note | `docs/99.templates/templates/governance/memory.template.md`       |
+| `docs/00.agent-governance/memory/progress.md`         | Agent Progress Log     | `docs/99.templates/templates/governance/progress.template.md`     |
+| `docs/90.references/`                                 | Reference              | `docs/99.templates/templates/common/reference.template.md`    |
+| `docs/98.archive/`                                    | Archive Tombstone      | `docs/99.templates/templates/common/archive.template.md`      |
+| `README.md` (per folder)                              | README                 | `docs/99.templates/templates/common/readme.template.md`       |
 
 For optional supporting contracts under `docs/03.specs/<feature-id>/`, keep
 Markdown support files in the feature directory and machine-readable contracts

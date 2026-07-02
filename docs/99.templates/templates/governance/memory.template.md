@@ -49,4 +49,4 @@ List related commands, validators, docs, or follow-up task references.
 
 - [Memory README](./README.md)
 - [Progress log](./progress.md)
-- [Memory template](../../99.templates/memory.template.md)
+- [Memory template](../../99.templates/templates/governance/memory.template.md)

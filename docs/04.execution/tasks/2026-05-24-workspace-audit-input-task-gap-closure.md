@@ -21,7 +21,7 @@ implementation that closes those gaps.
 - **Completed Audit Plan**: [Workspace audit improvement plan](../plans/2026-05-24-workspace-audit-improvement.md)
 - **Completed Audit Task**: [Workspace audit improvement task](./2026-05-24-workspace-audit-improvement.md)
 - **Stage Matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- **Task Template**: [Task template](../../99.templates/task.template.md)
+- **Task Template**: [Task template](../../99.templates/templates/sdlc/task.template.md)
 - **Graphify Baseline**: [Graph report](../../../graphify-out/GRAPH_REPORT.md)
 
 ## Working Rules

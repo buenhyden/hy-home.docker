@@ -56,8 +56,8 @@ service names, environment variables는 원형을 유지합니다.
 
 ## How to Work in This Area
 
-1. 새 사고 기록은 [incident template](../../99.templates/incident.template.md)을 복사해 시작합니다.
-2. 새 사후 분석은 [postmortem template](../../99.templates/postmortem.template.md)을 복사해 시작합니다.
+1. 새 사고 기록은 [incident template](../../99.templates/templates/operations/incident.template.md)을 복사해 시작합니다.
+2. 새 사후 분석은 [postmortem template](../../99.templates/templates/operations/postmortem.template.md)을 복사해 시작합니다.
 3. 사고 대응 절차는 이 폴더에 직접 쓰지 말고 관련 runbook으로 연결합니다.
 4. 사실, 가설, 조치, 후속 액션을 분리해서 기록하고 관련 증거 링크를 남깁니다.
 5. 본문은 한국어로 쓰되 timestamp, ID, command, evidence label, service name,
@@ -65,12 +65,12 @@ service names, environment variables는 원형을 유지합니다.
 
 ## Templates
 
-- [incident.template.md](../../99.templates/incident.template.md)
-- [postmortem.template.md](../../99.templates/postmortem.template.md)
+- [incident.template.md](../../99.templates/templates/operations/incident.template.md)
+- [postmortem.template.md](../../99.templates/templates/operations/postmortem.template.md)
 
 ## Related Documents
 
 - [Operations index](../README.md)
 - [Runbooks](../runbooks/README.md)
-- [Incident template](../../99.templates/incident.template.md)
-- [Postmortem template](../../99.templates/postmortem.template.md)
+- [Incident template](../../99.templates/templates/operations/incident.template.md)
+- [Postmortem template](../../99.templates/templates/operations/postmortem.template.md)

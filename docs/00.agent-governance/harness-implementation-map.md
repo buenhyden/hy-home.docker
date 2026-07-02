@@ -81,12 +81,12 @@ linked sources. It does not define new policy.
 | Surface               | Source                                                | Role                                  | Required Validation                     | Evidence               |
 | --------------------- | ----------------------------------------------------- | ------------------------------------- | --------------------------------------- | ---------------------- |
 | Operations index      | `docs/05.operations/README.md`                        | Guides, policies, runbooks, incidents | `check-doc-traceability.sh`             | PR Validation Evidence |
-| Harness task contract | `docs/99.templates/harness-task-contract.template.md` | Harness work contract template        | `check-repo-contracts.sh` template loop | PR Validation Evidence |
+| Harness task contract | `docs/99.templates/templates/governance/harness-task-contract.template.md` | Harness work contract template        | `check-repo-contracts.sh` template loop | PR Validation Evidence |
 
 ## Related Documents
 
 - `docs/00.agent-governance/README.md`
 - `docs/00.agent-governance/rules/approval-boundaries.md`
 - `docs/00.agent-governance/rules/environment-constraints.md`
-- `docs/99.templates/harness-task-contract.template.md`
+- `docs/99.templates/templates/governance/harness-task-contract.template.md`
 - `scripts/README.md`

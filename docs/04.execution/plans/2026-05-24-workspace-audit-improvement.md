@@ -134,6 +134,6 @@ deployment, permission, or deletion work was added.
 - **Documentation protocol**: [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - **Task checklists**: [Task checklists](../../00.agent-governance/rules/task-checklists.md)
 - **Progress log**: [Agent progress log](../../00.agent-governance/memory/progress.md)
-- **Plan template**: [Plan template](../../99.templates/plan.template.md)
-- **Task template**: [Task template](../../99.templates/task.template.md)
+- **Plan template**: [Plan template](../../99.templates/templates/sdlc/plan.template.md)
+- **Task template**: [Task template](../../99.templates/templates/sdlc/task.template.md)
 - **Graphify report**: [Graph report](../../../graphify-out/GRAPH_REPORT.md)

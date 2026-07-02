@@ -119,4 +119,4 @@ Graphify remains advisory due cross-root inferred edges, so Phase 4 treats it as
 - **Phase 3 Plan**: [Agent Governance Phase 3 Approved Surface Activation Plan](./2026-06-02-agent-governance-phase-3-approved-surface-activation.md)
 - **Phase 3 Task**: [Agent Governance Phase 3 Approved Surface Activation Task](../tasks/2026-06-02-agent-governance-phase-3-approved-surface-activation.md)
 - **Governance Hub**: [AI Agent Governance Hub](../../00.agent-governance/README.md)
-- **Task Template**: [Task template](../../99.templates/task.template.md)
+- **Task Template**: [Task template](../../99.templates/templates/sdlc/task.template.md)

@@ -64,7 +64,7 @@ docs/02.architecture/requirements/
 
 1. 상위 PRD는 [`../../01.requirements/`](../../01.requirements/README.md)에서 확인한다.
 2. 같은 tier, system, architecture concern을 다루는 ARD가 이미 있는지 먼저 확인한다.
-3. 새 ARD는 [`../../99.templates/ard.template.md`](../../99.templates/ard.template.md)에서 시작한다.
+3. 새 ARD는 [`../../99.templates/templates/sdlc/ard.template.md`](../../99.templates/templates/sdlc/ard.template.md)에서 시작한다.
 4. 모든 링크는 이 폴더 아래의 대상 ARD 위치 기준으로 다시 계산한다.
 5. ARD가 중요한 trade-off를 기록하거나 변경하면 [`../decisions/`](../decisions/README.md)의 ADR과 연결한다.
 6. 구현 상세는 [`../../03.specs/`](../../03.specs/README.md)에 둔다.
@@ -92,4 +92,4 @@ docs/02.architecture/requirements/
 - **Spec**: [Technical specifications](../../03.specs/README.md)
 - **Plan**: [Execution plans](../../04.execution/plans/README.md)
 - **Task**: [Execution tasks](../../04.execution/tasks/README.md)
-- **Template**: [ARD template](../../99.templates/ard.template.md)
+- **Template**: [ARD template](../../99.templates/templates/sdlc/ard.template.md)

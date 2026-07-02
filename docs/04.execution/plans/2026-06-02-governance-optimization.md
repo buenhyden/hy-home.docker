@@ -40,7 +40,7 @@ to implementation discipline was not codified.
 | Task    | Description                                                      | Files / Docs Affected                                                                                                                                                                                                                        | Target REQ | Validation Criteria                      |
 | ------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------------------- |
 | PLN-001 | Write service seed with built-in security hardening | `examples/sample-web-service/` | I1 | `docker compose config` parses and YAML is valid |
-| PLN-002 | Create service scaffold template and register it in 4 files | `docs/99.templates/service.template.md`, `scripts/validation/check-repo-contracts.sh`, `docs/99.templates/README.md`, `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/00.agent-governance/rules/stage-authoring-matrix.md` | I1 | Contract check has `failures=0` |
+| PLN-002 | Create service scaffold template and register it in 4 files | `docs/99.templates/templates/spec-contracts/service.template.md`, `scripts/validation/check-repo-contracts.sh`, `docs/99.templates/README.md`, `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/00.agent-governance/rules/stage-authoring-matrix.md` | I1 | Contract check has `failures=0` |
 | PLN-003 | Write new service onboarding guide | `docs/05.operations/guides/00-workspace/new-service-onboarding.md` | I1 | Guide profile headings are satisfied and normalization passes |
 | PLN-004 | Codify code review request/acceptance loop | `docs/00.agent-governance/rules/workflows.md`, `docs/00.agent-governance/rules/git-workflow.md` | I2 | Contract check has `failures=0` |
 | PLN-005 | Add generated-artifact freshness contract (LLM Wiki index regeneration) to QA scope | `docs/00.agent-governance/scopes/qa.md` | QA | Contract check has `failures=0` |
@@ -78,6 +78,6 @@ to implementation discipline was not codified.
 ## Related Documents
 
 - **Task**: [Governance optimization task](../tasks/2026-06-02-governance-optimization.md)
-- **Service template**: [Service scaffold template](../../99.templates/service.template.md)
+- **Service template**: [Service scaffold template](../../99.templates/templates/spec-contracts/service.template.md)
 - **Workflow rule**: [Workflows](../../00.agent-governance/rules/workflows.md)
 - **Operations**: [New-service onboarding guide](../../05.operations/guides/00-workspace/new-service-onboarding.md)

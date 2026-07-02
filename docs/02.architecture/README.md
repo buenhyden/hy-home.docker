@@ -61,8 +61,8 @@ docs/02.architecture/
 
 1. 상위 PRD는 [`../01.requirements/`](../01.requirements/README.md)에서 확인한다.
 2. ARD 라우팅은 [`requirements/README.md`](requirements/README.md), ADR 라우팅은 [`decisions/README.md`](decisions/README.md)를 따른다.
-3. 새 ARD는 [`../99.templates/ard.template.md`](../99.templates/ard.template.md)에서 시작한다.
-4. 새 ADR은 [`../99.templates/adr.template.md`](../99.templates/adr.template.md)에서 시작한다.
+3. 새 ARD는 [`../99.templates/templates/sdlc/ard.template.md`](../99.templates/templates/sdlc/ard.template.md)에서 시작한다.
+4. 새 ADR은 [`../99.templates/templates/sdlc/adr.template.md`](../99.templates/templates/sdlc/adr.template.md)에서 시작한다.
 5. 링크는 템플릿 위치가 아니라 복사된 대상 문서 위치 기준으로 계산한다.
 6. 구현 상세는 [`../03.specs/`](../03.specs/README.md), 운영 절차는 [`../05.operations/`](../05.operations/README.md)에 둔다.
 

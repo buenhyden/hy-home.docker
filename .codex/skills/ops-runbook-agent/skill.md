@@ -30,9 +30,9 @@ by its mapped template in `docs/99.templates/`.
 
 1. Read `AGENTS.md` and `docs/05.operations/README.md`.
 2. Read the mapped operations template for the target bucket.
-   - For guides: read `docs/99.templates/guide.template.md`.
-   - For policies: read `docs/99.templates/policy.template.md`.
-   - For runbooks: read `docs/99.templates/runbook.template.md`.
+   - For guides: read `docs/99.templates/templates/operations/guide.template.md`.
+   - For policies: read `docs/99.templates/templates/operations/policy.template.md`.
+   - For runbooks: read `docs/99.templates/templates/operations/runbook.template.md`.
 3. Check `docs/05.operations/<bucket>/<tier>/` for existing documents on the topic.
 4. Read the relevant spec at `docs/03.specs/<tier>/spec.md` for service context.
 
@@ -216,7 +216,7 @@ For a document at depth `guides/<tier>/<subdomain>/<topic>.md`:
 | Input | Source |
 | ----- | ------ |
 | Service spec | `docs/03.specs/<tier>/spec.md` |
-| Operations template | `docs/99.templates/guide.template.md`, `docs/99.templates/policy.template.md`, or `docs/99.templates/runbook.template.md` |
+| Operations template | `docs/99.templates/templates/operations/guide.template.md`, `docs/99.templates/templates/operations/policy.template.md`, or `docs/99.templates/templates/operations/runbook.template.md` |
 | Existing documents | `docs/05.operations/<bucket>/<tier>/` |
 
 ## Outputs

@@ -31,7 +31,7 @@ This document is the technical specification for the May 2026 workspace-wide aud
 ## Core Design
 
 - **Component Boundary**: this specification applies only to the workspace governance layer. It does not change infrastructure runtime behavior, CI/CD deployment behavior, or secret values.
-- **Key Dependencies**: `docs/99.templates/spec.template.md`, `docs/99.templates/plan.template.md`, `docs/99.templates/task.template.md`, `docs/00.agent-governance/rules/stage-authoring-matrix.md`
+- **Key Dependencies**: `docs/99.templates/templates/sdlc/spec.template.md`, `docs/99.templates/templates/sdlc/plan.template.md`, `docs/99.templates/templates/sdlc/task.template.md`, `docs/00.agent-governance/rules/stage-authoring-matrix.md`
 - **Tech Stack**: Markdown documents, Bash validation scripts, and the Claude `skill.md` format
 
 ## Historical Gap Registry Snapshot (2026-05-26)

@@ -26,7 +26,7 @@ steps, and verification commands. Does not implement; only plans.
 
 1. Read `AGENTS.md` and `docs/00.agent-governance/rules/stage-authoring-matrix.md`.
 2. Read the target spec file in `docs/03.specs/`.
-3. Read `docs/99.templates/plan.template.md` for the plan structure.
+3. Read `docs/99.templates/templates/sdlc/plan.template.md` for the plan structure.
 4. Check `docs/04.execution/plans/` for any existing plan for the same spec.
 
 ## Working Rules
@@ -43,7 +43,7 @@ steps, and verification commands. Does not implement; only plans.
 | Input | Source |
 | ----- | ------ |
 | Approved spec | `docs/03.specs/<tier>/spec.md` |
-| Plan template | `docs/99.templates/plan.template.md` |
+| Plan template | `docs/99.templates/templates/sdlc/plan.template.md` |
 | Existing plans | `docs/04.execution/plans/` |
 
 ## Outputs

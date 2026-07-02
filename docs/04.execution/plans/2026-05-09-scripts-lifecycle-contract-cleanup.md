@@ -34,7 +34,7 @@ current purpose-folder script contract:
 ## Goals & In-Scope
 
 - **Goals**:
-  - Align `scripts/README.md` with the base structure in `docs/99.templates/readme.template.md`.
+  - Align `scripts/README.md` with the base structure in `docs/99.templates/templates/common/readme.template.md`.
   - Preserve the script lifecycle table and usage examples.
   - Clarify the meaning of external-reference exemptions in `scripts/validation/check-repo-contracts.sh`.
   - Maintain traceability between the new plan and the parent README.
@@ -105,7 +105,7 @@ current purpose-folder script contract:
 
 - [scripts README](../../../scripts/README.md)
 - [Repository contract checker](../../../scripts/validation/check-repo-contracts.sh)
-- [Plan template](../../99.templates/plan.template.md)
-- [README template](../../99.templates/readme.template.md)
+- [Plan template](../../99.templates/templates/sdlc/plan.template.md)
+- [README template](../../99.templates/templates/common/readme.template.md)
 - [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - [Graphify report](../../../graphify-out/GRAPH_REPORT.md)

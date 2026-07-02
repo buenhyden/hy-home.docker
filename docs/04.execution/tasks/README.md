@@ -94,13 +94,13 @@ docs/04.execution/tasks/
 ├── 2026-06-05-language-policy-task-normalization-batch-5.md # Active language policy task normalization evidence
 ├── 2026-06-05-language-policy-task-normalization-batch-6.md # Active language policy task normalization evidence
 ├── 2026-06-05-language-policy-task-normalization-batch-7.md # Active final task language normalization evidence
-├── 2026-07-02-template-system-reorganization.md # Active Stage 99 template system reorganization task record
+├── 2026-07-02-template-system-reorganization.md # Completed Stage 99 template system reorganization task record
 └── README.md                                # This file
 ```
 
 ## How to Work in This Area
 
-1. 새 task 문서는 [task template](../../99.templates/task.template.md)을 복사해 작성합니다.
+1. 새 task 문서는 [task template](../../99.templates/templates/sdlc/task.template.md)을 복사해 작성합니다.
 2. Related Documents 링크는 `docs/04.execution/tasks/<file>.md` 위치 기준으로 계산합니다.
 3. 각 세부 task의 `Status`와 `Validation / Evidence`를 실제 진행에 맞게 갱신합니다.
 4. 문서-only 작업도 검증 evidence를 남깁니다.

@@ -65,6 +65,6 @@ This document records implementation status and verification evidence for `docs/
 
 - **Parent Plan**: [Execution stage remediation plan](../plans/2026-05-18-execution-stage-remediation.md)
 - **Execution README**: [Execution stage README](../README.md)
-- **Plan Template**: [Plan template](../../99.templates/plan.template.md)
-- **Task Template**: [Task template](../../99.templates/task.template.md)
+- **Plan Template**: [Plan template](../../99.templates/templates/sdlc/plan.template.md)
+- **Task Template**: [Task template](../../99.templates/templates/sdlc/task.template.md)
 - **Legacy Debt Memory**: [Execution stage legacy debt](../../00.agent-governance/memory/execution-stage-legacy-debt.md)

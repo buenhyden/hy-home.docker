@@ -95,8 +95,8 @@ docs/04.execution/
 
 ## How to Work in This Area
 
-1. 실행 전에는 [plan template](../99.templates/plan.template.md)을 사용해 `plans/YYYY-MM-DD-topic.md`를 작성합니다.
-2. 실행 중에는 [task template](../99.templates/task.template.md)을 사용해 `tasks/YYYY-MM-DD-topic.md`에 상태와 evidence를 기록합니다.
+1. 실행 전에는 [plan template](../99.templates/templates/sdlc/plan.template.md)을 사용해 `plans/YYYY-MM-DD-topic.md`를 작성합니다.
+2. 실행 중에는 [task template](../99.templates/templates/sdlc/task.template.md)을 사용해 `tasks/YYYY-MM-DD-topic.md`에 상태와 evidence를 기록합니다.
 3. 기존 historical plan/task는 의미를 보존합니다. 오래된 template drift는 대량 재작성하지 않고 별도 memory note로 관리합니다.
 4. 새 파일을 추가하거나 이동하면 해당 parent README와 `## Related Documents` 링크를 대상 위치 기준으로 갱신합니다.
 5. 완료 전에는 `check-doc-traceability.sh`, 관련 repository contract, link/pseudo-link scan을 실행합니다.

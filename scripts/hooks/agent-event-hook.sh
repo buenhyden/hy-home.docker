@@ -208,7 +208,7 @@ if not tool_name or tool_name in edit_tools:
                 "Governance memory edit detected.\n\n"
                 f"Path: `{short_path}`\n\n"
                 "Memory notes are advisory retrieval context, not active policy. "
-                "Use `docs/99.templates/memory.template.md` for durable notes, "
+                "Use `docs/99.templates/templates/governance/memory.template.md` for durable notes, "
                 "do not store transcripts, raw logs, shell history, credentials, "
                 "tokens, private keys, or secret values, and update "
                 "`docs/00.agent-governance/memory/progress.md` when creating or "
@@ -243,7 +243,7 @@ if not tool_name or tool_name in edit_tools:
                 system_messages.append(
                     "Infra service README edit detected.\n\n"
                     f"Path: `{short_path}`\n\n"
-                    "Use `docs/99.templates/readme.template.md` with the Infra Service "
+                    "Use `docs/99.templates/templates/common/readme.template.md` with the Infra Service "
                     "Readiness snippet. Include Purpose, Config files, Config values, "
                     "Compose linkage, Networks, Volumes, Ports, Labels, Secret refs, "
                     "Healthcheck, Operations, Validation, and Troubleshooting. Record "
@@ -253,7 +253,7 @@ if not tool_name or tool_name in edit_tools:
                 system_messages.append(
                     "README edit detected.\n\n"
                     f"Path: `{short_path}`\n\n"
-                    "Use `docs/99.templates/readme.template.md` as the target-path guide. "
+                    "Use `docs/99.templates/templates/common/readme.template.md` as the target-path guide. "
                     "Decide whether this README is a folder index or service leaf before "
                     "editing, preserve `## Related Documents`, and calculate links from "
                     "the README target path rather than from `docs/99.templates/`."

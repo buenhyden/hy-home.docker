@@ -93,7 +93,7 @@ touched.
 
 - Codex hook events must stay behaviorally aligned with Claude hook events.
 - Codex `PreToolUse` and `PostToolUse` matchers must cover normal file edits and patch-based edits including `apply_patch` and `ApplyPatch`.
-- README guidance is provider-neutral (e.g. folder-index README edits route to `docs/99.templates/readme.template.md`).
+- README guidance is provider-neutral (e.g. folder-index README edits route to `docs/99.templates/templates/common/readme.template.md`).
 - Runtime hooks provide advisory context and validation routing only. Policy remains in `docs/00.agent-governance/`.
 
 ## 8. Operational Practices

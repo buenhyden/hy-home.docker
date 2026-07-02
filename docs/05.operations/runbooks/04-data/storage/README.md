@@ -41,7 +41,7 @@ storage/
 
 ## How to Work in This Area
 
-1. 새 runbook leaf는 `docs/99.templates/runbook.template.md`를 따른다.
+1. 새 runbook leaf는 `docs/99.templates/templates/operations/runbook.template.md`를 따른다.
 2. destructive cleanup은 검증된 backup evidence와 owner approval 경계를 문서에 남긴다.
 3. 문서 이동이나 제목 변경 시 이 README와 `../README.md`를 함께 갱신한다.
 

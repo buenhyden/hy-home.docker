@@ -70,13 +70,13 @@ docs/04.execution/plans/
 ├── 2026-06-02-agent-governance-phase-4-closure-reconciliation.md # Completed agent governance Phase 4 closure reconciliation plan
 ├── 2026-06-02-docs-implementation-reconciliation.md # Completed docs implementation reconciliation plan
 ├── 2026-06-03-governance-surgical-reverification.md # Completed governance surgical re-verification and tech-stack drift closure plan
-├── 2026-07-02-template-system-reorganization.md # Active Stage 99 template system reorganization plan
+├── 2026-07-02-template-system-reorganization.md # Completed Stage 99 template system reorganization plan
 └── README.md                               # This file
 ```
 
 ## How to Work in This Area
 
-1. 새 plan은 [plan template](../../99.templates/plan.template.md)을 복사해 작성합니다.
+1. 새 plan은 [plan template](../../99.templates/templates/sdlc/plan.template.md)을 복사해 작성합니다.
 2. Related Documents 링크는 `docs/04.execution/plans/<file>.md` 위치 기준으로 계산합니다.
 3. 활성 plan은 이 폴더 아래 canonical 경로에만 둡니다. 비표준 `docs/*` 경로에는 active plan을 만들지 않습니다.
 4. 계획에는 work breakdown, verification plan, risks, completion criteria가 있어야 합니다.

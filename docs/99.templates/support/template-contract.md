@@ -1,0 +1,48 @@
+---
+layer: agentic
+---
+
+# Template Contract
+
+## Overview
+
+This document defines the non-copyable contract for template source files under
+`docs/99.templates/templates/`.
+
+## Template Source Rules
+
+- Copyable source files live only under `docs/99.templates/templates/`.
+- Markdown template files use the `*.template.md` suffix.
+- Machine-readable contract templates use `*.template.yaml`,
+  `*.template.graphql`, or `*.template.proto`.
+- Markdown template sources start with `status: draft` frontmatter.
+- Machine-readable templates use comments for `Target:` and cross-link ownership
+  instead of YAML frontmatter.
+- Every Markdown template includes target path guidance, target-relative link
+  guidance, and `## Related Documents`.
+- Non-Markdown contract templates do not include Markdown `## Related Documents`;
+  their parent Markdown spec or API spec owns cross-links.
+
+## Placeholder Rules
+
+- Placeholder text must be visually obvious.
+- Target documents must not keep unresolved placeholders.
+- Template-time example links are calculated from the copied target path, not
+  from the template source path.
+- Example commands in templates must be deleted or replaced before target
+  documents are saved.
+
+## Target Document Rules
+
+- A target document inherits structure from exactly one primary template.
+- Purpose-specific child templates may supplement a parent spec when the target
+  path and role require them.
+- Target document frontmatter follows [frontmatter contract](./frontmatter-contract.md), not the template source metadata.
+- Intentional template deviation must be recorded in Stage 04 task evidence.
+
+## Related Documents
+
+- [support README](./README.md)
+- [template governance](./template-governance.md)
+- [frontmatter contract](./frontmatter-contract.md)
+- [template selection](./template-selection.md)

@@ -22,7 +22,7 @@ for the original input.
 - **Completed Audit Task**: [Workspace audit improvement task](./2026-05-24-workspace-audit-improvement.md)
 - **Input Gap Closure Task**: [Workspace audit input task gap closure task](./2026-05-24-workspace-audit-input-task-gap-closure.md)
 - **Stage Matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- **Task Template**: [Task template](../../99.templates/task.template.md)
+- **Task Template**: [Task template](../../99.templates/templates/sdlc/task.template.md)
 - **Graphify Baseline**: [Graph report](../../../graphify-out/GRAPH_REPORT.md)
 
 ## Working Rules
