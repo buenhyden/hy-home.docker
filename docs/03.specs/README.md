@@ -59,6 +59,7 @@ docs/03.specs/
 ├── 10-communication/                    # Mail communication contracts
 ├── 11-laboratory/                       # Laboratory/admin surface contracts
 ├── docs-taxonomy-agent-first-migration/ # Completed docs taxonomy migration spec
+├── agentic-engineering-implementation-audit-pack/ # Draft Stage 90 audit pack design spec
 ├── harness-agent-first-engineering/     # Completed agent-first harness spec
 ├── home-docker-revalidation-deferred-follow-up/ # Completed Home Docker revalidation and deferred-follow-up spec
 ├── infra-secrets-docs-refresh/          # Completed infra/secrets/docs refresh spec
@@ -82,6 +83,7 @@ docs/03.specs/
 | Kafka, RabbitMQ, stream/message broker behavior            | `05-messaging/spec.md`                               |
 | Metrics, logs, traces, dashboards, alerts                  | `06-observability/spec.md`                           |
 | Workflow orchestration and cross-validation agent behavior | `07-workflow/spec.md`, `07-workflow/agent-design.md` |
+| Agentic engineering reference-audit pack design            | `agentic-engineering-implementation-audit-pack/spec.md` |
 | Local AI inference, RAG UI, model-serving contracts        | `08-ai/spec.md`, `08-ai/open-webui.md`               |
 | IaC, registry, quality, performance tooling services       | `09-tooling/spec.md`                                 |
 | Mail, SMTP, IMAP, development mail trapping                | `10-communication/spec.md`                           |
@@ -143,6 +145,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Operations Stage**: [../05.operations/README.md](../05.operations/README.md)
 - **Spec template**: [../99.templates/spec.template.md](../99.templates/spec.template.md)
 - **README template**: [../99.templates/readme.template.md](../99.templates/readme.template.md)
+- **Agentic Engineering Implementation Audit Pack Spec**: [agentic-engineering-implementation-audit-pack/spec.md](./agentic-engineering-implementation-audit-pack/spec.md)
 - **Harness / Agent-first Engineering Spec**: [harness-agent-first-engineering/spec.md](./harness-agent-first-engineering/spec.md)
 - **Home Docker Revalidation Deferred Follow-up Spec**: [home-docker-revalidation-deferred-follow-up/spec.md](./home-docker-revalidation-deferred-follow-up/spec.md)
 - **Infra / Secrets / Docs Refresh Spec**: [infra-secrets-docs-refresh/spec.md](./infra-secrets-docs-refresh/spec.md)
