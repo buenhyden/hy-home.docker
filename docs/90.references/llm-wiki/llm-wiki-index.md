@@ -648,7 +648,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md) | Markdown reference |
 | [docs/05.operations/guides/README.md](../../05.operations/guides/README.md) | folder index |
 | [docs/05.operations/incidents/README.md](../../05.operations/incidents/README.md) | folder index |
-| [docs/05.operations/incidents/postmortems/README.md](../../05.operations/incidents/postmortems/README.md) | folder index |
 | [docs/05.operations/policies/00-workspace/README.md](../../05.operations/policies/00-workspace/README.md) | folder index |
 | [docs/05.operations/policies/00-workspace/common-optimizations-template-exceptions.md](../../05.operations/policies/00-workspace/common-optimizations-template-exceptions.md) | Markdown reference |
 | [docs/05.operations/policies/00-workspace/harness-agent-first-engineering.md](../../05.operations/policies/00-workspace/harness-agent-first-engineering.md) | Markdown reference |

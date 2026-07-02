@@ -36,7 +36,14 @@ to operate, govern, respond to, or learn from a workspace service or process.
 - Guides provide context and handoff; they are not ordered emergency procedures.
 - Policies define controls and exceptions; they are not runbooks.
 - Runbooks provide executable procedures and evidence; they are not tutorials.
-- Incidents record event state; postmortems record analysis and follow-up.
+- Each incident owns a packet folder at
+  `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/`.
+- Incidents record event state in `INC-###-<incident-title>.md` inside the
+  packet folder.
+- Postmortems record analysis and follow-up in `postmortem.md` inside the same
+  packet folder.
+- Incident/postmortem pairs must share the same Incident ID, severity, and
+  primary service metadata.
 - Preserve command names, service names, profiles, secret IDs, and evidence
   labels exactly when copying from verified sources.
 

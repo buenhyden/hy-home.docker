@@ -49,7 +49,7 @@ docs/05.operations/
 ├── guides/       # 서비스 사용, 설정, 온보딩 가이드
 ├── policies/     # 운영 통제, 보안/가용성 정책, 예외 기준
 ├── runbooks/     # 복구, 검증, 반복 실행 절차
-├── incidents/    # 사고 기록과 postmortems/ 사후 분석
+├── incidents/    # 사고 단위 packet 폴더와 사후 분석
 └── README.md     # This file
 ```
 
@@ -60,7 +60,7 @@ docs/05.operations/
 | understand or configure a service                           | [guides/](./guides/README.md)                                                                   |
 | check allowed controls, exceptions, or review cadence       | [policies/](./policies/README.md)                                                               |
 | execute recovery, validation, rollback, or escalation steps | [runbooks/](./runbooks/README.md)                                                               |
-| record an incident or postmortem                            | [incidents/](./incidents/README.md) and [incidents/postmortems/](./incidents/postmortems/README.md) |
+| record an incident or postmortem                            | [incidents/](./incidents/README.md)                                                              |
 | confirm execution traceability                              | [execution plans](../04.execution/plans/README.md) and [tasks](../04.execution/tasks/README.md) |
 
 ## How to Work in This Area
@@ -68,7 +68,7 @@ docs/05.operations/
 1. 서비스 사용법이나 배경 설명은 `guides/01-gateway/traefik.md` 같은 guide 문서에 둡니다.
 2. 운영 통제, 예외, 보안/가용성 기준은 `policies/01-gateway/traefik.md` 같은 policy 문서에 둡니다.
 3. 명령 순서, 기대 결과, 실패 시 중단 기준이 있는 절차는 `runbooks/01-gateway/traefik.md` 같은 runbook 문서에 둡니다.
-4. 실제 사고 기록은 `incidents/YYYY/`, postmortem은 `incidents/postmortems/YYYY/`에 둡니다.
+4. 실제 사고 기록과 postmortem은 `incidents/YYYY/INC-###-incident-title/` packet 안에 둡니다.
 5. 문서를 추가, 이동, 삭제하면 해당 parent `README.md`와 관련 bucket 링크를 함께 갱신합니다.
 
 특정 서비스에 속하지 않는 cross-service 또는 workspace-level 문서(예: `guides/00-workspace/developer-setup.md`, `policies/00-workspace/infra-service-optimization-catalog.md`, `runbooks/00-workspace/release-management.md`)는 bucket root에 직접 두지 않고 의미별 하위 폴더에 둡니다. `guides/`, `policies/`, `runbooks/` root에는 해당 bucket `README.md`만 남깁니다.
@@ -82,7 +82,7 @@ docs/05.operations/
 | `guides/`    | 정상 사용, 설정, 온보딩, common checks                  | `## Usage`, `## Common Checks`, handoff links                                               |
 | `policies/`  | 운영 통제, 허용/금지 상태, 예외, 검토 주기              | `## Policy Scope`, `## Controls`, `## Verification`, `## Review Cadence`                    |
 | `runbooks/`  | 순서 있는 절차, evidence, rollback/recovery, escalation | `## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, `## Escalation` |
-| `incidents/` | 사고 사실 기록과 `postmortems/` 사후 분석               | incident/postmortem templates                                                               |
+| `incidents/` | 사고 사실 기록과 같은 packet 안의 사후 분석              | incident/postmortem templates                                                               |
 
 하나의 leaf 문서에는 하나의 primary purpose만 둡니다. 사용 설명과 반복 절차가 모두 필요한 경우 guide에서 runbook으로 handoff 링크를 둡니다.
 

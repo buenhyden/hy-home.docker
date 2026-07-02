@@ -93,8 +93,8 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/05.operations/guides/`                          | Operations Guide       | `docs/99.templates/templates/operations/guide.template.md`        |
 | `docs/05.operations/policies/`                        | Operations Policy      | `docs/99.templates/templates/operations/policy.template.md`       |
 | `docs/05.operations/runbooks/`                        | Operations Runbook     | `docs/99.templates/templates/operations/runbook.template.md`      |
-| `docs/05.operations/incidents/YYYY/`                  | Incident               | `docs/99.templates/templates/operations/incident.template.md`     |
-| `docs/05.operations/incidents/postmortems/YYYY/`      | Postmortem             | `docs/99.templates/templates/operations/postmortem.template.md`   |
+| `docs/05.operations/incidents/YYYY/INC-###-<title>/INC-###-<title>.md` | Incident | `docs/99.templates/templates/operations/incident.template.md` |
+| `docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md` | Postmortem | `docs/99.templates/templates/operations/postmortem.template.md` |
 | `docs/00.agent-governance/memory/<note>.md`           | Governance Memory Note | `docs/99.templates/templates/governance/memory.template.md`       |
 | `docs/00.agent-governance/memory/progress.md`         | Agent Progress Log     | `docs/99.templates/templates/governance/progress.template.md`     |
 | `docs/90.references/`                                 | Reference              | `docs/99.templates/templates/common/reference.template.md`    |
@@ -261,11 +261,10 @@ bucket's purpose-profile contract. Profile compliance is machine-verified by
 - `runbooks/**` required: `## When to Use`, `## Procedure`, `## Evidence`,
   `## Escalation`. Forbidden in runbooks: `## Usage`,
   `## Policy Scope`, `## Controls`, `## Exceptions`, `## Review Cadence`.
-- `incidents/YYYY/**` documents use `incident.template.md` (active incident record).
-  Filename pattern: `YYYY-MM-DD-<incident-title>.md`.
-- `incidents/postmortems/YYYY/**` documents use `postmortem.template.md`
-  (post-incident review). Filename pattern:
-  `YYYY-MM-DD-<incident-title>-postmortem.md`.
+- `incidents/YYYY/INC-###-<title>/INC-###-<title>.md` documents use
+  `incident.template.md` (active incident record).
+- `incidents/YYYY/INC-###-<title>/postmortem.md` documents use
+  `postmortem.template.md` (post-incident review).
 
 A document violating R4 is **INCOMPLETE** regardless of content quality.
 Completion is **PROHIBITED** until all profile checks pass.

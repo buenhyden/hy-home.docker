@@ -1,28 +1,37 @@
 ---
 status: draft
 ---
-<!-- Target: docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md -->
+<!-- Target: docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md -->
 
 # Incident: [Incident Title]
 
-INC-YYYYMMDD-XXX / [Short Incident Title]
+INC-###-[incident-title] / [Short Incident Title]
 
-> Use this template for `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md`.
+> Use this template for `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md`.
+>
+> Target Contract:
+>
+> - Each incident owns one packet folder: `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/`.
+> - The incident facts file is `INC-###-<incident-title>.md` inside that packet folder.
+> - The paired postmortem file is `postmortem.md` inside the same packet folder.
+> - `YYYY` comes from the incident detection date.
+> - Keep the same `Incident ID`, severity, and primary service metadata across the packet.
 >
 > Rules:
 >
 > - Record facts, status, and response state.
 > - Separate confirmed facts from current hypotheses.
-> - Keep final root cause analysis in a paired Postmortem under `docs/05.operations/incidents/postmortems/`.
+> - Keep final root cause analysis in the paired `postmortem.md`.
+> - Do not include final systemic RCA in this incident record; link to the postmortem after stabilization.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 >
-> Target-relative examples from `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md`:
+> Target-relative examples from `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md`:
 >
-> - Same-incident postmortem: `../postmortems/YYYY/YYYY-MM-DD-incident-title-postmortem.md`
-> - Direct runbook: `../../runbooks/topic.md`
-> - Domain runbook: `../../runbooks/domain/topic.md`
-> - Nested runbook: `../../runbooks/domain/subdomain/topic.md`
-> - Follow-up task: `../../../04.execution/tasks/YYYY-MM-DD-topic.md`
+> - Same-incident postmortem: `./postmortem.md`
+> - Direct runbook: `../../../runbooks/topic.md`
+> - Domain runbook: `../../../runbooks/domain/topic.md`
+> - Nested runbook: `../../../runbooks/domain/subdomain/topic.md`
+> - Follow-up task: `../../../../04.execution/tasks/YYYY-MM-DD-topic.md`
 
 ---
 
@@ -34,13 +43,13 @@ INC-YYYYMMDD-XXX / [Short Incident Title]
 
 | Field | Value |
 | --- | --- |
-| Incident ID | `INC-YYYYMMDD-XXX` |
+| Incident ID | `INC-###-<incident-title>` |
 | Severity | `SEV-1 / SEV-2 / SEV-3` |
 | Status | `Investigating / Identified / Mitigating / Monitoring / Resolved / Closed` |
 | Detection Time | `YYYY-MM-DD HH:MM UTC` |
 | Primary Service | [Affected service] |
 | Evidence Source | [Log / dashboard / report] |
-| Runbook Link | [../../runbooks/<topic>.md](../../runbooks/<topic>.md) |
+| Runbook Link | [../../../runbooks/<topic>.md](../../../runbooks/<topic>.md) |
 
 ## Agent Metadata (If Applicable)
 
@@ -83,13 +92,13 @@ INC-YYYYMMDD-XXX / [Short Incident Title]
 
 ## Postmortem Link
 
-- [YYYY-MM-DD-<incident-title>-postmortem.md](../postmortems/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md)
+- [postmortem.md](./postmortem.md)
 
 ## Related Documents
 
-- **Runbook, direct target**: [../../runbooks/<topic>.md](../../runbooks/<topic>.md)
-- **Runbook, domain target**: [../../runbooks/<domain>/<topic>.md](../../runbooks/<domain>/<topic>.md)
-- **Runbook, nested target**: [../../runbooks/<domain>/<subdomain>/<topic>.md](../../runbooks/<domain>/<subdomain>/<topic>.md)
-- **Operations Guide, domain target**: [../../guides/<domain>/<topic>.md](../../guides/<domain>/<topic>.md)
-- **Operations Policy, domain target**: [../../policies/<domain>/<topic>.md](../../policies/<domain>/<topic>.md)
-- **Follow-up Task**: [../../../04.execution/tasks/YYYY-MM-DD-<topic>.md](../../../04.execution/tasks/YYYY-MM-DD-<topic>.md)
+- **Runbook, direct target**: [../../../runbooks/<topic>.md](../../../runbooks/<topic>.md)
+- **Runbook, domain target**: [../../../runbooks/<domain>/<topic>.md](../../../runbooks/<domain>/<topic>.md)
+- **Runbook, nested target**: [../../../runbooks/<domain>/<subdomain>/<topic>.md](../../../runbooks/<domain>/<subdomain>/<topic>.md)
+- **Operations Guide, domain target**: [../../../guides/<domain>/<topic>.md](../../../guides/<domain>/<topic>.md)
+- **Operations Policy, domain target**: [../../../policies/<domain>/<topic>.md](../../../policies/<domain>/<topic>.md)
+- **Follow-up Task**: [../../../../04.execution/tasks/YYYY-MM-DD-<topic>.md](../../../../04.execution/tasks/YYYY-MM-DD-<topic>.md)

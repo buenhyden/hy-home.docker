@@ -428,6 +428,7 @@ if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
+import re
 import sys
 
 
@@ -441,37 +442,62 @@ def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
 
 failures: list[str] = []
 incidents_root = pathlib.Path("docs/05.operations/incidents")
-postmortems_root = incidents_root / "postmortems"
+year_re = re.compile(r"^20[0-9]{2}$")
+packet_re = re.compile(r"^INC-[0-9]{3}-[a-z0-9][a-z0-9-]*$")
 
-if not (postmortems_root / "README.md").is_file():
-    failures.append(f"missing postmortem folder README: {postmortems_root / 'README.md'}")
+if not incidents_root.is_dir():
+    failures.append(f"missing incidents root: {incidents_root}")
 
 if incidents_root.exists():
-    for path in sorted(incidents_root.rglob("*.md")):
-        if path.name == "README.md":
+    for child in sorted(incidents_root.iterdir()):
+        if child.name == "README.md":
             continue
-        is_postmortem_file = "postmortem" in path.stem.lower()
-        under_postmortems = is_relative_to(path, postmortems_root)
-        if is_postmortem_file and not under_postmortems:
-            failures.append(f"{path}: postmortem documents must live under {postmortems_root}/YYYY/")
-        if under_postmortems and not is_postmortem_file:
-            failures.append(f"{path}: non-postmortem documents must not live under {postmortems_root}")
+        if not child.is_dir() or not year_re.match(child.name):
+            failures.append(f"{child}: incidents root may contain only README.md and YYYY folders")
+            continue
+        for packet in sorted(child.iterdir()):
+            if not packet.is_dir() or not packet_re.match(packet.name):
+                failures.append(f"{packet}: incident year folders may contain only INC-###-<title> packet folders")
+                continue
+            expected_incident = packet / f"{packet.name}.md"
+            expected_postmortem = packet / "postmortem.md"
+            markdown_files = sorted(path for path in packet.glob("*.md"))
+            allowed_files = {expected_incident, expected_postmortem}
+            for path in markdown_files:
+                if path not in allowed_files:
+                    failures.append(
+                        f"{path}: incident packet markdown files must be {expected_incident.name} or postmortem.md"
+                    )
+            if markdown_files and not expected_incident.is_file():
+                failures.append(f"{packet}: incident packet is missing {expected_incident.name}")
+            if expected_postmortem.is_file() and not expected_incident.is_file():
+                failures.append(f"{expected_postmortem}: postmortem requires paired incident file {expected_incident.name}")
+    for stale in sorted(incidents_root.rglob("*postmortem*.md")):
+        if stale.name != "postmortem.md":
+            failures.append(f"{stale}: postmortem file must be named postmortem.md inside the incident packet")
 
 literal_requirements = {
     pathlib.Path("docs/05.operations/incidents/README.md"): [
-        "postmortems/README.md",
-        "postmortems/YYYY/",
+        "YYYY/INC-###-incident-title/",
+        "postmortem.md",
     ],
     pathlib.Path("docs/99.templates/templates/operations/incident.template.md"): [
-        "docs/05.operations/incidents/postmortems/",
-        "../postmortems/YYYY/YYYY-MM-DD-incident-title-postmortem.md",
+        "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md",
+        "./postmortem.md",
     ],
     pathlib.Path("docs/99.templates/templates/operations/postmortem.template.md"): [
-        "docs/05.operations/incidents/postmortems/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md",
-        "../../YYYY/YYYY-MM-DD-incident-title.md",
+        "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md",
+        "./INC-###-incident-title.md",
     ],
     pathlib.Path("docs/00.agent-governance/rules/documentation-protocol.md"): [
-        "docs/05.operations/incidents/postmortems/YYYY/",
+        "docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md",
+    ],
+    pathlib.Path(".claude/skills/ops-runbook-agent/skill.md"): [
+        "incidents/YYYY/INC-###-<incident-title>/",
+        "Filename: `postmortem.md`",
+    ],
+    pathlib.Path(".claude/skills/incident-response/skill.md"): [
+        "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md",
     ],
 }
 for path, literals in literal_requirements.items():
@@ -482,6 +508,24 @@ for path, literals in literal_requirements.items():
     for literal in literals:
         if literal not in text:
             failures.append(f"{path}: missing postmortem routing literal: {literal}")
+
+for path in [
+    pathlib.Path("docs/99.templates/templates/operations/incident.template.md"),
+    pathlib.Path("docs/99.templates/templates/operations/postmortem.template.md"),
+    pathlib.Path(".claude/skills/ops-runbook-agent/skill.md"),
+    pathlib.Path(".claude/skills/incident-response/skill.md"),
+]:
+    if not path.is_file():
+        continue
+    text = path.read_text(errors="ignore")
+    for forbidden in [
+        "docs/05.operations/incidents/postmortems/",
+        "PM-<INC-ID>-postmortem.md",
+        "place both files under `incidents/YYYY/`",
+        "YYYY-MM-DD-<incident-title>-postmortem.md",
+    ]:
+        if forbidden in text:
+            failures.append(f"{path}: stale postmortem routing literal remains: {forbidden}")
 
 if failures:
     for failure in failures:

@@ -111,8 +111,9 @@ README 파일은 `docs/99.templates/templates/common/readme.template.md`의 기�
 | Technical implementation contract | `docs/03.specs/` |
 | Implementation plan or evidence | `docs/04.execution/` |
 | Operational policy, guide, or runbook | `docs/05.operations/` |
-| Incident record | `docs/05.operations/incidents/YYYY/` |
-| Postmortem | `docs/05.operations/incidents/postmortems/YYYY/` |
+| Incident packet | `docs/05.operations/incidents/YYYY/INC-###-<title>/` |
+| Incident record | `docs/05.operations/incidents/YYYY/INC-###-<title>/INC-###-<title>.md` |
+| Postmortem | `docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md` |
 
 ## Reference Contract
 

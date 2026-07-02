@@ -30,7 +30,7 @@ title: 'Operations & SRE Scope'
 ## 4. Operational Procedures
 
 - **Incident Response**: Follow the `docs/05.operations/incidents/` protocol for live tracking.
-- **Post-mortems**: Mandatory retrospective in `docs/05.operations/incidents/postmortems/` for any SEV1/SEV2 incident.
+- **Post-mortems**: Mandatory retrospective as `postmortem.md` inside the incident packet folder for any SEV1/SEV2 incident.
 
 ## 5. Maintenance & Safety
 

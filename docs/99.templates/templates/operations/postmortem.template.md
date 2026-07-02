@@ -1,23 +1,32 @@
 ---
 status: draft
 ---
-<!-- Target: docs/05.operations/incidents/postmortems/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md -->
+<!-- Target: docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md -->
 
 # Postmortem: [Incident Title]
 
-> Use this template for `docs/05.operations/incidents/postmortems/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md`.
+> Use this template for `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md`.
+>
+> Target Contract:
+>
+> - Each incident owns one packet folder: `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/`.
+> - The paired incident facts file is `INC-###-<incident-title>.md` inside that packet folder.
+> - This postmortem analysis file is always named `postmortem.md` inside the same packet folder.
+> - `YYYY` comes from the incident detection date, not the analysis date.
+> - Use the same `Incident ID`, severity, and primary service metadata as the paired incident record.
 >
 > Rules:
 >
 > - Analyze systemic causes without blaming individuals.
-> - Link the paired Incident document under `docs/05.operations/incidents/YYYY/`.
+> - Link the paired Incident document in the same incident packet folder.
+> - Create postmortems for every SEV1/SEV2 incident; create SEV3 postmortems when recurrence, security exposure, or learning value warrants it.
 > - Convert prevention work into follow-up tasks with owners and verification.
 > - Do not include secret values, credentials, private keys, raw logs, or shell history.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 >
-> Target-relative examples from `docs/05.operations/incidents/postmortems/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md`:
+> Target-relative examples from `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md`:
 >
-> - Incident document: `../../YYYY/YYYY-MM-DD-incident-title.md`
+> - Incident document: `./INC-###-incident-title.md`
 > - Direct runbook: `../../../runbooks/topic.md`
 > - Domain policy: `../../../policies/domain/policy-or-standard.md`
 > - Follow-up task: `../../../../04.execution/tasks/YYYY-MM-DD-topic.md`
@@ -32,11 +41,11 @@ status: draft
 
 | Field | Value |
 | --- | --- |
-| Incident ID | `INC-YYYYMMDD-XXX` |
+| Incident ID | `INC-###-<incident-title>` |
 | Incident Date | `YYYY-MM-DD` |
 | Analysis Date | `YYYY-MM-DD` |
 | Severity | `SEV-1 / SEV-2 / SEV-3` |
-| Incident Document | [YYYY-MM-DD-<incident-title>.md](../../YYYY/YYYY-MM-DD-<incident-title>.md) |
+| Incident Document | [INC-###-<incident-title>.md](./INC-###-<incident-title>.md) |
 
 ## Agent Metadata (If Applicable)
 
@@ -108,5 +117,5 @@ status: draft
 - **Runbook, domain target**: [../../../runbooks/<domain>/<topic>.md](../../../runbooks/<domain>/<topic>.md)
 - **Runbook, nested target**: [../../../runbooks/<domain>/<subdomain>/<topic>.md](../../../runbooks/<domain>/<subdomain>/<topic>.md)
 - **Operation Policy, domain target**: [../../../policies/<domain>/<policy-or-standard>.md](../../../policies/<domain>/<policy-or-standard>.md)
-- **Incident**: [YYYY-MM-DD-<incident-title>.md](../../YYYY/YYYY-MM-DD-<incident-title>.md)
+- **Incident**: [INC-###-<incident-title>.md](./INC-###-<incident-title>.md)
 - **Follow-up Task**: [../../../../04.execution/tasks/YYYY-MM-DD-<topic>.md](../../../../04.execution/tasks/YYYY-MM-DD-<topic>.md)

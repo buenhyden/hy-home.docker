@@ -27,7 +27,10 @@ docker compose logs --tail=100 <service>
 docker network inspect infra_net
 ```
 
-Create an incident record immediately at `docs/05.operations/incidents/INC-<YYYYMMDD>-<seq>.md`.
+Create an incident packet immediately at
+`docs/05.operations/incidents/YYYY/INC-###-<incident-title>/`.
+Write the live incident record as
+`docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md`.
 
 ## Phase 2 — Timeline Reconstruction
 
@@ -81,8 +84,9 @@ Confirm the service returns to the workspace SLO baseline.
 
 ## Phase 6 — Postmortem
 
-For SEV1 and SEV2 incidents, create `docs/05.operations/incidents/PM-<INC-ID>-postmortem.md`.
-Include the incident link in `## Related Documents`.
+For SEV1 and SEV2 incidents, create
+`docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md`.
+Include the incident link in `## Incident Summary` and `## Related Documents`.
 
 ## Error Handling
 
@@ -98,5 +102,6 @@ Include the incident link in `## Related Documents`.
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/05.operations/`
 - `docs/05.operations/incidents/`
-- `docs/05.operations/incidents/`
+- `docs/99.templates/templates/operations/incident.template.md`
+- `docs/99.templates/templates/operations/postmortem.template.md`
 - `.claude/agents/incident-responder.md`
