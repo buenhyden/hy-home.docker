@@ -464,6 +464,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-06-02-docs-implementation-reconciliation.md](../../04.execution/plans/2026-06-02-docs-implementation-reconciliation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-governance-optimization.md](../../04.execution/plans/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-03-governance-surgical-reverification.md](../../04.execution/plans/2026-06-03-governance-surgical-reverification.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-02-template-system-reorganization.md](../../04.execution/plans/2026-07-02-template-system-reorganization.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
