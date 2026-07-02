@@ -29,7 +29,8 @@ Follow it for every response and artifact.
 
 ## Documentation Output
 
-- Author target-stage docs template-first (`docs/99.templates/*` per `rules/documentation-protocol.md`).
+- Author target-stage docs template-first: load the mapped template under
+  `docs/99.templates/templates/` per `rules/documentation-protocol.md`.
 - End every document with one `## Related Documents` section.
 - Keep root shims thin; route detail into governance.
 

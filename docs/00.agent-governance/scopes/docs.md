@@ -31,8 +31,8 @@ Boundaries and permissions for agents interacting with repository documentation.
   under `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`,
   `docs/04.execution/`, `docs/05.operations/`, `docs/90.references/`,
   or `docs/98.archive/`,
-  load the mapped template from `docs/99.templates/` and keep its required
-  contract.
+  load the mapped template from `docs/99.templates/templates/` and keep its
+  required contract.
 - Active stage artifacts must live only in canonical stage paths; non-stage `docs/*` paths are not valid targets for active specs, plans, or tasks.
 
 ## 4. Out-of-Scope Handling

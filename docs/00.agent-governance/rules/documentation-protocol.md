@@ -14,8 +14,8 @@ Protocol for maintaining documentation consistency and governance traceability.
 
 ## 2. Requirements and Constraints
 
-- Use templates from `docs/99.templates/` for every new or modified target-stage
-  document under `docs/01.requirements/`, `docs/02.architecture/`,
+- Use the mapped template under `docs/99.templates/templates/` for every new or
+  modified target-stage document under `docs/01.requirements/`, `docs/02.architecture/`,
   `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/`,
   `docs/90.references/`, and `docs/98.archive/`.
 - Use only relative links; never use absolute `file://` links.
@@ -61,13 +61,13 @@ Protocol for maintaining documentation consistency and governance traceability.
   unless a document type or approved plan explicitly requires them. Do not
   convert existing templates or active stage documents to HADS as incidental
   cleanup.
-- **Template frontmatter exemption**: Template source files under `docs/99.templates/*.template.md` use `status: draft` in YAML frontmatter instead of `layer:`. This is intentional. Agents performing `layer:` compliance audits must exempt those template source files from that check. `docs/99.templates/README.md` is an active folder README and may use repository README frontmatter such as `layer: agentic`. `memory.template.md` and `progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
+- **Template frontmatter exemption**: Markdown template source files under `docs/99.templates/templates/**/*.template.md` use `status: draft` in YAML frontmatter instead of `layer:`. This is intentional. Agents performing `layer:` compliance audits must exempt those template source files from that check. `docs/99.templates/README.md` is an active folder README and may use repository README frontmatter such as `layer: agentic`. `docs/99.templates/templates/governance/memory.template.md` and `docs/99.templates/templates/governance/progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
 - **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
   and `docs/90` MUST include YAML frontmatter with
   `status: draft | active | completed | superseded`.
   Archive tombstones under `docs/98.archive` MUST use `status: archived`.
   Governance memory files (`docs/00.agent-governance/`) use `layer:`
-  frontmatter instead. Template source files (`docs/99.templates/*.template.md`)
+  frontmatter instead. Markdown template source files (`docs/99.templates/templates/**/*.template.md`)
   always use `status: draft` and are exempt from the `layer:` requirement.
   A document without this frontmatter is **INCOMPLETE**. Retired aliases such
   as `approved`, `done`, and `archived` must be normalized when found.
@@ -232,7 +232,7 @@ implementation and should leave the active chain:
 These rules are blocking. Completion is **PROHIBITED** until all four pass.
 
 **R1 — Template First:**
-Read the matching template from `docs/99.templates/` before writing or editing
+Read the mapped template under `docs/99.templates/templates/` before writing or editing
 any target-stage document → keep required headings → fill every applicable
 section → remove placeholders before completion.
 Infrastructure triggers: new service → ARD first; network change → ADR first; production procedure → `05.operations` first.

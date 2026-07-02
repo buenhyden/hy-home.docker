@@ -30,7 +30,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 ## Task Principles
 
-1. **Template first (R1)**: load the mapped `docs/99.templates/*` template before writing or editing any target-stage document.
+1. **Template first (R1)**: load the mapped template under `docs/99.templates/templates/` before writing or editing any target-stage document.
 2. **README sync (R2)**: update parent README for any folder-level change before closing.
 3. **Related docs (R3)**: every document must have `## Related Documents` with upstream links.
 4. **Language policy**: governance files in English; human-facing docs in Korean.
@@ -63,7 +63,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 ### ADR (Architecture Decision Record)
 
-- Use template at `docs/99.templates/adr.template.md` as the base structure.
+- Use template at `docs/99.templates/templates/sdlc/adr.template.md` as the base structure.
 - Add **Status** field (Proposed / Accepted / Deprecated / Superseded by ADR-NNN).
 - Minimum three alternatives must be compared; rejection reasons are mandatory.
 - Include quality attribute tradeoff analysis from `.claude/skills/adr-writing/skill.md`.

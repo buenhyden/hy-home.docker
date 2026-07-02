@@ -32,7 +32,7 @@ artifacts in `hy-home.docker`. Claude exposes it natively via
 ## 4. Documentation Output
 
 - Author target-stage documents template-first per `rules/documentation-protocol.md`
-  (load the mapped `docs/99.templates/*` template before writing).
+  (load the mapped template under `docs/99.templates/templates/` before writing).
 - Every document ends with one `## Related Documents` section (R3).
 - Keep root shims thin; route detail into governance.
 - Keep human-facing documents direct and specific. Avoid promotional tone,

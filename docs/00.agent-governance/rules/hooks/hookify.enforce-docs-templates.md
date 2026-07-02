@@ -14,14 +14,14 @@ action: warn
 **Template use required (project rule)**
 
 When creating or editing documents under `docs/01` through `docs/05` or
-`docs/90`, follow the mapped template in `docs/99.templates`.
+`docs/90`, follow the mapped template under `docs/99.templates/templates/`.
 
 **AGENTS.md policy:**
-> Use templates from `docs/99.templates/` for every new or modified target-stage document under `docs/01` to `docs/05`, and `docs/90`.
+> Use mapped templates from `docs/99.templates/templates/` for every new or modified target-stage document under `docs/01` to `docs/05`, and `docs/90`.
 
 **Required actions:**
 
-1. Read the mapped template in `docs/99.templates/` before editing.
+1. Read the mapped template under `docs/99.templates/templates/` before editing.
 2. Preserve required heading structure.
 3. Remove all temporary placeholders before saving.
 4. Include a `## Related Documents` section in every Markdown document.
