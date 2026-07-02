@@ -38,11 +38,11 @@ artifacts; rules for using them live in [../support/](../support/README.md).
 
 | Category | Path | Templates |
 | --- | --- | --- |
-| SDLC | [sdlc/](./sdlc/) | `prd`, `ard`, `adr`, `spec`, `plan`, `task` |
-| Spec contracts | [spec-contracts/](./spec-contracts/) | `api-spec`, `agent-design`, `data-model`, `service`, `tests`, `openapi`, `schema`, `proto` |
-| Operations | [operations/](./operations/) | `guide`, `policy`, `runbook`, `incident`, `postmortem` |
-| Governance | [governance/](./governance/) | `memory`, `progress`, `harness-task-contract` |
-| Common | [common/](./common/) | `readme`, `reference`, `archive` |
+| SDLC | [sdlc/](./sdlc/README.md) | `prd`, `ard`, `adr`, `spec`, `plan`, `task` |
+| Spec contracts | [spec-contracts/](./spec-contracts/README.md) | `api-spec`, `agent-design`, `data-model`, `service`, `tests`, `openapi`, `schema`, `proto` |
+| Operations | [operations/](./operations/README.md) | `guide`, `policy`, `runbook`, `incident`, `postmortem` |
+| Governance | [governance/](./governance/README.md) | `memory`, `progress`, `harness-task-contract` |
+| Common | [common/](./common/README.md) | `readme`, `reference`, `archive` |
 
 ## Structure
 
@@ -50,10 +50,23 @@ artifacts; rules for using them live in [../support/](../support/README.md).
 templates/
 ├── README.md
 ├── common/
+│   ├── README.md
+│   └── *.template.md
 ├── governance/
+│   ├── README.md
+│   └── *.template.md
 ├── operations/
+│   ├── README.md
+│   └── *.template.md
 ├── sdlc/
+│   ├── README.md
+│   └── *.template.md
 └── spec-contracts/
+    ├── README.md
+    ├── *.template.md
+    ├── *.template.yaml
+    ├── *.template.graphql
+    └── *.template.proto
 ```
 
 ## How to Work in This Area
