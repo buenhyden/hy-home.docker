@@ -65,6 +65,7 @@ docs/03.specs/
 ├── infra-secrets-docs-refresh/          # Completed infra/secrets/docs refresh spec
 ├── llm-wiki-agent-first-completion/     # Completed LLM Wiki contract spec
 ├── standardize-infra-net/               # Completed infra_net standardization spec
+├── template-system-contract-standardization/ # Draft Stage 99 contract/frontmatter standardization spec
 ├── template-system-reorganization/      # Draft Stage 99 template system reorganization spec
 ├── workspace-audit-2026-05/             # Completed 2026-05-26 workspace audit historical spec
 ├── workspace-doc-consistency-2026-05/   # Completed 2026-05-28 workspace doc consistency spec (PR #89)
@@ -85,7 +86,8 @@ docs/03.specs/
 | Metrics, logs, traces, dashboards, alerts                  | `06-observability/spec.md`                           |
 | Workflow orchestration and cross-validation agent behavior | `07-workflow/spec.md`, `07-workflow/agent-design.md` |
 | Agentic engineering reference-audit pack design            | `agentic-engineering-implementation-audit-pack/spec.md` |
-| Stage 99 template taxonomy, frontmatter, and governance design | `template-system-reorganization/spec.md` |
+| Stage 99 template taxonomy and reorganization design | `template-system-reorganization/spec.md` |
+| Stage 99 template contract and frontmatter standardization design | `template-system-contract-standardization/spec.md` |
 | Local AI inference, RAG UI, model-serving contracts        | `08-ai/spec.md`, `08-ai/open-webui.md`               |
 | IaC, registry, quality, performance tooling services       | `09-tooling/spec.md`                                 |
 | Mail, SMTP, IMAP, development mail trapping                | `10-communication/spec.md`                           |
@@ -153,4 +155,5 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Infra / Secrets / Docs Refresh Spec**: [infra-secrets-docs-refresh/spec.md](./infra-secrets-docs-refresh/spec.md)
 - **LLM Wiki Agent-first Completion Spec**: [llm-wiki-agent-first-completion/spec.md](./llm-wiki-agent-first-completion/spec.md)
 - **Template System Reorganization Spec**: [template-system-reorganization/spec.md](./template-system-reorganization/spec.md)
+- **Template System Contract Standardization Spec**: [template-system-contract-standardization/spec.md](./template-system-contract-standardization/spec.md)
 - **Workspace Audit 2026-05 Spec**: [workspace-audit-2026-05/spec.md](./workspace-audit-2026-05/spec.md)

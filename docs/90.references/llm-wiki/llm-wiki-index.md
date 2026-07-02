@@ -396,6 +396,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/llm-wiki-agent-first-completion/spec.md](../../03.specs/llm-wiki-agent-first-completion/spec.md) | Markdown reference |
 | [docs/03.specs/standardize-infra-net/README.md](../../03.specs/standardize-infra-net/README.md) | folder index |
 | [docs/03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md) | Markdown reference |
+| [docs/03.specs/template-system-contract-standardization/spec.md](../../03.specs/template-system-contract-standardization/spec.md) | Markdown reference |
 | [docs/03.specs/template-system-reorganization/README.md](../../03.specs/template-system-reorganization/README.md) | folder index |
 | [docs/03.specs/template-system-reorganization/spec.md](../../03.specs/template-system-reorganization/spec.md) | Markdown reference |
 | [docs/03.specs/workspace-audit-2026-05/README.md](../../03.specs/workspace-audit-2026-05/README.md) | folder index |
