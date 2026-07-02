@@ -47,12 +47,13 @@ Audit reference는 task evidence나 incident timeline을 대체하지 않습니�
 
 ```text
 audits/
-└── README.md   # This file
+├── document-contracts/ # Workspace document contract audit reports
+└── README.md           # This file
 ```
 
 ## Current References
 
-No non-README audit references are currently tracked in this category.
+- [Document contract audit references](./document-contracts/README.md)
 
 ## How to Work in This Area
 
