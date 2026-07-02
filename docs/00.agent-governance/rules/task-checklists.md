@@ -65,7 +65,7 @@ Unified task execution checklists for all agent work.
 - [ ] Inspect the post-edit diff after hook-managed formatting or style checks.
 - [ ] Confirm no contradictory policy statements were introduced.
 - [ ] Confirm any HADS usage follows the mandatory
-      `docs/90.references/hads/` profile when applicable, or is explicitly
+      `docs/90.references/data/hads/` profile when applicable, or is explicitly
       approved/documented as advisory elsewhere.
 - [ ] Confirm completion criteria are satisfied for the affected stage(s).
 - [ ] Confirm any attachment gap coverage, template exceptions, or model/config

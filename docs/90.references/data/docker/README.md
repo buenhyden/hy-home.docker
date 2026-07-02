@@ -1,4 +1,4 @@
-<!-- Target: docs/90.references/docker/README.md -->
+<!-- Target: docs/90.references/data/docker/README.md -->
 
 # Docker References
 
@@ -6,13 +6,13 @@
 
 ## Overview
 
-`docs/90.references/docker` stores slow-changing Docker reference material used by docs, operations, and validators. It explains how Docker image/version facts are interpreted in this repository.
+`docs/90.references/data/docker` stores slow-changing Docker reference material used by docs, operations, and validators. It explains how Docker image/version facts are interpreted in this repository.
 
 This folder does not replace Compose files or registry JSON files. Runtime truth remains in `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json`, and `infra/image-tag-policy.exceptions.json`.
 
 ## Category Role
 
-`docs/90.references/docker` explains durable Docker image and version-reference rules. It helps readers understand how Compose image declarations, registry JSON files, and floating-tag exceptions relate to each other without replacing those runtime files.
+`docs/90.references/data/docker` explains durable Docker image and version-reference rules. It helps readers understand how Compose image declarations, registry JSON files, and floating-tag exceptions relate to each other without replacing those runtime files.
 
 Use this category for stable interpretation rules and inventory context. Use `docs/05.operations/` for operational procedures and `infra/` for the current runtime source of truth.
 
@@ -48,7 +48,7 @@ Use this category for stable interpretation rules and inventory context. Use `do
 ## Structure
 
 ```text
-docs/90.references/docker/
+docs/90.references/data/docker/
 ├── README.md                       # This file
 └── image-version-interpretation.md # Docker image/version source interpretation rules
 ```
@@ -79,8 +79,8 @@ docs/90.references/docker/
 
 ## Related Documents
 
-- [references index](../README.md)
+- [references index](../../README.md)
 - [image/version interpretation](./image-version-interpretation.md)
-- [image tag exceptions](../../../infra/image-tag-policy.exceptions.json)
-- [tech stack versions](../../../infra/tech-stack.versions.json)
-- [repo contract checker](../../../scripts/validation/check-repo-contracts.sh)
+- [image tag exceptions](../../../../infra/image-tag-policy.exceptions.json)
+- [tech stack versions](../../../../infra/tech-stack.versions.json)
+- [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh)

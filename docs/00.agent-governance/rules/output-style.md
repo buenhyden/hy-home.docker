@@ -40,7 +40,7 @@ artifacts in `hy-home.docker`. Claude exposes it natively via
   filler; use plain claims backed by repository evidence.
 - Use HADS block labels when a document type or approved plan explicitly asks
   for them. HADS is mandatory for non-README documents under
-  `docs/90.references/hads/`; elsewhere, do not add `[SPEC]`, `[NOTE]`, `[BUG]`,
+  `docs/90.references/data/hads/`; elsewhere, do not add `[SPEC]`, `[NOTE]`, `[BUG]`,
   or `[?]` tags to active templates as an incidental style change.
 
 ## 5. Honesty and Completion

@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/90.references/hads/profile.md -->
+<!-- Target: docs/90.references/data/hads/profile.md -->
 
 # Reference: HADS Profile
 
@@ -19,7 +19,7 @@ Read `[NOTE]` only if additional context is needed.
 This document records the approved reference profile and validator boundaries for applying HADS in `hy-home.docker`.
 
 **[NOTE]**
-HADS is not a format for rewriting the entire documentation system at once. In this repository, it first operates as a mandatory profile limited to `docs/90.references/hads/`.
+HADS is not a format for rewriting the entire documentation system at once. In this repository, it first operates as a mandatory profile limited to `docs/90.references/data/hads/`.
 
 ## Purpose
 
@@ -88,9 +88,9 @@ HADS is not a format for rewriting the entire documentation system at once. In t
 
 **[SPEC]**
 
-- [Documentation Protocol](../../00.agent-governance/rules/documentation-protocol.md) - repository documentation policy and HADS boundary.
-- [Template Catalog](../../99.templates/README.md) - reference template and target-stage mapping.
-- [Task Evidence](../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md) - approval-gate implementation history.
+- [Documentation Protocol](../../../00.agent-governance/rules/documentation-protocol.md) - repository documentation policy and HADS boundary.
+- [Template Catalog](../../../99.templates/README.md) - reference template and target-stage mapping.
+- [Task Evidence](../../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md) - approval-gate implementation history.
 
 ## Maintenance
 
@@ -98,14 +98,14 @@ HADS is not a format for rewriting the entire documentation system at once. In t
 
 - **Owner**: Documentation Specialist / Rules Engineer
 - **Review Cadence**: Review when HADS profile requirements or repository validators change.
-- **Update Trigger**: Update when `docs/90.references/hads/` validator rules, HADS block semantics, or template compatibility rules change.
+- **Update Trigger**: Update when `docs/90.references/data/hads/` validator rules, HADS block semantics, or template compatibility rules change.
 
 ## Related Documents
 
 **[SPEC]**
 
-- **References Index**: [../README.md](../README.md)
+- **References Index**: [../README.md](../../README.md)
 - **HADS Category README**: [README.md](./README.md)
-- **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
-- **Template Catalog**: [../../99.templates/README.md](../../99.templates/README.md)
-- **Repo Contract Checker**: [../../../scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh)
+- **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/rules/documentation-protocol.md)
+- **Template Catalog**: [../../99.templates/README.md](../../../99.templates/README.md)
+- **Repo Contract Checker**: [../../../scripts/validation/check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh)

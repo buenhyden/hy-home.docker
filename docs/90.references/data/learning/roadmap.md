@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/90.references/learning/roadmap.md -->
+<!-- Target: docs/90.references/data/learning/roadmap.md -->
 
 # Reference: CS, CE & SE Self-Learning Roadmap (v2)
 
@@ -57,8 +57,8 @@ This reference is stable context that links Docker-based home infrastructure to 
 
 ## 🔍 Repository Analysis Snapshot
 
-- **Component overview**: In the 2026-04-02 snapshot, the [infra index](../../../infra/README.md) provides gateway, identity, security, data, messaging, observability, workflow, AI, tooling, communication, and laboratory tiers as learning entrypoints.
-- **Learning difficulty context**: This snapshot includes high-availability, event-streaming, vector-search, and local-inference examples such as the [Patroni/etcd PostgreSQL cluster](../../../infra/04-data/relational/postgresql-cluster/README.md), [Kafka](../../../infra/05-messaging/kafka/README.md), [Qdrant](../../../infra/04-data/specialized/qdrant/README.md), and [Ollama](../../../infra/08-ai/ollama/README.md).
+- **Component overview**: In the 2026-04-02 snapshot, the [infra index](../../../../infra/README.md) provides gateway, identity, security, data, messaging, observability, workflow, AI, tooling, communication, and laboratory tiers as learning entrypoints.
+- **Learning difficulty context**: This snapshot includes high-availability, event-streaming, vector-search, and local-inference examples such as the [Patroni/etcd PostgreSQL cluster](../../../../infra/04-data/relational/postgresql-cluster/README.md), [Kafka](../../../../infra/05-messaging/kafka/README.md), [Qdrant](../../../../infra/04-data/specialized/qdrant/README.md), and [Ollama](../../../../infra/08-ai/ollama/README.md).
 
 ---
 
@@ -68,17 +68,17 @@ Distributed systems, algorithms, and protocol design.
 
 - **Distributed Consensus (Raft)**
   - **Theoretical root**: Algorithms for keeping state consistent in distributed environments despite network partitions or node failures, aligning with the CP side of CAP trade-offs.
-  - **Repository connection**: **Patroni** and **etcd** in the [PostgreSQL cluster](../../../infra/04-data/relational/postgresql-cluster/README.md).
+  - **Repository connection**: **Patroni** and **etcd** in the [PostgreSQL cluster](../../../../infra/04-data/relational/postgresql-cluster/README.md).
   - **Learning objective**: Understand leader election and log replication, then analyze real failover behavior.
 
 - **Log-Structured Merge Trees (LSM-Trees) vs Write-Ahead Logging (WAL)**
   - **Theoretical root**: Storage structures that maximize sequential write performance (LSM) and history recording that preserves transaction atomicity (WAL).
-  - **Repository connection**: [Kafka](../../../infra/05-messaging/kafka/README.md) and the [PostgreSQL cluster](../../../infra/04-data/relational/postgresql-cluster/README.md).
+  - **Repository connection**: [Kafka](../../../../infra/05-messaging/kafka/README.md) and the [PostgreSQL cluster](../../../../infra/04-data/relational/postgresql-cluster/README.md).
   - **Learning objective**: Understand performance differences between Kafka segment-log design and RDBMS WAL-based transaction processing.
 
 - **Vector Similarity Search (HNSW Algorithm)**
   - **Theoretical root**: Graph-based indexing algorithms for approximate nearest neighbor (ANN) search in high-dimensional vector spaces.
-  - **Repository connection**: [Qdrant](../../../infra/04-data/specialized/qdrant/README.md).
+  - **Repository connection**: [Qdrant](../../../../infra/04-data/specialized/qdrant/README.md).
   - **Learning objective**: Study how hierarchical navigable small-world graph structures support near O(log N) search behavior at scale.
 
 ## 🚜 Tier 2: Computer Engineering (Hardware/OS)
@@ -87,17 +87,17 @@ Kernel, memory, virtualization, and network stack topics.
 
 - **Kernel Resource Isolation (Linux Namespaces & Cgroups)**
   - **Technical root**: Kernel features that isolate the logical system view available to a process (namespaces) and control physical resource usage (cgroups).
-  - **Repository connection**: `deploy.resources` settings in [common optimizations](../../../infra/common-optimizations.yml) and Docker container isolation structure.
+  - **Repository connection**: `deploy.resources` settings in [common optimizations](../../../../infra/common-optimizations.yml) and Docker container isolation structure.
   - **Learning objective**: Analyze how containers provide isolated execution environments with lower overhead than virtual machines (VMs).
 
 - **Network IPAM and Virtualization (Static IPs & Overlay Networks)**
   - **Technical root**: Traffic routing between virtual network interfaces and IP Address Management (IPAM) policy.
-  - **Repository connection**: The [infra index](../../../infra/README.md) and the isolated `infra_net` network in Compose files.
+  - **Repository connection**: The [infra index](../../../../infra/README.md) and the isolated `infra_net` network in Compose files.
   - **Learning objective**: Learn static routing and IP management techniques for strengthening service-to-service communication security in Docker bridge networks.
 
 - **Storage I/O and Persistence (Block Storage & WAL Layout)**
   - **Technical root**: Storage I/O optimization across operating-system filesystems and database layers.
-  - **Repository connection**: Volume mount policy and data persistence layout in the [data tier](../../../infra/04-data/README.md).
+  - **Repository connection**: Volume mount policy and data persistence layout in the [data tier](../../../../infra/04-data/README.md).
   - **Learning objective**: Analyze local volume mount performance benefits and the effect of synchronous writes (`fsync`) on database consistency.
 
 ## 🛠️ Tier 3: Software Engineering (Practice)
@@ -106,12 +106,12 @@ Design patterns, CI/CD, observability, and security.
 
 - **Observability and SRE Golden Signals**
   - **Pattern root**: System health measurement through the four core signals: latency, traffic, errors, and saturation.
-  - **Repository connection**: The **LGTM Stack** (Loki, Grafana, Tempo, Prometheus) in the [observability tier](../../../infra/06-observability/README.md).
+  - **Repository connection**: The **LGTM Stack** (Loki, Grafana, Tempo, Prometheus) in the [observability tier](../../../../infra/06-observability/README.md).
   - **Learning objective**: Understand modern monitoring that analyzes distributed traces (Tempo), logs (Loki), and metrics (Prometheus) through integrated dashboards.
 
 - **Zero Trust and Centralized Authentication (OIDC/OAuth2)**
   - **Pattern root**: Architecture that verifies every request at the external gateway under a "never trust, always verify" principle.
-  - **Repository connection**: [Keycloak](../../../infra/02-auth/keycloak/README.md) and [OAuth2 Proxy](../../../infra/02-auth/oauth2-proxy/README.md).
+  - **Repository connection**: [Keycloak](../../../../infra/02-auth/keycloak/README.md) and [OAuth2 Proxy](../../../../infra/02-auth/oauth2-proxy/README.md).
   - **Learning objective**: Explain the roles of Authorization Code Flow and PKCE in microservice authentication and authorization systems.
 
 ---
@@ -156,12 +156,12 @@ This section is a learning-idea reference, not an implementation plan or task ba
 
 ## Sources
 
-- [infra index](../../../infra/README.md) - tier overview and service entrypoints used for the repository-analysis snapshot
-- [data tier](../../../infra/04-data/README.md) - PostgreSQL, Qdrant, and data-tier learning examples
-- [PostgreSQL cluster](../../../infra/04-data/relational/postgresql-cluster/README.md) - Patroni/etcd learning example
-- [Kafka](../../../infra/05-messaging/kafka/README.md) - event streaming learning example
-- [observability tier](../../../infra/06-observability/README.md) - LGTM learning example
-- [AI tier](../../../infra/08-ai/README.md) - Ollama/Open WebUI learning context
+- [infra index](../../../../infra/README.md) - tier overview and service entrypoints used for the repository-analysis snapshot
+- [data tier](../../../../infra/04-data/README.md) - PostgreSQL, Qdrant, and data-tier learning examples
+- [PostgreSQL cluster](../../../../infra/04-data/relational/postgresql-cluster/README.md) - Patroni/etcd learning example
+- [Kafka](../../../../infra/05-messaging/kafka/README.md) - event streaming learning example
+- [observability tier](../../../../infra/06-observability/README.md) - LGTM learning example
+- [AI tier](../../../../infra/08-ai/README.md) - Ollama/Open WebUI learning context
 - Linked external references already present in this document
 
 ## Maintenance
@@ -173,6 +173,6 @@ This section is a learning-idea reference, not an implementation plan or task ba
 ## Related Documents
 
 - [Learning reference index](./README.md)
-- [90.references](../README.md)
+- [90.references](../../README.md)
 - [stable reference terms](../glossary/stable-reference-terms.md)
 - [docs index](../../README.md)

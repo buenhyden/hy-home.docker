@@ -37,7 +37,7 @@ Graphify remains advisory when `report-graphify-health.sh` reports `surprising_c
 
 - **Non-goals**:
   - Do not preserve completed Phase 1/2/3/4 historical artifacts in the active chain when they conflict with current implementation.
-  - Do not broaden HADS mandatory validation beyond `docs/90.references/hads/`.
+  - Do not broaden HADS mandatory validation beyond `docs/90.references/data/hads/`.
   - Do not promote new Docker hard validators without a separate approval gate.
   - Do not recreate `.codex/agents/*.md` compatibility prompt files.
 - **Out of Scope**:
@@ -68,7 +68,7 @@ The attached decision scope is treated as an input contract for the continuation
 | PLN-DI-002 | Keep the Stage 00 canonical adapter model; plan drift-check hardening rather than architecture replacement. | `docs/00.agent-governance/providers/agents-md.md`, `subagent-protocol.md`, `scripts/operations/sync-provider-surfaces.sh`, `scripts/validation/check-repo-contracts.sh` | REQ-AGG-FUN-01, REQ-AGG-FUN-02 | Provider sync reports no drift and any new adapter rule maps back to Stage 00. |
 | PLN-DI-003 | Define the skill lifecycle as discovery -> applicability -> provider loading -> canonical artifact -> validation evidence. | `docs/00.agent-governance/rules/workflows.md`, `rules/task-checklists.md`, provider notes, skill adapter docs | REQ-AGG-FUN-04 | Skill guidance distinguishes workspace functions, provider adapters, and external strategy skills without creating a second governance layer. |
 | PLN-DI-004 | Add a curated Stage 04 execution evidence index for current governance/audit plans and remove archived-file direct links from active indexes. | `docs/04.execution/plans/README.md`, `docs/04.execution/tasks/README.md`, `docs/98.archive/README.md` | REQ-AGG-NFR-05 | Active indexes point to current canonical governance evidence; archived artifacts are tracked only by the archive ledger. |
-| PLN-DI-005 | Keep HADS mandatory validation bounded to non-README reference documents under `docs/90.references/hads/`. | `docs/90.references/hads/`, `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/99.templates/README.md` | REQ-AGG-FUN-05 | No active template or stage document outside the bounded HADS reference profile requires HADS block tags. |
+| PLN-DI-005 | Keep HADS mandatory validation bounded to non-README reference documents under `docs/90.references/data/hads/`. | `docs/90.references/data/hads/`, `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/99.templates/README.md` | REQ-AGG-FUN-05 | No active template or stage document outside the bounded HADS reference profile requires HADS block tags. |
 | PLN-DI-006 | Split Docker hardening expectations into hard validators and manual review boundaries. | `docs/00.agent-governance/scopes/infra.md`, `scopes/security.md`, `scripts/hardening/`, `scripts/validation/` | REQ-AGG-FUN-06 | New checks fail only on repo-proven rules; service-specific or compatibility-sensitive guidance remains manual review. |
 | PLN-DI-007 | Define a QA/CI/CD matrix by change type: local check, CI-only gate, skipped-check rationale, and required evidence. | `docs/00.agent-governance/scopes/qa.md`, `rules/github-governance.md`, `scripts/README.md`, task evidence conventions | REQ-AGG-FUN-07 | Docs-only, policy-only, behavior, runtime, and CI changes each map to the smallest meaningful verification set. |
 | PLN-DI-008 | Standardize Node/npm/rtk automation assumptions around explicit PATH handling or the QA/CI tooling shim. | `scripts/operations/use-qa-ci-tools.sh`, `scripts/README.md`, future automation docs | REQ-AGG-FUN-08 | Non-interactive shell examples use `/home/hy/.local/bin` explicitly or source the tooling shim before Node-based commands. |
@@ -103,7 +103,7 @@ The attached decision scope is treated as an input contract for the continuation
 | --- | --- | --- |
 | Historical Phase evidence keeps conflicting current-truth claims in active docs. | High | Move whole conflicting artifacts to `docs/98.archive/` tombstones and track them only in the archive ledger. |
 | Stage 00 adapter architecture is redesigned unnecessarily. | High | Preserve ADR-0027 and focus only on drift-check clarity and validation coverage. |
-| HADS rollout creates broad document churn. | High | Keep mandatory HADS validation bounded to `docs/90.references/hads/`; require separate approval for broad rollout. |
+| HADS rollout creates broad document churn. | High | Keep mandatory HADS validation bounded to `docs/90.references/data/hads/`; require separate approval for broad rollout. |
 | Docker hardening guidance breaks existing services if converted directly into hard validators. | High | Promote only repo-proven, low-risk checks; leave compatibility-sensitive items as manual review boundaries. |
 | QA/CI/CD rules become too heavy for docs-only or policy-only changes. | Medium | Define change-type-specific verification and require skipped-check rationale. |
 | Node automation works interactively but fails in agent shells. | Medium | Use explicit `/home/hy/.local/bin` PATH handling or `scripts/operations/use-qa-ci-tools.sh`. |
@@ -115,7 +115,7 @@ The attached decision scope is treated as an input contract for the continuation
 
 - **Offline Eval Gate**: Future implementation must pass repo contracts, doc traceability, provider sync, LLM Wiki freshness, diff hygiene, and Graphify health reporting.
 - **Sandbox / Canary Rollout**: N/A for this plan. Runtime Docker canary is required only if a later approved implementation changes Compose behavior or live services.
-- **Human Approval Gate**: Required before broad HADS rollout outside `docs/90.references/hads/`, new Docker/runtime mutation, deployment changes, or remote GitHub protection changes.
+- **Human Approval Gate**: Required before broad HADS rollout outside `docs/90.references/data/hads/`, new Docker/runtime mutation, deployment changes, or remote GitHub protection changes.
 - **Rollback Trigger**: Revert the follow-up implementation if it creates duplicate governance, weakens Stage 00 authority, introduces unapproved hard gates, or breaks provider parity.
 - **Prompt / Model Promotion Criteria**: No model, model alias, or reasoning-effort value changes are part of this plan.
 
@@ -127,7 +127,7 @@ original non-goal boundary only for repo-tracked, validator-backed changes.
 
 | Approved Gate | Implementation Boundary | Evidence |
 | --- | --- | --- |
-| HADS rollout | Mandatory only for non-README reference documents under `docs/90.references/hads/`; no broad conversion of existing active docs. | `docs/90.references/hads/profile.md`, `scripts/validation/check-repo-contracts.sh` HADS profile check. |
+| HADS rollout | Mandatory only for non-README reference documents under `docs/90.references/data/hads/`; no broad conversion of existing active docs. | `docs/90.references/data/hads/profile.md`, `scripts/validation/check-repo-contracts.sh` HADS profile check. |
 | Docker hard-validator promotion | `scripts/hardening/check-all-hardening.sh` becomes a hard gate inside repo contracts. | Repo contract hardening section and hardening command output. |
 | Codex Markdown prompt retirement | `.codex/agents/*.md` prompt files are removed; `.codex/agents/*.toml` is the sole Codex agent adapter surface. | Provider docs, sync script, TOML adapters, and repo contract drift checks. |
 | Stage 00 / template / validator protected surfaces | Protected docs and scripts may be updated for the approved bounded gate closure. | Task evidence and repository validation commands. |

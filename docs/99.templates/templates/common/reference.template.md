@@ -1,11 +1,12 @@
 ---
 status: draft
 ---
-<!-- Target: docs/90.references/<category>/<item>.md -->
+<!-- Target: docs/90.references/{audits,data,research}/<category>/<item>.md -->
 
 # Reference: {Item Name}
 
-> Use this template for non-README reference docs under `docs/90.references/<category>/<item>.md`.
+> Use this template for non-README reference docs under
+> `docs/90.references/{audits,data,research}/<category>/<item>.md`.
 >
 > Rules:
 >

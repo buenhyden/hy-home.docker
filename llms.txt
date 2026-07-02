@@ -13,8 +13,8 @@ This file is the repo-local LLM entrypoint for `hy-home.docker`. It points agent
 - [Infrastructure index](infra/README.md)
 - [Script and validator index](scripts/README.md)
 - [Secret handling index](secrets/README.md)
-- [LLM Wiki generated index](docs/90.references/llm-wiki/index.md)
-- [LLM Wiki repository map](docs/90.references/llm-wiki/repository-map.md)
+- [LLM Wiki generated index](docs/90.references/data/llm-wiki/index.md)
+- [LLM Wiki repository map](docs/90.references/data/llm-wiki/repository-map.md)
 
 ## Boundaries
 

@@ -97,4 +97,4 @@ This document records actual execution status and verification evidence for work
 - **Stage authoring matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **Template catalog**: [Template catalog](../../99.templates/README.md)
 - **Agent governance hub**: [Agent governance README](../../00.agent-governance/README.md)
-- **LLM Wiki index**: [Generated LLM Wiki index](../../90.references/llm-wiki/index.md)
+- **LLM Wiki index**: [Generated LLM Wiki index](../../90.references/data/llm-wiki/index.md)

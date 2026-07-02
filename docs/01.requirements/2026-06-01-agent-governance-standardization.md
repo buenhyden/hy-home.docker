@@ -41,7 +41,7 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 - **REQ-AGG-FUN-02**: `.claude/`, `.codex/`, `.agents/` provider adapters는 Stage 00 catalog의 role, scope, name set, policy intent를 보존해야 한다.
 - **REQ-AGG-FUN-03**: Codex adapter는 `.codex/agents/*.toml`만 active provider adapter로 취급하고, `.codex/agents/*.md` prompt files는 retired 상태로 유지해야 한다.
 - **REQ-AGG-FUN-04**: External strategy outputs는 canonical repository stages인 `docs/01`-`docs/05`, `docs/90`, `docs/99`로 귀속되어야 한다.
-- **REQ-AGG-FUN-05**: HADS mandatory profile은 `docs/90.references/hads/`의 non-README reference documents에만 적용하고, 그 밖의 active templates나 stage docs에는 broad HADS block tag를 요구하지 않아야 한다.
+- **REQ-AGG-FUN-05**: HADS mandatory profile은 `docs/90.references/data/hads/`의 non-README reference documents에만 적용하고, 그 밖의 active templates나 stage docs에는 broad HADS block tag를 요구하지 않아야 한다.
 - **REQ-AGG-FUN-06**: Docker/Compose best-practice guidance는 hard validator와 manual review boundary를 구분해야 한다.
 - **REQ-AGG-FUN-07**: QA/CI/CD evidence는 docs-only, policy-only, behavior change, runtime change를 구분해 최소 검증 명령과 skipped-check rationale을 기록해야 한다.
 - **REQ-AGG-FUN-08**: Node/npm/rtk 기반 automation은 `/home/hy/.local/bin` toolchain 존재를 활용할 수 있으나, non-interactive agent PATH 차이를 명시적으로 처리해야 한다.
@@ -74,7 +74,7 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
   - Remote GitHub branch protection mutation.
   - Broad rewrite of historical artifacts that remain semantically aligned with current implementation.
 - **Non-goals**:
-  - Do not broaden the HADS mandatory profile beyond `docs/90.references/hads/` in this requirement.
+  - Do not broaden the HADS mandatory profile beyond `docs/90.references/data/hads/` in this requirement.
   - Do not recreate `.codex/agents/*.md` compatibility prompt files.
   - Do not create a new non-stage documentation taxonomy.
 
@@ -96,7 +96,7 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
   - Mutate Docker runtime, deployment state, remote GitHub settings, or user-global Codex settings without explicit approval.
   - Treat provider adapter files as a separate policy source.
 - **Human-in-the-loop Requirement**:
-  - Required before broad HADS rollout outside `docs/90.references/hads/`, new Docker/runtime mutation, deployment, or remote protection change.
+  - Required before broad HADS rollout outside `docs/90.references/data/hads/`, new Docker/runtime mutation, deployment, or remote protection change.
 - **Evaluation Expectation**:
   - Every governance implementation task must record validation commands, pass/fail outcomes, skipped-check rationale, and Graphify advisory status when used.
 

@@ -112,7 +112,7 @@ validators as the source of truth for whether this backlog has reopened.
 ## Evidence
 
 - `docs/03.specs/README.md`
-- `docs/90.references/docker/README.md`
+- `docs/90.references/data/docker/README.md`
 - `scripts/README.md`
 - `scripts/validation/check-repo-contracts.sh`
 - `bash scripts/validation/check-repo-contracts.sh` on 2026-05-26:

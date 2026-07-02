@@ -28,7 +28,7 @@ English-only documentation surfaces regain Korean text.
   `docs/90.references`.
 - Exclude `README.md` files from this gate because the active language boundary
   closure targeted leaf/reference files, not human-facing stage indexes.
-- Exclude generated `docs/90.references/llm-wiki/index.md` because it is
+- Exclude generated `docs/90.references/data/llm-wiki/index.md` because it is
   path-only generated output maintained by its generator.
 - Keep the enforcement local and script-backed; do not change remote CI,
   protected branch settings, credentials, or third-party resources.
@@ -63,7 +63,7 @@ Korean characters:
 Approved exclusions:
 
 - Any `README.md`
-- `docs/90.references/llm-wiki/index.md`
+- `docs/90.references/data/llm-wiki/index.md`
 
 ## Validation Results
 

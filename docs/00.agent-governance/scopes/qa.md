@@ -60,7 +60,7 @@ part of QA before completion. Treat regeneration as a verification step, not an
 optional cleanup.
 
 - **LLM Wiki index**: when documents are added, removed, or renamed under indexed
-  scopes, regenerate `docs/90.references/llm-wiki/index.md` with
+  scopes, regenerate `docs/90.references/data/llm-wiki/index.md` with
   `bash scripts/knowledge/generate-llm-wiki-index.sh`. `check-repo-contracts.sh`
   enforces freshness locally and in the `repo-contracts` CI job; a stale index is
   a hard failure.

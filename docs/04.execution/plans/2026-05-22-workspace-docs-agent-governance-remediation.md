@@ -58,7 +58,7 @@ This repository aims to separate a Docker Compose-based home server and personal
 | PLN-004 | Remove duplicate infra_net ARD/ADR after reference migration | `docs/02.architecture/**`, linked stage docs, validator allowlists | DOC-GOV-004 | No reference to deleted duplicate files remains |
 | PLN-005 | Align agent/runtime governance and Hookify tracking exception | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `RTK.md`, `.claude/`, `.codex/`, `.agents/`, governance docs | DOC-GOV-005 | Hook parity and runtime catalog checks pass |
 | PLN-006 | Extend validator from changed-file gate to full-stage gate | `scripts/validation/check-repo-contracts.sh` | DOC-GOV-006 | Full repository contract check passes |
-| PLN-007 | Refresh generated LLM Wiki index and progress evidence | `docs/90.references/llm-wiki/index.md`, `docs/00.agent-governance/memory/progress.md` | DOC-GOV-007 | LLM Wiki generator check passes |
+| PLN-007 | Refresh generated LLM Wiki index and progress evidence | `docs/90.references/data/llm-wiki/index.md`, `docs/00.agent-governance/memory/progress.md` | DOC-GOV-007 | LLM Wiki generator check passes |
 
 ## Verification Plan
 
@@ -111,4 +111,4 @@ This repository aims to separate a Docker Compose-based home server and personal
 - **Documentation protocol**: [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage authoring matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **Templates**: [Template catalog](../../99.templates/README.md)
-- **LLM Wiki index**: [Generated LLM Wiki index](../../90.references/llm-wiki/index.md)
+- **LLM Wiki index**: [Generated LLM Wiki index](../../90.references/data/llm-wiki/index.md)

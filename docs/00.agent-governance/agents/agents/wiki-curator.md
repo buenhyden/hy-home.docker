@@ -10,14 +10,14 @@ LLM Wiki curation specialist for repo-local navigation, generated path indexes, 
 
 ## Purpose
 
-Keep `llms.txt` and `docs/90.references/llm-wiki/` fresh, safe, and aligned with canonical tracked source files without creating a public wiki, full-content bundle, or parallel runtime truth.
+Keep `llms.txt` and `docs/90.references/data/llm-wiki/` fresh, safe, and aligned with canonical tracked source files without creating a public wiki, full-content bundle, or parallel runtime truth.
 
 ## Scope
 
 **Covers:**
 
 - LLM Wiki entrypoint and generated tracked repo-local index maintenance
-- `docs/90.references/llm-wiki/` reference boundary updates
+- `docs/90.references/data/llm-wiki/` reference boundary updates
 - LLM Wiki maintenance guide synchronization
 - Freshness checks through `scripts/knowledge/generate-llm-wiki-index.sh --check`
 
@@ -32,7 +32,7 @@ Keep `llms.txt` and `docs/90.references/llm-wiki/` fresh, safe, and aligned with
 
 - Scope import: `docs/00.agent-governance/scopes/docs.md`
 - Runtime mirror: `.claude/agents/wiki-curator.md`
-- Generated artifact: `docs/90.references/llm-wiki/index.md`
+- Generated artifact: `docs/90.references/data/llm-wiki/index.md`
 
 ## Agents
 
@@ -50,8 +50,8 @@ Keep `llms.txt` and `docs/90.references/llm-wiki/` fresh, safe, and aligned with
 
 ## Artifacts
 
-- `docs/90.references/llm-wiki/index.md`
-- `docs/90.references/llm-wiki/repository-map.md`
+- `docs/90.references/data/llm-wiki/index.md`
+- `docs/90.references/data/llm-wiki/repository-map.md`
 - `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md`
 
 ## Related Documents
@@ -59,5 +59,5 @@ Keep `llms.txt` and `docs/90.references/llm-wiki/` fresh, safe, and aligned with
 - `../../scopes/docs.md`
 - `../../subagent-protocol.md`
 - `../README.md`
-- `../../../90.references/llm-wiki/README.md`
+- `../../../90.references/data/llm-wiki/README.md`
 - `../../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md`

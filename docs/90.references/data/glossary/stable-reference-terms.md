@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/90.references/glossary/stable-reference-terms.md -->
+<!-- Target: docs/90.references/data/glossary/stable-reference-terms.md -->
 
 # Reference: Stable Reference Terms
 
@@ -51,9 +51,9 @@ This reference is shared vocabulary for explaining role boundaries between docum
 
 ## Sources
 
-- [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md) - documentation stage boundaries and DOCS 3 rules
-- [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md) - stage roles and template mapping
-- [90.references](../README.md) - reference stage purpose and lifecycle
+- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - documentation stage boundaries and DOCS 3 rules
+- [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - stage roles and template mapping
+- [90.references](../../README.md) - reference stage purpose and lifecycle
 - [LLM Wiki repository map](../llm-wiki/repository-map.md) - tracked-source boundary and Graphify advisory rules
 
 ## Maintenance
@@ -65,7 +65,7 @@ This reference is shared vocabulary for explaining role boundaries between docum
 ## Related Documents
 
 - [Glossary references](./README.md)
-- [90.references](../README.md)
+- [90.references](../../README.md)
 - [docs index](../../README.md)
-- [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)

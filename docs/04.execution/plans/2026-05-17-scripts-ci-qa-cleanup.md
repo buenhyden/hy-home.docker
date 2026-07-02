@@ -40,7 +40,7 @@ instructions.
 | PLN-SCRIPT-002 | Remove redundant root script entrypoints | `scripts/hardening/`, `scripts/validation/`, `scripts/operations/` | Deleted scripts are absent and no active references remain |
 | PLN-SCRIPT-003 | Update repository script contracts | `scripts/validation/check-repo-contracts.sh` | Current inventory matches tracked scripts; deleted-script references fail in active surfaces |
 | PLN-SCRIPT-004 | Update active docs and runtime hook surface | `README.md`, `scripts/README.md`, `docs/03.specs/**`, `docs/05.operations/**`, `.claude/settings.json` | Active commands use canonical replacements and hook routing is dispatcher-based |
-| PLN-SCRIPT-005 | Refresh generated navigation | `docs/90.references/llm-wiki/index.md`, `graphify-out/` | Generated index is fresh; Graphify refresh attempted when available |
+| PLN-SCRIPT-005 | Refresh generated navigation | `docs/90.references/data/llm-wiki/index.md`, `graphify-out/` | Generated index is fresh; Graphify refresh attempted when available |
 
 ## Verification Plan
 

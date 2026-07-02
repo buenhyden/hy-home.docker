@@ -37,7 +37,7 @@ The 2026-05-18 bounded audit found:
 
 Representative deferred files:
 
-- `docs/90.references/kubernetes/docker-compose-to-k3s-migration.md` (migrated from `docs/04.execution/plans/2026-03-29-k8s-migration-strategy.md`)
+- `docs/90.references/data/kubernetes/docker-compose-to-k3s-migration.md` (migrated from `docs/04.execution/plans/2026-03-29-k8s-migration-strategy.md`)
 - `docs/04.execution/plans/2026-03-26-02-auth-standardization.md`
 - `docs/04.execution/tasks/2026-03-26-10-communication-tasks.md`
 - `docs/04.execution/tasks/2026-04-01-standardize-infra-net.md`

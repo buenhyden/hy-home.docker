@@ -1,7 +1,7 @@
 ---
 status: superseded
 ---
-<!-- Target: docs/90.references/learning/roadmap-v1.md -->
+<!-- Target: docs/90.references/data/learning/roadmap-v1.md -->
 
 # Reference: CS, CE & SE Self-Learning Roadmap (v1)
 
@@ -57,7 +57,7 @@ This archived reference is history/context for comparing the initial learning ca
 
 ## 🔍 Repository Analysis
 
-Archived 2026-03-30 snapshot. Preserve this section as historical context only; use [active learning roadmap](./roadmap.md), [infra index](../../../infra/README.md), and validators for live interpretation.
+Archived 2026-03-30 snapshot. Preserve this section as historical context only; use [active learning roadmap](./roadmap.md), [infra index](../../../../infra/README.md), and validators for live interpretation.
 
 - **Component Overview Snapshot**: A multi-tiered Docker-based private cloud infrastructure covering Gateway, Auth, Database Clusters, Messaging, and AI services.
 - **Learning Complexity Snapshot**: The archived analysis mapped Patroni, Valkey Cluster, Qdrant, and Ollama to intermediate-to-architect learning topics. It is not a live maturity rating.
@@ -153,7 +153,7 @@ Archived exercise ideas. These are not implementation tasks, operations runbooks
 ## Sources
 
 - [Active learning roadmap](./roadmap.md) - active learning roadmap reference
-- [infra index](../../../infra/README.md) - infrastructure entrypoint for verifying archived repo-state claims
+- [infra index](../../../../infra/README.md) - infrastructure entrypoint for verifying archived repo-state claims
 - Linked external references already present in this document
 
 ## Maintenance
@@ -166,6 +166,6 @@ Archived exercise ideas. These are not implementation tasks, operations runbooks
 
 - [Learning reference index](./README.md)
 - [Active learning roadmap](./roadmap.md)
-- [90.references](../README.md)
+- [90.references](../../README.md)
 - [stable reference terms](../glossary/stable-reference-terms.md)
 - [docs index](../../README.md)

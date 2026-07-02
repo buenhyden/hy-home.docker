@@ -3,7 +3,7 @@ layer: archive
 status: archived
 archived_from: docs/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md
 archived_on: 2026-06-02
-archive_reason: "Archived because the diagnostic treated Codex Markdown prompts and broad HADS advisory status as active unresolved decisions, while the current implementation has retired Markdown prompts and bounded HADS mandatory validation to docs/90.references/hads/."
+archive_reason: "Archived because the diagnostic treated Codex Markdown prompts and broad HADS advisory status as active unresolved decisions, while the current implementation has retired Markdown prompts and bounded HADS mandatory validation to docs/90.references/data/hads/."
 current_replacement: docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md
 ---
 <!-- Target: docs/98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md -->

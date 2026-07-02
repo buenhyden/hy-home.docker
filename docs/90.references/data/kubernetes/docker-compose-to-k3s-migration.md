@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/90.references/kubernetes/docker-compose-to-k3s-migration.md -->
+<!-- Target: docs/90.references/data/kubernetes/docker-compose-to-k3s-migration.md -->
 
 # Reference: Docker Compose to k3s/k3d Migration
 
@@ -99,11 +99,11 @@ Service-level Kubernetes migration suitability is evaluated with these criteria.
 
 ## Sources
 
-- [root README](../../../README.md) - repository purpose, runtime entrypoints, validation gates
-- [infra index](../../../infra/README.md) - Compose tier and service entrypoints
-- [docs index](../../README.md) - stage taxonomy and migration routing
-- [architecture index](../../02.architecture/README.md) - target location for accepted migration architecture decisions
-- [execution index](../../04.execution/README.md) - target location for active migration plans and task evidence
+- [root README](../../../../README.md) - repository purpose, runtime entrypoints, validation gates
+- [infra index](../../../../infra/README.md) - Compose tier and service entrypoints
+- [docs index](../../../README.md) - stage taxonomy and migration routing
+- [architecture index](../../../02.architecture/README.md) - target location for accepted migration architecture decisions
+- [execution index](../../../04.execution/README.md) - target location for active migration plans and task evidence
 
 ## Maintenance
 
@@ -114,8 +114,8 @@ Service-level Kubernetes migration suitability is evaluated with these criteria.
 ## Related Documents
 
 - [Kubernetes references](./README.md)
-- [90.references](../README.md)
-- [docs index](../../README.md)
-- [architecture index](../../02.architecture/README.md)
-- [execution index](../../04.execution/README.md)
-- [operations index](../../05.operations/README.md)
+- [90.references](../../README.md)
+- [docs index](../../../README.md)
+- [architecture index](../../../02.architecture/README.md)
+- [execution index](../../../04.execution/README.md)
+- [operations index](../../../05.operations/README.md)

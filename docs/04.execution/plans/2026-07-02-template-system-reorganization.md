@@ -50,7 +50,7 @@ The approved design separates responsibilities:
   - `docs/00.agent-governance/rules/**` and relevant hook guidance
   - `scripts/validation/check-repo-contracts.sh`
   - Direct references in stage READMEs and local guidance files
-  - `docs/90.references/llm-wiki/index.md`
+  - `docs/90.references/data/llm-wiki/index.md`
   - `docs/00.agent-governance/memory/progress.md`
 
 ## Non-Goals & Out-of-Scope
@@ -78,7 +78,7 @@ The approved design separates responsibilities:
 | PLN-TSR-004 | Normalize template-source and target-document frontmatter rules. | Markdown templates, `frontmatter-contract.md`, `lifecycle-status.md` | VAL-SPC-005 | Template source rules and target document key sets are type-specific and do not duplicate purpose. |
 | PLN-TSR-005 | Update repository contract validation for nested templates. | `scripts/validation/check-repo-contracts.sh` | VAL-SPC-004 | Template inventory, markdown template checks, machine-readable contract checks, memory/reference/harness checks use new paths. |
 | PLN-TSR-006 | Update Stage 00 governance, hook guidance, and stage README direct references. | Stage 00 rules, `.codex` or hook guidance if referenced, stage READMEs, root docs references | VAL-SPC-004, VAL-SPC-006 | No active direct reference points at removed flat template paths except historical evidence explicitly scoped as such. |
-| PLN-TSR-007 | Refresh generated index and record progress/gaps. | `docs/90.references/llm-wiki/index.md`, `docs/00.agent-governance/memory/progress.md` | VAL-SPC-006 | Generated index is fresh; unrelated repo-contract drift remains recorded as a gap. |
+| PLN-TSR-007 | Refresh generated index and record progress/gaps. | `docs/90.references/data/llm-wiki/index.md`, `docs/00.agent-governance/memory/progress.md` | VAL-SPC-006 | Generated index is fresh; unrelated repo-contract drift remains recorded as a gap. |
 | PLN-TSR-008 | Run validation and close task evidence. | Validation outputs, task evidence | VAL-SPC-001 through VAL-SPC-007 | All template-related checks pass; unrelated infra drift is documented without patching infra files. |
 
 ## Verification Plan

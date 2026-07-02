@@ -44,7 +44,7 @@ This plan converts those observations into a bounded Stage 04 closure artifact w
 
 - **Non-goals**:
   - Do not rewrite Stage 00 policy or ADR-0027.
-  - Do not broaden mandatory HADS validation beyond `docs/90.references/hads/`.
+  - Do not broaden mandatory HADS validation beyond `docs/90.references/data/hads/`.
   - Do not add a new Docker hard validator in this pass.
   - Do not recreate retired `.codex/agents/*.md` prompt adapters.
   - Do not create active non-stage taxonomies for external skills.
@@ -90,7 +90,7 @@ This plan converts those observations into a bounded Stage 04 closure artifact w
 | PLN-P2-001 | Create the Phase 2 strategy integration plan from the approved user plan and Phase 1 evidence. | `docs/04.execution/plans/2026-06-02-agent-governance-phase-2-strategy-integration.md` | REQ-AGG-MET-01 | Plan uses required template sections, has no placeholders, and links baseline artifacts. |
 | PLN-P2-002 | Create the paired task evidence with backlog disposition, skill mapping, verification summary, and scope safety. | `docs/04.execution/tasks/2026-06-02-agent-governance-phase-2-strategy-integration.md` | REQ-AGG-MET-04 | Task records actual evidence without Stage 00, runtime, secret, remote, model, or adapter changes. |
 | PLN-P2-003 | Register the new artifacts in Stage 04 indexes and progress log. | Stage 04 READMEs, `memory/progress.md` | REQ-AGG-MET-01 | Indexes and progress log point to the current Phase 2 artifacts. |
-| PLN-P2-004 | Refresh generated documentation index because docs are added. | `docs/90.references/llm-wiki/index.md` | REQ-AGG-MET-02 | LLM Wiki regeneration and freshness check pass. |
+| PLN-P2-004 | Refresh generated documentation index because docs are added. | `docs/90.references/data/llm-wiki/index.md` | REQ-AGG-MET-02 | LLM Wiki regeneration and freshness check pass. |
 | PLN-P2-005 | Refresh Graphify when available and run repository validation gates. | `graphify-out/`, task evidence | REQ-AGG-MET-02 | Diff hygiene, repo contracts, doc traceability, provider sync, LLM Wiki, and Graphify health are recorded. |
 
 ## Verification Plan

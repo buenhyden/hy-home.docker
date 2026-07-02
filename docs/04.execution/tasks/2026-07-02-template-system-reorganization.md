@@ -43,7 +43,7 @@ template system is enforced by governance rules and repository contract checks.
 | Templates | User approved template reorganization, destructive cleanup, and legacy deletion | `docs/99.templates/**` | Flat template files and mixed README governance | Templates moved under `templates/`; support rules split under `support/` | Revert the latest logical template commit | No secrets |
 | Governance | User approved contract and governance changes | `docs/00.agent-governance/rules/**`, hook guidance | Stage 00 rules reference flat template paths | Writable governance references updated to nested paths | Revert governance/validator alignment commit | No secrets |
 | Validation | User approved protected-surface changes | `scripts/validation/check-repo-contracts.sh` | Validator hardcodes flat template paths | Nested template inventory and recursive checks added | Revert validator alignment commit | No secrets |
-| Generated index | Required after docs path changes | `docs/90.references/llm-wiki/index.md` | Index reflects pre-migration paths | Regenerated after moved and added docs | Regenerate with script or revert index commit | No secrets |
+| Generated index | Required after docs path changes | `docs/90.references/data/llm-wiki/index.md` | Index reflects pre-migration paths | Regenerated after moved and added docs | Regenerate with script or revert index commit | No secrets |
 
 ## Task Table
 

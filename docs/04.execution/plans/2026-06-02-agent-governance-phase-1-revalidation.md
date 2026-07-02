@@ -40,7 +40,7 @@ The current plan preserves that chain. Graphify remains advisory when `report-gr
 
 - **Non-goals**:
   - Do not implement Stage 00 policy rewrites in this pass.
-  - Do not broaden HADS mandatory validation beyond `docs/90.references/hads/`.
+  - Do not broaden HADS mandatory validation beyond `docs/90.references/data/hads/`.
   - Do not replace ADR-0027 or redesign the canonical adapter model without a concrete contradiction.
   - Do not create active non-stage specs, plans, or task logs for external skills.
 - **Out of Scope**:
@@ -84,7 +84,7 @@ The current plan preserves that chain. Graphify remains advisory when `report-gr
 | `test-driven-development`, `systematic-debugging`, `verification-before-completion` | Apply through QA scope: TDD for behavior changes, root-cause evidence for bugs, fresh verification before completion claims. |
 | `finishing-a-development-branch` | Apply through GitHub governance and git workflow; branch completion still requires repository checks and user-approved merge/PR action. |
 | `requesting-code-review`, `receiving-code-review`, `code-review-excellence` | Apply through code-review workflow: self-review, local checks, structured findings, explicit resolution or reasoned pushback. |
-| `documentation-standards:hads`, documentation writer/coauthoring/humanizer skills | HADS remains mandatory only for `docs/90.references/hads/`; other documentation uses template contract, stage taxonomy, and human-readable style. |
+| `documentation-standards:hads`, documentation writer/coauthoring/humanizer skills | HADS remains mandatory only for `docs/90.references/data/hads/`; other documentation uses template contract, stage taxonomy, and human-readable style. |
 | Docker/container skills | Use as review lenses for Compose, Dockerfile, security, optimization, and orchestration; hard validators only for repo-proven rules. |
 | DevOps/CI/CD skills | Map secrets, GitHub Actions, and deployment-pipeline strategy into GitHub governance, QA matrix, and operations/runbook boundaries. |
 | Architecture and senior QA skills | Use as design/review lenses for ARD/ADR quality attributes and verification strategy; do not create parallel architecture or QA taxonomies. |
@@ -96,7 +96,7 @@ The current plan preserves that chain. Graphify remains advisory when `report-gr
 | PLN-P1R-001 | Create the Phase 1 revalidation plan from the approved user plan and current repository baseline. | `docs/04.execution/plans/2026-06-02-agent-governance-phase-1-revalidation.md` | REQ-AGG-MET-01 | Plan uses template sections, has no placeholders, and links upstream/downstream artifacts. |
 | PLN-P1R-002 | Create paired task evidence with current state findings, backlog classification, skill mapping, and verification record. | `docs/04.execution/tasks/2026-06-02-agent-governance-phase-1-revalidation.md` | REQ-AGG-MET-04 | Task captures evidence without runtime, secret, deployment, remote, or model changes. |
 | PLN-P1R-003 | Register the new artifacts in Stage 04 indexes and progress log. | Stage 04 READMEs, `memory/progress.md` | REQ-AGG-MET-01 | Parent indexes and progress log point to the current revalidation artifacts. |
-| PLN-P1R-004 | Refresh generated documentation index if required by added files. | `docs/90.references/llm-wiki/index.md` | REQ-AGG-MET-02 | LLM Wiki check passes after regeneration. |
+| PLN-P1R-004 | Refresh generated documentation index if required by added files. | `docs/90.references/data/llm-wiki/index.md` | REQ-AGG-MET-02 | LLM Wiki check passes after regeneration. |
 | PLN-P1R-005 | Run repository validation gates and record Graphify advisory status. | Task evidence | REQ-AGG-MET-02 | Diff hygiene, repo contracts, doc traceability, provider sync, and Graphify health are recorded. |
 
 ## Verification Plan

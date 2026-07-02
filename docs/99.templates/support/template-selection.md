@@ -24,7 +24,7 @@ template source.
 | `docs/05.operations/runbooks/**.md` | [runbook.template.md](../templates/operations/runbook.template.md) |
 | `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md` | [incident.template.md](../templates/operations/incident.template.md) |
 | `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md` | [postmortem.template.md](../templates/operations/postmortem.template.md) |
-| `docs/90.references/<category>/<item>.md` | [reference.template.md](../templates/common/reference.template.md) |
+| `docs/90.references/{audits,data,research}/<category>/<item>.md` | [reference.template.md](../templates/common/reference.template.md) |
 | `docs/98.archive/<original-stage>/<original-path>.md` | [archive.template.md](../templates/common/archive.template.md) |
 | `README.md`, `docs/README.md`, folder `README.md` files | [readme.template.md](../templates/common/readme.template.md) |
 

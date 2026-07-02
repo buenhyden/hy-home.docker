@@ -51,7 +51,7 @@ Local `main` already contains the 2026-05-25 workspace audit improvement commits
 | PLN-002 | Run six reviewer passes and integrate findings as evidence inputs | Task artifact | REV-2026-05-25 | Reviewer ledger captures findings and authority boundary |
 | PLN-003 | Record metadata-only `.env` and secret registry comparisons | Task artifact only | REV-2026-05-25 | Counts/drift names recorded without values |
 | PLN-004 | Re-run repo-native validation suite | Task artifact | REV-2026-05-25 | Pass/advisory/deferred results recorded |
-| PLN-005 | Refresh generated LLM Wiki index if required by repo tooling | `docs/90.references/llm-wiki/index.md` if changed | REV-2026-05-25 | Generator check passes |
+| PLN-005 | Refresh generated LLM Wiki index if required by repo tooling | `docs/90.references/data/llm-wiki/index.md` if changed | REV-2026-05-25 | Generator check passes |
 | PLN-006 | Update governance progress log | `docs/00.agent-governance/memory/progress.md` | REV-2026-05-25 | Progress entry links this follow-up |
 | PLN-007 | Clarify release tag changelog gate discovered by CI/CD review | `docs/05.operations/runbooks/00-workspace/release-management.md` | REV-2026-05-25 | Runbook matches tag workflow guard |
 

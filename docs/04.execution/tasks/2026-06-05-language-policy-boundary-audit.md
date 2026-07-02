@@ -101,7 +101,7 @@ project and operations content.
 | `bash scripts/validation/check-repo-contracts.sh` | PASS: failures=0. |
 | `bash scripts/validation/check-doc-traceability.sh` | PASS: failures=0. |
 | `bash scripts/validation/validate-harness.sh` | PASS: wrapper, traceability, implementation alignment, Compose, hardening, template/security baseline, and repository contracts passed. |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS after regenerating `docs/90.references/llm-wiki/index.md` for the new task path. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS after regenerating `docs/90.references/data/llm-wiki/index.md` for the new task path. |
 | `git diff --check` | PASS. |
 
 ## Verification Summary

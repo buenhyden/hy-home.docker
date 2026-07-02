@@ -72,7 +72,7 @@ The following English-only target files now have no Korean text:
 | `git diff --check` | PASS. |
 | `bash scripts/validation/check-repo-contracts.sh` | PASS. |
 | `bash scripts/validation/check-doc-traceability.sh` | PASS. |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS after regenerating `docs/90.references/llm-wiki/index.md` for the new task path. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS after regenerating `docs/90.references/data/llm-wiki/index.md` for the new task path. |
 
 ## Verification Summary
 

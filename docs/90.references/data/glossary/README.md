@@ -1,4 +1,4 @@
-<!-- Target: docs/90.references/glossary/README.md -->
+<!-- Target: docs/90.references/data/glossary/README.md -->
 
 # Glossary References
 
@@ -6,11 +6,11 @@
 
 ## Overview
 
-`docs/90.references/glossary`는 여러 stage 문서가 반복해서 사용하는 용어를 안정적으로 설명합니다. 이 폴더는 정책 원문이나 실행 절차가 아니라, 문서 작성자와 AI Agent가 같은 단어를 같은 의미로 해석하도록 돕는 reference 공간입니다.
+`docs/90.references/data/glossary`는 여러 stage 문서가 반복해서 사용하는 용어를 안정적으로 설명합니다. 이 폴더는 정책 원문이나 실행 절차가 아니라, 문서 작성자와 AI Agent가 같은 단어를 같은 의미로 해석하도록 돕는 reference 공간입니다.
 
 ## Category Role
 
-`docs/90.references/glossary`는 `docs/90.references`의 stage boundary와 source 해석 용어를 설명합니다. 실제 정책은 `docs/00.agent-governance/`, 운영 절차는 `docs/05.operations/`, runtime truth는 `infra/`, `scripts/`, registry 파일이 담당합니다.
+`docs/90.references/data/glossary`는 `docs/90.references`의 stage boundary와 source 해석 용어를 설명합니다. 실제 정책은 `docs/00.agent-governance/`, 운영 절차는 `docs/05.operations/`, runtime truth는 `infra/`, `scripts/`, registry 파일이 담당합니다.
 
 ## Language Rule
 
@@ -43,7 +43,7 @@
 ## Structure
 
 ```text
-docs/90.references/glossary/
+docs/90.references/data/glossary/
 ├── README.md                  # This file
 └── stable-reference-terms.md  # Reference-stage boundary terms
 ```
@@ -56,14 +56,14 @@ docs/90.references/glossary/
 
 1. 용어가 여러 stage 문서에서 반복되는지 먼저 확인합니다.
 2. active policy나 절차가 필요하면 glossary가 아니라 canonical stage 문서로 연결합니다.
-3. 새 non-README reference는 [reference.template.md](../../99.templates/templates/common/reference.template.md)를 기준으로 작성합니다.
-4. 새 glossary 문서를 추가하면 이 README와 [90.references](../README.md)를 함께 갱신합니다.
+3. 새 non-README reference는 [reference.template.md](../../../99.templates/templates/common/reference.template.md)를 기준으로 작성합니다.
+4. 새 glossary 문서를 추가하면 이 README와 [90.references](../../README.md)를 함께 갱신합니다.
 5. 변경 후 `bash scripts/validation/check-repo-contracts.sh`를 실행합니다.
 
 ## Related Documents
 
-- [90.references](../README.md)
+- [90.references](../../README.md)
 - [stable reference terms](./stable-reference-terms.md)
 - [docs index](../../README.md)
-- [reference template](../../99.templates/templates/common/reference.template.md)
-- [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
+- [reference template](../../../99.templates/templates/common/reference.template.md)
+- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)

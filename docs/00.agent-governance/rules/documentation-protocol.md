@@ -56,7 +56,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 - `README.md` files and root instruction shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) are documentation surfaces for DOCS 3 unless a higher-priority runtime constraint explicitly exempts them.
 - Root instruction shims must remain thin; their `## Related Documents` sections should point to canonical governance and provider docs instead of duplicating policy.
 - **HADS reference profile**: HADS block structure is mandatory for non-README
-  reference documents under `docs/90.references/hads/`. Outside that approved
+  reference documents under `docs/90.references/data/hads/`. Outside that approved
   profile, HADS labels (`[SPEC]`, `[NOTE]`, `[BUG]`, `[?]`) remain optional
   unless a document type or approved plan explicitly requires them. Do not
   convert existing templates or active stage documents to HADS as incidental

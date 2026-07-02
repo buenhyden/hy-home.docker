@@ -1,4 +1,4 @@
-<!-- Target: docs/90.references/hads/README.md -->
+<!-- Target: docs/90.references/data/hads/README.md -->
 
 # HADS References
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-`docs/90.references/hads` stores the approved Human-AI Document Standard (HADS)
+`docs/90.references/data/hads` stores the approved Human-AI Document Standard (HADS)
 reference profile for this repository.
 
 This category does not replace active documentation policy in
@@ -51,7 +51,7 @@ HADS profile terms, block tags, validator wording, and AI-readable instructions 
 ## Structure
 
 ```text
-docs/90.references/hads/
+docs/90.references/data/hads/
 ├── README.md        # This file
 └── profile.md       # HADS profile reference and validation contract
 ```
@@ -69,7 +69,7 @@ docs/90.references/hads/
 
 ## How to Work in This Area
 
-1. Use [reference.template.md](../../99.templates/templates/common/reference.template.md) as the
+1. Use [reference.template.md](../../../99.templates/templates/common/reference.template.md) as the
    reference-stage base.
 2. Add HADS header, AI reading instruction, and block tags before drafting facts.
 3. Run `bash scripts/validation/check-repo-contracts.sh` after edits.
@@ -83,7 +83,7 @@ docs/90.references/hads/
 
 ## Related Documents
 
-- [references index](../README.md)
+- [references index](../../README.md)
 - [HADS profile](./profile.md)
-- [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [repo contract checker](../../../scripts/validation/check-repo-contracts.sh)
+- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh)

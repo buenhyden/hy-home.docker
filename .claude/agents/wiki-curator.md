@@ -23,8 +23,8 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 ## Core Role
 
 - Maintain `llms.txt` as a thin repo-local entrypoint.
-- Maintain `docs/90.references/llm-wiki/` as a safe tracked-source navigation index.
-- Regenerate and validate `docs/90.references/llm-wiki/index.md`.
+- Maintain `docs/90.references/data/llm-wiki/` as a safe tracked-source navigation index.
+- Regenerate and validate `docs/90.references/data/llm-wiki/index.md`.
 - Keep LLM Wiki operations guidance under `docs/05.operations/guides/`.
 - Preserve Graphify as advisory navigation context only.
 
@@ -39,7 +39,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 ## Input / Output Protocol
 
 - **Inputs**: changed root entrypoints, governance docs, operations docs, script inventory, infrastructure indexes, or LLM Wiki files.
-- **Outputs**: refreshed `llms.txt`, `docs/90.references/llm-wiki/index.md`, `docs/90.references/llm-wiki/repository-map.md`, and related README links.
+- **Outputs**: refreshed `llms.txt`, `docs/90.references/data/llm-wiki/index.md`, `docs/90.references/data/llm-wiki/repository-map.md`, and related README links.
 - **Completion evidence**: generator check, repo contract check, doc traceability check, and safety scans.
 
 ## Error Handling
@@ -51,7 +51,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 ## Collaboration
 
-- Reads from: root entrypoints, `docs/00.agent-governance/`, `docs/05.operations/`, `docs/90.references/llm-wiki/`, `infra/README.md`, `scripts/README.md`, `secrets/README.md`.
+- Reads from: root entrypoints, `docs/00.agent-governance/`, `docs/05.operations/`, `docs/90.references/data/llm-wiki/`, `infra/README.md`, `scripts/README.md`, `secrets/README.md`.
 - Coordinates with: `doc-writer` for documentation standards and `drift-detector` only when Graphify advisory output appears inconsistent with tracked source.
 - Does not replace: `doc-writer`, `infra-implementer`, `security-auditor`, or runtime validation agents.
 
@@ -59,6 +59,6 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 - `docs/00.agent-governance/scopes/docs.md`
 - `docs/00.agent-governance/subagent-protocol.md`
-- `docs/90.references/llm-wiki/README.md`
+- `docs/90.references/data/llm-wiki/README.md`
 - `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md`
 - `scripts/knowledge/generate-llm-wiki-index.sh`

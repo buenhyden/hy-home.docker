@@ -1,11 +1,11 @@
-<!-- Target: docs/90.references/kubernetes/README.md -->
+<!-- Target: docs/90.references/data/kubernetes/README.md -->
 # Kubernetes References
 
 > Kubernetes and k3s/k3d migration reference material
 
 ## Overview
 
-`docs/90.references/kubernetes` stores stable Kubernetes reference material used by architecture, operations, and migration planning. It explains durable interpretation and migration-analysis context without replacing active architecture decisions, execution plans, or runtime configuration.
+`docs/90.references/data/kubernetes` stores stable Kubernetes reference material used by architecture, operations, and migration planning. It explains durable interpretation and migration-analysis context without replacing active architecture decisions, execution plans, or runtime configuration.
 
 This folder is not the source of truth for current deployment state. Runtime truth remains in `infra/`, `docker-compose.yml`, and validation scripts. Active migration decisions belong in `docs/02.architecture/`; implementation sequencing belongs in `docs/04.execution/`.
 
@@ -45,7 +45,7 @@ Use this category for slow-changing Kubernetes migration context, k3s/k3d evalua
 ## Structure
 
 ```text
-docs/90.references/kubernetes/
+docs/90.references/data/kubernetes/
 ├── README.md                             # This file
 └── docker-compose-to-k3s-migration.md    # Docker Compose to k3s/k3d migration reference
 ```
@@ -64,14 +64,14 @@ docs/90.references/kubernetes/
 ## How to Work in This Area
 
 1. Confirm the content is stable reference context, not an active plan or runbook.
-2. Use [reference.template.md](../../99.templates/templates/common/reference.template.md) for new non-README reference docs.
+2. Use [reference.template.md](../../../99.templates/templates/common/reference.template.md) for new non-README reference docs.
 3. Link to active architecture and execution docs instead of duplicating decisions or task status.
 4. Run `bash scripts/validation/check-repo-contracts.sh` after changing Kubernetes reference docs.
 
 ## Related Documents
 
-- [references index](../README.md)
-- [reference template](../../99.templates/templates/common/reference.template.md)
-- [architecture index](../../02.architecture/README.md)
-- [execution index](../../04.execution/README.md)
-- [operations index](../../05.operations/README.md)
+- [references index](../../README.md)
+- [reference template](../../../99.templates/templates/common/reference.template.md)
+- [architecture index](../../../02.architecture/README.md)
+- [execution index](../../../04.execution/README.md)
+- [operations index](../../../05.operations/README.md)

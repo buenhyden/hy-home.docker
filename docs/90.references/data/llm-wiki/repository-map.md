@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/90.references/llm-wiki/repository-map.md -->
+<!-- Target: docs/90.references/data/llm-wiki/repository-map.md -->
 
 # Reference: LLM Wiki Repository Map
 
@@ -11,7 +11,7 @@ This reference lists the canonical tracked source files that LLM agents should c
 
 ## Purpose
 
-Provide a repo-local exploration order so LLM agents do not confuse runtime truth with reference context. Root [`llms.txt`](../../../llms.txt) is a thin entrypoint to this document, and this document does not replace active policy or original runtime configuration.
+Provide a repo-local exploration order so LLM agents do not confuse runtime truth with reference context. Root [`llms.txt`](../../../../llms.txt) is a thin entrypoint to this document, and this document does not replace active policy or original runtime configuration.
 
 ## Repository Role
 
@@ -38,7 +38,7 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 
 ## Definitions / Facts
 
-- **LLM Wiki**: Repo-local exploration reference made of root `llms.txt` and `docs/90.references/llm-wiki/`.
+- **LLM Wiki**: Repo-local exploration reference made of root `llms.txt` and `docs/90.references/data/llm-wiki/`.
 - **Generated tracked repo-local index**: Path-only index refreshed by `scripts/knowledge/generate-llm-wiki-index.sh`.
 - **Tracked source files**: README files, governance docs, operations docs, Compose files, scripts, and registry JSON files tracked by Git.
 - **Runtime truth**: `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/` documents that directly define current runtime configuration and validation criteria.
@@ -48,17 +48,17 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 
 | Need | Canonical Source | Notes |
 | --- | --- | --- |
-| Repository overview | [README.md](../../../README.md) | human-facing root hub |
-| Agent execution rules | [AGENTS.md](../../../AGENTS.md) | provider-neutral entry shim |
-| Documentation taxonomy | [docs/README.md](../../README.md) | active stage routing |
-| Agent governance | [docs/00.agent-governance/README.md](../../00.agent-governance/README.md) | repo-local governance SSOT |
-| Infrastructure layout | [infra/README.md](../../../infra/README.md) | Compose tier and service map |
-| Script inventory | [scripts/README.md](../../../scripts/README.md) | validator and automation map |
-| Secret handling | [secrets/README.md](../../../secrets/README.md) | path and policy context only |
-| Docker reference context | [docs/90.references/docker/README.md](../docker/README.md) | stable Docker interpretation rules |
-| LLM entrypoint | [llms.txt](../../../llms.txt) | thin machine-readable entrypoint |
+| Repository overview | [README.md](../../../../README.md) | human-facing root hub |
+| Agent execution rules | [AGENTS.md](../../../../AGENTS.md) | provider-neutral entry shim |
+| Documentation taxonomy | [docs/README.md](../../../README.md) | active stage routing |
+| Agent governance | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md) | repo-local governance SSOT |
+| Infrastructure layout | [infra/README.md](../../../../infra/README.md) | Compose tier and service map |
+| Script inventory | [scripts/README.md](../../../../scripts/README.md) | validator and automation map |
+| Secret handling | [secrets/README.md](../../../../secrets/README.md) | path and policy context only |
+| Docker reference context | [docs/90.references/data/docker/README.md](../docker/README.md) | stable Docker interpretation rules |
+| LLM entrypoint | [llms.txt](../../../../llms.txt) | thin machine-readable entrypoint |
 | LLM generated index | [index.md](./index.md) | generated tracked repo-local path index |
-| LLM maintenance guide | [docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md) | refresh and validation procedure |
+| LLM maintenance guide | [docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md](../../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md) | refresh and validation procedure |
 
 ## Source Rules
 
@@ -71,12 +71,12 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 
 ## Sources
 
-- [README.md](../../../README.md) - repository purpose, map, verification entrypoints
-- [AGENTS.md](../../../AGENTS.md) - agent bootstrap, Graphify boundary, verification contract
-- [docs/README.md](../../README.md) - docs taxonomy, template mapping, contract validation
-- [docs/90.references/README.md](../README.md) - reference stage role and lifecycle
-- [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) - repository contract validation
-- [scripts/knowledge/report-graphify-health.sh](../../../scripts/knowledge/report-graphify-health.sh) - advisory Graphify health reporting
+- [README.md](../../../../README.md) - repository purpose, map, verification entrypoints
+- [AGENTS.md](../../../../AGENTS.md) - agent bootstrap, Graphify boundary, verification contract
+- [docs/README.md](../../../README.md) - docs taxonomy, template mapping, contract validation
+- [docs/90.references/README.md](../../README.md) - reference stage role and lifecycle
+- [scripts/validation/check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) - repository contract validation
+- [scripts/knowledge/report-graphify-health.sh](../../../../scripts/knowledge/report-graphify-health.sh) - advisory Graphify health reporting
 
 ## Maintenance
 
@@ -88,8 +88,8 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 
 - [LLM Wiki references](./README.md)
 - [LLM Wiki generated index](./index.md)
-- [LLM Wiki maintenance guide](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)
-- [LLM entrypoint](../../../llms.txt)
-- [90.references](../README.md)
-- [docs index](../../README.md)
-- [agent governance hub](../../00.agent-governance/README.md)
+- [LLM Wiki maintenance guide](../../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)
+- [LLM entrypoint](../../../../llms.txt)
+- [90.references](../../README.md)
+- [docs index](../../../README.md)
+- [agent governance hub](../../../00.agent-governance/README.md)

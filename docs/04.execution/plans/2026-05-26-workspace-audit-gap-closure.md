@@ -20,7 +20,7 @@ After the first audit session completed 18 skills, env/secrets comparison, and s
 - Missing skill count statement in AGENTS.md section 3
 - Missing Stage Handoff section in `docs/90.references/README.md`
 - Drift in `infra/tech-stack.versions.json` (16 components, Dependabot PR not reflected)
-- Stale `docs/90.references/llm-wiki/index.md`
+- Stale `docs/90.references/data/llm-wiki/index.md`
 
 ## Goals & In-Scope
 
@@ -41,7 +41,7 @@ After the first audit session completed 18 skills, env/secrets comparison, and s
 | PLN-003           | Add Stage Authoring Matrix skills section | `stage-authoring-matrix.md`            | Section 4 exists with 7 skill mappings |
 | PLN-004           | Add 90.references Stage Handoff section | `docs/90.references/README.md`         | "Stage Handoff" section exists |
 | PLN-005           | Correct tech-stack drift | `infra/tech-stack.versions.json`       | `check-repo-contracts.sh` failures=0 |
-| PLN-006           | Regenerate LLM Wiki index | `docs/90.references/llm-wiki/index.md` | `check-repo-contracts.sh` failures=0 |
+| PLN-006           | Regenerate LLM Wiki index | `docs/90.references/data/llm-wiki/index.md` | `check-repo-contracts.sh` failures=0 |
 | PLN-007 (BLOCKED) | Correct `.claude/CLAUDE.md` skill count | `.claude/CLAUDE.md`                    | Blocked; user manual edit required |
 
 ## Verification Plan

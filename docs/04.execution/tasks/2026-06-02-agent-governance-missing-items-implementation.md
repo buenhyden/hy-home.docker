@@ -42,7 +42,7 @@ Past Phase execution artifacts that conflict with the current implementation are
 | T-008 | Record the 2026-06-02 approval-gate closure scope in the parent plan and task evidence. | doc | N/A | Approved Gate Closure | Parent plan addendum and this task evidence distinguish repo-tracked protected surfaces from live runtime/remote state. | Codex | Completed |
 | T-009 | Retire Codex Markdown prompt adapters and make `.codex/agents/*.toml` the sole Codex agent adapter surface. | doc/script | N/A | Codex Markdown prompt retirement | `.codex/agents/*.md` removed; TOML adapters, provider docs, sync script, and repo contracts updated. | Codex | Completed |
 | T-010 | Promote Docker hardening from manual boundary to repo-contract hard validator. | script/doc | N/A | Docker hard-validator promotion | `check-repo-contracts.sh` runs `scripts/hardening/check-all-hardening.sh` as a hard gate. | Codex | Completed |
-| T-011 | Implement bounded HADS mandatory rollout for `docs/90.references/hads/`. | doc/script | N/A | HADS mandatory rollout | HADS profile reference docs added and repo contracts validate HADS profile shape. | Codex | Completed |
+| T-011 | Implement bounded HADS mandatory rollout for `docs/90.references/data/hads/`. | doc/script | N/A | HADS mandatory rollout | HADS profile reference docs added and repo contracts validate HADS profile shape. | Codex | Completed |
 | T-012 | Update indexes, progress, and LLM Wiki for approved gate closure. | doc/memory | N/A | Evidence closure | `docs/90.references/README.md`, progress log, and LLM Wiki index updated; LLM Wiki regenerated with 1014 paths. | Codex | Completed |
 | T-013 | Run verification for protected surface changes and record results. | eval | N/A | Verification | Verification summary records protected-surface checks. | Codex | Completed |
 | T-014 | Add archive stage governance and move conflicting old execution artifacts to tombstones. | doc/script | N/A | PLN-DI-001, PLN-DI-004 | `docs/98.archive/`, archive template, stage matrix, documentation protocol, QA/CI notes, and repo contracts updated. | Codex | Completed |
@@ -86,14 +86,14 @@ Past Phase execution artifacts that conflict with the current implementation are
   - `bash scripts/validation/check-quickwin-baseline.sh` — PASS (`services_total=5`; baseline enforced).
   - `bash scripts/validation/check-template-security-baseline.sh` — PASS (`template_adoption_missing=0`; required security controls enforced).
   - `bash scripts/operations/sync-provider-surfaces.sh` — PASS (`no drift`).
-  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — regenerated `docs/90.references/llm-wiki/index.md` with 1029 paths after fresh revalidation.
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — regenerated `docs/90.references/data/llm-wiki/index.md` with 1029 paths after fresh revalidation.
   - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — PASS.
   - `bash scripts/knowledge/report-graphify-health.sh` — advisory (`surprising_cross_root_inferred_edges=3`).
   - `rg -n "gpt-5\\.1|gemini-3-pro|unsupported|TBD|TODO" docs/00.agent-governance .codex AGENTS.md docs/04.execution` — advisory hits only: historical progress/task references, scan command literals, existing `.codex/skills/adr-writing/skill.md` instructional `TBD`, and the QA matrix word `unsupported`; no model/reasoning value was changed.
   - `bash -n scripts/validation/check-repo-contracts.sh scripts/operations/sync-provider-surfaces.sh` — PASS.
   - `bash scripts/hardening/check-all-hardening.sh` — PASS (`Summary: ALL checks passed successfully.`).
   - `bash scripts/operations/sync-provider-surfaces.sh` after Codex prompt retirement — PASS (`no drift`).
-  - `bash scripts/knowledge/generate-llm-wiki-index.sh` after approved gate closure — regenerated `docs/90.references/llm-wiki/index.md` with 1014 paths.
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh` after approved gate closure — regenerated `docs/90.references/data/llm-wiki/index.md` with 1014 paths.
   - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` after approved gate closure — PASS.
   - `bash scripts/validation/check-repo-contracts.sh` after approved gate closure — PASS (`failures=0`; `changed_template_docs_total=6`; `normalized_changed_template_docs_total=6`; `target_stage_docs_total=516`; `normalized_target_stage_docs_total=516`).
   - `rg -n "gpt-5\\.1|gemini-3-pro|unsupported|TBD|TODO|legacy_markdown_adapter" docs/00.agent-governance .codex AGENTS.md docs/04.execution scripts/operations scripts/validation` after approved gate closure — advisory hits only: historical progress/task references, scan command literals, existing validator/QA wording, existing `.codex/skills/adr-writing/skill.md` instructional `TBD`, and no `legacy_markdown_adapter` references.

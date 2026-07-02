@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/90.references/docker/image-version-interpretation.md -->
+<!-- Target: docs/90.references/data/docker/image-version-interpretation.md -->
 
 # Reference: Docker Image and Version Interpretation
 
@@ -52,9 +52,9 @@ This reference provides stable context for interpreting Docker image drift, floa
 ## Sources
 
 - [Docker reference category](./README.md) - Docker reference category role and working rules
-- [tech stack versions](../../../infra/tech-stack.versions.json) - tracked registry for important Docker images
-- [image tag exceptions](../../../infra/image-tag-policy.exceptions.json) - tracked floating tag exception registry
-- [repo contract checker](../../../scripts/validation/check-repo-contracts.sh) - repository contract validation for Docker image/tag policy and version drift
+- [tech stack versions](../../../../infra/tech-stack.versions.json) - tracked registry for important Docker images
+- [image tag exceptions](../../../../infra/image-tag-policy.exceptions.json) - tracked floating tag exception registry
+- [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh) - repository contract validation for Docker image/tag policy and version drift
 
 ## Maintenance
 
@@ -65,6 +65,6 @@ This reference provides stable context for interpreting Docker image drift, floa
 ## Related Documents
 
 - [Docker references](./README.md)
-- [90.references](../README.md)
+- [90.references](../../README.md)
 - [docs index](../../README.md)
-- [reference template](../../99.templates/templates/common/reference.template.md)
+- [reference template](../../../99.templates/templates/common/reference.template.md)

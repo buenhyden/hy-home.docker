@@ -68,12 +68,12 @@ legacy Korean-labeled overview heading:
 | Reference Category | Role Clarified | Language Rule Added |
 | --- | --- | --- |
 | `docs/90.references/README.md` | Repository-level stable reference role and category routing | Korean for human-facing references; English allowed for generated/LLM/HADS/machine-readable surfaces |
-| `docs/90.references/docker/README.md` | Docker image/version interpretation and registry context | Korean prose with image/tag, Compose path, JSON key, and command terms preserved |
-| `docs/90.references/glossary/README.md` | Stable vocabulary and stage-boundary terms | Korean definitions with canonical stage and technical terms preserved |
-| `docs/90.references/hads/README.md` | HADS profile and validator-backed AI-readable boundary | English allowed for HADS/profile/validator terms; Korean explanatory notes allowed |
-| `docs/90.references/kubernetes/README.md` | Kubernetes and k3s/k3d migration reference context | Korean prose with Kubernetes/k3s/k3d resource terms preserved |
-| `docs/90.references/learning/README.md` | CS/CE/SE learning roadmap and theory references | Korean learning prose with source titles and upstream terms preserved |
-| `docs/90.references/llm-wiki/README.md` | Repo-local LLM navigation map and generated path index | Korean README; English allowed for generated indexes and LLM-facing navigation |
+| `docs/90.references/data/docker/README.md` | Docker image/version interpretation and registry context | Korean prose with image/tag, Compose path, JSON key, and command terms preserved |
+| `docs/90.references/data/glossary/README.md` | Stable vocabulary and stage-boundary terms | Korean definitions with canonical stage and technical terms preserved |
+| `docs/90.references/data/hads/README.md` | HADS profile and validator-backed AI-readable boundary | English allowed for HADS/profile/validator terms; Korean explanatory notes allowed |
+| `docs/90.references/data/kubernetes/README.md` | Kubernetes and k3s/k3d migration reference context | Korean prose with Kubernetes/k3s/k3d resource terms preserved |
+| `docs/90.references/data/learning/README.md` | CS/CE/SE learning roadmap and theory references | Korean learning prose with source titles and upstream terms preserved |
+| `docs/90.references/data/llm-wiki/README.md` | Repo-local LLM navigation map and generated path index | Korean README; English allowed for generated indexes and LLM-facing navigation |
 
 ## Validation Results
 
@@ -86,7 +86,7 @@ legacy Korean-labeled overview heading:
 | Repository-wide legacy overview-heading scan | PASS: no legacy overview-heading matches remain after heading normalization. |
 | `bash scripts/validation/check-repo-contracts.sh` | PASS: failures=0. |
 | `bash scripts/validation/check-doc-traceability.sh` | PASS: failures=0. |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS after regenerating `docs/90.references/llm-wiki/index.md` for the new task path. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS after regenerating `docs/90.references/data/llm-wiki/index.md` for the new task path. |
 | `git diff --check` | PASS. |
 
 ## Verification Summary

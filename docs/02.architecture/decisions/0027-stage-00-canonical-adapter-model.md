@@ -21,14 +21,14 @@ Phase 1 진단은 Stage 00 canonical adapter model이 이미 존재하고 provid
 - `.claude/`, `.codex/`, and `.agents/` are provider runtime adapters. They may express Stage 00 catalog entries in provider-native formats, but they must not redefine policy.
 - `.codex/agents/*.toml` is the only active Codex agent adapter surface. `.codex/agents/*.md` prompt files are retired and must not be recreated.
 - External strategy skills must be adapted into canonical repository stage paths rather than creating active non-stage specs, plans, or task logs.
-- HADS mandatory validation is bounded to non-README documents under `docs/90.references/hads/`; broad HADS conversion outside that path requires a separate approved rollout.
+- HADS mandatory validation is bounded to non-README documents under `docs/90.references/data/hads/`; broad HADS conversion outside that path requires a separate approved rollout.
 - Docker hardening, QA, DevOps, and CI/CD strategy additions must distinguish hard repository validators from manual review expectations.
 
 ## Explicit Non-goals
 
 - This ADR does not define new provider model IDs or reasoning-effort values.
 - This ADR does not recreate retired Codex Markdown prompt files.
-- This ADR does not broaden HADS mandatory validation beyond `docs/90.references/hads/`.
+- This ADR does not broaden HADS mandatory validation beyond `docs/90.references/data/hads/`.
 - This ADR does not mutate Docker runtime, secrets, deployment state, or remote GitHub protection settings.
 - This ADR does not replace existing service/tier ARD or ADR documents.
 

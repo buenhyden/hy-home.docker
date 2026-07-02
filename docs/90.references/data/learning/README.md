@@ -1,4 +1,4 @@
-<!-- Target: docs/90.references/learning/README.md -->
+<!-- Target: docs/90.references/data/learning/README.md -->
 
 # Learning References
 
@@ -6,11 +6,11 @@
 
 ## Overview
 
-`docs/90.references/learning`은 `hy-home.docker` 인프라를 학습 대상으로 해석하기 위한 이론적 배경과 로드맵을 관리합니다. 이 폴더는 설치 가이드나 운영 절차가 아니라, 관련 개념을 장기적으로 참조하기 위한 학습 reference입니다.
+`docs/90.references/data/learning`은 `hy-home.docker` 인프라를 학습 대상으로 해석하기 위한 이론적 배경과 로드맵을 관리합니다. 이 폴더는 설치 가이드나 운영 절차가 아니라, 관련 개념을 장기적으로 참조하기 위한 학습 reference입니다.
 
 ## Category Role
 
-`docs/90.references/learning` connects repo-local infrastructure concepts to durable CS, CE, and SE learning topics. It is a learning map and theory index, not a service setup guide, curriculum task tracker, or operations runbook.
+`docs/90.references/data/learning` connects repo-local infrastructure concepts to durable CS, CE, and SE learning topics. It is a learning map and theory index, not a service setup guide, curriculum task tracker, or operations runbook.
 
 Use this category to preserve source-backed learning context and roadmap history. Use active stage docs for implementation decisions, operations procedures, and verification evidence.
 
@@ -46,7 +46,7 @@ Use this category to preserve source-backed learning context and roadmap history
 ## Structure
 
 ```text
-docs/90.references/learning/
+docs/90.references/data/learning/
 ├── README.md       # This file
 ├── roadmap.md      # Current learning roadmap reference
 └── roadmap-v1.md   # Archived initial roadmap reference
@@ -60,7 +60,7 @@ docs/90.references/learning/
 ## How to Work in This Area
 
 1. Keep learning references stable and source-backed.
-2. Use [reference.template.md](../../99.templates/templates/common/reference.template.md) for new non-README reference docs.
+2. Use [reference.template.md](../../../99.templates/templates/common/reference.template.md) for new non-README reference docs.
 3. Link repo-local examples to active docs or `infra/` paths with relative links.
 4. Preserve archived roadmaps as reference history unless explicitly asked to remove them.
 5. Do not present external links as newly verified unless they were re-checked during the current task.
@@ -68,7 +68,7 @@ docs/90.references/learning/
 
 ## Related Documents
 
-- [90.references](../README.md)
+- [90.references](../../README.md)
 - [stable reference terms](../glossary/stable-reference-terms.md)
 - [docs index](../../README.md)
-- [reference template](../../99.templates/templates/common/reference.template.md)
+- [reference template](../../../99.templates/templates/common/reference.template.md)

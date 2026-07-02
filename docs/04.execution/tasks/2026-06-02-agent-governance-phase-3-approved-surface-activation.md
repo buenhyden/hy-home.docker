@@ -87,7 +87,7 @@ This document records actual work evidence for reflecting user-approved policy, 
   - `git diff --check` — PASS.
   - `bash scripts/validation/check-repo-contracts.sh` — PASS (`failures=0`; `changed_template_docs_total=5`; `normalized_changed_template_docs_total=5`; `target_stage_docs_total=526`; `normalized_target_stage_docs_total=526`; approved-surface template check present).
   - `bash scripts/validation/check-doc-traceability.sh` — PASS (`failures=0`; `catalog_pairs_total=46`).
-  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — regenerated `docs/90.references/llm-wiki/index.md` with 1028 paths after staging the new Phase 3 Stage 04 artifacts.
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — regenerated `docs/90.references/data/llm-wiki/index.md` with 1028 paths after staging the new Phase 3 Stage 04 artifacts.
   - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — PASS.
 - **Eval Commands**:
   - `gh repo view --json nameWithOwner,defaultBranchRef,isPrivate` — PASS; read-only output confirmed `buenhyden/hy-home.docker`, default branch `main`, `isPrivate=false`.
@@ -98,7 +98,7 @@ This document records actual work evidence for reflecting user-approved policy, 
 - **Logs / Evidence Location**:
   - This task document.
   - [Progress log](../../00.agent-governance/memory/progress.md)
-  - [LLM Wiki index](../../90.references/llm-wiki/index.md)
+  - [LLM Wiki index](../../90.references/data/llm-wiki/index.md)
 
 ## Scope Safety
 

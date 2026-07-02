@@ -56,15 +56,15 @@ hy-home.docker/
 - [`docs/05.operations/`](./docs/05.operations) - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
 - [`docs/90.references/`](./docs/90.references) - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
 - [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
-- [`docs/90.references/llm-wiki/`](./docs/90.references/llm-wiki) - tracked source files 기반 LLM Wiki entrypoint
-- [`docs/90.references/llm-wiki/repository-map.md`](./docs/90.references/llm-wiki/repository-map.md) - curated repository map
-- [`docs/90.references/llm-wiki/index.md`](./docs/90.references/llm-wiki/index.md) - generated tracked path index
+- [`docs/90.references/data/llm-wiki/`](./docs/90.references/data/llm-wiki) - tracked source files 기반 LLM Wiki entrypoint
+- [`docs/90.references/data/llm-wiki/repository-map.md`](./docs/90.references/data/llm-wiki/repository-map.md) - curated repository map
+- [`docs/90.references/data/llm-wiki/index.md`](./docs/90.references/data/llm-wiki/index.md) - generated tracked path index
 - [`infra/`](./infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
 - [`scripts/`](./scripts) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
 - [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
 - [`projects/`](./projects) - 보조 앱, 스토리북, MCP 관련 프로젝트 공간
 - [`.github/workflows/`](.github/workflows) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
-- [`docs/90.references/docker/`](./docs/90.references/docker) - Docker image/version drift 기준과 참고 규칙
+- [`docs/90.references/data/docker/`](./docs/90.references/data/docker) - Docker image/version drift 기준과 참고 규칙
 - [`docs/03.specs/infra-secrets-docs-refresh/`](./docs/03.specs/infra-secrets-docs-refresh) - infra, secrets, 운영 문서 최신화 분석 명세
 
 ## Tech Stack
@@ -282,9 +282,9 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 - [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](./docs/00.agent-governance/rules/stage-authoring-matrix.md)
 - [`docs/05.operations/README.md`](./docs/05.operations/README.md)
 - [`docs/90.references/README.md`](./docs/90.references/README.md)
-- [`docs/90.references/docker/README.md`](./docs/90.references/docker/README.md)
-- [`docs/90.references/llm-wiki/README.md`](./docs/90.references/llm-wiki/README.md)
-- [`docs/90.references/llm-wiki/index.md`](./docs/90.references/llm-wiki/index.md)
+- [`docs/90.references/data/docker/README.md`](./docs/90.references/data/docker/README.md)
+- [`docs/90.references/data/llm-wiki/README.md`](./docs/90.references/data/llm-wiki/README.md)
+- [`docs/90.references/data/llm-wiki/index.md`](./docs/90.references/data/llm-wiki/index.md)
 - [`llms.txt`](./llms.txt)
 - [`docs/03.specs/infra-secrets-docs-refresh/spec.md`](./docs/03.specs/infra-secrets-docs-refresh/spec.md)
 - [`docs/04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md`](./docs/04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md)

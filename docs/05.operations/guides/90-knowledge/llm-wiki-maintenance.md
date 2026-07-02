@@ -55,8 +55,8 @@ status: active
 
 ## Common Checks
 
-- `llms.txt`가 `docs/90.references/llm-wiki/index.md`와 `repository-map.md`를 가리키는지 확인한다.
-- `docs/90.references/llm-wiki/index.md`가 generated tracked repo-local index인지 확인한다.
+- `llms.txt`가 `docs/90.references/data/llm-wiki/index.md`와 `repository-map.md`를 가리키는지 확인한다.
+- `docs/90.references/data/llm-wiki/index.md`가 generated tracked repo-local index인지 확인한다.
 - Graphify output은 navigation aid로만 사용하고 source truth로 취급하지 않는다.
 
 ## Runbook Handoff

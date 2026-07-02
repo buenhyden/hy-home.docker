@@ -35,7 +35,7 @@ Stage 00은 active policy와 catalog를 소유한다. Provider directories는 ru
   - Operations procedures unrelated to agent governance.
 - **Non-goals**:
   - Do not replace the existing service/tier architecture documents.
-  - Do not broaden the HADS mandatory profile beyond `docs/90.references/hads/`.
+  - Do not broaden the HADS mandatory profile beyond `docs/90.references/data/hads/`.
   - Do not recreate retired Codex Markdown prompt files.
   - Do not create a separate active governance layer under provider directories.
 
