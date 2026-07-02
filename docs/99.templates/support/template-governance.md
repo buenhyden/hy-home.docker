@@ -21,12 +21,10 @@ contracts, and validation rules.
 
 ## Commit Boundaries
 
-- Keep design, plan, task evidence, relocation, validator/governance alignment,
-  and reference fallout in separate logical commits where practical.
-- Use `git mv` for template relocation.
+- Keep support-contract edits, template-source edits, validator edits, direct fallout edits, and generated-index refreshes in separate commits where practical.
+- Use `git mv` for path moves.
 - Review path-only moves separately from content rewrites.
-- Record known unrelated validation failures as gaps instead of mixing runtime
-  fixes into template commits.
+- Record existing unrelated validation failures as gaps.
 
 ## Protected Surface Rules
 
@@ -45,6 +43,7 @@ and repository contract checks. A task touching these surfaces must record:
 - Run reference search after removing or moving template paths.
 - Run LLM Wiki regeneration after adding or moving tracked docs.
 - Run repository contract validation after validator or governance changes.
+- Run provider sync checks when agent-facing surfaces change.
 - Keep README documents as routing and index surfaces; detailed rules belong in
   support documents.
 
@@ -54,3 +53,4 @@ and repository contract checks. A task touching these surfaces must record:
 - [template contract](./template-contract.md)
 - [template selection](./template-selection.md)
 - [task evidence](../../04.execution/tasks/2026-07-02-template-system-reorganization.md)
+- [contract standardization task evidence](../../04.execution/tasks/2026-07-03-template-system-contract-standardization.md)

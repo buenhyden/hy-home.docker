@@ -63,11 +63,13 @@ support 문서를 기준으로 확인합니다.
 
 ## How to Work in This Area
 
-1. 새 문서를 만들기 전에 [template selection guide](./support/template-selection.md)를 확인한다.
-2. 복사 가능한 원본은 [templates/](./templates/README.md) 아래에서만 선택한다.
-3. frontmatter와 status 값은 [frontmatter contract](./support/frontmatter-contract.md)와 [lifecycle status](./support/lifecycle-status.md)를 따른다.
-4. 템플릿 자체를 바꿀 때는 [template governance](./support/template-governance.md)와 repository contract 검증을 함께 확인한다.
-5. README는 catalog 역할만 유지하고, 새로운 contract 또는 governance 규칙은 `support/`에 둔다.
+이 섹션은 Stage 99 작업 경로를 찾기 위한 routing map입니다.
+
+- Template 선택: [template selection guide](./support/template-selection.md)
+- 복사 가능한 template catalog: [templates README](./templates/README.md)
+- Frontmatter와 lifecycle status: [frontmatter contract](./support/frontmatter-contract.md), [lifecycle status](./support/lifecycle-status.md)
+- Template 변경과 검토: [template governance](./support/template-governance.md)
+- Durable support rule surface: [support README](./support/README.md)
 
 ## Related Documents
 

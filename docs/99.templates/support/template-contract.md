@@ -9,6 +9,13 @@ layer: agentic
 This document defines the non-copyable contract for template source files under
 `docs/99.templates/templates/`.
 
+## Surface Boundaries
+
+- Template forms and template rules are separate surfaces.
+- Copyable forms live under `docs/99.templates/templates/`.
+- Non-copyable rules live under `docs/99.templates/support/`.
+- README files are indexes and routing surfaces; durable rules belong in support documents.
+
 ## Template Source Rules
 
 - Copyable source files live only under `docs/99.templates/templates/`.
@@ -34,7 +41,7 @@ This document defines the non-copyable contract for template source files under
 
 ## Target Document Rules
 
-- A target document inherits structure from exactly one primary template.
+- Target documents inherit from exactly one primary template role.
 - Purpose-specific child templates may supplement a parent spec when the target
   path and role require them.
 - Target document frontmatter follows [frontmatter contract](./frontmatter-contract.md), not the template source metadata.

@@ -11,16 +11,19 @@ documents. Frontmatter is a Markdown-adjacent preprocessing convention, not core
 CommonMark syntax, so the repository treats it as a small structured metadata
 surface.
 
-## Field Families
+## Role Matrix
 
-| Family | Surface | Allowed Pattern |
+| Surface | Required Keys | Disallowed Duplicate-Purpose Keys |
 | --- | --- | --- |
-| Template source | `docs/99.templates/templates/**/*.template.md` | `status: draft` only unless a future validator explicitly accepts more keys. |
-| Machine-readable template | `*.template.yaml`, `*.template.graphql`, `*.template.proto` | No YAML frontmatter; use comments for target guidance. |
-| Stage documents | `docs/01` through `docs/05` and `docs/90` leaf docs | `status: draft`, `status: active`, `status: completed`, or `status: superseded`. |
-| Archive tombstones | `docs/98.archive/**` | `status: archived` plus archive-specific provenance keys when required. |
-| Governance and support | Stage 00 and Stage 99 governance/support README-style documents | `layer: agentic` when the file is a governance/support entrypoint. |
-| Generated files | generated tracked docs | `generated_by` only when generated tooling owns the file. |
+| Markdown template source | `status: draft` | `type`, `owner`, `updated`, `links`, `document_type`, `template_type` |
+| Machine-readable template source | none; use comments | YAML frontmatter fences, `type`, `owner`, `updated`, `links` |
+| Stage 99 support document | `layer: agentic` | `status`, `type`, `owner`, `updated`, `links` |
+| Target stage document | path-derived role plus lifecycle `status` | `type`, `document_type`, `template_type` |
+| Generated tracked document | generator-owned metadata such as `generated_by` | human-authored lifecycle keys unless the generator owns them |
+
+Archive tombstones are target stage documents with the archive lifecycle profile:
+`status: archived` plus archive-specific provenance keys when that profile
+requires them.
 
 ## Duplicate-Purpose Key Rules
 
