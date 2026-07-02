@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md -->
@@ -43,7 +43,7 @@ This task records execution evidence for the Stage 99 template-system contract s
 | T-003 | Normalize copyable templates. | docs | Template System Contract Standardization Spec / Interfaces | PLN-003 | Template scan and repo contract | Codex | Done |
 | T-004 | Update validator enforcement. | script | Template System Contract Standardization Spec / Validator Interfaces | PLN-004 | bash -n and repo contract | Codex | Done |
 | T-005 | Apply direct fallout and regenerate indexes. | docs | Template System Contract Standardization Spec / Tools | PLN-005 | Provider sync and LLM Wiki freshness | Codex | Done |
-| T-006 | Close verification evidence. | docs | Template System Contract Standardization Spec / Success Criteria | PLN-006 | Validation matrix complete | Codex | Planned |
+| T-006 | Close verification evidence. | docs | Template System Contract Standardization Spec / Success Criteria | PLN-006 | Validation matrix complete | Codex | Done |
 
 ## Inventory Baseline
 
@@ -57,6 +57,7 @@ This task records execution evidence for the Stage 99 template-system contract s
 - T-003: Template source scans found 22 Markdown `.template.md` files with exact `status: draft` frontmatter, no forbidden duplicate-purpose metadata keys, 3 machine-readable contract templates without YAML frontmatter, and 25 `.template.*` sources with `Target:` plus target-link guidance. Common reference target guidance and SDLC task reference examples now match `docs/90.references/{audits,data,research,learning}/**/*.md`; template README files now use only `Overview`, `Templates`, `Target Rules`, and `Related Documents` body sections.
 - T-004: Added `Stage 99 template and frontmatter contracts` to `scripts/validation/check-repo-contracts.sh` immediately after `Template inventory`. The validator now enforces exact Markdown template frontmatter, Markdown template `Target:` / target-relative / `## Related Documents` guidance, machine-readable `Target:` and `Cross-links:` comments, no machine-readable Markdown `## Related Documents`, no machine-readable YAML frontmatter fence, top-frontmatter-only legacy key scanning for Stage 99 Markdown, and README durable-marker routing to support with a nearby-line support-link window. Existing `Related Documents phased coverage` and `Contract template cross-link ownership` sections remain as broader template-content coverage.
 - T-005: Stale path scans and follow-up quality review remediated all actionable active flat-template guidance found in Task 5. `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/00.agent-governance/scopes/docs.md`, and `docs/00.agent-governance/rules/hooks/hookify.enforce-docs-templates.md` now point active template-first wording to `docs/99.templates/templates/`; `.claude/agents/doc-writer.md` points flat template-source wording to `docs/99.templates/templates/**/*.template.md` and `docs/99.templates/templates/sdlc/adr.template.md`; `docs/00.agent-governance/rules/output-style.md` and `.claude/output-styles/hy-home.md` instruct agents to load the mapped template under `docs/99.templates/templates/`. Directly changed Claude guidance surfaces were reviewed by focused stale-path scans. Provider mirror sync checks passed with no generated surface drift, which verifies `.codex` and `.agents` mirrors rather than the manually changed Claude files. The LLM Wiki index was regenerated with 1111 safe tracked paths. The remaining `updated:` hits in `docs/05.operations/guides/06-observability/loki.md`, `docs/05.operations/policies/06-observability/01.retention.md`, and `docs/05.operations/policies/06-observability/loki.md` are out-of-scope target-document metadata gaps and were not edited.
+- T-006: Final verification closed the task. Focused checks for diff whitespace, LLM Wiki freshness, provider mirror drift, traceability, implementation alignment, shell syntax, and Task 5 stale flat-template guidance passed. Full repository contract now has no Stage 99/template/frontmatter/provider/LLM Wiki failures and still fails only on out-of-scope infra drift: Keycloak hardening image mismatch and `infra/tech-stack.versions.json` expected-image drift for Traefik, Keycloak, Vault, PostgreSQL, Kafka, Grafana, Alloy, n8n, Ollama, Open WebUI, and RedisInsight. `graphify update .` was attempted after the script change and skipped because `graphify` is not available in PATH.
 
 ## Validation Results
 
@@ -69,12 +70,23 @@ This task records execution evidence for the Stage 99 template-system contract s
 | bash scripts/knowledge/generate-llm-wiki-index.sh --check | PASS: generated LLM Wiki index is fresh. |
 | bash scripts/validation/check-doc-traceability.sh | PASS: `failures=0`. |
 | bash scripts/validation/check-doc-implementation-alignment.sh | PASS: `failures=0`. |
+| bash -n scripts/validation/check-repo-contracts.sh | PASS. |
+| bash scripts/validation/check-repo-contracts.sh | FAIL with known out-of-scope infra drift only: hardening gate Keycloak image tag mismatch and tech-stack expected-image drift for Traefik, Keycloak, Vault, PostgreSQL, Kafka, Grafana, Alloy, n8n, Ollama, Open WebUI, and RedisInsight; no Stage 99/template/frontmatter/provider/LLM Wiki failures. |
+| graphify update . | SKIP: `graphify` is not available in PATH. |
 
 ## Verification Summary
 
 - Test Commands: Listed in ## Validation Results.
 - Eval Commands: N/A for documentation contract standardization.
-- Manual Checks: Verify support docs own rules and README files remain indexes.
+- Manual Checks: Verified support docs own durable rules and README files remain indexes.
+
+## Commit Trail
+
+- `8db0e7f0 docs(execution): Add template contract standardization evidence`
+- `ba2c9485 docs(templates): Consolidate support contracts`
+- `8e33bbce docs(templates): Normalize template source metadata`
+- `570939a7 test(templates): Enforce template metadata contract`
+- `82b6c64a docs(templates): Apply template contract fallout`
 
 ## Related Documents
 

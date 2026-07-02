@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md -->
@@ -105,7 +105,7 @@ is recorded as an out-of-scope gap when full repo contracts are run.
 - Read: `docs/99.templates/support/frontmatter-contract.md`
 - Read: `docs/03.specs/template-system-contract-standardization/spec.md`
 
-- [ ] **Step 1: Create the task evidence file from the task template**
+ **Step 1: Create the task evidence file from the task template**
 
 Create `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md` with this initial content:
 
@@ -175,7 +175,7 @@ generated indexes according to the approved spec.
 - **Frontmatter contract**: [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
 ```
 
-- [ ] **Step 2: Capture Stage 99 inventory counts**
+ **Step 2: Capture Stage 99 inventory counts**
 
 Run:
 
@@ -187,7 +187,7 @@ find docs/99.templates/support -maxdepth 1 -type f | sort
 Expected: output lists only canonical template/support files under the existing
 Stage 99 folders.
 
-- [ ] **Step 3: Capture legacy metadata scan**
+ **Step 3: Capture legacy metadata scan**
 
 Run:
 
@@ -198,7 +198,7 @@ rg -n '^(type|owner|updated|links|document_type|template_type):' docs/99.templat
 Expected: either no matches or matches that are explicitly documented as gaps in
 the task evidence.
 
-- [ ] **Step 4: Update the task evidence baseline**
+ **Step 4: Update the task evidence baseline**
 
 Edit `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`:
 
@@ -207,13 +207,13 @@ Edit `docs/04.execution/tasks/2026-07-03-template-system-contract-standardizatio
   hits.
 - Keep command details summarized; do not paste raw long logs.
 
-- [ ] **Step 5: Add the task to the tasks README index**
+ **Step 5: Add the task to the tasks README index**
 
 Modify `docs/04.execution/tasks/README.md` by adding one bullet or table entry
 for `2026-07-03-template-system-contract-standardization.md` near the other
 2026-07-03 or template-system entries.
 
-- [ ] **Step 6: Run Task 1 verification**
+ **Step 6: Run Task 1 verification**
 
 Run:
 
@@ -227,7 +227,7 @@ Expected:
 - `git diff --check` exits 0.
 - Traceability check exits 0 with `failures=0`.
 
-- [ ] **Step 7: Commit Task 1**
+ **Step 7: Commit Task 1**
 
 Run:
 
@@ -251,7 +251,7 @@ Expected: commit succeeds.
 - Modify: `docs/99.templates/README.md`
 - Modify: `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`
 
-- [ ] **Step 1: Add support ownership language to `template-contract.md`**
+ **Step 1: Add support ownership language to `template-contract.md`**
 
 Ensure `docs/99.templates/support/template-contract.md` contains these rules,
 using existing section headings when possible:
@@ -264,7 +264,7 @@ using existing section headings when possible:
 - Target documents inherit from exactly one primary template role.
 ```
 
-- [ ] **Step 2: Expand `frontmatter-contract.md` with a role matrix**
+ **Step 2: Expand `frontmatter-contract.md` with a role matrix**
 
 Ensure `docs/99.templates/support/frontmatter-contract.md` contains a table with
 these exact surface families:
@@ -279,7 +279,7 @@ these exact surface families:
 | Generated tracked document | generator-owned metadata such as `generated_by` | human-authored lifecycle keys unless the generator owns them |
 ```
 
-- [ ] **Step 3: Add protected-surface commit rules to `template-governance.md`**
+ **Step 3: Add protected-surface commit rules to `template-governance.md`**
 
 Ensure `docs/99.templates/support/template-governance.md` says:
 
@@ -290,7 +290,7 @@ Ensure `docs/99.templates/support/template-governance.md` says:
 - Run provider sync checks when agent-facing surfaces change.
 ```
 
-- [ ] **Step 4: Confirm `template-selection.md` maps every canonical role**
+ **Step 4: Confirm `template-selection.md` maps every canonical role**
 
 Check that `docs/99.templates/support/template-selection.md` includes target
 rows for:
@@ -305,19 +305,19 @@ rows for:
 
 If a role is missing, add an exact row with the existing canonical template path.
 
-- [ ] **Step 5: Keep `docs/99.templates/README.md` as a catalog**
+ **Step 5: Keep `docs/99.templates/README.md` as a catalog**
 
 Edit `docs/99.templates/README.md` only if it contains durable rules that now
 belong in support. Keep it limited to overview, audience, scope, catalog,
 structure, how-to-work, and related documents.
 
-- [ ] **Step 6: Update task evidence for Task 2**
+ **Step 6: Update task evidence for Task 2**
 
 In `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`,
 mark `T-002` as `Done` and add a concise note that support contracts now own
 the durable rules.
 
-- [ ] **Step 7: Run Task 2 verification**
+ **Step 7: Run Task 2 verification**
 
 Run:
 
@@ -332,7 +332,7 @@ Expected:
 - The `rg` command returns no README-only durable contract rules that should
   live in support. A README may link to support rules.
 
-- [ ] **Step 8: Commit Task 2**
+ **Step 8: Commit Task 2**
 
 Run:
 
@@ -354,7 +354,7 @@ Expected: commit succeeds.
 - Modify: `docs/99.templates/templates/**/README.md`
 - Modify: `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`
 
-- [ ] **Step 1: Verify Markdown template frontmatter**
+ **Step 1: Verify Markdown template frontmatter**
 
 Run:
 
@@ -370,7 +370,7 @@ status: draft
 ---
 ```
 
-- [ ] **Step 2: Remove duplicate-purpose metadata from Markdown templates**
+ **Step 2: Remove duplicate-purpose metadata from Markdown templates**
 
 Run:
 
@@ -382,7 +382,7 @@ Expected: no matches. If matches exist, remove those keys from template
 frontmatter or body metadata examples and rely on target sections such as
 `## Related Documents`.
 
-- [ ] **Step 3: Verify machine-readable templates do not use YAML frontmatter**
+ **Step 3: Verify machine-readable templates do not use YAML frontmatter**
 
 Run:
 
@@ -392,7 +392,7 @@ for f in docs/99.templates/templates/spec-contracts/*.template.yaml docs/99.temp
 
 Expected: no output block begins with `---`.
 
-- [ ] **Step 4: Confirm target guidance exists in every template**
+ **Step 4: Confirm target guidance exists in every template**
 
 Run:
 
@@ -404,7 +404,7 @@ rg -L 'Target-relative|Cross-links:' docs/99.templates/templates
 Expected: no missing-template files are printed. Markdown templates use
 `Target-relative`; machine-readable templates use `Cross-links:`.
 
-- [ ] **Step 5: Normalize category README wording**
+ **Step 5: Normalize category README wording**
 
 For each file below, ensure the README describes only category purpose, template
 list, target rules summary, and related documents:
@@ -421,12 +421,12 @@ docs/99.templates/templates/common/README.md
 Move any durable contract rule to the matching `support/` document and leave a
 link from the README.
 
-- [ ] **Step 6: Update task evidence for Task 3**
+ **Step 6: Update task evidence for Task 3**
 
 In `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`,
 mark `T-003` as `Done` and summarize the template frontmatter scan result.
 
-- [ ] **Step 7: Run Task 3 verification**
+ **Step 7: Run Task 3 verification**
 
 Run:
 
@@ -441,7 +441,7 @@ Expected:
 - Repo contract has no template-source failures. Existing infra image/version
   drift may remain and must be recorded as out-of-scope.
 
-- [ ] **Step 8: Commit Task 3**
+ **Step 8: Commit Task 3**
 
 Run:
 
@@ -458,7 +458,7 @@ Expected: commit succeeds.
 - Modify: `scripts/validation/check-repo-contracts.sh`
 - Modify: `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`
 
-- [ ] **Step 1: Add or update the Stage 99 template contract validator section**
+ **Step 1: Add or update the Stage 99 template contract validator section**
 
 In `scripts/validation/check-repo-contracts.sh`, ensure the template validation
 logic enforces these exact checks:
@@ -474,7 +474,7 @@ logic enforces these exact checks:
 8. Stage 99 README files do not contain durable rules that belong in support.
 ```
 
-- [ ] **Step 2: Add a legacy frontmatter key scan**
+ **Step 2: Add a legacy frontmatter key scan**
 
 Add a Python or shell check that fails when any Stage 99 template/support source
 uses these keys outside the allowed support examples:
@@ -491,12 +491,12 @@ template_type
 The check must allow these words in explanatory prose, but not as YAML
 frontmatter keys at the start of a line.
 
-- [ ] **Step 3: Add a machine-readable frontmatter check**
+ **Step 3: Add a machine-readable frontmatter check**
 
 Ensure non-Markdown templates under `docs/99.templates/templates` fail when the
 first non-empty line is `---`.
 
-- [ ] **Step 4: Add README/support boundary check**
+ **Step 4: Add README/support boundary check**
 
 Add a targeted check that scans Stage 99 README files for durable rule markers
 such as:
@@ -513,7 +513,7 @@ The check should fail only when the README is asserting a durable rule without a
 nearby link to a support document. Keep this check limited to
 `docs/99.templates/**/*.md`.
 
-- [ ] **Step 5: Run syntax verification**
+ **Step 5: Run syntax verification**
 
 Run:
 
@@ -523,12 +523,12 @@ bash -n scripts/validation/check-repo-contracts.sh
 
 Expected: command exits 0.
 
-- [ ] **Step 6: Update task evidence for Task 4**
+ **Step 6: Update task evidence for Task 4**
 
 In `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`,
 mark `T-004` as `Done` and add the validator sections updated.
 
-- [ ] **Step 7: Run Task 4 verification**
+ **Step 7: Run Task 4 verification**
 
 Run:
 
@@ -543,7 +543,7 @@ Expected:
 - Repo contract has no Stage 99 template/frontmatter failures. Existing infra
   image/version drift may remain and must be recorded as out-of-scope.
 
-- [ ] **Step 8: Commit Task 4**
+ **Step 8: Commit Task 4**
 
 Run:
 
@@ -564,7 +564,7 @@ Expected: commit succeeds.
 - Modify: `docs/90.references/llm-wiki/llm-wiki-index.md`
 - Modify: `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`
 
-- [ ] **Step 1: Search for stale template paths and legacy key examples**
+ **Step 1: Search for stale template paths and legacy key examples**
 
 Run:
 
@@ -575,7 +575,7 @@ rg -n 'docs/99\.templates/(?!templates/|support/)|\.template\.md|type:|owner:|up
 Expected: results are either canonical nested template paths, support contract
 examples, or direct fallout that must be updated in this task.
 
-- [ ] **Step 2: Update direct fallout references**
+ **Step 2: Update direct fallout references**
 
 For every direct fallout reference found in Step 1:
 
@@ -586,7 +586,7 @@ For every direct fallout reference found in Step 1:
   explanation
 - leave unrelated target-document body drift as a gap in the task evidence
 
-- [ ] **Step 3: Sync provider surfaces when `.claude` changed**
+ **Step 3: Sync provider surfaces when `.claude` changed**
 
 Run:
 
@@ -605,7 +605,7 @@ bash scripts/operations/sync-provider-surfaces.sh --write
 Then rerun the `--check` command. Expected final output:
 `sync-provider-surfaces: no drift`.
 
-- [ ] **Step 4: Refresh the LLM Wiki index**
+ **Step 4: Refresh the LLM Wiki index**
 
 Run:
 
@@ -619,7 +619,7 @@ Expected:
 - generator reports the path count
 - freshness check reports `PASS: generated LLM Wiki index is fresh`
 
-- [ ] **Step 5: Update task evidence for Task 5**
+ **Step 5: Update task evidence for Task 5**
 
 In `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`,
 mark `T-005` as `Done` and summarize:
@@ -629,7 +629,7 @@ mark `T-005` as `Done` and summarize:
 - LLM Wiki path count
 - any out-of-scope target-document body gaps
 
-- [ ] **Step 6: Run Task 5 verification**
+ **Step 6: Run Task 5 verification**
 
 Run:
 
@@ -643,7 +643,7 @@ bash scripts/validation/check-doc-implementation-alignment.sh
 
 Expected: every command exits 0.
 
-- [ ] **Step 7: Commit Task 5**
+ **Step 7: Commit Task 5**
 
 Run:
 
@@ -660,7 +660,7 @@ Expected: commit succeeds.
 - Modify: `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`
 - Modify: `docs/00.agent-governance/memory/progress.md`
 
-- [ ] **Step 1: Run final verification bundle**
+ **Step 1: Run final verification bundle**
 
 Run:
 
@@ -680,7 +680,7 @@ Expected:
   LLM Wiki failures
 - full repo contract may still fail on existing infra image/version drift
 
-- [ ] **Step 2: Try Graphify refresh**
+ **Step 2: Try Graphify refresh**
 
 Run:
 
@@ -693,7 +693,7 @@ Expected:
 - if `graphify` exists, the command completes
 - if `graphify` is unavailable, record `graphify update . skipped because graphify is unavailable in PATH`
 
-- [ ] **Step 3: Close task evidence**
+ **Step 3: Close task evidence**
 
 Edit `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`:
 
@@ -702,7 +702,7 @@ Edit `docs/04.execution/tasks/2026-07-03-template-system-contract-standardizatio
 - update every pending validation result with `PASS`, `PASS with known infra drift`, or `Skipped with reason`
 - record the final commit list
 
-- [ ] **Step 4: Update progress memory**
+ **Step 4: Update progress memory**
 
 Add or update the top row in `docs/00.agent-governance/memory/progress.md`:
 
@@ -710,7 +710,7 @@ Add or update the top row in `docs/00.agent-governance/memory/progress.md`:
 | 2026-07-03 | Template contract standardization implementation | Done | Implemented the Stage 99 support/template/frontmatter contract standardization plan with validator and direct fallout updates. | N/A | Checks PASS: `git diff --check`; `bash scripts/knowledge/generate-llm-wiki-index.sh --check`; `bash scripts/operations/sync-provider-surfaces.sh --check`; `bash scripts/validation/check-doc-traceability.sh`; `bash scripts/validation/check-doc-implementation-alignment.sh`. Full `check-repo-contracts.sh` has no template-system failures and still reports existing infra image/version drift. |
 ```
 
-- [ ] **Step 5: Commit Task 6**
+ **Step 5: Commit Task 6**
 
 Run:
 
@@ -753,14 +753,14 @@ Expected: commit succeeds.
 
 ## Completion Criteria
 
-- [ ] Support contracts define the canonical Stage 99 rule surface.
-- [ ] Copyable templates comply with frontmatter and target-contract rules.
-- [ ] Validator enforces the Stage 99 contract without broad false positives.
-- [ ] Direct fallout references are updated.
-- [ ] LLM Wiki index is fresh.
-- [ ] Provider surfaces report no drift.
-- [ ] Execution task evidence is completed.
-- [ ] Progress memory is updated.
+ Support contracts define the canonical Stage 99 rule surface.
+ Copyable templates comply with frontmatter and target-contract rules.
+ Validator enforces the Stage 99 contract without broad false positives.
+ Direct fallout references are updated.
+ LLM Wiki index is fresh.
+ Provider surfaces report no drift.
+ Execution task evidence is completed.
+ Progress memory is updated.
 
 ## Related Documents
 

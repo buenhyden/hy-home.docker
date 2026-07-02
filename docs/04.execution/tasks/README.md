@@ -95,7 +95,7 @@ docs/04.execution/tasks/
 ├── 2026-06-05-language-policy-task-normalization-batch-6.md # Active language policy task normalization evidence
 ├── 2026-06-05-language-policy-task-normalization-batch-7.md # Active final task language normalization evidence
 ├── 2026-07-02-template-system-reorganization.md # Completed Stage 99 template system reorganization task record
-├── 2026-07-03-template-system-contract-standardization.md # Active Stage 99 template contract standardization evidence
+├── 2026-07-03-template-system-contract-standardization.md # Completed Stage 99 template contract standardization evidence
 └── README.md                                # This file
 ```
 
