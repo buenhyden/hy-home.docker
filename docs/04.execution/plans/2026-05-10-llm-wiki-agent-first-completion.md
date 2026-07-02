@@ -16,7 +16,7 @@ The existing agent-first/Harness-first structure and docs taxonomy migration are
 ## Goals & In-Scope
 
 - **Goals**: Add deterministic LLM Wiki generation, `wiki-curator` ownership, operations guidance, and validator enforcement.
-- **In Scope**: `llms.txt`, `docs/90.references/data/llm-wiki/`, `docs/05.operations/guides/`, `.claude/agents/`, `docs/00.agent-governance/agents/`, `scripts/`.
+- **In Scope**: `llms.txt`, `docs/90.references/llm-wiki/`, `docs/05.operations/guides/`, `.claude/agents/`, `docs/00.agent-governance/agents/`, `scripts/`.
 
 ## Non-Goals & Out-of-Scope
 
@@ -27,7 +27,7 @@ The existing agent-first/Harness-first structure and docs taxonomy migration are
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-001 | Add deterministic LLM Wiki generator and generated index | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/data/llm-wiki/index.md` | VAL-SPC-001 | Generator and `--check` pass |
+| PLN-001 | Add deterministic LLM Wiki generator and generated index | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/llm-wiki-index.md` | VAL-SPC-001 | Generator and `--check` pass |
 | PLN-002 | Add first-class `wiki-curator` role | `.claude/agents/`, `docs/00.agent-governance/agents/`, `subagent-protocol.md` | VAL-SPC-002 | Runtime/governance catalog parity passes |
 | PLN-003 | Add maintenance guide and update LLM Wiki references | `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md`, `llms.txt`, reference READMEs | VAL-SPC-003 | Link and repo contract checks pass |
 | PLN-004 | Strengthen repository contracts | `scripts/validation/check-repo-contracts.sh`, `scripts/README.md` | VAL-SPC-003 | Missing or stale LLM Wiki assets fail validation |
@@ -71,4 +71,4 @@ The existing agent-first/Harness-first structure and docs taxonomy migration are
 - **Spec**: [../../03.specs/llm-wiki-agent-first-completion/spec.md](../../03.specs/llm-wiki-agent-first-completion/spec.md)
 - **Task**: [../tasks/2026-05-10-llm-wiki-agent-first-completion.md](../tasks/2026-05-10-llm-wiki-agent-first-completion.md)
 - **Guide**: [../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)
-- **Reference**: [../../90.references/data/llm-wiki/README.md](../../90.references/data/llm-wiki/README.md)
+- **Reference**: [../../90.references/llm-wiki/README.md](../../90.references/llm-wiki/README.md)

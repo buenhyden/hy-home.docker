@@ -41,7 +41,7 @@ This document records implementation and verification evidence for the 2026-05-2
 
 | Gap | Decision | Owner | Status |
 | --- | --- | --- | --- |
-| Stale `docs/90.references/data/llm-wiki/index.md` blocks repo contracts | Regenerate using repo generator | Agent | Done |
+| Stale `docs/90.references/llm-wiki/llm-wiki-index.md` blocks repo contracts | Regenerate using repo generator | Agent | Done |
 | Supervisor catalog does not route `workspace-audit-revalidation` | Add function link to supervisor skill list | Agent | Done |
 | Storybook README omits tracked `test` and `coverage` scripts | Add command rows only | Agent | Done |
 | `scripts/README.md` no-payload post-tool example is ambiguous | Replace with payload-based example and note no-payload no-op behavior | Agent | Done |
@@ -106,7 +106,7 @@ The only blocking local gate found before implementation was stale generated LLM
 | `docs/04.execution/plans/README.md` | Parent link/index update | None |
 | `docs/04.execution/tasks/README.md` | Parent link/index update | None |
 | `docs/00.agent-governance/memory/progress.md` | Progress evidence update | None |
-| `docs/90.references/data/llm-wiki/index.md` | Generated index refresh | None |
+| `docs/90.references/llm-wiki/llm-wiki-index.md` | Generated index refresh | None |
 | `docs/00.agent-governance/agents/agents/workflow-supervisor.md` | Documentation routing update | None |
 | `projects/storybook/nextjs/README.md` | Script documentation update | None |
 | `scripts/README.md` | Script behavior documentation update | None |
@@ -194,7 +194,7 @@ No secret value was printed in this document; this row records ID, env-var, and 
 
 - **Parent Plan**: [2026-05-25 home docker workspace audit improvement plan](../plans/2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Operations / Runbook**: [Release management runbook](../../05.operations/runbooks/00-workspace/release-management.md)
-- **Reference**: [LLM Wiki generated index](../../90.references/data/llm-wiki/index.md)
+- **Reference**: [LLM Wiki generated index](../../90.references/llm-wiki/llm-wiki-index.md)
 - **Governance Memory**: [progress.md](../../00.agent-governance/memory/progress.md)
 - **Scripts README**: [scripts README](../../../scripts/README.md)
 - **Storybook Next.js README**: [Storybook Next.js README](../../../projects/storybook/nextjs/README.md)

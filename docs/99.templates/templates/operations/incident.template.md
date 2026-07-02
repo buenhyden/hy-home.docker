@@ -13,12 +13,12 @@ INC-YYYYMMDD-XXX / [Short Incident Title]
 >
 > - Record facts, status, and response state.
 > - Separate confirmed facts from current hypotheses.
-> - Keep final root cause analysis in a paired Postmortem under `docs/05.operations/incidents/`.
+> - Keep final root cause analysis in a paired Postmortem under `docs/05.operations/incidents/postmortems/`.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 >
 > Target-relative examples from `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md`:
 >
-> - Same-incident postmortem: `./YYYY-MM-DD-incident-title-postmortem.md`
+> - Same-incident postmortem: `../postmortems/YYYY/YYYY-MM-DD-incident-title-postmortem.md`
 > - Direct runbook: `../../runbooks/topic.md`
 > - Domain runbook: `../../runbooks/domain/topic.md`
 > - Nested runbook: `../../runbooks/domain/subdomain/topic.md`
@@ -83,7 +83,7 @@ INC-YYYYMMDD-XXX / [Short Incident Title]
 
 ## Postmortem Link
 
-- [YYYY-MM-DD-<incident-title>-postmortem.md](./YYYY-MM-DD-<incident-title>-postmortem.md)
+- [YYYY-MM-DD-<incident-title>-postmortem.md](../postmortems/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md)
 
 ## Related Documents
 

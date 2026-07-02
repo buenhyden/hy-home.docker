@@ -70,8 +70,8 @@ docs/
 | operate or configure a service | `05.operations/guides/` |
 | define operational controls | `05.operations/policies/` |
 | execute recovery or repeatable procedures | `05.operations/runbooks/` |
-| record incidents or postmortems | `05.operations/incidents/` |
-| provide LLM-facing repository navigation | `90.references/data/llm-wiki/` |
+| record incidents or postmortems | `05.operations/incidents/` and `05.operations/incidents/postmortems/` |
+| provide LLM-facing repository navigation | `90.references/llm-wiki/` |
 | trace removed old documents | `98.archive/` |
 
 ## Migration Map
@@ -175,8 +175,8 @@ docs/
 | Operations Guide | `05.operations/guides/` | `99.templates/templates/operations/guide.template.md` |
 | Operations Policy | `05.operations/policies/` | `99.templates/templates/operations/policy.template.md` |
 | Runbook | `05.operations/runbooks/` | `99.templates/templates/operations/runbook.template.md` |
-| Incident | `05.operations/incidents/` | `99.templates/templates/operations/incident.template.md` |
-| Postmortem | `05.operations/incidents/` | `99.templates/templates/operations/postmortem.template.md` |
+| Incident | `05.operations/incidents/YYYY/` | `99.templates/templates/operations/incident.template.md` |
+| Postmortem | `05.operations/incidents/postmortems/YYYY/` | `99.templates/templates/operations/postmortem.template.md` |
 | Reference | `90.references/` | `99.templates/templates/common/reference.template.md` |
 | Archive Tombstone | `98.archive/` | `99.templates/templates/common/archive.template.md` |
 | README | 각 폴더 | `99.templates/templates/common/readme.template.md` |
@@ -212,8 +212,8 @@ bash scripts/validation/check-doc-traceability.sh
 | Spec | [03.specs/llm-wiki-agent-first-completion/spec.md](03.specs/llm-wiki-agent-first-completion/spec.md) |
 | Plan | [04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md](04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md) |
 | Task evidence | [04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md](04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md) |
-| Repository map | [90.references/data/llm-wiki/repository-map.md](90.references/data/llm-wiki/repository-map.md) |
-| Generated index | [90.references/data/llm-wiki/index.md](90.references/data/llm-wiki/index.md) |
+| Repository map | [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/repository-map.md) |
+| Generated index | [90.references/llm-wiki/llm-wiki-index.md](90.references/llm-wiki/llm-wiki-index.md) |
 | Operations guide | [05.operations/guides/90-knowledge/llm-wiki-maintenance.md](05.operations/guides/90-knowledge/llm-wiki-maintenance.md) |
 
 ## Related Documents
@@ -225,9 +225,9 @@ bash scripts/validation/check-doc-traceability.sh
 - [04.execution/README.md](04.execution/README.md)
 - [05.operations/README.md](05.operations/README.md)
 - [90.references/README.md](90.references/README.md)
-- [90.references/data/llm-wiki/README.md](90.references/data/llm-wiki/README.md)
-- [90.references/data/llm-wiki/repository-map.md](90.references/data/llm-wiki/repository-map.md)
-- [90.references/data/llm-wiki/index.md](90.references/data/llm-wiki/index.md)
+- [90.references/llm-wiki/README.md](90.references/llm-wiki/README.md)
+- [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/repository-map.md)
+- [90.references/llm-wiki/llm-wiki-index.md](90.references/llm-wiki/llm-wiki-index.md)
 - [98.archive/README.md](98.archive/README.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)

@@ -6,7 +6,7 @@
 
 ## Overview
 
-`docs/03.specs/llm-wiki-agent-first-completion`는 `docs/90.references/data/llm-wiki/` 경로 인덱스, `llms.txt` 진입점, LLM Wiki 생성 스크립트 완성 사양을 포함합니다.
+`docs/03.specs/llm-wiki-agent-first-completion`는 `docs/90.references/llm-wiki/` 경로 인덱스, `llms.txt` 진입점, LLM Wiki 생성 스크립트 완성 사양을 포함합니다.
 
 ## Audience
 
@@ -53,5 +53,5 @@ llm-wiki-agent-first-completion/
 
 - [spec.md](./spec.md)
 - [docs/03.specs/README.md](../README.md)
-- [docs/90.references/data/llm-wiki/README.md](../../90.references/data/llm-wiki/README.md)
+- [docs/90.references/llm-wiki/README.md](../../90.references/llm-wiki/README.md)
 - [scripts/knowledge/generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh)

@@ -18,7 +18,7 @@ This document tracks implementation work for the LLM Wiki generator, generated i
 
 - Keep root shims thin.
 - Do not add public wiki behavior, `llms-full.txt`, external model calls, Graphify authority, or Docker runtime changes.
-- Treat `docs/90.references/data/llm-wiki/index.md` as a generated tracked repo-local path index.
+- Treat `docs/90.references/llm-wiki/llm-wiki-index.md` as a generated tracked repo-local path index.
 - Record verification evidence before marking this task done.
 
 ## Task Table
@@ -66,4 +66,4 @@ This document tracks implementation work for the LLM Wiki generator, generated i
 - [Spec](../../03.specs/llm-wiki-agent-first-completion/spec.md)
 - [Plan](../plans/2026-05-10-llm-wiki-agent-first-completion.md)
 - [Maintenance Guide](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)
-- [LLM Wiki References](../../90.references/data/llm-wiki/README.md)
+- [LLM Wiki References](../../90.references/llm-wiki/README.md)

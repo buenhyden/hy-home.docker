@@ -108,14 +108,14 @@ This document records actual work evidence for comparing Stage 01 through Stage 
   - `bash scripts/hardening/check-all-hardening.sh` — PASS (`ALL checks passed successfully`).
 - **Eval Commands**:
   - `bash scripts/operations/sync-provider-surfaces.sh` — PASS (`no drift`).
-  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — regenerated `docs/90.references/data/llm-wiki/index.md` with 1033 paths.
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — regenerated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1033 paths.
   - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — PASS.
   - `/home/hy/.local/bin/graphify update .` — refreshed `graphify-out` with 2412 nodes, 2833 edges, and 125 communities.
   - `bash scripts/knowledge/report-graphify-health.sh` — advisory (`manifest_paths_total=825`; `surprising_cross_root_inferred_edges=3`; no volume, gitlink, generated/minified contamination, or meaningless god nodes).
 - **Logs / Evidence Location**:
   - This task document.
   - [Progress log](../../00.agent-governance/memory/progress.md)
-  - [LLM Wiki index](../../90.references/data/llm-wiki/index.md)
+  - [LLM Wiki index](../../90.references/llm-wiki/llm-wiki-index.md)
   - [Graphify report](../../../graphify-out/GRAPH_REPORT.md)
 
 ## Related Documents

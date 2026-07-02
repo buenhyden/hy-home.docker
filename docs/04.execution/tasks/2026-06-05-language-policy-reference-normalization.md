@@ -26,7 +26,7 @@ surfaces reached zero Korean-character files.
 
 - Non-README `docs/90.references/**` reference documents must be consistent
   with the English-only language boundary before hard enforcement is added.
-- Generated `docs/90.references/data/llm-wiki/index.md` is excluded from the
+- Generated `docs/90.references/llm-wiki/llm-wiki-index.md` is excluded from the
   reference language scan because it is path-only generated output.
 - Preserve commands, paths, service names, evidence IDs, upstream terms, runtime
   values, no-touch boundaries, and historical audit numbers exactly.
@@ -39,7 +39,7 @@ surfaces reached zero Korean-character files.
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
-| `docs/90.references` non-README reference documents | User continuation request for remaining risks and follow-up tasks | 7 reference files | 7 non-README reference files contained Korean text, excluding generated `llm-wiki/index.md` | 0 non-README reference files contain Korean text under the same exclusions | `git revert` or equivalent patch | No secret values, tokens, private keys, certificate contents, raw logs, shell history, or `.env` values |
+| `docs/90.references` non-README reference documents | User continuation request for remaining risks and follow-up tasks | 7 reference files | 7 non-README reference files contained Korean text, excluding generated `llm-wiki/llm-wiki-index.md` | 0 non-README reference files contain Korean text under the same exclusions | `git revert` or equivalent patch | No secret values, tokens, private keys, certificate contents, raw logs, shell history, or `.env` values |
 
 ## Task Table
 
@@ -57,26 +57,26 @@ The following non-README reference files now have no Korean text:
 - [Stable reference terms](../../90.references/data/glossary/stable-reference-terms.md)
 - [HADS profile](../../90.references/data/hads/profile.md)
 - [Docker Compose to k3s/k3d migration](../../90.references/data/kubernetes/docker-compose-to-k3s-migration.md)
-- [Learning roadmap v1](../../90.references/data/learning/roadmap-v1.md)
-- [Learning roadmap](../../90.references/data/learning/roadmap.md)
-- [LLM Wiki repository map](../../90.references/data/llm-wiki/repository-map.md)
+- [Learning roadmap v1](../../90.references/learning/roadmap-v1.md)
+- [Learning roadmap](../../90.references/learning/roadmap.md)
+- [LLM Wiki repository map](../../90.references/llm-wiki/repository-map.md)
 
 ## Validation Results
 
 | Command | Result |
 | --- | --- |
-| Korean-character file count under `docs/90.references`, excluding `README.md` and generated `llm-wiki/index.md` | 0 files remain. |
+| Korean-character file count under `docs/90.references`, excluding `README.md` and generated `llm-wiki/llm-wiki-index.md` | 0 files remain. |
 | Korean-character file count under `docs/03.specs`, excluding `README.md` | 0 leaf files remain. |
 | Korean-character file count under `docs/04.execution/plans`, excluding `README.md` | 0 leaf files remain. |
 | Korean-character file count under `docs/04.execution/tasks`, excluding `README.md` | 0 leaf files remain. |
 | `git diff --check` | PASS. |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/data/llm-wiki/index.md` with 1077 paths. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1077 paths. |
 
 ## Verification Summary
 
 - **Test Commands**:
   - Korean-character file count under `docs/90.references`, excluding
-    `README.md` and generated `llm-wiki/index.md`
+    `README.md` and generated `llm-wiki/llm-wiki-index.md`
   - Korean-character file counts for `docs/03.specs`, `docs/04.execution/plans`,
     and `docs/04.execution/tasks`
   - `git diff --check`

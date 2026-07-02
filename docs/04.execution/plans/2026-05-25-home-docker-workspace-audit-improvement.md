@@ -13,7 +13,7 @@ This document is the implementation plan for the `hy-home.docker` workspace audi
 
 ## Context
 
-Read-only audit evidence found one blocking local gate: `bash scripts/validation/check-repo-contracts.sh` failed because `docs/90.references/data/llm-wiki/index.md` was stale. Six reviewer outputs also identified documentation discoverability gaps around supervisor skill routing, Storybook QA commands, hook validation examples, and release/tag readiness evidence. Reviewer outputs are used as evidence inputs, not as sole authority; tracked repository files and local validators remain the source of truth.
+Read-only audit evidence found one blocking local gate: `bash scripts/validation/check-repo-contracts.sh` failed because `docs/90.references/llm-wiki/llm-wiki-index.md` was stale. Six reviewer outputs also identified documentation discoverability gaps around supervisor skill routing, Storybook QA commands, hook validation examples, and release/tag readiness evidence. Reviewer outputs are used as evidence inputs, not as sole authority; tracked repository files and local validators remain the source of truth.
 
 ## Goals & In-Scope
 
@@ -26,7 +26,7 @@ Read-only audit evidence found one blocking local gate: `bash scripts/validation
   - `docs/04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md`
   - Parent execution README links under `docs/04.execution/plans/` and `docs/04.execution/tasks/`
   - `docs/00.agent-governance/memory/progress.md`
-  - Generated `docs/90.references/data/llm-wiki/index.md`
+  - Generated `docs/90.references/llm-wiki/llm-wiki-index.md`
   - `docs/00.agent-governance/agents/agents/workflow-supervisor.md`
   - `projects/storybook/nextjs/README.md`
   - `scripts/README.md`
@@ -53,7 +53,7 @@ Read-only audit evidence found one blocking local gate: `bash scripts/validation
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
 | PLN-001 | Create dated execution plan and task artifacts from approved templates | `docs/04.execution/plans/*`, `docs/04.execution/tasks/*` | AUD-2026-05-25 | Parent links exist and doc traceability passes |
-| PLN-002 | Regenerate LLM Wiki index after staged path additions | `docs/90.references/data/llm-wiki/index.md` | AUD-2026-05-25 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` passes |
+| PLN-002 | Regenerate LLM Wiki index after staged path additions | `docs/90.references/llm-wiki/llm-wiki-index.md` | AUD-2026-05-25 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` passes |
 | PLN-003 | Register workspace audit revalidation routing in the supervisor catalog | `docs/00.agent-governance/agents/agents/workflow-supervisor.md` | AUD-2026-05-25 | Repo contract check passes |
 | PLN-004 | Document Storybook test and coverage commands | `projects/storybook/nextjs/README.md` | AUD-2026-05-25 | Storybook coverage command passes |
 | PLN-005 | Clarify hook validation no-payload behavior and Hookify supported events | `scripts/README.md` | AUD-2026-05-25 | Repo contract check passes |
@@ -103,7 +103,7 @@ Read-only audit evidence found one blocking local gate: `bash scripts/validation
 - **Task**: [2026-05-25 home docker workspace audit improvement task](../tasks/2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Operations**: [Operations index](../../05.operations/README.md)
 - **Release Management Runbook**: [release-management.md](../../05.operations/runbooks/00-workspace/release-management.md)
-- **LLM Wiki Generated Index**: [index.md](../../90.references/data/llm-wiki/index.md)
+- **LLM Wiki Generated Index**: [index.md](../../90.references/llm-wiki/llm-wiki-index.md)
 - **Workflow Supervisor**: [workflow-supervisor.md](../../00.agent-governance/agents/agents/workflow-supervisor.md)
 - **Scripts README**: [scripts README](../../../scripts/README.md)
 - **Storybook Next.js README**: [Storybook Next.js README](../../../projects/storybook/nextjs/README.md)

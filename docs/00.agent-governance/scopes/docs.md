@@ -58,7 +58,7 @@ record the migration in the archive README.
 | Path Pattern                          | Owner Agent  | Read-Only For                           |
 | ------------------------------------- | ------------ | --------------------------------------- |
 | `docs/00.agent-governance/`           | `doc-writer`   | governance rules — all agents read      |
-| `docs/90.references/data/llm-wiki/`        | `wiki-curator` | `doc-writer` (style and template review) |
+| `docs/90.references/llm-wiki/`        | `wiki-curator` | `doc-writer` (style and template review) |
 | `docs/98.archive/`                    | `doc-writer`   | all other agents                         |
 | `docs/99.templates/`                  | `doc-writer`   | all — template edits need user approval |
 | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | `doc-writer`   | all other agents                        |

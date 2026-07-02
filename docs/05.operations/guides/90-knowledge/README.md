@@ -56,4 +56,4 @@ guides/90-knowledge/
 - [Operations Guides index](../README.md)
 - [Operations Policies - 90-knowledge](../../policies/90-knowledge/README.md)
 - [Operations Runbooks - 90-knowledge](../../runbooks/90-knowledge/README.md)
-- [LLM Wiki references](../../../90.references/data/llm-wiki/README.md)
+- [LLM Wiki references](../../../90.references/llm-wiki/README.md)

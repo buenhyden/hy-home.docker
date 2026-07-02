@@ -81,7 +81,7 @@ This document records actual execution results and verification evidence for Age
   - `git diff --check` — PASS.
   - `bash scripts/validation/check-repo-contracts.sh` — PASS (`failures=0`; `changed_template_docs_total=4`; `normalized_changed_template_docs_total=4`; `target_stage_docs_total=522`; `normalized_target_stage_docs_total=522`).
   - `bash scripts/validation/check-doc-traceability.sh` — PASS (`failures=0`; `catalog_pairs_total=46`).
-  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — regenerated `docs/90.references/data/llm-wiki/index.md` with 1024 paths after the new Stage 04 artifacts were committed.
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — regenerated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1024 paths after the new Stage 04 artifacts were committed.
   - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — PASS.
 - **Eval Commands**:
   - `bash scripts/operations/sync-provider-surfaces.sh` — PASS (`no drift`).
@@ -90,7 +90,7 @@ This document records actual execution results and verification evidence for Age
 - **Logs / Evidence Location**:
   - This task document.
   - [Progress log](../../00.agent-governance/memory/progress.md)
-  - [LLM Wiki index](../../90.references/data/llm-wiki/index.md)
+  - [LLM Wiki index](../../90.references/llm-wiki/llm-wiki-index.md)
 
 ## Scope Safety
 

@@ -169,7 +169,7 @@ Target: `<!-- Target: docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-tit
 ```
 
 Filename: `YYYY-MM-DD-<incident-title>-postmortem.md`
-Target: `<!-- Target: docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md -->`
+Target: `<!-- Target: docs/05.operations/incidents/postmortems/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md -->`
 
 **Forbidden in postmortems**: `## Policy Scope`, `## Controls`, `## When to Use`, `## Procedure`, `## Common Checks`, `## Runbook Handoff`.
 

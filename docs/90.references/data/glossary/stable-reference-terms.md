@@ -54,7 +54,7 @@ This reference is shared vocabulary for explaining role boundaries between docum
 - [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - documentation stage boundaries and DOCS 3 rules
 - [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - stage roles and template mapping
 - [90.references](../../README.md) - reference stage purpose and lifecycle
-- [LLM Wiki repository map](../llm-wiki/repository-map.md) - tracked-source boundary and Graphify advisory rules
+- [LLM Wiki repository map](../../llm-wiki/repository-map.md) - tracked-source boundary and Graphify advisory rules
 
 ## Maintenance
 

@@ -26,7 +26,7 @@ This document is the implementation plan for aligning the `docs/01.requirements`
   - adjacent auth traceability link in `docs/02.architecture/requirements/0002-auth-architecture.md`
   - `docs/04.execution/plans/README.md`
   - `docs/00.agent-governance/memory/progress.md`
-  - `docs/90.references/data/llm-wiki/index.md`
+  - `docs/90.references/llm-wiki/llm-wiki-index.md`
 
 ## Non-Goals & Out-of-Scope
 
@@ -47,7 +47,7 @@ This document is the implementation plan for aligning the `docs/01.requirements`
 | PLN-003 | Normalize PRD H1s and required sections to the template contract | `docs/01.requirements/*.md` | REQ-PRD-DOC-003 | PRD scan: exactly one H1, required sections present |
 | PLN-004 | Fix Related Documents links and auth ADR placeholder | `docs/01.requirements/*.md`, `docs/02.architecture/requirements/0002-auth-architecture.md` | REQ-PRD-DOC-004 | No backticked pseudo-links, no `####-` placeholder paths, local links resolve |
 | PLN-005 | Update execution plan index and governance progress | `docs/04.execution/plans/README.md`, `docs/00.agent-governance/memory/progress.md` | REQ-PRD-DOC-005 | Parent README references this plan, progress log records evidence |
-| PLN-006 | Regenerate LLM Wiki index | `docs/90.references/data/llm-wiki/index.md` | REQ-PRD-DOC-006 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` passes |
+| PLN-006 | Regenerate LLM Wiki index | `docs/90.references/llm-wiki/llm-wiki-index.md` | REQ-PRD-DOC-006 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` passes |
 
 ## Verification Plan
 

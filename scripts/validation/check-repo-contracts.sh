@@ -229,7 +229,7 @@ if rg -n '[가-힣]' \
   docs/03.specs docs/04.execution/plans docs/04.execution/tasks docs/90.references \
   --glob '*.md' \
   --glob '!**/README.md' \
-  --glob '!docs/90.references/data/llm-wiki/index.md' >/tmp/check-repo-contracts-english-only-surfaces.txt; then
+  --glob '!docs/90.references/llm-wiki/llm-wiki-index.md' >/tmp/check-repo-contracts-english-only-surfaces.txt; then
   fail "closed English-only doc surfaces contain Korean text"
   cat /tmp/check-repo-contracts-english-only-surfaces.txt >&2
 fi
@@ -414,6 +414,74 @@ for bucket in ["guides", "policies", "runbooks"]:
         for literal in forbidden[bucket]:
             if literal in text:
                 failures.append(f"{path}: {bucket} document contains cross-profile heading: {literal}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
+section "Operations postmortem routing contract"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import sys
+
+
+def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
+    try:
+        path.relative_to(root)
+        return True
+    except ValueError:
+        return False
+
+
+failures: list[str] = []
+incidents_root = pathlib.Path("docs/05.operations/incidents")
+postmortems_root = incidents_root / "postmortems"
+
+if not (postmortems_root / "README.md").is_file():
+    failures.append(f"missing postmortem folder README: {postmortems_root / 'README.md'}")
+
+if incidents_root.exists():
+    for path in sorted(incidents_root.rglob("*.md")):
+        if path.name == "README.md":
+            continue
+        is_postmortem_file = "postmortem" in path.stem.lower()
+        under_postmortems = is_relative_to(path, postmortems_root)
+        if is_postmortem_file and not under_postmortems:
+            failures.append(f"{path}: postmortem documents must live under {postmortems_root}/YYYY/")
+        if under_postmortems and not is_postmortem_file:
+            failures.append(f"{path}: non-postmortem documents must not live under {postmortems_root}")
+
+literal_requirements = {
+    pathlib.Path("docs/05.operations/incidents/README.md"): [
+        "postmortems/README.md",
+        "postmortems/YYYY/",
+    ],
+    pathlib.Path("docs/99.templates/templates/operations/incident.template.md"): [
+        "docs/05.operations/incidents/postmortems/",
+        "../postmortems/YYYY/YYYY-MM-DD-incident-title-postmortem.md",
+    ],
+    pathlib.Path("docs/99.templates/templates/operations/postmortem.template.md"): [
+        "docs/05.operations/incidents/postmortems/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md",
+        "../../YYYY/YYYY-MM-DD-incident-title.md",
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/documentation-protocol.md"): [
+        "docs/05.operations/incidents/postmortems/YYYY/",
+    ],
+}
+for path, literals in literal_requirements.items():
+    if not path.is_file():
+        failures.append(f"missing file for postmortem routing contract: {path}")
+        continue
+    text = path.read_text(errors="ignore")
+    for literal in literals:
+        if literal not in text:
+            failures.append(f"{path}: missing postmortem routing literal: {literal}")
 
 if failures:
     for failure in failures:
@@ -1308,7 +1376,7 @@ import sys
 failures: list[str] = []
 repo_root = pathlib.Path(".").resolve()
 template_root = pathlib.Path("docs/99.templates")
-generated_llm_index = pathlib.Path("docs/90.references/data/llm-wiki/index.md")
+generated_llm_index = pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md")
 
 markdown_link = re.compile(r"(?<!!)(?<!\\)\[([^\]\n]+)\]\(([^)\n]+)\)")
 pseudo_doc_link = re.compile(r"`\[((?:\.{1,2}/|docs/)[^`\]]+?\.md(?:#[^`\]]*)?)\]`")
@@ -2712,8 +2780,8 @@ template = pathlib.Path("docs/99.templates/templates/common/reference.template.m
 if not root.is_dir():
     failures.append("missing reference stage folder: docs/90.references")
 
-allowed_top_level = {"README.md", "audits", "data", "research"}
-required_top_level = {"audits", "data", "research"}
+allowed_top_level = {"README.md", "audits", "data", "research", "learning", "llm-wiki"}
+required_top_level = {"audits", "data", "research", "learning", "llm-wiki"}
 if root.exists():
     present_top_level = {child.name for child in root.iterdir()}
     for required_name in sorted(required_top_level):
@@ -2722,7 +2790,7 @@ if root.exists():
     for child in sorted(root.iterdir()):
         if child.name not in allowed_top_level:
             failures.append(
-                f"{child}: unsupported reference top-level entry; expected one of audits, data, research, README.md"
+                f"{child}: unsupported reference top-level entry; expected one of audits, data, research, learning, llm-wiki, README.md"
             )
 
 template_required = [
@@ -2835,9 +2903,9 @@ required_files = [
     pathlib.Path("llms.txt"),
     pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
     pathlib.Path("docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md"),
-    pathlib.Path("docs/90.references/data/llm-wiki/README.md"),
-    pathlib.Path("docs/90.references/data/llm-wiki/index.md"),
-    pathlib.Path("docs/90.references/data/llm-wiki/repository-map.md"),
+    pathlib.Path("docs/90.references/llm-wiki/README.md"),
+    pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md"),
+    pathlib.Path("docs/90.references/llm-wiki/repository-map.md"),
     pathlib.Path(".claude/agents/wiki-curator.md"),
     pathlib.Path("docs/00.agent-governance/agents/agents/wiki-curator.md"),
     pathlib.Path("docs/03.specs/llm-wiki-agent-first-completion/spec.md"),
@@ -2853,8 +2921,8 @@ llms_path = pathlib.Path("llms.txt")
 if llms_path.is_file():
     text = llms_path.read_text(errors="ignore")
     required_literals = [
-        "docs/90.references/data/llm-wiki/index.md",
-        "docs/90.references/data/llm-wiki/repository-map.md",
+        "docs/90.references/llm-wiki/llm-wiki-index.md",
+        "docs/90.references/llm-wiki/repository-map.md",
         "generated tracked repo-local path index",
         "tracked source files",
         "Runtime truth",
@@ -2873,17 +2941,17 @@ if llms_path.is_file():
 readme_checks = {
     pathlib.Path("README.md"): [
         "llms.txt",
-        "docs/90.references/data/llm-wiki/",
-        "docs/90.references/data/llm-wiki/index.md",
+        "docs/90.references/llm-wiki/",
+        "docs/90.references/llm-wiki/llm-wiki-index.md",
     ],
     pathlib.Path("docs/README.md"): [
-        "90.references/data/llm-wiki/",
+        "90.references/llm-wiki/",
         "LLM Wiki contract",
         "generated index freshness",
     ],
     pathlib.Path("docs/90.references/README.md"): [
-        "data/llm-wiki/README.md",
-        "data/llm-wiki/index.md",
+        "llm-wiki/README.md",
+        "llm-wiki/llm-wiki-index.md",
     ],
     pathlib.Path("docs/05.operations/guides/README.md"): [
         "90-knowledge/README.md",
@@ -2915,7 +2983,7 @@ for path, literals in readme_checks.items():
         if literal not in text:
             failures.append(f"{path}: missing LLM Wiki registration literal: {literal}")
 
-wiki_files = [path for path in pathlib.Path("docs/90.references/data/llm-wiki").glob("*.md")]
+wiki_files = [path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")]
 safety_files = [
     llms_path,
     pathlib.Path("docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md"),
@@ -2949,7 +3017,7 @@ for path in safety_files:
     ):
         failures.append(f"{path}: public wiki/site wording must be explicitly out of scope")
 
-map_path = pathlib.Path("docs/90.references/data/llm-wiki/repository-map.md")
+map_path = pathlib.Path("docs/90.references/llm-wiki/repository-map.md")
 if map_path.is_file():
     text = map_path.read_text(errors="ignore")
     for literal in [
@@ -2964,7 +3032,7 @@ if map_path.is_file():
         if literal not in text:
             failures.append(f"{map_path}: missing repository map boundary literal: {literal}")
 
-index_path = pathlib.Path("docs/90.references/data/llm-wiki/index.md")
+index_path = pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md")
 if index_path.is_file():
     text = index_path.read_text(errors="ignore")
     for literal in [

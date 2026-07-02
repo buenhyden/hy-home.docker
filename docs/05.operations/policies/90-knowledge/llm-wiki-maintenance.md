@@ -11,7 +11,7 @@ status: active
 
 ## Policy Scope
 
-이 가이드는 루트 `llms.txt`, `docs/90.references/data/llm-wiki/`, `scripts/knowledge/generate-llm-wiki-index.sh`, `wiki-curator` 역할의 운영 절차를 다룬다.
+이 가이드는 루트 `llms.txt`, `docs/90.references/llm-wiki/`, `scripts/knowledge/generate-llm-wiki-index.sh`, `wiki-curator` 역할의 운영 절차를 다룬다.
 
 - **Systems**: `hy-home.docker` documentation and agent-governance surfaces
 - **Agents**: `wiki-curator`, `doc-writer`, `workflow-supervisor`

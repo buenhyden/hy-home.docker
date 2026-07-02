@@ -33,7 +33,7 @@ This plan cleans up only the documentation entrypoints that humans see first and
   - `docs/04.execution/tasks/README.md`
   - `docs/04.execution/plans/2026-05-18-docs-bounded-consistency-audit.md`
   - `docs/04.execution/tasks/2026-05-18-docs-bounded-consistency-audit.md`
-  - `docs/90.references/data/llm-wiki/index.md` when regenerated to include the new audit paths
+  - `docs/90.references/llm-wiki/llm-wiki-index.md` when regenerated to include the new audit paths
   - `docs/00.agent-governance/memory/progress.md`
 
 ## Non-Goals & Out-of-Scope

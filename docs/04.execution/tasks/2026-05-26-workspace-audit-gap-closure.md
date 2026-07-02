@@ -26,7 +26,7 @@ This document lists the gap-closure work for the 2026-05-26 workspace audit (ses
 | Task ID | Description                                                         | Type | Parent Plan | Validation / Evidence                                                                     | Status |
 | ------- | ------------------------------------------------------------------- | ---- | ----------- | ----------------------------------------------------------------------------------------- | ------ |
 | T-001   | Correct drift for 16 components in `infra/tech-stack.versions.json` | ops  | PLN-005     | `check-repo-contracts.sh` failures=0                                                      | Done   |
-| T-002   | Regenerate `docs/90.references/data/llm-wiki/index.md` (928 paths)       | ops  | PLN-006     | `check-repo-contracts.sh` failures=0                                                      | Done   |
+| T-002   | Regenerate `docs/90.references/llm-wiki/llm-wiki-index.md` (928 paths)       | ops  | PLN-006     | `check-repo-contracts.sh` failures=0                                                      | Done   |
 | T-003   | Add `.codex/hooks.json` `UserPromptSubmit` event                    | impl | PLN-001     | Confirm 7 keys with `jq '.hooks \| keys'`                                                 | Done   |
 | T-004   | State `.claude/skills/` skill count in `AGENTS.md` Section 3 (18 skills) | doc | PLN-002 | `grep "18 skills" AGENTS.md`                                                              | Done   |
 | T-005   | Add `stage-authoring-matrix.md` Section 4 Agent Skills by Stage      | doc  | PLN-003     | Section 4 exists with 7 skill rows                                                        | Done   |

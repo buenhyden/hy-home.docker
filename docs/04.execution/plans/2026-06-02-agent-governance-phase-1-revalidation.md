@@ -96,7 +96,7 @@ The current plan preserves that chain. Graphify remains advisory when `report-gr
 | PLN-P1R-001 | Create the Phase 1 revalidation plan from the approved user plan and current repository baseline. | `docs/04.execution/plans/2026-06-02-agent-governance-phase-1-revalidation.md` | REQ-AGG-MET-01 | Plan uses template sections, has no placeholders, and links upstream/downstream artifacts. |
 | PLN-P1R-002 | Create paired task evidence with current state findings, backlog classification, skill mapping, and verification record. | `docs/04.execution/tasks/2026-06-02-agent-governance-phase-1-revalidation.md` | REQ-AGG-MET-04 | Task captures evidence without runtime, secret, deployment, remote, or model changes. |
 | PLN-P1R-003 | Register the new artifacts in Stage 04 indexes and progress log. | Stage 04 READMEs, `memory/progress.md` | REQ-AGG-MET-01 | Parent indexes and progress log point to the current revalidation artifacts. |
-| PLN-P1R-004 | Refresh generated documentation index if required by added files. | `docs/90.references/data/llm-wiki/index.md` | REQ-AGG-MET-02 | LLM Wiki check passes after regeneration. |
+| PLN-P1R-004 | Refresh generated documentation index if required by added files. | `docs/90.references/llm-wiki/llm-wiki-index.md` | REQ-AGG-MET-02 | LLM Wiki check passes after regeneration. |
 | PLN-P1R-005 | Run repository validation gates and record Graphify advisory status. | Task evidence | REQ-AGG-MET-02 | Diff hygiene, repo contracts, doc traceability, provider sync, and Graphify health are recorded. |
 
 ## Verification Plan

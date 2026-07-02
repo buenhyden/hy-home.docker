@@ -11,7 +11,7 @@ Usage: bash scripts/knowledge/generate-llm-wiki-index.sh [--check]
 Generate the repo-local LLM Wiki path index.
 
 Options:
-  --check   Fail when docs/90.references/data/llm-wiki/index.md is stale.
+  --check   Fail when docs/90.references/llm-wiki/llm-wiki-index.md is stale.
   -h, --help
             Show this help.
 EOF
@@ -43,7 +43,7 @@ import subprocess
 import sys
 
 MODE = sys.argv[1]
-OUTPUT = pathlib.Path("docs/90.references/data/llm-wiki/index.md")
+OUTPUT = pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md")
 OUTPUT_PARENT = OUTPUT.parent
 
 ROOT_ENTRYPOINTS = {
@@ -152,7 +152,7 @@ def is_safe_candidate(path_text: str) -> bool:
 def classify(path_text: str) -> str:
     if path_text in ROOT_ENTRYPOINTS:
         return "Root entrypoints"
-    if path_text.startswith("docs/90.references/data/llm-wiki/") or path_text == "llms.txt":
+    if path_text.startswith("docs/90.references/llm-wiki/") or path_text == "llms.txt":
         return "LLM Wiki reference"
     if path_text.startswith("docs/00.agent-governance/"):
         return "Agent governance"
@@ -223,7 +223,7 @@ def render(paths: list[str]) -> str:
         "generated_by: scripts/knowledge/generate-llm-wiki-index.sh",
         "---",
         "",
-        "<!-- Target: docs/90.references/data/llm-wiki/index.md -->",
+        "<!-- Target: docs/90.references/llm-wiki/llm-wiki-index.md -->",
         "",
         "# Reference: LLM Wiki Generated Index",
         "",
@@ -292,10 +292,10 @@ def render(paths: list[str]) -> str:
     lines.extend([
         "## Sources",
         "",
-        "- [llms.txt](../../../../llms.txt) - root LLM entrypoint and boundary statement",
+        "- [llms.txt](../../../llms.txt) - root LLM entrypoint and boundary statement",
         "- [repository-map.md](./repository-map.md) - curated canonical source map",
-        "- [generate-llm-wiki-index.sh](../../../../scripts/knowledge/generate-llm-wiki-index.sh) - deterministic generator",
-        "- [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) - freshness and safety validator",
+        "- [generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) - deterministic generator",
+        "- [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) - freshness and safety validator",
         "",
         "## Maintenance",
         "",
@@ -307,8 +307,8 @@ def render(paths: list[str]) -> str:
         "",
         "- [LLM Wiki references](./README.md)",
         "- [LLM Wiki repository map](./repository-map.md)",
-        "- [LLM Wiki maintenance guide](../../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)",
-        "- [Agent governance hub](../../../00.agent-governance/README.md)",
+        "- [LLM Wiki maintenance guide](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)",
+        "- [Agent governance hub](../../00.agent-governance/README.md)",
     ])
     return "\n".join(lines) + "\n"
 
