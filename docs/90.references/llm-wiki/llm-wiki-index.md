@@ -469,6 +469,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-06-03-governance-surgical-reverification.md](../../04.execution/plans/2026-06-03-governance-surgical-reverification.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-02-template-system-reorganization.md](../../04.execution/plans/2026-07-02-template-system-reorganization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md](../../04.execution/plans/2026-07-03-template-system-contract-standardization.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md](../../04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -555,6 +556,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-7.md](../../04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-7.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-02-template-system-reorganization.md](../../04.execution/tasks/2026-07-02-template-system-reorganization.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md](../../04.execution/tasks/2026-07-03-template-system-contract-standardization.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md](../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -835,6 +837,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | --- | --- |
 | [docs/90.references/README.md](../README.md) | folder index |
 | [docs/90.references/audits/README.md](../audits/README.md) | folder index |
+| [docs/90.references/audits/document-contracts/README.md](../audits/document-contracts/README.md) | folder index |
 | [docs/90.references/data/README.md](../data/README.md) | folder index |
 | [docs/90.references/data/docker/README.md](../data/docker/README.md) | folder index |
 | [docs/90.references/data/docker/image-version-interpretation.md](../data/docker/image-version-interpretation.md) | Markdown reference |

@@ -15,6 +15,14 @@ contracts. It supports active execution evidence in
 `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 without replacing that task evidence.
 
+## Category Role
+
+`docs/90.references/audits/document-contracts` holds document-contract audit
+reports as stable reference material. It may store inventories, comparison
+matrices, automation coverage maps, and gap summaries, but it is not an
+approval gate, active policy source, runtime source of truth, or replacement
+for Stage 04 task evidence.
+
 ## Audience
 
 This README is for:
@@ -51,15 +59,15 @@ This README is for:
 - `automation-coverage-map.md`
 - `gap-register.md`
 
-## Current References
+## Planned References
 
-- Frontmatter inventory: `frontmatter-inventory.md`
-- Section profile inventory: `section-profile-inventory.md`
-- README profile inventory: `readme-profile-inventory.md`
-- Contract governance map: `contract-governance-map.md`
-- Template application gaps: `template-application-gaps.md`
-- Automation coverage map: `automation-coverage-map.md`
-- Gap register: `gap-register.md`
+- `frontmatter-inventory.md`
+- `section-profile-inventory.md`
+- `readme-profile-inventory.md`
+- `contract-governance-map.md`
+- `template-application-gaps.md`
+- `automation-coverage-map.md`
+- `gap-register.md`
 
 ## How to Work in This Area
 
