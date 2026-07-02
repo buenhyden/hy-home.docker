@@ -13,7 +13,7 @@ agent-facing governance records. Use these templates when the target document
 records durable agent memory, active progress, or the allowed surface for a
 harness-engineering task.
 
-## Use When
+## Templates
 
 | Need | Template |
 | --- | --- |
@@ -21,24 +21,15 @@ harness-engineering task.
 | Seed or repair the Stage 00 agent progress log structure | [progress.template.md](./progress.template.md) |
 | Define allowed paths, approvals, validation, secret handling, and rollback for harness work | [harness-task-contract.template.md](./harness-task-contract.template.md) |
 
-## Do Not Use For
-
-- Ordinary feature planning or task execution records; use
-  [SDLC templates](../sdlc/README.md).
-- Operational guide, policy, runbook, incident, or postmortem records; use
-  [operations](../operations/README.md).
-- Copying support rules into README files; rules live in
-  [support documents](../../support/README.md).
-
 ## Target Rules
 
-- Keep Stage 00 governance records concise and evidence-oriented.
-- Do not store secrets, credentials, or unredacted sensitive values in memory or
-  progress records.
-- Harness task contracts must name allowed and forbidden paths before state
-  changes begin.
-- Broad governance changes must update validation or support documents when
-  repository behavior changes.
+- `memory.template.md` targets
+  `docs/00.agent-governance/memory/{short-title}.md`.
+- `progress.template.md` targets
+  `docs/00.agent-governance/memory/progress.md`.
+- `harness-task-contract.template.md` targets
+  `docs/04.execution/tasks/YYYY-MM-DD-<harness-stream>.md`.
+- Calculate target-relative links from the copied document path.
 
 ## Related Documents
 

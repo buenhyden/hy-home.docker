@@ -12,7 +12,7 @@ layer: agentic
 05 operational documentation. Use these templates when a document explains how
 to operate, govern, respond to, or learn from a workspace service or process.
 
-## Use When
+## Templates
 
 | Need | Template |
 | --- | --- |
@@ -22,30 +22,16 @@ to operate, govern, respond to, or learn from a workspace service or process.
 | Record an active or resolved incident timeline and response state | [incident.template.md](./incident.template.md) |
 | Analyze incident impact, root cause, action items, and prevention | [postmortem.template.md](./postmortem.template.md) |
 
-## Do Not Use For
-
-- Product, architecture, spec, plan, or task records; use
-  [SDLC templates](../sdlc/README.md).
-- Stable external facts or research notes; use
-  [common/reference.template.md](../common/reference.template.md).
-- Harness approval contracts; use
-  [governance/harness-task-contract.template.md](../governance/harness-task-contract.template.md).
-
 ## Target Rules
 
-- Guides provide context and handoff; they are not ordered emergency procedures.
-- Policies define controls and exceptions; they are not runbooks.
-- Runbooks provide executable procedures and evidence; they are not tutorials.
-- Each incident owns a packet folder at
-  `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/`.
-- Incidents record event state in `INC-###-<incident-title>.md` inside the
-  packet folder.
-- Postmortems record analysis and follow-up in `postmortem.md` inside the same
-  packet folder.
-- Incident/postmortem pairs must share the same Incident ID, severity, and
-  primary service metadata.
-- Preserve command names, service names, profiles, secret IDs, and evidence
-  labels exactly when copying from verified sources.
+- `guide.template.md` targets `docs/05.operations/guides/<tier>/<topic>.md`.
+- `policy.template.md` targets `docs/05.operations/policies/<tier>/<topic>.md`.
+- `runbook.template.md` targets `docs/05.operations/runbooks/<tier>/<topic>.md`.
+- `incident.template.md` targets
+  `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md`.
+- `postmortem.template.md` targets
+  `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md`.
+- Calculate target-relative links from the copied document path.
 
 ## Related Documents
 

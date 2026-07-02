@@ -12,29 +12,7 @@ layer: agentic
 new document or machine-readable contract. Files in this tree are template
 artifacts; rules for using them live in [../support/](../support/README.md).
 
-## Audience
-
-이 README의 주요 독자:
-
-- Documentation Writers
-- AI Agents
-- Repository Maintainers
-
-## Scope
-
-### In Scope
-
-- Markdown document templates
-- Machine-readable contract templates
-- Category-level routing for copyable templates
-
-### Out of Scope
-
-- Template governance and lifecycle policy
-- Frontmatter schema rationale
-- Active stage document content
-
-## Category Catalog
+## Templates
 
 | Category | Path | Templates |
 | --- | --- | --- |
@@ -44,38 +22,17 @@ artifacts; rules for using them live in [../support/](../support/README.md).
 | Governance | [governance/](./governance/README.md) | `memory`, `progress`, `harness-task-contract` |
 | Common | [common/](./common/README.md) | `readme`, `reference`, `archive` |
 
-## Structure
+## Target Rules
 
-```text
-templates/
-├── README.md
-├── common/
-│   ├── README.md
-│   └── *.template.md
-├── governance/
-│   ├── README.md
-│   └── *.template.md
-├── operations/
-│   ├── README.md
-│   └── *.template.md
-├── sdlc/
-│   ├── README.md
-│   └── *.template.md
-└── spec-contracts/
-    ├── README.md
-    ├── *.template.md
-    ├── *.template.yaml
-    ├── *.template.graphql
-    └── *.template.proto
-```
-
-## How to Work in This Area
-
-1. Use [template selection](../support/template-selection.md) to choose one source template.
-2. Copy only files from this `templates/` tree.
-3. Replace placeholders before saving the target document.
-4. Calculate links from the copied target path, not from this template source path.
-5. Keep template source metadata aligned with [frontmatter contract](../support/frontmatter-contract.md).
+- Use [template selection](../support/template-selection.md) to map a target
+  path to one copyable template source.
+- Markdown templates target stage documents and use target-relative related
+  document links after copying.
+- Machine-readable contract templates target child contract files and use
+  in-file `Cross-links:` comments.
+- Template source metadata follows
+  [frontmatter contract](../support/frontmatter-contract.md); durable template
+  rules live under [support](../support/README.md).
 
 ## Related Documents
 

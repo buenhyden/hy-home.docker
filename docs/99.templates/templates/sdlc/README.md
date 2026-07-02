@@ -11,10 +11,9 @@ layer: agentic
 `docs/99.templates/templates/sdlc` contains copyable templates for the
 repository SDLC path from product intent to implementation evidence. Use these
 templates when the target document belongs to Stage 01 through Stage 04 and
-must preserve traceability across requirements, architecture, specs, plans, and
-tasks.
+needs traceability across requirements, architecture, specs, plans, and tasks.
 
-## Use When
+## Templates
 
 | Need | Template |
 | --- | --- |
@@ -25,25 +24,20 @@ tasks.
 | Plan an approved implementation stream | [plan.template.md](./plan.template.md) |
 | Track task execution, evidence, validation, and gaps | [task.template.md](./task.template.md) |
 
-## Do Not Use For
-
-- API, data, agent, service, or machine-readable contracts inside a feature
-  spec; use [spec-contracts](../spec-contracts/README.md).
-- Operational procedures, policies, incidents, or postmortems; use
-  [operations](../operations/README.md).
-- Stage 00 memory, progress, or harness task contract surfaces; use
-  [governance](../governance/README.md).
-
 ## Target Rules
 
-- Use one primary SDLC template per target document.
-- Keep target paths aligned with
-  [template selection](../../support/template-selection.md).
-- Replace template placeholders and examples with topic-specific content before
-  saving the target document.
-- Target document frontmatter follows
-  [frontmatter contract](../../support/frontmatter-contract.md), not template
-  source frontmatter.
+- `prd.template.md` targets
+  `docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md`.
+- `ard.template.md` targets
+  `docs/02.architecture/requirements/####-<system-or-domain>.md`.
+- `adr.template.md` targets
+  `docs/02.architecture/decisions/####-<short-title>.md`.
+- `spec.template.md` targets `docs/03.specs/<feature-id>/spec.md`.
+- `plan.template.md` targets
+  `docs/04.execution/plans/YYYY-MM-DD-<feature>.md`.
+- `task.template.md` targets
+  `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md`.
+- Calculate target-relative links from the copied document path.
 
 ## Related Documents
 

@@ -12,7 +12,7 @@ layer: agentic
 contracts that live under a feature spec directory. These templates supplement
 the parent SDLC spec; they do not replace the parent `spec.md`.
 
-## Use When
+## Templates
 
 | Need | Template |
 | --- | --- |
@@ -25,23 +25,18 @@ the parent SDLC spec; they do not replace the parent `spec.md`.
 | Seed a GraphQL schema contract owned by the parent API spec | [schema.template.graphql](./schema.template.graphql) |
 | Seed a protobuf service contract owned by the parent API spec | [service.template.proto](./service.template.proto) |
 
-## Do Not Use For
-
-- Top-level requirements, architecture, design, plan, or task documents; use
-  [SDLC templates](../sdlc/README.md).
-- Standalone service operations procedures; use
-  [operations](../operations/README.md).
-- General references under Stage 90; use
-  [common/reference.template.md](../common/reference.template.md).
-
 ## Target Rules
 
-- Place contract documents under the matching `docs/03.specs/<feature-id>/`
-  directory.
-- Keep machine-readable contracts under the feature spec's `contracts/`
-  subdirectory unless the approved spec states a narrower path.
-- Link each child contract from the parent spec or API spec.
-- Do not add Markdown frontmatter to YAML, GraphQL, or protobuf templates.
+- Markdown contract templates target
+  `docs/03.specs/<feature-id>/{api-spec,agent-design,data-model,service,tests}.md`.
+- `openapi.template.yaml` targets
+  `docs/03.specs/<feature-id>/contracts/openapi.yaml`.
+- `schema.template.graphql` targets
+  `docs/03.specs/<feature-id>/contracts/schema.graphql`.
+- `service.template.proto` targets
+  `docs/03.specs/<feature-id>/contracts/service.proto`.
+- Markdown contract templates use target-relative links; machine-readable
+  templates use `Cross-links:` comments.
 
 ## Related Documents
 

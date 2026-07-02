@@ -40,7 +40,7 @@ This task records execution evidence for the Stage 99 template-system contract s
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-001 | Capture Stage 99 inventory baseline. | docs | Template System Contract Standardization Spec / Data Modeling | PLN-001 | Inventory command output summarized below | Codex | Done |
 | T-002 | Consolidate support contracts. | docs | Template System Contract Standardization Spec / Core Design | PLN-002 | Support docs diff and README durable-rule scan | Codex | Done |
-| T-003 | Normalize copyable templates. | docs | Template System Contract Standardization Spec / Interfaces | PLN-003 | Template scan and repo contract | Codex | Planned |
+| T-003 | Normalize copyable templates. | docs | Template System Contract Standardization Spec / Interfaces | PLN-003 | Template scan and repo contract | Codex | Done |
 | T-004 | Update validator enforcement. | script | Template System Contract Standardization Spec / Validator Interfaces | PLN-004 | bash -n and repo contract | Codex | Planned |
 | T-005 | Apply direct fallout and regenerate indexes. | docs | Template System Contract Standardization Spec / Tools | PLN-005 | Provider sync and LLM Wiki freshness | Codex | Planned |
 | T-006 | Close verification evidence. | docs | Template System Contract Standardization Spec / Success Criteria | PLN-006 | Validation matrix complete | Codex | Planned |
@@ -54,6 +54,7 @@ This task records execution evidence for the Stage 99 template-system contract s
 ## Implementation Notes
 
 - T-002: Stage 99 support contracts now own durable template-system rules; `docs/99.templates/README.md` remains a catalog and routing surface with links to support.
+- T-003: Template source scans found 22 Markdown `.template.md` files with exact `status: draft` frontmatter, no forbidden duplicate-purpose metadata keys, 3 machine-readable contract templates without YAML frontmatter, and 25 `.template.*` sources with `Target:` plus target-link guidance. Common reference target guidance and SDLC task reference examples now match `docs/90.references/{audits,data,research,learning}/**/*.md`; template README files now use only `Overview`, `Templates`, `Target Rules`, and `Related Documents` body sections.
 
 ## Validation Results
 
@@ -66,6 +67,7 @@ This task records execution evidence for the Stage 99 template-system contract s
 | bash scripts/validation/check-doc-traceability.sh | PASS: `failures=0`. |
 | bash scripts/validation/check-doc-implementation-alignment.sh | PASS: `failures=0`. |
 | TEMPLATE_GATE_BASE=8db0e7f0 bash scripts/validation/check-repo-contracts.sh | FAIL: changed stage document template gate passed; `failures=3` from stale LLM Wiki index plus existing infra hardening and tech-stack drift. |
+| bash scripts/validation/check-repo-contracts.sh | FAIL: no template-source failures; `failures=3` from stale LLM Wiki index plus existing infra hardening and tech-stack image/version drift. |
 
 ## Verification Summary
 

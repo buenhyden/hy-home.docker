@@ -13,7 +13,7 @@ across stages. Use these templates when the target document is a routing README,
 a stable reference, or an archive tombstone rather than an SDLC, contract,
 operations, or governance record.
 
-## Use When
+## Templates
 
 | Need | Template |
 | --- | --- |
@@ -21,23 +21,15 @@ operations, or governance record.
 | Record stable facts, source rules, and maintenance expectations | [reference.template.md](./reference.template.md) |
 | Replace a removed or superseded document with a minimal archive tombstone | [archive.template.md](./archive.template.md) |
 
-## Do Not Use For
-
-- Active requirements, architecture, specs, plans, or tasks; use
-  [SDLC templates](../sdlc/README.md).
-- Feature child contracts; use
-  [spec-contracts](../spec-contracts/README.md).
-- Active operational procedures or controls; use
-  [operations](../operations/README.md).
-
 ## Target Rules
 
-- README files are routing and orientation surfaces; detailed policy and
-  governance rules belong in the owning support or governance document.
-- Reference documents must separate stable facts from active procedures.
-- Archive tombstones preserve replacement and provenance pointers; do not keep
-  stale body text in the tombstone.
-- Do not copy README template metadata examples into final README files.
+- `readme.template.md` targets repository, stage, folder, service, contract, and
+  purpose-folder `README.md` files.
+- `reference.template.md` targets
+  `docs/90.references/{audits,data,research,learning}/**/*.md`.
+- `archive.template.md` targets
+  `docs/98.archive/<original-stage>/<original-path>.md`.
+- Calculate target-relative links from the copied document path.
 
 ## Related Documents
 
