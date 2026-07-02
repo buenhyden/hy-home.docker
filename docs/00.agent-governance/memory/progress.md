@@ -330,6 +330,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | `02-auth` current-truth cleanup                 | Keycloak, OAuth2 Proxy, linked infra READMEs                        | ✅ Done | Corrected active PRD/ARD/ADR/spec/plan/task, guide/policy/runbook docs, and service READMEs to current Keycloak/OAuth2 Proxy images, Keycloak high-template baseline, root-active dev vs local/full OAuth2 Proxy session-store boundary, root profile validation commands, and stale-literal validation guards.                            |
 | `03-security` current-truth cleanup             | Vault, Vault Agent, linked infra READMEs                            | ✅ Done | Archived duplicate setup guide as a central tombstone; corrected active PRD/ARD/ADR/spec/plan/task, guide/policy/runbook docs, service READMEs, and Vault config comments to current Vault image, single-node Raft boundary, root profile validation commands, Vault Agent template/output contracts, and stale-literal validation guards. |
 
+## Template System Reorganization Design (2026-07-02)
+
+| Item                         | Area                                      | Status   | Notes                                                                                                                                                 |
+| ---------------------------- | ----------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Design spec                  | `docs/03.specs/template-system-reorganization/` | ✅ Draft | Approved research-backed design for splitting copyable templates from non-copyable support governance before mutating `docs/99.templates`.            |
+| Implementation boundary      | Stage 99 templates, support docs, governance, validators, direct fallout | ✅ Set   | First implementation cycle is bounded to template system migration and validation-visible fallout; broad corpus rewrites stay as follow-up gaps.       |
+| External-source basis        | CommonMark, GFM, YAML/frontmatter, JSON Schema, Diataxis, Good Docs, SDLC/SSDF | ✅ Recorded | Source-backed rationale is captured in the spec and will move into `docs/99.templates/support/external-source-rationale.md` during implementation. |
+| Repo contract validation gap | Infra hardening and tech-stack image drift      | Gap      | `check-repo-contracts.sh` still fails outside this design scope on Keycloak hardening image mismatch and existing `infra/tech-stack.versions.json` image drift. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
