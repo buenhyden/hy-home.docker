@@ -41,7 +41,7 @@ This task records execution evidence for the Stage 99 template-system contract s
 | T-001 | Capture Stage 99 inventory baseline. | docs | Template System Contract Standardization Spec / Data Modeling | PLN-001 | Inventory command output summarized below | Codex | Done |
 | T-002 | Consolidate support contracts. | docs | Template System Contract Standardization Spec / Core Design | PLN-002 | Support docs diff and README durable-rule scan | Codex | Done |
 | T-003 | Normalize copyable templates. | docs | Template System Contract Standardization Spec / Interfaces | PLN-003 | Template scan and repo contract | Codex | Done |
-| T-004 | Update validator enforcement. | script | Template System Contract Standardization Spec / Validator Interfaces | PLN-004 | bash -n and repo contract | Codex | Planned |
+| T-004 | Update validator enforcement. | script | Template System Contract Standardization Spec / Validator Interfaces | PLN-004 | bash -n and repo contract | Codex | Done |
 | T-005 | Apply direct fallout and regenerate indexes. | docs | Template System Contract Standardization Spec / Tools | PLN-005 | Provider sync and LLM Wiki freshness | Codex | Planned |
 | T-006 | Close verification evidence. | docs | Template System Contract Standardization Spec / Success Criteria | PLN-006 | Validation matrix complete | Codex | Planned |
 
@@ -55,19 +55,21 @@ This task records execution evidence for the Stage 99 template-system contract s
 
 - T-002: Stage 99 support contracts now own durable template-system rules; `docs/99.templates/README.md` remains a catalog and routing surface with links to support.
 - T-003: Template source scans found 22 Markdown `.template.md` files with exact `status: draft` frontmatter, no forbidden duplicate-purpose metadata keys, 3 machine-readable contract templates without YAML frontmatter, and 25 `.template.*` sources with `Target:` plus target-link guidance. Common reference target guidance and SDLC task reference examples now match `docs/90.references/{audits,data,research,learning}/**/*.md`; template README files now use only `Overview`, `Templates`, `Target Rules`, and `Related Documents` body sections.
+- T-004: Added `Stage 99 template and frontmatter contracts` to `scripts/validation/check-repo-contracts.sh` immediately after `Template inventory`. The validator now enforces exact Markdown template frontmatter, Markdown template `Target:` / target-relative / `## Related Documents` guidance, machine-readable `Target:` and `Cross-links:` comments, no machine-readable Markdown `## Related Documents`, no machine-readable YAML frontmatter fence, top-frontmatter-only legacy key scanning for Stage 99 Markdown, and README durable-marker routing to support with a nearby-line support-link window. Existing `Related Documents phased coverage` and `Contract template cross-link ownership` sections remain as broader template-content coverage.
 
 ## Validation Results
 
 | Command | Result |
 | --- | --- |
 | git diff --check | PASS. |
+| bash -n scripts/validation/check-repo-contracts.sh | PASS. |
 | rg -n 'README.*must\|README.*required\|README.*forbidden' docs/99.templates/README.md docs/99.templates/templates/*/README.md | PASS: no matches. |
 | bash scripts/knowledge/generate-llm-wiki-index.sh --check | FAIL: stale generated LLM Wiki index; generated-index refresh remains outside T-002 and is planned under T-005. |
 | bash scripts/operations/sync-provider-surfaces.sh --check | Pending |
 | bash scripts/validation/check-doc-traceability.sh | PASS: `failures=0`. |
 | bash scripts/validation/check-doc-implementation-alignment.sh | PASS: `failures=0`. |
 | TEMPLATE_GATE_BASE=8db0e7f0 bash scripts/validation/check-repo-contracts.sh | FAIL: changed stage document template gate passed; `failures=3` from stale LLM Wiki index plus existing infra hardening and tech-stack drift. |
-| bash scripts/validation/check-repo-contracts.sh | FAIL: no template-source failures; `failures=3` from stale LLM Wiki index plus existing infra hardening and tech-stack image/version drift. |
+| bash scripts/validation/check-repo-contracts.sh | FAIL: no Stage 99 template/frontmatter failures; `failures=3` from stale LLM Wiki index, Keycloak hardening image mismatch, and `infra/tech-stack.versions.json` expected-image drift for Traefik, Keycloak, Vault, PostgreSQL, Kafka, Grafana, Alloy, n8n, Ollama, Open WebUI, and RedisInsight. |
 
 ## Verification Summary
 

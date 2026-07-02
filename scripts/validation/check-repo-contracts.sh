@@ -106,6 +106,137 @@ if [[ "${#misplaced_templates[@]}" -gt 0 ]]; then
   printf '  %s\n' "${misplaced_templates[@]}" >&2
 fi
 
+section "Stage 99 template and frontmatter contracts"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+templates_root = pathlib.Path("docs/99.templates/templates")
+stage99_root = pathlib.Path("docs/99.templates")
+legacy_frontmatter_keys = {
+    "type",
+    "owner",
+    "updated",
+    "links",
+    "document_type",
+    "template_type",
+}
+frontmatter_key_re = re.compile(r"^([A-Za-z_][A-Za-z0-9_-]*)\s*:")
+durable_marker_re = re.compile(
+    r"\b("
+    r"allowed\s+keys|required\s+keys|must\s+not|must|required|forbidden|"
+    r"disallowed|shall|never"
+    r")\b",
+    flags=re.I,
+)
+
+
+def top_frontmatter(text: str) -> list[tuple[int, str]]:
+    lines = text.splitlines()
+    if not lines or lines[0] != "---":
+        return []
+    for index, line in enumerate(lines[1:], start=2):
+        if line == "---":
+            return [
+                (line_no, value)
+                for line_no, value in enumerate(lines[1 : index - 1], start=2)
+            ]
+    return []
+
+
+def first_non_empty_line(text: str) -> str:
+    for line in text.splitlines():
+        if line.strip():
+            return line.strip()
+    return ""
+
+
+def line_routes_to_support(line: str) -> bool:
+    return bool(
+        re.search(r"\[[^\]]+\]\([^)]*support/[^)]*\)", line)
+        or "docs/99.templates/support/" in line
+        or "../support/" in line
+        or "../../support/" in line
+        or "./support/" in line
+    )
+
+
+def nearby_routes_to_support(lines: list[str], index: int, window: int = 2) -> bool:
+    lower_bound = max(0, index - window)
+    upper_bound = min(len(lines), index + window + 1)
+    return any(line_routes_to_support(line) for line in lines[lower_bound:upper_bound])
+
+
+for path in sorted(templates_root.rglob("*.template.md")):
+    text = path.read_text(errors="ignore")
+    first_three = text.splitlines()[:3]
+    if first_three != ["---", "status: draft", "---"]:
+        failures.append(
+            f"{path}: Markdown template must start exactly with '---', 'status: draft', '---'"
+        )
+    if "Target:" not in text:
+        failures.append(f"{path}: Markdown template missing Target path guidance")
+    if "target-relative" not in text.lower():
+        failures.append(f"{path}: Markdown template missing target-relative guidance")
+    if "## Related Documents" not in text:
+        failures.append(f"{path}: Markdown template missing ## Related Documents")
+
+for path in sorted(templates_root.rglob("*.template.*")):
+    if path.suffix == ".md":
+        continue
+    text = path.read_text(errors="ignore")
+    if first_non_empty_line(text) == "---":
+        failures.append(f"{path}: machine-readable template must not use YAML frontmatter")
+    if "Target:" not in text:
+        failures.append(f"{path}: machine-readable template missing Target path guidance")
+    if "Cross-links:" not in text:
+        failures.append(f"{path}: machine-readable template missing Cross-links ownership note")
+    if "## Related Documents" in text:
+        failures.append(f"{path}: machine-readable template must not include Markdown ## Related Documents")
+
+for path in sorted(stage99_root.rglob("*.md")):
+    text = path.read_text(errors="ignore")
+    for line_no, line in top_frontmatter(text):
+        match = frontmatter_key_re.match(line)
+        if match and match.group(1) in legacy_frontmatter_keys:
+            failures.append(
+                f"{path}:{line_no}: legacy duplicate-purpose frontmatter key is not allowed: {match.group(1)}"
+            )
+
+for path in sorted(stage99_root.rglob("README.md")):
+    if path == pathlib.Path("docs/99.templates/support/README.md"):
+        continue
+    text = path.read_text(errors="ignore")
+    lines = text.splitlines()
+    in_fence = False
+    for index, line in enumerate(lines):
+        line_no = index + 1
+        stripped = line.lstrip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        if (
+            durable_marker_re.search(line)
+            and not nearby_routes_to_support(lines, index)
+        ):
+            failures.append(
+                f"{path}:{line_no}: Stage 99 README asserts a durable template rule; route it to support instead"
+            )
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
 section "Approved surface evidence template"
 if ! grep -q "^## Approved Surface Evidence" docs/99.templates/templates/sdlc/task.template.md; then
   echo "FAIL: docs/99.templates/templates/sdlc/task.template.md must include Approved Surface Evidence for high-risk work" >&2
