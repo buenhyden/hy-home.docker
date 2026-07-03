@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md -->
@@ -47,7 +47,7 @@ automation coverage, and future implementation gaps.
 | T-003 | Compare governance, contracts, templates, root shims, and provider surfaces. | docs | Workspace Document Contract Audit Pack Spec / Contracts | PLN-003 | Contract map and template-application gap report | Codex | Done |
 | T-004 | Map CI/CD, QA, and automation coverage. | docs | Workspace Document Contract Audit Pack Spec / Tool Contract | PLN-004 | Automation coverage map | Codex | Done |
 | T-005 | Build final gap register and implementation batch proposal. | docs | Workspace Document Contract Audit Pack Spec / Gap Disposition Rules | PLN-005 | Gap register with dispositions | Codex | Done |
-| T-006 | Close evidence, regenerate indexes, validate, and commit. | docs | Workspace Document Contract Audit Pack Spec / Verification | PLN-006 | Validation matrix and commit trail | Codex | Planned |
+| T-006 | Close evidence, regenerate indexes, validate, and commit. | docs | Workspace Document Contract Audit Pack Spec / Verification | PLN-006 | Validation matrix and commit trail | Codex | Done |
 
 ## Inventory Baseline
 
@@ -98,25 +98,17 @@ automation coverage, and future implementation gaps.
 
 ## Validation Results
 
-| Command | Result |
-| --- | --- |
-| `test -e DESIGN.md && printf 'DESIGN.md present\n' \|\| printf 'DESIGN.md absent\n'` | PASS: `DESIGN.md absent`. |
-| `rg -n 'direct-fix\|batch-fix\|historical-evidence\|out-of-scope-gap\|no-action' docs/90.references/audits/document-contracts` | PASS: approved dispositions found across the document-contract audit reports. |
-| `rg -n 'sample row\|example row\|measured gap\|measured finding\|illustrative row' docs/90.references/audits/document-contracts/contract-governance-map.md docs/90.references/audits/document-contracts/template-application-gaps.md` | PASS: no matches. |
-| `rg -n 'sample row\|example row\|measured gap\|measured finding\|illustrative row' docs/90.references/audits/document-contracts/gap-register.md` | PASS: no matches; `rg` exited 1 as expected for the negative check. |
-| `rg -n 'WDC-GAP-[0-9]{3}' docs/90.references/audits/document-contracts/gap-register.md` | PASS: register IDs are present from `WDC-GAP-001` through `WDC-GAP-030`. |
-| `git diff --check` | PASS (exit 0). |
-| `git diff --cached --check` | PASS (exit 0, extra staged-diff hygiene check). |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1123 paths after staging the new Task 5 gap register. |
-| `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
-| `bash scripts/validation/check-doc-traceability.sh` | PASS: `failures=0`. |
-| `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `failures=0`. |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
-| `bash -n scripts/validation/check-repo-contracts.sh` | PASS (exit 0). |
-| `git ls-files '.github/workflows/*.yml' '.github/workflows/*.yaml'` | PASS: 6 tracked workflow files measured for Task 4. |
-| `rg -n '^(name:\|on:\|permissions:\|jobs:)\|uses:\|pull-requests:\|contents:\|id-token:\|persist-credentials\|actions/checkout\|secrets\.' .github/workflows` | PASS: workflow evidence recorded in `automation-coverage-map.md`; all external `uses:` entries are full-SHA pinned, checkout credentials are not persisted, and token use is limited to built-in `GITHUB_TOKEN`. |
-| `git ls-files 'scripts/**/*.sh' 'scripts/*.sh' \| rg '(validation\|operations\|knowledge\|quality\|test\|lint\|format\|security\|audit)'` | PASS: 15 validation, operations, knowledge, QA, and security script paths measured for Task 4. |
-| `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL: `failures=2`; no Task 5/reference/LLM/provider/workflow/script failures, only known out-of-scope infra drift from Keycloak hardening image mismatch and `infra/tech-stack.versions.json` expected-image drift. |
+| Scope | Command | Result |
+| --- | --- | --- |
+| LLM Wiki regeneration | `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1123 paths; regenerated output did not change the tracked index during Task 6. |
+| Whitespace | `git diff --check` | PASS: no whitespace errors. |
+| LLM Wiki freshness | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
+| Provider surfaces | `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
+| Traceability | `bash scripts/validation/check-doc-traceability.sh` | PASS: `failures=0`. |
+| Implementation alignment | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `failures=0`. |
+| Repo contract syntax | `bash -n scripts/validation/check-repo-contracts.sh` | PASS: shell syntax is valid. |
+| Full repo contract | `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL: `failures=2`; no audit, reference, provider, LLM Wiki, Stage 99, or document-contract failures. Failures remain confined to known out-of-scope infra drift: the Keycloak hardening image mismatch and `infra/tech-stack.versions.json` expected-image drift. |
+| Graph refresh decision | `if git diff --name-only HEAD ...; then graphify update .; else printf ...; fi` | PASS: no code files changed, so graphify was not required. |
 
 ## Verification Summary
 
@@ -127,7 +119,14 @@ automation coverage, and future implementation gaps.
 
 ## Commit Trail
 
-- Pending.
+- Spec baseline: `dd81fafd` (`docs(specs): Add workspace document contract audit pack design`).
+- Plan baseline: `557ab344` (`docs(plans): Add workspace document contract audit pack plan`).
+- Task 1: `97e99f43` (`docs(audits): Add document contract audit pack evidence`), `9c33c5a5` (`docs(audits): Fix document contract audit reference index`).
+- Task 2: `a5a5fd54` (`docs(audits): Inventory workspace document profiles`), `48ed62ea` (`docs(audits): Fix document inventory measurements`), `2a32cb17` (`docs(audits): Refresh document inventory index`), `1ac68d10` (`docs(audits): Normalize inventory disposition value`), `e057fde1` (`docs(audits): Align inventory reports with reference contract`), `a3b61e8b` (`docs(audits): Polish document inventory findings`).
+- Task 3: `f68e302c` (`docs(audits): Compare document governance contracts`).
+- Task 4: `ed38c0bc` (`docs(audits): Map documentation automation coverage`), `829ce273` (`docs(audits): Complete automation reference headings`).
+- Task 5: `7598d0ba` (`docs(audits): Register document contract gaps`).
+- Task 6: pending current commit (`docs(audits): Close document contract audit evidence`).
 
 ## Related Documents
 

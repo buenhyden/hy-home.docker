@@ -70,7 +70,7 @@ docs/04.execution/plans/
 ├── 2026-06-02-agent-governance-phase-4-closure-reconciliation.md # Completed agent governance Phase 4 closure reconciliation plan
 ├── 2026-06-02-docs-implementation-reconciliation.md # Completed docs implementation reconciliation plan
 ├── 2026-06-03-governance-surgical-reverification.md # Completed governance surgical re-verification and tech-stack drift closure plan
-├── 2026-07-03-workspace-document-contract-audit-pack.md # Active workspace document contract audit pack plan
+├── 2026-07-03-workspace-document-contract-audit-pack.md # Completed workspace document contract audit pack plan
 ├── 2026-07-03-template-system-contract-standardization.md # Completed Stage 99 template contract/frontmatter standardization plan
 ├── 2026-07-02-template-system-reorganization.md # Completed Stage 99 template system reorganization plan
 └── README.md                               # This file
