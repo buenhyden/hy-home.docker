@@ -58,6 +58,7 @@ This README is for:
 - `contract-governance-map.md`
 - `template-application-gaps.md`
 - `automation-coverage-map.md`
+- `ci-qa-parser-graphify-decision.md`
 - `gap-register.md`
 
 ## Planned References
@@ -69,6 +70,7 @@ This README is for:
 - `contract-governance-map.md`
 - `template-application-gaps.md`
 - `automation-coverage-map.md`
+- `ci-qa-parser-graphify-decision.md`
 - `gap-register.md`
 
 ## How to Work in This Area

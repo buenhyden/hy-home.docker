@@ -49,6 +49,7 @@ corpus remediation begins.
 | `docs/01.requirements/2026-03-26-01-gateway.md`; `docs/01.requirements/2026-03-26-02-auth.md`; `docs/01.requirements/2026-03-26-06-observability.md`; `docs/01.requirements/2026-03-26-07-workflow.md` | PLN-WDC-RM-004 and user continuation for the next approved batch | PRD AI agent section heading normalization | Four active PRD docs used `## AI Agent Requirements` while the PRD template and 20 peer requirement docs use `## AI Agent Requirements (If Applicable)`. | The four PRD outliers now use the template heading. | `git revert` the T-004 requirements heading commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, runtime config, or requirement-body scope changes |
 | `infra/01-gateway/traefik/README.md`; `infra/01-gateway/nginx/README.md` | PLN-WDC-RM-004 and user continuation for the next approved batch | Infra README validation heading normalization | Two gateway README files used `## Validation Commands` in addition to their canonical `## Validation` sections. | The command tables are merged into the existing `## Validation` sections, leaving no `Validation Commands` heading split. | `git revert` the T-004 infra validation heading commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, runtime config, or Compose behavior changes |
 | `docs/99.templates/support/frontmatter-contract.md`; `docs/90.references/audits/document-contracts/frontmatter-routing-profile.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-004 and user continuation for the next approved batch | Frontmatter routing profile decision | WDC-GAP-006 recorded 185 tracked Markdown files without top frontmatter and required profile-specific routing before corpus edits. | The missing set is classified by surface as required, optional, deferred, or declined; no non-README active target-stage leaf document remains unrouted. | `git revert` the T-004 frontmatter routing commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, runtime config, generated report mutation, GitHub-native behavior, or broad corpus rewrite |
+| `docs/90.references/audits/document-contracts/ci-qa-parser-graphify-decision.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-005 and user continuation for the next approved batch | CI/CD, QA, parser, and Graphify decision evidence | WDC-GAP-010 and WDC-GAP-011 required decisions for dependency-audit gates and Graphify enforcement; WDC-GAP-018 needed parser/tooling classification. | Current coverage and no-change decisions are documented: dependency audit hard gates require future Security/QA approval, Graphify remains advisory, and parser matches are tooling follow-up only. | `git revert` the T-005 decision commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, workflow changes, script changes, pre-commit changes, generated Graphify output changes, or Markdown content rewrites |
 | Future protected surfaces | Parent plan approval gates | Provider, workflow, validator, secret-handling, infra, and target-stage changes | No remediation applied in T-001 | Future tasks must record per-batch evidence before edits | Revert the specific future batch commit | Redaction boundary must be restated in each future batch before touching protected surfaces |
 
 ## Task Table
@@ -59,7 +60,7 @@ corpus remediation begins.
 | T-002 | Fix active governance and provider adapter drift. | doc | PLN-WDC-RM-002 | WDC-GAP-001, WDC-GAP-002, WDC-GAP-022 | Provider sync and repo contracts | Codex | Done |
 | T-003 | Normalize README profiles by surface. | doc | PLN-WDC-RM-003 | WDC-GAP-003, WDC-GAP-004, WDC-GAP-005, WDC-GAP-017, WDC-GAP-019 | README/template drift checks | Codex | Done |
 | T-004 | Normalize target-stage frontmatter and section profiles. | doc | PLN-WDC-RM-004 | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Inventory rerun and profile exceptions | Codex | Done |
-| T-005 | Decide CI/CD, QA, parser, and Graphify enforcement. | doc/script | PLN-WDC-RM-005 | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Protected-surface checks | Codex | Planned |
+| T-005 | Decide CI/CD, QA, parser, and Graphify enforcement. | doc/script | PLN-WDC-RM-005 | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Protected-surface checks | Codex | Done |
 | T-006 | Preserve or reclassify historical evidence rows. | doc | PLN-WDC-RM-006 | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Historical evidence review | Codex | Planned |
 | T-007 | Execute infra drift only as a separate infra task if approved. | ops | PLN-WDC-RM-007 | WDC-GAP-020, WDC-GAP-021 | Infra-only validation | Codex | Deferred |
 | T-008 | Close batch evidence, update register dispositions, regenerate indexes, and commit. | doc | PLN-WDC-RM-008 | All touched rows | Final validation matrix and commit trail | Codex | Planned |
@@ -82,7 +83,7 @@ corpus remediation begins.
 | Governance and provider adapter drift | WDC-GAP-001, WDC-GAP-002, WDC-GAP-022 | Local adapter drift done; remote evidence deferred | WDC-GAP-001 and WDC-GAP-002 were remediated by making Gemini, Claude, and generated Codex adapter text defer to Stage 00 owners. WDC-GAP-022 still requires separate remote GitHub re-verification approval. |
 | README profile normalization | WDC-GAP-003, WDC-GAP-004, WDC-GAP-005, WDC-GAP-017, WDC-GAP-019 | Approved surfaces done; examples deferred | Projects, secrets, and tests README surfaces were remediated. `secrets/README.md` was handled as metadata-only documentation and no secret value files were inspected. WDC-GAP-017 remains deferred because `examples/**` needs a separate examples/scaffold contract decision. |
 | Target-stage frontmatter and section profiles | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Done | WDC-GAP-007 and WDC-GAP-016 were remediated for active Stage 05 operations metadata. WDC-GAP-008 was remediated by aligning active PRD AI-agent section headings with the PRD template. WDC-GAP-009 was remediated by merging gateway README validation command tables into the canonical `## Validation` sections. WDC-GAP-006 was closed by classifying missing-frontmatter surfaces into required, optional, deferred, and declined profiles without a broad corpus rewrite. |
-| CI/CD, QA, parser, and Graphify decisions | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Planned | Requires protected workflow, script, validator, or pre-commit approval before edits. |
+| CI/CD, QA, parser, and Graphify decisions | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Done; protected implementation deferred | Current coverage and decisions are recorded without mutating workflows, scripts, validators, pre-commit config, Graphify output, or Markdown content. Hard dependency-audit gates and Graphify hard gates require separate Security/QA or knowledge-graph approval. |
 | Historical evidence preservation or reclassification | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Planned | Preserve old truth unless active-consumption conflict is proven. |
 | Infra drift follow-up | WDC-GAP-020, WDC-GAP-021 | Deferred | Requires separate infra task and runtime-change approval if Compose changes. |
 
@@ -93,7 +94,7 @@ corpus remediation begins.
 | Gap baseline | Baseline `rg ... \| wc -l` commands listed in `## Baseline Snapshot` | PASS: register still has 30 rows with disposition distribution `0/11/4/7/8`. |
 | Task path pre-check | `test -f docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md` before creation | PASS: command exited non-zero before creation, confirming the evidence file was new. |
 | Target corpus boundary | Manual diff review | PASS: T-001 creates task evidence and task index only; no target corpus remediation is applied. |
-| LLM Wiki regeneration | `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1126 paths after the T-004 frontmatter routing update. |
+| LLM Wiki regeneration | `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1127 paths after the T-005 CI/QA decision update. |
 | Whitespace | `git diff --check` | PASS: no whitespace errors. |
 | LLM Wiki freshness | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
 | Provider surfaces | `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
@@ -113,6 +114,10 @@ corpus remediation begins.
 | Infra validation heading split | `rg -n '^## Validation Commands$\|^### Validation Commands$' infra --glob '*.md'` | PASS: no `Validation Commands` headings remain under infra. |
 | Gateway validation heading count | `rg -n '^## Validation$' infra/01-gateway/traefik/README.md infra/01-gateway/nginx/README.md` | PASS: the two changed gateway READMEs each retain one canonical `## Validation` section. |
 | Missing frontmatter routing | Current tracked Markdown first-line scan plus routing classifier | PASS: 185 files without top frontmatter are routed by surface; 0 non-README active target-stage leaf documents remain unrouted. |
+| Local QA responsibility inventory | `bash scripts/validation/run-local-qa-gates.sh --list` | PASS: lists local script-backed gates, CI/local-tooling gates, and remote-only gates; dependency audit is not listed as an active local gate. |
+| Dependency audit active-gate search | `rg -n 'npm audit\|pip audit' .github scripts --glob '*.yml' --glob '*.yaml' --glob '*.sh'` | PASS: no active workflow or script-backed `npm audit` / `pip audit` commands found. |
+| Graphify advisory status | `bash scripts/knowledge/report-graphify-health.sh` | PASS: command exits 0 and reports `status=advisory` with `surprising_cross_root_inferred_edges=2`, confirming advisory posture. |
+| Parser gap reproduction | `rg -n '^# ' .github/PULL_REQUEST_TEMPLATE.md scripts/README.md secrets/README.md` | PASS: matches include real H1 headings plus shell-comment examples, confirming WDC-GAP-018 is parser/tooling follow-up rather than content drift. |
 
 ## Remediation Evidence
 
@@ -198,6 +203,21 @@ corpus remediation begins.
   GitHub-native behavior, generated report output, secret material, or Compose
   behavior was changed.
 
+### T-005 CI/CD, QA, Parser, and Graphify Decision
+
+- WDC-GAP-010: documented the current dependency-update and QA coverage and
+  decided not to add `npm audit` or `pip audit` hard gates in this documentation
+  batch. Future hard gates require Security/QA approval for workflow/script
+  changes, thresholds, exceptions, and package-manager scope.
+- WDC-GAP-011: kept Graphify advisory. Current `report-graphify-health.sh`
+  output is advisory, so Graphify is a navigation aid that must be
+  corroborated against tracked source files and canonical docs.
+- WDC-GAP-018: classified the heading-scan matches in the PR template, scripts
+  README, and secrets README as fenced/comment-like parser evidence, not
+  content drift. No content fix was applied.
+- No `.github/workflows/**`, `scripts/**`, `.pre-commit-config.yaml`,
+  Graphify generated output, or Markdown content surface was changed.
+
 ## Verification Summary
 
 - **Test Commands**: Listed in `## Validation Results`.
@@ -211,9 +231,10 @@ corpus remediation begins.
   PRD documents. T-004 infra changes stayed limited to README section
   consolidation without runtime, Compose, or script changes. T-004 frontmatter
   routing created a contract/reference decision only and did not add
-  frontmatter to the 185 routed files; no provider, workflow, validator,
-  secret value, generated report, GitHub-native, Compose, or runtime surfaces
-  were changed.
+  frontmatter to the 185 routed files. T-005 created decision evidence only;
+  no provider, workflow, validator, script, pre-commit, secret value, generated
+  report, GitHub-native, Compose, Markdown content, or runtime surfaces were
+  changed.
 
 ## Related Documents
 
