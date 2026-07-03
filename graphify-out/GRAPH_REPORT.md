@@ -1,16 +1,16 @@
-# Graph Report - hy-home.docker  (2026-06-05)
+# Graph Report - hy-home.docker  (2026-07-04)
 
 ## Corpus Check
-- 845 files · ~710,852 words
+- 920 files · ~801,891 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 14805 nodes · 14757 edges · 1110 communities (1033 shown, 77 thin omitted)
+- 17718 nodes · 18760 edges · 1214 communities (1136 shown, 78 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0c32682a`
+- Built from commit: `c1c465c9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1124,18 +1124,122 @@
 - [[_COMMUNITY_Community 1107|Community 1107]]
 - [[_COMMUNITY_Community 1108|Community 1108]]
 - [[_COMMUNITY_Community 1109|Community 1109]]
+- [[_COMMUNITY_Community 1110|Community 1110]]
+- [[_COMMUNITY_Community 1111|Community 1111]]
+- [[_COMMUNITY_Community 1112|Community 1112]]
+- [[_COMMUNITY_Community 1113|Community 1113]]
+- [[_COMMUNITY_Community 1114|Community 1114]]
+- [[_COMMUNITY_Community 1115|Community 1115]]
+- [[_COMMUNITY_Community 1116|Community 1116]]
+- [[_COMMUNITY_Community 1117|Community 1117]]
+- [[_COMMUNITY_Community 1118|Community 1118]]
+- [[_COMMUNITY_Community 1119|Community 1119]]
+- [[_COMMUNITY_Community 1120|Community 1120]]
+- [[_COMMUNITY_Community 1121|Community 1121]]
+- [[_COMMUNITY_Community 1122|Community 1122]]
+- [[_COMMUNITY_Community 1123|Community 1123]]
+- [[_COMMUNITY_Community 1124|Community 1124]]
+- [[_COMMUNITY_Community 1125|Community 1125]]
+- [[_COMMUNITY_Community 1126|Community 1126]]
+- [[_COMMUNITY_Community 1127|Community 1127]]
+- [[_COMMUNITY_Community 1128|Community 1128]]
+- [[_COMMUNITY_Community 1129|Community 1129]]
+- [[_COMMUNITY_Community 1130|Community 1130]]
+- [[_COMMUNITY_Community 1131|Community 1131]]
+- [[_COMMUNITY_Community 1132|Community 1132]]
+- [[_COMMUNITY_Community 1133|Community 1133]]
+- [[_COMMUNITY_Community 1134|Community 1134]]
+- [[_COMMUNITY_Community 1135|Community 1135]]
+- [[_COMMUNITY_Community 1136|Community 1136]]
+- [[_COMMUNITY_Community 1137|Community 1137]]
+- [[_COMMUNITY_Community 1138|Community 1138]]
+- [[_COMMUNITY_Community 1139|Community 1139]]
+- [[_COMMUNITY_Community 1140|Community 1140]]
+- [[_COMMUNITY_Community 1141|Community 1141]]
+- [[_COMMUNITY_Community 1142|Community 1142]]
+- [[_COMMUNITY_Community 1143|Community 1143]]
+- [[_COMMUNITY_Community 1144|Community 1144]]
+- [[_COMMUNITY_Community 1145|Community 1145]]
+- [[_COMMUNITY_Community 1146|Community 1146]]
+- [[_COMMUNITY_Community 1147|Community 1147]]
+- [[_COMMUNITY_Community 1148|Community 1148]]
+- [[_COMMUNITY_Community 1149|Community 1149]]
+- [[_COMMUNITY_Community 1150|Community 1150]]
+- [[_COMMUNITY_Community 1151|Community 1151]]
+- [[_COMMUNITY_Community 1152|Community 1152]]
+- [[_COMMUNITY_Community 1153|Community 1153]]
+- [[_COMMUNITY_Community 1154|Community 1154]]
+- [[_COMMUNITY_Community 1155|Community 1155]]
+- [[_COMMUNITY_Community 1156|Community 1156]]
+- [[_COMMUNITY_Community 1157|Community 1157]]
+- [[_COMMUNITY_Community 1158|Community 1158]]
+- [[_COMMUNITY_Community 1159|Community 1159]]
+- [[_COMMUNITY_Community 1160|Community 1160]]
+- [[_COMMUNITY_Community 1161|Community 1161]]
+- [[_COMMUNITY_Community 1162|Community 1162]]
+- [[_COMMUNITY_Community 1163|Community 1163]]
+- [[_COMMUNITY_Community 1164|Community 1164]]
+- [[_COMMUNITY_Community 1165|Community 1165]]
+- [[_COMMUNITY_Community 1166|Community 1166]]
+- [[_COMMUNITY_Community 1167|Community 1167]]
+- [[_COMMUNITY_Community 1168|Community 1168]]
+- [[_COMMUNITY_Community 1169|Community 1169]]
+- [[_COMMUNITY_Community 1170|Community 1170]]
+- [[_COMMUNITY_Community 1171|Community 1171]]
+- [[_COMMUNITY_Community 1172|Community 1172]]
+- [[_COMMUNITY_Community 1173|Community 1173]]
+- [[_COMMUNITY_Community 1174|Community 1174]]
+- [[_COMMUNITY_Community 1175|Community 1175]]
+- [[_COMMUNITY_Community 1176|Community 1176]]
+- [[_COMMUNITY_Community 1177|Community 1177]]
+- [[_COMMUNITY_Community 1178|Community 1178]]
+- [[_COMMUNITY_Community 1179|Community 1179]]
+- [[_COMMUNITY_Community 1180|Community 1180]]
+- [[_COMMUNITY_Community 1181|Community 1181]]
+- [[_COMMUNITY_Community 1182|Community 1182]]
+- [[_COMMUNITY_Community 1183|Community 1183]]
+- [[_COMMUNITY_Community 1184|Community 1184]]
+- [[_COMMUNITY_Community 1185|Community 1185]]
+- [[_COMMUNITY_Community 1186|Community 1186]]
+- [[_COMMUNITY_Community 1187|Community 1187]]
+- [[_COMMUNITY_Community 1188|Community 1188]]
+- [[_COMMUNITY_Community 1189|Community 1189]]
+- [[_COMMUNITY_Community 1190|Community 1190]]
+- [[_COMMUNITY_Community 1191|Community 1191]]
+- [[_COMMUNITY_Community 1192|Community 1192]]
+- [[_COMMUNITY_Community 1193|Community 1193]]
+- [[_COMMUNITY_Community 1194|Community 1194]]
+- [[_COMMUNITY_Community 1195|Community 1195]]
+- [[_COMMUNITY_Community 1196|Community 1196]]
+- [[_COMMUNITY_Community 1197|Community 1197]]
+- [[_COMMUNITY_Community 1198|Community 1198]]
+- [[_COMMUNITY_Community 1199|Community 1199]]
+- [[_COMMUNITY_Community 1200|Community 1200]]
+- [[_COMMUNITY_Community 1201|Community 1201]]
+- [[_COMMUNITY_Community 1202|Community 1202]]
+- [[_COMMUNITY_Community 1203|Community 1203]]
+- [[_COMMUNITY_Community 1204|Community 1204]]
+- [[_COMMUNITY_Community 1205|Community 1205]]
+- [[_COMMUNITY_Community 1206|Community 1206]]
+- [[_COMMUNITY_Community 1207|Community 1207]]
+- [[_COMMUNITY_Community 1208|Community 1208]]
+- [[_COMMUNITY_Community 1209|Community 1209]]
+- [[_COMMUNITY_Community 1210|Community 1210]]
+- [[_COMMUNITY_Community 1211|Community 1211]]
+- [[_COMMUNITY_Community 1212|Community 1212]]
+- [[_COMMUNITY_Community 1213|Community 1213]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Prometheus Production Scrape And Alerting Config` - 50 edges
-2. `Prometheus Development Scrape And Alerting Config` - 43 edges
-3. `Task: Home Docker Workspace Audit and Improvement` - 42 edges
+2. `Task: Home Docker Workspace Audit and Improvement` - 43 edges
+3. `Prometheus Development Scrape And Alerting Config` - 43 edges
 4. `{Folder or Project Name}` - 32 edges
-5. `Secret Exposure Escalation` - 25 edges
-6. `Operations Template` - 23 edges
-7. `Operations Index` - 22 edges
-8. `Infra / Secrets / Docs Refresh Specification` - 21 edges
-9. `Task: Home Docker Revalidation Deferred Follow-up` - 21 edges
-10. `Operations Template` - 21 edges
+5. `{Folder or Project Name}` - 31 edges
+6. `Reference: CS, CE & SE Self-Learning Roadmap (v2)` - 25 edges
+7. `Secret Exposure Escalation` - 25 edges
+8. `Operations Template` - 23 edges
+9. `Infra / Secrets / Docs Refresh Specification` - 22 edges
+10. `Task: Home Docker Revalidation Deferred Follow-up` - 22 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `05-Messaging Optimization Hardening Runbook` --references--> `Doc Traceability Check`  [EXTRACTED]
@@ -1157,7 +1261,7 @@
 - **Workspace Audit Revalidation Skill Catalog Sync** — workspace_audit_revalidation_bounded_revalidation_workflow, workspace_audit_revalidation_runtime_skill, readme_agent_and_function_catalog, readme_runtime_skill_mirror, progress_workspace_audit_revalidation_skill_creation [EXTRACTED 1.00]
 - **Advisory Graph Boundary** — index_llm_wiki_generated_index, index_tracked_source_boundary, index_runtime_truth, index_advisory_graph_context, progress_graphify_health_advisory, 2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence [EXTRACTED 1.00]
 
-## Communities (1110 total, 77 thin omitted)
+## Communities (1214 total, 78 thin omitted)
 
 ### Community 0 - "Prometheus Alert Rule Group"
 Cohesion: 0.10
@@ -1192,8 +1296,8 @@ Cohesion: 0.18
 Nodes (17): 11-laboratory Architecture Reference Document, Non-intrusive Management Layer, Auth Optimization Hardening Architecture Reference Document, AI Optimization Hardening Architecture Reference Document, Tooling Catalog Expansion Policy, Tooling Control Plane, Tooling Optimization Hardening Architecture Reference Document, Laboratory Optimization Hardening Architecture Reference Document (+9 more)
 
 ### Community 8 - "Backup Infra Retention Common"
-Cohesion: 0.18
-Nodes (12): infra_net Collision Detection, infra_net Dictionary Network Definition, infra_net IP Mapping Validation and Update Procedure, Tooling infra_net External Boundary, Dozzle Read-only Docker Socket, Laboratory Gateway Allowlist SSO Boundary, No Direct Dashboard Exposure, 11-Laboratory Optimization Hardening Operations Policy (+4 more)
+Cohesion: 0.20
+Nodes (11): infra_net Collision Detection, infra_net Dictionary Network Definition, infra_net IP Mapping Validation and Update Procedure, Dozzle Read-only Docker Socket, Laboratory Gateway Allowlist SSO Boundary, No Direct Dashboard Exposure, 11-Laboratory Optimization Hardening Operations Policy, 11-laboratory Operations Policies (+3 more)
 
 ### Community 9 - "Adr Hybrid Traefik Nginx"
 Cohesion: 0.22
@@ -1264,12 +1368,12 @@ Cohesion: 0.22
 Nodes (11): OpenSearch Security Action Groups Defaults, OpenSearch Security Basic Internal Auth Domain, OpenSearch Security OpenID Auth Domain, Keycloak PostgreSQL Identity Database, Keycloak Compose Service, Keycloak Traefik Router, OpenSearch Dashboards Compose Service, OpenSearch Single Node Compose Service (+3 more)
 
 ### Community 26 - "Community 26"
-Cohesion: 0.13
-Nodes (16): ADR-0005 Polyglot Messaging, Apache Kafka Event Backbone, Kafka KRaft Mode, RabbitMQ Task Queue, ADR-0006 LGTM Stack Alloy, Grafana Alloy, Grafana LGTM Stack, MinIO S3 Backend (+8 more)
+Cohesion: 0.17
+Nodes (12): ADR-0006 LGTM Stack Alloy, Grafana Alloy, Grafana LGTM Stack, MinIO S3 Backend, Kafka UI Pinned Image, Messaging Hardening Gate, Messaging Optimization Hardening PRD, Loki Tempo Runtime Hardening (+4 more)
 
 ### Community 27 - "Tooling Adr Laboratory Locust"
-Cohesion: 0.22
-Nodes (10): ADR-0024 Tooling Hardening and HA Expansion Strategy, Tooling infra_net External Boundary, ADR-20260401 Standardize infra_net Subnet, Explicit infra_net Service Membership, infra_net 172.19.0.0/16 Subnet, Preserve k3d-hyhome Network Membership, Dictionary-Based infra_net Configuration, ADR-2026-04-01 Standardized Dictionary-Based Network Infrastructure (+2 more)
+Cohesion: 0.29
+Nodes (8): ADR-20260401 Standardize infra_net Subnet, Explicit infra_net Service Membership, infra_net 172.19.0.0/16 Subnet, Preserve k3d-hyhome Network Membership, Dictionary-Based infra_net Configuration, ADR-2026-04-01 Standardized Dictionary-Based Network Infrastructure, Service IP Groups, Static ipv4_address Assignment
 
 ### Community 28 - "Open Notebook Dashboard Dozzle"
 Cohesion: 0.09
@@ -1529,15 +1633,15 @@ Nodes (46): 1. Clone and Setup, 2. Repository Entry Points, AI Agent Guidance, A
 
 ### Community 126 - "Community 126"
 Cohesion: 0.05
-Nodes (41): Bounded Revalidation Reflection Matrix, Brainstorming Design Alternatives, Brainstorming Implementation Plan, Brainstorming Reflection Matrix, CEO Failure Modes Registry, CEO Implementation Alternatives, CEO Implementation Plan, CEO Plan Review (+33 more)
+Nodes (42): Bounded Revalidation Reflection Matrix, Brainstorming Design Alternatives, Brainstorming Implementation Plan, Brainstorming Reflection Matrix, CEO Failure Modes Registry, CEO Implementation Alternatives, CEO Implementation Plan, CEO Plan Review (+34 more)
 
 ### Community 127 - "Community 127"
 Cohesion: 0.06
-Nodes (36): 1. Initial Login, 2. Organizations and Workspaces, Common Checks, Common Pitfalls, Common Pitfalls, Executor Model, Executor Timeout, Feature Breakdown (+28 more)
+Nodes (38): 1. Initial Login, 2. Organizations and Workspaces, Common Checks, Common Pitfalls, Common Pitfalls, Executor Model, Executor Timeout, Feature Breakdown (+30 more)
 
 ### Community 128 - "Community 128"
 Cohesion: 0.06
-Nodes (36): 1. Job-based Execution, 2. State Management, 3. Credential Handling, Common Checks, Common Pitfalls, Common Pitfalls, Common Workflows, Formating and Validation (+28 more)
+Nodes (38): 1. Job-based Execution, 2. State Management, 3. Credential Handling, Common Checks, Common Pitfalls, Common Pitfalls, Common Workflows, Formating and Validation (+30 more)
 
 ### Community 129 - "Community 129"
 Cohesion: 0.07
@@ -1548,108 +1652,108 @@ Cohesion: 0.06
 Nodes (31): 1. Identify Bloat, 2. Emergency Cleanup, 3. Service-Specific Truncation, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist, Checklist (+23 more)
 
 ### Community 131 - "Community 131"
-Cohesion: 0.06
+Cohesion: 0.11
 Nodes (31): annotations, list, description, editable, __elements, fiscalYearStartMonth, gnetId, graphTooltip (+23 more)
 
 ### Community 132 - "Community 132"
-Cohesion: 0.06
+Cohesion: 0.11
 Nodes (30): annotations, list, description, editable, __elements, fiscalYearStartMonth, gnetId, graphTooltip (+22 more)
 
 ### Community 133 - "Community 133"
-Cohesion: 0.08
-Nodes (30): Architecture, Authentication & Authorization, Common Checks, Common Pitfalls, Common Pitfalls, Dashboards Catalog, Grafana Operational Policy (06-observability) Usage Guide, Grafana System Usage (06-observability) (+22 more)
+Cohesion: 0.07
+Nodes (31): Architecture, Authentication & Authorization, Common Checks, Common Pitfalls, Common Pitfalls, Dashboards Catalog, Grafana Operational Policy (06-observability) Usage Guide, Grafana System Usage (06-observability) (+23 more)
 
 ### Community 134 - "Community 134"
 Cohesion: 0.07
-Nodes (31): 1. Scrape Configurations, 2. Alerting Rule System, 3. Storage (TSDB), Alertmanager Integration, Architecture, Common Checks, Common Pitfalls, Common Pitfalls (+23 more)
+Nodes (32): 1. Scrape Configurations, 2. Alerting Rule System, 3. Storage (TSDB), Alertmanager Integration, Architecture, Common Checks, Common Pitfalls, Common Pitfalls (+24 more)
 
 ### Community 135 - "Community 135"
-Cohesion: 0.07
-Nodes (29): 1. Diagnosis, 2. Immediate Action (Safe), 3. Advanced Recovery (Data Loss Risk), 4. Verification, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist (+21 more)
+Cohesion: 0.06
+Nodes (30): 1. Diagnosis, 2. Immediate Action (Safe), 3. Advanced Recovery (Data Loss Risk), 4. Verification, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist (+22 more)
 
 ### Community 136 - "Community 136"
 Cohesion: 0.08
-Nodes (31): 1. Symptom, 2. Verification Steps (Host), 3. Recovery Procedure, 4. Escalation, Agent Operations (If Applicable), Agent Operations (If Applicable), AI GPU Recovery Procedure, AI GPU Recovery Runbook (+23 more)
+Nodes (32): 1. Symptom, 2. Verification Steps (Host), 3. Recovery Procedure, 4. Escalation, Agent Operations (If Applicable), Agent Operations (If Applicable), AI GPU Recovery Procedure, AI GPU Recovery Runbook (+24 more)
 
 ### Community 137 - "Community 137"
-Cohesion: 0.09
-Nodes (30): English, Korean, Overview (KR), Purpose, Related Documents, Target Audience, 1. Storage Exhaustion (디스크 공간 부족), 2. Root Credential Reset (비밀번호 초기화) (+22 more)
+Cohesion: 0.08
+Nodes (31): English, Korean, Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. Storage Exhaustion (디스크 공간 부족) (+23 more)
 
 ### Community 138 - "Community 138"
-Cohesion: 0.09
-Nodes (30): English, Korean, Overview (KR), Purpose, Related Documents, Target Audience, 1. Master Server Recovery, 2. Read-Only Mode Resolution (+22 more)
+Cohesion: 0.08
+Nodes (31): English, Korean, Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. Master Server Recovery (+23 more)
 
 ### Community 139 - "Community 139"
 Cohesion: 0.07
-Nodes (27): 1. Broken Trace Ingestion (트레이스 누락), 2. Backend Storage Connection (MinIO 오류), 3. WAL Corruption (쓰기 버퍼 손상), 4. Metrics Generator Failure, Agent Operations (If Applicable), Canonical References, Checklist, Emergency Full Restart (+19 more)
+Nodes (28): 1. Broken Trace Ingestion (트레이스 누락), 2. Backend Storage Connection (MinIO 오류), 3. WAL Corruption (쓰기 버퍼 손상), 4. Metrics Generator Failure, Agent Operations (If Applicable), Canonical References, Checklist, Emergency Full Restart (+20 more)
 
 ### Community 140 - "Community 140"
 Cohesion: 0.07
-Nodes (27): 1. Access and Authentication, 2. Creating a New Project, 3. Running a Local Scan, Architecture Context, Common Checks, Common Pitfalls, Common Pitfalls, elasticsearch.max_map_count (+19 more)
+Nodes (29): 1. Access and Authentication, 2. Creating a New Project, 3. Running a Local Scan, Architecture Context, Common Checks, Common Pitfalls, Common Pitfalls, elasticsearch.max_map_count (+21 more)
 
 ### Community 141 - "Community 141"
-Cohesion: 0.07
+Cohesion: 0.12
 Nodes (27): annotations, list, description, editable, gnetId, graphTooltip, id, iteration (+19 more)
 
 ### Community 142 - "Community 142"
 Cohesion: 0.07
-Nodes (26): 1. Service Restoration, 2. Pipeline Debugging (Alloy UI), 3. Memory Exhaustion Mitigation, 4. OTLP Connectivity Fix, Agent Operations (If Applicable), Alloy Recovery Procedure, Alloy Runbook, Canonical References (+18 more)
+Nodes (27): 1. Service Restoration, 2. Pipeline Debugging (Alloy UI), 3. Memory Exhaustion Mitigation, 4. OTLP Connectivity Fix, Agent Operations (If Applicable), Alloy Recovery Procedure, Alloy Runbook, Canonical References (+19 more)
 
 ### Community 143 - "Community 143"
 Cohesion: 0.07
-Nodes (26): 1. Service Health Check, 2. Check S3/MinIO Connectivity, 2. Common Scenarios, 3. Emergency Maintenance, Agent Operations (If Applicable), Canonical References, Checklist, Escalation (+18 more)
+Nodes (27): 1. Service Health Check, 2. Check S3/MinIO Connectivity, 2. Common Scenarios, 3. Emergency Maintenance, Agent Operations (If Applicable), Canonical References, Checklist, Escalation (+19 more)
 
 ### Community 144 - "Community 144"
 Cohesion: 0.07
-Nodes (26): 1. Ingestion Gaps (데이터 수집 중단), 2. Disk Space Pressure (저장소 부족), 3. High CPU Usage (수집 부하), Agent Operations (If Applicable), Canonical References, Checklist, Configuration Rollback, Emergency Restart (+18 more)
+Nodes (27): 1. Ingestion Gaps (데이터 수집 중단), 2. Disk Space Pressure (저장소 부족), 3. High CPU Usage (수집 부하), Agent Operations (If Applicable), Canonical References, Checklist, Configuration Rollback, Emergency Restart (+19 more)
 
 ### Community 145 - "Community 145"
 Cohesion: 0.07
-Nodes (26): 1. Check Service Status, 1. Elasticsearch Index Reconstruction, 2. JVM Memory Adjustment, 2. Verify Database Connectivity, 3. Log Inspection, Agent Operations (If Applicable), Canonical References, Checklist (+18 more)
+Nodes (27): 1. Check Service Status, 1. Elasticsearch Index Reconstruction, 2. JVM Memory Adjustment, 2. Verify Database Connectivity, 3. Log Inspection, Agent Operations (If Applicable), Canonical References, Checklist (+19 more)
 
 ### Community 146 - "Community 146"
 Cohesion: 0.07
-Nodes (26): 1. Check Service Status, 1. Resolving "Out of Sync" Items, 2. Repairing Corrupted Database, 2. Verify Port Connectivity, 3. Resetting GUI Password, Agent Operations (If Applicable), Canonical References, Checklist (+18 more)
+Nodes (27): 1. Check Service Status, 1. Resolving "Out of Sync" Items, 2. Repairing Corrupted Database, 2. Verify Port Connectivity, 3. Resetting GUI Password, Agent Operations (If Applicable), Canonical References, Checklist (+19 more)
 
 ### Community 147 - "Community 147"
 Cohesion: 0.06
-Nodes (32): 1. Check Execution Context, 1. Confirm Execution Context, 1. Force Unlocking State, 2. Handling Corrupted Local State, 2. Verify Backend Access, 2. Verify Remote Backend Access, 3. Force Unlocking State, 3. Resolving Provider Credential Failures (+24 more)
+Nodes (33): 1. Check Execution Context, 1. Confirm Execution Context, 1. Force Unlocking State, 2. Handling Corrupted Local State, 2. Verify Backend Access, 2. Verify Remote Backend Access, 3. Force Unlocking State, 3. Resolving Provider Credential Failures (+25 more)
 
 ### Community 148 - "Community 148"
 Cohesion: 0.07
-Nodes (26): 1. Check API and Executor Health, 1. Cleaning Up Hung Executors, 2. Resolving OIDC / DEX Auth Loops, 2. Verify Docker Socket Access, 3. Manual Workspace Unlock, Agent Operations (If Applicable), Canonical References, Checklist (+18 more)
+Nodes (27): 1. Check API and Executor Health, 1. Cleaning Up Hung Executors, 2. Resolving OIDC / DEX Auth Loops, 2. Verify Docker Socket Access, 3. Manual Workspace Unlock, Agent Operations (If Applicable), Canonical References, Checklist (+19 more)
 
 ### Community 149 - "Community 149"
-Cohesion: 0.07
+Cohesion: 0.13
 Nodes (26): annotations, list, description, editable, fiscalYearStartMonth, gnetId, graphTooltip, id (+18 more)
 
 ### Community 150 - "Community 150"
-Cohesion: 0.10
-Nodes (26): 1. Cluster Execution, 2. Work Breakdown, 3. Schema Registry Integration, 4. Data Pipeline with Connect, Common Checks, Common Pitfalls, Common Pitfalls, Implementation Snippet (+18 more)
+Cohesion: 0.09
+Nodes (27): 1. Cluster Execution, 2. Work Breakdown, 3. Schema Registry Integration, 4. Data Pipeline with Connect, Common Checks, Common Pitfalls, Common Pitfalls, Implementation Snippet (+19 more)
 
 ### Community 151 - "Community 151"
-Cohesion: 0.08
-Nodes (25): Agent Operations (If Applicable), Canonical References, Checklist, Dashboard Provisioning Issues, Datasource Connection Issues, Escalation, Evidence, Grafana Recovery Procedure (06-observability) (+17 more)
+Cohesion: 0.07
+Nodes (26): Agent Operations (If Applicable), Canonical References, Checklist, Dashboard Provisioning Issues, Datasource Connection Issues, Escalation, Evidence, Grafana Recovery Procedure (06-observability) (+18 more)
 
 ### Community 152 - "Community 152"
-Cohesion: 0.10
-Nodes (27): 1. 비상 중단 (Emergency Kill), 2. 마스터-워커 재동기화, 3. InfluxDB 지표 유실 장애, 4. 시나리오 스크립트 오류 복구, Agent Operations (If Applicable), Alerting & Detection, Canonical References, Checklist (+19 more)
+Cohesion: 0.09
+Nodes (28): 1. 비상 중단 (Emergency Kill), 2. 마스터-워커 재동기화, 3. InfluxDB 지표 유실 장애, 4. 시나리오 스크립트 오류 복구, Agent Operations (If Applicable), Alerting & Detection, Canonical References, Checklist (+20 more)
 
 ### Community 153 - "Community 153"
-Cohesion: 0.10
-Nodes (26): 1. 즉각 중단 (Emergency Stop), 2. 워커 노드 재동기화 (Worker Resync), 3. InfluxDB 지표 유실 대응 (Data Link Recovery), 4. 테스트 결과 수동 아카이빙 (Manual Archiving), Agent Operations (If Applicable), Alerting & Monitoring, Canonical References, Checklist (+18 more)
+Cohesion: 0.09
+Nodes (27): 1. 즉각 중단 (Emergency Stop), 2. 워커 노드 재동기화 (Worker Resync), 3. InfluxDB 지표 유실 대응 (Data Link Recovery), 4. 테스트 결과 수동 아카이빙 (Manual Archiving), Agent Operations (If Applicable), Alerting & Monitoring, Canonical References, Checklist (+19 more)
 
 ### Community 154 - "Community 154"
-Cohesion: 0.10
-Nodes (27): 1. 테스트 강제 중단 (Emergency Stop), 2. 마스터-워커 연결 복구 (Master-Worker Sync), 3. InfluxDB 데이터 전송 오류 (Data Link Recovery), 4. 타 서비스 영향 복구 (Cascading Failure Clean-up), Agent Operations (If Applicable), Alerting & Monitoring, Canonical References, Checklist (+19 more)
+Cohesion: 0.09
+Nodes (28): 1. 테스트 강제 중단 (Emergency Stop), 2. 마스터-워커 연결 복구 (Master-Worker Sync), 3. InfluxDB 데이터 전송 오류 (Data Link Recovery), 4. 타 서비스 영향 복구 (Cascading Failure Clean-up), Agent Operations (If Applicable), Alerting & Monitoring, Canonical References, Checklist (+20 more)
 
 ### Community 155 - "Community 155"
-Cohesion: 0.08
-Nodes (25): 1. MailHog (Development Sandbox), 2. Stalwart (Production Backend), Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Common Variables, Communication Tier Technical Specification, Component Boundary, Contracts (+17 more)
+Cohesion: 0.07
+Nodes (26): 1. MailHog (Development Sandbox), 2. Stalwart (Production Backend), Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Common Variables, Communication Tier Technical Specification, Component Boundary, Contracts (+18 more)
 
 ### Community 156 - "Community 156"
-Cohesion: 0.10
-Nodes (27): 1. Admin Password Reset, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Implementation Snippet (+19 more)
+Cohesion: 0.09
+Nodes (28): 1. Admin Password Reset, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Implementation Snippet (+20 more)
 
 ### Community 157 - "Community 157"
 Cohesion: 0.10
@@ -1672,20 +1776,20 @@ Cohesion: 0.08
 Nodes (25): Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist, Checklist, Escalation, Evidence, Harness Agent First Engineering Validation Operations (+17 more)
 
 ### Community 162 - "Community 162"
-Cohesion: 0.07
-Nodes (29): Agent Operations (If Applicable), Agent Operations (If Applicable), Agent Operations (If Applicable), Airflow Worker Recovery Operations, Airflow Worker Recovery Procedure, Canonical References, Checklist, Escalation (+21 more)
+Cohesion: 0.06
+Nodes (30): Agent Operations (If Applicable), Agent Operations (If Applicable), Agent Operations (If Applicable), Airflow Worker Recovery Operations, Airflow Worker Recovery Procedure, Canonical References, Checklist, Escalation (+22 more)
 
 ### Community 163 - "Community 163"
 Cohesion: 0.10
-Nodes (26): Overview (KR), Purpose, Related Documents, Target Audience, Agent Operations (If Applicable), Canonical References, Cassandra Health and Recovery Triage Procedure, Cassandra Health and Recovery Triage Runbook (+18 more)
+Nodes (27): Overview, Overview (KR), Purpose, Related Documents, Target Audience, Agent Operations (If Applicable), Canonical References, Cassandra Health and Recovery Triage Procedure (+19 more)
 
 ### Community 164 - "Community 164"
 Cohesion: 0.10
-Nodes (26): Overview (KR), Purpose, Related Documents, Target Audience, Agent Operations (If Applicable), Canonical References, Checklist, CouchDB Cluster Triage Procedure (+18 more)
+Nodes (27): Overview, Overview (KR), Purpose, Related Documents, Target Audience, Agent Operations (If Applicable), Canonical References, Checklist (+19 more)
 
 ### Community 165 - "Community 165"
 Cohesion: 0.10
-Nodes (26): Overview (KR), Purpose, Related Documents, Target Audience, Agent Operations (If Applicable), Canonical References, Checklist, Escalation (+18 more)
+Nodes (27): Overview, Overview (KR), Purpose, Related Documents, Target Audience, Agent Operations (If Applicable), Canonical References, Checklist (+19 more)
 
 ### Community 166 - "Community 166"
 Cohesion: 0.08
@@ -1693,282 +1797,282 @@ Nodes (24): 1. Context & Objective, 2. Recommended Permissions (Claude Code), 3.
 
 ### Community 167 - "Community 167"
 Cohesion: 0.08
-Nodes (24): Agent-first Engineering Components, Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+16 more)
+Nodes (25): Agent-first Engineering Components, Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+17 more)
 
 ### Community 168 - "Community 168"
-Cohesion: 0.08
+Cohesion: 0.13
 Nodes (24): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+16 more)
 
 ### Community 169 - "Community 169"
-Cohesion: 0.08
+Cohesion: 0.13
 Nodes (24): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+16 more)
 
 ### Community 170 - "Community 170"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (24): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+16 more)
 
 ### Community 171 - "Community 171"
-Cohesion: 0.08
+Cohesion: 0.13
 Nodes (24): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+16 more)
 
 ### Community 172 - "Community 172"
-Cohesion: 0.08
+Cohesion: 0.13
 Nodes (24): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+16 more)
 
 ### Community 173 - "Community 173"
-Cohesion: 0.08
+Cohesion: 0.13
 Nodes (24): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+16 more)
 
 ### Community 174 - "Community 174"
-Cohesion: 0.08
-Nodes (24): Definitions / Facts, Exercise 1: **Distributed Lock Concept Lab**, Exercise 2: **Controller Loop Simulation**, Exercise 3: **Vector Retrieval Thought Experiment**, In Scope, Maintenance, Out of Scope, Overview (KR) (+16 more)
+Cohesion: 0.06
+Nodes (30): 🪜 Deep-Dive Topics, Definitions / Facts, 📚 Evidence and References, Exercise 1: **Distributed Lock Concept Lab**, Exercise 2: **Controller Loop Simulation**, Exercise 3: **Vector Retrieval Thought Experiment**, In Scope, Maintenance (+22 more)
 
 ### Community 175 - "Community 175"
 Cohesion: 0.08
-Nodes (24): 🪜 Deep-Dive Topics, Definitions / Facts, 📝 Describe Changes, 📚 Evidence & References, Exercise 1: **Custom Controller Simulation**, Exercise 2: **Distributed Lock Concept Lab**, Exercise 3: **Vector Retrieval Thought Experiment**, In Scope (+16 more)
+Nodes (25): 🪜 Deep-Dive Topics, Definitions / Facts, 📝 Describe Changes, 📚 Evidence & References, Exercise 1: **Custom Controller Simulation**, Exercise 2: **Distributed Lock Concept Lab**, Exercise 3: **Vector Retrieval Thought Experiment**, In Scope (+17 more)
 
 ### Community 176 - "Community 176"
-Cohesion: 0.08
+Cohesion: 0.13
 Nodes (24): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+16 more)
 
 ### Community 177 - "Community 177"
-Cohesion: 0.08
+Cohesion: 0.07
 Nodes (25): 1. Context & Objective (KR), 2. Requirements & Constraints, 3.1. Full Stack Deployment, 3.2. Verification, 3. Setup & Installation, 4.1. Access Endpoints, 4.2. Storage Interfaces, 4. Usage & Integration (+17 more)
 
 ### Community 178 - "Community 178"
 Cohesion: 0.08
-Nodes (24): Change Scope, Coverage Ledger, Decision Log, Deferred Risk Register, Env Key Comparison, Final Report Evidence Map, Gap Registry, Inputs (+16 more)
+Nodes (25): Change Scope, Coverage Ledger, Decision Log, Deferred Risk Register, Env Key Comparison, Final Report Evidence Map, Gap Registry, Inputs (+17 more)
 
 ### Community 179 - "Community 179"
-Cohesion: 0.08
-Nodes (23): 1. Context & Objective, 2. Requirements & Constraints, 3. Setup & Installation, 4. Usage & Integration, 5. Maintenance & Safety, Constraints, Core Stack Deployment, Data Tier (04-data) (+15 more)
+Cohesion: 0.06
+Nodes (31): 1. Context & Objective, 2. Requirements & Constraints, 3. Setup & Installation, 4. Usage & Integration, 5. Maintenance & Safety, Constraints, Core Stack Deployment, Data Tier (04-data) (+23 more)
 
 ### Community 180 - "Community 180"
-Cohesion: 0.10
-Nodes (23): 1. Understanding Routing Tree, 2. Configuring Receivers, 3. Applying Silences, Alertmanager Notification Routing Usage (06-observability), Alertmanager Operational Policy (06-observability) Usage Guide, Common Checks, Common Pitfalls, Common Pitfalls (+15 more)
+Cohesion: 0.09
+Nodes (24): 1. Understanding Routing Tree, 2. Configuring Receivers, 3. Applying Silences, Alertmanager Notification Routing Usage (06-observability), Alertmanager Operational Policy (06-observability) Usage Guide, Common Checks, Common Pitfalls, Common Pitfalls (+16 more)
 
 ### Community 181 - "Community 181"
 Cohesion: 0.08
-Nodes (24): 1. 워크플로우 배포 및 테스트, 2. 자격 증명(Credentials) 관리, 3. 노드 라이브러리 확장, Access and Integration, AI Agent Guidance, Appendix: Links, Architecture and Components, Common Checks (+16 more)
+Nodes (25): 1. 워크플로우 배포 및 테스트, 2. 자격 증명(Credentials) 관리, 3. 노드 라이브러리 확장, Access and Integration, AI Agent Guidance, Appendix: Links, Architecture and Components, Common Checks (+17 more)
 
 ### Community 182 - "Community 182"
 Cohesion: 0.10
-Nodes (25): 1. Connection Failure Troubleshooting, 2. Configuration Reset, 3. Log Inspection, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist, Escalation (+17 more)
+Nodes (26): 1. Connection Failure Troubleshooting, 2. Configuration Reset, 3. Log Inspection, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist, Escalation (+18 more)
 
 ### Community 183 - "Community 183"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 184 - "Community 184"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 185 - "Community 185"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 186 - "Community 186"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 187 - "Community 187"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 188 - "Community 188"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 189 - "Community 189"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 190 - "Community 190"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 191 - "Community 191"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, editable, fiscalYearStartMonth, graphTooltip, id, links, panels (+15 more)
 
 ### Community 192 - "Community 192"
 Cohesion: 0.10
-Nodes (25): EN, KR, Overview (KR), Overview (KR/EN), Purpose, Related Documents, 1. 클러스터 수동 리더 변경 (Switchover), 2. etcd 쿼럼 복구 (전체 장애 시) (+17 more)
+Nodes (26): EN, KR, Overview, Overview (KR), Overview (KR/EN), Purpose, Related Documents, 1. 클러스터 수동 리더 변경 (Switchover) (+18 more)
 
 ### Community 193 - "Community 193"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 194 - "Community 194"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 195 - "Community 195"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 196 - "Community 196"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 197 - "Community 197"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 198 - "Community 198"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 199 - "Community 199"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 200 - "Community 200"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, editable, fiscalYearStartMonth, graphTooltip, id, links, panels (+15 more)
 
 ### Community 201 - "Community 201"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 202 - "Community 202"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 203 - "Community 203"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 204 - "Community 204"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 205 - "Community 205"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 206 - "Community 206"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, editable, fiscalYearStartMonth, graphTooltip, id, links, panels (+15 more)
 
 ### Community 207 - "Community 207"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 208 - "Community 208"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 209 - "Community 209"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 210 - "Community 210"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 211 - "Community 211"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 212 - "Community 212"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 213 - "Community 213"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 214 - "Community 214"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 215 - "Community 215"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 216 - "Community 216"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 217 - "Community 217"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 218 - "Community 218"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 219 - "Community 219"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 220 - "Community 220"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 221 - "Community 221"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 222 - "Community 222"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 223 - "Community 223"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 224 - "Community 224"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 225 - "Community 225"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 226 - "Community 226"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 227 - "Community 227"
-Cohesion: 0.08
+Cohesion: 0.14
 Nodes (23): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+15 more)
 
 ### Community 228 - "Community 228"
-Cohesion: 0.09
-Nodes (22): 1. Broker Quorum Recovery (Single node down), 1. Quorum Failure (KRaft), 2. Partition Rebalancing, 3. Schema Registry Incompatibility, Agent Operations, Agent Operations (If Applicable), Canonical References, Checklist (+14 more)
+Cohesion: 0.08
+Nodes (23): 1. Broker Quorum Recovery (Single node down), 1. Quorum Failure (KRaft), 2. Partition Rebalancing, 3. Schema Registry Incompatibility, Agent Operations, Agent Operations (If Applicable), Canonical References, Checklist (+15 more)
 
 ### Community 229 - "Community 229"
-Cohesion: 0.09
-Nodes (22): 1. Prometheus Container Crash (OOM/Corruption), 2. Scrape Target Unavailable, 3. Alerting Rule Evaluation Failure, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+14 more)
+Cohesion: 0.08
+Nodes (23): 1. Prometheus Container Crash (OOM/Corruption), 2. Scrape Target Unavailable, 3. Alerting Rule Evaluation Failure, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+15 more)
 
 ### Community 230 - "Community 230"
-Cohesion: 0.09
-Nodes (22): 1. Initial Health & API Check, 2. GPU Recognition Recovery, 3. VRAM OOM Mitigation, 4. Model Integrity Check, 5. Open WebUI Dependency Recheck, Agent Operations (If Applicable), Canonical References, Checklist (+14 more)
+Cohesion: 0.08
+Nodes (23): 1. Initial Health & API Check, 2. GPU Recognition Recovery, 3. VRAM OOM Mitigation, 4. Model Integrity Check, 5. Open WebUI Dependency Recheck, Agent Operations (If Applicable), Canonical References, Checklist (+15 more)
 
 ### Community 231 - "Community 231"
-Cohesion: 0.09
-Nodes (22): 1. Initial Triage, 2. Dependency Connectivity Check, 3. SQLite Backup and Recovery, 4. RAG Index Re-sync, 5. Service Restart Path, Agent Operations (If Applicable), Canonical References, Checklist (+14 more)
+Cohesion: 0.08
+Nodes (23): 1. Initial Triage, 2. Dependency Connectivity Check, 3. SQLite Backup and Recovery, 4. RAG Index Re-sync, 5. Service Restart Path, Agent Operations (If Applicable), Canonical References, Checklist (+15 more)
 
 ### Community 232 - "Community 232"
 Cohesion: 0.11
-Nodes (23): 1. 서비스 상태 확인 Checklist, 2. 일반 장애 복구 Procedure, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Mail Recovery Procedure (+15 more)
+Nodes (24): 1. 서비스 상태 확인 Checklist, 2. 일반 장애 복구 Procedure, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Mail Recovery Procedure (+16 more)
 
 ### Community 233 - "Community 233"
 Cohesion: 0.09
 Nodes (23): Prometheus rule group: Minio_alerts, Prometheus alert: MinioClusterDiskOffline, Prometheus alert: MinioDiskSpaceUsage, Prometheus alert: MinioServiceDown, Prometheus rule group: postgres_alerts, Prometheus alert: PostgresConnectionsExhausted, Prometheus alert: PostgresDeadlocks, Prometheus alert: PostgresDown (+15 more)
 
 ### Community 234 - "Community 234"
-Cohesion: 0.09
+Cohesion: 0.14
 Nodes (22): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+14 more)
 
 ### Community 235 - "Community 235"
-Cohesion: 0.09
+Cohesion: 0.14
 Nodes (22): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+14 more)
 
 ### Community 236 - "Community 236"
-Cohesion: 0.09
+Cohesion: 0.14
 Nodes (22): annotations, list, description, editable, fiscalYearStartMonth, graphTooltip, id, links (+14 more)
 
 ### Community 237 - "Community 237"
@@ -1976,19 +2080,19 @@ Cohesion: 0.13
 Nodes (23): Applications Dashboard Provider, Gateway Dashboard Provider, Grafana Dashboard Provider Provisioning, Infrastructure Dashboard Provider, Kubernetes Dashboard Provider, Observability Dashboard Provider, Security Dashboard Provider, alertmanager Compose Service (+15 more)
 
 ### Community 238 - "Community 238"
-Cohesion: 0.09
-Nodes (22): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Current Baseline, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+14 more)
+Cohesion: 0.08
+Nodes (23): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Current Baseline, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+15 more)
 
 ### Community 239 - "Community 239"
-Cohesion: 0.09
+Cohesion: 0.14
 Nodes (22): annotations, list, editable, fiscalYearStartMonth, graphTooltip, id, links, panels (+14 more)
 
 ### Community 240 - "Community 240"
-Cohesion: 0.09
+Cohesion: 0.14
 Nodes (22): annotations, list, editable, fiscalYearStartMonth, graphTooltip, id, links, panels (+14 more)
 
 ### Community 241 - "Community 241"
-Cohesion: 0.09
+Cohesion: 0.14
 Nodes (22): annotations, list, editable, fiscalYearStartMonth, graphTooltip, id, links, panels (+14 more)
 
 ### Community 242 - "Community 242"
@@ -2000,32 +2104,32 @@ Cohesion: 0.09
 Nodes (23): Prometheus scrape job: airflow-exporter (airflow-statsd-exporter:9102), Prometheus scrape job: airflow-monitor (airflow-statsd-exporter:9102), Prometheus scrape job: argo-rollouts (172.18.0.2:30092), Prometheus scrape job: argocd-application-controller (172.18.0.2:30082), Prometheus scrape job: argocd-applicationset-controller (172.18.0.2:30085), Prometheus scrape job: argocd-notifications-controller (172.18.0.2:30086), Prometheus scrape job: argocd-repo-server (172.18.0.2:30084), Prometheus scrape job: argocd-server (172.18.0.2:30083) (+15 more)
 
 ### Community 244 - "Community 244"
-Cohesion: 0.09
-Nodes (22): Change Scope, Coverage Ledger, Decision Log, Deferred Risk Register, Env Key Comparison, Final Report Evidence Map, Gap Registry, Inputs (+14 more)
+Cohesion: 0.08
+Nodes (23): Change Scope, Coverage Ledger, Decision Log, Deferred Risk Register, Env Key Comparison, Final Report Evidence Map, Gap Registry, Inputs (+15 more)
 
 ### Community 245 - "Community 245"
-Cohesion: 0.08
+Cohesion: 0.09
 Nodes (25): 01.Setup Operations, 1. Vault 서비스 실행, 2. Vault 초기화 (Initialization), 3. Vault Unseal 절차, 4. Vault Agent 연동 (선택 사항), Archive Ledger, Archive Metadata, Archive Tombstone: 03-Security Setup Guide (+17 more)
 
 ### Community 246 - "Community 246"
 Cohesion: 0.09
-Nodes (21): 01.Lgtm Stack Operations, 1. Unified Visualization, 2. Storage Integration (MinIO), Alerting Rule Management, Common Checks, Common Pitfalls, Core Workflows, Dashboard Provisioning (+13 more)
+Nodes (22): 01.Lgtm Stack Operations, 1. Unified Visualization, 2. Storage Integration (MinIO), Alerting Rule Management, Common Checks, Common Pitfalls, Core Workflows, Dashboard Provisioning (+14 more)
 
 ### Community 247 - "Community 247"
-Cohesion: 0.10
+Cohesion: 0.11
 Nodes (22): 02.Rag Workflow Operations, 1. 벡터 데이터베이스 연동, 2. 문서 임베딩 및 업로드, 3. 검색 및 응답 (Retrieval), Common Checks, Common Pitfalls, Core Components, Implementation Flow (+14 more)
 
 ### Community 248 - "Community 248"
-Cohesion: 0.09
-Nodes (21): 1. Accessing the GUI, 2. Pairing a New Device, 3. Sharing the Sync Folder, Architecture Context, Common Checks, Common Pitfalls, Connection Failures, How-to Procedures (+13 more)
+Cohesion: 0.08
+Nodes (23): 1. Accessing the GUI, 2. Pairing a New Device, 3. Sharing the Sync Folder, Architecture Context, Common Checks, Common Pitfalls, Connection Failures, How-to Procedures (+15 more)
 
 ### Community 249 - "Community 249"
-Cohesion: 0.12
-Nodes (23): Agent Operations, Agent Operations (If Applicable), Canonical References, Case 1: UI 접속 실패, Case 2: SurrealDB 준비 실패, Case 3: 로그인 또는 credential storage 오류, Checklist, Escalation (+15 more)
+Cohesion: 0.11
+Nodes (24): Agent Operations, Agent Operations (If Applicable), Canonical References, Case 1: UI 접속 실패, Case 2: SurrealDB 준비 실패, Case 3: 로그인 또는 credential storage 오류, Checklist, Escalation (+16 more)
 
 ### Community 250 - "Community 250"
 Cohesion: 0.09
-Nodes (21): 99.templates, API Spec 템플릿 위치, Audience, Cross-link Rules, Documentation Contract, How to Work in This Area, In Scope, Lifecycle Rules (+13 more)
+Nodes (22): 99.templates, API Spec 템플릿 위치, Audience, Category Catalog, Cross-link Rules, Documentation Contract, How to Work in This Area, In Scope (+14 more)
 
 ### Community 251 - "Community 251"
 Cohesion: 0.09
@@ -2037,27 +2141,27 @@ Nodes (22): Common Checks, Common Pitfalls, Deprecated / 불명확 키, `.env.ex
 
 ### Community 253 - "Community 253"
 Cohesion: 0.09
-Nodes (21): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable) (+13 more)
+Nodes (22): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable) (+14 more)
 
 ### Community 254 - "Community 254"
 Cohesion: 0.09
-Nodes (21): Automated Tests, Completion Criteria, Context, Documentation Layer, Goal Description, Goals & In-Scope, Implementation Plan - 10-communication Standardization, Infrastructure Layer (+13 more)
+Nodes (22): Automated Tests, Completion Criteria, Context, Documentation Layer, Goal Description, Goals & In-Scope, Implementation Plan - 10-communication Standardization, Infrastructure Layer (+14 more)
 
 ### Community 255 - "Community 255"
-Cohesion: 0.09
-Nodes (21): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable), Failure Modes & Fallback / Human Escalation (+13 more)
+Cohesion: 0.08
+Nodes (23): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Applied Rules Summary, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable) (+15 more)
 
 ### Community 256 - "Community 256"
-Cohesion: 0.09
-Nodes (21): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable), Failure Modes & Fallback / Human Escalation (+13 more)
+Cohesion: 0.08
+Nodes (23): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Applied Rules Summary, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable) (+15 more)
 
 ### Community 257 - "Community 257"
-Cohesion: 0.10
-Nodes (20): 1. Service Restoration, 2. Configuration Validation, 3. Notification Test, Agent Operations (If Applicable), Alertmanager Recovery Procedure (06-observability), Alertmanager Runbook, Canonical References, Checklist (+12 more)
+Cohesion: 0.09
+Nodes (21): 1. Service Restoration, 2. Configuration Validation, 3. Notification Test, Agent Operations (If Applicable), Alertmanager Recovery Procedure (06-observability), Alertmanager Runbook, Canonical References, Checklist (+13 more)
 
 ### Community 258 - "Community 258"
-Cohesion: 0.10
-Nodes (20): 1. 비정상 메트릭 그룹 삭제, 2. 서비스 재시작 (In-memory 초기화), 3. 연결 테스트, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+12 more)
+Cohesion: 0.09
+Nodes (21): 1. 비정상 메트릭 그룹 삭제, 2. 서비스 재시작 (In-memory 초기화), 3. 연결 테스트, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+13 more)
 
 ### Community 259 - "Community 259"
 Cohesion: 0.09
@@ -2065,15 +2169,15 @@ Nodes (24): 01.Airflow Dag Dev Operations, 1. DAG 작성 표준, 2. 모니터링
 
 ### Community 260 - "Community 260"
 Cohesion: 0.10
-Nodes (20): 02.N8N Automation Operations, 1. 워크플로우 생성 및 실행, 2. 에러 핸들링, Common Checks, Common Pitfalls, Key Procedures, n8n Automation Usage (07-workflow), Overview (+12 more)
+Nodes (21): 02.N8N Automation Operations, 1. 워크플로우 생성 및 실행, 2. 에러 핸들링, Common Checks, Common Pitfalls, Key Procedures, n8n Automation Usage (07-workflow), Overview (+13 more)
 
 ### Community 261 - "Community 261"
-Cohesion: 0.10
-Nodes (20): Agent Operations (If Applicable), Airflow Recovery Procedure, Airflow Runbook, Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+12 more)
+Cohesion: 0.09
+Nodes (21): Agent Operations (If Applicable), Airflow Recovery Procedure, Airflow Runbook, Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+13 more)
 
 ### Community 262 - "Community 262"
-Cohesion: 0.10
-Nodes (20): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, n8n Recovery Procedure, n8n Runbook, Observability and Evidence Sources (+12 more)
+Cohesion: 0.09
+Nodes (21): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, n8n Recovery Procedure, n8n Runbook, Observability and Evidence Sources (+13 more)
 
 ### Community 263 - "Community 263"
 Cohesion: 0.09
@@ -2084,32 +2188,32 @@ Cohesion: 0.09
 Nodes (24): 01.Iac Automation Operations, 1. 워크스페이스 구성, 2. 실행 및 승인 프로세스, Architecture, Archive Ledger, Archive Metadata, Archive Tombstone: 09-Tooling IaC Automation Guide, Common Checks (+16 more)
 
 ### Community 265 - "Community 265"
-Cohesion: 0.09
-Nodes (21): 10-communication - Communication Tier, Architecture, Component Diagram, Deployment, Downstream Consumers, Governance, Integration, Key Ports (+13 more)
+Cohesion: 0.06
+Nodes (29): 10-communication - Communication Tier, Architecture, Component Diagram, Deployment, Downstream Consumers, Governance, Integration, Key Ports (+21 more)
 
 ### Community 266 - "Community 266"
 Cohesion: 0.12
-Nodes (22): 1. Configuration Validation and Recovery, 2. Service Refresh, 3. Assets Check, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+14 more)
+Nodes (23): 1. Configuration Validation and Recovery, 2. Service Refresh, 3. Assets Check, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+15 more)
 
 ### Community 267 - "Community 267"
-Cohesion: 0.09
-Nodes (21): 11-laboratory - Management & Laboratory Tier, Architecture, Component Diagram, Deployment, Downstream Consumers, Governance, Integration, Key Ports (+13 more)
+Cohesion: 0.06
+Nodes (29): 11-laboratory - Management & Laboratory Tier, Architecture, Component Diagram, Deployment, Downstream Consumers, Governance, Integration, Key Ports (+21 more)
 
 ### Community 268 - "Community 268"
 Cohesion: 0.12
-Nodes (22): Overview (KR), Purpose, Related Documents, 1. Database Dump (Backup), 2. Database Load (Restore), 3. Password Rotation, Agent Operations (If Applicable), Canonical References (+14 more)
+Nodes (23): Overview, Overview (KR), Purpose, Related Documents, 1. Database Dump (Backup), 2. Database Load (Restore), 3. Password Rotation, Agent Operations (If Applicable) (+15 more)
 
 ### Community 269 - "Community 269"
 Cohesion: 0.12
-Nodes (22): Overview (KR), Purpose, Related Documents, 1. Collection Snapshot Execution, 2. Restoration from Snapshot, 3. Emergency Health Recovery, Agent Operations (If Applicable), Canonical References (+14 more)
+Nodes (23): Overview, Overview (KR), Purpose, Related Documents, 1. Collection Snapshot Execution, 2. Restoration from Snapshot, 3. Emergency Health Recovery, Agent Operations (If Applicable) (+15 more)
 
 ### Community 270 - "Community 270"
-Cohesion: 0.10
+Cohesion: 0.09
 Nodes (20): 1. Prerequisites, 2. Integrated Execution (Standard), 3. Standalone Verification, AI Agent Guidance, Audience, Compose Inventory Snapshot, Execution Model, Getting Started (+12 more)
 
 ### Community 271 - "Community 271"
-Cohesion: 0.10
-Nodes (20): Agent Role & IO Contract, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation, Failure Modes & Fallback / Human Escalation (+12 more)
+Cohesion: 0.09
+Nodes (21): Agent Role & IO Contract, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation, Failure Modes & Fallback / Human Escalation (+13 more)
 
 ### Community 272 - "Community 272"
 Cohesion: 0.10
@@ -2117,31 +2221,31 @@ Nodes (20): AI Agent Guidance, Audience, Configuration, Environment Variables, H
 
 ### Community 273 - "Community 273"
 Cohesion: 0.09
-Nodes (23): 1. Simple Stream Creation, 2. Materialized Views, Archive Ledger, Archive Metadata, Archive Tombstone: ksqlDB Streaming Operations, Common Checks, Common Pitfalls, Current Replacement (+15 more)
+Nodes (24): 1. Simple Stream Creation, 2. Materialized Views, Archive Ledger, Archive Metadata, Archive Tombstone: ksqlDB Streaming Operations, Common Checks, Common Pitfalls, Current Replacement (+16 more)
 
 ### Community 274 - "Community 274"
 Cohesion: 0.10
-Nodes (19): 1. Log Ingestion Flow, 1. Searching Logs in Grafana, 2. Log Analysis (LogQL), 2. Monitoring Loki Health, Common Checks, Common Pitfalls, Core Workflows, Loki Operational Policy Usage Guide (+11 more)
+Nodes (20): 1. Log Ingestion Flow, 1. Searching Logs in Grafana, 2. Log Analysis (LogQL), 2. Monitoring Loki Health, Common Checks, Common Pitfalls, Core Workflows, Loki Operational Policy Usage Guide (+12 more)
 
 ### Community 275 - "Community 275"
 Cohesion: 0.10
-Nodes (19): Agent Operations (If Applicable), Canonical References, Checklist, Docker Registry Runbook, Escalation, Evidence, Observability and Evidence Sources, Procedure (+11 more)
+Nodes (20): Agent Operations (If Applicable), Canonical References, Checklist, Docker Registry Runbook, Escalation, Evidence, Observability and Evidence Sources, Procedure (+12 more)
 
 ### Community 276 - "Community 276"
-Cohesion: 0.13
-Nodes (21): Agent Operations (If Applicable), Canonical References, Case 1: 로그 스트림 업데이트 중단, Case 2: 특정 컨테이너 로그 미노출, Checklist, Dozzle Procedure, Dozzle Recovery Procedure, Dozzle Recovery Runbook (+13 more)
+Cohesion: 0.12
+Nodes (22): Agent Operations (If Applicable), Canonical References, Case 1: 로그 스트림 업데이트 중단, Case 2: 특정 컨테이너 로그 미노출, Checklist, Dozzle Procedure, Dozzle Recovery Procedure, Dozzle Recovery Runbook (+14 more)
 
 ### Community 277 - "Community 277"
-Cohesion: 0.13
-Nodes (21): 1. 클러스터 상태 진단, 2. 슬롯 자동 복구, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+13 more)
+Cohesion: 0.12
+Nodes (22): 1. 클러스터 상태 진단, 2. 슬롯 자동 복구, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+14 more)
 
 ### Community 278 - "Community 278"
 Cohesion: 0.10
-Nodes (19): EN, KR, Overview (KR), Overview (KR/EN), Purpose, Related Documents, 1. 클러스터 상태 모니터링, 2. 애플리케이션 연결 정의 (+11 more)
+Nodes (20): EN, KR, Overview, Overview (KR), Overview (KR/EN), Purpose, Related Documents, 1. 클러스터 상태 모니터링 (+12 more)
 
 ### Community 279 - "Community 279"
-Cohesion: 0.13
-Nodes (21): Overview (KR), Purpose, Related Documents, Agent Operations (If Applicable), Canonical References, Checklist, Database Recovery, Escalation (+13 more)
+Cohesion: 0.12
+Nodes (22): Overview, Overview (KR), Purpose, Related Documents, Agent Operations (If Applicable), Canonical References, Checklist, Database Recovery (+14 more)
 
 ### Community 280 - "Community 280"
 Cohesion: 0.10
@@ -2149,7 +2253,7 @@ Nodes (19): Common Checks, Common Pitfalls, Common Pitfalls, Harness / Agent-fir
 
 ### Community 281 - "Community 281"
 Cohesion: 0.10
-Nodes (19): Definitions / Facts, In Scope, Maintenance, Migration Evaluation Criteria, Migration Roadmap Snapshot, Open Questions, Out of Scope, Overview (KR) (+11 more)
+Nodes (20): Definitions / Facts, In Scope, Maintenance, Migration Evaluation Criteria, Migration Roadmap Snapshot, Open Questions, Out of Scope, Overview (+12 more)
 
 ### Community 282 - "Community 282"
 Cohesion: 0.09
@@ -2160,16 +2264,16 @@ Cohesion: 0.10
 Nodes (20): AI Agent Operation Policy, Audience, Available Scripts, Configuration, Core Files, Docker Healthcheck, Environment Variables, How to Work in This Area (+12 more)
 
 ### Community 284 - "Community 284"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (18): AI Agent Guidance, Change Impact, Configuration, Observability Tier (06-observability), Service Matrix, Service Readiness, Tech Stack, Testing (+10 more)
 
 ### Community 285 - "Community 285"
-Cohesion: 0.11
-Nodes (18): 1. Service & GPU Health Check, 2. Model Lifecycle (CLI), 3. Inference API Check, 4. Open WebUI Integration Check, 5. Exporter Observability Check, Common Checks, Common Pitfalls, Common Pitfalls (+10 more)
+Cohesion: 0.10
+Nodes (19): 1. Service & GPU Health Check, 2. Model Lifecycle (CLI), 3. Inference API Check, 4. Open WebUI Integration Check, 5. Exporter Observability Check, Common Checks, Common Pitfalls, Common Pitfalls (+11 more)
 
 ### Community 286 - "Community 286"
-Cohesion: 0.11
-Nodes (18): 1. Access & Authentication, 2. Model Selection & Chat, 3. RAG Document Indexing, 4. Quick Connectivity Checks, 5. Advanced Settings, Common Checks, Common Pitfalls, Common Pitfalls (+10 more)
+Cohesion: 0.10
+Nodes (19): 1. Access & Authentication, 2. Model Selection & Chat, 3. RAG Document Indexing, 4. Quick Connectivity Checks, 5. Advanced Settings, Common Checks, Common Pitfalls, Common Pitfalls (+11 more)
 
 ### Community 287 - "Community 287"
 Cohesion: 0.11
@@ -2188,20 +2292,20 @@ Cohesion: 0.10
 Nodes (19): AI Agent Guidance, Audience, Available Scripts, Configuration, Core Files, Docker Healthcheck, How to Work in This Area, In Scope (+11 more)
 
 ### Community 291 - "Community 291"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (18): AI Agent Guidance, Allowed Outputs, Audience, Change Impact, Configuration, Environment Variables, Guardrails, How to Work in This Area (+10 more)
 
 ### Community 292 - "Community 292"
-Cohesion: 0.11
-Nodes (18): 1. Document Creation, 2. README Refactoring, Automated Verification, Completion Criteria, Context, Goals & In-Scope, Manual Verification, Non-Goals & Out-of-Scope (+10 more)
+Cohesion: 0.10
+Nodes (19): 1. Document Creation, 2. README Refactoring, Automated Verification, Completion Criteria, Context, Goals & In-Scope, Manual Verification, Non-Goals & Out-of-Scope (+11 more)
 
 ### Community 293 - "Community 293"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (18): Audience, Available Scripts, Configuration, Documentation Standards, EN, Environment Variables, How to Work in This Area, In Scope (+10 more)
 
 ### Community 294 - "Community 294"
-Cohesion: 0.11
-Nodes (18): 1. Vault Server, 2. Vault Agent, 3. Templating System, Alternative Scopes, Architecture Diagram, Boundaries & Non-goals, Component Architecture, Constraints (+10 more)
+Cohesion: 0.10
+Nodes (19): 1. Vault Server, 2. Vault Agent, 3. Templating System, Alternative Scopes, Architecture Diagram, Boundaries & Non-goals, Component Architecture, Constraints (+11 more)
 
 ### Community 295 - "Community 295"
 Cohesion: 0.11
@@ -2213,31 +2317,31 @@ Nodes (18): AI Agent Guidance, Audience, Configuration Highlights, Healthcheck P
 
 ### Community 297 - "Community 297"
 Cohesion: 0.10
-Nodes (19): 01-gateway Setup Usage, 01.Setup Operations, 1. Initialize Network, 1. Verify Network Contract, 2. Configure Traefik, 3. Deploy Gateway Stack, 3. Validate Gateway Stack, 4. Verify Functionality (+11 more)
+Nodes (20): 01-gateway Setup Usage, 01.Setup Operations, 1. Initialize Network, 1. Verify Network Contract, 2. Configure Traefik, 3. Deploy Gateway Stack, 3. Validate Gateway Stack, 4. Verify Functionality (+12 more)
 
 ### Community 298 - "Community 298"
 Cohesion: 0.11
-Nodes (17): 01-Gateway Nginx Procedure, 01-Gateway Nginx Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 01-Gateway Nginx Procedure, 01-Gateway Nginx Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 299 - "Community 299"
 Cohesion: 0.11
-Nodes (17): Agent Role & IO Contract (If Applicable), API Contract, Component Boundary, Contracts, Core Design, Data Modeling & Storage Strategy, Gateway Tier (01-gateway) Technical Specification, Interfaces & Data Structures (+9 more)
+Nodes (18): Agent Role & IO Contract (If Applicable), API Contract, Component Boundary, Contracts, Core Design, Data Modeling & Storage Strategy, Gateway Tier (01-gateway) Technical Specification, Interfaces & Data Structures (+10 more)
 
 ### Community 300 - "Community 300"
 Cohesion: 0.11
-Nodes (17): 01-Gateway Traefik Procedure, 01-Gateway Traefik Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 01-Gateway Traefik Procedure, 01-Gateway Traefik Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 301 - "Community 301"
 Cohesion: 0.11
-Nodes (17): 02-Auth Keycloak Procedure, 02-Auth Keycloak Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 02-Auth Keycloak Procedure, 02-Auth Keycloak Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 302 - "Community 302"
 Cohesion: 0.11
-Nodes (17): 02-Auth OAuth2 Proxy Procedure, 02-Auth OAuth2 Proxy Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 02-Auth OAuth2 Proxy Procedure, 02-Auth OAuth2 Proxy Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 303 - "Community 303"
 Cohesion: 0.11
-Nodes (17): 03-Security Vault Procedure, 03-Security Vault Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 03-Security Vault Procedure, 03-Security Vault Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 304 - "Community 304"
 Cohesion: 0.11
@@ -2245,51 +2349,51 @@ Nodes (17): 04-Data Optimization Hardening Procedure, 04-Data Optimization Harde
 
 ### Community 305 - "Community 305"
 Cohesion: 0.11
-Nodes (17): 05-Messaging Optimization Hardening Procedure, 05-Messaging Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 05-Messaging Optimization Hardening Procedure, 05-Messaging Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 306 - "Community 306"
 Cohesion: 0.11
-Nodes (17): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources, Procedure, RabbitMQ Recovery Procedure (+9 more)
+Nodes (18): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources, Procedure, RabbitMQ Recovery Procedure (+10 more)
 
 ### Community 307 - "Community 307"
 Cohesion: 0.11
-Nodes (17): 1. Ingestion Protocol Tier, 2. Data Reliability & Performance, 3. Labeling and Taxonomy, Alerting Rules, Alloy Operational Policy Operations Policy, Configuration Governance, Controls, Exceptions (+9 more)
+Nodes (18): 1. Ingestion Protocol Tier, 2. Data Reliability & Performance, 3. Labeling and Taxonomy, Alerting Rules, Alloy Operational Policy Operations Policy, Configuration Governance, Controls, Exceptions (+10 more)
 
 ### Community 308 - "Community 308"
 Cohesion: 0.11
-Nodes (17): AI Agent Policy Section (If Applicable), Backup & Persistence, Controls, Dashboard Provisioning, Datasource Management, Exceptions, Grafana Operational Policy (06-observability) Operations Policy, Maintenance Procedures (+9 more)
+Nodes (18): AI Agent Policy Section (If Applicable), Backup & Persistence, Controls, Dashboard Provisioning, Datasource Management, Exceptions, Grafana Operational Policy (06-observability) Operations Policy, Maintenance Procedures (+10 more)
 
 ### Community 309 - "Community 309"
 Cohesion: 0.11
-Nodes (17): 06-Observability Optimization Hardening Procedure, 06-Observability Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 06-Observability Optimization Hardening Procedure, 06-Observability Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 310 - "Community 310"
 Cohesion: 0.11
-Nodes (17): AI Agent Policy Section (If Applicable), Backup and Restore, Compliance and Security, Controls, Exception Handling, Exceptions, Maintenance and Updates, n8n Operations Policy (+9 more)
+Nodes (18): AI Agent Policy Section (If Applicable), Backup and Restore, Compliance and Security, Controls, Exception Handling, Exceptions, Maintenance and Updates, n8n Operations Policy (+10 more)
 
 ### Community 311 - "Community 311"
 Cohesion: 0.11
-Nodes (17): 07-Workflow Optimization Hardening Procedure, 07-Workflow Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 07-Workflow Optimization Hardening Procedure, 07-Workflow Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 312 - "Community 312"
-Cohesion: 0.10
-Nodes (21): 1. Prerequisites, 2. Pulling Models, 3. Verification, 4. Integration with Open WebUI, Archive Ledger, Archive Metadata, Archive Tombstone: Local LLM Setup Guide, Common Checks (+13 more)
+Cohesion: 0.09
+Nodes (22): 1. Prerequisites, 2. Pulling Models, 3. Verification, 4. Integration with Open WebUI, Archive Ledger, Archive Metadata, Archive Tombstone: Local LLM Setup Guide, Common Checks (+14 more)
 
 ### Community 313 - "Community 313"
 Cohesion: 0.11
-Nodes (17): 08-AI Optimization Hardening Procedure, 08-AI Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 08-AI Optimization Hardening Procedure, 08-AI Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 314 - "Community 314"
-Cohesion: 0.12
-Nodes (17): 09-Tooling Optimization Hardening Procedure, 09-Tooling Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Cohesion: 0.11
+Nodes (18): 09-Tooling Optimization Hardening Procedure, 09-Tooling Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 315 - "Community 315"
 Cohesion: 0.11
-Nodes (17): 1. Workspace RBAC, 2. SSO Authentication, Access Control Policy, Controls, Exceptions, Monthly, Operations: Terrakube Policy Operations Policy, Policy Scope (+9 more)
+Nodes (18): 1. Workspace RBAC, 2. SSO Authentication, Access Control Policy, Controls, Exceptions, Monthly, Operations: Terrakube Policy Operations Policy, Policy Scope (+10 more)
 
 ### Community 316 - "Community 316"
 Cohesion: 0.11
-Nodes (17): 11-Laboratory Optimization Hardening Procedure, 11-Laboratory Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 11-Laboratory Optimization Hardening Procedure, 11-Laboratory Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 317 - "Community 317"
 Cohesion: 0.11
@@ -2300,44 +2404,44 @@ Cohesion: 0.11
 Nodes (17): AI Agent Guidance, Airflow (07-workflow), Audience, Available Scripts, Configuration, Environment Variables, How to Work in This Area, In Scope (+9 more)
 
 ### Community 319 - "Community 319"
-Cohesion: 0.15
-Nodes (18): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, InfluxDB Recovery Procedure, InfluxDB Recovery Runbook, InfluxDB Runbook (+10 more)
+Cohesion: 0.14
+Nodes (19): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, InfluxDB Recovery Procedure, InfluxDB Recovery Runbook, InfluxDB Runbook (+11 more)
 
 ### Community 320 - "Community 320"
-Cohesion: 0.15
-Nodes (18): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, ksqlDB Recovery Procedure, ksqlDB Recovery Runbook, ksqlDB Runbook (+10 more)
+Cohesion: 0.14
+Nodes (19): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, ksqlDB Recovery Procedure, ksqlDB Recovery Runbook, ksqlDB Runbook (+11 more)
 
 ### Community 321 - "Community 321"
-Cohesion: 0.15
-Nodes (18): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources, OpenSearch Recovery Procedure, OpenSearch Recovery Runbook (+10 more)
+Cohesion: 0.14
+Nodes (19): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources, OpenSearch Recovery Procedure, OpenSearch Recovery Runbook (+11 more)
 
 ### Community 322 - "Community 322"
-Cohesion: 0.15
-Nodes (18): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources, Procedure, Rollback or Recovery (+10 more)
+Cohesion: 0.14
+Nodes (19): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources, Procedure, Rollback or Recovery (+11 more)
 
 ### Community 323 - "Community 323"
-Cohesion: 0.11
-Nodes (18): Overview (KR), Purpose, Related Documents, Target Audience, 1. 연결 정보 확인 (Connection Info), 2. 버킷 초기화 및 자동화 (Bucket Initialization), 3. MinIO Client (mc) 사용 (Using mc), 4. 애플리케이션 연동 (App Integration) (+10 more)
+Cohesion: 0.10
+Nodes (19): Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. 연결 정보 확인 (Connection Info), 2. 버킷 초기화 및 자동화 (Bucket Initialization), 3. MinIO Client (mc) 사용 (Using mc) (+11 more)
 
 ### Community 324 - "Community 324"
 Cohesion: 0.11
-Nodes (20): Common Pitfalls, Overview (KR), Purpose, Related Documents, Target Audience, 1. 클러스터 상태 확인, 2. 데이터베이스 및 문서 생성, 3. 데이터 동기화 (Replication) (+12 more)
+Nodes (21): Common Pitfalls, Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. 클러스터 상태 확인, 2. 데이터베이스 및 문서 생성 (+13 more)
 
 ### Community 325 - "Community 325"
-Cohesion: 0.15
-Nodes (18): Common Pitfalls, Overview (KR), Purpose, Related Documents, Target Audience, 1. Monitoring & Alerting, 2. Backup Strategy, 3. Resource Management (+10 more)
+Cohesion: 0.14
+Nodes (19): Common Pitfalls, Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. Monitoring & Alerting, 2. Backup Strategy (+11 more)
 
 ### Community 326 - "Community 326"
-Cohesion: 0.15
-Nodes (18): Common Pitfalls, Overview (KR), Purpose, Related Documents, Target Audience, 1. Monitoring & Health Check, 2. Disk Management (Compaction), 3. Backup & DR (+10 more)
+Cohesion: 0.14
+Nodes (19): Common Pitfalls, Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. Monitoring & Health Check, 2. Disk Management (Compaction) (+11 more)
 
 ### Community 327 - "Community 327"
-Cohesion: 0.15
-Nodes (18): Common Pitfalls, Overview (KR), Purpose, Related Documents, Target Audience, 1. Monitoring & Alerting, 2. Backup & Restoration, 3. Security Maintenance (+10 more)
+Cohesion: 0.14
+Nodes (19): Common Pitfalls, Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. Monitoring & Alerting, 2. Backup & Restoration (+11 more)
 
 ### Community 328 - "Community 328"
-Cohesion: 0.15
-Nodes (19): Overview (KR), Purpose, Related Documents, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+11 more)
+Cohesion: 0.14
+Nodes (20): Overview, Overview (KR), Purpose, Related Documents, Agent Operations (If Applicable), Canonical References, Checklist, Escalation (+12 more)
 
 ### Community 329 - "Community 329"
 Cohesion: 0.11
@@ -2353,7 +2457,7 @@ Nodes (17): AI Agent Guidance, Audience, Available Scripts, Configuration, Envir
 
 ### Community 332 - "Community 332"
 Cohesion: 0.11
-Nodes (17): 02-Auth Documentation Standardization Implementation Plan, Automated Verification, Completion Criteria, Context, Goals & In-Scope, Manual Verification, Non-Goals & Out-of-Scope, Overview (KR) (+9 more)
+Nodes (18): 02-Auth Documentation Standardization Implementation Plan, Automated Verification, Completion Criteria, Context, Goals & In-Scope, Manual Verification, Non-Goals & Out-of-Scope, Overview (+10 more)
 
 ### Community 333 - "Community 333"
 Cohesion: 0.11
@@ -2376,76 +2480,76 @@ Cohesion: 0.11
 Nodes (17): AI Agent Guidance, Audience, Available Scripts, Configuration, How to Work in This Area, In Scope, Operational Status, Out of Scope (+9 more)
 
 ### Community 338 - "Community 338"
-Cohesion: 0.10
-Nodes (19): AI Agent Requirements, Functional Requirements, GPU Support Check, Key Use Cases, Model Availability Check, Overview (KR), Personas, Problem Statement (+11 more)
+Cohesion: 0.09
+Nodes (21): AI Agent Requirements, AI Agent Requirements (If Applicable), Functional Requirements, GPU Support Check, Key Use Cases, Model Availability Check, Overview, Overview (KR) (+13 more)
 
 ### Community 339 - "Community 339"
-Cohesion: 0.12
-Nodes (16): 02-Auth Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+8 more)
+Cohesion: 0.11
+Nodes (17): 02-Auth Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+9 more)
 
 ### Community 340 - "Community 340"
-Cohesion: 0.12
-Nodes (16): 04-Data Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+8 more)
+Cohesion: 0.11
+Nodes (17): 04-Data Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+9 more)
 
 ### Community 341 - "Community 341"
 Cohesion: 0.11
-Nodes (17): 1. 연결 정보 및 인증, 1. 연결 정보 및 인증 경계, 2. Management UI 접속, 3. 주요 설정 가이드, 4. 클라이언트 연동 예시 (Python/pika), Common Checks, Common Pitfalls, Prerequisites (+9 more)
+Nodes (18): 1. 연결 정보 및 인증, 1. 연결 정보 및 인증 경계, 2. Management UI 접속, 3. 주요 설정 가이드, 4. 클라이언트 연동 예시 (Python/pika), Common Checks, Common Pitfalls, Prerequisites (+10 more)
 
 ### Community 342 - "Community 342"
-Cohesion: 0.12
-Nodes (16): 05-Messaging Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+8 more)
+Cohesion: 0.11
+Nodes (17): 05-Messaging Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+9 more)
 
 ### Community 343 - "Community 343"
-Cohesion: 0.12
-Nodes (16): 1. 메트릭 전송 (Pushing Metrics), 2. 프로메테우스 스크랩 설정, 3. 메트릭 삭제 (Deleting Metrics), Common Checks, Common Pitfalls, Common Pitfalls, Prerequisites, Pushgateway Usage Guide (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. 메트릭 전송 (Pushing Metrics), 2. 프로메테우스 스크랩 설정, 3. 메트릭 삭제 (Deleting Metrics), Common Checks, Common Pitfalls, Common Pitfalls, Prerequisites, Pushgateway Usage Guide (+9 more)
 
 ### Community 344 - "Community 344"
-Cohesion: 0.12
-Nodes (16): 1. 프로파일링 데이터 확인 (Exploration), 2. 플레임그래프(Flamegraph) 분석, 3. 시간대 비교 (Diff View), 4. 분산 추적 연동 (Trace-to-Profile), Common Checks, Common Pitfalls, Prerequisites, Pyroscope Usage Guide (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. 프로파일링 데이터 확인 (Exploration), 2. 플레임그래프(Flamegraph) 분석, 3. 시간대 비교 (Diff View), 4. 분산 추적 연동 (Trace-to-Profile), Common Checks, Common Pitfalls, Prerequisites, Pyroscope Usage Guide (+9 more)
 
 ### Community 345 - "Community 345"
-Cohesion: 0.12
-Nodes (16): 06-Observability Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+8 more)
+Cohesion: 0.11
+Nodes (17): 06-Observability Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+9 more)
 
 ### Community 346 - "Community 346"
-Cohesion: 0.12
-Nodes (16): 1. 분산 추적 데이터 조회 (TraceQL), 2. Trace-to-Metrics Correlation, 3. Service Graphs 및 Dependency Map, 4. 로그와 연동 (Trace ID Correlation), Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. 분산 추적 데이터 조회 (TraceQL), 2. Trace-to-Metrics Correlation, 3. Service Graphs 및 Dependency Map, 4. 로그와 연동 (Trace ID Correlation), Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff (+9 more)
 
 ### Community 347 - "Community 347"
 Cohesion: 0.11
-Nodes (17): 1. 시스템 아키텍처 이해, 2. UI 접근 및 모니터링, 3. 개발 환경 검증, Airflow Usage Guide, Common Checks, Common Pitfalls, Common Pitfalls, Common Pitfalls (+9 more)
+Nodes (18): 1. 시스템 아키텍처 이해, 2. UI 접근 및 모니터링, 3. 개발 환경 검증, Airflow Usage Guide, Common Checks, Common Pitfalls, Common Pitfalls, Common Pitfalls (+10 more)
 
 ### Community 348 - "Community 348"
-Cohesion: 0.12
-Nodes (16): 1. 테스트 시나리오 작성 (Scripting), 2. 인프라 실행 (Deployment), 3. 테스트 실행 및 UI 관리 (Execution), 4. 지표 수집 확인 (Monitoring), Common Checks, Common Pitfalls, Locust Usage Guide, Prerequisites (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. 테스트 시나리오 작성 (Scripting), 2. 인프라 실행 (Deployment), 3. 테스트 실행 및 UI 관리 (Execution), 4. 지표 수집 확인 (Monitoring), Common Checks, Common Pitfalls, Locust Usage Guide, Prerequisites (+9 more)
 
 ### Community 349 - "Community 349"
-Cohesion: 0.12
-Nodes (16): 1. 테스트 시나리오 작성 (Scripting), 2. 분산 환경 실행 (Orchestration), 3. 부하 가동 및 모니터링 (Execution), 4. 결과 분석 (Analysis), Common Checks, Common Pitfalls, Performance Testing Usage Guide, Prerequisites (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. 테스트 시나리오 작성 (Scripting), 2. 분산 환경 실행 (Orchestration), 3. 부하 가동 및 모니터링 (Execution), 4. 결과 분석 (Analysis), Common Checks, Common Pitfalls, Performance Testing Usage Guide, Prerequisites (+9 more)
 
 ### Community 350 - "Community 350"
-Cohesion: 0.12
-Nodes (16): 1. 테스트 예약 및 사전 공지 (Pre-testing), 2. 환경 격리 (Environment Isolation), 3. 지표 관리 및 보존 (Retention), Controls, Exceptions, Governance & Compliance, Operational Standards, Performance Testing Operations Policy (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. 테스트 예약 및 사전 공지 (Pre-testing), 2. 환경 격리 (Environment Isolation), 3. 지표 관리 및 보존 (Retention), Controls, Exceptions, Governance & Compliance, Operational Standards, Performance Testing Operations Policy (+9 more)
 
 ### Community 351 - "Community 351"
-Cohesion: 0.12
-Nodes (16): 1. Registry Login (If Auth is Configured), 2. Image Tagging, 3. Image Push, 4. Image Pull, Common Checks, Common Pitfalls, Docker Registry Usage Guide, Prerequisites (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. Registry Login (If Auth is Configured), 2. Image Tagging, 3. Image Push, 4. Image Pull, Common Checks, Common Pitfalls, Docker Registry Usage Guide, Prerequisites (+9 more)
 
 ### Community 352 - "Community 352"
-Cohesion: 0.12
-Nodes (16): 1. Remote State Requirement, 2. State Backups, Compliance & Security, Controls, Credential Rotation, Deployment Workflow, Exceptions, Maintenance Cycles (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. Remote State Requirement, 2. State Backups, Compliance & Security, Controls, Credential Rotation, Deployment Workflow, Exceptions, Maintenance Cycles (+9 more)
 
 ### Community 353 - "Community 353"
 Cohesion: 0.11
-Nodes (17): 1. Initial Admin Setup, 2. Managing Containers, 3. Stack Deployment, Best Practices, Common Checks, Common Pitfalls, Portainer Usage Guide, Prerequisites (+9 more)
+Nodes (18): 1. Initial Admin Setup, 2. Managing Containers, 3. Stack Deployment, Best Practices, Common Checks, Common Pitfalls, Portainer Usage Guide, Prerequisites (+10 more)
 
 ### Community 354 - "Community 354"
-Cohesion: 0.12
-Nodes (16): 1. Connection Setup, 2. Key Analysis & Browser, 3. Using Profiler, Best Practices, Common Checks, Common Pitfalls, Prerequisites, RedisInsight Usage Guide (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. Connection Setup, 2. Key Analysis & Browser, 3. Using Profiler, Best Practices, Common Checks, Common Pitfalls, Prerequisites, RedisInsight Usage Guide (+9 more)
 
 ### Community 355 - "Community 355"
-Cohesion: 0.12
-Nodes (16): 90.references, Audience, Current References, How to Work in This Area, In Scope, Naming and Lifecycle Rules, Out of Scope, Overview (+8 more)
+Cohesion: 0.11
+Nodes (18): 90.references, Audience, Category Language Rules, Current References, How to Work in This Area, In Scope, Language Boundary, Naming and Lifecycle Rules (+10 more)
 
 ### Community 356 - "Community 356"
 Cohesion: 0.12
@@ -2468,51 +2572,51 @@ Cohesion: 0.12
 Nodes (16): AI Agent Guidance, Audience, Available Scripts, Configuration, Environment Variables, Grafana Alloy Unified Collector, How to Work in This Area, In Scope (+8 more)
 
 ### Community 361 - "Community 361"
-Cohesion: 0.12
-Nodes (16): 1. 버전 선택 (Version Selection), 2. 기본 버킷 관리 (Basic Bucket Management), 3. 검증 및 상태 확인 (Verification & Health Check), Common Checks, Common Pitfalls, Common Pitfalls, InfluxDB Usage Guide, Prerequisites (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. 버전 선택 (Version Selection), 2. 기본 버킷 관리 (Basic Bucket Management), 3. 검증 및 상태 확인 (Verification & Health Check), Common Checks, Common Pitfalls, Common Pitfalls, InfluxDB Usage Guide, Prerequisites (+9 more)
 
 ### Community 362 - "Community 362"
-Cohesion: 0.12
-Nodes (16): 1. API Access (REST), 2. Dashboards Usage, 3. Index Management, Common Checks, Common Pitfalls, Common Pitfalls, OpenSearch Usage Guide, Prerequisites (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. API Access (REST), 2. Dashboards Usage, 3. Index Management, Common Checks, Common Pitfalls, Common Pitfalls, OpenSearch Usage Guide, Prerequisites (+9 more)
 
 ### Community 363 - "Community 363"
-Cohesion: 0.12
-Nodes (16): 1. Connection via MySQL Client, 2. Creating Tables, 3. Data Ingestion (Stream Load), Common Checks, Common Pitfalls, Common Pitfalls, Prerequisites, Runbook Handoff (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. Connection via MySQL Client, 2. Creating Tables, 3. Data Ingestion (Stream Load), Common Checks, Common Pitfalls, Common Pitfalls, Prerequisites, Runbook Handoff (+9 more)
 
 ### Community 364 - "Community 364"
-Cohesion: 0.12
-Nodes (16): 1. 클러스터 초기화 및 상태 확인, 2. 클라이언트 연결 설정 (Cluster Mode), 3. 데이터 파티셔닝 이해, Common Checks, Common Pitfalls, Common Pitfalls, Prerequisites, Runbook Handoff (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. 클러스터 초기화 및 상태 확인, 2. 클라이언트 연결 설정 (Cluster Mode), 3. 데이터 파티셔닝 이해, Common Checks, Common Pitfalls, Common Pitfalls, Prerequisites, Runbook Handoff (+9 more)
 
 ### Community 365 - "Community 365"
 Cohesion: 0.18
 Nodes (17): Cache and KV Valkey Cluster Runbook, Data Architecture Document, 04-Data Specification, etcd Cluster, MongoDB Replica Set, MongoDB Operation Policy Runbook, NodeDiskSpaceFilled Alert, Patroni Failover (+9 more)
 
 ### Community 366 - "Community 366"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (16): Apache Cassandra, Audience, Available Scripts, Configuration, Environment Variables, How to Work in This Area, In Scope, Out of Scope (+8 more)
 
 ### Community 367 - "Community 367"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (16): Audience, Available Scripts, Configuration, CouchDB Cluster, Environment Variables, How to Work in This Area, In Scope, Out of Scope (+8 more)
 
 ### Community 368 - "Community 368"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (16): Audience, Available Scripts, Change Impact, Configuration, Environment Variables, How to Work in This Area, In Scope, Laboratory Dashboard (Homer) (+8 more)
 
 ### Community 369 - "Community 369"
 Cohesion: 0.11
-Nodes (17): Overview (KR), Purpose, Related Documents, Target Audience, 1. S3 API 활용 (Using S3 API), 2. Filer API (CDN) 활용 (Using Filer API), 3. FUSE 호스트 마운트 (FUSE Host Mount), 4. 클러스터 모니터링 (Cluster Monitoring) (+9 more)
+Nodes (18): Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. S3 API 활용 (Using S3 API), 2. Filer API (CDN) 활용 (Using Filer API), 3. FUSE 호스트 마운트 (FUSE Host Mount) (+10 more)
 
 ### Community 370 - "Community 370"
-Cohesion: 0.12
-Nodes (19): Common Pitfalls, Overview (KR), Purpose, Related Documents, Target Audience, 1. Cassandra 서비스 상태 확인, 2. CQLSH를 통한 데이터베이스 접속, 3. 데이터 모델링 가이드 (+11 more)
+Cohesion: 0.11
+Nodes (20): Common Pitfalls, Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. Cassandra 서비스 상태 확인, 2. CQLSH를 통한 데이터베이스 접속 (+12 more)
 
 ### Community 371 - "Community 371"
-Cohesion: 0.12
-Nodes (19): Common Pitfalls, Overview (KR), Purpose, Related Documents, Target Audience, 1. 레플리카 셋 상태 진단, 2. 애플리케이션 연결, 3. 관리 UI 접근 (+11 more)
+Cohesion: 0.11
+Nodes (20): Common Pitfalls, Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. 레플리카 셋 상태 진단, 2. 애플리케이션 연결 (+12 more)
 
 ### Community 372 - "Community 372"
-Cohesion: 0.12
+Cohesion: 0.16
 Nodes (16): effective_date, owner_role, policy_id, quickwin_baseline, healthcheck_exceptions, secrets_exceptions, review_cadence, security_baseline (+8 more)
 
 ### Community 373 - "Community 373"
@@ -2520,7 +2624,7 @@ Cohesion: 0.12
 Nodes (16): Audience, Available Scripts, Configuration, Environment Variables, How to Work in This Area, In Scope, MongoDB Replica Set, Out of Scope (+8 more)
 
 ### Community 374 - "Community 374"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (16): 1. Initial Setup, 2. Environment Management, Audience, Available Scripts, How to Work in This Area, Implementation Details, Laboratory Portainer, Overview (+8 more)
 
 ### Community 375 - "Community 375"
@@ -2536,32 +2640,32 @@ Cohesion: 0.12
 Nodes (16): 1. Initial Setup, 2. Basic Usage, Audience, Available Scripts, How to Work in This Area, Implementation Details, Laboratory RedisInsight, Overview (+8 more)
 
 ### Community 378 - "Community 378"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (16): Audience, Available Scripts, Configuration, Docker Registry, Environment Variables, How to Work in This Area, In Scope, Out of Scope (+8 more)
 
 ### Community 379 - "Community 379"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (16): Audience, Available Scripts, Configuration, Environment Variables, How to Work in This Area, In Scope, Out of Scope, Overview (+8 more)
 
 ### Community 380 - "Community 380"
-Cohesion: 0.12
-Nodes (16): Agent Role & IO Contract (If Applicable), Assigned IP Mapping Table (Authoritative), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Interfaces & Data Structures, Network Definition Example (Root) (+8 more)
+Cohesion: 0.11
+Nodes (17): Agent Role & IO Contract (If Applicable), Assigned IP Mapping Table (Authoritative), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Interfaces & Data Structures, Network Definition Example (Root) (+9 more)
 
 ### Community 381 - "Community 381"
-Cohesion: 0.12
-Nodes (16): Agent-specific Types (If Applicable), Disposition Findings, Inputs, Overview (KR), Phase 1 - Baseline Corroboration, Phase 2 - Strategy Integration Evidence, Phase 3 - Verification Closure, Phase View (Optional) (+8 more)
+Cohesion: 0.11
+Nodes (17): Agent-specific Types (If Applicable), Disposition Findings, Inputs, Overview, Overview (KR), Phase 1 - Baseline Corroboration, Phase 2 - Strategy Integration Evidence, Phase 3 - Verification Closure (+9 more)
 
 ### Community 382 - "Community 382"
-Cohesion: 0.12
-Nodes (16): Agent-specific Types (If Applicable), Approved Surface Evidence, Disposition Evidence, Implementation Alignment Results, Inputs, Overview (KR), Phase 1 - Discovery and Validator, Phase 2 - Reconciliation (+8 more)
+Cohesion: 0.11
+Nodes (17): Agent-specific Types (If Applicable), Approved Surface Evidence, Disposition Evidence, Implementation Alignment Results, Inputs, Overview, Overview (KR), Phase 1 - Discovery and Validator (+9 more)
 
 ### Community 383 - "Community 383"
 Cohesion: 0.12
 Nodes (15): AI Agent Guidance, Allowed Outputs, Audience, Documentation Standards, Guardrails, How to Work in This Area, In Scope, Out of Scope (+7 more)
 
 ### Community 384 - "Community 384"
-Cohesion: 0.12
-Nodes (15): AI Agent Guidance, Auth Tier (02-auth), Change Impact, Configuration, Environment Variables, Tech Stack, Testing, Audience (+7 more)
+Cohesion: 0.08
+Nodes (23): AI Agent Guidance, Auth Tier (02-auth), Change Impact, Configuration, Environment Variables, Tech Stack, Testing, Audience (+15 more)
 
 ### Community 385 - "Community 385"
 Cohesion: 0.12
@@ -2569,11 +2673,11 @@ Nodes (15): AI Agent Guidance, Change Impact, Configuration, Environment Variabl
 
 ### Community 386 - "Community 386"
 Cohesion: 0.12
-Nodes (15): 03-Security Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation (+7 more)
+Nodes (16): 03-Security Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation (+8 more)
 
 ### Community 387 - "Community 387"
 Cohesion: 0.12
-Nodes (15): 1. Security & Access Control, 2. Resource Management, 3. Queue Management, 4. Backup & Persistence Strategies, Controls, Core Policies, Exceptions, Monitoring Standards (+7 more)
+Nodes (16): 1. Security & Access Control, 2. Resource Management, 3. Queue Management, 4. Backup & Persistence Strategies, Controls, Core Policies, Exceptions, Monitoring Standards (+8 more)
 
 ### Community 388 - "Community 388"
 Cohesion: 0.12
@@ -2581,15 +2685,15 @@ Nodes (15): AI Agent Guidance, Change Impact, Configuration, Messaging Tier (05-
 
 ### Community 389 - "Community 389"
 Cohesion: 0.12
-Nodes (15): 1. Understanding the Pipeline, 2. OTLP Ingestion, 3. Pipeline Debugging (Alloy UI), Alloy Operational Policy Usage Guide, Common Checks, Runbook Handoff, Usage, Usage Type (+7 more)
+Nodes (16): 1. Understanding the Pipeline, 2. OTLP Ingestion, 3. Pipeline Debugging (Alloy UI), Alloy Operational Policy Usage Guide, Common Checks, Runbook Handoff, Usage, Usage Type (+8 more)
 
 ### Community 390 - "Community 390"
 Cohesion: 0.12
-Nodes (15): Agent Role, Context & Memory Strategy, Evaluation Plan, Failure Modes & Fallback, Guardrails, Inputs / Outputs, Observability, Orchestration Model (+7 more)
+Nodes (16): Agent Role, Context & Memory Strategy, Evaluation Plan, Failure Modes & Fallback, Guardrails, Inputs / Outputs, Observability, Orchestration Model (+8 more)
 
 ### Community 391 - "Community 391"
 Cohesion: 0.12
-Nodes (15): 1. DAG Definition Pattern, 2. File Placement, Airflow Dag Basics Operations, Airflow DAG Basics Usage, Common Checks, Common Pitfalls, Overview (KR), Prerequisites (+7 more)
+Nodes (16): 1. DAG Definition Pattern, 2. File Placement, Airflow Dag Basics Operations, Airflow DAG Basics Usage, Common Checks, Common Pitfalls, Overview, Overview (KR) (+8 more)
 
 ### Community 392 - "Community 392"
 Cohesion: 0.12
@@ -2597,39 +2701,39 @@ Nodes (15): AI Agent Guidance, Change Impact, Configuration, Service Matrix, Tec
 
 ### Community 393 - "Community 393"
 Cohesion: 0.12
-Nodes (15): 07-Workflow Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation, Interfaces & Data Structures (+7 more)
+Nodes (16): 07-Workflow Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation, Interfaces & Data Structures (+8 more)
 
 ### Community 394 - "Community 394"
 Cohesion: 0.12
-Nodes (15): 08-AI Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), AI Hardening Control Surface, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation (+7 more)
+Nodes (16): 08-AI Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), AI Hardening Control Surface, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation (+8 more)
 
 ### Community 395 - "Community 395"
 Cohesion: 0.12
-Nodes (15): 1. 테스트 시나리오 정의, 2. 인프라 부팅, 3. 테스트 실행 및 분석, Common Checks, Common Pitfalls, k6 Usage Guide, Prerequisites, Runbook Handoff (+7 more)
+Nodes (16): 1. 테스트 시나리오 정의, 2. 인프라 부팅, 3. 테스트 실행 및 분석, Common Checks, Common Pitfalls, k6 Usage Guide, Prerequisites, Runbook Handoff (+8 more)
 
 ### Community 396 - "Community 396"
 Cohesion: 0.12
-Nodes (15): 1. 테스팅 수행 윈도우, 2. 리소스 및 비용 관리, 3. 보안 표준, Controls, Exceptions, k6 Operations Policy, Monitoring Requirements, Operational Standards (+7 more)
+Nodes (16): 1. 테스팅 수행 윈도우, 2. 리소스 및 비용 관리, 3. 보안 표준, Controls, Exceptions, k6 Operations Policy, Monitoring Requirements, Operational Standards (+8 more)
 
 ### Community 397 - "Community 397"
 Cohesion: 0.12
-Nodes (15): 1. 테스트 실행 거버넌스 (Governance), 2. 리소스 스케일링 정책 (Scaling), 3. 데이터 보존 및 보안 (Data & Security), Controls, Exceptions, Locust Operations Policy, Operational Standards, Policy Goals (+7 more)
+Nodes (16): 1. 테스트 실행 거버넌스 (Governance), 2. 리소스 스케일링 정책 (Scaling), 3. 데이터 보존 및 보안 (Data & Security), Controls, Exceptions, Locust Operations Policy, Operational Standards, Policy Goals (+8 more)
 
 ### Community 398 - "Community 398"
 Cohesion: 0.12
-Nodes (15): 09-Tooling Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation, Interfaces & Data Structures (+7 more)
+Nodes (16): 09-Tooling Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation, Interfaces & Data Structures (+8 more)
 
 ### Community 399 - "Community 399"
-Cohesion: 0.11
-Nodes (18): 1. Compose 경계 확인, 1. Stalwart 운영 서버 설정 (Production), 2. MailHog 개발 워크플로우 (Development), 2. Stalwart 운영 서버 사용, 3. MailHog 개발 워크플로우, Client Configuration (Stalwart), Common Checks, Common Pitfalls (+10 more)
+Cohesion: 0.10
+Nodes (19): 1. Compose 경계 확인, 1. Stalwart 운영 서버 설정 (Production), 2. MailHog 개발 워크플로우 (Development), 2. Stalwart 운영 서버 사용, 3. MailHog 개발 워크플로우, Client Configuration (Stalwart), Common Checks, Common Pitfalls (+11 more)
 
 ### Community 400 - "Community 400"
 Cohesion: 0.12
-Nodes (15): 1. Adding New Services, 2. Customizing Icons and Logos, 3. Layout and Theming, Common Checks, Common Pitfalls, Laboratory Dashboard Usage Guide, Prerequisites, Runbook Handoff (+7 more)
+Nodes (16): 1. Adding New Services, 2. Customizing Icons and Logos, 3. Layout and Theming, Common Checks, Common Pitfalls, Laboratory Dashboard Usage Guide, Prerequisites, Runbook Handoff (+8 more)
 
 ### Community 401 - "Community 401"
 Cohesion: 0.12
-Nodes (15): 11-Laboratory Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation, Interfaces & Data Structures (+7 more)
+Nodes (16): 11-Laboratory Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation, Interfaces & Data Structures (+8 more)
 
 ### Community 402 - "Community 402"
 Cohesion: 0.12
@@ -2637,19 +2741,19 @@ Nodes (15): Agent Role, Context & Memory Strategy, Evaluation Plan, Failure Mode
 
 ### Community 403 - "Community 403"
 Cohesion: 0.12
-Nodes (15): 1. ksqlDB CLI 연결 (Connecting to ksqlDB CLI), 2. 스트림 생성 (Creating a Stream), 3. 실체화된 테이블 생성 (Creating a Materialized Table), Common Checks, Common Pitfalls, ksqlDB Usage Guide, Prerequisites, Runbook Handoff (+7 more)
+Nodes (16): 1. ksqlDB CLI 연결 (Connecting to ksqlDB CLI), 2. 스트림 생성 (Creating a Stream), 3. 실체화된 테이블 생성 (Creating a Materialized Table), Common Checks, Common Pitfalls, ksqlDB Usage Guide, Prerequisites, Runbook Handoff (+8 more)
 
 ### Community 404 - "Community 404"
 Cohesion: 0.12
-Nodes (15): Overview (KR), Purpose, Related Documents, 1. 서비스 가동 및 상태 확인, 2. PostgreSQL 데이타베이스 접근, Common Checks, Common Pitfalls, Common Pitfalls (+7 more)
+Nodes (16): Overview, Overview (KR), Purpose, Related Documents, 1. 서비스 가동 및 상태 확인, 2. PostgreSQL 데이타베이스 접근, Common Checks, Common Pitfalls (+8 more)
 
 ### Community 405 - "Community 405"
 Cohesion: 0.12
-Nodes (15): Overview (KR), Purpose, Related Documents, 1. Accessing Neo4j Browser, 2. Basic Cypher Operations, 3. Internal Bolt Connection, Common Checks, Common Pitfalls (+7 more)
+Nodes (16): Overview, Overview (KR), Purpose, Related Documents, 1. Accessing Neo4j Browser, 2. Basic Cypher Operations, 3. Internal Bolt Connection, Common Checks (+8 more)
 
 ### Community 406 - "Community 406"
 Cohesion: 0.12
-Nodes (15): Overview (KR), Purpose, Related Documents, 1. Connecting to Qdrant, 2. Collection Management (REST), 3. Vector Similarity Search, Common Checks, Common Pitfalls (+7 more)
+Nodes (16): Overview, Overview (KR), Purpose, Related Documents, 1. Connecting to Qdrant, 2. Collection Management (REST), 3. Vector Similarity Search, Common Checks (+8 more)
 
 ### Community 407 - "Community 407"
 Cohesion: 0.12
@@ -2660,7 +2764,7 @@ Cohesion: 0.12
 Nodes (15): Audience, Available Scripts, Configuration, Environment Variables, How to Work in This Area, In Scope, 🧪 k6 Performance Testing Infrastructure, Out of Scope (+7 more)
 
 ### Community 409 - "Community 409"
-Cohesion: 0.12
+Cohesion: 0.20
 Nodes (15): description, gnetId, graphTooltip, panels, refresh, __requires, schemaVersion, templating (+7 more)
 
 ### Community 410 - "Community 410"
@@ -2677,7 +2781,7 @@ Nodes (15): Audience, Available Scripts, Configuration, Environment Variables, H
 
 ### Community 413 - "Community 413"
 Cohesion: 0.12
-Nodes (15): Agent Rollout & Evaluation Gates (If Applicable), Assumptions & Defaults, Completion Criteria, Context, Goals & In-Scope, Infra Service Optimization Priority Plan (Quick Wins + Quarterly) Implementation Plan, Non-Goals & Out-of-Scope, Overview (KR) (+7 more)
+Nodes (16): Agent Rollout & Evaluation Gates (If Applicable), Assumptions & Defaults, Completion Criteria, Context, Goals & In-Scope, Infra Service Optimization Priority Plan (Quick Wins + Quarterly) Implementation Plan, Non-Goals & Out-of-Scope, Overview (+8 more)
 
 ### Community 414 - "Community 414"
 Cohesion: 0.12
@@ -2685,7 +2789,7 @@ Nodes (15): 1. Operations & Configuration, 2. Traceability, AI Agent Guidance, A
 
 ### Community 415 - "Community 415"
 Cohesion: 0.12
-Nodes (15): AI Requirements, Analytics Tier Architecture Reference Document (ARD), Analytics Tier Architecture Reference Document (ARD), Boundaries, Boundaries & Non-goals, Consumes (Dependencies), Data Architecture, Infrastructure & Deployment (+7 more)
+Nodes (16): AI Requirements, Analytics Tier Architecture Reference Document (ARD), Analytics Tier Architecture Reference Document (ARD), Boundaries, Boundaries & Non-goals, Consumes (Dependencies), Data Architecture, Infrastructure & Deployment (+8 more)
 
 ### Community 416 - "Community 416"
 Cohesion: 0.12
@@ -2697,15 +2801,15 @@ Nodes (15): Audience, Configuration, Environment Variables, How to Work in This 
 
 ### Community 418 - "Community 418"
 Cohesion: 0.12
-Nodes (15): Approved Follow-up Refresh, Deferred Risk Register, Final Report Evidence Map, Gap Registry, Inputs, Low-Risk Follow-up Candidates, Low-Risk Follow-up Closure, Overview (KR) (+7 more)
+Nodes (16): Approved Follow-up Refresh, Deferred Risk Register, Final Report Evidence Map, Gap Registry, Inputs, Low-Risk Follow-up Candidates, Low-Risk Follow-up Closure, Overview (+8 more)
 
 ### Community 419 - "Community 419"
 Cohesion: 0.12
-Nodes (15): Agent-specific Types (If Applicable), Approved Surface Evidence, Inputs, Overview (KR), Phase 1 - Approval Surface Inspection, Phase 2 - Contract Activation, Phase 3 - Evidence Closure, Phase View (Optional) (+7 more)
+Nodes (16): Agent-specific Types (If Applicable), Approved Surface Evidence, Inputs, Overview, Overview (KR), Phase 1 - Approval Surface Inspection, Phase 2 - Contract Activation, Phase 3 - Evidence Closure (+8 more)
 
 ### Community 420 - "Community 420"
 Cohesion: 0.12
-Nodes (15): Agent-specific Types (If Applicable), Inputs, Outcome Reconciliation, Overview (KR), Phase 1 - Closure Inspection, Phase 2 - Closure Artifacts, Phase 3 - Final Verification, Phase View (Optional) (+7 more)
+Nodes (16): Agent-specific Types (If Applicable), Inputs, Outcome Reconciliation, Overview, Overview (KR), Phase 1 - Closure Inspection, Phase 2 - Closure Artifacts, Phase 3 - Final Verification (+8 more)
 
 ### Community 421 - "Community 421"
 Cohesion: 0.13
@@ -2716,15 +2820,15 @@ Cohesion: 0.13
 Nodes (14): 04.execution, AI Agent Guidance, Audience, Completed Remediation Evidence, Documentation Standards, Execution Contract, How to Work in This Area, In Scope (+6 more)
 
 ### Community 423 - "Community 423"
-Cohesion: 0.13
-Nodes (14): 1. Data Retention Periods, 2. Resource Allocation, 3. High Cardinality Governance, 4. Backup Strategy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Overview (KR) (+6 more)
+Cohesion: 0.12
+Nodes (15): 1. Data Retention Periods, 2. Resource Allocation, 3. High Cardinality Governance, 4. Backup Strategy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Overview (+7 more)
 
 ### Community 424 - "Community 424"
-Cohesion: 0.13
-Nodes (14): 1. Data Retention Policy, 2. Label Governance (Cardinality), 3. Performance & Resource Standards, 4. Backup & Disaster Recovery, AI Agent Policy Section (If Applicable), Controls, Exceptions, Loki Operational Policy Operations Policy (+6 more)
+Cohesion: 0.12
+Nodes (15): 1. Data Retention Policy, 2. Label Governance (Cardinality), 3. Performance & Resource Standards, 4. Backup & Disaster Recovery, AI Agent Policy Section (If Applicable), Controls, Exceptions, Loki Operational Policy Operations Policy (+7 more)
 
 ### Community 425 - "Community 425"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (14): AI Agent Guidance, AI Infrastructure Tier (08-ai), Configuration, Service Matrix, Tech Stack, Testing, Audience, How to Work in This Area (+6 more)
 
 ### Community 426 - "Community 426"
@@ -2737,35 +2841,35 @@ Nodes (15): Prometheus alert: ContainerHighCpuUtilization, Prometheus alert: Con
 
 ### Community 428 - "Community 428"
 Cohesion: 0.12
-Nodes (15): English, Korean, Overview (KR), Related Documents, Backup & Lifecycle, Compliance Requirements, Controls, Controls & Standards (+7 more)
+Nodes (16): English, Korean, Overview, Overview (KR), Related Documents, Backup & Lifecycle, Compliance Requirements, Controls (+8 more)
 
 ### Community 429 - "Community 429"
 Cohesion: 0.12
-Nodes (15): English, Korean, Overview (KR), Related Documents, Backup & Lifecycle, Compliance Requirements, Controls, Controls & Standards (+7 more)
+Nodes (16): English, Korean, Overview, Overview (KR), Related Documents, Backup & Lifecycle, Compliance Requirements, Controls (+8 more)
 
 ### Community 430 - "Community 430"
-Cohesion: 0.13
-Nodes (14): Agent Role & IO Contract (If Applicable), Canonical Stage Path Contract, Contracts, Core Design, Data Modeling & Storage Strategy, Docs Taxonomy and AI Agent-first Contract Migration Specification, Guardrails, Interfaces & Data Structures (+6 more)
+Cohesion: 0.12
+Nodes (15): Agent Role & IO Contract (If Applicable), Canonical Stage Path Contract, Contracts, Core Design, Data Modeling & Storage Strategy, Docs Taxonomy and AI Agent-first Contract Migration Specification, Guardrails, Interfaces & Data Structures (+7 more)
 
 ### Community 431 - "Community 431"
-Cohesion: 0.24
-Nodes (15): check_01_gateway(), check_02_auth(), check_03_security(), check_04_data(), check_05_messaging(), check_06_observability(), check_07_workflow(), check_08_ai() (+7 more)
+Cohesion: 0.23
+Nodes (16): check_01_gateway(), check_02_auth(), check_03_security(), check_04_data(), check_05_messaging(), check_06_observability(), check_07_workflow(), check_08_ai() (+8 more)
 
 ### Community 432 - "Community 432"
 Cohesion: 0.15
 Nodes (15): GPU Recognition Recovery, Ollama Inference Service, Ollama Runbook, VRAM OOM Mitigation, Open WebUI Runbook, Open WebUI Service, RAG Index Re-sync, AI Gateway SSO Chain (+7 more)
 
 ### Community 433 - "Community 433"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (14): Audience, How to Work in This Area, Image Tag Review, In Scope, Laboratory Open Notebook, Out of Scope, Overview, Related Documents (+6 more)
 
 ### Community 434 - "Community 434"
-Cohesion: 0.13
-Nodes (14): 09-tooling Documentation Standardization Plan, Automated Tests, Completion Criteria, Context, Goals & In-Scope, Manual Verification, Non-Goals & Out-of-Scope, Overview (KR) (+6 more)
+Cohesion: 0.12
+Nodes (15): 09-tooling Documentation Standardization Plan, Automated Tests, Completion Criteria, Context, Goals & In-Scope, Manual Verification, Non-Goals & Out-of-Scope, Overview (+7 more)
 
 ### Community 435 - "Community 435"
-Cohesion: 0.13
-Nodes (14): Agent Governance Phase 1 Revalidation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Current State Summary, Goals & In-Scope, Improvement Backlog, Non-Goals & Out-of-Scope (+6 more)
+Cohesion: 0.12
+Nodes (15): Agent Governance Phase 1 Revalidation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Current State Summary, Goals & In-Scope, Improvement Backlog, Non-Goals & Out-of-Scope (+7 more)
 
 ### Community 436 - "Community 436"
 Cohesion: 0.13
@@ -2776,68 +2880,68 @@ Cohesion: 0.17
 Nodes (13): docs-taxonomy-agent-first-migration Specifications, harness-agent-first-engineering Specifications, Agent Governance Thin Root Shim Contract, Codex Boundary, Docs Taxonomy and AI Agent-first Contract Migration Specification, Governance SSOT, Graphify Context Health, Harness Agent-first Engineering Specification (+5 more)
 
 ### Community 438 - "Community 438"
-Cohesion: 0.13
-Nodes (14): 02-Auth Architecture Reference Document (ARD), AI Agent Integration, Boundaries & Non-goals, Context, Data Models, Decisions, Overview (KR), Principles (+6 more)
+Cohesion: 0.12
+Nodes (15): 02-Auth Architecture Reference Document (ARD), AI Agent Integration, Boundaries & Non-goals, Context, Data Models, Decisions, Overview, Overview (KR) (+7 more)
 
 ### Community 439 - "Community 439"
-Cohesion: 0.13
-Nodes (14): Final Verification Evidence (2026-05-29), Inputs, Overview (KR), Phase 0: Pre-flight (완료), Phase 1: Foundation — 제목·형식 불일치 수정 (완료), Phase 2: Core Operations — 대량 반복 수정 (완료), Phase 3: Technical — Scripts & CI/CD (완료), Phase 4: Governance & Cleanup (완료) (+6 more)
+Cohesion: 0.10
+Nodes (20): Final Verification Evidence (2026-05-29), Inputs, Overview, Overview (KR), Phase 0: Pre-flight (completed), Phase 0: Pre-flight (완료), Phase 1: Foundation -- Title and Format Mismatch Fixes (completed), Phase 1: Foundation — 제목·형식 불일치 수정 (완료) (+12 more)
 
 ### Community 440 - "Community 440"
-Cohesion: 0.13
-Nodes (14): Agent-specific Types (If Applicable), Inputs, Overview (KR), Phase 1 - Baseline Revalidation, Phase 2 - Evidence Closure, Phase View (Optional), Related Documents, Revalidation Findings (+6 more)
+Cohesion: 0.12
+Nodes (15): Agent-specific Types (If Applicable), Inputs, Overview, Overview (KR), Phase 1 - Baseline Revalidation, Phase 2 - Evidence Closure, Phase View (Optional), Related Documents (+7 more)
 
 ### Community 441 - "Community 441"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (14): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Service Readiness (+6 more)
 
 ### Community 442 - "Community 442"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (14): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Service Readiness (+6 more)
 
 ### Community 443 - "Community 443"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (14): Audience, Available Scripts, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+6 more)
 
 ### Community 444 - "Community 444"
-Cohesion: 0.14
-Nodes (13): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Non-functional Requirements, Overview (KR), Personas, Problem Statement, Related Documents (+5 more)
+Cohesion: 0.13
+Nodes (14): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Non-functional Requirements, Overview, Overview (KR), Personas, Problem Statement (+6 more)
 
 ### Community 445 - "Community 445"
-Cohesion: 0.14
-Nodes (13): Agent Governance Standardization Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Non-functional Requirements, Overview (KR), Personas, Problem Statement (+5 more)
+Cohesion: 0.13
+Nodes (14): Agent Governance Standardization Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Non-functional Requirements, Overview, Overview (KR), Personas (+6 more)
 
 ### Community 446 - "Community 446"
-Cohesion: 0.14
-Nodes (13): Agent Role & IO Contract (If Applicable), Analytics Engine Contract, Analytics Tier Technical Specification (Spec), Contracts, Core Design, Data Modeling & Storage Strategy, Interfaces & Data Structures, Overview (KR) (+5 more)
+Cohesion: 0.13
+Nodes (14): Agent Role & IO Contract (If Applicable), Analytics Engine Contract, Analytics Tier Technical Specification (Spec), Contracts, Core Design, Data Modeling & Storage Strategy, Interfaces & Data Structures, Overview (+6 more)
 
 ### Community 447 - "Community 447"
 Cohesion: 0.14
 Nodes (13): 1. Frequency & Retention, 2. Tools, 3. Verification, AI Agent Policy Section (If Applicable), Backup Policy, Controls, Exceptions, Overview (KR) (+5 more)
 
 ### Community 448 - "Community 448"
-Cohesion: 0.21
-Nodes (14): 1. Topic## Replication Policy, 2. Data## Retention Standards, 3.## Schema Governance, AI Agent Policy Section, Controls, Exceptions, Kafka Cluster Operations Policy (05-messaging) Operations Policy, Kafka Operations Policy (+6 more)
+Cohesion: 0.19
+Nodes (15): 1. Topic## Replication Policy, 2. Data## Retention Standards, 3.## Schema Governance, AI Agent Policy Section, Controls, Exceptions, Kafka Cluster Operations Policy (05-messaging) Operations Policy, Kafka Operations Policy (+7 more)
 
 ### Community 449 - "Community 449"
 Cohesion: 0.14
 Nodes (13): Audience, Documentation Standards, How to Work in This Area, In Scope, Operations, Operations Contract, Out of Scope, Overview (+5 more)
 
 ### Community 450 - "Community 450"
-Cohesion: 0.14
-Nodes (13): 1. Alert Severity Levels, 2. Notification Standards, 3. Silence Policy, AI Agent Policy Section, Alertmanager Operational Policy (06-observability) Operations Policy, Controls, Exceptions, Policy Scope (+5 more)
+Cohesion: 0.13
+Nodes (14): 1. Alert Severity Levels, 2. Notification Standards, 3. Silence Policy, AI Agent Policy Section, Alertmanager Operational Policy (06-observability) Operations Policy, Controls, Exceptions, Policy Scope (+6 more)
 
 ### Community 451 - "Community 451"
-Cohesion: 0.14
-Nodes (13): Alerting Rule Management Requirements, Constraints, Controls, Exceptions, [OPERATIONAL-POLICY] 06-observability: prometheus Operations Policy, Performance Monitoring Requirements, Policy Details, Policy Scope (+5 more)
+Cohesion: 0.13
+Nodes (14): Alerting Rule Management Requirements, Constraints, Controls, Exceptions, [OPERATIONAL-POLICY] 06-observability: prometheus Operations Policy, Performance Monitoring Requirements, Policy Details, Policy Scope (+6 more)
 
 ### Community 452 - "Community 452"
-Cohesion: 0.14
-Nodes (13): 1. Quality Gate Enforcement, 2. Routine Maintenance, 3. Backup and Persistence, Controls, Exceptions, Monitoring Strategy, Operational Standards, Policy Scope (+5 more)
+Cohesion: 0.13
+Nodes (14): 1. Quality Gate Enforcement, 2. Routine Maintenance, 3. Backup and Persistence, Controls, Exceptions, Monitoring Strategy, Operational Standards, Policy Scope (+6 more)
 
 ### Community 453 - "Community 453"
-Cohesion: 0.14
-Nodes (13): 1. Data Integrity and Conflicts, 2. Routine Maintenance, 3. Resource Optimization, Controls, Exceptions, Monitoring Strategy, Operational Standards, Policy Scope (+5 more)
+Cohesion: 0.13
+Nodes (14): 1. Data Integrity and Conflicts, 2. Routine Maintenance, 3. Resource Optimization, Controls, Exceptions, Monitoring Strategy, Operational Standards, Policy Scope (+6 more)
 
 ### Community 454 - "Community 454"
 Cohesion: 0.16
@@ -2860,91 +2964,91 @@ Cohesion: 0.14
 Nodes (14): Prometheus rule group: keycloak_rules, Prometheus alert: KeycloakHighCode-to-tokenExchangeErrorRate, Prometheus alert: KeycloakHighLoginFailureRate, Prometheus alert: KeycloakHighRegistrationFailureRate, Prometheus alert: KeycloakHighTokenRefreshErrorRate, Prometheus alert: KeycloakNoSuccessfulLogins, Prometheus alert: KeycloakSlowRequestResponseTime, alert_rules.keycloak.yml Prometheus Rule File (+6 more)
 
 ### Community 459 - "Community 459"
-Cohesion: 0.14
-Nodes (13): ADR-0027: Stage 00 Canonical Adapter Model, Agent-related Example Decisions (If Applicable), Alternatives, Codex-centered governance redesign, Consequences, Context, Decision, Explicit Non-goals (+5 more)
+Cohesion: 0.13
+Nodes (14): ADR-0027: Stage 00 Canonical Adapter Model, Agent-related Example Decisions (If Applicable), Alternatives, Codex-centered governance redesign, Consequences, Context, Decision, Explicit Non-goals (+6 more)
 
 ### Community 460 - "Community 460"
-Cohesion: 0.14
-Nodes (13): Audience, Category Role, Current References, Docker References, Examples, How to Work in This Area, In Scope, Out of Scope (+5 more)
+Cohesion: 0.13
+Nodes (14): Audience, Category Role, Current References, Docker References, Examples, How to Work in This Area, In Scope, Language Rule (+6 more)
 
 ### Community 461 - "Community 461"
 Cohesion: 0.14
 Nodes (13): AI Agent Guidance, Audience, Documentation, Grafana Visualization & Dashboards, How to Work in This Area, Overview, Related Documents, Scope (+5 more)
 
 ### Community 462 - "Community 462"
-Cohesion: 0.14
-Nodes (13): AI READING INSTRUCTION, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview (KR), Purpose, Reference: HADS Profile (+5 more)
+Cohesion: 0.13
+Nodes (14): AI READING INSTRUCTION, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Overview (KR), Purpose (+6 more)
 
 ### Community 463 - "Community 463"
-Cohesion: 0.14
-Nodes (13): Audience, Category Role, Current References, Examples, HADS References, How to Work in This Area, In Scope, Out of Scope (+5 more)
+Cohesion: 0.13
+Nodes (14): Audience, Category Role, Current References, Examples, HADS References, How to Work in This Area, In Scope, Language Rule (+6 more)
 
 ### Community 464 - "Community 464"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (13): AI Agent Guidance, Audience, How to Work in This Area, In Scope, InfluxDB (TSDB), Out of Scope, Overview (KR), Related Documents (+5 more)
 
 ### Community 465 - "Community 465"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (13): AI Agent Guidance, Audience, How to Work in This Area, In Scope, ksqlDB, Out of Scope, Overview (KR), Related Documents (+5 more)
 
 ### Community 466 - "Community 466"
-Cohesion: 0.14
-Nodes (13): Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview (KR), Purpose, Reference: LLM Wiki Repository Map, Related Documents (+5 more)
+Cohesion: 0.13
+Nodes (14): Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Overview (KR), Purpose, Reference: LLM Wiki Repository Map (+6 more)
 
 ### Community 467 - "Community 467"
-Cohesion: 0.13
-Nodes (14): Agent Progress Log, Current Work Log, docs/05.operations Normalization (2026-05-27), Docs Implementation Audit Follow-up (2026-06-04), GitHub Governance Alignment Audit (P4 — 2026-04-10), Infra Team Agent Alignment Audit (P6 — 2026-04-10), Layer Audit (L1–L7), Local Instruction Authority Cleanup (P5 — 2026-04-10) (+6 more)
+Cohesion: 0.12
+Nodes (15): Agent Progress Log, Current Work Log, docs/05.operations Normalization (2026-05-27), Docs Implementation Audit Follow-up (2026-06-04), GitHub Governance Alignment Audit (P4 — 2026-04-10), Infra Team Agent Alignment Audit (P6 — 2026-04-10), Layer Audit (L1–L7), Local Instruction Authority Cleanup (P5 — 2026-04-10) (+7 more)
 
 ### Community 468 - "Community 468"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (13): Audience, How to Work in This Area, In Scope, Neo4j, Out of Scope, Overview, Related Documents, Scope (+5 more)
 
 ### Community 469 - "Community 469"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (13): AI Agent Guidance, Audience, How to Work in This Area, In Scope, OpenSearch, Out of Scope, Overview (KR), Related Documents (+5 more)
 
 ### Community 470 - "Community 470"
-Cohesion: 0.14
-Nodes (13): Agent Governance Decision Items Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Approved Gate Closure Addendum (2026-06-02), Attachment Gap Coverage, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope (+5 more)
+Cohesion: 0.13
+Nodes (14): Agent Governance Decision Items Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Approved Gate Closure Addendum (2026-06-02), Attachment Gap Coverage, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope (+6 more)
 
 ### Community 471 - "Community 471"
-Cohesion: 0.14
-Nodes (13): Agent Governance Phase 2 Strategy Integration Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Phase 1 Backlog Disposition (+5 more)
+Cohesion: 0.13
+Nodes (14): Agent Governance Phase 2 Strategy Integration Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+6 more)
 
 ### Community 472 - "Community 472"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (13): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Qdrant, Related Documents, Scope (+5 more)
 
 ### Community 473 - "Community 473"
-Cohesion: 0.14
-Nodes (13): 1. Context and Objective, 2. Requirements and Constraints, 3. Document Type ↔ Template Mapping, 4.1 Template Deviation Audit, 4. Authoring Protocol, 5. Operational Procedures, 6. Maintenance and Safety, 7. File Naming Conventions (+5 more)
+Cohesion: 0.13
+Nodes (14): 1. Context and Objective, 2. Requirements and Constraints, 3.1 Language Boundary by Stage, 3. Document Type ↔ Template Mapping, 4.1 Template Deviation Audit, 4. Authoring Protocol, 5. Operational Procedures, 6. Maintenance and Safety (+6 more)
 
 ### Community 474 - "Community 474"
 Cohesion: 0.11
-Nodes (17): 1. Analysis & Core Docs [/], 1. Analysis & Core Docs [x], 2. Operational Docs [ ], 2. Operational Docs [x], 3. Refactoring & Integration [ ], 3. Refactoring & Integration [x], 4. Quality Assurance [ ], 4. Quality Assurance [x] (+9 more)
+Nodes (18): 1. Analysis & Core Docs [/], 1. Analysis & Core Docs [x], 2. Operational Docs [ ], 2. Operational Docs [x], 3. Refactoring & Integration [ ], 3. Refactoring & Integration [x], 4. Quality Assurance [ ], 4. Quality Assurance [x] (+10 more)
 
 ### Community 475 - "Community 475"
-Cohesion: 0.14
-Nodes (13): Agent-specific Types (If Applicable), Inputs, Overview (KR), Phase 1, Phase 2, Phase 3, Phase View (Optional), Related Documents (+5 more)
+Cohesion: 0.13
+Nodes (14): Agent-specific Types (If Applicable), Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase 3, Phase View (Optional) (+6 more)
 
 ### Community 476 - "Community 476"
-Cohesion: 0.14
-Nodes (13): Agent-specific Types (If Applicable), Inputs, Overview (KR), Phase 1, Phase 2, Phase 3, Phase View (Optional), Related Documents (+5 more)
+Cohesion: 0.13
+Nodes (14): Agent-specific Types (If Applicable), Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase 3, Phase View (Optional) (+6 more)
 
 ### Community 477 - "Community 477"
-Cohesion: 0.14
-Nodes (13): Agent-specific Types (If Applicable), Inputs, Overview (KR), Phase 1, Phase 2, Phase 3, Phase View (Optional), Related Documents (+5 more)
+Cohesion: 0.13
+Nodes (14): Agent-specific Types (If Applicable), Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase 3, Phase View (Optional) (+6 more)
 
 ### Community 478 - "Community 478"
-Cohesion: 0.14
-Nodes (13): Agent-specific Types (If Applicable), Inputs, Overview (KR), Phase 1, Phase 2, Phase 3, Phase View (Optional), Related Documents (+5 more)
+Cohesion: 0.13
+Nodes (14): Agent-specific Types (If Applicable), Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase 3, Phase View (Optional) (+6 more)
 
 ### Community 479 - "Community 479"
-Cohesion: 0.14
-Nodes (13): Inputs, Overview (KR), Phase A: 드리프트 클로저 (완료), Phase B: Hook Parity (완료), Phase C: 거버넌스 문서 보강 (완료), Phase D: 승인 전환 항목 (완료), Phase E: 중간위험 갭 승인 처리 (완료), Phase View (+5 more)
+Cohesion: 0.10
+Nodes (19): Inputs, Overview, Overview (KR), Phase A: Drift Closure (completed), Phase A: 드리프트 클로저 (완료), Phase B: Hook Parity (completed), Phase B: Hook Parity (완료), Phase C: Governance Documentation Strengthening (completed) (+11 more)
 
 ### Community 480 - "Community 480"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (13): AI Agent Guidance, Audience, How to Work in This Area, In Scope, Out of Scope, Overview (KR), Related Documents, Scope (+5 more)
 
 ### Community 481 - "Community 481"
@@ -2952,160 +3056,160 @@ Cohesion: 0.18
 Nodes (13): ADR-0008 Ollama Open WebUI, NVIDIA Docker GPU Path, Ollama Inference Engine, Open WebUI UI and RAG, Ollama Backend, Open WebUI, Open WebUI Product Requirements, Qdrant RAG Storage (+5 more)
 
 ### Community 482 - "Community 482"
-Cohesion: 0.15
+Cohesion: 0.14
 Nodes (12): 1. Spawn Rules, 2. Required Preamble (per agent), 3. Agent Catalog Reference, 4. Communication Protocol, 5. Error Handling, 6. Lifecycle, Model and Provider Adapter Change Protocol, Model Policy (provider-equivalent mapping) (+4 more)
 
 ### Community 483 - "Community 483"
-Cohesion: 0.15
-Nodes (12): 01-Gateway Nginx Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 01-Gateway Nginx Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 484 - "Community 484"
-Cohesion: 0.15
-Nodes (12): 01-Gateway Traefik Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 01-Gateway Traefik Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 485 - "Community 485"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements, Functional Requirements, Gateway Tier (01-gateway) Product Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.13
+Nodes (14): AI Agent Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Gateway Tier (01-gateway) Product Requirements, Key Use Cases, Overview, Overview (KR), Personas (+6 more)
 
 ### Community 486 - "Community 486"
-Cohesion: 0.15
-Nodes (12): 02-Auth Product Requirements, AI Agent Requirements, Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.13
+Nodes (14): 02-Auth Product Requirements, AI Agent Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas (+6 more)
 
 ### Community 487 - "Community 487"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements (If Applicable), Data Tier (04-data) Product Requirements, Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), Data Tier (04-data) Product Requirements, Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 488 - "Community 488"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements (If Applicable), Analytics Tier (04-data/analytics) Product Requirements, Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), Analytics Tier (04-data/analytics) Product Requirements, Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 489 - "Community 489"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Messaging Tier (05-messaging) Product Requirements, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Messaging Tier (05-messaging) Product Requirements, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 490 - "Community 490"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements, Functional Requirements, Key Use Cases, Observability Tier Product Requirements, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.13
+Nodes (14): AI Agent Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Observability Tier Product Requirements, Overview, Overview (KR), Personas (+6 more)
 
 ### Community 491 - "Community 491"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements (If Applicable), AI Infrastructure Tier (08-ai) Product Requirements, Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), AI Infrastructure Tier (08-ai) Product Requirements, Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 492 - "Community 492"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents, Risks, Dependencies, and Assumptions (+4 more)
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement, Related Documents (+5 more)
 
 ### Community 493 - "Community 493"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements (If Applicable), Communication Tier (10-communication) Product Requirements, Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), Communication Tier (10-communication) Product Requirements, Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 494 - "Community 494"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Laboratory Tier (11-laboratory) Product Requirements, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Laboratory Tier (11-laboratory) Product Requirements, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 495 - "Community 495"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Open WebUI Product Requirements, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Open WebUI Product Requirements, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 496 - "Community 496"
-Cohesion: 0.15
-Nodes (12): 02-Auth Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): 02-Auth Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 497 - "Community 497"
-Cohesion: 0.15
-Nodes (12): 03-Security (Vault) Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): 03-Security (Vault) Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 498 - "Community 498"
-Cohesion: 0.15
-Nodes (12): 04-Data Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): 04-Data Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 499 - "Community 499"
-Cohesion: 0.15
-Nodes (12): 05-Messaging Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): 05-Messaging Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 500 - "Community 500"
-Cohesion: 0.15
-Nodes (12): 06-Observability Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): 06-Observability Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 501 - "Community 501"
-Cohesion: 0.15
-Nodes (12): 07-Workflow Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): 07-Workflow Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 502 - "Community 502"
-Cohesion: 0.15
-Nodes (12): 08-AI Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): 08-AI Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 503 - "Community 503"
-Cohesion: 0.15
-Nodes (12): 09-Tooling Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): 09-Tooling Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 504 - "Community 504"
-Cohesion: 0.15
-Nodes (12): 11-Laboratory Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): 11-Laboratory Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement (+5 more)
 
 ### Community 505 - "Community 505"
-Cohesion: 0.15
-Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview (KR), Personas, Problem Statement, Related Documents, Risks, Dependencies, and Assumptions (+4 more)
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Overview (KR), Personas, Problem Statement, Related Documents (+5 more)
 
 ### Community 506 - "Community 506"
 Cohesion: 0.15
 Nodes (12): Architecture, Architecture Contract, Audience, Current Inventory, Documentation Standards, How to Work in This Area, In Scope, Out of Scope (+4 more)
 
 ### Community 507 - "Community 507"
-Cohesion: 0.15
-Nodes (12): 02-Auth Keycloak Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 02-Auth Keycloak Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 508 - "Community 508"
-Cohesion: 0.15
-Nodes (12): 02-Auth OAuth2 Proxy Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 02-Auth OAuth2 Proxy Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 509 - "Community 509"
-Cohesion: 0.15
-Nodes (12): 03-Security Vault Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 03-Security Vault Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 510 - "Community 510"
 Cohesion: 0.15
 Nodes (12): 04-Data Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
 
 ### Community 511 - "Community 511"
-Cohesion: 0.15
-Nodes (12): 05-Messaging Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 05-Messaging Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 512 - "Community 512"
-Cohesion: 0.15
-Nodes (12): 06-Observability Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 06-Observability Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 513 - "Community 513"
-Cohesion: 0.15
-Nodes (12): 07-Workflow Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 07-Workflow Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 514 - "Community 514"
-Cohesion: 0.15
-Nodes (12): Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Interfaces & Data Structures, Open WebUI Technical Specification (Spec), Related Inputs, Strategic Boundaries & Non-goals (+4 more)
+Cohesion: 0.14
+Nodes (13): Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Interfaces & Data Structures, Open WebUI Technical Specification (Spec), Related Inputs, Strategic Boundaries & Non-goals (+5 more)
 
 ### Community 515 - "Community 515"
-Cohesion: 0.15
-Nodes (12): 08-AI Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 08-AI Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 516 - "Community 516"
-Cohesion: 0.15
-Nodes (12): 09-Tooling Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 09-Tooling Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 517 - "Community 517"
-Cohesion: 0.15
-Nodes (12): 09-tooling: Tooling Tier, Architecture, Operational Governance, Overview (KR), Services, Audience, How to Work in This Area, In Scope (+4 more)
+Cohesion: 0.10
+Nodes (19): 09-tooling: Tooling Tier, Architecture, Operational Governance, Overview (KR), Services, Audience, How to Work in This Area, In Scope (+11 more)
 
 ### Community 518 - "Community 518"
-Cohesion: 0.15
-Nodes (12): Common Checks, Common Pitfalls, Dozzle Usage Guide, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): Common Checks, Common Pitfalls, Dozzle Usage Guide, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 519 - "Community 519"
-Cohesion: 0.15
-Nodes (12): Common Checks, Common Pitfalls, Open Notebook Usage Guide, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): Common Checks, Common Pitfalls, Open Notebook Usage Guide, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 520 - "Community 520"
-Cohesion: 0.15
-Nodes (12): 11-Laboratory Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 11-Laboratory Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 521 - "Community 521"
 Cohesion: 0.15
@@ -3140,28 +3244,28 @@ Cohesion: 0.21
 Nodes (13): etcd Three Node Quorum, pg-cluster-init, PostgreSQL Cluster Exporters, pg-0 pg-1 pg-2 Patroni Nodes, pg-router HAProxy Service, Cluster Exporter Role, Cluster Generic Service Database, etcd Distributed Configuration Store (+5 more)
 
 ### Community 529 - "Community 529"
-Cohesion: 0.15
-Nodes (12): Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview (KR), Purpose, Reference: Docker Image and Version Interpretation, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Overview (KR), Purpose, Reference: Docker Image and Version Interpretation (+5 more)
 
 ### Community 530 - "Community 530"
-Cohesion: 0.15
-Nodes (12): Overview (KR), Purpose, Related Documents, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions (+4 more)
+Cohesion: 0.14
+Nodes (13): Overview, Overview (KR), Purpose, Related Documents, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff (+5 more)
 
 ### Community 531 - "Community 531"
-Cohesion: 0.15
-Nodes (12): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+4 more)
+Cohesion: 0.09
+Nodes (21): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+13 more)
 
 ### Community 532 - "Community 532"
-Cohesion: 0.15
-Nodes (12): Overview (KR), Related Documents, 1. Resource Allocation, 2. Security Controls, 3. Backup Standards, Controls, Exceptions, Neo4j Operations Policy (+4 more)
+Cohesion: 0.14
+Nodes (13): Overview, Overview (KR), Related Documents, 1. Resource Allocation, 2. Security Controls, 3. Backup Standards, Controls, Exceptions (+5 more)
 
 ### Community 533 - "Community 533"
-Cohesion: 0.15
-Nodes (12): Overview (KR), Related Documents, 1. Persistence and Snapshots, 2. Performance Optimization, 3. Security Controls, Controls, Exceptions, Policy Scope (+4 more)
+Cohesion: 0.14
+Nodes (13): Overview, Overview (KR), Related Documents, 1. Persistence and Snapshots, 2. Performance Optimization, 3. Security Controls, Controls, Exceptions (+5 more)
 
 ### Community 534 - "Community 534"
-Cohesion: 0.15
-Nodes (12): Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview (KR), Purpose, Reference: Stable Reference Terms, Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Overview (KR), Purpose, Reference: Stable Reference Terms (+5 more)
 
 ### Community 535 - "Community 535"
 Cohesion: 0.15
@@ -3176,36 +3280,36 @@ Cohesion: 0.15
 Nodes (12): Common Checks, Common Pitfalls, New Service Onboarding Guide, Overview (KR), Prerequisites, Purpose, Related Documents, Runbook Handoff (+4 more)
 
 ### Community 538 - "Community 538"
-Cohesion: 0.15
+Cohesion: 0.14
 Nodes (12): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+4 more)
 
 ### Community 539 - "Community 539"
-Cohesion: 0.15
-Nodes (12): Audience, Category Role, Current References, How to Work in This Area, In Scope, Kubernetes References, Out of Scope, Overview (+4 more)
+Cohesion: 0.14
+Nodes (13): Audience, Category Role, Current References, How to Work in This Area, In Scope, Kubernetes References, Language Rule, Out of Scope (+5 more)
 
 ### Community 540 - "Community 540"
-Cohesion: 0.15
-Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Current Disposition (2026-05-26), Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+4 more)
+Cohesion: 0.14
+Nodes (13): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Current Disposition (2026-05-26), Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+5 more)
 
 ### Community 541 - "Community 541"
-Cohesion: 0.15
-Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Home Docker Workspace Audit and Improvement Implementation Plan, Input Task Gap Closure Addendum, Non-Goals & Out-of-Scope, Overview (KR) (+4 more)
+Cohesion: 0.14
+Nodes (13): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Home Docker Workspace Audit and Improvement Implementation Plan, Input Task Gap Closure Addendum, Non-Goals & Out-of-Scope, Overview (+5 more)
 
 ### Community 542 - "Community 542"
-Cohesion: 0.15
-Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Current Disposition (2026-05-26), Goals & In-Scope, Large-Scale Authored SSoT Review Plan, Non-Goals & Out-of-Scope, Overview (KR) (+4 more)
+Cohesion: 0.14
+Nodes (13): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Current Disposition (2026-05-26), Goals & In-Scope, Large-Scale Authored SSoT Review Plan, Non-Goals & Out-of-Scope, Overview (+5 more)
 
 ### Community 543 - "Community 543"
-Cohesion: 0.15
-Nodes (12): Agent Governance Phase 3 Approved Surface Activation Plan, Agent Rollout & Evaluation Gates (If Applicable), Approved Surface Activation Matrix, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR) (+4 more)
+Cohesion: 0.14
+Nodes (13): Agent Governance Phase 3 Approved Surface Activation Plan, Agent Rollout & Evaluation Gates (If Applicable), Approved Surface Activation Matrix, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (+5 more)
 
 ### Community 544 - "Community 544"
-Cohesion: 0.15
-Nodes (12): Agent Governance Phase 4 Closure Reconciliation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Phase Outcome Matrix (+4 more)
+Cohesion: 0.14
+Nodes (13): Agent Governance Phase 4 Closure Reconciliation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+5 more)
 
 ### Community 545 - "Community 545"
-Cohesion: 0.15
-Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Disposition Rules, Docs Implementation Reconciliation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR) (+4 more)
+Cohesion: 0.14
+Nodes (13): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Disposition Rules, Docs Implementation Reconciliation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (+5 more)
 
 ### Community 546 - "Community 546"
 Cohesion: 0.15
@@ -3216,72 +3320,72 @@ Cohesion: 0.15
 Nodes (12): AI Agent Guidance, Architecture Reference Documents (ARD), Audience, Current Inventory, Documentation Standards, How to Work in This Area, In Scope, Out of Scope (+4 more)
 
 ### Community 548 - "Community 548"
-Cohesion: 0.15
-Nodes (12): Governance & Spec, Infrastructure Refactoring, Inputs, Operations & Guides, Overview (KR), Progress Summary, Related Documents, Task: 09-tooling Documentation Tasks (+4 more)
+Cohesion: 0.14
+Nodes (13): Governance & Spec, Infrastructure Refactoring, Inputs, Operations & Guides, Overview, Overview (KR), Progress Summary, Related Documents (+5 more)
 
 ### Community 549 - "Community 549"
-Cohesion: 0.15
-Nodes (12): Agent-specific Types (If Applicable), Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
+Cohesion: 0.14
+Nodes (13): Agent-specific Types (If Applicable), Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents (+5 more)
 
 ### Community 550 - "Community 550"
-Cohesion: 0.15
-Nodes (12): Inputs, Overview (KR), Phase 1, Phase 2, Phase 3, Phase View, Related Documents, Suggested Types (+4 more)
+Cohesion: 0.14
+Nodes (13): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase 3, Phase View, Related Documents (+5 more)
 
 ### Community 551 - "Community 551"
-Cohesion: 0.15
-Nodes (12): 24-Section Grill Review Report, Grill Findings Summary, Grill Review Questions, Inputs, Original Input Reflection Matrix, Overview (KR), Related Documents, Task Table (+4 more)
+Cohesion: 0.14
+Nodes (13): 24-Section Grill Review Report, Grill Findings Summary, Grill Review Questions, Inputs, Original Input Reflection Matrix, Overview, Overview (KR), Related Documents (+5 more)
 
 ### Community 552 - "Community 552"
-Cohesion: 0.15
-Nodes (12): Final Verification Evidence, Inputs, Overview (KR), Phase 1: Governance Rule Additions (완료), Phase 2: Script Extension (완료), Phase 3: Template & Doc Fixes (완료), Phase View, Related Documents (+4 more)
+Cohesion: 0.12
+Nodes (16): Final Verification Evidence, Inputs, Overview, Overview (KR), Phase 1: Governance Rule Additions (completed), Phase 1: Governance Rule Additions (완료), Phase 2: Script Extension (completed), Phase 2: Script Extension (완료) (+8 more)
 
 ### Community 553 - "Community 553"
-Cohesion: 0.15
-Nodes (12): Deviation Notes, Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
+Cohesion: 0.14
+Nodes (13): Deviation Notes, Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents (+5 more)
 
 ### Community 554 - "Community 554"
 Cohesion: 0.15
 Nodes (12): AI Agent Guidance, Audience, Documentation Standards, Execution Tasks, How to Work in This Area, In Scope, Out of Scope, Overview (+4 more)
 
 ### Community 555 - "Community 555"
-Cohesion: 0.17
-Nodes (12): MinIO S3, Observability Architecture Reference Document, Grafana Alloy, LGTM Stack, MinIO S3 Telemetry Storage, OTLP Telemetry Pipeline, cAdvisor Healthcheck, ADR-0021 Observability Hardening and HA Expansion Strategy (+4 more)
+Cohesion: 0.29
+Nodes (7): MinIO S3, Grafana Alloy, LGTM Stack, MinIO S3 Telemetry Storage, OTLP Telemetry Pipeline, cAdvisor Healthcheck, service_healthy Dependency Hardening
 
 ### Community 556 - "Community 556"
-Cohesion: 0.17
+Cohesion: 0.15
 Nodes (11): Gateway Tier (01-gateway), Networking (Ports), Tech Stack, Audience, How to Work in This Area, In Scope, Out of Scope, Overview (+3 more)
 
 ### Community 557 - "Community 557"
-Cohesion: 0.17
-Nodes (11): 03-Security Vault Operations Policy, AI Agent Policy Section (If Applicable), Auto-unseal & Remote Audit Adoption Gate, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+3 more)
+Cohesion: 0.15
+Nodes (12): 03-Security Vault Operations Policy, AI Agent Policy Section (If Applicable), Auto-unseal & Remote Audit Adoption Gate, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+4 more)
 
 ### Community 558 - "Community 558"
 Cohesion: 0.17
 Nodes (11): 04-Data Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+3 more)
 
 ### Community 559 - "Community 559"
-Cohesion: 0.17
-Nodes (11): 05-Messaging Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+3 more)
+Cohesion: 0.15
+Nodes (12): 05-Messaging Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+4 more)
 
 ### Community 560 - "Community 560"
-Cohesion: 0.17
-Nodes (11): 06-Observability Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+3 more)
+Cohesion: 0.15
+Nodes (12): 06-Observability Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+4 more)
 
 ### Community 561 - "Community 561"
-Cohesion: 0.17
-Nodes (11): 07-Workflow Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+3 more)
+Cohesion: 0.15
+Nodes (12): 07-Workflow Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+4 more)
 
 ### Community 562 - "Community 562"
-Cohesion: 0.17
-Nodes (11): 08-AI Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+3 more)
+Cohesion: 0.15
+Nodes (12): 08-AI Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+4 more)
 
 ### Community 563 - "Community 563"
-Cohesion: 0.17
-Nodes (11): AI Agent Policy Section (If Applicable), Controls, Exceptions, IaC Deployment Policy, Overview (KR), Policy Scope, Policy Scope, Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): AI Agent Policy Section (If Applicable), Controls, Exceptions, IaC Deployment Policy, Overview, Overview (KR), Policy Scope, Policy Scope (+4 more)
 
 ### Community 564 - "Community 564"
-Cohesion: 0.17
-Nodes (11): 09-Tooling Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+3 more)
+Cohesion: 0.15
+Nodes (12): 09-Tooling Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+4 more)
 
 ### Community 565 - "Community 565"
 Cohesion: 0.18
@@ -3300,7 +3404,7 @@ Cohesion: 0.17
 Nodes (11): Healthcheck & Operations, Image & Build, Networking & Volumes, Overview (KR), Parent Documents, Related Documents, Scope & Non-goals, Secrets (+3 more)
 
 ### Community 569 - "Community 569"
-Cohesion: 0.17
+Cohesion: 0.15
 Nodes (11): Agent and Function Catalog, Agents, Audience, Function / Skill Lifecycle, Functions, How to Work in This Area, Overview, Purpose (+3 more)
 
 ### Community 570 - "Community 570"
@@ -3308,52 +3412,52 @@ Cohesion: 0.17
 Nodes (12): Prometheus alert: GrafanaAlloyDown, Prometheus rule group: lgtm_alerts, Prometheus alert: LokiProcessTooManyRestarts, Prometheus alert: LokiRequestErrors, Prometheus alert: LokiRequestLatency, Prometheus alert: LokiRequestPanic, alert_rules.local.observability.yml Prometheus Rule File, Prometheus alert: TempoDown (+4 more)
 
 ### Community 571 - "Community 571"
-Cohesion: 0.17
-Nodes (11): Available Scripts, Cache & Key-Value Stores (04-data/cache-and-kv), Tech Stack, Audience, How to Work in This Area, In Scope, Out of Scope, Overview (+3 more)
+Cohesion: 0.10
+Nodes (19): Available Scripts, Cache & Key-Value Stores (04-data/cache-and-kv), Tech Stack, Audience, How to Work in This Area, In Scope, Out of Scope, Overview (+11 more)
 
 ### Community 572 - "Community 572"
-Cohesion: 0.17
-Nodes (11): ADR-0002: Choice of Keycloak and OAuth2 Proxy for IAM and SSO, AI Agent Guidance, Alternatives Considered, Consequence, Consequences, Context, Decision, Explicit Non-goals (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0002: Choice of Keycloak and OAuth2 Proxy for IAM and SSO, AI Agent Guidance, Alternatives Considered, Consequence, Consequences, Context, Decision, Explicit Non-goals (+4 more)
 
 ### Community 573 - "Community 573"
-Cohesion: 0.17
-Nodes (11): ADR-0008: Ollama and Open WebUI for Local AI Infrastructure, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, LocalAI (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0008: Ollama and Open WebUI for Local AI Infrastructure, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, LocalAI (+4 more)
 
 ### Community 574 - "Community 574"
-Cohesion: 0.17
-Nodes (11): ADR-0016: Open WebUI as Primary AI/RAG Interface, Alternatives, Consequences, Context, Decision, Explicit Non-goals, [LibreChat], [Ollama CLI] (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0016: Open WebUI as Primary AI/RAG Interface, Alternatives, Consequences, Context, Decision, Explicit Non-goals, [LibreChat], [Ollama CLI] (+4 more)
 
 ### Community 575 - "Community 575"
-Cohesion: 0.17
-Nodes (11): ADR-0017: 02-Auth Runtime Hardening and Fail-closed Policy, Agent-related Example Decisions (If Applicable), Alternatives, Compose 인라인 셸 유지, Consequences, Context, Decision, Explicit Non-goals (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0017: 02-Auth Runtime Hardening and Fail-closed Policy, Agent-related Example Decisions (If Applicable), Alternatives, Compose 인라인 셸 유지, Consequences, Context, Decision, Explicit Non-goals (+4 more)
 
 ### Community 576 - "Community 576"
-Cohesion: 0.17
-Nodes (11): ADR-0018: Vault Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR) (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0018: Vault Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (+4 more)
 
 ### Community 577 - "Community 577"
-Cohesion: 0.17
-Nodes (11): ADR-0019: 04-Data Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR) (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0019: 04-Data Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (+4 more)
 
 ### Community 578 - "Community 578"
-Cohesion: 0.17
-Nodes (11): ADR-0020: Messaging Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR) (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0020: Messaging Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (+4 more)
 
 ### Community 579 - "Community 579"
-Cohesion: 0.17
-Nodes (11): ADR-0021: Observability Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR) (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0021: Observability Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (+4 more)
 
 ### Community 580 - "Community 580"
-Cohesion: 0.17
-Nodes (11): ADR-0022: Workflow Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR) (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0022: Workflow Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (+4 more)
 
 ### Community 581 - "Community 581"
-Cohesion: 0.17
-Nodes (11): ADR-0023: AI Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR) (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0023: AI Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (+4 more)
 
 ### Community 582 - "Community 582"
-Cohesion: 0.17
-Nodes (11): ADR-0024: Tooling Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR) (+3 more)
+Cohesion: 0.15
+Nodes (12): ADR-0024: Tooling Hardening and HA Expansion Strategy, Agent-related Example Decisions (If Applicable), Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (+4 more)
 
 ### Community 583 - "Community 583"
 Cohesion: 0.20
@@ -3364,456 +3468,456 @@ Cohesion: 0.17
 Nodes (12): mng-pg, mng-pg-exporter, mng-pg-init, mng-valkey, mng-valkey-exporter, Management Generic Service Database, Management Platform Service Databases, Management Database (+4 more)
 
 ### Community 585 - "Community 585"
-Cohesion: 0.17
-Nodes (11): EN, KR, Overview (KR), Related Documents, Controls, Exceptions, Policy Scope, Policy Scope (+3 more)
+Cohesion: 0.15
+Nodes (12): EN, KR, Overview, Overview (KR), Related Documents, Controls, Exceptions, Policy Scope (+4 more)
 
 ### Community 586 - "Community 586"
-Cohesion: 0.17
-Nodes (11): Audience, Category Role, Current References, Glossary References, How to Work in This Area, In Scope, Out of Scope, Overview (+3 more)
+Cohesion: 0.15
+Nodes (12): Audience, Category Role, Current References, Glossary References, How to Work in This Area, In Scope, Language Rule, Out of Scope (+4 more)
 
 ### Community 587 - "Community 587"
-Cohesion: 0.33
-Nodes (11): agent-event-hook.sh script, has_changed_target_stage_docs(), logical_commit_stop_gate(), post_tool_use(), pre_compact(), pre_tool_use(), session_end(), session_start() (+3 more)
+Cohesion: 0.38
+Nodes (12): agent-event-hook.sh script, agent-event-hook.sh script, has_changed_target_stage_docs(), logical_commit_stop_gate(), post_tool_use(), pre_compact(), pre_tool_use(), session_end() (+4 more)
 
 ### Community 588 - "Community 588"
-Cohesion: 0.36
-Nodes (9): validate-docker-compose.sh script, check_dir(), check_file(), fail(), is_optional_secret(), ok(), run_preflight(), usage() (+1 more)
+Cohesion: 0.45
+Nodes (11): validate-docker-compose.sh script, check_dir(), check_file(), cleanup(), compose_secret_files(), fail(), is_optional_secret(), ok() (+3 more)
 
 ### Community 589 - "Community 589"
 Cohesion: 0.18
 Nodes (12): ksqlDB Kafka and Schema Registry Dependency, ksqlDB Operations Policy, ksqlDB Query Restart Recovery, ksqlDB Stream Lifecycle Governance, Management Database Bootstrap Recovery, OpenSearch Cluster Index Recovery, OpenSearch Operations Policy, OpenSearch Shard Replica Security Controls (+4 more)
 
 ### Community 590 - "Community 590"
-Cohesion: 0.17
-Nodes (11): Audience, Category Role, Current References, How to Work in This Area, In Scope, Learning References, Out of Scope, Overview (+3 more)
+Cohesion: 0.15
+Nodes (12): Audience, Category Role, Current References, How to Work in This Area, In Scope, Language Rule, Learning References, Out of Scope (+4 more)
 
 ### Community 591 - "Community 591"
-Cohesion: 0.17
-Nodes (11): Audience, Category Role, Current References, How to Work in This Area, In Scope, LLM Wiki References, Out of Scope, Overview (+3 more)
+Cohesion: 0.15
+Nodes (12): Audience, Category Role, Current References, How to Work in This Area, In Scope, Language Rule, LLM Wiki References, Out of Scope (+4 more)
 
 ### Community 592 - "Community 592"
 Cohesion: 0.17
 Nodes (11): Audience, Governance Memory, How to Work in This Area, In Scope, Maintenance and Safety, Operational Procedures, Out of Scope, Overview (+3 more)
 
 ### Community 593 - "Community 593"
-Cohesion: 0.17
-Nodes (11): 01-Gateway Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): 01-Gateway Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 594 - "Community 594"
-Cohesion: 0.17
-Nodes (11): 02-Auth Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): 02-Auth Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 595 - "Community 595"
-Cohesion: 0.17
-Nodes (11): 03-Security (Vault) Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): 03-Security (Vault) Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 596 - "Community 596"
-Cohesion: 0.17
-Nodes (11): 04-Data Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): 04-Data Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 597 - "Community 597"
-Cohesion: 0.17
-Nodes (11): 05-Messaging Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): 05-Messaging Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 598 - "Community 598"
-Cohesion: 0.17
-Nodes (11): 06-Observability Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): 06-Observability Optimization Hardening Implementation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 599 - "Community 599"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Infra Team Agent Cross-Validation Plan, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Infra Team Agent Cross-Validation Plan, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 600 - "Community 600"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Harness / Agent-first Engineering Plan, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Harness / Agent-first Engineering Plan, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 601 - "Community 601"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates, Completion Criteria, Context, Goals & In-Scope, LLM Wiki Agent-first Completion Plan, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates, Completion Criteria, Context, Goals & In-Scope, LLM Wiki Agent-first Completion Plan, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 602 - "Community 602"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, docs/01.requirements Remediation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, docs/01.requirements Remediation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 603 - "Community 603"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, docs/05.operations Purpose Remediation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, docs/05.operations Purpose Remediation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 604 - "Community 604"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Docs Bounded Consistency Audit Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Docs Bounded Consistency Audit Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 605 - "Community 605"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Execution Stage Remediation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Execution Stage Remediation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 606 - "Community 606"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+4 more)
 
 ### Community 607 - "Community 607"
-Cohesion: 0.17
-Nodes (11): Agent Hook Completion and Style Automation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Hook Completion and Style Automation Plan, Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 608 - "Community 608"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Data Analytics Execution Traceability Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Data Analytics Execution Traceability Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 609 - "Community 609"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Lifecycle README Debt Closure Plan, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Lifecycle README Debt Closure Plan, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 610 - "Community 610"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+4 more)
 
 ### Community 611 - "Community 611"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+4 more)
 
 ### Community 612 - "Community 612"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+4 more)
 
 ### Community 613 - "Community 613"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+4 more)
 
 ### Community 614 - "Community 614"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+4 more)
 
 ### Community 615 - "Community 615"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Home Docker Revalidation Deferred Follow-up Implementation Plan, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Home Docker Revalidation Deferred Follow-up Implementation Plan, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 616 - "Community 616"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Home Docker Workspace Audit Improvement Implementation Plan, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Home Docker Workspace Audit Improvement Implementation Plan, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 617 - "Community 617"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+4 more)
 
 ### Community 618 - "Community 618"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+4 more)
 
 ### Community 619 - "Community 619"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Claude Harness Governance Verification Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Claude Harness Governance Verification Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 620 - "Community 620"
-Cohesion: 0.17
-Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Governance Optimization (I1+I2) Implementation Plan, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Governance Optimization (I1+I2) Implementation Plan, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+4 more)
 
 ### Community 621 - "Community 621"
-Cohesion: 0.17
+Cohesion: 0.15
 Nodes (11): 1. Purpose, 2. Baseline Rules, 3. This Repository Policy, 4. Instruction File Hierarchy and Precedence, 5. Stage 00 Canonical Adapter Model, Adapter Rules, AGENTS.md Provider-Neutral Notes, References (+3 more)
 
 ### Community 622 - "Community 622"
-Cohesion: 0.17
-Nodes (11): AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Messaging Architecture Reference Document (ARD), Messaging Tier (05-messaging) Architecture Reference Document, Overview (KR), Quality Attributes (+3 more)
+Cohesion: 0.15
+Nodes (12): AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Messaging Architecture Reference Document (ARD), Messaging Tier (05-messaging) Architecture Reference Document, Overview, Overview (KR) (+4 more)
 
 ### Community 623 - "Community 623"
-Cohesion: 0.17
-Nodes (11): AI Agent Architecture Requirements (If Applicable), AI Infrastructure Architecture Reference Document (ARD), AI Infrastructure Reference Document, Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes (+3 more)
+Cohesion: 0.15
+Nodes (12): AI Agent Architecture Requirements (If Applicable), AI Infrastructure Architecture Reference Document (ARD), AI Infrastructure Reference Document, Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR) (+4 more)
 
 ### Community 624 - "Community 624"
-Cohesion: 0.17
-Nodes (11): AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Open WebUI Architecture Reference Document, Open WebUI Architecture Reference Document (ARD), Overview (KR), Quality Attributes (+3 more)
+Cohesion: 0.15
+Nodes (12): AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Open WebUI Architecture Reference Document, Open WebUI Architecture Reference Document (ARD), Overview, Overview (KR) (+4 more)
 
 ### Community 625 - "Community 625"
 Cohesion: 0.15
 Nodes (12): 1. Context & Objective, 2. Requirements & Constraints, 3.1 Change-Type Verification Matrix, 3.2 Generated-Artifact Freshness, 3.3 Local QA/CI Orchestration, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety (+4 more)
 
 ### Community 626 - "Community 626"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: 01-Gateway Optimization Hardening (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 627 - "Community 627"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: 02-Auth Optimization Hardening (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 628 - "Community 628"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: 03-Security (Vault) Optimization Hardening (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 629 - "Community 629"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: 04-Data Optimization Hardening (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 630 - "Community 630"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: 05-Messaging Optimization Hardening (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 631 - "Community 631"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: 06-Observability Optimization Hardening (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 632 - "Community 632"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: 07-Workflow Optimization Hardening (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 633 - "Community 633"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: 08-AI Optimization Hardening (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 634 - "Community 634"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: 09-Tooling Optimization Hardening (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 635 - "Community 635"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: 11-Laboratory Optimization Hardening (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 636 - "Community 636"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1: Documentation, Phase 2: Implementation, Phase 3: Verification, Phase View, Related Documents, Task: Standardize `infra_net` Implementation (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1: Documentation, Phase 2: Implementation, Phase 3: Verification, Phase View, Related Documents (+4 more)
 
 ### Community 637 - "Community 637"
-Cohesion: 0.17
-Nodes (11): Agent-specific Types (If Applicable), Completion Evidence, Inputs, Overview (KR), Phase View (Optional), Related Documents, Suggested Types, Task: Infra Team Agent Cross-Validation (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent-specific Types (If Applicable), Completion Evidence, Inputs, Overview, Overview (KR), Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 638 - "Community 638"
-Cohesion: 0.17
-Nodes (11): Agent-specific Types (If Applicable), Completion Evidence, Inputs, Overview (KR), Phase View (Optional), Related Documents, Suggested Types, Task: Requirements Standardization (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent-specific Types (If Applicable), Completion Evidence, Inputs, Overview, Overview (KR), Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 639 - "Community 639"
-Cohesion: 0.17
-Nodes (11): Agent-specific Types (If Applicable), Completion Evidence, Inputs, Overview (KR), Phase View (Optional), Related Documents, Suggested Types, Task: Scripts CI/CD and QA Cleanup (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent-specific Types (If Applicable), Completion Evidence, Inputs, Overview, Overview (KR), Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 640 - "Community 640"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View, Related Documents, Suggested Types, Task: docs/05.operations Purpose Remediation (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View, Related Documents, Suggested Types (+4 more)
 
 ### Community 641 - "Community 641"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View, Related Documents, Suggested Types, Task: Docs Bounded Consistency Audit (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View, Related Documents, Suggested Types (+4 more)
 
 ### Community 642 - "Community 642"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View, Related Documents, Suggested Types, Task: Execution Stage Remediation (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View, Related Documents, Suggested Types (+4 more)
 
 ### Community 643 - "Community 643"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View, Related Documents, Suggested Types, Task Table (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View, Related Documents, Suggested Types (+4 more)
 
 ### Community 644 - "Community 644"
-Cohesion: 0.17
-Nodes (11): Agent-specific Types (If Applicable), Completion Evidence, Inputs, Overview (KR), Phase View (Optional), Related Documents, Suggested Types, Task: Agent Hook Completion and Style Automation (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent-specific Types (If Applicable), Completion Evidence, Inputs, Overview, Overview (KR), Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 645 - "Community 645"
-Cohesion: 0.17
-Nodes (11): Agent-specific Types (If Applicable), Inputs, Overview (KR), Phase 1, Phase View (Optional), Related Documents, Suggested Types, Task: Data Analytics Execution Traceability (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent-specific Types (If Applicable), Inputs, Overview, Overview (KR), Phase 1, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 646 - "Community 646"
 Cohesion: 0.17
 Nodes (12): Phase 0-4: audit and analysis, Phase 10: office-hours omission review, Phase 11: Superpowers brainstorming omission review, Phase 12: gstack CEO plan review, Phase 13: Superpowers executing-plans follow-through, Phase 14: skill creation and improvement workflow review, Phase 15: workspace-audit-revalidation Skill creation, Phase 5-6: artifacts and low-risk implementation (+4 more)
 
 ### Community 647 - "Community 647"
-Cohesion: 0.17
-Nodes (11): Agent-specific Types (If Applicable), Inputs, Overview (KR), Phase View (Optional), Related Documents, Stage 00 -> Template Contract -> Skills -> Codex Harness -> QA/CI/CD -> Evidence, Suggested Types, Task: Agent Governance Missing Items Implementation (+3 more)
+Cohesion: 0.15
+Nodes (12): Agent-specific Types (If Applicable), Inputs, Overview, Overview (KR), Phase View (Optional), Related Documents, Stage 00 -> Template Contract -> Skills -> Codex Harness -> QA/CI/CD -> Evidence, Suggested Types (+4 more)
 
 ### Community 648 - "Community 648"
-Cohesion: 0.17
-Nodes (11): Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types, Task: Governance Optimization (I1+I2) (+3 more)
+Cohesion: 0.15
+Nodes (12): Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents, Suggested Types (+4 more)
 
 ### Community 649 - "Community 649"
-Cohesion: 0.15
-Nodes (12): Agent Role & IO Contract (If Applicable), Contracts, Core Design, Gap Registry Summary, Historical Gap Registry Snapshot (2026-05-26), Overview (KR), Related Documents, Related Inputs (+4 more)
+Cohesion: 0.14
+Nodes (13): Agent Role & IO Contract (If Applicable), Contracts, Core Design, Gap Registry Summary, Historical Gap Registry Snapshot (2026-05-26), Overview, Overview (KR), Related Documents (+5 more)
 
 ### Community 650 - "Community 650"
 Cohesion: 0.20
 Nodes (11): Data Optimization Hardening Architecture Reference Document, Airflow Orchestration Plane, n8n Automation Plane, Workflow Optimization Hardening Architecture Reference Document, 04-data Specifications Directory, Data Optimization Hardening Specification, DataHardeningContract, ksql Tier Label Contract (+3 more)
 
 ### Community 651 - "Community 651"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 01 Gateway, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 01 Gateway, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 652 - "Community 652"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 01 Gateway, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 01 Gateway, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 653 - "Community 653"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 01 Gateway, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 01 Gateway, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 654 - "Community 654"
-Cohesion: 0.18
-Nodes (10): 01-Gateway Traefik Operations Policy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): 01-Gateway Traefik Operations Policy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 655 - "Community 655"
-Cohesion: 0.18
-Nodes (10): 02-Auth Keycloak Operations Policy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): 02-Auth Keycloak Operations Policy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 656 - "Community 656"
-Cohesion: 0.18
-Nodes (10): 02-Auth OAuth2 Proxy Operations Policy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): 02-Auth OAuth2 Proxy Operations Policy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 657 - "Community 657"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 02 Auth, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 02 Auth, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 658 - "Community 658"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 02 Auth, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 02 Auth, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 659 - "Community 659"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 02 Auth, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 02 Auth, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 660 - "Community 660"
 Cohesion: 0.18
 Nodes (11): Cache Key-Value Guide, Cache Persistence Policy, Managed mng-valkey, Valkey Cluster, 07-Workflow Optimization Hardening, Airflow n8n SSO Hardening, Workflow Catalog Expansion, 11-Laboratory Optimization Hardening (+3 more)
 
 ### Community 661 - "Community 661"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 03 Security, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 03 Security, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 662 - "Community 662"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 03 Security, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 03 Security, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 663 - "Community 663"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 03 Security, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 03 Security, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 664 - "Community 664"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 04 Data, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 04 Data, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 665 - "Community 665"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 04 Data, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 04 Data, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 666 - "Community 666"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 04 Data, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 04 Data, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 667 - "Community 667"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 05 Messaging, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 05 Messaging, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 668 - "Community 668"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 05 Messaging, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 05 Messaging, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 669 - "Community 669"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 05 Messaging, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 05 Messaging, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 670 - "Community 670"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 06 Observability, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 06 Observability, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 671 - "Community 671"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 06 Observability, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 06 Observability, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 672 - "Community 672"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 06 Observability, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 06 Observability, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 673 - "Community 673"
-Cohesion: 0.18
-Nodes (10): Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Storage and Retention, Tempo Operations Policy, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Storage and Retention, Tempo Operations Policy, Verification (+3 more)
 
 ### Community 674 - "Community 674"
-Cohesion: 0.18
-Nodes (10): AI Agent Policy Section (If Applicable), Controls, DAG Deployment Operations Policy, Exceptions, Overview (KR), Policy Scope, Policy Scope, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): AI Agent Policy Section (If Applicable), Controls, DAG Deployment Operations Policy, Exceptions, Overview, Overview (KR), Policy Scope, Policy Scope (+3 more)
 
 ### Community 675 - "Community 675"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 07 Workflow, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 07 Workflow, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 676 - "Community 676"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 07 Workflow, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 07 Workflow, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 677 - "Community 677"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 07 Workflow, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 07 Workflow, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 678 - "Community 678"
-Cohesion: 0.18
-Nodes (10): AI Agent Policy Section (If Applicable), Controls, Exceptions, Ollama Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): AI Agent Policy Section (If Applicable), Controls, Exceptions, Ollama Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 679 - "Community 679"
-Cohesion: 0.18
-Nodes (10): AI Agent Policy Section (If Applicable), Controls, Exceptions, Open WebUI Operations Policy, Policy Scope, Policy Scope, Review Cadence, Overview (KR) (+2 more)
+Cohesion: 0.17
+Nodes (11): AI Agent Policy Section (If Applicable), Controls, Exceptions, Open WebUI Operations Policy, Policy Scope, Policy Scope, Review Cadence, Overview (+3 more)
 
 ### Community 680 - "Community 680"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 08 Ai, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 08 Ai, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 681 - "Community 681"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 08 Ai, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 08 Ai, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 682 - "Community 682"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 08 Ai, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 08 Ai, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 683 - "Community 683"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 09 Tooling, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 09 Tooling, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 684 - "Community 684"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 09 Tooling, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 09 Tooling, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 685 - "Community 685"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 09 Tooling, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 09 Tooling, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 686 - "Community 686"
-Cohesion: 0.18
-Nodes (10): AI Agent Policy Section (If Applicable), Controls, Docker Registry Operations Policy, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): AI Agent Policy Section (If Applicable), Controls, Docker Registry Operations Policy, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 687 - "Community 687"
-Cohesion: 0.18
-Nodes (10): Controls, Exceptions, Mail Operations Policy, Persistence & Backups, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): Controls, Exceptions, Mail Operations Policy, Persistence & Backups, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 688 - "Community 688"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 10 Communication, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 10 Communication, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 689 - "Community 689"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 10 Communication, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 10 Communication, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 690 - "Community 690"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 10 Communication, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 10 Communication, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 691 - "Community 691"
-Cohesion: 0.18
-Nodes (10): AI Agent Policy Section, Controls, Exceptions, Open Notebook Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): AI Agent Policy Section, Controls, Exceptions, Open Notebook Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 692 - "Community 692"
-Cohesion: 0.18
-Nodes (10): 11-Laboratory Optimization Hardening Operations Policy, Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): 11-Laboratory Optimization Hardening Operations Policy, Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 693 - "Community 693"
-Cohesion: 0.18
-Nodes (10): Controls, Disallowed Actions, Exceptions, Policy Scope, Policy Scope, Portainer Operations Policy, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): Controls, Disallowed Actions, Exceptions, Policy Scope, Policy Scope, Portainer Operations Policy, Review Cadence, Verification (+3 more)
 
 ### Community 694 - "Community 694"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 11 Laboratory, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 11 Laboratory, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 695 - "Community 695"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 11 Laboratory, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 11 Laboratory, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 696 - "Community 696"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 11 Laboratory, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 11 Laboratory, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 697 - "Community 697"
-Cohesion: 0.18
-Nodes (10): Controls, Disallowed Actions, Exceptions, Policy Scope, Policy Scope, RedisInsight Operations Policy, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): Controls, Disallowed Actions, Exceptions, Policy Scope, Policy Scope, RedisInsight Operations Policy, Review Cadence, Verification (+3 more)
 
 ### Community 698 - "Community 698"
 Cohesion: 0.20
@@ -3840,23 +3944,23 @@ Cohesion: 0.18
 Nodes (10): AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents, Summary (+2 more)
 
 ### Community 704 - "Community 704"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, ci-cd-engineer, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 705 - "Community 705"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, code-reviewer, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 706 - "Community 706"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, doc-writer, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 707 - "Community 707"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, drift-detector, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 708 - "Community 708"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, iac-reviewer, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 709 - "Community 709"
@@ -3864,15 +3968,15 @@ Cohesion: 0.18
 Nodes (10): Agents, Artifacts, incident-responder, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 710 - "Community 710"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, infra-implementer, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 711 - "Community 711"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, Overview, Purpose, qa-engineer, Related Documents, Scope, Skills (+2 more)
 
 ### Community 712 - "Community 712"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, Overview, Purpose, Related Documents, Scope, security-auditor, Skills (+2 more)
 
 ### Community 713 - "Community 713"
@@ -3880,7 +3984,7 @@ Cohesion: 0.18
 Nodes (10): Agents, Artifacts, Overview, Purpose, Related Documents, Scope, Skills, Structure (+2 more)
 
 ### Community 714 - "Community 714"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, Overview, Purpose, Related Documents, Scope, Skills, Structure (+2 more)
 
 ### Community 715 - "Community 715"
@@ -3888,195 +3992,195 @@ Cohesion: 0.18
 Nodes (11): Prometheus rule group: prometheus_alerts, Prometheus alert: PrometheusAlertmanagerConfigNotSynced, Prometheus alert: PrometheusAllTargetsMissing, Prometheus alert: PrometheusConfigurationReloadFailure, Prometheus alert: PrometheusInfraTargetsMissing, Prometheus alert: PrometheusJobMissing, Prometheus alert: PrometheusNotConnectedToAlertmanager, Prometheus alert: PrometheusRuleEvaluationFailures (+3 more)
 
 ### Community 716 - "Community 716"
-Cohesion: 0.18
-Nodes (10): AI Agent Policy Section, Controls, Exceptions, InfluxDB Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): AI Agent Policy Section, Controls, Exceptions, InfluxDB Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 717 - "Community 717"
-Cohesion: 0.18
-Nodes (10): AI Agent Policy Section, Controls, Exceptions, ksqlDB Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): AI Agent Policy Section, Controls, Exceptions, ksqlDB Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 718 - "Community 718"
-Cohesion: 0.18
-Nodes (10): AI Agent Policy Section, Controls, Exceptions, OpenSearch Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): AI Agent Policy Section, Controls, Exceptions, OpenSearch Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 719 - "Community 719"
-Cohesion: 0.18
-Nodes (10): AI Agent Guidance, Analytics Tier (04-Data: Analytics), Overview (KR), Audience, How to Work in This Area, In Scope, Out of Scope, Related Documents (+2 more)
+Cohesion: 0.11
+Nodes (17): AI Agent Guidance, Analytics Tier (04-Data: Analytics), Overview (KR), Audience, How to Work in This Area, In Scope, Out of Scope, Related Documents (+9 more)
 
 ### Community 720 - "Community 720"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 04 Data / Analytics, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 04 Data / Analytics, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 721 - "Community 721"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 04 Data / Analytics, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 04 Data / Analytics, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 722 - "Community 722"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 04 Data / Analytics, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 04 Data / Analytics, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 723 - "Community 723"
-Cohesion: 0.18
-Nodes (10): AI Agent Policy Section, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, StarRocks Operations Policy, Verification (+2 more)
+Cohesion: 0.17
+Nodes (11): AI Agent Policy Section, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, StarRocks Operations Policy, Verification (+3 more)
 
 ### Community 724 - "Community 724"
 Cohesion: 0.18
 Nodes (11): Backup Fire Drills, Backup Policy, Critical Database Backup Retention, Object Storage Backup Retention, Data Hardening CI Gate, ksql Tier Label Contract, 04-Data Optimization Hardening Operations Policy, SeaweedFS Expose Validation (+3 more)
 
 ### Community 725 - "Community 725"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 04 Data / Cache And Kv, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 04 Data / Cache And Kv, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 726 - "Community 726"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 04 Data / Cache And Kv, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 04 Data / Cache And Kv, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 727 - "Community 727"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 04 Data / Cache And Kv, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 04 Data / Cache And Kv, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 728 - "Community 728"
 Cohesion: 0.20
 Nodes (11): Alertmanager Critical Route, Alertmanager Default Slack Route, Alertmanager Slack Receivers, Alertmanager SMTP Placeholders, Kafka JMX Exporter Rules, Alertmanager Notification Routing, Grafana Alloy Collector, LGTM Stack (+3 more)
 
 ### Community 729 - "Community 729"
-Cohesion: 0.14
-Nodes (13): Approved Surface Evidence, Deviation Notes, Inputs, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents (+5 more)
+Cohesion: 0.13
+Nodes (14): Approved Surface Evidence, Deviation Notes, Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional) (+6 more)
 
 ### Community 730 - "Community 730"
-Cohesion: 0.18
-Nodes (10): ADR-0001: Traefik & Nginx Hybrid Gateway Architecture, [Alternative 1: Traefik Only], [Alternative 2: Nginx Only (with Nginx Proxy Manager 등)], Alternatives, Consequences, Context, Decision, Explicit Non-goals (+2 more)
+Cohesion: 0.17
+Nodes (11): ADR-0001: Traefik & Nginx Hybrid Gateway Architecture, [Alternative 1: Traefik Only], [Alternative 2: Nginx Only (with Nginx Proxy Manager 등)], Alternatives, Consequences, Context, Decision, Explicit Non-goals (+3 more)
 
 ### Community 731 - "Community 731"
-Cohesion: 0.18
-Nodes (10): ADR-0004: Choice of Spilo/Patroni for PostgreSQL HA, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR), Postgres Operator (K8s) (+2 more)
+Cohesion: 0.17
+Nodes (11): ADR-0004: Choice of Spilo/Patroni for PostgreSQL HA, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview, Overview (KR) (+3 more)
 
 ### Community 732 - "Community 732"
-Cohesion: 0.18
-Nodes (10): ADR-0005: Polyglot Messaging Strategy (Kafka & RabbitMQ Selection), Alternatives, Consequences, Context, Decision, Explicit Non-goals, [Only Apache Kafka], [Only RabbitMQ] (+2 more)
+Cohesion: 0.17
+Nodes (11): ADR-0005: Polyglot Messaging Strategy (Kafka & RabbitMQ Selection), Alternatives, Consequences, Context, Decision, Explicit Non-goals, [Only Apache Kafka], [Only RabbitMQ] (+3 more)
 
 ### Community 733 - "Community 733"
-Cohesion: 0.18
-Nodes (10): ADR-0006: LGTM Stack and Grafana Alloy Selection, Alternative 1: ELK Stack (Elasticsearch, Logstash, Kibana), Alternative 2: OpenTelemetry Collector (Vanilla), Alternatives, Consequences, Context, Decision, Explicit Non-goals (+2 more)
+Cohesion: 0.17
+Nodes (11): ADR-0006: LGTM Stack and Grafana Alloy Selection, Alternative 1: ELK Stack (Elasticsearch, Logstash, Kibana), Alternative 2: OpenTelemetry Collector (Vanilla), Alternatives, Consequences, Context, Decision, Explicit Non-goals (+3 more)
 
 ### Community 734 - "Community 734"
-Cohesion: 0.18
-Nodes (10): ADR-0007: Airflow & n8n Hybrid Workflow Strategy, [Alternative 1: Airflow Only], [Alternative 2: n8n Only], Alternatives, Consequences, Context, Decision, Explicit Non-goals (+2 more)
+Cohesion: 0.17
+Nodes (11): ADR-0007: Airflow & n8n Hybrid Workflow Strategy, [Alternative 1: Airflow Only], [Alternative 2: n8n Only], Alternatives, Consequences, Context, Decision, Explicit Non-goals (+3 more)
 
 ### Community 735 - "Community 735"
-Cohesion: 0.18
-Nodes (10): ADR-0009: Tooling Services Selection and Configuration, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR), Rationale (+2 more)
+Cohesion: 0.17
+Nodes (11): ADR-0009: Tooling Services Selection and Configuration, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview, Overview (KR) (+3 more)
 
 ### Community 736 - "Community 736"
-Cohesion: 0.18
-Nodes (10): ADR-0010: Communication Services Selection and Configuration, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR), Rationale (+2 more)
+Cohesion: 0.17
+Nodes (11): ADR-0010: Communication Services Selection and Configuration, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview, Overview (KR) (+3 more)
 
 ### Community 737 - "Community 737"
-Cohesion: 0.18
-Nodes (10): ADR-0015: Specialized Analytics Engines Selection, Alternative 01: PostgreSQL 확장 (TimescaleDB, pg_search 등 사용), Alternative 02: 클라우드 기반 관리 서비스 (BigQuery, Redshift 등), Alternatives, Consequences, Context, Decision, Explicit Non-goals (+2 more)
+Cohesion: 0.17
+Nodes (11): ADR-0015: Specialized Analytics Engines Selection, Alternative 01: PostgreSQL 확장 (TimescaleDB, pg_search 등 사용), Alternative 02: 클라우드 기반 관리 서비스 (BigQuery, Redshift 등), Alternatives, Consequences, Context, Decision, Explicit Non-goals (+3 more)
 
 ### Community 738 - "Community 738"
-Cohesion: 0.18
-Nodes (10): ADR-0025: Laboratory Hardening and HA Expansion Strategy, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR), Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): ADR-0025: Laboratory Hardening and HA Expansion Strategy, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview, Overview (KR) (+3 more)
 
 ### Community 739 - "Community 739"
-Cohesion: 0.18
-Nodes (10): ADR-0026: Standardize infra_net Subnet and Static IP Assignment, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR), Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): ADR-0026: Standardize infra_net Subnet and Static IP Assignment, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview, Overview (KR) (+3 more)
 
 ### Community 740 - "Community 740"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 741 - "Community 741"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 742 - "Community 742"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 743 - "Community 743"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 744 - "Community 744"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 745 - "Community 745"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 746 - "Community 746"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 747 - "Community 747"
-Cohesion: 0.18
-Nodes (10): Overview (KR), Related Documents, AI Agent Policy Section (If Applicable), Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+2 more)
+Cohesion: 0.17
+Nodes (11): Overview, Overview (KR), Related Documents, AI Agent Policy Section (If Applicable), Controls, Exceptions, Policy Scope, Policy Scope (+3 more)
 
 ### Community 748 - "Community 748"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 749 - "Community 749"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 750 - "Community 750"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 751 - "Community 751"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 752 - "Community 752"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 753 - "Community 753"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 754 - "Community 754"
-Cohesion: 0.18
-Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+Cohesion: 0.10
+Nodes (19): Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+11 more)
 
 ### Community 755 - "Community 755"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Audience, docs-taxonomy-agent-first-migration Specifications, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
 
 ### Community 756 - "Community 756"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): adr-writing, Agents, Artifacts, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 757 - "Community 757"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, ci-cd-patterns, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 758 - "Community 758"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, code-review-dimensions, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 759 - "Community 759"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, code-reviewer, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 760 - "Community 760"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, container-threat-modeling, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 761 - "Community 761"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, deployment-pipeline-design, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 762 - "Community 762"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, docker-compose-patterns, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 763 - "Community 763"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, e2e-testing, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 764 - "Community 764"
@@ -4084,23 +4188,23 @@ Cohesion: 0.18
 Nodes (10): Agents, Artifacts, incident-response, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 765 - "Community 765"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, infra-cross-validate, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 766 - "Community 766"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, infra-validate, Overview, Purpose, Related Documents, Scope, Skills (+2 more)
 
 ### Community 767 - "Community 767"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, Overview, Purpose, Related Documents, Scope, security-audit, Skills (+2 more)
 
 ### Community 768 - "Community 768"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, Overview, Purpose, Related Documents, Scope, Skills, Structure (+2 more)
 
 ### Community 769 - "Community 769"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agents, Artifacts, Overview, Purpose, Related Documents, Scope, Skills, Structure (+2 more)
 
 ### Community 770 - "Community 770"
@@ -4108,11 +4212,11 @@ Cohesion: 0.18
 Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Operations Guides, Out of Scope, Overview, Related Documents (+2 more)
 
 ### Community 771 - "Community 771"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Audience, harness-agent-first-engineering Specifications, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
 
 ### Community 772 - "Community 772"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Audience, home-docker-revalidation-deferred-follow-up Specifications, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
 
 ### Community 773 - "Community 773"
@@ -4120,11 +4224,11 @@ Cohesion: 0.18
 Nodes (10): 05.operations/incidents, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
 
 ### Community 774 - "Community 774"
-Cohesion: 0.18
-Nodes (10): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+2 more)
+Cohesion: 0.10
+Nodes (18): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+10 more)
 
 ### Community 775 - "Community 775"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Audience, How to Work in This Area, In Scope, infra-secrets-docs-refresh Specifications, Out of Scope, Overview, Related Documents, Scope (+2 more)
 
 ### Community 776 - "Community 776"
@@ -4132,7 +4236,7 @@ Cohesion: 0.18
 Nodes (10): Audience, How to Work in This Area, In Scope, llm-wiki-agent-first-completion Specifications, Out of Scope, Overview, Related Documents, Scope (+2 more)
 
 ### Community 777 - "Community 777"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Agent-first Engineering Components, Context, Evidence, Gaps, Harness Engineering Components, Memory: Harness and Agent-first Gap Audit, Prevention, Problem (+2 more)
 
 ### Community 778 - "Community 778"
@@ -4140,56 +4244,56 @@ Cohesion: 0.20
 Nodes (11): Ollama Integration, Open WebUI Specification, Qdrant Integration, RAG Embedding Model, 08-ai Specifications, 08-AI Optimization Hardening Technical Specification, check-ai-hardening Policy Gate, AI Hardening Control Surface (+3 more)
 
 ### Community 779 - "Community 779"
-Cohesion: 0.18
-Nodes (10): Completion Criteria, Context, Data Tier Documentation Standardization (04-data) Implementation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+2 more)
+Cohesion: 0.17
+Nodes (11): Completion Criteria, Context, Data Tier Documentation Standardization (04-data) Implementation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+3 more)
 
 ### Community 780 - "Community 780"
-Cohesion: 0.18
-Nodes (10): Completion Criteria, Context, Goals & In-Scope, Messaging Infrastructure Standardization Plan, Messaging Tier (05-messaging) Plan, Non-Goals & Out-of-Scope, Overview (KR), Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): Completion Criteria, Context, Goals & In-Scope, Messaging Infrastructure Standardization Plan, Messaging Tier (05-messaging) Plan, Non-Goals & Out-of-Scope, Overview, Overview (KR) (+3 more)
 
 ### Community 781 - "Community 781"
-Cohesion: 0.18
-Nodes (10): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Observability Standardization Plan, Overview (KR), Related Documents, Risks & Mitigations (+2 more)
+Cohesion: 0.17
+Nodes (11): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Observability Standardization Plan, Overview, Overview (KR), Related Documents (+3 more)
 
 ### Community 782 - "Community 782"
-Cohesion: 0.18
-Nodes (10): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Open WebUI Implementation Plan, Overview (KR), Related Documents, Risks & Mitigations (+2 more)
+Cohesion: 0.17
+Nodes (11): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Open WebUI Implementation Plan, Overview, Overview (KR), Related Documents (+3 more)
 
 ### Community 783 - "Community 783"
-Cohesion: 0.18
-Nodes (10): 07-Workflow Optimization Hardening Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+2 more)
+Cohesion: 0.17
+Nodes (11): 07-Workflow Optimization Hardening Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+3 more)
 
 ### Community 784 - "Community 784"
-Cohesion: 0.18
-Nodes (10): 08-AI Optimization Hardening Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+2 more)
+Cohesion: 0.17
+Nodes (11): 08-AI Optimization Hardening Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+3 more)
 
 ### Community 785 - "Community 785"
-Cohesion: 0.18
-Nodes (10): 09-Tooling Optimization Hardening Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+2 more)
+Cohesion: 0.17
+Nodes (11): 09-Tooling Optimization Hardening Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+3 more)
 
 ### Community 786 - "Community 786"
-Cohesion: 0.18
-Nodes (10): 11-Laboratory Optimization Hardening Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+2 more)
+Cohesion: 0.17
+Nodes (11): 11-Laboratory Optimization Hardening Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+3 more)
 
 ### Community 787 - "Community 787"
-Cohesion: 0.18
-Nodes (10): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations, Standardize `infra_net` Implementation Plan (+2 more)
+Cohesion: 0.17
+Nodes (11): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
 
 ### Community 788 - "Community 788"
-Cohesion: 0.18
-Nodes (10): Completion Criteria, Context, Docs Taxonomy and AI Agent-first Contract Migration Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+2 more)
+Cohesion: 0.17
+Nodes (11): Completion Criteria, Context, Docs Taxonomy and AI Agent-first Contract Migration Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+3 more)
 
 ### Community 789 - "Community 789"
-Cohesion: 0.18
-Nodes (10): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations, Scripts CI/CD & QA Cleanup Plan (+2 more)
+Cohesion: 0.17
+Nodes (11): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
 
 ### Community 790 - "Community 790"
-Cohesion: 0.18
-Nodes (10): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations, Verification Plan (+2 more)
+Cohesion: 0.17
+Nodes (11): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
 
 ### Community 791 - "Community 791"
-Cohesion: 0.18
-Nodes (10): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations, Verification Plan (+2 more)
+Cohesion: 0.17
+Nodes (11): Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents, Risks & Mitigations (+3 more)
 
 ### Community 792 - "Community 792"
 Cohesion: 0.18
@@ -4208,71 +4312,71 @@ Cohesion: 0.18
 Nodes (10): 1. Context and Objective, 2. Provider-Specific Rules, 3. Recommended Loading Sequence, 4. Runtime Boundary, 5. QA/CI Tooling, 6. Current Hook Contract, 7. Hook Parity Contract, 8. Operational Practices (+2 more)
 
 ### Community 796 - "Community 796"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): 1. Context and Objective, 2. Provider-Specific Rules, 3. Recommended Loading Sequence, 4. Instruction Precedence (Gemini-Specific), 5. Runtime Surface, 6. Hook Parity Contract, 7. Operational Practices, Gemini Provider Notes (+2 more)
 
 ### Community 797 - "Community 797"
-Cohesion: 0.18
-Nodes (10): Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents, Summary, System Overview & Context (+2 more)
+Cohesion: 0.17
+Nodes (11): Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes, Related Documents, Summary (+3 more)
 
 ### Community 798 - "Community 798"
-Cohesion: 0.18
-Nodes (10): Boundaries & Non-goals, Communication Tier Architecture Reference Document (ARD), Communication Tier Reference Document, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): Boundaries & Non-goals, Communication Tier Architecture Reference Document (ARD), Communication Tier Reference Document, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 799 - "Community 799"
-Cohesion: 0.18
-Nodes (10): 02-Auth Optimization Hardening Architecture Reference Document (ARD), AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): 02-Auth Optimization Hardening Architecture Reference Document (ARD), AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 800 - "Community 800"
-Cohesion: 0.18
-Nodes (10): 03-Security Optimization Hardening Architecture Reference Document (ARD), AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): 03-Security Optimization Hardening Architecture Reference Document (ARD), AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 801 - "Community 801"
-Cohesion: 0.18
-Nodes (10): 04-Data Optimization Hardening Architecture Reference Document (ARD), AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): 04-Data Optimization Hardening Architecture Reference Document (ARD), AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 802 - "Community 802"
-Cohesion: 0.18
-Nodes (10): 05-Messaging Optimization Hardening Architecture Reference Document (ARD), AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): 05-Messaging Optimization Hardening Architecture Reference Document (ARD), AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 803 - "Community 803"
-Cohesion: 0.18
-Nodes (10): 06-Observability Optimization Hardening Architecture Reference Document (ARD), Boundaries & Non-goals, Catalog-aligned Expansion Targets, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): 06-Observability Optimization Hardening Architecture Reference Document (ARD), Boundaries & Non-goals, Catalog-aligned Expansion Targets, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 804 - "Community 804"
-Cohesion: 0.18
-Nodes (10): 07-Workflow Optimization Hardening Architecture Reference Document (ARD), Boundaries & Non-goals, Catalog-aligned Expansion Targets, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): 07-Workflow Optimization Hardening Architecture Reference Document (ARD), Boundaries & Non-goals, Catalog-aligned Expansion Targets, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 805 - "Community 805"
-Cohesion: 0.18
-Nodes (10): 08-AI Optimization Hardening Architecture Reference Document (ARD), Boundaries & Non-goals, Catalog-aligned Expansion Targets, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): 08-AI Optimization Hardening Architecture Reference Document (ARD), Boundaries & Non-goals, Catalog-aligned Expansion Targets, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 806 - "Community 806"
-Cohesion: 0.18
-Nodes (10): 09-Tooling Optimization Hardening Architecture Reference Document (ARD), Boundaries & Non-goals, Catalog-aligned Expansion Targets, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): 09-Tooling Optimization Hardening Architecture Reference Document (ARD), Boundaries & Non-goals, Catalog-aligned Expansion Targets, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 807 - "Community 807"
-Cohesion: 0.18
-Nodes (10): 11-Laboratory Optimization Hardening Architecture Reference Document (ARD), Boundaries & Non-goals, Catalog-aligned Expansion Targets, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): 11-Laboratory Optimization Hardening Architecture Reference Document (ARD), Boundaries & Non-goals, Catalog-aligned Expansion Targets, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 808 - "Community 808"
-Cohesion: 0.18
-Nodes (10): Agent Governance Canonical Adapter Architecture Reference Document (ARD), AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents (+2 more)
+Cohesion: 0.17
+Nodes (11): Agent Governance Canonical Adapter Architecture Reference Document (ARD), AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes (+3 more)
 
 ### Community 809 - "Community 809"
 Cohesion: 0.18
 Nodes (10): Audience, Contents, How to Work in This Area, In Scope, Operations Runbooks, Out of Scope, Overview, Related Documents (+2 more)
 
 ### Community 810 - "Community 810"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): 1. Context & Objective, 2. Requirements & Constraints, 3.1 Approved Runtime Mutation Protocol, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety, 6. File Ownership SSOT, 7. Subagent Bridge (+2 more)
 
 ### Community 811 - "Community 811"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): 1. Context and Objective, 2. Requirements and Constraints, 3.1 Approved Secrets Work Protocol, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance and Safety, 6. File Ownership SSOT, 7. Subagent Bridge (+2 more)
 
 ### Community 812 - "Community 812"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (10): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, standardize-infra-net Specifications (+2 more)
 
 ### Community 813 - "Community 813"
@@ -4280,84 +4384,84 @@ Cohesion: 0.24
 Nodes (10): Analytics Tier Architecture Reference Document, Kafka Broker Cluster, Messaging Optimization Hardening Architecture Reference Document, RabbitMQ Management Plane, Docker Compose IPAM, infra_net Architecture Reference Document, infra_net Network, Static IP Mapping (+2 more)
 
 ### Community 814 - "Community 814"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): AI Agent Governance Hub, Audience, Core Concepts, Governance Coverage Matrix, How to Work in This Area, Overview, Related Documents, Scope (+1 more)
 
 ### Community 815 - "Community 815"
-Cohesion: 0.20
-Nodes (9): 01-Gateway Nginx Operations Policy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Policy Scope, Review Cadence, Verification, Overview (KR) (+1 more)
+Cohesion: 0.18
+Nodes (10): 01-Gateway Nginx Operations Policy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Policy Scope, Review Cadence, Verification, Overview (+2 more)
 
 ### Community 816 - "Community 816"
-Cohesion: 0.20
-Nodes (9): 01-gateway Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 01-gateway Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 817 - "Community 817"
-Cohesion: 0.20
-Nodes (9): 02-auth Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 02-auth Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 818 - "Community 818"
-Cohesion: 0.20
-Nodes (9): 03-security Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 03-security Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 819 - "Community 819"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): 04-data-analytics Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
 
 ### Community 820 - "Community 820"
-Cohesion: 0.20
-Nodes (9): 04-data Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 04-data Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 821 - "Community 821"
 Cohesion: 0.24
 Nodes (10): Vector Database Support, Neo4j Graph Database Operations, Neo4j Operations Policy, Neo4j Offline Dump Restore, Qdrant Operations Policy, Qdrant Snapshot Recovery, Qdrant Vector Search Operations, Specialized Data Operations (+2 more)
 
 ### Community 822 - "Community 822"
-Cohesion: 0.20
-Nodes (9): 05-messaging Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 05-messaging Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 823 - "Community 823"
-Cohesion: 0.20
-Nodes (9): Controls, Exceptions, Policy Scope, Policy Scope, Pushgateway Operations Policy, Review Cadence, Verification, Overview (KR) (+1 more)
+Cohesion: 0.18
+Nodes (10): Controls, Exceptions, Policy Scope, Policy Scope, Pushgateway Operations Policy, Review Cadence, Verification, Overview (+2 more)
 
 ### Community 824 - "Community 824"
-Cohesion: 0.20
-Nodes (9): Controls, Exceptions, Policy Scope, Policy Scope, Pyroscope Operations Policy, Review Cadence, Verification, Overview (KR) (+1 more)
+Cohesion: 0.18
+Nodes (10): Controls, Exceptions, Policy Scope, Policy Scope, Pyroscope Operations Policy, Review Cadence, Verification, Overview (+2 more)
 
 ### Community 825 - "Community 825"
-Cohesion: 0.20
-Nodes (9): 06-observability Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 06-observability Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 826 - "Community 826"
-Cohesion: 0.20
-Nodes (9): Airflow Operations Policy, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification, Overview (KR) (+1 more)
+Cohesion: 0.18
+Nodes (10): Airflow Operations Policy, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification, Overview (+2 more)
 
 ### Community 827 - "Community 827"
-Cohesion: 0.20
-Nodes (9): 07-workflow Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 07-workflow Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 828 - "Community 828"
-Cohesion: 0.20
-Nodes (9): 08-ai Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 08-ai Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 829 - "Community 829"
-Cohesion: 0.20
-Nodes (9): 09-tooling Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 09-tooling Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 830 - "Community 830"
-Cohesion: 0.20
-Nodes (9): 10-communication Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 10-communication Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 831 - "Community 831"
-Cohesion: 0.20
-Nodes (9): Controls, Exceptions, Laboratory Dashboard Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification, Overview (KR) (+1 more)
+Cohesion: 0.18
+Nodes (10): Controls, Exceptions, Laboratory Dashboard Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification, Overview (+2 more)
 
 ### Community 832 - "Community 832"
-Cohesion: 0.20
-Nodes (9): Controls, Dozzle Operations Policy, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification, Overview (KR) (+1 more)
+Cohesion: 0.18
+Nodes (10): Controls, Dozzle Operations Policy, Exceptions, Policy Scope, Policy Scope, Review Cadence, Verification, Overview (+2 more)
 
 ### Community 833 - "Community 833"
-Cohesion: 0.20
-Nodes (9): 11-laboratory Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+Cohesion: 0.11
+Nodes (17): 11-laboratory Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+9 more)
 
 ### Community 834 - "Community 834"
 Cohesion: 0.20
@@ -4372,23 +4476,23 @@ Cohesion: 0.20
 Nodes (10): Common Optimizations Coverage Snapshot, Infra Service Optimization Priority Plan, Infra Service Optimization Catalog, Priority Score Model, 2026 Q2 Q3 Quarterly Roadmap, Tier Weight Model, Auth Fail-Closed Security Posture, Auth Optimization Hardening Plan (+2 more)
 
 ### Community 837 - "Community 837"
-Cohesion: 0.20
-Nodes (10): Workflow Hardening Gate, AI Hardening Gate, Tooling Hardening Gate, Tooling infra_net Boundary, Tooling Optimization Hardening PRD, Laboratory Hardening Gate, 172.19.0.0/16 IPAM, infra_net Network (+2 more)
+Cohesion: 0.04
+Nodes (45): 1. Clone and Setup, 2. Repository Entry Points, AI Agent Guidance, Allowed Outputs, Assembly Rules, Audience, Available Scripts, Change Impact (+37 more)
 
 ### Community 838 - "Community 838"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): Agents, hook-developer, Overview, Purpose, Related Documents, Scope, Skills, Structure (+1 more)
 
 ### Community 839 - "Community 839"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): Agents, Overview, Purpose, Related Documents, rules-engineer, Scope, Skills, Structure (+1 more)
 
 ### Community 840 - "Community 840"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): Agents, Overview, Purpose, Related Documents, Scope, skill-creator, Skills, Structure (+1 more)
 
 ### Community 841 - "Community 841"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): Agents, Overview, Purpose, Related Documents, Scope, Skills, Structure, style-enforcer (+1 more)
 
 ### Community 842 - "Community 842"
@@ -4396,40 +4500,40 @@ Cohesion: 0.20
 Nodes (10): Prometheus rule group: OpenSearch_alerts, Prometheus alert: OpenSearchClusterYellow, Prometheus alert: OpenSearchDiskOutOfSpace, Prometheus alert: OpenSearchDiskSpaceLow, Prometheus alert: OpenSearchHealthRed, Prometheus alert: OpenSearchHeapUsageTooHigh, Prometheus alert: OpenSearchHeapUsageWarning, Prometheus alert: OpenSearchUnassignedShards (+2 more)
 
 ### Community 843 - "Community 843"
-Cohesion: 0.20
-Nodes (9): Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Valkey Cluster Operations Policy, Verification, Overview (KR) (+1 more)
+Cohesion: 0.18
+Nodes (10): Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence, Valkey Cluster Operations Policy, Verification, Overview (+2 more)
 
 ### Community 844 - "Community 844"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
 
 ### Community 845 - "Community 845"
-Cohesion: 0.20
-Nodes (9): Overview (KR), Related Documents, Controls, Exceptions, Management Database Operations Policy, Policy Scope, Policy Scope, Review Cadence (+1 more)
+Cohesion: 0.18
+Nodes (10): Overview, Overview (KR), Related Documents, Controls, Exceptions, Management Database Operations Policy, Policy Scope, Policy Scope (+2 more)
 
 ### Community 846 - "Community 846"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
 
 ### Community 847 - "Community 847"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): Agents, Overview, Purpose, Related Documents, Scope, Skills, Structure, style-validation (+1 more)
 
 ### Community 848 - "Community 848"
-Cohesion: 0.29
-Nodes (6): hardening-lib.sh script, check_contains(), check_file(), check_not_contains(), check_service_healthcheck(), fail()
+Cohesion: 0.40
+Nodes (9): hardening-lib.sh script, check_contains(), check_file(), check_not_contains(), check_service_healthcheck(), fail(), report_status(), start_tier() (+1 more)
 
 ### Community 849 - "Community 849"
-Cohesion: 0.20
-Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
+Cohesion: 0.11
+Nodes (17): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+9 more)
 
 ### Community 850 - "Community 850"
-Cohesion: 0.20
-Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
+Cohesion: 0.11
+Nodes (17): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+9 more)
 
 ### Community 851 - "Community 851"
-Cohesion: 0.20
-Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
+Cohesion: 0.11
+Nodes (17): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+9 more)
 
 ### Community 852 - "Community 852"
 Cohesion: 0.24
@@ -4444,20 +4548,20 @@ Cohesion: 0.20
 Nodes (9): 2026-05-09 Follow-up Audit, 2026-05-09 Script Usage Audit, Context, Evidence, Memory: Docker Documentation Contract Backlog, Prevention, Problem, Related Documents (+1 more)
 
 ### Community 855 - "Community 855"
-Cohesion: 0.20
-Nodes (9): Completion Criteria, Context, Gateway Documentation Standardization Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Verification Plan (+1 more)
+Cohesion: 0.18
+Nodes (10): Completion Criteria, Context, Gateway Documentation Standardization Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+2 more)
 
 ### Community 856 - "Community 856"
-Cohesion: 0.20
-Nodes (9): 07-workflow Documentation Standardization Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Verification Plan (+1 more)
+Cohesion: 0.18
+Nodes (10): 07-workflow Documentation Standardization Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+2 more)
 
 ### Community 857 - "Community 857"
-Cohesion: 0.20
-Nodes (9): 08-ai Documentation Standardization Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Verification Plan (+1 more)
+Cohesion: 0.18
+Nodes (10): 08-ai Documentation Standardization Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+2 more)
 
 ### Community 858 - "Community 858"
-Cohesion: 0.20
-Nodes (9): 11-laboratory Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Verification Plan (+1 more)
+Cohesion: 0.18
+Nodes (10): 11-laboratory Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+2 more)
 
 ### Community 859 - "Community 859"
 Cohesion: 0.20
@@ -4472,31 +4576,31 @@ Cohesion: 0.24
 Nodes (10): Cache and Key Value Tier, CouchDB Cluster, CouchDB Quorum Management, CouchDB Three Node Cluster, MongoDB KeyFile Internal Authentication, MongoDB Replica Set, MongoDB Primary Secondary Arbiter Topology, NoSQL Infrastructure Tier (+2 more)
 
 ### Community 862 - "Community 862"
-Cohesion: 0.20
-Nodes (9): Boundaries & Non-goals, Data Architecture, Gateway Tier Architecture Reference Document (ARD), Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents, Summary (+1 more)
+Cohesion: 0.18
+Nodes (10): Boundaries & Non-goals, Data Architecture, Gateway Tier Architecture Reference Document (ARD), Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes, Related Documents (+2 more)
 
 ### Community 863 - "Community 863"
-Cohesion: 0.20
-Nodes (9): Boundaries & Non-goals, Data Architecture, Data Tier (04-data) Architecture Reference Document (ARD), Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents, Summary (+1 more)
+Cohesion: 0.18
+Nodes (10): Boundaries & Non-goals, Data Architecture, Data Tier (04-data) Architecture Reference Document (ARD), Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes, Related Documents (+2 more)
 
 ### Community 864 - "Community 864"
-Cohesion: 0.20
-Nodes (9): Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Observability Architecture Reference Document (ARD), Overview (KR), Quality Attributes, Related Documents, Summary (+1 more)
+Cohesion: 0.18
+Nodes (10): Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Observability Architecture Reference Document (ARD), Overview, Overview (KR), Quality Attributes, Related Documents (+2 more)
 
 ### Community 865 - "Community 865"
-Cohesion: 0.20
-Nodes (9): Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents, Summary, System Overview & Context (+1 more)
+Cohesion: 0.18
+Nodes (10): Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes, Related Documents, Summary (+2 more)
 
 ### Community 866 - "Community 866"
-Cohesion: 0.20
-Nodes (9): 11-laboratory Architecture Reference Document (ARD), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents, Summary (+1 more)
+Cohesion: 0.18
+Nodes (10): 11-laboratory Architecture Reference Document (ARD), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes, Related Documents (+2 more)
 
 ### Community 867 - "Community 867"
-Cohesion: 0.20
-Nodes (9): Boundaries & Non-goals, Data Architecture, infra_net Architecture Reference Document (ARD), Infrastructure & Deployment, Overview (KR), Quality Attributes, Related Documents, Summary (+1 more)
+Cohesion: 0.18
+Nodes (10): Boundaries & Non-goals, Data Architecture, infra_net Architecture Reference Document (ARD), Infrastructure & Deployment, Overview, Overview (KR), Quality Attributes, Related Documents (+2 more)
 
 ### Community 868 - "Community 868"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): 1. Context & Objective, 2. Requirements & Constraints, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety, 6. File Ownership SSOT, 7. Subagent Bridge, Common Engineering Scope (+1 more)
 
 ### Community 869 - "Community 869"
@@ -4504,15 +4608,15 @@ Cohesion: 0.20
 Nodes (9): 1. Context & Objective, 2. Requirements & Constraints, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety, 6. File Ownership SSOT, 7. Subagent Bridge, Operations & SRE Scope (+1 more)
 
 ### Community 870 - "Community 870"
-Cohesion: 0.20
-Nodes (9): Implemented Closure, Input Requirement Matrix, Inputs, Overview (KR), Related Documents, Task Table, Task: Workspace Audit Input Task Gap Closure, Verification Summary (+1 more)
+Cohesion: 0.18
+Nodes (10): Implemented Closure, Input Requirement Matrix, Inputs, Overview, Overview (KR), Related Documents, Task Table, Task: Workspace Audit Input Task Gap Closure (+2 more)
 
 ### Community 871 - "Community 871"
-Cohesion: 0.20
-Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related References, Scope, Structure (+1 more)
+Cohesion: 0.18
+Nodes (10): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Related References, Scope (+2 more)
 
 ### Community 872 - "Community 872"
-Cohesion: 0.20
+Cohesion: 0.18
 Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
 
 ### Community 873 - "Community 873"
@@ -4564,8 +4668,8 @@ Cohesion: 0.22
 Nodes (9): Bootstrap Sequence, Graphify Navigation Rules, Repository Hard Constraints, Agent Runtime Surfaces, AGENTS.md Universal Entry Shim, Repository Verification Policy, Gemini Provider Overlay, Gemini Root Shim (+1 more)
 
 ### Community 885 - "Community 885"
-Cohesion: 0.22
-Nodes (8): ADR-0011: Laboratory Services Selection and Configuration, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview (KR), Related Documents
+Cohesion: 0.20
+Nodes (9): ADR-0011: Laboratory Services Selection and Configuration, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview, Overview (KR) (+1 more)
 
 ### Community 886 - "Community 886"
 Cohesion: 0.25
@@ -4580,15 +4684,15 @@ Cohesion: 0.28
 Nodes (9): Vault Agent Compose Service, Vault Agent Template Rendering, Vault Sys Healthcheck, Vault Compose Service, Security Tier, Vault Unseal Protocol, Vault Agent Sidecar, Vault Raft Storage (+1 more)
 
 ### Community 889 - "Community 889"
-Cohesion: 0.33
-Nodes (5): sync-provider-surfaces.sh script, gen_codex_agent(), gen_gemini_agent(), gen_gemini_skill(), sync_file()
+Cohesion: 0.44
+Nodes (8): sync-provider-surfaces.sh script, codex_model(), codex_reasoning_effort(), gemini_model(), gen_codex_agent(), gen_gemini_agent(), gen_gemini_skill(), sync_file()
 
 ### Community 890 - "Community 890"
 Cohesion: 0.31
 Nodes (9): Loki MinIO Connection Failure, MinIO Object Storage, MinIO Object Storage Runbook, S3 API, SeaweedFS Cluster, SeaweedFS Filer, SeaweedFS Master, SeaweedFS Runbook (+1 more)
 
 ### Community 891 - "Community 891"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (8): Context, Evidence, Memory: GitHub CI Contract Audit, Open Items (2026-05-28 re-audit), Prevention, Problem, Related Documents, Resolution
 
 ### Community 892 - "Community 892"
@@ -4616,11 +4720,11 @@ Cohesion: 0.25
 Nodes (9): Lake and Object Storage Tier, MinIO Object Storage, MinIO Path Style Access Requirement, MinIO S3 Compatible API, SeaweedFS FUSE Mount, SeaweedFS Master Volume Filer Architecture, SeaweedFS S3 Gateway, SeaweedFS Security Control (+1 more)
 
 ### Community 898 - "Community 898"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (8): 1. Commit Standards, 2. Branching Strategy, 3. Pull Request Protocol, 4. Operational Best Practices, 5. Agent Completion Commit Discipline, 6. Enforcement, Git Workflow Governance, Related Documents
 
 ### Community 899 - "Community 899"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (8): Completion Blockers (HALT if any fail), Documentation Gate (DOCS 3 RULES), Infrastructure Gate (infra layer only), Lint Gate (all layers), Postflight Checklist, Related Documents, Secrets Gate (all layers), Settings Gate (any settings change)
 
 ### Community 900 - "Community 900"
@@ -4628,20 +4732,20 @@ Cohesion: 0.22
 Nodes (8): 1. Context and Objective, 2. Operational Permissions, 3. Maintenance Standards, 4. Out-of-Scope Handling, 5. File Ownership SSOT, 6. Subagent Bridge, Documentation Operational Scope, Related Documents
 
 ### Community 901 - "Community 901"
-Cohesion: 0.22
-Nodes (8): Inputs, Overview (KR), Related Documents, Task: 07-workflow Documentation Standardization Tasks, Task List, Task Table, Verification Summary, Working Rules
+Cohesion: 0.20
+Nodes (9): Inputs, Overview, Overview (KR), Related Documents, Task: 07-workflow Documentation Standardization Tasks, Task List, Task Table, Verification Summary (+1 more)
 
 ### Community 902 - "Community 902"
-Cohesion: 0.22
-Nodes (8): Inputs, Overview (KR), Related Documents, Task: 08-ai Documentation Standardization Tasks, Task List, Task Table, Verification Summary, Working Rules
+Cohesion: 0.20
+Nodes (9): Inputs, Overview, Overview (KR), Related Documents, Task: 08-ai Documentation Standardization Tasks, Task List, Task Table, Verification Summary (+1 more)
 
 ### Community 903 - "Community 903"
-Cohesion: 0.22
-Nodes (8): Deviation Notes, Inputs, Overview (KR), Related Documents, Task: Scripts Lifecycle Contract Cleanup, Task Table, Verification Summary, Working Rules
+Cohesion: 0.20
+Nodes (9): Deviation Notes, Inputs, Overview, Overview (KR), Related Documents, Task: Scripts Lifecycle Contract Cleanup, Task Table, Verification Summary (+1 more)
 
 ### Community 904 - "Community 904"
-Cohesion: 0.22
-Nodes (8): Deferred Items, Inputs, Overview (KR), Related Documents, Task Table, Task: Workspace Audit 2026-05, Verification Summary, Working Rules
+Cohesion: 0.20
+Nodes (9): Deferred Items, Inputs, Overview, Overview (KR), Related Documents, Task Table, Task: Workspace Audit 2026-05, Verification Summary (+1 more)
 
 ### Community 905 - "Community 905"
 Cohesion: 0.29
@@ -4692,19 +4796,19 @@ Cohesion: 0.25
 Nodes (8): MinIO Cluster Common Settings, MinIO Four Node Cluster, MinIO Create Buckets Job, MinIO Data Volume, MinIO Single Node Service, MinIO Traefik API and Console Routes, MinIO Initialized Buckets, MinIO Secrets Management
 
 ### Community 917 - "Community 917"
-Cohesion: 0.33
-Nodes (7): IaC Deployment Policy, Plan Verification and Remote State, Tooling Gateway SSO Boundary, 09-Tooling Optimization Hardening Operations Policy, k6 Locust Test Runtime Contract, Tool Expansion Approval Gates, 09-tooling Operations Policies
+Cohesion: 0.29
+Nodes (8): IaC Deployment Policy, Plan Verification and Remote State, Tooling Gateway SSO Boundary, Tooling infra_net External Boundary, 09-Tooling Optimization Hardening Operations Policy, k6 Locust Test Runtime Contract, Tool Expansion Approval Gates, 09-tooling Operations Policies
 
 ### Community 918 - "Community 918"
 Cohesion: 0.25
 Nodes (7): description, effective_date, entries, owner_role, policy_id, review_cadence, source_of_truth
 
 ### Community 919 - "Community 919"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (8): 2026-06-03 Re-verification, Context, Evidence, Memory: Gemini Model Tier Review (2026-05-31), Prevention, Problem, Related Documents, Resolution
 
 ### Community 920 - "Community 920"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): Context, Evidence, Memory: Agentic Harness Contract Hardening, Prevention, Problem, Related Documents, Resolution
 
 ### Community 921 - "Community 921"
@@ -4716,7 +4820,7 @@ Cohesion: 0.25
 Nodes (7): Context, Evidence, Memory: governance-memory-usage-contract, Prevention, Problem, Related Documents, Resolution
 
 ### Community 923 - "Community 923"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): Context, Evidence, Memory: Stage Docs Lifecycle Audit, Prevention, Problem, Related Documents, Resolution
 
 ### Community 924 - "Community 924"
@@ -4732,8 +4836,8 @@ Cohesion: 0.25
 Nodes (8): 1. 저장소 클론, 2. 환경 파일 준비, 3. 사전 점검 실행, 4. Compose 구조 검증, 5. Repository contract 검증, 6. 코어 인프라 실행, 7. 주요 진입 문서 확인, Getting Started
 
 ### Community 927 - "Community 927"
-Cohesion: 0.29
-Nodes (8): ADR Process, ADR Traceability to ARD and Spec, Architecture, Architecture Decision Records, Architecture Requirements, New ADR Before Conflicting Change, PRD Traceability, Product Requirements Documents
+Cohesion: 0.17
+Nodes (13): Tooling infra_net Boundary, 172.19.0.0/16 IPAM, infra_net Network, k3d-hyhome Network, Standardize infra_net PRD, ADR Process, ADR Traceability to ARD and Spec, Architecture (+5 more)
 
 ### Community 928 - "Community 928"
 Cohesion: 0.25
@@ -4748,11 +4852,11 @@ Cohesion: 0.25
 Nodes (7): 1. Language, 2. Findings and Reports, 3. Instructions and Procedures, 4. Documentation Output, 5. Honesty and Completion, Output Style Contract, Related Documents
 
 ### Community 931 - "Community 931"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): 1. Documentation Quality Rubric, 2. Security Baseline, 3. Reliability Baseline, 4. Workflow Compliance, 5. Verification Checklist, Agent Quality and Security Standards, Related Documents
 
 ### Community 932 - "Community 932"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): 1. Token Optimization and Lazy Loading, 2. Language Standard, 3. Stage-Gate Compliance, 4. Execution Discipline, 5. GitHub Repository and PR Standards, AI Agent Standards, Related Documents
 
 ### Community 933 - "Community 933"
@@ -4760,72 +4864,72 @@ Cohesion: 0.25
 Nodes (7): 1. Stage-Gate Documentation Pipeline, 2. Supporting Workflows, 3. External Strategy Adaptation, 4. Skill Lifecycle Gate, 5. Routing Rules, Related Documents, Workflows
 
 ### Community 934 - "Community 934"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): 1. Context and Objective, 2. Requirements and Constraints, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance and Safety, Agentic Behavior Engineering Scope, Related Documents
 
 ### Community 935 - "Community 935"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): 1. Context & Objective, 2. Requirements & Constraints, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety, Architecture Strategy Scope, Related Documents
 
 ### Community 936 - "Community 936"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): 1. Context & Objective, 2. Requirements & Constraints, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety, Backend Engineering Scope, Related Documents
 
 ### Community 937 - "Community 937"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): 1. Context & Objective, 2. Requirements & Constraints, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety, Entry & Gateway Engineering Scope, Related Documents
 
 ### Community 938 - "Community 938"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): 1. Context & Objective, 2. Requirements & Constraints, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety, Frontend UI/UX Scope, Related Documents
 
 ### Community 939 - "Community 939"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): 1. Context & Objective, 2. Requirements & Constraints, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety, Metadata & Taxonomy Engineering Scope, Related Documents
 
 ### Community 940 - "Community 940"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): 1. Context & Objective, 2. Requirements & Constraints, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety, Mobile Engineering Scope, Related Documents
 
 ### Community 941 - "Community 941"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (7): 1. Context & Objective, 2. Requirements & Constraints, 3. Implementation Flow, 4. Operational Procedures, 5. Maintenance & Safety, Product Requirements Scope, Related Documents
 
 ### Community 942 - "Community 942"
-Cohesion: 0.25
-Nodes (7): Inputs, Overview (KR), Related Documents, Task: Gateway Documentation Standardization, Task Table, Verification Summary, Working Rules
+Cohesion: 0.22
+Nodes (8): Inputs, Overview, Overview (KR), Related Documents, Task: Gateway Documentation Standardization, Task Table, Verification Summary, Working Rules
 
 ### Community 943 - "Community 943"
-Cohesion: 0.25
-Nodes (7): Inputs, Overview (KR), Related Documents, Task: Auth Documentation Standardization, Task Table, Verification Summary, Working Rules
+Cohesion: 0.22
+Nodes (8): Inputs, Overview, Overview (KR), Related Documents, Task: Auth Documentation Standardization, Task Table, Verification Summary, Working Rules
 
 ### Community 944 - "Community 944"
-Cohesion: 0.25
-Nodes (7): Inputs, Overview (KR), Related Documents, Task: Security Documentation Standardization, Task Table, Verification Summary, Working Rules
+Cohesion: 0.22
+Nodes (8): Inputs, Overview, Overview (KR), Related Documents, Task: Security Documentation Standardization, Task Table, Verification Summary, Working Rules
 
 ### Community 945 - "Community 945"
-Cohesion: 0.25
-Nodes (7): Inputs, Overview (KR), Related Documents, Task: Data Tier Documentation Standardization (04-data), Task Table, Verification Summary, Working Rules
+Cohesion: 0.22
+Nodes (8): Inputs, Overview, Overview (KR), Related Documents, Task: Data Tier Documentation Standardization (04-data), Task Table, Verification Summary, Working Rules
 
 ### Community 946 - "Community 946"
-Cohesion: 0.25
-Nodes (7): Inputs, Overview (KR), Related Documents, Task: Messaging Infrastructure Documentation Standardization, Task Table, Verification Summary, Working Rules
+Cohesion: 0.22
+Nodes (8): Inputs, Overview, Overview (KR), Related Documents, Task: Messaging Infrastructure Documentation Standardization, Task Table, Verification Summary, Working Rules
 
 ### Community 947 - "Community 947"
-Cohesion: 0.25
-Nodes (7): Inputs, Overview (KR), Related Documents, Task: Observability Documentation Standardization, Task Table, Verification Summary, Working Rules
+Cohesion: 0.22
+Nodes (8): Inputs, Overview, Overview (KR), Related Documents, Task: Observability Documentation Standardization, Task Table, Verification Summary, Working Rules
 
 ### Community 948 - "Community 948"
-Cohesion: 0.25
-Nodes (7): Inputs, Overview (KR), Related Documents, Task: 11-laboratory Standardization, Task Table, Verification Summary, Working Rules
+Cohesion: 0.22
+Nodes (8): Inputs, Overview, Overview (KR), Related Documents, Task: 11-laboratory Standardization, Task Table, Verification Summary, Working Rules
 
 ### Community 949 - "Community 949"
-Cohesion: 0.25
-Nodes (7): Inputs, Overview (KR), Related Documents, Task: Open WebUI Documentation & Verification, Task Table, Verification Summary, Working Rules
+Cohesion: 0.22
+Nodes (8): Inputs, Overview, Overview (KR), Related Documents, Task: Open WebUI Documentation & Verification, Task Table, Verification Summary, Working Rules
 
 ### Community 950 - "Community 950"
-Cohesion: 0.25
-Nodes (7): Inputs, Overview (KR), Related Documents, Task: Docs Taxonomy and AI Agent-first Contract Migration, Task Table, Verification Summary, Working Rules
+Cohesion: 0.22
+Nodes (8): Inputs, Overview, Overview (KR), Related Documents, Task: Docs Taxonomy and AI Agent-first Contract Migration, Task Table, Verification Summary, Working Rules
 
 ### Community 951 - "Community 951"
 Cohesion: 0.38
@@ -4848,16 +4952,16 @@ Cohesion: 0.29
 Nodes (7): Analytical Specialized Databases Operations, OLAP Engine Support, Data Tier Usages, StarRocks FE BE Recovery, StarRocks Partition Bucket Resource Strategy, StarRocks Operations Policy, StarRocks Stream Load Idempotency
 
 ### Community 956 - "Community 956"
-Cohesion: 0.29
-Nodes (6): Archive Tombstone: Airbyte Operations Policy, Archive Ledger, Archive Metadata, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Tombstone: Airbyte Operations Policy, Archive Ledger, Archive Metadata, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 957 - "Community 957"
-Cohesion: 0.29
-Nodes (6): Archive Tombstone: Airbyte Runbook, Archive Ledger, Archive Metadata, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Tombstone: Airbyte Runbook, Archive Ledger, Archive Metadata, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 958 - "Community 958"
-Cohesion: 0.29
-Nodes (6): Archive Tombstone: Airbyte Usage Guide, Archive Ledger, Archive Metadata, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Tombstone: Airbyte Usage Guide, Archive Ledger, Archive Metadata, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 959 - "Community 959"
 Cohesion: 0.29
@@ -4896,8 +5000,8 @@ Cohesion: 0.29
 Nodes (7): Managed Valkey Dev Session Store, OAuth2 Proxy Dev Compose Service, OAuth2 Proxy Keycloak OIDC Issuer, OAuth2 Proxy Compose Service, OAuth2 Proxy Redis Session Store, OAuth2 Proxy Valkey Exporter, OAuth2 Proxy Valkey Service
 
 ### Community 968 - "Community 968"
-Cohesion: 0.38
-Nodes (4): opensearch-entrypoint.sh script, harden_dir_if_writable(), harden_file_if_writable(), OPENSEARCH_INITIAL_ADMIN_PASSWORD
+Cohesion: 0.50
+Nodes (6): opensearch-entrypoint.sh script, harden_dir_if_writable(), harden_file_if_writable(), hash_password(), OPENSEARCH_INITIAL_ADMIN_PASSWORD, read_secret()
 
 ### Community 969 - "Community 969"
 Cohesion: 0.29
@@ -4908,20 +5012,20 @@ Cohesion: 0.29
 Nodes (7): Loki Tempo Non-root Secret Guard, Airflow DAG Quality and Autoscale Gates, Workflow Gateway SSO Startup Contract, n8n Git Backup and Vault Credentials, n8n Non-root Secret Guard, 07-Workflow Optimization Hardening Operations Policy, 07-workflow Operations Policies
 
 ### Community 971 - "Community 971"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: AI Agent Governance Reorganization Plan, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: AI Agent Governance Reorganization Plan, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 972 - "Community 972"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: Stage 00 and Codex Harness Governance Alignment Plan, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Stage 00 and Codex Harness Governance Alignment Plan, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 973 - "Community 973"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 1 Diagnostic, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 1 Diagnostic, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 974 - "Community 974"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 2 Alignment Plan, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 2 Alignment Plan, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 975 - "Community 975"
 Cohesion: 0.29
@@ -4940,48 +5044,48 @@ Cohesion: 0.29
 Nodes (7): 11-laboratory Specifications, 11-Laboratory Optimization Hardening Technical Specification, Dashboard Direct Port Exposure Removal, Dozzle Docker Socket Read-only Mount, Gateway Allowlist SSO Chain, check-laboratory-hardening Policy Gate, Laboratory Hardening Control Surface
 
 ### Community 979 - "Community 979"
-Cohesion: 0.29
+Cohesion: 0.25
 Nodes (6): 1. Activation Protocol, 2. Persona-to-Layer Mapping, 3. Multi-Persona Rule, 4. Skills Engagement, AI Agent Persona Protocol, Related Documents
 
 ### Community 980 - "Community 980"
-Cohesion: 0.29
+Cohesion: 0.25
 Nodes (6): 1. Matrix, 2. Rules, 3. Supported / Unsupported / Deferred, 4. Output-Style Placement, Provider Capability Matrix, Related Documents
 
 ### Community 981 - "Community 981"
-Cohesion: 0.29
-Nodes (6): 1. Matrix, 2. Appendix: Supporting Stages, 3. Usage Rules, 4. Agent Skills by Stage, Related Documents, Stage Authoring Matrix (00-05, 90, 98, 99)
+Cohesion: 0.22
+Nodes (8): 1. Matrix, 2. Appendix: Supporting Stages, 3. Language Boundary by Stage, 3. Usage Rules, 4. Agent Skills by Stage, 5. Usage Rules, Related Documents, Stage Authoring Matrix (00-05, 90, 98, 99)
 
 ### Community 982 - "Community 982"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: Stage 00 and Codex Harness Governance Alignment Task, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Stage 00 and Codex Harness Governance Alignment Task, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 983 - "Community 983"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 1 Diagnostic Task, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 1 Diagnostic Task, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 984 - "Community 984"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 3 Implementation Task, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 3 Implementation Task, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 985 - "Community 985"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 3 Stage 01/02 Continuation Task, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 3 Stage 01/02 Continuation Task, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 986 - "Community 986"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 3 Strategy Integration Task, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 3 Strategy Integration Task, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 987 - "Community 987"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 4 Closure Task, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Phase 4 Closure Task, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 988 - "Community 988"
-Cohesion: 0.29
-Nodes (6): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Stage 01/02 Alignment Task, Current Replacement, Overview (KR), Related Documents
+Cohesion: 0.25
+Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governance Stage 01/02 Alignment Task, Current Replacement, Overview, Overview (KR), Related Documents
 
 ### Community 989 - "Community 989"
 Cohesion: 0.33
-Nodes (6): AI SSO Router Chain, ADR-0023 AI Hardening and HA Expansion Strategy, Tooling SSO Router Chain, Laboratory Direct Ports Removed, ADR-0025 Laboratory Hardening and HA Expansion Strategy, Laboratory IP Allowlist and SSO Chain
+Nodes (6): ADR-0024 Tooling Hardening and HA Expansion Strategy, Tooling infra_net External Boundary, Tooling SSO Router Chain, Laboratory Direct Ports Removed, ADR-0025 Laboratory Hardening and HA Expansion Strategy, Laboratory IP Allowlist and SSO Chain
 
 ### Community 990 - "Community 990"
 Cohesion: 0.33
@@ -5020,7 +5124,7 @@ Cohesion: 0.33
 Nodes (4): 1. Quick Reference, 2. Detailed Instructions, 3. IDE Integration, Related Documents
 
 ### Community 999 - "Community 999"
-Cohesion: 0.33
+Cohesion: 0.48
 Nodes (5): effective_date, floating_image_exceptions, owner_role, policy_id, review_cadence
 
 ### Community 1000 - "Community 1000"
@@ -5028,7 +5132,7 @@ Cohesion: 0.33
 Nodes (6): AI Agent Governance Hub, Governance Rules, Governance Scopes, Provider Overlays, Root Agent Shims, Stage Gate Lifecycle
 
 ### Community 1001 - "Community 1001"
-Cohesion: 0.33
+Cohesion: 0.29
 Nodes (5): 1. Hard Constraints, 2. Verification, 3. Graphify, Environment Constraints, Related Documents
 
 ### Community 1002 - "Community 1002"
@@ -5056,7 +5160,7 @@ Cohesion: 0.40
 Nodes (3): 1. Quick Reference, 2. Detailed Instructions, Related Documents
 
 ### Community 1008 - "Community 1008"
-Cohesion: 0.90
+Cohesion: 0.87
 Nodes (4): check-doc-traceability.sh script, check_contains_literal(), check_file_exists(), fail()
 
 ### Community 1009 - "Community 1009"
@@ -5072,7 +5176,7 @@ Cohesion: 0.40
 Nodes (4): Meta Commands, RTK - Rust Token Killer (Codex CLI), Rule, Verification
 
 ### Community 1012 - "Community 1012"
-Cohesion: 0.40
+Cohesion: 0.33
 Nodes (4): JIT Markers, Related Documents, Rule Markers, Stage Markers
 
 ### Community 1013 - "Community 1013"
@@ -5084,8 +5188,8 @@ Cohesion: 0.50
 Nodes (4): Claude Root Shim, Claude Runtime Bootstrap, RTK Command Prefix Rule, Rust Token Killer
 
 ### Community 1015 - "Community 1015"
-Cohesion: 0.83
-Nodes (3): check-repo-contracts.sh script, fail(), section()
+Cohesion: 0.80
+Nodes (4): check-repo-contracts.sh script, check-repo-contracts.sh script, fail(), section()
 
 ### Community 1016 - "Community 1016"
 Cohesion: 0.50
@@ -5100,11 +5204,15 @@ Cohesion: 0.50
 Nodes (4): 01-gateway Specifications Directory, Traefik dashboard-auth Middleware Contract, Gateway Tier Technical Specification, Nginx Special Path Proxy
 
 ### Community 1020 - "Community 1020"
-Cohesion: 0.15
-Nodes (12): Archive Decision, Findings and Disposition, Inputs, Key Finding, Methodology & Coverage, Overview (KR), Related Documents, Task: docs/01-05 Content-vs-Implementation Audit (+4 more)
+Cohesion: 0.14
+Nodes (13): Archive Decision, Findings and Disposition, Inputs, Key Finding, Methodology & Coverage, Overview, Overview (KR), Related Documents (+5 more)
+
+### Community 1034 - "Community 1034"
+Cohesion: 0.83
+Nodes (3): generate-llm-wiki-index.sh script, generate-llm-wiki-index.sh script, usage()
 
 ### Community 1035 - "Community 1035"
-Cohesion: 1.00
+Cohesion: 0.90
 Nodes (3): use-qa-ci-tools.sh script, qa_ci_add_dir(), qa_ci_prepend_path()
 
 ### Community 1036 - "Community 1036"
@@ -5120,20 +5228,20 @@ Cohesion: 0.67
 Nodes (3): In Scope, Out of Scope, Scope
 
 ### Community 1067 - "Community 1067"
-Cohesion: 0.18
-Nodes (10): Completion Criteria, Context, Goals & In-Scope, Governance Surgical Re-Verification + Tech-Stack Drift Closure Implementation Plan, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+2 more)
+Cohesion: 0.17
+Nodes (11): Completion Criteria, Context, Goals & In-Scope, Governance Surgical Re-Verification + Tech-Stack Drift Closure Implementation Plan, Non-Goals & Out-of-Scope, Overview, Overview (KR), Related Documents (+3 more)
 
 ### Community 1068 - "Community 1068"
 Cohesion: 0.29
-Nodes (7): Workflow Gateway SSO Policy, AI Gateway SSO Policy, Tooling Gateway SSO Policy, Dashboard Traefik-only Exposure, Dozzle Read-only Docker Socket, Laboratory Gateway SSO Allowlist, Laboratory Optimization Hardening PRD
+Nodes (8): Tooling Gateway SSO Policy, Tooling Hardening Gate, Tooling Optimization Hardening PRD, Dashboard Traefik-only Exposure, Dozzle Read-only Docker Socket, Laboratory Gateway SSO Allowlist, Laboratory Hardening Gate, Laboratory Optimization Hardening PRD
 
 ### Community 1069 - "Community 1069"
-Cohesion: 0.46
-Nodes (6): run-local-qa-gates.sh script, list_gates(), run_harness_gates(), run_script_backed_gates(), run_step(), usage()
+Cohesion: 0.56
+Nodes (7): run-local-qa-gates.sh script, list_gates(), run_bash_syntax(), run_harness_gates(), run_script_backed_gates(), run_step(), usage()
 
 ### Community 1070 - "Community 1070"
-Cohesion: 0.08
-Nodes (25): Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist, Checklist, Escalation, Evidence, Harness Agent First Engineering Validation Operations (+17 more)
+Cohesion: 0.07
+Nodes (26): Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist, Checklist, Escalation, Evidence, Harness Agent First Engineering Validation Operations (+18 more)
 
 ### Community 1072 - "Community 1072"
 Cohesion: 0.33
@@ -5141,115 +5249,115 @@ Nodes (6): Audit Handoff Artifacts, Delegated Agent Facility, Runtime Model Role
 
 ### Community 1073 - "Community 1073"
 Cohesion: 0.11
-Nodes (17): Overview (KR), Purpose, Related Documents, 04-Data Optimization Hardening Procedure, 04-Data Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist (+9 more)
+Nodes (18): Overview, Overview (KR), Purpose, Related Documents, 04-Data Optimization Hardening Procedure, 04-Data Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References (+10 more)
 
 ### Community 1074 - "Community 1074"
 Cohesion: 0.08
-Nodes (24): 1. Context & Objective, 2. Recommended Permissions (Claude Code), 3. Tool Configuration, 4. Operational Procedures, 5. Maintenance & Safety, Common Checks, Common Pitfalls, Developer Environment Setup Usage (+16 more)
+Nodes (25): 1. Context & Objective, 2. Recommended Permissions (Claude Code), 3. Tool Configuration, 4. Operational Procedures, 5. Maintenance & Safety, Common Checks, Common Pitfalls, Developer Environment Setup Usage (+17 more)
 
 ### Community 1075 - "Community 1075"
 Cohesion: 0.08
-Nodes (24): 01-gateway, 02-auth, 03-security, 04-data, 05-messaging, 06-observability, 07-workflow, 08-ai (+16 more)
+Nodes (25): 01-gateway, 02-auth, 03-security, 04-data, 05-messaging, 06-observability, 07-workflow, 08-ai (+17 more)
 
 ### Community 1076 - "Community 1076"
 Cohesion: 0.09
-Nodes (21): Common Checks, Common Pitfalls, `.env.example` vs `.env` Key Comparison, Overview (KR), Prerequisites, Purpose, Related Documents, Runbook Handoff (+13 more)
+Nodes (22): Common Checks, Common Pitfalls, `.env.example` vs `.env` Key Comparison, Overview, Overview (KR), Prerequisites, Purpose, Related Documents (+14 more)
 
 ### Community 1077 - "Community 1077"
-Cohesion: 0.10
-Nodes (19): Common Checks, Common Pitfalls, Common Pitfalls, Harness / Agent-first Engineering Usage Guide, Overview (KR), Prerequisites, Prerequisites, Purpose (+11 more)
+Cohesion: 0.09
+Nodes (21): Common Checks, Common Pitfalls, Common Pitfalls, Harness / Agent-first Engineering Usage Guide, Overview, Overview (KR), Prerequisites, Prerequisites (+13 more)
 
 ### Community 1078 - "Community 1078"
 Cohesion: 0.10
-Nodes (19): 0012 Standardize Infra Net Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Evidence, infra_net IP Mapping Validation & Update Procedure (+11 more)
+Nodes (20): 0012 Standardize Infra Net Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Evidence, infra_net IP Mapping Validation & Update Procedure (+12 more)
 
 ### Community 1079 - "Community 1079"
-Cohesion: 0.11
-Nodes (18): Common Checks, Common Pitfalls, Overview (KR), Prerequisites, Purpose, Related Documents, Runbook Handoff, secrets/ 경로 패턴 (+10 more)
+Cohesion: 0.10
+Nodes (19): Common Checks, Common Pitfalls, Overview, Overview (KR), Prerequisites, Purpose, Related Documents, Runbook Handoff (+11 more)
 
 ### Community 1080 - "Community 1080"
-Cohesion: 0.11
-Nodes (18): Agent Operations (If Applicable), AI Agent Policy Section, Canonical References, Checklist, Escalation, Evidence, LLM Wiki Maintenance Runbook, LLM Wiki Maintenance Runbook Procedure (+10 more)
+Cohesion: 0.10
+Nodes (19): Agent Operations (If Applicable), AI Agent Policy Section, Canonical References, Checklist, Escalation, Evidence, LLM Wiki Maintenance Runbook, LLM Wiki Maintenance Runbook Procedure (+11 more)
 
 ### Community 1081 - "Community 1081"
 Cohesion: 0.11
-Nodes (17): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources, Overview (KR), Procedure (+9 more)
+Nodes (18): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources, Overview, Overview (KR) (+10 more)
 
 ### Community 1082 - "Community 1082"
-Cohesion: 0.15
-Nodes (12): Common Checks, Common Pitfalls, New Service Onboarding Guide, Overview (KR), Prerequisites, Purpose, Related Documents, Runbook Handoff (+4 more)
+Cohesion: 0.14
+Nodes (13): Common Checks, Common Pitfalls, New Service Onboarding Guide, Overview, Overview (KR), Prerequisites, Purpose, Related Documents (+5 more)
 
 ### Community 1083 - "Community 1083"
-Cohesion: 0.15
-Nodes (12): 0012 Standardize Infra Net Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): 0012 Standardize Infra Net Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 1084 - "Community 1084"
-Cohesion: 0.15
-Nodes (12): Common Checks, Common Pitfalls, LLM Wiki Maintenance Usage Guide, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+Cohesion: 0.14
+Nodes (13): Common Checks, Common Pitfalls, LLM Wiki Maintenance Usage Guide, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 1085 - "Community 1085"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 00 Workspace, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 00 Workspace, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 1086 - "Community 1086"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 00 Workspace, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 00 Workspace, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 1087 - "Community 1087"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 00 Workspace, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 00 Workspace, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 1088 - "Community 1088"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 12 Infra Net, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 12 Infra Net, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 1089 - "Community 1089"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 12 Infra Net, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 12 Infra Net, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 1090 - "Community 1090"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 12 Infra Net, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 12 Infra Net, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 1091 - "Community 1091"
-Cohesion: 0.18
-Nodes (10): Operations Guides - 90 Knowledge, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Guides - 90 Knowledge, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 1092 - "Community 1092"
-Cohesion: 0.18
-Nodes (10): Operations Policies - 90 Knowledge, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Policies - 90 Knowledge, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 1093 - "Community 1093"
-Cohesion: 0.18
-Nodes (10): Operations Runbooks - 90 Knowledge, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
+Cohesion: 0.10
+Nodes (19): Operations Runbooks - 90 Knowledge, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+11 more)
 
 ### Community 1094 - "Community 1094"
 Cohesion: 0.11
-Nodes (17): 04-Data Storage Exhaustion Procedure, 04-Data Storage Exhaustion Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+Nodes (18): 04-Data Storage Exhaustion Procedure, 04-Data Storage Exhaustion Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 1095 - "Community 1095"
-Cohesion: 0.20
-Nodes (9): AI Agent Policy Section (If Applicable), Common Optimizations Template Exceptions Policy, Controls, Exceptions, Overview (KR), Policy Scope, Related Documents, Review Cadence (+1 more)
+Cohesion: 0.18
+Nodes (10): AI Agent Policy Section (If Applicable), Common Optimizations Template Exceptions Policy, Controls, Exceptions, Overview, Overview (KR), Policy Scope, Related Documents (+2 more)
 
 ### Community 1096 - "Community 1096"
-Cohesion: 0.20
-Nodes (9): AI Agent Policy Section (If Applicable), Controls, Exceptions, infra_net IP Management Operations Policy, Policy Scope, Review Cadence, Verification, Overview (KR) (+1 more)
+Cohesion: 0.18
+Nodes (10): AI Agent Policy Section (If Applicable), Controls, Exceptions, infra_net IP Management Operations Policy, Policy Scope, Review Cadence, Verification, Overview (+2 more)
 
 ### Community 1097 - "Community 1097"
-Cohesion: 0.22
-Nodes (8): Controls, Exceptions, Harness / Agent-first Engineering Operations Policy, Policy Scope, Review Cadence, Verification, Overview (KR), Related Documents
+Cohesion: 0.20
+Nodes (9): Controls, Exceptions, Harness / Agent-first Engineering Operations Policy, Policy Scope, Review Cadence, Verification, Overview, Overview (KR) (+1 more)
 
 ### Community 1098 - "Community 1098"
-Cohesion: 0.22
-Nodes (8): Controls, Exceptions, LLM Wiki Maintenance Operations Policy, Policy Scope, Review Cadence, Verification, Overview (KR), Related Documents
+Cohesion: 0.20
+Nodes (9): Controls, Exceptions, LLM Wiki Maintenance Operations Policy, Policy Scope, Review Cadence, Verification, Overview, Overview (KR) (+1 more)
 
 ### Community 1099 - "Community 1099"
-Cohesion: 0.15
-Nodes (12): Overview (KR), Purpose, Related Documents, 04-Data Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff (+4 more)
+Cohesion: 0.14
+Nodes (13): Overview, Overview (KR), Purpose, Related Documents, 04-Data Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites (+5 more)
 
 ### Community 1100 - "Community 1100"
-Cohesion: 0.18
-Nodes (10): Overview (KR), Related Documents, 04-Data Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope (+2 more)
+Cohesion: 0.17
+Nodes (11): Overview, Overview (KR), Related Documents, 04-Data Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions (+3 more)
 
 ### Community 1101 - "Community 1101"
 Cohesion: 0.20
@@ -5272,8 +5380,8 @@ Cohesion: 0.20
 Nodes (9): 04-Data Storage Runbooks, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
 
 ### Community 1106 - "Community 1106"
-Cohesion: 0.22
-Nodes (8): 04-Data Backup Policy, Controls, Exceptions, Overview (KR), Policy Scope, Related Documents, Review Cadence, Verification
+Cohesion: 0.20
+Nodes (9): 04-Data Backup Policy, Controls, Exceptions, Overview, Overview (KR), Policy Scope, Related Documents, Review Cadence (+1 more)
 
 ### Community 1107 - "Community 1107"
 Cohesion: 0.13
@@ -5287,6 +5395,414 @@ Nodes (12): Control / Governance, Docker Compose Runtime, Evidence / Progress, H
 Cohesion: 0.29
 Nodes (6): 1. Core Rules, 2. Surface Matrix, 3. Hard Stops, 4. Required Validation Entry Point, Approval Boundaries, Related Documents
 
+### Community 1110 - "Community 1110"
+Cohesion: 0.06
+Nodes (33): Agent Role, Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Canonical Template Groups, Contracts, Copyable Template Surface, Core Design, Data Modeling & Storage Strategy (+25 more)
+
+### Community 1111 - "Community 1111"
+Cohesion: 0.07
+Nodes (28): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable), Failure Modes & Fallback / Human Escalation (+20 more)
+
+### Community 1112 - "Community 1112"
+Cohesion: 0.08
+Nodes (25): Active stage docs, Agent governance, Definitions / Facts, Generated Index, GitHub workflow surface, In Scope, Infrastructure source, LLM Wiki reference (+17 more)
+
+### Community 1113 - "Community 1113"
+Cohesion: 0.09
+Nodes (22): Approved Surface Evidence, Baseline Snapshot, Batch Status, Inputs, Overview, Related Documents, Remediation Evidence, T-002 Governance and Provider Adapter Drift (+14 more)
+
+### Community 1114 - "Community 1114"
+Cohesion: 0.09
+Nodes (22): Audit Record Shape, Component Boundary, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation, External Basis (+14 more)
+
+### Community 1115 - "Community 1115"
+Cohesion: 0.09
+Nodes (21): Batch-Fix Candidates, Definitions / Facts, Direct-Fix Candidates, Future Implementation Batches, Gap Register, Gap Summary, Historical Evidence, In Scope (+13 more)
+
+### Community 1116 - "Community 1116"
+Cohesion: 0.09
+Nodes (21): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable) (+13 more)
+
+### Community 1117 - "Community 1117"
+Cohesion: 0.09
+Nodes (21): Approved Surface Evidence, Compose Impact, Follow-up Tasks, Gap Analysis, Goal, Implementation Plan, Implemented Changes, Inputs (+13 more)
+
+### Community 1118 - "Community 1118"
+Cohesion: 0.10
+Nodes (20): Agent Role & IO Contract, Agentic Engineering Implementation Audit Pack Technical Specification, Assessment Status Vocabulary, Contracts, Core Design, Edge Cases & Error Handling, Evaluation, Failure Modes & Fallback / Human Escalation (+12 more)
+
+### Community 1119 - "Community 1119"
+Cohesion: 0.10
+Nodes (19): Automation Coverage Map, CI/CD Workflow Coverage, Definitions / Facts, Formatting Coverage, Gaps For Register, In Scope, Maintenance, Method (+11 more)
+
+### Community 1120 - "Community 1120"
+Cohesion: 0.10
+Nodes (19): Agent Rollout & Evaluation Gates, Completion Criteria, Context, File Structure, Goals & In-Scope, Implementation Tasks, Non-Goals & Out-of-Scope, Overview (+11 more)
+
+### Community 1121 - "Community 1121"
+Cohesion: 0.10
+Nodes (19): Agent Rollout & Evaluation Gates, Completion Criteria, Context, File Structure, Goals & In-Scope, Implementation Tasks, Non-Goals & Out-of-Scope, Overview (+11 more)
+
+### Community 1122 - "Community 1122"
+Cohesion: 0.11
+Nodes (17): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources, Overview, Procedure (+9 more)
+
+### Community 1123 - "Community 1123"
+Cohesion: 0.12
+Nodes (16): Analysis, Application Notes for This Workspace, Definitions / Facts, Harness Components, In Scope, Maintenance, Out of Scope, Overview (+8 more)
+
+### Community 1124 - "Community 1124"
+Cohesion: 0.12
+Nodes (16): Analysis, Application Notes for This Workspace, Definitions / Facts, In Scope, Loop Map, Maintenance, Out of Scope, Overview (+8 more)
+
+### Community 1125 - "Community 1125"
+Cohesion: 0.12
+Nodes (16): Analysis, Common Environment and Rule Elements, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap (+8 more)
+
+### Community 1126 - "Community 1126"
+Cohesion: 0.12
+Nodes (16): Analysis, Application Notes for This Workspace, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap (+8 more)
+
+### Community 1127 - "Community 1127"
+Cohesion: 0.12
+Nodes (16): Analysis, Application Notes for This Workspace, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap (+8 more)
+
+### Community 1128 - "Community 1128"
+Cohesion: 0.12
+Nodes (16): Action Items, Agent Metadata (If Applicable), Contributing Factors, Detection Gaps, Impact, Incident Summary, Overview, Postmortem: [Incident Title] (+8 more)
+
+### Community 1129 - "Community 1129"
+Cohesion: 0.12
+Nodes (16): [API Name] Specification, API Style, Authentication & Authorization, Data Contract Compatibility, Endpoint / Operation Catalog, Error Model, Machine-readable Contract Files, Non-Functional Requirements (+8 more)
+
+### Community 1130 - "Community 1130"
+Cohesion: 0.12
+Nodes (16): Approved Surface Evidence, Current Validation Notes, Deviation Notes, Inputs, Overview, Phase 1: Evidence Bootstrap, Phase 2: Template and Support Migration, Phase 3: Validator and Governance Alignment (+8 more)
+
+### Community 1131 - "Community 1131"
+Cohesion: 0.12
+Nodes (15): Analysis, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap, Purpose (+7 more)
+
+### Community 1132 - "Community 1132"
+Cohesion: 0.12
+Nodes (15): Decisions, Definitions / Facts, Findings, In Scope, Maintenance, Method, Out of Scope, Overview (+7 more)
+
+### Community 1133 - "Community 1133"
+Cohesion: 0.12
+Nodes (15): Definitions / Facts, Findings, In Scope, Maintenance, Method, Out of Scope, Overview, Purpose (+7 more)
+
+### Community 1134 - "Community 1134"
+Cohesion: 0.12
+Nodes (15): Definitions / Facts, Findings, In Scope, Maintenance, Method, Out of Scope, Overview, Preservation Matrix (+7 more)
+
+### Community 1135 - "Community 1135"
+Cohesion: 0.12
+Nodes (15): Active Guidance Drift, Broad References With No Action, Definitions / Facts, Gaps For Register, Historical Evidence, Maintenance, Method, Out-of-Scope Gaps (+7 more)
+
+### Community 1136 - "Community 1136"
+Cohesion: 0.12
+Nodes (15): Agent Role, Context & Memory Strategy, Evaluation Plan, Failure Modes & Fallback, [Feature Name] Agent Design, Guardrails, Inputs / Outputs, Observability (+7 more)
+
+### Community 1137 - "Community 1137"
+Cohesion: 0.12
+Nodes (15): Approved Surface Evidence, Deviation Notes, Inputs, Overview, Phase 1, Phase 2, Phase View, Related Documents (+7 more)
+
+### Community 1138 - "Community 1138"
+Cohesion: 0.13
+Nodes (14): Contract Governance Map, Contract Owners, Definitions / Facts, Gaps For Register, Maintenance, Method, Overview, Potential Conflicts (+6 more)
+
+### Community 1139 - "Community 1139"
+Cohesion: 0.13
+Nodes (14): Affected Surfaces, Allowed Paths, Approval Required, Compose Impact, Evidence Location, Forbidden Paths, Goal, Harness Task Contract: [Task Name] (+6 more)
+
+### Community 1140 - "Community 1140"
+Cohesion: 0.14
+Nodes (13): Definitions / Facts, Findings, Frontmatter Inventory, Gaps For Register, Maintenance, Method, Overview, Purpose (+5 more)
+
+### Community 1141 - "Community 1141"
+Cohesion: 0.14
+Nodes (13): Definitions / Facts, Findings, Gaps For Register, Maintenance, Method, Overview, Purpose, Related Documents (+5 more)
+
+### Community 1142 - "Community 1142"
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), [Feature or System Name] Product Requirements, Functional Requirements, Key Use Cases, Non-functional Requirements, Overview, Personas, Problem Statement (+5 more)
+
+### Community 1143 - "Community 1143"
+Cohesion: 0.14
+Nodes (13): Agent-specific Types (If Applicable), Approved Surface Evidence, Inputs, Overview, Phase 1, Phase 2, Phase View (Optional), Related Documents (+5 more)
+
+### Community 1144 - "Community 1144"
+Cohesion: 0.14
+Nodes (13): Agent Evals (If Applicable), Contract & Integration Tests, Evidence & Reporting, [Feature Name] Test & Evaluation Strategy, Fixtures / Datasets, How to Run, Non-Functional Tests, Overview (+5 more)
+
+### Community 1145 - "Community 1145"
+Cohesion: 0.14
+Nodes (13): Approved Surface Evidence, Audit Findings, Follow-up Tasks, Inputs, Language Boundary Coverage Map, Overview, Related Documents, Remaining Risks (+5 more)
+
+### Community 1146 - "Community 1146"
+Cohesion: 0.14
+Nodes (13): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Spec Files, Overview, Reference Role Coverage, Related Documents, Remaining Risks (+5 more)
+
+### Community 1147 - "Community 1147"
+Cohesion: 0.14
+Nodes (13): Approved Surface Evidence, Commit Trail, Gap Disposition Summary, Implementation Notes, Inputs, Inventory Baseline, Overview, Related Documents (+5 more)
+
+### Community 1148 - "Community 1148"
+Cohesion: 0.15
+Nodes (12): Agentic Engineering Research Pack, Audience, Category Role, Current References, How to Work in This Area, In Scope, Out of Scope, Overview (+4 more)
+
+### Community 1149 - "Community 1149"
+Cohesion: 0.15
+Nodes (12): Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Purpose, Reference: {Item Name}, Related Documents (+4 more)
+
+### Community 1150 - "Community 1150"
+Cohesion: 0.15
+Nodes (12): Definitions / Facts, Findings, Gaps For Register, Maintenance, Method, Overview, Purpose, README Profile Inventory (+4 more)
+
+### Community 1151 - "Community 1151"
+Cohesion: 0.15
+Nodes (12): Common Checks, Common Pitfalls, Overview, Prerequisites, Purpose, Related Documents, Runbook Handoff, {Service} Usage Guide (+4 more)
+
+### Community 1152 - "Community 1152"
+Cohesion: 0.15
+Nodes (12): Agent Metadata (If Applicable), Current Hypothesis / Response State, Evidence, Follow-up Actions, Impact, Incident: [Incident Title], Incident Metadata, Incident Summary (+4 more)
+
+### Community 1153 - "Community 1153"
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates, Batch Approval Gates, Completion Criteria, Context, Document Contract Remediation Batches Implementation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (+4 more)
+
+### Community 1154 - "Community 1154"
+Cohesion: 0.15
+Nodes (12): Entities / Aggregates, [Feature Name] Data Model, Migration & Compatibility, Overview, Parent Documents, Privacy / Security, Related Documents, Relationships (+4 more)
+
+### Community 1155 - "Community 1155"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Enforcement Scope, Follow-up Tasks, Inputs, Overview, Related Documents, Remaining Risks, Task: Language Policy Hard Enforcement (+4 more)
+
+### Community 1156 - "Community 1156"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Spec Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Normalization Batch 2 (+4 more)
+
+### Community 1157 - "Community 1157"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Spec Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Normalization Batch 3 (+4 more)
+
+### Community 1158 - "Community 1158"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Plan Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Plan Normalization Batch 1 (+4 more)
+
+### Community 1159 - "Community 1159"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Plan Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Plan Normalization Batch 2 (+4 more)
+
+### Community 1160 - "Community 1160"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Plan Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Plan Normalization Batch 3 (+4 more)
+
+### Community 1161 - "Community 1161"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Plan Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Plan Normalization Batch 4 (+4 more)
+
+### Community 1162 - "Community 1162"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Plan Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Plan Normalization Batch 5 (+4 more)
+
+### Community 1163 - "Community 1163"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Plan Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Plan Normalization Batch 6 (+4 more)
+
+### Community 1164 - "Community 1164"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Plan Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Plan Normalization Batch 7 (+4 more)
+
+### Community 1165 - "Community 1165"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Plan Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Plan Normalization Batch 8 (+4 more)
+
+### Community 1166 - "Community 1166"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Reference Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Reference Normalization (+4 more)
+
+### Community 1167 - "Community 1167"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Task Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Task Normalization Batch 1 (+4 more)
+
+### Community 1168 - "Community 1168"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Task Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Task Normalization Batch 2 (+4 more)
+
+### Community 1169 - "Community 1169"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Task Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Task Normalization Batch 3 (+4 more)
+
+### Community 1170 - "Community 1170"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Task Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Task Normalization Batch 4 (+4 more)
+
+### Community 1171 - "Community 1171"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Task Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Task Normalization Batch 5 (+4 more)
+
+### Community 1172 - "Community 1172"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Task Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Task Normalization Batch 6 (+4 more)
+
+### Community 1173 - "Community 1173"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Follow-up Tasks, Inputs, Normalized Task Files, Overview, Related Documents, Remaining Risks, Task: Language Policy Task Normalization Batch 7 (+4 more)
+
+### Community 1174 - "Community 1174"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Commit Trail, Implementation Notes, Inputs, Inventory Baseline, Overview, Related Documents, Task Table (+4 more)
+
+### Community 1175 - "Community 1175"
+Cohesion: 0.17
+Nodes (11): Audience, Audit References, Category Role, Current References, How to Work in This Area, In Scope, Out of Scope, Overview (+3 more)
+
+### Community 1176 - "Community 1176"
+Cohesion: 0.17
+Nodes (11): Audience, Category Role, Current References, How to Work in This Area, In Scope, Out of Scope, Overview, Reference Data (+3 more)
+
+### Community 1177 - "Community 1177"
+Cohesion: 0.17
+Nodes (11): Audience, Category Role, Document Contract Audit References, How to Work in This Area, In Scope, Out of Scope, Overview, Planned References (+3 more)
+
+### Community 1178 - "Community 1178"
+Cohesion: 0.17
+Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Related Documents, Risks & Mitigations (+3 more)
+
+### Community 1179 - "Community 1179"
+Cohesion: 0.17
+Nodes (11): Audience, Category Role, Current References, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+3 more)
+
+### Community 1180 - "Community 1180"
+Cohesion: 0.17
+Nodes (11): ADR-####: [Short Title], Agent-related Example Decisions (If Applicable), [Alternative 1], [Alternative 2], Alternatives, Consequences, Context, Decision (+3 more)
+
+### Community 1181 - "Community 1181"
+Cohesion: 0.17
+Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, [Feature Name] Implementation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Related Documents (+3 more)
+
+### Community 1182 - "Community 1182"
+Cohesion: 0.17
+Nodes (11): Healthcheck & Operations, Image & Build, Networking & Volumes, Overview, Parent Documents, Related Documents, Scope & Non-goals, Secrets (+3 more)
+
+### Community 1183 - "Community 1183"
+Cohesion: 0.18
+Nodes (10): Agentic Engineering Implementation Audit Pack Specification, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+
+### Community 1184 - "Community 1184"
+Cohesion: 0.18
+Nodes (10): AI Agent Architecture Requirements (If Applicable), Boundaries & Non-goals, Data Architecture, Infrastructure & Deployment, Overview, Quality Attributes, Related Documents, Summary (+2 more)
+
+### Community 1185 - "Community 1185"
+Cohesion: 0.18
+Nodes (10): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+2 more)
+
+### Community 1186 - "Community 1186"
+Cohesion: 0.18
+Nodes (10): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Status (+2 more)
+
+### Community 1187 - "Community 1187"
+Cohesion: 0.20
+Nodes (9): Approved Surface Evidence, Inputs, Overview, Related Documents, Remote Verification Summary, Task: GitHub Branch Protection Reverification, Task Table, Verification Summary (+1 more)
+
+### Community 1188 - "Community 1188"
+Cohesion: 0.20
+Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
+
+### Community 1189 - "Community 1189"
+Cohesion: 0.22
+Nodes (8): Controls, Exceptions, Overview, Policy Scope, Related Documents, Review Cadence, {Topic Name} Policy, Verification
+
+### Community 1190 - "Community 1190"
+Cohesion: 0.22
+Nodes (8): Approved Surface Evidence, Inputs, Overview, Related Documents, Task: Examples Scaffold Contract Remediation, Task Table, Verification Summary, Working Rules
+
+### Community 1191 - "Community 1191"
+Cohesion: 0.25
+Nodes (8): ADR-0005 Polyglot Messaging, Apache Kafka Event Backbone, Kafka KRaft Mode, RabbitMQ Task Queue, Messaging Gateway SSO Policy, Observability Gateway SSO Policy, Workflow Gateway SSO Policy, AI Gateway SSO Policy
+
+### Community 1192 - "Community 1192"
+Cohesion: 0.25
+Nodes (7): Context, Evidence, Memory: {short-title}, Prevention, Problem, Related Documents, Resolution
+
+### Community 1193 - "Community 1193"
+Cohesion: 0.25
+Nodes (7): Agent Progress Log, Current Work Log, Layer Audit, Open Issues, Phase Tracker, Related Documents, Usage Contract
+
+### Community 1194 - "Community 1194"
+Cohesion: 0.25
+Nodes (7): Corpus Routing Rules, Duplicate-Purpose Key Rules, Frontmatter Contract, Legacy Cleanup Rules, Overview, Related Documents, Role Matrix
+
+### Community 1195 - "Community 1195"
+Cohesion: 0.25
+Nodes (7): Overview, Placeholder Rules, Related Documents, Surface Boundaries, Target Document Rules, Template Contract, Template Source Rules
+
+### Community 1196 - "Community 1196"
+Cohesion: 0.25
+Nodes (7): Change Boundaries, Commit Boundaries, Overview, Protected Surface Rules, Related Documents, Review Rules, Template Governance
+
+### Community 1197 - "Community 1197"
+Cohesion: 0.25
+Nodes (7): Governance Template Mapping, Overview, Related Documents, Selection Rules, Spec Child Template Mapping, Stage Template Mapping, Template Selection
+
+### Community 1198 - "Community 1198"
+Cohesion: 0.29
+Nodes (7): Observability Architecture Reference Document, ADR-0021 Observability Hardening and HA Expansion Strategy, Non-root Secret Guard Images, Observability SSO Router Chain, Workflow SSO Router Chain, AI SSO Router Chain, ADR-0023 AI Hardening and HA Expansion Strategy
+
+### Community 1199 - "Community 1199"
+Cohesion: 0.29
+Nodes (6): Archive Ledger, Archive Metadata, Archive Tombstone: {original document title}, Current Replacement, Overview, Related Documents
+
+### Community 1200 - "Community 1200"
+Cohesion: 0.29
+Nodes (5): 1. Bootstrap Sequence, 2. Graphify, 3. Quick Reference, 4. Detailed Instructions, Related Documents
+
+### Community 1201 - "Community 1201"
+Cohesion: 0.29
+Nodes (6): arrowParens, endOfLine, printWidth, semi, singleQuote, trailingComma
+
+### Community 1202 - "Community 1202"
+Cohesion: 0.29
+Nodes (6): Generated Metadata, Lifecycle Status, Overview, Related Documents, Status Selection Rules, Status Vocabulary
+
+### Community 1203 - "Community 1203"
+Cohesion: 0.33
+Nodes (5): Common Templates, Overview, Related Documents, Target Rules, Templates
+
+### Community 1204 - "Community 1204"
+Cohesion: 0.33
+Nodes (5): Governance Templates, Overview, Related Documents, Target Rules, Templates
+
+### Community 1205 - "Community 1205"
+Cohesion: 0.33
+Nodes (5): Operations Templates, Overview, Related Documents, Target Rules, Templates
+
+### Community 1206 - "Community 1206"
+Cohesion: 0.33
+Nodes (5): Overview, Related Documents, SDLC Templates, Target Rules, Templates
+
+### Community 1207 - "Community 1207"
+Cohesion: 0.33
+Nodes (5): Overview, Related Documents, Spec Contract Templates, Target Rules, Templates
+
+### Community 1208 - "Community 1208"
+Cohesion: 0.33
+Nodes (5): External Source Rationale, Local Interpretation, Overview, Related Documents, Source-Backed Decisions
+
+### Community 1209 - "Community 1209"
+Cohesion: 0.33
+Nodes (5): Overview, Related Documents, Target Rules, Template Artifacts, Templates
+
+### Community 1210 - "Community 1210"
+Cohesion: 0.40
+Nodes (3): 1. Quick Reference, 2. Detailed Instructions, Related Documents
+
+### Community 1211 - "Community 1211"
+Cohesion: 0.40
+Nodes (4): Meta Commands, RTK - Rust Token Killer (Codex CLI), Rule, Verification
+
 ## Ambiguous Edges - Review These
 - `Alertmanager Critical Route` → `Alertmanager SMTP Placeholders`  [AMBIGUOUS]
   infra/06-observability/alertmanager/config/config.yml · relation: references
@@ -5294,9 +5810,9 @@ Nodes (6): 1. Core Rules, 2. Surface Matrix, 3. Hard Stops, 4. Required Validati
   infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **9882 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+9877 more)
+- **11117 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+11112 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **77 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **78 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -5305,13 +5821,13 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `cadvisor Compose Service` and `pyroscope Compose Service`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `Prometheus Production Scrape And Alerting Config` connect `Community 129` to `Prometheus Alert Rule Group`, `Community 358`, `Prometheus Alert Kubecputhrottlinghigh Kubepodnotready`, `Community 233`, `Community 458`, `Community 427`, `Community 715`, `Community 842`, `Community 526`, `Community 525`, `Community 570`?**
+- **Why does `Secret Exposure Escalation` connect `Airflow Airbyte Failure Worker` to `Community 583`, `Data Cluster Cassandra Hardening`, `Community 1004`, `Community 365`, `Community 157`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `Prometheus Development Scrape And Alerting Config` connect `Community 243` to `Prometheus Alert Rule Group`, `Community 129`, `Community 358`, `Community 233`, `Community 458`, `Community 427`, `Community 715`, `Community 237`, `Community 526`, `Community 842`, `Community 525`, `Community 570`?**
+- **Why does `06-Observability Optimization Hardening Runbook` connect `Community 583` to `Airflow Airbyte Failure Worker`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `Prometheus rule group: lgtm_alerts` connect `Community 570` to `Prometheus Alert Rule Group`?**
+- **Why does `Valkey Cluster Runbook` connect `Community 365` to `Airflow Airbyte Failure Worker`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **What connects `printWidth`, `singleQuote`, `semi` to the rest of the system?**
-  _10455 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _11690 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Prometheus Alert Rule Group` be split into smaller, more focused modules?**
   _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._
