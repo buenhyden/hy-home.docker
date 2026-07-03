@@ -386,6 +386,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/agentic-engineering-implementation-audit-pack/spec.md](../../03.specs/agentic-engineering-implementation-audit-pack/spec.md) | Markdown reference |
 | [docs/03.specs/docs-taxonomy-agent-first-migration/README.md](../../03.specs/docs-taxonomy-agent-first-migration/README.md) | folder index |
 | [docs/03.specs/docs-taxonomy-agent-first-migration/spec.md](../../03.specs/docs-taxonomy-agent-first-migration/spec.md) | Markdown reference |
+| [docs/03.specs/document-restructure-audit-contract-archive/README.md](../../03.specs/document-restructure-audit-contract-archive/README.md) | folder index |
+| [docs/03.specs/document-restructure-audit-contract-archive/spec.md](../../03.specs/document-restructure-audit-contract-archive/spec.md) | Markdown reference |
 | [docs/03.specs/harness-agent-first-engineering/README.md](../../03.specs/harness-agent-first-engineering/README.md) | folder index |
 | [docs/03.specs/harness-agent-first-engineering/spec.md](../../03.specs/harness-agent-first-engineering/spec.md) | Markdown reference |
 | [docs/03.specs/home-docker-revalidation-deferred-follow-up/README.md](../../03.specs/home-docker-revalidation-deferred-follow-up/README.md) | folder index |
