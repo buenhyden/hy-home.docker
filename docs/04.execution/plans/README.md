@@ -74,6 +74,7 @@ docs/04.execution/plans/
 ├── 2026-07-03-workspace-document-contract-audit-pack.md # Completed workspace document contract audit pack plan
 ├── 2026-07-03-template-system-contract-standardization.md # Completed Stage 99 template contract/frontmatter standardization plan
 ├── 2026-07-02-template-system-reorganization.md # Completed Stage 99 template system reorganization plan
+├── 2026-07-04-document-restructure-audit-contract-archive.md # Active second-wave document restructure plan
 └── README.md                               # This file
 ```
 
@@ -155,6 +156,7 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Docs Implementation Reconciliation Plan**: [2026-06-02-docs-implementation-reconciliation.md](./2026-06-02-docs-implementation-reconciliation.md)
 - **Governance Surgical Re-Verification Plan**: [2026-06-03-governance-surgical-reverification.md](./2026-06-03-governance-surgical-reverification.md)
 - **Document Contract Remediation Batch Plan**: [2026-07-03-document-contract-remediation-batches.md](./2026-07-03-document-contract-remediation-batches.md)
+- **Document Restructure Audit, Contract, and Archive Plan**: [2026-07-04-document-restructure-audit-contract-archive.md](./2026-07-04-document-restructure-audit-contract-archive.md)
 - **Workspace Document Contract Audit Pack Plan**: [2026-07-03-workspace-document-contract-audit-pack.md](./2026-07-03-workspace-document-contract-audit-pack.md)
 - **Template System Reorganization Plan**: [2026-07-02-template-system-reorganization.md](./2026-07-02-template-system-reorganization.md)
 - **Template System Contract Standardization Plan**: [2026-07-03-template-system-contract-standardization.md](./2026-07-03-template-system-contract-standardization.md)
