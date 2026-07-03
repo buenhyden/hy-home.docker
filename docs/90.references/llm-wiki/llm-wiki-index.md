@@ -468,6 +468,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-06-02-governance-optimization.md](../../04.execution/plans/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-03-governance-surgical-reverification.md](../../04.execution/plans/2026-06-03-governance-surgical-reverification.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-02-template-system-reorganization.md](../../04.execution/plans/2026-07-02-template-system-reorganization.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-03-document-contract-remediation-batches.md](../../04.execution/plans/2026-07-03-document-contract-remediation-batches.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md](../../04.execution/plans/2026-07-03-template-system-contract-standardization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md](../../04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
