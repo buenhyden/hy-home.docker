@@ -52,6 +52,7 @@ This README is for:
 
 - `README.md`
 - `frontmatter-inventory.md`
+- `frontmatter-routing-profile.md`
 - `section-profile-inventory.md`
 - `readme-profile-inventory.md`
 - `contract-governance-map.md`
@@ -62,6 +63,7 @@ This README is for:
 ## Planned References
 
 - `frontmatter-inventory.md`
+- `frontmatter-routing-profile.md`
 - `section-profile-inventory.md`
 - `readme-profile-inventory.md`
 - `contract-governance-map.md`

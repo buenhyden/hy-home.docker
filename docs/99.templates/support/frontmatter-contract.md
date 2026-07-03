@@ -19,7 +19,10 @@ surface.
 | Machine-readable template source | none; use comments | YAML frontmatter fences, `type`, `owner`, `updated`, `links` |
 | Stage 99 support document | `layer: agentic` | `status`, `type`, `owner`, `updated`, `links` |
 | Target stage document | path-derived role plus lifecycle `status` | `type`, `document_type`, `template_type` |
+| Folder index README | none by default; use headings and path for role | copied template `status: draft`, `type`, `owner`, `updated`, `links` |
+| Root, provider, GitHub-native, and utility README | none by default unless a provider or native platform consumes metadata | copied template `status: draft`, `type`, `owner`, `updated`, `links` |
 | Generated tracked document | generator-owned metadata such as `generated_by` | human-authored lifecycle keys unless the generator owns them |
+| Generated report without metadata consumer | none; omit YAML frontmatter | human-authored lifecycle keys |
 
 Archive tombstones are target stage documents with the archive lifecycle profile:
 `status: archived` plus archive-specific provenance keys when that profile
@@ -31,6 +34,9 @@ requires them.
 - Do not use generic `owner`, `updated`, or `links` metadata unless a target
   profile explicitly consumes those keys.
 - Do not copy README template metadata examples into final README files.
+- Do not add YAML frontmatter to README files just to make them resemble
+  target-stage leaf documents. README role is normally derived from path,
+  heading, and folder-index profile.
 - Do not use template-source `status: draft` as a final target status without
   checking the target lifecycle.
 
@@ -42,6 +48,24 @@ requires them.
 - If a target document contains copied template instructions instead of
   topic-specific content, record a follow-up gap unless the document is already
   in the approved edit scope.
+
+## Corpus Routing Rules
+
+- Non-README target-stage Markdown under `docs/01` to `docs/05` and `docs/90`
+  requires lifecycle `status` frontmatter.
+- Archive tombstones under `docs/98.archive` require `status: archived`; archive
+  folder README files remain folder indexes and do not need archive tombstone
+  metadata.
+- Governance memory and Stage 00 rule/provider/scope documents use `layer:`
+  frontmatter instead of lifecycle `status`.
+- Markdown template sources keep `status: draft`; copied target documents must
+  replace that template-source status with the target profile or omit
+  frontmatter when the target is a README.
+- GitHub-native Markdown surfaces such as pull request templates, security
+  policy files, and ruleset evidence files should not receive repository
+  frontmatter unless a GitHub-specific consumer is approved.
+- Generated report files without a metadata consumer should not receive manual
+  YAML frontmatter; preserve generator output unless the generator is changed.
 
 ## Related Documents
 
