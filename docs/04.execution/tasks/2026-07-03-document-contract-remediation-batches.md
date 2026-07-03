@@ -51,6 +51,7 @@ corpus remediation begins.
 | `docs/99.templates/support/frontmatter-contract.md`; `docs/90.references/audits/document-contracts/frontmatter-routing-profile.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-004 and user continuation for the next approved batch | Frontmatter routing profile decision | WDC-GAP-006 recorded 185 tracked Markdown files without top frontmatter and required profile-specific routing before corpus edits. | The missing set is classified by surface as required, optional, deferred, or declined; no non-README active target-stage leaf document remains unrouted. | `git revert` the T-004 frontmatter routing commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, runtime config, generated report mutation, GitHub-native behavior, or broad corpus rewrite |
 | `docs/90.references/audits/document-contracts/ci-qa-parser-graphify-decision.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-005 and user continuation for the next approved batch | CI/CD, QA, parser, and Graphify decision evidence | WDC-GAP-010 and WDC-GAP-011 required decisions for dependency-audit gates and Graphify enforcement; WDC-GAP-018 needed parser/tooling classification. | Current coverage and no-change decisions are documented: dependency audit hard gates require future Security/QA approval, Graphify remains advisory, and parser matches are tooling follow-up only. | `git revert` the T-005 decision commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, workflow changes, script changes, pre-commit changes, generated Graphify output changes, or Markdown content rewrites |
 | `docs/90.references/audits/document-contracts/historical-evidence-preservation.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-006 and user continuation for the next approved batch | Historical evidence preservation decision | WDC-GAP-012 through WDC-GAP-015 required a decision on whether old baselines, completed docs, archive tombstones, and progress evidence should be rewritten. | The historical rows are preserved as audit and migration evidence; no completed artifacts or archive material were rewritten. | `git revert` the T-006 preservation commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, completed spec/plan/task rewrites, archive tombstone rewrites, or historical progress rewrites |
+| `docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md`; `docs/90.references/audits/document-contracts/gap-register.md`; `docs/90.references/llm-wiki/llm-wiki-index.md`; `docs/00.agent-governance/memory/progress.md` | PLN-WDC-RM-008 and user continuation for closure | Document-contract remediation closure evidence | T-008 was planned, T-007 was deferred pending separate infra approval, and the closure state needed one final synchronized evidence update. | T-008 records local closure; WDC-GAP-017, WDC-GAP-020, WDC-GAP-021, and WDC-GAP-022 remain explicit follow-up items outside this document-contract remediation batch. | `git revert` the T-008 closure commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, examples/scaffold rewrites, remote GitHub reads or writes, infra runtime changes, Compose changes, or tech-stack edits |
 | Future protected surfaces | Parent plan approval gates | Provider, workflow, validator, secret-handling, infra, and target-stage changes | No remediation applied in T-001 | Future tasks must record per-batch evidence before edits | Revert the specific future batch commit | Redaction boundary must be restated in each future batch before touching protected surfaces |
 
 ## Task Table
@@ -64,7 +65,7 @@ corpus remediation begins.
 | T-005 | Decide CI/CD, QA, parser, and Graphify enforcement. | doc/script | PLN-WDC-RM-005 | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Protected-surface checks | Codex | Done |
 | T-006 | Preserve or reclassify historical evidence rows. | doc | PLN-WDC-RM-006 | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Historical evidence review | Codex | Done |
 | T-007 | Execute infra drift only as a separate infra task if approved. | ops | PLN-WDC-RM-007 | WDC-GAP-020, WDC-GAP-021 | Infra-only validation | Codex | Deferred |
-| T-008 | Close batch evidence, update register dispositions, regenerate indexes, and commit. | doc | PLN-WDC-RM-008 | All touched rows | Final validation matrix and commit trail | Codex | Planned |
+| T-008 | Close batch evidence, update register dispositions, regenerate indexes, and commit. | doc | PLN-WDC-RM-008 | All touched rows | Final validation matrix and commit trail | Codex | Done |
 
 ## Baseline Snapshot
 
@@ -87,6 +88,7 @@ corpus remediation begins.
 | CI/CD, QA, parser, and Graphify decisions | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Done; protected implementation deferred | Current coverage and decisions are recorded without mutating workflows, scripts, validators, pre-commit config, Graphify output, or Markdown content. Hard dependency-audit gates and Graphify hard gates require separate Security/QA or knowledge-graph approval. |
 | Historical evidence preservation or reclassification | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Done | Historical baselines, completed artifacts, archive tombstones, legacy archive material, and progress rows are preserved. Future cleanup requires proof of active-consumption conflict. |
 | Infra drift follow-up | WDC-GAP-020, WDC-GAP-021 | Deferred | Requires separate infra task and runtime-change approval if Compose changes. |
+| Closure | All touched local remediation rows | Done | This document-contract remediation batch is locally closed. Remaining follow-up is limited to examples/scaffold contract work, remote GitHub re-verification, and infra version drift tasks that require separate approval. |
 
 ## Validation Results
 
@@ -95,9 +97,10 @@ corpus remediation begins.
 | Gap baseline | Baseline `rg ... \| wc -l` commands listed in `## Baseline Snapshot` | PASS: register still has 30 rows with disposition distribution `0/11/4/7/8`. |
 | Task path pre-check | `test -f docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md` before creation | PASS: command exited non-zero before creation, confirming the evidence file was new. |
 | Target corpus boundary | Manual diff review | PASS: T-001 creates task evidence and task index only; no target corpus remediation is applied. |
-| LLM Wiki regeneration | `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1128 paths after the T-006 historical preservation update. |
+| LLM Wiki regeneration | `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1128 paths after the T-008 closure update. |
 | Historical evidence source review | Reads of `frontmatter-inventory.md`, `readme-profile-inventory.md`, `section-profile-inventory.md`, and `template-application-gaps.md` | PASS: WDC-GAP-012 through WDC-GAP-015 source rows are audit baselines, completed evidence, archive/tombstone evidence, or old-path migration history. |
 | Historical evidence preservation scan | `rg -n -e 'docs/99\.templates/readme\.template' -e 'docs/99\.templates/service\.template' -e 'Related References' -e 'status: completed' -e 'status: archived' docs/03.specs docs/04.execution docs/98.archive archive docs/00.agent-governance/memory/progress.md --glob '*.md'` | PASS: matches are preserved historical or archive evidence; no active-guidance rewrite was applied in T-006. |
+| Closure status review | `rg -n -e 'T-00[1-8]' -e 'WDC-GAP-017' -e 'WDC-GAP-020' -e 'WDC-GAP-021' -e 'WDC-GAP-022' docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md docs/90.references/audits/document-contracts/gap-register.md` | PASS: T-001 through T-006 and T-008 are closed, T-007 remains deferred, and the remaining examples, remote GitHub, and infra rows are recorded as separate follow-up. |
 | Whitespace | `git diff --check` | PASS: no whitespace errors. |
 | LLM Wiki freshness | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
 | Provider surfaces | `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
@@ -111,7 +114,7 @@ corpus remediation begins.
 | README approved surfaces | `rg -n 'Related References\|docs/99\.templates/(readme\|service)\.template\|docs/0[7]\.operations\|docs/1[0]' projects/README.md projects/storybook/README.md projects/storybook/nextjs/README.md secrets/README.md tests/README.md` | PASS: no stale section, removed template, or legacy stage-pattern matches in approved T-003 surfaces. |
 | README examples boundary | `rg -n 'docs/99\.templates/(readme\|service)\.template\|Related References' projects secrets tests examples` | EXPECTED SCOPED RESIDUAL: matches remain only under `examples/sample-web-service/**`, which is WDC-GAP-017 and remains deferred. |
 | Operations metadata cleanup | `rg -n '^updated:\|^component:\|^runtime_state:\|^tier:\|^policy_state:' docs/05.operations` | PASS: no active Stage 05 matches remain for the remediated non-standard metadata keys. |
-| Changed target-stage gate | `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL only on known infra drift; changed target-stage documents report `changed_template_docs_total=5`, `normalized_changed_template_docs_total=5`, and `legacy_changed_template_docs_skipped=0`. |
+| Changed target-stage gate | `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL only on known infra drift; changed target-stage documents report `changed_template_docs_total=2`, `normalized_changed_template_docs_total=2`, and `legacy_changed_template_docs_skipped=0` for the T-008 closure diff. |
 | PRD AI-agent heading split | `rg -n '^## AI Agent Requirements$' docs/01.requirements` | PASS: no bare PRD AI-agent heading remains. |
 | PRD canonical AI-agent heading count | `rg -n '^## AI Agent Requirements \(If Applicable\)$' docs/01.requirements \| wc -l` | PASS: 24 canonical PRD AI-agent headings. |
 | Infra validation heading split | `rg -n '^## Validation Commands$\|^### Validation Commands$' infra --glob '*.md'` | PASS: no `Validation Commands` headings remain under infra. |
@@ -236,6 +239,26 @@ corpus remediation begins.
 - No completed Stage 03/04 artifacts, archive tombstones, legacy archive
   material, or historical progress rows were rewritten.
 
+### T-007 Infra Drift Follow-Up Boundary
+
+- WDC-GAP-020 and WDC-GAP-021 remain deferred because they require an
+  infra-specific task and runtime-change approval before editing hardening
+  scripts, Compose declarations, or `infra/tech-stack.versions.json`.
+- The full repository contract still fails on known out-of-scope infra drift:
+  the Keycloak hardening image mismatch and tech-stack expected-image drift.
+- No infra runtime files, Compose files, hardening scripts, or tech-stack
+  version records were changed in the document-contract remediation closure.
+
+### T-008 Closure Evidence
+
+- Closed the local document-contract remediation batch after T-002 through
+  T-006 completed their approved local doc/provider/reference changes.
+- Left WDC-GAP-017 as a future examples/scaffold contract decision.
+- Left WDC-GAP-022 as a future remote GitHub governance re-verification task.
+- Left WDC-GAP-020 and WDC-GAP-021 as future infra drift remediation tasks.
+- Regenerated the LLM Wiki index and updated the progress log with closure
+  evidence.
+
 ## Verification Summary
 
 - **Test Commands**: Listed in `## Validation Results`.
@@ -253,7 +276,11 @@ corpus remediation begins.
   no provider, workflow, validator, script, pre-commit, secret value, generated
   report, GitHub-native, Compose, Markdown content, or runtime surfaces were
   changed. T-006 created preservation evidence only and did not rewrite
-  historical documents.
+  historical documents. T-007 remained deferred because infra drift requires a
+  separate infra task and runtime-change approval. T-008 closed the local
+  document-contract remediation evidence and did not change examples, remote
+  GitHub state, infra runtime files, Compose files, hardening scripts, or
+  tech-stack version records.
 
 ## Related Documents
 
