@@ -6,20 +6,28 @@ itself.
 
 ## Current Remote State
 
-- Verified and updated on 2026-05-28 by audited GitHub API calls during the QA/CI/CD inspection pass.
+- Verified read-only on 2026-07-04 by audited GitHub API calls during the
+  document-contract follow-up pass. No remote settings were changed.
 - Repository rulesets: classic branch protection active on `main`.
-- Repository rulesets API returned `[]`; no repository rulesets are active.
+- Repository rulesets API returned `0`; no repository rulesets are active.
 - Required status checks: 12 remote contexts currently required with strict/latest up-to-date branch requirement enabled:
   `docs-traceability`, `repo-contracts`, `git-flow-contract`, `compose-validation`,
   `compose-all-profiles-validation`, `infrastructure-hardening`, `template-security-baseline`,
   `quickwin-baseline`, `pre-commit`, `zizmor`, `frontend-quality`, `storybook-coverage`.
-- Proposed local CI contract adds `docs-implementation-alignment`; agents must re-verify and update remote protection before asserting that the new context is remotely enforced.
+- Local CI contract includes `docs-implementation-alignment`, but the
+  2026-07-04 read-only verification confirmed that context is not currently a
+  remote required check. Agents must not assert remote enforcement for
+  `docs-implementation-alignment` until repository protection is updated and
+  reverified.
 - Pull request review protection: 1 approving review required; CODEOWNERS review required.
 - Conversation resolution: required before merge.
 - Force pushes: disabled.
 - Branch deletion: disabled.
 - Admin enforcement: `enforce_admins=false`; agents still follow no-bypass governance policy locally.
-- Linear history: enforced via squash/rebase merge preference.
+- Linear history: not remotely required by branch protection; repository
+  settings allow squash, rebase, and merge commits. Agents still prefer squash
+  or rebase by local governance.
+- Delete branch on merge: disabled.
 - Agents must re-verify remote state in future audit passes before asserting enforcement.
 
 ## Target Ruleset
