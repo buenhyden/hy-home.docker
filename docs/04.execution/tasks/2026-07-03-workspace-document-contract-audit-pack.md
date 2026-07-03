@@ -126,7 +126,7 @@ automation coverage, and future implementation gaps.
 - Task 3: `f68e302c` (`docs(audits): Compare document governance contracts`).
 - Task 4: `ed38c0bc` (`docs(audits): Map documentation automation coverage`), `829ce273` (`docs(audits): Complete automation reference headings`).
 - Task 5: `7598d0ba` (`docs(audits): Register document contract gaps`).
-- Task 6: pending current commit (`docs(audits): Close document contract audit evidence`).
+- Task 6: `4b9e05b2` (`docs(audits): Close document contract audit evidence`).
 
 ## Related Documents
 
