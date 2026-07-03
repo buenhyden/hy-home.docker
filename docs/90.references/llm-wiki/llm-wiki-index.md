@@ -838,6 +838,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/README.md](../README.md) | folder index |
 | [docs/90.references/audits/README.md](../audits/README.md) | folder index |
 | [docs/90.references/audits/document-contracts/README.md](../audits/document-contracts/README.md) | folder index |
+| [docs/90.references/audits/document-contracts/frontmatter-inventory.md](../audits/document-contracts/frontmatter-inventory.md) | Markdown reference |
+| [docs/90.references/audits/document-contracts/readme-profile-inventory.md](../audits/document-contracts/readme-profile-inventory.md) | Markdown reference |
+| [docs/90.references/audits/document-contracts/section-profile-inventory.md](../audits/document-contracts/section-profile-inventory.md) | Markdown reference |
 | [docs/90.references/data/README.md](../data/README.md) | folder index |
 | [docs/90.references/data/docker/README.md](../data/docker/README.md) | folder index |
 | [docs/90.references/data/docker/image-version-interpretation.md](../data/docker/image-version-interpretation.md) | Markdown reference |
