@@ -841,6 +841,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/audits/document-contracts/automation-coverage-map.md](../audits/document-contracts/automation-coverage-map.md) | Markdown reference |
 | [docs/90.references/audits/document-contracts/contract-governance-map.md](../audits/document-contracts/contract-governance-map.md) | Markdown reference |
 | [docs/90.references/audits/document-contracts/frontmatter-inventory.md](../audits/document-contracts/frontmatter-inventory.md) | Markdown reference |
+| [docs/90.references/audits/document-contracts/gap-register.md](../audits/document-contracts/gap-register.md) | Markdown reference |
 | [docs/90.references/audits/document-contracts/readme-profile-inventory.md](../audits/document-contracts/readme-profile-inventory.md) | Markdown reference |
 | [docs/90.references/audits/document-contracts/section-profile-inventory.md](../audits/document-contracts/section-profile-inventory.md) | Markdown reference |
 | [docs/90.references/audits/document-contracts/template-application-gaps.md](../audits/document-contracts/template-application-gaps.md) | Markdown reference |
