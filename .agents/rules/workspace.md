@@ -4,28 +4,39 @@ layer: agentic
 
 # Antigravity Workspace Rules
 
-These are the global workspace rules for agents running within the Antigravity IDE, as specified by the Provider Parity Model.
+These are Gemini/Antigravity runtime adapter rules for this workspace. They
+route the IDE to the canonical Stage 00 governance documents; they do not own
+repository policy.
 
 ## 1. Governance Alignment
 
-- This workspace leverages the central governance definitions from `docs/00.agent-governance/`.
-- The native rules defined here override fallback instructions for Gemini.
+- Policy source of truth: `docs/00.agent-governance/`.
+- Provider model and adapter source of truth:
+  `docs/00.agent-governance/providers/agents-md.md`,
+  `docs/00.agent-governance/providers/gemini.md`, and
+  `docs/00.agent-governance/subagent-protocol.md`.
+- If this file conflicts with Stage 00 governance, Stage 00 wins. Update the
+  owner document first, then adjust this adapter only when Gemini runtime
+  behavior needs a local bridge.
 
 ## 2. Model Selection (Reasoning Effort Control)
 
-Antigravity IDE controls reasoning effort explicitly through model routing:
+Antigravity IDE controls reasoning effort through model routing. Use the model
+tiers defined in `docs/00.agent-governance/subagent-protocol.md`; do not edit
+model identifiers in this adapter independently.
 
-- **`gemini-3.1-pro`**: Must be used for tasks requiring high reasoning effort, such as:
-  - Architecture and planning (`workflow-supervisor`)
-  - Complex code refactoring
-  - System design reviews
-- **`gemini-3.5-flash`**: Must be used for standard or low reasoning effort tasks, such as:
-  - Documentation generation and formatting
-  - Routine QA checks
-  - Summarization and iterative text editing
+Runtime mapping summary:
+
+- Supervisor-tier work follows the Gemini supervisor model in the Stage 00
+  Model Policy.
+- Worker-tier work follows the Gemini worker model in the Stage 00 Model
+  Policy.
 
 ## 3. Communication Protocol
 
-- Intermediate artifacts must be written to `_workspace/<phase>_<agent>_<artifact>.<ext>`.
-- Final audit handoffs are routed to `.agent-work/report/`.
-- No dead `_workspace/` files should be deleted without user approval.
+- Intermediate artifacts and audit handoffs follow
+  `docs/00.agent-governance/subagent-protocol.md`.
+- Preserve existing `_workspace/` artifacts unless the user explicitly approves
+  deletion.
+- Final repository evidence belongs in the canonical stage path defined by
+  `docs/00.agent-governance/rules/workflows.md`, not in this adapter.

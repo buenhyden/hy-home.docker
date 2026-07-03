@@ -22,7 +22,8 @@ Creates and updates operational documents in `docs/05.operations/`.
 
 Produce operations documents (guide, policy, or runbook) that operators and AI
 agents can follow. Every document must conform to the profile contract defined
-by its mapped template in `docs/99.templates/`.
+by the Stage 00 documentation protocol and its mapped template under
+`docs/99.templates/`.
 
 ---
 
@@ -40,7 +41,11 @@ by its mapped template in `docs/99.templates/`.
 
 ## Document Type Selection
 
-Pick exactly one bucket based on the primary purpose:
+Pick exactly one bucket based on the primary purpose. The canonical bucket,
+section, frontmatter, and language contracts are owned by
+`docs/00.agent-governance/rules/documentation-protocol.md`,
+`docs/00.agent-governance/rules/stage-authoring-matrix.md`, and the mapped
+operations templates.
 
 | Bucket | Purpose | When to use |
 | ------ | ------- | ----------- |
@@ -55,135 +60,31 @@ A single document must serve one primary purpose. If usage AND procedure are nee
 
 ## Required Section Profiles
 
-### Guide Profile (`guides/**`)
+Do not copy section profiles from this adapter. Load the mapped template before
+writing or editing:
 
-```markdown
-## Usage
-### Overview (KR)
-### Usage Type
-### Target Audience
-### Purpose
-### Prerequisites
-### Step-by-step Instructions
-### Common Pitfalls
+- Guide: `docs/99.templates/templates/operations/guide.template.md`
+- Policy: `docs/99.templates/templates/operations/policy.template.md`
+- Runbook: `docs/99.templates/templates/operations/runbook.template.md`
+- Incident: `docs/99.templates/templates/operations/incident.template.md`
+- Postmortem: `docs/99.templates/templates/operations/postmortem.template.md`
 
-## Common Checks
-- `<verification command>`
-- `<expected result>`
+If a template and this adapter disagree, the template and Stage 00 governance
+win. Update the owner document first, then adjust this adapter.
 
-## Runbook Handoff
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
-[recovery runbook](<relative-path-to-runbook>)을 따른다.
-
-## Related Documents
-```
-
-**Forbidden in guides**: `## Policy Scope`, `## Controls`, `## Review Cadence`,
-`## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, `## Escalation`.
-
-### Policy Profile (`policies/**`)
-
-```markdown
-## Policy Scope
-## Controls
-- **Required**: …
-- **Allowed**: …
-- **Disallowed**: …
-## Exceptions
-## Verification
-## Review Cadence
-## Related Documents
-```
-
-**Forbidden in policies**: `## Usage`, `## Common Checks`, `## Runbook Handoff`,
-`## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, `## Escalation`.
-
-### Runbook Profile (`runbooks/**`)
-
-```markdown
-## <Service> <Operation> Procedure
-> Scope: <one-line scope>
-### Overview (KR)
-### Purpose
-### Canonical References
-
-## When to Use
-(trigger conditions or symptoms)
-
-## Procedure
-### Checklist
-- [ ] …
-### Steps
-1. …
-
-### Verification Steps
-### Observability and Evidence Sources
-### Safe Rollback or Recovery Procedure
-### Agent Operations (If Applicable)
-
-## Evidence
-## Rollback or Recovery
-## Escalation
-## Related Documents
-```
-
-**Forbidden in runbooks**: `## Usage`, `## Policy Scope`, `## Controls`,
-`## Exceptions`, `## Review Cadence`.
-
-### Incident Profile (`incidents/YYYY/INC-###-<title>/`)
-
-```markdown
-## Overview (KR)
-## Incident Metadata
-## Agent Metadata (If Applicable)
-## Incident Summary
-## Impact
-## Timeline
-## Current Hypothesis / Response State
-## Evidence
-## Follow-up Actions
-## Postmortem Link
-## Related Documents
-```
-
-Filename: `INC-###-<incident-title>.md`
-Target: `<!-- Target: docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md -->`
-
-**Forbidden in incidents**: `## Policy Scope`, `## Controls`, `## When to Use`, `## Procedure`, `## Rollback or Recovery`, `## Escalation`.
-
-### Postmortem Profile (`incidents/YYYY/INC-###-<title>/`)
-
-```markdown
-## Overview (KR)
-## Incident Summary
-## Agent Metadata (If Applicable)
-## Impact
-## Timeline
-## Root Cause Analysis
-## What Went Well
-## What Went Wrong
-## Action Items
-## Prevention and Verification
-## Required Documentation Feedback Loop
-## Related Documents
-```
-
+Incident packet routing invariant:
 Filename: `postmortem.md`
-Target: `<!-- Target: docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md -->`
-
-**Forbidden in postmortems**: `## Policy Scope`, `## Controls`, `## When to Use`, `## Procedure`, `## Common Checks`, `## Runbook Handoff`.
+Target folder: `incidents/YYYY/INC-###-<incident-title>/`.
 
 ---
 
 ## Working Rules
 
-- Filename: `docs/05.operations/<bucket>/<tier>/<topic>.md`
-- Front matter: `status: active` (or `draft` while incomplete)
-- Target comment at line 4: `<!-- Target: docs/05.operations/<bucket>/... -->`
-- Heading levels: all required profile sections are h2 (`##`). Subsections use h3/h4.
-- `## Common Checks` in guides must contain runnable verification commands.
-- `## Runbook Handoff` must link to an existing runbook or state `N/A — no corresponding runbook`.
-- `## When to Use` and `## Procedure` in runbooks must be h2, not h3 or h4.
+- Follow `docs/00.agent-governance/rules/documentation-protocol.md` for
+  frontmatter, target comments, language boundary, heading profile, and
+  related-document requirements.
+- Follow `docs/99.templates/support/template-selection.md` for target path to
+  template mapping.
 - Never include secret values, tokens, or credential content.
 - Calculate all links relative to the target document path, not the template path.
 - After adding a new document, update the parent `<bucket>/<tier>/README.md` index.

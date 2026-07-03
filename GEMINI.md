@@ -25,14 +25,14 @@ For specific guidelines, see:
 Antigravity natively supports Workspace Rules, Skills, and Workflows within the `.agents/` directory.
 While the agent catalog (`.agents/agents/`) and skill references (`.agents/skills/`) remain as pointers to the central governance in `docs/00.agent-governance/`, workspace-specific rules and workflows can be directly defined in `.agents/rules/` and `.agents/workflows/` respectively.
 
-**Model Policy (Reasoning Effort)**
-Antigravity IDE relies strictly on model selection for reasoning effort:
-- **`gemini-3.1-pro`**: High reasoning tasks (Planning, Architecture, Refactor).
-- **`gemini-3.5-flash`**: Standard/low reasoning tasks (Iteration, Documentation, Summarization).
+Gemini model selection and reasoning-effort policy are owned by
+`docs/00.agent-governance/subagent-protocol.md`; do not redefine model values
+in this shim.
 
 ## Related Documents
 
 - `AGENTS.md`
 - `docs/00.agent-governance/README.md`
 - `docs/00.agent-governance/providers/gemini.md`
+- `docs/00.agent-governance/subagent-protocol.md`
 - `RTK.md`

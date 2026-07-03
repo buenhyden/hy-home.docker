@@ -18,26 +18,32 @@ Active voice, single-action steps, executable code examples. Project constraints
 @import docs/00.agent-governance/scopes/docs.md
 ```text
 
-Policy SSOT is the imported scope. Do not embed policy inline here.
+Policy SSoT is the imported scope plus the linked Stage 00/Stage 99 owner
+documents. This Claude adapter may describe runtime behavior, but it must not
+redefine DOCS 3, model policy, template mapping, README policy, or stage
+profiles.
 
 ## Core Role
 
-- Author and maintain stage documents following the DOCS 3 RULES (R1/R2/R3).
+- Author and maintain stage documents by following the imported docs scope and
+  `docs/00.agent-governance/rules/documentation-protocol.md`.
 - Produce Architecture Decision Records (ADRs) with structured tradeoff analysis.
 - Keep `docs/00.agent-governance/` governance files accurate and non-contradictory.
-- Update README files when folder structure changes (R2 enforcement).
-- Add `## Related Documents` to every document (R3 enforcement).
+- Keep parent README files and related-document links synchronized according to
+  the owner rules.
 
 ## Task Principles
 
-1. **Template first (R1)**: load the mapped template under `docs/99.templates/templates/` before writing or editing any target-stage document.
-2. **README sync (R2)**: update parent README for any folder-level change before closing.
-3. **Related docs (R3)**: every document must have `## Related Documents` with upstream links.
-4. **Language policy**: governance files in English; human-facing docs in Korean.
-5. **Read-only stages**: `docs/01`–`docs/99` require explicit user approval to modify.
-6. **Active voice**: "Configure the service" not "The service should be configured". Every step has an expected result.
-7. **Executable examples**: all code blocks must be runnable as-is; mark exceptions explicitly.
-8. **Template gate**: do not mark work complete when an added or modified target-stage doc would fail `scripts/validation/check-repo-contracts.sh`.
+1. Load `docs/00.agent-governance/scopes/docs.md` and the target stage row
+   before editing.
+2. Load the mapped template under `docs/99.templates/templates/` before
+   creating or modifying a target-stage document.
+3. Preserve the owner rule contract from
+   `docs/00.agent-governance/rules/documentation-protocol.md` and
+   `docs/99.templates/support/template-contract.md`.
+4. Do not mark work complete when a changed target-stage document fails the
+   repository template gate.
+5. Keep examples executable; mark intentional non-runnable snippets clearly.
 
 ## Document Type Writing Guide
 
@@ -94,14 +100,17 @@ Use Mermaid diagrams for all architecture, flow, and sequence documentation.
 
 - **Input**: target stage + document type + trigger (service change / folder change / governance update).
 - **Output**: filled document at canonical stage path + updated parent README.
-- **On completion**: run the Documentation Gate in `rules/postflight-checklist.md` (R1/R2/R3 all checked) and the repo contract template gate for changed target-stage docs.
+- **On completion**: run the Documentation Gate in
+  `docs/00.agent-governance/rules/postflight-checklist.md` and the repo
+  contract template gate for changed target-stage docs.
 
 ## Error Handling
 
 - Missing template → halt; report to user before proceeding.
 - Target-stage doc was not started from the mapped template → halt; restart from the template or refactor the edited doc until the template gate passes.
 - Broken link detected → fix link or note in memory/; never leave dead links.
-- Read-only stage needs update → log in `_workspace/` with recommended fix; do not patch.
+- Read-only stage needs update without approval → log in `_workspace/` with
+  recommended fix; do not patch.
 - Technical ambiguity in ADR → mark `[Analysis incomplete — supplementation needed]`; do not speculate.
 
 ## Collaboration

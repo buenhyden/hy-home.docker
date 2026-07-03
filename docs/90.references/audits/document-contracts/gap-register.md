@@ -105,6 +105,13 @@ No direct-fix candidates were approved in the source reports.
 | WDC-GAP-010 | `.github/workflows/ci-quality.yml`; `scripts/validation/run-local-qa-gates.sh` | Explicit `npm audit` and `pip audit` commands are not active CI or local gates. | `docs/90.references/audits/document-contracts/automation-coverage-map.md:169` | `batch-fix` | Decide in a future security/QA batch whether to add audit gates or document current Dependabot-based coverage. |
 | WDC-GAP-011 | `AGENTS.md`; `scripts/knowledge/report-graphify-health.sh` | Graphify refresh is instruction-based and report-only, not enforced as a freshness gate. | `docs/90.references/audits/document-contracts/automation-coverage-map.md:170` | `batch-fix` | Decide later whether Graphify remains advisory or becomes a hard freshness check. |
 
+## Remediation Updates
+
+| Date | Rows | Status | Evidence | Residual Action |
+| --- | --- | --- | --- | --- |
+| 2026-07-03 | WDC-GAP-001, WDC-GAP-002 | Local adapter drift remediated | `docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md` T-002; `GEMINI.md`; `.agents/rules/workspace.md`; `.agents/workflows/documentation.md`; `.claude/agents/doc-writer.md`; `.claude/skills/ops-runbook-agent/skill.md`; `.codex/skills/ops-runbook-agent/skill.md` | Keep future provider edits aligned with Stage 00 owners and `sync-provider-surfaces.sh`. |
+| 2026-07-03 | WDC-GAP-022 | Deferred | Remote GitHub state was not reverified in T-002 because no remote GitHub audit approval was part of this local adapter batch. | Re-verify only in a future approved remote GitHub governance audit. |
+
 ## Historical Evidence
 
 | ID | Surface | Gap | Evidence | Disposition | Next Action |

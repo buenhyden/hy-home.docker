@@ -4,18 +4,29 @@ layer: agentic
 
 # Documentation Workflow
 
-This workflow dictates how documentation is generated and maintained by Gemini within the Antigravity IDE.
+Gemini/Antigravity workflow adapter for repository documentation work. The
+canonical documentation rules live in Stage 00 and Stage 99; this file only
+orders the runtime steps.
 
 ## 1. Objective
 
-Ensure that all markdown documentation and plans strictly adhere to the Template Contracts defined in `docs/99.templates/`.
+Apply the repository documentation workflow while deferring policy ownership to
+`docs/00.agent-governance/` and template ownership to `docs/99.templates/`.
 
 ## 2. Pipeline Steps
 
-1. **Review Requirement**: Analyze user prompt and identify the correct stage-gate template (e.g., `prd.template.md`, `task.template.md`).
-2. **Determine Reasoning Effort (Model)**:
-   - If generating architectural concepts or planning from scratch, use `gemini-3.1-pro`.
-   - If only formatting, organizing, or summarizing existing context, use `gemini-3.5-flash`.
-3. **Execute Draft**: Use the chosen template to draft the document in `_workspace/`.
-4. **Validation**: Check against the template's placeholder constraints and ensure all links are target-relative.
-5. **Finalize**: Move to the designated stage folder under `docs/`.
+1. **Load owner rules**: Read `AGENTS.md`,
+   `docs/00.agent-governance/scopes/docs.md`,
+   `docs/00.agent-governance/rules/documentation-protocol.md`, and the
+   target stage row in `docs/00.agent-governance/rules/stage-authoring-matrix.md`.
+2. **Select runtime tier**: Use the Gemini model tier from
+   `docs/00.agent-governance/subagent-protocol.md`; do not redefine model
+   values here.
+3. **Load mapped template**: Use the template path defined by
+   `docs/00.agent-governance/rules/documentation-protocol.md` and
+   `docs/99.templates/support/template-selection.md`.
+4. **Draft in the right place**: Use `_workspace/` only for intermediate
+   analysis. Active artifacts must be written to the canonical stage path.
+5. **Validate before completion**: Run the repository gates required by the
+   owner rules, including target-relative link and template-contract checks for
+   changed stage documents.

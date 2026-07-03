@@ -49,7 +49,7 @@ corpus remediation begins.
 | Task ID | Description | Type | Parent Plan / Phase | Source Gaps | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-001 | Create task evidence and confirm current gap-register baseline. | doc | PLN-WDC-RM-001 | All rows | Baseline counts and validation matrix | Codex | Done |
-| T-002 | Fix active governance and provider adapter drift. | doc | PLN-WDC-RM-002 | WDC-GAP-001, WDC-GAP-002, WDC-GAP-022 | Provider sync and repo contracts | Codex | Planned |
+| T-002 | Fix active governance and provider adapter drift. | doc | PLN-WDC-RM-002 | WDC-GAP-001, WDC-GAP-002, WDC-GAP-022 | Provider sync and repo contracts | Codex | Done |
 | T-003 | Normalize README profiles by surface. | doc | PLN-WDC-RM-003 | WDC-GAP-003, WDC-GAP-004, WDC-GAP-005, WDC-GAP-017, WDC-GAP-019 | README/template drift checks | Codex | Planned |
 | T-004 | Normalize target-stage frontmatter and section profiles. | doc | PLN-WDC-RM-004 | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Inventory rerun and profile exceptions | Codex | Planned |
 | T-005 | Decide CI/CD, QA, parser, and Graphify enforcement. | doc/script | PLN-WDC-RM-005 | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Protected-surface checks | Codex | Planned |
@@ -72,7 +72,7 @@ corpus remediation begins.
 
 | Batch | Source Rows | Current Status | Boundary |
 | --- | --- | --- | --- |
-| Governance and provider adapter drift | WDC-GAP-001, WDC-GAP-002, WDC-GAP-022 | Planned | Requires provider/runtime prompt wording approval; no provider runtime config changes. |
+| Governance and provider adapter drift | WDC-GAP-001, WDC-GAP-002, WDC-GAP-022 | Local adapter drift done; remote evidence deferred | WDC-GAP-001 and WDC-GAP-002 were remediated by making Gemini, Claude, and generated Codex adapter text defer to Stage 00 owners. WDC-GAP-022 still requires separate remote GitHub re-verification approval. |
 | README profile normalization | WDC-GAP-003, WDC-GAP-004, WDC-GAP-005, WDC-GAP-017, WDC-GAP-019 | Planned | Requires per-surface approval and redaction-safe handling for `secrets/README.md`. |
 | Target-stage frontmatter and section profiles | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Planned | Requires stage/profile decisions before corpus edits. |
 | CI/CD, QA, parser, and Graphify decisions | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Planned | Requires protected workflow, script, validator, or pre-commit approval before edits. |
@@ -86,7 +86,7 @@ corpus remediation begins.
 | Gap baseline | Baseline `rg ... \| wc -l` commands listed in `## Baseline Snapshot` | PASS: register still has 30 rows with disposition distribution `0/11/4/7/8`. |
 | Task path pre-check | `test -f docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md` before creation | PASS: command exited non-zero before creation, confirming the evidence file was new. |
 | Target corpus boundary | Manual diff review | PASS: T-001 creates task evidence and task index only; no target corpus remediation is applied. |
-| LLM Wiki regeneration | `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1124 paths after adding this task evidence. |
+| LLM Wiki regeneration | `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1125 paths after adding this task evidence and T-002 remediation evidence. |
 | Whitespace | `git diff --check` | PASS: no whitespace errors. |
 | LLM Wiki freshness | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
 | Provider surfaces | `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
@@ -94,6 +94,30 @@ corpus remediation begins.
 | Implementation alignment | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `failures=0`. |
 | Repo contract syntax | `bash -n scripts/validation/check-repo-contracts.sh` | PASS: shell syntax is valid. |
 | Full repo contract | `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL: `failures=2`; no task, plan, reference, provider, LLM Wiki, Stage 99, or document-contract remediation failures. Failures remain confined to known out-of-scope infra drift: the Keycloak hardening image mismatch and `infra/tech-stack.versions.json` expected-image drift. |
+| Adapter wording drift | `rg -n 'gemini-3\.1-pro\|gemini-3\.5-flash\|DOCS 3 RULES\|R1\)\|R2\)\|R3\)\|docs/99\.templates/(readme\|service)\.template\|updated:' GEMINI.md .agents/rules/workspace.md .agents/workflows/documentation.md .claude/agents/doc-writer.md .claude/skills/ops-runbook-agent/skill.md .codex/skills/ops-runbook-agent/skill.md` | PASS: no matches in the remediated adapter surfaces. |
+| Provider mirror generation | `bash scripts/operations/sync-provider-surfaces.sh --write` | PASS: regenerated generated Codex/Gemini provider surfaces after the Claude ops-runbook skill edit. |
+| Provider mirror freshness | `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
+
+## Remediation Evidence
+
+### T-002 Governance and Provider Adapter Drift
+
+- WDC-GAP-001: updated `.agents/rules/workspace.md` and
+  `.agents/workflows/documentation.md` so Gemini/Antigravity native surfaces
+  defer model policy, workflow policy, artifact routing, and template rules to
+  Stage 00 and Stage 99 owners instead of restating those rules.
+- WDC-GAP-002: updated `.claude/agents/doc-writer.md` and
+  `.claude/skills/ops-runbook-agent/skill.md` so runtime prompts link to the
+  documentation protocol, docs scope, stage authoring matrix, and mapped
+  operations templates instead of owning DOCS 3 or operations section profiles.
+- Generated Codex mirror: refreshed
+  `.codex/skills/ops-runbook-agent/skill.md` from the Claude skill through
+  `scripts/operations/sync-provider-surfaces.sh --write`.
+- Root shim alignment: updated `GEMINI.md` so model selection points to
+  `docs/00.agent-governance/subagent-protocol.md` rather than repeating model
+  values.
+- WDC-GAP-022: remote branch-protection evidence remains deferred. No `gh api`
+  remote verification or remote setting mutation was performed in this batch.
 
 ## Verification Summary
 
