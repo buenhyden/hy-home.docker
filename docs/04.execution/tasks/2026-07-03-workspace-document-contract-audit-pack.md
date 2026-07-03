@@ -44,7 +44,7 @@ automation coverage, and future implementation gaps.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-001 | Create task evidence and audit bundle skeleton. | docs | Workspace Document Contract Audit Pack Spec / Data Modeling | PLN-001 | Audit skeleton and links | Codex | Done |
 | T-002 | Capture document profile inventories. | docs | Workspace Document Contract Audit Pack Spec / Core Design | PLN-002 | Inventory reports with commands and counts | Codex | Done |
-| T-003 | Compare governance, contracts, templates, root shims, and provider surfaces. | docs | Workspace Document Contract Audit Pack Spec / Contracts | PLN-003 | Contract map and template-application gap report | Codex | Planned |
+| T-003 | Compare governance, contracts, templates, root shims, and provider surfaces. | docs | Workspace Document Contract Audit Pack Spec / Contracts | PLN-003 | Contract map and template-application gap report | Codex | Done |
 | T-004 | Map CI/CD, QA, and automation coverage. | docs | Workspace Document Contract Audit Pack Spec / Tool Contract | PLN-004 | Automation coverage map | Codex | Planned |
 | T-005 | Build final gap register and implementation batch proposal. | docs | Workspace Document Contract Audit Pack Spec / Gap Disposition Rules | PLN-005 | Gap register with dispositions | Codex | Planned |
 | T-006 | Close evidence, regenerate indexes, validate, and commit. | docs | Workspace Document Contract Audit Pack Spec / Verification | PLN-006 | Validation matrix and commit trail | Codex | Planned |
@@ -67,16 +67,23 @@ automation coverage, and future implementation gaps.
 - Task 2 quality fix aligned the three inventory reports with the Stage 90
   reference document contract and added full reproduction commands for the
   Python frontmatter and section-profile scans.
+- Task 3 created `docs/90.references/audits/document-contracts/contract-governance-map.md`
+  and `docs/90.references/audits/document-contracts/template-application-gaps.md`.
+  `DESIGN.md` was absent in the repository root during Task 3 verification.
 
 ## Validation Results
 
 | Command | Result |
 | --- | --- |
+| `test -e DESIGN.md && printf 'DESIGN.md present\n' \|\| printf 'DESIGN.md absent\n'` | PASS: `DESIGN.md absent`. |
+| `rg -n 'sample row\|example row\|measured gap\|measured finding\|illustrative row' docs/90.references/audits/document-contracts/contract-governance-map.md docs/90.references/audits/document-contracts/template-application-gaps.md` | PASS: no matches. |
 | `git diff --check` | PASS (exit 0). |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
-| `bash scripts/operations/sync-provider-surfaces.sh --check` | Pending |
+| `git diff --cached --check` | PASS (exit 0, extra staged-diff hygiene check). |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1121 paths. |
+| `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
 | `bash scripts/validation/check-doc-traceability.sh` | PASS: `failures=0`. |
 | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `failures=0`. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
 | `bash -n scripts/validation/check-repo-contracts.sh` | PASS (exit 0). |
 | `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL: `failures=2`, only known out-of-scope infra drift from Keycloak hardening image mismatch and `infra/tech-stack.versions.json` expected-image drift. |
 
