@@ -50,6 +50,7 @@ corpus remediation begins.
 | `infra/01-gateway/traefik/README.md`; `infra/01-gateway/nginx/README.md` | PLN-WDC-RM-004 and user continuation for the next approved batch | Infra README validation heading normalization | Two gateway README files used `## Validation Commands` in addition to their canonical `## Validation` sections. | The command tables are merged into the existing `## Validation` sections, leaving no `Validation Commands` heading split. | `git revert` the T-004 infra validation heading commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, runtime config, or Compose behavior changes |
 | `docs/99.templates/support/frontmatter-contract.md`; `docs/90.references/audits/document-contracts/frontmatter-routing-profile.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-004 and user continuation for the next approved batch | Frontmatter routing profile decision | WDC-GAP-006 recorded 185 tracked Markdown files without top frontmatter and required profile-specific routing before corpus edits. | The missing set is classified by surface as required, optional, deferred, or declined; no non-README active target-stage leaf document remains unrouted. | `git revert` the T-004 frontmatter routing commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, runtime config, generated report mutation, GitHub-native behavior, or broad corpus rewrite |
 | `docs/90.references/audits/document-contracts/ci-qa-parser-graphify-decision.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-005 and user continuation for the next approved batch | CI/CD, QA, parser, and Graphify decision evidence | WDC-GAP-010 and WDC-GAP-011 required decisions for dependency-audit gates and Graphify enforcement; WDC-GAP-018 needed parser/tooling classification. | Current coverage and no-change decisions are documented: dependency audit hard gates require future Security/QA approval, Graphify remains advisory, and parser matches are tooling follow-up only. | `git revert` the T-005 decision commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, workflow changes, script changes, pre-commit changes, generated Graphify output changes, or Markdown content rewrites |
+| `docs/90.references/audits/document-contracts/historical-evidence-preservation.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-006 and user continuation for the next approved batch | Historical evidence preservation decision | WDC-GAP-012 through WDC-GAP-015 required a decision on whether old baselines, completed docs, archive tombstones, and progress evidence should be rewritten. | The historical rows are preserved as audit and migration evidence; no completed artifacts or archive material were rewritten. | `git revert` the T-006 preservation commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, completed spec/plan/task rewrites, archive tombstone rewrites, or historical progress rewrites |
 | Future protected surfaces | Parent plan approval gates | Provider, workflow, validator, secret-handling, infra, and target-stage changes | No remediation applied in T-001 | Future tasks must record per-batch evidence before edits | Revert the specific future batch commit | Redaction boundary must be restated in each future batch before touching protected surfaces |
 
 ## Task Table
@@ -61,7 +62,7 @@ corpus remediation begins.
 | T-003 | Normalize README profiles by surface. | doc | PLN-WDC-RM-003 | WDC-GAP-003, WDC-GAP-004, WDC-GAP-005, WDC-GAP-017, WDC-GAP-019 | README/template drift checks | Codex | Done |
 | T-004 | Normalize target-stage frontmatter and section profiles. | doc | PLN-WDC-RM-004 | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Inventory rerun and profile exceptions | Codex | Done |
 | T-005 | Decide CI/CD, QA, parser, and Graphify enforcement. | doc/script | PLN-WDC-RM-005 | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Protected-surface checks | Codex | Done |
-| T-006 | Preserve or reclassify historical evidence rows. | doc | PLN-WDC-RM-006 | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Historical evidence review | Codex | Planned |
+| T-006 | Preserve or reclassify historical evidence rows. | doc | PLN-WDC-RM-006 | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Historical evidence review | Codex | Done |
 | T-007 | Execute infra drift only as a separate infra task if approved. | ops | PLN-WDC-RM-007 | WDC-GAP-020, WDC-GAP-021 | Infra-only validation | Codex | Deferred |
 | T-008 | Close batch evidence, update register dispositions, regenerate indexes, and commit. | doc | PLN-WDC-RM-008 | All touched rows | Final validation matrix and commit trail | Codex | Planned |
 
@@ -84,7 +85,7 @@ corpus remediation begins.
 | README profile normalization | WDC-GAP-003, WDC-GAP-004, WDC-GAP-005, WDC-GAP-017, WDC-GAP-019 | Approved surfaces done; examples deferred | Projects, secrets, and tests README surfaces were remediated. `secrets/README.md` was handled as metadata-only documentation and no secret value files were inspected. WDC-GAP-017 remains deferred because `examples/**` needs a separate examples/scaffold contract decision. |
 | Target-stage frontmatter and section profiles | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Done | WDC-GAP-007 and WDC-GAP-016 were remediated for active Stage 05 operations metadata. WDC-GAP-008 was remediated by aligning active PRD AI-agent section headings with the PRD template. WDC-GAP-009 was remediated by merging gateway README validation command tables into the canonical `## Validation` sections. WDC-GAP-006 was closed by classifying missing-frontmatter surfaces into required, optional, deferred, and declined profiles without a broad corpus rewrite. |
 | CI/CD, QA, parser, and Graphify decisions | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Done; protected implementation deferred | Current coverage and decisions are recorded without mutating workflows, scripts, validators, pre-commit config, Graphify output, or Markdown content. Hard dependency-audit gates and Graphify hard gates require separate Security/QA or knowledge-graph approval. |
-| Historical evidence preservation or reclassification | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Planned | Preserve old truth unless active-consumption conflict is proven. |
+| Historical evidence preservation or reclassification | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Done | Historical baselines, completed artifacts, archive tombstones, legacy archive material, and progress rows are preserved. Future cleanup requires proof of active-consumption conflict. |
 | Infra drift follow-up | WDC-GAP-020, WDC-GAP-021 | Deferred | Requires separate infra task and runtime-change approval if Compose changes. |
 
 ## Validation Results
@@ -94,7 +95,9 @@ corpus remediation begins.
 | Gap baseline | Baseline `rg ... \| wc -l` commands listed in `## Baseline Snapshot` | PASS: register still has 30 rows with disposition distribution `0/11/4/7/8`. |
 | Task path pre-check | `test -f docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md` before creation | PASS: command exited non-zero before creation, confirming the evidence file was new. |
 | Target corpus boundary | Manual diff review | PASS: T-001 creates task evidence and task index only; no target corpus remediation is applied. |
-| LLM Wiki regeneration | `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1127 paths after the T-005 CI/QA decision update. |
+| LLM Wiki regeneration | `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1128 paths after the T-006 historical preservation update. |
+| Historical evidence source review | Reads of `frontmatter-inventory.md`, `readme-profile-inventory.md`, `section-profile-inventory.md`, and `template-application-gaps.md` | PASS: WDC-GAP-012 through WDC-GAP-015 source rows are audit baselines, completed evidence, archive/tombstone evidence, or old-path migration history. |
+| Historical evidence preservation scan | `rg -n -e 'docs/99\.templates/readme\.template' -e 'docs/99\.templates/service\.template' -e 'Related References' -e 'status: completed' -e 'status: archived' docs/03.specs docs/04.execution docs/98.archive archive docs/00.agent-governance/memory/progress.md --glob '*.md'` | PASS: matches are preserved historical or archive evidence; no active-guidance rewrite was applied in T-006. |
 | Whitespace | `git diff --check` | PASS: no whitespace errors. |
 | LLM Wiki freshness | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
 | Provider surfaces | `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
@@ -218,6 +221,21 @@ corpus remediation begins.
 - No `.github/workflows/**`, `scripts/**`, `.pre-commit-config.yaml`,
   Graphify generated output, or Markdown content surface was changed.
 
+### T-006 Historical Evidence Preservation
+
+- WDC-GAP-012: preserved frontmatter and README inventory baselines because
+  they are audit evidence. They should be superseded by a future inventory run,
+  not rewritten in place.
+- WDC-GAP-013: preserved requirement section-profile baseline evidence because
+  the active PRD heading drift was already remediated in T-004.
+- WDC-GAP-014: preserved archive tombstones and
+  `archive/Windows-Network-IP.md` as migration and historical-structure
+  evidence.
+- WDC-GAP-015: preserved old template-path mentions inside completed specs,
+  plans, tasks, and progress rows as evidence of the earlier template layout.
+- No completed Stage 03/04 artifacts, archive tombstones, legacy archive
+  material, or historical progress rows were rewritten.
+
 ## Verification Summary
 
 - **Test Commands**: Listed in `## Validation Results`.
@@ -234,7 +252,8 @@ corpus remediation begins.
   frontmatter to the 185 routed files. T-005 created decision evidence only;
   no provider, workflow, validator, script, pre-commit, secret value, generated
   report, GitHub-native, Compose, Markdown content, or runtime surfaces were
-  changed.
+  changed. T-006 created preservation evidence only and did not rewrite
+  historical documents.
 
 ## Related Documents
 

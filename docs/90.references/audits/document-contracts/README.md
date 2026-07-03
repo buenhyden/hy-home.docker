@@ -59,6 +59,7 @@ This README is for:
 - `template-application-gaps.md`
 - `automation-coverage-map.md`
 - `ci-qa-parser-graphify-decision.md`
+- `historical-evidence-preservation.md`
 - `gap-register.md`
 
 ## Planned References
@@ -71,6 +72,7 @@ This README is for:
 - `template-application-gaps.md`
 - `automation-coverage-map.md`
 - `ci-qa-parser-graphify-decision.md`
+- `historical-evidence-preservation.md`
 - `gap-register.md`
 
 ## How to Work in This Area
