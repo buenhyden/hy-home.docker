@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md -->

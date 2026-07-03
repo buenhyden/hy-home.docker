@@ -108,7 +108,7 @@ automation coverage, and future implementation gaps.
 | Implementation alignment | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `failures=0`. |
 | Repo contract syntax | `bash -n scripts/validation/check-repo-contracts.sh` | PASS: shell syntax is valid. |
 | Full repo contract | `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL: `failures=2`; no audit, reference, provider, LLM Wiki, Stage 99, or document-contract failures. Failures remain confined to known out-of-scope infra drift: the Keycloak hardening image mismatch and `infra/tech-stack.versions.json` expected-image drift. |
-| Graph refresh decision | `if git diff --name-only HEAD ...; then graphify update .; else printf ...; fi` | PASS: no code files changed, so graphify was not required. |
+| Graph refresh decision | N/A: docs-only closeout evidence | PASS: no code files changed, so graphify was not required. |
 
 ## Verification Summary
 
@@ -126,7 +126,8 @@ automation coverage, and future implementation gaps.
 - Task 3: `f68e302c` (`docs(audits): Compare document governance contracts`).
 - Task 4: `ed38c0bc` (`docs(audits): Map documentation automation coverage`), `829ce273` (`docs(audits): Complete automation reference headings`).
 - Task 5: `7598d0ba` (`docs(audits): Register document contract gaps`).
-- Task 6: `4b9e05b2` (`docs(audits): Close document contract audit evidence`), `4d59948b` (`docs(audits): Record final audit closeout commit`).
+- Task 6: `4b9e05b2` (`docs(audits): Close document contract audit evidence`), `4d59948b` (`docs(audits): Record final audit closeout commit`), `4cbebbec` (`docs(audits): Record complete Task 6 commit trail`).
+- Task 6 self-reference boundary: this trail records actual Task 6 closeout and follow-up commits available before the evidence-finalization commit that edits this line. That final commit cannot include its own final hash without changing that hash.
 
 ## Related Documents
 
