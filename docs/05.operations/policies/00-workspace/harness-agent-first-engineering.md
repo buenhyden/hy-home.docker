@@ -1,6 +1,5 @@
 ---
 status: active
-policy_state: enforced
 ---
 <!-- Target: docs/05.operations/policies/00-workspace/harness-agent-first-engineering.md -->
 
