@@ -13,6 +13,19 @@ workspace document contract audit pack. It uses repository-local commands only
 and records evidence for later gap registration without editing the target
 document corpus.
 
+## Purpose
+
+This reference preserves the Task 2 frontmatter measurements for the workspace
+document contract audit pack. It exists so later comparison and remediation
+tasks can reuse the baseline without rerunning or rewriting the target corpus.
+
+## Repository Role
+
+This report supports Stage 04 execution evidence and later document-contract
+gap registration. It is a stable Stage 90 audit reference, not an active
+frontmatter policy, template contract, runtime source of truth, or approval gate
+for bulk document normalization.
+
 ## Scope
 
 In scope: tracked Markdown files, tracked README files, top YAML frontmatter key
@@ -22,6 +35,17 @@ defined by the frontmatter contract.
 Out of scope: normalizing historical documents, editing operations documents,
 reading secret values, or changing template contracts.
 
+## Definitions / Facts
+
+- **Tracked Markdown file**: A path returned by `git ls-files '*.md'`.
+- **Tracked README file**: A tracked path matching `*README.md`.
+- **Top frontmatter**: A Markdown file whose first line is `---` and whose
+  frontmatter block has a later closing `---` fence.
+- **Missing top frontmatter**: A tracked Markdown file without a first-line
+  `---` fence.
+- **Duplicate-purpose key signal**: A frontmatter key named by the
+  frontmatter contract as potentially superseded or legacy metadata.
+
 ## Method
 
 | Evidence ID | Command | Measured Purpose |
@@ -29,8 +53,59 @@ reading secret values, or changing template contracts.
 | FM-001 | `git ls-files '*.md' \| wc -l` | Count tracked Markdown documents. |
 | FM-002 | `git ls-files '*README.md' \| wc -l` | Count tracked README documents. |
 | FM-003 | `git ls-files '*.md' \| rg -n '(^\|/)README\.md$'` | List tracked README surfaces and path categories. |
-| FM-004 | `python3 - <<'PY' ... print(f"{key}\t{count}\t{', '.join(examples[key])}") ... PY` | Count top-frontmatter keys, missing frontmatter, unterminated fences, and example paths. |
+| FM-004 | See `### Reproduction Commands`. | Count top-frontmatter keys, missing frontmatter, unterminated fences, and example paths. |
 | FM-005 | `rg -n '^type:\|^owner:\|^links:\|^document_type:\|^template_type:\|^updated:' --glob '*.md'` | Check explicit duplicate-purpose or legacy metadata keys from the frontmatter contract. |
+
+### Reproduction Commands
+
+Run this command from the repository root to reproduce the frontmatter
+distribution used by `FM-004`. The script reads tracked Markdown files, prints
+keys and example paths only, and does not print frontmatter values.
+
+```bash
+python3 - <<'PY'
+from collections import Counter, defaultdict
+from pathlib import Path
+import subprocess
+
+paths = subprocess.check_output(["git", "ls-files", "*.md"], text=True).splitlines()
+key_counts = Counter()
+examples = defaultdict(list)
+
+for path in paths:
+    text = Path(path).read_text(encoding="utf-8")
+    if not text.startswith("---\n"):
+        key_counts["(none)"] += 1
+        if len(examples["(none)"]) < 5:
+            examples["(none)"].append(path)
+        continue
+
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        key_counts["(unterminated)"] += 1
+        if len(examples["(unterminated)"]) < 5:
+            examples["(unterminated)"].append(path)
+        continue
+
+    keys = []
+    for line in text[4:end].splitlines():
+        if ":" in line and not line.startswith((" ", "-")):
+            keys.append(line.split(":", 1)[0].strip())
+
+    if not keys:
+        key_counts["(empty)"] += 1
+        if len(examples["(empty)"]) < 5:
+            examples["(empty)"].append(path)
+
+    for key in keys:
+        key_counts[key] += 1
+        if len(examples[key]) < 5:
+            examples[key].append(path)
+
+for key, count in sorted(key_counts.items(), key=lambda item: (-item[1], item[0])):
+    print(f"{key}\t{count}\t{', '.join(examples[key])}")
+PY
+```
 
 ## Findings
 
@@ -54,6 +129,21 @@ reading secret values, or changing template contracts.
 | Explicit legacy `updated` frontmatter remains in Stage 05 observability documents | The duplicate-purpose key scan found 3 `updated` keys under `docs/05.operations/**/06-observability/` | batch-fix | Record for a future bounded operations metadata cleanup if the target profile does not consume `updated`. |
 | Non-standard Stage 05 operational metadata needs a contract decision | `component`, `runtime_state`, and `tier` each appear 3 times; `policy_state` appears once | out-of-scope-gap | Defer to later contract comparison because Task 2 is inventory-only. |
 | Previously problematic role keys are absent | `type`, `owner`, `links`, `document_type`, and `template_type` are all 0 | no-action | Keep as closure evidence in the audit register. |
+
+## Sources
+
+- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) - Defines the Task 2 audit scope and execution evidence.
+- [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - Defines canonical and legacy frontmatter key expectations.
+- [Template selection](../../../99.templates/support/template-selection.md) - Supports document-profile routing for later comparison work.
+- [Reference template](../../../99.templates/templates/common/reference.template.md) - Defines the required Stage 90 reference structure.
+
+## Maintenance
+
+- **Owner**: Documentation Specialist / `doc-writer`.
+- **Review Cadence**: Review when the workspace document contract audit pack
+  advances to a new comparison or remediation task.
+- **Update Trigger**: Rerun the inventory when tracked Markdown membership,
+  frontmatter contracts, or Stage 90 reference template requirements change.
 
 ## Related Documents
 

@@ -12,6 +12,18 @@ This inventory records tracked README surfaces and counts the expected README
 profile headings named by the task prompt. It supports later contract
 comparison without changing README content.
 
+## Purpose
+
+This reference preserves the Task 2 README-profile measurements for the
+workspace document contract audit pack. It gives later comparison and gap
+registration tasks a stable baseline for README surface coverage.
+
+## Repository Role
+
+This report supports Stage 04 execution evidence and later Stage 90 audit
+references. It is not an active README template, policy source, or approval to
+rename README headings across the repository.
+
 ## Scope
 
 In scope: tracked `*README.md` files, README path categories, expected profile
@@ -20,6 +32,16 @@ gap candidates.
 
 Out of scope: rewriting README files, changing template-source READMEs, editing
 provider runtime surfaces, or modifying secret material.
+
+## Definitions / Facts
+
+- **Tracked README file**: A path returned by `git ls-files '*README.md'`.
+- **README profile heading**: One of the expected `##` headings counted by
+  `RP-003`.
+- **Score distribution**: The count of matched README profile headings per
+  tracked README file.
+- **Batch-fix disposition**: An observed issue that should be reviewed in a later
+  scoped remediation task before any README content changes.
 
 ## Method
 
@@ -50,6 +72,23 @@ provider runtime surfaces, or modifying secret material.
 | Example README has a scaffold-specific profile | `examples/sample-web-service/README.md` scored 1 against the expected README heading set | out-of-scope-gap | Record as an example-surface README profile decision for a later batch. |
 | Provider README profiles are intentionally thinner than folder README profiles | `.codex/README.md` scored 1 and `.agents/README.md` scored 3 | no-action | Treat as provider-surface evidence unless the provider contract comparison in a later task changes the profile. |
 | Template category READMEs use template-source headings | Six `docs/99.templates/templates/**/README.md` files scored 2 | no-action | Keep as template-source profile evidence for Task 3 contract comparison. |
+
+## Sources
+
+- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) - Defines Task 2 scope and README baseline evidence.
+- [Template selection](../../../99.templates/support/template-selection.md) - Supports profile routing for README comparison work.
+- [README template](../../../99.templates/templates/common/readme.template.md) - Defines the common README section profile used for comparison.
+- [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - Provides supporting metadata contract context for README profiles.
+- [Reference template](../../../99.templates/templates/common/reference.template.md) - Defines the required Stage 90 reference structure.
+
+## Maintenance
+
+- **Owner**: Documentation Specialist / `doc-writer`.
+- **Review Cadence**: Review when README contract comparisons or remediation
+  batches are planned.
+- **Update Trigger**: Rerun the inventory when tracked README membership,
+  README template requirements, or Stage 90 reference template requirements
+  change.
 
 ## Related Documents
 

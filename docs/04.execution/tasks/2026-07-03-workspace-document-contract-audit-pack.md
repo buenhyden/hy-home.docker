@@ -64,24 +64,28 @@ automation coverage, and future implementation gaps.
 - Task 2 measurement fix reran the committed-state inventory: 930 tracked
   Markdown files, 745 files with top frontmatter, 185 without top
   frontmatter, 519 `status` keys, and 206 tracked README files.
+- Task 2 quality fix aligned the three inventory reports with the Stage 90
+  reference document contract and added full reproduction commands for the
+  Python frontmatter and section-profile scans.
 
 ## Validation Results
 
 | Command | Result |
 | --- | --- |
-| `git diff --check` | Pending |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | Pending |
+| `git diff --check` | PASS (exit 0). |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
 | `bash scripts/operations/sync-provider-surfaces.sh --check` | Pending |
-| `bash scripts/validation/check-doc-traceability.sh` | Pending |
-| `bash scripts/validation/check-doc-implementation-alignment.sh` | Pending |
-| `bash -n scripts/validation/check-repo-contracts.sh` | Pending |
-| `bash scripts/validation/check-repo-contracts.sh` | Pending |
+| `bash scripts/validation/check-doc-traceability.sh` | PASS: `failures=0`. |
+| `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `failures=0`. |
+| `bash -n scripts/validation/check-repo-contracts.sh` | PASS (exit 0). |
+| `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL: `failures=2`, only known out-of-scope infra drift from Keycloak hardening image mismatch and `infra/tech-stack.versions.json` expected-image drift. |
 
 ## Verification Summary
 
 - Test Commands: Listed in `## Validation Results`.
 - Eval Commands: N/A for documentation audit reports.
-- Manual Checks: Confirm audit reports classify gaps without editing target documents.
+- Manual Checks: Confirm audit reports classify gaps without editing target
+  documents and include the required Stage 90 reference headings.
 
 ## Commit Trail
 
