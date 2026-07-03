@@ -51,7 +51,7 @@ automation coverage, and future implementation gaps.
 
 ## Inventory Baseline
 
-- Baseline tracked Markdown count: 927.
+- Baseline tracked Markdown count: 930 after Task 2 inventory reports are tracked.
 - Baseline README count: 206.
 - Baseline workflow count: Not run yet; Task 4 records the exact count.
 - Existing out-of-scope drift: Known infra hardening and tech-stack expected-image drift remain out of scope.
@@ -61,6 +61,9 @@ automation coverage, and future implementation gaps.
 - Task 2 created `docs/90.references/audits/document-contracts/frontmatter-inventory.md`,
   `docs/90.references/audits/document-contracts/section-profile-inventory.md`,
   and `docs/90.references/audits/document-contracts/readme-profile-inventory.md`.
+- Task 2 measurement fix reran the committed-state inventory: 930 tracked
+  Markdown files, 745 files with top frontmatter, 185 without top
+  frontmatter, 519 `status` keys, and 206 tracked README files.
 
 ## Validation Results
 
