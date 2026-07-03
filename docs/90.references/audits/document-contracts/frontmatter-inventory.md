@@ -36,7 +36,7 @@ reading secret values, or changing template contracts.
 
 | Evidence | Measurement | Representative Paths | Disposition |
 | --- | --- | --- | --- |
-| Tracked Markdown baseline | 930 tracked Markdown files after the three Task 2 inventory reports are tracked | `README.md`, `docs/00.agent-governance/README.md`, `infra/README.md`, `docs/90.references/audits/document-contracts/frontmatter-inventory.md` | committed-state |
+| Tracked Markdown baseline | 930 tracked Markdown files after the three Task 2 inventory reports are tracked | `README.md`, `docs/00.agent-governance/README.md`, `infra/README.md`, `docs/90.references/audits/document-contracts/frontmatter-inventory.md` | no-action |
 | Tracked README baseline | 206 tracked README files | `.agents/README.md`, `.codex/README.md`, `docs/98.archive/README.md`, `tests/README.md` | historical-evidence |
 | README surface coverage | README list includes root, docs, infra, projects, tests, examples, provider, and archive surfaces | `README.md`, `docs/README.md`, `infra/README.md`, `projects/README.md`, `examples/sample-web-service/README.md`, `docs/98.archive/README.md` | no-action |
 | Frontmatter coverage | 745 Markdown files have top frontmatter; 185 have no top frontmatter; 0 unterminated fences were found | Missing-frontmatter examples: `.agents/README.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/SECURITY.md`, `.github/rulesets/main-protection.md`, `CHANGELOG.md`, `README.md`, `RTK.md`, `archive/Windows-Network-IP.md` | batch-fix |
