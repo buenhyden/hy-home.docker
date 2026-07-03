@@ -42,8 +42,8 @@ automation coverage, and future implementation gaps.
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-001 | Create task evidence and audit bundle skeleton. | docs | Workspace Document Contract Audit Pack Spec / Data Modeling | PLN-001 | Audit skeleton and links | Codex | Active |
-| T-002 | Capture document profile inventories. | docs | Workspace Document Contract Audit Pack Spec / Core Design | PLN-002 | Inventory reports with commands and counts | Codex | Planned |
+| T-001 | Create task evidence and audit bundle skeleton. | docs | Workspace Document Contract Audit Pack Spec / Data Modeling | PLN-001 | Audit skeleton and links | Codex | Done |
+| T-002 | Capture document profile inventories. | docs | Workspace Document Contract Audit Pack Spec / Core Design | PLN-002 | Inventory reports with commands and counts | Codex | Done |
 | T-003 | Compare governance, contracts, templates, root shims, and provider surfaces. | docs | Workspace Document Contract Audit Pack Spec / Contracts | PLN-003 | Contract map and template-application gap report | Codex | Planned |
 | T-004 | Map CI/CD, QA, and automation coverage. | docs | Workspace Document Contract Audit Pack Spec / Tool Contract | PLN-004 | Automation coverage map | Codex | Planned |
 | T-005 | Build final gap register and implementation batch proposal. | docs | Workspace Document Contract Audit Pack Spec / Gap Disposition Rules | PLN-005 | Gap register with dispositions | Codex | Planned |
@@ -51,10 +51,16 @@ automation coverage, and future implementation gaps.
 
 ## Inventory Baseline
 
-- Baseline tracked Markdown count: Not run yet; Task 2 records the exact count.
-- Baseline README count: Not run yet; Task 2 records the exact count.
+- Baseline tracked Markdown count: 927.
+- Baseline README count: 206.
 - Baseline workflow count: Not run yet; Task 4 records the exact count.
 - Existing out-of-scope drift: Known infra hardening and tech-stack expected-image drift remain out of scope.
+
+## Implementation Notes
+
+- Task 2 created `docs/90.references/audits/document-contracts/frontmatter-inventory.md`,
+  `docs/90.references/audits/document-contracts/section-profile-inventory.md`,
+  and `docs/90.references/audits/document-contracts/readme-profile-inventory.md`.
 
 ## Validation Results
 
