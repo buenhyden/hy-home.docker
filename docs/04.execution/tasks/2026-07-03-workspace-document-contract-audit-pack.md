@@ -45,7 +45,7 @@ automation coverage, and future implementation gaps.
 | T-001 | Create task evidence and audit bundle skeleton. | docs | Workspace Document Contract Audit Pack Spec / Data Modeling | PLN-001 | Audit skeleton and links | Codex | Done |
 | T-002 | Capture document profile inventories. | docs | Workspace Document Contract Audit Pack Spec / Core Design | PLN-002 | Inventory reports with commands and counts | Codex | Done |
 | T-003 | Compare governance, contracts, templates, root shims, and provider surfaces. | docs | Workspace Document Contract Audit Pack Spec / Contracts | PLN-003 | Contract map and template-application gap report | Codex | Done |
-| T-004 | Map CI/CD, QA, and automation coverage. | docs | Workspace Document Contract Audit Pack Spec / Tool Contract | PLN-004 | Automation coverage map | Codex | Planned |
+| T-004 | Map CI/CD, QA, and automation coverage. | docs | Workspace Document Contract Audit Pack Spec / Tool Contract | PLN-004 | Automation coverage map | Codex | Done |
 | T-005 | Build final gap register and implementation batch proposal. | docs | Workspace Document Contract Audit Pack Spec / Gap Disposition Rules | PLN-005 | Gap register with dispositions | Codex | Planned |
 | T-006 | Close evidence, regenerate indexes, validate, and commit. | docs | Workspace Document Contract Audit Pack Spec / Verification | PLN-006 | Validation matrix and commit trail | Codex | Planned |
 
@@ -53,7 +53,7 @@ automation coverage, and future implementation gaps.
 
 - Baseline tracked Markdown count: 930 after Task 2 inventory reports are tracked.
 - Baseline README count: 206.
-- Baseline workflow count: Not run yet; Task 4 records the exact count.
+- Baseline workflow count: 6 tracked GitHub workflow files under `.github/workflows/`.
 - Existing out-of-scope drift: Known infra hardening and tech-stack expected-image drift remain out of scope.
 
 ## Implementation Notes
@@ -70,6 +70,14 @@ automation coverage, and future implementation gaps.
 - Task 3 created `docs/90.references/audits/document-contracts/contract-governance-map.md`
   and `docs/90.references/audits/document-contracts/template-application-gaps.md`.
   `DESIGN.md` was absent in the repository root during Task 3 verification.
+- Task 4 created `docs/90.references/audits/document-contracts/automation-coverage-map.md`
+  with workflow, QA, formatting, security, supply-chain, unguarded-rule, and
+  gap-disposition coverage.
+- Task 4 validation confirmed full repository contracts have no Task 4,
+  reference-stage, LLM Wiki, provider-surface, workflow-security, or
+  script-contract failures. The full contract still fails only on known
+  out-of-scope infra drift: Keycloak hardening image mismatch and
+  `infra/tech-stack.versions.json` expected-image drift.
 
 ## Validation Results
 
@@ -79,13 +87,16 @@ automation coverage, and future implementation gaps.
 | `rg -n 'sample row\|example row\|measured gap\|measured finding\|illustrative row' docs/90.references/audits/document-contracts/contract-governance-map.md docs/90.references/audits/document-contracts/template-application-gaps.md` | PASS: no matches. |
 | `git diff --check` | PASS (exit 0). |
 | `git diff --cached --check` | PASS (exit 0, extra staged-diff hygiene check). |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1121 paths. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1122 paths after staging the new Task 4 report. |
 | `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
 | `bash scripts/validation/check-doc-traceability.sh` | PASS: `failures=0`. |
 | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `failures=0`. |
 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
 | `bash -n scripts/validation/check-repo-contracts.sh` | PASS (exit 0). |
-| `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL: `failures=2`, only known out-of-scope infra drift from Keycloak hardening image mismatch and `infra/tech-stack.versions.json` expected-image drift. |
+| `git ls-files '.github/workflows/*.yml' '.github/workflows/*.yaml'` | PASS: 6 tracked workflow files measured for Task 4. |
+| `rg -n '^(name:\|on:\|permissions:\|jobs:)\|uses:\|pull-requests:\|contents:\|id-token:\|persist-credentials\|actions/checkout\|secrets\.' .github/workflows` | PASS: workflow evidence recorded in `automation-coverage-map.md`; all external `uses:` entries are full-SHA pinned, checkout credentials are not persisted, and token use is limited to built-in `GITHUB_TOKEN`. |
+| `git ls-files 'scripts/**/*.sh' 'scripts/*.sh' \| rg '(validation\|operations\|knowledge\|quality\|test\|lint\|format\|security\|audit)'` | PASS: 15 validation, operations, knowledge, QA, and security script paths measured for Task 4. |
+| `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL: `failures=2`; no Task 4/reference/LLM/provider/workflow/script failures, only known out-of-scope infra drift from Keycloak hardening image mismatch and `infra/tech-stack.versions.json` expected-image drift. |
 
 ## Verification Summary
 
