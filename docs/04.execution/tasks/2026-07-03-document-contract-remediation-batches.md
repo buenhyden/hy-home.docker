@@ -47,6 +47,7 @@ corpus remediation begins.
 | `tests/README.md` | PLN-WDC-RM-003 and user continuation for the next approved batch | Tests README profile cleanup | Tests README used `Related References`. | Tests README uses `Related Documents`. | `git revert` the T-003 README batch commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 | `docs/05.operations/guides/06-observability/loki.md`; `docs/05.operations/policies/06-observability/01.retention.md`; `docs/05.operations/policies/06-observability/loki.md`; `docs/05.operations/policies/00-workspace/harness-agent-first-engineering.md` | PLN-WDC-RM-004 and user continuation for the next approved batch | Stage 05 operations frontmatter metadata cleanup | Three observability docs used generic `updated` metadata plus path-derived metadata, and the workspace harness policy carried a non-standard policy-state key. | The four active Stage 05 docs now keep lifecycle `status: active` only in frontmatter; path, title, component, runtime, and enforcement context remain represented by target path, headings, and body sections. | `git revert` the T-004 operations metadata commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, or runtime config changes |
 | `docs/01.requirements/2026-03-26-01-gateway.md`; `docs/01.requirements/2026-03-26-02-auth.md`; `docs/01.requirements/2026-03-26-06-observability.md`; `docs/01.requirements/2026-03-26-07-workflow.md` | PLN-WDC-RM-004 and user continuation for the next approved batch | PRD AI agent section heading normalization | Four active PRD docs used `## AI Agent Requirements` while the PRD template and 20 peer requirement docs use `## AI Agent Requirements (If Applicable)`. | The four PRD outliers now use the template heading. | `git revert` the T-004 requirements heading commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, runtime config, or requirement-body scope changes |
+| `infra/01-gateway/traefik/README.md`; `infra/01-gateway/nginx/README.md` | PLN-WDC-RM-004 and user continuation for the next approved batch | Infra README validation heading normalization | Two gateway README files used `## Validation Commands` in addition to their canonical `## Validation` sections. | The command tables are merged into the existing `## Validation` sections, leaving no `Validation Commands` heading split. | `git revert` the T-004 infra validation heading commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, runtime config, or Compose behavior changes |
 | Future protected surfaces | Parent plan approval gates | Provider, workflow, validator, secret-handling, infra, and target-stage changes | No remediation applied in T-001 | Future tasks must record per-batch evidence before edits | Revert the specific future batch commit | Redaction boundary must be restated in each future batch before touching protected surfaces |
 
 ## Task Table
@@ -79,7 +80,7 @@ corpus remediation begins.
 | --- | --- | --- | --- |
 | Governance and provider adapter drift | WDC-GAP-001, WDC-GAP-002, WDC-GAP-022 | Local adapter drift done; remote evidence deferred | WDC-GAP-001 and WDC-GAP-002 were remediated by making Gemini, Claude, and generated Codex adapter text defer to Stage 00 owners. WDC-GAP-022 still requires separate remote GitHub re-verification approval. |
 | README profile normalization | WDC-GAP-003, WDC-GAP-004, WDC-GAP-005, WDC-GAP-017, WDC-GAP-019 | Approved surfaces done; examples deferred | Projects, secrets, and tests README surfaces were remediated. `secrets/README.md` was handled as metadata-only documentation and no secret value files were inspected. WDC-GAP-017 remains deferred because `examples/**` needs a separate examples/scaffold contract decision. |
-| Target-stage frontmatter and section profiles | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Operations metadata and PRD heading sub-batches done; remaining profile batches planned | WDC-GAP-007 and WDC-GAP-016 were remediated for active Stage 05 operations metadata. WDC-GAP-008 was remediated by aligning active PRD AI-agent section headings with the PRD template. WDC-GAP-006 frontmatter routing and WDC-GAP-009 infra validation heading normalization remain separate target-stage sub-batches. |
+| Target-stage frontmatter and section profiles | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Operations metadata, PRD heading, and infra validation heading sub-batches done; broad frontmatter routing remains | WDC-GAP-007 and WDC-GAP-016 were remediated for active Stage 05 operations metadata. WDC-GAP-008 was remediated by aligning active PRD AI-agent section headings with the PRD template. WDC-GAP-009 was remediated by merging gateway README validation command tables into the canonical `## Validation` sections. WDC-GAP-006 broad frontmatter routing remains a separate target-stage sub-batch. |
 | CI/CD, QA, parser, and Graphify decisions | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Planned | Requires protected workflow, script, validator, or pre-commit approval before edits. |
 | Historical evidence preservation or reclassification | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Planned | Preserve old truth unless active-consumption conflict is proven. |
 | Infra drift follow-up | WDC-GAP-020, WDC-GAP-021 | Deferred | Requires separate infra task and runtime-change approval if Compose changes. |
@@ -105,9 +106,11 @@ corpus remediation begins.
 | README approved surfaces | `rg -n 'Related References\|docs/99\.templates/(readme\|service)\.template\|docs/0[7]\.operations\|docs/1[0]' projects/README.md projects/storybook/README.md projects/storybook/nextjs/README.md secrets/README.md tests/README.md` | PASS: no stale section, removed template, or legacy stage-pattern matches in approved T-003 surfaces. |
 | README examples boundary | `rg -n 'docs/99\.templates/(readme\|service)\.template\|Related References' projects secrets tests examples` | EXPECTED SCOPED RESIDUAL: matches remain only under `examples/sample-web-service/**`, which is WDC-GAP-017 and remains deferred. |
 | Operations metadata cleanup | `rg -n '^updated:\|^component:\|^runtime_state:\|^tier:\|^policy_state:' docs/05.operations` | PASS: no active Stage 05 matches remain for the remediated non-standard metadata keys. |
-| Changed target-stage gate | `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL only on known infra drift; changed target-stage documents report `changed_template_docs_total=6`, `normalized_changed_template_docs_total=6`, and `legacy_changed_template_docs_skipped=0`. |
+| Changed target-stage gate | `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL only on known infra drift; changed target-stage documents report `changed_template_docs_total=2`, `normalized_changed_template_docs_total=2`, and `legacy_changed_template_docs_skipped=0`. |
 | PRD AI-agent heading split | `rg -n '^## AI Agent Requirements$' docs/01.requirements` | PASS: no bare PRD AI-agent heading remains. |
 | PRD canonical AI-agent heading count | `rg -n '^## AI Agent Requirements \(If Applicable\)$' docs/01.requirements \| wc -l` | PASS: 24 canonical PRD AI-agent headings. |
+| Infra validation heading split | `rg -n '^## Validation Commands$\|^### Validation Commands$' infra --glob '*.md'` | PASS: no `Validation Commands` headings remain under infra. |
+| Gateway validation heading count | `rg -n '^## Validation$' infra/01-gateway/traefik/README.md infra/01-gateway/nginx/README.md` | PASS: the two changed gateway READMEs each retain one canonical `## Validation` section. |
 
 ## Remediation Evidence
 
@@ -167,8 +170,16 @@ corpus remediation begins.
   `docs/99.templates/templates/sdlc/prd.template.md` by changing
   `## AI Agent Requirements` to
   `## AI Agent Requirements (If Applicable)`.
+- Remaining T-004 scope after the infra validation heading cleanup:
+  WDC-GAP-006 broad frontmatter routing.
+
+### T-004 Infra Validation Heading Cleanup
+
+- WDC-GAP-009: merged the Traefik and Nginx gateway README validation command
+  tables into their existing `## Validation` sections and removed the
+  `Validation Commands` split heading.
 - Remaining T-004 scope after this sub-batch: WDC-GAP-006 broad frontmatter
-  routing and WDC-GAP-009 infra validation heading normalization.
+  routing.
 
 ## Verification Summary
 
@@ -180,8 +191,9 @@ corpus remediation begins.
   project, secrets, and tests README surfaces, and T-004 operations metadata
   changes stayed limited to approved Stage 05 documentation frontmatter. T-004
   requirements changes stayed limited to section heading normalization in four
-  PRD documents; no provider, workflow, validator, secret value, runtime, or
-  infra surfaces were changed.
+  PRD documents. T-004 infra changes stayed limited to README section
+  consolidation without runtime, Compose, or script changes; no provider,
+  workflow, validator, secret value, or runtime surfaces were changed.
 
 ## Related Documents
 

@@ -70,15 +70,6 @@ traefik/
 3. Use labels in your service's `docker-compose.yml` to register routes with Traefik.
 4. After any configuration change, run the root profile validator and the gateway hardening check before using runtime dashboard evidence.
 
-## Validation Commands
-
-| Command | Description |
-| --- | --- |
-| `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` | Validate the root-included Traefik compose context |
-| `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Verify gateway hardening contracts |
-| `docker compose ps traefik` | Runtime state check only after an approved root stack is running |
-| `docker compose exec traefik traefik healthcheck --ping` | Runtime health check only after an approved root stack is running |
-
 ## Configuration
 
 ### Core Files
@@ -122,6 +113,13 @@ Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authenti
 | `HTTPS_HOST_PORT` |       No | Host port for HTTPS (default: 443) |
 
 ## Validation
+
+| Command | Description |
+| --- | --- |
+| `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` | Validate the root-included Traefik compose context |
+| `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Verify gateway hardening contracts |
+| `docker compose ps traefik` | Runtime state check only after an approved root stack is running |
+| `docker compose exec traefik traefik healthcheck --ping` | Runtime health check only after an approved root stack is running |
 
 - Run `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` after Traefik compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh 01-gateway` before marking documentation ready.

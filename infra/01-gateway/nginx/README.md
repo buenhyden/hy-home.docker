@@ -68,14 +68,6 @@ nginx/
 3. If the route requires SSO, include the `auth_request /_oauth2_auth_check;` directive.
 4. After any configuration change, run `bash scripts/hardening/check-all-hardening.sh 01-gateway`; run `nginx -t` or reload only against an approved running Nginx context.
 
-## Validation Commands
-
-| Command | Description |
-| --- | --- |
-| `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Verify the tracked Nginx compose/config hardening contract |
-| `docker compose exec nginx nginx -t` | Runtime config lint only after an approved Nginx compose context is running |
-| `docker compose exec nginx nginx -s reload` | Runtime reload only after `nginx -t` passes in the approved running context |
-
 ## Configuration
 
 ### Core Files
@@ -93,6 +85,12 @@ healthcheck:
 ```
 
 ## Validation
+
+| Command | Description |
+| --- | --- |
+| `bash scripts/hardening/check-all-hardening.sh 01-gateway` | Verify the tracked Nginx compose/config hardening contract |
+| `docker compose exec nginx nginx -t` | Runtime config lint only after an approved Nginx compose context is running |
+| `docker compose exec nginx nginx -s reload` | Runtime reload only after `nginx -t` passes in the approved running context |
 
 - Run `bash scripts/hardening/check-all-hardening.sh 01-gateway` after README, compose, or config changes that affect this service.
 - Run `bash scripts/validation/check-repo-contracts.sh` before marking the service documentation ready.
