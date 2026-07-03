@@ -117,12 +117,11 @@ secrets/
 - registry와 실제 파일 경로가 달라지면 문서와 검증 절차를 함께 갱신합니다.
 - AI Agent는 secret 값 파일 열람이 필요해 보이는 상황에서도 먼저 사용자 승인과 안전한 대체 절차를 요청해야 합니다.
 
-## Related References
+## Related Documents
 
 - [../README.md](../README.md)
 - [../AGENTS.md](../AGENTS.md)
 - [../docs/03.specs/infra-secrets-docs-refresh/spec.md](../docs/03.specs/infra-secrets-docs-refresh/spec.md)
 - [../docs/05.operations/README.md](../docs/05.operations/README.md)
-- [../docs/05.operations/README.md](../docs/05.operations/README.md)
-- [../docs/99.templates/readme.template.md](../docs/99.templates/readme.template.md)
+- [../docs/99.templates/templates/common/readme.template.md](../docs/99.templates/templates/common/readme.template.md)
 - [SENSITIVE_ENV_VARS.md.example](./SENSITIVE_ENV_VARS.md.example)

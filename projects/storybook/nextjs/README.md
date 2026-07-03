@@ -71,9 +71,9 @@ Parent repo 루트에서 실행할 때는 `npm --prefix projects/storybook/nextj
 3. Next.js app shell이나 API route 예시는 `src/pages/` 아래에서 관리합니다.
 4. README 또는 package script를 바꾼 뒤에는 최소 `npm --prefix projects/storybook/nextjs run lint`와 관련 build/test 명령을 검토합니다.
 
-## Related References
+## Related Documents
 
 - [Storybook workspace](../README.md)
 - [Projects README](../../README.md)
 - [Root README](../../../README.md)
-- [README template](../../../docs/99.templates/readme.template.md)
+- [README template](../../../docs/99.templates/templates/common/readme.template.md)

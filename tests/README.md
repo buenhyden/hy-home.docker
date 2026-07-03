@@ -46,7 +46,7 @@ tests/
 3. 새 테스트 파일을 추가하면 실행 명령, 기대 결과, CI 연결 여부를 이 README 또는 관련 stage 문서에 기록합니다.
 4. 테스트가 특정 service 또는 package에만 해당하면 해당 디렉터리 README에 위치와 실행법을 기록합니다.
 
-## Related References
+## Related Documents
 
 - [Root README](../README.md)
 - [Scripts README](../scripts/README.md)

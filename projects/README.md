@@ -27,7 +27,7 @@
 ### Out of Scope
 
 - `infra/` 서비스 정의와 운영 절차
-- `docs/01`부터 `docs/10`까지의 공식 stage 산출물 본문
+- `docs/00`부터 `docs/05`, `docs/90`, `docs/98`, `docs/99`까지의 공식 stage 산출물 본문
 - gitlink/submodule 내부 파일의 직접 수정
 - package manager 캐시, 빌드 산출물, `node_modules/`
 
@@ -43,12 +43,12 @@ projects/
 
 1. 하위 프로젝트를 수정하기 전에 해당 프로젝트의 `README.md`와 package manifest를 먼저 확인합니다.
 2. parent repo가 직접 추적하지 않는 gitlink/submodule 내부 파일은 별도 저장소 작업으로 분리합니다.
-3. README를 갱신할 때는 [`../docs/99.templates/readme.template.md`](../docs/99.templates/readme.template.md)의 공통 구조를 따릅니다.
-4. 인프라 노출, gateway, secret, 운영 절차가 바뀌면 관련 `infra/`, `docs/07.operations/`, `docs/07.operations/`, `docs/07.operations/` 문서도 함께 점검합니다.
+3. README를 갱신할 때는 [`../docs/99.templates/templates/common/readme.template.md`](../docs/99.templates/templates/common/readme.template.md)의 공통 구조를 따릅니다.
+4. 인프라 노출, gateway, secret, 운영 절차가 바뀌면 관련 `infra/`, `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/` 문서도 함께 점검합니다.
 
-## Related References
+## Related Documents
 
 - [Root README](../README.md)
 - [Docs hub](../docs/README.md)
-- [README template](../docs/99.templates/readme.template.md)
+- [README template](../docs/99.templates/templates/common/readme.template.md)
 - [Storybook project](storybook/README.md)

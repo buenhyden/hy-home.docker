@@ -59,9 +59,9 @@ storybook/
 | `npm --prefix projects/storybook/nextjs run build-storybook` | Storybook 정적 산출물 빌드 |
 | `npm --prefix projects/storybook/nextjs run lint` | ESLint 실행 |
 
-## Related References
+## Related Documents
 
 - [Projects README](../README.md)
 - [Next.js Storybook workspace](nextjs/README.md)
 - [Root README](../../README.md)
-- [README template](../../docs/99.templates/readme.template.md)
+- [README template](../../docs/99.templates/templates/common/readme.template.md)
