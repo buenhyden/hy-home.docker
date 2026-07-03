@@ -30,15 +30,25 @@ not a validator specification, and not a replacement for `.github/workflows/`,
 
 ## Scope
 
-In scope: tracked GitHub workflow files, workflow trigger scopes,
-permissions, action pinning, credential handling, repo-local validation and QA
-scripts, formatting hooks, security and supply-chain signals, and current
-Task 4 validation results.
+### In Scope
 
-Out of scope: editing workflows, editing validators, changing branch
-protection, reading or printing secret values, changing provider adapters,
-normalizing target documents, resolving existing infra image/version drift, or
-making remote GitHub changes.
+- Tracked GitHub workflow files.
+- Workflow trigger scopes, permissions, action pinning, and credential
+  handling.
+- Repo-local validation and QA scripts.
+- Formatting hooks.
+- Security and supply-chain signals.
+- Current Task 4 validation results.
+
+### Out of Scope
+
+- Editing workflows or validators.
+- Changing branch protection.
+- Reading or printing secret values.
+- Changing provider adapters.
+- Normalizing target documents.
+- Resolving existing infra image/version drift.
+- Making remote GitHub changes.
 
 ## Method
 
@@ -160,6 +170,17 @@ making remote GitHub changes.
 | AUTO-GAP-005 | Graphify refresh is instruction-based and report-only, not enforced. | `AGENTS.md` requires `graphify update .` when available; `report-graphify-health.sh` is advisory and exits 0. | batch-fix | Decide later whether Graphify should remain advisory or become a hard freshness check. |
 | AUTO-GAP-006 | Provider sync direct command is local-only but covered indirectly by repo contracts. | `sync-provider-surfaces.sh --check` passed; `check-repo-contracts.sh` validates runtime catalog and provider parity. | no-action | Keep current coverage unless provider drift recurs. |
 | AUTO-GAP-007 | Secret generation remains manual by design. | `gen-secrets.sh --check` and `--dry-run` avoid reading/writing values; no-argument mode may read/write secret registry and files. | no-action | Preserve manual redaction boundary; never run value-reading mode for audits. |
+
+## Source Rules
+
+- Prefer tracked workflow files, script files, and repo-local validators over
+  historical notes when classifying current automation coverage.
+- Summarize command output and validation results; do not paste raw logs or
+  secret-bearing content.
+- Re-run current checks before using this report for CI/CD, QA, security, or
+  branch-protection decisions.
+- Treat remote GitHub state as current only when freshly verified through an
+  approved read-only audit.
 
 ## Sources
 
