@@ -60,7 +60,7 @@ relational/
 | HA Logic   | Patroni                                   | Cluster Lifecycle         |
 | DCS        | etcd 3.6.12                               | Distributed Locks         |
 | Router     | `haproxy:3.3.10`                          | Traffic Distribution      |
-| Init Job   | `postgres:18-alpine`                      | Role/database sync        |
+| Init Job   | `postgres:18.4-alpine`                    | Role/database sync        |
 
 ## Getting Started
 

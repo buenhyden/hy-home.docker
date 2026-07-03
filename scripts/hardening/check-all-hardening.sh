@@ -80,7 +80,7 @@ check_02_auth() {
   check_file "$oauth_cfg"
 
   check_contains "$keycloak_compose" "service: template-infra-high" "keycloak compose template mismatch"
-  check_contains "$keycloak_compose" "image: quay.io/keycloak/keycloak:26.6.2-2" "keycloak image tag mismatch"
+  check_contains "$keycloak_compose" "image: quay.io/keycloak/keycloak:26.6.4-1" "keycloak image tag mismatch"
   check_contains "$keycloak_compose" "KC_DB_PASSWORD_FILE: /run/secrets/keycloak_db_password" "keycloak db password secret file missing"
   check_contains "$keycloak_compose" "/run/secrets/keycloak_admin_password" "keycloak admin secret injection mismatch"
   check_contains "$keycloak_compose" "/run/secrets/keycloak_db_password" "keycloak db secret injection mismatch"
@@ -100,14 +100,14 @@ check_02_auth() {
   check_contains "$oauth_full_compose" "OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://oauth2-proxy-valkey:6379" "local/full oauth2-proxy session store mismatch"
   check_contains "$oauth_full_compose" "- oauth2_valkey_password" "local/full oauth2-proxy valkey secret missing"
   check_contains "$oauth_full_compose" "image: valkey/valkey:9.1.0-alpine" "oauth2-proxy valkey image tag mismatch"
-  check_contains "$oauth_full_compose" "image: oliver006/redis_exporter:v1.84.0-alpine" "oauth2-proxy valkey exporter image tag mismatch"
+  check_contains "$oauth_full_compose" "image: oliver006/redis_exporter:v1.86.0-alpine" "oauth2-proxy valkey exporter image tag mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.4" "local/full oauth2-proxy infra_net IP mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.5" "oauth2-proxy valkey infra_net IP mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.6" "oauth2-proxy valkey exporter infra_net IP mismatch"
   check_not_contains "$oauth_full_compose" "v7.14.2" "local/full oauth2-proxy stale image reference"
 
-  check_contains "$oauth_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.2 AS src" "oauth2-proxy source image tag mismatch"
-  check_contains "$oauth_dev_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.2 AS src" "oauth2-proxy dev source image tag mismatch"
+  check_contains "$oauth_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.3 AS src" "oauth2-proxy source image tag mismatch"
+  check_contains "$oauth_dev_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.3 AS src" "oauth2-proxy dev source image tag mismatch"
   check_contains "$oauth_dockerfile" "USER oauth2proxy:oauth2proxy" "oauth2-proxy non-root user missing"
   check_contains "$oauth_dev_dockerfile" "USER oauth2proxy:oauth2proxy" "oauth2-proxy dev non-root user missing"
   check_contains "$oauth_entrypoint" "/run/secrets/oauth2_valkey_password" "oauth2-proxy local/full valkey secret injection mismatch"
@@ -144,7 +144,7 @@ check_03_security() {
   check_file "$spec_file"
 
   check_contains "$compose_file" "service: template-stateful-med" "vault compose template inheritance missing"
-  check_contains "$compose_file" "image: hashicorp/vault:2.0.1" "vault image tag mismatch"
+  check_contains "$compose_file" "image: hashicorp/vault:2.0.3" "vault image tag mismatch"
   check_contains "$compose_file" "vault-agent:" "vault-agent service missing"
   check_contains "$compose_file" "vault-agent-out:" "vault-agent output volume missing"
   check_contains "$compose_file" "vault-agent-out:/vault/out" "vault-agent output mount missing"
@@ -302,7 +302,7 @@ check_11_laboratory() {
 
   check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
   check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file" "dozzle middleware chain mismatch"
-  check_contains "$dozzle_compose" "image: amir20/dozzle:v10.6.4" "dozzle image tag mismatch"
+  check_contains "$dozzle_compose" "image: amir20/dozzle:v10.6.6" "dozzle image tag mismatch"
   check_contains "$dozzle_compose" "ipv4_address: 172.19.0.221" "dozzle infra_net IP mismatch"
 
   check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file,sso-errors@file,sso-auth@file" "open-notebook middleware chain mismatch"
@@ -316,7 +316,7 @@ check_11_laboratory() {
   check_contains "$portainer_compose" "image: portainer/portainer-ce:sts" "portainer image tag mismatch"
   check_contains "$portainer_compose" "ipv4_address: 172.19.0.220" "portainer infra_net IP mismatch"
 
-  check_contains "$redisinsight_compose" "image: redis/redisinsight:3.4.2" "redisinsight image tag mismatch"
+  check_contains "$redisinsight_compose" "image: redis/redisinsight:3.6.0" "redisinsight image tag mismatch"
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight middleware chain mismatch"
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight-static.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight static middleware chain mismatch"
   check_contains "$redisinsight_compose" "ipv4_address: 172.19.0.121" "redisinsight infra_net IP mismatch"

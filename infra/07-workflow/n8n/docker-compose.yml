@@ -64,8 +64,8 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        N8N_VERSION: 2.15.0
-    image: hyhome/n8n:2.15.0-local
+        N8N_VERSION: 2.29.5
+    image: hyhome/n8n:2.29.5-local
     container_name: n8n
     read_only: false
     expose:
@@ -126,8 +126,8 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        N8N_VERSION: 2.15.0
-    image: hyhome/n8n:2.15.0-local
+        N8N_VERSION: 2.29.5
+    image: hyhome/n8n:2.29.5-local
     container_name: n8n-worker
     read_only: false
     expose:
@@ -169,7 +169,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: n8nio/runners:2.27.5
+    image: n8nio/runners:2.29.5
     container_name: n8n-task-runner
     read_only: false
     depends_on:
@@ -206,7 +206,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: n8nio/runners:2.27.5
+    image: n8nio/runners:2.29.5
     container_name: n8n-task-runner-worker
     read_only: false
     depends_on:

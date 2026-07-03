@@ -30,7 +30,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
-    image: quay.io/keycloak/keycloak:26.6.4-0
+    image: quay.io/keycloak/keycloak:26.6.4-1
     container_name: keycloak
     hostname: keycloak
     tmpfs:

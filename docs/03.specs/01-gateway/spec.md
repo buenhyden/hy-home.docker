@@ -39,7 +39,7 @@ This specification defines the technical design and implementation details for t
 
 ### Component Boundary
 
-- **Traefik (v3.7.1)**: root-active edge routing, TLS termination, and SSO middleware application.
+- **Traefik (v3.7.6)**: root-active edge routing, TLS termination, and SSO middleware application.
 - **Nginx (Alpine)**: profile-only leaf for header manipulation and proxy pass behavior on special paths such as `/keycloak/` and `/minio/`.
 
 ### Key Dependencies
@@ -49,7 +49,7 @@ This specification defines the technical design and implementation details for t
 
 ### Tech Stack
 
-- Traefik v3.7.1
+- Traefik v3.7.6
 - Nginx Alpine
 - TLS 1.2/1.3
 

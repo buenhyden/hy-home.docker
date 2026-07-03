@@ -50,7 +50,7 @@ alertmanager/
 
 | Category     | Technology   | Version | Notes                          |
 | :----------- | :----------- | :------ | :----------------------------- |
-| Alerting     | Alertmanager | v0.32.1 | Single compose service with Docker Secret-rendered config |
+| Alerting     | Alertmanager | v0.33.0 | Single compose service with Docker Secret-rendered config |
 | Integrations | Slack / SMTP | -       | Webhook and SMTP relay         |
 
 ## Available Scripts

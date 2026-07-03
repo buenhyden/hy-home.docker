@@ -71,9 +71,9 @@ kafka/
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Engine     | Confluent CP-Kafka             | 8.2.1                     |
+| Engine     | Confluent CP-Kafka             | 8.3.0                     |
 | Mode       | KRaft                          | Integrated Metadata log   |
-| Registry   | CP-Schema-Registry             | 8.2.1                     |
+| Registry   | CP-Schema-Registry             | 8.3.0                     |
 | UI         | Kafbat (Kafka UI)              | Web-based management      |
 | Exporter   | Kafka Exporter                 | `danielqsj/kafka-exporter:v1.9.0` |
 

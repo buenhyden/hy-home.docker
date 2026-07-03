@@ -14,7 +14,7 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 
 | Component | Technology | Version |
 | :--- | :--- | :--- |
-| Metrics DB | Prometheus | v3.12.0 |
+| Metrics DB | Prometheus | v3.13.0 |
 | Configuration | YAML-based | Static & File-based SD |
 | Tooling | promtool | Config/Rule Validation |
 

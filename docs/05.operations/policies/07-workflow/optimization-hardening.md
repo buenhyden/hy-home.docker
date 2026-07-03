@@ -27,7 +27,7 @@ status: active
   - root-included dev compose는 shared `mng-valkey` broker 경계를 문서와 검증 evidence에 명시한다.
   - n8n worker/task-runner healthcheck를 필수로 유지한다.
   - service-local n8n task-runner는 `n8n`/`n8n-valkey` health 기반 의존성을 유지하고, root-included dev compose는 `mng-valkey` broker 경계를 명시한다.
-  - n8n compose 기본 이미지는 custom image(`hyhome/n8n:2.15.0-local`)를 사용한다.
+  - n8n compose 기본 이미지는 custom image(`hyhome/n8n:2.29.5-local`)를 사용한다.
   - n8n runtime은 non-root이며 entrypoint secret guard를 유지한다.
   - workflow 변경은 `check-all-hardening.sh 07-workflow` 및 CI `infrastructure-hardening`을 통과해야 한다.
   - 문서(PRD~Procedure)는 optimization-hardening 링크를 유지한다.

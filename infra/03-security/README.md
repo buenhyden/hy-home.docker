@@ -49,7 +49,7 @@ The `03-security` tier serves as the platform's root of trust. It provides Hashi
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Secret Mgmt | HashiCorp Vault               | `hashicorp/vault:2.0.1`   |
+| Secret Mgmt | HashiCorp Vault               | `hashicorp/vault:2.0.3`   |
 | Storage    | Raft (Integrated)              | Single-node current state; HA expansion planned |
 | Injection  | Vault Agent                    | Sidecar pattern           |
 | OS         | Alpine Linux (Container)       | Minimal surface area      |

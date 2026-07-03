@@ -13,7 +13,7 @@ Grafana serves as the primary observability portal for the `hy-home.docker` ecos
 
 | Component | Technology | Version |
 | :--- | :--- | :--- |
-| Frontend | Grafana | v13.0.2 |
+| Frontend | Grafana | v13.1.0 |
 | Auth | Generic OAuth2 | Keycloak Integration |
 
 ## System Components

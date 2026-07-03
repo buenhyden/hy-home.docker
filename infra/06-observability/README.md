@@ -75,13 +75,13 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Metrics    | Prometheus                     | v3.12.0                   |
-| Logs       | Loki                           | v3.6.6-custom, MinIO bucket `loki-bucket` |
-| Tracing    | Tempo                          | v2.10.1-custom, MinIO bucket `tempo-bucket` |
-| Profiling  | Pyroscope                      | v2.0.2                    |
-| Collector  | Grafana Alloy                  | v1.16.2                   |
-| UI         | Grafana                        | v13.0.2                   |
-| Alerting   | Alertmanager                   | v0.32.1                   |
+| Metrics    | Prometheus                     | v3.13.0                   |
+| Logs       | Loki                           | v3.7.3-custom, MinIO bucket `loki-bucket` |
+| Tracing    | Tempo                          | v3.0.2-custom, MinIO bucket `tempo-bucket` |
+| Profiling  | Pyroscope                      | v2.1.0                    |
+| Collector  | Grafana Alloy                  | v1.17.1                   |
+| UI         | Grafana                        | v13.1.0                   |
+| Alerting   | Alertmanager                   | v0.33.0                   |
 | Batch metrics | Pushgateway                 | v1.11.3                   |
 | Container metrics | cAdvisor                | v0.55.1                   |
 

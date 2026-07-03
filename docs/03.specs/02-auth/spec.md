@@ -46,7 +46,7 @@ This document defines the optimization/hardening implementation contract for `in
   - `mng-valkey` (OAuth2 session)
   - Traefik middleware/routers
 - **Tech Stack**:
-  - Keycloak 26.6.2-2
+  - Keycloak 26.6.4-1
   - OAuth2 Proxy 7.15.2
   - Docker Compose + common optimization templates
 

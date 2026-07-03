@@ -47,7 +47,7 @@ This document defines the optimization/hardening implementation contract for `in
   - `01-gateway/traefik` (external TLS termination)
   - Secret-consuming tiers (`02-auth`, `04-data`, `06-observability`)
 - **Tech Stack**:
-  - `hashicorp/vault:2.0.1`
+  - `hashicorp/vault:2.0.3`
   - Docker Compose + `common-optimizations.yml`
 
 ## Data Modeling & Storage Strategy

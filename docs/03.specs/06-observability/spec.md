@@ -48,7 +48,7 @@ This document defines the optimization/hardening implementation contract for the
   - Keycloak SSO
   - MinIO object storage for Loki/Tempo
 - **Tech Stack**:
-  - Prometheus `v3.12.0`, Grafana `13.0.2`, Loki `3.6.6-custom`, Tempo `2.10.1-custom`, Alloy `1.16.2`, Alertmanager `0.32.1`, Pushgateway `1.11.3`, Pyroscope `2.0.2`, cAdvisor `0.55.1`
+  - Prometheus `v3.13.0`, Grafana `13.1.0`, Loki `3.7.3-custom`, Tempo `3.0.2-custom`, Alloy `1.17.1`, Alertmanager `0.33.0`, Pushgateway `1.11.3`, Pyroscope `2.1.0`, cAdvisor `0.55.1`
 
 ## Data Modeling & Storage Strategy
 

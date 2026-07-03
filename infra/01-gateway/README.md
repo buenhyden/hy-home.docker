@@ -43,7 +43,7 @@ The `01-gateway` tier is the unified entry point for traffic entering the `hy-ho
 
 | Category   | Technology                        | Notes                     |
 | ---------- | --------------------------------- | ------------------------- |
-| Router     | Traefik v3.7.1                    | Primary dynamic router    |
+| Router     | Traefik v3.7.6                    | Primary dynamic router    |
 | Proxy      | Nginx Alpine                      | Specialized path proxy    |
 | Discovery  | Docker Provider                   | Auto-detection of containers |
 | Security   | OAuth2 Proxy / Keycloak           | Integrated SSO provider   |

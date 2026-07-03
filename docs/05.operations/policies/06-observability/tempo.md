@@ -17,7 +17,7 @@ status: active
 
 Tempo 서비스의 트레이스 인입, 저장소 처리, 메트릭 원격 쓰기 정책.
 
-- **Systems**: Tempo (v2.10.1-custom)
+- **Systems**: Tempo (v3.0.2-custom)
 - **Agents**: Grafana Alloy (OTLP Collectors)
 - **Environments**: Production (Observability Tier)
 

@@ -65,7 +65,7 @@ Grafana is the visualization frontend of the current LGTM stack (Loki, Grafana, 
 
 #### Key Components
 
-- **Grafana Core**: v13.0.2 (OSS edition).
+- **Grafana Core**: v13.1.0 (OSS edition).
 - **Provisioning System**: Uses YAML/JSON definitions for declarative management.
 - **Datasource Integrations**:
   - **Prometheus**: Metrics ingestion point (`uid: Prometheus`).

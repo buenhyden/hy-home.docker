@@ -63,7 +63,7 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| Image | `redis/redisinsight:3.4.2` | Current compose tag |
+| Image | `redis/redisinsight:3.6.0` | Current compose tag |
 | Port | `5540` (Internal) | Managed by Traefik |
 | Storage | `redisinsight-data` | Persistent volume for connections |
 

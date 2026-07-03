@@ -41,9 +41,9 @@ tempo/
 
 | Category | Technology | Version | Role |
 | :--- | :--- | :--- | :--- |
-| Tracing | [Grafana Tempo](https://github.com/grafana/tempo) | v2.10.1-custom | Distributed Tracing Backend |
+| Tracing | [Grafana Tempo](https://github.com/grafana/tempo) | v3.0.2-custom | Distributed Tracing Backend |
 | Storage | [MinIO](../../04-data/lake-and-object/minio/README.md) | latest | S3-Compatible Object Store |
-| Ingestion | [Grafana Alloy](../alloy/README.md) | v1.16.2 | OTLP Receiver & Forwarder |
+| Ingestion | [Grafana Alloy](../alloy/README.md) | v1.17.1 | OTLP Receiver & Forwarder |
 
 ## Available Scripts
 
@@ -100,7 +100,7 @@ Copyright (c) 2026. Licensed under the MIT License.
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Tempo Distributed Tracing service leaf in `06-observability`; compose service `tempo`, image `hy/tempo:2.10.1-custom` |
+| Purpose | Tempo Distributed Tracing service leaf in `06-observability`; compose service `tempo`, image `hy/tempo:3.0.2-custom` |
 | Config files | `config`, `config/tempo.yaml` |
 | Config values | No non-secret config keys declared in compose |
 | Compose linkage | Declared in `../docker-compose.yml` and root-included `../docker-compose.dev.yml` |

@@ -47,7 +47,7 @@ This document defines the optimization/hardening implementation contract for the
   - `01-gateway` Traefik dynamic middleware (`gateway-standard-chain`, `sso-*`)
   - `02-auth` SSO policy
 - **Tech Stack**:
-  - Kafka (Confluent CP 8.2.1)
+  - Kafka (Confluent CP 8.3.0)
   - RabbitMQ 4.3.1
   - Kafbat UI
   - Traefik TLS termination

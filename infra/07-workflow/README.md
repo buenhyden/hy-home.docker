@@ -50,7 +50,7 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
 | Orchestration | Apache Airflow              | v3.2.2 (CeleryExecutor)   |
-| Automation  | n8n                          | v2.15.0-local             |
+| Automation  | n8n                          | v2.29.5-local             |
 | Broker      | Valkey                       | root dev uses `mng-valkey`; service-local compose declares `airflow-valkey` and `n8n-valkey` |
 | Database    | PostgreSQL                   | Management PostgreSQL (`mng-pg`) |
 

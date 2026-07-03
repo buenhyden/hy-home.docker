@@ -22,7 +22,7 @@
 
 | Component | Technology | Version | Backend |
 | :--- | :--- | :--- | :--- |
-| Logging | Loki | v3.6.6-custom | MinIO (S3) |
+| Logging | Loki | v3.7.3-custom | MinIO (S3) |
 
 ## Available Scripts
 
@@ -111,7 +111,7 @@ infra/06-observability/loki/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Loki Log Aggregation System service leaf in `06-observability`; compose service `loki`, image `hy/loki:3.6.6-custom` |
+| Purpose | Loki Log Aggregation System service leaf in `06-observability`; compose service `loki`, image `hy/loki:3.7.3-custom` |
 | Config files | `config`, `config/loki-config.yaml` |
 | Config values | No non-secret config keys declared in compose |
 | Compose linkage | Declared in `../docker-compose.yml` and root-included `../docker-compose.dev.yml` |

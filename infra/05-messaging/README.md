@@ -50,10 +50,10 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Streaming  | Confluent Kafka                | `confluentinc/cp-kafka:8.2.1` |
+| Streaming  | Confluent Kafka                | `confluentinc/cp-kafka:8.3.0` |
 | Mode       | KRaft (Zookeeper-less)         | root dev single broker; service-local full 3 broker compose |
-| Schema     | Schema Registry                | `confluentinc/cp-schema-registry:8.2.1` |
-| Connect    | Kafka Connect / REST Proxy     | Confluent CP `8.2.1`      |
+| Schema     | Schema Registry                | `confluentinc/cp-schema-registry:8.3.0` |
+| Connect    | Kafka Connect / REST Proxy     | Confluent CP `8.3.0`      |
 | AMQP       | RabbitMQ                       | `rabbitmq:4.3.1-management-alpine` |
 
 ## Service Matrix

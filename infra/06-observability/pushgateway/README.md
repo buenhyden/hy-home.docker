@@ -40,7 +40,7 @@ pushgateway/
 | :--- | :--- | :--- | :--- |
 | Buffer | [prom/pushgateway](https://hub.docker.com/r/prom/pushgateway) | v1.11.3 | Metrics ingestion buffer |
 | Ingress | [Traefik](../../01-gateway/README.md) | v3.3.4 | SSL Termination & Routing |
-| Scraper | [Prometheus](../prometheus/README.md) | v3.12.0 | Scrape-to-pull bridge |
+| Scraper | [Prometheus](../prometheus/README.md) | v3.13.0 | Scrape-to-pull bridge |
 
 ## Usage Instructions
 

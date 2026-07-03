@@ -45,7 +45,7 @@ vault/
 
 | Category    | Technology      | Notes                  |
 | ----------- | --------------- | ---------------------- |
-| Platform    | Vault (Go)      | `hashicorp/vault:2.0.1` |
+| Platform    | Vault (Go)      | `hashicorp/vault:2.0.3` |
 | Persistence | Raft            | Single-node integrated storage |
 | Sidecar     | Vault Agent     | Auto-auth & Templating |
 | Runtime     | Official container image | Root compose profile service |

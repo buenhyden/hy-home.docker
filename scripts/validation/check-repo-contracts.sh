@@ -3735,16 +3735,16 @@ stage_roots = [
 ]
 
 stale_literals = {
-    "v3.6.8": "Traefik is declared as traefik:v3.7.1",
-    "v3.6.12": "Traefik is declared as traefik:v3.7.1",
-    "26.5.4": "Keycloak is declared as quay.io/keycloak/keycloak:26.6.2-2",
-    "7.14.2": "OAuth2 Proxy Dockerfile uses quay.io/oauth2-proxy/oauth2-proxy:v7.15.2",
-    "hashicorp/vault:1.21.4": "Vault is declared as hashicorp/vault:2.0.1",
-    "Confluent CP 8.1.1": "Kafka is declared as confluentinc/cp-kafka:8.2.1",
+    "v3.6.8": "Traefik is declared as traefik:v3.7.6",
+    "v3.6.12": "Traefik is declared as traefik:v3.7.6",
+    "26.5.4": "Keycloak is declared as quay.io/keycloak/keycloak:26.6.4-1",
+    "7.14.2": "OAuth2 Proxy Dockerfile uses quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
+    "hashicorp/vault:1.21.4": "Vault is declared as hashicorp/vault:2.0.3",
+    "Confluent CP 8.1.1": "Kafka is declared as confluentinc/cp-kafka:8.3.0",
     "RabbitMQ 4.2": "RabbitMQ is declared as rabbitmq:4.3.1-management-alpine",
     "kafbat/kafka-ui:v1.4.2": "Kafbat UI is declared as kafbat/kafka-ui:v1.5.0",
-    "v0.20.0": "Ollama is declared as ollama/ollama:0.30.2",
-    "v0.8.5-cuda": "Open WebUI is declared as ghcr.io/open-webui/open-webui:v0.9.6-cuda",
+    "v0.20.0": "Ollama is declared as ollama/ollama:0.31.1",
+    "v0.8.5-cuda": "Open WebUI is declared as ghcr.io/open-webui/open-webui:v0.10.2-cuda",
     "OLLAMA_WEB_UI_PORT": "Open WebUI compose uses OLLAMA_WEBUI_PORT",
     "docker compose -f infra/08-ai/ollama/docker-compose.yml config": "08-ai service-local compose files depend on root infra_net context; use the AI hardening check and root profile validator",
     "docker compose -f infra/08-ai/open-webui/docker-compose.yml config": "08-ai service-local compose files depend on root infra_net context; use the AI hardening check and root profile validator",
@@ -3777,23 +3777,23 @@ stale_literals = {
     "docker compose -f infra/11-laboratory/open-notebook/docker-compose.yml config": "11-laboratory service-local compose files depend on root infra_net context; use the laboratory hardening check and root admin profile validator",
     "docker compose --profile admin up -d open_notebook surrealdb": "Open Notebook runtime start requires approved root context; use root admin profile validation first",
     "docker compose --profile admin config": "Use HYHOME_COMPOSE_PROFILES=admin with scripts/validation/validate-docker-compose.sh for root-context validation",
-    "redis/redisinsight:3.2.0": "RedisInsight is declared as redis/redisinsight:3.4.2",
+    "redis/redisinsight:3.2.0": "RedisInsight is declared as redis/redisinsight:3.6.0",
     "HOMER_HOST_PORT": "Homer has no host port in the current optional compose; Traefik targets HOMER_PORT through expose",
     "docker logs dashboard": "Homer container name is homer",
     "portainer_data": "Portainer volume is portainer-data",
     "redisinsight_data": "RedisInsight volume is redisinsight-data",
     "traefik.http.routers.portainer.middlewares: sso-auth@file": "Portainer route uses the full gateway+allowlist+SSO chain",
     "traefik.http.routers.redisinsight.middlewares: sso-auth@file": "RedisInsight route uses the full gateway+allowlist+SSO chain",
-    "v12.3.3": "Grafana is declared as grafana/grafana:13.0.2",
+    "v12.3.3": "Grafana is declared as grafana/grafana:13.1.0",
     "v2.10.x": "Airflow is declared as apache/airflow:3.2.2",
     "airflow-webserver": "Airflow 3 uses airflow-apiserver in current workflow docs",
     "Apache n8n": "n8n is not an Apache project in current workflow docs",
     "infra/07-workflow/airflow/dags": "Airflow DAGs are bind-mounted from ${DEFAULT_WORKFLOW_DIR}/airflow/dags",
     "v1.11.2": "Pushgateway is declared as prom/pushgateway:v1.11.3",
-    "Pyroscope (v1.18.1)": "Pyroscope is declared as grafana/pyroscope:2.0.2",
+    "Pyroscope (v1.18.1)": "Pyroscope is declared as grafana/pyroscope:2.1.0",
     "v1.17-unprivileged": "Qdrant is declared as qdrant/qdrant:v1.18.1-unprivileged",
     "neo4j:5.26.23-community": "Neo4j is declared as neo4j:5.26.26-community",
-    "v10.2.0": "Dozzle is declared as amir20/dozzle:v10.6.4",
+    "v10.2.0": "Dozzle is declared as amir20/dozzle:v10.6.6",
     "PostgreSQL (v16+)": "PostgreSQL services are currently PostgreSQL 17/18 family images",
     "InfluxDB 2.x 채택": "InfluxDB 3.x Core is the primary compose; InfluxDB 2.x is legacy compose only",
     "OpenSearch 2.x 채택": "OpenSearch 3.x is the current analytics implementation family",
@@ -3846,10 +3846,10 @@ allowed_suffixes = {".md", ".yml", ".yaml", ".sh", ".cfg", ".Dockerfile", ""}
 auth_files = [path for path in auth_files if path.is_file() and path.suffix in allowed_suffixes]
 
 stale_literals = {
-    "26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.6.2-2",
-    "v26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.6.2-2",
-    "7.14.2": "OAuth2 Proxy source image is quay.io/oauth2-proxy/oauth2-proxy:v7.15.2",
-    "v7.14.2": "OAuth2 Proxy source image is quay.io/oauth2-proxy/oauth2-proxy:v7.15.2",
+    "26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.6.4-1",
+    "v26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.6.4-1",
+    "7.14.2": "OAuth2 Proxy source image is quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
+    "v7.14.2": "OAuth2 Proxy source image is quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
     "Keycloak: `template-infra-med`": "Keycloak current compose extends template-infra-high",
     "Keycloak은 `template-infra-med`": "Keycloak current compose extends template-infra-high",
     "`service: template-infra-med` 적용 여부": "Keycloak current guide must check template-infra-high",
@@ -3908,8 +3908,8 @@ allowed_suffixes = {".md", ".yml", ".yaml", ".sh", ".hcl", ".ctmpl", ""}
 security_files = [path for path in security_files if path.is_file() and path.suffix in allowed_suffixes]
 
 stale_literals = {
-    "hashicorp/vault:1.21.4": "Vault current image is hashicorp/vault:2.0.1",
-    "v1.21.4": "Vault current image is hashicorp/vault:2.0.1",
+    "hashicorp/vault:1.21.4": "Vault current image is hashicorp/vault:2.0.3",
+    "v1.21.4": "Vault current image is hashicorp/vault:2.0.3",
     "docs/05.operations/guides/03-security/01.setup.md": "Security setup guidance is consolidated into the Vault guide",
     "guides/03-security/01.setup.md": "Security setup guidance is consolidated into the Vault guide",
     "docker compose -f infra/03-security/vault/docker-compose.yml config": "03-security validation must use root profile validator",
@@ -3958,7 +3958,7 @@ roots = [
 ]
 
 stale_literals = {
-    "Traefik v3.6.12": "Traefik is declared as traefik:v3.7.1",
+    "Traefik v3.6.12": "Traefik is declared as traefik:v3.7.6",
     "Port 80, 443, 7687": "Traefik static entrypoints are web(80), websecure(443), and metrics(8082)",
     "| `7687` | `7687` | TCP | Neo4j Bolt": "Current gateway docs must not claim a public Neo4j Bolt gateway entrypoint",
     "cd infra/01-gateway": "Use root profile validation instead of a nonexistent tier-level compose stack",

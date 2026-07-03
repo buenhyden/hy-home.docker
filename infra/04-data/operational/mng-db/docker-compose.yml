@@ -108,7 +108,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-med
-    image: postgres:18-alpine
+    image: postgres:18.4-alpine
     container_name: mng-pg
     hostname: mng-pg
     shm_size: 256mb
@@ -145,7 +145,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: postgres:18-alpine
+    image: postgres:18.4-alpine
     container_name: mng-pg-init
     environment:
       POSTGRES_HOSTNAME: mng-pg

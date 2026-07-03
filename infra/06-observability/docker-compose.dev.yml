@@ -54,7 +54,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
-    image: prom/prometheus:v3.12.0
+    image: prom/prometheus:v3.13.0
     container_name: infra-prometheus
     tmpfs:
       - /tmp
@@ -106,7 +106,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
-    image: hy/loki:3.6.6-custom
+    image: hy/loki:3.7.3-custom
     build:
       context: ./loki
       dockerfile: Dockerfile
@@ -156,7 +156,7 @@ services:
     build:
       context: ./tempo
       dockerfile: Dockerfile
-    image: hy/tempo:2.10.1-custom
+    image: hy/tempo:3.0.2-custom
     container_name: infra-tempo
     user: '10001:10001'
     volumes:
@@ -200,7 +200,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/alloy:v1.17.0
+    image: grafana/alloy:v1.17.1
     container_name: infra-alloy
     tmpfs:
       - /tmp

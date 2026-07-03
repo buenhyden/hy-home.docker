@@ -7,7 +7,7 @@ status: active
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 선택 relational service인 PostgreSQL HA cluster 운영 기준을 정의한다. 기준은 현재 tracked compose의 etcd 3노드 3.6.12 tag, HAProxy `haproxy:3.3.10`, Spilo/Patroni `ghcr.io/zalando/spilo-17:4.0-p3`, init job `postgres:18-alpine`, postgres exporters `prometheuscommunity/postgres-exporter:v0.19.1`, Docker Secret 기반 credential 구성이다.
+이 정책은 `hy-home.docker`의 선택 relational service인 PostgreSQL HA cluster 운영 기준을 정의한다. 기준은 현재 tracked compose의 etcd 3노드 3.6.12 tag, HAProxy `haproxy:3.3.10`, Spilo/Patroni `ghcr.io/zalando/spilo-17:4.0-p3`, init job `postgres:18.4-alpine`, postgres exporters `prometheuscommunity/postgres-exporter:v0.19.1`, Docker Secret 기반 credential 구성이다.
 
 ## Policy Scope
 
