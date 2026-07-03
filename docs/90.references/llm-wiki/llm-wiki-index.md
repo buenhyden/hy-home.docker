@@ -560,6 +560,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md](../../04.execution/tasks/2026-07-03-template-system-contract-standardization.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md](../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-04-examples-scaffold-contract-remediation.md](../../04.execution/tasks/2026-07-04-examples-scaffold-contract-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-04-frontmatter-routing-evidence-refresh.md](../../04.execution/tasks/2026-07-04-frontmatter-routing-evidence-refresh.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-04-github-branch-protection-reverification.md](../../04.execution/tasks/2026-07-04-github-branch-protection-reverification.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-04-infra-tech-stack-version-refresh.md](../../04.execution/tasks/2026-07-04-infra-tech-stack-version-refresh.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
