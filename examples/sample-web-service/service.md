@@ -1,7 +1,15 @@
+---
+status: active
+---
+
+<!-- Target: examples/sample-web-service/service.md -->
+
 # sample-web-service Service Scaffold
 
-> Example instance of `docs/99.templates/service.template.md`. When authoring a
-> real service, copy the template to `docs/03.specs/<feature-id>/service.md`.
+> Example instance of
+> `docs/99.templates/templates/spec-contracts/service.template.md`. When
+> authoring a real service, copy the template to
+> `docs/03.specs/<feature-id>/service.md`.
 
 ## Overview (KR)
 
@@ -53,5 +61,5 @@
 ## Related Documents
 
 - [Service README](./README.md)
-- [Service scaffold template](../../docs/99.templates/service.template.md)
+- [Service scaffold template](../../docs/99.templates/templates/spec-contracts/service.template.md)
 - [New-service onboarding guide](../../docs/05.operations/guides/00-workspace/new-service-onboarding.md)

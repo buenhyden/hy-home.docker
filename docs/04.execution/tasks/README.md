@@ -97,6 +97,7 @@ docs/04.execution/tasks/
 ├── 2026-07-02-template-system-reorganization.md # Completed Stage 99 template system reorganization task record
 ├── 2026-07-03-document-contract-remediation-batches.md # Active document contract remediation batch evidence
 ├── 2026-07-03-template-system-contract-standardization.md # Completed Stage 99 template contract standardization evidence
+├── 2026-07-04-examples-scaffold-contract-remediation.md # Completed examples scaffold contract remediation task record
 └── README.md                                # This file
 ```
 

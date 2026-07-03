@@ -71,8 +71,8 @@ validator specification, and not approval to rewrite the 185 files.
 | Stage folder README indexes | 99 | `docs/03.specs/01-gateway/README.md`, `docs/05.operations/guides/README.md`, `docs/90.references/data/docker/README.md` | Optional | README role is derived from path and folder-index headings; adding target lifecycle status would blur README and leaf-document profiles. |
 | Infra README files | 66 | `infra/README.md`, `infra/01-gateway/traefik/README.md`, `infra/06-observability/grafana/README.md` | Optional | Infra README files are implementation and service indexes, not canonical docs target-stage leaf documents. |
 | Workspace README and utility README files | 8 | `README.md`, `docs/README.md`, `projects/README.md`, `scripts/README.md`, `secrets/README.md`, `tests/README.md` | Optional | The common README template is profile-driven and does not require target frontmatter after copying. |
-| Provider or examples README files | 2 | `.agents/README.md`, `examples/sample-web-service/README.md` | Deferred | Provider adapter and example scaffold profile decisions are tracked separately; examples remain tied to `WDC-GAP-017`. |
-| Example service scaffold file | 1 | `examples/sample-web-service/service.md` | Deferred | Example service scaffold contract needs a separate examples/sandbox decision before frontmatter changes. |
+| Provider README files | 1 | `.agents/README.md` | Deferred | Provider adapter README profile decisions remain separate from target-stage frontmatter routing. |
+| Example scaffold files | 2 | `examples/sample-web-service/README.md`, `examples/sample-web-service/service.md` | Closed | The examples scaffold contract follow-up closed `WDC-GAP-017`; both files now carry lifecycle frontmatter and current nested template links. |
 | GitHub-native Markdown | 3 | `.github/PULL_REQUEST_TEMPLATE.md`, `.github/SECURITY.md`, `.github/rulesets/main-protection.md` | Declined | GitHub-native Markdown and ruleset evidence should not receive repository frontmatter unless a GitHub-specific consumer is approved. |
 | Generated Graphify reports | 3 | `graphify-out/GRAPH_REPORT.md`, `graphify-out/2026-06-04/GRAPH_REPORT.md` | Declined | Generated output should remain generator-owned unless the generator is changed. |
 | Root special-purpose files | 2 | `CHANGELOG.md`, `RTK.md` | Declined | These root surfaces have special consumers and should not receive copied README or target-stage metadata. |
@@ -86,8 +86,10 @@ validator specification, and not approval to rewrite the 185 files.
   future README contract explicitly adds a metadata consumer.
 - Generated, GitHub-native, root special-purpose, and legacy archive files
   should not receive manual repository frontmatter as incidental cleanup.
-- Provider and examples surfaces remain deferred because their contracts are
-  separate from the target-stage frontmatter sub-batch.
+- Provider README routing remains deferred because provider-surface contracts
+  are separate from target-stage frontmatter routing.
+- Example scaffold routing was closed by the `WDC-GAP-017` follow-up without
+  changing example runtime files.
 
 ## Source Rules
 
