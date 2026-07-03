@@ -173,7 +173,7 @@ PY
 | --- | --- | --- | --- |
 | Requirement agent section naming is split | `AI Agent Requirements (If Applicable)` appears 20 times and `AI Agent Requirements` appears 4 times under `docs/01.requirements` | batch-fix | Add to the register as a future naming-normalization batch if requirements profiles require one spelling. |
 | Line-based heading scan surfaces fenced or comment-like H1 lines | `.github/PULL_REQUEST_TEMPLATE.md`, `scripts/README.md`, and `secrets/README.md` report H1 entries such as command or instruction lines | out-of-scope-gap | Record as an automation/parser gap for later fenced-aware audit tooling, not a Task 2 content fix. |
-| Infra validation terminology has a small split | `Validation` appears 47 times and `Validation Commands` appears 2 times under `infra` | batch-fix | Defer to a later infra README profile decision before any content edits. |
+| Infra validation terminology has a small split | `Validation` appears 48 times and `Validation Commands` appears 2 times under `infra` | batch-fix | Defer to a later infra README profile decision before any content edits. |
 | Operations nested `Overview` and `Purpose` headings are common | `docs/05.operations` reports 98 H3 `Overview` and 123 H3 `Purpose` entries | no-action | Treat as expected nested guide/runbook profile evidence unless a later contract comparison proves otherwise. |
 
 ## Sources
