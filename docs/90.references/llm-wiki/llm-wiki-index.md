@@ -858,6 +858,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/audits/document-contracts/readme-profile-inventory.md](../audits/document-contracts/readme-profile-inventory.md) | Markdown reference |
 | [docs/90.references/audits/document-contracts/section-profile-inventory.md](../audits/document-contracts/section-profile-inventory.md) | Markdown reference |
 | [docs/90.references/audits/document-contracts/template-application-gaps.md](../audits/document-contracts/template-application-gaps.md) | Markdown reference |
+| [docs/90.references/audits/document-restructure/README.md](../audits/document-restructure/README.md) | folder index |
+| [docs/90.references/audits/document-restructure/ci-qa-formatting-contract.md](../audits/document-restructure/ci-qa-formatting-contract.md) | Markdown reference |
+| [docs/90.references/audits/document-restructure/frontmatter-profile-inventory.md](../audits/document-restructure/frontmatter-profile-inventory.md) | Markdown reference |
+| [docs/90.references/audits/document-restructure/operations-bucket-restructure.md](../audits/document-restructure/operations-bucket-restructure.md) | Markdown reference |
+| [docs/90.references/audits/document-restructure/restructure-gap-register.md](../audits/document-restructure/restructure-gap-register.md) | Markdown reference |
+| [docs/90.references/audits/document-restructure/sdlc-spec-archive-candidates.md](../audits/document-restructure/sdlc-spec-archive-candidates.md) | Markdown reference |
+| [docs/90.references/audits/document-restructure/template-contract-drift.md](../audits/document-restructure/template-contract-drift.md) | Markdown reference |
 | [docs/90.references/data/README.md](../data/README.md) | folder index |
 | [docs/90.references/data/docker/README.md](../data/docker/README.md) | folder index |
 | [docs/90.references/data/docker/image-version-interpretation.md](../data/docker/image-version-interpretation.md) | Markdown reference |

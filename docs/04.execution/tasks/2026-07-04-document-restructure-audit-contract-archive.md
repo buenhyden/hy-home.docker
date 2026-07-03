@@ -45,6 +45,8 @@ change, or operations bucket restructure begins.
 | --- | --- | --- | --- | --- | --- | --- |
 | `docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md` | Approved Stage 03 spec, Stage 04 plan, and user continuation | Execution evidence | File absent before `PLN-DRA-001` | Task evidence created with baseline and protected boundaries | `git revert` the task-evidence commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 | `docs/04.execution/tasks/README.md` | Task-stage routing contract | Task index | Document restructure task not listed | Active task linked in structure and related documents | `git revert` the task-evidence commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
+| `docs/90.references/audits/document-restructure/**` | Approved Stage 03 spec, Stage 04 plan, and user continuation | Evidence-only audit pack | Folder absent before `PLN-DRA-002` | Audit pack reports created and indexed | `git revert` the audit-pack commit | No target moves, no secret values, no credentials, no tokens, no private keys, no raw logs, no shell history, and no `.env` values |
+| `docs/90.references/audits/README.md`; `docs/90.references/README.md` | Reference-stage index contract | Reference routing | Document restructure audit pack not listed | New audit pack linked from reference indexes | `git revert` the audit-pack commit | Path metadata only; no secret values or runtime logs |
 | `docs/90.references/llm-wiki/llm-wiki-index.md` | LLM Wiki generated index contract | Tracked path index | Task file absent from generated path list | Index regenerated after staging the new task | Rerun `bash scripts/knowledge/generate-llm-wiki-index.sh` after revert | Path metadata only; no secret values or raw runtime logs |
 | `docs/00.agent-governance/memory/progress.md` | Governance memory contract | Progress memory | `PLN-DRA-001` not recorded | Task-evidence baseline recorded after validation | `git revert` the task-evidence commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 | Future target documents | Parent plan approval gates | `docs/03.specs/**`, `docs/05.operations/**`, `docs/98.archive/**`, Stage 99 support, validators, workflows | No target moves, removals, contract edits, or validator changes in `PLN-DRA-001` | Future batches must add per-surface evidence before edits | Revert only the future batch commit that introduced the change | Redaction boundary must be restated before touching protected surfaces |
@@ -54,7 +56,7 @@ change, or operations bucket restructure begins.
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-DRA-001 | Create task evidence and current baseline. | doc | Implementation Handoff / Audit pack | PLN-DRA-001 | Baseline snapshot, protected surfaces, validation matrix | Codex | Done |
-| T-DRA-002 | Build the evidence-only Stage 90 audit pack. | doc | Audit Pack Design | PLN-DRA-002 | `docs/90.references/audits/document-restructure/**` reports and gap register | Codex | Planned |
+| T-DRA-002 | Build the evidence-only Stage 90 audit pack. | doc | Audit Pack Design | PLN-DRA-002 | `docs/90.references/audits/document-restructure/**` reports and gap register | Codex | Done |
 | T-DRA-003 | Update template, frontmatter, lifecycle, archive, and governance contracts. | doc | Template Contract Baseline | PLN-DRA-003 | Stage 99 support contract diffs and minimal Stage 00 updates if needed | Codex | Planned |
 | T-DRA-004 | Execute approved `docs/03.specs` archive/remove/relink batch. | doc | 03.specs Restructure Model | PLN-DRA-004 | Candidate dispositions, tombstones, link sync, validation | Codex | Planned |
 | T-DRA-005 | Execute approved operations bucket restructure batch. | doc | Operations Bucket Restructure Model | PLN-DRA-005 | Guide/policy/runbook candidate dispositions, tombstones, link sync, validation | Codex | Planned |
@@ -111,7 +113,7 @@ targets. The future audit pack must classify them before any target mutation.
 
 ### Phase 2: Evidence-Only Audit
 
-- [ ] T-DRA-002 Build the Stage 90 audit pack before contract or target edits.
+- [x] T-DRA-002 Build the Stage 90 audit pack before contract or target edits.
 
 ### Phase 3: Contract and Target Batches
 
@@ -133,6 +135,23 @@ targets. The future audit pack must classify them before any target mutation.
 | Implementation alignment | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `stage_docs_total=556`, links checked `4218`, `failures=0`. |
 | Repo contract syntax | `bash -n scripts/validation/check-repo-contracts.sh` | PASS: shell syntax is valid. |
 | Full repo contracts | `bash scripts/validation/check-repo-contracts.sh` | PASS: `failures=0`. |
+
+## Implementation Notes
+
+- T-DRA-002 created the evidence-only audit pack under
+  `docs/90.references/audits/document-restructure/`.
+- The audit pack contains `README.md`, `template-contract-drift.md`,
+  `frontmatter-profile-inventory.md`, `sdlc-spec-archive-candidates.md`,
+  `operations-bucket-restructure.md`, `ci-qa-formatting-contract.md`, and
+  `restructure-gap-register.md`.
+- The `DRA-GAP-*` register records 12 rows: 5 active-canonical rows, 2
+  historical-archive candidate rows, 0 duplicate-remove rows, 2
+  conflict-remove-or-archive candidate rows, and 3 evidence-preserve rows.
+- No `docs/03.specs/**`, `docs/05.operations/**`, Stage 99 support contract,
+  validator, workflow, provider runtime, runtime infra, secret material, or
+  archive tombstone target was modified in this audit-pack batch.
+- The LLM Wiki index was regenerated with 1143 tracked paths after staging the
+  new audit reports.
 
 ## Verification Summary
 

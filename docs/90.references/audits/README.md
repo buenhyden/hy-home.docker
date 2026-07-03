@@ -48,12 +48,14 @@ Audit reference는 task evidence나 incident timeline을 대체하지 않습니�
 ```text
 audits/
 ├── document-contracts/ # Workspace document contract audit reports
+├── document-restructure/ # Document restructure audit, archive, contract, and QA reports
 └── README.md           # This file
 ```
 
 ## Current References
 
 - [Document contract audit references](./document-contracts/README.md)
+- [Document restructure audit references](./document-restructure/README.md)
 
 ## How to Work in This Area
 
