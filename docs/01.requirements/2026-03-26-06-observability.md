@@ -58,7 +58,7 @@ status: active
 - **Persistence Layer**: Loki와 Tempo가 MinIO(`04-data`)에 의존하므로 데이터 계층 장애 시 관측 데이터 저장이 중단될 수 있다.
 - **Auth Layer**: Grafana 로그인 및 권한 관리가 Keycloak(`02-auth`)에 의존한다.
 
-## AI Agent Requirements
+## AI Agent Requirements (If Applicable)
 
 - **Allowed Actions**: Prometheus 쿼리(PromQL) 실행, 대시보드 상태 조회, 알람 상태 확인.
 - **Disallowed Actions**: 운영 데이터 임의 삭제, 알람 정책 임의 해제.
