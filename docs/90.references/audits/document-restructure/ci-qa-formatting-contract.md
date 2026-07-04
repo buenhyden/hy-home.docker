@@ -8,9 +8,10 @@ status: active
 
 ## Overview
 
-This report maps current CI/CD, QA, formatting, and validation coverage before
+This report maps current CI/CD, QA, formatting, and validation coverage for
 the document restructure implementation batches. It records which checks are
-hard gates today and which decisions need future approval.
+hard gates today and closes the `PLN-DRA-006` decision without mutating
+workflow or validator surfaces.
 
 ## Purpose
 
@@ -20,9 +21,9 @@ This report provides that classification without editing workflows or scripts.
 
 ## Repository Role
 
-This report supports `PLN-DRA-002` and the future `PLN-DRA-006` validator and
-CI/QA decision batch. It is not active CI policy, not a workflow specification,
-and not approval to mutate workflows, scripts, or pre-commit hooks.
+This report supports `PLN-DRA-002` and the `PLN-DRA-006` validator and CI/QA
+decision batch. It is not active CI policy, not a workflow specification, and
+not approval to mutate workflows, scripts, or pre-commit hooks.
 
 ## Scope
 
@@ -61,6 +62,10 @@ and not approval to mutate workflows, scripts, or pre-commit hooks.
 | DRA-CQA-003 | `git ls-files scripts/validation/*.sh scripts/operations/*.sh scripts/knowledge/*.sh \| wc -l` | 15 relevant validation, operations, and knowledge scripts. | Local automation baseline. |
 | DRA-CQA-004 | `rg -n 'check-doc-traceability\|check-doc-implementation-alignment\|check-repo-contracts\|sync-provider-surfaces\|generate-llm-wiki-index\|markdown\|lint\|format\|audit\|test\|build\|workflow\|actions/checkout\|permissions:' .github/workflows scripts/validation scripts/operations scripts/knowledge --glob '*.yml' --glob '*.yaml' --glob '*.sh'` | CI quality workflow and local scripts already cover doc traceability, implementation alignment, repo contracts, provider sync, LLM Wiki freshness, Storybook lint/build/test, workflow security, hardening, and advisory Graphify. | Coverage map. |
 | DRA-CQA-005 | Reads of `ci-qa-parser-graphify-decision.md` and `gap-register.md` | Dependency-audit hard gates and Graphify hard gates remain future protected-surface decisions unless separately approved. | Prevents silent CI hardening. |
+| DRA-CQA-006 | `bash scripts/validation/run-local-qa-gates.sh --list` | Local script-backed gates, CI/local-tooling gates, and remote-only gates are already separated. | `PLN-DRA-006` decision evidence. |
+| DRA-CQA-007 | `rg -n 'npm audit\|pip audit' .github scripts --glob '*.yml' --glob '*.yaml' --glob '*.sh'` | No active workflow or script-backed `npm audit` / `pip audit` command was found. | Confirms dependency-audit hard gate is not silently active. |
+| DRA-CQA-008 | `bash scripts/knowledge/report-graphify-health.sh` | Graphify reports `status=advisory` with `surprising_cross_root_inferred_edges=2`. | Confirms Graphify remains non-blocking. |
+| DRA-CQA-009 | Reads of `github-governance.md`, `.github/rulesets/main-protection.md`, and `check-repo-contracts.sh` required job coupling | Required job IDs are already coupled across workflow, repo contracts, and the local ruleset proposal. | Prevents partial workflow mutation. |
 
 ## Coverage Matrix
 
@@ -74,8 +79,8 @@ and not approval to mutate workflows, scripts, or pre-commit hooks.
 | Storybook lint/build/test | `ci-quality.yml`; `check-storybook-contract.sh` | Current hard gate | Out of scope unless web/project files change. |
 | Formatting | `git diff --check`; workflow and pre-commit policy surfaces | Current local evidence | Use for every batch. |
 | Workflow security | repo contracts inspect permissions, duplicate jobs/steps, pinned checkout, and required workflow shape | Current hard gate | Workflow mutation requires explicit approval. |
-| Dependency audit | Dependabot and existing QA coverage; no active `npm audit` / `pip audit` hard gate from prior decision | Future hardening candidate | Requires Security/QA approval. |
-| Graphify | `graphify update` instruction after code edits; `report-graphify-health.sh` advisory | Manual/advisory gate | Hard gate deferred until stable. |
+| Dependency audit | Dependabot and existing QA coverage; no active `npm audit` / `pip audit` hard gate from prior decision | Future hardening candidate | Deferred by `PLN-DRA-006`; requires Security/QA approval. |
+| Graphify | `graphify update` instruction after code edits; `report-graphify-health.sh` advisory | Manual/advisory gate | Deferred by `PLN-DRA-006` until the graph can safely block. |
 
 ## Findings
 
@@ -83,9 +88,20 @@ and not approval to mutate workflows, scripts, or pre-commit hooks.
 | --- | --- | --- | --- | --- |
 | DRA-CQA-001 | `.github/workflows/**` | Current workflow surface is protected and already checked by repository contracts. | `active-canonical` | No workflow edit in audit pack. |
 | DRA-CQA-002 | Scripts | Current scripts provide required documentation evidence gates. | `active-canonical` | Run in every batch. |
-| DRA-CQA-003 | Dependency audit | Hard `npm audit` / `pip audit` gates are not active and require separate Security/QA approval. | `evidence-preserve` / future hardening | `PLN-DRA-006` only if approved. |
-| DRA-CQA-004 | Graphify | Graphify remains advisory and should not block document restructure batches by default. | `evidence-preserve` | No hard gate without separate approval. |
+| DRA-CQA-003 | Dependency audit | Hard `npm audit` / `pip audit` gates are not active and require separate Security/QA approval. | `evidence-preserve` / future hardening | Deferred by `PLN-DRA-006`; no workflow or script change. |
+| DRA-CQA-004 | Graphify | Graphify remains advisory and should not block document restructure batches by default. | `evidence-preserve` | Deferred by `PLN-DRA-006`; no hard gate without separate approval. |
 | DRA-CQA-005 | Formatting | `git diff --check` remains the minimum formatting gate for document-only batches. | `active-canonical` | Use in every commit. |
+
+## PLN-DRA-006 Decision Results
+
+| Decision | Result | Rationale |
+| --- | --- | --- |
+| Current CI quality gates | Preserve unchanged | The workflow already covers documentation, repository contracts, compose, hardening, template/security, quickwin, pre-commit, frontend, Storybook, and GitHub Actions security gates. |
+| Local QA runner | Preserve unchanged | `run-local-qa-gates.sh --list` already separates local script-backed checks from GitHub-only responsibilities. |
+| Formatting | Keep `git diff --check` as the document-batch minimum | It is deterministic, local, and already used in every restructure batch. |
+| Dependency audit hard gate | Defer | No active `npm audit` / `pip audit` gate exists; adding one requires Security/QA approval, severity thresholds, exception handling, package-manager scope, and rollback design. |
+| Graphify hard gate | Defer | Current graph health is advisory; blocking use would be noisy until cross-root inferred-edge posture is resolved and the CLI is reliably available. |
+| Workflow/script mutation | None | `PLN-DRA-006` is a decision closure batch, not a protected-surface mutation batch. |
 
 ## Source Rules
 
@@ -109,8 +125,8 @@ and not approval to mutate workflows, scripts, or pre-commit hooks.
 ## Maintenance
 
 - **Owner**: QA Engineer / Documentation Specialist / Security Auditor.
-- **Review Cadence**: Review before `PLN-DRA-006` or any workflow, validator,
-  dependency audit, or Graphify hard-gate change.
+- **Review Cadence**: Review before any future workflow, validator, dependency
+  audit, or Graphify hard-gate change.
 - **Update Trigger**: Update when CI jobs, local QA scripts, required checks,
   dependency audit policy, or Graphify posture changes.
 

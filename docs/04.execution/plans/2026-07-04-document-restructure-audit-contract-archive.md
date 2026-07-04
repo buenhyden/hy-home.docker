@@ -171,7 +171,7 @@ documents as policy owners.
 - [x] Approved operations bucket targets across `00-workspace`, `01-*` through
       `12-*`, and `90-knowledge` are archived/removed/relinked without
       collapsing guide/policy/runbook roles.
-- [ ] Validator, CI/CD, QA, and formatting decisions are either implemented
+- [x] Validator, CI/CD, QA, and formatting decisions are either implemented
       with stable checks or recorded as future hardening candidates.
 - [x] LLM Wiki, progress memory, task evidence, and audit gap register reflect
       the final state.

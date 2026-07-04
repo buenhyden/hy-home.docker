@@ -58,7 +58,9 @@ change, or operations bucket restructure begins.
 | `scripts/knowledge/generate-llm-wiki-index.sh` | `PLN-DRA-005` LLM Wiki path contract sync | Generated index required-path contract | Required path and generated related link pointed to the old maintenance guide path | Required path and generated related link point to `guides/00-workspace/llm-wiki-maintenance.md` | `git revert` the operations bucket restructure commit, then rerun the generator | Path metadata only; no secret values or runtime logs |
 | `docs/90.references/llm-wiki/llm-wiki-index.md` | LLM Wiki generated index contract | Tracked path index | Prior generated path index from previous batch | Index regenerated after staging current batch changes | Rerun `bash scripts/knowledge/generate-llm-wiki-index.sh` after revert | Path metadata only; no secret values or raw runtime logs |
 | `docs/00.agent-governance/memory/progress.md` | Governance memory contract | Progress memory | `PLN-DRA-005` not recorded | Operations bucket restructure recorded after validation | `git revert` the operations bucket restructure commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
-| Future target documents | Parent plan approval gates | `docs/98.archive/**`, validators, workflows, provider runtime, runtime infra | No validator, workflow, provider runtime, runtime infra, secret material, or archive tombstone change through `PLN-DRA-005` | Future batches must add per-surface evidence before edits | Revert only the future batch commit that introduced the change | Redaction boundary must be restated before touching protected surfaces |
+| `docs/90.references/audits/document-restructure/{ci-qa-formatting-contract.md,restructure-gap-register.md}` | `PLN-DRA-006` validator/CI/QA decision batch | CI/QA/formatting decision evidence | Dependency-audit and Graphify hard gates were future candidates; current workflow/script gates were already active | Current gates are preserved; dependency-audit and Graphify hard gates remain future Security/QA candidates with no workflow/script mutation | `git revert` the validator/CI/QA decision commit | Evidence-only updates; no workflow, validator, credential, or remote setting changes |
+| `docs/03.specs/document-restructure-audit-contract-archive/spec.md`; `docs/04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md`; this task; progress memory | `PLN-DRA-006` closure evidence | Spec/plan/task/progress routing | `T-DRA-006` planned and completion criteria still open | Decision recorded and `T-DRA-006` marked done after validation | `git revert` the validator/CI/QA decision commit | Documentation metadata only; no secret values or runtime logs |
+| Future target documents | Parent plan approval gates | `docs/98.archive/**`, validators, workflows, provider runtime, runtime infra | No validator, workflow, provider runtime, runtime infra, secret material, or archive tombstone change through `PLN-DRA-006` | Future batches must add per-surface evidence before edits | Revert only the future batch commit that introduced the change | Redaction boundary must be restated before touching protected surfaces |
 
 ## Task Table
 
@@ -69,7 +71,7 @@ change, or operations bucket restructure begins.
 | T-DRA-003 | Update template, frontmatter, lifecycle, archive, and governance contracts. | doc | Template Contract Baseline | PLN-DRA-003 | Stage 99 support contract diffs and audit register reclassification | Codex | Done |
 | T-DRA-004 | Execute approved `docs/03.specs` archive/remove/relink batch. | doc | 03.specs Restructure Model | PLN-DRA-004 | Candidate dispositions, status/routing cleanup, no tombstones needed, validation | Codex | Done |
 | T-DRA-005 | Execute approved operations bucket restructure batch. | doc | Operations Bucket Restructure Model | PLN-DRA-005 | Full bucket candidate dispositions, `90-knowledge` relocation, link sync, validation | Codex | Done |
-| T-DRA-006 | Decide validator, CI/CD, QA, and formatting enforcement. | doc/test | CI/CD, QA, and Formatting Contract | PLN-DRA-006 | Stable check implementation or future-hardening decision record | Codex | Planned |
+| T-DRA-006 | Decide validator, CI/CD, QA, and formatting enforcement. | doc/test | CI/CD, QA, and Formatting Contract | PLN-DRA-006 | Stable check implementation or future-hardening decision record | Codex | Done |
 | T-DRA-007 | Close evidence and residual gaps. | doc | Verification / Success Criteria | PLN-DRA-007 | Final validation matrix, gap register, progress, LLM Wiki, commit trail | Codex | Planned |
 
 ## Baseline Snapshot
@@ -138,7 +140,7 @@ targets. The future audit pack must classify them before any target mutation.
 - [x] T-DRA-003 Update Stage 99 support contracts and minimal Stage 00 rules if needed.
 - [x] T-DRA-004 Execute approved `docs/03.specs` archive/remove/relink batch.
 - [x] T-DRA-005 Execute approved operations bucket restructure batch across all operations buckets.
-- [ ] T-DRA-006 Decide validator, CI/CD, QA, and formatting enforcement.
+- [x] T-DRA-006 Decide validator, CI/CD, QA, and formatting enforcement.
 - [ ] T-DRA-007 Close evidence and residual gaps.
 
 ## Validation Results
@@ -152,7 +154,10 @@ targets. The future audit pack must classify them before any target mutation.
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` | PASS: `failures=0`. |
 | Implementation alignment | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `stage_docs_total=553`, links checked `4205`, `archive_direct_links_total=0`, `operations_service_docs_checked=143`, `failures=0`. |
 | Script syntax | `bash -n scripts/validation/check-repo-contracts.sh`; `bash -n scripts/knowledge/generate-llm-wiki-index.sh`; `bash -n scripts/validation/check-doc-implementation-alignment.sh` | PASS: shell syntax is valid. |
-| Full repo contracts | `bash scripts/validation/check-repo-contracts.sh` | PASS: `changed_template_docs_total=21`, `target_stage_docs_total=617`, `failures=0`. |
+| Local QA gate inventory | `bash scripts/validation/run-local-qa-gates.sh --list` | PASS: local script-backed gates, CI/local-tooling gates, and remote-only gates are listed separately. |
+| Dependency-audit active gate scan | `rg -n 'npm audit\|pip audit' .github scripts --glob '*.yml' --glob '*.yaml' --glob '*.sh'` | PASS: no active workflow or script-backed dependency-audit command found. |
+| Graphify health posture | `bash scripts/knowledge/report-graphify-health.sh` | ADVISORY: `status=advisory`, `surprising_cross_root_inferred_edges=2`; not promoted to a hard gate. |
+| Full repo contracts | `bash scripts/validation/check-repo-contracts.sh` | PASS: `changed_template_docs_total=5`, `target_stage_docs_total=617`, `failures=0`. |
 | Graphify refresh | `command -v graphify` | SKIP: Graphify CLI was not available in PATH, so graph refresh was not run. |
 
 ## PLN-DRA-004 Stage 03 Exact Disposition List
@@ -190,6 +195,21 @@ targets. The future audit pack must classify them before any target mutation.
 | `docs/05.operations/policies/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/policies/00-workspace/README.md` |
 | `docs/05.operations/runbooks/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/runbooks/00-workspace/README.md` |
 | `docs/05.operations/{guides,policies,runbooks}/01-*...12-*` | Preserved in place | `active-canonical` | No duplicate or conflict justified a broad service-bucket move in this batch |
+
+## PLN-DRA-006 CI/QA/Formatting Decision List
+
+| Surface | Final Action | Disposition | Evidence / Future Pointer |
+| --- | --- | --- | --- |
+| `.github/workflows/ci-quality.yml` | Preserved | `active-canonical` | Existing workflow already owns docs traceability, implementation alignment, repo contracts, compose, hardening, template/security baseline, quickwin, pre-commit, frontend, Storybook coverage, and zizmor gates. |
+| `.github/rulesets/main-protection.md` | Preserved | `active-canonical` / proposal evidence | Local proposal lists required status checks and remote-state caveats; no remote GitHub setting was changed. |
+| `scripts/validation/run-local-qa-gates.sh` | Preserved | `active-canonical` | `--list` already separates local script-backed gates, CI/local-tooling gates, and remote-only responsibilities. |
+| `git diff --check` | Required per batch | `active-canonical` | Minimum formatting gate for document-only batches. |
+| `scripts/validation/check-doc-traceability.sh` | Required per batch | `active-canonical` | Current CI and local validation gate. |
+| `scripts/validation/check-doc-implementation-alignment.sh` | Required per batch | `active-canonical` | Current CI/local evidence gate; remote branch-protection enforcement remains separately verifiable. |
+| `scripts/validation/check-repo-contracts.sh` | Required per batch | `active-canonical` | Enforces documentation, workflow, LLM Wiki, hardening, and runtime-version contracts. |
+| `scripts/knowledge/generate-llm-wiki-index.sh --check` | Required for path-changing batches | `active-canonical` | Ensures generated tracked path index freshness. |
+| Dependency audit hard gates | Not added | `evidence-preserve` / future Security/QA candidate | No active `npm audit` or `pip audit` command exists in `.github` or `scripts`; future implementation requires thresholds, exception policy, package-manager scope, and rollback design. |
+| Graphify hard gate | Not added | `evidence-preserve` / future knowledge-graph candidate | `report-graphify-health.sh` currently reports `status=advisory`; Graphify remains navigation evidence, not a blocking gate. |
 
 ## Implementation Notes
 
@@ -239,6 +259,13 @@ targets. The future audit pack must classify them before any target mutation.
 - T-DRA-005 updated active links, the LLM Wiki repository map, the generated
   index generator required path, and role-specific parent README routing to
   the new `00-workspace` path.
+- T-DRA-006 preserved existing workflow and validator surfaces and closed the
+  decision by recording current gates as active-canonical. No workflow,
+  validator, pre-commit, remote GitHub setting, provider runtime, or secret
+  surface was changed.
+- T-DRA-006 kept dependency-audit and Graphify hard gates as future candidates
+  because the current evidence does not justify a noisy or credential-adjacent
+  hard gate inside this documentation restructure wave.
 
 ## Verification Summary
 
@@ -247,12 +274,10 @@ targets. The future audit pack must classify them before any target mutation.
   and doc alignment validation listed in `## Validation Results`.
 - **Logs / Evidence Location**: This task document, parent plan, progress
   memory, and generated LLM Wiki index.
-- **Manual Checks**: Confirmed T-DRA-005 moved only the legacy LLM Wiki
-  maintenance guide, policy, and runbook leaves into `00-workspace`, removed
-  the empty legacy bucket indexes, and preserved guide/policy/runbook role
-  separation. No archive tombstone, validator, workflow, provider runtime,
-  runtime infra, secret value, raw log, shell history, or `.env` value was
-  touched.
+- **Manual Checks**: Confirmed T-DRA-006 changed only decision/evidence
+  documents. No archive tombstone, validator, workflow, pre-commit hook,
+  provider runtime, runtime infra, secret value, raw log, shell history,
+  remote GitHub setting, or `.env` value was touched.
 
 ## Related Documents
 

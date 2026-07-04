@@ -391,6 +391,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Evidence | Spec, plan, task, audit gap register | ✅ Updated | `DRA-GAP-008` and `DRA-GAP-009` closed by `PLN-DRA-005`; task evidence records exact dispositions and rollback guidance. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass. Graphify refresh skipped because the CLI was unavailable. |
 
+## Document Restructure CI/QA Decision Batch (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Current CI quality gates | `.github/workflows/ci-quality.yml` | ✅ Preserved | Existing jobs cover docs, repo contracts, compose, hardening, template/security, quickwin, pre-commit, frontend, Storybook coverage, and zizmor. |
+| Local QA runner | `scripts/validation/run-local-qa-gates.sh` | ✅ Preserved | `--list` already separates local script-backed gates, CI/local-tooling gates, and remote-only responsibilities. |
+| Dependency audit hard gate | `.github`, `scripts` | ⏸ Deferred | No active `npm audit` / `pip audit` command exists; adding one requires future Security/QA approval, thresholds, exception handling, package scope, and rollback design. |
+| Graphify hard gate | `scripts/knowledge/report-graphify-health.sh` | ⏸ Deferred | Current graph health is advisory with cross-root inferred edges; Graphify remains navigation evidence rather than a blocking gate. |
+| Evidence | `PLN-DRA-006` | ✅ Updated | `DRA-GAP-010` and `DRA-GAP-011` closed for this wave without workflow, validator, pre-commit, remote GitHub, provider runtime, or secret-surface mutation. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass. Dependency audit scan has no active `npm audit` / `pip audit`; Graphify remains advisory. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

@@ -89,8 +89,8 @@ corpus.
 | DRA-GAP-007 | Current document restructure spec | Closed: current design spec and README are active for this wave. | `active-canonical` | Done in `PLN-DRA-004` | [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) |
 | DRA-GAP-008 | Operations bucket taxonomy | Closed: the full `00-workspace`, `01-*` through `12-*`, and legacy `90-knowledge` surface was reviewed; only the legacy LLM Wiki maintenance bucket required movement. | `active-canonical` / evidence-preserve | Done in `PLN-DRA-005` | [Operations bucket restructure](./operations-bucket-restructure.md) |
 | DRA-GAP-009 | Operations guide/policy/runbook roles | Closed: guide, policy, and runbook roles stayed separate while LLM Wiki maintenance moved from `90-knowledge` into `00-workspace`. | `active-canonical` / resolved historical bucket | Done in `PLN-DRA-005` | [Operations bucket restructure](./operations-bucket-restructure.md) |
-| DRA-GAP-010 | CI/CD and QA gates | Existing gates cover docs and repo contracts; new dependency-audit or Graphify hard gates require separate approval. | `evidence-preserve` / future hardening candidate | `PLN-DRA-006` only if approved. | [CI, QA, and formatting contract](./ci-qa-formatting-contract.md) |
-| DRA-GAP-011 | Workflow and validator surfaces | Workflow/script changes are protected surfaces and should not be bundled with archive moves. | `active-canonical` | Keep separate if `PLN-DRA-006` proceeds. | [CI, QA, and formatting contract](./ci-qa-formatting-contract.md) |
+| DRA-GAP-010 | CI/CD and QA gates | Closed for this wave: existing gates cover the restructure validation set; dependency-audit and Graphify hard gates remain future Security/QA candidates. | `evidence-preserve` / future hardening candidate | Done in `PLN-DRA-006`; future gate work requires a new exact approval. | [CI, QA, and formatting contract](./ci-qa-formatting-contract.md) |
+| DRA-GAP-011 | Workflow and validator surfaces | Closed for this wave: workflow and script surfaces stayed protected and unchanged. | `active-canonical` | Done in `PLN-DRA-006`; future mutation must update workflow, ruleset, governance, and repo-contract coupling together. | [CI, QA, and formatting contract](./ci-qa-formatting-contract.md) |
 | DRA-GAP-012 | Historical evidence | Prior audit reports and completed work products should not be rewritten for style alone. | `evidence-preserve` | Preserve unless active-consumption conflict is proven. | [Template contract drift](./template-contract-drift.md), [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) |
 
 ## Future Implementation Batches
@@ -100,7 +100,7 @@ corpus.
 | `PLN-DRA-003` template contracts | DRA-GAP-001, DRA-GAP-002 | Complete | Stage 99 contract diff, provider sync if Stage 00/provider text changes, repo contracts. |
 | `PLN-DRA-004` Stage 03 archive/remove | DRA-GAP-005, DRA-GAP-006, DRA-GAP-007, DRA-GAP-012 | Complete | Link synchronization, status cleanup, no tombstone needed, LLM Wiki, doc implementation alignment. |
 | `PLN-DRA-005` operations bucket restructure | DRA-GAP-008, DRA-GAP-009 | Complete | Role separation, operations links, LLM Wiki regeneration, doc traceability, repo contracts. |
-| `PLN-DRA-006` validator/CI/QA | DRA-GAP-010, DRA-GAP-011 | Workflow/script/validator and Security/QA approval | `bash -n`, local QA gates, repo contracts, rollback guidance. |
+| `PLN-DRA-006` validator/CI/QA | DRA-GAP-010, DRA-GAP-011 | Complete | Current gates preserved; dependency-audit and Graphify hard gates deferred with future approval requirements. |
 | Reference lifecycle cleanup | DRA-GAP-004 | Not required by current contract | Preserve unless a future Stage 90 archive-policy change requires a targeted diff. |
 
 ## Remediation Updates
@@ -111,6 +111,7 @@ corpus.
 | 2026-07-04 | DRA-GAP-004 | Reclassified | `lifecycle-status.md` clarifies `superseded`; `roadmap-v1.md` already points to `roadmap.md`. | No current target edit. |
 | 2026-07-04 | DRA-GAP-005, DRA-GAP-006, DRA-GAP-007 | Closed by `PLN-DRA-004` | Stage 03 candidate review updated status/routing for current, completed, draft, and superseded spec surfaces without removing active evidence. | No Stage 03 tombstone created; future archive requires a new conflict or duplicate row. |
 | 2026-07-04 | DRA-GAP-008, DRA-GAP-009 | Closed by `PLN-DRA-005` | LLM Wiki maintenance guide, policy, and runbook moved from legacy `90-knowledge` buckets to `00-workspace`; empty tracked legacy bucket README indexes were removed. | No remaining `90-knowledge` tracked Markdown leaf; future operations cleanup requires a new exact candidate row. |
+| 2026-07-04 | DRA-GAP-010, DRA-GAP-011 | Closed by `PLN-DRA-006` | CI/QA decision preserves current hard/local gates and records dependency-audit and Graphify hard gates as future candidates only. | Future workflow/script mutation requires exact approval, threshold/exception design, and rollback guidance. |
 
 ## Source Rules
 

@@ -219,6 +219,13 @@ The audit pack should separate:
 No new CI hard gate is introduced by this design. Future hard gates must be
 backed by audit evidence, rollback guidance, and owner approval.
 
+The approved `PLN-DRA-006` decision keeps the current CI quality workflow,
+local QA runner, repository contracts, formatting hygiene, and LLM Wiki
+freshness checks as the active validation set for this restructure wave.
+Networked dependency-audit hard gates and Graphify blocking gates remain future
+Security/QA candidates because they require protected workflow or validator
+changes, thresholds, exception handling, and rollback design.
+
 ## External Source Basis
 
 The restructure uses external sources as supporting rationale, not as direct
