@@ -544,6 +544,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Prometheus documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Prometheus compose/config scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Tempo Policy Profile Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Tempo policy structure | `docs/05.operations/policies/06-observability/tempo.md` | ✅ Updated | Removed the legacy blockquote separator and normalized the policy around `Overview`, `Policy Scope`, `Controls`, `Exceptions`, `Verification`, `Review Cadence`, and `Related Documents`. |
+| Current-truth boundary | `infra/06-observability/tempo` | ✅ Clarified | Preserved image `hy/tempo:3.0.2-custom`, upstream `grafana/tempo:3.0.2`, non-root user `10001:10001`, `tempo-data`, MinIO bucket `tempo-bucket`, 24h/1h retention, metrics generator remote_write, Docker Secret guard, and protected route chain. |
+| Command/document wording | `infra/06-observability/tempo/README.md`, `docs/05.operations/runbooks/06-observability/tempo.md` | ✅ Corrected | Added `--profile obs` to Tempo service commands, fixed the broken restart command, removed the invalid local `minio` restart from the observability compose command, and aligned log checks with container `infra-tempo`. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Tempo documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Tempo compose/config/image scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

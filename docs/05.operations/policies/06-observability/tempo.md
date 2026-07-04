@@ -5,51 +5,78 @@ status: active
 
 # Tempo Operations Policy
 
-> Operational standards for distributed tracing and S3 backend management.
-
----
-
 ## Overview
 
-이 문서는 Tempo 운영 정책을 정의한다. 분산 추적 데이터의 보관 주기(Retention), 스토리지 백엔드(MinIO) 관리, 그리고 메트릭 생성부(Metrics Generator) 운영 기준을 규정한다.
+이 정책은 Tempo distributed tracing backend의 trace ingestion, MinIO S3
+storage, block retention, metrics generator, secret boundary, protected route를
+정의한다. 사용 흐름은 Tempo guide가, 장애 대응 절차는 Tempo runbook이
+담당한다.
 
 ## Policy Scope
 
-Tempo 서비스의 트레이스 인입, 저장소 처리, 메트릭 원격 쓰기 정책.
+이 정책은 current `infra/06-observability/tempo` compose와
+`config/tempo.yaml`에 선언된 Tempo 운영 기준을 다룬다.
 
-- **Systems**: Tempo (v3.0.2-custom)
-- **Agents**: Grafana Alloy (OTLP Collectors)
-- **Environments**: Production (Observability Tier)
+- **Systems**: compose service `tempo`, container `infra-tempo`, image `hy/tempo:3.0.2-custom`, config `infra/06-observability/tempo/config/tempo.yaml`, volume `tempo-data`, MinIO bucket `tempo-bucket`
+- **Agents**: Operators, SREs, AI agents following repo-local governance
+- **Environments**: local, development, homelab operations
 
 ## Controls
 
 - **Required**:
-  - 모든 트레이스 데이터는 OTLP 표준을 준수해야 한다.
-  - `metrics_generator`를 통한 Span Metrics는 주기적으로 Prometheus로 `remote_write` 되어야 한다.
+  - Tempo service는 `template-stateful-high`, image
+    `hy/tempo:3.0.2-custom`, user `10001:10001`, read-only config mount,
+    persistent `tempo-data` volume을 유지한다.
+  - Custom Tempo image는 upstream `grafana/tempo:3.0.2`, non-root user
+    `10001:10001`, and `/docker-entrypoint.sh` secret guard를 유지한다.
+  - OTLP receiver는 internal gRPC `4317`과 HTTP `4318` endpoints를 유지한다.
+  - HTTP/query/health surface는 `${TEMPO_PORT:-3200}`와 `/ready` healthcheck를
+    기준으로 한다.
+  - Trace storage는 MinIO S3 backend, bucket `tempo-bucket`, endpoint
+    `minio:9000`, `insecure: true`를 사용한다.
+  - `MINIO_APP_USERNAME`은 environment reference로, `MINIO_APP_USER_PASSWORD`는
+    Docker Secret `minio_app_user_password`로만 주입한다.
+  - Block retention은 `block_retention: 24h`,
+    `compacted_block_retention: 1h`를 기준으로 한다.
+  - Metrics generator는 `span_metrics`, `service_graphs`, `local_blocks`를
+    활성화하고 Prometheus `http://prometheus:9090/api/v1/write`로
+    `remote_write` 한다.
+  - Tempo route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`
+    middleware chain을 유지한다.
 - **Allowed**:
-  - 개발 환경에서의 100% 샘플링 (주의: 부하 모니터링 필수).
-  - 특정 이슈 분석을 위한 일시적인 디버그 로그 레벨 상향.
+  - Development/debug 상황의 sampling 또는 log-level 변경은 plan/task
+    evidence와 rollback note가 있을 때만 허용한다.
+  - 장기 분석이 필요하면 retention policy와 MinIO owning policy/runbook을
+    함께 갱신한다.
 - **Disallowed**:
-  - 개인정보(PII)나 비밀번호 등 민감 정보가 트레이스 속성(Attributes)에 포함되지 않도록 마스킹 처리해야 한다.
-  - MinIO 관리 권한 없는 사용자의 버킷 직접 수정.
-
-## Storage and Retention
-
-- **Block Retention**: 데이터 블록은 기본 **24시간** 동안 보관한다 (비용 및 성능 최적화).
-- **Storage Backend**: MinIO 버킷 `tempo-bucket`을 상시 가용 상태로 유지한다.
+  - PII, password, token, credential 값을 trace attributes에 기록하는 행위
+  - Secret guard 없이 MinIO-backed Tempo image 또는 entrypoint를 변경하는 행위
+  - 승인 없이 bucket, retention, metrics generator processors, remote_write
+    endpoint, route middleware, image version을 runtime에서 변경하는 행위
 
 ## Exceptions
 
-- 장기 추적 분석이나 법적 규제 준수가 필요한 특정 도메인의 경우, 블록 보관 기간을 연장하거나 콜드 스토리지로 이전할 수 있다 (아키텍처 위원회 승인 필요).
+- Retention, bucket, sampling, remote_write, route, secret reference 예외는
+  사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+- 장애 대응 중 임시 조치가 필요하면 Tempo runbook에서 최소 조치와 rollback
+  evidence를 기록한다.
 
 ## Verification
 
-- **Storage Audit**: `mc ls` 명령을 통해 MinIO 버킷 내 데이터 블록 생성 및 삭제 상태 확인.
-- **Integration Test**: Grafana에서 지연 시간이 긴 트레이스 검색 및 시각화 정상 작동 여부 확인.
+- Compose service boundary:
+  `rg -n 'service: template-stateful-high|image: hy/tempo:3.0.2-custom|user: .10001:10001.|tempo-data|TEMPO_PORT|minio_app_user_password|tempo.middlewares' infra/06-observability/docker-compose.yml`
+- Tempo config:
+  `rg -n 'block_retention: 24h|compacted_block_retention: 1h|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: minio:9000|secret_key: \\$\\{MINIO_APP_USER_PASSWORD\\}' infra/06-observability/tempo/config/tempo.yaml`
+- Custom image secret guard:
+  `rg -n 'FROM grafana/tempo:3.0.2|USER 10001:10001|missing secret: /run/secrets/minio_app_user_password' infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
+- Repository contracts:
+  `bash scripts/validation/check-repo-contracts.sh`
 
 ## Review Cadence
 
-- Semi-annually (스토리지 증가율 및 트레이스 분석 빈도 검토)
+- Tempo image, config, retention, MinIO bucket, metrics generator,
+  remote_write, route, secret reference, OTLP receiver가 변경될 때 검토한다.
+- 정기 검토는 quarterly cadence로 수행한다.
 
 ## Related Documents
 

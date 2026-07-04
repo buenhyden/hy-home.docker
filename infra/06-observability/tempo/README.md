@@ -49,8 +49,8 @@ tempo/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose up -d tempo` | Start Tempo service |
-| `docker compose logs -f tempo` | Follow Tempo logs |
+| `docker compose --profile obs up -d tempo` | Start Tempo service |
+| `docker compose --profile obs logs -f tempo` | Follow Tempo logs |
 
 ## Configuration
 
@@ -73,7 +73,7 @@ tempo/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify trace ingestion by checking `docker logs tempo | grep -i 'error\|warn'` after config changes.
+- Verify trace ingestion by checking `docker logs infra-tempo | grep -i 'error\|warn'` after config changes.
 - Confirm OTLP endpoint reachability from Alloy by verifying traces appear in Grafana Tempo datasource.
 
 ## Troubleshooting

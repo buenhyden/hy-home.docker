@@ -28,7 +28,7 @@ status: active
 - **Resolution**:
 
   ```bash
-  docker compose restart tempo- [Tempo](./tempo.md)
+  docker compose --profile obs restart tempo
   ```
 
   Alloy와 Tempo 간의 OTLP 엔드포인트(4317/4318) 도달 가능성 확인.
@@ -65,8 +65,8 @@ status: active
 ## Move to infra directory
 cd infra/06-observability
 
-## Restart all related services
-docker compose restart minio tempo alloy
+## Restart related observability services
+docker compose --profile obs restart tempo alloy
 ```
 
 ### Manual Bucket Check
