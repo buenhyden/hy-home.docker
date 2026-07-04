@@ -524,6 +524,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed one operations policy and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, observability hardening check, template/security baseline, observability compose validation, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Alloy Policy Profile Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Alloy policy structure | `docs/05.operations/policies/06-observability/alloy.md` | ✅ Updated | Normalized the policy into the operations policy template flow and merged legacy operational standards, monitoring, and configuration-governance sections into `Controls`, `Exceptions`, `Verification`, and `Review Cadence`. |
+| Current-truth boundary | `infra/06-observability/alloy` | ✅ Clarified | Preserved image `grafana/alloy:v1.17.1`, `template-infra-med`, OTLP ports `4317/4318`, Alloy UI/health port `12345`, read-only Docker discovery/log mounts, `alloy-data`, Loki/Prometheus/Tempo/Pyroscope pipeline endpoints, network relabeling, and protected route chain. |
+| Conflicting README wording | `infra/06-observability/alloy/README.md` | ✅ Corrected | Aligned the UI URL with the HTTPS Traefik route, made profile forwarding conditional on a configured profile source, and added `--profile obs` to service commands. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Alloy documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Alloy compose/config scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

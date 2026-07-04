@@ -25,7 +25,7 @@ Alloy is the unified collection agent for the `hy-home.docker` platform. It repl
   - Metrics -> Prometheus
   - Logs -> Loki
   - Traces -> Tempo
-  - Profiling -> Pyroscope
+  - Profiling -> Pyroscope writer endpoint when a profile source is configured
 - **Status**: Live pipeline debugging via Alloy UI.
 
 ### Out of Scope
@@ -47,7 +47,7 @@ alloy/
 
 1. Follow the [Alloy Guide](../../../docs/05.operations/guides/06-observability/alloy.md).
 2. Modify `config.alloy` to add new pipeline components or relabeling rules.
-3. Access the Alloy UI at `http://alloy.${DEFAULT_URL}` to debug pipelines and check component status.
+3. Access the Alloy UI at `https://alloy.${DEFAULT_URL}` to debug pipelines and check component status.
 4. Verify changes in the [Alloy Operation Policy](../../../docs/05.operations/policies/06-observability/alloy.md).
 
 ## Tech Stack
@@ -62,8 +62,8 @@ alloy/
 
 | Command                        | Description                 |
 | :----------------------------- | :-------------------------- |
-| `docker compose restart alloy` | Apply configuration changes |
-| `docker compose logs -f alloy` | Tail collector logs         |
+| `docker compose --profile obs restart alloy` | Apply configuration changes |
+| `docker compose --profile obs logs -f alloy` | Tail collector logs         |
 
 ## Configuration
 
@@ -94,7 +94,7 @@ alloy/
 - Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For OTLP ingestion errors: verify port bindings (`ALLOY_OTLP_GRPC_PORT`, `ALLOY_OTLP_HTTP_PORT`) and check that applications target the correct Alloy endpoint.
-- For collector config errors: validate `config.alloy` HCL syntax and check the Alloy UI at `http://alloy.${DEFAULT_URL}` for component status.
+- For collector config errors: validate `config.alloy` HCL syntax and check the Alloy UI at `https://alloy.${DEFAULT_URL}` for component status.
 - For exporter errors: confirm downstream services (Prometheus, Loki, Tempo, Pyroscope) are reachable and their endpoints match `config.alloy` export targets.
 
 ## Related Documents
