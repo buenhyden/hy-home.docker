@@ -1,7 +1,5 @@
 # Open WebUI
 
-> Full-featured web interface for LLM interaction and RAG orchestration.
-
 ## Overview
 
 Open WebUI (formerly Ollama WebUI) provides a ChatGPT-like interface for local LLMs. Beyond simple chat, it acts as a RAG (Retrieval-Augmented Generation) orchestrator, integrating with Qdrant for vector document search and Ollama for embedding generation.
@@ -71,11 +69,15 @@ open-webui/
 
 - [Ollama Implementation](../ollama/README.md)
 - [Qdrant Implementation](../../04-data/specialized/qdrant/README.md)
-- [Open WebUI System Guide](../../../docs/05.operations/guides/08-ai/open-webui.md)
-- [Open WebUI Operations Policy](../../../docs/05.operations/policies/08-ai/open-webui.md)
-- [Open WebUI Runbook](../../../docs/05.operations/runbooks/08-ai/open-webui.md)
+- [Open WebUI usage guide](../../../docs/05.operations/guides/08-ai/open-webui.md)
+- [Open WebUI operations policy](../../../docs/05.operations/policies/08-ai/open-webui.md)
+- [Open WebUI recovery runbook](../../../docs/05.operations/runbooks/08-ai/open-webui.md)
 
----
+## Validation
+
+- Run `bash scripts/hardening/check-all-hardening.sh 08-ai` after README or Compose reference changes that affect Open WebUI.
+- Run `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh` for the current root-active profile surface.
+- Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
 
 ## Configuration
 
@@ -91,29 +93,3 @@ open-webui/
 
 - Changes to `docker-compose.yml` may affect SSO authentication flows.
 - Updating `RAG_EMBEDDING_MODEL` requires re-indexing of existing documents.
-
----
-
-## AI Agent Guidance
-
-이 영역을 수정하기 전에 Agent는 다음을 먼저 수행해야 한다.
-
-1. 이 README를 먼저 읽는다.
-2. Open WebUI stores chat history and RAG metadata in a local SQLite DB mapped to `${DEFAULT_AI_MODEL_DIR}/open-webui`.
-3. RAG indexing performance depends on the `qwen3-embedding:0.6b` model speed in Ollama.
-4. Ensure the `VECTOR_DB_URL` correctly points to the Qdrant instance in the `04-data` tier.
-
-### Allowed Outputs
-
-- `docker-compose.yml`: Update service configuration.
-- `README.md`: Update documentation links.
-
-### Guardrails
-
-- Do not modify `${DEFAULT_AI_MODEL_DIR}` paths without architectural approval.
-- Do not disable SSO middlewares unless explicitly requested for local debugging.
-
-### Validation
-
-- Verify Traefik host rules match `${DEFAULT_URL}`.
-- Ensure dependency on `ollama` health is maintained.

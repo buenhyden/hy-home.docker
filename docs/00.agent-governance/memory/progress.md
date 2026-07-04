@@ -682,6 +682,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed workflow documentation, generated LLM Wiki index, and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | Deletion-reference scan, `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
 
+## AI Tier Operations Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Policy profile cleanup | `docs/05.operations/policies/08-ai/{ollama,open-webui,optimization-hardening}.md` | ✅ Updated | Removed legacy AI-agent policy sections and stale blockquote separators while preserving model, GPU, RAG, SSO, and log-retention controls. |
+| Infra README residue | `infra/08-ai/{README.md,ollama/README.md,open-webui/README.md}` | ✅ Updated | Replaced stale system-guide/policy labels, removed standalone compose/log pipeline guidance, and kept root profile validation as the readiness evidence boundary. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed AI documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

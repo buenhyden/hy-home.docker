@@ -5,10 +5,6 @@ status: active
 
 # Ollama Operations Policy
 
-> GPU/VRAM 거버넌스와 모델 도입·승격·운영 통제 정책.
-
----
-
 ## Overview
 
 이 문서는 Ollama 운영 정책을 정의한다. 제한된 GPU 자원에서 안정적으로 추론 서비스를 제공하기 위해 모델 도입 기준, 리소스 사용 한계, 장애 대응 기준을 규정한다.
@@ -62,17 +58,6 @@ Ollama 추론 엔진 운영 전반:
 
 - **Quarterly**: 모델 포트폴리오/자원 정책 검토
 - **Per Model Change**: 모델 도입/교체 건별 검토
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**:
-  - 모델/기본 프롬프트 변경은 변경 요청 + 검증 기록 + 운영 반영 순으로 진행
-- **Eval / Guardrail Threshold**:
-  - 배포 게이트: health, 기본 추론 성공, 리소스 임계 초과 없음
-- **Log / Trace Retention**:
-  - 추론 계층 운영 로그/지표 증적 최소 90일 보관
-- **Safety Incident Thresholds**:
-  - GPU 자원 고갈로 서비스 불능, 무단 모델 교체, 비인가 추론 엔드포인트 노출은 `Sev1`
 
 ## Related Documents
 

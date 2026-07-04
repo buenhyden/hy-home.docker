@@ -1,7 +1,5 @@
 # Ollama Inference Engine
 
-> Local LLM inference server with NVIDIA GPU acceleration.
-
 ## Overview
 
 이 경로는 `hy-home.docker` 플랫폼의 핵심 추론 엔진인 Ollama 구성을 담당한다. NVIDIA GPU 가속을 통해 Llama 3, Mistral 등의 오픈소스 LLM을 로컬에서 효율적으로 구동하며, 지표 수집을 위한 Exporter를 포함한다.
@@ -56,9 +54,9 @@ ollama/
 
 ## How to Work in This Area
 
-1. 상위 시스템 가이드인 [Ollama System Guide](../../../docs/05.operations/guides/08-ai/ollama.md)를 먼저 읽는다.
-2. 리소스 예약 및 모델 거버넌스는 [Ollama Operations Policy](../../../docs/05.operations/policies/08-ai/ollama.md)를 따른다.
-3. 장애 발생 시 [Ollama Runbook](../../../docs/05.operations/runbooks/08-ai/ollama.md)에 따라 복구를 수행한다.
+1. 상위 사용 가이드인 [Ollama usage guide](../../../docs/05.operations/guides/08-ai/ollama.md)를 먼저 읽는다.
+2. 리소스 예약 및 모델 거버넌스는 [Ollama operations policy](../../../docs/05.operations/policies/08-ai/ollama.md)를 따른다.
+3. 장애 발생 시 [Ollama recovery runbook](../../../docs/05.operations/runbooks/08-ai/ollama.md)에 따라 복구를 수행한다.
 
 ## Validation
 
@@ -72,25 +70,14 @@ ollama/
 - Do not run this service-local compose file as a standalone config check; it depends on root `infra_net` context.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For model loading errors: verify the model name with `ollama list` and confirm sufficient disk space for model storage.
-- For API errors: check `docker logs ollama | grep -i 'error'` and confirm the API port binding matches client configuration.
+- For API errors: check `docker logs --tail=200 ollama` and confirm the API port binding matches client configuration.
 - For GPU errors: verify the NVIDIA container toolkit is installed and the GPU is accessible inside the container.
 
 ## Related Documents
 
-- **Guide**: [docs/05.operations/08-ai/ollama.md](../../../docs/05.operations/guides/08-ai/ollama.md)
-- **Policy**: [docs/05.operations/policies/08-ai/ollama.md](../../../docs/05.operations/policies/08-ai/ollama.md)
-- **Runbook**: [docs/05.operations/runbooks/08-ai/ollama.md](../../../docs/05.operations/runbooks/08-ai/ollama.md)
-
----
-
-## Available Scripts
-
-| Command | Description |
-| :--- | :--- |
-| `docker compose up -d` | Ollama 서비스 실행 |
-| `docker compose ps` | 컨테이너 상태 확인 |
-| `docker compose logs -f` | 런타임 로그 확인 |
-| `docker compose down` | 서비스 중지 |
+- **Guide**: [Ollama usage guide](../../../docs/05.operations/guides/08-ai/ollama.md)
+- **Policy**: [Ollama operations policy](../../../docs/05.operations/policies/08-ai/ollama.md)
+- **Runbook**: [Ollama recovery runbook](../../../docs/05.operations/runbooks/08-ai/ollama.md)
 
 ## Configuration
 
@@ -114,9 +101,3 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
   "prompt": "Why is the sky blue?"
 }'
 ```
-
-## AI Agent Guidance
-
-1. 모델 데이터는 `/root/.ollama` (호스트의 `${DEFAULT_AI_MODEL_DIR}/ollama`)에 저장된다. 볼륨 삭제 시 모든 모델을 다시 다운로드해야 하므로 주의한다.
-2. `ollama-exporter`를 통해 토큰 발생 속도 및 VRAM 가용량을 지속적으로 모니터링한다.
-3. 새로운 모델을 추가하기 전 [Ollama Operations Policy](../../../docs/05.operations/policies/08-ai/ollama.md)의 도입 기준을 확인한다.

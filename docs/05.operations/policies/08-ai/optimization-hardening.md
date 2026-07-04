@@ -68,13 +68,6 @@ status: active
   - 모델 접근 권한 분리 정책(역할/환경) 문서화
   - 대화 로그 보존 기간/마스킹 규칙/파기 절차 문서화
 
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: 모델/프롬프트 변경은 PRD/Plan/Task 반영 후 승인된 승격 절차로 수행
-- **Eval / Guardrail Threshold**: 하드닝 체크 + 정책 검증 + 승인 게이트 통과 필수
-- **Log / Trace Retention**: 최소 필요 보존 원칙, 민감 데이터 마스킹 필수
-- **Safety Incident Thresholds**: 인증 우회 의심, GPU OOM 반복, 비마스킹 로그 탐지 시 즉시 runbook 전환
-
 ## Related Documents
 
 - [Operations index](../../README.md)

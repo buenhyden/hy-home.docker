@@ -5,10 +5,6 @@ status: active
 
 # Open WebUI Operations Policy
 
-> Open WebUI 접근 통제, RAG 데이터 취급, 운영 변경 게이트 정책.
-
----
-
 ## Overview
 
 이 문서는 Open WebUI 운영 정책을 정의한다. 인증/접근 통제, 문서 업로드 및 RAG 처리 기준, 구성 변경 승인 절차를 명확히 하여 서비스 안정성과 보안을 유지한다.
@@ -60,18 +56,6 @@ Open WebUI 서비스 운영 전반:
 
 - **Quarterly**: 정책/권한/데이터 취급 기준 검토
 - **Per Release**: 모델/임베딩/연동 구성 변경 시 사전 검토
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**:
-  - 변경 요청 등록 -> 영향도 분석 -> staging 검증 -> 운영 반영
-  - 변경 시 관련 Usage/Procedure 동시 갱신
-- **Eval / Guardrail Threshold**:
-  - 배포 게이트: 연결성(OLLAMA/Qdrant), 인증(SSO), 핵심 질의 성공률 모두 통과 시에만 반영
-- **Log / Trace Retention**:
-  - 운영 로그/추적 증적은 최소 90일 보관
-- **Safety Incident Thresholds**:
-  - SSO 우회, 민감 데이터 외부 유출 정황, 무단 설정 변경은 즉시 `Sev1`로 분류
 
 ## Related Documents
 
