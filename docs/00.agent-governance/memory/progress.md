@@ -495,6 +495,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed one policy document and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Grafana Policy Profile Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Grafana policy structure | `docs/05.operations/policies/06-observability/grafana.md` | ✅ Updated | Merged the legacy leading Grafana policy block into the operations policy template flow: `Overview`, `Policy Scope`, `Controls`, `Exceptions`, `Verification`, `Review Cadence`, and `Related Documents`. |
+| Current-truth boundary | `infra/06-observability/grafana` | ✅ Clarified | Preserved image `grafana/grafana:13.1.0`, `template-stateful-med`, Keycloak role mapping, Docker Secret file references, read-only provisioning/dashboard mounts, `grafana-data`, protected route chain, and provisioned datasource/dashboard ownership. |
+| Conflicting README wording | `infra/06-observability/grafana/README.md` | ✅ Corrected | Aligned the provisioning guidance with `dashboards.yml` `editable: false` so production dashboards remain edit-locked and changes flow through git-managed provisioning. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Grafana documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

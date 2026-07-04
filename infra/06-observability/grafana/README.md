@@ -36,7 +36,7 @@ Grafana serves as the primary observability portal for the `hy-home.docker` ecos
 
 ## AI Agent Guidance
 
-1. **Provisioning**: Dashboards MUST NOT be edit-locked in production. Always use code-based provisioning in the `dashboards/` directory.
+1. **Provisioning**: Provisioned dashboards MUST stay edit-locked in production. Always use code-based provisioning in the `dashboards/` directory.
 2. **SSO Mapping**: Role mapping is managed via `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH` in `docker-compose.yml`. Groups starting with `/admins` map to `Admin`.
 3. **Variables**: Use Variables (Template tags) for cluster/node/service filtering to keep dashboards portable.
 4. **Color Palette**: Adhere to the `hy-home.docker` visual standards for dashboard consistency.

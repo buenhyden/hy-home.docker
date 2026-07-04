@@ -3,89 +3,83 @@ status: active
 ---
 <!-- Target: docs/05.operations/policies/06-observability/grafana.md -->
 
-# Grafana Operational Policy (06-observability) Operations Policy
-
-Policies and procedures for maintaining the visualization and alerting hub.
-
-## Dashboard Provisioning
-
-1. **Code-First Mandate**: All production dashboards MUST be stored as JSON files in `infra/06-observability/grafana/dashboards/`.
-2. **Directory Structure**:
-   - `provisioning/dashboards/dashboards.yml`: Configuration for the dashboard provider.
-   - `dashboards/`: Directory containing all `.json` dashboard definitions.
-3. **Standard Headers**: Dashboards should include a standardized title, version, and appropriate template variables (e.g., `$job`, `$instance`).
-4. **Lock Policy**: Provisioned dashboards are immutable in the UI to prevent drift. Changes must be committed to git.
-5. **Adding a New Dashboard**:
-   - Place the JSON file in `infra/06-observability/grafana/dashboards/`.
-   - Ensure a unique `uid` is set in the JSON to prevent collisions.
-   - Restart Grafana or wait for the provider to re-scan.
-
-## RBAC Management
-
-- **External Groups**: User access is exclusively managed through Keycloak groups (`/admins`, `/editors`).
-- **Admin Access**: Limited to core infrastructure maintainers.
-- **Editor Access**: Granted to developers for creating/testing new visualization patterns in development.
-
-## Maintenance Procedures
-
-### Datasource Management
-
-New datasources must be added via `infra/06-observability/grafana/provisioning/datasources/datasource.yml`. Avoid manual datasource creation to ensure service portability and reliability. Note the `uid` mapping (e.g., `Prometheus`, `Loki`, `Tempo`) used in dashboard references.
-
-### Version Upgrades
-
-Grafana version updates are managed via `docker-compose.yml`. Before upgrading, verify compatibility with existing plugins and OIDC mapping logic.
-
-### Backup & Persistence
-
-- **Data Volume**: The `/var/lib/grafana` directory is persisted via a Docker volume (`grafana-data`).
-- **Dashboard Backup**: Since dashboards are provisioned from git, recovery is as simple as restarting the container with the correct volume mount.
-
-## References
-
-- [Grafana System Usage](../../guides/06-observability/grafana.md)
-- [Loki Operational Policy (Retention)](./loki.md)
-
----
+# Grafana Operations Policy
 
 ## Overview
 
-이 문서는 `docs/05.operations/policies/06-observability/grafana.md` 주제의 운영 정책을 정의한다. 기존 운영 내용을 유지하면서 적용 범위, 통제, 검증 기준을 명시한다.
+이 정책은 Grafana visualization hub의 dashboard provisioning, datasource
+provisioning, Keycloak role mapping, secret boundary, protected route를
+정의한다. 사용 흐름은 Grafana guide가, 장애 대응 절차는 Grafana runbook이
+담당한다.
 
 ## Policy Scope
 
-이 정책은 관련 서비스의 운영 기준, 변경 통제, 검증 방법을 다룬다.
+이 정책은 current `infra/06-observability/grafana` compose, provisioning,
+dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 
-- **Systems**: 관련 Docker Compose 서비스와 문서화된 운영 자산
-- **Agents**: repo-local governance를 따르는 AI agents
+- **Systems**: compose service `grafana`, container `infra-grafana`, image `grafana/grafana:13.1.0`, volume `grafana-data`, provisioning path `infra/06-observability/grafana/provisioning`, dashboard path `infra/06-observability/grafana/dashboards`
+- **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
 ## Controls
 
-- **Required**: 변경 전 관련 README, guide, runbook 확인
-- **Allowed**: 문서와 검증 절차의 in-place 보강
-- **Disallowed**: secret 값 노출, 승인 없는 runtime 변경, 정책과 절차의 중복 SSoT 생성
+- **Required**:
+  - Dashboards는 `infra/06-observability/grafana/dashboards/`의 JSON
+    파일로 관리한다.
+  - Dashboard providers는
+    `infra/06-observability/grafana/provisioning/dashboards/dashboards.yml`
+    에서 `editable: false`를 유지한다.
+  - Datasources는
+    `infra/06-observability/grafana/provisioning/datasources/datasource.yml`
+    로 선언하고, dashboard references는 `Prometheus`, `Loki`, `Tempo`,
+    `alertmanager`, `Pyroscope` 같은 provisioned UID와 맞춘다.
+  - Grafana role mapping은 Keycloak groups `/admins`, `/editors`와
+    `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`를 기준으로 한다.
+  - `grafana_admin_password`와 `grafana_client_secret`은 Docker Secret
+    file reference로만 주입한다.
+  - Service는 `template-stateful-med`, image `grafana/grafana:13.1.0`,
+    read-only provisioning/dashboard mounts, persistent `grafana-data`
+    volume을 유지한다.
+  - Grafana route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`
+    middleware chain을 유지한다.
+- **Allowed**:
+  - 새 dashboard는 unique `uid`를 가진 JSON 파일로 추가한다.
+  - 새 datasource는 provisioning YAML과 연결 dashboard 변경을 같은
+    evidence 단위로 검증한다.
+  - Development 환경에서 UI로 탐색한 dashboard 변경은 JSON export와 review
+    후 git에 반영한다.
+- **Disallowed**:
+  - Provisioned dashboard 또는 datasource를 UI-only 변경으로 운영 기준에
+    반영하는 행위
+  - `GRAFANA_ADMIN_USERNAME`, `grafana_admin_password`,
+    `grafana_client_secret`, OAuth client secret 값을 문서, 로그, task
+    evidence에 기록하는 행위
+  - 승인 없이 route, role mapping, secret reference, provisioning mount,
+    dashboard provider lock, image version을 runtime에서 변경하는 행위
 
 ## Exceptions
 
-- 정책 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+- Dashboard provider lock, datasource UID, role mapping, secret reference,
+  route 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+- 장애 대응 중 임시 조치가 필요하면 Grafana runbook에서 최소 조치와
+  rollback evidence를 기록한다.
 
 ## Verification
 
-- 관련 repository validation script와 문서 heading audit로 준수 여부를 확인한다.
+- Compose service boundary:
+  `rg -n 'service: template-stateful-med|image: grafana/grafana:13.1.0|grafana_admin_password|grafana_client_secret|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
+- Provisioning boundary:
+  `rg -n 'editable: false|uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning`
+- Dashboard count:
+  `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`
+- Repository contracts:
+  `bash scripts/validation/check-repo-contracts.sh`
 
 ## Review Cadence
 
-- 서비스 구성 변경 시 검토
-- 문서 템플릿 변경 시 검토
-- 주요 운영 정책 변경 시 검토
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
-- **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
-- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
-- **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
+- Grafana image, provisioning YAML, dashboard tree, datasource UID, role
+  mapping, route, secret reference가 변경될 때 검토한다.
+- 정기 검토는 quarterly cadence로 수행한다.
 
 ## Related Documents
 
