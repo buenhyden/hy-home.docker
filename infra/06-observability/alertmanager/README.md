@@ -42,7 +42,7 @@ alertmanager/
 ## How to Work in This Area
 
 1. **Understand Routing**: Review `config/config.yml` to understand how alerts are grouped and dispatched.
-2. **Configuration Updates**: Always use `config.yml.template` for changes involving secrets (Slack webhooks, SMTP).
+2. **Configuration Updates**: Edit `config/config.yml`; Compose mounts it as `/etc/alertmanager/config.yml.template` and renders secrets into `/tmp/config.yml` at startup.
 3. **Secret Integration**: Ensure Docker Secrets for SMTP and Slack webhook are mounted before deployment.
 4. **Silence Management**: Use the Alertmanager UI/API for temporary alert silences during maintenance.
 
@@ -62,12 +62,13 @@ alertmanager/
 
 ## Configuration
 
-### Environment Variables
+### Docker Secrets
 
-| Variable            | Required | Description                                 |
-| :------------------ | :------- | :------------------------------------------ |
-| `SLACK_WEBHOOK_URL` | Yes      | Slack incoming webhook endpoint             |
-| `SMTP_PASSWORD`     | Yes      | SMTP authentication password (App Password) |
+| Secret | Required | Description |
+| :----- | :------- | :---------- |
+| `slack_webhook` | Yes | Slack incoming webhook endpoint rendered into `__SLACK_WEBHOOK_URL__` |
+| `smtp_username` | Yes | SMTP authentication username rendered into `__SMTP_USERNAME__` |
+| `smtp_password` | Yes | SMTP authentication password rendered into `__SMTP_PASSWORD__` |
 
 ## Validation
 
@@ -95,5 +96,5 @@ alertmanager/
 ## AI Agent Guidance
 
 1. **Silences**: Proactively create silences during planned infrastructure maintenance to prevent alert fatigue.
-2. **Grouping**: Group alerts by `alertname` and `service` to minimize notification noise.
-3. **Secret Rotation**: Trigger a service restart whenever `SLACK_WEBHOOK_URL` or `SMTP` credentials are rotated in Vault.
+2. **Grouping**: Keep alert grouping aligned with `alertname`, `job`, `domain`, and `severity` unless the policy and config are changed together.
+3. **Secret Rotation**: Trigger a service restart whenever the `slack_webhook`, `smtp_username`, or `smtp_password` Docker Secrets are rotated.

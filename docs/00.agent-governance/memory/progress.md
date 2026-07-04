@@ -505,6 +505,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Grafana documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Alertmanager Policy Profile Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Alertmanager policy structure | `docs/05.operations/policies/06-observability/alertmanager.md` | ✅ Updated | Normalized the policy into the operations policy template flow and removed the legacy agent-policy section. |
+| Current-truth boundary | `infra/06-observability/alertmanager` | ✅ Clarified | Preserved image `prom/alertmanager:v0.33.0`, `template-stateful-low`, rendered config flow, `alertmanager-data`, Slack receivers, SMTP placeholder boundary, inhibition rules, Docker Secret references, healthcheck, and protected route chain. |
+| Conflicting README wording | `infra/06-observability/alertmanager/README.md` | ✅ Corrected | Replaced the nonexistent local `config.yml.template` editing instruction with the actual `config/config.yml` mount/render flow and aligned grouping/secret-rotation guidance with the current config and Docker Secret names. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Alertmanager documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
