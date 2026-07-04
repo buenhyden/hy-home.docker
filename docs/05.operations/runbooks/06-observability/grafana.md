@@ -3,114 +3,130 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/06-observability/grafana.md -->
 
-# Grafana Runbook
+# Grafana Provisioning and Access Recovery Runbook
 
-## Overview
+## Grafana Provisioning and Access Recovery Procedure
 
-이 런북은 `docs/05.operations/runbooks/06-observability/grafana.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+> Scope: Grafana readiness checks, OAuth role mapping triage, datasource/provisioning evidence, dashboard reload, restart, and config rollback.
 
-## Grafana Recovery Procedure (06-observability)
+### Overview
 
-Standardized procedures for resolving common Grafana service disruptions.
-
-### SSO Authentication Failures
-
-#### Symptom: "OAuth Login Failed" or redirection loops
-
-1. **Verify Keycloak Status**: Ensure the Keycloak service is healthy and reachable.
-2. **Check Secrets**: Ensure `oauth2_proxy_client_secret` is correctly loaded as a secret in the `06-observability` tier.
-3. **Inspect Logs**: Check Grafana logs for OAuth2 token validation errors:
-
-   ```bash
-   docker compose -f infra/06-observability/docker-compose.yml logs grafana | grep -i "oauth"
-   ```
-
-4. **Group Synchronization**: If a user has incorrect roles, verify their group membership in Keycloak. Groups must start with `/admins` or `/editors`.
-5. **Time Sync**: Ensure clocks are synchronized between Grafana and Keycloak (NTP check).
-
-### Datasource Connection Issues
-
-#### Symptom: Dashboard panels show "Datasource not found" or "Query error"
-
-1. **Verify Backend Status**: Check if Prometheus, Loki, or Tempo containers are running and healthy.
-2. **Check UID Matching**: Ensure the dashboard expects the same `uid` defined in `datasource.yml` (e.g., `Prometheus` vs `prometheus`).
-3. **Trace-to-Log Link Break**: If "Logs" button disappears in Tempo, verify `tracesToLogsV2` configuration in `datasource.yml`.
-
-### Dashboard Provisioning Issues
-
-1. **Verify Volume Mount**: Ensure `./grafana/dashboards` is correctly mounted to `/etc/grafana/dashboards`.
-2. **Check YAML Config**: Inspect `infra/06-observability/grafana/provisioning/dashboards/dashboards.yml` for correct path references.
-3. **Grafana Refresh**: Restart the Grafana service to force a re-scan of the provisioning directory:
-
-   ```bash
-   docker compose -f infra/06-observability/docker-compose.yml restart grafana
-   ```
-
-### Service Unavailability
-
-#### Symptom: HTTP/503 or healthcheck failed
-
-1. **Resource Check**: Verify Grafana memory usage. By default, it is limited to 1GB.
-2. **Database Integrity**: Check `/var/lib/grafana/grafana.db` (SQLite) for corruption if the service fails to start.
-3. **Healthcheck Probe**: Run the healthcheck command manually:
-
-   ```bash
-   docker exec grafana wget -q --spider http://localhost:3000/api/health
-   ```
-
-### References
-
-- [Grafana System Usage](../../guides/06-observability/grafana.md)
-- [Keycloak Recovery Procedure](../02-auth/keycloak.md)
-
----
+이 런북은 Grafana readiness failure, OAuth login loop, role mapping drift, datasource query errors, dashboard provisioning failure, trace-to-log link regression, and config regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
 
 ### Purpose
 
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
+운영자가 `infra-grafana` 상태를 확인하고 Keycloak OAuth environment, Docker Secret references, datasource provisioning, dashboard provider locks, dashboard JSON tree, protected route를 검증하며, Secret 노출이나 SSO/route/provisioning 정책 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### Canonical References
 
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
+- **Policy**: [Grafana operations policy](../../policies/06-observability/grafana.md)
+- **Guide**: [Grafana usage guide](../../guides/06-observability/grafana.md)
+- **Infrastructure**: [Grafana infra README](../../../../infra/06-observability/grafana/README.md)
 
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
+- Grafana UI `https://grafana.${DEFAULT_URL}` 또는 `/api/health`가 실패할 때.
+- OAuth login loop, `OAuth Login Failed`, or unexpected Viewer/Editor/Admin role이 발생할 때.
+- Dashboard panels show `Datasource not found`, `Query error`, or empty trace/log/profile links.
+- Provisioned dashboard JSON or datasource YAML 변경 후 reload/restart와 검증이 필요할 때.
+- `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`, secret reference, datasource UID, dashboard provider, or route 변경 후 rollback 가능성을 확인해야 할 때.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+- [ ] `grafana` service, `infra-grafana` container, `grafana-data` volume, provisioning mounts, dashboard mounts, and Docker Secret IDs 상태를 확인한다.
+- [ ] 문제 유형을 readiness, OAuth/role mapping, datasource, dashboard provisioning, trace-to-log link, secret reference, config regression 중 하나로 분류한다.
+- [ ] `grafana_admin_password`, `grafana_client_secret`, OAuth client secret, rendered secret values는 기록하지 않는다.
+- [ ] Route, role mapping, secret reference, provider lock, datasource UID, or image version을 변경해야 해 보이면 중단하고 owning operator approval을 받는다.
 
 ### Steps
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+1. 현재 service 상태, 최근 로그, healthcheck를 캡처한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps grafana
+   docker logs --tail=200 infra-grafana
+   docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
+   ```
+
+2. Compose service boundary가 policy와 일치하는지 확인한다.
+
+   ```bash
+   rg -n 'service: template-stateful-med|image: grafana/grafana:13.1.0|container_name: infra-grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE|GF_SECURITY_ADMIN_PASSWORD__FILE|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   ```
+
+3. OAuth or role mapping failure이면 role mapping과 OAuth endpoint references만 확인한다.
+
+   ```bash
+   rg -n 'GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_AUTH_URL|GF_AUTH_GENERIC_OAUTH_TOKEN_URL|GF_AUTH_GENERIC_OAUTH_API_URL|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT|GF_AUTH_GENERIC_OAUTH_USE_PKCE|GF_AUTH_GENERIC_OAUTH_CODE_CHALLENGE_METHOD' infra/06-observability/docker-compose.yml
+   docker logs --tail=300 infra-grafana | grep -Ei 'oauth|role|login|token|keycloak|auth'
+   ```
+
+   Secret value나 token payload가 포함된 줄은 그대로 복사하지 말고 redaction summary로 기록한다.
+
+4. Datasource or dashboard query failure이면 datasource UID와 backend endpoints를 확인한다.
+
+   ```bash
+   rg -n 'uid: Prometheus|url: http://prometheus:9090|uid: Loki|url: http://loki:3100|uid: Tempo|url: http://tempo:3200|uid: alertmanager|url: http://alertmanager:9093|type: grafana-pyroscope-datasource|url: http://pyroscope:4040|tracesToLogsV2|datasourceUid: .Loki.' infra/06-observability/grafana/provisioning/datasources/datasource.yml
+   ```
+
+5. Dashboard provisioning failure이면 provider locks and dashboard inventory를 확인한다.
+
+   ```bash
+   rg -n 'folder:|editable: false|path: /etc/grafana/dashboards' infra/06-observability/grafana/provisioning/dashboards/dashboards.yml
+   find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l
+   ```
+
+6. Backend dependency issue가 의심되면 dependent services의 readiness를 확인한다.
+
+   ```bash
+   docker exec infra-prometheus wget -qO- http://localhost:9090/-/healthy
+   docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready
+   docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready
+   docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready
+   ```
+
+7. Config와 Secret ID 경계가 정책과 일치하지만 runtime state가 회복되지 않으면 Grafana를 재시작한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart grafana
+   docker logs --tail=100 infra-grafana
+   docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
+   ```
+
+8. Provisioning or dashboard 변경 후 장애가 발생했다면 Git-managed diff를 되돌리고 healthcheck를 재확인한다.
+
+   ```bash
+   git diff -- infra/06-observability/grafana/provisioning infra/06-observability/grafana/dashboards infra/06-observability/docker-compose.yml
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart grafana
+   docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
+   ```
+
+   이 런북은 role mapping change, secret rotation, datasource UID migration, dashboard provider lock change, protected middleware change, or Grafana image change를 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
 
 ### Verification Steps
 
-- [ ] 관련 validation script를 실행한다.
-- [ ] 문서 변경이면 template/heading audit를 확인한다.
-- [ ] runtime 변경이 있었다면 compose validation을 확인한다.
+- [ ] `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps grafana`에서 `grafana` service가 running이다.
+- [ ] `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`가 성공한다.
+- [ ] Provisioned datasource identities remain unchanged: UIDs `Prometheus`, `Loki`, `Tempo`, `alertmanager`, and Pyroscope datasource type `grafana-pyroscope-datasource`.
+- [ ] Dashboard providers remain `editable: false`, and tracked dashboard JSON count is expected.
+- [ ] OAuth role mapping still maps `/admins` to `Admin`, `/editors` to `Editor`, and others to `Viewer`.
+- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: `docker logs --tail=200 infra-grafana`
+- **Health**: Grafana `/api/health`, UI `https://grafana.${DEFAULT_URL}`
+- **Config**: compose env/secret refs, datasource provisioning, dashboard provider YAML, dashboard JSON tree
+- **Backends**: Prometheus healthy, Loki ready, Tempo ready, Pyroscope ready
+- **Evidence to Capture**: failing panel or login symptom, datasource UID, dashboard provider path, redacted auth log excerpt, restart timestamp, final recovery or escalation state
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+- Git-managed provisioning YAML, dashboard JSON, Compose env/secret reference, or datasource endpoint change가 원인이면 직전 Git diff 단위로 되돌리고 Grafana를 재시작한다.
+- Runtime restart는 `obs` profile compose 명령만 사용한다.
+- Role mapping, secret rotation, datasource UID migration, dashboard provider lock, protected middleware, or image version change는 이 런북의 안전 롤백 범위를 벗어난다.
 
 ### Agent Operations (If Applicable)
 
@@ -122,17 +138,18 @@ Standardized procedures for resolving common Grafana service disruptions.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
+- 실행한 명령, timestamp, operator or agent action을 기록한다.
+- Secret 값, token, OAuth payload, rendered secret values는 기록하지 않는다.
+- Datasource/dashboard 장애는 affected dashboard/panel, datasource UID, backend endpoint, redacted log excerpt, and provisioning diff를 함께 기록한다.
+- Role mapping/secret/datasource UID/provider/route 변경 필요성이 보이면 approval state를 기록한다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+이 런북에 명시된 validation, restart, and Git-managed provisioning/dashboard/compose rollback만 사용한다. Role mapping, secret rotation, datasource identity migration, dashboard provider lock, protected middleware, or image version 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+verification이 실패하거나, secret exposure risk가 보이거나, role mapping/secret/datasource/provider/route 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
 ## Related Documents
 

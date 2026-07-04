@@ -3,124 +3,91 @@ status: active
 ---
 <!-- Target: docs/05.operations/guides/06-observability/grafana.md -->
 
-# Grafana Operational Policy (06-observability) Usage Guide
+# Grafana Usage Guide
 
 ## Usage
 
 ### Overview
 
-이 가이드는 Grafana Operational Policy (06-observability) Usage Guide의 사용 맥락, 전제 조건, 일반 점검, runbook handoff 기준을 설명한다.
+이 가이드는 `06-observability` 계층의 Grafana 사용 맥락과 설정 확인 방법을 설명한다. Grafana는 `grafana/grafana:13.1.0`으로 실행되는 visualization hub이며, provisioned datasources, provisioned dashboards, Keycloak OAuth role mapping, and protected route를 통해 metrics, logs, traces, alerts, and profiles를 한 화면에서 탐색한다.
 
 ### Usage Type
 
-`system-guide | how-to`
+`system-guide`
 
 ### Target Audience
 
-- Operators
-- Developers
-- Contributors
-- AI Agents
+- Developer
+- Operator
+- SRE
+- AI Agent
 
 ### Purpose
 
-- Grafana Operational Policy (06-observability) Usage Guide의 운영 사용 맥락을 빠르게 파악한다.
-- 반복 실행 절차와 장애 대응은 연결된 runbook으로 넘긴다.
-- 통제 기준은 연결된 policy 문서와 분리해 유지한다.
+- Grafana compose service, provisioning mounts, datasource UID, dashboard provider, Keycloak role mapping, and protected route boundary를 빠르게 파악한다.
+- Grafana Explore와 dashboards에서 Prometheus, Loki, Tempo, Alertmanager, Pyroscope 연결을 확인한다.
+- 장애 대응, restart, provisioning rollback, SSO/datasource triage는 runbook으로 넘긴다.
 
 ### Prerequisites
 
-- Repository checkout 접근 가능
-- 관련 `docs/03.specs/` 또는 operations 문서 확인 가능
-- 필요한 경우 Docker/Docker Compose 명령 실행 권한
+- `infra/06-observability/grafana/provisioning` and `infra/06-observability/grafana/dashboards`를 읽을 수 있는 권한.
+- Docker Secret IDs `grafana_admin_password`, `grafana_client_secret`가 준비되어 있어야 한다. Secret 값은 문서, 로그, task evidence에 기록하지 않는다.
+- Keycloak groups `/admins`, `/editors` role mapping 정책을 변경하지 않는다.
+- Grafana UI `https://grafana.${DEFAULT_URL}` 접근 권한.
 
 ### Step-by-step Instructions
 
-1. 이 문서의 overview와 usage context를 확인한다.
-2. 관련 service, configuration, 또는 documentation target을 식별한다.
-3. `## Common Checks`의 검증 항목을 실행하거나 검토한다.
-4. 반복 절차, 장애 대응, rollback, escalation이 필요하면 `## Runbook Handoff`의 runbook으로 이동한다.
+1. Compose service boundary를 확인한다.
+
+   ```bash
+   rg -n 'service: template-stateful-med|image: grafana/grafana:13.1.0|container_name: infra-grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   ```
+
+2. Datasource provisioning boundary를 확인한다.
+
+   ```bash
+   rg -n 'uid: Prometheus|url: http://prometheus:9090|uid: Loki|url: http://loki:3100|uid: Tempo|url: http://tempo:3200|uid: alertmanager|url: http://alertmanager:9093|type: grafana-pyroscope-datasource|url: http://pyroscope:4040|tracesToLogsV2|datasourceUid: .Loki.' infra/06-observability/grafana/provisioning/datasources/datasource.yml
+   ```
+
+3. Dashboard provisioning boundary를 확인한다.
+
+   ```bash
+   rg -n 'folder:|editable: false|path: /etc/grafana/dashboards' infra/06-observability/grafana/provisioning/dashboards/dashboards.yml
+   find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l
+   ```
+
+4. UI에서 주요 탐색 경로를 확인한다.
+
+   - UI: `https://grafana.${DEFAULT_URL}`
+   - Metrics: datasource `Prometheus`
+   - Logs: datasource `Loki`
+   - Traces: datasource `Tempo`, `tracesToLogsV2` link to `Loki`
+   - Alerts: datasource `Alertmanager`
+   - Profiles: datasource `Pyroscope`
+
+5. Role mapping 기준을 확인한다.
+
+   - `/admins` group: `Admin`
+   - `/editors` group: `Editor`
+   - Other authenticated users: `Viewer`
+   - Anonymous role remains `Viewer`; browser login still uses OAuth auto-login.
 
 ### Common Pitfalls
 
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
-
-### Implementation Context (KR)
-
-이 문서는 `docs/05.operations/guides/06-observability/grafana.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
-
-### Grafana System Usage (06-observability)
-
-Unified visualization and observability hub for the `hy-home.docker` ecosystem.
-
-### Vision
-
-To provide a single, unified observability portal that integrates metrics, logs, traces, and profiles across all infrastructure layers and services, ensuring rapid incident response and data-driven operational decisions.
-
-### Architecture
-
-Grafana is the visualization frontend of the current LGTM stack (Loki, Grafana, Tempo, Prometheus). It pulls data from Prometheus, Loki, Tempo, Alertmanager, and Pyroscope datasources declared in provisioning.
-
-#### Key Components
-
-- **Grafana Core**: v13.1.0 (OSS edition).
-- **Provisioning System**: Uses YAML/JSON definitions for declarative management.
-- **Datasource Integrations**:
-  - **Prometheus**: Metrics ingestion point (`uid: Prometheus`).
-  - **Loki**: Log aggregation and search (`uid: Loki`).
-  - **Tempo**: Distributed tracing frontend with Log/Metric linking (`uid: Tempo`).
-  - **Pyroscope**: Continuous profiling visualization (`uid: Pyroscope`).
-  - **Alertmanager**: External alert status and silencing (`uid: alertmanager`).
-
-#### Authentication & Authorization
-
-- **Primary URL**: `https://grafana.${DEFAULT_URL}`
-- **Authentication**: Keycloak SSO (OIDC) with automatic role mapping.
-  - `/admins` group members are mapped to Grafana **Admin**.
-  - `/editors` group members are mapped to Grafana **Editor**.
-  - All other authenticated users default to **Viewer**.
-- **Role Sync**: Managed via `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`.
-
-### Dashboards Catalog
-
-The `hy-home.docker` ecosystem currently tracks 63 provisioned dashboard JSON files, categorized as follows:
-
-- **Infrastructure**:
-  - `Node Exporter Full`: Comprehensive host metrics.
-  - `cAdvisor Exporter`: Container-level resource usage.
-  - `Docker Dashboard`: Engine-level stats.
-- **Middleware**:
-  - `PostgreSQL Database`: Query performance and connection pooling.
-  - `Redis Overview`: Cache hit rates and memory usage.
-  - `Kafka Overview`: Broker health and topic throughput.
-- **AI & Vector DB**:
-  - `Ollama Exporter`: LLM inference performance.
-  - `Qdrant Overview`: Vector search latency and index size.
-- **Legacy/Other**:
-  - Integrated dashboards from various community sources (e.g., dashboard IDs 15983, 1860, etc.).
-
-### Integration Patterns
-
-#### Trace-to-Log Linking
-
-Tempo is configured to provide links to Loki logs based on Trace ID, Span ID, and common labels (`job`, `instance`, `container_name`). This allows seamless navigation from a slow trace directly to the relevant container logs.
-
-#### Service Graph
-
-Service dependency graphs are generated by Tempo using metrics stored in Prometheus, providing a visual representation of system interactions.
-
-### References
-
-- [Keycloak SSO Usage](../02-auth/keycloak.md)
-- [Datasource Provisioning](../../../../infra/06-observability/grafana/provisioning/datasources/datasource.yml)
-
----
+- **Provisioning drift**: UI-only dashboard or datasource changes do not become current truth until exported to JSON/YAML and committed.
+- **Datasource identity drift**: dashboards must reference provisioned datasource identities such as UIDs `Prometheus`, `Loki`, `Tempo`, `alertmanager`, and the Pyroscope datasource type `grafana-pyroscope-datasource`.
+- **Secret evidence**: `grafana_admin_password`, `grafana_client_secret`, OAuth client secret, and rendered secret values must not be copied into evidence.
+- **Role mapping drift**: `/admins` and `/editors` mapping is controlled by `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`.
+- **Dashboard edit lock**: provider `editable: false` keeps provisioned dashboards code-owned.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps grafana`
+- `docker logs --tail=100 infra-grafana`
+- `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`
+- `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
+- `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`
+
 
 ## Runbook Handoff
 

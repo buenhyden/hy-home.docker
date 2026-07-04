@@ -1,95 +1,119 @@
-# Grafana Visualization & Dashboards
-
-Unified visualization hub for metrics, logs, traces, and profiling.
-
-## Scope
-
-Grafana serves as the primary observability portal for the `hy-home.docker` ecosystem. It integrates multiple data sources including Prometheus, Loki, Tempo, and Pyroscope into cohesive dashboards, providing a single pane of glass for monitoring, alerting, and debugging.
-
-- **Primary URL**: `https://grafana.${DEFAULT_URL}`
-- **Authentication**: Keycloak SSO (OIDC) with automatic role mapping.
-
-## Tech Stack
-
-| Component | Technology | Version |
-| :--- | :--- | :--- |
-| Frontend | Grafana | v13.1.0 |
-| Auth | Generic OAuth2 | Keycloak Integration |
-
-## System Components
-
-- **Dashboards**: 63 provisioned JSON dashboards across domains.
-  - **Infrastructure**: Node Exporter, cAdvisor, Docker, Linux Hosts.
-  - **Middleware**: PostgreSQL, Redis, Kafka, MinIO.
-  - **AI/ML**: Ollama, Qdrant.
-  - **Services**: Application-specific metrics and SLI/SLO views.
-- **Datasources**: Pre-integrated Prometheus (metrics), Loki (logs), Tempo (traces), and Pyroscope (profiles).
-- **Provisioning**: Entirely code-based configuration for datasources and dashboards.
-
-## Documentation
-
-| Document | Description |
-| :--- | :--- |
-| [System Guide](../../../docs/05.operations/guides/06-observability/grafana.md) | Architecture, SSO mapping, and datasource integration details. |
-| [Operational Policy](../../../docs/05.operations/policies/06-observability/grafana.md) | Dashboard provisioning, RBAC, and datasource maintenance. |
-| [Recovery Runbook](../../../docs/05.operations/runbooks/06-observability/grafana.md) | Troubleshooting failing logins, dashboards, or service unavailability. |
-
-## AI Agent Guidance
-
-1. **Provisioning**: Provisioned dashboards MUST stay edit-locked in production. Always use code-based provisioning in the `dashboards/` directory.
-2. **SSO Mapping**: Role mapping is managed via `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH` in `docker-compose.yml`. Groups starting with `/admins` map to `Admin`.
-3. **Variables**: Use Variables (Template tags) for cluster/node/service filtering to keep dashboards portable.
-4. **Color Palette**: Adhere to the `hy-home.docker` visual standards for dashboard consistency.
-
----
+# Grafana Visualization and Dashboards
 
 ## Overview
 
-`infra/06-observability/grafana`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.
+`infra/06-observability/grafana` contains the Grafana implementation for the `06-observability` tier. Grafana runs as compose service `grafana`, container `infra-grafana`, image `grafana/grafana:13.1.0`, persists runtime state in `grafana-data`, mounts provisioning and dashboard trees read-only, and uses Keycloak Generic OAuth role mapping for access control.
 
 ## Audience
 
-이 README의 주요 독자:
+- Developers exploring metrics, logs, traces, alerts, and profiles
+- SREs maintaining datasource and dashboard provisioning
+- Operators troubleshooting SSO, dashboard, and datasource failures
+- AI Agents collecting redacted evidence without exposing secrets or tokens
 
-- Developers
-- Operators
-- Documentation Writers
-- AI Agents
+## Scope
+
+### In Scope
+
+- Grafana compose service and protected route `https://grafana.${DEFAULT_URL}`
+- Datasource provisioning in `provisioning/datasources/datasource.yml`
+- Dashboard provisioning in `provisioning/dashboards/dashboards.yml`
+- Dashboard JSON files in `dashboards/`
+- Keycloak Generic OAuth role mapping and Docker Secret file references
+
+### Out of Scope
+
+- UI-only dashboard changes that are not exported to JSON
+- Keycloak realm/client changes outside the Grafana compose boundary
+- Backend telemetry storage managed by Prometheus, Loki, Tempo, or Pyroscope
+- Runtime role mapping, secret, route, image, or provisioning policy changes without operations evidence
 
 ## Structure
 
 ```text
-infra/06-observability/grafana/
-├── dashboards/  # 하위 구성 영역
-├── provisioning/  # 하위 구성 영역
-└── README.md  # This file
+grafana/
+├── dashboards/       # Provisioned dashboard JSON tree
+├── provisioning/
+│   ├── dashboards/   # Dashboard provider YAML
+│   └── datasources/  # Datasource provisioning YAML
+└── README.md         # This file
 ```
+
+## Service Boundary
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Visualization hub for metrics, logs, traces, alerts, and profiles in the `06-observability` tier |
+| Compose service | `grafana` in `infra/06-observability/docker-compose.yml` |
+| Compose linkage | Declared in `infra/06-observability/docker-compose.yml` and mirrored in `infra/06-observability/docker-compose.dev.yml` |
+| Container | `infra-grafana` |
+| Image | `grafana/grafana:13.1.0` |
+| Config files | `provisioning/datasources/datasource.yml`, `provisioning/dashboards/dashboards.yml`, dashboard JSON files |
+| Config values | Datasource UIDs `Prometheus`, `Loki`, `Tempo`, `alertmanager`; Pyroscope datasource type `grafana-pyroscope-datasource`; dashboard providers `editable: false`; role mapping for `/admins` and `/editors` |
+| Volumes | `./grafana/provisioning:/etc/grafana/provisioning:ro`, `./grafana/dashboards:/etc/grafana/dashboards:ro`, `grafana-data:/var/lib/grafana:rw` |
+| Secret refs | `grafana_admin_password`, `grafana_client_secret` |
+| Networks | `infra_net`, `k3d-hyhome` |
+| Ports | `traefik.http.services.grafana-svc.loadbalancer.server.port: ${GRAFANA_PORT:-3000}` |
+| Labels | `traefik.http.routers.grafana.*`, `traefik.http.routers.grafana-static.*`, `traefik.http.services.grafana-svc.*` |
+| Healthcheck | `http://localhost:${GRAFANA_PORT:-3000}/api/health` |
+| Operations | [Guide](../../../docs/05.operations/guides/06-observability/grafana.md), [Policy](../../../docs/05.operations/policies/06-observability/grafana.md), [Runbook](../../../docs/05.operations/runbooks/06-observability/grafana.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with the linked runbook, compose config rendering, service logs, healthcheck, and redacted OAuth/datasource evidence |
+
+## Available Scripts
+
+| Command | Description |
+| :--- | :--- |
+| `docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d grafana` | Start Grafana from the repository root |
+| `docker compose -f infra/06-observability/docker-compose.yml --profile obs restart grafana` | Restart Grafana after approved provisioning, dashboard, or secret-reference changes |
+| `docker compose -f infra/06-observability/docker-compose.yml --profile obs logs -f grafana` | Tail Grafana logs from the repository root |
+
+## Configuration
+
+### Datasources
+
+- **Prometheus**: `uid: Prometheus`, URL `http://prometheus:9090`
+- **Loki**: `uid: Loki`, URL `http://loki:3100`
+- **Tempo**: `uid: Tempo`, URL `http://tempo:3200`, `tracesToLogsV2` links to `Loki`
+- **Alertmanager**: `uid: alertmanager`, URL `http://alertmanager:9093`
+- **Pyroscope**: datasource type `grafana-pyroscope-datasource`, URL `http://pyroscope:4040`
+
+### Dashboards and Access
+
+- Dashboard providers mount JSON files from `/etc/grafana/dashboards/*`.
+- Provider `editable: false` keeps dashboards code-owned.
+- Current dashboard inventory is 63 tracked JSON files.
+- Keycloak groups `/admins` and `/editors` map to Grafana `Admin` and `Editor`; other authenticated users default to `Viewer`.
+- `grafana_admin_password` and `grafana_client_secret` are injected through Docker Secret file references.
 
 ## How to Work in This Area
 
-1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
-2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
-3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
-4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+1. Follow the [Grafana guide](../../../docs/05.operations/guides/06-observability/grafana.md) for usage and provisioning context.
+2. Follow the [Grafana runbook](../../../docs/05.operations/runbooks/06-observability/grafana.md) for readiness, SSO, datasource, dashboard provisioning, restart, and rollback steps.
+3. Keep admin passwords, OAuth client secrets, tokens, and rendered secret values out of docs, logs, task evidence, and commit messages.
+4. Do not change role mapping, datasource UIDs, dashboard provider locks, secret references, image version, or route middleware without plan/task evidence and rollback notes.
 
 ## Validation
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify datasource connectivity by testing each datasource in Grafana UI (Configuration → Data Sources → Test).
-- Confirm dashboard provisioning by checking `docker logs grafana | grep -i 'error\|warn'` after config changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking infrastructure documentation ready.
+- Verify readiness with `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps grafana` and `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`.
+- Verify datasource provisioning with `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`.
+- Verify dashboard provisioning with `rg -n 'folder:|editable: false|path: /etc/grafana/dashboards' infra/06-observability/grafana/provisioning/dashboards/dashboards.yml`.
+- Verify dashboard inventory with `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, environment, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
-- For datasource errors: confirm the datasource URL and credentials match the target service's network address and auth config.
-- For dashboard loading errors: validate provisioning YAML syntax and confirm dashboard JSON files are correctly mounted.
-- For auth errors: verify Grafana's OIDC or admin credentials and confirm the OAuth2 callback URL is correctly configured.
+- For SSO failures, inspect redacted OAuth/role mapping logs and confirm `/admins` or `/editors` group membership separately.
+- For datasource errors, confirm the datasource UID and backend endpoint in provisioning YAML.
+- For dashboard loading errors, validate dashboard provider paths and dashboard JSON files.
 
 ## Related Documents
 
 - [infra/README.md](../../README.md)
-- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
-- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
-- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
+- [Operations index](../../../docs/05.operations/README.md)
+- [Grafana guide](../../../docs/05.operations/guides/06-observability/grafana.md)
+- [Grafana policy](../../../docs/05.operations/policies/06-observability/grafana.md)
+- [Grafana runbook](../../../docs/05.operations/runbooks/06-observability/grafana.md)

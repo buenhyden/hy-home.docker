@@ -641,6 +641,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Loki documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Loki compose/config/Dockerfile/entrypoint/Alloy/Grafana scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
 
+## Grafana Guide and Runbook Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Grafana usage guide | `docs/05.operations/guides/06-observability/grafana.md` | ✅ Updated | Removed stale operational-policy self-reference, legacy implementation context, generic template checks, and stale references, then rewrote the guide around current compose, provisioning mounts, datasource identities, dashboard providers, Keycloak role mapping, common checks, and runbook handoff boundaries. |
+| Grafana recovery runbook | `docs/05.operations/runbooks/06-observability/grafana.md` | ✅ Updated | Replaced mixed legacy troubleshooting/template content with one runbook covering readiness, OAuth role mapping triage, datasource/provisioning evidence, dashboard reload, backend readiness checks, restart, Git-managed provisioning/dashboard/compose rollback, evidence, and escalation. |
+| Current-truth boundary | `infra/06-observability/grafana` | ✅ Clarified | Preserved image `grafana/grafana:13.1.0`, `template-stateful-med`, container `infra-grafana`, `grafana-data`, read-only provisioning/dashboard mounts, Docker Secret IDs `grafana_admin_password` and `grafana_client_secret`, datasource identities `Prometheus`, `Loki`, `Tempo`, `alertmanager`, Pyroscope datasource type `grafana-pyroscope-datasource`, dashboard count `63`, `editable: false`, Keycloak role mapping, and protected route chain. |
+| Command/document wording | `infra/06-observability/grafana/README.md` | ✅ Corrected | Consolidated duplicate legacy README sections into one implementation entrypoint with repository-root `-f infra/06-observability/docker-compose.yml --profile obs` commands, service boundary rubric fields, readiness validation, datasource/dashboard evidence scans, and secret/OAuth evidence hygiene. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Grafana documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Grafana compose/provisioning/dashboard scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
