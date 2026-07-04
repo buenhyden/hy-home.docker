@@ -114,6 +114,7 @@ not be treated as the same kind of gap.
 ### Task 1: Create Task Evidence and Audit Bundle Skeleton
 
 **Files:**
+
 - Create: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 - Create: `docs/90.references/audits/document-contracts/README.md`
 - Modify: `docs/90.references/audits/README.md`
@@ -342,6 +343,7 @@ remove it from `git add`.
 ### Task 2: Capture Document Profile Inventories
 
 **Files:**
+
 - Create: `docs/90.references/audits/document-contracts/frontmatter-inventory.md`
 - Create: `docs/90.references/audits/document-contracts/section-profile-inventory.md`
 - Create: `docs/90.references/audits/document-contracts/readme-profile-inventory.md`
@@ -538,6 +540,7 @@ Expected: commit succeeds.
 ### Task 3: Compare Governance, Contracts, Templates, Root Shims, and Provider Surfaces
 
 **Files:**
+
 - Create: `docs/90.references/audits/document-contracts/contract-governance-map.md`
 - Create: `docs/90.references/audits/document-contracts/template-application-gaps.md`
 - Modify: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
@@ -656,6 +659,7 @@ Expected: commit succeeds.
 ### Task 4: Map CI/CD, QA, and Automation Coverage
 
 **Files:**
+
 - Create: `docs/90.references/audits/document-contracts/automation-coverage-map.md`
 - Modify: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 - Read: `.github/workflows/**`
@@ -780,6 +784,7 @@ Expected: commit succeeds.
 ### Task 5: Build Gap Register and Future Implementation Batch Proposal
 
 **Files:**
+
 - Create: `docs/90.references/audits/document-contracts/gap-register.md`
 - Modify: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 - Read: all reports under `docs/90.references/audits/document-contracts/`
@@ -877,6 +882,7 @@ Expected: commit succeeds.
 ### Task 6: Close Evidence, Regenerate Indexes, Validate, and Commit
 
 **Files:**
+
 - Modify: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 - Modify: `docs/00.agent-governance/memory/progress.md`
 - Modify: `docs/90.references/llm-wiki/llm-wiki-index.md`

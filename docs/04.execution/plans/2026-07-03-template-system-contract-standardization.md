@@ -99,6 +99,7 @@ is recorded as an out-of-scope gap when full repo contracts are run.
 ### Task 1: Create Execution Evidence and Inventory Baseline
 
 **Files:**
+
 - Create: `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`
 - Modify: `docs/04.execution/tasks/README.md`
 - Read: `docs/99.templates/support/template-contract.md`
@@ -241,6 +242,7 @@ Expected: commit succeeds.
 ### Task 2: Consolidate Support Contracts
 
 **Files:**
+
 - Modify: `docs/99.templates/support/template-contract.md`
 - Modify: `docs/99.templates/support/frontmatter-contract.md`
 - Modify: `docs/99.templates/support/template-governance.md`
@@ -346,6 +348,7 @@ Expected: commit succeeds.
 ### Task 3: Normalize Copyable Templates
 
 **Files:**
+
 - Modify: `docs/99.templates/templates/sdlc/*.template.md`
 - Modify: `docs/99.templates/templates/spec-contracts/*.template.*`
 - Modify: `docs/99.templates/templates/operations/*.template.md`
@@ -455,6 +458,7 @@ Expected: commit succeeds.
 ### Task 4: Enforce Template and Frontmatter Contracts
 
 **Files:**
+
 - Modify: `scripts/validation/check-repo-contracts.sh`
 - Modify: `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`
 
@@ -557,6 +561,7 @@ Expected: commit succeeds.
 ### Task 5: Apply Direct Fallout and Regenerate Indexes
 
 **Files:**
+
 - Modify if needed: `docs/00.agent-governance/rules/documentation-protocol.md`
 - Modify if needed: `docs/00.agent-governance/rules/stage-authoring-matrix.md`
 - Modify if needed: `.claude/**`
@@ -657,6 +662,7 @@ Expected: commit succeeds.
 ### Task 6: Final Verification and Evidence Closure
 
 **Files:**
+
 - Modify: `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md`
 - Modify: `docs/00.agent-governance/memory/progress.md`
 
