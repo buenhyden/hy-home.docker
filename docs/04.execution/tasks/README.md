@@ -76,24 +76,24 @@ docs/04.execution/tasks/
 ├── 2026-06-04-docs-implementation-audit.md # Active docs 01-05 content-vs-implementation audit and continuation evidence
 ├── 2026-06-05-harness-engineering.md # Completed workspace harness engineering implementation task record
 ├── 2026-06-05-language-policy-boundary-audit.md # Completed language policy boundary audit and template normalization evidence
-├── 2026-06-05-language-policy-normalization-batch-1.md # Active language policy spec/reference normalization evidence
-├── 2026-06-05-language-policy-normalization-batch-2.md # Active language policy spec normalization evidence
-├── 2026-06-05-language-policy-normalization-batch-3.md # Active language policy remaining spec normalization evidence
-├── 2026-06-05-language-policy-plan-normalization-batch-1.md # Active language policy plan normalization evidence
-├── 2026-06-05-language-policy-plan-normalization-batch-2.md # Active language policy plan normalization evidence
-├── 2026-06-05-language-policy-plan-normalization-batch-3.md # Active language policy plan normalization evidence
-├── 2026-06-05-language-policy-plan-normalization-batch-4.md # Active language policy plan normalization evidence
-├── 2026-06-05-language-policy-plan-normalization-batch-5.md # Active language policy plan normalization evidence
-├── 2026-06-05-language-policy-plan-normalization-batch-6.md # Active language policy plan normalization evidence
-├── 2026-06-05-language-policy-plan-normalization-batch-7.md # Active language policy plan normalization evidence
-├── 2026-06-05-language-policy-plan-normalization-batch-8.md # Active language policy plan normalization evidence
-├── 2026-06-05-language-policy-task-normalization-batch-1.md # Active language policy task normalization evidence
-├── 2026-06-05-language-policy-task-normalization-batch-2.md # Active language policy task normalization evidence
-├── 2026-06-05-language-policy-task-normalization-batch-3.md # Active language policy task normalization evidence
-├── 2026-06-05-language-policy-task-normalization-batch-4.md # Active language policy task normalization evidence
-├── 2026-06-05-language-policy-task-normalization-batch-5.md # Active language policy task normalization evidence
-├── 2026-06-05-language-policy-task-normalization-batch-6.md # Active language policy task normalization evidence
-├── 2026-06-05-language-policy-task-normalization-batch-7.md # Active final task language normalization evidence
+├── 2026-06-05-language-policy-normalization-batch-1.md # Completed language policy spec/reference normalization evidence
+├── 2026-06-05-language-policy-normalization-batch-2.md # Completed language policy spec normalization evidence
+├── 2026-06-05-language-policy-normalization-batch-3.md # Completed language policy remaining spec normalization evidence
+├── 2026-06-05-language-policy-plan-normalization-batch-1.md # Completed language policy plan normalization evidence
+├── 2026-06-05-language-policy-plan-normalization-batch-2.md # Completed language policy plan normalization evidence
+├── 2026-06-05-language-policy-plan-normalization-batch-3.md # Completed language policy plan normalization evidence
+├── 2026-06-05-language-policy-plan-normalization-batch-4.md # Completed language policy plan normalization evidence
+├── 2026-06-05-language-policy-plan-normalization-batch-5.md # Completed language policy plan normalization evidence
+├── 2026-06-05-language-policy-plan-normalization-batch-6.md # Completed language policy plan normalization evidence
+├── 2026-06-05-language-policy-plan-normalization-batch-7.md # Completed language policy plan normalization evidence
+├── 2026-06-05-language-policy-plan-normalization-batch-8.md # Completed language policy plan normalization evidence
+├── 2026-06-05-language-policy-task-normalization-batch-1.md # Completed language policy task normalization evidence
+├── 2026-06-05-language-policy-task-normalization-batch-2.md # Completed language policy task normalization evidence
+├── 2026-06-05-language-policy-task-normalization-batch-3.md # Completed language policy task normalization evidence
+├── 2026-06-05-language-policy-task-normalization-batch-4.md # Completed language policy task normalization evidence
+├── 2026-06-05-language-policy-task-normalization-batch-5.md # Completed language policy task normalization evidence
+├── 2026-06-05-language-policy-task-normalization-batch-6.md # Completed language policy task normalization evidence
+├── 2026-06-05-language-policy-task-normalization-batch-7.md # Completed final task language normalization evidence
 ├── 2026-06-05-language-policy-reference-normalization.md # Completed reference language normalization evidence
 ├── 2026-06-05-language-policy-hard-enforcement.md # Completed language validation hardening evidence
 ├── 2026-07-02-template-system-reorganization.md # Completed Stage 99 template system reorganization task record
@@ -189,24 +189,24 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Docs 01-05 Content-vs-Implementation Audit Task**: [2026-06-04-docs-implementation-audit.md](./2026-06-04-docs-implementation-audit.md) — active audit and continuation evidence
 - **Workspace Harness Engineering Task**: [2026-06-05-harness-engineering.md](./2026-06-05-harness-engineering.md) — completed harness validation wrapper and contract alignment evidence
 - **Language Policy Boundary Audit Task**: [2026-06-05-language-policy-boundary-audit.md](./2026-06-05-language-policy-boundary-audit.md) — completed language boundary audit, template normalization, and closure routing evidence
-- **Language Policy Normalization Batch 1 Task**: [2026-06-05-language-policy-normalization-batch-1.md](./2026-06-05-language-policy-normalization-batch-1.md) — active spec/reference language normalization evidence
-- **Language Policy Normalization Batch 2 Task**: [2026-06-05-language-policy-normalization-batch-2.md](./2026-06-05-language-policy-normalization-batch-2.md) — active spec language normalization evidence
-- **Language Policy Normalization Batch 3 Task**: [2026-06-05-language-policy-normalization-batch-3.md](./2026-06-05-language-policy-normalization-batch-3.md) — active remaining spec language normalization evidence
-- **Language Policy Plan Normalization Batch 1 Task**: [2026-06-05-language-policy-plan-normalization-batch-1.md](./2026-06-05-language-policy-plan-normalization-batch-1.md) — active plan language normalization evidence
-- **Language Policy Plan Normalization Batch 2 Task**: [2026-06-05-language-policy-plan-normalization-batch-2.md](./2026-06-05-language-policy-plan-normalization-batch-2.md) — active plan language normalization evidence
-- **Language Policy Plan Normalization Batch 3 Task**: [2026-06-05-language-policy-plan-normalization-batch-3.md](./2026-06-05-language-policy-plan-normalization-batch-3.md) — active plan language normalization evidence
-- **Language Policy Plan Normalization Batch 4 Task**: [2026-06-05-language-policy-plan-normalization-batch-4.md](./2026-06-05-language-policy-plan-normalization-batch-4.md) — active plan language normalization evidence
-- **Language Policy Plan Normalization Batch 5 Task**: [2026-06-05-language-policy-plan-normalization-batch-5.md](./2026-06-05-language-policy-plan-normalization-batch-5.md) — active plan language normalization evidence
-- **Language Policy Plan Normalization Batch 6 Task**: [2026-06-05-language-policy-plan-normalization-batch-6.md](./2026-06-05-language-policy-plan-normalization-batch-6.md) — active plan language normalization evidence
-- **Language Policy Plan Normalization Batch 7 Task**: [2026-06-05-language-policy-plan-normalization-batch-7.md](./2026-06-05-language-policy-plan-normalization-batch-7.md) — active plan language normalization evidence
-- **Language Policy Plan Normalization Batch 8 Task**: [2026-06-05-language-policy-plan-normalization-batch-8.md](./2026-06-05-language-policy-plan-normalization-batch-8.md) — active final plan language normalization evidence
-- **Language Policy Task Normalization Batch 1 Task**: [2026-06-05-language-policy-task-normalization-batch-1.md](./2026-06-05-language-policy-task-normalization-batch-1.md) — active task language normalization evidence
-- **Language Policy Task Normalization Batch 2 Task**: [2026-06-05-language-policy-task-normalization-batch-2.md](./2026-06-05-language-policy-task-normalization-batch-2.md) — active task language normalization evidence
-- **Language Policy Task Normalization Batch 3 Task**: [2026-06-05-language-policy-task-normalization-batch-3.md](./2026-06-05-language-policy-task-normalization-batch-3.md) — active task language normalization evidence
-- **Language Policy Task Normalization Batch 4 Task**: [2026-06-05-language-policy-task-normalization-batch-4.md](./2026-06-05-language-policy-task-normalization-batch-4.md) — active task language normalization evidence
-- **Language Policy Task Normalization Batch 5 Task**: [2026-06-05-language-policy-task-normalization-batch-5.md](./2026-06-05-language-policy-task-normalization-batch-5.md) — active task language normalization evidence
-- **Language Policy Task Normalization Batch 6 Task**: [2026-06-05-language-policy-task-normalization-batch-6.md](./2026-06-05-language-policy-task-normalization-batch-6.md) — active task language normalization evidence
-- **Language Policy Task Normalization Batch 7 Task**: [2026-06-05-language-policy-task-normalization-batch-7.md](./2026-06-05-language-policy-task-normalization-batch-7.md) — active final task language normalization evidence
+- **Language Policy Normalization Batch 1 Task**: [2026-06-05-language-policy-normalization-batch-1.md](./2026-06-05-language-policy-normalization-batch-1.md) — completed spec/reference language normalization evidence
+- **Language Policy Normalization Batch 2 Task**: [2026-06-05-language-policy-normalization-batch-2.md](./2026-06-05-language-policy-normalization-batch-2.md) — completed spec language normalization evidence
+- **Language Policy Normalization Batch 3 Task**: [2026-06-05-language-policy-normalization-batch-3.md](./2026-06-05-language-policy-normalization-batch-3.md) — completed remaining spec language normalization evidence
+- **Language Policy Plan Normalization Batch 1 Task**: [2026-06-05-language-policy-plan-normalization-batch-1.md](./2026-06-05-language-policy-plan-normalization-batch-1.md) — completed plan language normalization evidence
+- **Language Policy Plan Normalization Batch 2 Task**: [2026-06-05-language-policy-plan-normalization-batch-2.md](./2026-06-05-language-policy-plan-normalization-batch-2.md) — completed plan language normalization evidence
+- **Language Policy Plan Normalization Batch 3 Task**: [2026-06-05-language-policy-plan-normalization-batch-3.md](./2026-06-05-language-policy-plan-normalization-batch-3.md) — completed plan language normalization evidence
+- **Language Policy Plan Normalization Batch 4 Task**: [2026-06-05-language-policy-plan-normalization-batch-4.md](./2026-06-05-language-policy-plan-normalization-batch-4.md) — completed plan language normalization evidence
+- **Language Policy Plan Normalization Batch 5 Task**: [2026-06-05-language-policy-plan-normalization-batch-5.md](./2026-06-05-language-policy-plan-normalization-batch-5.md) — completed plan language normalization evidence
+- **Language Policy Plan Normalization Batch 6 Task**: [2026-06-05-language-policy-plan-normalization-batch-6.md](./2026-06-05-language-policy-plan-normalization-batch-6.md) — completed plan language normalization evidence
+- **Language Policy Plan Normalization Batch 7 Task**: [2026-06-05-language-policy-plan-normalization-batch-7.md](./2026-06-05-language-policy-plan-normalization-batch-7.md) — completed plan language normalization evidence
+- **Language Policy Plan Normalization Batch 8 Task**: [2026-06-05-language-policy-plan-normalization-batch-8.md](./2026-06-05-language-policy-plan-normalization-batch-8.md) — completed final plan language normalization evidence
+- **Language Policy Task Normalization Batch 1 Task**: [2026-06-05-language-policy-task-normalization-batch-1.md](./2026-06-05-language-policy-task-normalization-batch-1.md) — completed task language normalization evidence
+- **Language Policy Task Normalization Batch 2 Task**: [2026-06-05-language-policy-task-normalization-batch-2.md](./2026-06-05-language-policy-task-normalization-batch-2.md) — completed task language normalization evidence
+- **Language Policy Task Normalization Batch 3 Task**: [2026-06-05-language-policy-task-normalization-batch-3.md](./2026-06-05-language-policy-task-normalization-batch-3.md) — completed task language normalization evidence
+- **Language Policy Task Normalization Batch 4 Task**: [2026-06-05-language-policy-task-normalization-batch-4.md](./2026-06-05-language-policy-task-normalization-batch-4.md) — completed task language normalization evidence
+- **Language Policy Task Normalization Batch 5 Task**: [2026-06-05-language-policy-task-normalization-batch-5.md](./2026-06-05-language-policy-task-normalization-batch-5.md) — completed task language normalization evidence
+- **Language Policy Task Normalization Batch 6 Task**: [2026-06-05-language-policy-task-normalization-batch-6.md](./2026-06-05-language-policy-task-normalization-batch-6.md) — completed task language normalization evidence
+- **Language Policy Task Normalization Batch 7 Task**: [2026-06-05-language-policy-task-normalization-batch-7.md](./2026-06-05-language-policy-task-normalization-batch-7.md) — completed final task language normalization evidence
 - **Language Policy Reference Normalization Task**: [2026-06-05-language-policy-reference-normalization.md](./2026-06-05-language-policy-reference-normalization.md) — completed reference language normalization evidence
 - **Language Policy Hard Enforcement Task**: [2026-06-05-language-policy-hard-enforcement.md](./2026-06-05-language-policy-hard-enforcement.md) — completed language validation hardening evidence
 - **Frontmatter Routing Evidence Refresh Task**: [2026-07-04-frontmatter-routing-evidence-refresh.md](./2026-07-04-frontmatter-routing-evidence-refresh.md) — completed current-count and provider README routing evidence refresh

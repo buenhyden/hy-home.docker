@@ -439,6 +439,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Stage 04 task index | `docs/04.execution/tasks/README.md` | ✅ Updated | Replaced stale active labels for the language-policy closure tasks and added the missing reference/hard-enforcement entries to the structure listing. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Language Policy Normalization Batch Status Sync (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Spec normalization batches | `docs/04.execution/tasks/2026-06-05-language-policy-normalization-batch-{1..3}.md` | ✅ Updated | Marked completed because all task rows are `Done` and later closure evidence records zero non-README spec leaf drift. |
+| Plan normalization batches | `docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-{1..8}.md` | ✅ Updated | Marked completed because all task rows are `Done` and later closure evidence records zero non-README plan leaf drift. |
+| Task normalization batches | `docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-{1..7}.md` | ✅ Updated | Marked completed because all task rows are `Done` and later closure evidence records zero non-README task leaf drift. |
+| Stage 04 task index | `docs/04.execution/tasks/README.md` | ✅ Updated | Replaced stale active routing labels with completed labels for all language-policy normalization batch tasks. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

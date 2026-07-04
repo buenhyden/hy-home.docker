@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-5.md -->
