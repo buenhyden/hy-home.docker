@@ -515,6 +515,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Alertmanager documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Observability Hardening Policy Profile Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Hardening policy structure | `docs/05.operations/policies/06-observability/optimization-hardening.md` | ✅ Updated | Removed the legacy AI-agent policy section and folded retention, validation, and safety-threshold controls into the normal policy flow. |
+| Current-truth boundary | `06-observability` hardening baseline | ✅ Clarified | Preserved the gateway middleware chain, health-gated dependencies, cAdvisor healthcheck, Pyroscope root/dev compose coverage, Loki/Tempo non-root and secret-guard contracts, `infrastructure-hardening` CI job, and local hardening/template/doc validation gates. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed one operations policy and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, observability hardening check, template/security baseline, observability compose validation, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

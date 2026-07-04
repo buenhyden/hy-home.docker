@@ -3,7 +3,7 @@ status: active
 ---
 <!-- Target: docs/05.operations/policies/06-observability/optimization-hardening.md -->
 
-# 06-Observability Optimization Hardening Operations Policy
+# Observability Optimization Hardening Policy
 
 ## Overview
 
@@ -12,13 +12,16 @@ status: active
 ## Policy Scope
 
 - `infra/06-observability/docker-compose.yml`
+- `infra/06-observability/docker-compose.dev.yml`
 - `infra/06-observability/loki/{Dockerfile,docker-entrypoint.sh}`
 - `infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
-- `scripts/hardening/check-all-hardening.sh 06-observability`
+- `scripts/hardening/check-all-hardening.sh`
+- `scripts/validation/check-template-security-baseline.sh`
+- `.github/workflows/ci-quality.yml` `infrastructure-hardening` job
 
 - **Systems**: Prometheus, Alertmanager, Grafana, Loki, Tempo, Alloy, Pushgateway, Pyroscope, cAdvisor
-- **Agents**: Infra/DevOps/Operations agents
-- **Environments**: Local, Dev, Stage, Production-like
+- **Agents**: Operators, SREs, DevOps agents, AI agents following repo-local governance
+- **Environments**: local, development, homelab operations, production-like validation
 
 ## Controls
 
@@ -26,9 +29,17 @@ status: active
   - 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
   - `depends_on`은 핵심 백엔드에 대해 `service_healthy`를 우선 사용한다.
   - host observer(cAdvisor)는 healthcheck를 필수로 가진다.
+  - Pyroscope는 root-local compose와 dev compose 모두에서 route, service port,
+    persistent volume, healthcheck 기준을 유지한다.
   - Loki/Tempo 커스텀 이미지는 non-root 실행을 강제한다.
   - entrypoint는 secret 파일 존재를 선검증한다.
   - 관측성 변경은 `infrastructure-hardening` CI 게이트를 통과해야 한다.
+  - 관측성 변경은 `check-template-security-baseline.sh`,
+    `check-doc-traceability.sh`, 관련 compose validation 결과를 함께 확인한다.
+  - log/trace/profile retention 변경은 [retention policy](./01.retention.md)와
+    서비스별 policy/runbook에 함께 반영한다.
+  - 대량 scrape 실패, trace/log ingestion 지연 급증, 관리경로 인증 실패 급증은
+    runbook handoff 조건으로 취급한다.
   - 문서(PRD~Procedure)는 optimization-hardening 링크를 유지해야 한다.
 - **Allowed**:
   - 카탈로그 기반 단계 확장(샘플링/retention/pipeline module)
@@ -36,6 +47,7 @@ status: active
 - **Disallowed**:
   - 무검증 라우터 middleware 변경
   - root 실행 커스텀 이미지 재도입
+  - secret guard가 없는 Loki/Tempo object storage 연결
   - 정책 미연계 확장 실행
 
 ## Exceptions
@@ -68,15 +80,9 @@ status: active
   - 신규 서비스 온보딩 템플릿 표준화
   - 파이프라인 모듈 경계와 소유권 명시
 
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: `infrastructure-hardening` + 공통 기준선 통과 필수
-- **Log / Trace Retention**: 06-observability 기본 retention 정책 준수
-- **Safety Incident Thresholds**: 대량 scrape 실패, trace/log ingestion 지연 급증, 관리경로 인증 실패 급증 시 runbook 즉시 전환
-
 ## Related Documents
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/06-observability/optimization-hardening.md)
 - [Recovery runbook](../../runbooks/06-observability/optimization-hardening.md)
+- [Retention policy](./01.retention.md)
