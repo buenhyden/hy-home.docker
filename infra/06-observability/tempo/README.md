@@ -49,8 +49,8 @@ tempo/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose --profile obs up -d tempo` | Start Tempo service |
-| `docker compose --profile obs logs -f tempo` | Follow Tempo logs |
+| `docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d tempo` | Start Tempo service from the repository root |
+| `docker compose -f infra/06-observability/docker-compose.yml --profile obs logs -f tempo` | Follow Tempo logs from the repository root |
 
 ## Configuration
 
@@ -75,6 +75,7 @@ tempo/
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
 - Verify trace ingestion by checking `docker logs infra-tempo | grep -i 'error\|warn'` after config changes.
 - Confirm OTLP endpoint reachability from Alloy by verifying traces appear in Grafana Tempo datasource.
+- Confirm Tempo readiness with `docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`.
 
 ## Troubleshooting
 
@@ -83,6 +84,7 @@ tempo/
 - For OTLP ingestion errors: confirm port bindings and that Alloy's Tempo exporter targets the correct endpoint.
 - For trace query errors: verify the Tempo datasource URL in Grafana matches the Tempo container's network address.
 - For storage issues: confirm the Tempo data volume is mounted and the backend storage path is correctly configured.
+- For WAL, bucket, retention, or object mutation: stop and use the linked runbook escalation path before taking data-loss-risk action.
 
 ## Related Documents
 

@@ -3,128 +3,116 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/06-observability/tempo.md -->
 
-# Tempo Runbook
+# Tempo Readiness and Recovery Runbook
 
-## Overview
+## Tempo Readiness and Recovery Procedure
 
-이 문서는 Tempo 서비스 장애 발생 시 복구 절차를 정의한다. 트레이스 인입 안 됨, MinIO 연결 실패, WAL 손상, 쿼리 엔진 지연 등의 일반적인 시나리오를 다룬다.
+> Scope: Tempo readiness checks, OTLP ingestion triage, MinIO storage evidence, metrics generator verification, restart, and WAL symptom escalation.
 
-## Tempo Recovery Procedure
+### Overview
 
-> Troubleshooting and recovery procedures for distributed tracing.
-
----
-
-### Procedure Type
-
-`recovery-runbook`
-
-### Potential Issues & Symptoms
-
-#### 1. Broken Trace Ingestion (트레이스 누락)
-
-- **Symptom**: Grafana에서 최근 트레이스가 검색되지 않음.
-- **Check**: `infra-tempo` 로그 및 `distributor` 지표 확인.
-- **Resolution**:
-
-  ```bash
-  docker compose --profile obs restart tempo
-  ```
-
-  Alloy와 Tempo 간의 OTLP 엔드포인트(4317/4318) 도달 가능성 확인.
-
-#### 2. Backend Storage Connection (MinIO 오류)
-
-- **Symptom**: `Failed to write blocks to storage`, `S3 bucket access denied` 오류 로그 발생.
-- **Check**: MinIO 버킷 권한 및 네트워크 연결 상태.
-- **Resolution**:
-  - `MINIO_APP_USERNAME` 및 비밀번호 환경 변수 재확인.
-  - MinIO 인터페이스에서 `tempo-bucket` 존재 여부 확인.
-
-#### 3. WAL Corruption (쓰기 버퍼 손상)
-
-- **Symptom**: Tempo 재시작 시 `corrupt WAL` 오류와 함께 기동 실패.
-- **Check**: `/var/tempo/wal` 디렉토리 파일 상태.
-- **Resolution**:
-  - WAL 파일 백업 후 해당 디렉토리 정리 (데이터 유실 주의).
-
-#### 4. Metrics Generator Failure
-
-- **Symptom**: 서비스 그래프나 Span Metrics가 대시보드에서 보이지 않음.
-- **Check**: `tempo.yaml` 내 `remote_write` 설정 및 Prometheus 상태.
-- **Resolution**:
-  - Prometheus 엔드포인트 헬스체크.
-  - Tempo 재시작 후 메트릭 생성 로그 모니터링.
-
-### Recovery Steps
-
-#### Emergency Full Restart
-
-```bash
-
-## Move to infra directory
-cd infra/06-observability
-
-## Restart related observability services
-docker compose --profile obs restart tempo alloy
-```
-
-### Manual Bucket Check
-
-MinIO 클라이언트(`mc`)를 사용하여 스토리지 상태를 점검한다.
-
-### Post-Mortem Usagelines
-
-- 트레이스 유실 범위 및 시간을 기록한다.
-- `alloy`에서 `tempo`로의 데이터 전달 병목이었는지, `tempo` 내부 압축기(Compactor) 문제였는지 분석한다.
-- 재발 방지를 위해 저장소 모니터링 알림 임계값을 조정한다.
+이 런북은 Tempo trace ingestion failure, MinIO-backed storage error, metrics generator failure, query latency, and WAL corruption symptom을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
 
 ### Purpose
 
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
+운영자가 `infra-tempo`의 상태를 확인하고 Alloy → Tempo → MinIO → Prometheus remote write 경로를 검증하며, 데이터 손실 가능성이 있는 WAL or bucket 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### Canonical References
 
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
+- **Policy**: [Tempo operations policy](../../policies/06-observability/tempo.md)
+- **Guide**: [Tempo usage guide](../../guides/06-observability/tempo.md)
+- **Infrastructure**: [Tempo infra README](../../../../infra/06-observability/tempo/README.md)
 
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
+- Grafana Tempo datasource에서 최근 trace가 검색되지 않을 때.
+- Alloy는 trace를 수신하지만 Tempo에 trace가 도착하지 않는다고 의심될 때.
+- Tempo log에 S3, bucket, access denied, compaction, WAL 관련 오류가 보일 때.
+- Service graph or span metrics가 Prometheus/Grafana에서 보이지 않을 때.
+- Config 변경 후 readiness, route, storage, remote write evidence가 필요할 때.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+- [ ] `tempo` service, `infra-tempo` container, and `tempo-data` volume 상태를 확인한다.
+- [ ] Secret values를 열람하지 않는다. `minio_app_user_password` ID만 evidence에 기록한다.
+- [ ] 문제 유형을 readiness, ingestion, storage, metrics generator, query, WAL symptom 중 하나로 분류한다.
+- [ ] WAL deletion, bucket mutation, retention change, or secret rotation이 필요해 보이면 중단하고 owning operator approval을 받는다.
 
 ### Steps
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+1. 현재 service 상태, ready endpoint, 최근 로그를 캡처한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps tempo
+   docker logs --tail=200 infra-tempo
+   docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready
+   ```
+
+2. Compose and config boundary가 policy와 일치하는지 확인한다.
+
+   ```bash
+   rg -n 'service: template-stateful-high|image: hy/tempo:3.0.2-custom|container_name: infra-tempo|user: .10001:10001.|tempo-data|TEMPO_PORT|minio_app_user_password|tempo.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'endpoint: 0.0.0.0:4317|endpoint: 0.0.0.0:4318|block_retention: 24h|compacted_block_retention: 1h|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: minio:9000|secret_key: \\$\\{MINIO_APP_USER_PASSWORD\\}' infra/06-observability/tempo/config/tempo.yaml
+   ```
+
+3. Alloy exporter가 Tempo endpoint를 가리키는지 확인한다.
+
+   ```bash
+   rg -n 'otelcol.exporter.otlp "tempo"|endpoint = "tempo:4317"|traces  = \\[otelcol.exporter.otlp.tempo.input\\]' infra/06-observability/alloy/config/config.alloy
+   ```
+
+4. Storage or secret symptom은 로그 문구와 bucket/config boundary만 캡처한다. Secret value를 출력하지 않는다.
+
+   ```bash
+   docker logs --tail=500 infra-tempo | grep -Ei 's3|bucket|tempo-bucket|minio|access denied|secret|wal|compact|block'
+   ```
+
+5. Metrics generator failure가 의심되면 Tempo config의 `remote_write` endpoint와 Prometheus readiness를 확인한다.
+
+   ```bash
+   rg -n 'metrics_generator:|span_metrics:|service_graphs:|remote_write:|url: http://prometheus:9090/api/v1/write' infra/06-observability/tempo/config/tempo.yaml
+   docker exec infra-prometheus wget -qO- http://localhost:9090/-/healthy
+   ```
+
+6. Readiness or ingestion state가 config와 맞지만 회복되지 않으면 Tempo를 재시작한다. Alloy exporter state도 함께 의심될 때만 Alloy를 같이 재시작한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart tempo
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart tempo alloy
+   ```
+
+7. WAL corruption or local-block corruption이 의심되면 삭제하지 말고 evidence만 수집한다.
+
+   ```bash
+   docker logs --tail=500 infra-tempo | grep -Ei 'wal|corrupt|local block|compactor|failed to replay'
+   docker compose -f infra/06-observability/docker-compose.yml config | grep -n 'tempo-data'
+   ```
+
+   이 런북은 WAL 삭제, bucket mutation, or volume file mutation을 검증된 복구 절차로 제공하지 않는다. 데이터 손실 가능성이 있는 조치는 별도 incident/task approval과 backup evidence가 필요하다.
 
 ### Verification Steps
 
-- [ ] 관련 validation script를 실행한다.
-- [ ] 문서 변경이면 template/heading audit를 확인한다.
-- [ ] runtime 변경이 있었다면 compose validation을 확인한다.
+- [ ] `docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`가 성공한다.
+- [ ] Grafana Tempo datasource에서 최근 trace가 조회된다.
+- [ ] Service graph or span metrics가 필요한 경우 Prometheus remote write와 Grafana dashboard timestamp가 갱신된다.
+- [ ] Storage symptom이면 `tempo-bucket`, MinIO endpoint, secret reference boundary가 policy와 일치한다.
+- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: `docker logs --tail=200 infra-tempo`
+- **Health**: Tempo `/ready`, Grafana Tempo datasource, Grafana service graph dashboards
+- **Config**: `tempo.yaml`, Alloy Tempo exporter, Prometheus `/-/healthy`
+- **Storage**: `tempo-bucket` boundary, MinIO endpoint `minio:9000`, `tempo-data` volume
+- **Evidence to Capture**: failing symptom, log excerpt without secrets, affected route or endpoint, restart timestamp, final recovery or escalation state
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+- Git-managed `tempo.yaml`, Alloy exporter, or Compose 변경이 원인이면 직전 Git diff 단위로 되돌리고 readiness를 다시 확인한다.
+- Runtime restart는 `obs` profile compose 명령만 사용한다.
+- WAL deletion, bucket deletion, object mutation, retention change, or secret rotation은 이 런북의 안전 롤백 범위를 벗어난다.
 
 ### Agent Operations (If Applicable)
 
@@ -136,18 +124,18 @@ MinIO 클라이언트(`mc`)를 사용하여 스토리지 상태를 점검한다.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- 실행한 명령, timestamp, operator or agent action을 기록한다.
+- Secret values는 기록하지 않는다.
+- Trace ingestion 장애는 Alloy exporter check, Tempo ready state, Grafana datasource result를 함께 기록한다.
+- Storage/WAL symptom은 로그 발췌, `tempo-data` volume boundary, approval state를 기록한다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+이 런북에 명시된 validation, restart, and Git-managed config rollback만 사용한다. 데이터 손실 가능성이 있는 WAL, bucket, object, retention 조치는 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, WAL/bucket/object mutation이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
 ## Related Documents
 

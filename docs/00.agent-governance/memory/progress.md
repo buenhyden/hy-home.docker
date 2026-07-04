@@ -586,6 +586,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Prometheus documentation, the generated LLM Wiki index, and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Prometheus compose/config/reference scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Tempo Guide and Runbook Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Tempo usage guide | `docs/05.operations/guides/06-observability/tempo.md` | ✅ Updated | Removed the legacy blockquote separator and rewrote the guide around current compose, OTLP receiver, MinIO storage, retention, metrics generator, Grafana usage, common checks, and runbook handoff boundaries. |
+| Tempo recovery runbook | `docs/05.operations/runbooks/06-observability/tempo.md` | ✅ Updated | Replaced mixed legacy troubleshooting/template content with one runbook covering readiness, ingestion triage, storage evidence, metrics generator verification, restart, WAL symptom escalation, evidence, rollback, and escalation. |
+| Current-truth boundary | `infra/06-observability/tempo` | ✅ Clarified | Preserved image `hy/tempo:3.0.2-custom`, upstream `grafana/tempo:3.0.2`, non-root user `10001:10001`, OTLP `4317/4318`, `tempo-bucket`, `tempo-data`, `block_retention: 24h`, `compacted_block_retention: 1h`, Prometheus remote_write, and protected route chain. |
+| Command/document wording | `infra/06-observability/tempo/README.md` | ✅ Corrected | Added repository-root `-f infra/06-observability/docker-compose.yml --profile obs` Tempo commands, readiness validation, and WAL/bucket/retention escalation wording. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Tempo documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Tempo compose/config/Alloy scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
