@@ -486,6 +486,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed one policy document and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Loki Policy Profile Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Loki policy structure | `docs/05.operations/policies/06-observability/loki.md` | ✅ Updated | Merged the legacy leading Loki policy block into the operations policy template flow: `Overview`, `Policy Scope`, `Controls`, `Exceptions`, `Verification`, `Review Cadence`, and `Related Documents`. |
+| Current-truth boundary | `infra/06-observability/loki` | ✅ Clarified | Preserved MinIO bucket `loki-bucket`, retention `168h`, compactor settings, Docker Secret boundary, `template-stateful-high` resource cap, protected route chain, and low-cardinality label rules. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed one policy document and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
