@@ -1,7 +1,5 @@
 # Tempo Distributed Tracing
 
-> High-scale distributed tracing backend within the `06-observability` tier.
-
 ## Overview
 
 Tempo stores trace data in an S3-compatible backend (MinIO). It enables "TraceQL" for powerful querying and allows correlation between metrics, logs, and traces starting from a Span ID. It also generates span metrics and service graphs automatically.
@@ -73,13 +71,13 @@ tempo/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify trace ingestion by checking `docker logs infra-tempo | grep -i 'error\|warn'` after config changes.
+- Verify trace ingestion by checking `docker logs --tail=200 infra-tempo` after config changes.
 - Confirm OTLP endpoint reachability from Alloy by verifying traces appear in Grafana Tempo datasource.
 - Confirm Tempo readiness with `docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For OTLP ingestion errors: confirm port bindings and that Alloy's Tempo exporter targets the correct endpoint.
 - For trace query errors: verify the Tempo datasource URL in Grafana matches the Tempo container's network address.
@@ -88,15 +86,9 @@ tempo/
 
 ## Related Documents
 
-- [System Guide](../../../docs/05.operations/guides/06-observability/tempo.md)
-- [Operational Policy](../../../docs/05.operations/policies/06-observability/tempo.md)
-- [Recovery Runbook](../../../docs/05.operations/runbooks/06-observability/tempo.md)
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
-
----
+- [Usage guide](../../../docs/05.operations/guides/06-observability/tempo.md)
+- [Operations policy](../../../docs/05.operations/policies/06-observability/tempo.md)
+- [Recovery runbook](../../../docs/05.operations/runbooks/06-observability/tempo.md)
 
 ## Service Readiness
 
@@ -114,7 +106,7 @@ Copyright (c) 2026. Licensed under the MIT License.
 | Healthcheck | `http://localhost:${TEMPO_PORT:-3200}/ready` |
 | Operations | [Guide](../../../docs/05.operations/guides/06-observability/tempo.md), [Policy](../../../docs/05.operations/policies/06-observability/tempo.md), [Runbook](../../../docs/05.operations/runbooks/06-observability/tempo.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 

@@ -1,7 +1,5 @@
 # Prometheus
 
-> High-performance time-series database for system and application metrics.
-
 ## Scope
 
 Prometheus is the core metrics engine for the `hy-home.docker` platform. It scrapes targets defined in `config/prometheus.yml`, stores time-series data in the `prometheus-data` volume, and evaluates alerting rules. Label cardinality must stay controlled through the operations policy.
@@ -49,8 +47,6 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 3. **Scrape Settings**: Global interval is `30s`; service-specific overrides such as Prometheus `15s` and cAdvisor `1m` must remain intentional.
 4. **Networking**: Scrape targets must be reachable via the `infra_net`.
 
----
-
 ## Overview
 
 `infra/06-observability/prometheus`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.
@@ -86,11 +82,11 @@ infra/06-observability/prometheus/
 - Validate Prometheus config with `docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml`.
 - Validate alert rules with `docker exec infra-prometheus promtool check rules /etc/prometheus/alert_rules/*.yml`.
 - Verify scrape targets are UP by checking the Prometheus UI Targets page after `prometheus.yml` changes.
-- Confirm alert rules load correctly by checking `docker logs infra-prometheus | grep -i 'error\|warn'`.
+- Confirm alert rules load correctly by checking `docker logs --tail=200 infra-prometheus` after config or rule changes.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For scrape errors: validate `prometheus.yml` scrape configs and confirm target endpoints are reachable from the Prometheus container.
 - For alert rule errors: check YAML syntax in rule files and verify the `rule_files` paths are correctly mounted.

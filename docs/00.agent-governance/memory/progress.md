@@ -662,6 +662,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed stack/hardening documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted stack inventory/datasource/storage/middleware/healthcheck/Dockerfile/entrypoint scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
 
+## Observability Infra README Residue Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Tier README commands | `infra/06-observability/README.md` | ✅ Updated | Removed the legacy tagline and changed troubleshooting command examples to repository-root `docker compose -f infra/06-observability/docker-compose.yml --profile obs config`. |
+| Service README commands | `infra/06-observability/{alloy,prometheus,pushgateway,pyroscope,tempo}/README.md` | ✅ Updated | Normalized stale `docker logs ... | grep` and bare `docker compose config` examples to explicit `docker logs --tail=200 ...` or repository-root compose commands. |
+| Link labels and legacy separators | `infra/06-observability/{pushgateway,pyroscope,tempo}/README.md` | ✅ Updated | Replaced stale `System Guide`/`Operational Policy`/`Recovery Runbook` labels with guide/policy/runbook labels and removed legacy copyright separators while preserving meaningful admonitions. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed observability README documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted stale marker scan, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

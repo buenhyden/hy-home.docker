@@ -1,7 +1,5 @@
 # Pushgateway
 
-> Metrics buffer for ephemeral and batch jobs within the `06-observability` tier.
-
 ## Overview
 
 Pushgateway allows ephemeral and batch jobs to expose metrics to Prometheus in cases where the standard pull model is not feasible (e.g., short-lived CI/CD tasks or batch scripts). It acts as a temporary buffer that Prometheus can scrape when the matching scrape job is configured.
@@ -83,12 +81,12 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify metric push by checking `docker logs pushgateway | grep -i 'error\|warn'` and confirming pushed metrics appear in the Pushgateway UI.
+- Verify metric push by checking `docker logs --tail=200 pushgateway` and confirming pushed metrics appear in the Pushgateway UI.
 - Before relying on Prometheus dashboards or alerts, confirm a Pushgateway scrape job exists in `infra/06-observability/prometheus/config/prometheus.yml` and the target appears UP in the Prometheus Targets page.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For push errors: validate the push URL format (`http://pushgateway:9091/metrics/job/<job>`) and confirm network connectivity from the pushing service.
 - For stale metrics: use the Pushgateway UI or runbook DELETE commands to remove stale job groups.
@@ -97,15 +95,9 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 
 ## Related Documents
 
-- [System Guide](../../../docs/05.operations/guides/06-observability/pushgateway.md)
-- [Operational Policy](../../../docs/05.operations/policies/06-observability/pushgateway.md)
-- [Recovery Runbook](../../../docs/05.operations/runbooks/06-observability/pushgateway.md)
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
-
----
+- [Usage guide](../../../docs/05.operations/guides/06-observability/pushgateway.md)
+- [Operations policy](../../../docs/05.operations/policies/06-observability/pushgateway.md)
+- [Recovery runbook](../../../docs/05.operations/runbooks/06-observability/pushgateway.md)
 
 ## How to Work in This Area
 

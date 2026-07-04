@@ -1,7 +1,5 @@
 # Pyroscope Continuous Profiling
 
-> Continuous profiling platform for analyzing application performance within the `06-observability` tier.
-
 ## Overview
 
 Pyroscope provides continuous profiling of applications to identify performance bottlenecks, CPU hot paths, and memory leaks. It collects profiling data (CPU, memory, etc.) and allows developers to visualize it over time using flamegraphs.
@@ -72,13 +70,13 @@ pyroscope/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify profiling ingestion by checking `docker logs infra-pyroscope | grep -i 'error\|warn'` after config changes.
+- Verify profiling ingestion by checking `docker logs --tail=200 infra-pyroscope` after config changes.
 - Confirm profiles appear in Grafana Pyroscope datasource after Alloy sends profiling data.
 - Confirm Pyroscope readiness with `docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready`.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For ingestion errors: confirm Alloy's Pyroscope exporter endpoint matches the Pyroscope container's push API.
 - For missing profiles: verify service name labels in Alloy's profiling configuration match expected Pyroscope app names.
@@ -87,15 +85,9 @@ pyroscope/
 
 ## Related Documents
 
-- [System Guide](../../../docs/05.operations/guides/06-observability/pyroscope.md)
-- [Operational Policy](../../../docs/05.operations/policies/06-observability/pyroscope.md)
-- [Recovery Runbook](../../../docs/05.operations/runbooks/06-observability/pyroscope.md)
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
-
----
+- [Usage guide](../../../docs/05.operations/guides/06-observability/pyroscope.md)
+- [Operations policy](../../../docs/05.operations/policies/06-observability/pyroscope.md)
+- [Recovery runbook](../../../docs/05.operations/runbooks/06-observability/pyroscope.md)
 
 ## How to Work in This Area
 

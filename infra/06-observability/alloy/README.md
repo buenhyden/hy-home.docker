@@ -1,7 +1,5 @@
 # Grafana Alloy Unified Collector
 
-> Advanced telemetry pipeline and OTLP gateway.
-
 ## Overview
 
 Alloy is the unified collection agent for the `hy-home.docker` platform. It replaces legacy agents by providing a programmable configuration (Alloy HCL) to collect, process, and export metrics, logs, and traces. It acts as the primary OTLP gateway for all applications within the infrastructure.
@@ -86,12 +84,12 @@ alloy/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify OTLP pipeline health by checking `docker logs infra-alloy | grep -i "error\|warn"` after `config.alloy` changes.
+- Verify OTLP pipeline health by checking `docker logs --tail=200 infra-alloy` after `config.alloy` changes.
 - Confirm telemetry forwarding by verifying Loki, Prometheus, and Tempo receive data from Alloy exporters; for Pyroscope, confirm the writer endpoint remains configured and only claim profile ingestion when a profile source is explicitly connected.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For OTLP ingestion errors: verify port bindings (`ALLOY_OTLP_GRPC_PORT`, `ALLOY_OTLP_HTTP_PORT`) and check that applications target the correct Alloy endpoint.
 - For collector config errors: validate `config.alloy` HCL syntax and check the Alloy UI at `https://alloy.${DEFAULT_URL}` for component status.

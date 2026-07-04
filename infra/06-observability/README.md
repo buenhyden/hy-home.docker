@@ -1,7 +1,5 @@
 # Observability Tier (06-observability)
 
-> Centralized telemetry, monitoring, and debugging hub.
-
 ## Overview
 
 The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Tempo, Prometheus) combined with Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, and Pyroscope. External long-term metric storage is not declared in the tracked compose files.
@@ -62,7 +60,7 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 | Healthcheck | Compose healthcheck declared for `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway` |
 | Operations | [Guide index](../../docs/05.operations/guides/06-observability/README.md), [Policy index](../../docs/05.operations/policies/06-observability/README.md), [Runbook index](../../docs/05.operations/runbooks/06-observability/README.md) |
 | Validation | [validate-docker-compose.sh](../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
@@ -128,7 +126,7 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm LGTM service, network, volume, and secret references render.
+- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm LGTM service, network, volume, and secret references render.
 - Check service-specific logs first, then follow the linked observability runbook for data-path failures.
 
 ## Related Documents
