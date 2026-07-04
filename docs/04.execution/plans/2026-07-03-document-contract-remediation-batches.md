@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-03-document-contract-remediation-batches.md -->
@@ -51,8 +51,8 @@ secret, and infra surfaces as protected.
     boundaries.
   - Record evidence for any gap that is fixed, reclassified, deferred, or
     intentionally preserved.
-  - Preserve known infra drift as out of scope unless an infra-specific task
-    is explicitly approved.
+  - Preserve infra/runtime drift as separate from documentation batches unless
+    an infra-specific task is explicitly approved.
 - **In Scope**:
   - `docs/90.references/audits/document-contracts/gap-register.md`
   - batch-specific task evidence under `docs/04.execution/tasks/`
@@ -83,8 +83,7 @@ secret, and infra surfaces as protected.
   - provider runtime configuration changes
   - Docker Compose runtime changes outside the infra drift batch
   - broad historical evidence cleanup
-  - resolving Keycloak hardening image drift or tech-stack image drift outside
-    an infra-specific task
+  - resolving future image or tech-stack drift outside an infra-specific task
 
 ## Work Breakdown
 
@@ -96,7 +95,7 @@ secret, and infra surfaces as protected.
 | PLN-WDC-RM-004 | Normalize target-stage frontmatter and section profiles. | `docs/01.requirements/**`, approved `docs/05.operations/**`, `infra/**/*.md`, and other explicitly routed Markdown profiles | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Frontmatter and section inventories improve or explicitly document preserved exceptions by profile. |
 | PLN-WDC-RM-005 | Decide CI/CD, QA, parser, and Graphify enforcement. | `.github/workflows/**`, `scripts/validation/**`, `scripts/knowledge/**`, `.pre-commit-config.yaml` only after protected-surface approval | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Dependency-audit, parser, and Graphify decisions are either implemented with checks or documented as advisory/no-action. |
 | PLN-WDC-RM-006 | Preserve or reclassify historical evidence rows. | `docs/03.specs/**`, `docs/04.execution/**`, `docs/98.archive/**`, `archive/**`, progress memory | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Historical evidence remains semantically intact unless a specific active-guidance conflict is proven. |
-| PLN-WDC-RM-007 | Execute infra drift only as a separate infra task if approved. | `infra/02-auth/keycloak/**`, `infra/tech-stack.versions.json`, Compose declarations, hardening scripts | WDC-GAP-020, WDC-GAP-021 | Infra checks pass or the drift remains documented out of scope for documentation batches. |
+| PLN-WDC-RM-007 | Execute infra drift only as a separate infra task if approved. | `infra/02-auth/keycloak/**`, `infra/tech-stack.versions.json`, Compose declarations, hardening scripts | WDC-GAP-020, WDC-GAP-021 | Infra follow-up evidence keeps changes separate; tech-stack sync, hardening, and repo contracts pass. |
 | PLN-WDC-RM-008 | Close batch evidence, update register dispositions, regenerate indexes, and commit. | batch task evidence, `gap-register.md`, progress memory, LLM Wiki index | All touched rows | Every touched gap row has final disposition evidence and validation results. |
 
 ## Batch Approval Gates
@@ -120,7 +119,7 @@ secret, and infra surfaces as protected.
 | VAL-WDC-RM-004 | Traceability | Validate plan, task, and operations traceability. | `bash scripts/validation/check-doc-traceability.sh` | PASS with `failures=0`. |
 | VAL-WDC-RM-005 | Implementation Alignment | Validate active docs against tracked implementation surfaces. | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS with `failures=0`. |
 | VAL-WDC-RM-006 | Repo Contract Syntax | Validate repo-contract script syntax before full execution. | `bash -n scripts/validation/check-repo-contracts.sh` | Zero exit status. |
-| VAL-WDC-RM-007 | Repo Contracts | Validate repository contracts. | `bash scripts/validation/check-repo-contracts.sh` | PASS, or failure is limited to known out-of-scope infra drift until the infra batch is approved. |
+| VAL-WDC-RM-007 | Repo Contracts | Validate repository contracts. | `bash scripts/validation/check-repo-contracts.sh` | PASS with `failures=0`. |
 | VAL-WDC-RM-008 | README Template Drift | Check removed flat README/service template paths in affected surfaces. | `rg -n 'docs/99\\.templates/(readme|service)\\.template' projects secrets tests examples` | No active unreviewed references remain in approved surfaces. |
 | VAL-WDC-RM-009 | Operations Metadata | Check generic operations `updated` metadata after operations metadata cleanup. | `rg -n '^updated:' docs/05.operations` | No unapproved active operations metadata drift remains, or exceptions are recorded by profile. |
 | VAL-WDC-RM-010 | Gap Register | Confirm touched rows record a final disposition. | `rg -n 'WDC-GAP-00[1-9]|WDC-GAP-01[0-9]|WDC-GAP-02[0-2]' docs/90.references/audits/document-contracts/gap-register.md` | Touched rows have evidence-backed next action or closure wording. |
@@ -134,7 +133,7 @@ secret, and infra surfaces as protected.
 | Secret-handling documentation edits accidentally inspect secret material. | High | Limit reads to `secrets/README.md`; never inspect values or generated secret files. |
 | Validator or workflow changes break local developer ergonomics. | Medium | Separate advisory documentation from hard gates; run local QA gates before committing script/workflow changes. |
 | Historical evidence loses audit meaning. | Medium | Preserve old records unless a specific current-guidance conflict is documented. |
-| Full repo contracts remain red from known infra drift. | Medium | Keep infra drift recorded as out of scope until PLN-WDC-RM-007 is approved. |
+| Future infra image drift recurs outside a dedicated infra task. | Medium | Keep infra image/version changes in infra-specific task evidence and validate tech-stack sync, hardening, and repo contracts together. |
 
 ## Agent Rollout & Evaluation Gates
 
@@ -152,17 +151,16 @@ secret, and infra surfaces as protected.
 
 ## Completion Criteria
 
-- [ ] Batch task evidence exists before remediation edits start.
-- [ ] Touched `WDC-GAP-*` rows are closed, reclassified, or explicitly
+- [x] Batch task evidence exists before remediation edits start.
+- [x] Touched `WDC-GAP-*` rows are closed, reclassified, or explicitly
       deferred with evidence.
-- [ ] Provider, README, frontmatter, section, CI/CD, QA, historical, and infra
+- [x] Provider, README, frontmatter, section, CI/CD, QA, historical, and infra
       boundaries remain separated by commit.
-- [ ] Generated LLM Wiki index is fresh when path or document references
+- [x] Generated LLM Wiki index is fresh when path or document references
       change.
-- [ ] Progress memory records completed remediation batches and known residual
-      gaps.
-- [ ] Required validation commands pass, except known out-of-scope infra drift
-      until the infra batch is approved.
+- [x] Progress memory records completed remediation batches and former residual
+      follow-up closures.
+- [x] Required validation commands pass with `failures=0`.
 
 ## Related Documents
 

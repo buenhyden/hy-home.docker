@@ -421,6 +421,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Remediation batch boundary | `docs/04.execution/{plans,tasks}/2026-07-03-document-contract-remediation-batches.md` | ✅ Preserved | Left the document-contract remediation batch active because its plan still has open completion criteria and deferred follow-up boundaries. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki regeneration, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Document Contract Remediation Final Status Sync (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Plan/task frontmatter | `docs/04.execution/{plans,tasks}/2026-07-03-document-contract-remediation-batches.md` | ✅ Updated | Marked the remediation batch plan and task as `status: completed` after the examples scaffold, GitHub branch-protection, and infra tech-stack follow-ups closed the former residual WDC rows. |
+| Stage 04 indexes | `docs/04.execution/{plans,tasks}/README.md` | ✅ Updated | Replaced stale active routing labels with completed labels for the remediation batch plan/task. |
+| Gap register follow-up wording | `docs/90.references/audits/document-contracts/gap-register.md` | ✅ Updated | Clarified that WDC-GAP-017, WDC-GAP-020, WDC-GAP-021, and WDC-GAP-022 were follow-ups at local closure time and were later closed by separate task evidence. |
+| Validation | Local documentation and infra contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, tech-stack sync, hardening, doc traceability, doc implementation alignment, repo-contract syntax, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

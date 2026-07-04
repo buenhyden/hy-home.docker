@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md -->
@@ -33,15 +33,15 @@ corpus remediation begins.
   truth; provider files are adapters, not owners.
 - Do not inspect secret values, credentials, tokens, certificates, private
   keys, raw logs, shell history, or `.env` values.
-- Keep existing infra image/version drift out of documentation batches unless
-  an infra-specific task is approved.
+- Keep future infra image/version drift out of documentation batches unless an
+  infra-specific task is approved.
 
 ## Approved Surface Evidence
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
 | `docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md` | Approved remediation batch plan and user continuation | Execution evidence | File absent | Task evidence records baseline and future batch status | `git revert` this task-evidence commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
-| `docs/04.execution/tasks/README.md` | Task-stage routing contract | Task index | Remediation batch task not listed | Active task linked in structure and related documents | `git revert` this task-evidence commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
+| `docs/04.execution/tasks/README.md` | Task-stage routing contract | Task index | Remediation batch task not listed | Completed task linked in structure and related documents | `git revert` this task-evidence commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 | `projects/README.md`; `projects/storybook/README.md`; `projects/storybook/nextjs/README.md` | PLN-WDC-RM-003 and user continuation for the next approved batch | Project README profile and template-link cleanup | Project READMEs used `Related References`, removed flat README template links, and `projects/README.md` still named obsolete operations-stage paths. | Project READMEs use `Related Documents`, canonical common README template links, and current Stage 03/04/05 taxonomy wording. | `git revert` the T-003 README batch commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 | `secrets/README.md` | PLN-WDC-RM-003 secret README approval with redaction boundary | Secret README profile and template-link cleanup | Secret README used `Related References`, duplicated the operations README link, and linked a removed flat README template path. | Secret README uses `Related Documents`, one operations README link, and the canonical common README template link. | `git revert` the T-003 README batch commit | Read only `secrets/README.md`; do not inspect secret value files, credentials, tokens, private keys, certificates, raw logs, shell history, or `.env` values |
 | `tests/README.md` | PLN-WDC-RM-003 and user continuation for the next approved batch | Tests README profile cleanup | Tests README used `Related References`. | Tests README uses `Related Documents`. | `git revert` the T-003 README batch commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
@@ -51,7 +51,8 @@ corpus remediation begins.
 | `docs/99.templates/support/frontmatter-contract.md`; `docs/90.references/audits/document-contracts/frontmatter-routing-profile.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-004 and user continuation for the next approved batch | Frontmatter routing profile decision | WDC-GAP-006 recorded 185 tracked Markdown files without top frontmatter and required profile-specific routing before corpus edits. | The missing set is classified by surface as required, optional, deferred, or declined; no non-README active target-stage leaf document remains unrouted. | `git revert` the T-004 frontmatter routing commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, runtime config, generated report mutation, GitHub-native behavior, or broad corpus rewrite |
 | `docs/90.references/audits/document-contracts/ci-qa-parser-graphify-decision.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-005 and user continuation for the next approved batch | CI/CD, QA, parser, and Graphify decision evidence | WDC-GAP-010 and WDC-GAP-011 required decisions for dependency-audit gates and Graphify enforcement; WDC-GAP-018 needed parser/tooling classification. | Current coverage and no-change decisions are documented: dependency audit hard gates require future Security/QA approval, Graphify remains advisory, and parser matches are tooling follow-up only. | `git revert` the T-005 decision commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, workflow changes, script changes, pre-commit changes, generated Graphify output changes, or Markdown content rewrites |
 | `docs/90.references/audits/document-contracts/historical-evidence-preservation.md`; `docs/90.references/audits/document-contracts/README.md` | PLN-WDC-RM-006 and user continuation for the next approved batch | Historical evidence preservation decision | WDC-GAP-012 through WDC-GAP-015 required a decision on whether old baselines, completed docs, archive tombstones, and progress evidence should be rewritten. | The historical rows are preserved as audit and migration evidence; no completed artifacts or archive material were rewritten. | `git revert` the T-006 preservation commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, completed spec/plan/task rewrites, archive tombstone rewrites, or historical progress rewrites |
-| `docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md`; `docs/90.references/audits/document-contracts/gap-register.md`; `docs/90.references/llm-wiki/llm-wiki-index.md`; `docs/00.agent-governance/memory/progress.md` | PLN-WDC-RM-008 and user continuation for closure | Document-contract remediation closure evidence | T-008 was planned, T-007 was deferred pending separate infra approval, and the closure state needed one final synchronized evidence update. | T-008 records local closure; WDC-GAP-017, WDC-GAP-020, WDC-GAP-021, and WDC-GAP-022 remain explicit follow-up items outside this document-contract remediation batch. | `git revert` the T-008 closure commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, examples/scaffold rewrites, remote GitHub reads or writes, infra runtime changes, Compose changes, or tech-stack edits |
+| `docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md`; `docs/90.references/audits/document-contracts/gap-register.md`; `docs/90.references/llm-wiki/llm-wiki-index.md`; `docs/00.agent-governance/memory/progress.md` | PLN-WDC-RM-008 and user continuation for closure | Document-contract remediation closure evidence | T-008 was planned, T-007 was deferred pending separate infra approval, and the closure state needed one final synchronized evidence update. | T-008 records local closure; WDC-GAP-017, WDC-GAP-020, WDC-GAP-021, and WDC-GAP-022 were later closed by separate examples, GitHub re-verification, and infra tech-stack tasks. | `git revert` the T-008 closure commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, examples/scaffold rewrites, remote GitHub setting mutation, live infra runtime changes, or secret values |
+| `docs/04.execution/plans/2026-07-03-document-contract-remediation-batches.md`; this task; `docs/04.execution/{plans,tasks}/README.md`; `docs/90.references/audits/document-contracts/gap-register.md`; `docs/00.agent-governance/memory/progress.md` | User continuation after follow-up tasks completed | Final status synchronization | Parent plan and task still had `status: active`, README indexes said active, and local closure text still named WDC-GAP-017/020/021/022 as future follow-ups. | Plan/task/index status is completed; follow-up closure wording points to the completed examples scaffold, branch-protection re-verification, and infra tech-stack tasks. | `git revert` the final status synchronization commit | Documentation metadata only; no secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, remote setting mutation, live container mutation, or runtime secret reads |
 | Future protected surfaces | Parent plan approval gates | Provider, workflow, validator, secret-handling, infra, and target-stage changes | No remediation applied in T-001 | Future tasks must record per-batch evidence before edits | Revert the specific future batch commit | Redaction boundary must be restated in each future batch before touching protected surfaces |
 
 ## Task Table
@@ -64,7 +65,7 @@ corpus remediation begins.
 | T-004 | Normalize target-stage frontmatter and section profiles. | doc | PLN-WDC-RM-004 | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Inventory rerun and profile exceptions | Codex | Done |
 | T-005 | Decide CI/CD, QA, parser, and Graphify enforcement. | doc/script | PLN-WDC-RM-005 | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Protected-surface checks | Codex | Done |
 | T-006 | Preserve or reclassify historical evidence rows. | doc | PLN-WDC-RM-006 | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Historical evidence review | Codex | Done |
-| T-007 | Execute infra drift only as a separate infra task if approved. | ops | PLN-WDC-RM-007 | WDC-GAP-020, WDC-GAP-021 | Infra-only validation | Codex | Deferred |
+| T-007 | Execute infra drift only as a separate infra task if approved. | ops | PLN-WDC-RM-007 | WDC-GAP-020, WDC-GAP-021 | Closed by the infra tech-stack version refresh task | Codex | Done |
 | T-008 | Close batch evidence, update register dispositions, regenerate indexes, and commit. | doc | PLN-WDC-RM-008 | All touched rows | Final validation matrix and commit trail | Codex | Done |
 
 ## Baseline Snapshot
@@ -82,13 +83,13 @@ corpus remediation begins.
 
 | Batch | Source Rows | Current Status | Boundary |
 | --- | --- | --- | --- |
-| Governance and provider adapter drift | WDC-GAP-001, WDC-GAP-002, WDC-GAP-022 | Local adapter drift done; remote evidence deferred | WDC-GAP-001 and WDC-GAP-002 were remediated by making Gemini, Claude, and generated Codex adapter text defer to Stage 00 owners. WDC-GAP-022 still requires separate remote GitHub re-verification approval. |
-| README profile normalization | WDC-GAP-003, WDC-GAP-004, WDC-GAP-005, WDC-GAP-017, WDC-GAP-019 | Approved surfaces done; examples deferred | Projects, secrets, and tests README surfaces were remediated. `secrets/README.md` was handled as metadata-only documentation and no secret value files were inspected. WDC-GAP-017 remains deferred because `examples/**` needs a separate examples/scaffold contract decision. |
+| Governance and provider adapter drift | WDC-GAP-001, WDC-GAP-002, WDC-GAP-022 | Done | WDC-GAP-001 and WDC-GAP-002 were remediated by making Gemini, Claude, and generated Codex adapter text defer to Stage 00 owners. WDC-GAP-022 was later closed by the read-only GitHub branch-protection re-verification task. |
+| README profile normalization | WDC-GAP-003, WDC-GAP-004, WDC-GAP-005, WDC-GAP-017, WDC-GAP-019 | Done | Projects, secrets, and tests README surfaces were remediated. `secrets/README.md` was handled as metadata-only documentation and no secret value files were inspected. WDC-GAP-017 was later closed by the examples scaffold contract remediation task. |
 | Target-stage frontmatter and section profiles | WDC-GAP-006, WDC-GAP-007, WDC-GAP-008, WDC-GAP-009, WDC-GAP-016 | Done | WDC-GAP-007 and WDC-GAP-016 were remediated for active Stage 05 operations metadata. WDC-GAP-008 was remediated by aligning active PRD AI-agent section headings with the PRD template. WDC-GAP-009 was remediated by merging gateway README validation command tables into the canonical `## Validation` sections. WDC-GAP-006 was closed by classifying missing-frontmatter surfaces into required, optional, deferred, and declined profiles without a broad corpus rewrite. |
 | CI/CD, QA, parser, and Graphify decisions | WDC-GAP-010, WDC-GAP-011, WDC-GAP-018 | Done; protected implementation deferred | Current coverage and decisions are recorded without mutating workflows, scripts, validators, pre-commit config, Graphify output, or Markdown content. Hard dependency-audit gates and Graphify hard gates require separate Security/QA or knowledge-graph approval. |
 | Historical evidence preservation or reclassification | WDC-GAP-012, WDC-GAP-013, WDC-GAP-014, WDC-GAP-015 | Done | Historical baselines, completed artifacts, archive tombstones, legacy archive material, and progress rows are preserved. Future cleanup requires proof of active-consumption conflict. |
-| Infra drift follow-up | WDC-GAP-020, WDC-GAP-021 | Deferred | Requires separate infra task and runtime-change approval if Compose changes. |
-| Closure | All touched local remediation rows | Done | This document-contract remediation batch is locally closed. Remaining follow-up is limited to examples/scaffold contract work, remote GitHub re-verification, and infra version drift tasks that require separate approval. |
+| Infra drift follow-up | WDC-GAP-020, WDC-GAP-021 | Done | Closed by the infra tech-stack version refresh task with no live container pull, recreate, start, stop, or secret read. |
+| Closure | All touched local remediation rows and former follow-up rows | Done | This document-contract remediation batch and its separate follow-up rows are closed. Future examples, GitHub, or infra changes still require their own scoped approval and evidence. |
 
 ## Validation Results
 
@@ -100,21 +101,21 @@ corpus remediation begins.
 | LLM Wiki regeneration | `bash scripts/knowledge/generate-llm-wiki-index.sh` | PASS: generated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1128 paths after the T-008 closure update. |
 | Historical evidence source review | Reads of `frontmatter-inventory.md`, `readme-profile-inventory.md`, `section-profile-inventory.md`, and `template-application-gaps.md` | PASS: WDC-GAP-012 through WDC-GAP-015 source rows are audit baselines, completed evidence, archive/tombstone evidence, or old-path migration history. |
 | Historical evidence preservation scan | `rg -n -e 'docs/99\.templates/readme\.template' -e 'docs/99\.templates/service\.template' -e 'Related References' -e 'status: completed' -e 'status: archived' docs/03.specs docs/04.execution docs/98.archive archive docs/00.agent-governance/memory/progress.md --glob '*.md'` | PASS: matches are preserved historical or archive evidence; no active-guidance rewrite was applied in T-006. |
-| Closure status review | `rg -n -e 'T-00[1-8]' -e 'WDC-GAP-017' -e 'WDC-GAP-020' -e 'WDC-GAP-021' -e 'WDC-GAP-022' docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md docs/90.references/audits/document-contracts/gap-register.md` | PASS: T-001 through T-006 and T-008 are closed, T-007 remains deferred, and the remaining examples, remote GitHub, and infra rows are recorded as separate follow-up. |
+| Closure status review | `rg -n -e 'T-00[1-8]' -e 'WDC-GAP-017' -e 'WDC-GAP-020' -e 'WDC-GAP-021' -e 'WDC-GAP-022' docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md docs/90.references/audits/document-contracts/gap-register.md` | PASS: T-001 through T-008 are closed, and WDC-GAP-017, WDC-GAP-020, WDC-GAP-021, and WDC-GAP-022 point to completed follow-up tasks. |
 | Whitespace | `git diff --check` | PASS: no whitespace errors. |
 | LLM Wiki freshness | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
 | Provider surfaces | `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` | PASS: `failures=0`. |
 | Implementation alignment | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `failures=0`. |
 | Repo contract syntax | `bash -n scripts/validation/check-repo-contracts.sh` | PASS: shell syntax is valid. |
-| Full repo contract | `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL: `failures=2`; no task, plan, reference, provider, LLM Wiki, Stage 99, or document-contract remediation failures. Failures remain confined to known out-of-scope infra drift: the Keycloak hardening image mismatch and `infra/tech-stack.versions.json` expected-image drift. |
+| Full repo contract | `bash scripts/validation/check-repo-contracts.sh` | PASS: `failures=0`. |
 | Adapter wording drift | `rg -n 'gemini-3\.1-pro\|gemini-3\.5-flash\|DOCS 3 RULES\|R1\)\|R2\)\|R3\)\|docs/99\.templates/(readme\|service)\.template\|updated:' GEMINI.md .agents/rules/workspace.md .agents/workflows/documentation.md .claude/agents/doc-writer.md .claude/skills/ops-runbook-agent/skill.md .codex/skills/ops-runbook-agent/skill.md` | PASS: no matches in the remediated adapter surfaces. |
 | Provider mirror generation | `bash scripts/operations/sync-provider-surfaces.sh --write` | PASS: regenerated generated Codex/Gemini provider surfaces after the Claude ops-runbook skill edit. |
 | Provider mirror freshness | `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
 | README approved surfaces | `rg -n 'Related References\|docs/99\.templates/(readme\|service)\.template\|docs/0[7]\.operations\|docs/1[0]' projects/README.md projects/storybook/README.md projects/storybook/nextjs/README.md secrets/README.md tests/README.md` | PASS: no stale section, removed template, or legacy stage-pattern matches in approved T-003 surfaces. |
-| README examples boundary | `rg -n 'docs/99\.templates/(readme\|service)\.template\|Related References' projects secrets tests examples` | EXPECTED SCOPED RESIDUAL: matches remain only under `examples/sample-web-service/**`, which is WDC-GAP-017 and remains deferred. |
+| README examples boundary | `rg -n 'docs/99\.templates/(readme\|service)\.template\|Related References' projects secrets tests examples` | PASS: no stale flat template path or related-reference matches remain in projects, secrets, tests, or examples. |
 | Operations metadata cleanup | `rg -n '^updated:\|^component:\|^runtime_state:\|^tier:\|^policy_state:' docs/05.operations` | PASS: no active Stage 05 matches remain for the remediated non-standard metadata keys. |
-| Changed target-stage gate | `bash scripts/validation/check-repo-contracts.sh` | Expected FAIL only on known infra drift; changed target-stage documents report `changed_template_docs_total=2`, `normalized_changed_template_docs_total=2`, and `legacy_changed_template_docs_skipped=0` for the T-008 closure diff. |
+| Changed target-stage gate | `bash scripts/validation/check-repo-contracts.sh` | PASS: changed target-stage documents pass template normalization and full repo contracts report `failures=0`. |
 | PRD AI-agent heading split | `rg -n '^## AI Agent Requirements$' docs/01.requirements` | PASS: no bare PRD AI-agent heading remains. |
 | PRD canonical AI-agent heading count | `rg -n '^## AI Agent Requirements \(If Applicable\)$' docs/01.requirements \| wc -l` | PASS: 24 canonical PRD AI-agent headings. |
 | Infra validation heading split | `rg -n '^## Validation Commands$\|^### Validation Commands$' infra --glob '*.md'` | PASS: no `Validation Commands` headings remain under infra. |
@@ -143,8 +144,9 @@ corpus remediation begins.
 - Root shim alignment: updated `GEMINI.md` so model selection points to
   `docs/00.agent-governance/subagent-protocol.md` rather than repeating model
   values.
-- WDC-GAP-022: remote branch-protection evidence remains deferred. No `gh api`
-  remote verification or remote setting mutation was performed in this batch.
+- WDC-GAP-022: remote branch-protection evidence was not reverified in this
+  provider-adapter batch. It was later closed by the read-only GitHub branch
+  protection re-verification task, with no remote setting mutation.
 
 ### T-003 README Profile Normalization
 
@@ -157,9 +159,9 @@ corpus remediation begins.
   and replaced the removed flat README template link. No secret value files
   were opened.
 - WDC-GAP-005: updated `tests/README.md` to use `## Related Documents`.
-- WDC-GAP-017: examples remain deferred; `examples/sample-web-service/**`
-  still contains the removed flat service-template references until an
-  examples/scaffold contract decision is approved.
+- WDC-GAP-017: examples were later closed by the examples scaffold contract
+  remediation task. The sample scaffold now uses lifecycle frontmatter, common
+  README profile sections, and current nested service-template links.
 - WDC-GAP-019: the stale operations-stage literal in `projects/README.md` was
   remediated after project README scope approval in this batch.
 
@@ -241,21 +243,22 @@ corpus remediation begins.
 
 ### T-007 Infra Drift Follow-Up Boundary
 
-- WDC-GAP-020 and WDC-GAP-021 remain deferred because they require an
-  infra-specific task and runtime-change approval before editing hardening
-  scripts, Compose declarations, or `infra/tech-stack.versions.json`.
-- The full repository contract still fails on known out-of-scope infra drift:
-  the Keycloak hardening image mismatch and tech-stack expected-image drift.
-- No infra runtime files, Compose files, hardening scripts, or tech-stack
-  version records were changed in the document-contract remediation closure.
+- WDC-GAP-020 and WDC-GAP-021 were closed by the separate infra tech-stack
+  version refresh task after approval for that infra-specific work.
+- The follow-up synced `infra/tech-stack.versions.json`, curated Compose image
+  declarations, and hardening/contract expectations, then verified full repo
+  contracts with `failures=0`.
+- No live container pull, recreate, start, stop, remote deployment, or secret
+  read was performed as part of the follow-up evidence.
 
 ### T-008 Closure Evidence
 
 - Closed the local document-contract remediation batch after T-002 through
   T-006 completed their approved local doc/provider/reference changes.
-- Left WDC-GAP-017 as a future examples/scaffold contract decision.
-- Left WDC-GAP-022 as a future remote GitHub governance re-verification task.
-- Left WDC-GAP-020 and WDC-GAP-021 as future infra drift remediation tasks.
+- Recorded WDC-GAP-017, WDC-GAP-022, WDC-GAP-020, and WDC-GAP-021 as separate
+  follow-ups at local closure time, then linked the later completed examples,
+  GitHub re-verification, and infra tech-stack tasks when those follow-ups
+  were closed.
 - Regenerated the LLM Wiki index and updated the progress log with closure
   evidence.
 
@@ -276,11 +279,12 @@ corpus remediation begins.
   no provider, workflow, validator, script, pre-commit, secret value, generated
   report, GitHub-native, Compose, Markdown content, or runtime surfaces were
   changed. T-006 created preservation evidence only and did not rewrite
-  historical documents. T-007 remained deferred because infra drift requires a
-  separate infra task and runtime-change approval. T-008 closed the local
-  document-contract remediation evidence and did not change examples, remote
-  GitHub state, infra runtime files, Compose files, hardening scripts, or
-  tech-stack version records.
+  historical documents. T-007 was closed by a separate infra tech-stack task
+  after approval, with no live container mutation or secret reads. T-008 closed
+  the local document-contract remediation evidence, and this final status sync
+  only updates plan/task/index/register/progress wording to reflect that the
+  examples, GitHub re-verification, and infra tech-stack follow-ups are now
+  complete.
 
 ## Related Documents
 
@@ -289,3 +293,6 @@ corpus remediation begins.
 - **Audit Pack Task**: [Workspace document contract audit pack task](./2026-07-03-workspace-document-contract-audit-pack.md)
 - **Audit Pack Plan**: [Workspace document contract audit pack plan](../plans/2026-07-03-workspace-document-contract-audit-pack.md)
 - **Audit Pack Spec**: [Workspace document contract audit pack spec](../../03.specs/workspace-document-contract-audit-pack/spec.md)
+- **Examples Scaffold Remediation Task**: [Examples scaffold contract remediation](./2026-07-04-examples-scaffold-contract-remediation.md)
+- **GitHub Branch Protection Re-verification Task**: [GitHub branch protection re-verification](./2026-07-04-github-branch-protection-reverification.md)
+- **Infra Tech-Stack Version Refresh Task**: [Infra tech-stack version refresh](./2026-07-04-infra-tech-stack-version-refresh.md)
