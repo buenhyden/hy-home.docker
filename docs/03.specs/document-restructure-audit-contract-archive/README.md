@@ -23,6 +23,12 @@ remaining historical work products, archive completed history by default, remove
 conflicting or duplicate active documents when a canonical replacement exists,
 and keep implementation batches reviewable.
 
+It remains active as a reusable restructure/disposition contract, not as an open
+implementation task. Completed Stage 04 plan/task evidence records the
+2026-07-04 restructure wave; future archive, removal, validator, workflow, or
+runtime-adjacent batches must either reuse this model with exact candidate rows
+or supersede it explicitly.
+
 ## Audience
 
 This README is for:

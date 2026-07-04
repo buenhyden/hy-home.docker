@@ -16,6 +16,12 @@ document profiles, compare frontmatter and sections against templates, map
 CI/CD and QA automation coverage, and record gaps without rewriting historical
 evidence.
 
+It remains active as a reusable audit/disposition contract, not as an open
+implementation task. Completed Stage 04 plan/task evidence records the
+2026-07-03 execution; future document-contract batches should reuse or
+supersede this model explicitly instead of treating its active status as broad
+permission to rewrite the corpus.
+
 ## Audience
 
 This README is for:

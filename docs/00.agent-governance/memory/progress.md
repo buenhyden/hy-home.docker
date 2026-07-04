@@ -467,6 +467,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed plan/index/progress documentation only and did not modify runtime infrastructure, validators, CI workflows, provider runtime, secret material, `.env`, or archive tombstones. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Stage 03 Active Workstream Spec Boundary (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Document-contract audit spec | `docs/03.specs/workspace-document-contract-audit-pack/{README.md,spec.md}` | ✅ Clarified | Kept `status: active` because the completed 2026-07-03 plan/task closed the execution pass, while the spec remains the reusable audit/disposition contract for future document-contract batches and WDC gap routing. |
+| Document-restructure spec | `docs/03.specs/document-restructure-audit-contract-archive/{README.md,spec.md}` | ✅ Clarified | Kept `status: active` because the completed 2026-07-04 plan/task closed the restructure wave, while the spec remains the reusable archive/removal/disposition contract for future exact-candidate DRA batches. |
+| Stage 03 index | `docs/03.specs/README.md` | ✅ Updated | Reworded the two workstream entries from generic active design specs to active disposition contracts so completed execution evidence and active spec routing no longer appear contradictory. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets, archive tombstones | ✅ Preserved | This batch changed Stage 03 spec/index/progress text only and did not modify implementation files, validators, CI workflows, provider runtime, secret material, `.env`, or archive tombstones. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

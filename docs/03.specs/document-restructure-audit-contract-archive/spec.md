@@ -19,6 +19,19 @@ moves, deletions, validator changes, GitHub workflow changes, or runtime
 configuration changes. Those changes require a Stage 04 implementation plan,
 task evidence, and logical commits.
 
+## Status Boundary
+
+This spec intentionally remains `status: active` as the current
+document-restructure disposition contract. The paired Stage 04 plan and task are
+completed execution evidence for the 2026-07-04 restructure wave; that closure
+does not retire this spec because future exact-candidate batches still use its
+archive/removal model, protected-surface boundaries, and `DRA-GAP-*` routing
+rules.
+
+Move this spec to `status: completed` only when a newer active restructure spec
+supersedes it, all active gap-register references are retargeted, or a future
+task explicitly retires this restructure model with replacement evidence.
+
 ## Strategic Boundaries & Non-goals
 
 ### Goals

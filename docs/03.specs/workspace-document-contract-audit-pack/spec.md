@@ -19,6 +19,19 @@ template and governance contract, then records gaps for later implementation
 batches. This prevents historical evidence from being rewritten as if it were
 active policy.
 
+## Status Boundary
+
+This spec intentionally remains `status: active` as the current
+document-contract audit and disposition model. The paired Stage 04 plan and
+task are completed execution evidence for the 2026-07-03 audit pack; that
+closure does not retire this spec because future document-contract batches still
+use its profile model, gap disposition rules, protected-surface boundaries, and
+Stage 90 audit-output routing.
+
+Move this spec to `status: completed` only when a newer active document-contract
+spec supersedes it, all active gap-register references are retargeted, or a
+future task explicitly retires this audit model with replacement evidence.
+
 ## Strategic Boundaries & Non-goals
 
 This spec owns the design of the audit pack only. It does not directly
