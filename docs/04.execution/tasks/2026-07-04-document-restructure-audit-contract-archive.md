@@ -60,7 +60,8 @@ change, or operations bucket restructure begins.
 | `docs/00.agent-governance/memory/progress.md` | Governance memory contract | Progress memory | `PLN-DRA-005` not recorded | Operations bucket restructure recorded after validation | `git revert` the operations bucket restructure commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 | `docs/90.references/audits/document-restructure/{ci-qa-formatting-contract.md,restructure-gap-register.md}` | `PLN-DRA-006` validator/CI/QA decision batch | CI/QA/formatting decision evidence | Dependency-audit and Graphify hard gates were future candidates; current workflow/script gates were already active | Current gates are preserved; dependency-audit and Graphify hard gates remain future Security/QA candidates with no workflow/script mutation | `git revert` the validator/CI/QA decision commit | Evidence-only updates; no workflow, validator, credential, or remote setting changes |
 | `docs/03.specs/document-restructure-audit-contract-archive/spec.md`; `docs/04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md`; this task; progress memory | `PLN-DRA-006` closure evidence | Spec/plan/task/progress routing | `T-DRA-006` planned and completion criteria still open | Decision recorded and `T-DRA-006` marked done after validation | `git revert` the validator/CI/QA decision commit | Documentation metadata only; no secret values or runtime logs |
-| Future target documents | Parent plan approval gates | `docs/98.archive/**`, validators, workflows, provider runtime, runtime infra | No validator, workflow, provider runtime, runtime infra, secret material, or archive tombstone change through `PLN-DRA-006` | Future batches must add per-surface evidence before edits | Revert only the future batch commit that introduced the change | Redaction boundary must be restated before touching protected surfaces |
+| `docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md`; `docs/90.references/audits/document-restructure/restructure-gap-register.md`; `docs/00.agent-governance/memory/progress.md` | `PLN-DRA-007` closure batch | Final evidence, residual gaps, and commit trail | `T-DRA-007` planned; residual rows and commit trail not yet summarized | Final closure evidence records commit trail, accepted residual triggers, validation results, and progress memory | `git revert` the closure evidence commit | Evidence-only updates; no target moves, validator changes, workflow changes, secret values, or runtime logs |
+| Future target documents | Parent plan approval gates | `docs/98.archive/**`, validators, workflows, provider runtime, runtime infra | No validator, workflow, provider runtime, runtime infra, secret material, or archive tombstone change through `PLN-DRA-007` | Future batches must add per-surface evidence before edits | Revert only the future batch commit that introduced the change | Redaction boundary must be restated before touching protected surfaces |
 
 ## Task Table
 
@@ -72,7 +73,7 @@ change, or operations bucket restructure begins.
 | T-DRA-004 | Execute approved `docs/03.specs` archive/remove/relink batch. | doc | 03.specs Restructure Model | PLN-DRA-004 | Candidate dispositions, status/routing cleanup, no tombstones needed, validation | Codex | Done |
 | T-DRA-005 | Execute approved operations bucket restructure batch. | doc | Operations Bucket Restructure Model | PLN-DRA-005 | Full bucket candidate dispositions, `90-knowledge` relocation, link sync, validation | Codex | Done |
 | T-DRA-006 | Decide validator, CI/CD, QA, and formatting enforcement. | doc/test | CI/CD, QA, and Formatting Contract | PLN-DRA-006 | Stable check implementation or future-hardening decision record | Codex | Done |
-| T-DRA-007 | Close evidence and residual gaps. | doc | Verification / Success Criteria | PLN-DRA-007 | Final validation matrix, gap register, progress, LLM Wiki, commit trail | Codex | Planned |
+| T-DRA-007 | Close evidence and residual gaps. | doc | Verification / Success Criteria | PLN-DRA-007 | Final validation matrix, gap register, progress, LLM Wiki, commit trail | Codex | Done |
 
 ## Baseline Snapshot
 
@@ -141,7 +142,7 @@ targets. The future audit pack must classify them before any target mutation.
 - [x] T-DRA-004 Execute approved `docs/03.specs` archive/remove/relink batch.
 - [x] T-DRA-005 Execute approved operations bucket restructure batch across all operations buckets.
 - [x] T-DRA-006 Decide validator, CI/CD, QA, and formatting enforcement.
-- [ ] T-DRA-007 Close evidence and residual gaps.
+- [x] T-DRA-007 Close evidence and residual gaps.
 
 ## Validation Results
 
@@ -157,7 +158,7 @@ targets. The future audit pack must classify them before any target mutation.
 | Local QA gate inventory | `bash scripts/validation/run-local-qa-gates.sh --list` | PASS: local script-backed gates, CI/local-tooling gates, and remote-only gates are listed separately. |
 | Dependency-audit active gate scan | `rg -n 'npm audit\|pip audit' .github scripts --glob '*.yml' --glob '*.yaml' --glob '*.sh'` | PASS: no active workflow or script-backed dependency-audit command found. |
 | Graphify health posture | `bash scripts/knowledge/report-graphify-health.sh` | ADVISORY: `status=advisory`, `surprising_cross_root_inferred_edges=2`; not promoted to a hard gate. |
-| Full repo contracts | `bash scripts/validation/check-repo-contracts.sh` | PASS: `changed_template_docs_total=5`, `target_stage_docs_total=617`, `failures=0`. |
+| Full repo contracts | `bash scripts/validation/check-repo-contracts.sh` | PASS: `changed_template_docs_total=2`, `target_stage_docs_total=617`, `failures=0`. |
 | Graphify refresh | `command -v graphify` | SKIP: Graphify CLI was not available in PATH, so graph refresh was not run. |
 
 ## PLN-DRA-004 Stage 03 Exact Disposition List
@@ -210,6 +211,32 @@ targets. The future audit pack must classify them before any target mutation.
 | `scripts/knowledge/generate-llm-wiki-index.sh --check` | Required for path-changing batches | `active-canonical` | Ensures generated tracked path index freshness. |
 | Dependency audit hard gates | Not added | `evidence-preserve` / future Security/QA candidate | No active `npm audit` or `pip audit` command exists in `.github` or `scripts`; future implementation requires thresholds, exception policy, package-manager scope, and rollback design. |
 | Graphify hard gate | Not added | `evidence-preserve` / future knowledge-graph candidate | `report-graphify-health.sh` currently reports `status=advisory`; Graphify remains navigation evidence, not a blocking gate. |
+
+## PLN-DRA-007 Closure Evidence
+
+| Closure Area | Final State | Future Trigger |
+| --- | --- | --- |
+| Final dispositions | `DRA-GAP-001` through `DRA-GAP-011` are closed for this wave; `DRA-GAP-012` remains an evidence-preserve rule, not an implementation blocker. | Add a new exact candidate row before any future target archive, removal, workflow, validator, or runtime mutation. |
+| Accepted residual: frontmatter omissions | `DRA-GAP-003` remains accepted evidence because routing contracts do not require a broad Markdown frontmatter rewrite. | Reopen only if Stage 99 frontmatter contracts change or a narrow target document requires frontmatter normalization. |
+| Accepted residual: reference lifecycle | `DRA-GAP-004` remains accepted evidence because `roadmap-v1.md` has a valid `superseded` pointer. | Reopen only if Stage 90 lifecycle/archive policy changes. |
+| Historical evidence preservation | `DRA-GAP-012` preserves prior audit/spec evidence from style-only rewrites. | Reopen only if an active-consumption conflict is proven with exact file paths and replacements. |
+| Protected surfaces | No validator, workflow, provider runtime, runtime infra, remote GitHub setting, secret, `.env`, or archive tombstone surface was changed in `PLN-DRA-007`. | Future protected-surface mutation requires explicit approval and rollback guidance. |
+| LLM Wiki | Generated index was refreshed after closure documentation updates. | Regenerate after future root, governance, operations, script, infra-index, or LLM Wiki path changes. |
+
+## Commit Trail
+
+| Commit | Batch | Summary |
+| --- | --- | --- |
+| `d7a76fed` | Design | Added the document restructure design spec. |
+| `e5f2d987` | Plan | Added the implementation plan. |
+| `7cda080a` | Task evidence seed | Created baseline task evidence. |
+| `b92d0d0b` | `PLN-DRA-002` | Added the Stage 90 audit pack. |
+| `1fcad4e7` | `PLN-DRA-003` | Defined archive-centered template and lifecycle contracts. |
+| `f9858d3a` | `PLN-DRA-004` | Resolved Stage 03 dispositions. |
+| `e4a70da1` | `PLN-DRA-005` scope | Expanded operations restructure scope. |
+| `42acb35f` | `PLN-DRA-005` implementation | Moved LLM Wiki operations into `00-workspace`. |
+| `520f2af3` | `PLN-DRA-006` | Closed the CI/QA gate decision. |
+| This closure commit | `PLN-DRA-007` | Close final evidence, residual gap posture, LLM Wiki, and progress memory. |
 
 ## Implementation Notes
 
@@ -266,6 +293,9 @@ targets. The future audit pack must classify them before any target mutation.
 - T-DRA-006 kept dependency-audit and Graphify hard gates as future candidates
   because the current evidence does not justify a noisy or credential-adjacent
   hard gate inside this documentation restructure wave.
+- T-DRA-007 closes the document restructure evidence wave without target
+  document mutation. The remaining residuals are accepted trigger conditions,
+  not active blockers.
 
 ## Verification Summary
 
@@ -274,7 +304,7 @@ targets. The future audit pack must classify them before any target mutation.
   and doc alignment validation listed in `## Validation Results`.
 - **Logs / Evidence Location**: This task document, parent plan, progress
   memory, and generated LLM Wiki index.
-- **Manual Checks**: Confirmed T-DRA-006 changed only decision/evidence
+- **Manual Checks**: Confirmed T-DRA-007 changed only closure/evidence
   documents. No archive tombstone, validator, workflow, pre-commit hook,
   provider runtime, runtime infra, secret value, raw log, shell history,
   remote GitHub setting, or `.env` value was touched.

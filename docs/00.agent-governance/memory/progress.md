@@ -402,6 +402,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Evidence | `PLN-DRA-006` | ✅ Updated | `DRA-GAP-010` and `DRA-GAP-011` closed for this wave without workflow, validator, pre-commit, remote GitHub, provider runtime, or secret-surface mutation. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass. Dependency audit scan has no active `npm audit` / `pip audit`; Graphify remains advisory. |
 
+## Document Restructure Closure Batch (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Final task closure | `T-DRA-007` | ✅ Done | Task evidence now records final validation matrix, residual posture, and commit trail for the document restructure wave. |
+| Residual posture | `DRA-GAP-003`, `DRA-GAP-004`, `DRA-GAP-012` | ✅ Accepted | Remaining rows are non-blocking trigger conditions: frontmatter rewrite only if contract changes, reference lifecycle only if Stage 90 policy changes, and historical evidence only if active-consumption conflict is proven. |
+| Protected surfaces | validators, workflows, runtime, secrets | ✅ Preserved | Closure changed evidence documents only; no validator, workflow, provider runtime, runtime infra, remote GitHub setting, secret, `.env`, or archive tombstone surface was changed. |
+| Commit trail | `docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md` | ✅ Recorded | The task now lists the design, plan, audit, contract, Stage 03, operations, CI/QA, and closure commits/batches. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
