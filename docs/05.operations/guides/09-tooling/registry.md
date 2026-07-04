@@ -10,10 +10,6 @@ status: active
 ### Overview
 
 이 문서는 `hy-home.docker`에서 운영하는 프라이빗 도커 레지스트리(Docker Registry v2)에 대한 가이드다. 내부 이미지를 저장하고 배포하는 절차와 주의사항을 제공한다.
->
-> Private OCI-compliant image distribution service.
-
----
 
 ### Usage Type
 
@@ -74,7 +70,8 @@ docker pull registry.hy-home.docker:5000/<project>/<image>:<tag>
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- Runtime approval 후 service가 실행 중이면 `curl -f http://localhost:${REGISTRY_PORT:-5000}/v2/`
 
 ## Runbook Handoff
 

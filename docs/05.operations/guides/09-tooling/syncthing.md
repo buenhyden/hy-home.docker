@@ -11,9 +11,7 @@ status: active
 
 ### Overview
 
-이 문서는 `docs/05.operations/guides/09-tooling/syncthing.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
->
-> Usage for real-time, secure peer-to-peer file synchronization.
+이 문서는 Syncthing을 사용해 파일을 peer-to-peer 방식으로 동기화하는 방법을 설명한다. device pairing, folder sharing, sync 상태 확인은 guide에서 다루고, 복구 절차는 runbook으로 분리한다.
 
 ### Overview
 
@@ -108,7 +106,8 @@ To sync files with another device:
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- Runtime approval 후 service가 실행 중이면 `docker compose ps syncthing`
 
 ## Runbook Handoff
 

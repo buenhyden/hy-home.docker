@@ -73,13 +73,6 @@ status: active
 - **syncthing 승인 조건**:
   - 폴더 ACL/암호화 정책 및 충돌 처리 표준화
 
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: tooling hardening + 공통 기준선 통과 필수
-- **Log / Trace Retention**: 도구별 감사/실행 로그 보존 정책 준수
-- **Safety Incident Thresholds**: 인증 우회 의심/품질게이트 우회/테스트 오염 탐지 시 즉시 runbook 전환
-
 ## Related Documents
 
 - [Operations index](../../README.md)

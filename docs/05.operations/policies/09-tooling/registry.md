@@ -5,10 +5,6 @@ status: active
 
 # Docker Registry Operations Policy
 
-> Private OCI-compliant image distribution service governance.
-
----
-
 ## Overview
 
 이 문서는 `hy-home.docker` 도커 레지스트리 운영 정책을 정의한다. 이미지의 생명주기 관리, 보안 통제 기준, 그리고 저장 용량 최적화 방법을 규정한다.
@@ -44,10 +40,6 @@ status: active
 ## Review Cadence
 
 - Quarterly
-
-## AI Agent Policy Section (If Applicable)
-
-- **Registry Access**: 에이전트는 프라이빗 레지스트리의 이미지를 풀(Pull)할 수 있으나, 프로덕션 태그(`v*`)에 대한 푸시는 휴먼 게이트 승인이 필요함.
 
 ## Related Documents
 

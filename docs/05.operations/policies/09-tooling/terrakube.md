@@ -3,10 +3,9 @@ status: active
 ---
 <!-- Target: docs/05.operations/policies/09-tooling/terrakube.md -->
 
-# Operations: Terrakube Policy Operations Policy
+# Terrakube Operations Policy
 
 <!-- [ID:09-tooling:terrakube] -->
-> Operational guidelines and governance for the centralized Terrakube IaC platform.
 
 ## Overview
 

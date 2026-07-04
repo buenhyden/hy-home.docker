@@ -11,9 +11,7 @@ status: active
 
 ### Overview
 
-이 문서는 `docs/05.operations/guides/09-tooling/sonarqube.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
->
-> Usage for performing code quality and security scans using SonarQube.
+이 문서는 SonarQube를 사용해 코드 품질과 보안 분석을 수행하는 방법을 설명한다. 프로젝트 생성, 로컬 scan, quality gate 확인은 guide에서 다루고, 운영 통제와 복구 절차는 policy/runbook으로 분리한다.
 
 ### Usage Type
 
@@ -118,7 +116,8 @@ sysctl -w vm.max_map_count=262144
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- Runtime approval 후 service가 실행 중이면 `docker compose exec sonarqube curl -f http://localhost:${SONARQUBE_PORT:-9000}/api/system/status`
 
 ## Runbook Handoff
 

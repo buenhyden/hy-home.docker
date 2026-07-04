@@ -53,10 +53,6 @@ status: active
 
 이 문서는 `docs/05.operations/guides/09-tooling/terrakube.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
 
-### Terrakube Platform Usage
-
-> User guide for managing infrastructure automation workflows via the Terrakube platform.
-
 ### Overview
 
 Terrakube is an open-source alternative to Terraform Cloud, providing a centralized control plane for Infrastructure as Code (IaC). It manages workspaces, variables, team access, and private modules.
@@ -109,7 +105,7 @@ The `terrakube-executor` spins up ephemeral Docker containers for every job. It 
 If a job is stuck in "Pending" status, verify that the `terrakube-executor` container is healthy:
 
 ```bash
-docker compose logs -f terrakube-executor
+docker logs --tail=200 terrakube-executor
 ```
 
 #### SSO Failures
@@ -118,7 +114,8 @@ If OIDC logout occurs frequently, check the token expiration settings in the `hy
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- Runtime approval 후 service가 실행 중이면 `docker compose ps terrakube-api terrakube-executor`
 
 ## Runbook Handoff
 

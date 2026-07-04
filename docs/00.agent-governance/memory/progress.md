@@ -691,6 +691,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed AI documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
 
+## Tooling Tier Operations Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Guide marker cleanup | `docs/05.operations/guides/09-tooling/{registry,sonarqube,syncthing,terrakube}.md` | ✅ Updated | Replaced template residue common-check text with concrete 09-tooling hardening/runtime checks and removed stale blockquote usage fragments. |
+| Policy profile cleanup | `docs/05.operations/policies/09-tooling/**` | ✅ Updated | Removed legacy AI-agent policy sections and normalized Terraform/Terrakube policy titles while preserving IaC, registry, and hardening controls. |
+| Infra README residue | `infra/09-tooling/{README.md,k6/README.md,locust/README.md}` | ✅ Updated | Normalized policy/runbook link labels and removed legacy copyright separators from the Locust service README. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed tooling documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

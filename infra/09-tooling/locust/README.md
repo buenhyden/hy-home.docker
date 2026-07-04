@@ -69,14 +69,8 @@ locust/
 ## Related Documents
 
 - **Guide**: [Locust Load Testing Guide](../../../docs/05.operations/guides/09-tooling/locust.md)
-- **Policy**: [Locust Operations Policy](../../../docs/05.operations/policies/09-tooling/locust.md)
-- **Runbook**: [Locust Recovery Runbook](../../../docs/05.operations/runbooks/09-tooling/locust.md)
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
-
----
+- **Policy**: [Locust operations policy](../../../docs/05.operations/policies/09-tooling/locust.md)
+- **Runbook**: [Locust recovery runbook](../../../docs/05.operations/runbooks/09-tooling/locust.md)
 
 ## Service Readiness
 

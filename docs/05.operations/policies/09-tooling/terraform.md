@@ -3,10 +3,9 @@ status: active
 ---
 <!-- Target: docs/05.operations/policies/09-tooling/terraform.md -->
 
-# Operations: Terraform Policy Operations Policy
+# Terraform Operations Policy
 
 <!-- [ID:09-tooling:terraform] -->
-> Operational guidelines and policies for managing infrastructure via Terraform.
 
 ## Overview
 
