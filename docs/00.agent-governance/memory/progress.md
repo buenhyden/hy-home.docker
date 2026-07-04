@@ -564,6 +564,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Pyroscope documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Pyroscope compose/config scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Pushgateway Policy Profile Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Pushgateway policy structure | `docs/05.operations/policies/06-observability/pushgateway.md` | ✅ Updated | Removed the legacy blockquote separator and normalized the policy around current compose controls, label/cardinality rules, cleanup expectations, scrape integration boundary, exceptions, verification, review cadence, and related documents. |
+| Current-truth boundary | `infra/06-observability/pushgateway` | ✅ Clarified | Preserved image `prom/pushgateway:v1.11.3`, `template-infra-readonly-low`, profile `obs`, port `9091`, `/-/ready` healthcheck, protected route chain, ephemeral-only usage, stable label expectations, and no undeclared persistence behavior. |
+| Scrape integration gap | `infra/06-observability/prometheus/config/prometheus.yml` | ⚠️ Recorded | Targeted scan found no active `job_name: "pushgateway"` scrape block, so the docs now require treating Prometheus dependency as an implementation gap until a separate runtime configuration change adds it. |
+| Command/document wording | `infra/06-observability/pushgateway/README.md`, `docs/05.operations/guides/06-observability/pushgateway.md`, `docs/05.operations/runbooks/06-observability/pushgateway.md` | ✅ Corrected | Added `--profile obs` to Pushgateway service commands, removed template residue, separated usage from recovery, and aligned persistence/cleanup wording with the current compose boundary. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Pushgateway documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Pushgateway compose/config scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
