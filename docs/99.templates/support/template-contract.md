@@ -46,6 +46,12 @@ This document defines the non-copyable contract for template source files under
   path and role require them.
 - Target document frontmatter follows [frontmatter contract](./frontmatter-contract.md), not the template source metadata.
 - Intentional template deviation must be recorded in Stage 04 task evidence.
+- Archive, duplicate-remove, conflict-remove-or-archive, and evidence-preserve
+  decisions are governed by [template governance](./template-governance.md) and
+  [template selection](./template-selection.md), not by copying additional
+  instructions into target documents.
+- A target document must not keep copied template instructions or unresolved
+  examples as a substitute for topic-specific content.
 
 ## Related Documents
 

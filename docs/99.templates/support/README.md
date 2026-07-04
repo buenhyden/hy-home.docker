@@ -31,6 +31,7 @@ follow.
 - Frontmatter key and value policy
 - Lifecycle status vocabulary
 - Template selection rules
+- Archive-centered disposition and destructive-change rules
 - Source-backed rationale for local documentation choices
 
 ### Out of Scope
@@ -44,10 +45,10 @@ follow.
 | Document | Role |
 | --- | --- |
 | [template-contract.md](./template-contract.md) | Defines copyable template shape and source requirements. |
-| [template-governance.md](./template-governance.md) | Defines template change workflow, protected surfaces, and commit boundaries. |
+| [template-governance.md](./template-governance.md) | Defines template change workflow, protected surfaces, archive/remove dispositions, and commit boundaries. |
 | [frontmatter-contract.md](./frontmatter-contract.md) | Defines frontmatter key sets and legacy-key cleanup rules. |
-| [lifecycle-status.md](./lifecycle-status.md) | Defines lifecycle status values and where each value applies. |
-| [template-selection.md](./template-selection.md) | Maps document purpose and target path to a canonical template. |
+| [lifecycle-status.md](./lifecycle-status.md) | Defines lifecycle status values, transition rules, and archive status boundaries. |
+| [template-selection.md](./template-selection.md) | Maps document purpose, target path, and restructure disposition to a canonical template or action. |
 | [external-source-rationale.md](./external-source-rationale.md) | Records external source rationale behind local template rules. |
 
 ## Structure

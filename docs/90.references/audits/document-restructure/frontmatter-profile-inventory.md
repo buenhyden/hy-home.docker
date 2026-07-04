@@ -31,7 +31,7 @@ a broad Markdown corpus rewrite.
 - Tracked Markdown frontmatter counts and keys.
 - Current `status` value distribution under `docs/**`.
 - Stage 03 status distribution.
-- Reference-stage lifecycle outlier evidence.
+- Reference-stage transitional lifecycle evidence.
 
 ### Out of Scope
 
@@ -48,6 +48,8 @@ a broad Markdown corpus rewrite.
 - **Duplicate-purpose key**: a metadata key that repeats path, title, owner,
   date, or generated-state information without a profile-specific consumer.
 - **Outlier**: a value or key that needs routing before a target edit.
+- **Transitional status**: a lifecycle value that keeps a replaced document in
+  the active reference chain while it points to the current replacement.
 
 ## Method
 
@@ -56,8 +58,8 @@ a broad Markdown corpus rewrite.
 | DRA-FM-001 | `git ls-files '*.md' \| wc -l` | 948 tracked Markdown files. | Corpus baseline after `PLN-DRA-001`. |
 | DRA-FM-002 | First-line scan over `git ls-files '*.md'` | 764 tracked Markdown files start with top `---`; 184 do not. | Confirms current frontmatter population. |
 | DRA-FM-003 | Frontmatter key extraction from top fenced Markdown files | Top keys: `status` 538, `layer` 176, `name` 79, `description` 60, `model` 30, and provider/archive/generated keys in smaller counts. | Identifies key families and protected profiles. |
-| DRA-FM-004 | `rg --no-filename -o '^status: [a-z-]+' docs --glob '*.md' \| sort \| uniq -c` | `active` 349, `archived` 20, `completed` 140, `draft` 30, `superseded` 1. | Finds lifecycle value outlier. |
-| DRA-FM-005 | `rg -n '^status: superseded' docs --glob '*.md'` | `docs/90.references/learning/roadmap-v1.md:2` uses `status: superseded`. | Records reference-stage lifecycle follow-up. |
+| DRA-FM-004 | `rg --no-filename -o '^status: [a-z-]+' docs --glob '*.md' \| sort \| uniq -c` | `active` 349, `archived` 20, `completed` 140, `draft` 30, `superseded` 1. | Finds transitional lifecycle usage for replacement-pointer review. |
+| DRA-FM-005 | `rg -n '^status: superseded' docs --glob '*.md'` | `docs/90.references/learning/roadmap-v1.md:2` uses `status: superseded`. | Records reference-stage replacement-pointer follow-up. |
 | DRA-FM-006 | `rg --no-filename -o '^status: [a-z-]+' docs/03.specs --glob '*.md' \| sort \| uniq -c` | Stage 03 has `active` 17, `completed` 9, and `draft` 7. | Feeds Stage 03 archive candidate report. |
 
 ## Key Inventory
@@ -75,7 +77,7 @@ a broad Markdown corpus rewrite.
 | ID | Surface | Finding | Disposition | Recommended Batch |
 | --- | --- | --- | --- | --- |
 | DRA-FM-001 | Full tracked Markdown corpus | 184 tracked Markdown files still omit top frontmatter; prior routing profile already classifies README, generated, GitHub-native, root, and archive profiles. | `evidence-preserve` | No broad rewrite in this audit pack. |
-| DRA-FM-002 | `docs/90.references/learning/roadmap-v1.md` | `status: superseded` is outside the documented `draft`, `active`, `completed`, `archived` lifecycle vocabulary. | `conflict-remove-or-archive` candidate | Future reference lifecycle cleanup, outside Stage 03/05 restructure. |
+| DRA-FM-002 | `docs/90.references/learning/roadmap-v1.md` | `status: superseded` is an allowed transitional lifecycle value. The document points readers to the current `roadmap.md`, so no target edit is required in `PLN-DRA-003`. | `evidence-preserve` | Revisit only if a future reference cleanup changes Stage 90 archive policy. |
 | DRA-FM-003 | Stage 03 docs | Stage 03 has 9 completed files and 7 draft files that need candidate classification before archive or status cleanup. | `historical-archive` / `evidence-preserve` candidates | `PLN-DRA-004` after candidate review. |
 | DRA-FM-004 | Provider/agent frontmatter keys | Provider metadata keys are numerous and profile-specific; they should not be forced into document lifecycle profiles. | `evidence-preserve` | No action unless provider contracts change. |
 
@@ -85,7 +87,8 @@ a broad Markdown corpus rewrite.
 - Treat provider metadata and archive provenance as distinct profiles.
 - Do not bulk-add or bulk-normalize frontmatter for README, generated, root, or
   external-platform-native surfaces.
-- Record lifecycle outliers as gaps before changing them.
+- Record lifecycle outliers or transitional status usages as gaps before
+  changing them.
 
 ## Sources
 

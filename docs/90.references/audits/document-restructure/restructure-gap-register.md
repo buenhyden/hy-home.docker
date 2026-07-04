@@ -69,21 +69,21 @@ corpus.
 
 | Disposition | Count | Summary |
 | --- | ---: | --- |
-| `active-canonical` | 5 | Current template, operations, CI/QA, and current design surfaces remain active. |
+| `active-canonical` | 6 | Current template, operations, CI/QA, and current design surfaces remain active. |
 | `historical-archive` | 2 | Completed Stage 03 work products and prior template-system designs need archive review. |
 | `duplicate-remove` | 0 | No duplicate-remove decision is justified before deeper candidate comparison. |
-| `conflict-remove-or-archive` | 2 | Stage 99 disposition contract gap and one reference lifecycle outlier need future cleanup. |
-| `evidence-preserve` | 3 | Historical audit/spec evidence, provider metadata, Graphify/dependency-audit decisions, and operations bucket evidence need preservation or future approval. |
-| **Total** | **12** | Consolidated rows from `PLN-DRA-002`. |
+| `conflict-remove-or-archive` | 0 | No current row requires conflict removal after the Stage 99 contract update; future target batches may add exact file-level decisions. |
+| `evidence-preserve` | 4 | Historical audit/spec evidence, provider metadata, transitional reference status, Graphify/dependency-audit decisions, and operations bucket evidence need preservation or future approval. |
+| **Total** | **12** | Consolidated rows from `PLN-DRA-002`, reclassified after `PLN-DRA-003`. |
 
 ## Gap Register
 
 | ID | Surface | Gap or Finding | Disposition | Recommended Batch | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| DRA-GAP-001 | Stage 99 support contracts | Approved archive-centered dispositions are not yet explicitly owned by Stage 99 support docs. | `conflict-remove-or-archive` candidate | `PLN-DRA-003` | [Template contract drift](./template-contract-drift.md) |
-| DRA-GAP-002 | `archive.template.md` and archive guidance | Tombstone format exists, but conditions for historical archive, duplicate removal, and conflict archive are still design-level. | `active-canonical` with contract gap | `PLN-DRA-003` | [Template contract drift](./template-contract-drift.md) |
+| DRA-GAP-001 | Stage 99 support contracts | Closed: Stage 99 support docs now own archive-centered dispositions and destructive target-change preconditions. | `active-canonical` | Done in `PLN-DRA-003` | [Template contract drift](./template-contract-drift.md) |
+| DRA-GAP-002 | `archive.template.md` and archive guidance | Closed: archive tombstones remain a format template, while disposition conditions are owned by support contracts. | `active-canonical` | Done in `PLN-DRA-003` | [Template contract drift](./template-contract-drift.md) |
 | DRA-GAP-003 | Tracked Markdown frontmatter | 184 tracked Markdown files omit top frontmatter; prior routing says this is not a broad rewrite trigger. | `evidence-preserve` | No target rewrite; revisit only if contract changes. | [Frontmatter profile inventory](./frontmatter-profile-inventory.md) |
-| DRA-GAP-004 | `docs/90.references/learning/roadmap-v1.md` | `status: superseded` is outside current lifecycle vocabulary. | `conflict-remove-or-archive` candidate | Future reference lifecycle cleanup, not Stage 03/05 restructure. | [Frontmatter profile inventory](./frontmatter-profile-inventory.md) |
+| DRA-GAP-004 | `docs/90.references/learning/roadmap-v1.md` | Reclassified: `status: superseded` is an allowed transitional lifecycle value, and this document points to the current `roadmap.md`. | `evidence-preserve` | No target rewrite; revisit only if Stage 90 archive policy changes. | [Frontmatter profile inventory](./frontmatter-profile-inventory.md) |
 | DRA-GAP-005 | Completed `docs/03.specs` files | 9 completed Stage 03 files are historical archive or preserve candidates. | `historical-archive` / `evidence-preserve` candidates | `PLN-DRA-004` | [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) |
 | DRA-GAP-006 | Draft `docs/03.specs` files | 7 draft Stage 03 files need status review before archive/completion decisions. | `historical-archive` / `active-canonical` / `evidence-preserve` candidates | `PLN-DRA-004` | [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) |
 | DRA-GAP-007 | Current document restructure spec | Current design spec and README remain active for this wave. | `active-canonical` | No move in this wave. | [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) |
@@ -97,11 +97,18 @@ corpus.
 
 | Batch | Rows | Required Approval | Validation Focus |
 | --- | --- | --- | --- |
-| `PLN-DRA-003` template contracts | DRA-GAP-001, DRA-GAP-002 | Stage 99 support contract approval | Stage 99 contract diff, provider sync if Stage 00/provider text changes, repo contracts. |
+| `PLN-DRA-003` template contracts | DRA-GAP-001, DRA-GAP-002 | Complete | Stage 99 contract diff, provider sync if Stage 00/provider text changes, repo contracts. |
 | `PLN-DRA-004` Stage 03 archive/remove | DRA-GAP-005, DRA-GAP-006, DRA-GAP-007, DRA-GAP-012 | Exact file list and archive/remove approval | Link synchronization, tombstones, LLM Wiki, doc implementation alignment. |
 | `PLN-DRA-005` operations bucket restructure | DRA-GAP-008, DRA-GAP-009 | Exact guide/policy/runbook candidate approval | Role separation, operations links, doc traceability, repo contracts. |
 | `PLN-DRA-006` validator/CI/QA | DRA-GAP-010, DRA-GAP-011 | Workflow/script/validator and Security/QA approval | `bash -n`, local QA gates, repo contracts, rollback guidance. |
-| Reference lifecycle cleanup | DRA-GAP-004 | Reference-stage lifecycle decision | Lifecycle contract, targeted file diff, repo contracts. |
+| Reference lifecycle cleanup | DRA-GAP-004 | Not required by current contract | Preserve unless a future Stage 90 archive-policy change requires a targeted diff. |
+
+## Remediation Updates
+
+| Date | Rows | Status | Evidence | Residual Action |
+| --- | --- | --- | --- | --- |
+| 2026-07-04 | DRA-GAP-001, DRA-GAP-002 | Closed by `PLN-DRA-003` | Stage 99 support contract updates in `template-governance.md`, `template-selection.md`, `lifecycle-status.md`, `frontmatter-contract.md`, and `template-contract.md`. | Use `PLN-DRA-004` and `PLN-DRA-005` for exact target archive, remove, or relink work. |
+| 2026-07-04 | DRA-GAP-004 | Reclassified | `lifecycle-status.md` clarifies `superseded`; `roadmap-v1.md` already points to `roadmap.md`. | No current target edit. |
 
 ## Source Rules
 

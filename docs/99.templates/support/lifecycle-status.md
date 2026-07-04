@@ -15,9 +15,23 @@ documents, archive tombstones, and generated files.
 | --- | --- | --- |
 | `draft` | Template sources and in-progress target docs | The document is not yet the accepted current truth for its target surface. |
 | `active` | Current target docs | The document is current guidance, contract, reference, or working evidence. |
-| `completed` | Finished execution artifacts and historical-but-valid records | The document records completed work and remains valid evidence. |
-| `superseded` | Replaced active docs | The document has a current replacement and should point to it. |
+| `completed` | Finished execution artifacts and historical-but-valid records | The document records completed work and remains valid evidence until a later task archives or removes it. |
+| `superseded` | Replaced active docs retained for transition or reference | The document has a current replacement and must point to it while it remains in the active chain. |
 | `archived` | `docs/98.archive/**` tombstones | The original active document was removed from the active chain. |
+
+## Archive-Centered Lifecycle Rules
+
+- `completed` does not automatically mean archived. Completed specs, plans,
+  tasks, and audit records may remain active evidence.
+- `superseded` is a transitional lifecycle status for a document that still
+  exists in the active chain and points to a replacement.
+- `archived` is reserved for `docs/98.archive/**` tombstones after the original
+  target leaves the active chain.
+- A document restructure disposition such as `historical-archive`,
+  `duplicate-remove`, `conflict-remove-or-archive`, or `evidence-preserve` is a
+  task/audit decision, not a replacement for lifecycle `status`.
+- Preserve `evidence-preserve` documents with their historical wording unless a
+  future task proves active-consumption conflict.
 
 ## Generated Metadata
 
@@ -30,8 +44,11 @@ target stage.
 - Template sources use `status: draft`.
 - Stage 04 plans are `active` until completed, then `completed`.
 - Stage 04 tasks are `active` while work is in progress, then `completed`.
+- Replaced documents that remain in the active chain may use `superseded` only
+  when the body points to a current replacement.
 - Archive tombstones use `status: archived`.
 - Do not mark a document `completed` merely because it is old.
+- Do not mark a document `archived` outside `docs/98.archive/**`.
 
 ## Related Documents
 

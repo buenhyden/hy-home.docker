@@ -21,9 +21,9 @@ disposition model still needs an explicit support contract.
 
 ## Repository Role
 
-This report supports `PLN-DRA-002` and the future `PLN-DRA-003` template
-contract batch. It is not active policy, not a template source, and not
-approval to edit Stage 99 support documents.
+This report supports `PLN-DRA-002` and the `PLN-DRA-003` template contract
+batch. It is not active policy, not a template source, and not approval to
+move, remove, archive, or relink target documents.
 
 ## Scope
 
@@ -35,7 +35,6 @@ approval to edit Stage 99 support documents.
 
 ### Out of Scope
 
-- Editing Stage 99 contracts.
 - Moving target documents or creating archive tombstones.
 - Rewriting historical specs, plans, tasks, or progress rows.
 - Runtime, provider, workflow, or secret changes.
@@ -57,7 +56,7 @@ approval to edit Stage 99 support documents.
 | Evidence ID | Command or Read | Result Summary | Use |
 | --- | --- | --- | --- |
 | DRA-TCD-001 | `git ls-files 'docs/99.templates/support/*.md' 'docs/99.templates/templates/**/*.md' 'docs/99.templates/templates/**/*.yaml' 'docs/99.templates/templates/**/*.graphql' 'docs/99.templates/templates/**/*.proto' \| wc -l` | 37 Stage 99 support/template files are tracked. | Establishes template-system surface size. |
-| DRA-TCD-002 | `rg -n 'historical-archive\|duplicate-remove\|conflict-remove-or-archive\|evidence-preserve\|archive-centered\|destructive\|tombstone\|frontmatter\|status: archived\|status: completed' docs/99.templates/support docs/99.templates/templates --glob '*.md'` | Current contracts mention frontmatter, archive tombstones, and template source rules, but not the full approved disposition model. | Identifies the `PLN-DRA-003` contract gap. |
+| DRA-TCD-002 | `rg -n 'historical-archive\|duplicate-remove\|conflict-remove-or-archive\|evidence-preserve\|archive-centered\|destructive\|tombstone\|frontmatter\|status: archived\|status: completed' docs/99.templates/support docs/99.templates/templates --glob '*.md'` | At audit capture, contracts mentioned frontmatter, archive tombstones, and template source rules, but not the full approved disposition model. | Identified the `PLN-DRA-003` contract gap. |
 | DRA-TCD-003 | Reads of `template-contract.md`, `frontmatter-contract.md`, `template-governance.md`, `template-selection.md`, `lifecycle-status.md`, and `archive.template.md` | Existing contracts cover template-source frontmatter, target status, archive tombstones, and lifecycle values. | Separates covered rules from missing restructure-specific rules. |
 | DRA-TCD-004 | Read of `docs/03.specs/document-restructure-audit-contract-archive/spec.md` | The approved design requires archive-centered dispositions before target moves. | Binds findings to the approved Stage 03 design. |
 
@@ -66,8 +65,8 @@ approval to edit Stage 99 support documents.
 | ID | Surface | Finding | Disposition | Recommended Batch |
 | --- | --- | --- | --- | --- |
 | DRA-TCD-001 | Stage 99 support docs | Current support docs define frontmatter, lifecycle, archive tombstone, selection, and template-source boundaries. | `active-canonical` | No change in audit pack. |
-| DRA-TCD-002 | `template-governance.md`; `template-selection.md`; `lifecycle-status.md` | The approved disposition model is not yet explicitly owned by Stage 99 support docs. | `active-canonical` with contract gap | `PLN-DRA-003` |
-| DRA-TCD-003 | `archive.template.md` | Archive tombstones are available, but the template does not by itself decide when `historical-archive`, `duplicate-remove`, or `conflict-remove-or-archive` applies. | `active-canonical` with contract gap | `PLN-DRA-003` |
+| DRA-TCD-002 | `template-governance.md`; `template-selection.md`; `lifecycle-status.md` | Closed in `PLN-DRA-003`: the approved disposition model is now owned by Stage 99 support docs. | `active-canonical` | Done |
+| DRA-TCD-003 | `archive.template.md` | Closed in `PLN-DRA-003`: archive tombstones remain a format template, while disposition conditions are owned by Stage 99 support docs. | `active-canonical` | Done |
 | DRA-TCD-004 | README files | README files should remain indexes and should not receive durable archive/destructive-change rules. | `active-canonical` | Enforce in `PLN-DRA-003` and later README relink batches. |
 
 ## Source Rules
@@ -76,8 +75,15 @@ approval to edit Stage 99 support documents.
 - Use README files only for routing and index updates.
 - Do not copy external-source or Stage 03 design prose into templates as
   policy without adapting it to Stage 99 support-contract language.
-- Do not create tombstones or move documents until the future contract batch
-  defines exact archive/remove conditions.
+- Do not create tombstones or move documents until an implementation batch
+  records exact target paths, replacement pointers, link synchronization, and
+  rollback guidance.
+
+## Remediation Updates
+
+| Date | Rows | Status | Evidence | Residual Action |
+| --- | --- | --- | --- | --- |
+| 2026-07-04 | DRA-TCD-002, DRA-TCD-003 | Closed by `PLN-DRA-003` | Stage 99 support docs now define archive-centered disposition mapping, destructive target-change preconditions, archive metadata boundaries, and target-document cleanup rules. | Apply these rules in future Stage 03 and Stage 05 target batches only after exact file-list approval. |
 
 ## Sources
 
@@ -93,8 +99,7 @@ approval to edit Stage 99 support documents.
 ## Maintenance
 
 - **Owner**: Documentation Specialist / Repository Maintainer.
-- **Review Cadence**: Review before `PLN-DRA-003` and after any Stage 99
-  support contract changes.
+- **Review Cadence**: Review after any Stage 99 support contract changes.
 - **Update Trigger**: Update when the disposition model is added to Stage 99
   support docs or when archive/remove rules change.
 

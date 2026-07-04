@@ -28,6 +28,24 @@ Archive tombstones are target stage documents with the archive lifecycle profile
 `status: archived` plus archive-specific provenance keys when that profile
 requires them.
 
+## Disposition and Archive Metadata Rules
+
+Restructure dispositions are audit/task decisions, not frontmatter values. Do
+not add frontmatter keys such as `disposition`, `document_type`, or
+`template_type` to encode archive decisions.
+
+| Decision Surface | Frontmatter Rule |
+| --- | --- |
+| `active-canonical` | Keep the target's lifecycle `status` and primary document profile. |
+| `historical-archive` | Use `status: archived` only on the archive tombstone under `docs/98.archive/**`. |
+| `duplicate-remove` | Do not add new metadata to the duplicate solely to delete it; record replacement evidence in task/gap records. |
+| `conflict-remove-or-archive` | Use archive provenance keys on the tombstone or record a gap when no replacement exists. |
+| `evidence-preserve` | Preserve historical frontmatter unless a future task proves it is active-current guidance drift. |
+
+Archive provenance keys are limited to archive tombstones and approved archive
+profiles: `archived_from`, `archived_on`, `archive_reason`, and
+`current_replacement`.
+
 ## Duplicate-Purpose Key Rules
 
 - Do not use both `type` and path-derived document role for the same purpose.

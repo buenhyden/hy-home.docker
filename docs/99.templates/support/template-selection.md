@@ -28,6 +28,19 @@ template source.
 | Archive | `docs/98.archive/<original-stage>/<original-path>.md` | [archive.template.md](../templates/common/archive.template.md) |
 | README | `README.md`, `docs/README.md`, folder `README.md` files | [readme.template.md](../templates/common/readme.template.md) |
 
+## Restructure Disposition Mapping
+
+When a document restructure task classifies a target, choose the template or
+target action from this mapping:
+
+| Disposition | Template or Action | Selection Rule |
+| --- | --- | --- |
+| `active-canonical` | Keep the target's current primary template role. | Do not retag or move only because the document is old. |
+| `historical-archive` | [archive.template.md](../templates/common/archive.template.md) for the tombstone. | Use after active links and current replacement pointers are reviewed. |
+| `duplicate-remove` | Usually no new template; use archive template only when a tombstone is required for traceability. | Remove only after the canonical replacement is recorded. |
+| `conflict-remove-or-archive` | Archive template when removing from active chain; otherwise create a gap/reference record. | Do not leave conflicting current-truth guidance active without a gap. |
+| `evidence-preserve` | Preserve the existing evidence profile; add Stage 90 reference context if needed. | Do not rewrite historical evidence for style-only cleanup. |
+
 ## Spec Child Template Mapping
 
 | Role | Target Location | Template |
@@ -58,6 +71,8 @@ template source.
 - Use reference templates for stable facts only; do not put active policy or
   runbook procedure into Stage 90 references.
 - Use archive templates only for tombstones, not for preserving stale body text.
+- Keep guide, policy, and runbook roles separate during bucket restructure
+  work; path cleanup does not merge their templates or purposes.
 
 ## Related Documents
 
