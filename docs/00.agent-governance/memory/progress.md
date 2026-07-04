@@ -597,6 +597,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Tempo documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Tempo compose/config/Alloy scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Pyroscope Guide and Runbook Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Pyroscope usage guide | `docs/05.operations/guides/06-observability/pyroscope.md` | ✅ Updated | Removed the legacy blockquote separator and rewrote the guide around current compose, config, local filesystem storage, ingestion limits, Grafana datasource, Alloy writer, common checks, and runbook handoff boundaries. |
+| Pyroscope recovery runbook | `docs/05.operations/runbooks/06-observability/pyroscope.md` | ✅ Updated | Replaced mixed legacy troubleshooting/template content with one runbook covering readiness, profile ingestion triage, local storage evidence, restart, capacity escalation, evidence, rollback, and escalation. |
+| Current-truth boundary | `infra/06-observability/pyroscope` | ✅ Clarified | Preserved image `grafana/pyroscope:2.1.0`, `template-infra-med`, container `infra-pyroscope`, local filesystem `/var/lib/pyroscope`, `pyroscope-data`, ingestion limits, analytics disabled, self-profiling push disabled, no fixed retention declaration, Alloy `pyroscope.write`, Grafana datasource, and protected route chain. |
+| Command/document wording | `infra/06-observability/pyroscope/README.md` | ✅ Corrected | Added repository-root `-f infra/06-observability/docker-compose.yml --profile obs` Pyroscope commands, readiness validation, no-fixed-retention wording, and retention/storage/ingestion-limit escalation wording. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Pyroscope documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Pyroscope compose/config/Alloy/Grafana scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

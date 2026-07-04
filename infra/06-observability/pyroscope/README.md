@@ -48,14 +48,14 @@ pyroscope/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose --profile obs up -d pyroscope` | Start Pyroscope service |
-| `docker compose --profile obs restart pyroscope` | Apply configuration changes |
+| `docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d pyroscope` | Start Pyroscope service from the repository root |
+| `docker compose -f infra/06-observability/docker-compose.yml --profile obs restart pyroscope` | Apply configuration changes from the repository root |
 
 ## Configuration
 
 - **Ingestion**: Receives profiling data via Protobuf over HTTP (Port 4040).
 - **Storage**: Local filesystem backend (`/var/lib/pyroscope`).
-- **Retention**: Data is compacted and pruned according to system limits.
+- **Retention**: No fixed retention period is declared in `pyroscope.yaml`; capacity and retention changes require policy review.
 
 ## Operational Status
 
@@ -74,6 +74,7 @@ pyroscope/
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
 - Verify profiling ingestion by checking `docker logs infra-pyroscope | grep -i 'error\|warn'` after config changes.
 - Confirm profiles appear in Grafana Pyroscope datasource after Alloy sends profiling data.
+- Confirm Pyroscope readiness with `docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready`.
 
 ## Troubleshooting
 
@@ -82,6 +83,7 @@ pyroscope/
 - For ingestion errors: confirm Alloy's Pyroscope exporter endpoint matches the Pyroscope container's push API.
 - For missing profiles: verify service name labels in Alloy's profiling configuration match expected Pyroscope app names.
 - For storage issues: confirm the Pyroscope data volume is mounted and has sufficient disk space.
+- For retention, storage backend, ingestion limit, or profile data deletion: stop and use the linked runbook escalation path before taking data-loss-risk action.
 
 ## Related Documents
 

@@ -3,122 +3,112 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/06-observability/pyroscope.md -->
 
-# Pyroscope Runbook
+# Pyroscope Readiness and Recovery Runbook
 
-## Overview
+## Pyroscope Readiness and Recovery Procedure
 
-이 문서는 Pyroscope 서비스 장애 발생 시 복구 절차를 정의한다. 프로파일 데이터 인입 중단, 저장소 공간 부족, 쿼리 성능 저하 등의 일반적인 데브옵스 시나리오를 다룬다.
+> Scope: Pyroscope readiness checks, profile ingestion triage, local storage evidence, restart, and capacity escalation.
 
-## Pyroscope Recovery Procedure
+### Overview
 
-> Troubleshooting and recovery procedures for continuous profiling.
-
----
-
-### Procedure Type
-
-`recovery-runbook`
-
-### Potential Issues & Symptoms
-
-#### 1. Ingestion Gaps (데이터 수집 중단)
-
-- **Symptom**: Grafana 플레임그래프에 데이터가 표시되지 않음.
-- **Check**: `infra-pyroscope` 컨테이너 로그 및 `infra-alloy` 송신 로그 확인.
-- **Resolution**:
-
-  ```bash
-  docker compose --profile obs restart pyroscope alloy
-  ```
-
-#### 2. Disk Space Pressure (저장소 부족)
-
-- **Symptom**: 컨테이너가 `Read-only` 모드로 전환되거나 비정상 종료됨.
-- **Check**: `df -h`로 `/var/lib/pyroscope` 마운트 지점 확인.
-- **Resolution**:
-  - `pyroscope.yaml`의 storage/capacity 관련 변경이 필요한지 검토한다.
-  - 오래된 데이터 수동 삭제는 이 런북의 검증된 복구 범위가 아니므로 승인된 maintenance 절차로 에스컬레이션한다.
-
-#### 3. High CPU Usage (수집 부하)
-
-- **Symptom**: 호스트 시스템 CPU 사용률 급증.
-- **Check**: `docker stats infra-pyroscope`.
-- **Resolution**:
-  - `pyroscope.yaml`의 `ingestion_rate_mb` 또는 `ingestion_burst_size_mb` 조정 필요성을 검토한다.
-  - Alloy에서 수집 대상 서비스 필터링 강화.
-
-### Recovery Steps
-
-#### Emergency Restart
-
-```bash
-
-## Move to infra directory
-cd infra/06-observability
-
-## Restart Pyroscope
-docker compose --profile obs restart pyroscope
-
-## Verify Health
-curl -f http://localhost:4040/ready
-```
-
-### Configuration Rollback
-
-설정 변경 후 장애 발생 시 `infra/06-observability/pyroscope/config/pyroscope.yaml`을 이전 버전으로 복구하고 재시작한다.
-
-### Post-Mortem Usagelines
-
-- 장애 발생 시간과 복구 시간을 기록한다.
-- `alloy` 레이블 매핑 오류였는지, `pyroscope` 자체 저장소 문제였는지 원인을 규명한다.
-- 재발 방지를 위해 알림 임계값(Alert Threshold) 조정을 검토한다.
+이 런북은 Pyroscope profile ingestion gap, Grafana datasource failure, local filesystem storage pressure, high CPU overhead, and config regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
 
 ### Purpose
 
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
+운영자가 `infra-pyroscope` 상태를 확인하고 Alloy/Grafana 연결, ingestion limits, local storage boundary를 검증하며, 데이터 삭제나 retention/capacity 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### Canonical References
 
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
+- **Policy**: [Pyroscope operations policy](../../policies/06-observability/pyroscope.md)
+- **Guide**: [Pyroscope usage guide](../../guides/06-observability/pyroscope.md)
+- **Infrastructure**: [Pyroscope infra README](../../../../infra/06-observability/pyroscope/README.md)
 
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
+- Grafana Pyroscope datasource에서 최근 profile이 보이지 않을 때.
+- Alloy `pyroscope.write` endpoint는 선언되어 있지만 profile ingestion gap이 의심될 때.
+- `infra-pyroscope` 로그에 storage, ingestion limit, label cardinality, or ready failure 관련 오류가 보일 때.
+- Profile ingestion으로 host or container CPU usage가 비정상적으로 높을 때.
+- `pyroscope.yaml` 변경 후 readiness, storage, ingestion limit evidence가 필요할 때.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+- [ ] `pyroscope` service, `infra-pyroscope` container, and `pyroscope-data` volume 상태를 확인한다.
+- [ ] Profile labels에 high-cardinality or secret-bearing values가 들어갔는지 의심되면 ingestion source를 먼저 식별한다.
+- [ ] 문제 유형을 readiness, ingestion, Grafana datasource, storage/capacity, CPU overhead, config regression 중 하나로 분류한다.
+- [ ] Data deletion, retention change, storage backend change, or ingestion limit change가 필요해 보이면 중단하고 owning operator approval을 받는다.
 
 ### Steps
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+1. 현재 service 상태, ready endpoint, 최근 로그를 캡처한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps pyroscope
+   docker logs --tail=200 infra-pyroscope
+   docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready
+   ```
+
+2. Compose and config boundary가 policy와 일치하는지 확인한다.
+
+   ```bash
+   rg -n 'service: template-infra-med|image: grafana/pyroscope:2.1.0|container_name: infra-pyroscope|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'http_listen_port: 4040|reporting_enabled: false|data_dir: /var/lib/pyroscope/compactor|ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|multitenancy_enabled: false|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml
+   ```
+
+3. Alloy writer와 Grafana datasource가 Pyroscope endpoint를 가리키는지 확인한다.
+
+   ```bash
+   rg -n 'pyroscope.write "local_pyroscope"|url = "http://pyroscope:4040"|type: grafana-pyroscope-datasource|url: http://pyroscope:4040' infra/06-observability/alloy/config/config.alloy infra/06-observability/grafana/provisioning/datasources/datasource.yml
+   ```
+
+4. Storage or cardinality symptom은 로그와 capacity evidence를 캡처한다. Profile data를 삭제하지 않는다.
+
+   ```bash
+   docker logs --tail=500 infra-pyroscope | grep -Ei 'storage|filesystem|label|cardinality|ingestion|limit|error|warn'
+   docker stats --no-stream infra-pyroscope
+   docker compose -f infra/06-observability/docker-compose.yml config | grep -n 'pyroscope-data'
+   ```
+
+5. Readiness or ingestion state가 config와 맞지만 회복되지 않으면 Pyroscope를 재시작한다. Alloy writer state도 함께 의심될 때만 Alloy를 같이 재시작한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart pyroscope
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart pyroscope alloy
+   ```
+
+6. `pyroscope.yaml` 변경 후 장애가 발생했다면 Git-managed config diff를 되돌리고 readiness를 재확인한다.
+
+   ```bash
+   git diff -- infra/06-observability/pyroscope/config/pyroscope.yaml
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart pyroscope
+   docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready
+   ```
+
+   이 런북은 profile data deletion, filesystem mutation, retention change, or ingestion limit change를 검증된 복구 절차로 제공하지 않는다. 데이터 손실 가능성이 있거나 운영 기준을 바꾸는 조치는 별도 incident/task approval과 rollback evidence가 필요하다.
 
 ### Verification Steps
 
-- [ ] 관련 validation script를 실행한다.
-- [ ] 문서 변경이면 template/heading audit를 확인한다.
-- [ ] runtime 변경이 있었다면 compose validation을 확인한다.
+- [ ] `docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready`가 성공한다.
+- [ ] Grafana Pyroscope datasource에서 최근 profile이 조회된다.
+- [ ] `docker stats --no-stream infra-pyroscope`에서 CPU/memory 사용량이 정상 범위로 돌아온다.
+- [ ] Storage symptom이면 `pyroscope-data`, `/var/lib/pyroscope`, and filesystem backend boundary가 policy와 일치한다.
+- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: `docker logs --tail=200 infra-pyroscope`, `docker logs --tail=200 infra-alloy`
+- **Health**: Pyroscope `/ready`, Grafana Pyroscope datasource
+- **Config**: `pyroscope.yaml`, Alloy `pyroscope.write`, Grafana datasource provisioning
+- **Runtime**: `docker stats --no-stream infra-pyroscope`, `pyroscope-data` volume boundary
+- **Evidence to Capture**: failing symptom, log excerpt, affected profile source or label, restart timestamp, final recovery or escalation state
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+- Git-managed `pyroscope.yaml`, Alloy writer, Grafana datasource, or Compose 변경이 원인이면 직전 Git diff 단위로 되돌리고 readiness를 다시 확인한다.
+- Runtime restart는 `obs` profile compose 명령만 사용한다.
+- Profile data deletion, filesystem mutation, retention change, storage backend change, and ingestion limit change는 이 런북의 안전 롤백 범위를 벗어난다.
 
 ### Agent Operations (If Applicable)
 
@@ -130,18 +120,18 @@ curl -f http://localhost:4040/ready
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- 실행한 명령, timestamp, operator or agent action을 기록한다.
+- Profile label or payload에 secret-bearing value가 의심되면 원문 값을 기록하지 않는다.
+- Ingestion 장애는 Alloy writer check, Pyroscope ready state, Grafana datasource result를 함께 기록한다.
+- Storage/capacity symptom은 로그 발췌, `pyroscope-data` volume boundary, approval state를 기록한다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+이 런북에 명시된 validation, restart, and Git-managed config rollback만 사용한다. 데이터 손실 가능성이 있는 profile data deletion, filesystem mutation, retention/storage/ingestion-limit change는 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, storage/capacity 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
 ## Related Documents
 
