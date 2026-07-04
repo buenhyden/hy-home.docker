@@ -45,11 +45,15 @@ status: active
 
 #### 시나리오 1: 태스크 지연 (Task stuck in Queued)
 
-1. Broker 상태 확인:
+1. 증거 캡처:
+   - `docker compose logs --tail=100 airflow-worker airflow-scheduler airflow-apiserver`
+   - `docker compose exec airflow-worker df -h /opt/airflow/logs`
+2. Broker 상태 확인:
    - root-included dev compose: `docker compose exec mng-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/mng_valkey_password)" ping'`
    - service-local compose: `docker compose exec airflow-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/airflow_valkey_password)" ping'`
-2. 워커 재배포: `docker compose restart airflow-worker`
-3. Flower(`flower.${DEFAULT_URL}`)를 통해 큐에 쌓인 작업량 확인.
+3. Celery worker 응답 확인: `docker compose exec airflow-apiserver airflow celery inspect ping`
+4. 워커만 재시작: `docker compose restart airflow-worker`
+5. Flower(`flower.${DEFAULT_URL}`) 또는 worker 로그에서 heartbeat 회복 여부를 확인한다.
 
 ##### 시나리오 2: 메타데이터 DB 오류
 
@@ -77,7 +81,7 @@ status: active
 ### Observability and Evidence Sources
 
 - **Signals**: Grafana Alert (Worker Down), Flower (Queue Length).
-- **Evidence to Capture**: `docker compose logs --tail=100 airflow-scheduler`, `airflow-worker` 로그.
+- **Evidence to Capture**: `docker compose logs --tail=100 airflow-scheduler airflow-worker airflow-apiserver`, broker ping, `airflow celery inspect ping`, DAG list 결과.
 
 ### Safe Rollback or Recovery Procedure
 

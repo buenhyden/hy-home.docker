@@ -54,7 +54,7 @@ airflow/
 | Healthcheck | Compose healthcheck declared for `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, and `flower`; init/exporter services are validated through compose and hardening checks |
 | Operations | [Guide](../../../docs/05.operations/guides/07-workflow/airflow.md), [Policy](../../../docs/05.operations/policies/07-workflow/airflow.md), [Runbook](../../../docs/05.operations/runbooks/07-workflow/airflow.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`, then inspect service logs and linked runbook evidence. |
 
 ## How to Work in This Area
 
@@ -98,20 +98,20 @@ airflow/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Airflow.
+- Run `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Airflow.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking Airflow documentation ready.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Start with the root workflow validation command because this leaf depends on root `infra_net`, Docker Secrets, and root include context.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For DAG errors: check the Airflow UI task logs and verify DAG file syntax with `airflow dags list`.
-- For scheduler errors: confirm the scheduler container is running and check `docker logs airflow-scheduler | grep -i 'error'`.
+- For scheduler errors: confirm the scheduler container is running and check `docker logs --tail=200 airflow-scheduler`.
 - For worker errors: verify the executor configuration and confirm the message broker is reachable.
 
 ## Related Documents
 
 - **ARD**: [07-workflow Architecture](../../../docs/02.architecture/requirements/0007-workflow-architecture.md)
-- **Guide**: [Airflow System Guide](../../../docs/05.operations/guides/07-workflow/airflow.md)
-- **Policy**: [Airflow Operations Policy](../../../docs/05.operations/policies/07-workflow/airflow.md)
-- **Runbook**: [Airflow Recovery Runbook](../../../docs/05.operations/runbooks/07-workflow/airflow.md)
+- **Guide**: [Airflow usage guide](../../../docs/05.operations/guides/07-workflow/airflow.md)
+- **Policy**: [Airflow operations policy](../../../docs/05.operations/policies/07-workflow/airflow.md)
+- **Runbook**: [Airflow recovery runbook](../../../docs/05.operations/runbooks/07-workflow/airflow.md)

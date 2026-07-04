@@ -672,6 +672,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed observability README documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted stale marker scan, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
 
+## Workflow Tier Operations Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| n8n guide consolidation | `docs/05.operations/guides/07-workflow/n8n.md` | ✅ Updated | Folded the duplicate `02.n8n-automation.md` workflow authoring content into the canonical n8n guide and removed the duplicate active guide. |
+| Airflow runbook consolidation | `docs/05.operations/runbooks/07-workflow/airflow.md` | ✅ Updated | Folded worker queue recovery steps into the canonical Airflow runbook and removed the duplicate `airflow-worker-recovery.md` runbook. |
+| Policy and README residue | `docs/05.operations/policies/07-workflow/**`, `infra/07-workflow/**/README.md` | ✅ Updated | Removed legacy AI-agent policy sections, stale blockquote separators, stale `docker compose config` readiness guidance, and outdated guide/runbook link labels. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed workflow documentation, generated LLM Wiki index, and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | Deletion-reference scan, `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

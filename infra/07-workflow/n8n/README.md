@@ -1,10 +1,5 @@
 # n8n Low-code Automation
 
-> [!NOTE]
-> Rapid workflow automation and third-party integrations with visual logic.
-
----
-
 ## Overview (KR)
 
 n8n은 시각적 인터페이스를 통해 워크플로우 자동화를 구현하는 로우코드 도구이다. 복잡한 Airflow DAG와 달리 직관적인 노드 연결을 통해 API 통합, 웹후크 처리, 이벤트 기반 자동화를 빠르게 배포할 수 있다.
@@ -60,7 +55,7 @@ n8n/
 | Healthcheck | Compose healthcheck declared for `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, and service-local `n8n-valkey`; exporter is dependency-gated |
 | Operations | [Guide](../../../docs/05.operations/guides/07-workflow/n8n.md), [Policy](../../../docs/05.operations/policies/07-workflow/n8n.md), [Runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`, then inspect service logs and linked runbook evidence. |
 
 ## How to Work in This Area
 
@@ -101,25 +96,19 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 - **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/07-workflow/spec.md)
 - **Plan**: [07-workflow Implementation Plan](../../../docs/04.execution/plans/2026-03-26-07-workflow-standardization.md)
 
-## Operational Documentation
-
-- **System Guide**: [n8n System Guide](../../../docs/05.operations/guides/07-workflow/n8n.md)
-- **Operations Policy**: [n8n Operations Policy](../../../docs/05.operations/policies/07-workflow/n8n.md)
-- **Recovery Runbook**: [n8n Recovery Runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md)
-
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect n8n.
+- Run `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect n8n.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking n8n documentation ready.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm n8n, worker, task runner, Valkey, and secret references render.
+- Start with the root workflow validation command because this leaf depends on root `infra_net`, Docker Secrets, and root include context.
 - Check n8n service logs and the linked runbook before changing queue or credential settings.
 
 ## Related Documents
 
-- **Guide**: [n8n System Guide](../../../docs/05.operations/guides/07-workflow/n8n.md)
-- **Policy**: [n8n Operations Policy](../../../docs/05.operations/policies/07-workflow/n8n.md)
-- **Runbook**: [n8n Recovery Runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md)
+- **Guide**: [n8n usage guide](../../../docs/05.operations/guides/07-workflow/n8n.md)
+- **Policy**: [n8n operations policy](../../../docs/05.operations/policies/07-workflow/n8n.md)
+- **Runbook**: [n8n recovery runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md)
 - **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/07-workflow/spec.md)

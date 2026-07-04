@@ -630,7 +630,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/06-observability/pushgateway.md](../../05.operations/guides/06-observability/pushgateway.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/pyroscope.md](../../05.operations/guides/06-observability/pyroscope.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/tempo.md](../../05.operations/guides/06-observability/tempo.md) | Markdown reference |
-| [docs/05.operations/guides/07-workflow/02.n8n-automation.md](../../05.operations/guides/07-workflow/02.n8n-automation.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/README.md](../../05.operations/guides/07-workflow/README.md) | folder index |
 | [docs/05.operations/guides/07-workflow/airflow-dag-basics.md](../../05.operations/guides/07-workflow/airflow-dag-basics.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/airflow.md](../../05.operations/guides/07-workflow/airflow.md) | Markdown reference |
@@ -805,7 +804,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/runbooks/06-observability/pyroscope.md](../../05.operations/runbooks/06-observability/pyroscope.md) | Markdown reference |
 | [docs/05.operations/runbooks/06-observability/tempo.md](../../05.operations/runbooks/06-observability/tempo.md) | Markdown reference |
 | [docs/05.operations/runbooks/07-workflow/README.md](../../05.operations/runbooks/07-workflow/README.md) | folder index |
-| [docs/05.operations/runbooks/07-workflow/airflow-worker-recovery.md](../../05.operations/runbooks/07-workflow/airflow-worker-recovery.md) | Markdown reference |
 | [docs/05.operations/runbooks/07-workflow/airflow.md](../../05.operations/runbooks/07-workflow/airflow.md) | Markdown reference |
 | [docs/05.operations/runbooks/07-workflow/n8n.md](../../05.operations/runbooks/07-workflow/n8n.md) | Markdown reference |
 | [docs/05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/runbooks/07-workflow/optimization-hardening.md) | Markdown reference |

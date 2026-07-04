@@ -5,10 +5,6 @@ status: active
 
 # Airflow Operations Policy
 
-> Airflow 시스템의 안정적 운영을 위한 정책, 통제 기준 및 관리 절차 정의.
-
----
-
 ## Overview
 
 이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 운영 정책을 정의한다. 현재 구현은 Airflow 3.2.2와 `airflow-apiserver` 기반 Airflow 3 서비스 구성을 기준으로 한다.

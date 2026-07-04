@@ -67,13 +67,6 @@ status: active
   - workflow Git backup 표준 운영 절차 수립
   - credential store Vault 연계 모델 및 롤백 절차 문서화
 
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: workflow hardening + 공통 기준선 통과 필수
-- **Log / Trace Retention**: workflow 서비스 기본 보존 정책 준수
-- **Safety Incident Thresholds**: 인증 실패 급증, queue 정체 장기화, scheduler/worker 반복 재시작 발생 시 runbook 전환
-
 ## Related Documents
 
 - [Operations index](../../README.md)

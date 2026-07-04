@@ -40,8 +40,8 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 
 ## How to Work in This Area
 
-1. Read the [Airflow DAG Basics Guide](../../docs/05.operations/guides/07-workflow/airflow-dag-basics.md).
-2. Follow the [n8n Automation Guide](../../docs/05.operations/guides/07-workflow/02.n8n-automation.md).
+1. Read the [Airflow DAG basics guide](../../docs/05.operations/guides/07-workflow/airflow-dag-basics.md).
+2. Follow the [n8n usage guide](../../docs/05.operations/guides/07-workflow/n8n.md).
 3. Check the [Operations Policy](../../docs/05.operations/policies/07-workflow/README.md) for scaling.
 4. Consult the [Workflow Runbook](../../docs/05.operations/runbooks/07-workflow/README.md) for failure recovery.
 

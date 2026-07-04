@@ -35,7 +35,6 @@
 
 ```text
 runbooks/07-workflow/
-├── airflow-worker-recovery.md
 ├── airflow.md
 ├── n8n.md
 ├── optimization-hardening.md
@@ -51,8 +50,7 @@ runbooks/07-workflow/
 
 | Path | Purpose |
 | --- | --- |
-| [airflow-worker-recovery.md](./airflow-worker-recovery.md) | Airflow Worker Recovery runbook 문서 |
-| [airflow.md](./airflow.md) | Airflow runbook 문서 |
+| [airflow.md](./airflow.md) | Airflow API server, scheduler, worker, broker recovery runbook |
 | [n8n.md](./n8n.md) | N8N runbook 문서 |
 | [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening runbook 문서 |
 

@@ -36,7 +36,6 @@
 
 ```text
 guides/07-workflow/
-├── 02.n8n-automation.md
 ├── airflow-dag-basics.md
 ├── airflow.md
 ├── n8n.md
@@ -53,10 +52,9 @@ guides/07-workflow/
 
 | Path | Purpose |
 | --- | --- |
-| [02.n8n-automation.md](./02.n8n-automation.md) | n8n workflow 작성과 활성화 기본 절차 |
 | [airflow-dag-basics.md](./airflow-dag-basics.md) | Airflow DAG 작성 위치와 기본 패턴 |
 | [airflow.md](./airflow.md) | Airflow runtime, access, common checks |
-| [n8n.md](./n8n.md) | n8n runtime, access, queue-mode common checks |
+| [n8n.md](./n8n.md) | n8n runtime, workflow 작성, access, queue-mode common checks |
 | [optimization-hardening.md](./optimization-hardening.md) | workflow hardening 변경 절차와 검증 기준 |
 
 ## Related Documents

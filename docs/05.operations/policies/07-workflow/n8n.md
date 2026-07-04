@@ -47,13 +47,6 @@ status: active
 - n8n/core runner version 변경 시 검토
 - 주요 운영 정책 변경 시 검토
 
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
-- **Eval / Guardrail Threshold**: workflow compose validation과 hardening gate를 통과해야 한다.
-- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
-- **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
-
 ## Related Documents
 
 - [Operations index](../../README.md)
