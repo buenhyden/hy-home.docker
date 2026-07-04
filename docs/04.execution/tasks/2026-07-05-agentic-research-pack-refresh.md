@@ -54,7 +54,7 @@ Stage 04 evidence, README indexes, and Stage 00 progress memory only.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-RSRCH-001 | Create task evidence and plan link closure | doc | `VAL-SPC-006` / Memory and evidence | `PLN-001` | Task document exists and repo links validate | Documentation Specialist | Done |
 | T-RSRCH-002 | Revalidate external source set and repo-local evidence | doc | `VAL-SPC-002`, `VAL-SPC-003` | `PLN-002` | Source inventory and revalidation notes | Documentation Specialist | Done |
-| T-RSRCH-003 | Refresh existing research pack documents | doc | `VAL-SPC-002`, `VAL-SPC-003`, `VAL-SPC-004` | `PLN-003` | Git diff and source-backed updates | Documentation Specialist | Pending |
+| T-RSRCH-003 | Refresh existing research pack documents | doc | `VAL-SPC-002`, `VAL-SPC-003`, `VAL-SPC-004` | `PLN-003` | Git diff and source-backed updates | Documentation Specialist | Done |
 | T-RSRCH-004 | Add targeted references if required | doc | `VAL-SPC-003`, `VAL-SPC-004` | `PLN-004` | New reference docs or N/A rationale | Documentation Specialist | Pending |
 | T-RSRCH-005 | Update indexes, progress memory, and validation evidence | doc | `VAL-SPC-006`, `VAL-SPC-007` | `PLN-005` | Final validation summary | Documentation Specialist | Pending |
 
@@ -70,7 +70,7 @@ Stage 04 evidence, README indexes, and Stage 00 progress memory only.
 
 ### Phase 3: Research Refresh
 
-- [ ] T-RSRCH-003 Refresh existing research pack documents.
+- [x] T-RSRCH-003 Refresh existing research pack documents.
 - [ ] T-RSRCH-004 Add targeted references or record N/A rationale.
 
 ### Phase 4: Final Evidence
@@ -86,7 +86,7 @@ project sources are preferred for downstream Stage 90 edits.
 | Source Class | URL / Source | What It Supports | Current Caveat / Update Needed |
 | --- | --- | --- | --- |
 | Stage 03 Spec | [Agentic Research Pack Refresh Spec](../../03.specs/agentic-research-pack-refresh/spec.md) | Design contract, source priority, provider parity guardrail, no-runtime-change boundary | Active; downstream research edits must stay advisory and must not claim provider parity without official support. |
-| Stage 04 Plan | [Agentic Research Pack Refresh Plan](../plans/2026-07-05-agentic-research-pack-refresh.md) | Execution sequencing for source revalidation, research refresh, targeted additions, and final validation | Active; this slice covers `PLN-002` external and repo-local evidence only. |
+| Stage 04 Plan | [Agentic Research Pack Refresh Plan](../plans/2026-07-05-agentic-research-pack-refresh.md) | Execution sequencing for source revalidation, research refresh, targeted additions, and final validation | Active; this evidence currently covers `PLN-002` source revalidation and `PLN-003` existing research refresh. |
 | Stage 90 Research Pack | [Agentic Engineering Research Pack](../../90.references/research/agentic-engineering/README.md) | Target research category and existing document set | Active; refresh existing files before adding Docker/security/automation references. |
 | Claude Code Provider Docs | <https://code.claude.com/docs/en/overview>, <https://code.claude.com/docs/en/sub-agents>, <https://code.claude.com/docs/en/hooks> | Claude Code overview, CLAUDE.md/project memory, custom subagents, hooks, tool/permission scoping, parallel work | Update provider comparison to current `code.claude.com` URLs; Claude official docs support first-class subagents and hooks. |
 | OpenAI Codex Provider Docs | <https://developers.openai.com/codex/cli>, <https://developers.openai.com/codex/subagents>, <https://developers.openai.com/codex/hooks>, <https://developers.openai.com/codex/guides/agents-md>, <https://developers.openai.com/codex/security> | Codex CLI, custom subagents, hooks, AGENTS.md discovery, sandbox/approval/security model | Update provider comparison to current Codex docs; Codex official docs support first-class subagents and hooks. |
@@ -153,14 +153,36 @@ project sources are preferred for downstream Stage 90 edits.
   scripts, workflow behavior, provider runtime configuration, secret material,
   `.env` files, remote GitHub state, or branch protection.
 
+## Existing Research Refresh Notes
+
+Task 3 refreshed the existing Stage 90 research documents in place. No new
+targeted reference document was created, and Task 4 remains pending for the
+separate targeted-reference decision. README index and Stage 00 progress-memory
+updates remain outside this Task 3 write set and are not marked complete here.
+
+Changed research documents:
+
+- [workspace-baseline.md](../../90.references/research/agentic-engineering/workspace-baseline.md) - added explicit Security, Linting / Syntax, and Docker Compose / Infrastructure category rows with repo-local evidence and reference boundaries.
+- [harness-engineering.md](../../90.references/research/agentic-engineering/harness-engineering.md) - added infrastructure and security harness rows, source-freshness caveat, and distinction from test/eval harnesses.
+- [loop-engineering.md](../../90.references/research/agentic-engineering/loop-engineering.md) - added automation pipeline and security review loops and clarified approval requirements for external actions.
+- [provider-implementation-comparison.md](../../90.references/research/agentic-engineering/provider-implementation-comparison.md) - updated Claude Code URLs, refreshed Gemini subagent-gap date to 2026-07-05, and added Docker/infra, security/approval, and common-rule-substrate rows.
+- [spec-driven-sdlc.md](../../90.references/research/agentic-engineering/spec-driven-sdlc.md) - clarified Compose infrastructure lifecycle, QA evidence classes, and secure SDLC reference-only status.
+- [quality-ci-formatting.md](../../90.references/research/agentic-engineering/quality-ci-formatting.md) - clarified QA evidence classes, Compose infrastructure lifecycle, and secure SDLC reference-only status.
+
 ## Deviation Log
 
 No deviations recorded yet.
 
 ## Verification Summary
 
-Validation runs after research documents and indexes are updated. Initial plan
-and task scaffold validation is recorded in progress memory.
+Task 3 validation was run after the existing research documents were refreshed.
+
+| Command | Result | Notes |
+| --- | --- | --- |
+| `git diff --check` | PASS | No whitespace or conflict-marker issues. |
+| `rg -n "TBD\|TODO\|FIXME\|\\[.*\\]\|\\{.*\\}\|first-class subagent parity" docs/90.references/research/agentic-engineering -g '*.md'` | PASS with expected matches | Output is valid Markdown links plus caveat/gap uses of `first-class subagent parity`; no unresolved template placeholders found. |
+| `rg -n "docs\\.anthropic\|2026-07-02" docs/90.references/research/agentic-engineering -g '*.md'` | PASS | No stale Anthropic URL or old provider revalidation-date claims remain in the research pack. |
+| `bash scripts/validation/check-repo-contracts.sh` | PASS | `failures=0`; LLM Wiki contract passed, so no `llm-wiki-index.md` regeneration was required. |
 
 ## Related Documents
 

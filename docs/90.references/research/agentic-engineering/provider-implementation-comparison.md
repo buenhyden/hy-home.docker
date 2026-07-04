@@ -44,7 +44,7 @@ This reference provides background for `providers/claude.md`, `providers/codex.m
 - **Codex AGENTS.md**: OpenAI docs describe `AGENTS.md` as a project instruction discovery mechanism.
 - **Gemini CLI**: Google describes Gemini CLI as an open-source terminal AI agent using a ReAct loop with built-in tools and MCP servers.
 - **Gemini context files**: Gemini CLI supports `GEMINI.md` and configurable context file names for persistent context.
-- **Gemini subagent gap**: As of the 2026-07-02 research pass, official Gemini CLI sources reviewed here did not show first-class subagents comparable to Claude and Codex. Gemini is interpreted through config, context, MCP, action, and IDE integration surfaces.
+- **Gemini subagent gap**: As of the 2026-07-05 research pass, official Gemini CLI and Gemini Code Assist sources reviewed here did not show first-class subagents comparable to Claude and Codex. Gemini is interpreted through config, context, MCP, action, approval, and IDE integration surfaces.
 
 ## Provider Comparison Matrix
 
@@ -56,6 +56,9 @@ This reference provides background for `providers/claude.md`, `providers/codex.m
 | Sandbox/approval | permissions and sandbox docs | explicit sandbox/approval docs and permission profiles | sandbox/trust/config docs in official repo | approval boundaries and environment constraints |
 | MCP | supported | supported | supported via `mcpServers` | project-local MCP baseline stays config-governed |
 | Automation/CI | provider hooks and workflows | noninteractive mode, GitHub Action, hooks | official `run-gemini-cli` GitHub Action | external actions remain approval-gated |
+| Docker/infra awareness | tool-driven through shell and project docs | sandboxed local shell plus project docs | tool-driven ReAct/MCP workflow | Stage 00 infra scope and scripts are provider-neutral |
+| Security/approval model | permissions, hooks, human approval | sandbox/approval modes, hooks, config | trust/config/tool confirmation surfaces | approval boundaries and protected surface evidence |
+| Common rule substrate | root shim and provider docs | `AGENTS.md`, `.codex/`, provider docs | `GEMINI.md`, `.agents/`, provider docs | Stage 00 remains the SSoT |
 | Skills/functions | Claude skills standard extensions | Codex skill adapters in repo-local surface | `.agents/skills` reference indexes in this repo | Stage 00 function catalog is canonical |
 | Model policy | Claude aliases and provider model names | Codex GPT model and reasoning effort | Gemini model selection | `subagent-protocol.md` mapping |
 
@@ -97,11 +100,11 @@ This matches the repo-local Provider Adapter Model. `.claude/` can be a richer r
 
 ## Sources
 
-- [Claude Code overview](https://docs.anthropic.com/en/docs/claude-code/overview) - Claude Code product scope
-- [Claude Code subagents](https://docs.anthropic.com/en/docs/claude-code/sub-agents) - subagent capabilities and context isolation
-- [Claude Code hooks](https://docs.anthropic.com/en/docs/claude-code/hooks) - lifecycle hook model
-- [Claude Code settings](https://docs.anthropic.com/en/docs/claude-code/settings) - configuration surface
-- [Claude Code security](https://docs.anthropic.com/en/docs/claude-code/security) - permissions and approval framing
+- [Claude Code overview](https://code.claude.com/docs/en/overview) - Claude Code product scope
+- [Claude Code subagents](https://code.claude.com/docs/en/sub-agents) - subagent capabilities and context isolation
+- [Claude Code hooks](https://code.claude.com/docs/en/hooks) - lifecycle hook model
+- [Claude Code settings](https://code.claude.com/docs/en/settings) - configuration surface
+- [Claude Code security](https://code.claude.com/docs/en/security) - permissions and approval framing
 - [Codex CLI](https://developers.openai.com/codex/cli) - Codex CLI overview
 - [Codex subagents](https://developers.openai.com/codex/subagents) - Codex subagent model
 - [Codex hooks](https://developers.openai.com/codex/hooks) - Codex hook model

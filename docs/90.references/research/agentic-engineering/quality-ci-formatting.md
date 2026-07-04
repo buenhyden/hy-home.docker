@@ -71,15 +71,21 @@ From a DORA perspective, this repository's CI does not directly measure runtime 
 
 Formatting is less about taste and more about where drift is caught. pre-commit, post-tool validation, and `git diff --check` catch trivial drift early. Repository guidance does not make manual pre-commit runs the default procedure, so documentation tasks should prioritize repository scripts and diff hygiene.
 
-For secure quality gates, GitHub Actions SHA pinning, minimal permissions, zizmor SARIF, secret boundaries, cache caution, NIST SSDF, SLSA, and OWASP SAMM are useful references. This research task does not adopt those frameworks as active policy.
+QA covers formatting, linting, syntax checks, documentation contracts, Compose rendering, hardening, security baselines, and CI-only gates as separate evidence classes. This matters because a docs traceability failure, a Compose rendering failure, and a GitHub-only SARIF gate require different owners, evidence, and skipped-check rationale.
+
+Docker Compose infrastructure work still follows Stage 01-05 when it changes requirements, architecture, implementation contracts, execution evidence, or operations behavior. Quality gates can verify Compose rendering and hardening, but they do not replace active-stage requirements, specs, task evidence, or operations guidance.
+
+For secure quality gates, GitHub Actions SHA pinning, minimal permissions, zizmor SARIF, secret boundaries, cache caution, NIST SSDF, SLSA, and OWASP SAMM are useful references. Secure SDLC frameworks remain references unless adopted through a separate approved policy, spec, or task.
 
 ## Application Notes for This Workspace
 
 - QA evidence should separate local checks, CI-only gates, hook/script evidence, and skipped-check rationale.
 - Docs-only changes still require repository contracts, traceability, and diff hygiene.
+- QA evidence should name formatting, linting, syntax, documentation contracts, Compose rendering, hardening, security baselines, and CI-only gates separately.
 - CI workflow changes require separate approval because local files do not prove remote GitHub behavior.
 - Formatting drift should be treated as review noise and contract-failure risk, not personal style.
 - Security scanner results remain reference evidence until active finding triage connects them to remediation work.
+- Secure SDLC frameworks remain references unless adopted through a separate approved policy, spec, or task.
 
 ## Potential Follow-up / Gap
 

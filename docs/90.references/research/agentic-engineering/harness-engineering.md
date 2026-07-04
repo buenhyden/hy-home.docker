@@ -40,6 +40,8 @@ This reference provides background for the HAFE specification and policy, QA sco
 - **Fixture**: pytest describes fixtures as defined, reliable, and consistent test context. A fixture is narrower than a harness but central to repeatable testing.
 - **Evaluation harness**: OpenAI HumanEval, EleutherAI LM Evaluation Harness, and Inspect AI show how model or AI system behavior can be evaluated through repeatable task, scorer, and dataset structures.
 - **Runtime harness**: In agentic coding providers, the runtime harness combines context files, hooks, tools, sandboxes, approvals, subagents, MCP, permissions, and configuration layers.
+- **Infrastructure harness**: Docker Compose project files, profiles, networks, secrets, health checks, validation scripts, and hardening checks form the controlled runtime environment that agents inspect and validate.
+- **Security harness**: Approval boundaries, secret redaction, workflow security scans, sandbox controls, and supply-chain checks constrain what automation may do and what evidence may be recorded.
 - **Governance harness**: In a repository-specific harness, Stage 00 rules, scopes, templates, validators, progress logs, and commit discipline make agent actions auditable.
 
 ## Harness Components
@@ -50,6 +52,8 @@ This reference provides background for the HAFE specification and policy, QA sco
 | Execution boundary | test doubles, fixtures, sandbox, permissions | Codex sandbox/approval, Claude permissions/hooks, Gemini trust/sandbox references, filesystem sandbox |
 | Tool surface | shell, file tools, MCP servers, web fetch | `scripts/**`, MCP baseline, provider hooks, validation commands |
 | Validation harness | test suite, eval runner, scorer | `scripts/validation/**`, `scripts/hardening/**`, CI jobs, `git diff --check` |
+| Infrastructure harness | Compose project, profiles, networks, secrets, health checks | `docker-compose.yml`, `infra/**/docker-compose*.yml`, `validate-docker-compose.sh`, `check-all-hardening.sh` |
+| Security harness | sandbox, approvals, secret boundaries, workflow security, supply-chain checks | approval boundaries, `.github/SECURITY.md`, GitHub governance, zizmor, template/security baseline |
 | Evidence capture | test report, eval score, trace, log | `docs/04.execution/tasks/**`, `memory/progress.md`, PR validation evidence |
 | Routing policy | test selection, agent selection, model policy | `subagent-protocol.md`, `agents/`, `scopes/`, model mapping |
 | Safety control | no secrets, approvals, protected paths | approval boundaries, secrets rules, sandbox mode, external action boundaries |
@@ -60,6 +64,8 @@ Harness engineering centers on repeatable execution environments and observable 
 
 `hy-home.docker` already has a repository-level harness. Stage 00 governance defines agent context and behavior, provider surfaces expose execution adapters, and scripts/CI provide validation harnesses. The HAFE policy controls root shims, runtime mirror parity, hook safety, template-first docs, and Graphify advisory boundaries, which matches a policy -> execution -> verification -> evidence harness model.
 
+Infrastructure and security harnesses are adjacent to, but distinct from, test and eval harnesses. Test and eval harnesses measure behavior against tests, scorers, and datasets; infrastructure harnesses render and validate the Docker Compose runtime boundary; security harnesses enforce approval, redaction, workflow, and supply-chain constraints. Stage 90 can describe these harnesses, but the runtime and policy sources of truth remain in Compose, infra, Stage 00, scripts, and CI.
+
 The main external-reference gap is explicit evaluation harnessing for agent outputs. The repository has strong contracts and CI gates, but it does not currently define a dataset/scorer-based eval harness for agent output quality. That remains a follow-up gap rather than an active change in this task.
 
 ## Application Notes for This Workspace
@@ -68,6 +74,8 @@ The main external-reference gap is explicit evaluation harnessing for agent outp
 - Before an agent performs external action, the relevant sandbox, approval, and human gate should be clear.
 - Provider-specific features should remain adapters and must not replace Stage 00 policy.
 - Validation harnesses should separate locally reproducible checks from remote-only CI gates.
+- Infrastructure harness claims should cite Compose, infra, validation, and hardening sources rather than restating runtime configuration.
+- Security harness claims should cite approval boundaries, disclosure guidance, GitHub governance, zizmor/SARIF, and template/security baseline checks rather than inventing new controls.
 - Secret values cannot be harness evidence; only paths, IDs, metadata, or redacted evidence should be recorded.
 
 ## Potential Follow-up / Gap
@@ -79,7 +87,7 @@ The main external-reference gap is explicit evaluation harnessing for agent outp
 ## Source Rules
 
 - Harness terminology should prefer ISTQB, pytest, official eval framework docs, and provider official docs.
-- Provider product features were checked against official sources on 2026-07-02 and must be rechecked before operational adoption.
+- Provider, Docker Compose, and security-source facts were checked against official and repo-local sources on 2026-07-05 and must be rechecked before operational adoption.
 - Repo-local application must be corroborated against Stage 00, HAFE docs, scripts, and CI workflow.
 
 ## Sources
@@ -89,11 +97,15 @@ The main external-reference gap is explicit evaluation harnessing for agent outp
 - [OpenAI HumanEval](https://github.com/openai/human-eval) - code evaluation harness example and sandbox caveat
 - [EleutherAI LM Evaluation Harness](https://github.com/EleutherAI/lm-evaluation-harness) - model evaluation harness example
 - [Inspect AI](https://inspect.aisi.org.uk/) - frontier AI evaluation framework with agentic task support
-- [Claude Code hooks](https://docs.anthropic.com/en/docs/claude-code/hooks) - provider lifecycle hook surface
+- [Claude Code hooks](https://code.claude.com/docs/en/hooks) - provider lifecycle hook surface
 - [Codex sandboxing](https://developers.openai.com/codex/concepts/sandboxing) - Codex sandbox boundary
 - [Codex agent approvals and security](https://developers.openai.com/codex/agent-approvals-security) - approval and network controls
 - [Gemini CLI configuration](https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html) - Gemini configuration surface
+- [Docker Compose overview](https://docs.docker.com/compose/) - Compose project and runtime orchestration context
+- [Docker Compose file reference](https://docs.docker.com/reference/compose-file/) - Compose profiles, networks, secrets, and healthcheck reference context
 - [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md) - repo-local harness surface routing
+- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - protected surface and approval matrix
+- [GitHub governance](../../../00.agent-governance/rules/github-governance.md) - workflow security and required-check contracts
 - [HAFE policy](../../../05.operations/policies/00-workspace/harness-agent-first-engineering.md) - repo-local controls
 
 ## Maintenance

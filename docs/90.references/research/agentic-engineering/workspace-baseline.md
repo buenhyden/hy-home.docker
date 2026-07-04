@@ -61,6 +61,9 @@ This reference is a navigation aid for `docs/00.agent-governance/`, the HAFE spe
 | Role | `infra/README.md`, `docs/README.md`, `scripts/README.md` | Operational, documentation, and agent collaboration repository |
 | CI/CD | `.github/workflows/ci-quality.yml`, `docs/00.agent-governance/scopes/qa.md` | GitHub Actions pipeline that separates local reproducible checks and remote-only gates |
 | QA | `scripts/validation/**`, `scripts/hardening/**`, `check-doc-traceability.sh` | Script-backed validation for docs, Compose, hardening, template/security, QuickWin, and frontend surfaces |
+| Security | `.github/SECURITY.md`, `docs/00.agent-governance/scopes/security.md`, `docs/00.agent-governance/rules/github-governance.md`, `scripts/validation/check-template-security-baseline.sh` | Security is handled through disclosure guidance, scope-level enforcement, GitHub Actions security contracts, template/security baseline checks, secret boundaries, and hardening validation. |
+| Linting / Syntax | `.pre-commit-config.yaml`, `scripts/hooks/post-tool-validate.sh`, `.github/workflows/ci-quality.yml` | Style and syntax drift are checked through hook-mediated validation, CI pre-commit, frontend quality gates, YAML/security scans, and `git diff --check`. |
+| Docker Compose / Infrastructure | `docker-compose.yml`, `infra/README.md`, `scripts/validation/validate-docker-compose.sh`, `scripts/hardening/check-all-hardening.sh` | Runtime truth remains in Compose and infra files; research docs cite it but do not replace it. |
 | Automation | `scripts/hooks/**`, `.claude/hooks/**`, `.codex/hooks.json`, `.agents/workflows/**` | Provider hooks and workflows execute Stage 00 policy as adapters |
 | Formatting | `.pre-commit-config.yaml`, `post-tool-validate.sh`, `git diff --check` | Completion hygiene for whitespace, shell style, Markdown linting, and generated index freshness |
 | Operating Contract | HAFE policy and runbook | Evidence-backed boundaries across root, provider, runtime, script, and stage surfaces |
@@ -100,10 +103,14 @@ Provider-wise, Claude, Codex, and Gemini share policy but expose different mecha
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - template, language, stage, README, related-documents contract
 - [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - stage responsibilities and templates
 - [QA scope](../../../00.agent-governance/scopes/qa.md) - QA/CI gate model
+- [Security scope](../../../00.agent-governance/scopes/security.md) - security enforcement and secret-boundary model
+- [GitHub governance](../../../00.agent-governance/rules/github-governance.md) - workflow security, protected-branch, and required-check contracts
 - [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md) - repo-local harness surface routing
 - [HAFE specification](../../../03.specs/harness-agent-first-engineering/spec.md) - existing harness and agent-first engineering contracts
 - [HAFE guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md) - workspace audit guide
 - [HAFE policy](../../../05.operations/policies/00-workspace/harness-agent-first-engineering.md) - operations controls
+- [Infra README](../../../../infra/README.md) - Docker Compose infrastructure inventory and validation guidance
+- [Security disclosure](../../../../.github/SECURITY.md) - vulnerability reporting boundary
 - [Scripts README](../../../../scripts/README.md) - purpose-folder script contract
 - [CI workflow](../../../../.github/workflows/ci-quality.yml) - GitHub Actions quality gates
 

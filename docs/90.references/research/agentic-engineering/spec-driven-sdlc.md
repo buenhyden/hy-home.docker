@@ -65,19 +65,25 @@ Compared with external SDD sources, this repository is closer to spec-anchored g
 
 From a secure SDLC perspective, NIST SSDF practice groups align with this repository's governance, secret boundaries, validation scripts, and CI gates. Formal SSDF control mapping would require separate approved policy, specification, or task work; this reference does not adopt SSDF as active policy.
 
+Docker Compose infrastructure work still follows Stage 01-05 when it changes requirements, architecture, implementation contracts, execution evidence, or operations behavior. A Compose edit may look like an infra-only change, but new service behavior, ports, networks, profiles, secrets, readiness expectations, or operations controls still need the same traceability as other implementation work.
+
+QA evidence should keep formatting, linting, syntax checks, documentation contracts, Compose rendering, hardening, security baselines, and CI-only gates as separate evidence classes. Treating them separately makes skipped-check rationale and follow-up ownership clearer.
+
 ## Application Notes for This Workspace
 
 - New active documents should start by selecting the target stage and template.
 - Agent implementation should not start without an approved plan when the workflow requires one.
 - Reference documents must not replace active specs or plans.
 - Traceability is maintained through Related Documents, parent README sync, validation commands, and task evidence.
+- Docker Compose infrastructure work should enter the Stage 01-05 lifecycle when it changes requirements, architecture, implementation contracts, execution evidence, or operations behavior.
+- Secure SDLC frameworks remain references unless adopted through a separate approved policy, spec, or task.
 - External SDD tool structures should be adapted into this repository's canonical stage paths rather than copied directly.
 
 ## Potential Follow-up / Gap
 
 - A future implementation guide could compare official SDD workflows with the repo-local Stage 01-05 lifecycle.
 - Mapping NIST SSDF practice groups to repository controls would require a separate approved policy or spec task.
-- No `docs/04.execution/plans` plan artifact was created for this research task because the user explicitly limited the writable scope to research references, necessary reference README updates, and the progress log.
+- This research refresh now has a Stage 03 spec, Stage 04 plan, and Stage 04 task evidence; any next active change discovered from this reference pack should continue through the same stage-gated path.
 
 ## Source Rules
 

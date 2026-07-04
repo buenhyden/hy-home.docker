@@ -52,6 +52,8 @@ This reference provides background for `agentic.md`, QA scope, provider notes, h
 | Tool execution loop | file edit, shell command, provider tool call | execute bounded action | command output, diff, hook result | sandbox, approval, `post-tool-validate.sh` |
 | Verification loop | changed files, completion gate | run validators | pass/fail and skipped-check rationale | `check-repo-contracts.sh`, `check-doc-traceability.sh`, CI jobs |
 | CI loop | push, PR, dispatch | GitHub Actions jobs | required checks and logs | `.github/workflows/ci-quality.yml` |
+| Automation pipeline loop | script, hook, CI, or provider workflow trigger | run local or remote automation | pass/fail logs, SARIF, task evidence, progress memory | scripts, provider hooks, `.github/workflows/ci-quality.yml` |
+| Security review loop | protected surface, workflow change, secret boundary, dependency or action risk | inspect against policy and scanners | findings, skipped-check rationale, escalation | security scope, GitHub governance, `.github/SECURITY.md`, zizmor |
 | Human approval loop | risky ambiguity, external action, protected surface | stop and ask | explicit approval or narrowed scope | user approval boundaries, sandbox escalation |
 | Memory loop | material progress or durable finding | update progress/memory | future retrieval context | `memory/progress.md`, memory notes |
 | Eval loop | future eval-backed work | run eval tasks/scorers | score, error clusters, regression signals | potential follow-up, not current active surface |
@@ -61,6 +63,8 @@ This reference provides background for `agentic.md`, QA scope, provider notes, h
 Loop engineering allows repetition while specifying inputs, outputs, stop conditions, and evidence. ReAct and Gemini CLI's ReAct description show how actions connected to external tools or environments produce observations that shape the next step. Reflexion provides a conceptual basis for storing feedback as memory for later trials.
 
 The loops in `hy-home.docker` are broader than a provider's internal agent loop. Stage 00 bootstrap creates a context-loading loop, hooks create tool-lifecycle loops, validation scripts and GitHub Actions create feedback loops, and `memory/progress.md` lets future agents retrieve prior work context.
+
+Automation pipeline loops add another form of repetition: scripts, hooks, CI jobs, and provider workflows can run locally or remotely and feed back logs, SARIF, task evidence, and memory updates. They improve observability, but they do not authorize external actions by themselves. Posting, publishing, pushing, merging, opening paid jobs, changing credentials, or modifying protected surfaces still requires explicit approval and recorded evidence.
 
 The important distinction is between loop autonomy and loop authority. An agent can iterate inside the local sandbox, but external posting, publishing, pushing, merging, credentials, and protected surfaces require explicit approval. Without this separation, loop engineering becomes uncontrolled execution.
 
@@ -96,6 +100,9 @@ The important distinction is between loop autonomy and loop authority. An agent 
 - [GitHub Actions workflow syntax](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions) - workflow/jobs/steps automation loop
 - [Agentic rule](../../../00.agent-governance/rules/agentic.md) - repo-local execution loop
 - [QA scope](../../../00.agent-governance/scopes/qa.md) - repo-local verification evidence loop
+- [Security scope](../../../00.agent-governance/scopes/security.md) - repo-local security review and secret-boundary loop
+- [GitHub governance](../../../00.agent-governance/rules/github-governance.md) - workflow security, SARIF, and protected-surface evidence
+- [Security disclosure](../../../../.github/SECURITY.md) - vulnerability reporting boundary
 - [CI workflow](../../../../.github/workflows/ci-quality.yml) - repo-local CI feedback loop
 
 ## Maintenance
