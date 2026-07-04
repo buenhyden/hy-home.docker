@@ -554,6 +554,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Tempo documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Tempo compose/config/image scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Pyroscope Policy Profile Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Pyroscope policy structure | `docs/05.operations/policies/06-observability/pyroscope.md` | ✅ Updated | Removed the legacy blockquote separator and normalized the policy around current compose/config controls, exceptions, verification, review cadence, and related documents. |
+| Current-truth boundary | `infra/06-observability/pyroscope` | ✅ Clarified | Preserved image `grafana/pyroscope:2.1.0`, `template-infra-med`, filesystem backend `/var/lib/pyroscope`, `pyroscope-data`, compactor path, ingestion limits, analytics disabled, self-profiling push disabled, no fixed retention declaration, and protected route chain. |
+| Command/document wording | `infra/06-observability/pyroscope/README.md`, `docs/05.operations/runbooks/06-observability/pyroscope.md` | ✅ Corrected | Added `--profile obs` to Pyroscope service commands and aligned log/stats checks with container `infra-pyroscope`. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Pyroscope documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Pyroscope compose/config scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

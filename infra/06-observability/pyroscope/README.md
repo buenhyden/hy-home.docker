@@ -48,8 +48,8 @@ pyroscope/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose up -d pyroscope` | Start Pyroscope service |
-| `docker compose restart pyroscope` | Apply configuration changes |
+| `docker compose --profile obs up -d pyroscope` | Start Pyroscope service |
+| `docker compose --profile obs restart pyroscope` | Apply configuration changes |
 
 ## Configuration
 
@@ -72,7 +72,7 @@ pyroscope/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify profiling ingestion by checking `docker logs pyroscope | grep -i 'error\|warn'` after config changes.
+- Verify profiling ingestion by checking `docker logs infra-pyroscope | grep -i 'error\|warn'` after config changes.
 - Confirm profiles appear in Grafana Pyroscope datasource after Alloy sends profiling data.
 
 ## Troubleshooting

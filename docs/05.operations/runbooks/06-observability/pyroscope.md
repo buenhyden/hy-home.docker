@@ -28,8 +28,7 @@ status: active
 - **Resolution**:
 
   ```bash
-  docker compose restart pyroscope
-  docker compose restart alloy
+  docker compose --profile obs restart pyroscope alloy
   ```
 
 #### 2. Disk Space Pressure (저장소 부족)
@@ -43,7 +42,7 @@ status: active
 #### 3. High CPU Usage (수집 부하)
 
 - **Symptom**: 호스트 시스템 CPU 사용률 급증.
-- **Check**: `docker stats pyroscope`.
+- **Check**: `docker stats infra-pyroscope`.
 - **Resolution**:
   - `pyroscope.yaml`의 `ingestion_rate_mb` 또는 `ingestion_burst_size_mb` 조정 필요성을 검토한다.
   - Alloy에서 수집 대상 서비스 필터링 강화.
@@ -58,7 +57,7 @@ status: active
 cd infra/06-observability
 
 ## Restart Pyroscope
-docker compose restart pyroscope
+docker compose --profile obs restart pyroscope
 
 ## Verify Health
 curl -f http://localhost:4040/ready
