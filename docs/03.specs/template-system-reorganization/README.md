@@ -1,5 +1,5 @@
 ---
-status: draft
+status: superseded
 ---
 
 <!-- Target: docs/03.specs/template-system-reorganization/README.md -->
@@ -11,15 +11,13 @@ status: draft
 
 ## Overview
 
-`docs/03.specs/template-system-reorganization` defines the design contract for
-the `docs/99.templates` reorganization. The work separates template bodies from
-template governance, normalizes frontmatter responsibilities, and prepares the
-validator and governance surfaces for nested template paths.
+`docs/03.specs/template-system-reorganization` preserves the first design
+contract for the `docs/99.templates` reorganization. The current replacement is
+[Template System Contract Standardization](../template-system-contract-standardization/spec.md).
 
-This folder is a design surface only. The implementation target remains
-`docs/99.templates/`, relevant Stage 00 governance rules, validation scripts,
-and only the direct reference fallout needed to keep the repository contract
-coherent.
+This folder is retained as transition/reference evidence. Use the replacement
+spec and Stage 99 support contracts for current template, frontmatter, archive,
+and governance rules.
 
 ## Audience
 
@@ -32,8 +30,10 @@ This README is for:
 
 ## Status
 
-This specification is a draft design contract. It becomes the input to a Stage
-04 execution plan after user review and approval.
+This specification is superseded by
+[Template System Contract Standardization](../template-system-contract-standardization/spec.md).
+The original migration was implemented through the Stage 04 template-system
+reorganization plan and task evidence.
 
 ## Scope
 
@@ -64,16 +64,16 @@ template-system-reorganization/
 
 ## How to Work in This Area
 
-1. Read [spec.md](./spec.md) before changing `docs/99.templates`.
-2. Treat this spec as the implementation boundary for the first migration
-   cycle.
+1. Use the replacement spec before changing `docs/99.templates`.
+2. Use this folder only for transition history and earlier implementation
+   rationale.
 3. Record gaps discovered outside the approved scope instead of fixing unrelated
    docs or runtime surfaces.
-4. Create the Stage 04 plan only after this design is reviewed and approved.
 
 ## Related Documents
 
 - [spec.md](./spec.md)
+- [current replacement spec](../template-system-contract-standardization/spec.md)
 - [docs/03.specs README](../README.md)
 - [template catalog](../../99.templates/README.md)
 - [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)

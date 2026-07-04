@@ -1,5 +1,5 @@
 ---
-status: draft
+status: superseded
 ---
 
 <!-- Target: docs/03.specs/template-system-reorganization/spec.md -->
@@ -8,19 +8,19 @@ status: draft
 
 ## Overview
 
-This document defines the design contract for reorganizing `docs/99.templates`
-from a flat template folder into a structured template system with two explicit
-responsibilities:
+This document preserves the earlier design contract for reorganizing
+`docs/99.templates` from a flat template folder into a structured template
+system with two explicit responsibilities:
 
 - `docs/99.templates/templates/` holds copyable document and contract templates.
 - `docs/99.templates/support/` holds non-copyable template governance,
   frontmatter rules, lifecycle vocabulary, selection guidance, and source-backed
   rationale.
 
-The implementation must preserve the repository's stage-gated documentation
-model while removing legacy template paths, duplicate-purpose guidance, mixed
-README responsibilities, and frontmatter fields that do not belong to a given
-document type.
+This design is superseded by
+[Template System Contract Standardization](../template-system-contract-standardization/spec.md).
+Use the replacement spec and Stage 99 support contracts for current template,
+frontmatter, archive, and governance rules.
 
 ## Strategic Boundaries & Non-goals
 
@@ -43,6 +43,8 @@ document type.
 
 - **User-approved direction**: 2026-07-02 conversation approval for the
   research-backed `docs/99.templates` reorganization design.
+- **Current replacement spec**:
+  [Template System Contract Standardization](../template-system-contract-standardization/spec.md)
 - **Current Template Catalog**:
   [../../99.templates/README.md](../../99.templates/README.md)
 - **Documentation Protocol**:

@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 
 <!-- Target: docs/03.specs/document-restructure-audit-contract-archive/spec.md -->

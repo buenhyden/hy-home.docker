@@ -1,5 +1,5 @@
 ---
-status: draft
+status: completed
 ---
 
 <!-- Target: docs/03.specs/template-system-contract-standardization/spec.md -->
