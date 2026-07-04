@@ -3,78 +3,87 @@ status: active
 ---
 <!-- Target: docs/05.operations/guides/06-observability/alertmanager.md -->
 
-# Alertmanager Operational Policy (06-observability) Usage Guide
+# Alertmanager Usage Guide
 
 ## Usage
 
 ### Overview
 
-이 문서는 Alertmanager(06-observability)의 알림 라우팅 체계와 설정 방법을 설명한다. 다양한 소스(Prometheus, Loki 등)에서 유입된 경보(Alert)를 그룹화하고 중복을 제거하여 적절한 대상(Slack, Email 등)으로 전달하는 과정을 다룬다.
-
-### Alertmanager Notification Routing Usage (06-observability)
-
-> Centralized alert routing, deduplication, and notification gateway.
-
----
+이 가이드는 `06-observability` 계층의 Alertmanager 사용 맥락과 설정 확인 방법을 설명한다. Alertmanager는 Prometheus가 전달한 alerts를 grouping, deduplication, inhibition, silence, receiver routing으로 처리하고 Slack receiver로 전달한다. Compose는 `infra/06-observability/alertmanager/config/config.yml`을 `/etc/alertmanager/config.yml.template`로 마운트한 뒤 Docker Secret 값을 런타임 `/tmp/config.yml`에 렌더링한다.
 
 ### Usage Type
 
-`system-guide | how-to`
+`system-guide`
 
 ### Target Audience
 
-- Developer (SRE, Backend)
+- Developer
 - Operator
-- Agent-tuner
+- SRE
+- AI Agent
 
 ### Purpose
 
-이 가이드는 Alertmanager의 라우팅 규칙을 이해하고, 알림 수신자(Receiver)를 설정하며, 알림 피로도를 줄이기 위한 그룹화 설정을 돕는다.
+- Alertmanager compose service, route tree, receiver, inhibition, silence, and secret-rendered config boundary를 빠르게 파악한다.
+- Prometheus alert delivery, Grafana datasource, protected route, and notification receiver 관계를 확인한다.
+- 장애 대응, restart, config rollback, notification failure triage는 runbook으로 넘긴다.
 
 ### Prerequisites
 
-- [Alertmanager Infrastructure README](../../../../infra/06-observability/alertmanager/README.md)
-- Prometheus 또는 Loki 등 알림 소스 구동 중
-- Slack Webhook URL 또는 SMTP 서버 정보
+- `infra/06-observability/alertmanager/config/config.yml` route/receiver 구조를 읽을 수 있는 권한.
+- Docker Secret IDs `smtp_username`, `smtp_password`, `slack_webhook`가 준비되어 있어야 한다. Secret 값은 문서, 로그, task evidence에 기록하지 않는다.
+- Prometheus `alertmanagers` target `alertmanager:9093`와 Grafana Alertmanager datasource가 현재 compose network에서 접근 가능해야 한다.
+- Alertmanager UI `https://alertmanager.${DEFAULT_URL}` 접근 권한.
 
 ### Step-by-step Instructions
 
-#### 1. Understanding Routing Tree
+1. Compose service boundary를 확인한다.
 
-Alertmanager는 트리 구조의 라우팅 규칙을 사용한다. `route` 섹션에서 최상위 규칙을 정의하며, 하위 `routes`를 통해 조건별로 알림을 분기할 수 있다.
+   ```bash
+   rg -n 'service: template-stateful-low|image: prom/alertmanager:v0.33.0|container_name: infra-alertmanager|smtp_username|smtp_password|slack_webhook|alertmanager-data|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   ```
 
-```yaml
-route:
-  group_by: ['alertname', 'job']
-  group_wait: 30s
-  group_interval: 5m
-  repeat_interval: 1h
-  receiver: 'team-notifications'
-```
+2. Alertmanager config template boundary를 확인한다.
 
-#### 2. Configuring Receivers
+   ```bash
+   rg -n 'group_by: \\[\"alertname\", \"job\", \"domain\", \"severity\"\\]|repeat_interval: 4h|receiver: \"team-notifications-slack\"|receiver: \"critical-notifications\"|severity=\"critical\"|__SMTP_USERNAME__|__SMTP_PASSWORD__|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml
+   ```
 
-알림을 실제로 전달받을 대상(Slack, Email 등)을 `receivers` 섹션에 정의한다.
+3. 현재 routing model을 이해한다.
 
-- **Slack Integration**: `slack_configs`를 사용하여 채널과 메시지 형식을 지정한다.
-- **Email Integration**: `email_configs`를 사용하여 메일 서버와 수신자를 지정한다.
+   - **Default route**: `group_by`는 `alertname`, `job`, `domain`, `severity` 기준이고 `repeat_interval`은 `4h`이다.
+   - **Critical route**: `severity="critical"` alerts는 `critical-notifications` receiver로 전달되고 `repeat_interval`은 `1h`이다.
+   - **Slack receivers**: 기본 receiver는 `#notification`, critical receiver는 `#critical-alerts` 채널을 사용한다.
+   - **Email receiver**: SMTP placeholders는 유지하지만 `email_configs`가 commented state이면 email delivery를 활성 기능으로 간주하지 않는다.
+   - **Inhibition**: critical alert가 같은 warning alert를 억제하고, `InstanceDown`은 같은 instance의 app/datastore/messaging service-level alerts를 억제한다.
 
-#### 3. Applying Silences
+4. Prometheus와 Grafana 연결을 확인한다.
 
-계획된 유지보수 기간 동안 발생하는 불필요한 알림을 차단하기 위해 Silence를 설정할 수 있다.
+   ```bash
+   rg -n 'alertmanagers:|targets: \\[\"alertmanager:9093\"\\]|job_name: \"alertmanager\"' infra/06-observability/prometheus/config/prometheus.yml
+   rg -n 'name: Alertmanager|uid: alertmanager|url: http://alertmanager:9093|handleGrafanaManagedAlerts: false' infra/06-observability/grafana/provisioning/datasources/datasource.yml
+   ```
 
-- **Alertmanager UI**: `http://localhost:9093/#/silences`에 접속하여 `New Silence`를 클릭한다.
-- **API/CLI**: `amtool` 등을 사용하여 프로그래밍 방식으로 Silence를 관리할 수 있다.
+5. Planned maintenance silence는 Alertmanager UI에서 만료 시각과 사유를 포함해 생성한다.
+
+   - UI: `https://alertmanager.${DEFAULT_URL}`
+   - Silence는 expiry 없이 생성하지 않는다.
+   - Secret, webhook, SMTP credential 값은 silence comment나 evidence에 남기지 않는다.
 
 ### Common Pitfalls
 
-- **Notification Storms**: `group_wait`와 `group_interval`이 너무 짧으면 수많은 알림이 쏟아질 수 있다.
-- **Resolution Delays**: `repeat_interval`이 너무 길면 해결된 문제가 다시 발생했을 때 알림이 늦게 올 수 있다.
-- **Invalid Templates**: Slack 메시지 템플릿 문법 오류 시 알림 발송 자체가 실패할 수 있으므로 주의해야 한다.
+- **Secret rendering assumption**: Git-managed `config.yml`에는 placeholders가 있고, runtime `/tmp/config.yml`에는 Secret 값이 렌더링된다. `/tmp/config.yml` 원문을 evidence로 남기지 않는다.
+- **Email assumption**: SMTP placeholders가 있어도 `email_configs`가 commented state이면 email notification을 보장한다고 쓰지 않는다.
+- **Silence drift**: 만료 없는 silence나 너무 넓은 matcher는 critical alert를 숨길 수 있다.
+- **Route drift**: `group_by`, `repeat_interval`, receiver name을 바꾸면 policy와 runbook evidence도 함께 갱신해야 한다.
+- **Direct access assumption**: 외부 UI 접근은 Traefik protected route와 SSO middleware를 통한다. 내부 compose network에서는 `alertmanager:9093`를 사용한다.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alertmanager`
+- `docker logs --tail=100 infra-alertmanager`
+- `rg -n 'route:|receivers:|inhibit_rules:|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml`
+- `rg -n 'alertmanagers:|targets: \\[\"alertmanager:9093\"\\]' infra/06-observability/prometheus/config/prometheus.yml`
 
 ## Runbook Handoff
 

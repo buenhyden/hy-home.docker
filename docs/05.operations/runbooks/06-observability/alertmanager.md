@@ -3,79 +3,122 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/06-observability/alertmanager.md -->
 
-# Alertmanager Runbook
+# Alertmanager Notification Recovery Runbook
 
-## Overview
+## Alertmanager Notification Recovery Procedure
 
-이 런북은 Alertmanager(06-observability) 알림 서비스의 장애 발생 시 복구 절차를 정의한다. 통지 실패, 설정 오류, 그리고 수신자 연결 문제를 신속하게 해결하는 방법을 제공한다.
+> Scope: Alertmanager readiness checks, Prometheus delivery evidence, secret-rendered config verification, notification path triage, restart, and config rollback.
 
-## Alertmanager Recovery Procedure (06-observability)
+### Overview
 
-> Scope: Alertmanager Notification Service
-
----
+이 런북은 Alertmanager UI/readiness failure, Prometheus alert delivery gap, Slack notification failure, silence/inhibition drift, and config rendering regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
 
 ### Purpose
 
-알림 서비스의 가용성을 복구하여 장애 상황이 운영자에게 지체 없이 전달되도록 보장한다.
+운영자가 `infra-alertmanager` 상태를 확인하고 Prometheus `alertmanager:9093` delivery, route/receiver config, Docker Secret-rendered runtime boundary, protected UI route를 검증하며, Secret 노출이나 receiver 정책 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### Canonical References
 
-- [Alertmanager Infrastructure README](../../../../infra/06-observability/alertmanager/README.md)
-- [Alertmanager Operational Policy](../../policies/06-observability/alertmanager.md)
-- [Alertmanager System Usage](../../guides/06-observability/alertmanager.md)
+- **Policy**: [Alertmanager operations policy](../../policies/06-observability/alertmanager.md)
+- **Guide**: [Alertmanager usage guide](../../guides/06-observability/alertmanager.md)
+- **Infrastructure**: [Alertmanager infra README](../../../../infra/06-observability/alertmanager/README.md)
 
 ## When to Use
 
-- Prometheus/Loki에서 알림이 발생했으나 실제 통지(Slack/Email)가 오지 않을 때.
-- Alertmanager UI에 접속이 불가능하거나 서비스가 응답하지 않을 때.
-- 잘못된 Silence 설정으로 인해 중요 알림이 차단되었을 때.
+- Prometheus에서 firing alert가 있는데 Alertmanager UI나 Slack receiver에서 보이지 않을 때.
+- Alertmanager UI `https://alertmanager.${DEFAULT_URL}` 또는 `/-/ready` endpoint가 실패할 때.
+- `smtp_username`, `smtp_password`, `slack_webhook` Secret 누락 또는 config rendering error가 의심될 때.
+- 잘못된 silence 또는 inhibition rule로 중요 알림이 차단된 것처럼 보일 때.
+- `config.yml` 변경 후 route, receiver, template, notification delivery 상태 검증이 필요할 때.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] Alertmanager 컨테이너 상태 확인 (`docker ps`)
-- [ ] Slack Webhook URL 유효성 확인
-- [ ] Alertmanager 로그 내 `level=error` 메시지 확인
-- [ ] 활성화된 Silence 목록 확인
+- [ ] `alertmanager` service, `infra-alertmanager` container, `alertmanager-data` volume, and Docker Secret IDs 상태를 확인한다.
+- [ ] 문제 유형을 readiness, Prometheus delivery, receiver delivery, silence/inhibition, secret rendering, config regression 중 하나로 분류한다.
+- [ ] Secret value, rendered `/tmp/config.yml`, Slack webhook URL, SMTP credential 원문은 기록하지 않는다.
+- [ ] Route/receiver/inhibition/secret rendering을 변경해야 해 보이면 중단하고 owning operator approval을 받는다.
 
 ### Steps
 
-#### 1. Service Restoration
+1. 현재 service 상태, 최근 로그, readiness를 캡처한다.
 
-Alertmanager 서비스가 중단된 경우 컨테이너를 재시작한다.
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alertmanager
+   docker logs --tail=200 infra-alertmanager
+   docker exec infra-alertmanager wget -q --spider http://localhost:9093/-/ready
+   ```
 
-```bash
-HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh
-docker compose --profile obs restart alertmanager
-```
+2. Compose service boundary가 policy와 일치하는지 확인한다.
 
-##### 2. Configuration Validation
+   ```bash
+   rg -n 'service: template-stateful-low|image: prom/alertmanager:v0.33.0|container_name: infra-alertmanager|alertmanager-data|smtp_username|smtp_password|slack_webhook|ALERTMANAGER_PORT|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   ```
 
-설정 오류(YAML 문법 등)가 의심되는 경우 로그를 확인하고 수정한 후 다시 로드한다.
+3. Secret 값이 아닌 placeholder와 route/receiver config만 확인한다.
 
-```bash
-docker logs infra-alertmanager | grep "err"
-```
+   ```bash
+   rg -n 'route:|group_by: \\[\"alertname\", \"job\", \"domain\", \"severity\"\\]|repeat_interval: 4h|receiver: \"team-notifications-slack\"|receiver: \"critical-notifications\"|severity=\"critical\"|inhibit_rules:|__SMTP_USERNAME__|__SMTP_PASSWORD__|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml
+   ```
 
-##### 3. Notification Test
+4. Prometheus가 Alertmanager target을 사용하고 있는지 확인한다.
 
-Mock 알림을 수동으로 발송하여 통지 경로를 테스트한다. (Prometheus API 사용 또는 `amtool` 사용)
+   ```bash
+   rg -n 'alertmanagers:|targets: \\[\"alertmanager:9093\"\\]|job_name: \"alertmanager\"' infra/06-observability/prometheus/config/prometheus.yml
+   ```
+
+5. Grafana datasource가 같은 Alertmanager endpoint를 가리키는지 확인한다.
+
+   ```bash
+   rg -n 'name: Alertmanager|uid: alertmanager|url: http://alertmanager:9093|handleGrafanaManagedAlerts: false' infra/06-observability/grafana/provisioning/datasources/datasource.yml
+   ```
+
+6. Silence or inhibition drift가 의심되면 UI에서 matcher, creator, comment, expiry를 확인한다.
+
+   - UI: `https://alertmanager.${DEFAULT_URL}`
+   - Expiry 없는 silence가 있으면 삭제 또는 만료 시각 부여를 owning operator에게 요청한다.
+   - Critical alert를 숨기는 broad matcher가 있으면 evidence만 기록하고 정책 변경은 승인 후 수행한다.
+
+7. Config와 Secret ID 경계가 정책과 일치하지만 runtime state가 회복되지 않으면 Alertmanager를 재시작한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alertmanager
+   docker logs --tail=100 infra-alertmanager
+   ```
+
+8. `config.yml` 변경 후 장애가 발생했다면 Git-managed config diff를 되돌리고 readiness를 재확인한다.
+
+   ```bash
+   git diff -- infra/06-observability/alertmanager/config/config.yml
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alertmanager
+   docker exec infra-alertmanager wget -q --spider http://localhost:9093/-/ready
+   ```
+
+   이 런북은 Slack webhook rotation, SMTP credential rotation, receiver/channel change, inhibition policy change, protected middleware change를 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
 
 ### Verification Steps
 
-- [ ] Alertmanager UI (`https://alertmanager.${DEFAULT_URL}` 또는 내부 `http://alertmanager:9093`) 접속 확인.
-- [ ] Slack `#notification` 채널에 테스트 메시지 수신 확인.
+- [ ] `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alertmanager`에서 `alertmanager` service가 running이다.
+- [ ] `/-/ready` endpoint가 성공한다.
+- [ ] Prometheus config의 `alertmanagers` target이 `alertmanager:9093`를 유지한다.
+- [ ] Alertmanager UI에서 firing alerts, silences, receivers를 확인할 수 있다.
+- [ ] Slack notification failure가 있었으면 test alert 또는 다음 firing alert에서 expected receiver 도착 여부를 확인하고 timestamp를 기록한다.
+- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: `alertmanager_notifications_failed_total` 지표 상승 여부.
-- **Evidence to Capture**: `alertmanager.log` 파일의 에러 스택 트레이스.
+- **Logs**: `docker logs --tail=200 infra-alertmanager`
+- **Health**: Alertmanager `/-/ready`, UI `https://alertmanager.${DEFAULT_URL}`
+- **Config**: `infra/06-observability/alertmanager/config/config.yml`, Prometheus `alertmanagers` target, Grafana datasource
+- **Metrics**: `alertmanager_notifications_failed_total`, `prometheus_notifications_alertmanagers_discovered`
+- **Evidence to Capture**: failing receiver, route matcher, relevant log excerpt with secrets redacted, restart timestamp, final recovery or escalation state
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 설정을 변경한 후 서비스가 기동되지 않으면 이전 정상 버전의 `config.yml`로 복구한다.
+- Git-managed `config.yml`, Compose, or datasource/Prometheus endpoint change가 원인이면 직전 Git diff 단위로 되돌리고 Alertmanager를 재시작한다.
+- Runtime restart는 `obs` profile compose 명령만 사용한다.
+- Secret rotation, Slack webhook replacement, SMTP credential replacement, receiver/channel change, or protected route middleware change는 이 런북의 안전 롤백 범위를 벗어난다.
 
 ### Agent Operations (If Applicable)
 
@@ -87,18 +130,18 @@ Mock 알림을 수동으로 발송하여 통지 경로를 테스트한다. (Prom
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- 실행한 명령, timestamp, operator or agent action을 기록한다.
+- Secret 값, rendered `/tmp/config.yml`, Slack webhook URL, SMTP credential 원문은 기록하지 않는다.
+- Notification 장애는 affected receiver, matching route, alert labels, log excerpt, silence/inhibition state를 함께 기록한다.
+- Receiver/channel/secret/middleware 변경 필요성이 보이면 approval state를 기록한다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+이 런북에 명시된 validation, restart, and Git-managed config rollback만 사용한다. Secret rotation, receiver/channel policy, inhibition policy, protected middleware, or external Slack/SMTP resource 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+verification이 실패하거나, secret exposure risk가 보이거나, receiver/channel/secret/middleware 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
 ## Related Documents
 

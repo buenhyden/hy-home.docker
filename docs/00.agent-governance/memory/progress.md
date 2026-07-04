@@ -619,6 +619,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Alloy documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Alloy compose/config scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Alertmanager Guide and Runbook Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Alertmanager usage guide | `docs/05.operations/guides/06-observability/alertmanager.md` | ✅ Updated | Removed the stale operational-policy title, legacy blockquote separator, and template residue, then rewrote the guide around current compose, route tree, receiver, inhibition, silence, Prometheus delivery, Grafana datasource, secret-rendered config, common checks, and runbook handoff boundaries. |
+| Alertmanager recovery runbook | `docs/05.operations/runbooks/06-observability/alertmanager.md` | ✅ Updated | Replaced mixed legacy troubleshooting/template content with one runbook covering readiness, Prometheus delivery evidence, secret-rendered config verification, notification path triage, silence/inhibition review, restart, Git-managed config rollback, evidence, and escalation. |
+| Current-truth boundary | `infra/06-observability/alertmanager` | ✅ Clarified | Preserved image `prom/alertmanager:v0.33.0`, `template-stateful-low`, container `infra-alertmanager`, `alertmanager-data`, Docker Secret IDs `smtp_username`, `smtp_password`, `slack_webhook`, source config `config/config.yml`, runtime render to `/tmp/config.yml`, `/-/ready`, protected route chain, Prometheus target `alertmanager:9093`, and Grafana datasource. |
+| Command/document wording | `infra/06-observability/alertmanager/README.md` | ✅ Corrected | Added repository-root `-f infra/06-observability/docker-compose.yml --profile obs` commands, readiness validation, Prometheus delivery scan, secret-rendered config boundary, and evidence hygiene warnings for rendered config and secret values. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Alertmanager documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Alertmanager compose/config/Prometheus/Grafana scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
