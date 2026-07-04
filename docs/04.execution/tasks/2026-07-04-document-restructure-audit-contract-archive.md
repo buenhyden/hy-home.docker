@@ -33,7 +33,8 @@ change, or operations bucket restructure begins.
 - Do not inspect secret values, credentials, tokens, certificates, private
   keys, raw logs, shell history, or `.env` values.
 - Keep guide, policy, and runbook roles separate during future operations
-  bucket work.
+  bucket work across `00-workspace`, `01-*` through `12-*`, and legacy
+  `90-knowledge`.
 - Treat README files as routing/index surfaces; durable rules belong in Stage
   99 support contracts.
 - Record every future move, removal, archive, validator, or protected-surface
@@ -63,7 +64,7 @@ change, or operations bucket restructure begins.
 | T-DRA-002 | Build the evidence-only Stage 90 audit pack. | doc | Audit Pack Design | PLN-DRA-002 | `docs/90.references/audits/document-restructure/**` reports and gap register | Codex | Done |
 | T-DRA-003 | Update template, frontmatter, lifecycle, archive, and governance contracts. | doc | Template Contract Baseline | PLN-DRA-003 | Stage 99 support contract diffs and audit register reclassification | Codex | Done |
 | T-DRA-004 | Execute approved `docs/03.specs` archive/remove/relink batch. | doc | 03.specs Restructure Model | PLN-DRA-004 | Candidate dispositions, status/routing cleanup, no tombstones needed, validation | Codex | Done |
-| T-DRA-005 | Execute approved operations bucket restructure batch. | doc | Operations Bucket Restructure Model | PLN-DRA-005 | Guide/policy/runbook candidate dispositions, tombstones, link sync, validation | Codex | Planned |
+| T-DRA-005 | Execute approved operations bucket restructure batch. | doc | Operations Bucket Restructure Model | PLN-DRA-005 | Full bucket candidate dispositions, `90-knowledge` relocation, link sync, validation | Codex | Planned |
 | T-DRA-006 | Decide validator, CI/CD, QA, and formatting enforcement. | doc/test | CI/CD, QA, and Formatting Contract | PLN-DRA-006 | Stable check implementation or future-hardening decision record | Codex | Planned |
 | T-DRA-007 | Close evidence and residual gaps. | doc | Verification / Success Criteria | PLN-DRA-007 | Final validation matrix, gap register, progress, LLM Wiki, commit trail | Codex | Planned |
 
@@ -82,6 +83,8 @@ document restructure work.
 | `docs/03.specs` files with `status: draft` | Same status scan | 7 |
 | Operations `01-*` bucket directories | `find docs/05.operations/guides docs/05.operations/policies docs/05.operations/runbooks -type d -name '01-*' \| sort \| wc -l` | 3 |
 | Tracked Markdown files directly under operations `01-*` buckets | `git ls-files 'docs/05.operations/guides/01-*/*.md' 'docs/05.operations/policies/01-*/*.md' 'docs/05.operations/runbooks/01-*/*.md' \| wc -l` | 10 |
+| Full-scope operations top-level bucket directories | `find docs/05.operations/guides docs/05.operations/policies docs/05.operations/runbooks -mindepth 1 -maxdepth 1 -type d \| sort \| wc -l` | 42 |
+| Tracked Markdown files directly under full-scope operations buckets | `git ls-files 'docs/05.operations/guides/*/*.md' 'docs/05.operations/policies/*/*.md' 'docs/05.operations/runbooks/*/*.md' \| wc -l` | 262 |
 | Existing `document-restructure` Stage 90 audit files | `git ls-files 'docs/90.references/audits/document-restructure/**' \| wc -l` | 0 |
 | Task evidence file before this batch | `test -f docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md` | Absent |
 
@@ -92,6 +95,13 @@ The current operations `01-*` target buckets are:
 - `docs/05.operations/guides/01-gateway`
 - `docs/05.operations/policies/01-gateway`
 - `docs/05.operations/runbooks/01-gateway`
+
+After the scope correction, `PLN-DRA-005` applies to all
+`docs/05.operations/{guides,policies,runbooks}` top-level buckets:
+`00-workspace`, `01-gateway`, `02-auth`, `03-security`, `04-data`,
+`05-messaging`, `06-observability`, `07-workflow`, `08-ai`, `09-tooling`,
+`10-communication`, `11-laboratory`, `12-infra-net`, and legacy
+`90-knowledge`.
 
 Tracked Markdown files directly under those buckets:
 
@@ -123,7 +133,7 @@ targets. The future audit pack must classify them before any target mutation.
 
 - [x] T-DRA-003 Update Stage 99 support contracts and minimal Stage 00 rules if needed.
 - [x] T-DRA-004 Execute approved `docs/03.specs` archive/remove/relink batch.
-- [ ] T-DRA-005 Execute approved operations bucket restructure batch.
+- [ ] T-DRA-005 Execute approved operations bucket restructure batch across all operations buckets.
 - [ ] T-DRA-006 Decide validator, CI/CD, QA, and formatting enforcement.
 - [ ] T-DRA-007 Close evidence and residual gaps.
 
@@ -195,6 +205,10 @@ targets. The future audit pack must classify them before any target mutation.
 - T-DRA-004 did not move, remove, or relink any `docs/05.operations/**`,
   validator, workflow, provider runtime, runtime infra, secret material, or
   `.env` value.
+- T-DRA-005 scope was corrected from `01-*` only to the full operations bucket
+  taxonomy. The implementation target includes `00-workspace`, `01-*` through
+  `12-*`, and legacy `90-knowledge` for each of guides, policies, and
+  runbooks.
 
 ## Verification Summary
 

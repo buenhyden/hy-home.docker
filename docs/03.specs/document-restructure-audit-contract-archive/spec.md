@@ -11,8 +11,8 @@ status: active
 This specification defines the second document-system restructure wave for
 `hy-home.docker`. The wave combines an evidence-first audit pack with a
 template-contract baseline, then prepares archive-centered restructuring for
-historical `docs/03.specs` work products and historical
-`docs/05.operations/{guides,policies,runbooks}` `01-*` stage buckets.
+historical `docs/03.specs` work products and operations buckets under
+`docs/05.operations/{guides,policies,runbooks}`.
 
 The work is intentionally staged. The design commit creates no target document
 moves, deletions, validator changes, GitHub workflow changes, or runtime
@@ -31,9 +31,9 @@ task evidence, and logical commits.
   documents rather than README catalog text.
 - Define archive-centered treatment for completed historical `docs/03.specs`
   work products.
-- Define archive-centered treatment for historical operations bucket documents
-  under `docs/05.operations/guides`, `docs/05.operations/policies`, and
-  `docs/05.operations/runbooks`.
+- Define archive-centered treatment for operations bucket documents under
+  `docs/05.operations/{guides,policies,runbooks}` across `00-workspace`,
+  `01-*` through `12-*`, and the legacy `90-knowledge` bucket.
 - Remove or archive conflicting and duplicate active documents only when a
   canonical replacement, tombstone, or gap record preserves traceability.
 
@@ -133,7 +133,7 @@ The audit pack will live under
 | `template-contract-drift.md` | Conflicts among templates, support contracts, governance, README catalog text, and legacy sections. |
 | `frontmatter-profile-inventory.md` | Current frontmatter keys and values by document type, including legacy or duplicate-purpose keys. |
 | `sdlc-spec-archive-candidates.md` | `docs/03.specs` active, archive, duplicate, conflict, and evidence-preserve candidates. |
-| `operations-bucket-restructure.md` | `docs/05.operations/{guides,policies,runbooks}` bucket-level archive/consolidation candidates. |
+| `operations-bucket-restructure.md` | `docs/05.operations/{guides,policies,runbooks}` bucket-level archive/consolidation candidates across `00-workspace`, `01-*` through `12-*`, and `90-knowledge`. |
 | `ci-qa-formatting-contract.md` | Current CI/CD, QA, and formatting coverage plus manual-review and future-hardening candidates. |
 | `restructure-gap-register.md` | Stable gap IDs, batch assignments, approvals, validation commands, and residual risks. |
 
@@ -164,17 +164,23 @@ stage authoring policy, or validation expectations change.
 
 ## Operations Bucket Restructure Model
 
-The operations target is limited to:
+The operations target includes the full purpose and service-bucket taxonomy:
 
-- `docs/05.operations/guides/{01-*...}`
-- `docs/05.operations/policies/{01-*...}`
-- `docs/05.operations/runbooks/{01-*...}`
+- `docs/05.operations/guides/{00-workspace,01-*...12-*,90-knowledge}`
+- `docs/05.operations/policies/{00-workspace,01-*...12-*,90-knowledge}`
+- `docs/05.operations/runbooks/{00-workspace,01-*...12-*,90-knowledge}`
 
 The model keeps active canonical guide/policy/runbook documents that map to
 current operations and tracked implementation. Completed historical bucket
 artifacts default to archive. Duplicate or conflicting documents are removed
 from active routing after canonical replacement and traceability evidence are
 recorded.
+
+`90-knowledge` is a legacy operations purpose bucket, not a service tier. LLM
+Wiki maintenance operations belong under `00-workspace` because they govern the
+repository-wide reference index and agent navigation workflow. The reference
+facts remain under `docs/90.references/llm-wiki/`; only operational guide,
+policy, and runbook procedures move into `00-workspace`.
 
 The model does not merge guide, policy, and runbook roles into one document.
 Those roles remain separate because the Stage Authoring Matrix and operations
@@ -265,7 +271,7 @@ The implementation plan should use these batches:
 | Audit pack | Create `docs/90.references/audits/document-restructure/` evidence reports and gap register. | `docs(audits): Add document restructure audit pack` |
 | Template contract | Update Stage 99 support contracts and minimal Stage 00 governance if needed. | `docs(templates): Define archive-centered restructure contracts` |
 | `03.specs` archive | Move/archive/remove approved historical spec work products and sync links. | `docs(specs): Archive historical spec work products` |
-| Operations buckets | Restructure historical `guides`, `policies`, and `runbooks` `01-*` buckets. | `docs(ops): Restructure historical operations buckets` |
+| Operations buckets | Restructure historical `guides`, `policies`, and `runbooks` buckets across `00-workspace`, `01-*` through `12-*`, and legacy `90-knowledge`. | `docs(ops): Restructure historical operations buckets` |
 | Validator/CI/QA | Add only stable repo-local validator rules; record CI hard gates as approved future work if risky. | `test(docs): Enforce restructure documentation contracts` |
 | Closure | Update task evidence, gap register, progress, and LLM Wiki index. | `docs(tasks): Close document restructure remediation` |
 

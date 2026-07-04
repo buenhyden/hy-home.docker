@@ -15,8 +15,8 @@ status: active
 This plan turns the approved Stage 03 document restructure design into
 executable work. The work starts with evidence-only audit reports, then updates
 template and frontmatter contracts, and only then applies archive-centered
-restructuring to historical `docs/03.specs` work products and historical
-`docs/05.operations/{guides,policies,runbooks}` `01-*` buckets.
+restructuring to historical `docs/03.specs` work products and operations
+buckets under `docs/05.operations/{guides,policies,runbooks}`.
 
 This plan does not perform the target restructure by itself. Implementation
 tasks must record approved surfaces, before/after evidence, rollback paths,
@@ -50,7 +50,8 @@ documents as policy owners.
   - Archive completed historical work products by default and remove duplicate
     or conflicting active guidance only with replacement/gap evidence.
   - Keep guide, policy, and runbook roles separate while restructuring
-    historical operations `01-*` buckets.
+    operations buckets across `00-workspace`, `01-*` through `12-*`, and the
+    legacy `90-knowledge` bucket.
   - Record all residual gaps, protected-surface decisions, validation results,
     and follow-up ownership.
 - **In Scope**:
@@ -61,9 +62,10 @@ documents as policy owners.
     stage-authoring rules
   - approved historical work-product moves/removals under `docs/03.specs/**`
   - approved historical bucket moves/removals under
-    `docs/05.operations/guides/{01-*...}`,
-    `docs/05.operations/policies/{01-*...}`, and
-    `docs/05.operations/runbooks/{01-*...}`
+    `docs/05.operations/guides/{00-workspace,01-*...12-*,90-knowledge}`,
+    `docs/05.operations/policies/{00-workspace,01-*...12-*,90-knowledge}`,
+    and
+    `docs/05.operations/runbooks/{00-workspace,01-*...12-*,90-knowledge}`
   - `docs/98.archive/**` archive tombstones and provenance records
   - validators or CI/QA documentation only when audit evidence and approval
     justify them
@@ -99,7 +101,7 @@ documents as policy owners.
 | PLN-DRA-002 | Build the evidence-only audit pack. | `docs/90.references/audits/document-restructure/**`, audit indexes | VAL-DRA-002, VAL-DRA-003 | Audit reports exist, classify every target row with a stable disposition, and do not mutate target-stage documents. |
 | PLN-DRA-003 | Update template, frontmatter, lifecycle, archive, and governance contracts. | Stage 99 support docs; minimal Stage 00 rules if needed | VAL-DRA-003, VAL-DRA-004 | Contract changes define archive-centered restructure rules and keep README policy out of README files. |
 | PLN-DRA-004 | Execute approved `docs/03.specs` archive/remove/relink batch. | `docs/03.specs/**`, `docs/98.archive/**`, related README links | VAL-DRA-002, VAL-DRA-003 | Historical specs are archived/removed only after active links, replacements, and tombstones are synchronized. |
-| PLN-DRA-005 | Execute approved operations bucket restructure batch. | `docs/05.operations/{guides,policies,runbooks}/01-*`, `docs/98.archive/**`, related README links | VAL-DRA-002, VAL-DRA-003 | Guide/policy/runbook roles remain separate and duplicate/conflicting active guidance is removed or archived with evidence. |
+| PLN-DRA-005 | Execute approved operations bucket restructure batch. | `docs/05.operations/{guides,policies,runbooks}/{00-workspace,01-*...12-*,90-knowledge}`, `docs/98.archive/**`, related README links | VAL-DRA-002, VAL-DRA-003 | Guide/policy/runbook roles remain separate, `90-knowledge` operations material moves into `00-workspace`, and duplicate/conflicting active guidance is removed or archived with evidence. |
 | PLN-DRA-006 | Decide validator, CI/CD, QA, and formatting enforcement. | `.github/workflows/**`, `scripts/validation/**`, Stage 99 support, audit reports | VAL-DRA-004, VAL-DRA-005 | Stable local checks are added only with approval; risky CI hard gates remain documented future work. |
 | PLN-DRA-007 | Close evidence and residual gaps. | task evidence, audit gap register, progress memory, LLM Wiki | VAL-DRA-001 through VAL-DRA-005 | Final dispositions, validation results, residual gaps, and commit trail are recorded. |
 
@@ -111,7 +113,7 @@ documents as policy owners.
 | Stage 99 contracts | Approval for template/support contract changes | Do not make README files durable policy owners. |
 | Stage 00 governance | Approval when an agent-facing rule or stage-authoring rule changes | Keep provider-local surfaces as adapters to Stage 00 and Stage 99 owners. |
 | `docs/03.specs` archive/remove | Approval after candidate report identifies exact files and dispositions | Preserve replacement links, tombstones, and gap rows before removing active guidance. |
-| Operations bucket restructure | Approval after candidate report identifies exact guide/policy/runbook files | Do not merge guide, policy, and runbook roles. |
+| Operations bucket restructure | Approval after candidate report identifies exact guide/policy/runbook files across `00-workspace`, `01-*` through `12-*`, and `90-knowledge` | Do not merge guide, policy, and runbook roles. |
 | Validator/CI/QA/formatting | Explicit script/workflow/CI approval | Do not add credential-dependent or noisy hard gates without rollback guidance. |
 | Infra/runtime | Separate infra approval | Do not change Compose, images, hardening scripts, or runtime provider config in documentation batches. |
 
@@ -166,8 +168,9 @@ documents as policy owners.
       and destructive-change rules before archive/remove batches run.
 - [ ] Approved historical `docs/03.specs` targets are archived/removed/relinked
       with tombstone or gap evidence.
-- [ ] Approved operations `01-*` bucket targets are archived/removed/relinked
-      without collapsing guide/policy/runbook roles.
+- [ ] Approved operations bucket targets across `00-workspace`, `01-*` through
+      `12-*`, and `90-knowledge` are archived/removed/relinked without
+      collapsing guide/policy/runbook roles.
 - [ ] Validator, CI/CD, QA, and formatting decisions are either implemented
       with stable checks or recorded as future hardening candidates.
 - [ ] LLM Wiki, progress memory, task evidence, and audit gap register reflect
