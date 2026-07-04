@@ -384,6 +384,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/03.specs/agentic-engineering-implementation-audit-pack/README.md](../../03.specs/agentic-engineering-implementation-audit-pack/README.md) | folder index |
 | [docs/03.specs/agentic-engineering-implementation-audit-pack/spec.md](../../03.specs/agentic-engineering-implementation-audit-pack/spec.md) | Markdown reference |
+| [docs/03.specs/agentic-research-pack-refresh/README.md](../../03.specs/agentic-research-pack-refresh/README.md) | folder index |
+| [docs/03.specs/agentic-research-pack-refresh/spec.md](../../03.specs/agentic-research-pack-refresh/spec.md) | Markdown reference |
 | [docs/03.specs/docs-taxonomy-agent-first-migration/README.md](../../03.specs/docs-taxonomy-agent-first-migration/README.md) | folder index |
 | [docs/03.specs/docs-taxonomy-agent-first-migration/spec.md](../../03.specs/docs-taxonomy-agent-first-migration/spec.md) | Markdown reference |
 | [docs/03.specs/document-restructure-audit-contract-archive/README.md](../../03.specs/document-restructure-audit-contract-archive/README.md) | folder index |

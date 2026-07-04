@@ -739,6 +739,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This correction changed Stage 03 documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Agentic Research Pack Refresh Plan (2026-07-05)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Stage 04 plan | `docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md` | ✅ Added | Added the canonical implementation plan for refreshing the Stage 90 agentic engineering research pack from the Stage 03 spec. |
+| Stage 04 task evidence | `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md` | ✅ Added | Added the canonical execution evidence scaffold so the plan can link to a real task record under repository link contracts. |
+| Plan index | `docs/04.execution/plans/README.md` | ✅ Updated | Added the active plan to the structure and related-document index. |
+| Task index | `docs/04.execution/tasks/README.md` | ✅ Updated | Added the active task evidence record to the structure and related-document index. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Stage 04 planning documentation and progress memory only; no runtime config, Compose, validator, workflow behavior, provider runtime, secret material, `.env`, or remote GitHub state changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
