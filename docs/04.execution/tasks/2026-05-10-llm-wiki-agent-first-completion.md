@@ -65,5 +65,5 @@ This document tracks implementation work for the LLM Wiki generator, generated i
 
 - [Spec](../../03.specs/llm-wiki-agent-first-completion/spec.md)
 - [Plan](../plans/2026-05-10-llm-wiki-agent-first-completion.md)
-- [Maintenance Guide](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)
+- [Maintenance Guide](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)
 - [LLM Wiki References](../../90.references/llm-wiki/README.md)

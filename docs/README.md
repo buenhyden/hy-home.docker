@@ -214,7 +214,7 @@ bash scripts/validation/check-doc-traceability.sh
 | Task evidence | [04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md](04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md) |
 | Repository map | [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/repository-map.md) |
 | Generated index | [90.references/llm-wiki/llm-wiki-index.md](90.references/llm-wiki/llm-wiki-index.md) |
-| Operations guide | [05.operations/guides/90-knowledge/llm-wiki-maintenance.md](05.operations/guides/90-knowledge/llm-wiki-maintenance.md) |
+| Operations guide | [05.operations/guides/00-workspace/llm-wiki-maintenance.md](05.operations/guides/00-workspace/llm-wiki-maintenance.md) |
 
 ## Related Documents
 

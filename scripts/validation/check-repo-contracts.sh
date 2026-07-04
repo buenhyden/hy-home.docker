@@ -3077,7 +3077,7 @@ failures: list[str] = []
 required_files = [
     pathlib.Path("llms.txt"),
     pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
-    pathlib.Path("docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md"),
+    pathlib.Path("docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
     pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md"),
     pathlib.Path("docs/90.references/llm-wiki/repository-map.md"),
@@ -3129,9 +3129,9 @@ readme_checks = {
         "llm-wiki/llm-wiki-index.md",
     ],
     pathlib.Path("docs/05.operations/guides/README.md"): [
-        "90-knowledge/README.md",
+        "00-workspace/README.md",
     ],
-    pathlib.Path("docs/05.operations/guides/90-knowledge/README.md"): [
+    pathlib.Path("docs/05.operations/guides/00-workspace/README.md"): [
         "llm-wiki-maintenance.md",
     ],
     pathlib.Path("scripts/README.md"): [
@@ -3161,7 +3161,7 @@ for path, literals in readme_checks.items():
 wiki_files = [path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")]
 safety_files = [
     llms_path,
-    pathlib.Path("docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md"),
+    pathlib.Path("docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md"),
     *wiki_files,
 ]
 for path in safety_files:

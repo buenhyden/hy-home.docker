@@ -52,9 +52,13 @@ change, or operations bucket restructure begins.
 | `docs/90.references/audits/document-restructure/{template-contract-drift.md,frontmatter-profile-inventory.md,restructure-gap-register.md}` | `PLN-DRA-003` evidence update | Audit register maintenance | Audit pack still showed pre-contract gaps and one `superseded` conflict classification | Gap rows reclassified after the Stage 99 contract update; no target document edited | `git revert` the Stage 99 contract batch commit | Evidence-only updates; no target moves and no secret values |
 | `docs/03.specs/{README.md,document-restructure-audit-contract-archive/{README.md,spec.md},template-system-contract-standardization/spec.md,template-system-reorganization/{README.md,spec.md}}` | `PLN-DRA-004` Stage 03 disposition batch | Stage 03 status and routing cleanup | Stage 03 had 7 draft rows and prior template-system routing still pointed at an implemented predecessor design | Current restructure spec is active, template contract standardization is completed, template reorganization is superseded with replacement pointer, and Stage 03 routing prefers the current template-system spec | `git revert` the Stage 03 disposition batch commit | No archive tombstone, no secret values, no credentials, no tokens, no private keys, no raw logs, no shell history, and no `.env` values |
 | `docs/90.references/audits/document-restructure/{sdlc-spec-archive-candidates.md,restructure-gap-register.md}` | `PLN-DRA-004` evidence update | Stage 03 disposition evidence | Audit pack listed Stage 03 candidates before exact link review | Final disposition table records every reviewed Stage 03 candidate and closes DRA-GAP-005 through DRA-GAP-007 without moving files | `git revert` the Stage 03 disposition batch commit | Evidence-only updates; no target archive or secret values |
+| `docs/05.operations/{guides,policies,runbooks}/90-knowledge/llm-wiki-maintenance.md` | `PLN-DRA-005` operations bucket restructure | Legacy operations bucket leaves | Three active LLM Wiki maintenance leaves lived under the legacy `90-knowledge` bucket | Guide, policy, and runbook leaves moved to matching `00-workspace` role buckets | `git revert` the operations bucket restructure commit | Path metadata and operations text only; no secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
+| `docs/05.operations/{guides,policies,runbooks}/{00-workspace,README.md}` | `PLN-DRA-005` operations bucket restructure | Operations routing and bucket indexes | `00-workspace` indexes did not list LLM Wiki maintenance; parent role indexes listed `90-knowledge` | `00-workspace` indexes list LLM Wiki maintenance; parent role indexes no longer route to `90-knowledge` | `git revert` the operations bucket restructure commit | Routing/index metadata only; no secret values or runtime logs |
+| `docs/05.operations/{guides,policies,runbooks}/90-knowledge/README.md` | `PLN-DRA-005` operations bucket restructure | Empty legacy bucket indexes | Legacy bucket README files routed to the LLM Wiki maintenance leaves | README indexes removed after the leaves moved and no tracked Markdown remained in the legacy bucket | `git revert` the operations bucket restructure commit | Routing/index metadata only; no secret values or runtime logs |
+| `scripts/knowledge/generate-llm-wiki-index.sh` | `PLN-DRA-005` LLM Wiki path contract sync | Generated index required-path contract | Required path and generated related link pointed to the old maintenance guide path | Required path and generated related link point to `guides/00-workspace/llm-wiki-maintenance.md` | `git revert` the operations bucket restructure commit, then rerun the generator | Path metadata only; no secret values or runtime logs |
 | `docs/90.references/llm-wiki/llm-wiki-index.md` | LLM Wiki generated index contract | Tracked path index | Prior generated path index from previous batch | Index regenerated after staging current batch changes | Rerun `bash scripts/knowledge/generate-llm-wiki-index.sh` after revert | Path metadata only; no secret values or raw runtime logs |
-| `docs/00.agent-governance/memory/progress.md` | Governance memory contract | Progress memory | `PLN-DRA-003` not recorded | Stage 99 contract batch recorded after validation | `git revert` the Stage 99 contract batch commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
-| Future target documents | Parent plan approval gates | `docs/05.operations/**`, `docs/98.archive/**`, validators, workflows | No target moves, removals, validator changes, or workflow changes through `PLN-DRA-004` | Future batches must add per-surface evidence before edits | Revert only the future batch commit that introduced the change | Redaction boundary must be restated before touching protected surfaces |
+| `docs/00.agent-governance/memory/progress.md` | Governance memory contract | Progress memory | `PLN-DRA-005` not recorded | Operations bucket restructure recorded after validation | `git revert` the operations bucket restructure commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
+| Future target documents | Parent plan approval gates | `docs/98.archive/**`, validators, workflows, provider runtime, runtime infra | No validator, workflow, provider runtime, runtime infra, secret material, or archive tombstone change through `PLN-DRA-005` | Future batches must add per-surface evidence before edits | Revert only the future batch commit that introduced the change | Redaction boundary must be restated before touching protected surfaces |
 
 ## Task Table
 
@@ -64,7 +68,7 @@ change, or operations bucket restructure begins.
 | T-DRA-002 | Build the evidence-only Stage 90 audit pack. | doc | Audit Pack Design | PLN-DRA-002 | `docs/90.references/audits/document-restructure/**` reports and gap register | Codex | Done |
 | T-DRA-003 | Update template, frontmatter, lifecycle, archive, and governance contracts. | doc | Template Contract Baseline | PLN-DRA-003 | Stage 99 support contract diffs and audit register reclassification | Codex | Done |
 | T-DRA-004 | Execute approved `docs/03.specs` archive/remove/relink batch. | doc | 03.specs Restructure Model | PLN-DRA-004 | Candidate dispositions, status/routing cleanup, no tombstones needed, validation | Codex | Done |
-| T-DRA-005 | Execute approved operations bucket restructure batch. | doc | Operations Bucket Restructure Model | PLN-DRA-005 | Full bucket candidate dispositions, `90-knowledge` relocation, link sync, validation | Codex | Planned |
+| T-DRA-005 | Execute approved operations bucket restructure batch. | doc | Operations Bucket Restructure Model | PLN-DRA-005 | Full bucket candidate dispositions, `90-knowledge` relocation, link sync, validation | Codex | Done |
 | T-DRA-006 | Decide validator, CI/CD, QA, and formatting enforcement. | doc/test | CI/CD, QA, and Formatting Contract | PLN-DRA-006 | Stable check implementation or future-hardening decision record | Codex | Planned |
 | T-DRA-007 | Close evidence and residual gaps. | doc | Verification / Success Criteria | PLN-DRA-007 | Final validation matrix, gap register, progress, LLM Wiki, commit trail | Codex | Planned |
 
@@ -133,7 +137,7 @@ targets. The future audit pack must classify them before any target mutation.
 
 - [x] T-DRA-003 Update Stage 99 support contracts and minimal Stage 00 rules if needed.
 - [x] T-DRA-004 Execute approved `docs/03.specs` archive/remove/relink batch.
-- [ ] T-DRA-005 Execute approved operations bucket restructure batch across all operations buckets.
+- [x] T-DRA-005 Execute approved operations bucket restructure batch across all operations buckets.
 - [ ] T-DRA-006 Decide validator, CI/CD, QA, and formatting enforcement.
 - [ ] T-DRA-007 Close evidence and residual gaps.
 
@@ -146,9 +150,10 @@ targets. The future audit pack must classify them before any target mutation.
 | LLM Wiki freshness | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS: generated LLM Wiki index is fresh. |
 | Provider surfaces | `bash scripts/operations/sync-provider-surfaces.sh --check` | PASS: `sync-provider-surfaces: no drift`. |
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` | PASS: `failures=0`. |
-| Implementation alignment | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `stage_docs_total=556`, links checked `4221`, `archive_direct_links_total=0`, `failures=0`. |
-| Repo contract syntax | `bash -n scripts/validation/check-repo-contracts.sh` | PASS: shell syntax is valid. |
-| Full repo contracts | `bash scripts/validation/check-repo-contracts.sh` | PASS: `changed_template_docs_total=9`, `target_stage_docs_total=620`, `failures=0`. |
+| Implementation alignment | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS: `stage_docs_total=553`, links checked `4205`, `archive_direct_links_total=0`, `operations_service_docs_checked=143`, `failures=0`. |
+| Script syntax | `bash -n scripts/validation/check-repo-contracts.sh`; `bash -n scripts/knowledge/generate-llm-wiki-index.sh`; `bash -n scripts/validation/check-doc-implementation-alignment.sh` | PASS: shell syntax is valid. |
+| Full repo contracts | `bash scripts/validation/check-repo-contracts.sh` | PASS: `changed_template_docs_total=21`, `target_stage_docs_total=617`, `failures=0`. |
+| Graphify refresh | `command -v graphify` | SKIP: Graphify CLI was not available in PATH, so graph refresh was not run. |
 
 ## PLN-DRA-004 Stage 03 Exact Disposition List
 
@@ -170,6 +175,21 @@ targets. The future audit pack must classify them before any target mutation.
 | `docs/03.specs/template-system-contract-standardization/spec.md` | Status changed to `completed` | `evidence-preserve` | Stage 99 support contracts and Stage 04 standardization task |
 | `docs/03.specs/template-system-reorganization/README.md` | Status changed to `superseded`; replacement pointer added | `evidence-preserve` / `superseded` | `docs/03.specs/template-system-contract-standardization/spec.md` |
 | `docs/03.specs/template-system-reorganization/spec.md` | Status changed to `superseded`; replacement pointer added | `evidence-preserve` / `superseded` | `docs/03.specs/template-system-contract-standardization/spec.md` |
+
+## PLN-DRA-005 Operations Exact Disposition List
+
+| Target | Final Action | Disposition | Replacement / Current Pointer |
+| --- | --- | --- | --- |
+| `docs/05.operations/guides/00-workspace/` | Kept active; LLM Wiki maintenance guide added | `active-canonical` | Workspace-level guide bucket |
+| `docs/05.operations/policies/00-workspace/` | Kept active; LLM Wiki maintenance policy added | `active-canonical` | Workspace-level policy bucket |
+| `docs/05.operations/runbooks/00-workspace/` | Kept active; LLM Wiki maintenance runbook added | `active-canonical` | Workspace-level runbook bucket |
+| `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md` | Moved | `historical-archive` / resolved legacy bucket | `docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md` |
+| `docs/05.operations/policies/90-knowledge/llm-wiki-maintenance.md` | Moved | `historical-archive` / resolved legacy bucket | `docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md` |
+| `docs/05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md` | Moved | `historical-archive` / resolved legacy bucket | `docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md` |
+| `docs/05.operations/guides/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/guides/00-workspace/README.md` |
+| `docs/05.operations/policies/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/policies/00-workspace/README.md` |
+| `docs/05.operations/runbooks/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/runbooks/00-workspace/README.md` |
+| `docs/05.operations/{guides,policies,runbooks}/01-*...12-*` | Preserved in place | `active-canonical` | No duplicate or conflict justified a broad service-bucket move in this batch |
 
 ## Implementation Notes
 
@@ -209,17 +229,30 @@ targets. The future audit pack must classify them before any target mutation.
   taxonomy. The implementation target includes `00-workspace`, `01-*` through
   `12-*`, and legacy `90-knowledge` for each of guides, policies, and
   runbooks.
+- T-DRA-005 moved LLM Wiki maintenance guide, policy, and runbook leaves from
+  the legacy `90-knowledge` buckets into matching `00-workspace` buckets.
+- T-DRA-005 removed the three legacy `90-knowledge` bucket README indexes
+  after the move left no tracked Markdown leaf in those buckets.
+- T-DRA-005 preserved all `01-gateway` through `12-infra-net` service buckets
+  in place because the candidate comparison found no broad duplicate or
+  conflict-removal justification.
+- T-DRA-005 updated active links, the LLM Wiki repository map, the generated
+  index generator required path, and role-specific parent README routing to
+  the new `00-workspace` path.
 
 ## Verification Summary
 
 - **Test Commands**: Listed in `## Validation Results`.
-- **Eval Commands**: N/A for task evidence and baseline documentation.
+- **Eval Commands**: `bash scripts/knowledge/generate-llm-wiki-index.sh --check`
+  and doc alignment validation listed in `## Validation Results`.
 - **Logs / Evidence Location**: This task document, parent plan, progress
   memory, and generated LLM Wiki index.
-- **Manual Checks**: Confirmed T-DRA-004 updated Stage 03 status/routing and
-  evidence records only. No archive tombstone was needed; no Stage 05
-  operations document, validator, workflow, provider runtime, runtime infra,
-  secret value, raw log, shell history, or `.env` value was touched.
+- **Manual Checks**: Confirmed T-DRA-005 moved only the legacy LLM Wiki
+  maintenance guide, policy, and runbook leaves into `00-workspace`, removed
+  the empty legacy bucket indexes, and preserved guide/policy/runbook role
+  separation. No archive tombstone, validator, workflow, provider runtime,
+  runtime infra, secret value, raw log, shell history, or `.env` value was
+  touched.
 
 ## Related Documents
 

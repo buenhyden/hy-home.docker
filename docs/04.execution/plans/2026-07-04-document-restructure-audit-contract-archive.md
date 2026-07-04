@@ -161,21 +161,21 @@ documents as policy owners.
 
 ## Completion Criteria
 
-- [ ] Task evidence exists before target-stage mutation begins.
-- [ ] Stage 90 audit reports classify template/frontmatter drift, historical
+- [x] Task evidence exists before target-stage mutation begins.
+- [x] Stage 90 audit reports classify template/frontmatter drift, historical
       specs, operations buckets, CI/QA/formatting coverage, and residual gaps.
-- [ ] Stage 99 support contracts define archive-centered template/frontmatter
+- [x] Stage 99 support contracts define archive-centered template/frontmatter
       and destructive-change rules before archive/remove batches run.
-- [ ] Approved historical `docs/03.specs` targets are archived/removed/relinked
+- [x] Approved historical `docs/03.specs` targets are archived/removed/relinked
       with tombstone or gap evidence.
-- [ ] Approved operations bucket targets across `00-workspace`, `01-*` through
+- [x] Approved operations bucket targets across `00-workspace`, `01-*` through
       `12-*`, and `90-knowledge` are archived/removed/relinked without
       collapsing guide/policy/runbook roles.
 - [ ] Validator, CI/CD, QA, and formatting decisions are either implemented
       with stable checks or recorded as future hardening candidates.
-- [ ] LLM Wiki, progress memory, task evidence, and audit gap register reflect
+- [x] LLM Wiki, progress memory, task evidence, and audit gap register reflect
       the final state.
-- [ ] Required validation commands pass or any residual failure is recorded as
+- [x] Required validation commands pass or any residual failure is recorded as
       out-of-scope with owner and follow-up.
 
 ## Related Documents

@@ -116,5 +116,5 @@ bash scripts/validation/check-doc-traceability.sh
 
 - **Plan**: [../../04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md](../../04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md)
 - **Tasks**: [../../04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md](../../04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md)
-- **Guide**: [../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)
+- **Guide**: [../../05.operations/guides/00-workspace/llm-wiki-maintenance.md](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)
 - **Reference**: [../../90.references/llm-wiki/README.md](../../90.references/llm-wiki/README.md)

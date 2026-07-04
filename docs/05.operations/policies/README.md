@@ -53,7 +53,6 @@ policies/
 ├── 10-communication/
 ├── 11-laboratory/
 ├── 12-infra-net/
-├── 90-knowledge/
 └── README.md
 ```
 
@@ -82,7 +81,6 @@ policies/
 | [10-communication/](./10-communication/README.md) | 10 Communication policy 문서 |
 | [11-laboratory/](./11-laboratory/README.md) | 11 Laboratory policy 문서 |
 | [12-infra-net/](./12-infra-net/README.md) | infra_net IP 관리 policy 문서 |
-| [90-knowledge/](./90-knowledge/README.md) | Knowledge maintenance policy 문서 |
 
 ## Related Documents
 

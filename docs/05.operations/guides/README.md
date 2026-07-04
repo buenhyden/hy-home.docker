@@ -53,7 +53,6 @@ guides/
 ├── 10-communication/
 ├── 11-laboratory/
 ├── 12-infra-net/
-├── 90-knowledge/
 └── README.md
 ```
 
@@ -83,7 +82,6 @@ guides/
 | [10-communication/](./10-communication/README.md) | 10 Communication guide 문서 |
 | [11-laboratory/](./11-laboratory/README.md) | 11 Laboratory guide 문서 |
 | [12-infra-net/](./12-infra-net/README.md) | infra_net 네트워크 표준화 guide 문서 |
-| [90-knowledge/](./90-knowledge/README.md) | Knowledge maintenance guide 문서 |
 
 ## Related Documents
 

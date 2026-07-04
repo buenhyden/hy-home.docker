@@ -69,11 +69,11 @@ corpus.
 
 | Disposition | Count | Summary |
 | --- | ---: | --- |
-| `active-canonical` | 7 | Current template, operations, CI/QA, Stage 03, and current design surfaces remain active. |
+| `active-canonical` | 7 | Current template, operations, CI/QA, Stage 03, and current design surfaces remain active; the operations bucket scope correction is closed. |
 | `historical-archive` | 0 | Stage 03 review found no current conflicting target that should become a tombstone in this batch. |
 | `duplicate-remove` | 0 | No duplicate-remove decision is justified before deeper candidate comparison. |
 | `conflict-remove-or-archive` | 0 | No current row requires conflict removal after the Stage 99 contract update; future target batches may add exact file-level decisions. |
-| `evidence-preserve` | 5 | Historical audit/spec evidence, provider metadata, transitional reference status, Graphify/dependency-audit decisions, and operations bucket evidence need preservation or future approval. |
+| `evidence-preserve` | 5 | Historical audit/spec evidence, provider metadata, transitional reference status, Graphify/dependency-audit decisions, and operations bucket evidence are preserved. |
 | **Total** | **12** | Consolidated rows from `PLN-DRA-002`, reclassified after `PLN-DRA-003` and `PLN-DRA-004`. |
 
 ## Gap Register
@@ -87,8 +87,8 @@ corpus.
 | DRA-GAP-005 | Completed `docs/03.specs` files | Closed: completed Stage 03 specs were reviewed and retained as evidence or active inputs; no archive tombstone was justified. | `evidence-preserve` | Done in `PLN-DRA-004` | [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) |
 | DRA-GAP-006 | Draft `docs/03.specs` files | Closed: current and implemented draft rows were reclassified; the agentic-engineering audit-pack design intentionally remains draft. | `active-canonical` / `evidence-preserve` | Done in `PLN-DRA-004` | [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) |
 | DRA-GAP-007 | Current document restructure spec | Closed: current design spec and README are active for this wave. | `active-canonical` | Done in `PLN-DRA-004` | [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) |
-| DRA-GAP-008 | Operations bucket taxonomy | 42 top-level guide/policy/runbook buckets and 262 direct Markdown files require full-scope candidate comparison, not only `01-gateway`. | `active-canonical` / restructure review | `PLN-DRA-005` | [Operations bucket restructure](./operations-bucket-restructure.md) |
-| DRA-GAP-009 | Operations guide/policy/runbook roles | Leaf docs are active and role-specific; `90-knowledge` is the only legacy bucket-level move candidate identified so far. | `active-canonical` / `historical-archive` candidate | Preserve roles in `PLN-DRA-005`; move LLM Wiki maintenance into `00-workspace`. | [Operations bucket restructure](./operations-bucket-restructure.md) |
+| DRA-GAP-008 | Operations bucket taxonomy | Closed: the full `00-workspace`, `01-*` through `12-*`, and legacy `90-knowledge` surface was reviewed; only the legacy LLM Wiki maintenance bucket required movement. | `active-canonical` / evidence-preserve | Done in `PLN-DRA-005` | [Operations bucket restructure](./operations-bucket-restructure.md) |
+| DRA-GAP-009 | Operations guide/policy/runbook roles | Closed: guide, policy, and runbook roles stayed separate while LLM Wiki maintenance moved from `90-knowledge` into `00-workspace`. | `active-canonical` / resolved historical bucket | Done in `PLN-DRA-005` | [Operations bucket restructure](./operations-bucket-restructure.md) |
 | DRA-GAP-010 | CI/CD and QA gates | Existing gates cover docs and repo contracts; new dependency-audit or Graphify hard gates require separate approval. | `evidence-preserve` / future hardening candidate | `PLN-DRA-006` only if approved. | [CI, QA, and formatting contract](./ci-qa-formatting-contract.md) |
 | DRA-GAP-011 | Workflow and validator surfaces | Workflow/script changes are protected surfaces and should not be bundled with archive moves. | `active-canonical` | Keep separate if `PLN-DRA-006` proceeds. | [CI, QA, and formatting contract](./ci-qa-formatting-contract.md) |
 | DRA-GAP-012 | Historical evidence | Prior audit reports and completed work products should not be rewritten for style alone. | `evidence-preserve` | Preserve unless active-consumption conflict is proven. | [Template contract drift](./template-contract-drift.md), [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) |
@@ -99,7 +99,7 @@ corpus.
 | --- | --- | --- | --- |
 | `PLN-DRA-003` template contracts | DRA-GAP-001, DRA-GAP-002 | Complete | Stage 99 contract diff, provider sync if Stage 00/provider text changes, repo contracts. |
 | `PLN-DRA-004` Stage 03 archive/remove | DRA-GAP-005, DRA-GAP-006, DRA-GAP-007, DRA-GAP-012 | Complete | Link synchronization, status cleanup, no tombstone needed, LLM Wiki, doc implementation alignment. |
-| `PLN-DRA-005` operations bucket restructure | DRA-GAP-008, DRA-GAP-009 | Exact guide/policy/runbook candidate approval | Role separation, operations links, doc traceability, repo contracts. |
+| `PLN-DRA-005` operations bucket restructure | DRA-GAP-008, DRA-GAP-009 | Complete | Role separation, operations links, LLM Wiki regeneration, doc traceability, repo contracts. |
 | `PLN-DRA-006` validator/CI/QA | DRA-GAP-010, DRA-GAP-011 | Workflow/script/validator and Security/QA approval | `bash -n`, local QA gates, repo contracts, rollback guidance. |
 | Reference lifecycle cleanup | DRA-GAP-004 | Not required by current contract | Preserve unless a future Stage 90 archive-policy change requires a targeted diff. |
 
@@ -110,6 +110,7 @@ corpus.
 | 2026-07-04 | DRA-GAP-001, DRA-GAP-002 | Closed by `PLN-DRA-003` | Stage 99 support contract updates in `template-governance.md`, `template-selection.md`, `lifecycle-status.md`, `frontmatter-contract.md`, and `template-contract.md`. | Use `PLN-DRA-004` and `PLN-DRA-005` for exact target archive, remove, or relink work. |
 | 2026-07-04 | DRA-GAP-004 | Reclassified | `lifecycle-status.md` clarifies `superseded`; `roadmap-v1.md` already points to `roadmap.md`. | No current target edit. |
 | 2026-07-04 | DRA-GAP-005, DRA-GAP-006, DRA-GAP-007 | Closed by `PLN-DRA-004` | Stage 03 candidate review updated status/routing for current, completed, draft, and superseded spec surfaces without removing active evidence. | No Stage 03 tombstone created; future archive requires a new conflict or duplicate row. |
+| 2026-07-04 | DRA-GAP-008, DRA-GAP-009 | Closed by `PLN-DRA-005` | LLM Wiki maintenance guide, policy, and runbook moved from legacy `90-knowledge` buckets to `00-workspace`; empty tracked legacy bucket README indexes were removed. | No remaining `90-knowledge` tracked Markdown leaf; future operations cleanup requires a new exact candidate row. |
 
 ## Source Rules
 
@@ -125,7 +126,7 @@ corpus.
 - [Template contract drift](./template-contract-drift.md) - Supplies Stage 99 disposition contract findings.
 - [Frontmatter profile inventory](./frontmatter-profile-inventory.md) - Supplies frontmatter and lifecycle findings.
 - [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) - Supplies Stage 03 candidate findings.
-- [Operations bucket restructure](./operations-bucket-restructure.md) - Supplies operations `01-*` findings.
+- [Operations bucket restructure](./operations-bucket-restructure.md) - Supplies operations bucket findings and `PLN-DRA-005` closure evidence.
 - [CI, QA, and formatting contract](./ci-qa-formatting-contract.md) - Supplies automation findings.
 - [Document restructure implementation plan](../../../04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md) - Supplies batch boundaries.
 - [Document restructure task evidence](../../../04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md) - Supplies execution evidence.

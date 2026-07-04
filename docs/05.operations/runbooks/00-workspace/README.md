@@ -6,7 +6,7 @@
 
 ## Overview
 
-`runbooks/00-workspace`는 `docs/05.operations`의 workspace-level runbook 문서를 관리합니다. harness 검증, release readiness처럼 저장소 전체 작업 흐름에 걸친 절차와 evidence capture 기준을 한 곳에 둡니다.
+`runbooks/00-workspace`는 `docs/05.operations`의 workspace-level runbook 문서를 관리합니다. harness 검증, LLM Wiki freshness, release readiness처럼 저장소 전체 작업 흐름에 걸친 절차와 evidence capture 기준을 한 곳에 둡니다.
 
 ## Audience
 
@@ -36,6 +36,7 @@
 ```text
 runbooks/00-workspace/
 ├── harness-agent-first-engineering-validation.md
+├── llm-wiki-maintenance.md
 ├── release-management.md
 └── README.md
 ```
@@ -50,6 +51,7 @@ runbooks/00-workspace/
 | Path | Purpose |
 | --- | --- |
 | [harness-agent-first-engineering-validation.md](./harness-agent-first-engineering-validation.md) | Harness / Agent-first Engineering validation runbook 문서 |
+| [llm-wiki-maintenance.md](./llm-wiki-maintenance.md) | LLM Wiki maintenance runbook 문서 |
 | [release-management.md](./release-management.md) | Release management runbook 문서 |
 
 ## Related Documents

@@ -144,6 +144,6 @@ status: active
 
 - [Operations index](../../README.md)
 - [Runbooks index](../README.md)
-- [LLM Wiki maintenance runbook](../90-knowledge/llm-wiki-maintenance.md)
+- [LLM Wiki maintenance runbook](./llm-wiki-maintenance.md)
 - [Execution plans](../../../04.execution/plans/README.md)
 - [Execution tasks](../../../04.execution/tasks/README.md)

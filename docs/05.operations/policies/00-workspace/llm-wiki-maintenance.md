@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/policies/90-knowledge/llm-wiki-maintenance.md -->
+<!-- Target: docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md -->
 
 # LLM Wiki Maintenance Operations Policy
 
@@ -41,5 +41,5 @@ status: active
 ## Related Documents
 
 - [Operations index](../../README.md)
-- [Usage guide](../../guides/90-knowledge/llm-wiki-maintenance.md)
-- [Recovery runbook](../../runbooks/90-knowledge/llm-wiki-maintenance.md)
+- [Usage guide](../../guides/00-workspace/llm-wiki-maintenance.md)
+- [Recovery runbook](../../runbooks/00-workspace/llm-wiki-maintenance.md)

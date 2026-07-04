@@ -54,7 +54,6 @@ runbooks/
 ├── 10-communication/
 ├── 11-laboratory/
 ├── 12-infra-net/
-├── 90-knowledge/
 └── README.md
 ```
 
@@ -83,7 +82,6 @@ runbooks/
 | [10-communication/](./10-communication/README.md) | 10 Communication runbook 문서 |
 | [11-laboratory/](./11-laboratory/README.md) | 11 Laboratory runbook 문서 |
 | [12-infra-net/](./12-infra-net/README.md) | infra_net 검증 runbook 문서 |
-| [90-knowledge/](./90-knowledge/README.md) | Knowledge maintenance runbook 문서 |
 
 ## Related Documents
 

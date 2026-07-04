@@ -52,7 +52,7 @@ Keep `llms.txt` and `docs/90.references/llm-wiki/` fresh, safe, and aligned with
 
 - `docs/90.references/llm-wiki/llm-wiki-index.md`
 - `docs/90.references/llm-wiki/repository-map.md`
-- `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md`
+- `docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md`
 
 ## Related Documents
 
@@ -60,4 +60,4 @@ Keep `llms.txt` and `docs/90.references/llm-wiki/` fresh, safe, and aligned with
 - `../../subagent-protocol.md`
 - `../README.md`
 - `../../../90.references/llm-wiki/README.md`
-- `../../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md`
+- `../../../05.operations/guides/00-workspace/llm-wiki-maintenance.md`

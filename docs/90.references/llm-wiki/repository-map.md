@@ -58,7 +58,7 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 | Docker reference context | [docs/90.references/data/docker/README.md](../data/docker/README.md) | stable Docker interpretation rules |
 | LLM entrypoint | [llms.txt](../../../llms.txt) | thin machine-readable entrypoint |
 | LLM generated index | [llm-wiki-index.md](./llm-wiki-index.md) | generated tracked repo-local path index |
-| LLM maintenance guide | [docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md) | refresh and validation procedure |
+| LLM maintenance guide | [docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md) | refresh and validation procedure |
 
 ## Source Rules
 
@@ -88,7 +88,7 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 
 - [LLM Wiki references](./README.md)
 - [LLM Wiki generated index](./llm-wiki-index.md)
-- [LLM Wiki maintenance guide](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)
+- [LLM Wiki maintenance guide](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)
 - [LLM entrypoint](../../../llms.txt)
 - [90.references](../README.md)
 - [docs index](../../README.md)

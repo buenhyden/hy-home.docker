@@ -379,6 +379,18 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | External-source basis        | CommonMark, GFM, YAML/frontmatter, JSON Schema, Diataxis, Good Docs, SDLC/SSDF | ✅ Recorded | Source-backed rationale is captured in the spec and will move into `docs/99.templates/support/external-source-rationale.md` during implementation. |
 | Repo contract validation gap | Infra hardening and tech-stack image drift      | Gap      | `check-repo-contracts.sh` still fails outside this design scope on Keycloak hardening image mismatch and existing `infra/tech-stack.versions.json` image drift. |
 
+## Document Restructure Operations Bucket Batch (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Scope correction | `PLN-DRA-005` | ✅ Done | Operations restructure scope now covers `00-workspace`, `01-*` through `12-*`, and legacy `90-knowledge`, not only `01-gateway`. |
+| LLM Wiki operations relocation | `docs/05.operations/{guides,policies,runbooks}` | ✅ Done | Moved LLM Wiki maintenance guide, policy, and runbook leaves from legacy `90-knowledge` buckets into matching `00-workspace` buckets. |
+| Legacy bucket indexes | `docs/05.operations/*/90-knowledge/README.md` | ✅ Removed | Removed the three tracked legacy bucket README indexes after no tracked Markdown leaves remained in the bucket. |
+| Service buckets | `01-gateway` through `12-infra-net` | ✅ Preserved | Candidate comparison found no broad duplicate or conflict-removal justification for service buckets in this batch. |
+| LLM Wiki path contract | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/` | ✅ Updated | Required path, repository map, README, and generated index now point to the `00-workspace` maintenance guide. |
+| Evidence | Spec, plan, task, audit gap register | ✅ Updated | `DRA-GAP-008` and `DRA-GAP-009` closed by `PLN-DRA-005`; task evidence records exact dispositions and rollback guidance. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass. Graphify refresh skipped because the CLI was unavailable. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md -->
+<!-- Target: docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md -->
 
 # LLM Wiki Maintenance Usage Guide
 
@@ -9,7 +9,7 @@ status: active
 
 ### Overview
 
-이 가이드는 `guides/90-knowledge/llm-wiki-maintenance.md` 대상의 사용 맥락, 설정 확인 방법, 안전한 운영 진입점을 설명한다.
+이 가이드는 `guides/00-workspace/llm-wiki-maintenance.md` 대상의 사용 맥락, 설정 확인 방법, 안전한 운영 진입점을 설명한다.
 
 이 문서는 LLM Wiki를 언제 확인하거나 갱신해야 하는지 판단할 때 사용한다. 반복 실행 절차는 runbook으로 넘기고, 운영 통제 기준은 policy로 넘긴다.
 
@@ -61,10 +61,10 @@ status: active
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/90-knowledge/llm-wiki-maintenance.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/00-workspace/llm-wiki-maintenance.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../README.md)
-- [Operations policy](../../policies/90-knowledge/llm-wiki-maintenance.md)
-- [Recovery runbook](../../runbooks/90-knowledge/llm-wiki-maintenance.md)
+- [Operations policy](../../policies/00-workspace/llm-wiki-maintenance.md)
+- [Recovery runbook](../../runbooks/00-workspace/llm-wiki-maintenance.md)

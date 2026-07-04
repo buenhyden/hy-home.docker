@@ -6,7 +6,7 @@
 
 ## Overview
 
-`policies/00-workspace`는 `docs/05.operations`의 workspace-level policy 문서를 관리합니다. harness 운영, 공통 최적화 예외, 인프라 서비스 최적화 catalog처럼 저장소 전체 운영 기준에 가까운 policy를 한 곳에 둡니다.
+`policies/00-workspace`는 `docs/05.operations`의 workspace-level policy 문서를 관리합니다. harness 운영, 공통 최적화 예외, LLM Wiki maintenance controls, 인프라 서비스 최적화 catalog처럼 저장소 전체 운영 기준에 가까운 policy를 한 곳에 둡니다.
 
 ## Audience
 
@@ -38,6 +38,7 @@ policies/00-workspace/
 ├── common-optimizations-template-exceptions.md
 ├── harness-agent-first-engineering.md
 ├── infra-service-optimization-catalog.md
+├── llm-wiki-maintenance.md
 └── README.md
 ```
 
@@ -53,6 +54,7 @@ policies/00-workspace/
 | [common-optimizations-template-exceptions.md](./common-optimizations-template-exceptions.md) | Common optimizations template exceptions policy 문서 |
 | [harness-agent-first-engineering.md](./harness-agent-first-engineering.md) | Harness / Agent-first Engineering policy 문서 |
 | [infra-service-optimization-catalog.md](./infra-service-optimization-catalog.md) | Infra service optimization catalog policy 문서 |
+| [llm-wiki-maintenance.md](./llm-wiki-maintenance.md) | LLM Wiki maintenance policy 문서 |
 
 ## Related Documents
 

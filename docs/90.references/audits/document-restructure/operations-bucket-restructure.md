@@ -10,7 +10,7 @@ status: active
 
 This report inventories the current operations buckets under guides, policies,
 and runbooks. It records candidate evidence for an operations restructure batch
-without moving or rewriting operations content in the audit section.
+and the `PLN-DRA-005` implementation result after the approved move.
 
 ## Purpose
 
@@ -58,6 +58,8 @@ batch. It is not an operations policy, guide, or runbook.
 | DRA-OPS-003 | Bucket file-count scan by role and bucket | `00-workspace`, `01-*` through `12-*`, and `90-knowledge` are present in all three role buckets. | Role classification. |
 | DRA-OPS-004 | Reads of operations templates and Stage Authoring Matrix | Guide, policy, and runbook roles have distinct template expectations. | Prevents role collapse. |
 | DRA-OPS-005 | Reads of `90-knowledge/llm-wiki-maintenance.md` guide, policy, and runbook | The content is repository-wide LLM Wiki operation, not a service-tier `90` domain. | Identifies move target. |
+| DRA-OPS-006 | `git mv` of the three LLM Wiki maintenance leaves into `00-workspace` | Guide, policy, and runbook roles stayed separate while the legacy bucket content moved into the workspace bucket. | Implementation evidence. |
+| DRA-OPS-007 | Link scan, LLM Wiki regeneration, and repo validators | Active references now point to `00-workspace`; legacy bucket README indexes were removed after the bucket became empty. | Closure evidence. |
 
 ## Bucket Inventory
 
@@ -90,10 +92,10 @@ batch. It is not an operations policy, guide, or runbook.
 
 | File | Role | Current Evidence | Preliminary Disposition | Future Batch |
 | --- | --- | --- | --- | --- |
-| `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md` | Guide leaf | `status: active`; workspace-wide LLM Wiki maintenance usage guide. | move to `guides/00-workspace/` | `PLN-DRA-005` |
-| `docs/05.operations/policies/90-knowledge/llm-wiki-maintenance.md` | Policy leaf | `status: active`; workspace-wide LLM Wiki maintenance controls. | move to `policies/00-workspace/` | `PLN-DRA-005` |
-| `docs/05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md` | Runbook leaf | `status: active`; workspace-wide LLM Wiki maintenance procedure. | move to `runbooks/00-workspace/` | `PLN-DRA-005` |
-| `docs/05.operations/*/90-knowledge/README.md` | Bucket indexes | README profile headings for a legacy knowledge bucket. | remove after move if empty | `PLN-DRA-005` |
+| `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md` | Guide leaf | `status: active`; workspace-wide LLM Wiki maintenance usage guide. | Moved to `guides/00-workspace/llm-wiki-maintenance.md`. | Done in `PLN-DRA-005` |
+| `docs/05.operations/policies/90-knowledge/llm-wiki-maintenance.md` | Policy leaf | `status: active`; workspace-wide LLM Wiki maintenance controls. | Moved to `policies/00-workspace/llm-wiki-maintenance.md`. | Done in `PLN-DRA-005` |
+| `docs/05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md` | Runbook leaf | `status: active`; workspace-wide LLM Wiki maintenance procedure. | Moved to `runbooks/00-workspace/llm-wiki-maintenance.md`. | Done in `PLN-DRA-005` |
+| `docs/05.operations/*/90-knowledge/README.md` | Bucket indexes | README profile headings for a legacy knowledge bucket. | Removed after the leaf move left the tracked bucket empty. | Done in `PLN-DRA-005` |
 
 ## Findings
 
@@ -102,7 +104,28 @@ batch. It is not an operations policy, guide, or runbook.
 | DRA-OPS-001 | Operations bucket taxonomy | The actual restructure surface is all 42 top-level role buckets, not only `01-gateway`. | `active-canonical` / restructure review | `PLN-DRA-005` |
 | DRA-OPS-002 | Guide/policy/runbook leaves | Service and workspace leaf documents are active and role-specific; no broad duplicate-remove action is justified without per-file comparison. | `active-canonical` | No broad move in audit pack. |
 | DRA-OPS-003 | Bucket README files | Bucket READMEs are index profiles and may omit top lifecycle frontmatter under current routing. | `active-canonical` | Preserve unless future contract changes. |
-| DRA-OPS-004 | `90-knowledge` bucket | LLM Wiki maintenance is workspace-level operations material and should move into `00-workspace`; reference facts remain under `docs/90.references/llm-wiki/`. | `historical-archive` / integration candidate | `PLN-DRA-005` |
+| DRA-OPS-004 | `90-knowledge` bucket | LLM Wiki maintenance is workspace-level operations material and should move into `00-workspace`; reference facts remain under `docs/90.references/llm-wiki/`. | Closed: moved to `00-workspace` and removed empty tracked legacy indexes. | Done in `PLN-DRA-005` |
+
+## PLN-DRA-005 Implementation Results
+
+| Area | Final Action | Evidence |
+| --- | --- | --- |
+| Guide leaf | `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md` moved to `docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md`. | Target comment, parent README, active links, and LLM Wiki references now use the `00-workspace` path. |
+| Policy leaf | `docs/05.operations/policies/90-knowledge/llm-wiki-maintenance.md` moved to `docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md`. | Policy role stayed separate from the guide and runbook. |
+| Runbook leaf | `docs/05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md` moved to `docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md`. | Runbook now links to its guide and policy as canonical references. |
+| Legacy bucket indexes | `docs/05.operations/{guides,policies,runbooks}/90-knowledge/README.md` removed. | No tracked Markdown files remain in the legacy bucket after the move. |
+| Service buckets | `01-gateway` through `12-infra-net` preserved in place. | No broad move, merge, or archive was justified by the candidate comparison. |
+| Workspace bucket | `00-workspace` now owns the LLM Wiki maintenance guide, policy, and runbook. | Role-specific `00-workspace` README files list the new leaves. |
+
+Post-batch path evidence:
+
+- `docs/05.operations/{guides,policies,runbooks}/90-knowledge/` has no tracked
+  Markdown leaf after the implementation batch.
+- The existing Git pathspec count for operations bucket Markdown files drops
+  from 262 to 259 because the three legacy bucket README indexes were removed
+  while the three LLM Wiki maintenance leaves were moved.
+- Direct top-level operations bucket README files now count 39 in the working
+  tree: 13 buckets for each of guides, policies, and runbooks.
 
 ## Source Rules
 

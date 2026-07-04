@@ -1,13 +1,13 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md -->
+<!-- Target: docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md -->
 
 # LLM Wiki Maintenance Runbook
 
 ## Overview
 
-이 런북은 `runbooks/90-knowledge/llm-wiki-maintenance.md` 대상의 반복 실행 절차, 검증 evidence, 실패 시 중단 기준을 정의한다.
+이 런북은 `runbooks/00-workspace/llm-wiki-maintenance.md` 대상의 반복 실행 절차, 검증 evidence, 실패 시 중단 기준을 정의한다.
 
 ## LLM Wiki Maintenance Runbook Procedure
 
@@ -21,8 +21,8 @@ status: active
 ### Canonical References
 
 - [Operations index](../../README.md)
-- **Policy**: N/A — no upstream source
-- **Guide**: N/A — no upstream source
+- **Policy**: [LLM Wiki maintenance policy](../../policies/00-workspace/llm-wiki-maintenance.md)
+- **Guide**: [LLM Wiki maintenance guide](../../guides/00-workspace/llm-wiki-maintenance.md)
 
 ## When to Use
 
@@ -121,5 +121,5 @@ status: active
 ## Related Documents
 
 - [Operations index](../../README.md)
-- [Usage guide](../../guides/90-knowledge/llm-wiki-maintenance.md)
-- [Operations policy](../../policies/90-knowledge/llm-wiki-maintenance.md)
+- [Usage guide](../../guides/00-workspace/llm-wiki-maintenance.md)
+- [Operations policy](../../policies/00-workspace/llm-wiki-maintenance.md)

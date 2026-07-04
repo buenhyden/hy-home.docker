@@ -6,7 +6,7 @@
 
 ## Overview
 
-`guides/00-workspace`는 `docs/05.operations`의 workspace-level guide 문서를 관리합니다. 로컬 개발 준비, env/secrets metadata 비교, agent-first 운영 맥락, 신규 서비스 온보딩처럼 특정 서비스 leaf보다 저장소 전체 운영 흐름에 가까운 사용 가이드를 한 곳에 둡니다.
+`guides/00-workspace`는 `docs/05.operations`의 workspace-level guide 문서를 관리합니다. 로컬 개발 준비, env/secrets metadata 비교, agent-first 운영 맥락, LLM Wiki maintenance, 신규 서비스 온보딩처럼 특정 서비스 leaf보다 저장소 전체 운영 흐름에 가까운 사용 가이드를 한 곳에 둡니다.
 
 ## Audience
 
@@ -38,6 +38,7 @@ guides/00-workspace/
 ├── developer-setup.md
 ├── env-key-comparison.md
 ├── harness-agent-first-engineering.md
+├── llm-wiki-maintenance.md
 ├── new-service-onboarding.md
 ├── sensitive-env-vars-comparison.md
 └── README.md
@@ -55,6 +56,7 @@ guides/00-workspace/
 | [developer-setup.md](./developer-setup.md) | Developer setup guide 문서 |
 | [env-key-comparison.md](./env-key-comparison.md) | `.env.example` vs `.env` metadata comparison guide 문서 |
 | [harness-agent-first-engineering.md](./harness-agent-first-engineering.md) | Harness / Agent-first Engineering guide 문서 |
+| [llm-wiki-maintenance.md](./llm-wiki-maintenance.md) | LLM Wiki maintenance guide 문서 |
 | [new-service-onboarding.md](./new-service-onboarding.md) | New service onboarding guide 문서 |
 | [sensitive-env-vars-comparison.md](./sensitive-env-vars-comparison.md) | Sensitive env vars metadata comparison guide 문서 |
 

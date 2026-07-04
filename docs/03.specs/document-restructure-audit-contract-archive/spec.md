@@ -182,6 +182,12 @@ repository-wide reference index and agent navigation workflow. The reference
 facts remain under `docs/90.references/llm-wiki/`; only operational guide,
 policy, and runbook procedures move into `00-workspace`.
 
+The approved `PLN-DRA-005` implementation closes this legacy-bucket case by
+moving the LLM Wiki maintenance guide, policy, and runbook into `00-workspace`
+and removing the empty tracked `90-knowledge` bucket indexes. Service buckets
+from `01-gateway` through `12-infra-net` remain active in place until a future
+exact candidate row proves a duplicate or conflict.
+
 The model does not merge guide, policy, and runbook roles into one document.
 Those roles remain separate because the Stage Authoring Matrix and operations
 templates give them different purposes.

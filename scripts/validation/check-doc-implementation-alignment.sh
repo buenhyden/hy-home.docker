@@ -169,7 +169,6 @@ NON_SERVICE_STEMS = {
 NON_SERVICE_TIERS = {
     "00-workspace",
     "12-infra-net",
-    "90-knowledge",
 }
 
 
