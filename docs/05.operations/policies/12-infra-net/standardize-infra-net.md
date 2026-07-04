@@ -36,21 +36,19 @@ status: active
 
 ## Verification
 
-- `docker compose config` 명령을 통한 구문 검증.
-- `grep -r "ipv4_address" infra/` 명령을 통한 모든 서비스의 고정 IP 상태 확인.
-- `docker network inspect infra_net` 명령을 통한 런타임 IP 할당 비교.
+- `bash scripts/validation/validate-docker-compose.sh`를 통한 root compose 구조 검증.
+- 변경한 tier profile은 `HYHOME_COMPOSE_PROFILES`로 지정해 동일 검증을 반복한다.
+- `rg -n "ipv4_address:|infra_net:" infra docker-compose.yml`를 통한 고정 IP와 network 선언 상태 확인.
+- 실행 중인 승인된 환경에서는 `docker network inspect infra_net` 결과를 authoritative mapping과 비교한다.
 
 ## Review Cadence
 
-- **Monthly**: IP 맵핑 테이블(Sheet/Doc)과 현재 Compose 파일 사이의 실태 점검 및 업데이트.
-
-## AI Agent Policy Section (If Applicable)
-
-- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
-- **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
-- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
-- **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
+- **Monthly**: authoritative mapping table과 현재 Compose 파일 사이의 실태를 점검한다.
+- **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
 
 ## Related Documents
 
 - [Operations index](../../README.md)
+- [Usage guide](../../guides/12-infra-net/standardize-infra-net.md)
+- [Recovery runbook](../../runbooks/12-infra-net/standardize-infra-net.md)
+- [infra_net spec](../../../03.specs/standardize-infra-net/spec.md)

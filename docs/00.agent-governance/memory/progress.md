@@ -720,6 +720,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed laboratory documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
 
+## Infra Net Operations Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Guide validation boundary | `docs/05.operations/guides/12-infra-net/standardize-infra-net.md` | ✅ Updated | Replaced bare `docker compose config` guidance with repository-root compose validation and profile-specific evidence commands, and normalized the audience and related policy handoff. |
+| Policy profile cleanup | `docs/05.operations/policies/12-infra-net/standardize-infra-net.md` | ✅ Updated | Removed the legacy AI-agent policy section and replaced generic compose/grep checks with root validation, profile expansion, `rg` inventory, and approved runtime inspection evidence. |
+| Runbook procedure cleanup | `docs/05.operations/runbooks/12-infra-net/standardize-infra-net.md` | ✅ Updated | Aligned the runbook with the operations template by using one scoped procedure, root/profile validation steps, non-destructive evidence capture, Git-managed rollback boundaries, and explicit escalation for runtime network changes. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed infra_net operations documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, stale marker scan, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

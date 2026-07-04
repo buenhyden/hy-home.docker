@@ -19,7 +19,7 @@ status: active
 
 - Developer
 - Operator
-- Agent-tuner
+- AI Agent
 
 ### Purpose
 
@@ -49,17 +49,20 @@ status: active
 3. **루트 Docker Compose 수정**:
    - 프로젝트 루트의 `docker-compose.yml` 내 `include:` 섹션에서 해당 파일이 주석 처리되어 있지 않은지 확인한다.
 4. **구성 검증**:
-   - `docker compose config`를 실행하여 YAML 구문에 오류가 없는지 최종 확인한다.
+   - repository root에서 `bash scripts/validation/validate-docker-compose.sh`를 실행하여 기본 compose 구조와 root `infra_net` 컨텍스트를 검증한다.
+   - 특정 tier profile을 변경한 경우 해당 profile을 `HYHOME_COMPOSE_PROFILES`에 지정해 동일 검증을 반복한다.
 
 ### Common Pitfalls
 
-- **IP Conflict**: 이미 할당된 IP를 중복 부여하지 않도록 `grep` 등으로 전체 조사를 수행해야 함.
+- **IP Conflict**: 이미 할당된 IP를 중복 부여하지 않도록 `rg -n "ipv4_address:" infra docker-compose.yml`로 전체 조사를 수행해야 함.
 - **Indentation Error**: YAML 딕셔너리 구조에서의 들여쓰기 오류 주의.
 - **Network Scope**: 지정된 주소 대역(`172.19.0.0/16`) 외부의 IP를 입력할 경우 배포 실패.
 
 ## Common Checks
 
-- `docker compose config`
+- `bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES="workflow" bash scripts/validation/validate-docker-compose.sh` (변경한 profile 값으로 대체)
+- `rg -n "ipv4_address:|infra_net:" infra docker-compose.yml`
 
 ## Runbook Handoff
 
@@ -69,4 +72,5 @@ status: active
 
 - [Operations index](../../README.md)
 - [infra_net spec](../../../03.specs/standardize-infra-net/spec.md)
+- [Operations policy](../../policies/12-infra-net/standardize-infra-net.md)
 - [Recovery runbook](../../runbooks/12-infra-net/standardize-infra-net.md)
