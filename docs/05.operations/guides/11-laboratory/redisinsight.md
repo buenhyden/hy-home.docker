@@ -10,10 +10,6 @@ status: active
 ### Overview
 
 이 문서는 RedisInsight를 사용하여 Redis 데이터를 탐색하고 분석하는 방법을 설명한다. 키 브라우징, 메모리 분석기, 그리고 웹 기반 CLI 사용 절차를 포함한다.
->
-> Redis 데이터 시각화 및 분석 도구 활용 가이드.
-
----
 
 ### Usage Type
 
@@ -68,7 +64,8 @@ status: active
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
+- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
 
 ## Runbook Handoff
 

@@ -5,10 +5,6 @@ status: active
 
 # Open Notebook Operations Policy
 
-> Operational policy for Open Notebook and its SurrealDB dependency in the laboratory tier.
-
----
-
 ## Overview
 
 이 문서는 `open-notebook` 서비스의 운영 정책을 정의한다. Open Notebook은 노트북형 지식 작업과 로컬 실험을 지원하지만 인증, secret, 데이터 볼륨, Traefik 노출 경계를 지켜야 하는 관리 계층 서비스다.
@@ -52,13 +48,6 @@ status: active
 
 - 월 1회
 - Open Notebook 이미지, secret, Traefik middleware, SurrealDB schema/storage 변경 시 즉시
-
-## AI Agent Policy Section
-
-- **Model / Prompt Change Process**: Open Notebook 내부 AI 기능이나 외부 모델 연결을 추가하기 전 별도 Spec 또는 Operation 문서를 작성한다.
-- **Eval / Guardrail Threshold**: 외부 모델/API 연동은 prompt injection, secret leakage, credential persistence 검토를 통과해야 한다.
-- **Log / Trace Retention**: 서비스 로그에는 secret 값을 남기지 않고, 장애 분석에는 path, status, container state만 기록한다.
-- **Safety Incident Thresholds**: secret 노출, 공개 route 노출, 데이터 볼륨 손상은 즉시 incident 후보로 기록한다.
 
 ## Related Documents
 

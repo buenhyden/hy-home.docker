@@ -710,6 +710,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed communication documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
 
+## Laboratory Tier Operations Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Guide marker cleanup | `docs/05.operations/guides/11-laboratory/{dashboard,dozzle,portainer,redisinsight}.md` | ✅ Updated | Replaced template residue common-check text with concrete 11-laboratory hardening/runtime checks and removed stale blockquote usage fragments. |
+| Policy profile cleanup | `docs/05.operations/policies/11-laboratory/open-notebook.md` | ✅ Updated | Removed the legacy AI-agent policy section and stale policy tagline while preserving Open Notebook, SurrealDB, secret, route, and persistence controls. |
+| Infra README residue | `infra/11-laboratory/{dashboard,open-notebook,portainer,redisinsight}/README.md` | ✅ Updated | Normalized guide/policy/runbook labels and replaced log grep/order residue with `docker logs --tail` examples. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed laboratory documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

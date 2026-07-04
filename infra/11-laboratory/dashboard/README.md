@@ -88,7 +88,7 @@ dashboard/
 - Run `bash scripts/hardening/check-all-hardening.sh 11-laboratory` after any Compose or config reference changes.
 - Run `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh` for root-active laboratory profile validation.
 - Verify UI connectivity by accessing the dashboard URL and confirming all service links resolve correctly.
-- Confirm service health indicators by checking `docker logs homer --tail 100` after config changes when the optional service is running.
+- Confirm service health indicators by checking `docker logs --tail=100 homer` after config changes when the optional service is running.
 - Verify that all referenced service endpoints are reachable from the dashboard container.
 
 ## Troubleshooting
@@ -98,7 +98,7 @@ dashboard/
 
 ## Related Documents
 
-- **Guide**: [Dashboard Management Guide](../../../docs/05.operations/guides/11-laboratory/dashboard.md)
-- **Policy**: [Laboratory Operations Policy](../../../docs/05.operations/policies/11-laboratory/dashboard.md)
-- **Runbook**: [Dashboard Recovery Runbook](../../../docs/05.operations/runbooks/11-laboratory/dashboard.md)
+- **Guide**: [Dashboard usage guide](../../../docs/05.operations/guides/11-laboratory/dashboard.md)
+- **Policy**: [Dashboard operations policy](../../../docs/05.operations/policies/11-laboratory/dashboard.md)
+- **Runbook**: [Dashboard recovery runbook](../../../docs/05.operations/runbooks/11-laboratory/dashboard.md)
 - **Official**: [Homer Documentation](https://github.com/bastienwirtz/homer)

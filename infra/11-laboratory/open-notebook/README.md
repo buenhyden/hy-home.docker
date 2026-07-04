@@ -78,7 +78,7 @@ open-notebook/
 - Run `bash scripts/hardening/check-all-hardening.sh 11-laboratory` after any Compose or config reference changes.
 - Run `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh` for root-active laboratory profile validation.
 - Verify kernel connectivity by opening a notebook and confirming the kernel starts without errors.
-- Confirm persistence by checking `docker logs open-notebook | grep -i 'error\|warn'` after config changes.
+- Confirm persistence by checking `docker logs --tail=200 open-notebook` after config changes.
 - Verify the notebook data volume is mounted and notebooks persist across container restarts.
 
 ## Troubleshooting

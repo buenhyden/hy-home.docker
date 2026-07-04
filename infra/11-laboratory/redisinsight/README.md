@@ -93,6 +93,6 @@ labels:
 
 ## Related Documents
 
-- **System Guide**: [RedisInsight Guide](../../../docs/05.operations/guides/11-laboratory/redisinsight.md)
-- **Operations Policy**: [RedisInsight Operations](../../../docs/05.operations/policies/11-laboratory/redisinsight.md)
-- **Runbook**: [RedisInsight Runbook](../../../docs/05.operations/runbooks/11-laboratory/redisinsight.md)
+- **Guide**: [RedisInsight usage guide](../../../docs/05.operations/guides/11-laboratory/redisinsight.md)
+- **Policy**: [RedisInsight operations policy](../../../docs/05.operations/policies/11-laboratory/redisinsight.md)
+- **Runbook**: [RedisInsight recovery runbook](../../../docs/05.operations/runbooks/11-laboratory/redisinsight.md)

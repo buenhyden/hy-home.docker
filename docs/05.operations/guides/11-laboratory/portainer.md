@@ -10,10 +10,6 @@ status: active
 ### Overview
 
 이 문서는 Portainer를 사용하여 로컬 및 원격 Docker 환경을 관리하는 방법을 설명한다. 웹 인터페이스를 통한 실시간 모니터링, 로그 분석, 볼륨/네트워크 관리 절차를 포함한다.
->
-> Docker 환경 관리 및 컨테이너 오케스트레이션 UI 활용 가이드.
-
----
 
 ### Usage Type
 
@@ -67,7 +63,8 @@ status: active
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
+- Optional include를 활성화한 runtime에서 `docker logs --tail=100 portainer`
 
 ## Runbook Handoff
 
