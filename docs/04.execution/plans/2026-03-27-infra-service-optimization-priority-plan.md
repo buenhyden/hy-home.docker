@@ -15,6 +15,19 @@ This document is the integrated implementation plan that fixes execution priorit
 The scope is documentation-based implementation planning; actual Compose changes are performed in the later `docs/04.execution/tasks` stage.
 The plan structure is Quick Wins (30 days) plus Quarterly work for the next two quarters: 2026 Q2 and 2026 Q3.
 
+## Status Boundary
+
+This plan intentionally remains `status: active` as an umbrella roadmap and
+priority contract. The checked `Completion Criteria` below mean the plan
+document itself was authored, indexed, and verified; they do not mean every
+2026 Q2/Q3 roadmap deliverable has been fully executed or superseded.
+
+The plan can move to `status: completed` only when a later task record proves
+that the remaining quarterly roadmap and operations-standard codification work
+has either been implemented, superseded by a newer active roadmap, or explicitly
+retired with replacement evidence. Until then, this file remains the active
+parent plan for historical 2026-03 optimization and hardening child plans.
+
 ## Context
 
 - Baseline document: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)

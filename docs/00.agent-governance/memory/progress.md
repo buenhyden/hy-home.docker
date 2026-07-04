@@ -458,6 +458,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, secrets, remote GitHub, provider runtime, implementation files | ✅ Preserved | This sync changed task/index/progress evidence only and did not modify runtime infrastructure, validators, workflows, secrets, `.env`, provider adapters, or archive tombstones. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Infra Optimization Priority Plan Status Boundary (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Active umbrella plan | `docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md` | ✅ Clarified | Kept `status: active` by design and added a status boundary explaining that checked completion criteria cover plan authoring/indexing, while Q2/Q3 roadmap and operations-standard codification closure still need later task or replacement evidence. |
+| Stage 04 plan index | `docs/04.execution/plans/README.md` | ✅ Updated | Added the missing explicit route for the active infra service optimization priority plan in both the structure tree and related-documents list. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed plan/index/progress documentation only and did not modify runtime infrastructure, validators, CI workflows, provider runtime, secret material, `.env`, or archive tombstones. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
