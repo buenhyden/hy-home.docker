@@ -3,138 +3,126 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/06-observability/loki.md -->
 
-# Loki Runbook
+# Loki Readiness and Storage Recovery Runbook
 
-## Overview
+## Loki Readiness and Storage Recovery Procedure
 
-이 런북은 `docs/05.operations/runbooks/06-observability/loki.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+> Scope: Loki readiness checks, Alloy ingestion evidence, MinIO storage/retention verification, restart, and config rollback.
 
-## Loki Recovery Procedure
+### Overview
 
-> Critical recovery procedures for Loki logging service.
-
-### 1. Service Health Check
-
-Verify if Loki is healthy and ready to receive logs:
-
-```bash
-
-## Check readiness
-wget -qO- http://loki:3100/ready
-
-## Check service status (docker compose)
-docker compose ps loki
-```
-
-### 2. Common Scenarios
-
-#### Scenario A: "No logs found" in Grafana
-
-**Symptoms**: Explore shows empty results despite containers running.
-
-1. **Verify Alloy Status**: Check `https://alloy.${DEFAULT_URL}`. Ensure `loki.write` components are healthy.
-2. **Check Loki Ingestion**: Look for `entry out of order` or `rate limit exceeded` errors in Loki logs:
-
-   ```bash
-   docker compose logs --tail=100 loki
-   ```
-
-3. **Verify Labels**: Ensure the LogQL query labels match exactly what Alloy is sending.
-
-#### Scenario B: MinIO Connection Failure
-
-**Symptoms**: Loki logs show `S3 storage: connection refused` or `access denied`.
-
-1. **Check MinIO Status**: `docker compose ps minio`.
-2. **Verify Credentials**: Ensure `MINIO_APP_USERNAME` and `minio_app_user_password` secret match the `loki-config.yaml` S3 settings.
-3. **Bucket Existence**: Verify `loki-bucket` exists in MinIO UI.
-
-#### Scenario C: Loki Ingester OOM (Out Of Memory)
-
-**Symptoms**: `infra-loki` container restarts frequently with exit code 137.
-
-1. **Temporary Fix**: Increase memory limit in `infra/06-observability/docker-compose.yml` if traffic has surged.
-
-```bash
-docker compose -f infra/06-observability/docker-compose.yml restart loki
-```
-
-#### 2. Check S3/MinIO Connectivity
-
-1. **Root Cause**: Check for a specific service emitting massive log volume (log spikes).
-2. **Mitigation**: Use `limits_config` in `loki-config.yaml` to throttle high-volume streams.
-
-### 3. Emergency Maintenance
-
-#### Force Compaction
-
-If storage is full and retention cleanup is pending:
-
-```bash
-
-## Compactor runs automatically, but check for errors:
-docker compose -f infra/06-observability/docker-compose.yml logs -f loki | grep "compactor"
-```
-
-### Flush Chunks
-
-If Loki needs to be shut down gracefully while ensuring all logs are committed to S3:
-
-- Loki handles this automatically on `SIGTERM`. Ensure `stop_grace_period` is sufficient (min 30s).
-
----
-
-- [Loki System Usage](../../guides/06-observability/loki.md)
- | [Operational Policy](../../policies/06-observability/loki.md)
-
----
+이 런북은 Loki readiness failure, Grafana "no logs found", Alloy ingestion failure, MinIO storage/credential symptom, retention/compactor issue, label cardinality regression, and config regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
 
 ### Purpose
 
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
+운영자가 `infra-loki` 상태를 확인하고 Alloy -> Loki ingestion, MinIO S3 backend, retention/compactor config, custom image secret expansion, Grafana datasource를 검증하며, Secret 노출이나 retention/resource/runtime 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### Canonical References
 
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
+- **Policy**: [Loki operations policy](../../policies/06-observability/loki.md)
+- **Guide**: [Loki usage guide](../../guides/06-observability/loki.md)
+- **Infrastructure**: [Loki infra README](../../../../infra/06-observability/loki/README.md)
 
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
+- Loki UI route 또는 `ready` endpoint가 실패할 때.
+- Grafana Explore에서 expected logs가 보이지 않을 때.
+- Loki logs에 `S3`, `access denied`, `entry out of order`, `rate limit`, `compactor`, `retention`, or `OOM` symptom이 보일 때.
+- `MINIO_APP_USERNAME`, `minio_app_user_password`, `loki-bucket`, retention, compactor, or label policy 변경 후 검증이 필요할 때.
+- `loki-config.yaml`, `Dockerfile`, or `docker-entrypoint.sh` 변경 후 rollback 가능성을 확인해야 할 때.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+- [ ] `loki` service, `infra-loki` container, `loki-data` volume, custom image, and Docker Secret ID 상태를 확인한다.
+- [ ] 문제 유형을 readiness, Alloy ingestion, Grafana datasource/query, MinIO storage/credential, retention/compactor, label cardinality, config regression 중 하나로 분류한다.
+- [ ] `MINIO_APP_USER_PASSWORD` value, MinIO credential value, rendered environment, or secret payload 원문은 기록하지 않는다.
+- [ ] Retention, resource cap, MinIO bucket, route, or secret reference를 변경해야 해 보이면 중단하고 owning operator approval을 받는다.
 
 ### Steps
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+1. 현재 service 상태, 최근 로그, readiness를 캡처한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps loki
+   docker logs --tail=200 infra-loki
+   docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready
+   ```
+
+2. Compose service boundary가 policy와 일치하는지 확인한다.
+
+   ```bash
+   rg -n 'service: template-stateful-high|image: hy/loki:3.7.3-custom|container_name: infra-loki|loki-data|MINIO_APP_USERNAME|minio_app_user_password|LOKI_HOST_PORT|LOKI_PORT|/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   ```
+
+3. Custom image and secret expansion boundary를 확인한다.
+
+   ```bash
+   rg -n 'FROM grafana/loki:3.7.3|ENTRYPOINT \\[\"/docker-entrypoint.sh\"\\]|-config.expand-env=true|MINIO_APP_USER_PASSWORD|/run/secrets/minio_app_user_password|exec /usr/bin/loki' infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh
+   ```
+
+4. MinIO storage, retention, compactor, and ruler boundary를 확인한다.
+
+   ```bash
+   rg -n 'bucketnames: loki-bucket|access_key_id: \\$\\{MINIO_APP_USERNAME\\}|secret_access_key: \\$\\{MINIO_APP_USER_PASSWORD\\}|retention_enabled: true|retention_period: 168h|compaction_interval: 10m|retention_delete_delay: 2h|alertmanager_url: http://alertmanager:9093' infra/06-observability/loki/config/loki-config.yaml
+   ```
+
+5. Grafana "no logs found"가 문제이면 Alloy ingestion path와 Grafana datasource를 확인한다.
+
+   ```bash
+   rg -n 'loki.source.docker|loki.write|url = \"http://loki:3100/loki/api/v1/push\"|project_net\\|infra_net' infra/06-observability/alloy/config/config.alloy
+   rg -n 'name: Loki|uid: Loki|url: http://loki:3100' infra/06-observability/grafana/provisioning/datasources/datasource.yml
+   ```
+
+6. Storage or retention symptom이 의심되면 Loki logs에서 관련 증상만 추출한다.
+
+   ```bash
+   docker logs --tail=500 infra-loki | grep -Ei 's3|bucket|loki-bucket|minio|access denied|secret|retention|compactor|rate limit|out of order|oom|error|warn'
+   ```
+
+   Secret value나 credential payload가 포함된 줄은 그대로 복사하지 말고 redaction summary로 기록한다.
+
+7. Config와 Secret ID 경계가 정책과 일치하지만 runtime state가 회복되지 않으면 Loki를 재시작한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart loki
+   docker logs --tail=100 infra-loki
+   docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready
+   ```
+
+8. `loki-config.yaml`, custom image, or entrypoint 변경 후 장애가 발생했다면 Git-managed diff를 되돌리고 readiness를 재확인한다.
+
+   ```bash
+   git diff -- infra/06-observability/loki/config/loki-config.yaml infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart loki
+   docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready
+   ```
+
+   이 런북은 retention change, MinIO bucket migration, resource cap increase, secret rotation, high-cardinality label expansion, or protected middleware change를 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
 
 ### Verification Steps
 
-- [ ] 관련 validation script를 실행한다.
-- [ ] 문서 변경이면 template/heading audit를 확인한다.
-- [ ] runtime 변경이 있었다면 compose validation을 확인한다.
+- [ ] `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps loki`에서 `loki` service가 running이다.
+- [ ] `docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready`가 ready response를 반환한다.
+- [ ] Alloy `loki.write` endpoint가 `http://loki:3100/loki/api/v1/push`를 유지한다.
+- [ ] Grafana datasource `Loki`가 `http://loki:3100`를 유지한다.
+- [ ] `retention_enabled: true`, `retention_period: 168h`, and `bucketnames: loki-bucket`가 config에 남아 있다.
+- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: `docker logs --tail=200 infra-loki`, `docker logs --tail=200 infra-alloy`
+- **Health**: Loki `/ready`, Grafana Explore query result, Alloy component graph
+- **Config**: `loki-config.yaml`, Dockerfile, entrypoint, Alloy `loki.write`, Grafana datasource
+- **Metrics**: `loki_request_duration_seconds_count`, `loki_panic_total`, compactor/retention log symptoms
+- **Evidence to Capture**: failing query, affected labels, relevant redacted log excerpt, storage symptom, restart timestamp, final recovery or escalation state
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+- Git-managed `loki-config.yaml`, Dockerfile, entrypoint, Compose, Alloy endpoint, or Grafana datasource change가 원인이면 직전 Git diff 단위로 되돌리고 Loki를 재시작한다.
+- Runtime restart는 `obs` profile compose 명령만 사용한다.
+- Retention, MinIO bucket, resource cap, secret rotation, label cardinality policy, or protected route middleware change는 이 런북의 안전 롤백 범위를 벗어난다.
 
 ### Agent Operations (If Applicable)
 
@@ -146,17 +134,18 @@ If Loki needs to be shut down gracefully while ensuring all logs are committed t
 
 ## Evidence
 
-- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
+- 실행한 명령, timestamp, operator or agent action을 기록한다.
+- Secret 값, rendered environment, MinIO credential 원문은 기록하지 않는다.
+- Log ingestion 장애는 affected LogQL query, labels, Alloy component, Loki log excerpt, storage symptom을 함께 기록한다.
+- Retention/resource/bucket/secret/middleware 변경 필요성이 보이면 approval state를 기록한다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+이 런북에 명시된 validation, restart, and Git-managed config/image/entrypoint rollback만 사용한다. Retention, MinIO bucket, resource cap, secret rotation, high-cardinality label, protected middleware, or external storage 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+verification이 실패하거나, secret exposure risk가 보이거나, retention/resource/bucket/secret/middleware 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
 ## Related Documents
 

@@ -630,6 +630,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Alertmanager documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Alertmanager compose/config/Prometheus/Grafana scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Loki Guide and Runbook Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Loki usage guide | `docs/05.operations/guides/06-observability/loki.md` | ✅ Updated | Removed the stale operational-policy title, legacy blockquote, and template residue, then rewrote the guide around current compose, custom image, MinIO storage, retention, compactor, label cardinality, Alloy ingestion, Grafana datasource, LogQL usage, common checks, and runbook handoff boundaries. |
+| Loki recovery runbook | `docs/05.operations/runbooks/06-observability/loki.md` | ✅ Updated | Replaced mixed legacy troubleshooting/template content with one runbook covering readiness, Alloy ingestion evidence, MinIO storage/retention verification, custom image secret expansion, restart, Git-managed config/image/entrypoint rollback, evidence, and escalation. |
+| Current-truth boundary | `infra/06-observability/loki` | ✅ Clarified | Preserved image `hy/loki:3.7.3-custom`, upstream `grafana/loki:3.7.3`, `template-stateful-high`, container `infra-loki`, `loki-data`, MinIO bucket `loki-bucket`, `MINIO_APP_USERNAME`, Docker Secret ID `minio_app_user_password`, `-config.expand-env=true`, retention `168h`, compactor settings, protected route chain, Alloy `loki.write`, and Grafana datasource `Loki`. |
+| Command/document wording | `infra/06-observability/loki/README.md` | ✅ Corrected | Consolidated duplicate legacy README sections into one implementation entrypoint with repository-root `-f infra/06-observability/docker-compose.yml --profile obs` commands, readiness validation, storage/retention evidence scans, ingestion wiring checks, and secret evidence hygiene. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Loki documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Loki compose/config/Dockerfile/entrypoint/Alloy/Grafana scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
