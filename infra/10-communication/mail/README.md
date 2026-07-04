@@ -77,9 +77,9 @@ mail/
 
 ## Related Documents
 
-- **Guide**: [Mail Services Guide](../../../docs/05.operations/guides/10-communication/mail.md)
-- **Policy**: [Mail Operations Policy](../../../docs/05.operations/policies/10-communication/mail.md)
-- **Runbook**: [Mail Recovery Runbook](../../../docs/05.operations/runbooks/10-communication/mail.md)
+- **Guide**: [Mail usage guide](../../../docs/05.operations/guides/10-communication/mail.md)
+- **Policy**: [Mail operations policy](../../../docs/05.operations/policies/10-communication/mail.md)
+- **Runbook**: [Mail recovery runbook](../../../docs/05.operations/runbooks/10-communication/mail.md)
 
 ## Service Readiness
 

@@ -5,10 +5,6 @@ status: active
 
 # Mail Operations Policy
 
-> 메일 인프라(Stalwart, MailHog)의 안정성과 보안을 유지하기 위한 운영 정책입니다.
-
----
-
 ## Overview
 
 이 문서는 `10-communication` 티어의 메일 서비스 운영 정책을 정의합니다. 시스템 가용성, 데이터 보존, 보안 통제 기준 및 검증 방법을 포함합니다.
