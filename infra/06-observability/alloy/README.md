@@ -62,8 +62,8 @@ alloy/
 
 | Command                        | Description                 |
 | :----------------------------- | :-------------------------- |
-| `docker compose --profile obs restart alloy` | Apply configuration changes |
-| `docker compose --profile obs logs -f alloy` | Tail collector logs         |
+| `docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alloy` | Apply configuration changes from the repository root |
+| `docker compose -f infra/06-observability/docker-compose.yml --profile obs logs -f alloy` | Tail collector logs from the repository root |
 
 ## Configuration
 
@@ -86,8 +86,8 @@ alloy/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify OTLP pipeline health by checking `docker logs alloy | grep -i "error\|warn"` after `config.alloy` changes.
-- Confirm telemetry forwarding by verifying Prometheus, Loki, Tempo, and Pyroscope receive data from Alloy exporters.
+- Verify OTLP pipeline health by checking `docker logs infra-alloy | grep -i "error\|warn"` after `config.alloy` changes.
+- Confirm telemetry forwarding by verifying Loki, Prometheus, and Tempo receive data from Alloy exporters; for Pyroscope, confirm the writer endpoint remains configured and only claim profile ingestion when a profile source is explicitly connected.
 
 ## Troubleshooting
 
@@ -96,9 +96,10 @@ alloy/
 - For OTLP ingestion errors: verify port bindings (`ALLOY_OTLP_GRPC_PORT`, `ALLOY_OTLP_HTTP_PORT`) and check that applications target the correct Alloy endpoint.
 - For collector config errors: validate `config.alloy` HCL syntax and check the Alloy UI at `https://alloy.${DEFAULT_URL}` for component status.
 - For exporter errors: confirm downstream services (Prometheus, Loki, Tempo, Pyroscope) are reachable and their endpoints match `config.alloy` export targets.
+- For Docker socket/container mount or relabel cardinality changes: stop and use the linked runbook escalation path before changing the current policy boundary.
 
 ## Related Documents
 
-- **System Guide**: [docs/05.operations/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)
+- **System Guide**: [docs/05.operations/guides/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)
 - **Policy**: [docs/05.operations/policies/06-observability/alloy.md](../../../docs/05.operations/policies/06-observability/alloy.md)
 - **Runbooks**: [docs/05.operations/runbooks/06-observability/alloy.md](../../../docs/05.operations/runbooks/06-observability/alloy.md)

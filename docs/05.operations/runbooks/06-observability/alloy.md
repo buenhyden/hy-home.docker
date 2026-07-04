@@ -3,117 +3,124 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/06-observability/alloy.md -->
 
-# Alloy Runbook
+# Alloy Readiness and Pipeline Recovery Runbook
 
-## Overview
+## Alloy Readiness and Pipeline Recovery Procedure
 
-이 런북은 `hy-home.docker`의 텔레메트리 수집 엔진인 Grafana Alloy의 장애 복구 절차를 정의한다. 데이터 수집 중단이나 파이프라인 지연 발생 시 신속하게 대응하기 위한 가이드라인이다.
+> Scope: Alloy readiness checks, Docker discovery evidence, OTLP ingress triage, downstream exporter verification, restart, and config rollback.
 
-## Alloy Recovery Procedure
+### Overview
 
-> Incident Response and Recovery Procedures for the Telemetry Pipeline
-
----
-
-### Procedure Type
-
-`recovery | troubleshooting`
-
-### Target Audience
-
-- Operator
-- SRE
-- On-call Engineer
+이 런북은 Grafana Alloy의 service readiness failure, Docker discovery/log collection gap, OTLP trace ingress failure, downstream exporter failure, pipeline label drift, and config regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
 
 ### Purpose
 
-Alloy 서비스의 가용성을 유지하고, 텔레메트리 데이터 유실을 최소화하기 위한 복구 절차를 수행한다.
-
-### Prerequisites
-
-- [Alloy System Usage](../../guides/06-observability/alloy.md) 이해
-- [Alloy Operational Policy](../../policies/06-observability/alloy.md) 숙지
-- Docker Compose 권한 및 Alloy UI 접근 권한
-
-### Step-by-step Instructions
-
-#### 1. Service Restoration
-
-Alloy 컨테이너가 중단되었거나 응답하지 않을 경우:
-
-1. `docker compose ps alloy`로 상태 확인.
-2. repository root에서 `docker compose --profile obs restart alloy` 실행.
-3. `docker compose logs -f alloy`로 에러 메시지 확인.
-
-#### 2. Pipeline Debugging (Alloy UI)
-
-데이터 수집은 되지만 특정 레이블이 탈락하거나 전송되지 않을 경우:
-
-1. `https://alloy.${DEFAULT_URL}`에 접속.
-2. **Graph View**에서 빨간색으로 표시된 컴포넌트 식별.
-3. 해당 컴포넌트를 클릭하여 구체적인 에러 메시지(예: `connection refused to loki`) 확인.
-
-#### 3. Memory Exhaustion Mitigation
-
-Alloy가 메모리 부족으로 재시작을 반복할 경우:
-
-1. `config.alloy`에서 `otelcol.processor.batch`의 `send_batch_size`를 일시적으로 축소.
-2. 사용량이 많은 `discovery.relabel` 규칙이 있는지 검토 및 최적화.
-
-#### 4. OTLP Connectivity Fix
-
-앱이 데이터를 전송하지 못할 경우:
-
-1. 내부 네트워크에서 `nc -zv alloy 4317` (gRPC) 또는 `nc -zv alloy 4318` (HTTP)로 포트 오픈 여부 확인.
-2. Alloy 컨테이너 로그에서 `otelcol.receiver.otlp` 초기화 에러 확인.
-
-### Common Pitfalls
-
-- **Stale Configuration**: `config.alloy` 수정 후 `restart`하지 않으면 변경 사항이 반영되지 않는다.
-- **Docker Socket Disconnect**: 호스트의 `/var/run/docker.sock` 권한 문제로 discovery가 중단될 수 있다.
+운영자가 `infra-alloy` 상태를 확인하고 Docker discovery, Loki/Prometheus/Tempo/Pyroscope exporter 경로, OTLP ports, route, config boundary를 검증하며, mount 권한이나 pipeline 구조 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### Canonical References
 
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
+- **Policy**: [Alloy operations policy](../../policies/06-observability/alloy.md)
+- **Guide**: [Alloy usage guide](../../guides/06-observability/alloy.md)
+- **Infrastructure**: [Alloy infra README](../../../../infra/06-observability/alloy/README.md)
 
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
+- Alloy UI or `/-/healthy` endpoint가 실패할 때.
+- Docker logs, metrics, or traces가 backend에 도착하지 않을 때.
+- OTLP clients가 `alloy:4317` or `alloy:4318`로 전송하지 못할 때.
+- 특정 backend exporter에서 connection refused or timeout이 보일 때.
+- `config.alloy` 변경 후 component graph, label, or exporter 상태 검증이 필요할 때.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+- [ ] `alloy` service, `infra-alloy` container, `alloy-data` volume, and read-only Docker mounts 상태를 확인한다.
+- [ ] 문제 유형을 readiness, Docker discovery/logs, OTLP ingress, downstream exporter, relabel/label drift, config regression 중 하나로 분류한다.
+- [ ] Docker socket/container mounts를 read-write로 바꾸거나 exporter endpoint/port를 변경해야 해 보이면 중단하고 owning operator approval을 받는다.
+- [ ] Secret-bearing labels or high-cardinality labels가 발견되면 원문 값을 기록하지 않는다.
 
 ### Steps
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+1. 현재 service 상태, 최근 로그, route/health signal을 캡처한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alloy
+   docker logs --tail=200 infra-alloy
+   docker exec infra-alloy bash -lc 'exec 3<>/dev/tcp/localhost/12345; printf "HEAD /-/healthy HTTP/1.1\r\nHost: localhost\r\n\r\n" >&3; timeout 2 head -1 <&3'
+   ```
+
+2. Compose service boundary가 policy와 일치하는지 확인한다.
+
+   ```bash
+   rg -n 'service: template-infra-med|image: grafana/alloy:v1.17.1|container_name: infra-alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n '/var/lib/docker/containers:/var/lib/docker/containers:ro|/var/run/docker.sock:/var/run/docker.sock:ro|alloy-data:/var/lib/alloy:rw' infra/06-observability/docker-compose.yml
+   ```
+
+3. Pipeline config boundary를 확인한다.
+
+   ```bash
+   rg -n 'discovery.docker|project_net\\|infra_net|loki.source.docker|loki.write|prometheus.remote_write|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy
+   ```
+
+4. Downstream exporter failure가 의심되면 backend readiness를 확인한다.
+
+   ```bash
+   docker exec infra-prometheus wget -qO- http://localhost:9090/-/healthy
+   docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready
+   docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready
+   docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready
+   ```
+
+5. OTLP ingress 장애가 의심되면 Compose port binding과 Alloy config를 확인한다.
+
+   ```bash
+   rg -n 'ALLOY_OTLP_GRPC_HOST_PORT|ALLOY_OTLP_HTTP_HOST_PORT|4317|4318' infra/06-observability/docker-compose.yml infra/06-observability/alloy/config/config.alloy
+   ```
+
+6. Label drift or discovery gap이 의심되면 relabel rules와 network filter를 확인한다.
+
+   ```bash
+   rg -n 'target_label  = "service_name"|target_label  = "container_name"|target_label = "scope"|regex         = "project_net\\|infra_net"|replacement   = "infra"' infra/06-observability/alloy/config/config.alloy
+   ```
+
+7. Config가 현재 정책과 일치하지만 runtime state가 회복되지 않으면 Alloy를 재시작한다.
+
+   ```bash
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alloy
+   ```
+
+8. `config.alloy` 변경 후 장애가 발생했다면 Git-managed config diff를 되돌리고 readiness를 재확인한다.
+
+   ```bash
+   git diff -- infra/06-observability/alloy/config/config.alloy
+   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alloy
+   docker logs --tail=100 infra-alloy
+   ```
+
+   이 런북은 mount permission relaxation, Docker socket read-write access, exporter endpoint change, OTLP port change, or high-cardinality relabel expansion을 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
 
 ### Verification Steps
 
-- [ ] 관련 validation script를 실행한다.
-- [ ] 문서 변경이면 template/heading audit를 확인한다.
-- [ ] runtime 변경이 있었다면 compose validation을 확인한다.
+- [ ] `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alloy`에서 `alloy` service가 running이다.
+- [ ] Alloy UI `https://alloy.${DEFAULT_URL}`에서 pipeline graph에 failed component가 없다.
+- [ ] Logs appear in Loki, Alloy self metrics appear in Prometheus, and OTLP traces appear in Tempo for affected paths.
+- [ ] Pyroscope writer endpoint remains configured, and profile ingestion is only claimed when a profile source is explicitly connected.
+- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: `docker logs --tail=200 infra-alloy`
+- **Health**: Alloy `/-/healthy`, Alloy UI graph
+- **Config**: `config.alloy`, Docker discovery/relabel rules, exporter endpoints
+- **Backends**: Loki ready, Prometheus healthy, Tempo ready, Pyroscope ready
+- **Evidence to Capture**: failing component, relevant log excerpt, affected telemetry signal, restart timestamp, final recovery or escalation state
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+- Git-managed `config.alloy`, Compose, or downstream endpoint change가 원인이면 직전 Git diff 단위로 되돌리고 Alloy를 재시작한다.
+- Runtime restart는 `obs` profile compose 명령만 사용한다.
+- Docker socket/container mount permission relaxation, exporter endpoint change, OTLP port change, relabel cardinality expansion은 이 런북의 안전 롤백 범위를 벗어난다.
 
 ### Agent Operations (If Applicable)
 
@@ -125,18 +132,18 @@ Alloy가 메모리 부족으로 재시작을 반복할 경우:
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- 실행한 명령, timestamp, operator or agent action을 기록한다.
+- Secret-bearing label or payload가 의심되면 원문 값을 기록하지 않는다.
+- Pipeline 장애는 component name, backend endpoint, log excerpt, affected telemetry signal을 함께 기록한다.
+- Mount or endpoint change 필요성이 보이면 approval state를 기록한다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+이 런북에 명시된 validation, restart, and Git-managed config rollback만 사용한다. Docker mount permission, exporter endpoint, OTLP port, high-cardinality relabel, or backend runtime 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+verification이 실패하거나, secret exposure risk가 보이거나, Docker mount/endpoint/port 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
 ## Related Documents
 

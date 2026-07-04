@@ -608,6 +608,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Pyroscope documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Pyroscope compose/config/Alloy/Grafana scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Alloy Guide and Runbook Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Alloy usage guide | `docs/05.operations/guides/06-observability/alloy.md` | ✅ Updated | Removed the legacy operational-policy title and blockquote separator, then rewrote the guide around current compose, Docker discovery, relabeling, Loki logs, Prometheus metrics, Tempo traces, Pyroscope writer endpoint, OTLP ports, common checks, and runbook handoff boundaries. |
+| Alloy recovery runbook | `docs/05.operations/runbooks/06-observability/alloy.md` | ✅ Updated | Replaced mixed legacy troubleshooting/template content with one runbook covering readiness, Docker discovery evidence, OTLP ingress triage, downstream exporter verification, restart, config rollback, evidence, rollback, and escalation. |
+| Current-truth boundary | `infra/06-observability/alloy` | ✅ Clarified | Preserved image `grafana/alloy:v1.17.1`, `template-infra-med`, container `infra-alloy`, read-only Docker mounts, `alloy-data`, OTLP `4317/4318`, `project_net|infra_net` discovery filter, Loki/Prometheus/Tempo exporter endpoints, Pyroscope writer endpoint, and protected route chain. |
+| Command/document wording | `infra/06-observability/alloy/README.md` | ✅ Corrected | Added repository-root `-f infra/06-observability/docker-compose.yml --profile obs` Alloy commands, fixed log container `infra-alloy`, corrected the stale system-guide link text, and clarified that Pyroscope profile ingestion requires an explicit profile source. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Alloy documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Alloy compose/config scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
