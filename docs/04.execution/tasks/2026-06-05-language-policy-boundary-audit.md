@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-06-05-language-policy-boundary-audit.md -->
@@ -80,9 +80,9 @@ project and operations content.
 
 | Check | Result | Notes |
 | --- | --- | --- |
-| Korean text in `docs/03.specs` | 43 files total; 23 non-README leaf files | Active document normalization remains a follow-up batch. |
-| Korean text in `docs/04.execution/plans` | 58 files total; 57 non-README leaf files | Active document normalization remains a follow-up batch. |
-| Korean text in `docs/04.execution/tasks` | 61 files total; 60 non-README leaf files | Active document normalization remains a follow-up batch. |
+| Korean text in `docs/03.specs` | 43 files total; 23 non-README leaf files at initial audit time | Closed by later bounded spec normalization batches; hard enforcement now protects non-README closed English-only surfaces. |
+| Korean text in `docs/04.execution/plans` | 58 files total; 57 non-README leaf files at initial audit time | Closed by later bounded plan normalization batches; hard enforcement now protects non-README closed English-only surfaces. |
+| Korean text in `docs/04.execution/tasks` | 61 files total; 60 non-README leaf files at initial audit time | Closed by later bounded task normalization batches; hard enforcement now protects non-README closed English-only surfaces. |
 | Korean text or legacy Korean-labeled overview headings in English-only templates | 0 matches after this pass | Applies to spec, API spec, agent design, data model, service, tests, plan, and task templates. |
 | Korean text in `docs/00.agent-governance` | 0 files | Existing governance surface already matches English-only policy. |
 | Korean text in human-facing/mixed surfaces | Expected | `docs/01.requirements`, `docs/02.architecture`, `docs/05.operations`, `docs/90.references`, `docs/98.archive`, `docs/99.templates`, root `README.md`, and folder READMEs now have explicit boundary rules instead of a single broad default. |
@@ -118,32 +118,28 @@ project and operations content.
 
 ## Remaining Risks
 
-- Full active-document normalization is not complete. Current audit found 162
-  Markdown files with Korean text under English-only spec/plan/task surfaces
-  when README and folder-index files are included, and 140 non-README leaf
-  documents that still need bounded English normalization.
-- Repo contracts now require `## Overview`; historical Korean-labeled overview
-  headings have been normalized repository-wide.
-- Existing human-facing and mixed-audience documents outside the edited README
-  and template surfaces were not bulk-polished in this pass; they now have a
-  policy target for future bounded batches.
-- No hard language-boundary gate was added yet. Enforcing it immediately would
-  fail against the known spec/plan/task normalization backlog.
+- None for the closed English-only leaf/reference surfaces. Later bounded
+  normalization batches reduced non-README `docs/03.specs`,
+  `docs/04.execution/plans`, `docs/04.execution/tasks`, and
+  `docs/90.references` Korean-character counts to zero under the approved
+  README and generated-index exclusions.
+- Future drift on the closed English-only surfaces is guarded by the hard
+  repository contract gate recorded in
+  [Language Policy Hard Enforcement](./2026-06-05-language-policy-hard-enforcement.md).
+- Human-facing and mixed-audience documents outside the closed English-only
+  surfaces remain governed by the language boundary policy and should be
+  polished in bounded tasks when their content changes.
 
 ## Follow-up Tasks
 
-- Normalize active `docs/03.specs/**` documents to English in bounded batches.
-- Normalize active `docs/04.execution/plans/**` documents to English in bounded
-  batches.
-- Normalize active `docs/04.execution/tasks/**` documents to English in bounded
-  batches, preserving historical evidence meaning.
-- Review `docs/01.requirements/**`, `docs/02.architecture/**`,
-  `docs/90.references/**`, and `docs/98.archive/**` in bounded batches for
-  consistency with the newly documented mixed/human-facing rules.
-- Add a repo-contract language-boundary gate after the English-only backlog is
-  remediated and any README/folder-index exceptions are explicitly modeled.
-- After active normalization, add hard Korean-character enforcement for
-  English-only surfaces.
+- Completed: spec, plan, task, and reference normalization were handled by the
+  bounded language-policy normalization batches and the reference normalization
+  task.
+- Completed: hard Korean-character enforcement for the closed English-only
+  surfaces was added in
+  [Language Policy Hard Enforcement](./2026-06-05-language-policy-hard-enforcement.md).
+- Future human-facing or mixed-audience review remains content-change driven,
+  not an open blocker for this language-policy closure scope.
 
 ## Related Documents
 
@@ -154,3 +150,5 @@ project and operations content.
 - **Operations Policies**: [Operations policies README](../../05.operations/policies/README.md)
 - **Operations Runbooks**: [Operations runbooks README](../../05.operations/runbooks/README.md)
 - **Incident Records**: [Incident records README](../../05.operations/incidents/README.md)
+- **Reference Normalization**: [2026-06-05-language-policy-reference-normalization.md](./2026-06-05-language-policy-reference-normalization.md)
+- **Hard Enforcement**: [2026-06-05-language-policy-hard-enforcement.md](./2026-06-05-language-policy-hard-enforcement.md)

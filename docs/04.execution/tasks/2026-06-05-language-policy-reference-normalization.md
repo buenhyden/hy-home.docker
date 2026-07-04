@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-06-05-language-policy-reference-normalization.md -->
@@ -89,13 +89,13 @@ The following non-README reference files now have no Korean text:
 
 - The non-README `docs/90.references/**` reference consistency backlog is
   closed.
-- Hard Korean-character enforcement still needs to be added for the closed
-  English-only surfaces so future drift fails validation.
+- Hard Korean-character enforcement was later added for the closed English-only
+  surfaces so future drift fails validation.
 
 ## Follow-up Tasks
 
-- Add hard Korean-character enforcement for the closed English-only surfaces in
-  repository validation.
+- Completed by
+  [Language Policy Hard Enforcement](./2026-06-05-language-policy-hard-enforcement.md).
 
 ## Related Documents
 

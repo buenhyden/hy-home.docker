@@ -430,6 +430,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Gap register follow-up wording | `docs/90.references/audits/document-contracts/gap-register.md` | ✅ Updated | Clarified that WDC-GAP-017, WDC-GAP-020, WDC-GAP-021, and WDC-GAP-022 were follow-ups at local closure time and were later closed by separate task evidence. |
 | Validation | Local documentation and infra contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, tech-stack sync, hardening, doc traceability, doc implementation alignment, repo-contract syntax, and full repo contracts pass with `failures=0`. |
 
+## Language Policy Closure Status Sync (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Boundary audit status | `docs/04.execution/tasks/2026-06-05-language-policy-boundary-audit.md` | ✅ Updated | Marked the boundary audit task as completed after its spec, plan, task, reference, and hard-enforcement follow-ups closed the original active-document backlog. |
+| Reference and hard-enforcement tasks | `docs/04.execution/tasks/2026-06-05-language-policy-{reference-normalization,hard-enforcement}.md` | ✅ Updated | Marked both follow-up tasks as completed and replaced stale follow-up wording with links to the completed hard-enforcement evidence. |
+| Stage 04 task index | `docs/04.execution/tasks/README.md` | ✅ Updated | Replaced stale active labels for the language-policy closure tasks and added the missing reference/hard-enforcement entries to the structure listing. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
