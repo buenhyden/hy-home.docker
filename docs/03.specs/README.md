@@ -58,6 +58,7 @@ docs/03.specs/
 ├── 09-tooling/                          # Tooling service contracts
 ├── 10-communication/                    # Mail communication contracts
 ├── 11-laboratory/                       # Laboratory/admin surface contracts
+├── agentic-research-pack-refresh/       # Active Stage 90 agentic research refresh spec
 ├── document-restructure-audit-contract-archive/ # Active document restructure disposition contract
 ├── docs-taxonomy-agent-first-migration/ # Completed docs taxonomy migration spec
 ├── agentic-engineering-implementation-audit-pack/ # Draft Stage 90 audit pack design spec
@@ -87,6 +88,7 @@ docs/03.specs/
 | Kafka, RabbitMQ, stream/message broker behavior            | `05-messaging/spec.md`                               |
 | Metrics, logs, traces, dashboards, alerts                  | `06-observability/spec.md`                           |
 | Workflow orchestration and cross-validation agent behavior | `07-workflow/spec.md`, `07-workflow/agent-design.md` |
+| Stage 90 agentic engineering research pack refresh | `agentic-research-pack-refresh/spec.md` |
 | Agentic engineering reference-audit pack design            | `agentic-engineering-implementation-audit-pack/spec.md` |
 | Second-wave document restructure disposition contract | `document-restructure-audit-contract-archive/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `template-system-contract-standardization/spec.md` |
@@ -152,6 +154,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Operations Stage**: [../05.operations/README.md](../05.operations/README.md)
 - **Spec template**: [../99.templates/templates/sdlc/spec.template.md](../99.templates/templates/sdlc/spec.template.md)
 - **README template**: [../99.templates/templates/common/readme.template.md](../99.templates/templates/common/readme.template.md)
+- **Agentic Research Pack Refresh Spec**: [agentic-research-pack-refresh/spec.md](./agentic-research-pack-refresh/spec.md)
 - **Agentic Engineering Implementation Audit Pack Spec**: [agentic-engineering-implementation-audit-pack/spec.md](./agentic-engineering-implementation-audit-pack/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [document-restructure-audit-contract-archive/spec.md](./document-restructure-audit-contract-archive/spec.md)
 - **Harness / Agent-first Engineering Spec**: [harness-agent-first-engineering/spec.md](./harness-agent-first-engineering/spec.md)

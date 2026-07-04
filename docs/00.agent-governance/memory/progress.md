@@ -730,6 +730,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed infra_net operations documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, stale marker scan, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Agentic Research Pack Refresh Spec Path Correction (2026-07-05)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Design location | `docs/03.specs/agentic-research-pack-refresh/` | ✅ Corrected | Moved the Superpowers research-refresh design contract into the canonical Stage 03 specification path requested by the user instead of `_workspace/superpowers/specs/`. |
+| Stage 03 index | `docs/03.specs/README.md` | ✅ Updated | Added the new spec folder to the structure, routing table, and related-spec index. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This correction changed Stage 03 documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
