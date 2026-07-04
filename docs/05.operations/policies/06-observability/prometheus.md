@@ -3,90 +3,100 @@ status: active
 ---
 <!-- Target: docs/05.operations/policies/06-observability/prometheus.md -->
 
-# [OPERATIONAL-POLICY] 06-observability: prometheus Operations Policy
-
-Standardized procedures for maintaining Prometheus metrics collection and alerting integrity.
+# Prometheus Operations Policy
 
 ## Overview
 
-This policy defines the Prometheus controls for scrape target registration, alerting rule management, performance monitoring, and TSDB integrity. Ordered recovery or reload procedures belong in the matching runbook.
-
-## Policy Details
-
-### Scrape Target Registration Requirements
-
-To add a new service for monitoring:
-
-1. Ensure the target service exposes metrics (usually on port `9090` or `8080`).
-2. Update `infra/06-observability/prometheus/config/prometheus.yml`:
-
-   ```yaml
-   - job_name: 'new-service'
-     static_configs:
-       - targets: ['new-service:port']
-   ```
-
-3. Validate configuration:
-
-   ```bash
-   docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml
-   ```
-
-4. Reload Prometheus (send `SIGHUP` or use API `-X POST /-/reload`).
-
-### Alerting Rule Management Requirements
-
-- **Definition**: Rules must be added to the appropriate file in `config/alert_rules/`.
-- **Naming**: Use camelCase for alert names (e.g., `PostgresInstanceDown`).
-- **Standard Labels**:
-  - `severity`: `critical` (immediate action), `warning` (investigation), `info` (notification only).
-- **Testing**:
-
-  ```bash
-  promtool test rules config/alert_rules/tests/*.yml
-  ```
-
-### Performance Monitoring Requirements
-
-- **Cardinality Audit**: Periodically review high-cardinality metrics (e.g., `container_...` from cAdvisor).
-- **Rule Evaluation**: Monitor `prometheus_rule_evaluation_duration_seconds` to ensure evaluations complete within the `15s` window.
-- **TSDB Integrity**: Check for compaction failures in Prometheus logs.
-
-## Constraints
-
-- **Scrape Intervals**: Never set below `10s` without architectural approval.
-- **Retention**: Default is `15d`; any changes require volume resizing.
-- **Rule Format**: Use `expr`, `for`, `labels`, and `annotations` (Summary/Description).
-
----
-**AI Agent Note**: AI agents must verify that every new infrastructure component includes a corresponding scrape configuration and basic "up" alert.
+This policy defines Prometheus controls for scrape target registration, alerting
+rule management, TSDB persistence, lifecycle reload, secret file references, and
+protected access. Ordered recovery or reload procedures belong in the matching
+runbook.
 
 ## Policy Scope
 
-This policy applies to Prometheus scrape target registration, alerting rule management, performance monitoring, and TSDB integrity controls for the observability tier.
+This policy applies to the current `infra/06-observability/prometheus` compose,
+config, and alert-rule surfaces.
+
+- **Systems**: compose service `prometheus`, container `infra-prometheus`, image `prom/prometheus:v3.13.0`, config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
+- **Agents**: Operators, SREs, AI agents following repo-local governance
+- **Environments**: local, development, homelab operations
 
 ## Controls
 
-- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
-- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
-- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+- **Required**:
+  - Prometheus service는 `template-stateful-high`, image
+    `prom/prometheus:v3.13.0`, tmpfs `/tmp` and `/etc/prometheus:size=10M`,
+    read-only config/rules mounts, persistent `prometheus-data` volume을
+    유지한다.
+  - Runtime command는 `--config.file=/etc/prometheus/prometheus.yml`,
+    `--storage.tsdb.path=/prometheus`, `--web.enable-lifecycle`,
+    `--web.enable-remote-write-receiver`를 유지한다.
+  - Global cadence는 `scrape_interval: 30s`와 `evaluation_interval: 30s`를
+    기준으로 한다. Service-specific intervals such as Prometheus `15s` and
+    cAdvisor `1m` must remain intentional and reviewed.
+  - Scrape jobs are managed in
+    `infra/06-observability/prometheus/config/prometheus.yml`.
+  - Alert and recording rules are loaded from
+    `/etc/prometheus/alert_rules/alert_rules.local.*.yml`,
+    `/etc/prometheus/alert_rules/alert_rules.k8s.yml`,
+    `/etc/prometheus/alert_rules/alert_rules.keycloak.yml`,
+    `/etc/prometheus/alert_rules/alert_rules.vault.yml`, and
+    `/etc/prometheus/alert_rules/recording_rules.yml`.
+  - Alert rules must include `expr`, `for` when applicable, `labels.severity`,
+    and actionable `annotations`.
+  - `opensearch_exporter_password` and `vault_token` are Docker Secret file
+    references only; their values must not appear in docs, logs, or task
+    evidence.
+  - Prometheus route must keep
+    `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
+  - TSDB retention changes must be paired with
+    [retention policy](./01.retention.md), volume impact review, and plan/task
+    evidence. The current compose command does not declare an explicit
+    `--storage.tsdb.retention.*` flag.
+- **Allowed**:
+  - New scrape targets may be added when the target exposes a stable metrics
+    endpoint reachable from Prometheus networks and has matching alerting or
+    documented no-alert rationale.
+  - Expensive PromQL may be moved into recording rules after dashboard and rule
+    impact review.
+  - Lifecycle reload may be used after config/rule validation; operational
+    reload steps belong in the runbook.
+- **Disallowed**:
+  - Scrape interval below `10s` without architectural approval and capacity
+    evidence
+  - High-cardinality label additions without cardinality review
+  - UI/API-only changes that bypass git-managed `prometheus.yml` or
+    `alert_rules`
+  - Recording secret values, bearer tokens, or rendered secret content in
+    documentation or evidence
+  - Declaring retention behavior that is not backed by compose/config and the
+    retention policy
 
 ## Exceptions
 
-N/A — 현재 승인된 예외 없음.
+- Scrape interval, retention, secret reference, route, or rule-loading
+  exceptions require user approval and related plan/task evidence.
+- Emergency reload or target suppression must be recorded through the Prometheus
+  runbook with rollback evidence.
 
 ## Verification
 
-- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
-- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
+- Compose service boundary:
+  `rg -n 'service: template-stateful-high|image: prom/prometheus:v3.13.0|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|vault_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
+- Prometheus config:
+  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules.yml|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/vault_token' infra/06-observability/prometheus/config/prometheus.yml`
+- Repository contracts:
+  `bash scripts/validation/check-repo-contracts.sh`
 
 ## Review Cadence
 
-- Review when linked service configuration, architecture, or runbook behavior changes.
+- Prometheus image, runtime flags, scrape jobs, alert rules, recording rules,
+  secret references, route, retention, or mounted paths change.
+- Regular review follows quarterly cadence.
 
 ## Related Documents
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/06-observability/prometheus.md)
 - [Recovery runbook](../../runbooks/06-observability/prometheus.md)
+- [Retention policy](./01.retention.md)

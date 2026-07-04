@@ -8,7 +8,7 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 
 - **Role**: Metrics Aggregation & Alerting Engine.
 - **Layer**: `06-observability` (Telemetry Storage).
-- **Interface**: [http://prometheus.hy-home.local](http://prometheus.hy-home.local) (via Traefik).
+- **Interface**: `https://prometheus.${DEFAULT_URL}` via Traefik.
 
 ## Tech Stack
 
@@ -20,9 +20,9 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 
 ## System Components
 
-- **Scrape Configs**: Defined in `config/prometheus.yml` (20+ internal & infra jobs).
-- **Alerting Rules**: Modularized in `config/alert_rules/` (9+ files by domain).
-- **Storage**: Persistent TSDB volume with retention policies.
+- **Scrape Configs**: Defined in `config/prometheus.yml` (34 tracked jobs).
+- **Alerting Rules**: Modularized in `config/alert_rules/` (12 tracked rule files by domain).
+- **Storage**: Persistent TSDB volume; explicit retention flags are not declared in Compose.
 
 ## Management Guide
 
@@ -84,7 +84,7 @@ infra/06-observability/prometheus/
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
 - Verify scrape targets are UP by checking the Prometheus UI Targets page after `prometheus.yml` changes.
-- Confirm alert rules load correctly by checking `docker logs prometheus | grep -i 'error\|warn'`.
+- Confirm alert rules load correctly by checking `docker logs infra-prometheus | grep -i 'error\|warn'`.
 
 ## Troubleshooting
 

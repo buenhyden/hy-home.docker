@@ -534,6 +534,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Alloy documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Alloy compose/config scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Prometheus Policy Profile Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Prometheus policy structure | `docs/05.operations/policies/06-observability/prometheus.md` | ✅ Updated | Replaced the legacy `[OPERATIONAL-POLICY]` title, policy-details block, constraints block, and AI-agent note with the operations policy template flow. |
+| Current-truth boundary | `infra/06-observability/prometheus` | ✅ Clarified | Preserved image `prom/prometheus:v3.13.0`, `template-stateful-high`, lifecycle reload, remote-write receiver, `prometheus-data`, 34 scrape jobs, 12 rule files, Docker Secret file references, and protected route chain. |
+| Conflicting README wording | `infra/06-observability/prometheus/README.md` | ✅ Corrected | Aligned the Traefik URL with HTTPS, updated scrape/rule inventory counts, clarified that explicit retention flags are not declared in Compose, and fixed the log check container name. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Prometheus documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Prometheus compose/config scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
