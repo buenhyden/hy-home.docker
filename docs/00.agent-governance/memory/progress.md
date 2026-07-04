@@ -477,6 +477,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets, archive tombstones | ✅ Preserved | This batch changed Stage 03 spec/index/progress text only and did not modify implementation files, validators, CI workflows, provider runtime, secret material, `.env`, or archive tombstones. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Observability Retention Policy Profile Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Retention policy structure | `docs/05.operations/policies/06-observability/01.retention.md` | ✅ Updated | Merged the legacy leading retention/performance block into the operations policy template flow: `Overview`, `Policy Scope`, `Controls`, `Exceptions`, `Verification`, `Review Cadence`, and `Related Documents`. |
+| Current-truth boundary | `06-observability` retention/storage controls | ✅ Clarified | Preserved Prometheus/Loki/Tempo/Pyroscope retention facts while preventing unimplemented external long-term archive or S3 Glacier wording from reading as active implementation. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed one policy document and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
