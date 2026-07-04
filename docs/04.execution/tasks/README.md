@@ -98,7 +98,7 @@ docs/04.execution/tasks/
 ├── 2026-07-03-document-contract-remediation-batches.md # Active document contract remediation batch evidence
 ├── 2026-07-03-template-system-contract-standardization.md # Completed Stage 99 template contract standardization evidence
 ├── 2026-07-04-examples-scaffold-contract-remediation.md # Completed examples scaffold contract remediation task record
-├── 2026-07-04-document-restructure-audit-contract-archive.md # Active document restructure task evidence
+├── 2026-07-04-document-restructure-audit-contract-archive.md # Completed document restructure task evidence
 ├── 2026-07-04-frontmatter-routing-evidence-refresh.md # Completed frontmatter routing evidence refresh task record
 ├── 2026-07-04-github-branch-protection-reverification.md # Completed read-only GitHub branch protection re-verification task record
 ├── 2026-07-04-infra-tech-stack-version-refresh.md # Completed infra tech-stack Compose and registry version refresh evidence

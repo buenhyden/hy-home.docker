@@ -412,6 +412,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Commit trail | `docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md` | ✅ Recorded | The task now lists the design, plan, audit, contract, Stage 03, operations, CI/QA, and closure commits/batches. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Stage 04 Document Restructure Status Refresh (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Plan/task frontmatter | `docs/04.execution/{plans,tasks}/2026-07-04-document-restructure-audit-contract-archive.md` | ✅ Updated | Marked the completed document restructure plan and task as `status: completed` after all completion criteria and task rows were closed. |
+| Stage 04 indexes | `docs/04.execution/{plans,tasks}/README.md` | ✅ Updated | Replaced stale active routing labels with completed labels for the document restructure plan/task only. |
+| Remediation batch boundary | `docs/04.execution/{plans,tasks}/2026-07-03-document-contract-remediation-batches.md` | ✅ Preserved | Left the document-contract remediation batch active because its plan still has open completion criteria and deferred follow-up boundaries. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki regeneration, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

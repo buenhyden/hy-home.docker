@@ -74,7 +74,7 @@ docs/04.execution/plans/
 ├── 2026-07-03-workspace-document-contract-audit-pack.md # Completed workspace document contract audit pack plan
 ├── 2026-07-03-template-system-contract-standardization.md # Completed Stage 99 template contract/frontmatter standardization plan
 ├── 2026-07-02-template-system-reorganization.md # Completed Stage 99 template system reorganization plan
-├── 2026-07-04-document-restructure-audit-contract-archive.md # Active second-wave document restructure plan
+├── 2026-07-04-document-restructure-audit-contract-archive.md # Completed second-wave document restructure plan
 └── README.md                               # This file
 ```
 
