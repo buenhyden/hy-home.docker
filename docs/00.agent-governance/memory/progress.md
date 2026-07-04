@@ -652,6 +652,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Grafana documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Grafana compose/provisioning/dashboard scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
 
+## Observability Stack and Hardening Guide Cleanup (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| LGTM stack guide | `docs/05.operations/guides/06-observability/01.lgtm-stack.md` | ✅ Updated | Replaced generic template filler and legacy blockquote summary with a current stack map covering Prometheus, Loki, Tempo, Grafana, Alloy, Alertmanager, Pushgateway, cAdvisor, and Pyroscope roles, data paths, storage boundaries, service-specific handoff, and evidence commands. |
+| Optimization hardening runbook | `docs/05.operations/runbooks/06-observability/optimization-hardening.md` | ✅ Updated | Reworked the runbook around observability gateway/SSO middleware, compose health dependencies, custom image hardening, Pyroscope/cAdvisor availability checks, hardening validation, Git-managed rollback evidence, and escalation boundaries. |
+| Current-truth boundary | `infra/06-observability` | ✅ Clarified | Preserved compose service inventory, Grafana datasource identities, Loki/Tempo storage references, Prometheus TSDB boundary, Pyroscope local volume, route middleware chain, health dependencies, cAdvisor healthcheck, Loki/Tempo `USER 10001:10001`, and MinIO secret guards. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed stack/hardening documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted stack inventory/datasource/storage/middleware/healthcheck/Dockerfile/entrypoint scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, infra README rubric advisory `0`, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

@@ -5,18 +5,17 @@ status: active
 
 # 06-Observability Optimization Hardening Runbook
 
-## Overview
-
-이 런북은 `06-observability` 하드닝 항목에서 발생할 수 있는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. gateway/SSO 체인 누락, health 의존성 회귀, 커스텀 이미지 런타임 하드닝 누락, CI 기준선 실패를 중심으로 점검/복구한다.
-
 ## 06-Observability Optimization Hardening Procedure
 
-> Scope: Observability Gateway/Compose Baseline Recovery
+> Scope: observability gateway/SSO middleware, compose health dependency, custom image hardening, hardening checks, restart, and Git-managed rollback evidence.
+
+### Overview
+
+이 런북은 `06-observability` hardening regression을 복구하기 위한 실행 절차를 제공한다. Gateway/SSO middleware 누락, health dependency 회귀, custom image runtime hardening 누락, Pyroscope route availability 회귀, cAdvisor healthcheck 회귀, and CI hardening baseline failure를 중심으로 점검/복구한다.
 
 ### Purpose
 
-- 관측성 관리 경로의 보안/가용성 기준을 신속히 복구한다.
-- compose/CI 회귀를 조기에 차단하고 안정 상태로 복원한다.
+운영자가 observability management route, compose dependency, healthcheck, custom image, and hardening validation boundary를 확인하고, runtime/security policy 변경이 필요한 경우 별도 승인으로 격리하도록 돕는다.
 
 ### Canonical References
 
@@ -27,69 +26,90 @@ status: active
 
 ## When to Use
 
-- `infrastructure-hardening` CI가 실패할 때
-- 관측성 UI/API가 Traefik 경유로 비정상 응답할 때
-- 스택 부팅 시 Alloy/Grafana 의존성 대기로 장애가 반복될 때
-- Loki/Tempo custom image 런타임 실패가 발생할 때
+- `infrastructure-hardening` CI가 실패할 때.
+- 관측성 UI/API가 Traefik 경유로 비정상 응답할 때.
+- 스택 부팅 시 Alloy/Grafana dependency 또는 service health race가 반복될 때.
+- Loki/Tempo custom image runtime hardening이 깨졌을 때.
+- Pyroscope or cAdvisor route/healthcheck availability가 회귀했을 때.
+- hardening script, Compose, Dockerfile, or operations docs 변경 후 rollback 가능성을 확인해야 할 때.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 실패 항목(middleware/depends_on/healthcheck/image/script/doc) 식별
-- [ ] 최근 변경 커밋과 영향 범위 확인
-- [ ] 운영 영향도(수집/조회/알림 경로) 평가
+- [ ] 실패 항목을 middleware, depends_on, healthcheck, image, script, workflow, or docs 중 하나로 분류한다.
+- [ ] 최근 변경 커밋과 영향 범위를 확인한다.
+- [ ] telemetry collection, query, alerting, profiling, and UI route 영향도를 평가한다.
+- [ ] Secret value, token, or credential payload는 기록하지 않는다.
+- [ ] Route/middleware, resource cap, secret reference, workflow gate, or runtime hardening rule을 변경해야 해 보이면 중단하고 owning operator approval을 받는다.
 
 ### Steps
 
-1. 정적 구성 점검
-   - root context: `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
-   - service-local context: root networks/secrets를 선언한 임시 validation overlay를 함께 사용한다.
-2. 하드닝 기준 점검
-   - `bash scripts/hardening/check-all-hardening.sh 06-observability`
-3. 증상별 복구
-   - middleware 누락:
-     - 대상 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 재적용
-   - 의존성 race:
-     - Alloy/Grafana의 Loki/Tempo `depends_on`을 `service_healthy`로 복원
-   - 호스트 수집기 신호 불량:
-     - cAdvisor `/healthz` healthcheck 복원
-     - cAdvisor labels가 `traefik.http.routers.cadvisor.*`와 `${CADVISOR_PORT:-8080}` service port를 사용하도록 복원
-   - pyroscope route/availability 회귀:
-     - root-included `docker-compose.dev.yml`과 local `docker-compose.yml` 모두 `pyroscope` service를 렌더하도록 복원
-     - Pyroscope labels가 `traefik.http.routers.pyroscope.*`와 `${PYROSCOPE_PORT:-4040}` service port를 사용하도록 복원
-   - custom image 회귀:
-     - Loki/Tempo Dockerfile `USER 10001:10001` 복원
-     - entrypoint secret guard 복원
-4. 재검증
-   - `bash scripts/hardening/check-all-hardening.sh 06-observability`
-   - `bash scripts/validation/check-template-security-baseline.sh`
-   - `bash scripts/validation/check-doc-traceability.sh`
+1. 정적 구성과 hardening baseline을 캡처한다.
+
+   ```bash
+   HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh
+   bash scripts/hardening/check-all-hardening.sh 06-observability
+   ```
+
+2. Gateway/SSO middleware boundary를 확인한다.
+
+   ```bash
+   rg -n 'traefik.http.routers.(prometheus|alloy|grafana|alertmanager|pushgateway|loki|tempo|pyroscope|cadvisor).*middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   ```
+
+3. Health dependency and healthcheck boundary를 확인한다.
+
+   ```bash
+   rg -n 'condition: service_healthy|/healthz|/api/health|/-/healthy|/ready|/-/ready' infra/06-observability/docker-compose.yml
+   ```
+
+4. Custom image hardening boundary를 확인한다.
+
+   ```bash
+   rg -n 'USER 10001:10001|/run/secrets/minio_app_user_password|MINIO_APP_USER_PASSWORD|exec /usr/bin/(loki|tempo)' infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh infra/06-observability/tempo/Dockerfile infra/06-observability/tempo/docker-entrypoint.sh
+   ```
+
+5. Pyroscope and cAdvisor route availability boundary를 확인한다.
+
+   ```bash
+   rg -n 'pyroscope:|cadvisor:|traefik.http.routers.pyroscope|traefik.http.services.pyroscope.loadbalancer.server.port|traefik.http.routers.cadvisor|traefik.http.services.cadvisor.loadbalancer.server.port|PYROSCOPE_PORT|CADVISOR_PORT' infra/06-observability/docker-compose.yml infra/06-observability/docker-compose.dev.yml
+   ```
+
+6. 증상별 Git-managed rollback 후보를 확인한다.
+
+   ```bash
+   git diff -- infra/06-observability/docker-compose.yml infra/06-observability/docker-compose.dev.yml infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh infra/06-observability/tempo/Dockerfile infra/06-observability/tempo/docker-entrypoint.sh scripts/hardening/check-all-hardening.sh .github/workflows/ci-quality.yml
+   ```
+
+7. Hardening script, Compose, Dockerfile, or workflow 변경이 원인이면 직전 Git diff 단위로 되돌리고 재검증한다.
+
+   ```bash
+   HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh
+   bash scripts/hardening/check-all-hardening.sh 06-observability
+   bash scripts/validation/check-doc-traceability.sh
+   ```
+
+   이 런북은 route/middleware policy change, resource cap change, secret rotation, workflow gate redesign, or runtime security relaxation을 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
 
 ### Verification Steps
 
-- [ ] observability compose `config` 검증 통과
-- [ ] `check-all-hardening.sh 06-observability` 실패 0건
-- [ ] optimization-hardening 문서 링크/README 인덱스 최신화 확인
+- [ ] `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`가 통과한다.
+- [ ] `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패가 0건이다.
+- [ ] `bash scripts/validation/check-doc-traceability.sh`가 통과한다.
+- [ ] Observability route middleware, health dependencies, custom image hardening, Pyroscope/cAdvisor availability checks가 현재 policy와 일치한다.
+- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: CI `infrastructure-hardening` 상태, Traefik 라우터 상태, container health
-- **Evidence to Capture**:
-  - 변경 전후 `check-all-hardening.sh 06-observability` 출력
-  - compose `config` 결과
-  - 관련 compose/Dockerfile/docs diff
+- **Signals**: CI `infrastructure-hardening` 상태, Traefik router labels, container health, hardening script output
+- **Evidence to Capture**: before/after hardening output, compose validation result, affected router/service, relevant diff, final recovery or escalation state
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 롤백 대상 파일
-  - `infra/06-observability/docker-compose.yml`
-  - `infra/06-observability/loki/{Dockerfile,docker-entrypoint.sh}`
-  - `infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
-  - `scripts/hardening/check-all-hardening.sh 06-observability`
-  - `.github/workflows/ci-quality.yml`
-- [ ] 롤백 후 정적 검증 재실행
-- [ ] 운영 정책/가이드/태스크 문서 링크 재확인
+- Git-managed Compose, Dockerfile, entrypoint, hardening script, workflow, or operations doc change가 원인이면 직전 Git diff 단위로 되돌린다.
+- Runtime restart는 affected service의 documented runbook을 따른다.
+- Route/middleware policy, resource cap, secret reference, workflow gate, or runtime security relaxation은 이 런북의 안전 롤백 범위를 벗어난다.
 
 ### Agent Operations (If Applicable)
 
@@ -101,18 +121,18 @@ status: active
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- 실행한 명령, timestamp, operator or agent action을 기록한다.
+- Secret 값, token, credential payload 원문은 기록하지 않는다.
+- Hardening 장애는 failed check name, affected service/router, before/after command output, relevant redacted diff, and recovery/escalation state를 함께 기록한다.
+- Route/resource/secret/workflow/security policy 변경 필요성이 보이면 approval state를 기록한다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+이 런북에 명시된 validation, evidence capture, and Git-managed rollback만 사용한다. Route/middleware policy, resource cap, secret reference, workflow gate, runtime security relaxation, or external service 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+verification이 실패하거나, secret exposure risk가 보이거나, route/resource/secret/workflow/security 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 owning operator에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
 ## Related Documents
 
