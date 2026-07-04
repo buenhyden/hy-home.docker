@@ -1,10 +1,10 @@
-# [INFRA] 06-observability: prometheus
+# Prometheus
 
 > High-performance time-series database for system and application metrics.
 
 ## Scope
 
-Prometheus is the core metrics engine for the `hy-home.docker` platform. It scrapes targets defined via service discovery, stores time-series data, and evaluates alerting rules. It supports high-cardinality data and provides a powerful query language (PromQL).
+Prometheus is the core metrics engine for the `hy-home.docker` platform. It scrapes targets defined in `config/prometheus.yml`, stores time-series data in the `prometheus-data` volume, and evaluates alerting rules. Label cardinality must stay controlled through the operations policy.
 
 - **Role**: Metrics Aggregation & Alerting Engine.
 - **Layer**: `06-observability` (Telemetry Storage).
@@ -46,7 +46,7 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 
 1. **PromQL Optimization**: Use Recording Rules for expensive dashboard queries.
 2. **Rule Management**: Always validate with `promtool` before applying changes.
-3. **Scrape Settings**: Standard intervals: 15s (infra), 30s-60s (apps).
+3. **Scrape Settings**: Global interval is `30s`; service-specific overrides such as Prometheus `15s` and cAdvisor `1m` must remain intentional.
 4. **Networking**: Scrape targets must be reachable via the `infra_net`.
 
 ---
@@ -83,6 +83,8 @@ infra/06-observability/prometheus/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Validate Prometheus config with `docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml`.
+- Validate alert rules with `docker exec infra-prometheus promtool check rules /etc/prometheus/alert_rules/*.yml`.
 - Verify scrape targets are UP by checking the Prometheus UI Targets page after `prometheus.yml` changes.
 - Confirm alert rules load correctly by checking `docker logs infra-prometheus | grep -i 'error\|warn'`.
 
@@ -98,5 +100,6 @@ infra/06-observability/prometheus/
 
 - [infra/README.md](../../README.md)
 - [docs/05.operations/README.md](../../../docs/05.operations/README.md)
-- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
-- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
+- [Prometheus usage guide](../../../docs/05.operations/guides/06-observability/prometheus.md)
+- [Prometheus operations policy](../../../docs/05.operations/policies/06-observability/prometheus.md)
+- [Prometheus recovery runbook](../../../docs/05.operations/runbooks/06-observability/prometheus.md)

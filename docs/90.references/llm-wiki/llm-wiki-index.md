@@ -800,7 +800,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/runbooks/06-observability/grafana.md](../../05.operations/runbooks/06-observability/grafana.md) | Markdown reference |
 | [docs/05.operations/runbooks/06-observability/loki.md](../../05.operations/runbooks/06-observability/loki.md) | Markdown reference |
 | [docs/05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/runbooks/06-observability/optimization-hardening.md) | Markdown reference |
-| [docs/05.operations/runbooks/06-observability/prometheus-recovery.md](../../05.operations/runbooks/06-observability/prometheus-recovery.md) | Markdown reference |
 | [docs/05.operations/runbooks/06-observability/prometheus.md](../../05.operations/runbooks/06-observability/prometheus.md) | Markdown reference |
 | [docs/05.operations/runbooks/06-observability/pushgateway.md](../../05.operations/runbooks/06-observability/pushgateway.md) | Markdown reference |
 | [docs/05.operations/runbooks/06-observability/pyroscope.md](../../05.operations/runbooks/06-observability/pyroscope.md) | Markdown reference |

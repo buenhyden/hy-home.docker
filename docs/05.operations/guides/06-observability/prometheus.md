@@ -3,57 +3,73 @@ status: active
 ---
 <!-- Target: docs/05.operations/guides/06-observability/prometheus.md -->
 
-# [OPERATIONAL-POLICY] 06-observability: prometheus Usage Guide
+# Prometheus Usage Guide
 
 ## Usage
 
 ### Overview
 
-이 가이드는 [OPERATIONAL-POLICY] 06-observability: prometheus Usage Guide의 사용 맥락, 전제 조건, 일반 점검, runbook handoff 기준을 설명한다.
+이 가이드는 `06-observability` 계층의 Prometheus 사용 맥락과 설정 확인 방법을 설명한다. Prometheus는 `infra/06-observability/prometheus/config/prometheus.yml`의 scrape job을 기준으로 metrics를 수집하고, `config/alert_rules/`의 rule files를 평가하며, `prometheus-data` TSDB volume에 데이터를 저장한다.
 
 ### Usage Type
 
-`system-guide | how-to`
+`system-guide`
 
 ### Target Audience
 
-- Operators
-- Developers
-- Contributors
-- AI Agents
+- Operator
+- SRE
+- Developer
+- AI Agent
 
 ### Purpose
 
-- [OPERATIONAL-POLICY] 06-observability: prometheus Usage Guide의 운영 사용 맥락을 빠르게 파악한다.
-- 반복 실행 절차와 장애 대응은 연결된 runbook으로 넘긴다.
-- 통제 기준은 연결된 policy 문서와 분리해 유지한다.
+- Prometheus compose service, scrape config, alert rule, and TSDB boundary를 빠르게 파악한다.
+- 새 scrape target 또는 alert rule을 검토할 때 확인해야 할 파일과 검증 명령을 찾는다.
+- 반복 실행, reload, restart, TSDB symptom triage는 연결된 runbook으로 넘긴다.
 
 ### Prerequisites
 
-- Repository checkout 접근 가능
-- 관련 `docs/03.specs/` 또는 operations 문서 확인 가능
-- 필요한 경우 Docker/Docker Compose 명령 실행 권한
+- Repository checkout 접근 권한.
+- `infra/06-observability/docker-compose.yml` and `infra/06-observability/prometheus/config/prometheus.yml` 확인 권한.
+- 필요 시 `obs` Docker Compose profile과 `infra-prometheus` container에 대한 read-only inspection 권한.
+- Docker Secret values는 열람하지 않는다. 문서에는 secret ID와 file reference만 기록한다.
 
 ### Step-by-step Instructions
 
-1. 이 문서의 overview와 usage context를 확인한다.
-2. 관련 service, configuration, 또는 documentation target을 식별한다.
-3. `## Common Checks`의 검증 항목을 실행하거나 검토한다.
-4. 반복 절차, 장애 대응, rollback, escalation이 필요하면 `## Runbook Handoff`의 runbook으로 이동한다.
+1. Compose service boundary를 확인한다.
+
+   ```bash
+   rg -n 'service: template-stateful-high|image: prom/prometheus:v3.13.0|container_name: infra-prometheus|--web.enable-lifecycle|prometheus-data|prometheus.middlewares' infra/06-observability/docker-compose.yml
+   ```
+
+2. Scrape job과 rule file boundary를 확인한다.
+
+   ```bash
+   rg -n '^  - job_name:' infra/06-observability/prometheus/config/prometheus.yml
+   rg --files infra/06-observability/prometheus/config/alert_rules
+   ```
+
+   현재 repository 기준 scrape job은 34개, alert/recording rule file은 12개다.
+
+3. Config or rule 변경 전후로 Prometheus 내장 검증 도구를 사용한다.
+
+   ```bash
+   docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml
+   docker exec infra-prometheus promtool check rules /etc/prometheus/alert_rules/*.yml
+   ```
+
+4. Target 상태는 Prometheus UI `Targets` page 또는 Prometheus API로 확인한다. Route는 `https://prometheus.${DEFAULT_URL}`이며, container 내부 health endpoint는 `http://localhost:9090/-/healthy`다.
+
+5. Reload, restart, scrape 장애 대응, TSDB symptom triage가 필요하면 runbook으로 이동한다.
 
 ### Common Pitfalls
 
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
-
-### Implementation Context (KR)
-
-이 문서는 `docs/05.operations/guides/06-observability/prometheus.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
-
-### Prometheus System Usage
-
-Prometheus is the core metrics engine for the `hy-home.docker` platform, responsible for metrics collection, alerting, and time-series storage.
+- Prometheus restart 명령에서 profile과 compose file을 생략하면 다른 project context에서 실행될 수 있다. 운영 절차는 runbook의 profile 포함 명령을 따른다.
+- 현재 compose command에는 explicit `--storage.tsdb.retention.*` flag가 없다. retention 동작을 문서화할 때는 policy와 compose 근거를 함께 확인한다.
+- High-cardinality label을 추가하면 TSDB memory와 query cost가 커진다. label 추가는 policy의 cardinality review 대상이다.
+- Rule file 변경 후 `promtool`을 실행하지 않으면 reload 시점에 rule evaluation failure로 이어질 수 있다.
+- 복구 절차, WAL/TSDB 조치, rollback 판단을 guide에 직접 넣지 않는다. 해당 내용은 runbook에서 evidence와 escalation 기준으로 처리한다.
 
 ### Architecture
 
@@ -83,49 +99,47 @@ graph TD
 
 #### 1. Scrape Configurations
 
-The `prometheus.yml` file contains precise configurations for discovering and scraping various components:
+`prometheus.yml`은 Prometheus가 수집하는 scrape job의 source of truth다.
 
-- **Internal Monitoring**: Self-scraping and Alertmanager monitoring.
-- **Telemetry Pipe**: Grafana Alloy integration for logs/metrics collection.
-- **Infrastructure Tier**: Scrapers for PostgreSQL 17/18 family services, Valkey, Kafka, and MinIO.
-- **System Layer**: cAdvisor for container-level resource metrics.
+- **Internal monitoring**: Prometheus self-scrape, Alertmanager, Alloy, gateway and observability services.
+- **Infrastructure tier**: PostgreSQL 17/18 family services, Valkey, Kafka, MinIO, Qdrant, OpenSearch, etcd.
+- **Kubernetes/GitOps**: k3d NodePort targets for Argo CD, kube-state-metrics, Istio, and Argo Rollouts.
+- **Applications**: Keycloak, n8n, Airflow, Vault, Ollama exporter.
 
 #### 2. Alerting Rule System
 
-Rules are partitioned into domain-specific files in `config/alert_rules/`:
+Rules are partitioned into domain-specific files in `config/alert_rules/`.
 
-- `datastores.yml`: Database health and performance alerts.
-- `infra.yml`: General infrastructure and service availability.
-- `prometheus.yml`: Self-monitoring for the metrics engine.
-- `gateway.yml`: Traffic and entrypoint health (Traefik).
+- Local domain files use the `alert_rules.local.*.yml` naming pattern.
+- Kubernetes, Keycloak, Vault, and recording rules are loaded as explicit files in `prometheus.yml`.
+- Rule changes must be validated before reload.
 
 #### 3. Storage (TSDB)
 
-- **Retention**: Data is persisted in a dedicated volume with a configurable retention period.
-- **Performance**: Recording rules are used to pre-calculate expensive PromQL expressions.
+- Prometheus data is persisted in the `prometheus-data` volume.
+- Current compose does not declare explicit retention flags.
+- Recording rules are used to pre-calculate expensive PromQL expressions.
 
 ### Integration Patterns
 
 #### Grafana DataSource
 
-Prometheus is configured as the primary Prometheus datasource in Grafana, enabling dashboarding for all system components.
+Prometheus is the primary metrics datasource for Grafana dashboards.
 
 #### Alertmanager Integration
 
-Prometheus evaluates rules every `15s` and dispatches active alerts to Alertmanager for deduplication and notification routing.
+Prometheus evaluates rules on the configured `evaluation_interval` and dispatches active alerts to Alertmanager for deduplication and notification routing.
 
 #### Keycloak Observation
 
-Prometheus scrapes the Keycloak `/metrics` endpoint (enabled via theme/provider) to monitor authentication health.
-
----
-**AI Agent Note**: When adding new services, ensure they expose a `/metrics` endpoint and register them in `prometheus.yml` under the appropriate job name.
-
----
+Prometheus scrapes `keycloak:9000` with `domain: "auth"` label in the current config.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `rg -n '^  - job_name:' infra/06-observability/prometheus/config/prometheus.yml`
+- `rg --files infra/06-observability/prometheus/config/alert_rules`
+- `docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml`
+- `docker exec infra-prometheus promtool check rules /etc/prometheus/alert_rules/*.yml`
 
 ## Runbook Handoff
 

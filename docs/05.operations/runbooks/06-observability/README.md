@@ -40,7 +40,6 @@ runbooks/06-observability/
 ├── grafana.md
 ├── loki.md
 ├── optimization-hardening.md
-├── prometheus-recovery.md
 ├── prometheus.md
 ├── pushgateway.md
 ├── pyroscope.md
@@ -62,8 +61,7 @@ runbooks/06-observability/
 | [grafana.md](./grafana.md) | Grafana SSO, datasource, and dashboard evidence procedure |
 | [loki.md](./loki.md) | Loki readiness and MinIO storage evidence procedure |
 | [optimization-hardening.md](./optimization-hardening.md) | Gateway/route/health hardening recovery procedure |
-| [prometheus-recovery.md](./prometheus-recovery.md) | Prometheus recovery reference retained for specific TSDB failures |
-| [prometheus.md](./prometheus.md) | Prometheus readiness, scrape, and alert rule evidence procedure |
+| [prometheus.md](./prometheus.md) | Prometheus readiness, scrape, alert rule, reload, restart, and TSDB symptom evidence procedure |
 | [pushgateway.md](./pushgateway.md) | Pushgateway stale metric evidence and cleanup boundary procedure |
 | [pyroscope.md](./pyroscope.md) | Pyroscope readiness and local storage evidence procedure |
 | [tempo.md](./tempo.md) | Tempo readiness and trace storage evidence procedure |

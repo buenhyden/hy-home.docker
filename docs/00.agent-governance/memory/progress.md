@@ -575,6 +575,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Pushgateway documentation and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Pushgateway compose/config scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Prometheus Guide and Runbook Consolidation (2026-07-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Prometheus usage guide | `docs/05.operations/guides/06-observability/prometheus.md` | ✅ Updated | Removed the legacy `[OPERATIONAL-POLICY]` title/purpose residue and rewrote the guide around current compose, scrape job, alert rule, TSDB, validation, and runbook handoff boundaries. |
+| Prometheus recovery runbook | `docs/05.operations/runbooks/06-observability/prometheus.md` | ✅ Consolidated | Replaced mixed legacy recovery/template content with one runbook covering readiness, config/rule validation, lifecycle reload, scrape target triage, restart, TSDB symptom escalation, evidence, rollback, and escalation. |
+| Duplicate runbook removal | `docs/05.operations/runbooks/06-observability/prometheus-recovery.md` | ✅ Removed | Folded the TSDB symptom boundary into the canonical `prometheus.md` runbook and removed the duplicate active runbook plus README index entry. |
+| Current-truth boundary | `infra/06-observability/prometheus/README.md` | ✅ Clarified | Preserved image `prom/prometheus:v3.13.0`, 34 scrape jobs, 12 rule files, `prometheus-data`, no explicit retention flag, controlled cardinality wording, and direct guide/policy/runbook links. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Prometheus documentation, the generated LLM Wiki index, and progress memory only; no runtime config, Compose, validator, workflow, provider runtime, secret material, `.env`, or archive tombstone changed. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, targeted Prometheus compose/config/reference scans, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
