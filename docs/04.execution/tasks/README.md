@@ -145,6 +145,7 @@ docs/04.execution/tasks/
 ├── 2026-07-05-provider-semantic-parity-validator.md # Completed provider semantic parity validator evidence
 ├── 2026-07-05-compose-profile-service-coverage-snapshot.md # Completed generated Compose profile/service coverage snapshot evidence
 ├── 2026-07-05-gap-routing-recommendation.md # Completed gap-to-stage routing recommendation evidence
+├── 2026-07-05-agent-output-eval-fixtures.md # Completed agent-output eval fixture pack evidence
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration evidence
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract evidence
 └── README.md                                # This file
@@ -226,6 +227,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Provider Semantic Parity Validator Task**: [2026-07-05-provider-semantic-parity-validator.md](./2026-07-05-provider-semantic-parity-validator.md)
 - **Compose Profile Service Coverage Snapshot Task**: [2026-07-05-compose-profile-service-coverage-snapshot.md](./2026-07-05-compose-profile-service-coverage-snapshot.md)
 - **Gap Routing Recommendation Task**: [2026-07-05-gap-routing-recommendation.md](./2026-07-05-gap-routing-recommendation.md)
+- **Agent Output Eval Fixtures Task**: [2026-07-05-agent-output-eval-fixtures.md](./2026-07-05-agent-output-eval-fixtures.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
 - **Agent Governance Phase 4 Closure Reconciliation Task**: [2026-06-02-agent-governance-phase-4-closure-reconciliation.md](./2026-06-02-agent-governance-phase-4-closure-reconciliation.md)
 - **Docs Implementation Reconciliation Task**: [2026-06-02-docs-implementation-reconciliation.md](./2026-06-02-docs-implementation-reconciliation.md)

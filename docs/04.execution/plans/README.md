@@ -86,6 +86,7 @@ docs/04.execution/plans/
 ├── 2026-07-05-provider-semantic-parity-validator.md # Completed provider semantic parity validator plan
 ├── 2026-07-05-compose-profile-service-coverage-snapshot.md # Completed generated Compose profile/service coverage snapshot plan
 ├── 2026-07-05-gap-routing-recommendation.md # Completed gap-to-stage routing recommendation plan
+├── 2026-07-05-agent-output-eval-fixtures.md # Completed agent-output eval fixture pack plan
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration plan
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract plan
 └── README.md                               # This file
@@ -177,6 +178,7 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Provider Semantic Parity Validator Plan**: [2026-07-05-provider-semantic-parity-validator.md](./2026-07-05-provider-semantic-parity-validator.md)
 - **Compose Profile Service Coverage Snapshot Plan**: [2026-07-05-compose-profile-service-coverage-snapshot.md](./2026-07-05-compose-profile-service-coverage-snapshot.md)
 - **Gap Routing Recommendation Plan**: [2026-07-05-gap-routing-recommendation.md](./2026-07-05-gap-routing-recommendation.md)
+- **Agent Output Eval Fixtures Plan**: [2026-07-05-agent-output-eval-fixtures.md](./2026-07-05-agent-output-eval-fixtures.md)
 - **Workspace Support Surface Contract Plan**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
 - **Template System Numbered SDLC Paths Plan**: [2026-07-05-template-system-numbered-sdlc-paths.md](./2026-07-05-template-system-numbered-sdlc-paths.md)
 - **Workspace Document Contract Audit Pack Plan**: [2026-07-03-workspace-document-contract-audit-pack.md](./2026-07-03-workspace-document-contract-audit-pack.md)

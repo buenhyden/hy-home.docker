@@ -418,6 +418,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md](../../03.specs/108-compose-profile-service-coverage-snapshot/spec.md) | Markdown reference |
 | [docs/03.specs/109-gap-routing-recommendation/README.md](../../03.specs/109-gap-routing-recommendation/README.md) | folder index |
 | [docs/03.specs/109-gap-routing-recommendation/spec.md](../../03.specs/109-gap-routing-recommendation/spec.md) | Markdown reference |
+| [docs/03.specs/110-agent-output-eval-fixtures/spec.md](../../03.specs/110-agent-output-eval-fixtures/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -486,6 +487,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md](../../04.execution/plans/2026-07-03-template-system-contract-standardization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md](../../04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md](../../04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-05-agent-output-eval-fixtures.md](../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md](../../04.execution/plans/2026-07-05-agentic-research-pack-refresh.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md](../../04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md) | Markdown reference |
@@ -587,6 +589,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-04-frontmatter-routing-evidence-refresh.md](../../04.execution/tasks/2026-07-04-frontmatter-routing-evidence-refresh.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-04-github-branch-protection-reverification.md](../../04.execution/tasks/2026-07-04-github-branch-protection-reverification.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-04-infra-tech-stack-version-refresh.md](../../04.execution/tasks/2026-07-04-infra-tech-stack-version-refresh.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md](../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md](../../04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md](../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md) | Markdown reference |
@@ -903,6 +906,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/glossary/README.md](../data/glossary/README.md) | folder index |
 | [docs/90.references/data/glossary/stable-reference-terms.md](../data/glossary/stable-reference-terms.md) | Markdown reference |
 | [docs/90.references/data/governance/README.md](../data/governance/README.md) | folder index |
+| [docs/90.references/data/governance/agent-output-eval-fixtures.md](../data/governance/agent-output-eval-fixtures.md) | Markdown reference |
 | [docs/90.references/data/governance/gap-to-stage-routing.md](../data/governance/gap-to-stage-routing.md) | Markdown reference |
 | [docs/90.references/data/hads/README.md](../data/hads/README.md) | folder index |
 | [docs/90.references/data/hads/profile.md](../data/hads/profile.md) | Markdown reference |

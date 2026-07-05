@@ -34,6 +34,7 @@ status: active
 - Docker image/version interpretation references
 - Generated Docker Compose profile/service coverage inventory
 - Stable governance routing reference data
+- Stable agent-output eval fixture reference data
 - Stable glossary and stage-boundary vocabulary
 - HADS profile and validation boundary
 - Kubernetes/k3s/k3d migration reference context
@@ -67,6 +68,7 @@ data/
 - [glossary/README.md](./glossary/README.md) - stable reference terminology category
 - [glossary/stable-reference-terms.md](./glossary/stable-reference-terms.md) - shared terms for reference-stage boundaries
 - [governance/README.md](./governance/README.md) - governance routing reference data category
+- [governance/agent-output-eval-fixtures.md](./governance/agent-output-eval-fixtures.md) - agent-output eval fixture catalog for docs, provider, and infra tasks
 - [governance/gap-to-stage-routing.md](./governance/gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
 - [hads/README.md](./hads/README.md) - HADS profile category
 - [hads/profile.md](./hads/profile.md) - HADS profile and validation contract

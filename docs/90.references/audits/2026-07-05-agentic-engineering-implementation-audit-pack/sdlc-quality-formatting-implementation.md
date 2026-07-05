@@ -90,7 +90,7 @@ validation/hardening surfaces, and quality-related research.
 | Gap | Status | Follow-up Direction |
 | --- | --- | --- |
 | Universal formatting/linting coverage | Partially Implemented | Add a scoped formatting/linting inventory before introducing new gates. |
-| Agent-output eval as QA | Partially Implemented | Create eval fixtures and criteria for recurring agent tasks. |
+| Agent-output eval as QA | Fixture Pack Implemented / Runner Partial | Use [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) for recurring docs, provider, and infra tasks; executable QA gating remains future work. |
 | CI/CD release/deploy automation | Not Implemented / Out of Scope | Keep deployment automation separate from validation CI unless explicitly approved. |
 | Security maturity framework mapping | Implemented / Tooling Partial | SSDF/SLSA/OpenSSF Scorecard mapping exists in [security framework maturity coverage](./security-framework-maturity.md); SBOM, provenance, attestation, and vulnerability gates remain future work. |
 

@@ -97,14 +97,15 @@ or enforcement depth differs from repository policy.
 | --- | --- | --- |
 | Semantic parity checks across provider adapter content are limited. | Provider surfaces can match catalog shape while drifting in detailed behavior. | Stage 00 governance / validation follow-up |
 | Gemini native hook and subagent parity is not proven by official sources. | Gemini must remain behavioral/pointer parity, not first-class parity. | Provider research follow-up |
-| Agent-result eval harness is not a full CI gate. | Loop engineering maturity depends on manual review and task evidence for many agent outputs. | QA / agentic workflow follow-up |
+| Agent-result eval harness now has fixtures but no executable gate. | Loop engineering maturity still depends on manual review and task evidence for many agent outputs. | [Agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) |
 | Security framework adoption is reference-backed and now mapped, but not fully automated. | SSDF/SLSA maturity cannot be claimed as fully implemented because SBOM, provenance, attestation, and vulnerability-gate evidence is still incomplete. | [Security framework maturity coverage](./security-framework-maturity.md) |
 
 ## Automation Impact
 
 The highest-value automation candidates are semantic provider adapter diffing,
-agent-output eval fixtures, automated audit-matrix refresh from repo paths, and
-CI summary artifacts that map local gates to remote required checks.
+an executable agent-output eval runner, automated audit-matrix refresh from
+repo paths, and CI summary artifacts that map local gates to remote required
+checks.
 
 ## Source Rules
 

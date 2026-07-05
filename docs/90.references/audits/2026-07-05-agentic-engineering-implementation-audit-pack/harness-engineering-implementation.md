@@ -94,7 +94,7 @@ contracts, and task evidence.
 | --- | --- | --- |
 | Provider adapter semantic parity | Partially Implemented | Add a validator that compares important behavioral clauses, not only names, models, and scope imports. |
 | Gemini native hooks and subagents | Partially Implemented | Keep Gemini as behavioral/pointer parity until official sources support native parity. |
-| Agent eval harness | Partially Implemented | Add eval fixtures for common agent tasks, report scoring, and regression tracking. |
+| Agent eval harness | Fixture Pack Implemented / Runner Partial | [Agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) cover common docs, provider, and infra tasks; report scoring automation and regression tracking remain future work. |
 | Supply-chain evidence | Partially Implemented | Consider SLSA/attestation mapping as a separate security plan. |
 
 ## Automation Impact

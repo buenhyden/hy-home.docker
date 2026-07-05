@@ -65,7 +65,7 @@ and audit gaps in the overview, harness, and loop reports.
 | LLM Wiki freshness | Implemented | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/llm-wiki-index.md` | Add report grouping by stage/category for audit consumers. |
 | Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml`, [Compose profile coverage reference](../../data/docker/compose-profile-service-coverage.md), `scripts/operations/generate-compose-profile-service-coverage.sh` | Profile-to-service coverage snapshot is now generated and freshness-checked locally; future work can publish grouped summaries into CI or audit reports if useful. |
 | Tech-stack version sync | Implemented | `scripts/operations/sync-tech-stack-versions.sh`, `infra/tech-stack.versions.json` | Add drift severity and source provenance summary. |
-| Agent-output eval | Partially Implemented | [loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md), Stage 04 evidence patterns | Create small eval fixtures for docs, provider, and infra tasks. |
+| Agent-output eval | Fixture Pack Implemented / Runner Partial | [loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md), Stage 04 evidence patterns, [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) | Small docs/provider/infra fixtures now exist; executable runner or CI gate remains future work. |
 | Gap routing | Implemented | Stage 04 task evidence, audit gap tables, [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), [gap routing reference](../../data/governance/gap-to-stage-routing.md), `scripts/validation/recommend-gap-routing.sh` | Gap-to-stage suggestions are now available locally for text and path inputs; future work can decide whether to publish routing summaries into audit reports. |
 | Security maturity | Mapped / Partially Implemented | `.github/workflows/ci-quality.yml`, [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md), [security framework maturity coverage](./security-framework-maturity.md) | SSDF/SLSA/OpenSSF Scorecard coverage is now mapped; tooling adoption, SBOM, provenance, and vulnerability gates remain future work. |
 
@@ -76,10 +76,10 @@ and audit gaps in the overview, harness, and loop reports.
   generated index freshness, and workflow security scanning.
 - A local advisory changed-path QA recommendation report now exists; future
   work can decide whether to publish that output into PR or CI summaries.
-- Provider semantic role-scope parity, Compose profile coverage inventory, and
-  security framework maturity mapping are now covered. The remaining
-  highest-value gaps are agent-output correctness, vulnerability gating, SBOM,
-  and provenance/attestation automation.
+- Provider semantic role-scope parity, Compose profile coverage inventory,
+  agent-output eval fixtures, and security framework maturity mapping are now
+  covered. The remaining highest-value gaps are executable eval runner
+  adoption, vulnerability gating, SBOM, and provenance/attestation automation.
 - Gemini-specific automation should remain reminder/checklist based until
   native hook/subagent support is confirmed by official sources.
 
@@ -89,7 +89,7 @@ and audit gaps in the overview, harness, and loop reports.
 | --- | --- | --- |
 | AEA-AUTO-001 | PR/CI summary integration for the changed-path QA-gate recommendation report | Stage 04 plan |
 | AEA-AUTO-002 | Provider semantic role-scope parity validator | Implemented by [Provider semantic parity validator spec](../../../03.specs/107-provider-semantic-parity-validator/spec.md) and [task evidence](../../../04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md); deeper free-text clause comparison remains optional future work. |
-| AEA-AUTO-003 | Agent-output eval fixture pack | Stage 03 spec + Stage 04 plan |
+| AEA-AUTO-003 | Agent-output eval fixture pack | Implemented by [Agent output eval fixtures spec](../../../03.specs/110-agent-output-eval-fixtures/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md), and [fixture reference](../../data/governance/agent-output-eval-fixtures.md); executable runner or CI gate remains optional future work. |
 | AEA-AUTO-004 | Gap-to-stage routing generator for the Stage 00 manual routing contract | Implemented by [Gap routing recommendation spec](../../../03.specs/109-gap-routing-recommendation/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md), [gap routing reference](../../data/governance/gap-to-stage-routing.md), and `scripts/validation/recommend-gap-routing.sh`. |
 | AEA-AUTO-005 | Compose profile/service coverage snapshot | Implemented by [Compose profile service coverage snapshot spec](../../../03.specs/108-compose-profile-service-coverage-snapshot/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md), [generated Docker data reference](../../data/docker/compose-profile-service-coverage.md), and `scripts/operations/generate-compose-profile-service-coverage.sh`. |
 | AEA-AUTO-006 | SSDF/SLSA maturity coverage matrix | Implemented by [Security framework maturity coverage](./security-framework-maturity.md); follow-up security tooling remains future Stage 03/04 work. |
