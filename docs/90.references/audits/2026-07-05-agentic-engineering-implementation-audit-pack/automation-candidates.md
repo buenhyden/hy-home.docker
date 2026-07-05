@@ -66,7 +66,7 @@ and audit gaps in the overview, harness, and loop reports.
 | Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml` | Generate profile-to-service coverage snapshot for audit reports. |
 | Tech-stack version sync | Implemented | `scripts/operations/sync-tech-stack-versions.sh`, `infra/tech-stack.versions.json` | Add drift severity and source provenance summary. |
 | Agent-output eval | Partially Implemented | [loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md), Stage 04 evidence patterns | Create small eval fixtures for docs, provider, and infra tasks. |
-| Gap routing | Partially Implemented | Stage 04 task evidence and audit gap tables | Generate gap-to-stage suggestions: policy, spec, plan, runbook, validator, or reference. |
+| Gap routing | Partially Implemented | Stage 04 task evidence, audit gap tables, [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) | Generate gap-to-stage suggestions from the manual routing contract: policy, spec, plan, runbook, validator, or reference. |
 | Security maturity | Partially Implemented | `.github/workflows/ci-quality.yml`, [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | Add SSDF/SLSA coverage matrix as a separate security audit. |
 
 ## Findings
@@ -87,7 +87,7 @@ and audit gaps in the overview, harness, and loop reports.
 | AEA-AUTO-001 | Changed-path to QA-gate recommendation report | Stage 03 spec + Stage 04 plan |
 | AEA-AUTO-002 | Provider semantic parity validator | Stage 03 spec + Stage 04 plan |
 | AEA-AUTO-003 | Agent-output eval fixture pack | Stage 03 spec + Stage 04 plan |
-| AEA-AUTO-004 | Gap-to-stage routing generator | Stage 04 plan or Stage 90 data reference |
+| AEA-AUTO-004 | Gap-to-stage routing generator for the Stage 00 manual routing contract | Stage 04 plan or Stage 90 data reference |
 | AEA-AUTO-005 | Compose profile/service coverage snapshot | Stage 90 data reference or scripts plan |
 | AEA-AUTO-006 | SSDF/SLSA maturity coverage matrix | Stage 90 audit pack or security spec |
 

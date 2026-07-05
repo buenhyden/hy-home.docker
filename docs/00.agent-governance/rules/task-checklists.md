@@ -16,6 +16,8 @@ Unified task execution checklists for all agent work.
       repository stages before editing.
 - [ ] Confirm whether `docs/01` to `docs/99` are in read-only mode.
 - [ ] Identify required input documents (PRD, ARD, ADR, Specs, Plans, Tasks).
+- [ ] For audit/review/validation gaps, classify the canonical owner with
+      `documentation-protocol.md` gap-to-stage routing before editing.
 - [ ] Review `docs/00.agent-governance/memory/README.md` and `progress.md`; retrieve relevant memory notes when the task touches governance, docs, runtime, or repeated failures.
 - [ ] Identify ambiguity. Ask before state changes if a wrong assumption could
       change scope, policy, security posture, or verification outcome.
@@ -40,6 +42,8 @@ Unified task execution checklists for all agent work.
 - [ ] Keep external strategy outputs in canonical stage paths; do not create
       active non-stage specs, plans, or task logs.
 - [ ] Preserve SSoT traceability across affected documentation artifacts.
+- [ ] Route each new gap to exactly one canonical owner first; use downstream
+      links instead of duplicating rules or evidence across stages.
 - [ ] Maintain language policy consistency (English governance, Korean human-facing docs).
 - [ ] Keep assumptions explicit and update them when repository evidence disproves them.
 - [ ] Validate new/changed links as edits are made.

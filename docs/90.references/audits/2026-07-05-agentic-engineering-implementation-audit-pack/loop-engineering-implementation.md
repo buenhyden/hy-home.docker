@@ -73,7 +73,7 @@ indexes.
 | Memory / progress loop | Implemented | [progress memory](../../../00.agent-governance/memory/progress.md), [memory README](../../../00.agent-governance/memory/README.md) | Agents must review and update progress memory during repository work. |
 | Generated index freshness loop | Implemented | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/llm-wiki-index.md` | LLM Wiki freshness is checked by repo contracts. |
 | Human approval loop | Implemented | [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md), task approved-surface evidence | Protected surfaces and hard stops require explicit approval and evidence. |
-| Operations learning loop | Partially Implemented | `docs/05.operations/**`, [HAFE guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md), incidents structure | Operations docs and postmortem routing exist; not every audit gap has an operational feedback artifact. |
+| Operations learning loop | Partially Implemented | `docs/05.operations/**`, [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), [HAFE guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md), incidents structure | Operations docs, postmortem routing, and manual gap-to-stage routing exist; not every audit gap has generated closure review or operational feedback evidence. |
 | Eval / semantic scoring loop | Partially Implemented | [loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md), scripts/CI surface | Research and QA concepts exist, but general-purpose agent-output eval is not a full CI gate. |
 
 ## Findings
@@ -95,13 +95,13 @@ indexes.
 | --- | --- | --- |
 | Agent-output eval loop is not generalized. | Regression risk remains for agent behavior that passes structural checks. | Create small eval fixtures for common docs, provider, and infra tasks. |
 | Provider semantic parity loop is partial. | Adapter files may drift in behavioral detail even when catalog parity passes. | Add diff/extraction checks for critical clauses. |
-| Operations learning loop is selective. | Audit findings may not consistently become policies, runbooks, or backlog items. | Add gap-to-stage routing guidance or a recurring audit closure review. |
+| Operations learning loop is selective. | Audit findings may not consistently become policies, runbooks, or backlog items. | Manual gap-to-stage routing now exists in Stage 00; add a recurring audit closure review or generated routing report if stronger automation is needed. |
 | Gemini behavioral parity loop is manual. | Gemini users must remember hook-equivalent obligations. | Keep explicit Gemini gap rows and revalidate official docs periodically. |
 
 ## Automation Impact
 
 Future loop automation should focus on semantic checks: provider-adapter clause
-diffing, audit-gap routing, agent-output eval fixtures, and a generated loop
+diffing, automated audit-gap routing, agent-output eval fixtures, and a generated loop
 coverage matrix that is refreshed from repository paths.
 
 ## Source Rules

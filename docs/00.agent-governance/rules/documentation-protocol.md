@@ -195,6 +195,32 @@ implementation and should leave the active chain:
 3. Record the migration in `docs/98.archive/README.md`.
 4. Do not link active documents back to the archive tombstone.
 
+### 5.1 Gap-to-Stage Routing
+
+When an audit, review, validation failure, or agent handoff finds a gap, route
+the gap to the canonical owner before editing. Do not duplicate the same rule
+or evidence across stages.
+
+| Gap Type | Canonical Owner | Routing Rule |
+| --- | --- | --- |
+| Governance, provider behavior, agent execution rule, approval boundary, or memory contract | `docs/00.agent-governance/` | Update the rule/provider/memory surface only when the policy change is approved; otherwise record a memory note or task gap. |
+| User value, scope, acceptance criteria, or product intent | `docs/01.requirements/` | Create or update the numbered PRD. Link downstream architecture/spec work instead of embedding design details. |
+| Architecture shape, major technical decision, quality attribute, or tradeoff | `docs/02.architecture/` | Use ARD for enduring architecture and ADR for a decision record. Link PRD/spec evidence. |
+| Interface, data model, service contract, agent contract, or verification contract | `docs/03.specs/` | Update the numbered spec folder and optional support contract files. Do not record execution evidence here. |
+| Work sequencing, approval gates, rollback strategy, or implementation backlog | `docs/04.execution/plans/` | Create or update a plan. Keep actual execution results in the sibling task document. |
+| Completed work evidence, validation output, deviation, or implementation disposition | `docs/04.execution/tasks/` | Record the task result, checks, protected-surface boundary, and remaining gaps. |
+| Operator usage, operational control, recovery procedure, incident, or postmortem | `docs/05.operations/` | Route usage to `guides/`, policy to `policies/`, recovery to `runbooks/`, and incident evidence to `incidents/`. |
+| Source-backed research, audit snapshot, data reference, learning note, or LLM navigation | `docs/90.references/` | Keep it evidence-only. Do not make it active policy, plan, task evidence, or runtime truth. |
+| Obsolete or implementation-conflicting document that must leave the active chain | `docs/98.archive/` | Create a tombstone, update the archive ledger, and remove active references. |
+| Template, frontmatter, lifecycle, or authoring contract | `docs/99.templates/` | Put reusable rules in `support/` and copyable document shapes in `templates/`. |
+| Runtime, secret value, credential, remote GitHub mutation, deployment, or uncertain implementation drift | Stage 04 task/audit gap first | Record as out-of-scope or approval-gated unless the current task explicitly approves that surface and names validation/rollback evidence. |
+
+If one gap spans multiple stages, update the earliest canonical owner that
+changes the decision or rule, then link downstream artifacts. For example, a
+new operational requirement starts in `docs/01.requirements/`, design belongs
+in `docs/02.architecture/` or `docs/03.specs/`, rollout belongs in
+`docs/04.execution/`, and operator procedure belongs in `docs/05.operations/`.
+
 ## 6. Maintenance and Safety
 
 - Remove obsolete instructions quickly in editable scope.
