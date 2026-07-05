@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md -->
@@ -91,7 +91,7 @@ An existing Stage 90 research pack already covers much of the requested scope. T
 - Modify: `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md`
 - Modify if needed: `docs/04.execution/tasks/README.md`
 
-- [ ] **Step 1: Read task template**
+- [x] **Step 1: Read task template**
 
 Run:
 
@@ -101,7 +101,7 @@ cat docs/99.templates/templates/sdlc/task.template.md
 
 Expected: template shows required task evidence sections and `## Verification Summary`.
 
-- [ ] **Step 2: Confirm task evidence file**
+- [x] **Step 2: Confirm task evidence file**
 
 Confirm `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md` contains this minimum evidence scaffold:
 
@@ -159,7 +159,7 @@ Validation runs after research documents and indexes are updated.
 - [Research references](../../90.references/research/README.md)
 ```
 
-- [ ] **Step 3: Check parent task README**
+- [x] **Step 3: Check parent task README**
 
 Run:
 
@@ -169,7 +169,7 @@ rg -n "agentic-research-pack-refresh|2026-07-05" docs/04.execution/tasks/README.
 
 Expected: if no entry exists, add a single related-document/index entry using the local README pattern.
 
-- [ ] **Step 4: Validate task scaffold**
+- [x] **Step 4: Validate task scaffold**
 
 Run:
 
@@ -180,7 +180,7 @@ bash scripts/validation/check-repo-contracts.sh
 
 Expected: `git diff --check` has no output and repo contract reports `failures=0`.
 
-- [ ] **Step 5: Commit task evidence updates**
+- [x] **Step 5: Commit task evidence updates**
 
 Run:
 
@@ -198,7 +198,7 @@ Expected: commit succeeds.
 - Read: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/*.md`
 - Read: `docs/00.agent-governance/**`, `scripts/README.md`, `.github/workflows/ci-quality.yml`, `infra/README.md`
 
-- [ ] **Step 1: Inventory current research pack**
+- [x] **Step 1: Inventory current research pack**
 
 Run:
 
@@ -208,7 +208,7 @@ rg --files docs/90.references/research/2026-07-05-agentic-research-pack-refresh 
 
 Expected: existing research files are listed, including `workspace-baseline.md`, `harness-engineering.md`, `loop-engineering.md`, `spec-driven-sdlc.md`, `quality-ci-formatting.md`, and `provider-implementation-comparison.md`.
 
-- [ ] **Step 2: Revalidate official external source set**
+- [x] **Step 2: Revalidate official external source set**
 
 Use web verification for these primary sources before editing research text:
 
@@ -240,7 +240,7 @@ Reflexion paper: https://arxiv.org/abs/2303.11366
 
 Expected: task evidence records each source class and whether it supports provider, Docker Compose, infrastructure, security, quality, loop, or SDLC analysis.
 
-- [ ] **Step 3: Inventory repo-local evidence**
+- [x] **Step 3: Inventory repo-local evidence**
 
 Run:
 
@@ -250,7 +250,7 @@ rg -n "CI/CD|QA|Formatting|Linting|Docker Compose|Security|workflow|pipeline|aut
 
 Expected: output identifies repo-local sources. Record only summarized source roles in the task evidence, not raw output.
 
-- [ ] **Step 4: Update task evidence source inventory**
+- [x] **Step 4: Update task evidence source inventory**
 
 Modify `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md` so `## Source Inventory` includes rows for:
 
@@ -262,7 +262,7 @@ Modify `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md` so 
 | Repo-local Evidence | Stage 00, scripts, CI workflow, infra, Stage 90 research pack | Workspace-specific baseline and gap analysis | Revalidated 2026-07-05 |
 ```
 
-- [ ] **Step 5: Commit source inventory**
+- [x] **Step 5: Commit source inventory**
 
 Run:
 
@@ -284,7 +284,7 @@ Expected: commit succeeds.
 - Modify: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md`
 - Modify: `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md`
 
-- [ ] **Step 1: Refresh workspace baseline coverage**
+- [x] **Step 1: Refresh workspace baseline coverage**
 
 Update `workspace-baseline.md` so the category map explicitly covers:
 
@@ -296,7 +296,7 @@ Update `workspace-baseline.md` so the category map explicitly covers:
 
 Expected: no duplicate rows with the same role remain.
 
-- [ ] **Step 2: Refresh harness engineering**
+- [x] **Step 2: Refresh harness engineering**
 
 Update `harness-engineering.md` so `Harness Components` includes Docker Compose/runtime infrastructure, security boundaries, and source freshness caveats:
 
@@ -307,7 +307,7 @@ Update `harness-engineering.md` so `Harness Components` includes Docker Compose/
 
 Expected: Application notes distinguish test/eval harness from infrastructure and security harnesses.
 
-- [ ] **Step 3: Refresh loop engineering**
+- [x] **Step 3: Refresh loop engineering**
 
 Update `loop-engineering.md` so the loop map includes:
 
@@ -318,7 +318,7 @@ Update `loop-engineering.md` so the loop map includes:
 
 Expected: analysis explains that automation loops do not authorize external actions without approval.
 
-- [ ] **Step 4: Refresh provider comparison**
+- [x] **Step 4: Refresh provider comparison**
 
 Update `provider-implementation-comparison.md` only after official provider source revalidation. Required comparison rows:
 
@@ -330,7 +330,7 @@ Update `provider-implementation-comparison.md` only after official provider sour
 
 Expected: Gemini first-class subagent parity remains a gap unless official current docs prove otherwise.
 
-- [ ] **Step 5: Refresh SDLC and quality documents**
+- [x] **Step 5: Refresh SDLC and quality documents**
 
 Update `spec-driven-sdlc.md` and `quality-ci-formatting.md` with:
 
@@ -342,7 +342,7 @@ Update `spec-driven-sdlc.md` and `quality-ci-formatting.md` with:
 
 Expected: no active policy wording says the frameworks are adopted.
 
-- [ ] **Step 6: Validate refreshed existing docs**
+- [x] **Step 6: Validate refreshed existing docs**
 
 Run:
 
@@ -354,7 +354,7 @@ bash scripts/validation/check-repo-contracts.sh
 
 Expected: `git diff --check` has no output; placeholder scan has no unresolved template placeholders; repo contract reports `failures=0`. The phrase `first-class subagent parity` may appear only in a caveat/gap context.
 
-- [ ] **Step 7: Commit existing research refresh**
+- [x] **Step 7: Commit existing research refresh**
 
 Run:
 
@@ -375,7 +375,7 @@ Expected: commit succeeds.
 - Modify if pack structure changes: `docs/90.references/research/README.md`
 - Modify: `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md`
 
-- [ ] **Step 1: Decide targeted additions**
+- [x] **Step 1: Decide targeted additions**
 
 Use this decision rule:
 
@@ -387,7 +387,7 @@ Create automation-pipeline-workflow.md when automation, pipeline, provider hooks
 
 Expected: task evidence records `Created` or `N/A - covered by refreshed existing documents` for each targeted file.
 
-- [ ] **Step 2: Create Docker Compose / infrastructure reference if needed**
+- [x] **Step 2: Create Docker Compose / infrastructure reference if needed**
 
 If needed, create `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md` with these exact sections:
 
@@ -469,7 +469,7 @@ Record only follow-up gaps; do not fix them in this document.
 
 Then replace "Add source-backed facts..." and "Map official..." paragraphs with actual researched content before commit.
 
-- [ ] **Step 3: Create security governance reference if needed**
+- [x] **Step 3: Create security governance reference if needed**
 
 If needed, create `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md` with the same reference template sections and sources for:
 
@@ -487,7 +487,7 @@ repo-local template/security baseline
 
 Expected: document distinguishes reference frameworks from adopted active policy.
 
-- [ ] **Step 4: Create automation/pipeline/workflow reference if needed**
+- [x] **Step 4: Create automation/pipeline/workflow reference if needed**
 
 If needed, create `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md` with the same reference template sections and sources for:
 
@@ -503,7 +503,7 @@ repo-local provider surfaces
 
 Expected: document distinguishes local automation evidence from remote action approval.
 
-- [ ] **Step 5: Update research README indexes**
+- [x] **Step 5: Update research README indexes**
 
 If any targeted document is created, update `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md`:
 
@@ -515,7 +515,7 @@ If any targeted document is created, update `docs/90.references/research/2026-07
 
 Add matching `Current References` rows and reading-order guidance. Update `docs/90.references/research/README.md` only if the parent pack summary needs to name the expanded structure.
 
-- [ ] **Step 6: Validate targeted additions**
+- [x] **Step 6: Validate targeted additions**
 
 Run:
 
@@ -526,7 +526,7 @@ bash scripts/validation/check-repo-contracts.sh
 
 Expected: no whitespace issues and `failures=0`.
 
-- [ ] **Step 7: Commit targeted additions**
+- [x] **Step 7: Commit targeted additions**
 
 Run:
 
@@ -544,7 +544,7 @@ Expected: commit succeeds if files were added. If no targeted files were needed,
 - Modify: `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md`
 - Modify if generated: `docs/90.references/llm-wiki/llm-wiki-index.md`
 
-- [ ] **Step 1: Run final validation gates**
+- [x] **Step 1: Run final validation gates**
 
 Run:
 
@@ -568,7 +568,7 @@ check-doc-implementation-alignment.sh: failures=0
 check-repo-contracts.sh: failures=0
 ```
 
-- [ ] **Step 2: Regenerate LLM Wiki index if freshness fails**
+- [x] **Step 2: Regenerate LLM Wiki index if freshness fails**
 
 Run only if `--check` fails:
 
@@ -578,7 +578,7 @@ bash scripts/knowledge/generate-llm-wiki-index.sh
 
 Expected: `docs/90.references/llm-wiki/llm-wiki-index.md` updates and the subsequent `--check` passes.
 
-- [ ] **Step 3: Update task evidence final summary**
+- [x] **Step 3: Update task evidence final summary**
 
 In `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md`, set all work items to `Done` or `N/A` and add validation results:
 
@@ -595,7 +595,7 @@ In `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md`, set al
 | `bash scripts/validation/check-repo-contracts.sh` | Pass | failures=0 |
 ```
 
-- [ ] **Step 4: Update progress memory**
+- [x] **Step 4: Update progress memory**
 
 Add a new English section to `docs/00.agent-governance/memory/progress.md` before `## Open Issues`:
 
@@ -610,7 +610,7 @@ Add a new English section to `docs/00.agent-governance/memory/progress.md` befor
 | Validation | Local documentation contracts | ✅ Pass | Final validation gates passed with `failures=0`. |
 ```
 
-- [ ] **Step 5: Commit final evidence**
+- [x] **Step 5: Commit final evidence**
 
 Run:
 
@@ -653,14 +653,14 @@ Expected: commit succeeds. If `llm-wiki-index.md` did not change, `git add` safe
 
 ## Completion Criteria
 
-- [ ] Task evidence exists and links to this plan, the Stage 03 spec, and the research pack.
-- [ ] External source inventory is revalidated and summarized.
-- [ ] Existing research documents are refreshed.
-- [ ] Targeted reference documents are added or N/A rationale is recorded.
-- [ ] README indexes are updated when structure changes.
-- [ ] Progress memory is updated.
-- [ ] Final validation gates pass or unrelated failures are recorded as out of scope.
-- [ ] Logical commits exist for the plan, task evidence/source inventory, research refresh, targeted additions/rationale, and final evidence.
+- [x] Task evidence exists and links to this plan, the Stage 03 spec, and the research pack.
+- [x] External source inventory is revalidated and summarized.
+- [x] Existing research documents are refreshed.
+- [x] Targeted reference documents are added or N/A rationale is recorded.
+- [x] README indexes are updated when structure changes.
+- [x] Progress memory is updated.
+- [x] Final validation gates pass or unrelated failures are recorded as out of scope.
+- [x] Logical commits exist for the plan, task evidence/source inventory, research refresh, targeted additions/rationale, and final evidence.
 
 ## Related Documents
 

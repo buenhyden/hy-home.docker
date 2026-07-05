@@ -140,7 +140,7 @@ docs/04.execution/tasks/
 ├── 2026-07-04-github-branch-protection-reverification.md # Completed read-only GitHub branch protection re-verification task record
 ├── 2026-07-04-infra-tech-stack-version-refresh.md # Completed infra tech-stack Compose and registry version refresh evidence
 ├── 2026-07-05-agentic-engineering-implementation-audit-pack.md # Active Stage 90 agentic engineering implementation audit pack evidence
-├── 2026-07-05-agentic-research-pack-refresh.md # Active Stage 90 agentic research pack refresh evidence
+├── 2026-07-05-agentic-research-pack-refresh.md # Completed Stage 90 agentic research pack refresh evidence
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration evidence
 └── README.md                                # This file
 ```
@@ -249,4 +249,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Language Policy Hard Enforcement Task**: [2026-06-05-language-policy-hard-enforcement.md](./2026-06-05-language-policy-hard-enforcement.md) — completed language validation hardening evidence
 - **Frontmatter Routing Evidence Refresh Task**: [2026-07-04-frontmatter-routing-evidence-refresh.md](./2026-07-04-frontmatter-routing-evidence-refresh.md) — completed current-count and provider README routing evidence refresh
 - **Agentic Engineering Implementation Audit Pack Task**: [2026-07-05-agentic-engineering-implementation-audit-pack.md](./2026-07-05-agentic-engineering-implementation-audit-pack.md) — active implementation-status audit pack evidence
-- **Agentic Research Pack Refresh Task**: [2026-07-05-agentic-research-pack-refresh.md](./2026-07-05-agentic-research-pack-refresh.md) — active research refresh execution evidence
+- **Agentic Research Pack Refresh Task**: [2026-07-05-agentic-research-pack-refresh.md](./2026-07-05-agentic-research-pack-refresh.md) — completed research refresh execution evidence
