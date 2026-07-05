@@ -3696,6 +3696,16 @@ elif ! grep -q 'coverage_check=pass' /tmp/check-repo-contracts-audit-pack-covera
 fi
 rm -f /tmp/check-repo-contracts-audit-pack-coverage.txt
 
+section "Provider hook parity matrix"
+if ! bash scripts/validation/report-provider-hook-parity.sh --check >/tmp/check-repo-contracts-provider-hook-parity.txt 2>&1; then
+  fail "generated provider hook parity matrix is stale or generator check failed"
+  cat /tmp/check-repo-contracts-provider-hook-parity.txt >&2
+elif ! grep -q 'generated provider hook parity matrix is fresh' /tmp/check-repo-contracts-provider-hook-parity.txt; then
+  fail "provider hook parity generator did not print a pass marker"
+  cat /tmp/check-repo-contracts-provider-hook-parity.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-provider-hook-parity.txt
+
 section "Script reference integrity"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -3882,6 +3892,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/recommend-gap-routing.sh"),
     pathlib.Path("scripts/validation/recommend-qa-gates.sh"),
     pathlib.Path("scripts/validation/report-audit-pack-coverage.sh"),
+    pathlib.Path("scripts/validation/report-provider-hook-parity.sh"),
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),

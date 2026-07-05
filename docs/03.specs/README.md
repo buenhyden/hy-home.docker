@@ -83,6 +83,7 @@ docs/03.specs/
 ├── 112-audit-pack-coverage-report/       # Active audit-pack implementation-status coverage report
 ├── 113-llm-wiki-stage-category-coverage/ # Active LLM Wiki stage/category coverage snapshot
 ├── 114-tech-stack-version-provenance/     # Active tech-stack version provenance snapshot
+├── 115-provider-hook-parity-matrix/       # Active provider hook parity matrix
 └── README.md                            # This file
 ```
 
@@ -109,6 +110,7 @@ docs/03.specs/
 | Audit-pack implementation-status coverage report | `112-audit-pack-coverage-report/spec.md` |
 | LLM Wiki stage/category coverage snapshot | `113-llm-wiki-stage-category-coverage/spec.md` |
 | Tech-stack version provenance snapshot | `114-tech-stack-version-provenance/spec.md` |
+| Provider hook parity matrix | `115-provider-hook-parity-matrix/spec.md` |
 | Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
 | Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
@@ -185,6 +187,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Audit Pack Coverage Report Spec**: [112-audit-pack-coverage-report/spec.md](./112-audit-pack-coverage-report/spec.md)
 - **LLM Wiki Stage Category Coverage Spec**: [113-llm-wiki-stage-category-coverage/spec.md](./113-llm-wiki-stage-category-coverage/spec.md)
 - **Tech-Stack Version Provenance Spec**: [114-tech-stack-version-provenance/spec.md](./114-tech-stack-version-provenance/spec.md)
+- **Provider Hook Parity Matrix Spec**: [115-provider-hook-parity-matrix/spec.md](./115-provider-hook-parity-matrix/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)

@@ -73,6 +73,7 @@ data/
 - [governance/README.md](./governance/README.md) - governance routing reference data category
 - [governance/agent-output-eval-fixtures.md](./governance/agent-output-eval-fixtures.md) - agent-output eval fixture catalog for docs, provider, and infra tasks
 - [governance/gap-to-stage-routing.md](./governance/gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
+- [governance/provider-hook-parity-matrix.md](./governance/provider-hook-parity-matrix.md) - generated provider hook parity matrix and Gemini behavioral reminder checklist
 - [hads/README.md](./hads/README.md) - HADS profile category
 - [hads/profile.md](./hads/profile.md) - HADS profile and validation contract
 - [knowledge/README.md](./knowledge/README.md) - generated LLM Wiki coverage and knowledge-index data category

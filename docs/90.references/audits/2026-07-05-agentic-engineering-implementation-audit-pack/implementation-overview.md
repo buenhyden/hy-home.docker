@@ -72,7 +72,7 @@ or enforcement depth differs from repository policy.
 | Codex provider harness/loop | Implemented | [Codex provider notes](../../../00.agent-governance/providers/codex.md), `.codex/hooks.json`, `.codex/agents/`, `.codex/skills/` | Repo-local Codex adapter aligns with official AGENTS.md, subagent, hook, sandbox, and approval concepts. |
 | Gemini provider harness/loop | Partially Implemented | [Gemini provider notes](../../../00.agent-governance/providers/gemini.md), `.agents/`, official Gemini CLI docs | Repo-local pointer adapters and behavioral contracts exist; official Gemini CLI evidence supports ReAct/MCP/context, not Claude/Codex-style native subagents or hooks. |
 | Common provider-neutral rules/environment | Implemented | [Stage 00 governance hub](../../../00.agent-governance/README.md), [provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md), [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) | Shared policy, templates, scopes, model tiers, memory, and provider-adapter routing exist. |
-| Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json` | Local scripts, CI gates, provider hooks, generated indexes, and sync checks exist; semantic agent-eval automation and Gemini native hooks remain partial. |
+| Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json`, [provider hook parity matrix](../../data/governance/provider-hook-parity-matrix.md) | Local scripts, CI gates, provider hook matrix, generated indexes, and sync checks exist; executable agent-eval automation and Gemini native hooks remain partial. |
 | Spec-driven SDLC | Implemented | [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [Stage 04 tasks README](../../../04.execution/tasks/README.md) | Stage-gated spec, plan, task, operations, and reference taxonomy is active and validator-backed. |
 | Docker Compose / infrastructure | Implemented | [infra README](../../../../infra/README.md), `docker-compose.yml`, `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json`, [tech-stack version provenance](../../data/docker/tech-stack-version-provenance.md) | Modular Compose topology, profiles, root-active inventory, service READMEs, version registry, generated provenance, validation, and hardening checks exist. |
 | CI/CD | Implemented | `.github/workflows/ci-quality.yml`, [GitHub governance](../../../00.agent-governance/rules/github-governance.md) | CI quality gates cover docs, repo contracts, Compose, hardening, template/security, pre-commit, frontend quality, coverage, and workflow security. |
@@ -87,8 +87,8 @@ or enforcement depth differs from repository policy.
 - The strongest implementation areas are governance, template contracts,
   documentation traceability, Compose validation, local/remote quality gates,
   and Claude/Codex runtime adapters.
-- The main partial areas are semantic agent evaluation, Gemini native feature
-  parity, full provider-adapter semantic parity checks, and complete
+- The main partial areas are executable agent evaluation, Gemini native feature
+  parity, deeper free-text provider-adapter semantic comparison, and complete
   supply-chain/security maturity automation.
 
 ## Gap / Follow-up
@@ -108,8 +108,9 @@ vulnerability gating, SBOM, and provenance/attestation automation. Changed-path
 QA recommendations are now surfaced in CI Step Summary, audit-pack
 implementation-status coverage is now reportable through repo contracts, and
 LLM Wiki safe-path coverage is grouped by source bucket/category in Stage 90
-data, and tech-stack version source provenance is now generated from the
-registry and listed Compose declarations.
+data, tech-stack version source provenance is generated from the registry and
+listed Compose declarations, and provider hook parity is generated with Gemini
+behavioral reminders.
 
 ## Source Rules
 

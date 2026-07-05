@@ -91,6 +91,7 @@ docs/04.execution/plans/
 ├── 2026-07-05-audit-pack-coverage-report.md # Completed audit-pack coverage report plan
 ├── 2026-07-06-llm-wiki-stage-category-coverage.md # Completed LLM Wiki stage/category coverage plan
 ├── 2026-07-06-tech-stack-version-provenance.md # Completed tech-stack version provenance plan
+├── 2026-07-06-provider-hook-parity-matrix.md # Completed provider hook parity matrix plan
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration plan
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract plan
 └── README.md                               # This file
