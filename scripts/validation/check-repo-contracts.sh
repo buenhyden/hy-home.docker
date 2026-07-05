@@ -3578,6 +3578,13 @@ if ! bash scripts/hardening/check-all-hardening.sh >/tmp/check-repo-contracts-ha
 fi
 rm -f /tmp/check-repo-contracts-hardening.txt
 
+section "Compose profile coverage snapshot"
+if ! bash scripts/operations/generate-compose-profile-service-coverage.sh --check >/tmp/check-repo-contracts-compose-profile-coverage.txt 2>&1; then
+  fail "generated Compose profile coverage snapshot is stale or generator check failed"
+  cat /tmp/check-repo-contracts-compose-profile-coverage.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-compose-profile-coverage.txt
+
 section "Script reference integrity"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -3770,6 +3777,7 @@ expected_implementations = {
     pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
+    pathlib.Path("scripts/operations/generate-compose-profile-service-coverage.sh"),
     pathlib.Path("scripts/operations/use-qa-ci-tools.sh"),
     pathlib.Path("scripts/operations/sync-provider-surfaces.sh"),
     pathlib.Path("scripts/operations/sync-tech-stack-versions.sh"),

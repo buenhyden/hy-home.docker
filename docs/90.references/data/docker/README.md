@@ -6,7 +6,7 @@
 
 ## Overview
 
-`docs/90.references/data/docker` stores slow-changing Docker reference material used by docs, operations, and validators. It explains how Docker image/version facts are interpreted in this repository.
+`docs/90.references/data/docker` stores slow-changing Docker reference material used by docs, operations, and validators. It explains how Docker image/version facts and generated Compose inventory facts are interpreted in this repository.
 
 This folder does not replace Compose files or registry JSON files. Runtime truth remains in `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json`, and `infra/image-tag-policy.exceptions.json`.
 
@@ -37,6 +37,7 @@ Use this category for stable interpretation rules and inventory context. Use `do
 - Tech-stack registry interpretation
 - Floating tag exception reference links
 - Compose image declaration comparison rules
+- Generated Compose profile/service coverage inventory
 
 ### Out of Scope
 
@@ -50,11 +51,13 @@ Use this category for stable interpretation rules and inventory context. Use `do
 ```text
 docs/90.references/data/docker/
 ├── README.md                       # This file
+├── compose-profile-service-coverage.md # Generated Compose profile/service coverage snapshot
 └── image-version-interpretation.md # Docker image/version source interpretation rules
 ```
 
 ## Current References
 
+- [compose-profile-service-coverage.md](./compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
 - [image-version-interpretation.md](./image-version-interpretation.md) - Docker image/version source interpretation rules
 
 ## Reference Rules
@@ -62,7 +65,8 @@ docs/90.references/data/docker/
 1. Compose files are the runtime source of truth for declared images.
 2. `infra/tech-stack.versions.json` is the registry used to check that important images are still declared in Compose files.
 3. Floating tags are allowed only when documented in `infra/image-tag-policy.exceptions.json`.
-4. Docker reference text should explain durable interpretation rules, not prescribe rollout steps.
+4. Generated Compose coverage output is derived inventory and must be regenerated after tracked Compose service/profile changes.
+5. Docker reference text should explain durable interpretation rules and inventory context, not prescribe rollout steps.
 
 ## How to Work in This Area
 
@@ -70,7 +74,8 @@ docs/90.references/data/docker/
 2. Keep current image values in Compose and registry files, not in reference prose.
 3. Update `infra/tech-stack.versions.json` when a major operational image is added to the validated registry.
 4. Update `infra/image-tag-policy.exceptions.json` when a floating image tag is intentionally approved.
-5. Run `bash scripts/validation/check-repo-contracts.sh` after changing Docker reference docs or registry files.
+5. Run `bash scripts/operations/generate-compose-profile-service-coverage.sh` after changing tracked Compose services or profiles.
+6. Run `bash scripts/validation/check-repo-contracts.sh` after changing Docker reference docs or registry files.
 
 ## Examples
 
@@ -80,7 +85,9 @@ docs/90.references/data/docker/
 ## Related Documents
 
 - [references index](../../README.md)
+- [Compose profile/service coverage](./compose-profile-service-coverage.md)
 - [image/version interpretation](./image-version-interpretation.md)
 - [image tag exceptions](../../../../infra/image-tag-policy.exceptions.json)
 - [tech stack versions](../../../../infra/tech-stack.versions.json)
+- [Compose coverage generator](../../../../scripts/operations/generate-compose-profile-service-coverage.sh)
 - [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh)

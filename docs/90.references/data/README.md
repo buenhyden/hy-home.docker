@@ -32,6 +32,7 @@ status: active
 ### In Scope
 
 - Docker image/version interpretation references
+- Generated Docker Compose profile/service coverage inventory
 - Stable glossary and stage-boundary vocabulary
 - HADS profile and validation boundary
 - Kubernetes/k3s/k3d migration reference context
@@ -59,6 +60,7 @@ data/
 ## Current References
 
 - [docker/README.md](./docker/README.md) - Docker image/version drift, registry, and runtime reference rules
+- [docker/compose-profile-service-coverage.md](./docker/compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
 - [docker/image-version-interpretation.md](./docker/image-version-interpretation.md) - Docker image/version source interpretation rules
 - [glossary/README.md](./glossary/README.md) - stable reference terminology category
 - [glossary/stable-reference-terms.md](./glossary/stable-reference-terms.md) - shared terms for reference-stage boundaries

@@ -158,6 +158,7 @@ Reference 문서는 active stage의 판단을 돕는 안정적 배경 지식입�
 - [audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md](./audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md) - SDLC, CI/CD, QA, formatting, linting, and security quality audit
 - [data/README.md](./data/README.md) - stable reference data category
 - [data/docker/README.md](./data/docker/README.md) - Docker image/version drift, registry, and runtime reference rules
+- [data/docker/compose-profile-service-coverage.md](./data/docker/compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
 - [data/docker/image-version-interpretation.md](./data/docker/image-version-interpretation.md) - Docker image/version source interpretation rules
 - [data/glossary/README.md](./data/glossary/README.md) - stable reference terminology category
 - [data/glossary/stable-reference-terms.md](./data/glossary/stable-reference-terms.md) - shared terms for reference-stage boundaries
