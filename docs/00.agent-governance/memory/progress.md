@@ -767,6 +767,17 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | Preserved | This batch changed research references, README indexes, task evidence, generated LLM Wiki navigation, and progress memory only; no runtime config, Compose, validator, workflow behavior, provider runtime, secret material, `.env`, remote GitHub state, or branch protection changed. |
 | Validation | Local documentation contracts | Pass | Final gates passed: `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts with `failures=0`. |
 
+## Template System Numbered SDLC Paths (2026-07-05)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| PRD path contract | `docs/01.requirements/*.md` | Done | PRD files now use deterministic three-digit filenames and repository validators enforce the filename rule. |
+| Spec path contract | `docs/03.specs/*/` | Done | Spec folders now use deterministic three-digit folder names, with Stage 00 governance and provider skill guidance pointing to numbered Spec paths. |
+| Template and support contract | `docs/99.templates/**` | Done | Stage 99 templates and support docs publish numbered PRD/Spec target guidance and no longer advertise the legacy target forms. |
+| Validator contract | `scripts/validation/check-repo-contracts.sh` | Done | Added the numbered SDLC path contract check for PRD filenames, Spec folders, and Stage 99 legacy guidance regression. |
+| Protected surfaces | runtime, Compose, workflows, secrets, remote GitHub state | Preserved | This migration changed documentation, provider skill text, validation rules, indexes, and task evidence only; no runtime config, Compose behavior, secret material, `.env`, remote GitHub settings, or deployment state changed. |
+| Validation | Local documentation contracts | Pass | Final gates passed: shell syntax, `git diff --check`, focused stale target scan, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

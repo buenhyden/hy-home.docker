@@ -50,6 +50,10 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Keep `docs/99.templates/**` aligned with the target folder language boundary.
   Template READMEs are human-facing and Korean by default; template source for
   English-only targets must not introduce Korean placeholders.
+- PRD files under `docs/01.requirements/` use the canonical
+  `NNN-feature-or-system.md` filename form.
+- Spec folders under `docs/03.specs/` use the canonical `NNN-feature-id/`
+  directory form; parent specs live at `docs/03.specs/NNN-feature-id/spec.md`.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user approval.
 - Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/05`, `docs/90`, `docs/99`). Archive tombstones live under `docs/98.archive` and are not active artifacts.
 - Non-stage `docs/*` paths such as `docs/superpowers/` must not contain active specs or plans.
@@ -80,14 +84,14 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/02.architecture/requirements/`                  | ARD                    | `docs/99.templates/templates/sdlc/ard.template.md`          |
 | `docs/02.architecture/decisions/`                     | ADR                    | `docs/99.templates/templates/sdlc/adr.template.md`          |
 | `docs/03.specs/`                                      | Spec                   | `docs/99.templates/templates/sdlc/spec.template.md`         |
-| `docs/03.specs/<feature-id>/api-spec.md`              | API Spec               | `docs/99.templates/templates/spec-contracts/api-spec.template.md`     |
-| `docs/03.specs/<feature-id>/agent-design.md`          | Agent Design           | `docs/99.templates/templates/spec-contracts/agent-design.template.md` |
-| `docs/03.specs/<feature-id>/data-model.md`            | Data Model             | `docs/99.templates/templates/spec-contracts/data-model.template.md`   |
-| `docs/03.specs/<feature-id>/service.md`               | Service Scaffold       | `docs/99.templates/templates/spec-contracts/service.template.md`      |
-| `docs/03.specs/<feature-id>/tests.md`                 | Test Contract          | `docs/99.templates/templates/spec-contracts/tests.template.md`        |
-| `docs/03.specs/<feature-id>/contracts/openapi.yaml`   | OpenAPI Contract       | `docs/99.templates/templates/spec-contracts/openapi.template.yaml`    |
-| `docs/03.specs/<feature-id>/contracts/schema.graphql` | GraphQL Contract       | `docs/99.templates/templates/spec-contracts/schema.template.graphql`  |
-| `docs/03.specs/<feature-id>/contracts/service.proto`  | Protobuf Contract      | `docs/99.templates/templates/spec-contracts/service.template.proto`   |
+| `docs/03.specs/NNN-feature-id/api-spec.md`              | API Spec               | `docs/99.templates/templates/spec-contracts/api-spec.template.md`     |
+| `docs/03.specs/NNN-feature-id/agent-design.md`          | Agent Design           | `docs/99.templates/templates/spec-contracts/agent-design.template.md` |
+| `docs/03.specs/NNN-feature-id/data-model.md`            | Data Model             | `docs/99.templates/templates/spec-contracts/data-model.template.md`   |
+| `docs/03.specs/NNN-feature-id/service.md`               | Service Scaffold       | `docs/99.templates/templates/spec-contracts/service.template.md`      |
+| `docs/03.specs/NNN-feature-id/tests.md`                 | Test Contract          | `docs/99.templates/templates/spec-contracts/tests.template.md`        |
+| `docs/03.specs/NNN-feature-id/contracts/openapi.yaml`   | OpenAPI Contract       | `docs/99.templates/templates/spec-contracts/openapi.template.yaml`    |
+| `docs/03.specs/NNN-feature-id/contracts/schema.graphql` | GraphQL Contract       | `docs/99.templates/templates/spec-contracts/schema.template.graphql`  |
+| `docs/03.specs/NNN-feature-id/contracts/service.proto`  | Protobuf Contract      | `docs/99.templates/templates/spec-contracts/service.template.proto`   |
 | `docs/04.execution/plans/`                            | Plan                   | `docs/99.templates/templates/sdlc/plan.template.md`         |
 | `docs/04.execution/tasks/`                            | Task                   | `docs/99.templates/templates/sdlc/task.template.md`         |
 | `docs/05.operations/guides/`                          | Operations Guide       | `docs/99.templates/templates/operations/guide.template.md`        |
@@ -101,7 +105,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/98.archive/`                                    | Archive Tombstone      | `docs/99.templates/templates/common/archive.template.md`      |
 | `README.md` (per folder)                              | README                 | `docs/99.templates/templates/common/readme.template.md`       |
 
-For optional supporting contracts under `docs/03.specs/<feature-id>/`, keep
+For optional supporting contracts under `docs/03.specs/NNN-feature-id/`, keep
 Markdown support files in the feature directory and machine-readable contracts
 under `contracts/`. Parent Markdown Spec or API Spec documents own the
 cross-links for YAML, GraphQL, and Proto files.

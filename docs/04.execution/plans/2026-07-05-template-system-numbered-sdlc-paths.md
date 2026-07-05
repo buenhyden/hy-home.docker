@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md -->
@@ -119,10 +119,10 @@ edits, validator edits, and generated-index fallout reviewable.
 - [x] All PRD files use numbered filenames.
 - [x] All Spec folders use numbered folder names.
 - [x] Stage 99 templates/support publish the numbered PRD and Spec contract.
-- [ ] Stage 00 governance and validators enforce the numbered contract.
-- [ ] Cross-links, README indexes, generated indexes, and progress memory are
+- [x] Stage 00 governance and validators enforce the numbered contract.
+- [x] Cross-links, README indexes, generated indexes, and progress memory are
       updated.
-- [ ] Final validation bundle passes.
+- [x] Final validation bundle passes.
 
 ## Related Documents
 

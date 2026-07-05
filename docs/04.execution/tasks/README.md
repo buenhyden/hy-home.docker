@@ -141,7 +141,7 @@ docs/04.execution/tasks/
 ├── 2026-07-04-infra-tech-stack-version-refresh.md # Completed infra tech-stack Compose and registry version refresh evidence
 ├── 2026-07-05-agentic-engineering-implementation-audit-pack.md # Active Stage 90 agentic engineering implementation audit pack evidence
 ├── 2026-07-05-agentic-research-pack-refresh.md # Active Stage 90 agentic research pack refresh evidence
-├── 2026-07-05-template-system-numbered-sdlc-paths.md # Active numbered PRD/Spec path migration evidence
+├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration evidence
 └── README.md                                # This file
 ```
 

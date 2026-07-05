@@ -35,7 +35,7 @@ by the Stage 00 documentation protocol and its mapped template under
    - For policies: read `docs/99.templates/templates/operations/policy.template.md`.
    - For runbooks: read `docs/99.templates/templates/operations/runbook.template.md`.
 3. Check `docs/05.operations/<bucket>/<tier>/` for existing documents on the topic.
-4. Read the relevant spec at `docs/03.specs/<tier>/spec.md` for service context.
+4. Read the relevant spec at `docs/03.specs/NNN-<tier>/spec.md` for service context.
 
 ---
 
@@ -123,7 +123,7 @@ For an incident packet at depth `incidents/YYYY/INC-###-<title>/`:
 
 | Input | Source |
 | ----- | ------ |
-| Service spec | `docs/03.specs/<tier>/spec.md` |
+| Service spec | `docs/03.specs/NNN-<tier>/spec.md` |
 | Operations template | `docs/99.templates/templates/operations/guide.template.md`, `docs/99.templates/templates/operations/policy.template.md`, `docs/99.templates/templates/operations/runbook.template.md`, `docs/99.templates/templates/operations/incident.template.md`, or `docs/99.templates/templates/operations/postmortem.template.md` |
 | Existing documents | `docs/05.operations/<bucket>/<tier>/` |
 

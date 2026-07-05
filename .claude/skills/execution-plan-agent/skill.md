@@ -42,7 +42,7 @@ steps, and verification commands. Does not implement; only plans.
 
 | Input | Source |
 | ----- | ------ |
-| Approved spec | `docs/03.specs/<tier>/spec.md` |
+| Approved spec | `docs/03.specs/NNN-<tier>/spec.md` |
 | Plan template | `docs/99.templates/templates/sdlc/plan.template.md` |
 | Existing plans | `docs/04.execution/plans/` |
 

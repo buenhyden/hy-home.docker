@@ -43,7 +43,7 @@ single infra tier or file. Does not mass-edit all 47 files at once.
 | ----- | ------ |
 | Target tier or compose file | User message |
 | Baseline check results | `bash scripts/validation/check-quickwin-baseline.sh` |
-| Service spec | `docs/03.specs/<tier>/spec.md` |
+| Service spec | `docs/03.specs/NNN-<tier>/spec.md` |
 
 ## Outputs
 

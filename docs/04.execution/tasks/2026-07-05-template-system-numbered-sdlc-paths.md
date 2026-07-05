@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md -->
@@ -49,8 +49,8 @@ evidence derived from the parent Spec and Plan.
 | T-NSP-002 | Move PRD corpus to numbered filenames | doc | `PRD Migration Map` | `PLN-NSP-002` | `git mv` path evidence; focused PRD path scan; link rewrite evidence | Documentation Specialist | Done |
 | T-NSP-003 | Move Spec corpus to numbered folders | doc | `Spec Migration Map` | `PLN-NSP-003` | `git mv` path evidence; focused Spec folder scan; link rewrite evidence | Documentation Specialist | Done |
 | T-NSP-004 | Update Stage 99 templates and support contracts | doc | `Contract Fallout Surfaces` | `PLN-NSP-004` | Template/support diff; stale target-pattern scan; repo contracts | Documentation Specialist | Done |
-| T-NSP-005 | Update Stage 00 governance and repository validator | doc | `Validator Interfaces` | `PLN-NSP-005` | Validator diff; governance stale-pattern scan; repo contracts | Documentation Specialist | Todo |
-| T-NSP-006 | Rewrite remaining links, regenerate index, and close validation | doc | `Verification` | `PLN-NSP-006` | LLM Wiki freshness; provider sync; traceability; alignment; repo contracts | Documentation Specialist | Todo |
+| T-NSP-005 | Update Stage 00 governance and repository validator | doc | `Validator Interfaces` | `PLN-NSP-005` | Validator diff; governance stale-pattern scan; repo contracts | Documentation Specialist | Done |
+| T-NSP-006 | Rewrite remaining links, regenerate index, and close validation | doc | `Verification` | `PLN-NSP-006` | LLM Wiki freshness; provider sync; traceability; alignment; repo contracts | Documentation Specialist | Done |
 
 ## Phase View
 
@@ -66,11 +66,11 @@ evidence derived from the parent Spec and Plan.
 ### Phase 3: Contract and Validator Updates
 
 - [x] T-NSP-004 Update Stage 99 templates and support contracts.
-- [ ] T-NSP-005 Update Stage 00 governance and repository validator.
+- [x] T-NSP-005 Update Stage 00 governance and repository validator.
 
 ### Phase 4: Closure
 
-- [ ] T-NSP-006 Rewrite remaining links, regenerate index, and close
+- [x] T-NSP-006 Rewrite remaining links, regenerate index, and close
   validation.
 
 ## Deviation Log
@@ -114,6 +114,15 @@ Validation evidence is updated after each logical implementation batch.
 | `bash scripts/validation/check-doc-traceability.sh` after Stage 99 numbered path contract update | PASS | `failures=0`. |
 | `bash scripts/validation/check-doc-implementation-alignment.sh` after Stage 99 numbered path contract update | PASS | `failures=0`; 4350 repo-local Markdown links checked. |
 | `bash scripts/validation/check-repo-contracts.sh` after Stage 99 numbered path contract update | PASS | `failures=0`; template and frontmatter contracts synchronized. |
+| `bash -n scripts/validation/check-repo-contracts.sh` after governance and validator update | PASS | Shell syntax and embedded heredoc structure validate. |
+| `git diff --check` after governance and validator update | PASS | No whitespace or conflict-marker issues. |
+| Focused governance/provider legacy PRD/Spec target scan after governance and validator update | PASS | No old PRD target guidance or unnumbered Spec target guidance remains in Stage 00, provider skills, validator, or root shims. |
+| `command -v graphify` after validator script update | SKIP | `graphify` is unavailable in PATH, so graph refresh was skipped per the root agent shim. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` final | PASS | Generated LLM Wiki index is fresh with the numbered path set. |
+| `bash scripts/operations/sync-provider-surfaces.sh --check` final | PASS | `sync-provider-surfaces: no drift`. |
+| `bash scripts/validation/check-doc-traceability.sh` final | PASS | `failures=0`. |
+| `bash scripts/validation/check-doc-implementation-alignment.sh` final | PASS | `failures=0`; 4350 repo-local Markdown links checked. |
+| `bash scripts/validation/check-repo-contracts.sh` final | PASS | `failures=0`; numbered SDLC path contracts, templates, frontmatter, and repo documentation contracts are synchronized. |
 
 ## Related Documents
 

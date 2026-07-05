@@ -378,6 +378,58 @@ if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.spe
 fi
 rm -f /tmp/check-repo-contracts-banned.txt
 
+section "Numbered SDLC path contracts"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+slug = r"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+prd_name = re.compile(rf"[0-9]{{3}}-{slug}\.md")
+spec_dir = re.compile(rf"[0-9]{{3}}-{slug}")
+
+prd_root = pathlib.Path("docs/01.requirements")
+for path in sorted(prd_root.glob("*.md")):
+    if path.name == "README.md":
+        continue
+    if not prd_name.fullmatch(path.name):
+        failures.append(f"{path}: PRD filename must match NNN-feature-or-system.md")
+
+spec_root = pathlib.Path("docs/03.specs")
+for path in sorted(child for child in spec_root.iterdir() if child.is_dir()):
+    if not spec_dir.fullmatch(path.name):
+        failures.append(f"{path}: Spec folder must match NNN-feature-id")
+
+legacy_patterns = [
+    re.compile(r"docs/01\.requirements/YYYY-MM-DD-[^\s`)]+"),
+    re.compile(r"\.\.?/01\.requirements/YYYY-MM-DD-[^\s`)]+"),
+    re.compile(r"docs/03\.specs/<feature-id>/"),
+    re.compile(r"docs/03\.specs/feature-id/"),
+    re.compile(r"(?<![0-9])03\.specs/<feature-id>/"),
+    re.compile(r"(?<![0-9])03\.specs/feature-id/"),
+]
+for path in sorted(pathlib.Path("docs/99.templates").rglob("*")):
+    if not path.is_file() or path.suffix.lower() not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
+        continue
+    text = path.read_text(errors="ignore")
+    for pattern in legacy_patterns:
+        match = pattern.search(text)
+        if match:
+            failures.append(
+                f"{path}: legacy PRD/Spec target guidance remains: {match.group(0)}"
+            )
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
 section "Active docs taxonomy shorthand"
 if rg -n 'docs/(0[1-9]~0?9|01~09|01~10|01-03|01-09)|(^|[^[:alnum:]_/.-])01~09([^[:alnum:]_/.-]|$)|PRD~Runbook[[:space:]]*\(01~09\)|문서 계층[[:space:]]*\(01~09\)|문서 체계[[:space:]]*\(01~09\)|optimization-hardening 문서 세트[[:space:]]*\(01~09\)|docs/01[[:space:]]*[–-][[:space:]]*docs/10|docs/01.?to.?docs/10|Stage (06|07|10)|docs/07([^[:alnum:]_.-]|$)|docs/08([^[:alnum:]_.-]|$)|docs/09([^[:alnum:]_.-]|$)|05/08/09|07/08/09' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
