@@ -99,7 +99,7 @@ in the same batch.
       surfaces.
 - [x] `.gitignore` protects `_workspace` runtime artifacts.
 - [x] Stage 00 and Stage 99 contract wording is aligned.
-- [ ] Repository validator enforces the tracked `_workspace` allowlist and
+- [x] Repository validator enforces the tracked `_workspace` allowlist and
       prohibited path segments.
 - [ ] Final verification is recorded in task evidence and progress memory.
 

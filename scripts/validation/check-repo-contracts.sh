@@ -1518,6 +1518,122 @@ PY
   failures=$((failures + 1))
 fi
 
+section "_workspace protected surface"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import subprocess
+import sys
+
+failures: list[str] = []
+
+allowed_tracked = {
+    "_workspace/README.md",
+    "_workspace/repo-support/README.md",
+}
+required_gitignore = [
+    "_workspace/**",
+    "!_workspace/",
+    "!_workspace/README.md",
+    "!_workspace/repo-support/",
+    "!_workspace/repo-support/README.md",
+]
+prohibited_segments = {
+    "auth",
+    "auth-files",
+    "credential",
+    "credentials",
+    "diagnostic",
+    "diagnostics",
+    "history",
+    "key",
+    "keys",
+    "local-logs",
+    "log",
+    "logs",
+    "private-key",
+    "private-keys",
+    "raw-logs",
+    "secret",
+    "secrets",
+    "shell-history",
+    "token",
+    "tokens",
+}
+
+
+def run_git_ls_files() -> list[str]:
+    result = subprocess.run(
+        ["git", "ls-files", "_workspace"],
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.returncode != 0:
+        failures.append(f"git ls-files _workspace failed: {result.stderr.strip()}")
+        return []
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
+tracked = set(run_git_ls_files())
+missing = sorted(allowed_tracked - tracked)
+if missing:
+    failures.append(f"_workspace missing tracked contract files: {', '.join(missing)}")
+
+unexpected = sorted(tracked - allowed_tracked)
+if unexpected:
+    failures.append(f"_workspace has unapproved tracked files: {', '.join(unexpected)}")
+
+for tracked_path in sorted(tracked):
+    parts = [part.lower() for part in pathlib.PurePosixPath(tracked_path).parts]
+    for segment in prohibited_segments:
+        if segment in parts:
+            failures.append(f"{tracked_path}: prohibited _workspace path segment: {segment}")
+
+gitignore = pathlib.Path(".gitignore")
+if not gitignore.is_file():
+    failures.append("missing .gitignore for _workspace protection")
+else:
+    text = gitignore.read_text(errors="ignore")
+    for literal in required_gitignore:
+        if literal not in text:
+            failures.append(f".gitignore missing _workspace protection literal: {literal}")
+
+contracts = {
+    pathlib.Path("_workspace/README.md"): [
+        "repo-support",
+        "Prohibited Surface",
+        "diagnostics dumps",
+        "shell history",
+        "secret values",
+    ],
+    pathlib.Path("_workspace/repo-support/README.md"): [
+        "Allowed Artifacts",
+        "Prohibited Artifacts",
+        "Promotion Rule",
+        "docs/04.execution/tasks/",
+        "docs/90.references/",
+    ],
+}
+for path, literals in contracts.items():
+    if not path.is_file():
+        failures.append(f"missing _workspace contract README: {path}")
+        continue
+    text = path.read_text(errors="ignore")
+    for literal in literals:
+        if literal not in text:
+            failures.append(f"{path}: missing _workspace contract literal: {literal}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
 section "Active script ownership globs"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
