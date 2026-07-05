@@ -53,7 +53,7 @@ research/
 
 ## Current References
 
-- [agentic-engineering/README.md](./agentic-engineering/README.md) - 하네스/루프/agent-first engineering research pack index
+- [agentic-engineering/README.md](./agentic-engineering/README.md) - 하네스/루프/agent-first engineering research pack index, including targeted Docker Compose/infrastructure, security governance, and automation/pipeline/workflow references
 
 ## How to Work in This Area
 

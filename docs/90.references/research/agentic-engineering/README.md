@@ -35,6 +35,7 @@ status: active
 - 루프 엔지니어링과 feedback loop 분석
 - spec-driven development와 SDLC 분석
 - CI/CD, QA, formatting, quality gate 분석
+- Docker Compose, infrastructure harness, security governance, automation, pipeline, workflow 분석
 - Claude, Codex, Gemini provider 구현 비교
 - 공통 provider-neutral 환경과 규칙을 만들기 위한 요소 정리
 
@@ -55,7 +56,10 @@ agentic-engineering/
 ├── loop-engineering.md                  # Agent/eval/CI/human feedback loop analysis
 ├── spec-driven-sdlc.md                  # Spec-driven development and SDLC mapping
 ├── quality-ci-formatting.md             # QA, CI/CD, formatting, secure quality gates
-└── provider-implementation-comparison.md # Claude, Codex, Gemini comparison
+├── provider-implementation-comparison.md # Claude, Codex, Gemini comparison
+├── docker-compose-infrastructure.md      # Docker Compose and infrastructure harness analysis
+├── security-governance.md                # Secure SDLC and security governance analysis
+└── automation-pipeline-workflow.md       # Automation, pipeline, and workflow analysis
 ```
 
 ## Current References
@@ -66,13 +70,17 @@ agentic-engineering/
 - [spec-driven-sdlc.md](./spec-driven-sdlc.md) - spec-driven development, SDLC, traceability 분석
 - [quality-ci-formatting.md](./quality-ci-formatting.md) - CI/CD, QA, formatting, secure quality gate 분석
 - [provider-implementation-comparison.md](./provider-implementation-comparison.md) - Claude, Codex, Gemini provider 현황과 공통 체계 분석
+- [docker-compose-infrastructure.md](./docker-compose-infrastructure.md) - Docker Compose, infrastructure harness, profiles, networks, secrets, validation, hardening 분석
+- [security-governance.md](./security-governance.md) - secure SDLC reference frameworks, workflow security, secret boundaries, approval evidence 분석
+- [automation-pipeline-workflow.md](./automation-pipeline-workflow.md) - automation, pipeline, workflow loop, provider hook, local/remote action boundary 분석
 
 ## Reading Order
 
 1. [workspace-baseline.md](./workspace-baseline.md)에서 이 저장소의 현재 체계를 먼저 확인합니다.
 2. [harness-engineering.md](./harness-engineering.md)와 [loop-engineering.md](./loop-engineering.md)에서 개념적 구조를 확인합니다.
 3. [spec-driven-sdlc.md](./spec-driven-sdlc.md)와 [quality-ci-formatting.md](./quality-ci-formatting.md)에서 stage-gate와 검증 루프를 비교합니다.
-4. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인합니다.
+4. [docker-compose-infrastructure.md](./docker-compose-infrastructure.md), [security-governance.md](./security-governance.md), [automation-pipeline-workflow.md](./automation-pipeline-workflow.md)에서 targeted reference를 확인합니다.
+5. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인합니다.
 
 ## How to Work in This Area
 

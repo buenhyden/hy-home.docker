@@ -877,10 +877,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/learning/roadmap.md](../learning/roadmap.md) | Markdown reference |
 | [docs/90.references/research/README.md](../research/README.md) | folder index |
 | [docs/90.references/research/agentic-engineering/README.md](../research/agentic-engineering/README.md) | folder index |
+| [docs/90.references/research/agentic-engineering/automation-pipeline-workflow.md](../research/agentic-engineering/automation-pipeline-workflow.md) | Markdown reference |
+| [docs/90.references/research/agentic-engineering/docker-compose-infrastructure.md](../research/agentic-engineering/docker-compose-infrastructure.md) | Markdown reference |
 | [docs/90.references/research/agentic-engineering/harness-engineering.md](../research/agentic-engineering/harness-engineering.md) | Markdown reference |
 | [docs/90.references/research/agentic-engineering/loop-engineering.md](../research/agentic-engineering/loop-engineering.md) | Markdown reference |
 | [docs/90.references/research/agentic-engineering/provider-implementation-comparison.md](../research/agentic-engineering/provider-implementation-comparison.md) | Markdown reference |
 | [docs/90.references/research/agentic-engineering/quality-ci-formatting.md](../research/agentic-engineering/quality-ci-formatting.md) | Markdown reference |
+| [docs/90.references/research/agentic-engineering/security-governance.md](../research/agentic-engineering/security-governance.md) | Markdown reference |
 | [docs/90.references/research/agentic-engineering/spec-driven-sdlc.md](../research/agentic-engineering/spec-driven-sdlc.md) | Markdown reference |
 | [docs/90.references/research/agentic-engineering/workspace-baseline.md](../research/agentic-engineering/workspace-baseline.md) | Markdown reference |
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |
