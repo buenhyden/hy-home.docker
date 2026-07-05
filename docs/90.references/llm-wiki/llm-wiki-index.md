@@ -893,6 +893,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md) | Markdown reference |
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md) | Markdown reference |
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md) | Markdown reference |
+| [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md) | Markdown reference |
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md) | Markdown reference |
 | [docs/90.references/audits/README.md](../audits/README.md) | folder index |
 | [docs/90.references/data/README.md](../data/README.md) | folder index |

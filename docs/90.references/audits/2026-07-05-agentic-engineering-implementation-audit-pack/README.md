@@ -65,7 +65,8 @@ This README is for:
 ├── provider-harness-loop-implementation.md
 ├── workspace-rules-environment-implementation.md
 ├── automation-candidates.md
-└── sdlc-quality-formatting-implementation.md
+├── sdlc-quality-formatting-implementation.md
+└── security-framework-maturity.md
 ```
 
 ## Current References
@@ -77,6 +78,7 @@ This README is for:
 - [Workspace rules and environment implementation](./workspace-rules-environment-implementation.md)
 - [Automation candidates](./automation-candidates.md)
 - [SDLC quality formatting implementation](./sdlc-quality-formatting-implementation.md)
+- [Security framework maturity coverage](./security-framework-maturity.md)
 
 ## How to Work in This Area
 

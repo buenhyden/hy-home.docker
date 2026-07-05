@@ -800,6 +800,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, workflows, secrets, remote GitHub state | Preserved | This migration changed documentation, provider skill text, validation rules, indexes, and task evidence only; no runtime config, Compose behavior, secret material, `.env`, remote GitHub settings, or deployment state changed. |
 | Validation | Local documentation contracts | Pass | Final gates passed: shell syntax, `git diff --check`, focused stale target scan, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts with `failures=0`. |
 
+## Security Framework Maturity Coverage (2026-07-05)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| SSDF/SLSA audit matrix | `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md` | Done | Added a Stage 90 coverage matrix that maps NIST SSDF, SLSA v1.2, and OpenSSF Scorecard criteria to repo-local security governance, workflow, dependency, hardening, and validation evidence. |
+| Automation candidate closure | `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md` | Done | Closed `AEA-AUTO-006` as implemented by a Stage 90 audit reference while preserving SBOM, provenance, attestation, OSV/SCA, and vulnerability-gate work as future Stage 03/04 gaps. |
+| Reference indexes | `docs/90.references/README.md`, audit pack README | Done | Added the new report to the pack structure, current-reference indexes, and related audit links. |
+| Protected surfaces | runtime, Compose, workflows, secrets, remote GitHub state | Preserved | This batch changed audit references, indexes, generated navigation, and progress memory only; no runtime config, Compose behavior, workflow behavior, secret material, `.env`, remote GitHub settings, or deployment state changed. |
+| Validation | Local documentation contracts | Pass | Final gates passed: `git diff --check`, `git diff --cached --check`, LLM Wiki freshness, doc traceability, doc implementation alignment, Graphify health report advisory-only, and full repo contracts with `failures=0`. `graphify update .` was skipped because the CLI is unavailable in this shell; claims were corroborated against tracked source files. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

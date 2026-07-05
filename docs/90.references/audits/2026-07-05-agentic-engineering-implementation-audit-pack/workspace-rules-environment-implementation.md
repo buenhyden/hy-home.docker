@@ -94,7 +94,7 @@ infra README, root Compose, provider notes, and approval boundaries.
 | --- | --- | --- |
 | Common rules are strong but distributed. | New contributors may need several hops to understand the full contract. | Generate a concise provider-neutral rule digest from Stage 00 and Stage 99. |
 | Docker/infrastructure maturity is validation-heavy but not deployment-maturity certified. | Compose checks do not prove production rollout readiness. | Keep deployment readiness in operations/runbook scope. |
-| Security maturity is policy-backed but not fully framework-scored. | Cannot claim full SSDF/SLSA adoption. | Create separate security maturity audit if needed. |
+| Security maturity is policy-backed and now framework-mapped, but not fully tool-backed. | Cannot claim full SSDF/SLSA adoption. | Use [security framework maturity coverage](./security-framework-maturity.md) for the current gap map. |
 
 ## Automation Impact
 

@@ -92,7 +92,7 @@ validation/hardening surfaces, and quality-related research.
 | Universal formatting/linting coverage | Partially Implemented | Add a scoped formatting/linting inventory before introducing new gates. |
 | Agent-output eval as QA | Partially Implemented | Create eval fixtures and criteria for recurring agent tasks. |
 | CI/CD release/deploy automation | Not Implemented / Out of Scope | Keep deployment automation separate from validation CI unless explicitly approved. |
-| Security maturity framework automation | Partially Implemented | Add SSDF/SLSA mapping as a separate security reference or audit. |
+| Security maturity framework mapping | Implemented / Tooling Partial | SSDF/SLSA/OpenSSF Scorecard mapping exists in [security framework maturity coverage](./security-framework-maturity.md); SBOM, provenance, attestation, and vulnerability gates remain future work. |
 
 ## Automation Impact
 
@@ -138,4 +138,5 @@ runtime cost before adding new gates.
 - [Audit pack README](./README.md)
 - [Implementation overview](./implementation-overview.md)
 - [Automation candidates](./automation-candidates.md)
+- [Security framework maturity coverage](./security-framework-maturity.md)
 - [Workspace rules/environment audit](./workspace-rules-environment-implementation.md)

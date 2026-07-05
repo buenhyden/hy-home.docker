@@ -98,7 +98,7 @@ or enforcement depth differs from repository policy.
 | Semantic parity checks across provider adapter content are limited. | Provider surfaces can match catalog shape while drifting in detailed behavior. | Stage 00 governance / validation follow-up |
 | Gemini native hook and subagent parity is not proven by official sources. | Gemini must remain behavioral/pointer parity, not first-class parity. | Provider research follow-up |
 | Agent-result eval harness is not a full CI gate. | Loop engineering maturity depends on manual review and task evidence for many agent outputs. | QA / agentic workflow follow-up |
-| Security framework adoption is reference-backed but not fully automated. | SSDF/SLSA maturity cannot be claimed as fully implemented. | Security governance follow-up |
+| Security framework adoption is reference-backed and now mapped, but not fully automated. | SSDF/SLSA maturity cannot be claimed as fully implemented because SBOM, provenance, attestation, and vulnerability-gate evidence is still incomplete. | [Security framework maturity coverage](./security-framework-maturity.md) |
 
 ## Automation Impact
 
@@ -140,6 +140,7 @@ CI summary artifacts that map local gates to remote required checks.
 - [Audit pack README](./README.md)
 - [Harness implementation audit](./harness-engineering-implementation.md)
 - [Loop implementation audit](./loop-engineering-implementation.md)
+- [Security framework maturity coverage](./security-framework-maturity.md)
 - [Research pack](../../research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Audit pack spec](../../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md)
 - [Audit pack plan](../../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
