@@ -8,16 +8,17 @@ status: active
 
 ## Overview
 
-This specification defines a small, non-executing fixture pack for evaluating
-common agent outputs in `hy-home.docker`. The fixtures cover documentation,
-provider-surface, and infrastructure documentation tasks so future agents can
-score output quality consistently before this becomes a scripted eval harness.
+This specification defines a small fixture pack for evaluating common agent
+outputs in `hy-home.docker`. The fixtures cover documentation, provider-surface,
+and infrastructure documentation tasks so future agents can score output quality
+consistently. The local advisory runner for these fixtures is specified
+separately in `116-agent-output-eval-runner`.
 
 ## Strategic Boundaries & Non-goals
 
-The fixture pack is reference data, not an automated grader. It does not add CI
-jobs, model calls, remote evaluation runs, provider runtime changes, workflow
-changes, or protected runtime mutations.
+The fixture pack is reference data, not the runner implementation. It does not
+add CI jobs, model calls, remote evaluation runs, provider runtime changes,
+workflow changes, or protected runtime mutations.
 
 ## Related Inputs
 
@@ -30,8 +31,9 @@ changes, or protected runtime mutations.
 
 ## Contracts
 
-- **Config Contract**: No executable configuration is introduced. The fixture
-  pack lives under `docs/90.references/data/governance/`.
+- **Config Contract**: The fixture pack lives under
+  `docs/90.references/data/governance/`; local runner behavior is specified by
+  [116-agent-output-eval-runner](../116-agent-output-eval-runner/spec.md).
 - **Data / Interface Contract**: Each fixture must define an input scenario,
   required source context, expected output properties, scoring criteria, block
   conditions, and verification evidence.
@@ -54,8 +56,8 @@ changes, or protected runtime mutations.
   required context, expected output, scoring criteria, block conditions,
   evidence}`.
 - **Migration / Transition Plan**: Add the fixture reference, update indexes,
-  close `AEA-AUTO-003` as a reference fixture pack, and leave scripted eval
-  execution as future work.
+  close `AEA-AUTO-003` as a reference fixture pack, and link local runner
+  execution to the separate runner spec.
 
 ## Interfaces & Data Structures
 
@@ -132,8 +134,8 @@ Not applicable. This change exposes no external API.
 
 ## Evaluation (If Applicable)
 
-- **Eval Types**: Manual checklist scoring now; future scripted fixture runner
-  remains optional.
+- **Eval Types**: Manual checklist scoring and optional local advisory runner
+  scoring.
 - **Metrics**: Fixture pass/fail plus criterion score where useful.
 - **Datasets / Fixtures**: `agent-output-eval-fixtures.md` defines docs,
   provider, and infrastructure fixture scenarios.
@@ -173,8 +175,8 @@ bash scripts/validation/check-repo-contracts.sh
   infrastructure fixtures with scoring criteria and block conditions.
 - **VAL-AOE-002**: Stage 03/04 evidence and parent README indexes link the new
   fixture pack.
-- **VAL-AOE-003**: Audit gap references point to the fixture pack and leave
-  scripted or CI eval execution as future work.
+- **VAL-AOE-003**: Audit gap references point to the fixture pack and link the
+  local runner follow-up; CI eval gate adoption remains separate future work.
 - **VAL-AOE-004**: Documentation validation and repository contracts pass.
 
 ## Related Documents
@@ -182,5 +184,6 @@ bash scripts/validation/check-repo-contracts.sh
 - **Plan**: [../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md](../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md)
 - **Tasks**: [../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md](../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md)
 - **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)
+- **Runner spec**: [../116-agent-output-eval-runner/spec.md](../116-agent-output-eval-runner/spec.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 - **Loop research**: [../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md)

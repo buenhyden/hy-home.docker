@@ -1,16 +1,16 @@
 # Graph Report - hy-home.docker  (2026-07-06)
 
 ## Corpus Check
-- 1001 files · ~910,116 words
+- 1006 files · ~914,413 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 20540 nodes · 21584 edges · 1394 communities (1309 shown, 85 thin omitted)
+- 20599 nodes · 21638 edges · 1399 communities (1313 shown, 86 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `73dd72fd`
+- Built from commit: `bd348a76`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1408,6 +1408,11 @@
 - [[_COMMUNITY_Community 1391|Community 1391]]
 - [[_COMMUNITY_Community 1392|Community 1392]]
 - [[_COMMUNITY_Community 1393|Community 1393]]
+- [[_COMMUNITY_Community 1394|Community 1394]]
+- [[_COMMUNITY_Community 1395|Community 1395]]
+- [[_COMMUNITY_Community 1396|Community 1396]]
+- [[_COMMUNITY_Community 1397|Community 1397]]
+- [[_COMMUNITY_Community 1398|Community 1398]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Agent Progress Log` - 57 edges
@@ -1441,7 +1446,7 @@
 - **Workspace Audit Revalidation Skill Catalog Sync** — workspace_audit_revalidation_bounded_revalidation_workflow, workspace_audit_revalidation_runtime_skill, readme_agent_and_function_catalog, readme_runtime_skill_mirror, progress_workspace_audit_revalidation_skill_creation [EXTRACTED 1.00]
 - **Advisory Graph Boundary** — index_llm_wiki_generated_index, index_tracked_source_boundary, index_runtime_truth, index_advisory_graph_context, progress_graphify_health_advisory, 2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence [EXTRACTED 1.00]
 
-## Communities (1394 total, 85 thin omitted)
+## Communities (1399 total, 86 thin omitted)
 
 ### Community 0 - "Prometheus Alert Rule Group"
 Cohesion: 0.10
@@ -6581,7 +6586,7 @@ Nodes (19): Assessment Method, Automation Impact, Definitions / Facts, Findings,
 
 ### Community 1366 - "Community 1366"
 Cohesion: 0.10
-Nodes (19): AOE-DOC-001: Stage Reference Update, AOE-INFRA-001: Infrastructure Documentation Output, AOE-PROVIDER-001: Provider Surface Parity, Common Scoring Contract, Definitions / Facts, Evaluation Procedure, Fixture Catalog, Gap / Follow-up (+11 more)
+Nodes (20): AOE-DOC-001: Stage Reference Update, AOE-INFRA-001: Infrastructure Documentation Output, AOE-PROVIDER-001: Provider Surface Parity, Common Scoring Contract, Definitions / Facts, Evaluation Procedure, Executable Runner, Fixture Catalog (+12 more)
 
 ### Community 1367 - "Community 1367"
 Cohesion: 0.15
@@ -6675,6 +6680,22 @@ Nodes (11): Agent Rollout & Evaluation Gates, Completion Criteria, Context, Goal
 Cohesion: 0.33
 Nodes (6): Audit Handoff Artifacts, Delegated Agent Facility, Runtime Model Roles, Single Primary Scope Import, Subagent Protocol, TaskUpdate Lifecycle
 
+### Community 1394 - "Community 1394"
+Cohesion: 0.09
+Nodes (21): Agent Output Eval Runner Technical Specification, Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+13 more)
+
+### Community 1395 - "Community 1395"
+Cohesion: 0.15
+Nodes (12): Approved Surface Evidence, Inputs, Overview, Phase 1: Runner And Fixture Reference, Phase 2: Contracts And Evidence, Phase 3: Closure, Phase View, Related Documents (+4 more)
+
+### Community 1396 - "Community 1396"
+Cohesion: 0.17
+Nodes (11): Agent Output Eval Runner Implementation Plan, Agent Rollout & Evaluation Gates, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Related Documents (+3 more)
+
+### Community 1397 - "Community 1397"
+Cohesion: 0.25
+Nodes (7): Actions Taken, Key Decisions, Open Questions / Follow-ups, Related Files, Session: 완료되었는가?, Summary, Technical Notes
+
 ## Ambiguous Edges - Review These
 - `Alertmanager Critical Route` → `Alertmanager SMTP Placeholders`  [AMBIGUOUS]
   infra/06-observability/alertmanager/config/config.yml · relation: references
@@ -6682,9 +6703,9 @@ Nodes (6): Audit Handoff Artifacts, Delegated Agent Facility, Runtime Model Role
   infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **13211 isolated node(s):** `version`, `sessions`, `printWidth`, `singleQuote`, `semi` (+13206 more)
+- **13258 isolated node(s):** `version`, `sessions`, `printWidth`, `singleQuote`, `semi` (+13253 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **85 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **86 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -6693,12 +6714,12 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `cadvisor Compose Service` and `pyroscope Compose Service`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `Prometheus Development Scrape And Alerting Config` connect `Community 243` to `Prometheus Alert Rule Group`, `Community 129`, `Community 358`, `Community 233`, `Community 458`, `Community 427`, `Community 715`, `Community 237`, `Community 526`, `Community 842`, `Community 525`, `Community 570`?**
+- **Why does `alert_rules.k8s.yml Prometheus Rule File` connect `Community 358` to `Community 129`, `Community 243`, `Community 525`, `Prometheus Alert Kubecputhrottlinghigh Kubepodnotready`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `prometheus Compose Service` connect `Community 237` to `Community 243`?**
+- **Why does `Prometheus Production Scrape And Alerting Config` connect `Community 129` to `Prometheus Alert Rule Group`, `Community 358`, `Prometheus Alert Kubecputhrottlinghigh Kubepodnotready`, `Community 233`, `Community 458`, `Community 427`, `Community 715`, `Community 842`, `Community 526`, `Community 525`, `Community 570`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **What connects `version`, `sessions`, `printWidth` to the rest of the system?**
-  _13784 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _13831 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Prometheus Alert Rule Group` be split into smaller, more focused modules?**
   _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._
 - **Should `Tier Product Requirements Oauth2` be split into smaller, more focused modules?**

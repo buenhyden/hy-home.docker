@@ -3706,6 +3706,16 @@ elif ! grep -q 'generated provider hook parity matrix is fresh' /tmp/check-repo-
 fi
 rm -f /tmp/check-repo-contracts-provider-hook-parity.txt
 
+section "Agent output eval fixture runner"
+if ! bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures >/tmp/check-repo-contracts-agent-output-eval.txt 2>&1; then
+  fail "agent-output eval fixture runner catalog check failed"
+  cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
+elif ! grep -q 'fixtures_check=pass' /tmp/check-repo-contracts-agent-output-eval.txt; then
+  fail "agent-output eval fixture runner did not print a pass marker"
+  cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-agent-output-eval.txt
+
 section "Script reference integrity"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -3893,6 +3903,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/recommend-qa-gates.sh"),
     pathlib.Path("scripts/validation/report-audit-pack-coverage.sh"),
     pathlib.Path("scripts/validation/report-provider-hook-parity.sh"),
+    pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"),
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),

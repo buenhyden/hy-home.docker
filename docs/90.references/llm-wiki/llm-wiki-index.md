@@ -424,6 +424,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md](../../03.specs/113-llm-wiki-stage-category-coverage/spec.md) | Markdown reference |
 | [docs/03.specs/114-tech-stack-version-provenance/spec.md](../../03.specs/114-tech-stack-version-provenance/spec.md) | Markdown reference |
 | [docs/03.specs/115-provider-hook-parity-matrix/spec.md](../../03.specs/115-provider-hook-parity-matrix/spec.md) | Markdown reference |
+| [docs/03.specs/116-agent-output-eval-runner/spec.md](../../03.specs/116-agent-output-eval-runner/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -503,6 +504,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-05-qa-gate-recommendation-ci-summary.md](../../04.execution/plans/2026-07-05-qa-gate-recommendation-ci-summary.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-workspace-support-surface-contract.md](../../04.execution/plans/2026-07-05-workspace-support-surface-contract.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-06-agent-output-eval-runner.md](../../04.execution/plans/2026-07-06-agent-output-eval-runner.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-provider-hook-parity-matrix.md](../../04.execution/plans/2026-07-06-provider-hook-parity-matrix.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-tech-stack-version-provenance.md](../../04.execution/plans/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
@@ -610,6 +612,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-05-qa-gate-recommendation-ci-summary.md](../../04.execution/tasks/2026-07-05-qa-gate-recommendation-ci-summary.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-workspace-support-surface-contract.md](../../04.execution/tasks/2026-07-05-workspace-support-surface-contract.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-06-agent-output-eval-runner.md](../../04.execution/tasks/2026-07-06-agent-output-eval-runner.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md](../../04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-tech-stack-version-provenance.md](../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
@@ -1269,6 +1272,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/recommend-qa-gates.sh](../../../scripts/validation/recommend-qa-gates.sh) | script |
 | [scripts/validation/report-audit-pack-coverage.sh](../../../scripts/validation/report-audit-pack-coverage.sh) | script |
 | [scripts/validation/report-provider-hook-parity.sh](../../../scripts/validation/report-provider-hook-parity.sh) | script |
+| [scripts/validation/run-agent-output-eval-fixtures.sh](../../../scripts/validation/run-agent-output-eval-fixtures.sh) | script |
 | [scripts/validation/run-local-qa-gates.sh](../../../scripts/validation/run-local-qa-gates.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) | script |
 | [scripts/validation/validate-harness.sh](../../../scripts/validation/validate-harness.sh) | script |

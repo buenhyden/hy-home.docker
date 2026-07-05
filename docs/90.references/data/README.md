@@ -71,7 +71,7 @@ data/
 - [glossary/README.md](./glossary/README.md) - stable reference terminology category
 - [glossary/stable-reference-terms.md](./glossary/stable-reference-terms.md) - shared terms for reference-stage boundaries
 - [governance/README.md](./governance/README.md) - governance routing reference data category
-- [governance/agent-output-eval-fixtures.md](./governance/agent-output-eval-fixtures.md) - agent-output eval fixture catalog for docs, provider, and infra tasks
+- [governance/agent-output-eval-fixtures.md](./governance/agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for docs, provider, and infra tasks
 - [governance/gap-to-stage-routing.md](./governance/gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
 - [governance/provider-hook-parity-matrix.md](./governance/provider-hook-parity-matrix.md) - generated provider hook parity matrix and Gemini behavioral reminder checklist
 - [hads/README.md](./hads/README.md) - HADS profile category

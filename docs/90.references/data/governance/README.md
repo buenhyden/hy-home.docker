@@ -38,7 +38,7 @@ validation 작업을 보조합니다. 실행 절차나 policy 변경은 canonica
 
 - Stable routing-reference data derived from Stage 00 governance rules
 - Advisory validation and recommendation tool references
-- Agent-output eval fixture references for recurring task surfaces
+- Agent-output eval fixture and local advisory runner references for recurring task surfaces
 - Generated provider hook parity and behavioral reminder references
 - Governance inventory context used by audit reports
 
@@ -61,7 +61,7 @@ governance/
 
 ## Current References
 
-- [agent-output-eval-fixtures.md](./agent-output-eval-fixtures.md) - agent-output eval fixture catalog for documentation, provider, and infrastructure tasks
+- [agent-output-eval-fixtures.md](./agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for documentation, provider, and infrastructure tasks
 - [gap-to-stage-routing.md](./gap-to-stage-routing.md) - Stage 00 gap-to-stage routing table and recommender contract
 - [provider-hook-parity-matrix.md](./provider-hook-parity-matrix.md) - generated Claude/Codex/Gemini hook parity matrix and Gemini behavioral reminder checklist
 
