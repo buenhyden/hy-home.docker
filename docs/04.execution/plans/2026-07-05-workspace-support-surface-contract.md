@@ -95,9 +95,9 @@ in the same batch.
 ## Completion Criteria
 
 - [x] Stage 03 spec and Stage 04 plan/task evidence exist and are linked.
-- [ ] `_workspace` contract README files exist and define allowed/prohibited
+- [x] `_workspace` contract README files exist and define allowed/prohibited
       surfaces.
-- [ ] `.gitignore` protects `_workspace` runtime artifacts.
+- [x] `.gitignore` protects `_workspace` runtime artifacts.
 - [ ] Stage 00 and Stage 99 contract wording is aligned.
 - [ ] Repository validator enforces the tracked `_workspace` allowlist and
       prohibited path segments.

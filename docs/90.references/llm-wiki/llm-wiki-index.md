@@ -410,6 +410,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/104-agentic-research-pack-refresh/spec.md](../../03.specs/104-agentic-research-pack-refresh/spec.md) | Markdown reference |
 | [docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md](../../03.specs/105-agentic-engineering-implementation-audit-pack/README.md) | folder index |
 | [docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md](../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md) | Markdown reference |
+| [docs/03.specs/106-workspace-support-surface-contract/README.md](../../03.specs/106-workspace-support-surface-contract/README.md) | folder index |
+| [docs/03.specs/106-workspace-support-surface-contract/spec.md](../../03.specs/106-workspace-support-surface-contract/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -481,6 +483,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md](../../04.execution/plans/2026-07-05-agentic-research-pack-refresh.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-05-workspace-support-surface-contract.md](../../04.execution/plans/2026-07-05-workspace-support-surface-contract.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -577,6 +580,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md](../../04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-05-workspace-support-surface-contract.md](../../04.execution/tasks/2026-07-05-workspace-support-surface-contract.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs

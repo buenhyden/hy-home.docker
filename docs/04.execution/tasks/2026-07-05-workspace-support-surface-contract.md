@@ -39,7 +39,7 @@ GitHub, and Docker Compose mutation remain out of scope.
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
 | Stage 03/04 execution | User approved Approach A on 2026-07-05 | `docs/03.specs/106-workspace-support-surface-contract/`, this plan/task pair | No dedicated `_workspace` contract spec existed | Spec/plan/task created | Revert planning commit | No secret values, raw logs, or shell history |
-| `_workspace` contract | User approved `_workspace` role/purpose cleanup | `_workspace/README.md`, `_workspace/repo-support/README.md`, `.gitignore` | `_workspace` directory absent; `.gitignore` had no `_workspace` rule | Pending | Revert contract commit | No runtime artifacts or secrets |
+| `_workspace` contract | User approved `_workspace` role/purpose cleanup | `_workspace/README.md`, `_workspace/repo-support/README.md`, `.gitignore` | `_workspace` directory absent; `.gitignore` had no `_workspace` rule | Tracked contract README files and default-ignore rules added | Revert contract commit | No runtime artifacts or secrets |
 | Governance/support contract | User approved contract/governance edits | Stage 00 and Stage 99 direct fallout | Stage 00 used generic `_workspace/` handoff guidance | Pending | Revert governance commit | No credentials or token material |
 | Validator | User approved rules/environment enforcement | `scripts/validation/check-repo-contracts.sh` | No `_workspace` tracked allowlist | Pending | Revert validator commit | Path-only checks; no file body secret inspection |
 
@@ -48,7 +48,7 @@ GitHub, and Docker Compose mutation remain out of scope.
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-WSC-001 | Create spec, plan, and task scaffold | doc | `VAL-WSC-006` | `PLN-WSC-001` | New Stage 03/04 files; link/contract validation | Documentation Specialist | Done |
-| T-WSC-002 | Add `_workspace` contract and ignore boundary | contract | `VAL-WSC-001`, `VAL-WSC-002` | `PLN-WSC-002` | `_workspace` README files; `.gitignore`; focused git status | Documentation Specialist | Pending |
+| T-WSC-002 | Add `_workspace` contract and ignore boundary | contract | `VAL-WSC-001`, `VAL-WSC-002` | `PLN-WSC-002` | `_workspace` README files; `.gitignore`; focused git status | Documentation Specialist | Done |
 | T-WSC-003 | Update Stage 00 and Stage 99 contract wording | governance | `VAL-WSC-003`, `VAL-WSC-004` | `PLN-WSC-003` | Direct fallout docs updated; focused `_workspace` reference search | Documentation Specialist | Pending |
 | T-WSC-004 | Add validator enforcement | validation | `VAL-WSC-005` | `PLN-WSC-004` | `check-repo-contracts.sh`; negative/positive contract behavior | QA / Validator Maintainer | Pending |
 | T-WSC-005 | Validate, update progress, and close evidence | evidence | `VAL-WSC-006` | `PLN-WSC-005` | Final validation summary; progress memory | Documentation Specialist | Pending |
@@ -61,7 +61,7 @@ GitHub, and Docker Compose mutation remain out of scope.
 
 ### Phase 2: Contract Boundary
 
-- [ ] T-WSC-002 Add `_workspace` contract and ignore boundary.
+- [x] T-WSC-002 Add `_workspace` contract and ignore boundary.
 
 ### Phase 3: Governance and Validation
 
@@ -98,6 +98,10 @@ Validation results will be appended as each logical unit completes.
 | `git diff --check` after planning scaffold | PASS | No whitespace or conflict-marker issues. |
 | `bash scripts/validation/check-doc-traceability.sh` after planning scaffold | PASS | `failures=0`. |
 | `bash scripts/validation/check-repo-contracts.sh` after planning scaffold | PASS | `failures=0`; `changed_template_docs_total=7`, all normalized. |
+| `git check-ignore -v _workspace/repo-support/example.txt` after ignore update | PASS | Runtime artifacts below `_workspace/repo-support/` are ignored by `_workspace/**`. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh` after new docs and `_workspace` contracts | PASS | Regenerated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1163 paths. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` after contract README update | PASS | Generated LLM Wiki index is fresh. |
+| `bash scripts/validation/check-repo-contracts.sh` after contract README update | PASS | `failures=0`; no repo contract drift after `_workspace` and index updates. |
 
 ## Related Documents
 

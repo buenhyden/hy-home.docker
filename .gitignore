@@ -107,6 +107,13 @@ volumes/
 
 .agent-work/
 
+# Repo-support staging surface
+_workspace/**
+!_workspace/
+!_workspace/README.md
+!_workspace/repo-support/
+!_workspace/repo-support/README.md
+
 !graphify-out/graph.html
 !graphify-out/GRAPH_REPORT.md
 !graphify-out/graph.json
