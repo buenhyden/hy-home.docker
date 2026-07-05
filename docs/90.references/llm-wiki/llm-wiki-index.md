@@ -848,9 +848,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/README.md](../README.md) | folder index |
 | [docs/90.references/audits/README.md](../audits/README.md) | folder index |
 | [docs/90.references/audits/agentic-engineering/README.md](../audits/agentic-engineering/README.md) | folder index |
+| [docs/90.references/audits/agentic-engineering/automation-candidates.md](../audits/agentic-engineering/automation-candidates.md) | Markdown reference |
 | [docs/90.references/audits/agentic-engineering/harness-engineering-implementation.md](../audits/agentic-engineering/harness-engineering-implementation.md) | Markdown reference |
 | [docs/90.references/audits/agentic-engineering/implementation-overview.md](../audits/agentic-engineering/implementation-overview.md) | Markdown reference |
 | [docs/90.references/audits/agentic-engineering/loop-engineering-implementation.md](../audits/agentic-engineering/loop-engineering-implementation.md) | Markdown reference |
+| [docs/90.references/audits/agentic-engineering/provider-harness-loop-implementation.md](../audits/agentic-engineering/provider-harness-loop-implementation.md) | Markdown reference |
+| [docs/90.references/audits/agentic-engineering/sdlc-quality-formatting-implementation.md](../audits/agentic-engineering/sdlc-quality-formatting-implementation.md) | Markdown reference |
+| [docs/90.references/audits/agentic-engineering/workspace-rules-environment-implementation.md](../audits/agentic-engineering/workspace-rules-environment-implementation.md) | Markdown reference |
 | [docs/90.references/audits/document-contracts/README.md](../audits/document-contracts/README.md) | folder index |
 | [docs/90.references/audits/document-contracts/automation-coverage-map.md](../audits/document-contracts/automation-coverage-map.md) | Markdown reference |
 | [docs/90.references/audits/document-contracts/ci-qa-parser-graphify-decision.md](../audits/document-contracts/ci-qa-parser-graphify-decision.md) | Markdown reference |

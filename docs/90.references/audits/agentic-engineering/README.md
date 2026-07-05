@@ -73,6 +73,10 @@ agentic-engineering/
 - [Implementation overview](./implementation-overview.md)
 - [Harness engineering implementation](./harness-engineering-implementation.md)
 - [Loop engineering implementation](./loop-engineering-implementation.md)
+- [Provider harness and loop implementation](./provider-harness-loop-implementation.md)
+- [Workspace rules and environment implementation](./workspace-rules-environment-implementation.md)
+- [Automation candidates](./automation-candidates.md)
+- [SDLC quality formatting implementation](./sdlc-quality-formatting-implementation.md)
 
 ## How to Work in This Area
 

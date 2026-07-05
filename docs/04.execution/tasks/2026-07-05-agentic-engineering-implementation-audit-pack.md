@@ -48,7 +48,7 @@ are limited to documentation evidence and indexes.
 | T-AEA-001 | Activate spec and create execution scaffold | doc | `VAL-SPC-001`, `VAL-SPC-004` | `PLN-AEA-001` | Stage 03/04 files and indexes; `git diff --check`; traceability; repo contracts | Documentation Specialist | Done |
 | T-AEA-002 | Inventory research criteria and repo-local evidence | doc | `VAL-SPC-002`, `VAL-SPC-003` | `PLN-AEA-002` | Evidence inventory below; official source revalidation on 2026-07-05 | Documentation Specialist | Done |
 | T-AEA-003 | Write overview, harness, and loop audit reports | doc | `VAL-SPC-002`, `VAL-SPC-003` | `PLN-AEA-003` | Stage 90 audit reports; `git diff --check`; LLM Wiki freshness; repo contracts | Documentation Specialist | Done |
-| T-AEA-004 | Write provider, workspace, automation, and SDLC/quality audit reports | doc | `VAL-SPC-002`, `VAL-SPC-003`, `VAL-SPC-005` | `PLN-AEA-004` | Stage 90 audit reports | Documentation Specialist | Pending |
+| T-AEA-004 | Write provider, workspace, automation, and SDLC/quality audit reports | doc | `VAL-SPC-002`, `VAL-SPC-003`, `VAL-SPC-005` | `PLN-AEA-004` | Stage 90 audit reports; `git diff --check`; repo contracts | Documentation Specialist | Done |
 | T-AEA-005 | Update indexes, progress memory, and validation evidence | doc | `VAL-SPC-004`, `VAL-SPC-005` | `PLN-AEA-005` | README indexes, progress memory, final validation | Documentation Specialist | Pending |
 
 ## Phase View
@@ -64,7 +64,7 @@ are limited to documentation evidence and indexes.
 ### Phase 3: Audit Reports
 
 - [x] T-AEA-003 Write overview, harness, and loop audit reports.
-- [ ] T-AEA-004 Write provider, workspace, automation, and SDLC/quality audit reports.
+- [x] T-AEA-004 Write provider, workspace, automation, and SDLC/quality audit reports.
 
 ### Phase 4: Closure
 
@@ -115,6 +115,9 @@ Validation runs after each logical unit and final closure.
 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` after overview/harness/loop reports | PASS | Generated LLM Wiki index was fresh before staging new tracked files. |
 | `bash scripts/validation/check-repo-contracts.sh` after overview/harness/loop reports | PASS | `failures=0`; reference docs normalized. |
 | `bash scripts/knowledge/generate-llm-wiki-index.sh` after staging overview/harness/loop reports | PASS | Regenerated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1150 paths. |
+| `git diff --check` after provider/workspace/automation/SDLC reports | PASS | No whitespace or conflict-marker issues. |
+| `bash scripts/validation/check-repo-contracts.sh` after provider/workspace/automation/SDLC reports | PASS | `failures=0`; reference docs normalized. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh` after staging provider/workspace/automation/SDLC reports | PASS | Regenerated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1154 paths. |
 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | Pending | Run after new tracked docs are added. |
 | `bash scripts/operations/sync-provider-surfaces.sh --check` | Pending | Final provider-surface check. |
 | `bash scripts/validation/check-doc-implementation-alignment.sh` | Pending | Final implementation-alignment check. |
