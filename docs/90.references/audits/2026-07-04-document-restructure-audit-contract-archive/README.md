@@ -17,6 +17,8 @@ without replacing that task evidence or authorizing target document moves.
 
 The pack classifies template/frontmatter drift, Stage 03 historical work
 products, operations `01-*` buckets, CI/CD, QA, formatting, and residual gaps.
+Later lifecycle overlays are recorded in-place when follow-up cleanup changes
+the current status distribution without changing the original audit baseline.
 It does not mutate `docs/03.specs/**`, `docs/05.operations/**`, Stage 99
 contracts, validators, workflows, provider runtime configuration, runtime
 infrastructure, or secret material.
@@ -42,7 +44,7 @@ This README is for:
 ### In Scope
 
 - Template, support-contract, frontmatter, and lifecycle drift evidence.
-- `docs/03.specs` active, completed, draft, archive, duplicate, and
+- `docs/03.specs` active, completed, prior-draft, archive, duplicate, and
   evidence-preserve candidate classification.
 - `docs/05.operations/{guides,policies,runbooks}` `01-*` bucket classification.
 - CI/CD, QA, formatting, validator, and generated-index coverage mapping.

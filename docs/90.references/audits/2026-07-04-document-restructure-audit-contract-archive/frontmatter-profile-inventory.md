@@ -8,15 +8,17 @@ status: active
 
 ## Overview
 
-This report captures the current frontmatter profile before document restructure
-work begins. It records current counts, keys, status values, and frontmatter
-gaps without editing any target document.
+This report captures the DRA baseline frontmatter profile from before document
+restructure work began. It records baseline counts, keys, status values, and
+frontmatter gaps without editing any target document, then carries lifecycle
+overlays when later cleanup changes the status distribution.
 
 ## Purpose
 
 The restructure design requires frontmatter standardization by document type,
 but target edits must be evidence-led. This report gives the future contract
-and target-stage batches a reproducible baseline.
+and target-stage batches a reproducible baseline plus the latest lifecycle
+overlay when status cleanup occurs.
 
 ## Repository Role
 
@@ -29,7 +31,8 @@ a broad Markdown corpus rewrite.
 ### In Scope
 
 - Tracked Markdown frontmatter counts and keys.
-- Current `status` value distribution under `docs/**`.
+- Baseline `status` value distribution under `docs/**` and later lifecycle
+  overlays when refreshed.
 - Stage 03 status distribution.
 - Reference-stage transitional lifecycle evidence.
 
@@ -58,15 +61,15 @@ a broad Markdown corpus rewrite.
 | DRA-FM-001 | `git ls-files '*.md' \| wc -l` | 948 tracked Markdown files. | Corpus baseline after `PLN-DRA-001`. |
 | DRA-FM-002 | First-line scan over `git ls-files '*.md'` | 764 tracked Markdown files start with top `---`; 184 do not. | Confirms current frontmatter population. |
 | DRA-FM-003 | Frontmatter key extraction from top fenced Markdown files | Top keys: `status` 538, `layer` 176, `name` 79, `description` 60, `model` 30, and provider/archive/generated keys in smaller counts. | Identifies key families and protected profiles. |
-| DRA-FM-004 | `rg --no-filename -o '^status: [a-z-]+' docs --glob '*.md' \| sort \| uniq -c` | `active` 349, `archived` 20, `completed` 140, `draft` 30, `superseded` 1. | Finds transitional lifecycle usage for replacement-pointer review. |
+| DRA-FM-004 | `rg --no-filename -o '^status: [a-z-]+' docs --glob '*.md' \| sort \| uniq -c` | Baseline: `active` 349, `archived` 20, `completed` 140, `draft` 30, `superseded` 1. 2026-07-05 overlay: `active` 344, `archived` 20, `completed` 179, `draft` 23, `superseded` 3. | Finds transitional lifecycle usage for replacement-pointer review and later cleanup. |
 | DRA-FM-005 | `rg -n '^status: superseded' docs --glob '*.md'` | `docs/90.references/learning/roadmap-v1.md:2` uses `status: superseded`. | Records reference-stage replacement-pointer follow-up. |
-| DRA-FM-006 | `rg --no-filename -o '^status: [a-z-]+' docs/03.specs --glob '*.md' \| sort \| uniq -c` | Stage 03 has `active` 17, `completed` 9, and `draft` 7. | Feeds Stage 03 archive candidate report. |
+| DRA-FM-006 | `rg --no-filename -o '^status: [a-z-]+' docs/03.specs --glob '*.md' \| sort \| uniq -c` | Baseline: Stage 03 had `active` 17, `completed` 9, and `draft` 7. 2026-07-05 overlay: Stage 03 has `active` 19, `completed` 16, and `superseded` 2. | Feeds Stage 03 archive candidate report and later lifecycle cleanup evidence. |
 
 ## Key Inventory
 
 | Key | Count | Profile Interpretation |
 | --- | ---: | --- |
-| `status` | 538 | Primary lifecycle key for target docs and references. |
+| `status` | 538 baseline; 569 in the 2026-07-05 lifecycle overlay | Primary lifecycle key for target docs and references. |
 | `layer` | 176 | Agent/governance profile key. |
 | `name`, `description`, `model`, `tools`, `permissionMode`, `conditions`, `pattern` | 224 combined | Provider and agent metadata profiles; do not normalize as document lifecycle keys. |
 | `archived_from`, `archived_on`, `archive_reason`, `current_replacement` | 60 combined | Archive tombstone provenance keys. |
@@ -78,7 +81,7 @@ a broad Markdown corpus rewrite.
 | --- | --- | --- | --- | --- |
 | DRA-FM-001 | Full tracked Markdown corpus | 184 tracked Markdown files still omit top frontmatter; prior routing profile already classifies README, generated, GitHub-native, root, and archive profiles. | `evidence-preserve` | No broad rewrite in this audit pack. |
 | DRA-FM-002 | `docs/90.references/learning/roadmap-v1.md` | `status: superseded` is an allowed transitional lifecycle value. The document points readers to the current `roadmap.md`, so no target edit is required in `PLN-DRA-003`. | `evidence-preserve` | Revisit only if a future reference cleanup changes Stage 90 archive policy. |
-| DRA-FM-003 | Stage 03 docs | Stage 03 has 9 completed files and 7 draft files that need candidate classification before archive or status cleanup. | `historical-archive` / `evidence-preserve` candidates | `PLN-DRA-004` after candidate review. |
+| DRA-FM-003 | Stage 03 docs | Baseline Stage 03 had 9 completed files and 7 draft files that needed candidate classification before archive or status cleanup. After the 2026-07-05 lifecycle cleanup, Stage 03 has no draft rows. | `historical-archive` / `evidence-preserve` / `completed` candidates | `PLN-DRA-004` plus 2026-07-05 lifecycle evidence refresh. |
 | DRA-FM-004 | Provider/agent frontmatter keys | Provider metadata keys are numerous and profile-specific; they should not be forced into document lifecycle profiles. | `evidence-preserve` | No action unless provider contracts change. |
 
 ## Source Rules
