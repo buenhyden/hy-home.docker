@@ -18,6 +18,7 @@ contracts, and validation rules.
 | Validators | Update `scripts/validation/check-repo-contracts.sh` when template paths or contracts change. |
 | Stage 00 governance | Update only when the template system changes agent-facing rules or bootstrap behavior. |
 | Target documents | Update only direct fallout unless a separate plan approves broad corpus normalization. |
+| Repo-support staging | Keep `_workspace` tracked surface limited to approved contract README files; runtime artifacts remain ignored under `_workspace/repo-support/`. |
 
 ## Archive and Removal Governance
 
@@ -84,6 +85,8 @@ and repository contract checks. A task touching these surfaces must record:
 - Run LLM Wiki regeneration after adding or moving tracked docs.
 - Run repository contract validation after validator or governance changes.
 - Run provider sync checks when agent-facing surfaces change.
+- Run focused `_workspace` reference checks after changing repo-support staging
+  rules.
 - Keep README documents as routing and index surfaces; detailed rules belong in
   support documents.
 

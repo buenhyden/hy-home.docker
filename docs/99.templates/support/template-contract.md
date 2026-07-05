@@ -15,6 +15,8 @@ This document defines the non-copyable contract for template source files under
 - Copyable forms live under `docs/99.templates/templates/`.
 - Non-copyable rules live under `docs/99.templates/support/`.
 - README files are indexes and routing surfaces; durable rules belong in support documents.
+- `_workspace` README files are repo-support contract documents, not copyable
+  template sources and not target-stage documents.
 
 ## Template Source Rules
 
@@ -59,6 +61,9 @@ This document defines the non-copyable contract for template source files under
   path and role require them.
 - Target document frontmatter follows [frontmatter contract](./frontmatter-contract.md), not the template source metadata.
 - Intentional template deviation must be recorded in Stage 04 task evidence.
+- `_workspace` runtime artifacts are ignored repo-support scratch files. Promote
+  durable outcomes to canonical stages instead of treating `_workspace` as a
+  template target.
 - Archive, duplicate-remove, conflict-remove-or-archive, and evidence-preserve
   decisions are governed by [template governance](./template-governance.md) and
   [template selection](./template-selection.md), not by copying additional

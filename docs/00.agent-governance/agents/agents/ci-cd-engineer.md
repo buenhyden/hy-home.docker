@@ -40,11 +40,11 @@ Automate software delivery pipelines, ensure deployment safety, and manage relea
 
 - Trigger for pipeline setup, deployment automation, and release troubleshooting.
 - **Inputs:** deployment requirements + source code
-- **Outputs:** pipeline configurations + `_workspace/cicd_report_<date>.md`
+- **Outputs:** pipeline configurations + `_workspace/repo-support/cicd_report_<date>.md`
 
 ## Artifacts
 
-- `_workspace/cicd_report_<date>.md`
+- `_workspace/repo-support/cicd_report_<date>.md`
 
 ## Related Documents
 

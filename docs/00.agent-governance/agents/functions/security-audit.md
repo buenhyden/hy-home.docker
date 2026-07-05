@@ -44,11 +44,11 @@ Provide a repeatable audit flow that detects security regressions early and reco
 
 - Trigger for security audits of code, infra, or workflow assets.
 - **Inputs:** target paths, audit trigger, optional incident context
-- **Outputs:** `_workspace/security_audit_<date>.md`
+- **Outputs:** `_workspace/repo-support/security_audit_<date>.md`
 
 ## Artifacts
 
-- `_workspace/security_audit_<date>.md`
+- `_workspace/repo-support/security_audit_<date>.md`
 
 ## Related Documents
 

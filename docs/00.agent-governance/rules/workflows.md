@@ -89,7 +89,7 @@ the lifecycle policy above.
 
 1. `workflow-supervisor` selects the workflow and delegates each step to the right
    worker agent with exactly one primary scope (`subagent-protocol.md`).
-2. Each step writes intermediate artifacts to `_workspace/` and audit handoffs per
+2. Each step writes intermediate artifacts to `_workspace/repo-support/` and audit handoffs per
    the Communication Protocol.
 3. The `policy-gate-agent` step must pass before any stage document is marked complete.
 4. Read `memory/progress.md` before starting and append after completing the workflow.

@@ -45,11 +45,11 @@ Provide a repeatable review workflow that produces structured, severity-tagged f
 
 - Trigger when a code review is requested.
 - **Inputs:** target files, diff, scope, optional review mode
-- **Outputs:** `_workspace/review_<branch>_<date>.md`
+- **Outputs:** `_workspace/repo-support/review_<branch>_<date>.md`
 
 ## Artifacts
 
-- `_workspace/review_<branch>_<date>.md`
+- `_workspace/repo-support/review_<branch>_<date>.md`
 
 ## Related Documents
 

@@ -44,12 +44,12 @@ Apply infrastructure changes while preserving SLOs, network isolation, and secre
 
 - Trigger for infra changes in Compose or `infra/` assets.
 - **Inputs:** change request + target files
-- **Outputs:** modified files + `_workspace/infra_<artifact>.md`
+- **Outputs:** modified files + `_workspace/repo-support/infra_<artifact>.md`
 
 ## Artifacts
 
-- `_workspace/infra_<artifact>.md`
-- `_workspace/cross-validate_<date>.md` (after cross-validation)
+- `_workspace/repo-support/infra_<artifact>.md`
+- `_workspace/repo-support/cross-validate_<date>.md` (after cross-validation)
 
 ## Related Documents
 

@@ -41,7 +41,7 @@ To write hook rules (/writing-hookify-rules, /hook-development) that intercept t
 - Trigger when governance requires programmatic enforcement via hooks.
 - **Inputs:** governance policy + trigger condition
 - **Outputs:** `.claude/hookify.<rule>.local.md`
-- **Artifacts:** `_workspace/hook_development_<date>.md`
+- **Artifacts:** `_workspace/repo-support/hook_development_<date>.md`
 
 ## Related Documents
 

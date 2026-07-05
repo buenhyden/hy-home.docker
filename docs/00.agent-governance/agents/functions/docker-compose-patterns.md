@@ -48,7 +48,7 @@ Enable safe, zero-downtime deployments using proven patterns without requiring K
 
 ## Artifacts
 
-- `_workspace/deployment_<strategy>_<date>.md`
+- `_workspace/repo-support/deployment_<strategy>_<date>.md`
 
 ## Related Documents
 

@@ -40,11 +40,11 @@ Ensure software quality by executing unit, integration, and E2E tests, verifying
 
 - Trigger for testing features, validating bug fixes, or running test suites.
 - **Inputs:** specification + test target code
-- **Outputs:** test results + `_workspace/qa_report_<date>.md`
+- **Outputs:** test results + `_workspace/repo-support/qa_report_<date>.md`
 
 ## Artifacts
 
-- `_workspace/qa_report_<date>.md`
+- `_workspace/repo-support/qa_report_<date>.md`
 
 ## Related Documents
 

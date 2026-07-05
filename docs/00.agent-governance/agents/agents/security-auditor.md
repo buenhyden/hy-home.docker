@@ -44,11 +44,11 @@ Prevent security regressions by detecting plaintext secrets, unsafe access patte
 
 - Trigger for new/changed services or suspected security issues.
 - **Inputs:** target paths, scope path, audit trigger
-- **Outputs:** `_workspace/security_audit_<date>.md`
+- **Outputs:** `_workspace/repo-support/security_audit_<date>.md`
 
 ## Artifacts
 
-- `_workspace/security_audit_<date>.md`
+- `_workspace/repo-support/security_audit_<date>.md`
 
 ## Related Documents
 

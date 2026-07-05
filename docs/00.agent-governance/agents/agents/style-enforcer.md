@@ -41,7 +41,7 @@ To ensure all agents use a consistent, workspace-aligned output style, including
 - Trigger when generating reports, logs, or reviewing artifact styling.
 - **Inputs:** raw output + style guide
 - **Outputs:** styled markdown
-- **Artifacts:** `_workspace/style_review_<date>.md`
+- **Artifacts:** `_workspace/repo-support/style_review_<date>.md`
 
 ## Related Documents
 

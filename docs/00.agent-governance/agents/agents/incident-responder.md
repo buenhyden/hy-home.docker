@@ -47,7 +47,7 @@ Reduce MTTR and ensure incidents are recorded, analyzed, and followed by actiona
 
 - `docs/05.operations/incidents/YYYY/INC-###-<title>/INC-###-<title>.md`
 - `docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md`
-- `_workspace/incident_timeline_<id>.md`
+- `_workspace/repo-support/incident_timeline_<id>.md`
 
 ## Related Documents
 

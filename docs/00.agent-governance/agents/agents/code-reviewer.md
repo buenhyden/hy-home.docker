@@ -43,11 +43,11 @@ Ensure consistent engineering standards and surface risks without modifying sour
 
 - Trigger when a code review is requested.
 - **Inputs:** changed file list, diff, relevant scope path
-- **Outputs:** `_workspace/review_<branch>_<date>.md`
+- **Outputs:** `_workspace/repo-support/review_<branch>_<date>.md`
 
 ## Artifacts
 
-- `_workspace/review_<branch>_<date>.md`
+- `_workspace/repo-support/review_<branch>_<date>.md`
 
 ## Related Documents
 

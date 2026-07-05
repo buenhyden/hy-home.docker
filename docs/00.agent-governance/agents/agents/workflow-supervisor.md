@@ -58,7 +58,7 @@ Make runtime execution predictable by separating high-level routing and final de
 ## Artifacts
 
 - final synthesized responses
-- delegated worker artifact references in `_workspace/`
+- delegated worker artifact references in `_workspace/repo-support/`
 
 ## Related Documents
 

@@ -44,11 +44,11 @@ before changes are marked complete.
 
 - Trigger when validating service or tooling changes before completion.
 - **Inputs:** changed paths, target services
-- **Outputs:** test evidence in `_workspace/` and task docs
+- **Outputs:** test evidence in `_workspace/repo-support/` and task docs
 
 ## Artifacts
 
-- `_workspace/test_<date>.md`
+- `_workspace/repo-support/test_<date>.md`
 
 ## Related Documents
 

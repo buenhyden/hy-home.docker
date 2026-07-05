@@ -106,10 +106,13 @@ agent name set.
 
 ## 4. Communication Protocol
 
-- **Data handoff**: write runtime intermediate artifacts to `_workspace/<phase>_<agent>_<artifact>.<ext>`.
+- **Data handoff**: write non-secret runtime intermediate artifacts to `_workspace/repo-support/<phase>_<agent>_<artifact>.<ext>`.
 - **Audit handoff**: write orchestration reports, matrices, plans, and approval handoffs to `.agent-work/report/` when a workflow prompt requires that location.
 - **Status updates**: use TaskUpdate (`in_progress` → `completed` | `failed`).
 - **Conflict**: if file ownership conflicts arise, halt and escalate to user — do not overwrite.
+- **Prohibited data**: do not store diagnostics dumps, local logs, raw logs,
+  auth files, tokens, credentials, private keys, shell history, secret values,
+  or token-bearing command output in `_workspace`.
 
 ## 5. Error Handling
 
@@ -120,10 +123,13 @@ agent name set.
 ## 6. Lifecycle
 
 ```text
-Spawn → @import scope → execute → write artifact → TaskUpdate(completed) → cleanup _workspace
+Spawn → @import scope → execute → write repo-support artifact → TaskUpdate(completed) → promote durable evidence or cleanup ignored scratch
 ```
 
-Dead `_workspace/` files are preserved for audit; do not delete without user approval.
+Ignored `_workspace/repo-support/` scratch files are task-local. Promote durable
+non-secret outcomes to Stage 04 task evidence, Stage 90 references, or Stage 00
+memory before completion. Do not delete user-created scratch artifacts without
+explicit approval.
 
 ## Related Documents
 

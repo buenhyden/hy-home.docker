@@ -49,8 +49,8 @@ Provide a consistent, auditable CI/CD pattern set so pipelines are safe, measura
 
 ## Artifacts
 
-- `_workspace/pipeline_<date>.md`
-- `_workspace/gate_policy_<date>.md`
+- `_workspace/repo-support/pipeline_<date>.md`
+- `_workspace/repo-support/gate_policy_<date>.md`
 
 ## Related Documents
 

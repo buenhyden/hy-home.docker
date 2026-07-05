@@ -47,7 +47,7 @@ Provide a repeatable, auditable validation sequence around infrastructure change
 
 ## Artifacts
 
-- `_workspace/drift_<date>.md` (if drift detected)
+- `_workspace/repo-support/drift_<date>.md` (if drift detected)
 
 ## Related Documents
 

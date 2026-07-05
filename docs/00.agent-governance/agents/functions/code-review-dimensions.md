@@ -47,7 +47,7 @@ Give the code-reviewer agent a consistent, workspace-calibrated reference set so
 
 ## Artifacts
 
-- `_workspace/review_<branch>_<YYYY-MM-DD>.md`
+- `_workspace/repo-support/review_<branch>_<YYYY-MM-DD>.md`
 
 ## Related Documents
 

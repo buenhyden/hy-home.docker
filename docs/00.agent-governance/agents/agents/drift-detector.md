@@ -43,11 +43,11 @@ Prevent configuration drift from accumulating silently between deployments by pr
 
 - Trigger for periodic drift checks or post-incident investigations.
 - **Inputs:** target compose files + optional live container state
-- **Outputs:** `_workspace/drift_<date>.md`
+- **Outputs:** `_workspace/repo-support/drift_<date>.md`
 
 ## Artifacts
 
-- `_workspace/drift_<date>.md`
+- `_workspace/repo-support/drift_<date>.md`
 
 ## Related Documents
 

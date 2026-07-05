@@ -42,12 +42,12 @@ Provide read-only drift and performance validation to prevent configuration and 
 
 - Trigger after infra changes or as part of cross-validation.
 - **Inputs:** compose files, optional live container snapshot
-- **Outputs:** `_workspace/iac_review_<date>.md`, `_workspace/cross-validate_<date>.md`
+- **Outputs:** `_workspace/repo-support/iac_review_<date>.md`, `_workspace/repo-support/cross-validate_<date>.md`
 
 ## Artifacts
 
-- `_workspace/iac_review_<date>.md`
-- `_workspace/cross-validate_<date>.md`
+- `_workspace/repo-support/iac_review_<date>.md`
+- `_workspace/repo-support/cross-validate_<date>.md`
 
 ## Related Documents
 

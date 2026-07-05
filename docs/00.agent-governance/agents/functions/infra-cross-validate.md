@@ -44,11 +44,11 @@ Ensure infrastructure changes are validated by independent security and drift/pe
 
 - Trigger after infra change and post-flight validation.
 - **Inputs:** changed file list
-- **Outputs:** `_workspace/cross-validate_<date>.md`
+- **Outputs:** `_workspace/repo-support/cross-validate_<date>.md`
 
 ## Artifacts
 
-- `_workspace/cross-validate_<date>.md`
+- `_workspace/repo-support/cross-validate_<date>.md`
 
 ## Related Documents
 

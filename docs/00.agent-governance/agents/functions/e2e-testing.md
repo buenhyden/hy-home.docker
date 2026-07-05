@@ -43,11 +43,11 @@ before a change is considered done.
 
 - Trigger when validating end-to-end runtime behavior of the stack.
 - **Inputs:** target compose project, smoke-path list
-- **Outputs:** e2e evidence in `_workspace/` and task docs
+- **Outputs:** e2e evidence in `_workspace/repo-support/` and task docs
 
 ## Artifacts
 
-- `_workspace/e2e_<date>.md`
+- `_workspace/repo-support/e2e_<date>.md`
 
 ## Related Documents
 

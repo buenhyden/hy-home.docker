@@ -41,7 +41,7 @@ To define, update, and validate workspace-wide Rules and configuration files (/u
 - Trigger when workspace rules or overarching configurations change.
 - **Inputs:** policy update + target configs
 - **Outputs:** updated markdown rules + config files
-- **Artifacts:** `_workspace/rules_update_<date>.md`
+- **Artifacts:** `_workspace/repo-support/rules_update_<date>.md`
 
 ## Related Documents
 

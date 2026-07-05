@@ -21,6 +21,7 @@ surface.
 | Target stage document | path-derived role plus lifecycle `status` | `type`, `document_type`, `template_type` |
 | Folder index README | none by default; use headings and path for role | copied template `status: draft`, `type`, `owner`, `updated`, `links` |
 | Root, provider, GitHub-native, and utility README | none by default unless a provider or native platform consumes metadata | copied template `status: draft`, `type`, `owner`, `updated`, `links` |
+| Repo-support contract README (`_workspace/**/README.md`) | none; role is path-derived | lifecycle `status`, `layer`, `type`, `owner`, `updated`, `links` |
 | Generated tracked document | generator-owned metadata such as `generated_by` | human-authored lifecycle keys unless the generator owns them |
 | Generated report without metadata consumer | none; omit YAML frontmatter | human-authored lifecycle keys |
 
@@ -82,6 +83,9 @@ profiles: `archived_from`, `archived_on`, `archive_reason`, and
 - GitHub-native Markdown surfaces such as pull request templates, security
   policy files, and ruleset evidence files should not receive repository
   frontmatter unless a GitHub-specific consumer is approved.
+- `_workspace` README files are repo-support contract surfaces. Do not add
+  target-stage lifecycle frontmatter, Stage 00 `layer:` frontmatter, or template
+  source metadata to them.
 - Generated report files without a metadata consumer should not receive manual
   YAML frontmatter; preserve generator output unless the generator is changed.
 

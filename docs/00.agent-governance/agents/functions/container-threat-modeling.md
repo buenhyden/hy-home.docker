@@ -42,11 +42,11 @@ Systematically surface container-specific threats before security vulnerabilitie
 
 - Trigger when adding new services, changing network topology, or handling sensitive data flows.
 - **Inputs:** service architecture description or Compose file
-- **Outputs:** `_workspace/threat_model_<date>.md`
+- **Outputs:** `_workspace/repo-support/threat_model_<date>.md`
 
 ## Artifacts
 
-- `_workspace/threat_model_<date>.md`
+- `_workspace/repo-support/threat_model_<date>.md`
 
 ## Related Documents
 

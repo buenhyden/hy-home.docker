@@ -11,6 +11,12 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
 - Root instruction files stay thin; detailed policy lives in `docs/00.agent-governance/`.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user instruction.
 - Active stage artifacts belong only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`.
+- `_workspace` is an ignored repo-support staging surface, not an active stage.
+  Only `_workspace/README.md` and `_workspace/repo-support/README.md` are
+  approved tracked contract files. Runtime artifacts must stay under
+  `_workspace/repo-support/` and must not contain diagnostics dumps, local logs,
+  raw logs, auth files, tokens, credentials, private keys, shell history, or
+  secret values.
 - Run checks listed by the active rules and primary scope before declaring completion.
 - Most-specific in-scope instruction file wins when multiple repository instructions apply.
 - System, developer, and direct user instructions always override repository instruction files.

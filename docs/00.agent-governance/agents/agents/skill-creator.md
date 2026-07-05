@@ -41,7 +41,7 @@ To create and maintain reusable skills (/writing-skills, /skill-creator) that ag
 - Trigger when creating or updating custom skills for agents.
 - **Inputs:** skill requirements + agent constraints
 - **Outputs:** `.claude/skills/<skill-name>/SKILL.md` or equivalent
-- **Artifacts:** `_workspace/skill_development_<date>.md`
+- **Artifacts:** `_workspace/repo-support/skill_development_<date>.md`
 
 ## Related Documents
 

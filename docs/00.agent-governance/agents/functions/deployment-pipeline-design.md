@@ -42,11 +42,11 @@ Keep CI/CD pipelines safe, measurable, and aligned with workspace SLOs and the C
 
 - Trigger when designing or auditing CI/CD pipelines for this repository.
 - **Inputs:** changed workflows, gate requirements
-- **Outputs:** pipeline design/audit doc in `_workspace/`
+- **Outputs:** pipeline design/audit doc in `_workspace/repo-support/`
 
 ## Artifacts
 
-- `_workspace/pipeline_design_<date>.md`
+- `_workspace/repo-support/pipeline_design_<date>.md`
 
 ## Related Documents
 
