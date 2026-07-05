@@ -15,7 +15,7 @@ nearby active documentation plus validation expectations.
 
 ## Inputs
 
-- **Gap Register**: [WDC gap register](../../90.references/audits/document-contracts/gap-register.md)
+- **Gap Register**: [WDC gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
 - **Version Registry**: [infra/tech-stack.versions.json](../../../infra/tech-stack.versions.json)
 - **Sync Script**: [sync-tech-stack-versions.sh](../../../scripts/operations/sync-tech-stack-versions.sh)
 - **Infra Scope**: [Infrastructure Operational Scope](../../00.agent-governance/scopes/infra.md)
@@ -135,6 +135,6 @@ nearby active documentation plus validation expectations.
 ## Related Documents
 
 - [Task README](./README.md)
-- [Gap register](../../90.references/audits/document-contracts/gap-register.md)
+- [Gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
 - [Tech-stack registry](../../../infra/tech-stack.versions.json)
 - [Infrastructure Operational Scope](../../00.agent-governance/scopes/infra.md)

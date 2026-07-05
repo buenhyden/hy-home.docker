@@ -18,7 +18,7 @@ configuration.
 
 - **Parent Spec**: [Agentic Research Pack Refresh Spec](../../03.specs/agentic-research-pack-refresh/spec.md)
 - **Parent Plan**: [Agentic Research Pack Refresh Plan](../plans/2026-07-05-agentic-research-pack-refresh.md)
-- **Target Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/agentic-engineering/README.md)
+- **Target Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 
 ## Working Rules
 
@@ -32,7 +32,7 @@ configuration.
 
 ## Task Scope
 
-- Refresh existing Stage 90 research documents under `docs/90.references/research/agentic-engineering/`.
+- Refresh existing Stage 90 research documents under `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`.
 - Add targeted reference documents only when existing documents would become unfocused.
 - Update README indexes and progress memory.
 - Preserve source rules, maintenance notes, and related document links.
@@ -45,7 +45,7 @@ Stage 04 evidence, README indexes, and Stage 00 progress memory only.
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
-| Stage 90 research references | User request on 2026-07-05 | `docs/90.references/research/agentic-engineering/` | Existing research pack | Refreshed source-backed references | Revert documentation commits | No secret values or raw logs |
+| Stage 90 research references | User request on 2026-07-05 | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` | Existing research pack | Refreshed source-backed references | Revert documentation commits | No secret values or raw logs |
 | Stage 04 evidence | Stage 03 spec and Stage 04 plan | This task document | No task evidence for this refresh | Execution evidence and validation summary | Revert task documentation commit | No shell history or raw secret logs |
 
 ## Task Table
@@ -87,7 +87,7 @@ project sources are preferred for downstream Stage 90 edits.
 | --- | --- | --- | --- |
 | Stage 03 Spec | [Agentic Research Pack Refresh Spec](../../03.specs/agentic-research-pack-refresh/spec.md) | Design contract, source priority, provider parity guardrail, no-runtime-change boundary | Active; downstream research edits must stay advisory and must not claim provider parity without official support. |
 | Stage 04 Plan | [Agentic Research Pack Refresh Plan](../plans/2026-07-05-agentic-research-pack-refresh.md) | Execution sequencing for source revalidation, research refresh, targeted additions, and final validation | Active; this evidence currently covers `PLN-002` source revalidation, `PLN-003` existing research refresh, and `PLN-004` targeted additions. |
-| Stage 90 Research Pack | [Agentic Engineering Research Pack](../../90.references/research/agentic-engineering/README.md) | Target research category and existing document set | Active; refresh existing files before adding Docker/security/automation references. |
+| Stage 90 Research Pack | [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md) | Target research category and existing document set | Active; refresh existing files before adding Docker/security/automation references. |
 | Claude Code Provider Docs | <https://code.claude.com/docs/en/overview>, <https://code.claude.com/docs/en/sub-agents>, <https://code.claude.com/docs/en/hooks> | Claude Code overview, CLAUDE.md/project memory, custom subagents, hooks, tool/permission scoping, parallel work | Update provider comparison to current `code.claude.com` URLs; Claude official docs support first-class subagents and hooks. |
 | OpenAI Codex Provider Docs | <https://developers.openai.com/codex/cli>, <https://developers.openai.com/codex/subagents>, <https://developers.openai.com/codex/hooks>, <https://developers.openai.com/codex/guides/agents-md>, <https://developers.openai.com/codex/security> | Codex CLI, custom subagents, hooks, AGENTS.md discovery, sandbox/approval/security model | Update provider comparison to current Codex docs; Codex official docs support first-class subagents and hooks. |
 | Gemini CLI Provider Docs | <https://developers.google.com/gemini-code-assist/docs/gemini-cli>, <https://google-gemini.github.io/gemini-cli/docs/>, <https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html>, <https://google-gemini.github.io/gemini-cli/docs/cli/commands.html>, <https://google-gemini.github.io/gemini-cli/docs/tools/mcp-server.html> | Gemini CLI overview, ReAct loop, GEMINI.md/context files, settings, MCP servers, commands, tool configuration, trusted/security controls | Official Gemini sources reviewed here do not show first-class subagents comparable to Claude/Codex. Treat Gemini as agentic CLI + ReAct/MCP/context-file support, not subagent parity, unless a later official source proves otherwise. |
@@ -102,16 +102,16 @@ project sources are preferred for downstream Stage 90 edits.
 
 | File | Current Role |
 | --- | --- |
-| [README.md](../../90.references/research/agentic-engineering/README.md) | Pack index, scope, reading order, and maintenance guidance |
-| [workspace-baseline.md](../../90.references/research/agentic-engineering/workspace-baseline.md) | Repo-local purpose, roles, CI/CD, QA, automation, formatting, templates, scripts, SDLC, governance, and rules baseline |
-| [harness-engineering.md](../../90.references/research/agentic-engineering/harness-engineering.md) | Harness components, runtime/test/eval/governance harness mapping, and workspace application gaps |
-| [loop-engineering.md](../../90.references/research/agentic-engineering/loop-engineering.md) | Agent, validation, CI, memory, eval, approval, automation, and workflow loop mapping |
-| [provider-implementation-comparison.md](../../90.references/research/agentic-engineering/provider-implementation-comparison.md) | Claude, Codex, Gemini harness/loop implementation comparison and provider-neutral normalization |
-| [quality-ci-formatting.md](../../90.references/research/agentic-engineering/quality-ci-formatting.md) | CI/CD, QA, formatting, linting, syntax checks, and security gate analysis |
-| [spec-driven-sdlc.md](../../90.references/research/agentic-engineering/spec-driven-sdlc.md) | Spec-driven development, SDLC, traceability, and secure SDLC reference mapping |
-| [docker-compose-infrastructure.md](../../90.references/research/agentic-engineering/docker-compose-infrastructure.md) | Docker Compose, infrastructure harness, profile, network, secret, validation, and hardening analysis |
-| [security-governance.md](../../90.references/research/agentic-engineering/security-governance.md) | Secure SDLC references, workflow security, secret boundaries, approval evidence, and repo-local security governance analysis |
-| [automation-pipeline-workflow.md](../../90.references/research/agentic-engineering/automation-pipeline-workflow.md) | Automation, pipeline, workflow loops, provider hooks, local/remote action boundaries, and task evidence analysis |
+| [README.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md) | Pack index, scope, reading order, and maintenance guidance |
+| [workspace-baseline.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md) | Repo-local purpose, roles, CI/CD, QA, automation, formatting, templates, scripts, SDLC, governance, and rules baseline |
+| [harness-engineering.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md) | Harness components, runtime/test/eval/governance harness mapping, and workspace application gaps |
+| [loop-engineering.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md) | Agent, validation, CI, memory, eval, approval, automation, and workflow loop mapping |
+| [provider-implementation-comparison.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md) | Claude, Codex, Gemini harness/loop implementation comparison and provider-neutral normalization |
+| [quality-ci-formatting.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md) | CI/CD, QA, formatting, linting, syntax checks, and security gate analysis |
+| [spec-driven-sdlc.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md) | Spec-driven development, SDLC, traceability, and secure SDLC reference mapping |
+| [docker-compose-infrastructure.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md) | Docker Compose, infrastructure harness, profile, network, secret, validation, and hardening analysis |
+| [security-governance.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | Secure SDLC references, workflow security, secret boundaries, approval evidence, and repo-local security governance analysis |
+| [automation-pipeline-workflow.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md) | Automation, pipeline, workflow loops, provider hooks, local/remote action boundaries, and task evidence analysis |
 
 ### Revalidation Notes
 
@@ -164,12 +164,12 @@ only inside the existing baseline, quality, and loop documents.
 
 Changed research documents:
 
-- [workspace-baseline.md](../../90.references/research/agentic-engineering/workspace-baseline.md) - added explicit Security, Linting / Syntax, and Docker Compose / Infrastructure category rows with repo-local evidence and reference boundaries.
-- [harness-engineering.md](../../90.references/research/agentic-engineering/harness-engineering.md) - added infrastructure and security harness rows, source-freshness caveat, and distinction from test/eval harnesses.
-- [loop-engineering.md](../../90.references/research/agentic-engineering/loop-engineering.md) - added automation pipeline and security review loops and clarified approval requirements for external actions.
-- [provider-implementation-comparison.md](../../90.references/research/agentic-engineering/provider-implementation-comparison.md) - updated Claude Code URLs, refreshed Gemini subagent-gap date to 2026-07-05, and added Docker/infra, security/approval, and common-rule-substrate rows.
-- [spec-driven-sdlc.md](../../90.references/research/agentic-engineering/spec-driven-sdlc.md) - clarified Compose infrastructure lifecycle, QA evidence classes, and secure SDLC reference-only status.
-- [quality-ci-formatting.md](../../90.references/research/agentic-engineering/quality-ci-formatting.md) - clarified QA evidence classes, Compose infrastructure lifecycle, and secure SDLC reference-only status.
+- [workspace-baseline.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md) - added explicit Security, Linting / Syntax, and Docker Compose / Infrastructure category rows with repo-local evidence and reference boundaries.
+- [harness-engineering.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md) - added infrastructure and security harness rows, source-freshness caveat, and distinction from test/eval harnesses.
+- [loop-engineering.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md) - added automation pipeline and security review loops and clarified approval requirements for external actions.
+- [provider-implementation-comparison.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md) - updated Claude Code URLs, refreshed Gemini subagent-gap date to 2026-07-05, and added Docker/infra, security/approval, and common-rule-substrate rows.
+- [spec-driven-sdlc.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md) - clarified Compose infrastructure lifecycle, QA evidence classes, and secure SDLC reference-only status.
+- [quality-ci-formatting.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md) - clarified QA evidence classes, Compose infrastructure lifecycle, and secure SDLC reference-only status.
 
 ## Targeted Reference Addition Notes
 
@@ -180,13 +180,13 @@ broad if expanded further.
 
 Created targeted references:
 
-- [docker-compose-infrastructure.md](../../90.references/research/agentic-engineering/docker-compose-infrastructure.md) - analyzes Docker Compose and infrastructure harness evidence against official Docker guidance and repo-local Compose, infra, validation, hardening, profile, network, secret, and healthcheck surfaces.
-- [security-governance.md](../../90.references/research/agentic-engineering/security-governance.md) - analyzes secure SDLC and supply-chain references against repo-local reporting, approval, redaction, workflow security, hardening, and template/security baseline evidence.
-- [automation-pipeline-workflow.md](../../90.references/research/agentic-engineering/automation-pipeline-workflow.md) - analyzes GitHub Actions, provider hooks, scripts, CI, task evidence, and local/remote automation authority boundaries.
+- [docker-compose-infrastructure.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md) - analyzes Docker Compose and infrastructure harness evidence against official Docker guidance and repo-local Compose, infra, validation, hardening, profile, network, secret, and healthcheck surfaces.
+- [security-governance.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md) - analyzes secure SDLC and supply-chain references against repo-local reporting, approval, redaction, workflow security, hardening, and template/security baseline evidence.
+- [automation-pipeline-workflow.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md) - analyzes GitHub Actions, provider hooks, scripts, CI, task evidence, and local/remote automation authority boundaries.
 
 README index updates:
 
-- [Agentic Engineering Research Pack README](../../90.references/research/agentic-engineering/README.md) now lists the three targeted references in the structure, current references, and reading order.
+- [Agentic Engineering Research Pack README](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md) now lists the three targeted references in the structure, current references, and reading order.
 - [Research References README](../../90.references/research/README.md) now names the expanded targeted-reference scope in the agentic engineering pack summary.
 
 ## Deviation Log
@@ -204,8 +204,8 @@ memory were updated.
 | Command | Result | Notes |
 | --- | --- | --- |
 | `git diff --check` | PASS | No whitespace or conflict-marker issues. |
-| `rg -n "TBD\|TODO\|FIXME\|\\[.*\\]\|\\{.*\\}\|first-class subagent parity" docs/90.references/research/agentic-engineering -g '*.md'` | PASS with expected matches | Output is valid Markdown links plus caveat/gap uses of `first-class subagent parity`; no unresolved template placeholders found. |
-| `rg -n "docs\\.anthropic\|2026-07-02" docs/90.references/research/agentic-engineering -g '*.md'` | PASS | No stale Anthropic URL or old provider revalidation-date claims remain in the research pack. |
+| `rg -n "TBD\|TODO\|FIXME\|\\[.*\\]\|\\{.*\\}\|first-class subagent parity" docs/90.references/research/2026-07-05-agentic-research-pack-refresh -g '*.md'` | PASS with expected matches | Output is valid Markdown links plus caveat/gap uses of `first-class subagent parity`; no unresolved template placeholders found. |
+| `rg -n "docs\\.anthropic\|2026-07-02" docs/90.references/research/2026-07-05-agentic-research-pack-refresh -g '*.md'` | PASS | No stale Anthropic URL or old provider revalidation-date claims remain in the research pack. |
 | `bash scripts/validation/check-repo-contracts.sh` | PASS | `failures=0`; LLM Wiki contract passed, so no `llm-wiki-index.md` regeneration was required. |
 | `git diff --check` after targeted additions | PASS | No whitespace or conflict-marker issues. |
 | `bash scripts/validation/check-repo-contracts.sh` after targeted additions | PASS | `failures=0`; LLM Wiki contract passed after regeneration. |
@@ -220,5 +220,5 @@ memory were updated.
 
 - [Plan](../plans/2026-07-05-agentic-research-pack-refresh.md)
 - [Spec](../../03.specs/agentic-research-pack-refresh/spec.md)
-- [Research pack](../../90.references/research/agentic-engineering/README.md)
+- [Research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Research references](../../90.references/research/README.md)

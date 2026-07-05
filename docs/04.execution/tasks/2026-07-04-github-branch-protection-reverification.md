@@ -16,7 +16,7 @@ configuration.
 ## Inputs
 
 - **Parent Plan**: [Document contract remediation batch plan](../plans/2026-07-03-document-contract-remediation-batches.md)
-- **Source Register**: [Document contract gap register](../../90.references/audits/document-contracts/gap-register.md)
+- **Source Register**: [Document contract gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
 - **Local GitHub Protection Record**: [main protection proposal](../../../.github/rulesets/main-protection.md)
 - **GitHub Governance Policy**: [GitHub governance](../../00.agent-governance/rules/github-governance.md)
 
@@ -111,6 +111,6 @@ configuration.
 ## Related Documents
 
 - **Parent Plan**: [Document contract remediation batch plan](../plans/2026-07-03-document-contract-remediation-batches.md)
-- **Source Register**: [Document contract gap register](../../90.references/audits/document-contracts/gap-register.md)
+- **Source Register**: [Document contract gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
 - **Local GitHub Protection Record**: [main protection proposal](../../../.github/rulesets/main-protection.md)
 - **GitHub Governance Policy**: [GitHub governance](../../00.agent-governance/rules/github-governance.md)

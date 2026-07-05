@@ -12,7 +12,7 @@ This document defines the design contract for a Stage 90 reference-audit pack
 that assesses how much of the researched agentic engineering model is currently
 implemented in `hy-home.docker`.
 
-The audit pack will use `docs/90.references/research/agentic-engineering/` as
+The audit pack will use `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` as
 its criteria source and repo-local evidence as its implementation source. It
 will not change active policy, runtime provider configuration, CI/CD behavior,
 or scripts.
@@ -35,19 +35,19 @@ or scripts.
   promote the existing Stage 03 draft and implement a Stage 90
   reference-audit pack from the current research baseline.
 - **Research Pack**:
-  [../../90.references/research/agentic-engineering/README.md](../../90.references/research/agentic-engineering/README.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Workspace Baseline Reference**:
-  [../../90.references/research/agentic-engineering/workspace-baseline.md](../../90.references/research/agentic-engineering/workspace-baseline.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md)
 - **Harness Engineering Reference**:
-  [../../90.references/research/agentic-engineering/harness-engineering.md](../../90.references/research/agentic-engineering/harness-engineering.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md)
 - **Loop Engineering Reference**:
-  [../../90.references/research/agentic-engineering/loop-engineering.md](../../90.references/research/agentic-engineering/loop-engineering.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md)
 - **Provider Comparison Reference**:
-  [../../90.references/research/agentic-engineering/provider-implementation-comparison.md](../../90.references/research/agentic-engineering/provider-implementation-comparison.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md)
 - **Quality / CI / Formatting Reference**:
-  [../../90.references/research/agentic-engineering/quality-ci-formatting.md](../../90.references/research/agentic-engineering/quality-ci-formatting.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md)
 - **Spec-Driven SDLC Reference**:
-  [../../90.references/research/agentic-engineering/spec-driven-sdlc.md](../../90.references/research/agentic-engineering/spec-driven-sdlc.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md)
 - **Stage 90 Contract**: [../../90.references/README.md](../../90.references/README.md)
 - **Execution Plan**:
   [../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
@@ -59,7 +59,7 @@ or scripts.
 | Contract | Required Behavior |
 | --- | --- |
 | Stage boundary | Audit reports live under `docs/90.references/audits/` and do not replace policy, plans, runbooks, task evidence, or runtime truth. |
-| Criteria source | Implementation assessment criteria come from the source-backed research pack under `docs/90.references/research/agentic-engineering/`. |
+| Criteria source | Implementation assessment criteria come from the source-backed research pack under `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`. |
 | Evidence source | Implementation status must cite repo-local evidence such as Stage 00 governance, provider notes, runtime surfaces, scripts, CI workflow, templates, and HAFE docs. |
 | Gap handling | Missing or partial implementation is recorded as `Gap / Follow-up` or `Automation Candidate`, not fixed in this task. |
 | Report consistency | All audit reports use the shared status vocabulary and assessment sections defined here. |
@@ -221,7 +221,7 @@ out of scope instead of modifying infra files.
 - [docs/03.specs README](../README.md)
 - [implementation plan](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
 - [task evidence](../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md)
-- [research pack](../../90.references/research/agentic-engineering/README.md)
+- [research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [90.references](../../90.references/README.md)
 - [reference template](../../99.templates/templates/common/reference.template.md)
 - [README template](../../99.templates/templates/common/readme.template.md)

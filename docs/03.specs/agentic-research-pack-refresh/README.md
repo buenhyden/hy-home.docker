@@ -11,13 +11,13 @@ status: active
 ## Overview
 
 `docs/03.specs/agentic-research-pack-refresh` defines the technical design
-contract for refreshing `docs/90.references/research/agentic-engineering/`.
+contract for refreshing `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`.
 The work revalidates existing research documents against current external
 sources and repo-local evidence, then adds targeted reference documents only
 when the existing pack would become too broad.
 
 This folder is a specification-stage design surface. The final research
-documents remain under `docs/90.references/research/agentic-engineering/`.
+documents remain under `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`.
 
 ## Audience
 
@@ -63,7 +63,7 @@ agentic-research-pack-refresh/
 ## How to Work in This Area
 
 1. Read [spec.md](./spec.md) before editing the Stage 90 research pack.
-2. Keep final research outputs in `docs/90.references/research/agentic-engineering/`, not in this spec folder.
+2. Keep final research outputs in `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`, not in this spec folder.
 3. Record active-policy or runtime improvement ideas as follow-up gaps unless the user expands scope.
 4. Create Stage 04 plan/task artifacts only if the user requests a full SDLC execution trail for this research refresh.
 
@@ -71,6 +71,6 @@ agentic-research-pack-refresh/
 
 - [spec.md](./spec.md)
 - [docs/03.specs README](../README.md)
-- [agentic engineering research pack](../../90.references/research/agentic-engineering/README.md)
+- [agentic engineering research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [research references](../../90.references/research/README.md)
 - [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

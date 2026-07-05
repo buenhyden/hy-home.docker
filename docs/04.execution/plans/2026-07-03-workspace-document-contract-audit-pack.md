@@ -10,7 +10,7 @@ status: completed
 
 **Goal:** Produce a contract-first audit pack that inventories workspace document profiles, compares them with repo-local contracts, maps CI/CD and QA automation coverage, and records actionable gaps without rewriting the corpus.
 
-**Architecture:** The plan executes the approved spec in `docs/03.specs/workspace-document-contract-audit-pack/spec.md` as an audit-only pass. It creates execution evidence under `docs/04.execution/tasks/`, durable audit reports under `docs/90.references/audits/document-contracts/`, and a batch proposal that later implementation plans can execute with separate commits.
+**Architecture:** The plan executes the approved spec in `docs/03.specs/workspace-document-contract-audit-pack/spec.md` as an audit-only pass. It creates execution evidence under `docs/04.execution/tasks/`, durable audit reports under `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/`, and a batch proposal that later implementation plans can execute with separate commits.
 
 **Tech Stack:** Markdown, YAML frontmatter inspection, `git ls-files`, `rg`, Bash validation scripts, GitHub Actions YAML inspection, repo-local documentation validators.
 
@@ -26,7 +26,7 @@ runtime behavior, read secret values, or modify remote systems.
 The plan deliberately separates:
 
 - **Execution evidence** in `docs/04.execution/tasks/`.
-- **Reusable audit reports** in `docs/90.references/audits/document-contracts/`.
+- **Reusable audit reports** in `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/`.
 - **Future implementation batches** described as gaps, not executed in this
   audit pack.
 
@@ -46,7 +46,7 @@ not be treated as the same kind of gap.
 
 - **Goals**:
   - Create an execution task record for the audit pack.
-  - Create the `docs/90.references/audits/document-contracts/` audit-report
+  - Create the `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/` audit-report
     bundle.
   - Inventory document roles, surfaces, README profiles, frontmatter keys,
     sections, stale template guidance, CI/CD rules, QA gates, and automation
@@ -58,7 +58,7 @@ not be treated as the same kind of gap.
   - `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
   - `docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md`
   - `docs/90.references/audits/README.md`
-  - `docs/90.references/audits/document-contracts/**`
+  - `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/**`
   - `docs/90.references/README.md` when it needs a new audit category link
   - `docs/90.references/llm-wiki/llm-wiki-index.md`
   - `docs/00.agent-governance/memory/progress.md`
@@ -85,14 +85,14 @@ not be treated as the same kind of gap.
 | File or Directory | Responsibility in This Plan |
 | --- | --- |
 | `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md` | Execution evidence, task checklist, validation results, and commit trail for the audit pack run. |
-| `docs/90.references/audits/document-contracts/README.md` | Index for the durable document-contract audit reports. |
-| `docs/90.references/audits/document-contracts/frontmatter-inventory.md` | Counts and examples of top-frontmatter keys by surface and document role. |
-| `docs/90.references/audits/document-contracts/section-profile-inventory.md` | Required, optional, duplicate, and forbidden heading patterns by document role. |
-| `docs/90.references/audits/document-contracts/readme-profile-inventory.md` | README profile comparison for root, docs, governance, infra, scripts, secrets, projects, tests, examples, and archive surfaces. |
-| `docs/90.references/audits/document-contracts/contract-governance-map.md` | Stage 00, Stage 99, root shim, provider, script, and workflow governance comparison. |
-| `docs/90.references/audits/document-contracts/template-application-gaps.md` | Active stale template guidance, old template paths, unresolved template tokens, and historical-evidence classifications. |
-| `docs/90.references/audits/document-contracts/automation-coverage-map.md` | CI/CD, QA, validation, provider sync, LLM Wiki, hardening, and local QA coverage matrix. |
-| `docs/90.references/audits/document-contracts/gap-register.md` | Final disposition table and future implementation batch proposal. |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md` | Index for the durable document-contract audit reports. |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-inventory.md` | Counts and examples of top-frontmatter keys by surface and document role. |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/section-profile-inventory.md` | Required, optional, duplicate, and forbidden heading patterns by document role. |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/readme-profile-inventory.md` | README profile comparison for root, docs, governance, infra, scripts, secrets, projects, tests, examples, and archive surfaces. |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/contract-governance-map.md` | Stage 00, Stage 99, root shim, provider, script, and workflow governance comparison. |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/template-application-gaps.md` | Active stale template guidance, old template paths, unresolved template tokens, and historical-evidence classifications. |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md` | CI/CD, QA, validation, provider sync, LLM Wiki, hardening, and local QA coverage matrix. |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md` | Final disposition table and future implementation batch proposal. |
 | `docs/90.references/audits/README.md` | Audit category index updated to route to `document-contracts/`. |
 | `docs/90.references/README.md` | Reference-stage index updated when the new audit bundle is not already discoverable. |
 | `docs/90.references/llm-wiki/llm-wiki-index.md` | Generated tracked path index refreshed after new audit files are added. |
@@ -116,7 +116,7 @@ not be treated as the same kind of gap.
 **Files:**
 
 - Create: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
-- Create: `docs/90.references/audits/document-contracts/README.md`
+- Create: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md`
 - Modify: `docs/90.references/audits/README.md`
 - Modify: `docs/90.references/README.md` when the audit bundle is not listed
 - Read: `docs/03.specs/workspace-document-contract-audit-pack/spec.md`
@@ -157,14 +157,14 @@ automation coverage, and future implementation gaps.
 - Do not read or print secret values from `secrets/**`.
 - Classify historical evidence separately from active guidance drift.
 - Record existing infra image/version drift as out of scope.
-- Keep execution evidence here and stable audit reports in `docs/90.references/audits/document-contracts/`.
+- Keep execution evidence here and stable audit reports in `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/`.
 
 ## Approved Surface Evidence
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
 | `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md` | Approved Stage 03 spec and user approval | Execution evidence | File absent | Task evidence records audit execution | `git revert` audit-pack commits | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
-| `docs/90.references/audits/document-contracts/**` | Approved Stage 03 spec and user approval | Durable audit reports | Bundle absent | Audit reports created and indexed | `git revert` audit-pack commits | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/**` | Approved Stage 03 spec and user approval | Durable audit reports | Bundle absent | Audit reports created and indexed | `git revert` audit-pack commits | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 | `docs/90.references/audits/README.md` | Approved Stage 03 spec and user approval | Audit category routing | Document-contract bundle not listed | Bundle linked | `git revert` audit-pack commits | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 
 ## Task Table
@@ -211,12 +211,12 @@ automation coverage, and future implementation gaps.
 
 - Spec: `docs/03.specs/workspace-document-contract-audit-pack/spec.md`
 - Plan: `docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md`
-- Audit bundle: `docs/90.references/audits/document-contracts/README.md`
+- Audit bundle: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md`
 ```
 
 - [ ] **Step 2: Create the audit bundle README**
 
-Create `docs/90.references/audits/document-contracts/README.md` with this
+Create `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md` with this
 content:
 
 ```markdown
@@ -224,7 +224,7 @@ content:
 status: active
 ---
 
-<!-- Target: docs/90.references/audits/document-contracts/README.md -->
+<!-- Target: docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md -->
 
 # Document Contract Audit References
 
@@ -333,7 +333,7 @@ Expected:
 Run:
 
 ```bash
-git add docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md docs/90.references/audits/README.md docs/90.references/audits/document-contracts/README.md docs/90.references/README.md
+git add docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md docs/90.references/audits/README.md docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md docs/90.references/README.md
 git commit -m "docs(audits): Add document contract audit pack evidence"
 ```
 
@@ -344,9 +344,9 @@ remove it from `git add`.
 
 **Files:**
 
-- Create: `docs/90.references/audits/document-contracts/frontmatter-inventory.md`
-- Create: `docs/90.references/audits/document-contracts/section-profile-inventory.md`
-- Create: `docs/90.references/audits/document-contracts/readme-profile-inventory.md`
+- Create: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-inventory.md`
+- Create: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/section-profile-inventory.md`
+- Create: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/readme-profile-inventory.md`
 - Modify: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 - Read: `docs/99.templates/support/frontmatter-contract.md`
 - Read: `docs/99.templates/support/template-selection.md`
@@ -515,7 +515,7 @@ In `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
 Run:
 
 ```bash
-rg -n 'sample row|example row|measured gap|measured finding|exact command from this task|illustrative row' docs/90.references/audits/document-contracts/frontmatter-inventory.md docs/90.references/audits/document-contracts/section-profile-inventory.md docs/90.references/audits/document-contracts/readme-profile-inventory.md
+rg -n 'sample row|example row|measured gap|measured finding|exact command from this task|illustrative row' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-inventory.md docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/section-profile-inventory.md docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/readme-profile-inventory.md
 git diff --check
 bash scripts/validation/check-doc-traceability.sh
 ```
@@ -531,7 +531,7 @@ Expected:
 Run:
 
 ```bash
-git add docs/90.references/audits/document-contracts/frontmatter-inventory.md docs/90.references/audits/document-contracts/section-profile-inventory.md docs/90.references/audits/document-contracts/readme-profile-inventory.md docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
+git add docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-inventory.md docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/section-profile-inventory.md docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/readme-profile-inventory.md docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
 git commit -m "docs(audits): Inventory workspace document profiles"
 ```
 
@@ -541,8 +541,8 @@ Expected: commit succeeds.
 
 **Files:**
 
-- Create: `docs/90.references/audits/document-contracts/contract-governance-map.md`
-- Create: `docs/90.references/audits/document-contracts/template-application-gaps.md`
+- Create: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/contract-governance-map.md`
+- Create: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/template-application-gaps.md`
 - Modify: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 - Read: `AGENTS.md`
 - Read: `CLAUDE.md`
@@ -633,7 +633,7 @@ Run:
 
 ```bash
 test -e DESIGN.md && printf 'DESIGN.md present\n' || printf 'DESIGN.md absent\n'
-rg -n 'sample row|example row|measured gap|measured finding|illustrative row' docs/90.references/audits/document-contracts/contract-governance-map.md docs/90.references/audits/document-contracts/template-application-gaps.md
+rg -n 'sample row|example row|measured gap|measured finding|illustrative row' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/contract-governance-map.md docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/template-application-gaps.md
 git diff --check
 bash scripts/operations/sync-provider-surfaces.sh --check
 bash scripts/validation/check-doc-implementation-alignment.sh
@@ -650,7 +650,7 @@ Expected:
 Run:
 
 ```bash
-git add docs/90.references/audits/document-contracts/contract-governance-map.md docs/90.references/audits/document-contracts/template-application-gaps.md docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
+git add docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/contract-governance-map.md docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/template-application-gaps.md docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
 git commit -m "docs(audits): Compare document governance contracts"
 ```
 
@@ -660,7 +660,7 @@ Expected: commit succeeds.
 
 **Files:**
 
-- Create: `docs/90.references/audits/document-contracts/automation-coverage-map.md`
+- Create: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md`
 - Modify: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 - Read: `.github/workflows/**`
 - Read: `scripts/README.md`
@@ -718,7 +718,7 @@ Expected:
 
 - [ ] **Step 4: Write `automation-coverage-map.md`**
 
-Create `docs/90.references/audits/document-contracts/automation-coverage-map.md`
+Create `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md`
 with:
 
 - `## Overview`
@@ -754,7 +754,7 @@ In `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
 Run:
 
 ```bash
-rg -n 'sample row|example row|measured gap|measured finding|illustrative row' docs/90.references/audits/document-contracts/automation-coverage-map.md
+rg -n 'sample row|example row|measured gap|measured finding|illustrative row' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md
 git diff --check
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/operations/sync-provider-surfaces.sh --check
@@ -775,7 +775,7 @@ Expected:
 Run:
 
 ```bash
-git add docs/90.references/audits/document-contracts/automation-coverage-map.md docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
+git add docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
 git commit -m "docs(audits): Map documentation automation coverage"
 ```
 
@@ -785,16 +785,16 @@ Expected: commit succeeds.
 
 **Files:**
 
-- Create: `docs/90.references/audits/document-contracts/gap-register.md`
+- Create: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md`
 - Modify: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
-- Read: all reports under `docs/90.references/audits/document-contracts/`
+- Read: all reports under `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/`
 
 - [ ] **Step 1: Extract gap rows from audit reports**
 
 Run:
 
 ```bash
-rg -n 'direct-fix|batch-fix|historical-evidence|out-of-scope-gap|no-action' docs/90.references/audits/document-contracts
+rg -n 'direct-fix|batch-fix|historical-evidence|out-of-scope-gap|no-action' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack
 ```
 
 Expected: output lists gap classifications from all report files. Every gap
@@ -802,7 +802,7 @@ candidate should have one of the approved dispositions.
 
 - [ ] **Step 2: Write `gap-register.md`**
 
-Create `docs/90.references/audits/document-contracts/gap-register.md` with:
+Create `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md` with:
 
 - `## Overview`
 - `## Scope`
@@ -856,8 +856,8 @@ In `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
 Run:
 
 ```bash
-rg -n 'sample row|example row|measured gap|measured finding|illustrative row' docs/90.references/audits/document-contracts/gap-register.md
-rg -n 'WDC-GAP-[0-9]{3}' docs/90.references/audits/document-contracts/gap-register.md
+rg -n 'sample row|example row|measured gap|measured finding|illustrative row' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md
+rg -n 'WDC-GAP-[0-9]{3}' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md
 git diff --check
 bash scripts/validation/check-doc-traceability.sh
 ```
@@ -873,7 +873,7 @@ Expected:
 Run:
 
 ```bash
-git add docs/90.references/audits/document-contracts/gap-register.md docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
+git add docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
 git commit -m "docs(audits): Register document contract gaps"
 ```
 
@@ -992,8 +992,8 @@ Expected: commit succeeds.
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-WDC-PLAN-001 | Structural | Plan and task evidence use canonical Stage 04 paths. | `test -f docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md && test -f docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md` | Both files exist after Task 1. |
-| VAL-WDC-PLAN-002 | Reference | Audit reports live under the Stage 90 audit category. | `test -d docs/90.references/audits/document-contracts` | Directory exists after Task 1. |
-| VAL-WDC-PLAN-003 | Template Hygiene | Audit report files do not retain illustrative template rows. | `rg -n 'sample row|example row|measured gap|measured finding|illustrative row' docs/90.references/audits/document-contracts` | No matches after each report is finalized. |
+| VAL-WDC-PLAN-002 | Reference | Audit reports live under the Stage 90 audit category. | `test -d docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack` | Directory exists after Task 1. |
+| VAL-WDC-PLAN-003 | Template Hygiene | Audit report files do not retain illustrative template rows. | `rg -n 'sample row|example row|measured gap|measured finding|illustrative row' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack` | No matches after each report is finalized. |
 | VAL-WDC-PLAN-004 | Provider Sync | Provider mirrors have no generated drift. | `bash scripts/operations/sync-provider-surfaces.sh --check` | Exit 0. |
 | VAL-WDC-PLAN-005 | LLM Wiki | Generated tracked path index is fresh. | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | Exit 0 after Task 6 regeneration. |
 | VAL-WDC-PLAN-006 | Traceability | Stage 04 task and plan routing stays synchronized. | `bash scripts/validation/check-doc-traceability.sh` | Exit 0 with `failures=0`. |
@@ -1030,7 +1030,7 @@ Expected: commit succeeds.
 ## Completion Criteria
 
 - [ ] Task evidence exists and records all six tasks.
-- [ ] Audit bundle exists under `docs/90.references/audits/document-contracts/`.
+- [ ] Audit bundle exists under `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/`.
 - [ ] Frontmatter, section, README, governance, template-gap, automation, and
       gap-register reports are complete.
 - [ ] No target corpus normalization is mixed into this audit pack.

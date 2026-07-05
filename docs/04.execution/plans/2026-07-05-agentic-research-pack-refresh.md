@@ -10,7 +10,7 @@ status: active
 
 **Goal:** Refresh and extend the Stage 90 agentic engineering research pack with current external source evidence and repo-local analysis.
 
-**Architecture:** Use the existing `docs/90.references/research/agentic-engineering/` pack as the canonical research category. Refresh current documents first, add targeted reference documents only where Docker Compose, infrastructure, security, automation, pipeline, or workflow coverage would make the existing files unfocused, and record active-stage improvements as gaps. Preserve Stage 90 as reference context rather than policy, plan, runbook, task evidence, or runtime truth.
+**Architecture:** Use the existing `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` pack as the canonical research category. Refresh current documents first, add targeted reference documents only where Docker Compose, infrastructure, security, automation, pipeline, or workflow coverage would make the existing files unfocused, and record active-stage improvements as gaps. Preserve Stage 90 as reference context rather than policy, plan, runbook, task evidence, or runtime truth.
 
 **Tech Stack:** Markdown reference documents, Stage 90 reference template, Stage 04 task evidence, repository validation scripts, official vendor/standards web sources, repo-local governance/docs/scripts/CI evidence.
 
@@ -37,7 +37,7 @@ An existing Stage 90 research pack already covers much of the requested scope. T
   - Update README indexes and progress memory when structure changes.
   - Commit by logical unit.
 - **In Scope**:
-  - Stage 90 research documents under `docs/90.references/research/agentic-engineering/`.
+  - Stage 90 research documents under `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`.
   - Stage 90 research README indexes.
   - Stage 04 task evidence for this execution.
   - Stage 00 progress memory.
@@ -60,16 +60,16 @@ An existing Stage 90 research pack already covers much of the requested scope. T
 | Path | Responsibility |
 | --- | --- |
 | `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md` | Execution evidence, source list, validation evidence, deviations, and final status. |
-| `docs/90.references/research/agentic-engineering/workspace-baseline.md` | Repo-local workspace purpose, roles, CI/CD, QA, formatting, linting, automation, scripts, templates, integration guides, SDLC, governance, rules, infrastructure, and security baseline. |
-| `docs/90.references/research/agentic-engineering/harness-engineering.md` | Harness engineering concepts, runtime/test/eval/governance harness mapping, and workspace application gaps. |
-| `docs/90.references/research/agentic-engineering/loop-engineering.md` | Agent, validation, CI, memory, eval, approval, human-in-the-loop, automation, and workflow loops. |
-| `docs/90.references/research/agentic-engineering/provider-implementation-comparison.md` | Claude, Codex, Gemini harness/loop implementation status and common provider-neutral environment rules. |
-| `docs/90.references/research/agentic-engineering/spec-driven-sdlc.md` | Spec-driven development and SDLC mapping, including secure SDLC references. |
-| `docs/90.references/research/agentic-engineering/quality-ci-formatting.md` | CI/CD, QA, formatting, linting, syntax checks, and security gate analysis. |
-| `docs/90.references/research/agentic-engineering/docker-compose-infrastructure.md` | Targeted Docker Compose and infrastructure reference if existing docs would become too broad. |
-| `docs/90.references/research/agentic-engineering/security-governance.md` | Targeted security governance reference if security coverage should be separated from quality and workspace baseline docs. |
-| `docs/90.references/research/agentic-engineering/automation-pipeline-workflow.md` | Targeted automation/pipeline/workflow reference if loop and quality docs become too broad. |
-| `docs/90.references/research/agentic-engineering/README.md` | Research pack index, structure, reading order, and source-maintenance guidance. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md` | Repo-local workspace purpose, roles, CI/CD, QA, formatting, linting, automation, scripts, templates, integration guides, SDLC, governance, rules, infrastructure, and security baseline. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md` | Harness engineering concepts, runtime/test/eval/governance harness mapping, and workspace application gaps. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md` | Agent, validation, CI, memory, eval, approval, human-in-the-loop, automation, and workflow loops. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md` | Claude, Codex, Gemini harness/loop implementation status and common provider-neutral environment rules. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md` | Spec-driven development and SDLC mapping, including secure SDLC references. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md` | CI/CD, QA, formatting, linting, syntax checks, and security gate analysis. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md` | Targeted Docker Compose and infrastructure reference if existing docs would become too broad. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md` | Targeted security governance reference if security coverage should be separated from quality and workspace baseline docs. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md` | Targeted automation/pipeline/workflow reference if loop and quality docs become too broad. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md` | Research pack index, structure, reading order, and source-maintenance guidance. |
 | `docs/90.references/research/README.md` | Parent research index, updated only if pack structure changes materially. |
 | `docs/00.agent-governance/memory/progress.md` | Progress and validation evidence. |
 
@@ -120,7 +120,7 @@ This task records execution evidence for refreshing and extending the Stage 90 a
 
 ## Task Scope
 
-- Refresh existing Stage 90 research documents under `docs/90.references/research/agentic-engineering/`.
+- Refresh existing Stage 90 research documents under `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`.
 - Add targeted reference documents only when existing documents would become unfocused.
 - Update README indexes and progress memory.
 - Do not change runtime, provider config, CI workflow behavior, scripts, secrets, or remote GitHub state.
@@ -141,7 +141,7 @@ This task records execution evidence for refreshing and extending the Stage 90 a
 | --- | --- | --- | --- |
 | Stage 03 Spec | [Agentic Research Pack Refresh Spec](../../03.specs/agentic-research-pack-refresh/spec.md) | Design contract | Active |
 | Stage 04 Plan | [Agentic Research Pack Refresh Plan](../plans/2026-07-05-agentic-research-pack-refresh.md) | Execution plan | Active |
-| Stage 90 Research Pack | [Agentic Engineering Research Pack](../../90.references/research/agentic-engineering/README.md) | Target research category | Active |
+| Stage 90 Research Pack | [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md) | Target research category | Active |
 
 ## Deviation Log
 
@@ -155,7 +155,7 @@ Validation runs after research documents and indexes are updated.
 
 - [Plan](../plans/2026-07-05-agentic-research-pack-refresh.md)
 - [Spec](../../03.specs/agentic-research-pack-refresh/spec.md)
-- [Research pack](../../90.references/research/agentic-engineering/README.md)
+- [Research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Research references](../../90.references/research/README.md)
 ```
 
@@ -195,7 +195,7 @@ Expected: commit succeeds.
 
 **Files:**
 - Modify: `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md`
-- Read: `docs/90.references/research/agentic-engineering/*.md`
+- Read: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/*.md`
 - Read: `docs/00.agent-governance/**`, `scripts/README.md`, `.github/workflows/ci-quality.yml`, `infra/README.md`
 
 - [ ] **Step 1: Inventory current research pack**
@@ -203,7 +203,7 @@ Expected: commit succeeds.
 Run:
 
 ```bash
-rg --files docs/90.references/research/agentic-engineering | sort
+rg --files docs/90.references/research/2026-07-05-agentic-research-pack-refresh | sort
 ```
 
 Expected: existing research files are listed, including `workspace-baseline.md`, `harness-engineering.md`, `loop-engineering.md`, `spec-driven-sdlc.md`, `quality-ci-formatting.md`, and `provider-implementation-comparison.md`.
@@ -245,7 +245,7 @@ Expected: task evidence records each source class and whether it supports provid
 Run:
 
 ```bash
-rg -n "CI/CD|QA|Formatting|Linting|Docker Compose|Security|workflow|pipeline|automation|harness|loop|provider|template|secret|approval" README.md AGENTS.md docs/00.agent-governance docs/03.specs/agentic-research-pack-refresh docs/90.references/research/agentic-engineering scripts .github infra -g '*.md' -g '*.yml' -g '*.yaml'
+rg -n "CI/CD|QA|Formatting|Linting|Docker Compose|Security|workflow|pipeline|automation|harness|loop|provider|template|secret|approval" README.md AGENTS.md docs/00.agent-governance docs/03.specs/agentic-research-pack-refresh docs/90.references/research/2026-07-05-agentic-research-pack-refresh scripts .github infra -g '*.md' -g '*.yml' -g '*.yaml'
 ```
 
 Expected: output identifies repo-local sources. Record only summarized source roles in the task evidence, not raw output.
@@ -276,12 +276,12 @@ Expected: commit succeeds.
 ### Task 3: Refresh Existing Research Pack Documents
 
 **Files:**
-- Modify: `docs/90.references/research/agentic-engineering/workspace-baseline.md`
-- Modify: `docs/90.references/research/agentic-engineering/harness-engineering.md`
-- Modify: `docs/90.references/research/agentic-engineering/loop-engineering.md`
-- Modify: `docs/90.references/research/agentic-engineering/spec-driven-sdlc.md`
-- Modify: `docs/90.references/research/agentic-engineering/quality-ci-formatting.md`
-- Modify: `docs/90.references/research/agentic-engineering/provider-implementation-comparison.md`
+- Modify: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md`
+- Modify: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md`
+- Modify: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md`
+- Modify: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md`
+- Modify: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md`
+- Modify: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md`
 - Modify: `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md`
 
 - [ ] **Step 1: Refresh workspace baseline coverage**
@@ -348,7 +348,7 @@ Run:
 
 ```bash
 git diff --check
-rg -n "TBD|TODO|FIXME|\\[.*\\]|\\{.*\\}|first-class subagent parity" docs/90.references/research/agentic-engineering -g '*.md'
+rg -n "TBD|TODO|FIXME|\\[.*\\]|\\{.*\\}|first-class subagent parity" docs/90.references/research/2026-07-05-agentic-research-pack-refresh -g '*.md'
 bash scripts/validation/check-repo-contracts.sh
 ```
 
@@ -359,7 +359,7 @@ Expected: `git diff --check` has no output; placeholder scan has no unresolved t
 Run:
 
 ```bash
-git add docs/90.references/research/agentic-engineering/workspace-baseline.md docs/90.references/research/agentic-engineering/harness-engineering.md docs/90.references/research/agentic-engineering/loop-engineering.md docs/90.references/research/agentic-engineering/spec-driven-sdlc.md docs/90.references/research/agentic-engineering/quality-ci-formatting.md docs/90.references/research/agentic-engineering/provider-implementation-comparison.md docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md
+git add docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md
 git commit -m "docs(research): Refresh agentic engineering research pack"
 ```
 
@@ -368,10 +368,10 @@ Expected: commit succeeds.
 ### Task 4: Add Targeted Reference Documents If Needed
 
 **Files:**
-- Create if needed: `docs/90.references/research/agentic-engineering/docker-compose-infrastructure.md`
-- Create if needed: `docs/90.references/research/agentic-engineering/security-governance.md`
-- Create if needed: `docs/90.references/research/agentic-engineering/automation-pipeline-workflow.md`
-- Modify: `docs/90.references/research/agentic-engineering/README.md`
+- Create if needed: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md`
+- Create if needed: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md`
+- Create if needed: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md`
+- Modify: `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md`
 - Modify if pack structure changes: `docs/90.references/research/README.md`
 - Modify: `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md`
 
@@ -389,13 +389,13 @@ Expected: task evidence records `Created` or `N/A - covered by refreshed existin
 
 - [ ] **Step 2: Create Docker Compose / infrastructure reference if needed**
 
-If needed, create `docs/90.references/research/agentic-engineering/docker-compose-infrastructure.md` with these exact sections:
+If needed, create `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md` with these exact sections:
 
 ```markdown
 ---
 status: active
 ---
-<!-- Target: docs/90.references/research/agentic-engineering/docker-compose-infrastructure.md -->
+<!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md -->
 
 # Reference: Docker Compose and Infrastructure Harness
 
@@ -471,7 +471,7 @@ Then replace "Add source-backed facts..." and "Map official..." paragraphs with 
 
 - [ ] **Step 3: Create security governance reference if needed**
 
-If needed, create `docs/90.references/research/agentic-engineering/security-governance.md` with the same reference template sections and sources for:
+If needed, create `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md` with the same reference template sections and sources for:
 
 ```text
 NIST SSDF
@@ -489,7 +489,7 @@ Expected: document distinguishes reference frameworks from adopted active policy
 
 - [ ] **Step 4: Create automation/pipeline/workflow reference if needed**
 
-If needed, create `docs/90.references/research/agentic-engineering/automation-pipeline-workflow.md` with the same reference template sections and sources for:
+If needed, create `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md` with the same reference template sections and sources for:
 
 ```text
 GitHub Actions workflow syntax
@@ -505,7 +505,7 @@ Expected: document distinguishes local automation evidence from remote action ap
 
 - [ ] **Step 5: Update research README indexes**
 
-If any targeted document is created, update `docs/90.references/research/agentic-engineering/README.md`:
+If any targeted document is created, update `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md`:
 
 ```markdown
 ├── docker-compose-infrastructure.md      # Docker Compose and infrastructure harness analysis
@@ -531,7 +531,7 @@ Expected: no whitespace issues and `failures=0`.
 Run:
 
 ```bash
-git add docs/90.references/research/agentic-engineering docs/90.references/research/README.md docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md
+git add docs/90.references/research/2026-07-05-agentic-research-pack-refresh docs/90.references/research/README.md docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md
 git commit -m "docs(research): Add targeted agentic engineering references"
 ```
 
@@ -604,8 +604,8 @@ Add a new English section to `docs/00.agent-governance/memory/progress.md` befor
 
 | Item | Area | Status | Notes |
 | ---- | ---- | ------ | ----- |
-| Existing research refresh | `docs/90.references/research/agentic-engineering/*.md` | ✅ Updated | Revalidated and refreshed source-backed coverage for workspace baseline, harness, loop, provider comparison, SDLC, QA, CI/CD, formatting, linting, syntax checks, automation, pipeline, workflow, Docker Compose, infrastructure, and security. |
-| Targeted additions | `docs/90.references/research/agentic-engineering/` | ✅ Updated | Added targeted reference documents where needed, or recorded N/A rationale in task evidence when existing refreshed documents remained sufficient. |
+| Existing research refresh | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/*.md` | ✅ Updated | Revalidated and refreshed source-backed coverage for workspace baseline, harness, loop, provider comparison, SDLC, QA, CI/CD, formatting, linting, syntax checks, automation, pipeline, workflow, Docker Compose, infrastructure, and security. |
+| Targeted additions | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` | ✅ Updated | Added targeted reference documents where needed, or recorded N/A rationale in task evidence when existing refreshed documents remained sufficient. |
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed research references, task evidence, README indexes, and progress memory only; no runtime config, Compose, validator, workflow behavior, provider runtime, secret material, `.env`, or remote GitHub state changed. |
 | Validation | Local documentation contracts | ✅ Pass | Final validation gates passed with `failures=0`. |
 ```
@@ -665,7 +665,7 @@ Expected: commit succeeds. If `llm-wiki-index.md` did not change, `git add` safe
 ## Related Documents
 
 - **Spec**: [Agentic Research Pack Refresh Spec](../../03.specs/agentic-research-pack-refresh/spec.md)
-- **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/agentic-engineering/README.md)
+- **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Research References**: [Research References](../../90.references/research/README.md)
 - **Task**: [Agentic Research Pack Refresh Task](../tasks/2026-07-05-agentic-research-pack-refresh.md)
 - **Reference Template**: [Reference Template](../../99.templates/templates/common/reference.template.md)

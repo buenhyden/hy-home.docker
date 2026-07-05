@@ -17,7 +17,7 @@ repo-local implementation surfaces.
 
 - **Parent Spec**: [Agentic Engineering Implementation Audit Pack Spec](../../03.specs/agentic-engineering-implementation-audit-pack/spec.md)
 - **Parent Plan**: [Agentic Engineering Implementation Audit Pack Plan](../plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
-- **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/agentic-engineering/README.md)
+- **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 
 ## Working Rules
 
@@ -39,7 +39,7 @@ are limited to documentation evidence and indexes.
 | --- | --- | --- | --- | --- | --- | --- |
 | Stage 03 design | User approved approach A on 2026-07-05 | `docs/03.specs/agentic-engineering-implementation-audit-pack/` | Draft design spec existed | Active design spec linked to Stage 04 | Revert planning commit | No secret values or raw logs |
 | Stage 04 execution | User approved approach A on 2026-07-05 | `docs/04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md`, this file | No dedicated plan/task for this audit pack | Plan and task evidence scaffold | Revert planning commit | No shell history or raw secret logs |
-| Stage 90 audit references | User request for category reports | `docs/90.references/audits/agentic-engineering/` | No dedicated implementation audit pack | Category-specific audit reports | Revert audit-report commits | No secrets, credentials, or raw logs |
+| Stage 90 audit references | User request for category reports | `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/` | No dedicated implementation audit pack | Category-specific audit reports | Revert audit-report commits | No secrets, credentials, or raw logs |
 
 ## Task Table
 
@@ -77,7 +77,7 @@ verification and repo-local file inspection.
 
 | Evidence Class | Evidence Path / Source | Audit Role | Implementation Signal |
 | --- | --- | --- | --- |
-| Research criteria | [Agentic engineering research pack](../../90.references/research/agentic-engineering/README.md) | Criteria source for all audit reports | Implemented research baseline with dedicated workspace, harness, loop, provider, SDLC, quality, Docker/infrastructure, security, and automation references. |
+| Research criteria | [Agentic engineering research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md) | Criteria source for all audit reports | Implemented research baseline with dedicated workspace, harness, loop, provider, SDLC, quality, Docker/infrastructure, security, and automation references. |
 | Governance SSoT | [Stage 00 governance hub](../../00.agent-governance/README.md) | Workspace rules, roles, workflows, memory, QA/CI/CD, template contract, and provider adapter model | Implemented as canonical policy and routing hub. |
 | Harness map | [Harness implementation map](../../00.agent-governance/harness-implementation-map.md) | Harness surface-to-source routing for governance, runtime, secrets, scripts, validation, CI, hooks, evidence, PR/review, and operations | Implemented map; semantic enforcement depth varies by surface. |
 | Approval boundaries | [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md) | Protected-surface and approval matrix for Compose, secrets, scripts, workflows, governance, operations, and templates | Implemented policy matrix; runtime enforcement remains script/hook/manual by surface. |
@@ -129,6 +129,6 @@ Validation runs after each logical unit and final closure.
 
 - **Parent Spec**: [Agentic Engineering Implementation Audit Pack Spec](../../03.specs/agentic-engineering-implementation-audit-pack/spec.md)
 - **Parent Plan**: [Agentic Engineering Implementation Audit Pack Plan](../plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
-- **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/agentic-engineering/README.md)
+- **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Audit References**: [Audit references index](../../90.references/audits/README.md)
 - **Reference Template**: [Reference template](../../99.templates/templates/common/reference.template.md)

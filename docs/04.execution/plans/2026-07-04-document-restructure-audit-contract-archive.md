@@ -41,7 +41,7 @@ documents as policy owners.
 
 - **Goals**:
   - Create a Stage 90 audit pack under
-    `docs/90.references/audits/document-restructure/`.
+    `docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/`.
   - Classify template/frontmatter drift, `docs/03.specs` historical work
     products, operations bucket documents, and CI/QA/formatting coverage with
     stable dispositions.
@@ -56,7 +56,7 @@ documents as policy owners.
     and follow-up ownership.
 - **In Scope**:
   - `docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md`
-  - `docs/90.references/audits/document-restructure/**`
+  - `docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/**`
   - `docs/99.templates/support/*.md` when contract changes are needed
   - minimal `docs/00.agent-governance/**` updates only for agent-facing or
     stage-authoring rules
@@ -98,7 +98,7 @@ documents as policy owners.
 | Task ID | Description | Files / Docs Affected | Source Criteria | Validation Criteria |
 | --- | --- | --- | --- | --- |
 | PLN-DRA-001 | Create task evidence and current baseline. | Stage 04 task evidence, progress memory | VAL-DRA-001, VAL-DRA-002 | Task evidence records approved surfaces, redaction boundaries, baseline path counts, and no target moves yet. |
-| PLN-DRA-002 | Build the evidence-only audit pack. | `docs/90.references/audits/document-restructure/**`, audit indexes | VAL-DRA-002, VAL-DRA-003 | Audit reports exist, classify every target row with a stable disposition, and do not mutate target-stage documents. |
+| PLN-DRA-002 | Build the evidence-only audit pack. | `docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/**`, audit indexes | VAL-DRA-002, VAL-DRA-003 | Audit reports exist, classify every target row with a stable disposition, and do not mutate target-stage documents. |
 | PLN-DRA-003 | Update template, frontmatter, lifecycle, archive, and governance contracts. | Stage 99 support docs; minimal Stage 00 rules if needed | VAL-DRA-003, VAL-DRA-004 | Contract changes define archive-centered restructure rules and keep README policy out of README files. |
 | PLN-DRA-004 | Execute approved `docs/03.specs` archive/remove/relink batch. | `docs/03.specs/**`, `docs/98.archive/**`, related README links | VAL-DRA-002, VAL-DRA-003 | Historical specs are archived/removed only after active links, replacements, and tombstones are synchronized. |
 | PLN-DRA-005 | Execute approved operations bucket restructure batch. | `docs/05.operations/{guides,policies,runbooks}/{00-workspace,01-*...12-*,90-knowledge}`, `docs/98.archive/**`, related README links | VAL-DRA-002, VAL-DRA-003 | Guide/policy/runbook roles remain separate, `90-knowledge` operations material moves into `00-workspace`, and duplicate/conflicting active guidance is removed or archived with evidence. |
@@ -129,7 +129,7 @@ documents as policy owners.
 | VAL-DRA-PLAN-006 | Repo Contract Syntax | Validate repo-contract script syntax. | `bash -n scripts/validation/check-repo-contracts.sh` | Zero exit status. |
 | VAL-DRA-PLAN-007 | Repo Contracts | Validate repository documentation and Docker contracts. | `bash scripts/validation/check-repo-contracts.sh` | PASS, or any failure is recorded as out-of-scope residual drift with owner and follow-up. |
 | VAL-DRA-PLAN-008 | Archive Links | Verify active documents do not link directly to deprecated active paths after archive moves. | `bash scripts/validation/check-doc-implementation-alignment.sh` plus targeted `rg` from task evidence | No unreviewed active links point to removed or archived targets. |
-| VAL-DRA-PLAN-009 | Candidate Dispositions | Confirm every moved/removed target has a disposition row. | `rg -n 'DRA-GAP-|DRA-[0-9]{3}' docs/90.references/audits/document-restructure` | Every touched target has evidence, disposition, and batch owner. |
+| VAL-DRA-PLAN-009 | Candidate Dispositions | Confirm every moved/removed target has a disposition row. | `rg -n 'DRA-GAP-|DRA-[0-9]{3}' docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive` | Every touched target has evidence, disposition, and batch owner. |
 
 ## Risks & Mitigations
 

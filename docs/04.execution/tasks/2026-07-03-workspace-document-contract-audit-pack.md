@@ -28,14 +28,14 @@ automation coverage, and future implementation gaps.
 - Do not read or print secret values from `secrets/**`.
 - Classify historical evidence separately from active guidance drift.
 - Record existing infra image/version drift as out of scope.
-- Keep execution evidence here and stable audit reports in `docs/90.references/audits/document-contracts/`.
+- Keep execution evidence here and stable audit reports in `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/`.
 
 ## Approved Surface Evidence
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
 | `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md` | Approved Stage 03 spec and user approval | Execution evidence | File absent | Task evidence records audit execution | `git revert` audit-pack commits | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
-| `docs/90.references/audits/document-contracts/**` | Approved Stage 03 spec and user approval | Durable audit reports | Bundle absent | Audit reports created and indexed | `git revert` audit-pack commits | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/**` | Approved Stage 03 spec and user approval | Durable audit reports | Bundle absent | Audit reports created and indexed | `git revert` audit-pack commits | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 | `docs/90.references/audits/README.md` | Approved Stage 03 spec and user approval | Audit category routing | Document-contract bundle not listed | Bundle linked | `git revert` audit-pack commits | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 
 ## Task Table
@@ -69,19 +69,19 @@ automation coverage, and future implementation gaps.
 
 ## Implementation Notes
 
-- Task 2 created `docs/90.references/audits/document-contracts/frontmatter-inventory.md`,
-  `docs/90.references/audits/document-contracts/section-profile-inventory.md`,
-  and `docs/90.references/audits/document-contracts/readme-profile-inventory.md`.
+- Task 2 created `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-inventory.md`,
+  `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/section-profile-inventory.md`,
+  and `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/readme-profile-inventory.md`.
 - Task 2 measurement fix reran the committed-state inventory: 930 tracked
   Markdown files, 745 files with top frontmatter, 185 without top
   frontmatter, 519 `status` keys, and 206 tracked README files.
 - Task 2 quality fix aligned the three inventory reports with the Stage 90
   reference document contract and added full reproduction commands for the
   Python frontmatter and section-profile scans.
-- Task 3 created `docs/90.references/audits/document-contracts/contract-governance-map.md`
-  and `docs/90.references/audits/document-contracts/template-application-gaps.md`.
+- Task 3 created `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/contract-governance-map.md`
+  and `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/template-application-gaps.md`.
   `DESIGN.md` was absent in the repository root during Task 3 verification.
-- Task 4 created `docs/90.references/audits/document-contracts/automation-coverage-map.md`
+- Task 4 created `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md`
   with workflow, QA, formatting, security, supply-chain, unguarded-rule, and
   gap-disposition coverage.
 - Task 4 validation confirmed full repository contracts have no Task 4,
@@ -89,7 +89,7 @@ automation coverage, and future implementation gaps.
   script-contract failures. The full contract still fails only on known
   out-of-scope infra drift: Keycloak hardening image mismatch and
   `infra/tech-stack.versions.json` expected-image drift.
-- Task 5 created `docs/90.references/audits/document-contracts/gap-register.md`
+- Task 5 created `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md`
   with 30 consolidated gap rows and future implementation batches.
 - No target corpus fixes were applied in this audit pack. The Task 5 changes
   are limited to the Stage 90 gap register, this Stage 04 task evidence, the
@@ -133,4 +133,4 @@ automation coverage, and future implementation gaps.
 
 - Spec: `docs/03.specs/workspace-document-contract-audit-pack/spec.md`
 - Plan: `docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md`
-- Audit bundle: `docs/90.references/audits/document-contracts/README.md`
+- Audit bundle: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md`

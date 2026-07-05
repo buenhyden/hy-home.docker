@@ -47,17 +47,23 @@ Audit reference는 task evidence나 incident timeline을 대체하지 않습니�
 
 ```text
 audits/
-├── agentic-engineering/ # Agentic engineering implementation-status audit reports
-├── document-contracts/ # Workspace document contract audit reports
-├── document-restructure/ # Document restructure audit, archive, contract, and QA reports
-└── README.md           # This file
+├── 2026-07-03-workspace-document-contract-audit-pack/ # Workspace document contract audit reports
+├── 2026-07-04-document-restructure-audit-contract-archive/ # Document restructure audit, archive, contract, and QA reports
+├── 2026-07-05-agentic-engineering-implementation-audit-pack/ # Agentic engineering implementation-status audit reports
+└── README.md # This file
 ```
 
 ## Current References
 
-- [Agentic engineering implementation audit references](./agentic-engineering/README.md)
-- [Document contract audit references](./document-contracts/README.md)
-- [Document restructure audit references](./document-restructure/README.md)
+- [Workspace document contract audit references](./2026-07-03-workspace-document-contract-audit-pack/README.md)
+- [Document restructure audit references](./2026-07-04-document-restructure-audit-contract-archive/README.md)
+- [Agentic engineering implementation audit references](./2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+
+## Naming Rules
+
+- SDLC-linked audit packs live under `<date>-<sdlc_key>/`.
+- Pack-level report files use descriptive names such as `gap-register.md` or `implementation-overview.md`.
+- Do not use `part-*.md` prefixes for finalized report files.
 
 ## How to Work in This Area
 

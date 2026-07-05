@@ -95,7 +95,7 @@ task explicitly retires this restructure model with replacement evidence.
 
 The restructure program has four design components:
 
-1. **Audit pack** under `docs/90.references/audits/document-restructure/`.
+1. **Audit pack** under `docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/`.
    This is evidence-only and does not mutate target documents.
 2. **Template contract baseline** under `docs/99.templates/support/`, with
    minimal Stage 00 updates only when agent-facing policy changes.
@@ -138,7 +138,7 @@ contract. Conflicting or duplicate documents must not remain as active guidance.
 ## Audit Pack Design
 
 The audit pack will live under
-`docs/90.references/audits/document-restructure/` and contain:
+`docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/` and contain:
 
 | Report | Purpose |
 | --- | --- |
@@ -294,7 +294,7 @@ The implementation plan should use these batches:
 
 | Batch | Scope | Commit Boundary |
 | --- | --- | --- |
-| Audit pack | Create `docs/90.references/audits/document-restructure/` evidence reports and gap register. | `docs(audits): Add document restructure audit pack` |
+| Audit pack | Create `docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/` evidence reports and gap register. | `docs(audits): Add document restructure audit pack` |
 | Template contract | Update Stage 99 support contracts and minimal Stage 00 governance if needed. | `docs(templates): Define archive-centered restructure contracts` |
 | `03.specs` archive | Move/archive/remove approved historical spec work products and sync links. | `docs(specs): Archive historical spec work products` |
 | Operations buckets | Restructure historical `guides`, `policies`, and `runbooks` buckets across `00-workspace`, `01-*` through `12-*`, and legacy `90-knowledge`. | `docs(ops): Restructure historical operations buckets` |

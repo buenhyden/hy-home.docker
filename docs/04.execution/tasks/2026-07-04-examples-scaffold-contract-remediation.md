@@ -16,7 +16,7 @@ runtime behavior.
 ## Inputs
 
 - **Parent Plan**: [Document contract remediation batch plan](../plans/2026-07-03-document-contract-remediation-batches.md)
-- **Source Register**: [Document contract gap register](../../90.references/audits/document-contracts/gap-register.md)
+- **Source Register**: [Document contract gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
 - **README Template**: [README template](../../99.templates/templates/common/readme.template.md)
 - **Service Template**: [Service scaffold template](../../99.templates/templates/spec-contracts/service.template.md)
 
@@ -36,7 +36,7 @@ runtime behavior.
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
 | `examples/sample-web-service/README.md`; `examples/sample-web-service/service.md` | User continuation for the next follow-up and PLN-WDC-RM-003 examples approval gate | Example scaffold documentation profile and template links | The README had a scaffold-specific profile with no top lifecycle frontmatter, and both files linked to removed flat `docs/99.templates/service.template.md`. | The README now follows the common README profile while preserving scaffold-specific sections; both files carry `status: active` frontmatter and link to `docs/99.templates/templates/spec-contracts/service.template.md`. | `git revert` the examples scaffold remediation commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, runtime config changes, Compose changes, Dockerfile changes, nginx config changes, or static site changes |
-| `docs/90.references/audits/document-contracts/gap-register.md`; `docs/90.references/audits/document-contracts/frontmatter-routing-profile.md`; `docs/04.execution/tasks/README.md`; `docs/00.agent-governance/memory/progress.md` | Documentation traceability requirements | Closure evidence for `WDC-GAP-017` | `WDC-GAP-017` was deferred as an examples/scaffold decision and the frontmatter routing profile listed examples as deferred. | The example scaffold decision is recorded as closed, while provider and infra follow-up rows remain separate. | `git revert` the examples scaffold remediation commit | Same redaction boundary as above |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md`; `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-routing-profile.md`; `docs/04.execution/tasks/README.md`; `docs/00.agent-governance/memory/progress.md` | Documentation traceability requirements | Closure evidence for `WDC-GAP-017` | `WDC-GAP-017` was deferred as an examples/scaffold decision and the frontmatter routing profile listed examples as deferred. | The example scaffold decision is recorded as closed, while provider and infra follow-up rows remain separate. | `git revert` the examples scaffold remediation commit | Same redaction boundary as above |
 
 ## Task Table
 
@@ -85,7 +85,7 @@ runtime behavior.
 ## Related Documents
 
 - **Parent Plan**: [Document contract remediation batch plan](../plans/2026-07-03-document-contract-remediation-batches.md)
-- **Source Register**: [Document contract gap register](../../90.references/audits/document-contracts/gap-register.md)
-- **Frontmatter Routing Profile**: [Frontmatter routing profile](../../90.references/audits/document-contracts/frontmatter-routing-profile.md)
+- **Source Register**: [Document contract gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
+- **Frontmatter Routing Profile**: [Frontmatter routing profile](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-routing-profile.md)
 - **Example README**: [sample-web-service README](../../../examples/sample-web-service/README.md)
 - **Example Service Scaffold**: [sample-web-service service scaffold](../../../examples/sample-web-service/service.md)

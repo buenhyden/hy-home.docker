@@ -141,7 +141,7 @@ The audit pack has four workstreams:
 
 The implementation plan should create a Stage 04 task record before broad
 auditing starts. Detailed audit outputs should live under
-`docs/90.references/audits/document-contracts/` unless the plan chooses a more
+`docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/` unless the plan chooses a more
 specific Stage 90 path.
 
 Recommended records:

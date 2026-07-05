@@ -47,13 +47,19 @@ status: active
 
 ```text
 research/
-├── README.md              # This file
-└── agentic-engineering/   # Harness, loop, provider, SDLC, QA research pack
+├── README.md # This file
+└── 2026-07-05-agentic-research-pack-refresh/ # Harness, loop, provider, SDLC, QA research pack
 ```
 
 ## Current References
 
-- [agentic-engineering/README.md](./agentic-engineering/README.md) - 하네스/루프/agent-first engineering research pack index, including targeted Docker Compose/infrastructure, security governance, and automation/pipeline/workflow references
+- [2026-07-05-agentic-research-pack-refresh/README.md](./2026-07-05-agentic-research-pack-refresh/README.md) - 하네스/루프/agent-first engineering research pack index, including targeted Docker Compose/infrastructure, security governance, and automation/pipeline/workflow references
+
+## Naming Rules
+
+- SDLC-linked research packs live under `<date>-<sdlc_key>/`.
+- Pack-level report files use descriptive names such as `workspace-baseline.md` or `quality-ci-formatting.md`.
+- Do not use `part-*.md` prefixes for finalized report files.
 
 ## How to Work in This Area
 

@@ -18,8 +18,8 @@ root, or archive files.
 ## Inputs
 
 - **Parent Plan**: [Document contract remediation batch plan](../plans/2026-07-03-document-contract-remediation-batches.md)
-- **Source Register**: [Document contract gap register](../../90.references/audits/document-contracts/gap-register.md)
-- **Frontmatter Routing Profile**: [Frontmatter routing profile](../../90.references/audits/document-contracts/frontmatter-routing-profile.md)
+- **Source Register**: [Document contract gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
+- **Frontmatter Routing Profile**: [Frontmatter routing profile](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-routing-profile.md)
 - **Frontmatter Contract**: [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
 - **Provider README Evidence**: [Gemini shared runtime README](../../../.agents/README.md), [Codex runtime surface README](../../../.codex/README.md)
 
@@ -38,7 +38,7 @@ root, or archive files.
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
-| `docs/90.references/audits/document-contracts/frontmatter-routing-profile.md`; `docs/90.references/audits/document-contracts/gap-register.md` | User continuation for the next document-contract follow-up; routing-profile update trigger | Current frontmatter routing evidence | The routing profile still said 185 current files and kept provider README routing as deferred even though `WDC-GAP-024` classified provider README profiles as no-action. | The routing profile now records 184 current files, examples closed, Graphify generated reports at 4, and provider README routing as optional/no-action. | `git revert` the evidence-refresh commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, provider config changes, generated Graphify output mutation, GitHub setting changes, or broad Markdown corpus rewrites |
+| `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-routing-profile.md`; `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md` | User continuation for the next document-contract follow-up; routing-profile update trigger | Current frontmatter routing evidence | The routing profile still said 185 current files and kept provider README routing as deferred even though `WDC-GAP-024` classified provider README profiles as no-action. | The routing profile now records 184 current files, examples closed, Graphify generated reports at 4, and provider README routing as optional/no-action. | `git revert` the evidence-refresh commit | No secret values, credentials, tokens, private keys, raw logs, shell history, `.env` values, provider config changes, generated Graphify output mutation, GitHub setting changes, or broad Markdown corpus rewrites |
 | `docs/04.execution/tasks/2026-07-04-frontmatter-routing-evidence-refresh.md`; `docs/04.execution/tasks/README.md`; `docs/00.agent-governance/memory/progress.md`; `docs/90.references/llm-wiki/llm-wiki-index.md` | Stage 04 traceability and index freshness requirements | Task evidence, task index, progress memory, and generated knowledge index | No task evidence existed for this refresh. | Task evidence and indexes record the current routing refresh. | `git revert` the evidence-refresh commit | Same redaction boundary as above |
 
 ## Task Table
@@ -55,7 +55,7 @@ root, or archive files.
 - **Test Commands**:
   - `zsh -fc 'git ls-files -z "*.md" | while IFS= read -r -d "" f; do first=$(sed -n "1p" "$f"); [[ "$first" == "---" ]] && continue; print -r -- "$f"; done | wc -l'`
   - `zsh -fc 'stage=0; infra=0; workspace=0; provider=0; example=0; github=0; graphify=0; root=0; archive=0; other=0; git ls-files -z "*.md" | while IFS= read -r -d "" f; do first=$(sed -n "1p" "$f"); [[ "$first" == "---" ]] && continue; case "$f" in docs/*) ((stage++));; infra/*) ((infra++));; .agents/README.md) ((provider++));; examples/*) ((example++));; .github/*) ((github++));; graphify-out/*) ((graphify++));; README.md|CHANGELOG.md|RTK.md) ((root++));; archive/*) ((archive++));; projects/*|scripts/*|secrets/*|tests/*) ((workspace++));; *) ((other++)); print -r -- "OTHER $f";; esac; done; print -r -- "stage=$stage"; print -r -- "infra=$infra"; print -r -- "workspace=$workspace"; print -r -- "provider=$provider"; print -r -- "example=$example"; print -r -- "github=$github"; print -r -- "graphify=$graphify"; print -r -- "root=$root"; print -r -- "archive=$archive"; print -r -- "other=$other"; print -r -- "total=$((stage+infra+workspace+provider+example+github+graphify+root+archive+other))"'`
-  - `rg -n 'Provider README routing remains deferred|provider/examples deferred|Path classification of the 185 files|all 185 files' docs/90.references/audits/document-contracts/frontmatter-routing-profile.md docs/90.references/audits/document-contracts/gap-register.md`
+  - `rg -n 'Provider README routing remains deferred|provider/examples deferred|Path classification of the 185 files|all 185 files' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-routing-profile.md docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md`
   - `git diff --check`
   - `git diff --cached --check`
   - `bash scripts/knowledge/generate-llm-wiki-index.sh --check`
@@ -88,7 +88,7 @@ root, or archive files.
 ## Related Documents
 
 - **Parent Plan**: [Document contract remediation batch plan](../plans/2026-07-03-document-contract-remediation-batches.md)
-- **Source Register**: [Document contract gap register](../../90.references/audits/document-contracts/gap-register.md)
-- **Frontmatter Routing Profile**: [Frontmatter routing profile](../../90.references/audits/document-contracts/frontmatter-routing-profile.md)
+- **Source Register**: [Document contract gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
+- **Frontmatter Routing Profile**: [Frontmatter routing profile](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/frontmatter-routing-profile.md)
 - **Examples Scaffold Remediation Task**: [Examples scaffold contract remediation](./2026-07-04-examples-scaffold-contract-remediation.md)
 - **Infra Tech-Stack Version Refresh Task**: [Infra tech-stack version refresh](./2026-07-04-infra-tech-stack-version-refresh.md)

@@ -72,6 +72,6 @@ agentic-engineering-implementation-audit-pack/
 - [docs/03.specs README](../README.md)
 - [implementation plan](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
 - [task evidence](../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md)
-- [research pack](../../90.references/research/agentic-engineering/README.md)
+- [research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [90.references](../../90.references/README.md)
 - [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

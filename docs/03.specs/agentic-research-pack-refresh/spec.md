@@ -10,7 +10,7 @@ status: active
 
 This document defines the technical design and implementation contract for
 refreshing the existing
-`docs/90.references/research/agentic-engineering/` research pack. The work uses
+`docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` research pack. The work uses
 a refresh-first strategy, then adds targeted new reference documents only where
 the existing pack would become unfocused.
 
@@ -41,7 +41,7 @@ provider implementation status, Docker Compose, and infrastructure.
 - **ARD**: N/A - no architecture runtime surface changes are proposed.
 - **Related ADRs**: N/A - no architecture decision is introduced.
 - **Research Pack**:
-  [../../90.references/research/agentic-engineering/README.md](../../90.references/research/agentic-engineering/README.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Stage 90 Contract**:
   [../../90.references/README.md](../../90.references/README.md)
 - **Reference Template**:
@@ -53,7 +53,7 @@ provider implementation status, Docker Compose, and infrastructure.
 
 | Contract | Required Behavior |
 | --- | --- |
-| Stage boundary | Final research outputs live under `docs/90.references/research/agentic-engineering/` and do not replace policy, plans, runbooks, incidents, task evidence, or runtime truth. |
+| Stage boundary | Final research outputs live under `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` and do not replace policy, plans, runbooks, incidents, task evidence, or runtime truth. |
 | Refresh-first rule | Existing research documents are updated before adding new files. New files are added only when an existing document would become unfocused. |
 | Source priority | External facts prefer official vendor docs, standards, primary papers, official repositories, and canonical framework docs. |
 | Repo-local evidence | Workspace claims must cite current Stage 00 governance, provider notes, HAFE docs, scripts, CI workflow, templates, operations docs, and runtime inventory where applicable. |
@@ -66,7 +66,7 @@ provider implementation status, Docker Compose, and infrastructure.
 ### Target Structure
 
 ```text
-docs/90.references/research/agentic-engineering/
+docs/90.references/research/2026-07-05-agentic-research-pack-refresh/
 ├── README.md
 ├── workspace-baseline.md
 ├── harness-engineering.md
@@ -247,7 +247,7 @@ applicable, and stale provider capability claims.
 
 - [spec README](./README.md)
 - [docs/03.specs README](../README.md)
-- [agentic engineering research pack](../../90.references/research/agentic-engineering/README.md)
+- [agentic engineering research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [research references](../../90.references/research/README.md)
 - [reference template](../../99.templates/templates/common/reference.template.md)
 - [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

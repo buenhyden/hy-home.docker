@@ -27,7 +27,7 @@ close each batch with validation results.
 ## Context
 
 The completed workspace document contract audit pack created a stable gap
-register under `docs/90.references/audits/document-contracts/gap-register.md`.
+register under `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md`.
 That register classifies 30 rows:
 
 - 11 `batch-fix` rows that need bounded remediation.
@@ -54,7 +54,7 @@ secret, and infra surfaces as protected.
   - Preserve infra/runtime drift as separate from documentation batches unless
     an infra-specific task is explicitly approved.
 - **In Scope**:
-  - `docs/90.references/audits/document-contracts/gap-register.md`
+  - `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md`
   - batch-specific task evidence under `docs/04.execution/tasks/`
   - provider and governance text surfaces listed by WDC-GAP-001 and
     WDC-GAP-002
@@ -122,7 +122,7 @@ secret, and infra surfaces as protected.
 | VAL-WDC-RM-007 | Repo Contracts | Validate repository contracts. | `bash scripts/validation/check-repo-contracts.sh` | PASS with `failures=0`. |
 | VAL-WDC-RM-008 | README Template Drift | Check removed flat README/service template paths in affected surfaces. | `rg -n 'docs/99\\.templates/(readme|service)\\.template' projects secrets tests examples` | No active unreviewed references remain in approved surfaces. |
 | VAL-WDC-RM-009 | Operations Metadata | Check generic operations `updated` metadata after operations metadata cleanup. | `rg -n '^updated:' docs/05.operations` | No unapproved active operations metadata drift remains, or exceptions are recorded by profile. |
-| VAL-WDC-RM-010 | Gap Register | Confirm touched rows record a final disposition. | `rg -n 'WDC-GAP-00[1-9]|WDC-GAP-01[0-9]|WDC-GAP-02[0-2]' docs/90.references/audits/document-contracts/gap-register.md` | Touched rows have evidence-backed next action or closure wording. |
+| VAL-WDC-RM-010 | Gap Register | Confirm touched rows record a final disposition. | `rg -n 'WDC-GAP-00[1-9]|WDC-GAP-01[0-9]|WDC-GAP-02[0-2]' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md` | Touched rows have evidence-backed next action or closure wording. |
 
 ## Risks & Mitigations
 
@@ -164,7 +164,7 @@ secret, and infra surfaces as protected.
 
 ## Related Documents
 
-- **Audit Gap Register**: [gap register](../../90.references/audits/document-contracts/gap-register.md)
+- **Audit Gap Register**: [gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
 - **Audit Pack Plan**: [workspace document contract audit pack plan](./2026-07-03-workspace-document-contract-audit-pack.md)
 - **Audit Pack Task Evidence**: [workspace document contract audit pack task](../tasks/2026-07-03-workspace-document-contract-audit-pack.md)
 - **Audit Pack Spec**: [workspace document contract audit pack spec](../../03.specs/workspace-document-contract-audit-pack/spec.md)
