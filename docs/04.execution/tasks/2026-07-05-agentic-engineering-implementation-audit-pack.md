@@ -49,7 +49,7 @@ are limited to documentation evidence and indexes.
 | T-AEA-002 | Inventory research criteria and repo-local evidence | doc | `VAL-SPC-002`, `VAL-SPC-003` | `PLN-AEA-002` | Evidence inventory below; official source revalidation on 2026-07-05 | Documentation Specialist | Done |
 | T-AEA-003 | Write overview, harness, and loop audit reports | doc | `VAL-SPC-002`, `VAL-SPC-003` | `PLN-AEA-003` | Stage 90 audit reports; `git diff --check`; LLM Wiki freshness; repo contracts | Documentation Specialist | Done |
 | T-AEA-004 | Write provider, workspace, automation, and SDLC/quality audit reports | doc | `VAL-SPC-002`, `VAL-SPC-003`, `VAL-SPC-005` | `PLN-AEA-004` | Stage 90 audit reports; `git diff --check`; repo contracts | Documentation Specialist | Done |
-| T-AEA-005 | Update indexes, progress memory, and validation evidence | doc | `VAL-SPC-004`, `VAL-SPC-005` | `PLN-AEA-005` | README indexes, progress memory, final validation | Documentation Specialist | Pending |
+| T-AEA-005 | Update indexes, progress memory, and validation evidence | doc | `VAL-SPC-004`, `VAL-SPC-005` | `PLN-AEA-005` | README indexes, progress memory, final validation bundle | Documentation Specialist | Done |
 
 ## Phase View
 
@@ -68,7 +68,7 @@ are limited to documentation evidence and indexes.
 
 ### Phase 4: Closure
 
-- [ ] T-AEA-005 Update indexes, progress memory, and validation evidence.
+- [x] T-AEA-005 Update indexes, progress memory, and validation evidence.
 
 ## Evidence Inventory
 
@@ -118,9 +118,12 @@ Validation runs after each logical unit and final closure.
 | `git diff --check` after provider/workspace/automation/SDLC reports | PASS | No whitespace or conflict-marker issues. |
 | `bash scripts/validation/check-repo-contracts.sh` after provider/workspace/automation/SDLC reports | PASS | `failures=0`; reference docs normalized. |
 | `bash scripts/knowledge/generate-llm-wiki-index.sh` after staging provider/workspace/automation/SDLC reports | PASS | Regenerated `docs/90.references/llm-wiki/llm-wiki-index.md` with 1154 paths. |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | Pending | Run after new tracked docs are added. |
-| `bash scripts/operations/sync-provider-surfaces.sh --check` | Pending | Final provider-surface check. |
-| `bash scripts/validation/check-doc-implementation-alignment.sh` | Pending | Final implementation-alignment check. |
+| `git diff --check` final | PASS | No whitespace or conflict-marker issues. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` final | PASS | Generated LLM Wiki index is fresh. |
+| `bash scripts/operations/sync-provider-surfaces.sh --check` final | PASS | `sync-provider-surfaces: no drift`. |
+| `bash scripts/validation/check-doc-traceability.sh` final | PASS | `failures=0`. |
+| `bash scripts/validation/check-doc-implementation-alignment.sh` final | PASS | `failures=0`. |
+| `bash scripts/validation/check-repo-contracts.sh` final | PASS | `failures=0`. |
 
 ## Related Documents
 
