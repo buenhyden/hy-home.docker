@@ -56,7 +56,7 @@ Stage 04 evidence, README indexes, and Stage 00 progress memory only.
 | T-RSRCH-002 | Revalidate external source set and repo-local evidence | doc | `VAL-SPC-002`, `VAL-SPC-003` | `PLN-002` | Source inventory and revalidation notes | Documentation Specialist | Done |
 | T-RSRCH-003 | Refresh existing research pack documents | doc | `VAL-SPC-002`, `VAL-SPC-003`, `VAL-SPC-004` | `PLN-003` | Git diff and source-backed updates | Documentation Specialist | Done |
 | T-RSRCH-004 | Add targeted references if required | doc | `VAL-SPC-003`, `VAL-SPC-004` | `PLN-004` | New reference docs or N/A rationale | Documentation Specialist | Done |
-| T-RSRCH-005 | Update indexes, progress memory, and validation evidence | doc | `VAL-SPC-006`, `VAL-SPC-007` | `PLN-005` | Final validation summary | Documentation Specialist | Pending |
+| T-RSRCH-005 | Update indexes, progress memory, and validation evidence | doc | `VAL-SPC-006`, `VAL-SPC-007` | `PLN-005` | Final validation summary | Documentation Specialist | Done |
 
 ## Phase View
 
@@ -75,7 +75,7 @@ Stage 04 evidence, README indexes, and Stage 00 progress memory only.
 
 ### Phase 4: Final Evidence
 
-- [ ] T-RSRCH-005 Update indexes, progress memory, and final validation summary.
+- [x] T-RSRCH-005 Update indexes, progress memory, and final validation summary.
 
 ## Source Inventory
 
@@ -158,10 +158,9 @@ project sources are preferred for downstream Stage 90 edits.
 
 ## Existing Research Refresh Notes
 
-Task 3 refreshed the existing Stage 90 research documents in place. No new
-targeted reference document was created, and Task 4 remains pending for the
-separate targeted-reference decision. README index and Stage 00 progress-memory
-updates remain outside this Task 3 write set and are not marked complete here.
+Task 3 refreshed the existing Stage 90 research documents in place. Task 4 then
+added targeted reference documents for the topics that were too broad to keep
+only inside the existing baseline, quality, and loop documents.
 
 Changed research documents:
 
@@ -192,11 +191,15 @@ README index updates:
 
 ## Deviation Log
 
-No deviations recorded yet.
+| Deviation | Reason | Resolution |
+| --- | --- | --- |
+| Task 4 implementation ran locally after a subagent dispatch attempt hit the current agent thread limit. | The multi-agent tool reported `agent thread limit reached` after Task 3 reviews completed. | Completed Task 4 in the controller session with the same write-scope boundary, validation gates, and logical commit discipline. No document scope, runtime, provider, CI, secret, or remote boundary changed. |
 
 ## Verification Summary
 
-Task 3 validation was run after the existing research documents were refreshed.
+Task validation and final validation were run after the existing research
+documents, targeted references, README indexes, LLM Wiki index, and progress
+memory were updated.
 
 | Command | Result | Notes |
 | --- | --- | --- |
@@ -206,6 +209,12 @@ Task 3 validation was run after the existing research documents were refreshed.
 | `bash scripts/validation/check-repo-contracts.sh` | PASS | `failures=0`; LLM Wiki contract passed, so no `llm-wiki-index.md` regeneration was required. |
 | `git diff --check` after targeted additions | PASS | No whitespace or conflict-marker issues. |
 | `bash scripts/validation/check-repo-contracts.sh` after targeted additions | PASS | `failures=0`; LLM Wiki contract passed after regeneration. |
+| `git diff --check` final | PASS | No output. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` final | PASS | Generated LLM Wiki index is fresh. |
+| `bash scripts/operations/sync-provider-surfaces.sh --check` final | PASS | `sync-provider-surfaces: no drift`. |
+| `bash scripts/validation/check-doc-traceability.sh` final | PASS | `failures=0`. |
+| `bash scripts/validation/check-doc-implementation-alignment.sh` final | PASS | `failures=0`. |
+| `bash scripts/validation/check-repo-contracts.sh` final | PASS | `failures=0`. |
 
 ## Related Documents
 

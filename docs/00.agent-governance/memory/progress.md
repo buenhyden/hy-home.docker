@@ -750,6 +750,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed Stage 04 planning documentation and progress memory only; no runtime config, Compose, validator, workflow behavior, provider runtime, secret material, `.env`, or remote GitHub state changed. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Agentic Research Pack Refresh (2026-07-05)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Source inventory | `docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md` | Done | Revalidated and recorded official provider, Docker Compose, GitHub Actions, quality-tool, secure SDLC, supply-chain, loop/eval, and repo-local evidence sources. Gemini remains recorded as agentic CLI plus ReAct/MCP/context-file support, not first-class subagent parity with Claude/Codex. |
+| Existing research refresh | `docs/90.references/research/agentic-engineering/*.md` | Done | Refreshed source-backed coverage for workspace baseline, harness, loop, provider comparison, SDLC, QA, CI/CD, formatting, linting, syntax checks, automation, pipeline, workflow, Docker Compose, infrastructure, and security. |
+| Targeted additions | `docs/90.references/research/agentic-engineering/` | Done | Added `docker-compose-infrastructure.md`, `security-governance.md`, and `automation-pipeline-workflow.md`, then updated research README indexes and regenerated the LLM Wiki index to 1144 paths. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | Preserved | This batch changed research references, README indexes, task evidence, generated LLM Wiki navigation, and progress memory only; no runtime config, Compose, validator, workflow behavior, provider runtime, secret material, `.env`, remote GitHub state, or branch protection changed. |
+| Validation | Local documentation contracts | Pass | Final gates passed: `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts with `failures=0`. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
