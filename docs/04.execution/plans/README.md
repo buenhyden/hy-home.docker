@@ -80,7 +80,7 @@ docs/04.execution/plans/
 ├── 2026-07-03-template-system-contract-standardization.md # Completed Stage 99 template contract/frontmatter standardization plan
 ├── 2026-07-02-template-system-reorganization.md # Completed Stage 99 template system reorganization plan
 ├── 2026-07-04-document-restructure-audit-contract-archive.md # Completed second-wave document restructure plan
-├── 2026-07-05-agentic-engineering-implementation-audit-pack.md # Active Stage 90 agentic engineering implementation audit pack plan
+├── 2026-07-05-agentic-engineering-implementation-audit-pack.md # Completed Stage 90 agentic engineering implementation audit pack plan
 ├── 2026-07-05-agentic-research-pack-refresh.md # Completed Stage 90 agentic research pack refresh plan
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration plan
 └── README.md                               # This file
