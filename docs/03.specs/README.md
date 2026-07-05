@@ -67,6 +67,7 @@ docs/03.specs/
 ├── infra-secrets-docs-refresh/          # Completed infra/secrets/docs refresh spec
 ├── llm-wiki-agent-first-completion/     # Completed LLM Wiki contract spec
 ├── standardize-infra-net/               # Completed infra_net standardization spec
+├── 099-template-system-numbered-sdlc-paths/ # Active numbered PRD/Spec path migration design
 ├── template-system-contract-standardization/ # Completed Stage 99 contract/frontmatter standardization spec
 ├── template-system-reorganization/      # Superseded Stage 99 template system reorganization spec
 ├── workspace-document-contract-audit-pack/ # Active workspace document contract audit/disposition spec
@@ -91,6 +92,7 @@ docs/03.specs/
 | Stage 90 agentic engineering research pack refresh | `agentic-research-pack-refresh/spec.md` |
 | Agentic engineering reference-audit pack design            | `agentic-engineering-implementation-audit-pack/spec.md` |
 | Second-wave document restructure disposition contract | `document-restructure-audit-contract-archive/spec.md` |
+| Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `template-system-contract-standardization/spec.md` |
 | Workspace-wide document contract audit/disposition model | `workspace-document-contract-audit-pack/spec.md` |
 | Local AI inference, RAG UI, model-serving contracts        | `08-ai/spec.md`, `08-ai/open-webui.md`               |
@@ -157,6 +159,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Agentic Research Pack Refresh Spec**: [agentic-research-pack-refresh/spec.md](./agentic-research-pack-refresh/spec.md)
 - **Agentic Engineering Implementation Audit Pack Spec**: [agentic-engineering-implementation-audit-pack/spec.md](./agentic-engineering-implementation-audit-pack/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [document-restructure-audit-contract-archive/spec.md](./document-restructure-audit-contract-archive/spec.md)
+- **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [harness-agent-first-engineering/spec.md](./harness-agent-first-engineering/spec.md)
 - **Home Docker Revalidation Deferred Follow-up Spec**: [home-docker-revalidation-deferred-follow-up/spec.md](./home-docker-revalidation-deferred-follow-up/spec.md)
 - **Infra / Secrets / Docs Refresh Spec**: [infra-secrets-docs-refresh/spec.md](./infra-secrets-docs-refresh/spec.md)
