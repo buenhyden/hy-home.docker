@@ -377,6 +377,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/08-ai/spec.md](../../03.specs/08-ai/spec.md) | Markdown reference |
 | [docs/03.specs/09-tooling/README.md](../../03.specs/09-tooling/README.md) | folder index |
 | [docs/03.specs/09-tooling/spec.md](../../03.specs/09-tooling/spec.md) | Markdown reference |
+| [docs/03.specs/099-template-system-numbered-sdlc-paths/README.md](../../03.specs/099-template-system-numbered-sdlc-paths/README.md) | folder index |
+| [docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md](../../03.specs/099-template-system-numbered-sdlc-paths/spec.md) | Markdown reference |
 | [docs/03.specs/10-communication/README.md](../../03.specs/10-communication/README.md) | folder index |
 | [docs/03.specs/10-communication/spec.md](../../03.specs/10-communication/spec.md) | Markdown reference |
 | [docs/03.specs/11-laboratory/README.md](../../03.specs/11-laboratory/README.md) | folder index |

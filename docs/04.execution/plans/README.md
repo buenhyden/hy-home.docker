@@ -82,6 +82,7 @@ docs/04.execution/plans/
 ├── 2026-07-04-document-restructure-audit-contract-archive.md # Completed second-wave document restructure plan
 ├── 2026-07-05-agentic-engineering-implementation-audit-pack.md # Active Stage 90 agentic engineering implementation audit pack plan
 ├── 2026-07-05-agentic-research-pack-refresh.md # Active Stage 90 agentic research pack refresh plan
+├── 2026-07-05-template-system-numbered-sdlc-paths.md # Active numbered PRD/Spec path migration plan
 └── README.md                               # This file
 ```
 
@@ -167,6 +168,7 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Document Restructure Audit, Contract, and Archive Plan**: [2026-07-04-document-restructure-audit-contract-archive.md](./2026-07-04-document-restructure-audit-contract-archive.md)
 - **Agentic Research Pack Refresh Plan**: [2026-07-05-agentic-research-pack-refresh.md](./2026-07-05-agentic-research-pack-refresh.md)
 - **Agentic Engineering Implementation Audit Pack Plan**: [2026-07-05-agentic-engineering-implementation-audit-pack.md](./2026-07-05-agentic-engineering-implementation-audit-pack.md)
+- **Template System Numbered SDLC Paths Plan**: [2026-07-05-template-system-numbered-sdlc-paths.md](./2026-07-05-template-system-numbered-sdlc-paths.md)
 - **Workspace Document Contract Audit Pack Plan**: [2026-07-03-workspace-document-contract-audit-pack.md](./2026-07-03-workspace-document-contract-audit-pack.md)
 - **Template System Reorganization Plan**: [2026-07-02-template-system-reorganization.md](./2026-07-02-template-system-reorganization.md)
 - **Template System Contract Standardization Plan**: [2026-07-03-template-system-contract-standardization.md](./2026-07-03-template-system-contract-standardization.md)
