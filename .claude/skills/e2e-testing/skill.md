@@ -29,7 +29,7 @@ Use when validating end-to-end runtime behavior of the composed stack.
    ```
 
 3. Execute smoke paths against healthy service endpoints; record pass/fail per path.
-4. Capture evidence in `_workspace/e2e_<date>.md`; promote to task docs when closing work.
+4. Capture evidence in `_workspace/repo-support/e2e_<date>.md`; promote to task docs when closing work.
 
 ## Rules
 

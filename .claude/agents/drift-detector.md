@@ -104,7 +104,7 @@ docker inspect <container_name> --format '{{.HostConfig.Memory}} {{.HostConfig.N
 
 ## Deliverable Format
 
-Save as `_workspace/drift_<YYYY-MM-DD>.md`:
+Save as `_workspace/repo-support/drift_<YYYY-MM-DD>.md`:
 
 ```text
 # Drift Detection Report — YYYY-MM-DD
@@ -140,7 +140,7 @@ Save as `_workspace/drift_<YYYY-MM-DD>.md`:
 
 ## Audit Schedule
 - **Frequency**: Triggered by infra change + daily scheduled scan
-- **Alert Channel**: Logged to `_workspace/`, escalated to user on RED finding
+- **Alert Channel**: Logged to `_workspace/repo-support/`, escalated to user on RED finding
 ```text
 
 ## Team Communication Protocol

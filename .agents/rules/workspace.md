@@ -36,7 +36,7 @@ Runtime mapping summary:
 
 - Intermediate artifacts and audit handoffs follow
   `docs/00.agent-governance/subagent-protocol.md`.
-- Preserve existing `_workspace/` artifacts unless the user explicitly approves
+- Preserve existing `_workspace/repo-support/` artifacts unless the user explicitly approves
   deletion.
 - Final repository evidence belongs in the canonical stage path defined by
   `docs/00.agent-governance/rules/workflows.md`, not in this adapter.

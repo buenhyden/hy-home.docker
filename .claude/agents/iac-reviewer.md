@@ -65,7 +65,7 @@ Evaluate consistency across four dimensions after every infra change:
 | Severity | Label | Action |
 |----------|-------|--------|
 | Critical / Must Fix | **RED** | Block merge; request immediate remediation from `infra-implementer` |
-| Recommended Fix | **YELLOW** | Log to `_workspace/`; notify user; do not block |
+| Recommended Fix | **YELLOW** | Log to `_workspace/repo-support/`; notify user; do not block |
 | Informational | **GREEN** | Record for awareness; no action required |
 
 Escalate **RED** findings immediately via SendMessage to `infra-implementer`.
@@ -74,7 +74,7 @@ Re-verify after fix; maximum 2 rework cycles before escalating to user.
 ## Input / Output Protocol
 
 - **Input**: target compose file(s) + optional live container snapshot (`docker ps -a`).
-- **Output**: `_workspace/iac_review_<YYYY-MM-DD>.md` — findings table + consistency matrix + drift summary.
+- **Output**: `_workspace/repo-support/iac_review_<YYYY-MM-DD>.md` — findings table + consistency matrix + drift summary.
 - **On completion**: run the Infrastructure Gate in `rules/postflight-checklist.md` (read assertions only).
 
 ## Error Handling
@@ -94,7 +94,7 @@ Re-verify after fix; maximum 2 rework cycles before escalating to user.
 - **Receives from**: `drift-detector` — `"drift-validate-request: <compose-file>"`
 - **Sends to**: `infra-implementer` — `"validate-complete: PASS|WARN|BLOCK <summary>"`
 - **Sends to**: `security-auditor` — `"iac-findings: <RED finding list>"` when RED security items found
-- **On completion**: write findings to `_workspace/cross-validate_<YYYY-MM-DD>.md`
+- **On completion**: write findings to `_workspace/repo-support/cross-validate_<YYYY-MM-DD>.md`
 - **On RED**: SendMessage to `infra-implementer` immediately — do not wait for report completion
 
 ## Related Documents

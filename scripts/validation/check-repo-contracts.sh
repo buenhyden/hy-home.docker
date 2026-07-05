@@ -1518,6 +1518,69 @@ PY
   failures=$((failures + 1))
 fi
 
+section "Provider workspace artifact path parity"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+scan_roots = [
+    pathlib.Path(".agents"),
+    pathlib.Path(".claude"),
+    pathlib.Path(".codex"),
+]
+scan_files: set[pathlib.Path] = set()
+allowed_suffixes = {".md", ".toml", ".json"}
+stale_workspace_path = re.compile(
+    r"_workspace/(?!(?:repo-support(?:/|[`'\"),.;:\]\}\s]|$)|README\.md))"
+)
+
+for root in scan_roots:
+    if not root.exists():
+        continue
+    for path in root.rglob("*"):
+        if path.is_file() and path.suffix in allowed_suffixes:
+            scan_files.add(path)
+
+workflow_design = pathlib.Path("docs/03.specs/008-workflow/agent-design.md")
+if workflow_design.is_file():
+    scan_files.add(workflow_design)
+
+for path in sorted(scan_files):
+    text = path.read_text(errors="ignore")
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        if stale_workspace_path.search(line):
+            failures.append(
+                f"{path}:{line_no}: provider/workflow artifact paths must use _workspace/repo-support/: {line.strip()}"
+            )
+
+required_literals = {
+    pathlib.Path(".agents/rules/workspace.md"): "_workspace/repo-support/",
+    pathlib.Path(".agents/workflows/documentation.md"): "_workspace/repo-support/",
+    pathlib.Path(".claude/agents/code-reviewer.md"): "_workspace/repo-support/",
+    pathlib.Path(".claude/skills/code-reviewer/skill.md"): "_workspace/repo-support/",
+    pathlib.Path(".codex/skills/code-reviewer/skill.md"): "_workspace/repo-support/",
+    workflow_design: "_workspace/repo-support/",
+}
+for path, literal in required_literals.items():
+    if not path.is_file():
+        failures.append(f"missing provider path parity file: {path}")
+        continue
+    text = path.read_text(errors="ignore")
+    if literal not in text:
+        failures.append(f"{path}: missing provider workspace parity literal: {literal}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
 section "_workspace protected surface"
 if ! python3 - <<'PY'; then
 from __future__ import annotations

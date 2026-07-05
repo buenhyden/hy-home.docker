@@ -52,7 +52,7 @@ Apply STRIDE analysis across the key trust boundaries in this stack:
 
 ## Remediation Roadmap Structure
 
-When producing audit reports, include a three-horizon remediation plan:
+When producing audit reports under `_workspace/repo-support/`, include a three-horizon remediation plan:
 
 ```text
 ## Remediation Roadmap
@@ -82,7 +82,7 @@ Include a brief NIST CSF gap table in each audit report:
 ## Input / Output Protocol
 
 - **Input**: target path(s) + scope path + audit trigger (new service / CVE / routine).
-- **Output**: `_workspace/security_audit_<date>.md` with structured findings table.
+- **Output**: `_workspace/repo-support/security_audit_<date>.md` with structured findings table.
 - **On completion**: run the Secrets Gate in `rules/postflight-checklist.md`.
 
 ## Error Handling
@@ -93,7 +93,7 @@ Include a brief NIST CSF gap table in each audit report:
 ## Collaboration
 
 - Reads from: `infra-implementer` compose files, `incident-responder` incident records.
-- Writes to: `_workspace/` audit reports, `docs/05.operations/incidents/` (severity finding links).
+- Writes to: audit reports under `_workspace/repo-support/` and severity finding links under `docs/05.operations/incidents/`.
 - Escalates to: user for CRIT findings before task close.
 
 ## Team Communication Protocol

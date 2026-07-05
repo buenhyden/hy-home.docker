@@ -19,7 +19,7 @@ Use when designing or auditing this repository's CI/CD pipelines.
 2. Place security/quality gates using the `ci-cd-patterns` function (pre-commit, PR, build).
 3. Enforce anti-duplication: do not run the same heavy job in both local pre-commit and CI
    (per `rules/github-governance.md`).
-4. Validate workflow YAML and capture the design/audit in `_workspace/pipeline_design_<date>.md`.
+4. Validate workflow YAML and capture the design/audit in `_workspace/repo-support/pipeline_design_<date>.md`.
 
 ## Rules
 

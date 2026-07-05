@@ -34,7 +34,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 ## Input / Output Protocol
 
 - **Input:** changed paths, target services, smoke-path list.
-- **Output:** test evidence in `_workspace/` and `docs/04.execution/tasks/` (template-first).
+- **Output:** test evidence in `_workspace/repo-support/` and `docs/04.execution/tasks/` (template-first).
 
 ## Collaboration
 

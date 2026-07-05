@@ -32,7 +32,7 @@ This document defines the workflow cross-validation agent design that sequential
 
 - **Primary Role**: cross-validation coordinator that safely orchestrates the independent validation chain after infrastructure changes
 - **Primary User / Caller**: `infra-implementer` or the routing `workflow-supervisor`
-- **Success Definition**: after post-flight checks, `security-auditor` and `iac-reviewer` run in the defined order and message contract, and results are recorded consistently in `_workspace/` and `docs/00.agent-governance/memory/progress.md`.
+- **Success Definition**: after post-flight checks, `security-auditor` and `iac-reviewer` run in the defined order and message contract, and results are recorded consistently in `_workspace/repo-support/` and `docs/00.agent-governance/memory/progress.md`.
 
 ## Inputs / Outputs
 
@@ -46,7 +46,7 @@ This document defines the workflow cross-validation agent design that sequential
   - `"validate-request: <file-list>"`
   - `"validate-complete: PASS|WARN <summary>"`
   - `"BLOCK: <reason>"`
-  - `_workspace/cross-validate_<YYYY-MM-DD>.md`
+  - `_workspace/repo-support/cross-validate_<YYYY-MM-DD>.md`
   - `docs/00.agent-governance/memory/progress.md` append entry
 - **Expected Structured Format**:
   - message payloads are plain-text, deterministic, and severity-coded as `PASS`, `WARN`, or `BLOCK`
@@ -73,7 +73,7 @@ This document defines the workflow cross-validation agent design that sequential
 | `docker image ls` | Image audit evidence | Inspect image tag/digest state | Pulling or retagging images | Downgrade to WARN when audit evidence is partial |
 | `docker inspect` | Drift/performance inspection | Read container config and limits | Modifying live containers | Report unreachable target as validation gap |
 | `bash scripts/validation/check-*.sh` | Policy gate execution | Run approved repository validation scripts | Running unrelated mutation scripts | Attach stderr/stdout summary to report |
-| `Read` / workspace file writes | Evidence persistence | Write `_workspace/` report and progress note | Writing plaintext secrets | Redact and halt on secret exposure |
+| `Read` / workspace file writes | Evidence persistence | Write `_workspace/repo-support/` report and progress note | Writing plaintext secrets | Redact and halt on secret exposure |
 
 ## Prompt / Policy Contract
 
@@ -126,7 +126,7 @@ This document defines the workflow cross-validation agent design that sequential
 ## Failure Modes & Fallback
 
 - **Failure Mode 1**: `security-auditor` unreachable or returns incomplete response
-- **Fallback 1**: record agent response gap in `_workspace/` and escalate to user without fabricating audit completion
+- **Fallback 1**: record agent response gap in `_workspace/repo-support/` and escalate to user without fabricating audit completion
 - **Failure Mode 2**: `iac-reviewer` can inspect drift but lacks performance evidence
 - **Fallback 2**: return `WARN` with explicit missing evidence instead of `PASS`
 - **Failure Mode 3**: legacy references point to removed non-stage docs
@@ -139,7 +139,7 @@ This document defines the workflow cross-validation agent design that sequential
   - critical finding path: auditor emits deterministic `BLOCK`
   - partial evidence path: reviewer emits `WARN`
 - **Online Signals**:
-  - `_workspace/cross-validate_<date>.md` created
+  - `_workspace/repo-support/cross-validate_<date>.md` created
   - `progress.md` receives durable summary
   - no active references remain to removed `docs/superpowers` artifacts
 - **Acceptance Thresholds**:

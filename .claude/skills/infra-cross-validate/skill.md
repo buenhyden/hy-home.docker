@@ -62,7 +62,7 @@ security-auditor → iac-reviewer: "validate-request: <file list>"
 - health checks, restart policy, and resource limits
 - gateway and stateful-service performance guardrails carried forward from the workspace performance patterns
 
-Record results in `_workspace/cross-validate_<YYYY-MM-DD>.md`, then send:
+Record results in `_workspace/repo-support/cross-validate_<YYYY-MM-DD>.md`, then send:
 
 ```text
 iac-reviewer → infra-implementer: "validate-complete: PASS|WARN <summary>"
@@ -72,7 +72,7 @@ iac-reviewer → infra-implementer: "validate-complete: PASS|WARN <summary>"
 
 `infra-implementer` must:
 
-1. read `_workspace/cross-validate_<YYYY-MM-DD>.md`
+1. read `_workspace/repo-support/cross-validate_<YYYY-MM-DD>.md`
 2. record the result in `docs/00.agent-governance/memory/progress.md`
 3. notify the user if warnings remain
 
@@ -82,7 +82,7 @@ iac-reviewer → infra-implementer: "validate-complete: PASS|WARN <summary>"
 | --- | --- |
 | Critical issue in Phase 1 | Halt immediately, roll back, escalate |
 | Warning in Phase 2 | Continue, record, notify |
-| Missing agent response | Record the gap in `_workspace/`, escalate to the user |
+| Missing agent response | Record the gap in `_workspace/repo-support/`, escalate to the user |
 
 ## Relationship to infra-validate
 

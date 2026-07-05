@@ -109,7 +109,7 @@ Use Mermaid diagrams for all architecture, flow, and sequence documentation.
 - Missing template → halt; report to user before proceeding.
 - Target-stage doc was not started from the mapped template → halt; restart from the template or refactor the edited doc until the template gate passes.
 - Broken link detected → fix link or note in memory/; never leave dead links.
-- Read-only stage needs update without approval → log in `_workspace/` with
+- Read-only stage needs update without approval → log in `_workspace/repo-support/` with
   recommended fix; do not patch.
 - Technical ambiguity in ADR → mark `[Analysis incomplete — supplementation needed]`; do not speculate.
 

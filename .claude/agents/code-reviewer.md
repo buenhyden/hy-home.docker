@@ -79,7 +79,7 @@ Present the top 10 findings by priority. Do not demand more than 10 fixes in a s
 ## Input / Output Protocol
 
 - **Input**: changed file list + diff + scope path.
-- **Output**: `_workspace/review_<branch>_<YYYY-MM-DD>.md` with findings table + per-domain scores + cross-domain conflict log + final verdict.
+- **Output**: `_workspace/repo-support/review_<branch>_<YYYY-MM-DD>.md` with findings table + per-domain scores + cross-domain conflict log + final verdict.
 - **On completion**: run the Lint Gate in `rules/postflight-checklist.md`.
   For PR-targeted reviews, additionally apply the Completion Gate in `rules/github-governance.md`:
   verify required checks, required reviews, CODEOWNERS-triggered reviewers, and absence of unpinned actions or secret exposure.
@@ -92,7 +92,7 @@ Present the top 10 findings by priority. Do not demand more than 10 fixes in a s
 ## Collaboration
 
 - Reads from: all layer agent outputs, diffs, `scopes/common.md`.
-- Writes to: `_workspace/` review reports.
+- Writes to: review reports under `_workspace/repo-support/`.
 - Escalates to: `infra-implementer` (infra BLOCK), `security-auditor` (secret BLOCK), user (unresolvable conflict).
 
 ## Related Documents

@@ -29,7 +29,7 @@ Use when validating service or tooling changes before marking work complete.
    ```
 
 4. Capture results as task evidence under `docs/04.execution/tasks/` (template-first) or
-   `_workspace/test_<date>.md` for intermediate runs.
+   `_workspace/repo-support/test_<date>.md` for intermediate runs.
 
 ## Rules
 

@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-05-provider-workspace-artifact-path-parity.md -->
@@ -91,10 +91,10 @@ were already updated, but focused provider-surface scans still found active
 ## Completion Criteria
 
 - [x] Stage 04 evidence exists and is indexed.
-- [ ] Active provider/runtime artifact paths use `_workspace/repo-support/`.
-- [ ] Generated Codex skill mirrors are synchronized.
-- [ ] Repository validation enforces provider workspace path parity.
-- [ ] Final validation and progress memory are recorded.
+- [x] Active provider/runtime artifact paths use `_workspace/repo-support/`.
+- [x] Generated Codex skill mirrors are synchronized.
+- [x] Repository validation enforces provider workspace path parity.
+- [x] Final validation and progress memory are recorded.
 
 ## Related Documents
 

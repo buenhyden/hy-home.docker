@@ -37,17 +37,17 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 ## Input / Output Protocol
 
 - **Input**: task description + scope path + target compose file(s).
-- **Output**: modified file(s) + `_workspace/infra_<artifact>.md` with change summary.
+- **Output**: modified file(s) + `_workspace/repo-support/infra_<artifact>.md` with change summary.
 - **On completion**: run the Infrastructure Gate in `rules/postflight-checklist.md`.
 
 ## Error Handling
 
 - Compose validation failure → fix and re-validate; do not proceed past failures.
-- Service health check failure → revert change, log to `_workspace/`, escalate to user.
+- Service health check failure → revert change, log to `_workspace/repo-support/`, escalate to user.
 
 ## Collaboration
 
-- Reads from: `security-auditor` audit reports, `code-reviewer` findings, `drift-detector` drift reports.
+- Reads from: `security-auditor` audit reports under `_workspace/repo-support/`, `code-reviewer` findings, `drift-detector` drift reports.
 - Writes to: `docker-compose*.yml`, `infra/*/`, `scripts/validation/validate-docker-compose.sh`.
 - Escalates to: user for plaintext secret discovery or destructive operation requests.
 
@@ -56,7 +56,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - **Sends to**: `security-auditor` — `"audit-request: <file-list>"` immediately after change is applied and post-flight check passes
 - **Receives from**: `security-auditor` — `"BLOCK: <reason>"` (roll back change → escalate to user) or `"audit-complete"` (continue)
 - **Receives from**: `iac-reviewer` — `"validate-complete: PASS|WARN <summary>"`
-- **On BLOCK**: revert the applied change, record reason in `_workspace/`, escalate to user — do not proceed
+- **On BLOCK**: revert the applied change, record reason in `_workspace/repo-support/`, escalate to user — do not proceed
 - **On WARN**: record findings in `memory/progress.md`, optionally notify user, do not block
 
 ## Related Documents

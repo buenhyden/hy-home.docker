@@ -171,7 +171,7 @@ OR ─┬── Plaintext in compose env section
 
 ## Output Format
 
-Produce `_workspace/threat_model_<YYYY-MM-DD>.md`:
+Produce `_workspace/repo-support/threat_model_<YYYY-MM-DD>.md`:
 
 ```markdown
 # Container Threat Model — YYYY-MM-DD

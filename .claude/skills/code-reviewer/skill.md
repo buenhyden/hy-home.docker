@@ -34,7 +34,7 @@ Evaluate the requested scope across these lenses:
 ### Phase 1 — Prepare
 
 - identify the target paths, diff, or review scope
-- save organized context to `_workspace/00_input.md` when the task is broad enough to warrant it
+- save organized context to `_workspace/repo-support/00_input.md` when the task is broad enough to warrant it
 - choose full or focused mode
 
 ### Phase 2 — Review
@@ -52,7 +52,7 @@ Escalate to:
 
 ### Phase 3 — Synthesize
 
-- consolidate findings into `_workspace/review_<branch>_<date>.md`
+- consolidate findings into `_workspace/repo-support/review_<branch>_<date>.md`
 - prioritize issues by severity
 - keep summaries brief and actionable
 

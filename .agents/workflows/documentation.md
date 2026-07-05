@@ -25,7 +25,7 @@ Apply the repository documentation workflow while deferring policy ownership to
 3. **Load mapped template**: Use the template path defined by
    `docs/00.agent-governance/rules/documentation-protocol.md` and
    `docs/99.templates/support/template-selection.md`.
-4. **Draft in the right place**: Use `_workspace/` only for intermediate
+4. **Draft in the right place**: Use `_workspace/repo-support/` only for intermediate
    analysis. Active artifacts must be written to the canonical stage path.
 5. **Validate before completion**: Run the repository gates required by the
    owner rules, including target-relative link and template-contract checks for

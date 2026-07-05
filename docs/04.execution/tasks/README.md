@@ -141,7 +141,7 @@ docs/04.execution/tasks/
 ├── 2026-07-04-infra-tech-stack-version-refresh.md # Completed infra tech-stack Compose and registry version refresh evidence
 ├── 2026-07-05-agentic-engineering-implementation-audit-pack.md # Completed Stage 90 agentic engineering implementation audit pack evidence
 ├── 2026-07-05-agentic-research-pack-refresh.md # Completed Stage 90 agentic research pack refresh evidence
-├── 2026-07-05-provider-workspace-artifact-path-parity.md # Active provider `_workspace/repo-support` parity evidence
+├── 2026-07-05-provider-workspace-artifact-path-parity.md # Completed provider `_workspace/repo-support` parity evidence
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration evidence
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract evidence
 └── README.md                                # This file

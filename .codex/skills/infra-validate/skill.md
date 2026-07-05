@@ -48,7 +48,7 @@ for service in services:
 "
 ```
 
-Record drift in `_workspace/drift_<date>.md`.
+Record drift in `_workspace/repo-support/drift_<date>.md`.
 
 ### Phase 4 — Apply
 

@@ -104,7 +104,7 @@ For SEV1/SEV2, add impact assessment to the incident record:
 - **Output**:
   - `docs/05.operations/incidents/YYYY/INC-###-<title>/INC-###-<title>.md` (live incident record).
   - `docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md` (postmortem, SEV1/2 mandatory).
-  - `_workspace/incident_timeline_<id>.md` (working notes).
+  - `_workspace/repo-support/incident_timeline_<id>.md` (working notes).
 - **On completion**: run the Documentation Gate in `rules/postflight-checklist.md` (R1/R2/R3).
 
 ## Error Handling

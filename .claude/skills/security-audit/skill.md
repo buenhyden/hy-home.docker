@@ -27,7 +27,7 @@ Capture:
 - code, container, or operational audit boundary
 - compliance or policy context if relevant
 
-Save broad-scope input to `_workspace/00_input.md`.
+Save broad-scope input to `_workspace/repo-support/00_input.md`.
 
 ### Phase 2 — Threat-Model-First Audit
 
@@ -41,7 +41,7 @@ Save broad-scope input to `_workspace/00_input.md`.
 
 ### Phase 3 — Report and Remediation
 
-Write `_workspace/security_audit_<date>.md` with:
+Write `_workspace/repo-support/security_audit_<date>.md` with:
 
 - severity-tagged findings: `CRIT`, `HIGH`, `MED`, `LOW`
 - evidence references
