@@ -67,6 +67,7 @@ list_gates() {
 Local script-backed gates:
 - git diff --check
 - bash -n for scripts/**/*.sh and .claude/hooks/*.sh
+- scripts/validation/recommend-qa-gates.sh (advisory; recommends gates, does not execute them)
 - scripts/operations/sync-provider-surfaces.sh
 - scripts/operations/sync-tech-stack-versions.sh --check
 - scripts/validation/check-doc-traceability.sh

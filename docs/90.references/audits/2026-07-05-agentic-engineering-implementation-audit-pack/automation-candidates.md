@@ -58,7 +58,7 @@ and audit gaps in the overview, harness, and loop reports.
 
 | Automation Area | Current Status | Evidence | Candidate |
 | --- | --- | --- | --- |
-| Local validation orchestration | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/run-local-qa-gates.sh` | Generate per-change recommended gate lists from changed paths. |
+| Local validation orchestration | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/recommend-qa-gates.sh` | Optionally surface changed-path gate recommendations in PR or CI summaries. |
 | Repository contracts | Implemented | `scripts/validation/check-repo-contracts.sh` | Add audit-pack coverage output for implementation-status categories. |
 | Provider surface sync | Implemented | `scripts/operations/sync-provider-surfaces.sh` | Add semantic clause parity checks, not only structural sync. |
 | Provider hooks | Partially Implemented | `.claude/hooks/`, `.codex/hooks.json`, [Gemini provider notes](../../../00.agent-governance/providers/gemini.md) | Generate hook parity matrix and Gemini behavioral reminder checklist. |
@@ -74,6 +74,8 @@ and audit gaps in the overview, harness, and loop reports.
 - The repository already automates many structural checks: contracts, docs
   traceability, Compose validation, hardening, pre-commit, frontend quality,
   generated index freshness, and workflow security scanning.
+- A local advisory changed-path QA recommendation report now exists; future
+  work can decide whether to publish that output into PR or CI summaries.
 - The highest-value gaps are semantic rather than structural: provider adapter
   meaning, agent-output correctness, gap routing, and security-framework
   maturity.
@@ -84,7 +86,7 @@ and audit gaps in the overview, harness, and loop reports.
 
 | Candidate ID | Candidate | Suggested Future Stage |
 | --- | --- | --- |
-| AEA-AUTO-001 | Changed-path to QA-gate recommendation report | Stage 03 spec + Stage 04 plan |
+| AEA-AUTO-001 | PR/CI summary integration for the changed-path QA-gate recommendation report | Stage 04 plan |
 | AEA-AUTO-002 | Provider semantic parity validator | Stage 03 spec + Stage 04 plan |
 | AEA-AUTO-003 | Agent-output eval fixture pack | Stage 03 spec + Stage 04 plan |
 | AEA-AUTO-004 | Gap-to-stage routing generator for the Stage 00 manual routing contract | Stage 04 plan or Stage 90 data reference |

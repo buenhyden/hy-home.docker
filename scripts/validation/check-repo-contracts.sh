@@ -3546,6 +3546,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/check-doc-traceability.sh"),
     pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
+    pathlib.Path("scripts/validation/recommend-qa-gates.sh"),
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
