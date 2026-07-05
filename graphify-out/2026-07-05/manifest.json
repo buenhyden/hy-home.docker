@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1783259614.1563063,
-    "ast_hash": "ef7678fde2c32b25a233bde0bd7ec79c",
+    "mtime": 1783260898.2952206,
+    "ast_hash": "494b023f1acca9b9bad4029cc575542e",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -1315,8 +1315,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/03.specs/README.md": {
-    "mtime": 1783259542.6790965,
-    "ast_hash": "0774bd1869a0979055ef0c80a7de8de4",
+    "mtime": 1783260833.368991,
+    "ast_hash": "4dd20c6d02baaef44cbcbb50ce17e358",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/README.md": {
@@ -1645,8 +1645,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/plans/README.md": {
-    "mtime": 1783259542.856354,
-    "ast_hash": "6f0649253bbdf704c9567b4fd7ebd925",
+    "mtime": 1783260833.5227704,
+    "ast_hash": "5b9591eff4171e6691f7f7cd59f3cccb",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md": {
@@ -2095,8 +2095,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/README.md": {
-    "mtime": 1783259543.0257337,
-    "ast_hash": "5aca5fbffd7ed5364c8fdf60864a2aa1",
+    "mtime": 1783260833.6764657,
+    "ast_hash": "5ff261edbf29c06dcdd3af88e3f5c44f",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/README.md": {
@@ -3390,8 +3390,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/README.md": {
-    "mtime": 1783259543.3763099,
-    "ast_hash": "f070e09e652d4b109e3eeb7d18e1b754",
+    "mtime": 1783260834.1139061,
+    "ast_hash": "65614f8e5105647340a2c65fbd55dbaf",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/README.md": {
@@ -3400,8 +3400,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/README.md": {
-    "mtime": 1783259543.2108696,
-    "ast_hash": "3d86e841d59e016add401105866dd2cf",
+    "mtime": 1783260833.82622,
+    "ast_hash": "73bab1d73fe63efbddcb65f1f8c582cd",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/docker/README.md": {
@@ -3465,8 +3465,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/llm-wiki/llm-wiki-index.md": {
-    "mtime": 1783259658.6610358,
-    "ast_hash": "cf9d0721e65e0dc23211a3a55e3ded31",
+    "mtime": 1783260940.7605302,
+    "ast_hash": "566a9a959b95d6a864ee8e6cf1af4248",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/llm-wiki/repository-map.md": {
@@ -5165,28 +5165,28 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md": {
-    "mtime": 1783222952.777235,
-    "ast_hash": "bb4ed07b0bbc982804f0b10b82ff6226",
+    "mtime": 1783260223.826003,
+    "ast_hash": "a47046f3d86335c2a27c87635c5d2d04",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md": {
-    "mtime": 1783259594.162328,
-    "ast_hash": "87c831245fe1510f152de91753bf064f",
+    "mtime": 1783260872.1213589,
+    "ast_hash": "ba6246867bbb98d37196dddd0b367039",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md": {
-    "mtime": 1783220707.2825973,
-    "ast_hash": "2d98b4f21acf3ee87bf386b13483ce12",
+    "mtime": 1783260872.452919,
+    "ast_hash": "ee74c0f420aa955bce2eee0c938fcf97",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md": {
-    "mtime": 1783222952.7773314,
-    "ast_hash": "bbaaab1301936c613fc775fad88c81b7",
+    "mtime": 1783260872.748955,
+    "ast_hash": "34155689f9f1db33cdefadbe86fc296d",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md": {
-    "mtime": 1783225547.2142096,
-    "ast_hash": "bbc6d94efe2c461e90a1c7622d4779d6",
+    "mtime": 1783260872.2873652,
+    "ast_hash": "82b5b890ef59323a3cefcbc42188ce00",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md": {
@@ -5195,13 +5195,13 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md": {
-    "mtime": 1783222952.7778144,
-    "ast_hash": "1416bed6a2c8ac157f480877f70cc652",
+    "mtime": 1783260872.6029105,
+    "ast_hash": "4e8494cf9c1f376bc5251ea3f456aef4",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md": {
-    "mtime": 1783220707.2836266,
-    "ast_hash": "042c782cb43d11bb9f1839be37da8d57",
+    "mtime": 1783260272.4495227,
+    "ast_hash": "60a65c5bbae0148435e0a4589c5c9922",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md": {
@@ -5330,23 +5330,48 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/plans/2026-07-05-gap-routing-recommendation.md": {
-    "mtime": 1783259502.4327013,
-    "ast_hash": "0b1c9bca3a1e7488add78509cc8d7e28",
+    "mtime": 1783259750.9717944,
+    "ast_hash": "59c412e4393f2e0f08f465f2b0b70afc",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-07-05-gap-routing-recommendation.md": {
-    "mtime": 1783259502.5785208,
-    "ast_hash": "3261b19906e8439dde07612beab837f3",
+    "mtime": 1783259751.1332738,
+    "ast_hash": "8df46a797635a93a9f371e21c90a51f0",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/governance/README.md": {
-    "mtime": 1783259351.051084,
-    "ast_hash": "266960a839dbbb8aa9a0685eae9bddfb",
+    "mtime": 1783260833.9641516,
+    "ast_hash": "f8ccff7e65a3f849e071fd798bb6d338",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/governance/gap-to-stage-routing.md": {
     "mtime": 1783259351.2202468,
     "ast_hash": "acfbd02570d18e31c43fc135ee67e18c",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/03.specs/110-agent-output-eval-fixtures/spec.md": {
+    "mtime": 1783260789.5584764,
+    "ast_hash": "c364c9f555fdc14809a4b7ee507c9a27",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/04.execution/plans/2026-07-05-agent-output-eval-fixtures.md": {
+    "mtime": 1783260789.7093866,
+    "ast_hash": "c1059a0d8ff7f008bd5a8af91481c048",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md": {
+    "mtime": 1783260789.860297,
+    "ast_hash": "d26815a22901ba18922a29050cd41986",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md": {
+    "mtime": 1783260295.8927934,
+    "ast_hash": "30a5d2619b8ed6fbe864fbe164b4aaf1",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/90.references/data/governance/agent-output-eval-fixtures.md": {
+    "mtime": 1783260790.0151784,
+    "ast_hash": "baf1041c5e05fc5e0de1e6837ca15a2b",
     "semantic_hash": ""
   }
 }

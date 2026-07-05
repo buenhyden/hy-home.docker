@@ -173,7 +173,9 @@ Compose set unless `HYHOME_COMPOSE_PROFILES` is already set.
 
 `scripts/validation/recommend-qa-gates.sh` is an advisory changed-path report.
 It prints recommended local gates and remote/manual responsibilities without
-executing checks or mutating repository, runtime, remote, or secret state.
+executing checks or mutating repository, runtime, remote, or secret state. The
+CI quality workflow publishes the same advisory report to `GITHUB_STEP_SUMMARY`
+without changing the required job set.
 
 Repo-local Hookify metadata validation currently supports only `bash`, `file`,
 and `stop` events, as enforced by

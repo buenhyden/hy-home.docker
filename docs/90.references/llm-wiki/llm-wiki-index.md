@@ -419,6 +419,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/109-gap-routing-recommendation/README.md](../../03.specs/109-gap-routing-recommendation/README.md) | folder index |
 | [docs/03.specs/109-gap-routing-recommendation/spec.md](../../03.specs/109-gap-routing-recommendation/spec.md) | Markdown reference |
 | [docs/03.specs/110-agent-output-eval-fixtures/spec.md](../../03.specs/110-agent-output-eval-fixtures/spec.md) | Markdown reference |
+| [docs/03.specs/111-qa-gate-recommendation-ci-summary/spec.md](../../03.specs/111-qa-gate-recommendation-ci-summary/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -494,6 +495,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-05-gap-routing-recommendation.md](../../04.execution/plans/2026-07-05-gap-routing-recommendation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-provider-semantic-parity-validator.md](../../04.execution/plans/2026-07-05-provider-semantic-parity-validator.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-provider-workspace-artifact-path-parity.md](../../04.execution/plans/2026-07-05-provider-workspace-artifact-path-parity.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-05-qa-gate-recommendation-ci-summary.md](../../04.execution/plans/2026-07-05-qa-gate-recommendation-ci-summary.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-workspace-support-surface-contract.md](../../04.execution/plans/2026-07-05-workspace-support-surface-contract.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
@@ -596,6 +598,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-05-gap-routing-recommendation.md](../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md](../../04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-provider-workspace-artifact-path-parity.md](../../04.execution/tasks/2026-07-05-provider-workspace-artifact-path-parity.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-05-qa-gate-recommendation-ci-summary.md](../../04.execution/tasks/2026-07-05-qa-gate-recommendation-ci-summary.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-workspace-support-surface-contract.md](../../04.execution/tasks/2026-07-05-workspace-support-surface-contract.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |

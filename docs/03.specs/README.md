@@ -79,6 +79,7 @@ docs/03.specs/
 ├── 108-compose-profile-service-coverage-snapshot/ # Active generated Compose profile/service coverage snapshot
 ├── 109-gap-routing-recommendation/      # Active gap-to-stage routing recommendation
 ├── 110-agent-output-eval-fixtures/       # Active agent-output eval fixture pack
+├── 111-qa-gate-recommendation-ci-summary/ # Active QA gate recommendation CI summary
 └── README.md                            # This file
 ```
 
@@ -101,6 +102,7 @@ docs/03.specs/
 | Generated Docker Compose profile/service coverage snapshot | `108-compose-profile-service-coverage-snapshot/spec.md` |
 | Gap-to-stage routing advisory recommendation | `109-gap-routing-recommendation/spec.md` |
 | Agent-output eval fixture pack | `110-agent-output-eval-fixtures/spec.md` |
+| QA gate recommendation CI summary | `111-qa-gate-recommendation-ci-summary/spec.md` |
 | Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
 | Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
@@ -173,6 +175,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Compose Profile Service Coverage Snapshot Spec**: [108-compose-profile-service-coverage-snapshot/spec.md](./108-compose-profile-service-coverage-snapshot/spec.md)
 - **Gap Routing Recommendation Spec**: [109-gap-routing-recommendation/spec.md](./109-gap-routing-recommendation/spec.md)
 - **Agent Output Eval Fixtures Spec**: [110-agent-output-eval-fixtures/spec.md](./110-agent-output-eval-fixtures/spec.md)
+- **QA Gate Recommendation CI Summary Spec**: [111-qa-gate-recommendation-ci-summary/spec.md](./111-qa-gate-recommendation-ci-summary/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)

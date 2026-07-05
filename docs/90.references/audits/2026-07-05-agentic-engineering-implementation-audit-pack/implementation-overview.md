@@ -102,10 +102,10 @@ or enforcement depth differs from repository policy.
 
 ## Automation Impact
 
-The highest-value automation candidates are semantic provider adapter diffing,
-an executable agent-output eval runner, automated audit-matrix refresh from
-repo paths, and CI summary artifacts that map local gates to remote required
-checks.
+The highest-value remaining automation candidates are an executable
+agent-output eval runner, automated audit-matrix refresh from repo paths,
+vulnerability gating, SBOM, and provenance/attestation automation. Changed-path
+QA recommendations are now surfaced in CI Step Summary.
 
 ## Source Rules
 

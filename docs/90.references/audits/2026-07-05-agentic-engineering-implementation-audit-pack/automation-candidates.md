@@ -58,7 +58,7 @@ and audit gaps in the overview, harness, and loop reports.
 
 | Automation Area | Current Status | Evidence | Candidate |
 | --- | --- | --- | --- |
-| Local validation orchestration | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/recommend-qa-gates.sh` | Optionally surface changed-path gate recommendations in PR or CI summaries. |
+| Local validation orchestration | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/recommend-qa-gates.sh`, `.github/workflows/ci-quality.yml` | Changed-path gate recommendations are available locally and published to GitHub Step Summary in CI. |
 | Repository contracts | Implemented | `scripts/validation/check-repo-contracts.sh` | Add audit-pack coverage output for implementation-status categories. |
 | Provider surface sync | Implemented | `scripts/operations/sync-provider-surfaces.sh`, `scripts/validation/check-repo-contracts.sh`, [Provider semantic parity validator spec](../../../03.specs/107-provider-semantic-parity-validator/spec.md) | Semantic role-scope parity is now enforced for Stage 00 catalog scope, Claude adapters, Codex TOML adapters, Gemini pointer adapters, and the subagent protocol. Future work can add deeper free-text clause comparison if needed. |
 | Provider hooks | Partially Implemented | `.claude/hooks/`, `.codex/hooks.json`, [Gemini provider notes](../../../00.agent-governance/providers/gemini.md) | Generate hook parity matrix and Gemini behavioral reminder checklist. |
@@ -74,8 +74,8 @@ and audit gaps in the overview, harness, and loop reports.
 - The repository already automates many structural checks: contracts, docs
   traceability, Compose validation, hardening, pre-commit, frontend quality,
   generated index freshness, and workflow security scanning.
-- A local advisory changed-path QA recommendation report now exists; future
-  work can decide whether to publish that output into PR or CI summaries.
+- A local advisory changed-path QA recommendation report exists and is now
+  published into GitHub Step Summary from the CI quality workflow.
 - Provider semantic role-scope parity, Compose profile coverage inventory,
   agent-output eval fixtures, and security framework maturity mapping are now
   covered. The remaining highest-value gaps are executable eval runner
@@ -87,7 +87,7 @@ and audit gaps in the overview, harness, and loop reports.
 
 | Candidate ID | Candidate | Suggested Future Stage |
 | --- | --- | --- |
-| AEA-AUTO-001 | PR/CI summary integration for the changed-path QA-gate recommendation report | Stage 04 plan |
+| AEA-AUTO-001 | PR/CI summary integration for the changed-path QA-gate recommendation report | Implemented by [QA gate recommendation CI summary spec](../../../03.specs/111-qa-gate-recommendation-ci-summary/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-qa-gate-recommendation-ci-summary.md), `.github/workflows/ci-quality.yml`, and `scripts/validation/check-repo-contracts.sh`. |
 | AEA-AUTO-002 | Provider semantic role-scope parity validator | Implemented by [Provider semantic parity validator spec](../../../03.specs/107-provider-semantic-parity-validator/spec.md) and [task evidence](../../../04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md); deeper free-text clause comparison remains optional future work. |
 | AEA-AUTO-003 | Agent-output eval fixture pack | Implemented by [Agent output eval fixtures spec](../../../03.specs/110-agent-output-eval-fixtures/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md), and [fixture reference](../../data/governance/agent-output-eval-fixtures.md); executable runner or CI gate remains optional future work. |
 | AEA-AUTO-004 | Gap-to-stage routing generator for the Stage 00 manual routing contract | Implemented by [Gap routing recommendation spec](../../../03.specs/109-gap-routing-recommendation/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md), [gap routing reference](../../data/governance/gap-to-stage-routing.md), and `scripts/validation/recommend-gap-routing.sh`. |

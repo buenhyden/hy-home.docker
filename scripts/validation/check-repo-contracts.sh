@@ -895,6 +895,7 @@ required_jobs = {
 ci_jobs: set[str] = set()
 if ci_quality.is_file():
     data = yaml.safe_load(ci_quality.read_text()) or {}
+    ci_text = ci_quality.read_text()
     ci_jobs = set((data.get("jobs") or {}).keys())
     missing_jobs = sorted(required_jobs - ci_jobs)
     for job_id in missing_jobs:
@@ -902,6 +903,13 @@ if ci_quality.is_file():
     unexpected_jobs = sorted(ci_jobs - required_jobs)
     for job_id in unexpected_jobs:
         failures.append(f"{ci_quality}: unexpected QA/CI job outside the ruleset contract: {job_id}")
+    for literal in [
+        "Publish QA gate recommendations",
+        "GITHUB_STEP_SUMMARY",
+        "scripts/validation/recommend-qa-gates.sh --base",
+    ]:
+        if literal not in ci_text:
+            failures.append(f"{ci_quality}: missing QA recommendation summary literal: {literal}")
 else:
     failures.append("missing required workflow: .github/workflows/ci-quality.yml")
 

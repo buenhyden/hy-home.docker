@@ -37,10 +37,50 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      EVENT_NAME: ${{ github.event_name }}
+      PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      PUSH_BEFORE_SHA: ${{ github.event.before }}
     steps:
       - *checkout
       - name: Check docs against tracked implementation surfaces
         run: bash scripts/validation/check-doc-implementation-alignment.sh
+      - name: Publish QA gate recommendations
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          summary_file="${GITHUB_STEP_SUMMARY:-}"
+          if [[ -z "$summary_file" ]]; then
+            echo "GITHUB_STEP_SUMMARY is unavailable; skipping QA recommendation summary."
+            exit 0
+          fi
+
+          base_ref=""
+          if [[ "$EVENT_NAME" == "pull_request" && -n "${PR_BASE_SHA:-}" ]]; then
+            base_ref="$PR_BASE_SHA"
+          elif [[ "$EVENT_NAME" == "push" && -n "${PUSH_BEFORE_SHA:-}" && "$PUSH_BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+            base_ref="$PUSH_BEFORE_SHA"
+          elif git rev-parse --verify --quiet HEAD~1 >/dev/null; then
+            base_ref="HEAD~1"
+          fi
+
+          {
+            echo "## QA gate recommendations"
+            echo
+            if [[ -n "$base_ref" ]] && git rev-parse --verify --quiet "${base_ref}^{commit}" >/dev/null; then
+              echo '```text'
+              bash scripts/validation/recommend-qa-gates.sh --base "$base_ref"
+              echo '```'
+            else
+              echo "No comparable base ref is available for this run."
+              echo
+              echo '```text'
+              bash scripts/validation/recommend-qa-gates.sh --files .github/workflows/ci-quality.yml
+              echo '```'
+            fi
+          } >> "$summary_file"
 
   # ── Repository Contract Validation ──────────────────────
   repo-contracts:
