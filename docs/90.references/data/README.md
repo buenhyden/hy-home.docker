@@ -67,6 +67,7 @@ data/
 - [docker/README.md](./docker/README.md) - Docker image/version drift, registry, and runtime reference rules
 - [docker/compose-profile-service-coverage.md](./docker/compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
 - [docker/image-version-interpretation.md](./docker/image-version-interpretation.md) - Docker image/version source interpretation rules
+- [docker/tech-stack-version-provenance.md](./docker/tech-stack-version-provenance.md) - generated tech-stack registry drift severity and source provenance snapshot
 - [glossary/README.md](./glossary/README.md) - stable reference terminology category
 - [glossary/stable-reference-terms.md](./glossary/stable-reference-terms.md) - shared terms for reference-stage boundaries
 - [governance/README.md](./governance/README.md) - governance routing reference data category

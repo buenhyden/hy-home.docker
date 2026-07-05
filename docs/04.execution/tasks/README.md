@@ -149,6 +149,7 @@ docs/04.execution/tasks/
 ├── 2026-07-05-qa-gate-recommendation-ci-summary.md # Completed QA gate recommendation CI summary evidence
 ├── 2026-07-05-audit-pack-coverage-report.md # Completed audit-pack coverage report evidence
 ├── 2026-07-06-llm-wiki-stage-category-coverage.md # Completed LLM Wiki stage/category coverage evidence
+├── 2026-07-06-tech-stack-version-provenance.md # Completed tech-stack version provenance evidence
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration evidence
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract evidence
 └── README.md                                # This file

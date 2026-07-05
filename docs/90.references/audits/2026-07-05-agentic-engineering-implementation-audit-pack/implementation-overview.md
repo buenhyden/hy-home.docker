@@ -74,7 +74,7 @@ or enforcement depth differs from repository policy.
 | Common provider-neutral rules/environment | Implemented | [Stage 00 governance hub](../../../00.agent-governance/README.md), [provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md), [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) | Shared policy, templates, scopes, model tiers, memory, and provider-adapter routing exist. |
 | Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json` | Local scripts, CI gates, provider hooks, generated indexes, and sync checks exist; semantic agent-eval automation and Gemini native hooks remain partial. |
 | Spec-driven SDLC | Implemented | [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [Stage 04 tasks README](../../../04.execution/tasks/README.md) | Stage-gated spec, plan, task, operations, and reference taxonomy is active and validator-backed. |
-| Docker Compose / infrastructure | Implemented | [infra README](../../../../infra/README.md), `docker-compose.yml`, `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json` | Modular Compose topology, profiles, root-active inventory, service READMEs, version registry, validation, and hardening checks exist. |
+| Docker Compose / infrastructure | Implemented | [infra README](../../../../infra/README.md), `docker-compose.yml`, `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json`, [tech-stack version provenance](../../data/docker/tech-stack-version-provenance.md) | Modular Compose topology, profiles, root-active inventory, service READMEs, version registry, generated provenance, validation, and hardening checks exist. |
 | CI/CD | Implemented | `.github/workflows/ci-quality.yml`, [GitHub governance](../../../00.agent-governance/rules/github-governance.md) | CI quality gates cover docs, repo contracts, Compose, hardening, template/security, pre-commit, frontend quality, coverage, and workflow security. |
 | QA, formatting, linting, syntax | Partially Implemented | `.github/workflows/ci-quality.yml`, [scripts README](../../../../scripts/README.md), [Codex provider notes](../../../00.agent-governance/providers/codex.md) | Strong docs, shell, Compose, frontend, pre-commit, and contract checks exist; universal language-specific formatting/linting coverage is not complete across every surface. |
 | Security | Partially Implemented | [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md), `.github/SECURITY.md`, `.github/workflows/ci-quality.yml`, [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | Secret boundaries, workflow permissions, hardening, security reporting, and approvals exist; full SSDF/SLSA maturity and attestation automation are not fully adopted. |
@@ -108,7 +108,8 @@ vulnerability gating, SBOM, and provenance/attestation automation. Changed-path
 QA recommendations are now surfaced in CI Step Summary, audit-pack
 implementation-status coverage is now reportable through repo contracts, and
 LLM Wiki safe-path coverage is grouped by source bucket/category in Stage 90
-data.
+data, and tech-stack version source provenance is now generated from the
+registry and listed Compose declarations.
 
 ## Source Rules
 

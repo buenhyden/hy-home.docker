@@ -52,13 +52,15 @@ Use this category for stable interpretation rules and inventory context. Use `do
 docs/90.references/data/docker/
 ├── README.md                       # This file
 ├── compose-profile-service-coverage.md # Generated Compose profile/service coverage snapshot
-└── image-version-interpretation.md # Docker image/version source interpretation rules
+├── image-version-interpretation.md # Docker image/version source interpretation rules
+└── tech-stack-version-provenance.md # Generated tech-stack registry provenance snapshot
 ```
 
 ## Current References
 
 - [compose-profile-service-coverage.md](./compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
 - [image-version-interpretation.md](./image-version-interpretation.md) - Docker image/version source interpretation rules
+- [tech-stack-version-provenance.md](./tech-stack-version-provenance.md) - generated tech-stack registry drift severity and source provenance snapshot
 
 ## Reference Rules
 
@@ -66,7 +68,8 @@ docs/90.references/data/docker/
 2. `infra/tech-stack.versions.json` is the registry used to check that important images are still declared in Compose files.
 3. Floating tags are allowed only when documented in `infra/image-tag-policy.exceptions.json`.
 4. Generated Compose coverage output is derived inventory and must be regenerated after tracked Compose service/profile changes.
-5. Docker reference text should explain durable interpretation rules and inventory context, not prescribe rollout steps.
+5. Generated tech-stack provenance output is derived registry/Compose evidence and must be regenerated after tracked registry, exception, or listed Compose image changes.
+6. Docker reference text should explain durable interpretation rules and inventory context, not prescribe rollout steps.
 
 ## How to Work in This Area
 
@@ -75,7 +78,8 @@ docs/90.references/data/docker/
 3. Update `infra/tech-stack.versions.json` when a major operational image is added to the validated registry.
 4. Update `infra/image-tag-policy.exceptions.json` when a floating image tag is intentionally approved.
 5. Run `bash scripts/operations/generate-compose-profile-service-coverage.sh` after changing tracked Compose services or profiles.
-6. Run `bash scripts/validation/check-repo-contracts.sh` after changing Docker reference docs or registry files.
+6. Run `bash scripts/operations/generate-tech-stack-version-provenance.sh` after changing tracked tech-stack registry, floating exception, or listed Compose image declarations.
+7. Run `bash scripts/validation/check-repo-contracts.sh` after changing Docker reference docs or registry files.
 
 ## Examples
 
@@ -87,7 +91,9 @@ docs/90.references/data/docker/
 - [references index](../../README.md)
 - [Compose profile/service coverage](./compose-profile-service-coverage.md)
 - [image/version interpretation](./image-version-interpretation.md)
+- [tech-stack version provenance](./tech-stack-version-provenance.md)
 - [image tag exceptions](../../../../infra/image-tag-policy.exceptions.json)
 - [tech stack versions](../../../../infra/tech-stack.versions.json)
 - [Compose coverage generator](../../../../scripts/operations/generate-compose-profile-service-coverage.sh)
+- [tech-stack provenance generator](../../../../scripts/operations/generate-tech-stack-version-provenance.sh)
 - [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh)

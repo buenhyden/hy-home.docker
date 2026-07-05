@@ -3645,6 +3645,16 @@ if ! bash scripts/operations/generate-compose-profile-service-coverage.sh --chec
 fi
 rm -f /tmp/check-repo-contracts-compose-profile-coverage.txt
 
+section "Tech-stack version provenance snapshot"
+if ! bash scripts/operations/generate-tech-stack-version-provenance.sh --check >/tmp/check-repo-contracts-tech-stack-provenance.txt 2>&1; then
+  fail "generated tech-stack provenance snapshot is stale or generator check failed"
+  cat /tmp/check-repo-contracts-tech-stack-provenance.txt >&2
+elif ! grep -q 'generated tech-stack provenance snapshot is fresh' /tmp/check-repo-contracts-tech-stack-provenance.txt; then
+  fail "tech-stack provenance generator did not print a pass marker"
+  cat /tmp/check-repo-contracts-tech-stack-provenance.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-tech-stack-provenance.txt
+
 section "Gap routing recommender"
 if ! bash scripts/validation/recommend-gap-routing.sh --text "runbook recovery procedure is missing rollback evidence" >/tmp/check-repo-contracts-gap-routing-ops.txt 2>&1; then
   fail "gap routing recommender failed for operations text"
@@ -3882,6 +3892,7 @@ expected_implementations = {
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
     pathlib.Path("scripts/operations/generate-compose-profile-service-coverage.sh"),
+    pathlib.Path("scripts/operations/generate-tech-stack-version-provenance.sh"),
     pathlib.Path("scripts/operations/use-qa-ci-tools.sh"),
     pathlib.Path("scripts/operations/sync-provider-surfaces.sh"),
     pathlib.Path("scripts/operations/sync-tech-stack-versions.sh"),

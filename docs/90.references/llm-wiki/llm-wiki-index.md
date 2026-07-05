@@ -422,6 +422,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/111-qa-gate-recommendation-ci-summary/spec.md](../../03.specs/111-qa-gate-recommendation-ci-summary/spec.md) | Markdown reference |
 | [docs/03.specs/112-audit-pack-coverage-report/spec.md](../../03.specs/112-audit-pack-coverage-report/spec.md) | Markdown reference |
 | [docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md](../../03.specs/113-llm-wiki-stage-category-coverage/spec.md) | Markdown reference |
+| [docs/03.specs/114-tech-stack-version-provenance/spec.md](../../03.specs/114-tech-stack-version-provenance/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -502,6 +503,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-workspace-support-surface-contract.md](../../04.execution/plans/2026-07-05-workspace-support-surface-contract.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-06-tech-stack-version-provenance.md](../../04.execution/plans/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -607,6 +609,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-workspace-support-surface-contract.md](../../04.execution/tasks/2026-07-05-workspace-support-surface-contract.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-06-tech-stack-version-provenance.md](../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -912,6 +915,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/docker/README.md](../data/docker/README.md) | folder index |
 | [docs/90.references/data/docker/compose-profile-service-coverage.md](../data/docker/compose-profile-service-coverage.md) | Markdown reference |
 | [docs/90.references/data/docker/image-version-interpretation.md](../data/docker/image-version-interpretation.md) | Markdown reference |
+| [docs/90.references/data/docker/tech-stack-version-provenance.md](../data/docker/tech-stack-version-provenance.md) | Markdown reference |
 | [docs/90.references/data/glossary/README.md](../data/glossary/README.md) | folder index |
 | [docs/90.references/data/glossary/stable-reference-terms.md](../data/glossary/stable-reference-terms.md) | Markdown reference |
 | [docs/90.references/data/governance/README.md](../data/governance/README.md) | folder index |
@@ -1246,6 +1250,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/lib/hardening-lib.sh](../../../scripts/lib/hardening-lib.sh) | script |
 | [scripts/operations/gen-secrets.sh](../../../scripts/operations/gen-secrets.sh) | script |
 | [scripts/operations/generate-compose-profile-service-coverage.sh](../../../scripts/operations/generate-compose-profile-service-coverage.sh) | script |
+| [scripts/operations/generate-tech-stack-version-provenance.sh](../../../scripts/operations/generate-tech-stack-version-provenance.sh) | script |
 | [scripts/operations/sync-provider-surfaces.sh](../../../scripts/operations/sync-provider-surfaces.sh) | script |
 | [scripts/operations/sync-tech-stack-versions.sh](../../../scripts/operations/sync-tech-stack-versions.sh) | script |
 | [scripts/operations/use-qa-ci-tools.sh](../../../scripts/operations/use-qa-ci-tools.sh) | script |
