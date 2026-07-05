@@ -46,7 +46,7 @@ are limited to documentation evidence and indexes.
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-AEA-001 | Activate spec and create execution scaffold | doc | `VAL-SPC-001`, `VAL-SPC-004` | `PLN-AEA-001` | Stage 03/04 files and indexes; `git diff --check`; traceability; repo contracts | Documentation Specialist | Done |
-| T-AEA-002 | Inventory research criteria and repo-local evidence | doc | `VAL-SPC-002`, `VAL-SPC-003` | `PLN-AEA-002` | Evidence inventory below | Documentation Specialist | Pending |
+| T-AEA-002 | Inventory research criteria and repo-local evidence | doc | `VAL-SPC-002`, `VAL-SPC-003` | `PLN-AEA-002` | Evidence inventory below; official source revalidation on 2026-07-05 | Documentation Specialist | Done |
 | T-AEA-003 | Write overview, harness, and loop audit reports | doc | `VAL-SPC-002`, `VAL-SPC-003` | `PLN-AEA-003` | Stage 90 audit reports | Documentation Specialist | Pending |
 | T-AEA-004 | Write provider, workspace, automation, and SDLC/quality audit reports | doc | `VAL-SPC-002`, `VAL-SPC-003`, `VAL-SPC-005` | `PLN-AEA-004` | Stage 90 audit reports | Documentation Specialist | Pending |
 | T-AEA-005 | Update indexes, progress memory, and validation evidence | doc | `VAL-SPC-004`, `VAL-SPC-005` | `PLN-AEA-005` | README indexes, progress memory, final validation | Documentation Specialist | Pending |
@@ -59,7 +59,7 @@ are limited to documentation evidence and indexes.
 
 ### Phase 2: Evidence Inventory
 
-- [ ] T-AEA-002 Inventory research criteria and repo-local evidence.
+- [x] T-AEA-002 Inventory research criteria and repo-local evidence.
 
 ### Phase 3: Audit Reports
 
@@ -72,11 +72,35 @@ are limited to documentation evidence and indexes.
 
 ## Evidence Inventory
 
-Evidence inventory is recorded during `T-AEA-002`.
+Evidence inventory was recorded on 2026-07-05 using read-only official-source
+verification and repo-local file inspection.
+
+| Evidence Class | Evidence Path / Source | Audit Role | Implementation Signal |
+| --- | --- | --- | --- |
+| Research criteria | [Agentic engineering research pack](../../90.references/research/agentic-engineering/README.md) | Criteria source for all audit reports | Implemented research baseline with dedicated workspace, harness, loop, provider, SDLC, quality, Docker/infrastructure, security, and automation references. |
+| Governance SSoT | [Stage 00 governance hub](../../00.agent-governance/README.md) | Workspace rules, roles, workflows, memory, QA/CI/CD, template contract, and provider adapter model | Implemented as canonical policy and routing hub. |
+| Harness map | [Harness implementation map](../../00.agent-governance/harness-implementation-map.md) | Harness surface-to-source routing for governance, runtime, secrets, scripts, validation, CI, hooks, evidence, PR/review, and operations | Implemented map; semantic enforcement depth varies by surface. |
+| Approval boundaries | [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md) | Protected-surface and approval matrix for Compose, secrets, scripts, workflows, governance, operations, and templates | Implemented policy matrix; runtime enforcement remains script/hook/manual by surface. |
+| Subagent protocol | [Subagent protocol](../../00.agent-governance/subagent-protocol.md) | Provider-neutral role catalog, model policy, delegation rules, and provider adapter mapping | Implemented governance protocol with provider adapters. |
+| Provider capability matrix | [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md) | Claude/Codex/Gemini capability mapping | Implemented internally, with Gemini native-hook limitation recorded. |
+| Claude provider | [Claude provider notes](../../00.agent-governance/providers/claude.md), `.claude/settings.json`, `.claude/agents/`, `.claude/skills/`, `.claude/hooks/` | Claude harness/loop implementation and runtime adapter evidence | Implemented first-class runtime mirror and hooks. |
+| Codex provider | [Codex provider notes](../../00.agent-governance/providers/codex.md), `.codex/README.md`, `.codex/hooks.json`, `.codex/agents/`, `.codex/skills/` | Codex harness/loop implementation and runtime adapter evidence | Implemented TOML agent adapters, skills, hooks, sandbox/approval boundary. |
+| Gemini provider | [Gemini provider notes](../../00.agent-governance/providers/gemini.md), `.agents/README.md`, `.agents/agents/`, `.agents/skills/` | Gemini shared surface, context loading, and behavioral parity evidence | Partially implemented: repo-local pointer adapters exist, but official Gemini CLI docs do not show Claude/Codex-style first-class subagents or programmatic hook parity. |
+| CI/CD | `.github/workflows/ci-quality.yml` | Remote quality gates, branch-flow checks, Compose validation, hardening, frontend quality, pre-commit, and workflow security scan | Implemented broad CI gate set; deployment/CD release automation is outside current scope. |
+| Scripts / automation | [scripts README](../../../scripts/README.md), `scripts/validation/**`, `scripts/hardening/**`, `scripts/hooks/**`, `scripts/operations/**`, `scripts/knowledge/**` | Local QA, contract checks, hook routing, provider sync, LLM Wiki, hardening, Compose and tech-stack validation | Implemented script-backed automation surface; eval automation and semantic agent-result scoring remain partial. |
+| Infrastructure | [infra README](../../../infra/README.md), `docker-compose.yml`, `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json` | Docker Compose and infrastructure harness evidence | Implemented modular Compose topology with profiles, tier READMEs, version registry, validation, and hardening checks. |
+| HAFE operations | [HAFE guide](../../05.operations/guides/00-workspace/harness-agent-first-engineering.md), [HAFE policy](../../05.operations/policies/00-workspace/harness-agent-first-engineering.md) | Operational guidance and policy for harness / agent-first work | Implemented, with some Graphify/runtime-validation caveats documented. |
+| Templates | [Template contract](../../99.templates/support/template-contract.md), [frontmatter contract](../../99.templates/support/frontmatter-contract.md), [reference template](../../99.templates/templates/common/reference.template.md) | Document shape, frontmatter, Stage 90 reference/audit contract | Implemented and enforced by repo contracts. |
+| Official Claude docs | <https://code.claude.com/docs/en/overview>, <https://code.claude.com/docs/en/sub-agents>, <https://code.claude.com/docs/en/hooks> | External criteria for Claude Code agentic runtime, subagents, hooks, automation | Revalidated on 2026-07-05; supports first-class subagents and hooks. |
+| Official Codex docs | <https://developers.openai.com/codex/cli>, <https://developers.openai.com/codex/subagents>, <https://developers.openai.com/codex/hooks>, <https://developers.openai.com/codex/guides/agents-md>, <https://developers.openai.com/codex/security> | External criteria for Codex CLI, AGENTS.md, subagents, hooks, sandbox/security | Revalidated on 2026-07-05; supports first-class subagents and hooks. |
+| Official Gemini docs | <https://developers.google.com/gemini-code-assist/docs/gemini-cli>, <https://google-gemini.github.io/gemini-cli/docs/>, <https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html>, <https://google-gemini.github.io/gemini-cli/docs/tools/mcp-server.html> | External criteria for Gemini CLI, ReAct loop, configuration layers, MCP, tools, context | Revalidated on 2026-07-05; supports ReAct/MCP/context-file model, not first-class subagent/hook parity. |
+| Docker / GitHub / quality / security sources | Docker Compose docs, GitHub Actions workflow syntax and secure-use docs, pre-commit, EditorConfig, Prettier, NIST SSDF, SLSA | External criteria for infrastructure, CI/CD, QA, formatting, linting, secure workflow, and supply-chain framing | Revalidated on 2026-07-05 as reference criteria, not adopted policy. |
 
 ## Deviation Log
 
-No deviations recorded yet.
+| Deviation | Reason | Resolution |
+| --- | --- | --- |
+| Read-only sidecar subagent review could not be spawned. | `multi_agent_v1.spawn_agent` reported `agent thread limit reached`. | Continued in the controller session and recorded the limitation here; no scope or write boundary changed. |
 
 ## Verification Summary
 
