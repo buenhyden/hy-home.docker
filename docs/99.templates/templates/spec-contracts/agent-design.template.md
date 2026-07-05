@@ -2,11 +2,11 @@
 status: draft
 ---
 
-<!-- Target: docs/03.specs/<feature-id>/agent-design.md -->
+<!-- Target: docs/03.specs/NNN-<feature-id>/agent-design.md -->
 
 # [Feature Name] Agent Design
 
-> Use this template for `docs/03.specs/<feature-id>/agent-design.md`.
+> Use this template for `docs/03.specs/NNN-<feature-id>/agent-design.md`.
 >
 > Rules:
 >
@@ -29,7 +29,7 @@ and evaluation strategy.
 ## Parent Documents
 
 - **Spec**: [./spec.md](./spec.md)
-- **PRD**: [../../01.requirements/YYYY-MM-DD-feature.md](../../01.requirements/YYYY-MM-DD-feature.md)
+- **PRD**: [../../01.requirements/NNN-feature.md](../../01.requirements/NNN-feature.md)
 - **ARD**: [ARD folder](../../02.architecture/requirements/)
 - **Related ADRs**: [ADR folder](../../02.architecture/decisions/)
 

@@ -54,6 +54,18 @@ task evidence or Stage 90 references when needed.
 - Review path-only moves separately from content rewrites.
 - Record existing unrelated validation failures as gaps.
 
+## Numbered Path Governance
+
+- PRD and Spec path-rule changes are protected template-system changes.
+- A PRD path-rule change must update copyable templates, template selection,
+  support contracts, Stage 00 governance, validators, active cross-links, and
+  generated reference indexes as applicable.
+- A Spec path-rule change must update parent Spec templates, spec-child
+  templates, provider-facing examples, Stage 00 governance, validators, active
+  cross-links, and generated reference indexes as applicable.
+- Do not create alias documents at legacy PRD or Spec paths unless a later
+  approved rollback task explicitly requires one.
+
 ## Protected Surface Rules
 
 Template and validation changes are protected because they affect agent behavior

@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md -->
+<!-- Target: docs/01.requirements/NNN-<feature-or-system>.md -->
 
 # [Feature or System Name] Product Requirements
 
-> Use this template for `docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md`.
+> Use this template for `docs/01.requirements/NNN-<feature-or-system>.md`.
 >
 > Rules:
 >
@@ -17,11 +17,11 @@ status: draft
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 > - Replace example links with real target-relative links, or delete unused examples before saving.
 >
-> Target-relative examples from `docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md`:
+> Target-relative examples from `docs/01.requirements/NNN-<feature-or-system>.md`:
 >
 > - ARD: `../02.architecture/requirements/####-system-or-domain.md`
 > - ADR: `../02.architecture/decisions/####-short-title.md`
-> - Spec: `../03.specs/feature-id/spec.md`
+> - Spec: `../03.specs/NNN-feature-id/spec.md`
 > - Plan: `../04.execution/plans/YYYY-MM-DD-feature.md`
 > - Task: `../04.execution/tasks/YYYY-MM-DD-feature-or-stream.md`
 
@@ -82,7 +82,7 @@ status: draft
 ## Related Documents
 
 - **ARD**: [Architecture requirements](../02.architecture/requirements/####-system-or-domain.md)
-- **Spec**: [Technical specification](../03.specs/<feature-id>/spec.md)
+- **Spec**: [Technical specification](../03.specs/NNN-<feature-id>/spec.md)
 - **Plan**: [Implementation plan](../04.execution/plans/YYYY-MM-DD-<feature>.md)
 - **ADR**: [Architecture decision](../02.architecture/decisions/####-<short-title>.md)
 - **Task**: [Execution evidence](../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md)

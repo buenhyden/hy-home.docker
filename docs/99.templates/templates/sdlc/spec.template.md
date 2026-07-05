@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/03.specs/<feature-id>/spec.md -->
+<!-- Target: docs/03.specs/NNN-<feature-id>/spec.md -->
 
 # [Feature Name] Technical Specification (Spec)
 
-> Use this template for `docs/03.specs/<feature-id>/spec.md`.
+> Use this template for `docs/03.specs/NNN-<feature-id>/spec.md`.
 >
 > Rules:
 >
@@ -19,9 +19,9 @@ status: draft
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 > - Replace example links with real target-relative links, or delete unused examples before saving.
 >
-> Target-relative examples from `docs/03.specs/<feature-id>/spec.md`:
+> Target-relative examples from `docs/03.specs/NNN-<feature-id>/spec.md`:
 >
-> - PRD: `../../01.requirements/YYYY-MM-DD-feature-or-system.md`
+> - PRD: `../../01.requirements/NNN-feature-or-system.md`
 > - ARD: `../../02.architecture/requirements/####-system-or-domain-name.md`
 > - ADR: `../../02.architecture/decisions/####-short-title.md`
 > - Plan: `../../04.execution/plans/YYYY-MM-DD-feature.md`
@@ -45,7 +45,7 @@ and verification criteria.
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/YYYY-MM-DD-<feature-or-system>.md](../../01.requirements/YYYY-MM-DD-<feature-or-system>.md)
+- **PRD**: [../../01.requirements/NNN-<feature-or-system>.md](../../01.requirements/NNN-<feature-or-system>.md)
 - **ARD**: [../../02.architecture/requirements/####-<system-or-domain-name>.md](../../02.architecture/requirements/####-<system-or-domain-name>.md)
 - **Related ADRs**: [../../02.architecture/decisions/####-<short-title>.md](../../02.architecture/decisions/####-<short-title>.md)
 

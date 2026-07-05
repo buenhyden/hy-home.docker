@@ -28,13 +28,13 @@ the parent SDLC spec; they do not replace the parent `spec.md`.
 ## Target Rules
 
 - Markdown contract templates target
-  `docs/03.specs/<feature-id>/{api-spec,agent-design,data-model,service,tests}.md`.
+  `docs/03.specs/NNN-<feature-id>/{api-spec,agent-design,data-model,service,tests}.md`.
 - `openapi.template.yaml` targets
-  `docs/03.specs/<feature-id>/contracts/openapi.yaml`.
+  `docs/03.specs/NNN-<feature-id>/contracts/openapi.yaml`.
 - `schema.template.graphql` targets
-  `docs/03.specs/<feature-id>/contracts/schema.graphql`.
+  `docs/03.specs/NNN-<feature-id>/contracts/schema.graphql`.
 - `service.template.proto` targets
-  `docs/03.specs/<feature-id>/contracts/service.proto`.
+  `docs/03.specs/NNN-<feature-id>/contracts/service.proto`.
 - Markdown contract templates use target-relative links; machine-readable
   templates use `Cross-links:` comments.
 

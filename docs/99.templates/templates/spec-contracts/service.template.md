@@ -2,11 +2,11 @@
 status: draft
 ---
 
-<!-- Target: docs/03.specs/<feature-id>/service.md -->
+<!-- Target: docs/03.specs/NNN-<feature-id>/service.md -->
 
 # [Service Name] Service Scaffold
 
-> Use this template for `docs/03.specs/<feature-id>/service.md`.
+> Use this template for `docs/03.specs/NNN-<feature-id>/service.md`.
 >
 > Rules:
 >

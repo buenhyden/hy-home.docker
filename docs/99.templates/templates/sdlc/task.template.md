@@ -20,7 +20,7 @@ status: draft
 >
 > Target-relative examples from `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md`:
 >
-> - Parent Spec: `../../03.specs/feature-id/spec.md`
+> - Parent Spec: `../../03.specs/NNN-feature-id/spec.md`
 > - Parent Plan: `../plans/YYYY-MM-DD-feature.md`
 > - Operations direct target: `../../05.operations/guides/topic.md`
 > - Operations domain target: `../../05.operations/guides/domain/topic.md`
@@ -36,7 +36,7 @@ auditable form.
 
 ## Inputs
 
-- **Parent Spec**: [Feature spec](../../03.specs/<feature-id>/spec.md)
+- **Parent Spec**: [Feature spec](../../03.specs/NNN-<feature-id>/spec.md)
 - **Parent Plan**: [Execution plan](../plans/YYYY-MM-DD-<feature>.md)
 
 ## Working Rules
@@ -97,7 +97,7 @@ adapters. Delete the section when no such surface is in scope.
 
 ## Related Documents
 
-- **Parent Spec**: [Feature spec](../../03.specs/<feature-id>/spec.md)
+- **Parent Spec**: [Feature spec](../../03.specs/NNN-<feature-id>/spec.md)
 - **Parent Plan**: [Execution plan](../plans/YYYY-MM-DD-<feature>.md)
 - **Operations / References**: [Operations guide](../../05.operations/guides/<topic>.md)
 - **Reference**: [Reference item](../../90.references/{audits,data,research,learning}/<category>/<item>.md)

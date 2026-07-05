@@ -17,9 +17,9 @@ status: draft
 >
 > Target-relative examples from `docs/02.architecture/requirements/####-<system-or-domain>.md`:
 >
-> - PRD: `../../01.requirements/YYYY-MM-DD-feature-or-system.md`
+> - PRD: `../../01.requirements/NNN-feature-or-system.md`
 > - ADR: `../decisions/####-short-title.md`
-> - Spec: `../../03.specs/feature-id/spec.md`
+> - Spec: `../../03.specs/NNN-feature-id/spec.md`
 > - Plan: `../../04.execution/plans/YYYY-MM-DD-feature.md`
 > - Task: `../../04.execution/tasks/YYYY-MM-DD-feature-or-stream.md`
 > - Operations: `../../05.operations/README.md`
@@ -76,8 +76,8 @@ status: draft
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/YYYY-MM-DD-<feature-or-system>.md](../../01.requirements/YYYY-MM-DD-<feature-or-system>.md)
-- **Spec**: [../../03.specs/<feature-id>/spec.md](../../03.specs/<feature-id>/spec.md)
+- **PRD**: [../../01.requirements/NNN-<feature-or-system>.md](../../01.requirements/NNN-<feature-or-system>.md)
+- **Spec**: [../../03.specs/NNN-<feature-id>/spec.md](../../03.specs/NNN-<feature-id>/spec.md)
 - **Plan**: [../../04.execution/plans/YYYY-MM-DD-<feature>.md](../../04.execution/plans/YYYY-MM-DD-<feature>.md)
 - **Task**: [../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md](../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md)
 - **ADR**: [../decisions/####-<short-title>.md](../decisions/####-<short-title>.md)

@@ -1,4 +1,4 @@
-# Target: docs/03.specs/<feature-id>/contracts/openapi.yaml
+# Target: docs/03.specs/NNN-<feature-id>/contracts/openapi.yaml
 # Cross-links: link this contract from the parent Markdown spec or API spec.
 # Do not add a Markdown Related Documents section to this YAML contract.
 openapi: 3.1.0

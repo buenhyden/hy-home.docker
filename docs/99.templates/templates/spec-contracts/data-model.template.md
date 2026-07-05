@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/03.specs/<feature-id>/data-model.md -->
+<!-- Target: docs/03.specs/NNN-<feature-id>/data-model.md -->
 
 # [Feature Name] Data Model
 
-> Use this template for `docs/03.specs/<feature-id>/data-model.md`.
+> Use this template for `docs/03.specs/NNN-<feature-id>/data-model.md`.
 >
 > Rules:
 >

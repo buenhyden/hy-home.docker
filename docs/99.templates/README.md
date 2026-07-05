@@ -30,7 +30,7 @@ support 문서를 기준으로 확인합니다.
 
 - `docs/01`부터 `docs/05`, `docs/90`, `docs/98` stage 문서 템플릿
 - `docs/00.agent-governance/memory/`의 memory note와 progress log 템플릿
-- `docs/03.specs/<feature-id>/`에서 사용하는 child contract 템플릿
+- `docs/03.specs/NNN-<feature-id>/`에서 사용하는 child contract 템플릿
 - repository-wide README와 folder README 템플릿
 - template contract, frontmatter contract, lifecycle/status, selection guide
 

@@ -39,6 +39,19 @@ This document defines the non-copyable contract for template source files under
 - Example commands in templates must be deleted or replaced before target
   documents are saved.
 
+## Numbered SDLC Path Rules
+
+- PRD template target guidance uses
+  `docs/01.requirements/NNN-<feature-or-system>.md`.
+- Spec template and spec-child target guidance uses
+  `docs/03.specs/NNN-<feature-id>/...`.
+- `NNN` is a zero-padded three-digit routing prefix and is part of the
+  canonical path, not a frontmatter key.
+- Plan and Task template target guidance remains date-prefixed under
+  `docs/04.execution/`.
+- Template source files must not publish date-prefixed PRD targets or
+  unnumbered Spec targets except inside explicit historical migration tables.
+
 ## Target Document Rules
 
 - Target documents inherit from exactly one primary template role.

@@ -118,7 +118,7 @@ edits, validator edits, and generated-index fallout reviewable.
 - [x] Stage 04 plan and task evidence exist and are indexed.
 - [x] All PRD files use numbered filenames.
 - [x] All Spec folders use numbered folder names.
-- [ ] Stage 99 templates/support publish the numbered PRD and Spec contract.
+- [x] Stage 99 templates/support publish the numbered PRD and Spec contract.
 - [ ] Stage 00 governance and validators enforce the numbered contract.
 - [ ] Cross-links, README indexes, generated indexes, and progress memory are
       updated.

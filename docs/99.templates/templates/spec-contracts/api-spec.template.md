@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/03.specs/<feature-id>/api-spec.md -->
+<!-- Target: docs/03.specs/NNN-<feature-id>/api-spec.md -->
 
 # [API Name] Specification
 
-> Use this template for `docs/03.specs/<feature-id>/api-spec.md`.
+> Use this template for `docs/03.specs/NNN-<feature-id>/api-spec.md`.
 >
 > Rules:
 >

@@ -27,12 +27,12 @@ needs traceability across requirements, architecture, specs, plans, and tasks.
 ## Target Rules
 
 - `prd.template.md` targets
-  `docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md`.
+  `docs/01.requirements/NNN-<feature-or-system>.md`.
 - `ard.template.md` targets
   `docs/02.architecture/requirements/####-<system-or-domain>.md`.
 - `adr.template.md` targets
   `docs/02.architecture/decisions/####-<short-title>.md`.
-- `spec.template.md` targets `docs/03.specs/<feature-id>/spec.md`.
+- `spec.template.md` targets `docs/03.specs/NNN-<feature-id>/spec.md`.
 - `plan.template.md` targets
   `docs/04.execution/plans/YYYY-MM-DD-<feature>.md`.
 - `task.template.md` targets

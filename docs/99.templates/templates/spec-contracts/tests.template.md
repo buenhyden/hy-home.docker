@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/03.specs/<feature-id>/tests.md -->
+<!-- Target: docs/03.specs/NNN-<feature-id>/tests.md -->
 
 # [Feature Name] Test & Evaluation Strategy
 
-> Use this template for `docs/03.specs/<feature-id>/tests.md`.
+> Use this template for `docs/03.specs/NNN-<feature-id>/tests.md`.
 >
 > Rules:
 >

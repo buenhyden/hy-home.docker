@@ -23,6 +23,9 @@ contracts remain canonical for this workspace.
 | [Diataxis](https://diataxis.fr/) | Use documentation-purpose distinctions when separating guides, references, explanations, and procedures. |
 | [The Good Docs Project templates](https://www.thegooddocsproject.dev/template) | Separate copyable template bodies from adoption and style guidance. |
 | [NIST SSDF](https://csrc.nist.gov/projects/ssdf) | Keep security review and validation expectations integrated into SDLC template governance. |
+| [Google developer documentation filename guidance](https://developers.google.com/style/filenames) | Use stable, lowercase, hyphenated path components for canonical documentation targets. |
+| [Google developer documentation date guidance](https://developers.google.com/style/dates-times) | Keep dates as content or evidence when useful; do not use dates as the primary PRD routing key after numbered path migration. |
+| [IEEE 1012-2024](https://standards.ieee.org/ieee/1012/7324/) | Preserve verification and validation traceability when path contracts change. |
 
 ## Local Interpretation
 
@@ -35,6 +38,10 @@ contracts remain canonical for this workspace.
   template stages.
 - Security SDLC expectations appear in template governance and task evidence,
   not as runtime changes inside this template migration.
+- Numbered PRD and Spec paths use stable routing identifiers while preserving
+  dates in execution evidence, history notes, audit packs, or archive context.
+- Path migrations must include verification evidence because they change how
+  agents and humans resolve implementation contracts.
 
 ## Related Documents
 

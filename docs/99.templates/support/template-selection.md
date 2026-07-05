@@ -13,10 +13,10 @@ template source.
 
 | Role | Target Location | Template |
 | --- | --- | --- |
-| PRD | `docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md` | [prd.template.md](../templates/sdlc/prd.template.md) |
+| PRD | `docs/01.requirements/NNN-<feature-or-system>.md` | [prd.template.md](../templates/sdlc/prd.template.md) |
 | ARD | `docs/02.architecture/requirements/####-<system-or-domain>.md` | [ard.template.md](../templates/sdlc/ard.template.md) |
 | ADR | `docs/02.architecture/decisions/####-<short-title>.md` | [adr.template.md](../templates/sdlc/adr.template.md) |
-| Spec | `docs/03.specs/<feature-id>/spec.md` | [spec.template.md](../templates/sdlc/spec.template.md) |
+| Spec | `docs/03.specs/NNN-<feature-id>/spec.md` | [spec.template.md](../templates/sdlc/spec.template.md) |
 | Plan | `docs/04.execution/plans/YYYY-MM-DD-<feature>.md` | [plan.template.md](../templates/sdlc/plan.template.md) |
 | Task | `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md` | [task.template.md](../templates/sdlc/task.template.md) |
 | Guide | `docs/05.operations/guides/**.md` | [guide.template.md](../templates/operations/guide.template.md) |
@@ -45,14 +45,14 @@ target action from this mapping:
 
 | Role | Target Location | Template |
 | --- | --- | --- |
-| API spec | `docs/03.specs/<feature-id>/api-spec.md` | [api-spec.template.md](../templates/spec-contracts/api-spec.template.md) |
-| Agent design | `docs/03.specs/<feature-id>/agent-design.md` | [agent-design.template.md](../templates/spec-contracts/agent-design.template.md) |
-| Data model | `docs/03.specs/<feature-id>/data-model.md` | [data-model.template.md](../templates/spec-contracts/data-model.template.md) |
-| Service | `docs/03.specs/<feature-id>/service.md` | [service.template.md](../templates/spec-contracts/service.template.md) |
-| Tests | `docs/03.specs/<feature-id>/tests.md` | [tests.template.md](../templates/spec-contracts/tests.template.md) |
-| OpenAPI | `docs/03.specs/<feature-id>/contracts/openapi.yaml` | [openapi.template.yaml](../templates/spec-contracts/openapi.template.yaml) |
-| GraphQL | `docs/03.specs/<feature-id>/contracts/schema.graphql` | [schema.template.graphql](../templates/spec-contracts/schema.template.graphql) |
-| Protobuf | `docs/03.specs/<feature-id>/contracts/service.proto` | [service.template.proto](../templates/spec-contracts/service.template.proto) |
+| API spec | `docs/03.specs/NNN-<feature-id>/api-spec.md` | [api-spec.template.md](../templates/spec-contracts/api-spec.template.md) |
+| Agent design | `docs/03.specs/NNN-<feature-id>/agent-design.md` | [agent-design.template.md](../templates/spec-contracts/agent-design.template.md) |
+| Data model | `docs/03.specs/NNN-<feature-id>/data-model.md` | [data-model.template.md](../templates/spec-contracts/data-model.template.md) |
+| Service | `docs/03.specs/NNN-<feature-id>/service.md` | [service.template.md](../templates/spec-contracts/service.template.md) |
+| Tests | `docs/03.specs/NNN-<feature-id>/tests.md` | [tests.template.md](../templates/spec-contracts/tests.template.md) |
+| OpenAPI | `docs/03.specs/NNN-<feature-id>/contracts/openapi.yaml` | [openapi.template.yaml](../templates/spec-contracts/openapi.template.yaml) |
+| GraphQL | `docs/03.specs/NNN-<feature-id>/contracts/schema.graphql` | [schema.template.graphql](../templates/spec-contracts/schema.template.graphql) |
+| Protobuf | `docs/03.specs/NNN-<feature-id>/contracts/service.proto` | [service.template.proto](../templates/spec-contracts/service.template.proto) |
 
 ## Governance Template Mapping
 
