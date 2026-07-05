@@ -46,6 +46,7 @@ tests/_tmp_*
 # Universal
 *.tmp
 Thumbs.db
+sessions/
 
 # Project-specific
 uploads/
