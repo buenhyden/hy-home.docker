@@ -77,6 +77,7 @@ docs/03.specs/
 ├── 106-workspace-support-surface-contract/ # Active `_workspace` repo-support surface contract
 ├── 107-provider-semantic-parity-validator/ # Active provider adapter semantic parity validator
 ├── 108-compose-profile-service-coverage-snapshot/ # Active generated Compose profile/service coverage snapshot
+├── 109-gap-routing-recommendation/      # Active gap-to-stage routing recommendation
 └── README.md                            # This file
 ```
 
@@ -97,6 +98,7 @@ docs/03.specs/
 | `_workspace` repo-support and protected-surface contract | `106-workspace-support-surface-contract/spec.md` |
 | Provider adapter semantic role-scope parity validation | `107-provider-semantic-parity-validator/spec.md` |
 | Generated Docker Compose profile/service coverage snapshot | `108-compose-profile-service-coverage-snapshot/spec.md` |
+| Gap-to-stage routing advisory recommendation | `109-gap-routing-recommendation/spec.md` |
 | Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
 | Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
@@ -167,6 +169,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Workspace Support Surface Contract Spec**: [106-workspace-support-surface-contract/spec.md](./106-workspace-support-surface-contract/spec.md)
 - **Provider Semantic Parity Validator Spec**: [107-provider-semantic-parity-validator/spec.md](./107-provider-semantic-parity-validator/spec.md)
 - **Compose Profile Service Coverage Snapshot Spec**: [108-compose-profile-service-coverage-snapshot/spec.md](./108-compose-profile-service-coverage-snapshot/spec.md)
+- **Gap Routing Recommendation Spec**: [109-gap-routing-recommendation/spec.md](./109-gap-routing-recommendation/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)

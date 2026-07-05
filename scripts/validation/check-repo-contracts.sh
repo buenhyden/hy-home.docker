@@ -3585,6 +3585,37 @@ if ! bash scripts/operations/generate-compose-profile-service-coverage.sh --chec
 fi
 rm -f /tmp/check-repo-contracts-compose-profile-coverage.txt
 
+section "Gap routing recommender"
+if ! bash scripts/validation/recommend-gap-routing.sh --text "runbook recovery procedure is missing rollback evidence" >/tmp/check-repo-contracts-gap-routing-ops.txt 2>&1; then
+  fail "gap routing recommender failed for operations text"
+  cat /tmp/check-repo-contracts-gap-routing-ops.txt >&2
+elif ! grep -q 'suggested_owner=`docs/05.operations/`' /tmp/check-repo-contracts-gap-routing-ops.txt; then
+  fail "gap routing recommender did not route operations text to docs/05.operations"
+  cat /tmp/check-repo-contracts-gap-routing-ops.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-gap-routing-ops.txt
+
+if ! bash scripts/validation/recommend-gap-routing.sh --files docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md >/tmp/check-repo-contracts-gap-routing-spec.txt 2>&1; then
+  fail "gap routing recommender failed for spec path"
+  cat /tmp/check-repo-contracts-gap-routing-spec.txt >&2
+elif ! grep -q 'suggested_owner=`docs/03.specs/`' /tmp/check-repo-contracts-gap-routing-spec.txt; then
+  fail "gap routing recommender did not route spec path to docs/03.specs"
+  cat /tmp/check-repo-contracts-gap-routing-spec.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-gap-routing-spec.txt
+
+if ! bash scripts/validation/recommend-gap-routing.sh --text "token=example-redacted" >/tmp/check-repo-contracts-gap-routing-redaction.txt 2>&1; then
+  fail "gap routing recommender failed for redaction fixture"
+  cat /tmp/check-repo-contracts-gap-routing-redaction.txt >&2
+elif ! grep -q 'suggested_owner=Stage 04 task/audit gap first' /tmp/check-repo-contracts-gap-routing-redaction.txt; then
+  fail "gap routing recommender did not route protected text to Stage 04 task/audit gap first"
+  cat /tmp/check-repo-contracts-gap-routing-redaction.txt >&2
+elif ! grep -q 'input=\[redacted-sensitive-input\]' /tmp/check-repo-contracts-gap-routing-redaction.txt; then
+  fail "gap routing recommender did not redact sensitive-looking text input"
+  cat /tmp/check-repo-contracts-gap-routing-redaction.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-gap-routing-redaction.txt
+
 section "Script reference integrity"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -3768,6 +3799,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/check-doc-traceability.sh"),
     pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
+    pathlib.Path("scripts/validation/recommend-gap-routing.sh"),
     pathlib.Path("scripts/validation/recommend-qa-gates.sh"),
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),

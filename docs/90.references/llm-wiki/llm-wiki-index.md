@@ -416,6 +416,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/107-provider-semantic-parity-validator/spec.md](../../03.specs/107-provider-semantic-parity-validator/spec.md) | Markdown reference |
 | [docs/03.specs/108-compose-profile-service-coverage-snapshot/README.md](../../03.specs/108-compose-profile-service-coverage-snapshot/README.md) | folder index |
 | [docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md](../../03.specs/108-compose-profile-service-coverage-snapshot/spec.md) | Markdown reference |
+| [docs/03.specs/109-gap-routing-recommendation/README.md](../../03.specs/109-gap-routing-recommendation/README.md) | folder index |
+| [docs/03.specs/109-gap-routing-recommendation/spec.md](../../03.specs/109-gap-routing-recommendation/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -487,6 +489,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md](../../04.execution/plans/2026-07-05-agentic-research-pack-refresh.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md](../../04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-05-gap-routing-recommendation.md](../../04.execution/plans/2026-07-05-gap-routing-recommendation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-provider-semantic-parity-validator.md](../../04.execution/plans/2026-07-05-provider-semantic-parity-validator.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-provider-workspace-artifact-path-parity.md](../../04.execution/plans/2026-07-05-provider-workspace-artifact-path-parity.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
@@ -587,6 +590,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md](../../04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md](../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-05-gap-routing-recommendation.md](../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md](../../04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-provider-workspace-artifact-path-parity.md](../../04.execution/tasks/2026-07-05-provider-workspace-artifact-path-parity.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
@@ -897,6 +901,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/docker/image-version-interpretation.md](../data/docker/image-version-interpretation.md) | Markdown reference |
 | [docs/90.references/data/glossary/README.md](../data/glossary/README.md) | folder index |
 | [docs/90.references/data/glossary/stable-reference-terms.md](../data/glossary/stable-reference-terms.md) | Markdown reference |
+| [docs/90.references/data/governance/README.md](../data/governance/README.md) | folder index |
+| [docs/90.references/data/governance/gap-to-stage-routing.md](../data/governance/gap-to-stage-routing.md) | Markdown reference |
 | [docs/90.references/data/hads/README.md](../data/hads/README.md) | folder index |
 | [docs/90.references/data/hads/profile.md](../data/hads/profile.md) | Markdown reference |
 | [docs/90.references/data/kubernetes/README.md](../data/kubernetes/README.md) | folder index |
@@ -1233,6 +1239,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
 | [scripts/validation/check-storybook-contract.sh](../../../scripts/validation/check-storybook-contract.sh) | script |
 | [scripts/validation/check-template-security-baseline.sh](../../../scripts/validation/check-template-security-baseline.sh) | script |
+| [scripts/validation/recommend-gap-routing.sh](../../../scripts/validation/recommend-gap-routing.sh) | script |
 | [scripts/validation/recommend-qa-gates.sh](../../../scripts/validation/recommend-qa-gates.sh) | script |
 | [scripts/validation/run-local-qa-gates.sh](../../../scripts/validation/run-local-qa-gates.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) | script |

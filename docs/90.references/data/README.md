@@ -33,6 +33,7 @@ status: active
 
 - Docker image/version interpretation references
 - Generated Docker Compose profile/service coverage inventory
+- Stable governance routing reference data
 - Stable glossary and stage-boundary vocabulary
 - HADS profile and validation boundary
 - Kubernetes/k3s/k3d migration reference context
@@ -53,6 +54,7 @@ data/
 ├── README.md      # This file
 ├── docker/        # Docker image/version and registry interpretation
 ├── glossary/      # Stable vocabulary and stage-boundary terms
+├── governance/    # Governance routing and validation reference data
 ├── hads/          # HADS reference profile and validator boundary
 └── kubernetes/    # Kubernetes and k3s/k3d migration reference context
 ```
@@ -64,6 +66,8 @@ data/
 - [docker/image-version-interpretation.md](./docker/image-version-interpretation.md) - Docker image/version source interpretation rules
 - [glossary/README.md](./glossary/README.md) - stable reference terminology category
 - [glossary/stable-reference-terms.md](./glossary/stable-reference-terms.md) - shared terms for reference-stage boundaries
+- [governance/README.md](./governance/README.md) - governance routing reference data category
+- [governance/gap-to-stage-routing.md](./governance/gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
 - [hads/README.md](./hads/README.md) - HADS profile category
 - [hads/profile.md](./hads/profile.md) - HADS profile and validation contract
 - [kubernetes/README.md](./kubernetes/README.md) - Kubernetes and k3s/k3d migration reference context

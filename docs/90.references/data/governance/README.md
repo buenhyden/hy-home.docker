@@ -1,0 +1,74 @@
+---
+status: active
+---
+
+<!-- Target: docs/90.references/data/governance/README.md -->
+
+# Governance Reference Data
+
+> Stage routing, governance inventory, and validation-reference data
+
+## Overview
+
+`docs/90.references/data/governance` stores stable governance reference data
+that supports Stage 00 rules and repository validation without becoming active
+policy itself.
+
+이 폴더의 reference는 Stage 00 governance 원문을 대체하지 않습니다. 최신
+정책과 routing rule은 `docs/00.agent-governance/`가 담당합니다.
+
+## Category Role
+
+이 category는 governance 규칙을 반복해서 해석해야 하는 audit, review,
+validation 작업을 보조합니다. 실행 절차나 policy 변경은 canonical Stage 00
+또는 Stage 04 문서에서 처리합니다.
+
+## Audience
+
+이 README의 주요 독자:
+
+- Documentation Writers
+- QA Engineers
+- AI Agents
+- Repository Maintainers
+
+## Scope
+
+### In Scope
+
+- Stable routing-reference data derived from Stage 00 governance rules
+- Advisory validation and recommendation tool references
+- Governance inventory context used by audit reports
+
+### Out of Scope
+
+- Active policy body
+- Provider runtime configuration
+- Model policy changes
+- Secret values, credentials, tokens, private keys, shell history, or raw logs
+
+## Structure
+
+```text
+governance/
+├── README.md                  # This file
+└── gap-to-stage-routing.md    # Gap-to-stage routing advisory reference
+```
+
+## Current References
+
+- [gap-to-stage-routing.md](./gap-to-stage-routing.md) - Stage 00 gap-to-stage routing table and recommender contract
+
+## How to Work in This Area
+
+1. Verify that a new document is reference data, not active policy.
+2. Link every governance fact back to Stage 00 source documents.
+3. Keep non-README reference documents English-only.
+4. Run `bash scripts/validation/check-repo-contracts.sh` after changing this category.
+
+## Related Documents
+
+- [reference data](../README.md)
+- [90.references](../../README.md)
+- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [gap routing recommender](../../../../scripts/validation/recommend-gap-routing.sh)
