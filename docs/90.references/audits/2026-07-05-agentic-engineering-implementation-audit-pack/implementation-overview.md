@@ -105,8 +105,10 @@ or enforcement depth differs from repository policy.
 The highest-value remaining automation candidates are an executable
 agent-output eval runner, full automated audit-matrix refresh from repo paths,
 vulnerability gating, SBOM, and provenance/attestation automation. Changed-path
-QA recommendations are now surfaced in CI Step Summary, and audit-pack
-implementation-status coverage is now reportable through repo contracts.
+QA recommendations are now surfaced in CI Step Summary, audit-pack
+implementation-status coverage is now reportable through repo contracts, and
+LLM Wiki safe-path coverage is grouped by source bucket/category in Stage 90
+data.
 
 ## Source Rules
 

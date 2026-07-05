@@ -3352,10 +3352,13 @@ failures: list[str] = []
 required_files = [
     pathlib.Path("llms.txt"),
     pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
+    pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"),
     pathlib.Path("docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
     pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md"),
     pathlib.Path("docs/90.references/llm-wiki/repository-map.md"),
+    pathlib.Path("docs/90.references/data/knowledge/README.md"),
+    pathlib.Path("docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md"),
     pathlib.Path(".claude/agents/wiki-curator.md"),
     pathlib.Path("docs/00.agent-governance/agents/agents/wiki-curator.md"),
     pathlib.Path("docs/03.specs/096-llm-wiki-agent-first-completion/spec.md"),
@@ -3411,7 +3414,12 @@ readme_checks = {
     ],
     pathlib.Path("scripts/README.md"): [
         "generate-llm-wiki-index.sh",
+        "generate-llm-wiki-coverage.sh",
         "--check",
+    ],
+    pathlib.Path("docs/90.references/data/README.md"): [
+        "knowledge/README.md",
+        "knowledge/llm-wiki-stage-category-coverage.md",
     ],
     pathlib.Path("docs/00.agent-governance/agents/README.md"): [
         "wiki-curator",
@@ -3513,6 +3521,38 @@ if index_path.is_file():
         if linked_path.startswith("secrets/") and linked_path != "secrets/README.md":
             failures.append(f"{index_path}: generated index includes secret content path: {linked_path}")
 
+coverage_path = pathlib.Path("docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md")
+if coverage_path.is_file():
+    text = coverage_path.read_text(errors="ignore")
+    for literal in [
+        "generated_by: scripts/knowledge/generate-llm-wiki-coverage.sh",
+        "## Source Bucket Coverage",
+        "## LLM Wiki Category Coverage",
+        "## Path Role Coverage",
+        "scripts/knowledge/generate-llm-wiki-coverage.sh --check",
+        "graphify-out/",
+        "secrets/README.md",
+    ]:
+        if literal not in text:
+            failures.append(f"{coverage_path}: missing generated coverage literal: {literal}")
+
+    coverage_tables = text.split("## Source Bucket Coverage", 1)[-1].split("## Sources", 1)[0]
+    for forbidden in [
+        "volumes/",
+        "node_modules/",
+        ".min.js",
+        ".min.css",
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+    ]:
+        if forbidden in coverage_tables:
+            failures.append(f"{coverage_path}: generated coverage includes excluded path marker: {forbidden}")
+    for match in re.finditer(r"\[([^\]]+)\]\(", coverage_tables):
+        linked_path = match.group(1)
+        if linked_path.startswith("secrets/") and linked_path != "secrets/README.md":
+            failures.append(f"{coverage_path}: generated coverage includes secret content path: {linked_path}")
+
 generator = pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh")
 if generator.is_file() and index_path.is_file():
     result = subprocess.run(
@@ -3524,6 +3564,18 @@ if generator.is_file() and index_path.is_file():
         failures.append("generated LLM Wiki index is stale or generator check failed")
         for line in (result.stderr or result.stdout).splitlines():
             failures.append(f"generate-llm-wiki-index.sh --check: {line}")
+
+coverage_generator = pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh")
+if coverage_generator.is_file() and coverage_path.is_file():
+    result = subprocess.run(
+        ["bash", "scripts/knowledge/generate-llm-wiki-coverage.sh", "--check"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        failures.append("generated LLM Wiki coverage snapshot is stale or generator check failed")
+        for line in (result.stderr or result.stdout).splitlines():
+            failures.append(f"generate-llm-wiki-coverage.sh --check: {line}")
 
 if failures:
     for failure in failures:
@@ -3826,6 +3878,7 @@ expected_implementations = {
     pathlib.Path("scripts/hooks/patch-graphify-post-commit.sh"),
     pathlib.Path("scripts/hooks/post-tool-validate.sh"),
     pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
+    pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"),
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
     pathlib.Path("scripts/operations/generate-compose-profile-service-coverage.sh"),

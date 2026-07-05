@@ -62,7 +62,7 @@ and audit gaps in the overview, harness, and loop reports.
 | Repository contracts | Implemented | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/report-audit-pack-coverage.sh` | Audit-pack implementation-status coverage output is now available locally and checked by repo contracts. |
 | Provider surface sync | Implemented | `scripts/operations/sync-provider-surfaces.sh`, `scripts/validation/check-repo-contracts.sh`, [Provider semantic parity validator spec](../../../03.specs/107-provider-semantic-parity-validator/spec.md) | Semantic role-scope parity is now enforced for Stage 00 catalog scope, Claude adapters, Codex TOML adapters, Gemini pointer adapters, and the subagent protocol. Future work can add deeper free-text clause comparison if needed. |
 | Provider hooks | Partially Implemented | `.claude/hooks/`, `.codex/hooks.json`, [Gemini provider notes](../../../00.agent-governance/providers/gemini.md) | Generate hook parity matrix and Gemini behavioral reminder checklist. |
-| LLM Wiki freshness | Implemented | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/llm-wiki-index.md` | Add report grouping by stage/category for audit consumers. |
+| LLM Wiki freshness | Implemented | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/generate-llm-wiki-coverage.sh`, `docs/90.references/llm-wiki/llm-wiki-index.md`, [LLM Wiki coverage snapshot](../../data/knowledge/llm-wiki-stage-category-coverage.md) | Safe tracked-source index freshness and source-bucket/category coverage are generated and checked locally. |
 | Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml`, [Compose profile coverage reference](../../data/docker/compose-profile-service-coverage.md), `scripts/operations/generate-compose-profile-service-coverage.sh` | Profile-to-service coverage snapshot is now generated and freshness-checked locally; future work can publish grouped summaries into CI or audit reports if useful. |
 | Tech-stack version sync | Implemented | `scripts/operations/sync-tech-stack-versions.sh`, `infra/tech-stack.versions.json` | Add drift severity and source provenance summary. |
 | Agent-output eval | Fixture Pack Implemented / Runner Partial | [loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md), Stage 04 evidence patterns, [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) | Small docs/provider/infra fixtures now exist; executable runner or CI gate remains future work. |
@@ -77,10 +77,11 @@ and audit gaps in the overview, harness, and loop reports.
   security scanning.
 - A local advisory changed-path QA recommendation report exists and is now
   published into GitHub Step Summary from the CI quality workflow.
-- Provider semantic role-scope parity, Compose profile coverage inventory,
-  agent-output eval fixtures, and security framework maturity mapping are now
-  covered. The remaining highest-value gaps are executable eval runner
-  adoption, vulnerability gating, SBOM, and provenance/attestation automation.
+- Provider semantic role-scope parity, LLM Wiki source-bucket/category
+  coverage, Compose profile coverage inventory, agent-output eval fixtures, and
+  security framework maturity mapping are now covered. The remaining
+  highest-value gaps are executable eval runner adoption, vulnerability gating,
+  SBOM, and provenance/attestation automation.
 - Gemini-specific automation should remain reminder/checklist based until
   native hook/subagent support is confirmed by official sources.
 
@@ -95,6 +96,7 @@ and audit gaps in the overview, harness, and loop reports.
 | AEA-AUTO-005 | Compose profile/service coverage snapshot | Implemented by [Compose profile service coverage snapshot spec](../../../03.specs/108-compose-profile-service-coverage-snapshot/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md), [generated Docker data reference](../../data/docker/compose-profile-service-coverage.md), and `scripts/operations/generate-compose-profile-service-coverage.sh`. |
 | AEA-AUTO-006 | SSDF/SLSA maturity coverage matrix | Implemented by [Security framework maturity coverage](./security-framework-maturity.md); follow-up security tooling remains future Stage 03/04 work. |
 | AEA-AUTO-007 | Audit-pack implementation-status coverage output | Implemented by [Audit pack coverage report spec](../../../03.specs/112-audit-pack-coverage-report/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-audit-pack-coverage-report.md), `scripts/validation/report-audit-pack-coverage.sh`, and repo-contract `--check` coverage. |
+| AEA-AUTO-008 | LLM Wiki stage/category coverage report | Implemented by [LLM Wiki stage category coverage spec](../../../03.specs/113-llm-wiki-stage-category-coverage/spec.md), [task evidence](../../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md), [generated coverage snapshot](../../data/knowledge/llm-wiki-stage-category-coverage.md), `scripts/knowledge/generate-llm-wiki-coverage.sh`, and repo-contract freshness coverage. |
 
 ## Automation Impact
 

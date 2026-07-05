@@ -37,6 +37,7 @@ status: active
 - Stable agent-output eval fixture reference data
 - Stable glossary and stage-boundary vocabulary
 - HADS profile and validation boundary
+- Generated LLM Wiki coverage and knowledge-index reference data
 - Kubernetes/k3s/k3d migration reference context
 
 ### Out of Scope
@@ -57,6 +58,7 @@ data/
 ├── glossary/      # Stable vocabulary and stage-boundary terms
 ├── governance/    # Governance routing and validation reference data
 ├── hads/          # HADS reference profile and validator boundary
+├── knowledge/     # Generated LLM Wiki coverage and knowledge-index data
 └── kubernetes/    # Kubernetes and k3s/k3d migration reference context
 ```
 
@@ -72,6 +74,8 @@ data/
 - [governance/gap-to-stage-routing.md](./governance/gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
 - [hads/README.md](./hads/README.md) - HADS profile category
 - [hads/profile.md](./hads/profile.md) - HADS profile and validation contract
+- [knowledge/README.md](./knowledge/README.md) - generated LLM Wiki coverage and knowledge-index data category
+- [knowledge/llm-wiki-stage-category-coverage.md](./knowledge/llm-wiki-stage-category-coverage.md) - generated LLM Wiki source-bucket/category coverage snapshot
 - [kubernetes/README.md](./kubernetes/README.md) - Kubernetes and k3s/k3d migration reference context
 - [kubernetes/docker-compose-to-k3s-migration.md](./kubernetes/docker-compose-to-k3s-migration.md) - Docker Compose to k3s/k3d migration suitability snapshot
 

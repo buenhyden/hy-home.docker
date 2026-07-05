@@ -420,6 +420,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/109-gap-routing-recommendation/spec.md](../../03.specs/109-gap-routing-recommendation/spec.md) | Markdown reference |
 | [docs/03.specs/110-agent-output-eval-fixtures/spec.md](../../03.specs/110-agent-output-eval-fixtures/spec.md) | Markdown reference |
 | [docs/03.specs/111-qa-gate-recommendation-ci-summary/spec.md](../../03.specs/111-qa-gate-recommendation-ci-summary/spec.md) | Markdown reference |
+| [docs/03.specs/112-audit-pack-coverage-report/spec.md](../../03.specs/112-audit-pack-coverage-report/spec.md) | Markdown reference |
+| [docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md](../../03.specs/113-llm-wiki-stage-category-coverage/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -491,6 +493,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-05-agent-output-eval-fixtures.md](../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md](../../04.execution/plans/2026-07-05-agentic-research-pack-refresh.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-05-audit-pack-coverage-report.md](../../04.execution/plans/2026-07-05-audit-pack-coverage-report.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md](../../04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-gap-routing-recommendation.md](../../04.execution/plans/2026-07-05-gap-routing-recommendation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-provider-semantic-parity-validator.md](../../04.execution/plans/2026-07-05-provider-semantic-parity-validator.md) | Markdown reference |
@@ -498,6 +501,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-05-qa-gate-recommendation-ci-summary.md](../../04.execution/plans/2026-07-05-qa-gate-recommendation-ci-summary.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-workspace-support-surface-contract.md](../../04.execution/plans/2026-07-05-workspace-support-surface-contract.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -594,6 +598,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md](../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md](../../04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-05-audit-pack-coverage-report.md](../../04.execution/tasks/2026-07-05-audit-pack-coverage-report.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md](../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-gap-routing-recommendation.md](../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md](../../04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md) | Markdown reference |
@@ -601,6 +606,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-05-qa-gate-recommendation-ci-summary.md](../../04.execution/tasks/2026-07-05-qa-gate-recommendation-ci-summary.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-workspace-support-surface-contract.md](../../04.execution/tasks/2026-07-05-workspace-support-surface-contract.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -913,6 +919,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/governance/gap-to-stage-routing.md](../data/governance/gap-to-stage-routing.md) | Markdown reference |
 | [docs/90.references/data/hads/README.md](../data/hads/README.md) | folder index |
 | [docs/90.references/data/hads/profile.md](../data/hads/profile.md) | Markdown reference |
+| [docs/90.references/data/knowledge/README.md](../data/knowledge/README.md) | folder index |
+| [docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md](../data/knowledge/llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/90.references/data/kubernetes/README.md](../data/kubernetes/README.md) | folder index |
 | [docs/90.references/data/kubernetes/docker-compose-to-k3s-migration.md](../data/kubernetes/docker-compose-to-k3s-migration.md) | Markdown reference |
 | [docs/90.references/learning/README.md](../learning/README.md) | folder index |
@@ -1232,6 +1240,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/hooks/agent-event-hook.sh](../../../scripts/hooks/agent-event-hook.sh) | script |
 | [scripts/hooks/patch-graphify-post-commit.sh](../../../scripts/hooks/patch-graphify-post-commit.sh) | script |
 | [scripts/hooks/post-tool-validate.sh](../../../scripts/hooks/post-tool-validate.sh) | script |
+| [scripts/knowledge/generate-llm-wiki-coverage.sh](../../../scripts/knowledge/generate-llm-wiki-coverage.sh) | script |
 | [scripts/knowledge/generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) | script |
 | [scripts/knowledge/report-graphify-health.sh](../../../scripts/knowledge/report-graphify-health.sh) | script |
 | [scripts/lib/hardening-lib.sh](../../../scripts/lib/hardening-lib.sh) | script |
@@ -1249,6 +1258,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/check-template-security-baseline.sh](../../../scripts/validation/check-template-security-baseline.sh) | script |
 | [scripts/validation/recommend-gap-routing.sh](../../../scripts/validation/recommend-gap-routing.sh) | script |
 | [scripts/validation/recommend-qa-gates.sh](../../../scripts/validation/recommend-qa-gates.sh) | script |
+| [scripts/validation/report-audit-pack-coverage.sh](../../../scripts/validation/report-audit-pack-coverage.sh) | script |
 | [scripts/validation/run-local-qa-gates.sh](../../../scripts/validation/run-local-qa-gates.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) | script |
 | [scripts/validation/validate-harness.sh](../../../scripts/validation/validate-harness.sh) | script |
