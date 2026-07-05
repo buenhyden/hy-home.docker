@@ -1,12 +1,12 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/099-template-system-numbered-sdlc-paths/README.md -->
 
 # Template System Numbered SDLC Paths
 
-> Stage 03 design entrypoint for the numbered PRD and Spec path migration.
+> Completed Stage 03 design entrypoint for the numbered PRD and Spec path migration.
 
 ## Overview
 

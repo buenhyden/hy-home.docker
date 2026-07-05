@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md -->
@@ -30,8 +30,8 @@ This README is for:
 
 ## Status
 
-This specification is an active design contract approved on 2026-07-05. It is
-the input to the Stage 04 execution plan and Stage 90 audit reports.
+This specification is a completed design contract approved on 2026-07-05. It
+was the input to the Stage 04 execution plan and Stage 90 audit reports.
 
 ## Scope
 

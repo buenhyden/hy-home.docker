@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/104-agentic-research-pack-refresh/spec.md -->
@@ -14,7 +14,7 @@ refreshing the existing
 a refresh-first strategy, then adds targeted new reference documents only where
 the existing pack would become unfocused.
 
-The refreshed pack will analyze workspace purpose, roles, CI/CD, QA,
+The refreshed pack analyzes workspace purpose, roles, CI/CD, QA,
 formatting, linting, syntax checks, automation, pipelines, workflows,
 operating contracts, templates, scripts, integration guides, SDLC, governance,
 system structure, rules, security, harness engineering, loop engineering,

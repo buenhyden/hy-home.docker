@@ -67,13 +67,13 @@ docs/03.specs/
 ├── 096-llm-wiki-agent-first-completion/ # Completed LLM Wiki contract spec
 ├── 097-home-docker-revalidation-deferred-follow-up/ # Completed Home Docker revalidation and deferred-follow-up spec
 ├── 098-standardize-infra-net/           # Completed infra_net standardization spec
-├── 099-template-system-numbered-sdlc-paths/ # Active numbered PRD/Spec path migration design
+├── 099-template-system-numbered-sdlc-paths/ # Completed numbered PRD/Spec path migration design
 ├── 100-template-system-contract-standardization/ # Completed Stage 99 contract/frontmatter standardization spec
 ├── 101-template-system-reorganization/  # Superseded Stage 99 template system reorganization spec
 ├── 102-workspace-document-contract-audit-pack/ # Active workspace document contract audit/disposition spec
 ├── 103-document-restructure-audit-contract-archive/ # Active document restructure disposition contract
-├── 104-agentic-research-pack-refresh/   # Active Stage 90 agentic research refresh spec
-├── 105-agentic-engineering-implementation-audit-pack/ # Active Stage 90 implementation audit pack design spec
+├── 104-agentic-research-pack-refresh/   # Completed Stage 90 agentic research refresh spec
+├── 105-agentic-engineering-implementation-audit-pack/ # Completed Stage 90 implementation audit pack design spec
 └── README.md                            # This file
 ```
 

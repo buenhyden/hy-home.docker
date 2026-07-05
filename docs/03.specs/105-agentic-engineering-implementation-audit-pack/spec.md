@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md -->
@@ -12,9 +12,9 @@ This document defines the design contract for a Stage 90 reference-audit pack
 that assesses how much of the researched agentic engineering model is currently
 implemented in `hy-home.docker`.
 
-The audit pack will use `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` as
+The audit pack uses `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` as
 its criteria source and repo-local evidence as its implementation source. It
-will not change active policy, runtime provider configuration, CI/CD behavior,
+did not change active policy, runtime provider configuration, CI/CD behavior,
 or scripts.
 
 ## Strategic Boundaries & Non-goals

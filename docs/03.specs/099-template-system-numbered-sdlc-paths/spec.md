@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md -->

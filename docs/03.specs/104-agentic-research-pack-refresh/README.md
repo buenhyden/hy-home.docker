@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/104-agentic-research-pack-refresh/README.md -->
@@ -30,9 +30,9 @@ This README is for:
 
 ## Status
 
-This specification is an active design contract for the approved research-pack
-refresh approach: update the existing pack first, then add targeted documents if
-needed.
+This specification is a completed design contract for the approved
+research-pack refresh approach: update the existing pack first, then add
+targeted documents if needed.
 
 ## Scope
 
