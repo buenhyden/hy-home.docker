@@ -455,8 +455,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/check-repo-contracts.sh": {
-    "mtime": 1783243273.1047525,
-    "ast_hash": "c848d018d32c35fc35a682d3c7fb39fd",
+    "mtime": 1783244399.8381176,
+    "ast_hash": "d2a8b3f45185ea3ce476289c1bfda225",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/check-storybook-contract.sh": {
@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1783243367.494125,
-    "ast_hash": "146069d44d878d15a586a57284dfce9a",
+    "mtime": 1783244436.8212326,
+    "ast_hash": "ae01883fccf7e79501bc9fadbd17c83e",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -1315,8 +1315,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/03.specs/README.md": {
-    "mtime": 1783243138.6746578,
-    "ast_hash": "ea149edca53fe60a07779c70f22abcd7",
+    "mtime": 1783244337.0234103,
+    "ast_hash": "f9af8d444f1d54edaed9aa47c8d1983e",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/README.md": {
@@ -1645,8 +1645,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/plans/README.md": {
-    "mtime": 1783243334.3952537,
-    "ast_hash": "6a8cfcd3865f615a70b4efb6cbd25150",
+    "mtime": 1783244337.1718826,
+    "ast_hash": "1946349da3d3fa15dc4d077353ac9937",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md": {
@@ -2095,8 +2095,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/README.md": {
-    "mtime": 1783243334.557821,
-    "ast_hash": "9177691ce6bca5ee6ea208e086a69d18",
+    "mtime": 1783244337.320355,
+    "ast_hash": "0cf8cf9388d30127792b695cd6abe3d1",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/README.md": {
@@ -3390,8 +3390,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/README.md": {
-    "mtime": 1783220824.1812725,
-    "ast_hash": "0d04aae8069995d81fb7bd0c92d98219",
+    "mtime": 1783244357.1572545,
+    "ast_hash": "6944bcb45a47cadb951a1c56ef0a6882",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/README.md": {
@@ -3400,13 +3400,13 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/README.md": {
-    "mtime": 1783220707.2837992,
-    "ast_hash": "731bce6763666ec2c78e50eef4890b9c",
+    "mtime": 1783244357.0159574,
+    "ast_hash": "8b12be3c43d696504f7781e6dae21baf",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/docker/README.md": {
-    "mtime": 1783220707.2842677,
-    "ast_hash": "b606c2419edd13d7721f1d63c6263cb9",
+    "mtime": 1783244356.866586,
+    "ast_hash": "97a46aefa8b96e7516168ebf3f73e19d",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/docker/image-version-interpretation.md": {
@@ -3465,8 +3465,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/llm-wiki/llm-wiki-index.md": {
-    "mtime": 1783243372.7843437,
-    "ast_hash": "250996dc9523ae5cdcd046a373028e2d",
+    "mtime": 1783244479.328269,
+    "ast_hash": "b3702265c7f7e5b56966d20ad3365771",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/llm-wiki/repository-map.md": {
@@ -4570,8 +4570,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/README.md": {
-    "mtime": 1783225815.9087627,
-    "ast_hash": "ed7bf1fdfecafc007b53bf4d47f57bcf",
+    "mtime": 1783244373.199792,
+    "ast_hash": "6f7c450b28546e955af9b001fba39186",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/requirements.txt": {
@@ -5170,8 +5170,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md": {
-    "mtime": 1783243345.581488,
-    "ast_hash": "a75950e33e9cb7c52b4c62cbf543f1c2",
+    "mtime": 1783244411.9840856,
+    "ast_hash": "60f3079c9c58b7fd86507f35e269514a",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md": {
@@ -5270,8 +5270,38 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md": {
-    "mtime": 1783243334.0701194,
-    "ast_hash": "a5ab7132246a2ed769e03235911be02c",
+    "mtime": 1783243507.4460766,
+    "ast_hash": "783a554d045fb898f8698038e4564398",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/scripts/operations/generate-compose-profile-service-coverage.sh": {
+    "mtime": 1783243818.3216634,
+    "ast_hash": "2159d1a6cc7b60282974bc5ae2f9a53a",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/03.specs/108-compose-profile-service-coverage-snapshot/README.md": {
+    "mtime": 1783244313.9623241,
+    "ast_hash": "716daab74b21e6b8498732b8327d3ff0",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md": {
+    "mtime": 1783244314.1808398,
+    "ast_hash": "60481ebd666919e29a05d09e80322a4a",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md": {
+    "mtime": 1783244314.321314,
+    "ast_hash": "e5bd009f07ca98f2e5f67bd9a34cb9fc",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md": {
+    "mtime": 1783244314.4656906,
+    "ast_hash": "6a882c44a82bd7b8f0e6bace38564558",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/90.references/data/docker/compose-profile-service-coverage.md": {
+    "mtime": 1783243929.7927897,
+    "ast_hash": "1d7d43d6b2d472663baf9b7bfceebbda",
     "semantic_hash": ""
   }
 }

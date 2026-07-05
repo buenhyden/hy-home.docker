@@ -9,7 +9,7 @@ status: active
 
 ## Overview
 
-`docs/90.references/research`는 active stage 문서를 보조하는 조사형 reference를 관리합니다. 이 폴더의 문서는 외부 표준, 공식 제품 문서, 논문, repo-local canonical 파일을 함께 읽고 느리게 변하는 분석 기준을 제공합니다.
+`docs/90.references/research`는 active stage 문서를 보조하는 조사형 reference를 관리합니다. 이 폴더의 문서는 외부 표준, 공식 제품 문서, 논문, 공식 repository, repo-local canonical 파일을 함께 읽고 느리게 변하는 분석 기준을 제공합니다.
 
 이 category는 정책, 실행 계획, 운영 runbook, task evidence를 대체하지 않습니다. 현재 정책은 `docs/00.agent-governance/`와 `docs/05.operations/policies/`, 실행 계획과 evidence는 `docs/04.execution/`, runtime truth는 `infra/`, `scripts/`, provider runtime surface가 담당합니다.
 
@@ -53,7 +53,7 @@ research/
 
 ## Current References
 
-- [2026-07-05-agentic-research-pack-refresh/README.md](./2026-07-05-agentic-research-pack-refresh/README.md) - 하네스/루프/agent-first engineering research pack index, including targeted Docker Compose/infrastructure, security governance, and automation/pipeline/workflow references
+- [2026-07-05-agentic-research-pack-refresh/README.md](./2026-07-05-agentic-research-pack-refresh/README.md) - 하네스/루프/agent-first engineering research pack index, including targeted Docker Compose/infrastructure, security governance, automation/pipeline/workflow, and AI agent catalog references
 
 ## Naming Rules
 

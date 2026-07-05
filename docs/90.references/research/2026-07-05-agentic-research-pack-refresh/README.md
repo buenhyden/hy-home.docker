@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md -->
 
 # Agentic Engineering Research Pack
@@ -38,6 +39,7 @@ status: active
 - Docker Compose, infrastructure harness, security governance, automation, pipeline, workflow 분석
 - Claude, Codex, Gemini provider 구현 비교
 - 공통 provider-neutral 환경과 규칙을 만들기 위한 요소 정리
+- 외부 AI agent catalog 패턴과 repo-local agent catalog 비교 분석
 
 ### Out of Scope
 
@@ -59,7 +61,8 @@ status: active
 ├── provider-implementation-comparison.md # Claude, Codex, Gemini comparison
 ├── docker-compose-infrastructure.md      # Docker Compose and infrastructure harness analysis
 ├── security-governance.md                # Secure SDLC and security governance analysis
-└── automation-pipeline-workflow.md       # Automation, pipeline, and workflow analysis
+├── automation-pipeline-workflow.md       # Automation, pipeline, and workflow analysis
+└── ai-agent-catalogs.md                  # External agent catalog vs curated catalog analysis
 ```
 
 ## Current References
@@ -73,6 +76,7 @@ status: active
 - [docker-compose-infrastructure.md](./docker-compose-infrastructure.md) - Docker Compose, infrastructure harness, profiles, networks, secrets, validation, hardening 분석
 - [security-governance.md](./security-governance.md) - secure SDLC reference frameworks, workflow security, secret boundaries, approval evidence 분석
 - [automation-pipeline-workflow.md](./automation-pipeline-workflow.md) - automation, pipeline, workflow loop, provider hook, local/remote action boundary 분석
+- [ai-agent-catalogs.md](./ai-agent-catalogs.md) - agency-agents 같은 외부 agent catalog 패턴과 repo-local curated catalog, import 경계 분석
 
 ## Reading Order
 
@@ -81,6 +85,7 @@ status: active
 3. [spec-driven-sdlc.md](./spec-driven-sdlc.md)와 [quality-ci-formatting.md](./quality-ci-formatting.md)에서 stage-gate와 검증 루프를 비교합니다.
 4. [docker-compose-infrastructure.md](./docker-compose-infrastructure.md), [security-governance.md](./security-governance.md), [automation-pipeline-workflow.md](./automation-pipeline-workflow.md)에서 targeted reference를 확인합니다.
 5. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인합니다.
+6. [ai-agent-catalogs.md](./ai-agent-catalogs.md)에서 외부 agent catalog와 repo-local catalog의 import 경계를 확인합니다.
 
 ## How to Work in This Area
 

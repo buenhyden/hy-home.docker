@@ -41,6 +41,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 ## Agents
 
 - [workflow-supervisor](./agents/workflow-supervisor.md)
+- [ci-cd-engineer](./agents/ci-cd-engineer.md)
 - [code-reviewer](./agents/code-reviewer.md)
 - [doc-writer](./agents/doc-writer.md)
 - [drift-detector](./agents/drift-detector.md)
