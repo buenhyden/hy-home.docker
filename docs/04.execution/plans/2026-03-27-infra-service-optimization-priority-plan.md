@@ -108,6 +108,23 @@ parent plan for historical 2026-03 optimization and hardening child plans.
 | 2026 Q2 (2026-04-01 ~ 2026-06-30) | Codify operations criteria (Compose lint/gate), regularize backup/recovery rehearsals, and strengthen SLO/Alert alignment | Compose policy gate draft, recovery rehearsal calendar, SLO/Alert alignment report | Tier A core services meet 100% of the operations baseline |
 | 2026 Q3 (2026-07-01 ~ 2026-09-30) | Optimize scalability/performance for messaging, data, and AI; add policy auto-validation CI; improve security hardening | Performance optimization backlog completion report, policy validation CI pipeline, security hardening checklist | Quarterly performance regression and incident recovery lead-time targets are met |
 
+## Roadmap Status Review (2026-07-05)
+
+This review preserves the plan as an active roadmap while separating completed
+Quick Win baseline work from unclosed quarterly roadmap work.
+
+| Item | Current Evidence | Disposition |
+| --- | --- | --- |
+| `PLN-QW-001` ~ `PLN-QW-005` | `infra-service-optimization-catalog.md` records 2026-03-28 Quick Win enforcement with `0` missing `restart`, `healthcheck`, `no-new-privileges`, `cpus`/`mem_limit`, and `secrets` after approved exceptions. | Implemented baseline; keep `check-quickwin-baseline.sh` as a regression gate. |
+| `PLN-QW-006` | Archive tombstones and `docs/98.archive/README.md` track Airbyte guide/policy/runbook removal from the active `07-workflow` chain because no implementation exists under `infra/07-workflow/airbyte`. | Implemented active-chain cleanup; future workflow services need implementation evidence before returning to active operations docs. |
+| `PLN-QW-007` | `check-doc-traceability.sh` is a required local/CI gate and later task evidence records `failures=0` after operations purpose and archive cleanup. | Enforced as a standing traceability gate. |
+| 2026 Q2 roadmap | Quick Win and traceability baselines exist, but no later task record proves the recovery rehearsal calendar, SLO/Alert alignment report, and full Tier A operations-baseline closure as a single completed quarterly deliverable set. | Carry forward as unclosed roadmap work. The 2026 Q2 calendar window has elapsed, but completion is not inferred from elapsed time. |
+| 2026 Q3 roadmap | Q3 began on 2026-07-01. No later task record proves completion of the performance backlog report, policy validation CI pipeline, or security hardening checklist for the Q3 roadmap. | Remains planned work under this active umbrella until implemented, superseded, or explicitly retired. |
+
+Completion of this active umbrella plan requires a later task or replacement
+roadmap that links the Q2/Q3 deliverables above to validation evidence. Checked
+plan-authoring criteria are not sufficient to close the roadmap.
+
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |

@@ -478,6 +478,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This batch changed plan/index/progress documentation only and did not modify runtime infrastructure, validators, CI workflows, provider runtime, secret material, `.env`, or archive tombstones. |
 | Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
 
+## Infra Optimization Roadmap Carry-Forward Review (2026-07-05)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| Quick Win baseline | `PLN-QW-001`~`PLN-QW-007` | ✅ Clarified | Recorded the current evidence split in the active umbrella plan: Quick Win baseline enforcement, workflow active-chain cleanup, and traceability gate enforcement have closure evidence. |
+| Quarterly roadmap | 2026 Q2/Q3 infra optimization work | ⚠️ Carry-forward | Kept the plan `active` because Q2 elapsed without a later task proving the recovery rehearsal calendar, SLO/Alert alignment report, full Tier A operations-baseline closure, or Q3 performance/policy/hardening deliverables. |
+| Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets | ✅ Preserved | This review changed plan/progress documentation only and did not modify runtime infrastructure, validators, CI workflows, provider runtime, secret material, `.env`, or archive tombstones. |
+| Validation | Local documentation contracts | ✅ Pass | `git diff --check`, LLM Wiki freshness, provider surface check, doc traceability, doc implementation alignment, and full repo contracts pass with `failures=0`. |
+
 ## Stage 03 Active Workstream Spec Boundary (2026-07-04)
 
 | Item | Area | Status | Notes |
