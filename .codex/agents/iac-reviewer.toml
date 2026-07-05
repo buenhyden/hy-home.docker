@@ -1,6 +1,6 @@
 name = "iac-reviewer"
-layer = "agentic"
+layer = "infra"
 model = "gpt-5.4-mini"
 model_reasoning_effort = "medium"
 source_catalog = "docs/00.agent-governance/agents/agents/iac-reviewer.md"
-scope = "docs/00.agent-governance/scopes/agentic.md"
+scope = "docs/00.agent-governance/scopes/infra.md"

@@ -83,6 +83,7 @@ docs/04.execution/plans/
 ├── 2026-07-05-agentic-engineering-implementation-audit-pack.md # Completed Stage 90 agentic engineering implementation audit pack plan
 ├── 2026-07-05-agentic-research-pack-refresh.md # Completed Stage 90 agentic research pack refresh plan
 ├── 2026-07-05-provider-workspace-artifact-path-parity.md # Completed provider `_workspace/repo-support` parity plan
+├── 2026-07-05-provider-semantic-parity-validator.md # Completed provider semantic parity validator plan
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration plan
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract plan
 └── README.md                               # This file
@@ -171,6 +172,7 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Agentic Research Pack Refresh Plan**: [2026-07-05-agentic-research-pack-refresh.md](./2026-07-05-agentic-research-pack-refresh.md)
 - **Agentic Engineering Implementation Audit Pack Plan**: [2026-07-05-agentic-engineering-implementation-audit-pack.md](./2026-07-05-agentic-engineering-implementation-audit-pack.md)
 - **Provider Workspace Artifact Path Parity Plan**: [2026-07-05-provider-workspace-artifact-path-parity.md](./2026-07-05-provider-workspace-artifact-path-parity.md)
+- **Provider Semantic Parity Validator Plan**: [2026-07-05-provider-semantic-parity-validator.md](./2026-07-05-provider-semantic-parity-validator.md)
 - **Workspace Support Surface Contract Plan**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
 - **Template System Numbered SDLC Paths Plan**: [2026-07-05-template-system-numbered-sdlc-paths.md](./2026-07-05-template-system-numbered-sdlc-paths.md)
 - **Workspace Document Contract Audit Pack Plan**: [2026-07-03-workspace-document-contract-audit-pack.md](./2026-07-03-workspace-document-contract-audit-pack.md)

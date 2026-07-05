@@ -1,16 +1,16 @@
-# Graph Report - hy-home.docker  (2026-07-04)
+# Graph Report - hy-home.docker  (2026-07-05)
 
 ## Corpus Check
-- 920 files · ~801,891 words
+- 954 files · ~866,971 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 17718 nodes · 18760 edges · 1214 communities (1136 shown, 78 thin omitted)
+- 19896 nodes · 20990 edges · 1347 communities (1269 shown, 78 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c1c465c9`
+- Built from commit: `2db77438`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1228,17 +1228,150 @@
 - [[_COMMUNITY_Community 1211|Community 1211]]
 - [[_COMMUNITY_Community 1212|Community 1212]]
 - [[_COMMUNITY_Community 1213|Community 1213]]
+- [[_COMMUNITY_Community 1214|Community 1214]]
+- [[_COMMUNITY_Community 1215|Community 1215]]
+- [[_COMMUNITY_Community 1216|Community 1216]]
+- [[_COMMUNITY_Community 1217|Community 1217]]
+- [[_COMMUNITY_Community 1218|Community 1218]]
+- [[_COMMUNITY_Community 1219|Community 1219]]
+- [[_COMMUNITY_Community 1220|Community 1220]]
+- [[_COMMUNITY_Community 1221|Community 1221]]
+- [[_COMMUNITY_Community 1222|Community 1222]]
+- [[_COMMUNITY_Community 1223|Community 1223]]
+- [[_COMMUNITY_Community 1224|Community 1224]]
+- [[_COMMUNITY_Community 1225|Community 1225]]
+- [[_COMMUNITY_Community 1226|Community 1226]]
+- [[_COMMUNITY_Community 1227|Community 1227]]
+- [[_COMMUNITY_Community 1228|Community 1228]]
+- [[_COMMUNITY_Community 1229|Community 1229]]
+- [[_COMMUNITY_Community 1230|Community 1230]]
+- [[_COMMUNITY_Community 1231|Community 1231]]
+- [[_COMMUNITY_Community 1232|Community 1232]]
+- [[_COMMUNITY_Community 1233|Community 1233]]
+- [[_COMMUNITY_Community 1234|Community 1234]]
+- [[_COMMUNITY_Community 1235|Community 1235]]
+- [[_COMMUNITY_Community 1236|Community 1236]]
+- [[_COMMUNITY_Community 1237|Community 1237]]
+- [[_COMMUNITY_Community 1238|Community 1238]]
+- [[_COMMUNITY_Community 1239|Community 1239]]
+- [[_COMMUNITY_Community 1240|Community 1240]]
+- [[_COMMUNITY_Community 1241|Community 1241]]
+- [[_COMMUNITY_Community 1242|Community 1242]]
+- [[_COMMUNITY_Community 1243|Community 1243]]
+- [[_COMMUNITY_Community 1244|Community 1244]]
+- [[_COMMUNITY_Community 1245|Community 1245]]
+- [[_COMMUNITY_Community 1246|Community 1246]]
+- [[_COMMUNITY_Community 1247|Community 1247]]
+- [[_COMMUNITY_Community 1248|Community 1248]]
+- [[_COMMUNITY_Community 1249|Community 1249]]
+- [[_COMMUNITY_Community 1250|Community 1250]]
+- [[_COMMUNITY_Community 1251|Community 1251]]
+- [[_COMMUNITY_Community 1252|Community 1252]]
+- [[_COMMUNITY_Community 1253|Community 1253]]
+- [[_COMMUNITY_Community 1254|Community 1254]]
+- [[_COMMUNITY_Community 1255|Community 1255]]
+- [[_COMMUNITY_Community 1256|Community 1256]]
+- [[_COMMUNITY_Community 1257|Community 1257]]
+- [[_COMMUNITY_Community 1258|Community 1258]]
+- [[_COMMUNITY_Community 1259|Community 1259]]
+- [[_COMMUNITY_Community 1260|Community 1260]]
+- [[_COMMUNITY_Community 1261|Community 1261]]
+- [[_COMMUNITY_Community 1262|Community 1262]]
+- [[_COMMUNITY_Community 1263|Community 1263]]
+- [[_COMMUNITY_Community 1264|Community 1264]]
+- [[_COMMUNITY_Community 1265|Community 1265]]
+- [[_COMMUNITY_Community 1266|Community 1266]]
+- [[_COMMUNITY_Community 1267|Community 1267]]
+- [[_COMMUNITY_Community 1268|Community 1268]]
+- [[_COMMUNITY_Community 1269|Community 1269]]
+- [[_COMMUNITY_Community 1270|Community 1270]]
+- [[_COMMUNITY_Community 1271|Community 1271]]
+- [[_COMMUNITY_Community 1272|Community 1272]]
+- [[_COMMUNITY_Community 1273|Community 1273]]
+- [[_COMMUNITY_Community 1274|Community 1274]]
+- [[_COMMUNITY_Community 1275|Community 1275]]
+- [[_COMMUNITY_Community 1276|Community 1276]]
+- [[_COMMUNITY_Community 1277|Community 1277]]
+- [[_COMMUNITY_Community 1278|Community 1278]]
+- [[_COMMUNITY_Community 1279|Community 1279]]
+- [[_COMMUNITY_Community 1280|Community 1280]]
+- [[_COMMUNITY_Community 1281|Community 1281]]
+- [[_COMMUNITY_Community 1282|Community 1282]]
+- [[_COMMUNITY_Community 1283|Community 1283]]
+- [[_COMMUNITY_Community 1284|Community 1284]]
+- [[_COMMUNITY_Community 1285|Community 1285]]
+- [[_COMMUNITY_Community 1286|Community 1286]]
+- [[_COMMUNITY_Community 1287|Community 1287]]
+- [[_COMMUNITY_Community 1288|Community 1288]]
+- [[_COMMUNITY_Community 1289|Community 1289]]
+- [[_COMMUNITY_Community 1290|Community 1290]]
+- [[_COMMUNITY_Community 1291|Community 1291]]
+- [[_COMMUNITY_Community 1292|Community 1292]]
+- [[_COMMUNITY_Community 1293|Community 1293]]
+- [[_COMMUNITY_Community 1294|Community 1294]]
+- [[_COMMUNITY_Community 1295|Community 1295]]
+- [[_COMMUNITY_Community 1296|Community 1296]]
+- [[_COMMUNITY_Community 1297|Community 1297]]
+- [[_COMMUNITY_Community 1298|Community 1298]]
+- [[_COMMUNITY_Community 1299|Community 1299]]
+- [[_COMMUNITY_Community 1300|Community 1300]]
+- [[_COMMUNITY_Community 1301|Community 1301]]
+- [[_COMMUNITY_Community 1302|Community 1302]]
+- [[_COMMUNITY_Community 1303|Community 1303]]
+- [[_COMMUNITY_Community 1304|Community 1304]]
+- [[_COMMUNITY_Community 1305|Community 1305]]
+- [[_COMMUNITY_Community 1306|Community 1306]]
+- [[_COMMUNITY_Community 1307|Community 1307]]
+- [[_COMMUNITY_Community 1308|Community 1308]]
+- [[_COMMUNITY_Community 1309|Community 1309]]
+- [[_COMMUNITY_Community 1310|Community 1310]]
+- [[_COMMUNITY_Community 1311|Community 1311]]
+- [[_COMMUNITY_Community 1312|Community 1312]]
+- [[_COMMUNITY_Community 1313|Community 1313]]
+- [[_COMMUNITY_Community 1314|Community 1314]]
+- [[_COMMUNITY_Community 1315|Community 1315]]
+- [[_COMMUNITY_Community 1316|Community 1316]]
+- [[_COMMUNITY_Community 1317|Community 1317]]
+- [[_COMMUNITY_Community 1318|Community 1318]]
+- [[_COMMUNITY_Community 1319|Community 1319]]
+- [[_COMMUNITY_Community 1320|Community 1320]]
+- [[_COMMUNITY_Community 1321|Community 1321]]
+- [[_COMMUNITY_Community 1322|Community 1322]]
+- [[_COMMUNITY_Community 1323|Community 1323]]
+- [[_COMMUNITY_Community 1324|Community 1324]]
+- [[_COMMUNITY_Community 1325|Community 1325]]
+- [[_COMMUNITY_Community 1326|Community 1326]]
+- [[_COMMUNITY_Community 1327|Community 1327]]
+- [[_COMMUNITY_Community 1328|Community 1328]]
+- [[_COMMUNITY_Community 1329|Community 1329]]
+- [[_COMMUNITY_Community 1330|Community 1330]]
+- [[_COMMUNITY_Community 1331|Community 1331]]
+- [[_COMMUNITY_Community 1332|Community 1332]]
+- [[_COMMUNITY_Community 1333|Community 1333]]
+- [[_COMMUNITY_Community 1334|Community 1334]]
+- [[_COMMUNITY_Community 1335|Community 1335]]
+- [[_COMMUNITY_Community 1336|Community 1336]]
+- [[_COMMUNITY_Community 1337|Community 1337]]
+- [[_COMMUNITY_Community 1338|Community 1338]]
+- [[_COMMUNITY_Community 1339|Community 1339]]
+- [[_COMMUNITY_Community 1340|Community 1340]]
+- [[_COMMUNITY_Community 1341|Community 1341]]
+- [[_COMMUNITY_Community 1342|Community 1342]]
+- [[_COMMUNITY_Community 1343|Community 1343]]
+- [[_COMMUNITY_Community 1344|Community 1344]]
+- [[_COMMUNITY_Community 1345|Community 1345]]
+- [[_COMMUNITY_Community 1346|Community 1346]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `Prometheus Production Scrape And Alerting Config` - 50 edges
-2. `Task: Home Docker Workspace Audit and Improvement` - 43 edges
-3. `Prometheus Development Scrape And Alerting Config` - 43 edges
-4. `{Folder or Project Name}` - 32 edges
-5. `{Folder or Project Name}` - 31 edges
-6. `Reference: CS, CE & SE Self-Learning Roadmap (v2)` - 25 edges
-7. `Secret Exposure Escalation` - 25 edges
-8. `Operations Template` - 23 edges
-9. `Infra / Secrets / Docs Refresh Specification` - 22 edges
+1. `Agent Progress Log` - 55 edges
+2. `Prometheus Production Scrape And Alerting Config` - 50 edges
+3. `Task: Home Docker Workspace Audit and Improvement` - 43 edges
+4. `Prometheus Development Scrape And Alerting Config` - 43 edges
+5. `{Folder or Project Name}` - 32 edges
+6. `{Folder or Project Name}` - 31 edges
+7. `Reference: CS, CE & SE Self-Learning Roadmap (v2)` - 25 edges
+8. `Secret Exposure Escalation` - 25 edges
+9. `Operations Template` - 23 edges
 10. `Task: Home Docker Revalidation Deferred Follow-up` - 22 edges
 
 ## Surprising Connections (you probably didn't know these)
@@ -1261,7 +1394,7 @@
 - **Workspace Audit Revalidation Skill Catalog Sync** — workspace_audit_revalidation_bounded_revalidation_workflow, workspace_audit_revalidation_runtime_skill, readme_agent_and_function_catalog, readme_runtime_skill_mirror, progress_workspace_audit_revalidation_skill_creation [EXTRACTED 1.00]
 - **Advisory Graph Boundary** — index_llm_wiki_generated_index, index_tracked_source_boundary, index_runtime_truth, index_advisory_graph_context, progress_graphify_health_advisory, 2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence [EXTRACTED 1.00]
 
-## Communities (1214 total, 78 thin omitted)
+## Communities (1347 total, 78 thin omitted)
 
 ### Community 0 - "Prometheus Alert Rule Group"
 Cohesion: 0.10
@@ -1368,12 +1501,12 @@ Cohesion: 0.22
 Nodes (11): OpenSearch Security Action Groups Defaults, OpenSearch Security Basic Internal Auth Domain, OpenSearch Security OpenID Auth Domain, Keycloak PostgreSQL Identity Database, Keycloak Compose Service, Keycloak Traefik Router, OpenSearch Dashboards Compose Service, OpenSearch Single Node Compose Service (+3 more)
 
 ### Community 26 - "Community 26"
-Cohesion: 0.17
-Nodes (12): ADR-0006 LGTM Stack Alloy, Grafana Alloy, Grafana LGTM Stack, MinIO S3 Backend, Kafka UI Pinned Image, Messaging Hardening Gate, Messaging Optimization Hardening PRD, Loki Tempo Runtime Hardening (+4 more)
+Cohesion: 0.13
+Nodes (16): ADR-0005 Polyglot Messaging, Apache Kafka Event Backbone, Kafka KRaft Mode, RabbitMQ Task Queue, ADR-0006 LGTM Stack Alloy, Grafana Alloy, Grafana LGTM Stack, MinIO S3 Backend (+8 more)
 
 ### Community 27 - "Tooling Adr Laboratory Locust"
-Cohesion: 0.29
-Nodes (8): ADR-20260401 Standardize infra_net Subnet, Explicit infra_net Service Membership, infra_net 172.19.0.0/16 Subnet, Preserve k3d-hyhome Network Membership, Dictionary-Based infra_net Configuration, ADR-2026-04-01 Standardized Dictionary-Based Network Infrastructure, Service IP Groups, Static ipv4_address Assignment
+Cohesion: 0.22
+Nodes (10): ADR-0024 Tooling Hardening and HA Expansion Strategy, Tooling infra_net External Boundary, ADR-20260401 Standardize infra_net Subnet, Explicit infra_net Service Membership, infra_net 172.19.0.0/16 Subnet, Preserve k3d-hyhome Network Membership, Dictionary-Based infra_net Configuration, ADR-2026-04-01 Standardized Dictionary-Based Network Infrastructure (+2 more)
 
 ### Community 28 - "Open Notebook Dashboard Dozzle"
 Cohesion: 0.09
@@ -1637,7 +1770,7 @@ Nodes (42): Bounded Revalidation Reflection Matrix, Brainstorming Design Alterna
 
 ### Community 127 - "Community 127"
 Cohesion: 0.06
-Nodes (38): 1. Initial Login, 2. Organizations and Workspaces, Common Checks, Common Pitfalls, Common Pitfalls, Executor Model, Executor Timeout, Feature Breakdown (+30 more)
+Nodes (39): 1. Initial Login, 2. Organizations and Workspaces, Common Checks, Common Pitfalls, Common Pitfalls, Executor Model, Executor Timeout, Feature Breakdown (+31 more)
 
 ### Community 128 - "Community 128"
 Cohesion: 0.06
@@ -1660,12 +1793,12 @@ Cohesion: 0.11
 Nodes (30): annotations, list, description, editable, __elements, fiscalYearStartMonth, gnetId, graphTooltip (+22 more)
 
 ### Community 133 - "Community 133"
-Cohesion: 0.07
-Nodes (31): Architecture, Authentication & Authorization, Common Checks, Common Pitfalls, Common Pitfalls, Dashboards Catalog, Grafana Operational Policy (06-observability) Usage Guide, Grafana System Usage (06-observability) (+23 more)
+Cohesion: 0.08
+Nodes (32): Architecture, Authentication & Authorization, Common Checks, Common Pitfalls, Common Pitfalls, Dashboards Catalog, Grafana Operational Policy (06-observability) Usage Guide, Grafana System Usage (06-observability) (+24 more)
 
 ### Community 134 - "Community 134"
 Cohesion: 0.07
-Nodes (32): 1. Scrape Configurations, 2. Alerting Rule System, 3. Storage (TSDB), Alertmanager Integration, Architecture, Common Checks, Common Pitfalls, Common Pitfalls (+24 more)
+Nodes (33): 1. Scrape Configurations, 2. Alerting Rule System, 3. Storage (TSDB), Alertmanager Integration, Architecture, Common Checks, Common Pitfalls, Common Pitfalls (+25 more)
 
 ### Community 135 - "Community 135"
 Cohesion: 0.06
@@ -1684,28 +1817,28 @@ Cohesion: 0.08
 Nodes (31): English, Korean, Overview, Overview (KR), Purpose, Related Documents, Target Audience, 1. Master Server Recovery (+23 more)
 
 ### Community 139 - "Community 139"
-Cohesion: 0.07
-Nodes (28): 1. Broken Trace Ingestion (트레이스 누락), 2. Backend Storage Connection (MinIO 오류), 3. WAL Corruption (쓰기 버퍼 손상), 4. Metrics Generator Failure, Agent Operations (If Applicable), Canonical References, Checklist, Emergency Full Restart (+20 more)
+Cohesion: 0.08
+Nodes (30): 1. Broken Trace Ingestion (트레이스 누락), 2. Backend Storage Connection (MinIO 오류), 3. WAL Corruption (쓰기 버퍼 손상), 4. Metrics Generator Failure, Agent Operations (If Applicable), Canonical References, Checklist, Emergency Full Restart (+22 more)
 
 ### Community 140 - "Community 140"
-Cohesion: 0.07
-Nodes (29): 1. Access and Authentication, 2. Creating a New Project, 3. Running a Local Scan, Architecture Context, Common Checks, Common Pitfalls, Common Pitfalls, elasticsearch.max_map_count (+21 more)
+Cohesion: 0.06
+Nodes (30): 1. Access and Authentication, 2. Creating a New Project, 3. Running a Local Scan, Architecture Context, Common Checks, Common Pitfalls, Common Pitfalls, elasticsearch.max_map_count (+22 more)
 
 ### Community 141 - "Community 141"
 Cohesion: 0.12
 Nodes (27): annotations, list, description, editable, gnetId, graphTooltip, id, iteration (+19 more)
 
 ### Community 142 - "Community 142"
-Cohesion: 0.07
-Nodes (27): 1. Service Restoration, 2. Pipeline Debugging (Alloy UI), 3. Memory Exhaustion Mitigation, 4. OTLP Connectivity Fix, Agent Operations (If Applicable), Alloy Recovery Procedure, Alloy Runbook, Canonical References (+19 more)
+Cohesion: 0.09
+Nodes (29): 1. Service Restoration, 2. Pipeline Debugging (Alloy UI), 3. Memory Exhaustion Mitigation, 4. OTLP Connectivity Fix, Agent Operations (If Applicable), Alloy Readiness and Pipeline Recovery Procedure, Alloy Readiness and Pipeline Recovery Runbook, Alloy Recovery Procedure (+21 more)
 
 ### Community 143 - "Community 143"
-Cohesion: 0.07
-Nodes (27): 1. Service Health Check, 2. Check S3/MinIO Connectivity, 2. Common Scenarios, 3. Emergency Maintenance, Agent Operations (If Applicable), Canonical References, Checklist, Escalation (+19 more)
+Cohesion: 0.09
+Nodes (29): 1. Service Health Check, 2. Check S3/MinIO Connectivity, 2. Common Scenarios, 3. Emergency Maintenance, Agent Operations (If Applicable), Canonical References, Checklist, Escalation (+21 more)
 
 ### Community 144 - "Community 144"
-Cohesion: 0.07
-Nodes (27): 1. Ingestion Gaps (데이터 수집 중단), 2. Disk Space Pressure (저장소 부족), 3. High CPU Usage (수집 부하), Agent Operations (If Applicable), Canonical References, Checklist, Configuration Rollback, Emergency Restart (+19 more)
+Cohesion: 0.09
+Nodes (29): 1. Ingestion Gaps (데이터 수집 중단), 2. Disk Space Pressure (저장소 부족), 3. High CPU Usage (수집 부하), Agent Operations (If Applicable), Canonical References, Checklist, Configuration Rollback, Emergency Restart (+21 more)
 
 ### Community 145 - "Community 145"
 Cohesion: 0.07
@@ -1732,8 +1865,8 @@ Cohesion: 0.09
 Nodes (27): 1. Cluster Execution, 2. Work Breakdown, 3. Schema Registry Integration, 4. Data Pipeline with Connect, Common Checks, Common Pitfalls, Common Pitfalls, Implementation Snippet (+19 more)
 
 ### Community 151 - "Community 151"
-Cohesion: 0.07
-Nodes (26): Agent Operations (If Applicable), Canonical References, Checklist, Dashboard Provisioning Issues, Datasource Connection Issues, Escalation, Evidence, Grafana Recovery Procedure (06-observability) (+18 more)
+Cohesion: 0.09
+Nodes (28): Agent Operations (If Applicable), Canonical References, Checklist, Dashboard Provisioning Issues, Datasource Connection Issues, Escalation, Evidence, Grafana Provisioning and Access Recovery Procedure (+20 more)
 
 ### Community 152 - "Community 152"
 Cohesion: 0.09
@@ -1764,8 +1897,8 @@ Cohesion: 0.08
 Nodes (25): Active stage docs, Agent governance, Definitions / Facts, Generated Index, GitHub workflow surface, In Scope, Infrastructure source, LLM Wiki reference (+17 more)
 
 ### Community 159 - "Community 159"
-Cohesion: 0.08
-Nodes (25): 1. Management, 1. Querying Strategy, 1. Storage Integration, 2. Retention Policy, 2. Troubleshooting, 2. Verification, 3. Contextual Retrieval, AI Agent Guidance (+17 more)
+Cohesion: 0.06
+Nodes (30): 1. Management, 1. Querying Strategy, 1. Storage Integration, 2. Retention Policy, 2. Troubleshooting, 2. Verification, 3. Contextual Retrieval, AI Agent Guidance (+22 more)
 
 ### Community 160 - "Community 160"
 Cohesion: 0.08
@@ -1848,12 +1981,12 @@ Cohesion: 0.06
 Nodes (31): 1. Context & Objective, 2. Requirements & Constraints, 3. Setup & Installation, 4. Usage & Integration, 5. Maintenance & Safety, Constraints, Core Stack Deployment, Data Tier (04-data) (+23 more)
 
 ### Community 180 - "Community 180"
-Cohesion: 0.09
-Nodes (24): 1. Understanding Routing Tree, 2. Configuring Receivers, 3. Applying Silences, Alertmanager Notification Routing Usage (06-observability), Alertmanager Operational Policy (06-observability) Usage Guide, Common Checks, Common Pitfalls, Common Pitfalls (+16 more)
+Cohesion: 0.10
+Nodes (25): 1. Understanding Routing Tree, 2. Configuring Receivers, 3. Applying Silences, Alertmanager Notification Routing Usage (06-observability), Alertmanager Operational Policy (06-observability) Usage Guide, Alertmanager Usage Guide, Common Checks, Common Pitfalls (+17 more)
 
 ### Community 181 - "Community 181"
-Cohesion: 0.08
-Nodes (25): 1. 워크플로우 배포 및 테스트, 2. 자격 증명(Credentials) 관리, 3. 노드 라이브러리 확장, Access and Integration, AI Agent Guidance, Appendix: Links, Architecture and Components, Common Checks (+17 more)
+Cohesion: 0.06
+Nodes (31): 1. Architecture and Components, 1. 워크플로우 배포 및 테스트, 2. Access and Integration, 2. 자격 증명(Credentials) 관리, 3. Workflow Authoring and Activation, 3. 노드 라이브러리 확장, 4. Credential and Secret Boundary, 5. Custom Node Extension (+23 more)
 
 ### Community 182 - "Community 182"
 Cohesion: 0.10
@@ -2044,8 +2177,8 @@ Cohesion: 0.08
 Nodes (23): 1. Broker Quorum Recovery (Single node down), 1. Quorum Failure (KRaft), 2. Partition Rebalancing, 3. Schema Registry Incompatibility, Agent Operations, Agent Operations (If Applicable), Canonical References, Checklist (+15 more)
 
 ### Community 229 - "Community 229"
-Cohesion: 0.08
-Nodes (23): 1. Prometheus Container Crash (OOM/Corruption), 2. Scrape Target Unavailable, 3. Alerting Rule Evaluation Failure, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+15 more)
+Cohesion: 0.10
+Nodes (25): 1. Prometheus Container Crash (OOM/Corruption), 2. Scrape Target Unavailable, 3. Alerting Rule Evaluation Failure, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+17 more)
 
 ### Community 230 - "Community 230"
 Cohesion: 0.08
@@ -2112,8 +2245,8 @@ Cohesion: 0.09
 Nodes (25): 01.Setup Operations, 1. Vault 서비스 실행, 2. Vault 초기화 (Initialization), 3. Vault Unseal 절차, 4. Vault Agent 연동 (선택 사항), Archive Ledger, Archive Metadata, Archive Tombstone: 03-Security Setup Guide (+17 more)
 
 ### Community 246 - "Community 246"
-Cohesion: 0.09
-Nodes (22): 01.Lgtm Stack Operations, 1. Unified Visualization, 2. Storage Integration (MinIO), Alerting Rule Management, Common Checks, Common Pitfalls, Core Workflows, Dashboard Provisioning (+14 more)
+Cohesion: 0.10
+Nodes (23): 01.Lgtm Stack Operations, 1. Unified Visualization, 2. Storage Integration (MinIO), Alerting Rule Management, Common Checks, Common Pitfalls, Core Workflows, Dashboard Provisioning (+15 more)
 
 ### Community 247 - "Community 247"
 Cohesion: 0.11
@@ -2121,7 +2254,7 @@ Nodes (22): 02.Rag Workflow Operations, 1. 벡터 데이터베이스 연동, 2. 
 
 ### Community 248 - "Community 248"
 Cohesion: 0.08
-Nodes (23): 1. Accessing the GUI, 2. Pairing a New Device, 3. Sharing the Sync Folder, Architecture Context, Common Checks, Common Pitfalls, Connection Failures, How-to Procedures (+15 more)
+Nodes (24): 1. Accessing the GUI, 2. Pairing a New Device, 3. Sharing the Sync Folder, Architecture Context, Common Checks, Common Pitfalls, Connection Failures, How-to Procedures (+16 more)
 
 ### Community 249 - "Community 249"
 Cohesion: 0.11
@@ -2144,8 +2277,8 @@ Cohesion: 0.09
 Nodes (22): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable) (+14 more)
 
 ### Community 254 - "Community 254"
-Cohesion: 0.09
-Nodes (22): Automated Tests, Completion Criteria, Context, Documentation Layer, Goal Description, Goals & In-Scope, Implementation Plan - 10-communication Standardization, Infrastructure Layer (+14 more)
+Cohesion: 0.08
+Nodes (24): Automated Tests, Completion Criteria, Context, Documentation Layer, Goal Description, Goals & In-Scope, Implementation Plan - 10-communication Standardization, Infrastructure Layer (+16 more)
 
 ### Community 255 - "Community 255"
 Cohesion: 0.08
@@ -2156,12 +2289,12 @@ Cohesion: 0.08
 Nodes (23): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Applied Rules Summary, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable) (+15 more)
 
 ### Community 257 - "Community 257"
-Cohesion: 0.09
-Nodes (21): 1. Service Restoration, 2. Configuration Validation, 3. Notification Test, Agent Operations (If Applicable), Alertmanager Recovery Procedure (06-observability), Alertmanager Runbook, Canonical References, Checklist (+13 more)
+Cohesion: 0.12
+Nodes (23): 1. Service Restoration, 2. Configuration Validation, 3. Notification Test, Agent Operations (If Applicable), Alertmanager Notification Recovery Procedure, Alertmanager Notification Recovery Runbook, Alertmanager Recovery Procedure (06-observability), Alertmanager Runbook (+15 more)
 
 ### Community 258 - "Community 258"
-Cohesion: 0.09
-Nodes (21): 1. 비정상 메트릭 그룹 삭제, 2. 서비스 재시작 (In-memory 초기화), 3. 연결 테스트, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+13 more)
+Cohesion: 0.12
+Nodes (23): 1. 비정상 메트릭 그룹 삭제, 2. 서비스 재시작 (In-memory 초기화), 3. 연결 테스트, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence (+15 more)
 
 ### Community 259 - "Community 259"
 Cohesion: 0.09
@@ -2224,8 +2357,8 @@ Cohesion: 0.09
 Nodes (24): 1. Simple Stream Creation, 2. Materialized Views, Archive Ledger, Archive Metadata, Archive Tombstone: ksqlDB Streaming Operations, Common Checks, Common Pitfalls, Current Replacement (+16 more)
 
 ### Community 274 - "Community 274"
-Cohesion: 0.10
-Nodes (20): 1. Log Ingestion Flow, 1. Searching Logs in Grafana, 2. Log Analysis (LogQL), 2. Monitoring Loki Health, Common Checks, Common Pitfalls, Core Workflows, Loki Operational Policy Usage Guide (+12 more)
+Cohesion: 0.11
+Nodes (21): 1. Log Ingestion Flow, 1. Searching Logs in Grafana, 2. Log Analysis (LogQL), 2. Monitoring Loki Health, Common Checks, Common Pitfalls, Core Workflows, Loki Operational Policy Usage Guide (+13 more)
 
 ### Community 275 - "Community 275"
 Cohesion: 0.10
@@ -2292,7 +2425,7 @@ Cohesion: 0.10
 Nodes (19): AI Agent Guidance, Audience, Available Scripts, Configuration, Core Files, Docker Healthcheck, How to Work in This Area, In Scope (+11 more)
 
 ### Community 291 - "Community 291"
-Cohesion: 0.10
+Cohesion: 0.11
 Nodes (18): AI Agent Guidance, Allowed Outputs, Audience, Change Impact, Configuration, Environment Variables, Guardrails, How to Work in This Area (+10 more)
 
 ### Community 292 - "Community 292"
@@ -2356,12 +2489,12 @@ Cohesion: 0.11
 Nodes (18): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources, Procedure, RabbitMQ Recovery Procedure (+10 more)
 
 ### Community 307 - "Community 307"
-Cohesion: 0.11
-Nodes (18): 1. Ingestion Protocol Tier, 2. Data Reliability & Performance, 3. Labeling and Taxonomy, Alerting Rules, Alloy Operational Policy Operations Policy, Configuration Governance, Controls, Exceptions (+10 more)
+Cohesion: 0.14
+Nodes (19): 1. Ingestion Protocol Tier, 2. Data Reliability & Performance, 3. Labeling and Taxonomy, Alerting Rules, Alloy Operational Policy Operations Policy, Alloy Operations Policy, Configuration Governance, Controls (+11 more)
 
 ### Community 308 - "Community 308"
-Cohesion: 0.11
-Nodes (18): AI Agent Policy Section (If Applicable), Backup & Persistence, Controls, Dashboard Provisioning, Datasource Management, Exceptions, Grafana Operational Policy (06-observability) Operations Policy, Maintenance Procedures (+10 more)
+Cohesion: 0.14
+Nodes (19): AI Agent Policy Section (If Applicable), Backup & Persistence, Controls, Dashboard Provisioning, Datasource Management, Exceptions, Grafana Operational Policy (06-observability) Operations Policy, Grafana Operations Policy (+11 more)
 
 ### Community 309 - "Community 309"
 Cohesion: 0.11
@@ -2388,8 +2521,8 @@ Cohesion: 0.11
 Nodes (18): 09-Tooling Optimization Hardening Procedure, 09-Tooling Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+10 more)
 
 ### Community 315 - "Community 315"
-Cohesion: 0.11
-Nodes (18): 1. Workspace RBAC, 2. SSO Authentication, Access Control Policy, Controls, Exceptions, Monthly, Operations: Terrakube Policy Operations Policy, Policy Scope (+10 more)
+Cohesion: 0.16
+Nodes (19): 1. Workspace RBAC, 2. SSO Authentication, Access Control Policy, Controls, Exceptions, Monthly, Operations: Terrakube Policy Operations Policy, Policy Scope (+11 more)
 
 ### Community 316 - "Community 316"
 Cohesion: 0.11
@@ -2461,7 +2594,7 @@ Nodes (18): 02-Auth Documentation Standardization Implementation Plan, Automated
 
 ### Community 333 - "Community 333"
 Cohesion: 0.11
-Nodes (17): AI Agent Guidance, Audience, Configuration, How to Work in This Area, In Scope, Operational Status, Out of Scope, Overview (+9 more)
+Nodes (18): AI Agent Guidance, Audience, Configuration, How to Work in This Area, In Scope, Operational Status, Out of Scope, Overview (+10 more)
 
 ### Community 334 - "Community 334"
 Cohesion: 0.11
@@ -2500,8 +2633,8 @@ Cohesion: 0.11
 Nodes (17): 05-Messaging Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+9 more)
 
 ### Community 343 - "Community 343"
-Cohesion: 0.11
-Nodes (17): 1. 메트릭 전송 (Pushing Metrics), 2. 프로메테우스 스크랩 설정, 3. 메트릭 삭제 (Deleting Metrics), Common Checks, Common Pitfalls, Common Pitfalls, Prerequisites, Pushgateway Usage Guide (+9 more)
+Cohesion: 0.09
+Nodes (21): 1. 메트릭 전송 (Pushing Metrics), 1. 서비스 도달성 확인, 2. 메트릭 전송, 2. 프로메테우스 스크랩 설정, 3. Prometheus scrape 연동 확인, 3. 메트릭 삭제 (Deleting Metrics), 4. 메트릭 삭제, Common Checks (+13 more)
 
 ### Community 344 - "Community 344"
 Cohesion: 0.11
@@ -2536,8 +2669,8 @@ Cohesion: 0.11
 Nodes (17): 1. Registry Login (If Auth is Configured), 2. Image Tagging, 3. Image Push, 4. Image Pull, Common Checks, Common Pitfalls, Docker Registry Usage Guide, Prerequisites (+9 more)
 
 ### Community 352 - "Community 352"
-Cohesion: 0.11
-Nodes (17): 1. Remote State Requirement, 2. State Backups, Compliance & Security, Controls, Credential Rotation, Deployment Workflow, Exceptions, Maintenance Cycles (+9 more)
+Cohesion: 0.17
+Nodes (18): 1. Remote State Requirement, 2. State Backups, Compliance & Security, Controls, Credential Rotation, Deployment Workflow, Exceptions, Maintenance Cycles (+10 more)
 
 ### Community 353 - "Community 353"
 Cohesion: 0.11
@@ -2564,8 +2697,8 @@ Cohesion: 0.12
 Nodes (17): Prometheus alert: ArgoAppNotSynced, Prometheus alert: ArgoAppOutOfSync, Prometheus alert: ArgoAppSyncFailed, Prometheus alert: ArgoAppUnhealthy, Prometheus rule group: argocd_alerts, Prometheus rule group: etcd_alerts, Prometheus alert: EtcdHighCommitDuration, Prometheus alert: EtcdHighFsyncDurations (+9 more)
 
 ### Community 359 - "Community 359"
-Cohesion: 0.12
-Nodes (16): AI Agent Guidance, Alertmanager Notification Routing, Audience, Available Scripts, Configuration, Environment Variables, How to Work in This Area, In Scope (+8 more)
+Cohesion: 0.11
+Nodes (17): AI Agent Guidance, Alertmanager Notification Routing, Audience, Available Scripts, Configuration, Docker Secrets, Environment Variables, How to Work in This Area (+9 more)
 
 ### Community 360 - "Community 360"
 Cohesion: 0.12
@@ -2684,8 +2817,8 @@ Cohesion: 0.12
 Nodes (15): AI Agent Guidance, Change Impact, Configuration, Messaging Tier (05-messaging), Service Matrix, Tech Stack, Testing, Audience (+7 more)
 
 ### Community 389 - "Community 389"
-Cohesion: 0.12
-Nodes (16): 1. Understanding the Pipeline, 2. OTLP Ingestion, 3. Pipeline Debugging (Alloy UI), Alloy Operational Policy Usage Guide, Common Checks, Runbook Handoff, Usage, Usage Type (+8 more)
+Cohesion: 0.11
+Nodes (21): 1. Understanding the Pipeline, 2. OTLP Ingestion, 3. Pipeline Debugging (Alloy UI), Alloy Operational Policy Usage Guide, Alloy Usage Guide, Common Checks, Common Pitfalls, Prerequisites (+13 more)
 
 ### Community 390 - "Community 390"
 Cohesion: 0.12
@@ -2780,12 +2913,12 @@ Cohesion: 0.12
 Nodes (15): Audience, Available Scripts, Configuration, Environment Variables, How to Work in This Area, In Scope, Management Database (mng-db), Out of Scope (+7 more)
 
 ### Community 413 - "Community 413"
-Cohesion: 0.12
-Nodes (16): Agent Rollout & Evaluation Gates (If Applicable), Assumptions & Defaults, Completion Criteria, Context, Goals & In-Scope, Infra Service Optimization Priority Plan (Quick Wins + Quarterly) Implementation Plan, Non-Goals & Out-of-Scope, Overview (+8 more)
+Cohesion: 0.11
+Nodes (18): Agent Rollout & Evaluation Gates (If Applicable), Assumptions & Defaults, Completion Criteria, Context, Goals & In-Scope, Infra Service Optimization Priority Plan (Quick Wins + Quarterly) Implementation Plan, Non-Goals & Out-of-Scope, Overview (+10 more)
 
 ### Community 414 - "Community 414"
-Cohesion: 0.12
-Nodes (15): 1. Operations & Configuration, 2. Traceability, AI Agent Guidance, Audience, How to Work in This Area, [INFRA] 06-observability: prometheus, Management Guide, Overview (+7 more)
+Cohesion: 0.21
+Nodes (16): 1. Operations & Configuration, 2. Traceability, AI Agent Guidance, Audience, How to Work in This Area, [INFRA] 06-observability: prometheus, Management Guide, Overview (+8 more)
 
 ### Community 415 - "Community 415"
 Cohesion: 0.12
@@ -2824,8 +2957,8 @@ Cohesion: 0.12
 Nodes (15): 1. Data Retention Periods, 2. Resource Allocation, 3. High Cardinality Governance, 4. Backup Strategy, AI Agent Policy Section (If Applicable), Controls, Exceptions, Overview (+7 more)
 
 ### Community 424 - "Community 424"
-Cohesion: 0.12
-Nodes (15): 1. Data Retention Policy, 2. Label Governance (Cardinality), 3. Performance & Resource Standards, 4. Backup & Disaster Recovery, AI Agent Policy Section (If Applicable), Controls, Exceptions, Loki Operational Policy Operations Policy (+7 more)
+Cohesion: 0.17
+Nodes (16): 1. Data Retention Policy, 2. Label Governance (Cardinality), 3. Performance & Resource Standards, 4. Backup & Disaster Recovery, AI Agent Policy Section (If Applicable), Controls, Exceptions, Loki Operational Policy Operations Policy (+8 more)
 
 ### Community 425 - "Community 425"
 Cohesion: 0.12
@@ -2928,12 +3061,12 @@ Cohesion: 0.14
 Nodes (13): Audience, Documentation Standards, How to Work in This Area, In Scope, Operations, Operations Contract, Out of Scope, Overview (+5 more)
 
 ### Community 450 - "Community 450"
-Cohesion: 0.13
-Nodes (14): 1. Alert Severity Levels, 2. Notification Standards, 3. Silence Policy, AI Agent Policy Section, Alertmanager Operational Policy (06-observability) Operations Policy, Controls, Exceptions, Policy Scope (+6 more)
+Cohesion: 0.18
+Nodes (15): 1. Alert Severity Levels, 2. Notification Standards, 3. Silence Policy, AI Agent Policy Section, Alertmanager Operational Policy (06-observability) Operations Policy, Alertmanager Operations Policy, Controls, Exceptions (+7 more)
 
 ### Community 451 - "Community 451"
-Cohesion: 0.13
-Nodes (14): Alerting Rule Management Requirements, Constraints, Controls, Exceptions, [OPERATIONAL-POLICY] 06-observability: prometheus Operations Policy, Performance Monitoring Requirements, Policy Details, Policy Scope (+6 more)
+Cohesion: 0.18
+Nodes (15): Alerting Rule Management Requirements, Constraints, Controls, Exceptions, [OPERATIONAL-POLICY] 06-observability: prometheus Operations Policy, Performance Monitoring Requirements, Policy Details, Policy Scope (+7 more)
 
 ### Community 452 - "Community 452"
 Cohesion: 0.13
@@ -2972,8 +3105,8 @@ Cohesion: 0.13
 Nodes (14): Audience, Category Role, Current References, Docker References, Examples, How to Work in This Area, In Scope, Language Rule (+6 more)
 
 ### Community 461 - "Community 461"
-Cohesion: 0.14
-Nodes (13): AI Agent Guidance, Audience, Documentation, Grafana Visualization & Dashboards, How to Work in This Area, Overview, Related Documents, Scope (+5 more)
+Cohesion: 0.13
+Nodes (21): AI Agent Guidance, Audience, Available Scripts, Configuration, Dashboards and Access, Datasources, Documentation, Grafana Visualization and Dashboards (+13 more)
 
 ### Community 462 - "Community 462"
 Cohesion: 0.13
@@ -2996,8 +3129,8 @@ Cohesion: 0.13
 Nodes (14): Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Overview (KR), Purpose, Reference: LLM Wiki Repository Map (+6 more)
 
 ### Community 467 - "Community 467"
-Cohesion: 0.12
-Nodes (15): Agent Progress Log, Current Work Log, docs/05.operations Normalization (2026-05-27), Docs Implementation Audit Follow-up (2026-06-04), GitHub Governance Alignment Audit (P4 — 2026-04-10), Infra Team Agent Alignment Audit (P6 — 2026-04-10), Layer Audit (L1–L7), Local Instruction Authority Cleanup (P5 — 2026-04-10) (+7 more)
+Cohesion: 0.04
+Nodes (55): Agent Progress Log, Agentic Research Pack Refresh (2026-07-05), Agentic Research Pack Refresh Plan (2026-07-05), Agentic Research Pack Refresh Spec Path Correction (2026-07-05), AI Tier Operations Cleanup (2026-07-04), Alertmanager Guide and Runbook Cleanup (2026-07-04), Alertmanager Policy Profile Cleanup (2026-07-04), Alloy Guide and Runbook Cleanup (2026-07-04) (+47 more)
 
 ### Community 468 - "Community 468"
 Cohesion: 0.13
@@ -3020,8 +3153,8 @@ Cohesion: 0.13
 Nodes (13): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Qdrant, Related Documents, Scope (+5 more)
 
 ### Community 473 - "Community 473"
-Cohesion: 0.13
-Nodes (14): 1. Context and Objective, 2. Requirements and Constraints, 3.1 Language Boundary by Stage, 3. Document Type ↔ Template Mapping, 4.1 Template Deviation Audit, 4. Authoring Protocol, 5. Operational Procedures, 6. Maintenance and Safety (+6 more)
+Cohesion: 0.12
+Nodes (15): 1. Context and Objective, 2. Requirements and Constraints, 3.1 Language Boundary by Stage, 3. Document Type ↔ Template Mapping, 4.1 Template Deviation Audit, 4. Authoring Protocol, 5.1 Gap-to-Stage Routing, 5. Operational Procedures (+7 more)
 
 ### Community 474 - "Community 474"
 Cohesion: 0.11
@@ -3196,7 +3329,7 @@ Cohesion: 0.14
 Nodes (13): 09-Tooling Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+5 more)
 
 ### Community 517 - "Community 517"
-Cohesion: 0.10
+Cohesion: 0.09
 Nodes (19): 09-tooling: Tooling Tier, Architecture, Operational Governance, Overview (KR), Services, Audience, How to Work in This Area, In Scope (+11 more)
 
 ### Community 518 - "Community 518"
@@ -3344,12 +3477,12 @@ Cohesion: 0.14
 Nodes (13): Deviation Notes, Inputs, Overview, Overview (KR), Phase 1, Phase 2, Phase View (Optional), Related Documents (+5 more)
 
 ### Community 554 - "Community 554"
-Cohesion: 0.15
-Nodes (12): AI Agent Guidance, Audience, Documentation Standards, Execution Tasks, How to Work in This Area, In Scope, Out of Scope, Overview (+4 more)
+Cohesion: 0.12
+Nodes (16): AI Agent Guidance, Audience, Documentation Standards, Execution Tasks, How to Work in This Area, In Scope, Inputs, Out of Scope (+8 more)
 
 ### Community 555 - "Community 555"
-Cohesion: 0.29
-Nodes (7): MinIO S3, Grafana Alloy, LGTM Stack, MinIO S3 Telemetry Storage, OTLP Telemetry Pipeline, cAdvisor Healthcheck, service_healthy Dependency Hardening
+Cohesion: 0.17
+Nodes (12): MinIO S3, Observability Architecture Reference Document, Grafana Alloy, LGTM Stack, MinIO S3 Telemetry Storage, OTLP Telemetry Pipeline, cAdvisor Healthcheck, ADR-0021 Observability Hardening and HA Expansion Strategy (+4 more)
 
 ### Community 556 - "Community 556"
 Cohesion: 0.15
@@ -3368,8 +3501,8 @@ Cohesion: 0.15
 Nodes (12): 05-Messaging Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+4 more)
 
 ### Community 560 - "Community 560"
-Cohesion: 0.15
-Nodes (12): 06-Observability Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope, Policy Scope, Review Cadence (+4 more)
+Cohesion: 0.23
+Nodes (13): 06-Observability Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Observability Optimization Hardening Policy, Policy Scope, Policy Scope (+5 more)
 
 ### Community 561 - "Community 561"
 Cohesion: 0.15
@@ -3844,8 +3977,8 @@ Cohesion: 0.17
 Nodes (11): AI Agent Policy Section (If Applicable), Controls, Exceptions, Ollama Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+3 more)
 
 ### Community 679 - "Community 679"
-Cohesion: 0.17
-Nodes (11): AI Agent Policy Section (If Applicable), Controls, Exceptions, Open WebUI Operations Policy, Policy Scope, Policy Scope, Review Cadence, Overview (+3 more)
+Cohesion: 0.15
+Nodes (12): AI Agent Policy Section (If Applicable), Controls, Exceptions, Open WebUI Operations Policy, Policy Scope, Policy Scope, Review Cadence, Verification (+4 more)
 
 ### Community 680 - "Community 680"
 Cohesion: 0.10
@@ -4524,7 +4657,7 @@ Cohesion: 0.40
 Nodes (9): hardening-lib.sh script, check_contains(), check_file(), check_not_contains(), check_service_healthcheck(), fail(), report_status(), start_tier() (+1 more)
 
 ### Community 849 - "Community 849"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (17): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+9 more)
 
 ### Community 850 - "Community 850"
@@ -4532,7 +4665,7 @@ Cohesion: 0.11
 Nodes (17): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+9 more)
 
 ### Community 851 - "Community 851"
-Cohesion: 0.11
+Cohesion: 0.10
 Nodes (17): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+9 more)
 
 ### Community 852 - "Community 852"
@@ -4836,8 +4969,8 @@ Cohesion: 0.25
 Nodes (8): 1. 저장소 클론, 2. 환경 파일 준비, 3. 사전 점검 실행, 4. Compose 구조 검증, 5. Repository contract 검증, 6. 코어 인프라 실행, 7. 주요 진입 문서 확인, Getting Started
 
 ### Community 927 - "Community 927"
-Cohesion: 0.17
-Nodes (13): Tooling infra_net Boundary, 172.19.0.0/16 IPAM, infra_net Network, k3d-hyhome Network, Standardize infra_net PRD, ADR Process, ADR Traceability to ARD and Spec, Architecture (+5 more)
+Cohesion: 0.29
+Nodes (8): ADR Process, ADR Traceability to ARD and Spec, Architecture, Architecture Decision Records, Architecture Requirements, New ADR Before Conflicting Change, PRD Traceability, Product Requirements Documents
 
 ### Community 928 - "Community 928"
 Cohesion: 0.25
@@ -5085,7 +5218,7 @@ Nodes (7): Archive Ledger, Archive Metadata, Archived Tombstone: Agent Governanc
 
 ### Community 989 - "Community 989"
 Cohesion: 0.33
-Nodes (6): ADR-0024 Tooling Hardening and HA Expansion Strategy, Tooling infra_net External Boundary, Tooling SSO Router Chain, Laboratory Direct Ports Removed, ADR-0025 Laboratory Hardening and HA Expansion Strategy, Laboratory IP Allowlist and SSO Chain
+Nodes (6): AI SSO Router Chain, ADR-0023 AI Hardening and HA Expansion Strategy, Tooling SSO Router Chain, Laboratory Direct Ports Removed, ADR-0025 Laboratory Hardening and HA Expansion Strategy, Laboratory IP Allowlist and SSO Chain
 
 ### Community 990 - "Community 990"
 Cohesion: 0.33
@@ -5233,11 +5366,11 @@ Nodes (11): Completion Criteria, Context, Goals & In-Scope, Governance Surgical 
 
 ### Community 1068 - "Community 1068"
 Cohesion: 0.29
-Nodes (8): Tooling Gateway SSO Policy, Tooling Hardening Gate, Tooling Optimization Hardening PRD, Dashboard Traefik-only Exposure, Dozzle Read-only Docker Socket, Laboratory Gateway SSO Allowlist, Laboratory Hardening Gate, Laboratory Optimization Hardening PRD
+Nodes (7): Workflow Gateway SSO Policy, AI Gateway SSO Policy, Tooling Gateway SSO Policy, Dashboard Traefik-only Exposure, Dozzle Read-only Docker Socket, Laboratory Gateway SSO Allowlist, Laboratory Optimization Hardening PRD
 
 ### Community 1069 - "Community 1069"
-Cohesion: 0.56
-Nodes (7): run-local-qa-gates.sh script, list_gates(), run_bash_syntax(), run_harness_gates(), run_script_backed_gates(), run_step(), usage()
+Cohesion: 0.46
+Nodes (6): run-local-qa-gates.sh script, list_gates(), run_harness_gates(), run_script_backed_gates(), run_step(), usage()
 
 ### Community 1070 - "Community 1070"
 Cohesion: 0.07
@@ -5269,7 +5402,7 @@ Nodes (21): Common Checks, Common Pitfalls, Common Pitfalls, Harness / Agent-fir
 
 ### Community 1078 - "Community 1078"
 Cohesion: 0.10
-Nodes (20): 0012 Standardize Infra Net Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Evidence, infra_net IP Mapping Validation & Update Procedure (+12 more)
+Nodes (22): 0012 Standardize Infra Net Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Evidence, Evidence (+14 more)
 
 ### Community 1079 - "Community 1079"
 Cohesion: 0.10
@@ -5656,8 +5789,8 @@ Cohesion: 0.15
 Nodes (12): Approved Surface Evidence, Commit Trail, Implementation Notes, Inputs, Inventory Baseline, Overview, Related Documents, Task Table (+4 more)
 
 ### Community 1175 - "Community 1175"
-Cohesion: 0.17
-Nodes (11): Audience, Audit References, Category Role, Current References, How to Work in This Area, In Scope, Out of Scope, Overview (+3 more)
+Cohesion: 0.15
+Nodes (12): Audience, Audit References, Category Role, Current References, How to Work in This Area, In Scope, Naming Rules, Out of Scope (+4 more)
 
 ### Community 1176 - "Community 1176"
 Cohesion: 0.17
@@ -5672,8 +5805,8 @@ Cohesion: 0.17
 Nodes (11): Agent Rollout & Evaluation Gates (If Applicable), Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Related Documents, Risks & Mitigations (+3 more)
 
 ### Community 1179 - "Community 1179"
-Cohesion: 0.17
-Nodes (11): Audience, Category Role, Current References, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+3 more)
+Cohesion: 0.15
+Nodes (12): Audience, Category Role, Current References, How to Work in This Area, In Scope, Naming Rules, Out of Scope, Overview (+4 more)
 
 ### Community 1180 - "Community 1180"
 Cohesion: 0.17
@@ -5720,8 +5853,8 @@ Cohesion: 0.22
 Nodes (8): Approved Surface Evidence, Inputs, Overview, Related Documents, Task: Examples Scaffold Contract Remediation, Task Table, Verification Summary, Working Rules
 
 ### Community 1191 - "Community 1191"
-Cohesion: 0.25
-Nodes (8): ADR-0005 Polyglot Messaging, Apache Kafka Event Backbone, Kafka KRaft Mode, RabbitMQ Task Queue, Messaging Gateway SSO Policy, Observability Gateway SSO Policy, Workflow Gateway SSO Policy, AI Gateway SSO Policy
+Cohesion: 0.06
+Nodes (33): Agent Role, Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Canonical Template Groups, Contracts, Copyable Template Surface, Core Design, Data Modeling & Storage Strategy (+25 more)
 
 ### Community 1192 - "Community 1192"
 Cohesion: 0.25
@@ -5732,24 +5865,24 @@ Cohesion: 0.25
 Nodes (7): Agent Progress Log, Current Work Log, Layer Audit, Open Issues, Phase Tracker, Related Documents, Usage Contract
 
 ### Community 1194 - "Community 1194"
-Cohesion: 0.25
-Nodes (7): Corpus Routing Rules, Duplicate-Purpose Key Rules, Frontmatter Contract, Legacy Cleanup Rules, Overview, Related Documents, Role Matrix
+Cohesion: 0.22
+Nodes (8): Corpus Routing Rules, Disposition and Archive Metadata Rules, Duplicate-Purpose Key Rules, Frontmatter Contract, Legacy Cleanup Rules, Overview, Related Documents, Role Matrix
 
 ### Community 1195 - "Community 1195"
-Cohesion: 0.25
-Nodes (7): Overview, Placeholder Rules, Related Documents, Surface Boundaries, Target Document Rules, Template Contract, Template Source Rules
+Cohesion: 0.22
+Nodes (8): Numbered SDLC Path Rules, Overview, Placeholder Rules, Related Documents, Surface Boundaries, Target Document Rules, Template Contract, Template Source Rules
 
 ### Community 1196 - "Community 1196"
-Cohesion: 0.25
-Nodes (7): Change Boundaries, Commit Boundaries, Overview, Protected Surface Rules, Related Documents, Review Rules, Template Governance
+Cohesion: 0.20
+Nodes (9): Archive and Removal Governance, Change Boundaries, Commit Boundaries, Numbered Path Governance, Overview, Protected Surface Rules, Related Documents, Review Rules (+1 more)
 
 ### Community 1197 - "Community 1197"
-Cohesion: 0.25
-Nodes (7): Governance Template Mapping, Overview, Related Documents, Selection Rules, Spec Child Template Mapping, Stage Template Mapping, Template Selection
+Cohesion: 0.22
+Nodes (8): Governance Template Mapping, Overview, Related Documents, Restructure Disposition Mapping, Selection Rules, Spec Child Template Mapping, Stage Template Mapping, Template Selection
 
 ### Community 1198 - "Community 1198"
-Cohesion: 0.29
-Nodes (7): Observability Architecture Reference Document, ADR-0021 Observability Hardening and HA Expansion Strategy, Non-root Secret Guard Images, Observability SSO Router Chain, Workflow SSO Router Chain, AI SSO Router Chain, ADR-0023 AI Hardening and HA Expansion Strategy
+Cohesion: 0.06
+Nodes (32): Agent Role, Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contract Fallout Surfaces, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+24 more)
 
 ### Community 1199 - "Community 1199"
 Cohesion: 0.29
@@ -5764,8 +5897,8 @@ Cohesion: 0.29
 Nodes (6): arrowParens, endOfLine, printWidth, semi, singleQuote, trailingComma
 
 ### Community 1202 - "Community 1202"
-Cohesion: 0.29
-Nodes (6): Generated Metadata, Lifecycle Status, Overview, Related Documents, Status Selection Rules, Status Vocabulary
+Cohesion: 0.25
+Nodes (7): Archive-Centered Lifecycle Rules, Generated Metadata, Lifecycle Status, Overview, Related Documents, Status Selection Rules, Status Vocabulary
 
 ### Community 1203 - "Community 1203"
 Cohesion: 0.33
@@ -5803,6 +5936,538 @@ Nodes (3): 1. Quick Reference, 2. Detailed Instructions, Related Documents
 Cohesion: 0.40
 Nodes (4): Meta Commands, RTK - Rust Token Killer (Codex CLI), Rule, Verification
 
+### Community 1214 - "Community 1214"
+Cohesion: 0.07
+Nodes (28): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable), Failure Modes & Fallback / Human Escalation (+20 more)
+
+### Community 1215 - "Community 1215"
+Cohesion: 0.08
+Nodes (25): 1. MailHog (Development Sandbox), 2. Stalwart (Production Backend), Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Common Variables, Communication Tier Technical Specification, Component Boundary, Contracts (+17 more)
+
+### Community 1216 - "Community 1216"
+Cohesion: 0.08
+Nodes (25): 03.specs Restructure Model, Audit Pack Design, CI/CD, QA, and Formatting Contract, Component Boundary, Contracts, Core Design, Disposition Model, Document Restructure Audit, Contract, and Archive Technical Specification (+17 more)
+
+### Community 1217 - "Community 1217"
+Cohesion: 0.08
+Nodes (24): Agent-first Engineering Components, Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+16 more)
+
+### Community 1218 - "Community 1218"
+Cohesion: 0.08
+Nodes (24): Agent Role & IO Contract, Agentic Research Pack Refresh Technical Specification, API Contract, Contracts, Core Design, Data Modeling & Storage Strategy, Document Responsibilities, Edge Cases & Error Handling (+16 more)
+
+### Community 1219 - "Community 1219"
+Cohesion: 0.08
+Nodes (23): Audit Record Shape, Component Boundary, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation, External Basis (+15 more)
+
+### Community 1220 - "Community 1220"
+Cohesion: 0.09
+Nodes (22): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Current Baseline, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+14 more)
+
+### Community 1221 - "Community 1221"
+Cohesion: 0.09
+Nodes (21): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Applied Rules Summary, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable) (+13 more)
+
+### Community 1222 - "Community 1222"
+Cohesion: 0.09
+Nodes (21): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Applied Rules Summary, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable) (+13 more)
+
+### Community 1223 - "Community 1223"
+Cohesion: 0.09
+Nodes (21): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation (If Applicable) (+13 more)
+
+### Community 1224 - "Community 1224"
+Cohesion: 0.09
+Nodes (21): Batch-Fix Candidates, Definitions / Facts, Direct-Fix Candidates, Future Implementation Batches, Gap Register, Gap Summary, Historical Evidence, In Scope (+13 more)
+
+### Community 1225 - "Community 1225"
+Cohesion: 0.09
+Nodes (21): Approved Surface Evidence, Baseline Snapshot, Commit Trail, Implementation Notes, Inputs, Overview, Phase 1: Evidence Seed, Phase 2: Evidence-Only Audit (+13 more)
+
+### Community 1226 - "Community 1226"
+Cohesion: 0.09
+Nodes (21): Agentic Research Pack Refresh Task, Approved Surface Evidence, Current Research Pack Inventory, Deviation Log, Existing Research Refresh Notes, Inputs, Overview, Phase 1: Planning and Evidence Scaffold (+13 more)
+
+### Community 1227 - "Community 1227"
+Cohesion: 0.10
+Nodes (20): Agent Role & IO Contract, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Evaluation, Failure Modes & Fallback / Human Escalation (+12 more)
+
+### Community 1228 - "Community 1228"
+Cohesion: 0.10
+Nodes (20): Agent Role & IO Contract, Agentic Engineering Implementation Audit Pack Technical Specification, Assessment Status Vocabulary, Contracts, Core Design, Edge Cases & Error Handling, Evaluation, Failure Modes & Fallback / Human Escalation (+12 more)
+
+### Community 1229 - "Community 1229"
+Cohesion: 0.10
+Nodes (20): Agent Role & IO Contract, Contracts, Core Design, Data Modeling & Storage Strategy, Git Ignore Model, Governance Rule, Guardrails, Interfaces & Data Structures (+12 more)
+
+### Community 1230 - "Community 1230"
+Cohesion: 0.10
+Nodes (19): Automation Coverage Map, CI/CD Workflow Coverage, Definitions / Facts, Formatting Coverage, Gaps For Register, In Scope, Maintenance, Method (+11 more)
+
+### Community 1231 - "Community 1231"
+Cohesion: 0.11
+Nodes (18): Agent Operations (If Applicable), AI Agent Policy Section, Canonical References, Checklist, Escalation, Evidence, LLM Wiki Maintenance Runbook, LLM Wiki Maintenance Runbook Procedure (+10 more)
+
+### Community 1232 - "Community 1232"
+Cohesion: 0.11
+Nodes (18): Bucket Group Inventory, Bucket Inventory, Candidate Files, Definitions / Facts, Findings, In Scope, Maintenance, Method (+10 more)
+
+### Community 1233 - "Community 1233"
+Cohesion: 0.11
+Nodes (18): Agent Rollout & Evaluation Gates, Agentic Research Pack Refresh Implementation Plan, Completion Criteria, Context, File Structure, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (+10 more)
+
+### Community 1234 - "Community 1234"
+Cohesion: 0.11
+Nodes (17): Agent Role & IO Contract (If Applicable), API Contract, Component Boundary, Contracts, Core Design, Data Modeling & Storage Strategy, Gateway Tier (01-gateway) Technical Specification, Interfaces & Data Structures (+9 more)
+
+### Community 1235 - "Community 1235"
+Cohesion: 0.11
+Nodes (17): Definitions / Facts, Future Implementation Batches, Gap Register, Gap Summary, In Scope, Maintenance, Method, Out of Scope (+9 more)
+
+### Community 1236 - "Community 1236"
+Cohesion: 0.11
+Nodes (17): Completed Candidate List, Definitions / Facts, Findings, In Scope, Maintenance, Method, Out of Scope, Overview (+9 more)
+
+### Community 1237 - "Community 1237"
+Cohesion: 0.11
+Nodes (17): Assessment Method, Automation Impact, Definitions / Facts, Findings, Gap / Follow-up, Implementation Status Matrix, In Scope, Maintenance (+9 more)
+
+### Community 1238 - "Community 1238"
+Cohesion: 0.11
+Nodes (17): Assessment Method, Automation Impact, Definitions / Facts, Findings, Gap / Follow-up, Implementation Status Matrix, In Scope, Maintenance (+9 more)
+
+### Community 1239 - "Community 1239"
+Cohesion: 0.11
+Nodes (17): Assessment Method, Automation Impact, Definitions / Facts, Findings, Gap / Follow-up, Implementation Status Matrix, In Scope, Maintenance (+9 more)
+
+### Community 1240 - "Community 1240"
+Cohesion: 0.11
+Nodes (17): Assessment Method, Automation Impact, Definitions / Facts, Findings, Gap / Follow-up, Implementation Status Matrix, In Scope, Maintenance (+9 more)
+
+### Community 1241 - "Community 1241"
+Cohesion: 0.11
+Nodes (17): Assessment Method, Automation Impact, Definitions / Facts, Findings, Gap / Follow-up, Implementation Status Matrix, In Scope, Maintenance (+9 more)
+
+### Community 1242 - "Community 1242"
+Cohesion: 0.11
+Nodes (17): Assessment Method, Automation Impact, Definitions / Facts, Findings, Gap / Follow-up, Implementation Status Matrix, In Scope, Maintenance (+9 more)
+
+### Community 1243 - "Community 1243"
+Cohesion: 0.11
+Nodes (17): Assessment Method, Automation Impact, Definitions / Facts, Findings, Gap / Follow-up, Implementation Status Matrix, In Scope, Maintenance (+9 more)
+
+### Community 1244 - "Community 1244"
+Cohesion: 0.12
+Nodes (16): 02-Auth Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+8 more)
+
+### Community 1245 - "Community 1245"
+Cohesion: 0.12
+Nodes (16): 04-Data Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+8 more)
+
+### Community 1246 - "Community 1246"
+Cohesion: 0.12
+Nodes (16): 05-Messaging Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+8 more)
+
+### Community 1247 - "Community 1247"
+Cohesion: 0.12
+Nodes (16): 06-Observability Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+8 more)
+
+### Community 1248 - "Community 1248"
+Cohesion: 0.12
+Nodes (16): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents, Risks, Dependencies, and Assumptions (+8 more)
+
+### Community 1249 - "Community 1249"
+Cohesion: 0.12
+Nodes (16): Agent Role & IO Contract (If Applicable), Assigned IP Mapping Table (Authoritative), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Interfaces & Data Structures, Network Definition Example (Root) (+8 more)
+
+### Community 1250 - "Community 1250"
+Cohesion: 0.12
+Nodes (16): Coverage Matrix, Definitions / Facts, Findings, In Scope, Maintenance, Method, Out of Scope, Overview (+8 more)
+
+### Community 1251 - "Community 1251"
+Cohesion: 0.12
+Nodes (16): Analysis, Application Notes for This Workspace, Definitions / Facts, Harness Components, In Scope, Maintenance, Out of Scope, Overview (+8 more)
+
+### Community 1252 - "Community 1252"
+Cohesion: 0.12
+Nodes (16): Analysis, Application Notes for This Workspace, Definitions / Facts, In Scope, Loop Map, Maintenance, Out of Scope, Overview (+8 more)
+
+### Community 1253 - "Community 1253"
+Cohesion: 0.12
+Nodes (16): Analysis, Common Environment and Rule Elements, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap (+8 more)
+
+### Community 1254 - "Community 1254"
+Cohesion: 0.12
+Nodes (16): Analysis, Application Notes for This Workspace, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap (+8 more)
+
+### Community 1255 - "Community 1255"
+Cohesion: 0.12
+Nodes (16): Analysis, Application Notes for This Workspace, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap (+8 more)
+
+### Community 1256 - "Community 1256"
+Cohesion: 0.12
+Nodes (15): 03-Security Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation (+7 more)
+
+### Community 1257 - "Community 1257"
+Cohesion: 0.12
+Nodes (15): Agent Role, Context & Memory Strategy, Evaluation Plan, Failure Modes & Fallback, Guardrails, Inputs / Outputs, Observability, Orchestration Model (+7 more)
+
+### Community 1258 - "Community 1258"
+Cohesion: 0.12
+Nodes (15): 07-Workflow Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation, Interfaces & Data Structures (+7 more)
+
+### Community 1259 - "Community 1259"
+Cohesion: 0.12
+Nodes (15): 08-AI Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), AI Hardening Control Surface, Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation (+7 more)
+
+### Community 1260 - "Community 1260"
+Cohesion: 0.12
+Nodes (15): 09-Tooling Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation, Interfaces & Data Structures (+7 more)
+
+### Community 1261 - "Community 1261"
+Cohesion: 0.12
+Nodes (15): 11-Laboratory Optimization Hardening Technical Specification, Agent Role & IO Contract (If Applicable), Contracts, Core Design, Data Modeling & Storage Strategy, Edge Cases & Error Handling, Failure Modes & Fallback / Human Escalation, Interfaces & Data Structures (+7 more)
+
+### Community 1262 - "Community 1262"
+Cohesion: 0.12
+Nodes (15): Decisions, Definitions / Facts, Findings, In Scope, Maintenance, Method, Out of Scope, Overview (+7 more)
+
+### Community 1263 - "Community 1263"
+Cohesion: 0.12
+Nodes (15): Definitions / Facts, Findings, In Scope, Maintenance, Method, Out of Scope, Overview, Purpose (+7 more)
+
+### Community 1264 - "Community 1264"
+Cohesion: 0.12
+Nodes (15): Definitions / Facts, Findings, In Scope, Maintenance, Method, Out of Scope, Overview, Preservation Matrix (+7 more)
+
+### Community 1265 - "Community 1265"
+Cohesion: 0.12
+Nodes (15): Active Guidance Drift, Broad References With No Action, Definitions / Facts, Gaps For Register, Historical Evidence, Maintenance, Method, Out-of-Scope Gaps (+7 more)
+
+### Community 1266 - "Community 1266"
+Cohesion: 0.12
+Nodes (15): Definitions / Facts, Findings, In Scope, Key Inventory, Maintenance, Method, Out of Scope, Overview (+7 more)
+
+### Community 1267 - "Community 1267"
+Cohesion: 0.12
+Nodes (15): Definitions / Facts, Findings, In Scope, Maintenance, Method, Out of Scope, Overview, Purpose (+7 more)
+
+### Community 1268 - "Community 1268"
+Cohesion: 0.12
+Nodes (15): Analysis, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap, Purpose (+7 more)
+
+### Community 1269 - "Community 1269"
+Cohesion: 0.12
+Nodes (15): Agentic Engineering Implementation Audit Pack Task, Approved Surface Evidence, Deviation Log, Evidence Inventory, Inputs, Overview, Phase 1: Planning Scaffold, Phase 2: Evidence Inventory (+7 more)
+
+### Community 1270 - "Community 1270"
+Cohesion: 0.12
+Nodes (15): Approved Surface Evidence, Deviation Log, Evidence Inventory, Inputs, Overview, Phase 1: Planning Scaffold, Phase 2: Contract Boundary, Phase 3: Governance and Validation (+7 more)
+
+### Community 1271 - "Community 1271"
+Cohesion: 0.13
+Nodes (14): Agent Role & IO Contract (If Applicable), Canonical Stage Path Contract, Contracts, Core Design, Data Modeling & Storage Strategy, Docs Taxonomy and AI Agent-first Contract Migration Specification, Guardrails, Interfaces & Data Structures (+6 more)
+
+### Community 1272 - "Community 1272"
+Cohesion: 0.13
+Nodes (14): Contract Governance Map, Contract Owners, Definitions / Facts, Gaps For Register, Maintenance, Method, Overview, Potential Conflicts (+6 more)
+
+### Community 1273 - "Community 1273"
+Cohesion: 0.13
+Nodes (14): Analysis, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap, Purpose (+6 more)
+
+### Community 1274 - "Community 1274"
+Cohesion: 0.13
+Nodes (14): Analysis, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap, Purpose (+6 more)
+
+### Community 1275 - "Community 1275"
+Cohesion: 0.13
+Nodes (14): Analysis, Definitions / Facts, In Scope, Maintenance, Out of Scope, Overview, Potential Follow-up / Gap, Purpose (+6 more)
+
+### Community 1276 - "Community 1276"
+Cohesion: 0.13
+Nodes (14): Approved Surface Evidence, Deviation Log, Evidence Inventory, Inputs, Overview, Phase 1: Planning, Phase 2: Provider Parity, Phase 3: Closure (+6 more)
+
+### Community 1277 - "Community 1277"
+Cohesion: 0.13
+Nodes (14): Approved Surface Evidence, Deviation Log, Inputs, Overview, Phase 1: Execution Scaffold, Phase 2: Corpus Moves, Phase 3: Contract and Validator Updates, Phase 4: Closure (+6 more)
+
+### Community 1278 - "Community 1278"
+Cohesion: 0.14
+Nodes (13): Agent Role & IO Contract (If Applicable), Analytics Engine Contract, Analytics Tier Technical Specification (Spec), Contracts, Core Design, Data Modeling & Storage Strategy, Interfaces & Data Structures, Overview (+5 more)
+
+### Community 1279 - "Community 1279"
+Cohesion: 0.14
+Nodes (13): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Non-functional Requirements, Overview, Personas, Problem Statement, Related Documents (+5 more)
+
+### Community 1280 - "Community 1280"
+Cohesion: 0.14
+Nodes (13): Agent Governance Standardization Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Non-functional Requirements, Overview, Personas, Problem Statement (+5 more)
+
+### Community 1281 - "Community 1281"
+Cohesion: 0.14
+Nodes (13): Definitions / Facts, Findings, Frontmatter Inventory, Gaps For Register, Maintenance, Method, Overview, Purpose (+5 more)
+
+### Community 1282 - "Community 1282"
+Cohesion: 0.14
+Nodes (13): Definitions / Facts, Findings, Gaps For Register, Maintenance, Method, Overview, Purpose, Related Documents (+5 more)
+
+### Community 1283 - "Community 1283"
+Cohesion: 0.15
+Nodes (12): Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Interfaces & Data Structures, Open WebUI Technical Specification (Spec), Overview, Related Documents (+4 more)
+
+### Community 1284 - "Community 1284"
+Cohesion: 0.15
+Nodes (12): Common Checks, Common Pitfalls, LLM Wiki Maintenance Usage Guide, Prerequisites, Runbook Handoff, Step-by-step Instructions, Target Audience, Usage (+4 more)
+
+### Community 1285 - "Community 1285"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Gateway Tier (01-gateway) Product Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1286 - "Community 1286"
+Cohesion: 0.15
+Nodes (12): 02-Auth Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1287 - "Community 1287"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), Data Tier (04-data) Product Requirements, Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1288 - "Community 1288"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), Analytics Tier (04-data/analytics) Product Requirements, Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1289 - "Community 1289"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Messaging Tier (05-messaging) Product Requirements, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1290 - "Community 1290"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Observability Tier Product Requirements, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1291 - "Community 1291"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), AI Infrastructure Tier (08-ai) Product Requirements, Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1292 - "Community 1292"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents, Risks, Dependencies, and Assumptions (+4 more)
+
+### Community 1293 - "Community 1293"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), Communication Tier (10-communication) Product Requirements, Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1294 - "Community 1294"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Laboratory Tier (11-laboratory) Product Requirements, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1295 - "Community 1295"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Open WebUI Product Requirements, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1296 - "Community 1296"
+Cohesion: 0.15
+Nodes (12): 02-Auth Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1297 - "Community 1297"
+Cohesion: 0.15
+Nodes (12): 03-Security (Vault) Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1298 - "Community 1298"
+Cohesion: 0.15
+Nodes (12): 04-Data Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1299 - "Community 1299"
+Cohesion: 0.15
+Nodes (12): 05-Messaging Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1300 - "Community 1300"
+Cohesion: 0.15
+Nodes (12): 06-Observability Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1301 - "Community 1301"
+Cohesion: 0.15
+Nodes (12): 07-Workflow Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1302 - "Community 1302"
+Cohesion: 0.15
+Nodes (12): 08-AI Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1303 - "Community 1303"
+Cohesion: 0.15
+Nodes (12): 09-Tooling Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1304 - "Community 1304"
+Cohesion: 0.15
+Nodes (12): 11-Laboratory Optimization & Hardening Product Requirements, AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents (+4 more)
+
+### Community 1305 - "Community 1305"
+Cohesion: 0.15
+Nodes (12): AI Agent Requirements (If Applicable), Functional Requirements, Key Use Cases, Overview, Personas, Problem Statement, Related Documents, Risks, Dependencies, and Assumptions (+4 more)
+
+### Community 1306 - "Community 1306"
+Cohesion: 0.15
+Nodes (12): Definitions / Facts, Findings, Gaps For Register, Maintenance, Method, Overview, Purpose, README Profile Inventory (+4 more)
+
+### Community 1307 - "Community 1307"
+Cohesion: 0.15
+Nodes (12): Agentic Engineering Research Pack, Audience, Category Role, Current References, How to Work in This Area, In Scope, Out of Scope, Overview (+4 more)
+
+### Community 1308 - "Community 1308"
+Cohesion: 0.21
+Nodes (11): recommend-qa-gates.sh script, add_gate(), add_remote_note(), EXPLICIT_PATHS, GATE_REASONS, GATES, PATHS, recommend_for_path() (+3 more)
+
+### Community 1309 - "Community 1309"
+Cohesion: 0.15
+Nodes (12): Agent Rollout & Evaluation Gates, Batch Approval Gates, Completion Criteria, Context, Document Restructure Audit, Contract, and Archive Implementation Plan, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview (+4 more)
+
+### Community 1310 - "Community 1310"
+Cohesion: 0.17
+Nodes (11): Agent Role & IO Contract (If Applicable), Contracts, Core Design, Historical Gap Registry Snapshot (2026-05-26), Overview, Related Documents, Related Inputs, Strategic Boundaries & Non-goals (+3 more)
+
+### Community 1311 - "Community 1311"
+Cohesion: 0.17
+Nodes (11): Audience, Category Role, Document Contract Audit References, How to Work in This Area, In Scope, Out of Scope, Overview, Planned References (+3 more)
+
+### Community 1312 - "Community 1312"
+Cohesion: 0.17
+Nodes (11): Audience, Category Role, Current References, Document Restructure Audit References, How to Work in This Area, In Scope, Out of Scope, Overview (+3 more)
+
+### Community 1313 - "Community 1313"
+Cohesion: 0.17
+Nodes (11): Agentic Engineering Implementation Audit References, Audience, Category Role, Current References, How to Work in This Area, In Scope, Out of Scope, Overview (+3 more)
+
+### Community 1314 - "Community 1314"
+Cohesion: 0.17
+Nodes (11): Agent Rollout & Evaluation Gates, Agentic Engineering Implementation Audit Pack Implementation Plan, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Related Documents (+3 more)
+
+### Community 1315 - "Community 1315"
+Cohesion: 0.17
+Nodes (11): Agent Rollout & Evaluation Gates, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Provider Workspace Artifact Path Parity Implementation Plan, Related Documents (+3 more)
+
+### Community 1316 - "Community 1316"
+Cohesion: 0.17
+Nodes (11): Agent Rollout & Evaluation Gates, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Related Documents, Risks & Mitigations (+3 more)
+
+### Community 1317 - "Community 1317"
+Cohesion: 0.17
+Nodes (11): Agent Rollout & Evaluation Gates, Completion Criteria, Context, Goals & In-Scope, Non-Goals & Out-of-Scope, Overview, Related Documents, Risks & Mitigations (+3 more)
+
+### Community 1318 - "Community 1318"
+Cohesion: 0.18
+Nodes (10): Audience, docs-taxonomy-agent-first-migration Specifications, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+
+### Community 1319 - "Community 1319"
+Cohesion: 0.18
+Nodes (10): Audience, harness-agent-first-engineering Specifications, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+
+### Community 1320 - "Community 1320"
+Cohesion: 0.18
+Nodes (10): Audience, How to Work in This Area, In Scope, infra-secrets-docs-refresh Specifications, Out of Scope, Overview, Related Documents, Scope (+2 more)
+
+### Community 1321 - "Community 1321"
+Cohesion: 0.18
+Nodes (10): Audience, How to Work in This Area, In Scope, llm-wiki-agent-first-completion Specifications, Out of Scope, Overview, Related Documents, Scope (+2 more)
+
+### Community 1322 - "Community 1322"
+Cohesion: 0.18
+Nodes (10): Audience, home-docker-revalidation-deferred-follow-up Specifications, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+
+### Community 1323 - "Community 1323"
+Cohesion: 0.18
+Nodes (10): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, standardize-infra-net Specifications (+2 more)
+
+### Community 1324 - "Community 1324"
+Cohesion: 0.18
+Nodes (10): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Status (+2 more)
+
+### Community 1325 - "Community 1325"
+Cohesion: 0.18
+Nodes (10): Agentic Research Pack Refresh Specification, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+
+### Community 1326 - "Community 1326"
+Cohesion: 0.18
+Nodes (10): Agentic Engineering Implementation Audit Pack Specification, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+2 more)
+
+### Community 1327 - "Community 1327"
+Cohesion: 0.18
+Nodes (10): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Status (+2 more)
+
+### Community 1328 - "Community 1328"
+Cohesion: 0.20
+Nodes (9): 01-gateway Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1329 - "Community 1329"
+Cohesion: 0.20
+Nodes (9): 02-auth Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1330 - "Community 1330"
+Cohesion: 0.20
+Nodes (9): 03-security Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1331 - "Community 1331"
+Cohesion: 0.20
+Nodes (9): 04-data Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1332 - "Community 1332"
+Cohesion: 0.20
+Nodes (9): 04-data-analytics Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1333 - "Community 1333"
+Cohesion: 0.20
+Nodes (9): 05-messaging Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1334 - "Community 1334"
+Cohesion: 0.20
+Nodes (9): 06-observability Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1335 - "Community 1335"
+Cohesion: 0.20
+Nodes (9): 07-workflow Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1336 - "Community 1336"
+Cohesion: 0.20
+Nodes (9): 08-ai Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1337 - "Community 1337"
+Cohesion: 0.20
+Nodes (9): 09-tooling Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1338 - "Community 1338"
+Cohesion: 0.20
+Nodes (9): 10-communication Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1339 - "Community 1339"
+Cohesion: 0.20
+Nodes (9): 11-laboratory Specifications, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1340 - "Community 1340"
+Cohesion: 0.20
+Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
+
+### Community 1341 - "Community 1341"
+Cohesion: 0.20
+Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
+
+### Community 1342 - "Community 1342"
+Cohesion: 0.20
+Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
+
+### Community 1343 - "Community 1343"
+Cohesion: 0.20
+Nodes (9): Audience, Document Restructure Audit, Contract, and Archive, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1344 - "Community 1344"
+Cohesion: 0.20
+Nodes (10): Workflow Hardening Gate, AI Hardening Gate, Tooling Hardening Gate, Tooling infra_net Boundary, Tooling Optimization Hardening PRD, Laboratory Hardening Gate, 172.19.0.0/16 IPAM, infra_net Network (+2 more)
+
+### Community 1345 - "Community 1345"
+Cohesion: 0.22
+Nodes (8): Controls, Exceptions, LLM Wiki Maintenance Operations Policy, Policy Scope, Review Cadence, Verification, Overview, Related Documents
+
+### Community 1346 - "Community 1346"
+Cohesion: 0.22
+Nodes (8): Approved Surface Evidence, Inputs, Overview, Related Documents, Task: Frontmatter Routing Evidence Refresh, Task Table, Verification Summary, Working Rules
+
 ## Ambiguous Edges - Review These
 - `Alertmanager Critical Route` → `Alertmanager SMTP Placeholders`  [AMBIGUOUS]
   infra/06-observability/alertmanager/config/config.yml · relation: references
@@ -5810,7 +6475,7 @@ Nodes (4): Meta Commands, RTK - Rust Token Killer (Codex CLI), Rule, Verificatio
   infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **11117 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+11112 more)
+- **12695 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+12690 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **78 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -5821,13 +6486,13 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `cadvisor Compose Service` and `pyroscope Compose Service`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `Secret Exposure Escalation` connect `Airflow Airbyte Failure Worker` to `Community 583`, `Data Cluster Cassandra Hardening`, `Community 1004`, `Community 365`, `Community 157`?**
+- **Why does `Qdrant Runbook` connect `Airflow Airbyte Failure Worker` to `Community 821`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `06-Observability Optimization Hardening Runbook` connect `Community 583` to `Airflow Airbyte Failure Worker`?**
-  _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `Valkey Cluster Runbook` connect `Community 365` to `Airflow Airbyte Failure Worker`?**
+- **Why does `Qdrant Snapshot Recovery` connect `Community 821` to `Airflow Airbyte Failure Worker`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **What connects `printWidth`, `singleQuote`, `semi` to the rest of the system?**
-  _11690 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _13268 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Prometheus Alert Rule Group` be split into smaller, more focused modules?**
   _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._
+- **Should `Tier Product Requirements Oauth2` be split into smaller, more focused modules?**
+  _Cohesion score 0.125 - nodes in this community are weakly interconnected._

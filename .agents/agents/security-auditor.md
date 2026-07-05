@@ -1,5 +1,5 @@
 ---
-layer: agentic
+layer: security
 model: gemini-3.5-flash
 ---
 

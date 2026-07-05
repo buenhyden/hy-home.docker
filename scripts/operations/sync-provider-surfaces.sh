@@ -55,6 +55,21 @@ gemini_model() {
   fi
 }
 
+agent_role_scope() {
+  local src="$1"
+  local scope
+  scope="$(
+    sed -n 's/.*Scope import: `docs\/00\.agent-governance\/scopes\/\([^`/]*\)\.md`.*/\1/p' "$src" | head -1
+  )"
+  if [ -z "$scope" ]; then
+    scope="$(sed -n 's/^layer: *//p' "$src" | head -1)"
+  fi
+  if [ -z "$scope" ]; then
+    scope="agentic"
+  fi
+  echo "$scope"
+}
+
 # Reconcile $TMP against the target file: copy in write mode, report drift otherwise.
 sync_file() {
   local target="$1"
@@ -69,9 +84,10 @@ sync_file() {
 
 gen_gemini_agent() {
   local name="$1"
+  local layer="$2"
   cat >"$TMP" <<EOF
 ---
-layer: agentic
+layer: ${layer}
 model: $(gemini_model "$name")
 ---
 
@@ -114,15 +130,12 @@ EOF
 # Agents: Codex TOML adapter + Gemini pointer.
 for src in docs/00.agent-governance/agents/agents/*.md; do
   name="$(basename "$src" .md)"
-  layer="$(sed -n 's/^layer: *//p' "$src" | head -1)"
-  if [ -z "$layer" ]; then
-    layer="agentic"
-  fi
+  layer="$(agent_role_scope "$src")"
 
   gen_codex_agent "$name" "$layer"
   sync_file ".codex/agents/${name}.toml"
 
-  gen_gemini_agent "$name"
+  gen_gemini_agent "$name" "$layer"
   sync_file ".agents/agents/${name}.md"
 done
 

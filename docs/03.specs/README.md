@@ -75,6 +75,7 @@ docs/03.specs/
 ├── 104-agentic-research-pack-refresh/   # Completed Stage 90 agentic research refresh spec
 ├── 105-agentic-engineering-implementation-audit-pack/ # Completed Stage 90 implementation audit pack design spec
 ├── 106-workspace-support-surface-contract/ # Active `_workspace` repo-support surface contract
+├── 107-provider-semantic-parity-validator/ # Active provider adapter semantic parity validator
 └── README.md                            # This file
 ```
 
@@ -93,6 +94,7 @@ docs/03.specs/
 | Stage 90 agentic engineering research pack refresh | `104-agentic-research-pack-refresh/spec.md` |
 | Agentic engineering reference-audit pack design            | `105-agentic-engineering-implementation-audit-pack/spec.md` |
 | `_workspace` repo-support and protected-surface contract | `106-workspace-support-surface-contract/spec.md` |
+| Provider adapter semantic role-scope parity validation | `107-provider-semantic-parity-validator/spec.md` |
 | Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
 | Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
@@ -161,6 +163,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Agentic Research Pack Refresh Spec**: [104-agentic-research-pack-refresh/spec.md](./104-agentic-research-pack-refresh/spec.md)
 - **Agentic Engineering Implementation Audit Pack Spec**: [105-agentic-engineering-implementation-audit-pack/spec.md](./105-agentic-engineering-implementation-audit-pack/spec.md)
 - **Workspace Support Surface Contract Spec**: [106-workspace-support-surface-contract/spec.md](./106-workspace-support-surface-contract/spec.md)
+- **Provider Semantic Parity Validator Spec**: [107-provider-semantic-parity-validator/spec.md](./107-provider-semantic-parity-validator/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)

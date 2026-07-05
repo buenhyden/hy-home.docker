@@ -1,5 +1,5 @@
 ---
-layer: agentic
+layer: qa
 model: gemini-3.5-flash
 ---
 

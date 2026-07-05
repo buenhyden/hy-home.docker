@@ -1203,6 +1203,16 @@ def toml_value(text: str, key: str) -> str | None:
     match = re.search(rf"^{re.escape(key)}\s*=\s*\"([^\"]*)\"\s*$", text, re.M)
     return match.group(1).strip() if match else None
 
+def canonical_agent_scope(path: pathlib.Path) -> str | None:
+    text = read(path)
+    match = re.search(
+        r"Scope import:\s*`docs/00\.agent-governance/scopes/([A-Za-z0-9_-]+)\.md`",
+        text,
+    )
+    if match:
+        return match.group(1)
+    return frontmatter_value(text, "layer")
+
 runtime_agents = sorted(p.stem for p in pathlib.Path(".claude/agents").glob("*.md"))
 governance_agents = sorted(p.stem for p in pathlib.Path("docs/00.agent-governance/agents/agents").glob("*.md"))
 if runtime_agents != governance_agents:
@@ -1214,23 +1224,39 @@ if runtime_functions != governance_functions:
     failures.append(f"runtime function catalog mismatch: .claude={runtime_functions} governance={governance_functions}")
 
 protocol = pathlib.Path("docs/00.agent-governance/subagent-protocol.md").read_text()
+canonical_scopes: dict[str, str] = {}
+for agent in governance_agents:
+    catalog_path = pathlib.Path(f"docs/00.agent-governance/agents/agents/{agent}.md")
+    scope = canonical_agent_scope(catalog_path)
+    if not scope:
+        failures.append(f"{catalog_path}: missing canonical Scope import or layer")
+        continue
+    canonical_scopes[agent] = scope
+
 for agent in runtime_agents:
     agent_path = pathlib.Path(f".claude/agents/{agent}.md")
     text = read(agent_path)
     protocol_path = f".claude/agents/{agent}.md"
     model = frontmatter_value(text, "model")
     layer = frontmatter_value(text, "layer")
+    canonical_scope = canonical_scopes.get(agent)
     expected_model = "opus" if agent == "workflow-supervisor" else "sonnet"
-    expected_scope = f"@import docs/00.agent-governance/scopes/{layer}.md" if layer else None
+    expected_scope = f"@import docs/00.agent-governance/scopes/{canonical_scope}.md" if canonical_scope else None
 
     if protocol_path not in protocol:
         failures.append(f"subagent protocol missing runtime agent: {protocol_path}")
     if model != expected_model:
         failures.append(f"{agent_path}: expected model {expected_model!r}, found {model!r}")
+    if not canonical_scope:
+        failures.append(f"{agent_path}: missing canonical Stage 00 scope")
+    elif layer != canonical_scope:
+        failures.append(f"{agent_path}: expected semantic layer {canonical_scope!r}, found {layer!r}")
     if not layer:
         failures.append(f"{agent_path}: missing layer front matter")
-    elif expected_scope not in text:
+    if expected_scope and expected_scope not in text:
         failures.append(f"{agent_path}: missing exact scope import {expected_scope!r}")
+    if canonical_scope and f"| `{agent}` | `scopes/{canonical_scope}.md` |" not in protocol:
+        failures.append(f"subagent protocol missing semantic scope for {agent}: scopes/{canonical_scope}.md")
 
 # --- Cross-provider parity (Stage 00 Canonical Adapter Model: providers/agents-md.md section 5) ---
 codex_agents = sorted(p.stem for p in pathlib.Path(".codex/agents").glob("*.toml"))
@@ -1252,18 +1278,24 @@ if gemini_functions != governance_functions:
 for agent in runtime_agents:
     path = pathlib.Path(f".codex/agents/{agent}.toml")
     text = read(path)
+    canonical_scope = canonical_scopes.get(agent)
     expected_model = "gpt-5.5" if agent == "workflow-supervisor" else "gpt-5.4-mini"
     expected_effort = "xhigh" if agent == "workflow-supervisor" else "medium"
     expected_catalog = f"docs/00.agent-governance/agents/agents/{agent}.md"
+    expected_scope_path = f"docs/00.agent-governance/scopes/{canonical_scope}.md" if canonical_scope else None
 
     if toml_value(text, "name") != agent:
         failures.append(f"{path}: expected name {agent!r}, found {toml_value(text, 'name')!r}")
+    if canonical_scope and toml_value(text, "layer") != canonical_scope:
+        failures.append(f"{path}: expected semantic layer {canonical_scope!r}, found {toml_value(text, 'layer')!r}")
     if toml_value(text, "model") != expected_model:
         failures.append(f"{path}: expected model {expected_model!r}, found {toml_value(text, 'model')!r}")
     if toml_value(text, "model_reasoning_effort") != expected_effort:
         failures.append(f"{path}: expected model_reasoning_effort {expected_effort!r}, found {toml_value(text, 'model_reasoning_effort')!r}")
     if toml_value(text, "source_catalog") != expected_catalog:
         failures.append(f"{path}: expected source_catalog {expected_catalog!r}")
+    if expected_scope_path and toml_value(text, "scope") != expected_scope_path:
+        failures.append(f"{path}: expected semantic scope {expected_scope_path!r}, found {toml_value(text, 'scope')!r}")
 
 codex_markdown_agents = sorted(pathlib.Path(".codex/agents").glob("*.md"))
 if codex_markdown_agents:
@@ -1287,9 +1319,13 @@ for agent in gemini_agents:
     if len(text.splitlines()) > 15:
         failures.append(f"{path}: too long ({len(text.splitlines())} lines); Gemini surface must be a pointer, not a full copy")
     model = frontmatter_value(text, "model")
+    layer = frontmatter_value(text, "layer")
     expected = "gemini-3.1-pro" if agent == "workflow-supervisor" else "gemini-3.5-flash"
     if model != expected:
         failures.append(f"{path}: expected model {expected!r}, found {model!r}")
+    canonical_scope = canonical_scopes.get(agent)
+    if canonical_scope and layer != canonical_scope:
+        failures.append(f"{path}: expected semantic layer {canonical_scope!r}, found {layer!r}")
 for fn in gemini_functions:
     path = pathlib.Path(f".agents/skills/{fn}/skill.md")
     text = read(path)

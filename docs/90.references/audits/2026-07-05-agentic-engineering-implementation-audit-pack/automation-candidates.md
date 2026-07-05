@@ -60,7 +60,7 @@ and audit gaps in the overview, harness, and loop reports.
 | --- | --- | --- | --- |
 | Local validation orchestration | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/recommend-qa-gates.sh` | Optionally surface changed-path gate recommendations in PR or CI summaries. |
 | Repository contracts | Implemented | `scripts/validation/check-repo-contracts.sh` | Add audit-pack coverage output for implementation-status categories. |
-| Provider surface sync | Implemented | `scripts/operations/sync-provider-surfaces.sh` | Add semantic clause parity checks, not only structural sync. |
+| Provider surface sync | Implemented | `scripts/operations/sync-provider-surfaces.sh`, `scripts/validation/check-repo-contracts.sh`, [Provider semantic parity validator spec](../../../03.specs/107-provider-semantic-parity-validator/spec.md) | Semantic role-scope parity is now enforced for Stage 00 catalog scope, Claude adapters, Codex TOML adapters, Gemini pointer adapters, and the subagent protocol. Future work can add deeper free-text clause comparison if needed. |
 | Provider hooks | Partially Implemented | `.claude/hooks/`, `.codex/hooks.json`, [Gemini provider notes](../../../00.agent-governance/providers/gemini.md) | Generate hook parity matrix and Gemini behavioral reminder checklist. |
 | LLM Wiki freshness | Implemented | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/llm-wiki-index.md` | Add report grouping by stage/category for audit consumers. |
 | Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml` | Generate profile-to-service coverage snapshot for audit reports. |
@@ -76,9 +76,9 @@ and audit gaps in the overview, harness, and loop reports.
   generated index freshness, and workflow security scanning.
 - A local advisory changed-path QA recommendation report now exists; future
   work can decide whether to publish that output into PR or CI summaries.
-- The highest-value gaps are semantic rather than structural: provider adapter
-  meaning, agent-output correctness, gap routing, and security-framework
-  maturity.
+- Provider semantic role-scope parity is now covered by generator and
+  repository-contract enforcement. The remaining highest-value gaps are
+  agent-output correctness, gap routing, and security-framework maturity.
 - Gemini-specific automation should remain reminder/checklist based until
   native hook/subagent support is confirmed by official sources.
 
@@ -87,7 +87,7 @@ and audit gaps in the overview, harness, and loop reports.
 | Candidate ID | Candidate | Suggested Future Stage |
 | --- | --- | --- |
 | AEA-AUTO-001 | PR/CI summary integration for the changed-path QA-gate recommendation report | Stage 04 plan |
-| AEA-AUTO-002 | Provider semantic parity validator | Stage 03 spec + Stage 04 plan |
+| AEA-AUTO-002 | Provider semantic role-scope parity validator | Implemented by [Provider semantic parity validator spec](../../../03.specs/107-provider-semantic-parity-validator/spec.md) and [task evidence](../../../04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md); deeper free-text clause comparison remains optional future work. |
 | AEA-AUTO-003 | Agent-output eval fixture pack | Stage 03 spec + Stage 04 plan |
 | AEA-AUTO-004 | Gap-to-stage routing generator for the Stage 00 manual routing contract | Stage 04 plan or Stage 90 data reference |
 | AEA-AUTO-005 | Compose profile/service coverage snapshot | Stage 90 data reference or scripts plan |

@@ -1,5 +1,5 @@
 ---
-layer: agentic
+layer: ops
 model: gemini-3.5-flash
 ---
 
