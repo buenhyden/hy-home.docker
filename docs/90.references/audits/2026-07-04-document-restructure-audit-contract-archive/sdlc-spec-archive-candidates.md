@@ -32,7 +32,7 @@ links without replacement evidence.
 
 - Tracked Markdown under `docs/03.specs/**`.
 - Stage 03 status distribution.
-- Completed spec candidates and draft/active follow-up candidates.
+- Completed spec candidates and prior draft/active follow-up candidates.
 - Link and tombstone prerequisites for future move/remove batches.
 - Final `PLN-DRA-004` status/routing decisions.
 
@@ -41,7 +41,8 @@ links without replacement evidence.
 - Moving specs to `docs/98.archive`.
 - Creating tombstones.
 - Rewriting completed evidence.
-- Declaring future agentic-engineering audit-pack implementation approval.
+- Retiring currently active restructure or domain specs without replacement
+  evidence.
 
 ## Definitions / Facts
 
@@ -51,8 +52,9 @@ links without replacement evidence.
   `docs/98.archive` after link and replacement evidence.
 - **Evidence preserve**: completed or draft audit evidence that should remain
   readable in place unless a future plan proves it is no longer active.
-- **Draft follow-up**: a draft design/audit spec that needs status or archive
-  review before target mutation.
+- **Prior draft follow-up**: a design/audit spec that needed status or archive
+  review before target mutation at the time of the original `PLN-DRA-004`
+  candidate review.
 
 ## Method
 
@@ -79,12 +81,12 @@ links without replacement evidence.
 | `docs/03.specs/092-workspace-consistency-2026-05b/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed consistency design/audit work product. | `PLN-DRA-004` |
 | `docs/03.specs/091-workspace-doc-consistency-2026-05/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed consistency design/audit work product. | `PLN-DRA-004` |
 
-## Draft Follow-Up List
+## Prior Follow-Up List
 
 | Candidate | Preliminary Disposition | Rationale | Future Batch |
 | --- | --- | --- | --- |
-| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md` | `active-canonical` or `evidence-preserve` review | Draft audit-pack design; needs status review before archive. | `PLN-DRA-004` |
-| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md` | `active-canonical` or `evidence-preserve` review | Draft audit-pack design; likely current research lineage. | `PLN-DRA-004` |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md` | `evidence-preserve` / `completed` follow-up | Resolved after the Stage 90 audit pack and Stage 04 evidence were implemented. | 2026-07-05 lifecycle cleanup |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md` | `evidence-preserve` / `completed` follow-up | Resolved after the Stage 90 audit pack and Stage 04 evidence were implemented. | 2026-07-05 lifecycle cleanup |
 | `docs/03.specs/103-document-restructure-audit-contract-archive/README.md` | `active-canonical` | Current approved design entrypoint. | No archive in current wave. |
 | `docs/03.specs/103-document-restructure-audit-contract-archive/spec.md` | `active-canonical` | Current approved design spec. | No archive in current wave. |
 | `docs/03.specs/100-template-system-contract-standardization/spec.md` | `historical-archive` or `evidence-preserve` review | Prior design work appears implemented; verify links before archive. | `PLN-DRA-004` |
@@ -110,21 +112,20 @@ consume them.
 | `docs/03.specs/090-workspace-audit-2026-05/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Historical audit chain and comparison guides. |
 | `docs/03.specs/092-workspace-consistency-2026-05b/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Follow-up governance consistency plan/task. |
 | `docs/03.specs/091-workspace-doc-consistency-2026-05/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Predecessor to `workspace-consistency-2026-05b`. |
-| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md` | `active-canonical` draft follow-up | Kept as draft; not archived because the Stage 90 audit pack has not been implemented. | Future agentic-engineering audit pack approval. |
-| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md` | `active-canonical` draft follow-up | Kept as draft; not archived because the Stage 90 audit pack has not been implemented. | Future agentic-engineering audit pack approval. |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md` | `evidence-preserve` / `completed` | Kept in place and later marked completed after the Stage 90 audit pack and Stage 04 evidence were implemented. | Stage 90 agentic engineering implementation audit pack and Stage 04 evidence. |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md` | `evidence-preserve` / `completed` | Kept in place and later marked completed after the Stage 90 audit pack and Stage 04 evidence were implemented. | Stage 90 agentic engineering implementation audit pack and Stage 04 evidence. |
 | `docs/03.specs/103-document-restructure-audit-contract-archive/README.md` | `active-canonical` | Status changed to `active`. | Current `PLN-DRA-*` implementation chain. |
 | `docs/03.specs/103-document-restructure-audit-contract-archive/spec.md` | `active-canonical` | Status changed to `active`. | Current `PLN-DRA-*` implementation chain. |
 | `docs/03.specs/100-template-system-contract-standardization/spec.md` | `evidence-preserve` | Status changed to `completed`; kept as implementation evidence. | Stage 99 support contracts and Stage 04 standardization task. |
 | `docs/03.specs/101-template-system-reorganization/README.md` | `evidence-preserve` / `superseded` | Status changed to `superseded`; body points to the replacement spec. | `docs/03.specs/100-template-system-contract-standardization/spec.md` |
 | `docs/03.specs/101-template-system-reorganization/spec.md` | `evidence-preserve` / `superseded` | Status changed to `superseded`; body points to the replacement spec. | `docs/03.specs/100-template-system-contract-standardization/spec.md` |
 
-Current Stage 03 status count after `PLN-DRA-004`:
+Current Stage 03 status count after the 2026-07-05 lifecycle cleanup:
 
 | Status | Count | Meaning |
 | --- | ---: | --- |
 | `active` | 19 | Active domain specs and current design surfaces. |
-| `completed` | 10 | Finished specs retained as valid evidence. |
-| `draft` | 2 | Agentic-engineering audit-pack design still awaits implementation approval. |
+| `completed` | 16 | Finished specs retained as valid evidence. |
 | `superseded` | 2 | Prior template-system reorganization surfaces pointing to the current replacement. |
 
 ## Findings
@@ -132,7 +133,7 @@ Current Stage 03 status count after `PLN-DRA-004`:
 | ID | Surface | Finding | Disposition | Recommended Batch |
 | --- | --- | --- | --- | --- |
 | DRA-SDL-001 | Completed Stage 03 specs | Link review found no completed spec that should leave the active chain in this batch; completed historical specs remain evidence or active inputs. | `active-canonical` / `evidence-preserve` | Done in `PLN-DRA-004`; no tombstones created. |
-| DRA-SDL-002 | Draft Stage 03 specs | Five draft rows were reclassified: current document restructure is active, template contract standardization is completed, and template reorganization is superseded. The agentic-engineering audit-pack design remains draft. | `active-canonical` / `evidence-preserve` | Done in `PLN-DRA-004`; agentic audit pack remains a future approval item. |
+| DRA-SDL-002 | Draft Stage 03 specs | The prior draft rows have been reclassified: current document restructure remains active, template contract standardization and the later agentic audit-pack design are completed, and template reorganization is superseded. No Stage 03 draft rows remain. | `active-canonical` / `evidence-preserve` / `completed` | Updated by the 2026-07-05 lifecycle cleanup; no agentic audit-pack future approval item remains. |
 | DRA-SDL-003 | Current document restructure spec | The current design spec and README are active for this wave. | `active-canonical` | Done in `PLN-DRA-004`; no target move. |
 | DRA-SDL-004 | Active domain specs | 17 active Stage 03 files include canonical domain specs and current design references. | `active-canonical` | No broad archive. |
 

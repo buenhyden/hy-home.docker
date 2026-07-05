@@ -174,8 +174,8 @@ targets. The future audit pack must classify them before any target mutation.
 | `docs/03.specs/090-workspace-audit-2026-05/spec.md` | Kept in place | `evidence-preserve` | Historical audit chain and comparison guides |
 | `docs/03.specs/092-workspace-consistency-2026-05b/spec.md` | Kept in place | `evidence-preserve` | Follow-up governance consistency plan/task |
 | `docs/03.specs/091-workspace-doc-consistency-2026-05/spec.md` | Kept in place | `evidence-preserve` | Predecessor to `workspace-consistency-2026-05b` |
-| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md` | Kept as draft | `active-canonical` draft follow-up | Future agentic-engineering audit pack approval |
-| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md` | Kept as draft | `active-canonical` draft follow-up | Future agentic-engineering audit pack approval |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md` | Kept in place; later marked completed | `evidence-preserve` / `completed` | Stage 90 agentic engineering implementation audit pack and Stage 04 evidence |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md` | Kept in place; later marked completed | `evidence-preserve` / `completed` | Stage 90 agentic engineering implementation audit pack and Stage 04 evidence |
 | `docs/03.specs/103-document-restructure-audit-contract-archive/README.md` | Status changed to `active` | `active-canonical` | Current `PLN-DRA-*` implementation chain |
 | `docs/03.specs/103-document-restructure-audit-contract-archive/spec.md` | Status changed to `active` | `active-canonical` | Current `PLN-DRA-*` implementation chain |
 | `docs/03.specs/100-template-system-contract-standardization/spec.md` | Status changed to `completed` | `evidence-preserve` | Stage 99 support contracts and Stage 04 standardization task |
