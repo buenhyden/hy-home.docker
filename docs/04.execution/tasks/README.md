@@ -141,6 +141,7 @@ docs/04.execution/tasks/
 ├── 2026-07-04-infra-tech-stack-version-refresh.md # Completed infra tech-stack Compose and registry version refresh evidence
 ├── 2026-07-05-agentic-engineering-implementation-audit-pack.md # Completed Stage 90 agentic engineering implementation audit pack evidence
 ├── 2026-07-05-agentic-research-pack-refresh.md # Completed Stage 90 agentic research pack refresh evidence
+├── 2026-07-05-provider-workspace-artifact-path-parity.md # Active provider `_workspace/repo-support` parity evidence
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration evidence
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract evidence
 └── README.md                                # This file
@@ -218,6 +219,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Agent Governance Phase 1 Revalidation Task**: [2026-06-02-agent-governance-phase-1-revalidation.md](./2026-06-02-agent-governance-phase-1-revalidation.md)
 - **Agent Governance Phase 2 Strategy Integration Task**: [2026-06-02-agent-governance-phase-2-strategy-integration.md](./2026-06-02-agent-governance-phase-2-strategy-integration.md)
 - **Agent Governance Phase 3 Approved Surface Activation Task**: [2026-06-02-agent-governance-phase-3-approved-surface-activation.md](./2026-06-02-agent-governance-phase-3-approved-surface-activation.md)
+- **Provider Workspace Artifact Path Parity Task**: [2026-07-05-provider-workspace-artifact-path-parity.md](./2026-07-05-provider-workspace-artifact-path-parity.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
 - **Agent Governance Phase 4 Closure Reconciliation Task**: [2026-06-02-agent-governance-phase-4-closure-reconciliation.md](./2026-06-02-agent-governance-phase-4-closure-reconciliation.md)
 - **Docs Implementation Reconciliation Task**: [2026-06-02-docs-implementation-reconciliation.md](./2026-06-02-docs-implementation-reconciliation.md)
