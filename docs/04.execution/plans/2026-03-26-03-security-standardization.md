@@ -22,7 +22,7 @@ Standardize the `03-security` tier documentation system to improve architecture 
 - **PRD**: [003-security.md](../../01.requirements/003-security.md)
 - **ARD**: [0003-security-architecture.md](../../02.architecture/requirements/0003-security-architecture.md)
 - **ADR**: [0003-vault-as-secrets-manager.md](../../02.architecture/decisions/0003-vault-as-secrets-manager.md)
-- **Spec**: [03-security/spec.md](../../03.specs/03-security/spec.md)
+- **Spec**: [003-security/spec.md](../../03.specs/003-security/spec.md)
 
 ### 2. README Refactoring
 
@@ -79,4 +79,4 @@ This historical plan exists to organize the work described in the existing goal 
 - [Security PRD](../../01.requirements/003-security.md)
 - [Security ARD](../../02.architecture/requirements/0003-security-architecture.md)
 - [Vault ADR](../../02.architecture/decisions/0003-vault-as-secrets-manager.md)
-- [Security spec](../../03.specs/03-security/spec.md)
+- [Security spec](../../03.specs/003-security/spec.md)

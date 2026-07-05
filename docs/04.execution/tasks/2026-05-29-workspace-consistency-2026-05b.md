@@ -12,7 +12,7 @@ This document is the implementation and verification task list for the workspace
 
 ## Inputs
 
-- **Parent Spec**: [workspace-consistency-2026-05b spec](../../03.specs/workspace-consistency-2026-05b/spec.md)
+- **Parent Spec**: [workspace-consistency-2026-05b spec](../../03.specs/092-workspace-consistency-2026-05b/spec.md)
 - **Parent Plan**: [2026-05-29 workspace consistency 2026-05b plan](../plans/2026-05-29-workspace-consistency-2026-05b.md)
 
 ## Working Rules
@@ -88,7 +88,7 @@ This document is the implementation and verification task list for the workspace
 
 ## Related Documents
 
-- **Parent Spec**: [workspace-consistency-2026-05b spec](../../03.specs/workspace-consistency-2026-05b/spec.md)
+- **Parent Spec**: [workspace-consistency-2026-05b spec](../../03.specs/092-workspace-consistency-2026-05b/spec.md)
 - **Parent Plan**: [2026-05-29 workspace consistency 2026-05b plan](../plans/2026-05-29-workspace-consistency-2026-05b.md)
 - **Predecessor Task**: [2026-05-28 workspace doc consistency tasks](./2026-05-28-workspace-doc-consistency.md)
 - **Templates**: [docs/99.templates/](../../99.templates/)

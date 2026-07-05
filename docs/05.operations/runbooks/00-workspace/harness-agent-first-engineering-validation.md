@@ -26,7 +26,7 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 
 #### Canonical References
 
-- [Specification](../../../03.specs/harness-agent-first-engineering/spec.md)
+- [Specification](../../../03.specs/094-harness-agent-first-engineering/spec.md)
 - [Usage Guide](../../guides/00-workspace/harness-agent-first-engineering.md)
 - [Operations Policy](../../policies/00-workspace/harness-agent-first-engineering.md)
 - [Agent Governance Hub](../../../00.agent-governance/README.md)

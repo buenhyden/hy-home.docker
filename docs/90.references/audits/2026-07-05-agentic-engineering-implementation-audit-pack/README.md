@@ -92,6 +92,6 @@ This README is for:
 
 - [Audit references](../README.md)
 - [Agentic engineering research pack](../../research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Audit pack spec](../../../03.specs/agentic-engineering-implementation-audit-pack/spec.md)
+- [Audit pack spec](../../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md)
 - [Audit pack plan](../../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
 - [Audit pack task evidence](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md)

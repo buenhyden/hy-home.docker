@@ -16,7 +16,7 @@ change, or operations bucket restructure begins.
 
 ## Inputs
 
-- **Parent Spec**: [Document restructure design spec](../../03.specs/document-restructure-audit-contract-archive/spec.md)
+- **Parent Spec**: [Document restructure design spec](../../03.specs/103-document-restructure-audit-contract-archive/spec.md)
 - **Parent Plan**: [Document restructure implementation plan](../plans/2026-07-04-document-restructure-audit-contract-archive.md)
 - **Prior Audit Pack Task**: [Workspace document contract audit pack task](./2026-07-03-workspace-document-contract-audit-pack.md)
 - **Prior Remediation Task**: [Document contract remediation batch task](./2026-07-03-document-contract-remediation-batches.md)
@@ -59,7 +59,7 @@ change, or operations bucket restructure begins.
 | `docs/90.references/llm-wiki/llm-wiki-index.md` | LLM Wiki generated index contract | Tracked path index | Prior generated path index from previous batch | Index regenerated after staging current batch changes | Rerun `bash scripts/knowledge/generate-llm-wiki-index.sh` after revert | Path metadata only; no secret values or raw runtime logs |
 | `docs/00.agent-governance/memory/progress.md` | Governance memory contract | Progress memory | `PLN-DRA-005` not recorded | Operations bucket restructure recorded after validation | `git revert` the operations bucket restructure commit | No secret values, credentials, tokens, private keys, raw logs, shell history, or `.env` values |
 | `docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/{ci-qa-formatting-contract.md,restructure-gap-register.md}` | `PLN-DRA-006` validator/CI/QA decision batch | CI/QA/formatting decision evidence | Dependency-audit and Graphify hard gates were future candidates; current workflow/script gates were already active | Current gates are preserved; dependency-audit and Graphify hard gates remain future Security/QA candidates with no workflow/script mutation | `git revert` the validator/CI/QA decision commit | Evidence-only updates; no workflow, validator, credential, or remote setting changes |
-| `docs/03.specs/document-restructure-audit-contract-archive/spec.md`; `docs/04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md`; this task; progress memory | `PLN-DRA-006` closure evidence | Spec/plan/task/progress routing | `T-DRA-006` planned and completion criteria still open | Decision recorded and `T-DRA-006` marked done after validation | `git revert` the validator/CI/QA decision commit | Documentation metadata only; no secret values or runtime logs |
+| `docs/03.specs/103-document-restructure-audit-contract-archive/spec.md`; `docs/04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md`; this task; progress memory | `PLN-DRA-006` closure evidence | Spec/plan/task/progress routing | `T-DRA-006` planned and completion criteria still open | Decision recorded and `T-DRA-006` marked done after validation | `git revert` the validator/CI/QA decision commit | Documentation metadata only; no secret values or runtime logs |
 | `docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md`; `docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/restructure-gap-register.md`; `docs/00.agent-governance/memory/progress.md` | `PLN-DRA-007` closure batch | Final evidence, residual gaps, and commit trail | `T-DRA-007` planned; residual rows and commit trail not yet summarized | Final closure evidence records commit trail, accepted residual triggers, validation results, and progress memory | `git revert` the closure evidence commit | Evidence-only updates; no target moves, validator changes, workflow changes, secret values, or runtime logs |
 | Future target documents | Parent plan approval gates | `docs/98.archive/**`, validators, workflows, provider runtime, runtime infra | No validator, workflow, provider runtime, runtime infra, secret material, or archive tombstone change through `PLN-DRA-007` | Future batches must add per-surface evidence before edits | Revert only the future batch commit that introduced the change | Redaction boundary must be restated before touching protected surfaces |
 
@@ -165,22 +165,22 @@ targets. The future audit pack must classify them before any target mutation.
 
 | Target | Final Action | Disposition | Replacement / Current Pointer |
 | --- | --- | --- | --- |
-| `docs/03.specs/docs-taxonomy-agent-first-migration/spec.md` | Kept in place | `evidence-preserve` | Stage 04 taxonomy plan/task evidence |
-| `docs/03.specs/harness-agent-first-engineering/spec.md` | Kept in place | `active-canonical` / `evidence-preserve` | HAFE operations guide, policy, and validation runbook |
-| `docs/03.specs/home-docker-revalidation-deferred-follow-up/spec.md` | Kept in place | `evidence-preserve` | Stage 04 deferred follow-up plan/task |
-| `docs/03.specs/infra-secrets-docs-refresh/spec.md` | Kept in place | `evidence-preserve` | Stage 04 infra/secrets/docs refresh plan/task |
-| `docs/03.specs/llm-wiki-agent-first-completion/spec.md` | Kept in place | `evidence-preserve` | LLM Wiki generator/index contract and Stage 04 evidence |
-| `docs/03.specs/standardize-infra-net/spec.md` | Kept in place | `active-canonical` | Stage 05 infra_net guide/runbook and architecture requirements/decision |
-| `docs/03.specs/workspace-audit-2026-05/spec.md` | Kept in place | `evidence-preserve` | Historical audit chain and comparison guides |
-| `docs/03.specs/workspace-consistency-2026-05b/spec.md` | Kept in place | `evidence-preserve` | Follow-up governance consistency plan/task |
-| `docs/03.specs/workspace-doc-consistency-2026-05/spec.md` | Kept in place | `evidence-preserve` | Predecessor to `workspace-consistency-2026-05b` |
-| `docs/03.specs/agentic-engineering-implementation-audit-pack/README.md` | Kept as draft | `active-canonical` draft follow-up | Future agentic-engineering audit pack approval |
-| `docs/03.specs/agentic-engineering-implementation-audit-pack/spec.md` | Kept as draft | `active-canonical` draft follow-up | Future agentic-engineering audit pack approval |
-| `docs/03.specs/document-restructure-audit-contract-archive/README.md` | Status changed to `active` | `active-canonical` | Current `PLN-DRA-*` implementation chain |
-| `docs/03.specs/document-restructure-audit-contract-archive/spec.md` | Status changed to `active` | `active-canonical` | Current `PLN-DRA-*` implementation chain |
-| `docs/03.specs/template-system-contract-standardization/spec.md` | Status changed to `completed` | `evidence-preserve` | Stage 99 support contracts and Stage 04 standardization task |
-| `docs/03.specs/template-system-reorganization/README.md` | Status changed to `superseded`; replacement pointer added | `evidence-preserve` / `superseded` | `docs/03.specs/template-system-contract-standardization/spec.md` |
-| `docs/03.specs/template-system-reorganization/spec.md` | Status changed to `superseded`; replacement pointer added | `evidence-preserve` / `superseded` | `docs/03.specs/template-system-contract-standardization/spec.md` |
+| `docs/03.specs/093-docs-taxonomy-agent-first-migration/spec.md` | Kept in place | `evidence-preserve` | Stage 04 taxonomy plan/task evidence |
+| `docs/03.specs/094-harness-agent-first-engineering/spec.md` | Kept in place | `active-canonical` / `evidence-preserve` | HAFE operations guide, policy, and validation runbook |
+| `docs/03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md` | Kept in place | `evidence-preserve` | Stage 04 deferred follow-up plan/task |
+| `docs/03.specs/095-infra-secrets-docs-refresh/spec.md` | Kept in place | `evidence-preserve` | Stage 04 infra/secrets/docs refresh plan/task |
+| `docs/03.specs/096-llm-wiki-agent-first-completion/spec.md` | Kept in place | `evidence-preserve` | LLM Wiki generator/index contract and Stage 04 evidence |
+| `docs/03.specs/098-standardize-infra-net/spec.md` | Kept in place | `active-canonical` | Stage 05 infra_net guide/runbook and architecture requirements/decision |
+| `docs/03.specs/090-workspace-audit-2026-05/spec.md` | Kept in place | `evidence-preserve` | Historical audit chain and comparison guides |
+| `docs/03.specs/092-workspace-consistency-2026-05b/spec.md` | Kept in place | `evidence-preserve` | Follow-up governance consistency plan/task |
+| `docs/03.specs/091-workspace-doc-consistency-2026-05/spec.md` | Kept in place | `evidence-preserve` | Predecessor to `workspace-consistency-2026-05b` |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md` | Kept as draft | `active-canonical` draft follow-up | Future agentic-engineering audit pack approval |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md` | Kept as draft | `active-canonical` draft follow-up | Future agentic-engineering audit pack approval |
+| `docs/03.specs/103-document-restructure-audit-contract-archive/README.md` | Status changed to `active` | `active-canonical` | Current `PLN-DRA-*` implementation chain |
+| `docs/03.specs/103-document-restructure-audit-contract-archive/spec.md` | Status changed to `active` | `active-canonical` | Current `PLN-DRA-*` implementation chain |
+| `docs/03.specs/100-template-system-contract-standardization/spec.md` | Status changed to `completed` | `evidence-preserve` | Stage 99 support contracts and Stage 04 standardization task |
+| `docs/03.specs/101-template-system-reorganization/README.md` | Status changed to `superseded`; replacement pointer added | `evidence-preserve` / `superseded` | `docs/03.specs/100-template-system-contract-standardization/spec.md` |
+| `docs/03.specs/101-template-system-reorganization/spec.md` | Status changed to `superseded`; replacement pointer added | `evidence-preserve` / `superseded` | `docs/03.specs/100-template-system-contract-standardization/spec.md` |
 
 ## PLN-DRA-005 Operations Exact Disposition List
 
@@ -311,7 +311,7 @@ targets. The future audit pack must classify them before any target mutation.
 
 ## Related Documents
 
-- **Parent Spec**: [Document restructure design spec](../../03.specs/document-restructure-audit-contract-archive/spec.md)
+- **Parent Spec**: [Document restructure design spec](../../03.specs/103-document-restructure-audit-contract-archive/spec.md)
 - **Parent Plan**: [Document restructure implementation plan](../plans/2026-07-04-document-restructure-audit-contract-archive.md)
 - **Prior Audit Pack Task**: [Workspace document contract audit pack task](./2026-07-03-workspace-document-contract-audit-pack.md)
 - **Prior Remediation Task**: [Document contract remediation batch task](./2026-07-03-document-contract-remediation-batches.md)

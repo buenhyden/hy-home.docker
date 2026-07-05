@@ -99,7 +99,7 @@ bash scripts/hardening/check-all-hardening.sh
 
 ## Related Documents
 
-- [Specification](../../03.specs/harness-agent-first-engineering/spec.md)
+- [Specification](../../03.specs/094-harness-agent-first-engineering/spec.md)
 - [Task Evidence](../tasks/2026-05-09-harness-agent-first-engineering.md)
 - [Guide](../../05.operations/guides/00-workspace/harness-agent-first-engineering.md)
 - [Operations Policy](../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)

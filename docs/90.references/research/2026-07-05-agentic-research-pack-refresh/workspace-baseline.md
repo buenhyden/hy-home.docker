@@ -106,7 +106,7 @@ Provider-wise, Claude, Codex, and Gemini share policy but expose different mecha
 - [Security scope](../../../00.agent-governance/scopes/security.md) - security enforcement and secret-boundary model
 - [GitHub governance](../../../00.agent-governance/rules/github-governance.md) - workflow security, protected-branch, and required-check contracts
 - [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md) - repo-local harness surface routing
-- [HAFE specification](../../../03.specs/harness-agent-first-engineering/spec.md) - existing harness and agent-first engineering contracts
+- [HAFE specification](../../../03.specs/094-harness-agent-first-engineering/spec.md) - existing harness and agent-first engineering contracts
 - [HAFE guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md) - workspace audit guide
 - [HAFE policy](../../../05.operations/policies/00-workspace/harness-agent-first-engineering.md) - operations controls
 - [Infra README](../../../../infra/README.md) - Docker Compose infrastructure inventory and validation guidance
@@ -126,4 +126,4 @@ Provider-wise, Claude, Codex, and Gemini share policy but expose different mecha
 - [research references](../README.md)
 - [90.references](../../README.md)
 - [agent governance hub](../../../00.agent-governance/README.md)
-- [HAFE specification](../../../03.specs/harness-agent-first-engineering/spec.md)
+- [HAFE specification](../../../03.specs/094-harness-agent-first-engineering/spec.md)

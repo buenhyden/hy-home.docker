@@ -13,7 +13,7 @@ This document is work evidence that fills the missing execution plan/task covera
 
 ## Inputs
 
-- **Parent Spec**: [Data analytics spec](../../03.specs/04-data-analytics/spec.md)
+- **Parent Spec**: [Data analytics spec](../../03.specs/005-data-analytics/spec.md)
 - **Parent Plan**: [Data analytics execution traceability plan](../plans/2026-05-22-data-analytics-execution-traceability.md)
 - **Infra Evidence**: [Analytics infra README](../../../infra/04-data/analytics/README.md)
 - **Operations Evidence**: [Analytics operations guide index](../../05.operations/guides/04-data/analytics/README.md)
@@ -61,14 +61,14 @@ This document is work evidence that fills the missing execution plan/task covera
   - PASS: analytics compose path existence check through linked infra README and operations docs.
   - Superseded: direct `docker compose -f infra/04-data/analytics/... config` commands require root network/secret context or a local validation overlay and are not used as current proof.
 - **Eval Commands**:
-  - Spec link scan: `docs/03.specs/04-data-analytics/spec.md` now has direct plan/task links.
+  - Spec link scan: `docs/03.specs/005-data-analytics/spec.md` now has direct plan/task links.
 - **Logs / Evidence Location**:
   - This task document.
   - Current evidence records the analytics compose boundary and avoids claiming rootless service-local compose parse success.
 
 ## Related Documents
 
-- **Parent Spec**: [Data analytics spec](../../03.specs/04-data-analytics/spec.md)
+- **Parent Spec**: [Data analytics spec](../../03.specs/005-data-analytics/spec.md)
 - **Parent Plan**: [Data analytics execution traceability plan](../plans/2026-05-22-data-analytics-execution-traceability.md)
 - **Audit Task**: [Spec execution implementation audit task](./2026-05-22-spec-execution-implementation-audit.md)
 - **Infra README**: [Analytics infra README](../../../infra/04-data/analytics/README.md)

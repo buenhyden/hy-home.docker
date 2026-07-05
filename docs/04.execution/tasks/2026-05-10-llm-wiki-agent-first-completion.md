@@ -11,7 +11,7 @@ This document tracks implementation work for the LLM Wiki generator, generated i
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/llm-wiki-agent-first-completion/spec.md](../../03.specs/llm-wiki-agent-first-completion/spec.md)
+- **Parent Spec**: [../../03.specs/096-llm-wiki-agent-first-completion/spec.md](../../03.specs/096-llm-wiki-agent-first-completion/spec.md)
 - **Parent Plan**: [../plans/2026-05-10-llm-wiki-agent-first-completion.md](../plans/2026-05-10-llm-wiki-agent-first-completion.md)
 
 ## Working Rules
@@ -63,7 +63,7 @@ This document tracks implementation work for the LLM Wiki generator, generated i
 
 ## Related Documents
 
-- [Spec](../../03.specs/llm-wiki-agent-first-completion/spec.md)
+- [Spec](../../03.specs/096-llm-wiki-agent-first-completion/spec.md)
 - [Plan](../plans/2026-05-10-llm-wiki-agent-first-completion.md)
 - [Maintenance Guide](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)
 - [LLM Wiki References](../../90.references/llm-wiki/README.md)

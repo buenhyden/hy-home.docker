@@ -31,8 +31,8 @@ This document records actual progress status and verification evidence for the i
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-SPEC-EXEC-001 | Inventory docs/03 spec/design docs and docs/04 plan/task docs | doc | Specs README | PLN-SPEC-EXEC-001 | 19 spec/design docs, 39 plans, 34 tasks found | doc-writer | Done |
-| T-SPEC-EXEC-002 | Detect spec documents without execution plan/task links | doc | Spec Related Documents | PLN-SPEC-EXEC-001 | `04-data-analytics/spec.md` has 0 plan/task links | doc-writer | Done |
-| T-SPEC-EXEC-003 | Add data analytics execution traceability evidence | doc | `04-data-analytics/spec.md` | PLN-SPEC-EXEC-002 | new data analytics plan/task and static compose checks | doc-writer | Done |
+| T-SPEC-EXEC-002 | Detect spec documents without execution plan/task links | doc | Spec Related Documents | PLN-SPEC-EXEC-001 | `005-data-analytics/spec.md` has 0 plan/task links | doc-writer | Done |
+| T-SPEC-EXEC-003 | Add data analytics execution traceability evidence | doc | `005-data-analytics/spec.md` | PLN-SPEC-EXEC-002 | new data analytics plan/task and static compose checks | doc-writer | Done |
 | T-SPEC-EXEC-004 | Classify remaining active/draft plan/task implementation state | audit | Execution plans/tasks | PLN-SPEC-EXEC-003 | stale implemented items separated from runtime-evidence-pending historical service rollout docs | doc-writer | Done |
 | T-SPEC-EXEC-005 | Remediate additional high-confidence gaps | doc | scoped by audit | PLN-SPEC-EXEC-004 | data analytics, infra team agent, requirements, scripts, execution remediation, and hook automation evidence aligned | doc-writer | Done |
 | T-SPEC-EXEC-006 | Run final validators and update progress evidence | test | Verification plan | PLN-SPEC-EXEC-005 | validator bundle and hook smoke tests passed; progress log updated | doc-writer | Done |
@@ -74,7 +74,7 @@ This document records actual progress status and verification evidence for the i
   - PASS: `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config >/dev/null`
   - PASS: `docker compose -f infra/04-data/analytics/opensearch/docker-compose.yml config >/dev/null`
   - PASS: `docker compose -f infra/04-data/analytics/warehouses/docker-compose.yml config >/dev/null`
-  - PASS: `test -f docs/03.specs/07-workflow/agent-design.md`
+  - PASS: `test -f docs/03.specs/008-workflow/agent-design.md`
   - PASS: `test -f docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md`
   - PASS: `test ! -d docs/superpowers`
   - PASS: `git diff --check`
@@ -89,7 +89,7 @@ This document records actual progress status and verification evidence for the i
   - PASS: `/home/hy/.local/bin/graphify update .`
   - ADVISORY: `bash scripts/knowledge/report-graphify-health.sh` remains advisory due to 3 cross-root inferred edges.
 - **Eval Commands**:
-  - Initial inventory scan over `docs/03.specs` found 19 non-README spec/design docs; only `04-data-analytics/spec.md` had no direct plan/task links.
+  - Initial inventory scan over `docs/03.specs` found 19 non-README spec/design docs; only `005-data-analytics/spec.md` had no direct plan/task links.
   - Initial execution inventory found 39 plan docs and 34 task docs before this remediation.
   - Final inventory after remediation: 19 spec/design docs, 42 plan docs, and 40 task docs. Status counts after completion are 15 active / 1 completed / 3 approved specs, 18 completed / 24 active plans, and 17 completed / 23 active tasks.
   - Final direct spec link scan found zero spec/design docs missing plan or task links.
@@ -105,10 +105,10 @@ This document records actual progress status and verification evidence for the i
 ## Related Documents
 
 - **Parent Plan**: [Spec execution implementation audit plan](../plans/2026-05-22-spec-execution-implementation-audit.md)
-- **Data analytics spec**: [Data analytics spec](../../03.specs/04-data-analytics/spec.md)
+- **Data analytics spec**: [Data analytics spec](../../03.specs/005-data-analytics/spec.md)
 - **Data analytics plan**: [Data analytics execution traceability plan](../plans/2026-05-22-data-analytics-execution-traceability.md)
 - **Data analytics task**: [Data analytics execution traceability task](./2026-05-22-data-analytics-execution-traceability.md)
-- **Workflow agent design**: [Workflow cross-validation agent design](../../03.specs/07-workflow/agent-design.md)
+- **Workflow agent design**: [Workflow cross-validation agent design](../../03.specs/008-workflow/agent-design.md)
 - **Infra team agent plan**: [Infra team agent cross-validation plan](../plans/2026-04-10-infra-team-agent-cross-validation.md)
 - **Infra team agent task**: [Infra team agent cross-validation task](./2026-04-10-infra-team-agent-cross-validation.md)
 - **Requirements standardization task**: [Requirements standardization task](./2026-05-17-requirements-standardization.md)

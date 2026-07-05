@@ -102,5 +102,5 @@ The existing constraints, component architecture, and reliability sections descr
 
 - [Security PRD](../../01.requirements/003-security.md)
 - [Vault ADR](../decisions/0003-vault-as-secrets-manager.md)
-- [Security spec](../../03.specs/03-security/spec.md)
+- [Security spec](../../03.specs/003-security/spec.md)
 - [Security standardization plan](../../04.execution/plans/2026-03-26-03-security-standardization.md)

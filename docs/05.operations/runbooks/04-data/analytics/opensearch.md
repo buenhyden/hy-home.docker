@@ -21,7 +21,7 @@ status: active
 
 ### Canonical References
 
-- **Spec**: [Analytics spec](../../../../03.specs/04-data-analytics/spec.md)
+- **Spec**: [Analytics spec](../../../../03.specs/005-data-analytics/spec.md)
 - **Policy**: [OpenSearch policy](../../../policies/04-data/analytics/opensearch.md)
 - **Guide**: [OpenSearch guide](../../../guides/04-data/analytics/opensearch.md)
 

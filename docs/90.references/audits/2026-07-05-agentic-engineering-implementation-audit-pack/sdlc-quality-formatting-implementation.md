@@ -59,7 +59,7 @@ validation/hardening surfaces, and quality-related research.
 
 | Area | Status | Evidence | Notes |
 | --- | --- | --- | --- |
-| Spec-driven development | Implemented | [Stage 03 README](../../../03.specs/README.md), [audit pack spec](../../../03.specs/agentic-engineering-implementation-audit-pack/spec.md) | Active specs define contracts, verification, and handoff paths. |
+| Spec-driven development | Implemented | [Stage 03 README](../../../03.specs/README.md), [audit pack spec](../../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md) | Active specs define contracts, verification, and handoff paths. |
 | Execution planning | Implemented | [Stage 04 plans README](../../../04.execution/plans/README.md), [audit pack plan](../../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Plans define WBS, verification, risk, and completion criteria. |
 | Task evidence | Implemented | [Stage 04 tasks README](../../../04.execution/tasks/README.md), [audit pack task](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Task files record evidence, status, deviation, and validation results. |
 | Documentation contracts | Implemented | [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, frontmatter, language boundaries, links, and reference contracts are validator-backed. |

@@ -125,6 +125,6 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 ## Related Documents
 
 - [Env Key Comparison](env-key-comparison.md)
-- [Spec](../../../03.specs/workspace-audit-2026-05/spec.md)
+- [Spec](../../../03.specs/090-workspace-audit-2026-05/spec.md)
 - [secrets/SENSITIVE_ENV_VARS.md.example](../../../../secrets/SENSITIVE_ENV_VARS.md.example)
 - [secrets/README.md](../../../../secrets/README.md)

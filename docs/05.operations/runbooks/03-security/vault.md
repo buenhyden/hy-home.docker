@@ -20,7 +20,7 @@ status: active
 
 ### Canonical References
 
-- [Spec](../../../03.specs/03-security/spec.md)
+- [Spec](../../../03.specs/003-security/spec.md)
 - [Operations Policy](../../policies/03-security/vault.md)
 - [Plan](../../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md)

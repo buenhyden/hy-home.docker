@@ -52,11 +52,11 @@ commands, paths, or validation IDs.
 
 The following English-only target files now have no Korean text:
 
-- [Harness Agent-first Engineering Spec](../../03.specs/harness-agent-first-engineering/spec.md)
-- [Auth Tier Spec](../../03.specs/02-auth/spec.md)
-- [Security Tier Spec](../../03.specs/03-security/spec.md)
-- [Observability Tier Spec](../../03.specs/06-observability/spec.md)
-- [Workspace Audit 2026-05 Spec](../../03.specs/workspace-audit-2026-05/spec.md)
+- [Harness Agent-first Engineering Spec](../../03.specs/094-harness-agent-first-engineering/spec.md)
+- [Auth Tier Spec](../../03.specs/002-auth/spec.md)
+- [Security Tier Spec](../../03.specs/003-security/spec.md)
+- [Observability Tier Spec](../../03.specs/007-observability/spec.md)
+- [Workspace Audit 2026-05 Spec](../../03.specs/090-workspace-audit-2026-05/spec.md)
 
 ## Validation Results
 

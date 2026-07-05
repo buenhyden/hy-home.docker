@@ -14,7 +14,7 @@ status: active
 ## Overview
 
 This document is the implementation plan for
-`docs/03.specs/agentic-engineering-implementation-audit-pack/spec.md`. It
+`docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md`. It
 defines the execution order for creating a Stage 90 audit pack that compares
 the current agentic engineering research baseline with repo-local
 implementation evidence.
@@ -68,7 +68,7 @@ workflow behavior, secrets, or remote GitHub state.
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-AEA-001 | Activate the Stage 03 design and create execution scaffold | `docs/03.specs/agentic-engineering-implementation-audit-pack/**`, this plan, task evidence, Stage 03/04 indexes | `VAL-SPC-001`, `VAL-SPC-004` | Spec is active, plan/task links exist, no placeholder markers remain. |
+| PLN-AEA-001 | Activate the Stage 03 design and create execution scaffold | `docs/03.specs/105-agentic-engineering-implementation-audit-pack/**`, this plan, task evidence, Stage 03/04 indexes | `VAL-SPC-001`, `VAL-SPC-004` | Spec is active, plan/task links exist, no placeholder markers remain. |
 | PLN-AEA-002 | Inventory research criteria and repo-local evidence | task evidence; read-only evidence from Stage 00, provider notes, scripts, workflows, infra, templates, operations, and research pack | `VAL-SPC-002`, `VAL-SPC-003` | Evidence inventory cites exact local paths and source freshness caveats. |
 | PLN-AEA-003 | Write overview, harness, and loop audit reports | `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md`, `implementation-overview.md`, `harness-engineering-implementation.md`, `loop-engineering-implementation.md` | `VAL-SPC-002`, `VAL-SPC-003` | Reports use required sections, status vocabulary, gaps, automation impact, and sources. |
 | PLN-AEA-004 | Write provider, workspace, automation, and SDLC/quality audit reports | `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md`, `workspace-rules-environment-implementation.md`, `automation-candidates.md`, `sdlc-quality-formatting-implementation.md` | `VAL-SPC-002`, `VAL-SPC-003`, `VAL-SPC-005` | Reports cover requested categories and do not overstate Gemini first-class subagent parity. |
@@ -79,7 +79,7 @@ workflow behavior, secrets, or remote GitHub state.
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-PLN-001 | Structural | Check whitespace, conflict markers, and patch hygiene | `git diff --check` | No output. |
-| VAL-PLN-002 | Structural | Check unresolved work markers in the new audit pack | `rg -n "TBD|TODO|FIXME" docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack docs/03.specs/agentic-engineering-implementation-audit-pack docs/04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md` | No unresolved work markers. |
+| VAL-PLN-002 | Structural | Check unresolved work markers in the new audit pack | `rg -n "TBD|TODO|FIXME" docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack docs/03.specs/105-agentic-engineering-implementation-audit-pack docs/04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md` | No unresolved work markers. |
 | VAL-PLN-003 | Reference | Check generated LLM Wiki freshness after new docs are added | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | Generated index is fresh or regenerated in the final batch. |
 | VAL-PLN-004 | Provider surface | Confirm provider surface sync is unchanged | `bash scripts/operations/sync-provider-surfaces.sh --check` | No provider surface drift. |
 | VAL-PLN-005 | Traceability | Check documentation traceability | `bash scripts/validation/check-doc-traceability.sh` | `failures=0`. |
@@ -118,7 +118,7 @@ workflow behavior, secrets, or remote GitHub state.
 
 ## Related Documents
 
-- **Spec**: [Agentic Engineering Implementation Audit Pack Spec](../../03.specs/agentic-engineering-implementation-audit-pack/spec.md)
+- **Spec**: [Agentic Engineering Implementation Audit Pack Spec](../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md)
 - **Task**: [Agentic Engineering Implementation Audit Pack Task](../tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md)
 - **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Audit References**: [Audit references index](../../90.references/audits/README.md)

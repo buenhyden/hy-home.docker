@@ -65,7 +65,7 @@ indexes.
 | Loop | Status | Evidence | Notes |
 | --- | --- | --- | --- |
 | Bootstrap / context loop | Implemented | `AGENTS.md`, [Stage 00 governance hub](../../../00.agent-governance/README.md), [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) | Root shims and Stage 00 define loading sequence, scope, memory, and stage rules. |
-| Brainstorm / spec / plan loop | Implemented | [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [audit pack spec](../../../03.specs/agentic-engineering-implementation-audit-pack/spec.md) | Design and execution artifacts are routed through canonical stages. |
+| Brainstorm / spec / plan loop | Implemented | [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [audit pack spec](../../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md) | Design and execution artifacts are routed through canonical stages. |
 | Delegation / subagent loop | Partially Implemented | [subagent protocol](../../../00.agent-governance/subagent-protocol.md), `.claude/agents/`, `.codex/agents/`, `.agents/agents/` | Governance and adapters exist; runtime-native parity differs by provider. |
 | Hook pre/post edit loop | Partially Implemented | `.claude/hooks/`, `.codex/hooks.json`, [provider notes](../../../00.agent-governance/providers/gemini.md) | Claude/Codex hooks exist; Gemini follows behavioral contract. |
 | Local validation loop | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/**` | Local checks cover docs, contracts, Compose, hardening, templates, and QA bundles. |

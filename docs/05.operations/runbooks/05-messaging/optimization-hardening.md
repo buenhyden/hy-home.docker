@@ -20,7 +20,7 @@ status: active
 
 ### Canonical References
 
-- [Spec](../../../03.specs/05-messaging/spec.md)
+- [Spec](../../../03.specs/006-messaging/spec.md)
 - [Operations Policy](../../policies/05-messaging/optimization-hardening.md)
 - [Plan](../../../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md)

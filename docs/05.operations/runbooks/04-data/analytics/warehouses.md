@@ -21,7 +21,7 @@ status: active
 
 ### Canonical References
 
-- **Spec**: [Analytics spec](../../../../03.specs/04-data-analytics/spec.md)
+- **Spec**: [Analytics spec](../../../../03.specs/005-data-analytics/spec.md)
 - **Policy**: [StarRocks policy](../../../policies/04-data/analytics/warehouses.md)
 - **Guide**: [StarRocks guide](../../../guides/04-data/analytics/warehouses.md)
 

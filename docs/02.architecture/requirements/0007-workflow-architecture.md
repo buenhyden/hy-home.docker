@@ -66,6 +66,6 @@ status: active
 ## Related Documents
 
 - **PRD**: [008-workflow.md](../../01.requirements/008-workflow.md)
-- **Spec**: [07-workflow/spec.md](../../03.specs/07-workflow/spec.md)
+- **Spec**: [008-workflow/spec.md](../../03.specs/008-workflow/spec.md)
 - **Plan**: [2026-03-26-07-workflow-standardization.md](../../04.execution/plans/2026-03-26-07-workflow-standardization.md)
 - **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../decisions/0007-airflow-n8n-hybrid-workflow.md)

@@ -57,4 +57,4 @@ status: active
 
 - **PRD**: [../../01.requirements/001-gateway.md](../../01.requirements/001-gateway.md)
 - **ARD**: [../requirements/0001-gateway-architecture.md](../requirements/0001-gateway-architecture.md)
-- **Related Spec**: [../../03.specs/01-gateway/spec.md](../../03.specs/01-gateway/spec.md)
+- **Related Spec**: [../../03.specs/001-gateway/spec.md](../../03.specs/001-gateway/spec.md)

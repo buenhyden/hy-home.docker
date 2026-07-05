@@ -21,7 +21,7 @@ Local `main` already contains the 2026-05-25 workspace audit improvement commits
   - Preserve a metadata-only env/secrets drift record.
   - Keep deferred runtime/operator/GitHub/cleanup items explicit and reviewable.
 - **In Scope**:
-  - `docs/03.specs/home-docker-revalidation-deferred-follow-up/spec.md`
+  - `docs/03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md`
   - `docs/04.execution/plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md`
   - `docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md`
   - Parent README links under `docs/03.specs/`, `docs/04.execution/plans/`, and `docs/04.execution/tasks/`
@@ -98,7 +98,7 @@ Local `main` already contains the 2026-05-25 workspace audit improvement commits
 
 ## Related Documents
 
-- **Spec**: [home-docker-revalidation-deferred-follow-up spec](../../03.specs/home-docker-revalidation-deferred-follow-up/spec.md)
+- **Spec**: [home-docker-revalidation-deferred-follow-up spec](../../03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md)
 - **Task**: [2026-05-25 home docker revalidation deferred follow-up task](../tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md)
 - **Baseline Plan**: [2026-05-25 home docker workspace audit improvement plan](./2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Baseline Task**: [2026-05-25 home docker workspace audit improvement task](../tasks/2026-05-25-home-docker-workspace-audit-improvement.md)

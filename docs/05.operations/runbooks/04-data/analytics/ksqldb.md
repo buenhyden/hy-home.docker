@@ -21,7 +21,7 @@ status: active
 
 ### Canonical References
 
-- **Spec**: [Analytics spec](../../../../03.specs/04-data-analytics/spec.md)
+- **Spec**: [Analytics spec](../../../../03.specs/005-data-analytics/spec.md)
 - **Policy**: [ksqlDB policy](../../../policies/04-data/analytics/ksqldb.md)
 - **Guide**: [ksqlDB guide](../../../guides/04-data/analytics/ksqldb.md)
 

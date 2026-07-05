@@ -32,7 +32,7 @@ replacement exists, and strengthen Stage 99 support contracts so README files
 remain routing/index surfaces rather than policy owners.
 
 The approved design is in
-`docs/03.specs/document-restructure-audit-contract-archive/spec.md`. It uses
+`docs/03.specs/103-document-restructure-audit-contract-archive/spec.md`. It uses
 external documentation-structure, SDLC, CI/CD, QA, and formatting sources as
 supporting rationale while keeping repository-local Stage 00 and Stage 99
 documents as policy owners.
@@ -180,8 +180,8 @@ documents as policy owners.
 
 ## Related Documents
 
-- **Spec**: [Document restructure design spec](../../03.specs/document-restructure-audit-contract-archive/spec.md)
-- **Spec README**: [Document restructure design README](../../03.specs/document-restructure-audit-contract-archive/README.md)
+- **Spec**: [Document restructure design spec](../../03.specs/103-document-restructure-audit-contract-archive/spec.md)
+- **Spec README**: [Document restructure design README](../../03.specs/103-document-restructure-audit-contract-archive/README.md)
 - **Task Evidence Target**: `docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md` created by `PLN-DRA-001`
 - **Prior Audit Pack Plan**: [Workspace document contract audit pack plan](./2026-07-03-workspace-document-contract-audit-pack.md)
 - **Prior Remediation Plan**: [Document contract remediation batch plan](./2026-07-03-document-contract-remediation-batches.md)

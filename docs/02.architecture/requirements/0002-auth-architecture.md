@@ -60,7 +60,7 @@ graph TD
 
 ## Data Models
 
-Refer to `docs/03.specs/02-auth/spec.md` for detailed OIDC claims and realm structures.
+Refer to `docs/03.specs/002-auth/spec.md` for detailed OIDC claims and realm structures.
 
 ## AI Agent Integration
 
@@ -93,5 +93,5 @@ The existing architecture diagram, component, constraint, or reliability section
 ## Related Documents
 
 - **PRD**: [Auth product requirements](../../01.requirements/002-auth.md)
-- **Spec**: [Auth technical specification](../../03.specs/02-auth/spec.md)
+- **Spec**: [Auth technical specification](../../03.specs/002-auth/spec.md)
 - **ADR**: [Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)

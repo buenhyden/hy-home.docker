@@ -83,7 +83,7 @@ This document is the optimization/hardening implementation plan for `infra/07-wo
 - **PRD**: [../01.requirements/019-workflow-optimization-hardening.md](../../01.requirements/019-workflow-optimization-hardening.md)
 - **ARD**: [../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md](../../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
-- **Spec**: [../03.specs/07-workflow/spec.md](../../03.specs/07-workflow/spec.md)
+- **Spec**: [../03.specs/008-workflow/spec.md](../../03.specs/008-workflow/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md](../tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)
 - **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/guides/07-workflow/optimization-hardening.md)
 - **Operations**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/07-workflow/optimization-hardening.md)

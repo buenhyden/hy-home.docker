@@ -51,4 +51,4 @@ status: active
 
 - **PRD**: [../../01.requirements/007-observability.md](../../01.requirements/007-observability.md)
 - **ARD**: [../requirements/0006-observability-architecture.md](../requirements/0006-observability-architecture.md)
-- **Spec**: [../../03.specs/06-observability/spec.md](../../03.specs/06-observability/spec.md)
+- **Spec**: [../../03.specs/007-observability/spec.md](../../03.specs/007-observability/spec.md)

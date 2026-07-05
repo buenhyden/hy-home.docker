@@ -12,7 +12,7 @@ This document is the implementation and verification task list for the May 2026 
 
 ## Inputs
 
-- **Parent Spec**: [Workspace Audit 2026-05 Spec](../../03.specs/workspace-audit-2026-05/spec.md)
+- **Parent Spec**: [Workspace Audit 2026-05 Spec](../../03.specs/090-workspace-audit-2026-05/spec.md)
 - **Parent Plan**: [Workspace Audit 2026-05 Plan](../plans/2026-05-26-workspace-audit.md)
 
 ## Working Rules
@@ -26,7 +26,7 @@ This document is the implementation and verification task list for the May 2026 
 
 | Task ID | Description                            | Type | Parent Spec / Section | Validation / Evidence                                                        | Status |
 | ------- | -------------------------------------- | ---- | --------------------- | ---------------------------------------------------------------------------- | ------ |
-| T-001   | Create Session Spec | doc | GAP-10 | `docs/03.specs/workspace-audit-2026-05/spec.md` exists | Done |
+| T-001   | Create Session Spec | doc | GAP-10 | `docs/03.specs/090-workspace-audit-2026-05/spec.md` exists | Done |
 | T-002   | Create Session Plan | doc | GAP-10 | `docs/04.execution/plans/2026-05-26-workspace-audit.md` exists | Done |
 | T-003   | Create Session Task | doc | GAP-10 | This file | Done |
 | T-004   | compose-stack-agent skill stub | impl | GAP-05 | `.claude/skills/compose-stack-agent/skill.md` exists | Done |
@@ -58,6 +58,6 @@ This document is the implementation and verification task list for the May 2026 
 
 ## Related Documents
 
-- **Parent Spec**: [Workspace Audit 2026-05 Spec](../../03.specs/workspace-audit-2026-05/spec.md)
+- **Parent Spec**: [Workspace Audit 2026-05 Spec](../../03.specs/090-workspace-audit-2026-05/spec.md)
 - **Parent Plan**: [Workspace Audit 2026-05 Plan](../plans/2026-05-26-workspace-audit.md)
 - **Operations / References**: [Operations Stage](../../05.operations/README.md)

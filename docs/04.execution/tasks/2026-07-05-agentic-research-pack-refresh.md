@@ -16,7 +16,7 @@ configuration.
 
 ## Inputs
 
-- **Parent Spec**: [Agentic Research Pack Refresh Spec](../../03.specs/agentic-research-pack-refresh/spec.md)
+- **Parent Spec**: [Agentic Research Pack Refresh Spec](../../03.specs/104-agentic-research-pack-refresh/spec.md)
 - **Parent Plan**: [Agentic Research Pack Refresh Plan](../plans/2026-07-05-agentic-research-pack-refresh.md)
 - **Target Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 
@@ -85,7 +85,7 @@ project sources are preferred for downstream Stage 90 edits.
 
 | Source Class | URL / Source | What It Supports | Current Caveat / Update Needed |
 | --- | --- | --- | --- |
-| Stage 03 Spec | [Agentic Research Pack Refresh Spec](../../03.specs/agentic-research-pack-refresh/spec.md) | Design contract, source priority, provider parity guardrail, no-runtime-change boundary | Active; downstream research edits must stay advisory and must not claim provider parity without official support. |
+| Stage 03 Spec | [Agentic Research Pack Refresh Spec](../../03.specs/104-agentic-research-pack-refresh/spec.md) | Design contract, source priority, provider parity guardrail, no-runtime-change boundary | Active; downstream research edits must stay advisory and must not claim provider parity without official support. |
 | Stage 04 Plan | [Agentic Research Pack Refresh Plan](../plans/2026-07-05-agentic-research-pack-refresh.md) | Execution sequencing for source revalidation, research refresh, targeted additions, and final validation | Active; this evidence currently covers `PLN-002` source revalidation, `PLN-003` existing research refresh, and `PLN-004` targeted additions. |
 | Stage 90 Research Pack | [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md) | Target research category and existing document set | Active; refresh existing files before adding Docker/security/automation references. |
 | Claude Code Provider Docs | <https://code.claude.com/docs/en/overview>, <https://code.claude.com/docs/en/sub-agents>, <https://code.claude.com/docs/en/hooks> | Claude Code overview, CLAUDE.md/project memory, custom subagents, hooks, tool/permission scoping, parallel work | Update provider comparison to current `code.claude.com` URLs; Claude official docs support first-class subagents and hooks. |
@@ -219,6 +219,6 @@ memory were updated.
 ## Related Documents
 
 - [Plan](../plans/2026-07-05-agentic-research-pack-refresh.md)
-- [Spec](../../03.specs/agentic-research-pack-refresh/spec.md)
+- [Spec](../../03.specs/104-agentic-research-pack-refresh/spec.md)
 - [Research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Research references](../../90.references/research/README.md)

@@ -10,7 +10,7 @@ status: completed
 
 **Goal:** Standardize the Stage 99 template system contract and frontmatter rules so `support/` owns rules, `templates/` owns copyable forms, and validators enforce the boundary.
 
-**Architecture:** This plan implements the contract-first design in `docs/03.specs/template-system-contract-standardization/spec.md`. It updates support contracts first, then copyable templates, then validator enforcement, then direct fallout surfaces and generated indexes. Broad target-document rewrites stay out of scope unless they are direct fallout from a changed template or validator rule.
+**Architecture:** This plan implements the contract-first design in `docs/03.specs/100-template-system-contract-standardization/spec.md`. It updates support contracts first, then copyable templates, then validator enforcement, then direct fallout surfaces and generated indexes. Broad target-document rewrites stay out of scope unless they are direct fallout from a changed template or validator rule.
 
 **Tech Stack:** Markdown, Bash, Python snippets embedded in `scripts/validation/check-repo-contracts.sh`, Git, repo-local validation scripts.
 
@@ -104,7 +104,7 @@ is recorded as an out-of-scope gap when full repo contracts are run.
 - Modify: `docs/04.execution/tasks/README.md`
 - Read: `docs/99.templates/support/template-contract.md`
 - Read: `docs/99.templates/support/frontmatter-contract.md`
-- Read: `docs/03.specs/template-system-contract-standardization/spec.md`
+- Read: `docs/03.specs/100-template-system-contract-standardization/spec.md`
 
  **Step 1: Create the task evidence file from the task template**
 
@@ -170,7 +170,7 @@ generated indexes according to the approved spec.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/template-system-contract-standardization/spec.md](../../03.specs/template-system-contract-standardization/spec.md)
+- **Spec**: [../../03.specs/100-template-system-contract-standardization/spec.md](../../03.specs/100-template-system-contract-standardization/spec.md)
 - **Plan**: [../plans/2026-07-03-template-system-contract-standardization.md](../plans/2026-07-03-template-system-contract-standardization.md)
 - **Template contract**: [../../99.templates/support/template-contract.md](../../99.templates/support/template-contract.md)
 - **Frontmatter contract**: [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
@@ -770,8 +770,8 @@ Expected: commit succeeds.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/template-system-contract-standardization/spec.md](../../03.specs/template-system-contract-standardization/spec.md)
-- **Prior Template System Spec**: [../../03.specs/template-system-reorganization/spec.md](../../03.specs/template-system-reorganization/spec.md)
+- **Spec**: [../../03.specs/100-template-system-contract-standardization/spec.md](../../03.specs/100-template-system-contract-standardization/spec.md)
+- **Prior Template System Spec**: [../../03.specs/101-template-system-reorganization/spec.md](../../03.specs/101-template-system-reorganization/spec.md)
 - **Planned Task Evidence**: `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md` will be created by Task 1.
 - **Template catalog**: [../../99.templates/README.md](../../99.templates/README.md)
 - **Template contract**: [../../99.templates/support/template-contract.md](../../99.templates/support/template-contract.md)

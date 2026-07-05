@@ -11,7 +11,7 @@ This document tracks implementation and verification evidence for aligning the n
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/docs-taxonomy-agent-first-migration/spec.md](../../03.specs/docs-taxonomy-agent-first-migration/spec.md)
+- **Parent Spec**: [../../03.specs/093-docs-taxonomy-agent-first-migration/spec.md](../../03.specs/093-docs-taxonomy-agent-first-migration/spec.md)
 - **Parent Plan**: [../plans/2026-05-10-docs-taxonomy-agent-first-migration.md](../plans/2026-05-10-docs-taxonomy-agent-first-migration.md)
 
 ## Working Rules

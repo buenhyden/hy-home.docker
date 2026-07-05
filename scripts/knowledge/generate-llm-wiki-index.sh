@@ -63,7 +63,7 @@ REQUIRED_LOCAL_PATHS = {
     "docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md",
     "docs/00.agent-governance/agents/agents/wiki-curator.md",
     ".claude/agents/wiki-curator.md",
-    "docs/03.specs/llm-wiki-agent-first-completion/spec.md",
+    "docs/03.specs/096-llm-wiki-agent-first-completion/spec.md",
     "docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md",
     "docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md",
 }

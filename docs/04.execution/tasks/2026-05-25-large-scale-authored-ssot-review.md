@@ -56,7 +56,7 @@ This document is the execution record for reviewing authored SSoT surfaces befor
 | --- | --- | --- | --- | --- |
 | GOV-001 | Runtime skill authority | `.claude/skills` remains runtime SSoT; `.agents/skills/workspace-audit-revalidation/skill.md` now mirrors the approved runtime skill for compatibility consumers | Closed after expanded approval; keep `.claude` authoritative | No |
 | GOV-002 | Graphify authority | Graphify report is advisory due cross-root inferred edges | Keep corroboration requirement in reviewer prompts and task evidence | No |
-| DLR-001 | Spec folder routing | `docs/03.specs/home-docker-revalidation-deferred-follow-up/README.md` now exists and links to the spec/plan/task chain | Closed in low-risk docs lane | No |
+| DLR-001 | Spec folder routing | `docs/03.specs/097-home-docker-revalidation-deferred-follow-up/README.md` now exists and links to the spec/plan/task chain | Closed in low-risk docs lane | No |
 | DLR-002 | Task evidence heading | The two 2026-05-25 task docs now use exact `## Verification Summary` headings while preserving evidence tables | Closed in low-risk docs lane | No |
 | DLR-003 | Architecture status metadata | Architecture leaf docs now have explicit `status: active` frontmatter | Closed after expanded approval; broad body cleanup still avoided | No |
 | DLR-004 | Historical plan/task pairing | Completed scripts lifecycle cleanup plan now has retrospective task evidence; active 2026-03 priority plan is classified as a parent/umbrella plan | Closed after expanded approval | No |
@@ -111,7 +111,7 @@ This document is the execution record for reviewing authored SSoT surfaces befor
 
 | Closure Item | Result | Evidence |
 | --- | --- | --- |
-| Spec folder README | Added `docs/03.specs/home-docker-revalidation-deferred-follow-up/README.md` | Repo contract changed-doc template gate PASS |
+| Spec folder README | Added `docs/03.specs/097-home-docker-revalidation-deferred-follow-up/README.md` | Repo contract changed-doc template gate PASS |
 | Verification heading normalization | Renamed the two current 2026-05-25 task headings from `Verification Log` to `Verification Summary` | Existing evidence tables preserved |
 | Release-readiness checklist | Added backup/N/A, rollback/recovery link, incident path, and remote gate verification requirements | Doc traceability PASS |
 | Non-mutating baseline validation | Replaced `.env.example` copy behavior with Compose `--env-file .env.example` when `.env` is absent | Static copy scan PASS; baseline validators PASS |

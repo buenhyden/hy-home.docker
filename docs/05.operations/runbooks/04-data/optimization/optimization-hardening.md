@@ -20,7 +20,7 @@ status: active
 
 ### Canonical References
 
-- [Spec](../../../../03.specs/04-data/spec.md)
+- [Spec](../../../../03.specs/004-data/spec.md)
 - [Operations Policy](../../../policies/04-data/optimization/optimization-hardening.md)
 - [Usage Guide](../../../guides/04-data/optimization/optimization-hardening.md)
 - [Plan](../../../../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md)

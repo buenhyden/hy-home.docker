@@ -141,5 +141,5 @@ CI summary artifacts that map local gates to remote required checks.
 - [Harness implementation audit](./harness-engineering-implementation.md)
 - [Loop implementation audit](./loop-engineering-implementation.md)
 - [Research pack](../../research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Audit pack spec](../../../03.specs/agentic-engineering-implementation-audit-pack/spec.md)
+- [Audit pack spec](../../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md)
 - [Audit pack plan](../../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)

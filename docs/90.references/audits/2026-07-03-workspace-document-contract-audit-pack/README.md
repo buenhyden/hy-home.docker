@@ -89,7 +89,7 @@ This README is for:
 ## Related Documents
 
 - [Audit references](../README.md)
-- [Workspace document contract audit pack spec](../../../03.specs/workspace-document-contract-audit-pack/spec.md)
+- [Workspace document contract audit pack spec](../../../03.specs/102-workspace-document-contract-audit-pack/spec.md)
 - [Workspace document contract audit pack plan](../../../04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md)
 - [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md)
 - [Template contract](../../../99.templates/support/template-contract.md)

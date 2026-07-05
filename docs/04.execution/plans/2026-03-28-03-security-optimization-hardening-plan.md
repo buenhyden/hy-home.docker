@@ -48,7 +48,7 @@ This document is the optimization/hardening implementation plan for `infra/03-se
 | PLN-SEC-003 | Add 03-security hardening validation script coverage | `scripts/hardening/check-all-hardening.sh 03-security` | REQ-PRD-FUN-04 | Script pass/fail behavior verified |
 | PLN-SEC-004 | Add CI `infrastructure-hardening` job | `.github/workflows/ci-quality.yml` | REQ-PRD-FUN-04 | Job runs on PR/push |
 | PLN-SEC-005 | Reflect scripts README inventory | `scripts/README.md` | REQ-PRD-FUN-04 | README entry and example exist |
-| PLN-SEC-006 | Clarify root security profile validation boundary | `docs/03.specs/03-security/spec.md`, operations docs | REQ-PRD-FUN-04 | Root profile validation passes |
+| PLN-SEC-006 | Clarify root security profile validation boundary | `docs/03.specs/003-security/spec.md`, operations docs | REQ-PRD-FUN-04 | Root profile validation passes |
 | PLN-SEC-007 | Create/update PRD-to-Runbook documents and synchronize README indexes | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-FUN-05 | Cross-links and indexes reflected |
 
 ## Verification Plan
@@ -90,7 +90,7 @@ This document is the optimization/hardening implementation plan for `infra/03-se
 - **PRD**: [../01.requirements/015-security-optimization-hardening.md](../../01.requirements/015-security-optimization-hardening.md)
 - **ARD**: [../02.architecture/requirements/0018-security-optimization-hardening-architecture.md](../../02.architecture/requirements/0018-security-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md)
-- **Spec**: [../03.specs/03-security/spec.md](../../03.specs/03-security/spec.md)
+- **Spec**: [../03.specs/003-security/spec.md](../../03.specs/003-security/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md](../tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
 - **Guide**: [../../05.operations/guides/03-security/vault.md](../../05.operations/guides/03-security/vault.md)
 - **Policy**: [../../05.operations/policies/03-security/vault.md](../../05.operations/policies/03-security/vault.md)

@@ -51,4 +51,4 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/12-infra-net/standardize-infra-net.md)
 - [Recovery runbook](../../runbooks/12-infra-net/standardize-infra-net.md)
-- [infra_net spec](../../../03.specs/standardize-infra-net/spec.md)
+- [infra_net spec](../../../03.specs/098-standardize-infra-net/spec.md)

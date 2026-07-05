@@ -46,6 +46,6 @@ lake-and-object/
 ## Related Documents
 
 - [infra/04-data/README.md](../README.md)
-- [docs/03.specs/04-data/README.md](../../../docs/03.specs/04-data/README.md)
+- [docs/03.specs/004-data/README.md](../../../docs/03.specs/004-data/README.md)
 - [docs/05.operations/guides/04-data/](../../../docs/05.operations/guides/04-data/)
 - [secrets/storage/](../../../secrets/storage/)

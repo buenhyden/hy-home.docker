@@ -21,7 +21,7 @@ status: active
 
 ### Canonical References
 
-- **Spec**: [04-data spec](../../../../03.specs/04-data/spec.md)
+- **Spec**: [04-data spec](../../../../03.specs/004-data/spec.md)
 - **Policy**: [Valkey Cluster policy](../../../policies/04-data/cache-and-kv/valkey-cluster.md)
 - **Guide**: [Valkey Cluster guide](../../../guides/04-data/cache-and-kv/valkey-cluster.md)
 - **Repo**: [Valkey Cluster infrastructure](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)

@@ -19,7 +19,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 
 ### Canonical References
 
-- **Spec**: [09-tooling spec](../../../03.specs/09-tooling/spec.md)
+- **Spec**: [09-tooling spec](../../../03.specs/010-tooling/spec.md)
 - **Policy**: [Optimization hardening policy](../../policies/09-tooling/optimization-hardening.md)
 - **Guide**: [Optimization hardening guide](../../guides/09-tooling/optimization-hardening.md)
 - **Plan**: [Optimization hardening plan](../../../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md)

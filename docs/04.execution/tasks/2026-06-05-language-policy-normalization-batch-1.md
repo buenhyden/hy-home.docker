@@ -53,15 +53,15 @@ English and adds explicit category-level purpose/language rules for
 The following English-only target files now have no Korean text and no
 legacy Korean-labeled overview heading:
 
-- [Open WebUI Spec](../../03.specs/08-ai/open-webui.md)
-- [LLM Wiki Spec](../../03.specs/llm-wiki-agent-first-completion/spec.md)
-- [Docs Taxonomy Migration Spec](../../03.specs/docs-taxonomy-agent-first-migration/spec.md)
-- [Communication Tier Spec](../../03.specs/10-communication/spec.md)
-- [Home Docker Revalidation Follow-up Spec](../../03.specs/home-docker-revalidation-deferred-follow-up/spec.md)
-- [Analytics Tier Spec](../../03.specs/04-data-analytics/spec.md)
-- [Gateway Tier Spec](../../03.specs/01-gateway/spec.md)
-- [Standardize Infra Net Spec](../../03.specs/standardize-infra-net/spec.md)
-- [Workflow Cross-Validation Agent Design](../../03.specs/07-workflow/agent-design.md)
+- [Open WebUI Spec](../../03.specs/009-ai/open-webui.md)
+- [LLM Wiki Spec](../../03.specs/096-llm-wiki-agent-first-completion/spec.md)
+- [Docs Taxonomy Migration Spec](../../03.specs/093-docs-taxonomy-agent-first-migration/spec.md)
+- [Communication Tier Spec](../../03.specs/011-communication/spec.md)
+- [Home Docker Revalidation Follow-up Spec](../../03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md)
+- [Analytics Tier Spec](../../03.specs/005-data-analytics/spec.md)
+- [Gateway Tier Spec](../../03.specs/001-gateway/spec.md)
+- [Standardize Infra Net Spec](../../03.specs/098-standardize-infra-net/spec.md)
+- [Workflow Cross-Validation Agent Design](../../03.specs/008-workflow/agent-design.md)
 
 ## Reference Role Coverage
 

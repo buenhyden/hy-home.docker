@@ -167,7 +167,7 @@ secret, and infra surfaces as protected.
 - **Audit Gap Register**: [gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
 - **Audit Pack Plan**: [workspace document contract audit pack plan](./2026-07-03-workspace-document-contract-audit-pack.md)
 - **Audit Pack Task Evidence**: [workspace document contract audit pack task](../tasks/2026-07-03-workspace-document-contract-audit-pack.md)
-- **Audit Pack Spec**: [workspace document contract audit pack spec](../../03.specs/workspace-document-contract-audit-pack/spec.md)
+- **Audit Pack Spec**: [workspace document contract audit pack spec](../../03.specs/102-workspace-document-contract-audit-pack/spec.md)
 - **Template Contract**: [template contract](../../99.templates/support/template-contract.md)
 - **Frontmatter Contract**: [frontmatter contract](../../99.templates/support/frontmatter-contract.md)
 - **Stage Authoring Matrix**: [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

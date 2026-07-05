@@ -83,7 +83,7 @@ PR #89 (`workspace-doc-consistency-2026-05`) completed large-scale structural co
 
 ## Related Documents
 
-- **Spec**: [workspace-consistency-2026-05b spec](../../03.specs/workspace-consistency-2026-05b/spec.md)
+- **Spec**: [workspace-consistency-2026-05b spec](../../03.specs/092-workspace-consistency-2026-05b/spec.md)
 - **Task**: [2026-05-29 workspace consistency 2026-05b tasks](../tasks/2026-05-29-workspace-consistency-2026-05b.md)
 - **Predecessor Plan**: [2026-05-28 workspace doc consistency plan](./2026-05-28-workspace-doc-consistency.md)
 - **Templates**: [docs/99.templates/](../../99.templates/)

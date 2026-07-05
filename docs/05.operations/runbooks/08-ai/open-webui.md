@@ -25,7 +25,7 @@ status: active
 
 - [../../../02.architecture/requirements/0013-open-webui-architecture.md](../../../02.architecture/requirements/0013-open-webui-architecture.md)
 - [../../../02.architecture/decisions/0016-open-webui-implementation.md](../../../02.architecture/decisions/0016-open-webui-implementation.md)
-- [../../../03.specs/08-ai/open-webui.md](../../../03.specs/08-ai/open-webui.md)
+- [../../../03.specs/009-ai/open-webui.md](../../../03.specs/009-ai/open-webui.md)
 - [../../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md](../../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md)
 
 ## When to Use

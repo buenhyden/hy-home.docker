@@ -54,5 +54,5 @@ Infrastructure information for the `08-ai` tier is fragmented, so it needs to mo
 
 - **PRD**: [009-ai.md](../../01.requirements/009-ai.md)
 - **ARD**: [0008-ai-architecture.md](../../02.architecture/requirements/0008-ai-architecture.md)
-- **Spec**: [08-ai/spec.md](../../03.specs/08-ai/spec.md)
+- **Spec**: [009-ai/spec.md](../../03.specs/009-ai/spec.md)
 - **ADR**: [0008-ollama-openwebui-local-ai.md](../../02.architecture/decisions/0008-ollama-openwebui-local-ai.md)

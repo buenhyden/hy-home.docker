@@ -18,7 +18,7 @@ template system is enforced by governance rules and repository contract checks.
 
 ## Inputs
 
-- **Parent Spec**: [Template system reorganization spec](../../03.specs/template-system-reorganization/spec.md)
+- **Parent Spec**: [Template system reorganization spec](../../03.specs/101-template-system-reorganization/spec.md)
 - **Parent Plan**: [Template system reorganization plan](../plans/2026-07-02-template-system-reorganization.md)
 - **Template Catalog**: [Template catalog](../../99.templates/README.md)
 - **Documentation Protocol**: [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
@@ -116,7 +116,7 @@ template system is enforced by governance rules and repository contract checks.
 
 ## Related Documents
 
-- **Parent Spec**: [Template system reorganization spec](../../03.specs/template-system-reorganization/spec.md)
+- **Parent Spec**: [Template system reorganization spec](../../03.specs/101-template-system-reorganization/spec.md)
 - **Parent Plan**: [Template system reorganization plan](../plans/2026-07-02-template-system-reorganization.md)
 - **Template Catalog**: [Template catalog](../../99.templates/README.md)
 - **Documentation Protocol**: [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)

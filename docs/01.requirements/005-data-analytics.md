@@ -67,5 +67,5 @@ status: active
 
 - **ARD**: [0012-data-analytics-architecture.md](../02.architecture/requirements/0012-data-analytics-architecture.md)
 - **ADR**: [0015-analytics-engine-selection.md](../02.architecture/decisions/0015-analytics-engine-selection.md)
-- **Spec**: [spec.md](../03.specs/04-data-analytics/spec.md)
+- **Spec**: [spec.md](../03.specs/005-data-analytics/spec.md)
 - **Guide**: [README.md](../05.operations/guides/04-data/analytics/README.md)

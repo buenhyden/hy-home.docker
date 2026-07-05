@@ -11,7 +11,7 @@ This document tracks the `11-laboratory` optimization and hardening execution ta
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/11-laboratory/spec.md](../../03.specs/11-laboratory/spec.md)
+- **Parent Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/012-laboratory/spec.md)
 - **Parent Plan**: [../plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
 
 ## Working Rules

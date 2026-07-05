@@ -11,7 +11,7 @@ This document tracks the `02-auth` optimization and hardening implementation tas
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/02-auth/spec.md](../../03.specs/02-auth/spec.md)
+- **Parent Spec**: [../../03.specs/002-auth/spec.md](../../03.specs/002-auth/spec.md)
 - **Parent Plan**: [../plans/2026-03-28-02-auth-optimization-hardening-plan.md](../plans/2026-03-28-02-auth-optimization-hardening-plan.md)
 
 ## Working Rules
@@ -24,15 +24,15 @@ This document tracks the `02-auth` optimization and hardening implementation tas
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-AUTH-001 | Remove inline shell from OAuth2 Proxy compose and switch to entrypoint-based execution | impl | 02-auth/spec.md / Contracts | PLN-AUTH-001 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | Infra | Done |
-| T-AUTH-002 | Handle cookie/client/redis secret file injection in the OAuth2 Proxy entrypoint | impl | 02-auth/spec.md / Core Design | PLN-AUTH-001 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | Infra | Done |
-| T-AUTH-003 | Create a non-root user in the OAuth2 Proxy Dockerfile and apply `USER` | impl | 02-auth/spec.md / Security | PLN-AUTH-002 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | DevOps | Done |
-| T-AUTH-004 | Remove secret length output from Keycloak compose | impl | 02-auth/spec.md / Security | PLN-AUTH-003 | Code review + `docker compose config` | Infra | Done |
-| T-AUTH-005 | Add `scripts/hardening/check-all-hardening.sh 02-auth` | ops | 02-auth/spec.md / Verification | PLN-AUTH-004 | Confirm script pass/fail behavior | DevOps | Done |
-| T-AUTH-006 | Add the `infrastructure-hardening` job to the CI workflow | ops | 02-auth/spec.md / CI | PLN-AUTH-005 | PR CI logs | DevOps | Done |
-| T-AUTH-007 | Create PRD/ARD/ADR/Plan/Task documents and connect links | doc | 02-auth/spec.md / Traceability | PLN-AUTH-006 | Confirm bidirectional relative-path links | Docs | Done |
-| T-AUTH-008 | Rework the 02-auth Guide/Operation/Runbook and update README indexes | doc | 02-auth/spec.md / Traceability | PLN-AUTH-006, PLN-AUTH-007 | `bash scripts/validation/check-doc-traceability.sh` | Docs | Done |
-| T-AUTH-009 | Run 02-auth validation commands and record results | test | 02-auth/spec.md / Verification | PLN-AUTH-004~005 | Collect execution results | Infra | Done |
+| T-AUTH-001 | Remove inline shell from OAuth2 Proxy compose and switch to entrypoint-based execution | impl | 002-auth/spec.md / Contracts | PLN-AUTH-001 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | Infra | Done |
+| T-AUTH-002 | Handle cookie/client/redis secret file injection in the OAuth2 Proxy entrypoint | impl | 002-auth/spec.md / Core Design | PLN-AUTH-001 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | Infra | Done |
+| T-AUTH-003 | Create a non-root user in the OAuth2 Proxy Dockerfile and apply `USER` | impl | 002-auth/spec.md / Security | PLN-AUTH-002 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | DevOps | Done |
+| T-AUTH-004 | Remove secret length output from Keycloak compose | impl | 002-auth/spec.md / Security | PLN-AUTH-003 | Code review + `docker compose config` | Infra | Done |
+| T-AUTH-005 | Add `scripts/hardening/check-all-hardening.sh 02-auth` | ops | 002-auth/spec.md / Verification | PLN-AUTH-004 | Confirm script pass/fail behavior | DevOps | Done |
+| T-AUTH-006 | Add the `infrastructure-hardening` job to the CI workflow | ops | 002-auth/spec.md / CI | PLN-AUTH-005 | PR CI logs | DevOps | Done |
+| T-AUTH-007 | Create PRD/ARD/ADR/Plan/Task documents and connect links | doc | 002-auth/spec.md / Traceability | PLN-AUTH-006 | Confirm bidirectional relative-path links | Docs | Done |
+| T-AUTH-008 | Rework the 02-auth Guide/Operation/Runbook and update README indexes | doc | 002-auth/spec.md / Traceability | PLN-AUTH-006, PLN-AUTH-007 | `bash scripts/validation/check-doc-traceability.sh` | Docs | Done |
+| T-AUTH-009 | Run 02-auth validation commands and record results | test | 002-auth/spec.md / Verification | PLN-AUTH-004~005 | Collect execution results | Infra | Done |
 
 ## Suggested Types
 

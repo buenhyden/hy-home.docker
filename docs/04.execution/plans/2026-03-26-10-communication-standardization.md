@@ -19,7 +19,7 @@ Standardize the documentation system for the `10-communication` tier according t
 
 #### [NEW] [0010-communication-services.md](../../02.architecture/decisions/0010-communication-services.md)
 
-#### [NEW] [spec.md](../../03.specs/10-communication/spec.md)
+#### [NEW] [spec.md](../../03.specs/011-communication/spec.md)
 
 #### [NEW] [2026-03-26-10-communication-tasks.md](../tasks/2026-03-26-10-communication-tasks.md)
 
@@ -75,4 +75,4 @@ The existing proposed changes, documentation layer, infrastructure layer, or roa
 - [Communication PRD](../../01.requirements/011-communication.md)
 - [Communication ARD](../../02.architecture/requirements/0010-communication-architecture.md)
 - [Communication ADR](../../02.architecture/decisions/0010-communication-services.md)
-- [Communication spec](../../03.specs/10-communication/spec.md)
+- [Communication spec](../../03.specs/011-communication/spec.md)

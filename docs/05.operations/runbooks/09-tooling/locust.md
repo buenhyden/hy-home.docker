@@ -21,7 +21,7 @@ status: active
 
 ### Canonical References
 
-- **Spec**: [09-tooling spec](../../../03.specs/09-tooling/spec.md)
+- **Spec**: [09-tooling spec](../../../03.specs/010-tooling/spec.md)
 - **Policy**: [Locust policy](../../policies/09-tooling/locust.md)
 - **Guide**: [Locust guide](../../guides/09-tooling/locust.md)
 

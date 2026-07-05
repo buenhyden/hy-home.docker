@@ -68,7 +68,7 @@ The existing agent-first/Harness-first structure and docs taxonomy migration are
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/llm-wiki-agent-first-completion/spec.md](../../03.specs/llm-wiki-agent-first-completion/spec.md)
+- **Spec**: [../../03.specs/096-llm-wiki-agent-first-completion/spec.md](../../03.specs/096-llm-wiki-agent-first-completion/spec.md)
 - **Task**: [../tasks/2026-05-10-llm-wiki-agent-first-completion.md](../tasks/2026-05-10-llm-wiki-agent-first-completion.md)
 - **Guide**: [../../05.operations/guides/00-workspace/llm-wiki-maintenance.md](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)
 - **Reference**: [../../90.references/llm-wiki/README.md](../../90.references/llm-wiki/README.md)

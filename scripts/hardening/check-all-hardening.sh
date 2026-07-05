@@ -136,7 +136,7 @@ check_03_security() {
   local vault_hcl="infra/03-security/vault/config/vault.hcl"
   local agent_hcl="infra/03-security/vault/config/vault-agent.hcl"
   local templates_dir="infra/03-security/vault/config/templates"
-  local spec_file="docs/03.specs/03-security/spec.md"
+  local spec_file="docs/03.specs/003-security/spec.md"
 
   check_file "$compose_file"
   check_file "$vault_hcl"

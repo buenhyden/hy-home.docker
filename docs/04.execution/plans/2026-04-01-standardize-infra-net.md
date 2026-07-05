@@ -60,6 +60,6 @@ To establish a communication standard between infrastructure services and reduce
 
 - **PRD**: [../../01.requirements/023-standardize-infra-net.md](../../01.requirements/023-standardize-infra-net.md)
 - **ARD**: [../../02.architecture/requirements/0026-standardize-infra-net.md](../../02.architecture/requirements/0026-standardize-infra-net.md)
-- **Spec**: [../../03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md)
+- **Spec**: [../../03.specs/098-standardize-infra-net/spec.md](../../03.specs/098-standardize-infra-net/spec.md)
 - **ADR**: [../../02.architecture/decisions/0026-standardize-infra-net.md](../../02.architecture/decisions/0026-standardize-infra-net.md)
 - **TASK**: [../tasks/2026-04-01-standardize-infra-net.md](../tasks/2026-04-01-standardize-infra-net.md)

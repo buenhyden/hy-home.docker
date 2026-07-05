@@ -78,6 +78,6 @@ N/A
 ## Related Documents
 
 - **ARD**: [Security architecture requirements](../02.architecture/requirements/0003-security-architecture.md)
-- **Spec**: [Security technical specification](../03.specs/03-security/spec.md)
+- **Spec**: [Security technical specification](../03.specs/003-security/spec.md)
 - **Plan**: [Security standardization plan](../04.execution/plans/2026-03-26-03-security-standardization.md)
 - **ADR**: [Vault as secrets manager decision](../02.architecture/decisions/0003-vault-as-secrets-manager.md)

@@ -23,19 +23,19 @@ context so future agents do not re-open completed cleanup work.
 
 Missing README coverage was originally observed under:
 
-- `docs/03.specs/01-gateway`
-- `docs/03.specs/02-auth`
-- `docs/03.specs/03-security`
-- `docs/03.specs/04-data`
-- `docs/03.specs/04-data-analytics`
-- `docs/03.specs/05-messaging`
-- `docs/03.specs/06-observability`
-- `docs/03.specs/07-workflow`
-- `docs/03.specs/08-ai`
-- `docs/03.specs/09-tooling`
-- `docs/03.specs/10-communication`
-- `docs/03.specs/11-laboratory`
-- `docs/03.specs/standardize-infra-net`
+- `docs/03.specs/001-gateway`
+- `docs/03.specs/002-auth`
+- `docs/03.specs/003-security`
+- `docs/03.specs/004-data`
+- `docs/03.specs/005-data-analytics`
+- `docs/03.specs/006-messaging`
+- `docs/03.specs/007-observability`
+- `docs/03.specs/008-workflow`
+- `docs/03.specs/009-ai`
+- `docs/03.specs/010-tooling`
+- `docs/03.specs/011-communication`
+- `docs/03.specs/012-laboratory`
+- `docs/03.specs/098-standardize-infra-net`
 
 As of the 2026-05-22 bounded re-audit, those listed `docs/03.specs/*`
 directories have README coverage and the repository contract reports a clean

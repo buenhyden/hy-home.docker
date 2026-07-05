@@ -61,6 +61,6 @@ N/A
 ## Related Documents
 
 - **ARD**: [Laboratory architecture requirements](../02.architecture/requirements/0011-laboratory-architecture.md)
-- **Spec**: [Laboratory technical specification](../03.specs/11-laboratory/spec.md)
+- **Spec**: [Laboratory technical specification](../03.specs/012-laboratory/spec.md)
 - **Plan**: [Laboratory standardization plan](../04.execution/plans/2026-03-26-11-laboratory-standardization.md)
 - **ADR**: [Laboratory services decision](../02.architecture/decisions/0011-laboratory-services.md)

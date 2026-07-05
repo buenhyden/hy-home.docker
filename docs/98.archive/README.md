@@ -65,10 +65,10 @@ stale 본문을 다시 노출하지 않습니다.
 | `docs/05.operations/guides/08-ai/local-llm-setup.md` | `docs/98.archive/05.operations/guides/08-ai/local-llm-setup.md` | Duplicate local Ollama setup guide with generic template residue and no active runbook handoff | `docs/05.operations/guides/08-ai/ollama.md` |
 | `docs/05.operations/guides/09-tooling/01.iac-automation.md` | `docs/98.archive/05.operations/guides/09-tooling/01.iac-automation.md` | Duplicate Terrakube/Terraform guide with generic template residue and no active runbook handoff | `docs/05.operations/guides/09-tooling/terrakube.md`; `docs/05.operations/guides/09-tooling/terraform.md` |
 | `docs/05.operations/guides/03-security/01.setup.md` | `docs/98.archive/05.operations/guides/03-security/01.setup.md` | Duplicate Vault setup guide with stale service-local compose startup, direct container runtime commands, and generic template residue | `docs/05.operations/guides/03-security/vault.md` |
-| `docs/05.operations/guides/07-workflow/airbyte.md` | `docs/98.archive/05.operations/guides/07-workflow/airbyte.md` | No tracked Airbyte implementation under `infra/07-workflow/airbyte` | `docs/03.specs/07-workflow/spec.md` |
+| `docs/05.operations/guides/07-workflow/airbyte.md` | `docs/98.archive/05.operations/guides/07-workflow/airbyte.md` | No tracked Airbyte implementation under `infra/07-workflow/airbyte` | `docs/03.specs/008-workflow/spec.md` |
 | `docs/05.operations/guides/05-messaging/ksql-streaming.md` | `docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md` | ksqlDB is currently implemented under `infra/04-data/analytics/ksql`, not under `infra/05-messaging` | `docs/05.operations/guides/04-data/analytics/ksqldb.md` |
-| `docs/05.operations/policies/07-workflow/airbyte.md` | `docs/98.archive/05.operations/policies/07-workflow/airbyte.md` | No tracked Airbyte implementation under `infra/07-workflow/airbyte` | `docs/03.specs/07-workflow/spec.md` |
-| `docs/05.operations/runbooks/07-workflow/airbyte.md` | `docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md` | No tracked Airbyte implementation under `infra/07-workflow/airbyte` | `docs/03.specs/07-workflow/spec.md` |
+| `docs/05.operations/policies/07-workflow/airbyte.md` | `docs/98.archive/05.operations/policies/07-workflow/airbyte.md` | No tracked Airbyte implementation under `infra/07-workflow/airbyte` | `docs/03.specs/008-workflow/spec.md` |
+| `docs/05.operations/runbooks/07-workflow/airbyte.md` | `docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md` | No tracked Airbyte implementation under `infra/07-workflow/airbyte` | `docs/03.specs/008-workflow/spec.md` |
 
 ## How to Work in This Area
 

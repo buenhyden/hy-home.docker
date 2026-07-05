@@ -66,5 +66,5 @@ status: active
 ## Related Documents
 
 - **ARD**: [Observability architecture requirements](../02.architecture/requirements/0006-observability-architecture.md)
-- **Spec**: [Observability technical specification](../03.specs/06-observability/spec.md)
+- **Spec**: [Observability technical specification](../03.specs/007-observability/spec.md)
 - **ADR**: [LGTM stack selection decision](../02.architecture/decisions/0006-lgtm-stack-selection.md)

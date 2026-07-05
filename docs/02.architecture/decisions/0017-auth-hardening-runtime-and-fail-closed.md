@@ -62,6 +62,6 @@ status: active
 
 - **PRD**: [../01.requirements/014-auth-optimization-hardening.md](../../01.requirements/014-auth-optimization-hardening.md)
 - **ARD**: [../02.architecture/requirements/0014-auth-optimization-hardening-architecture.md](../requirements/0014-auth-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/02-auth/spec.md](../../03.specs/02-auth/spec.md)
+- **Spec**: [../03.specs/002-auth/spec.md](../../03.specs/002-auth/spec.md)
 - **Plan**: [../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md)
 - **Related ADR**: [./0002-keycloak-oauth2-proxy-choice.md](./0002-keycloak-oauth2-proxy-choice.md)

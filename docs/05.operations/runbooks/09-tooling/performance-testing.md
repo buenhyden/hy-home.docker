@@ -19,7 +19,7 @@ status: active
 
 ### Canonical References
 
-- **Spec**: [09-tooling spec](../../../03.specs/09-tooling/spec.md)
+- **Spec**: [09-tooling spec](../../../03.specs/010-tooling/spec.md)
 - **Policy**: [Performance testing policy](../../policies/09-tooling/performance-testing.md)
 - **Guide**: [Performance testing guide](../../guides/09-tooling/performance-testing.md)
 

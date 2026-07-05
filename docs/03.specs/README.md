@@ -46,34 +46,34 @@ status: active
 
 ```text
 docs/03.specs/
-├── 01-gateway/                          # Traefik/Nginx gateway contracts
-├── 02-auth/                             # Keycloak/OAuth2 Proxy contracts
-├── 03-security/                         # Vault and secret delivery contracts
-├── 04-data/                             # Core data service contracts
-├── 04-data-analytics/                   # Analytics engine contracts
-├── 05-messaging/                        # Kafka/RabbitMQ messaging contracts
-├── 06-observability/                    # LGTM observability contracts
-├── 07-workflow/                         # Airflow/n8n workflow contracts and agent design
-├── 08-ai/                               # Ollama/Open WebUI AI contracts
-├── 09-tooling/                          # Tooling service contracts
-├── 10-communication/                    # Mail communication contracts
-├── 11-laboratory/                       # Laboratory/admin surface contracts
-├── agentic-research-pack-refresh/       # Active Stage 90 agentic research refresh spec
-├── document-restructure-audit-contract-archive/ # Active document restructure disposition contract
-├── docs-taxonomy-agent-first-migration/ # Completed docs taxonomy migration spec
-├── agentic-engineering-implementation-audit-pack/ # Active Stage 90 implementation audit pack design spec
-├── harness-agent-first-engineering/     # Completed agent-first harness spec
-├── home-docker-revalidation-deferred-follow-up/ # Completed Home Docker revalidation and deferred-follow-up spec
-├── infra-secrets-docs-refresh/          # Completed infra/secrets/docs refresh spec
-├── llm-wiki-agent-first-completion/     # Completed LLM Wiki contract spec
-├── standardize-infra-net/               # Completed infra_net standardization spec
+├── 001-gateway/                         # Traefik/Nginx gateway contracts
+├── 002-auth/                            # Keycloak/OAuth2 Proxy contracts
+├── 003-security/                        # Vault and secret delivery contracts
+├── 004-data/                            # Core data service contracts
+├── 005-data-analytics/                  # Analytics engine contracts
+├── 006-messaging/                       # Kafka/RabbitMQ messaging contracts
+├── 007-observability/                   # LGTM observability contracts
+├── 008-workflow/                        # Airflow/n8n workflow contracts and agent design
+├── 009-ai/                              # Ollama/Open WebUI AI contracts
+├── 010-tooling/                         # Tooling service contracts
+├── 011-communication/                   # Mail communication contracts
+├── 012-laboratory/                      # Laboratory/admin surface contracts
+├── 090-workspace-audit-2026-05/         # Completed 2026-05-26 workspace audit historical spec
+├── 091-workspace-doc-consistency-2026-05/ # Completed 2026-05-28 workspace doc consistency spec (PR #89)
+├── 092-workspace-consistency-2026-05b/  # Completed 2026-05-29 workspace governance consistency follow-up spec
+├── 093-docs-taxonomy-agent-first-migration/ # Completed docs taxonomy migration spec
+├── 094-harness-agent-first-engineering/ # Completed agent-first harness spec
+├── 095-infra-secrets-docs-refresh/      # Completed infra/secrets/docs refresh spec
+├── 096-llm-wiki-agent-first-completion/ # Completed LLM Wiki contract spec
+├── 097-home-docker-revalidation-deferred-follow-up/ # Completed Home Docker revalidation and deferred-follow-up spec
+├── 098-standardize-infra-net/           # Completed infra_net standardization spec
 ├── 099-template-system-numbered-sdlc-paths/ # Active numbered PRD/Spec path migration design
-├── template-system-contract-standardization/ # Completed Stage 99 contract/frontmatter standardization spec
-├── template-system-reorganization/      # Superseded Stage 99 template system reorganization spec
-├── workspace-document-contract-audit-pack/ # Active workspace document contract audit/disposition spec
-├── workspace-audit-2026-05/             # Completed 2026-05-26 workspace audit historical spec
-├── workspace-doc-consistency-2026-05/   # Completed 2026-05-28 workspace doc consistency spec (PR #89)
-├── workspace-consistency-2026-05b/      # Completed 2026-05-29 workspace governance consistency follow-up spec
+├── 100-template-system-contract-standardization/ # Completed Stage 99 contract/frontmatter standardization spec
+├── 101-template-system-reorganization/  # Superseded Stage 99 template system reorganization spec
+├── 102-workspace-document-contract-audit-pack/ # Active workspace document contract audit/disposition spec
+├── 103-document-restructure-audit-contract-archive/ # Active document restructure disposition contract
+├── 104-agentic-research-pack-refresh/   # Active Stage 90 agentic research refresh spec
+├── 105-agentic-engineering-implementation-audit-pack/ # Active Stage 90 implementation audit pack design spec
 └── README.md                            # This file
 ```
 
@@ -81,24 +81,24 @@ docs/03.specs/
 
 | If you need to define...                                   | Use                                                  |
 | ---------------------------------------------------------- | ---------------------------------------------------- |
-| Gateway routing, TLS, middleware, proxy behavior           | `01-gateway/spec.md`                                 |
-| Identity, OAuth2, OIDC, session store behavior             | `02-auth/spec.md`                                    |
-| Vault, secret template, AppRole, secret delivery behavior  | `03-security/spec.md`                                |
-| Databases, cache, object storage, core data persistence    | `04-data/spec.md`                                    |
-| InfluxDB, ksqlDB, OpenSearch, OLAP analytics engines       | `04-data-analytics/spec.md`                          |
-| Kafka, RabbitMQ, stream/message broker behavior            | `05-messaging/spec.md`                               |
-| Metrics, logs, traces, dashboards, alerts                  | `06-observability/spec.md`                           |
-| Workflow orchestration and cross-validation agent behavior | `07-workflow/spec.md`, `07-workflow/agent-design.md` |
-| Stage 90 agentic engineering research pack refresh | `agentic-research-pack-refresh/spec.md` |
-| Agentic engineering reference-audit pack design            | `agentic-engineering-implementation-audit-pack/spec.md` |
-| Second-wave document restructure disposition contract | `document-restructure-audit-contract-archive/spec.md` |
+| Gateway routing, TLS, middleware, proxy behavior           | `001-gateway/spec.md`                                |
+| Identity, OAuth2, OIDC, session store behavior             | `002-auth/spec.md`                                   |
+| Vault, secret template, AppRole, secret delivery behavior  | `003-security/spec.md`                               |
+| Databases, cache, object storage, core data persistence    | `004-data/spec.md`                                   |
+| InfluxDB, ksqlDB, OpenSearch, OLAP analytics engines       | `005-data-analytics/spec.md`                         |
+| Kafka, RabbitMQ, stream/message broker behavior            | `006-messaging/spec.md`                              |
+| Metrics, logs, traces, dashboards, alerts                  | `007-observability/spec.md`                          |
+| Workflow orchestration and cross-validation agent behavior | `008-workflow/spec.md`, `008-workflow/agent-design.md` |
+| Stage 90 agentic engineering research pack refresh | `104-agentic-research-pack-refresh/spec.md` |
+| Agentic engineering reference-audit pack design            | `105-agentic-engineering-implementation-audit-pack/spec.md` |
+| Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
 | Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
-| Stage 99 template contract, taxonomy, and frontmatter standardization design | `template-system-contract-standardization/spec.md` |
-| Workspace-wide document contract audit/disposition model | `workspace-document-contract-audit-pack/spec.md` |
-| Local AI inference, RAG UI, model-serving contracts        | `08-ai/spec.md`, `08-ai/open-webui.md`               |
-| IaC, registry, quality, performance tooling services       | `09-tooling/spec.md`                                 |
-| Mail, SMTP, IMAP, development mail trapping                | `10-communication/spec.md`                           |
-| Laboratory/admin UI surfaces and access contracts          | `11-laboratory/spec.md`                              |
+| Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
+| Workspace-wide document contract audit/disposition model | `102-workspace-document-contract-audit-pack/spec.md` |
+| Local AI inference, RAG UI, model-serving contracts        | `009-ai/spec.md`, `009-ai/open-webui.md`             |
+| IaC, registry, quality, performance tooling services       | `010-tooling/spec.md`                                |
+| Mail, SMTP, IMAP, development mail trapping                | `011-communication/spec.md`                          |
+| Laboratory/admin UI surfaces and access contracts          | `012-laboratory/spec.md`                             |
 | Completed governance/documentation contract work           | named governance spec folders                        |
 
 ## How to Work in This Area
@@ -156,14 +156,14 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Operations Stage**: [../05.operations/README.md](../05.operations/README.md)
 - **Spec template**: [../99.templates/templates/sdlc/spec.template.md](../99.templates/templates/sdlc/spec.template.md)
 - **README template**: [../99.templates/templates/common/readme.template.md](../99.templates/templates/common/readme.template.md)
-- **Agentic Research Pack Refresh Spec**: [agentic-research-pack-refresh/spec.md](./agentic-research-pack-refresh/spec.md)
-- **Agentic Engineering Implementation Audit Pack Spec**: [agentic-engineering-implementation-audit-pack/spec.md](./agentic-engineering-implementation-audit-pack/spec.md)
-- **Document Restructure Audit, Contract, and Archive Spec**: [document-restructure-audit-contract-archive/spec.md](./document-restructure-audit-contract-archive/spec.md)
+- **Agentic Research Pack Refresh Spec**: [104-agentic-research-pack-refresh/spec.md](./104-agentic-research-pack-refresh/spec.md)
+- **Agentic Engineering Implementation Audit Pack Spec**: [105-agentic-engineering-implementation-audit-pack/spec.md](./105-agentic-engineering-implementation-audit-pack/spec.md)
+- **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
-- **Harness / Agent-first Engineering Spec**: [harness-agent-first-engineering/spec.md](./harness-agent-first-engineering/spec.md)
-- **Home Docker Revalidation Deferred Follow-up Spec**: [home-docker-revalidation-deferred-follow-up/spec.md](./home-docker-revalidation-deferred-follow-up/spec.md)
-- **Infra / Secrets / Docs Refresh Spec**: [infra-secrets-docs-refresh/spec.md](./infra-secrets-docs-refresh/spec.md)
-- **LLM Wiki Agent-first Completion Spec**: [llm-wiki-agent-first-completion/spec.md](./llm-wiki-agent-first-completion/spec.md)
-- **Template System Contract Standardization Spec**: [template-system-contract-standardization/spec.md](./template-system-contract-standardization/spec.md)
-- **Workspace Document Contract Audit Pack Spec**: [workspace-document-contract-audit-pack/spec.md](./workspace-document-contract-audit-pack/spec.md)
-- **Workspace Audit 2026-05 Spec**: [workspace-audit-2026-05/spec.md](./workspace-audit-2026-05/spec.md)
+- **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)
+- **Home Docker Revalidation Deferred Follow-up Spec**: [097-home-docker-revalidation-deferred-follow-up/spec.md](./097-home-docker-revalidation-deferred-follow-up/spec.md)
+- **Infra / Secrets / Docs Refresh Spec**: [095-infra-secrets-docs-refresh/spec.md](./095-infra-secrets-docs-refresh/spec.md)
+- **LLM Wiki Agent-first Completion Spec**: [096-llm-wiki-agent-first-completion/spec.md](./096-llm-wiki-agent-first-completion/spec.md)
+- **Template System Contract Standardization Spec**: [100-template-system-contract-standardization/spec.md](./100-template-system-contract-standardization/spec.md)
+- **Workspace Document Contract Audit Pack Spec**: [102-workspace-document-contract-audit-pack/spec.md](./102-workspace-document-contract-audit-pack/spec.md)
+- **Workspace Audit 2026-05 Spec**: [090-workspace-audit-2026-05/spec.md](./090-workspace-audit-2026-05/spec.md)

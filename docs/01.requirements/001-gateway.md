@@ -70,6 +70,6 @@ status: active
 ## Related Documents
 
 - **ARD**: [Gateway architecture requirements](../02.architecture/requirements/0001-gateway-architecture.md)
-- **Spec**: [Gateway technical specification](../03.specs/01-gateway/spec.md)
+- **Spec**: [Gateway technical specification](../03.specs/001-gateway/spec.md)
 - **Plan**: [Gateway standardization plan](../04.execution/plans/2026-03-26-01-gateway-standardization.md)
 - **ADR**: [Traefik and Nginx hybrid decision](../02.architecture/decisions/0001-traefik-nginx-hybrid.md)

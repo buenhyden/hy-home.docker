@@ -11,7 +11,7 @@ This document lists tasks for documenting the messaging layer (`05-messaging`) a
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/05-messaging/spec.md](../../03.specs/05-messaging/spec.md)
+- **Parent Spec**: [../../03.specs/006-messaging/spec.md](../../03.specs/006-messaging/spec.md)
 - **Parent Plan**: [../plans/2026-03-26-05-messaging-standardization.md](../plans/2026-03-26-05-messaging-standardization.md)
 
 ## Working Rules
@@ -38,5 +38,5 @@ This document lists tasks for documenting the messaging layer (`05-messaging`) a
 
 ## Related Documents
 
-- **Parent Spec**: [../../03.specs/05-messaging/spec.md](../../03.specs/05-messaging/spec.md)
+- **Parent Spec**: [../../03.specs/006-messaging/spec.md](../../03.specs/006-messaging/spec.md)
 - **Parent Plan**: [../plans/2026-03-26-05-messaging-standardization.md](../plans/2026-03-26-05-messaging-standardization.md)

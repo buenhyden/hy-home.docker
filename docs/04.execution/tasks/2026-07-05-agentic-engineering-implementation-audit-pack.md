@@ -15,7 +15,7 @@ repo-local implementation surfaces.
 
 ## Inputs
 
-- **Parent Spec**: [Agentic Engineering Implementation Audit Pack Spec](../../03.specs/agentic-engineering-implementation-audit-pack/spec.md)
+- **Parent Spec**: [Agentic Engineering Implementation Audit Pack Spec](../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md)
 - **Parent Plan**: [Agentic Engineering Implementation Audit Pack Plan](../plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
 - **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 
@@ -37,7 +37,7 @@ are limited to documentation evidence and indexes.
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
-| Stage 03 design | User approved approach A on 2026-07-05 | `docs/03.specs/agentic-engineering-implementation-audit-pack/` | Draft design spec existed | Active design spec linked to Stage 04 | Revert planning commit | No secret values or raw logs |
+| Stage 03 design | User approved approach A on 2026-07-05 | `docs/03.specs/105-agentic-engineering-implementation-audit-pack/` | Draft design spec existed | Active design spec linked to Stage 04 | Revert planning commit | No secret values or raw logs |
 | Stage 04 execution | User approved approach A on 2026-07-05 | `docs/04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md`, this file | No dedicated plan/task for this audit pack | Plan and task evidence scaffold | Revert planning commit | No shell history or raw secret logs |
 | Stage 90 audit references | User request for category reports | `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/` | No dedicated implementation audit pack | Category-specific audit reports | Revert audit-report commits | No secrets, credentials, or raw logs |
 
@@ -127,7 +127,7 @@ Validation runs after each logical unit and final closure.
 
 ## Related Documents
 
-- **Parent Spec**: [Agentic Engineering Implementation Audit Pack Spec](../../03.specs/agentic-engineering-implementation-audit-pack/spec.md)
+- **Parent Spec**: [Agentic Engineering Implementation Audit Pack Spec](../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md)
 - **Parent Plan**: [Agentic Engineering Implementation Audit Pack Plan](../plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
 - **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Audit References**: [Audit references index](../../90.references/audits/README.md)

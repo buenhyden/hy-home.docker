@@ -52,5 +52,5 @@ status: active
 
 - **PRD**: [infra_net product requirements](../../01.requirements/023-standardize-infra-net.md)
 - **ARD**: [infra_net architecture requirements](../requirements/0026-standardize-infra-net.md)
-- **Spec**: [infra_net technical specification](../../03.specs/standardize-infra-net/spec.md)
+- **Spec**: [infra_net technical specification](../../03.specs/098-standardize-infra-net/spec.md)
 - **Plan**: [infra_net implementation plan](../../04.execution/plans/2026-04-01-standardize-infra-net.md)

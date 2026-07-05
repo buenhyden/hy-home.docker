@@ -15,7 +15,7 @@ automation coverage, and future implementation gaps.
 
 ## Inputs
 
-- Parent Spec: `docs/03.specs/workspace-document-contract-audit-pack/spec.md`
+- Parent Spec: `docs/03.specs/102-workspace-document-contract-audit-pack/spec.md`
 - Parent Plan: `docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md`
 - Template Contract: `docs/99.templates/support/template-contract.md`
 - Frontmatter Contract: `docs/99.templates/support/frontmatter-contract.md`
@@ -131,6 +131,6 @@ automation coverage, and future implementation gaps.
 
 ## Related Documents
 
-- Spec: `docs/03.specs/workspace-document-contract-audit-pack/spec.md`
+- Spec: `docs/03.specs/102-workspace-document-contract-audit-pack/spec.md`
 - Plan: `docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md`
 - Audit bundle: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md`

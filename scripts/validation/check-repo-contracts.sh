@@ -3083,7 +3083,7 @@ required_files = [
     pathlib.Path("docs/90.references/llm-wiki/repository-map.md"),
     pathlib.Path(".claude/agents/wiki-curator.md"),
     pathlib.Path("docs/00.agent-governance/agents/agents/wiki-curator.md"),
-    pathlib.Path("docs/03.specs/llm-wiki-agent-first-completion/spec.md"),
+    pathlib.Path("docs/03.specs/096-llm-wiki-agent-first-completion/spec.md"),
     pathlib.Path("docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md"),
     pathlib.Path("docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md"),
 ]

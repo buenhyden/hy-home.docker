@@ -108,7 +108,7 @@ docker inspect --format '{{json .State.Health}}' schema-registry
 
 1. **Initialize Topics**: 새 토픽은 반드시 `docker-compose.yml`의 `kafka-init` 서비스를 통해 관리되도록 설정한다.
 2. **Monitor Health**: 브로커 점검 시 `UnderReplicatedPartitions` 지표가 0인지 항상 확인한다.
-3. **SSoT Linkage**: 토픽 스펙 변경 시 `docs/03.specs/05-messaging/spec.md`를 함께 갱신한다.
+3. **SSoT Linkage**: 토픽 스펙 변경 시 `docs/03.specs/006-messaging/spec.md`를 함께 갱신한다.
 
 ## Validation
 

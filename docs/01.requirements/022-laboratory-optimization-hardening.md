@@ -83,7 +83,7 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 ## Related Documents
 
 - **ARD**: [../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md](../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/11-laboratory/spec.md](../03.specs/11-laboratory/spec.md)
+- **Spec**: [../03.specs/012-laboratory/spec.md](../03.specs/012-laboratory/spec.md)
 - **Plan**: [../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)

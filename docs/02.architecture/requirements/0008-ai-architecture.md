@@ -68,5 +68,5 @@ status: active
 ## Related Documents
 
 - **PRD**: [009-ai.md](../../01.requirements/009-ai.md)
-- **Spec**: [08-ai/spec.md](../../03.specs/08-ai/spec.md)
+- **Spec**: [009-ai/spec.md](../../03.specs/009-ai/spec.md)
 - **ADR**: [0008-ollama-openwebui-local-ai.md](../decisions/0008-ollama-openwebui-local-ai.md)

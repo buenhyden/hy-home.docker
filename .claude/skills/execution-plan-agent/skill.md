@@ -13,7 +13,7 @@ Creates implementation plans from approved specs in `docs/03.specs/`.
 ## Trigger Examples
 
 - "Create an execution plan for the observability spec"
-- "Decompose docs/03.specs/06-observability/spec.md into a plan"
+- "Decompose docs/03.specs/007-observability/spec.md into a plan"
 - "Turn the Vault spec into a plan with rollback criteria"
 
 ## Purpose

@@ -22,7 +22,7 @@ This document tracks detailed work items and progress for the `2026-03-26-07-wor
   - [x] Create `docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md`
   - [x] Refresh indexing in `docs/02.architecture/decisions/README.md`
 - [x] **TSK-04: Detail the Technical Spec**
-  - [x] Create `docs/03.specs/07-workflow/spec.md`
+  - [x] Create `docs/03.specs/008-workflow/spec.md`
   - [x] Refresh indexing in `docs/03.specs/README.md`
 - [/] **TSK-05: Compose Plan & Task and clean up lint**
   - [x] Create `docs/04.execution/plans/2026-03-26-07-workflow-standardization.md`

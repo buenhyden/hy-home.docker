@@ -127,4 +127,4 @@ architecture, specs, execution evidence, and operations guidance.
 - [workspace baseline](./workspace-baseline.md)
 - [harness engineering](./harness-engineering.md)
 - [quality, CI, and formatting](./quality-ci-formatting.md)
-- [HAFE spec](../../../03.specs/harness-agent-first-engineering/spec.md)
+- [HAFE spec](../../../03.specs/094-harness-agent-first-engineering/spec.md)

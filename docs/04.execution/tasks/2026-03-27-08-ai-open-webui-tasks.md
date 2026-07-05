@@ -13,7 +13,7 @@ This document is the implementation and verification task list for Open WebUI. I
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/08-ai/open-webui.md](../../03.specs/08-ai/open-webui.md)
+- **Parent Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/009-ai/open-webui.md)
 - **Parent Plan**: [../plans/2026-03-27-08-ai-open-webui-plan.md](../plans/2026-03-27-08-ai-open-webui-plan.md)
 
 ## Working Rules
@@ -42,5 +42,5 @@ This document is the implementation and verification task list for Open WebUI. I
 
 ## Related Documents
 
-- **Parent Spec**: [../../03.specs/08-ai/open-webui.md](../../03.specs/08-ai/open-webui.md)
+- **Parent Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/009-ai/open-webui.md)
 - **Parent Plan**: [../plans/2026-03-27-08-ai-open-webui-plan.md](../plans/2026-03-27-08-ai-open-webui-plan.md)

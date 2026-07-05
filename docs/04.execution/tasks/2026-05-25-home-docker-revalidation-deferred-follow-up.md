@@ -11,7 +11,7 @@ This document is the execution record for revalidating the 2026-05-25 `hy-home.d
 
 ## Inputs
 
-- **Parent Spec**: [home-docker-revalidation-deferred-follow-up spec](../../03.specs/home-docker-revalidation-deferred-follow-up/spec.md)
+- **Parent Spec**: [home-docker-revalidation-deferred-follow-up spec](../../03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md)
 - **Parent Plan**: [2026-05-25 home docker revalidation deferred follow-up plan](../plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md)
 - **Baseline Plan**: [2026-05-25 home docker workspace audit improvement plan](../plans/2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Baseline Task**: [2026-05-25 home docker workspace audit improvement task](./2026-05-25-home-docker-workspace-audit-improvement.md)
@@ -132,7 +132,7 @@ The prior 2026-05-25 audit closed the low-risk documentation and generated-index
 
 | Path | Change Type | Runtime Impact |
 | --- | --- | --- |
-| `docs/03.specs/home-docker-revalidation-deferred-follow-up/spec.md` | New spec artifact | None |
+| `docs/03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md` | New spec artifact | None |
 | `docs/04.execution/plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md` | New plan artifact | None |
 | `docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md` | New task artifact | None |
 | `docs/03.specs/README.md` | Parent index/link update | None |
@@ -231,7 +231,7 @@ No secret value is recorded in this document; this row records ID, env-var, and 
 
 ## Related Documents
 
-- **Parent Spec**: [home-docker-revalidation-deferred-follow-up spec](../../03.specs/home-docker-revalidation-deferred-follow-up/spec.md)
+- **Parent Spec**: [home-docker-revalidation-deferred-follow-up spec](../../03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md)
 - **Parent Plan**: [2026-05-25 home docker revalidation deferred follow-up plan](../plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md)
 - **Baseline Plan**: [2026-05-25 home docker workspace audit improvement plan](../plans/2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Baseline Task**: [2026-05-25 home docker workspace audit improvement task](./2026-05-25-home-docker-workspace-audit-improvement.md)

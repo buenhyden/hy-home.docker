@@ -22,9 +22,9 @@ The initial inventory baseline is as follows.
 - `docs/04.execution/tasks`: 34 task documents
 - Graphify health: advisory due to `surprising_cross_root_inferred_edges=3`; navigation aid only
 
-The first concrete gap is that `docs/03.specs/04-data-analytics/spec.md` is an active spec but lacks `docs/04.execution` plan/task links. Related infra and operations documents exist, so execution traceability evidence is added.
+The first concrete gap is that `docs/03.specs/005-data-analytics/spec.md` is an active spec but lacks `docs/04.execution` plan/task links. Related infra and operations documents exist, so execution traceability evidence is added.
 
-The second concrete gap is that `docs/03.specs/07-workflow/agent-design.md` and `docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md` describe a cross-validation system completed by current runtime implementation and progress evidence, but their document status remains draft and task evidence is missing.
+The second concrete gap is that `docs/03.specs/008-workflow/agent-design.md` and `docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md` describe a cross-validation system completed by current runtime implementation and progress evidence, but their document status remains draft and task evidence is missing.
 
 Additional stale-state gaps are some 2026-05-17/18 execution plans that were already completed by progress log and task evidence but still remained `draft` or `active`. This plan aligns those items to completed status with retrospective task evidence and keeps older 2026-03 service rollout plan/task items active when runtime evidence is insufficient.
 
@@ -69,7 +69,7 @@ Additional stale-state gaps are some 2026-05-17/18 execution plans that were alr
 | --- | --- | --- | --- | --- |
 | VAL-SPEC-EXEC-001 | Inventory | Count docs and detect spec plan/task link coverage | targeted Python/read-only scans over `docs/03.specs` and `docs/04.execution` | counts recorded; zero false completion claims |
 | VAL-SPEC-EXEC-002 | Static Compose | Validate data analytics compose files | `docker compose -f infra/04-data/analytics/{influxdb,ksql,opensearch,warehouses}/docker-compose.yml config` | exit code 0; env warnings are recorded when present |
-| VAL-SPEC-EXEC-002A | Runtime Catalog | Validate infra team cross-validation evidence | `test -f docs/03.specs/07-workflow/agent-design.md`; `test ! -d docs/superpowers`; targeted `rg` for `infra-cross-validate`, `security-auditor`, and `iac-reviewer` | canonical docs and runtime/catalog surfaces exist; removed non-stage directory remains absent |
+| VAL-SPEC-EXEC-002A | Runtime Catalog | Validate infra team cross-validation evidence | `test -f docs/03.specs/008-workflow/agent-design.md`; `test ! -d docs/superpowers`; targeted `rg` for `infra-cross-validate`, `security-auditor`, and `iac-reviewer` | canonical docs and runtime/catalog surfaces exist; removed non-stage directory remains absent |
 | VAL-SPEC-EXEC-002B | Retrospective Evidence | Validate stale execution state fixes | targeted status and progress scans for requirements, scripts, and execution-stage remediation docs | completed status is backed by progress/task evidence |
 | VAL-SPEC-EXEC-002C | Hook Smoke | Validate requested hook improvements | Stop and PostToolUse hook simulations | Stop blocks owned uncommitted changes; post-edit validation runs formatting/style path |
 | VAL-SPEC-EXEC-003 | Repository Contract | Validate docs/runtime contracts | `bash scripts/validation/check-repo-contracts.sh` | failures=0 |
@@ -108,7 +108,7 @@ Additional stale-state gaps are some 2026-05-17/18 execution plans that were alr
 - **Specs README**: [Specs index](../../03.specs/README.md)
 - **Plans README**: [Execution plans index](./README.md)
 - **Tasks README**: [Execution tasks index](../tasks/README.md)
-- **Data analytics spec**: [Data analytics spec](../../03.specs/04-data-analytics/spec.md)
+- **Data analytics spec**: [Data analytics spec](../../03.specs/005-data-analytics/spec.md)
 - **Data analytics traceability plan**: [Data analytics execution traceability plan](./2026-05-22-data-analytics-execution-traceability.md)
 - **Infra team agent plan**: [Infra team agent cross-validation plan](./2026-04-10-infra-team-agent-cross-validation.md)
 - **Infra team agent task**: [Infra team agent cross-validation task](../tasks/2026-04-10-infra-team-agent-cross-validation.md)

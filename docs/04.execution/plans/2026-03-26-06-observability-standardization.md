@@ -36,7 +36,7 @@ This document is the detailed implementation plan for standardizing documentatio
 | PLN-001 | PRD Creation | `docs/01.requirements/007-observability.md` | REQ-PRD-FUN-05 | File existence & H1 check |
 | PLN-002 | ARD Creation | `docs/02.architecture/requirements/0006-observability-architecture.md` | ARD-Reference | Data flow diagram check |
 | PLN-003 | ADR Creation | `docs/02.architecture/decisions/0006-lgtm-stack-selection.md` | ADR-Decision | Alternative analysis check |
-| PLN-004 | Spec Creation | `docs/03.specs/06-observability/spec.md` | VAL-SPC-001 | Port mapping accuracy |
+| PLN-004 | Spec Creation | `docs/03.specs/007-observability/spec.md` | VAL-SPC-001 | Port mapping accuracy |
 | PLN-005 | Index Updates | `docs/*/README.md` | Traceability | Link validity check |
 
 ## Verification Plan
@@ -62,5 +62,5 @@ This document is the detailed implementation plan for standardizing documentatio
 
 - **PRD**: [../../01.requirements/007-observability.md](../../01.requirements/007-observability.md)
 - **ARD**: [../../02.architecture/requirements/0006-observability-architecture.md](../../02.architecture/requirements/0006-observability-architecture.md)
-- **Spec**: [../../03.specs/06-observability/spec.md](../../03.specs/06-observability/spec.md)
+- **Spec**: [../../03.specs/007-observability/spec.md](../../03.specs/007-observability/spec.md)
 - **ADR**: [../../02.architecture/decisions/0006-lgtm-stack-selection.md](../../02.architecture/decisions/0006-lgtm-stack-selection.md)

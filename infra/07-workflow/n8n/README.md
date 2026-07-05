@@ -93,7 +93,7 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 - **PRD**: [07-workflow PRD](../../../docs/01.requirements/008-workflow.md)
 - **ARD**: [07-workflow ARD](../../../docs/02.architecture/requirements/0007-workflow-architecture.md)
 - **ADR**: [N8N Integration ADR](../../../docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)
-- **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/07-workflow/spec.md)
+- **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/008-workflow/spec.md)
 - **Plan**: [07-workflow Implementation Plan](../../../docs/04.execution/plans/2026-03-26-07-workflow-standardization.md)
 
 ## Validation
@@ -111,4 +111,4 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 - **Guide**: [n8n usage guide](../../../docs/05.operations/guides/07-workflow/n8n.md)
 - **Policy**: [n8n operations policy](../../../docs/05.operations/policies/07-workflow/n8n.md)
 - **Runbook**: [n8n recovery runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md)
-- **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/07-workflow/spec.md)
+- **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/008-workflow/spec.md)

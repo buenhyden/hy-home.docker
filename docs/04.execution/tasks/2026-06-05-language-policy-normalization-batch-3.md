@@ -51,15 +51,15 @@ and records the updated plan/task backlog for the next English-only surfaces.
 
 The following English-only target files now have no Korean text:
 
-- [AI Tier Spec](../../03.specs/08-ai/spec.md)
-- [Laboratory Tier Spec](../../03.specs/11-laboratory/spec.md)
-- [Infra Secrets Docs Refresh Spec](../../03.specs/infra-secrets-docs-refresh/spec.md)
-- [Tooling Tier Spec](../../03.specs/09-tooling/spec.md)
-- [Workspace Consistency 2026-05b Spec](../../03.specs/workspace-consistency-2026-05b/spec.md)
-- [Workspace Documentation Consistency 2026-05 Spec](../../03.specs/workspace-doc-consistency-2026-05/spec.md)
-- [Messaging Tier Spec](../../03.specs/05-messaging/spec.md)
-- [Data Tier Spec](../../03.specs/04-data/spec.md)
-- [Workflow Tier Spec](../../03.specs/07-workflow/spec.md)
+- [AI Tier Spec](../../03.specs/009-ai/spec.md)
+- [Laboratory Tier Spec](../../03.specs/012-laboratory/spec.md)
+- [Infra Secrets Docs Refresh Spec](../../03.specs/095-infra-secrets-docs-refresh/spec.md)
+- [Tooling Tier Spec](../../03.specs/010-tooling/spec.md)
+- [Workspace Consistency 2026-05b Spec](../../03.specs/092-workspace-consistency-2026-05b/spec.md)
+- [Workspace Documentation Consistency 2026-05 Spec](../../03.specs/091-workspace-doc-consistency-2026-05/spec.md)
+- [Messaging Tier Spec](../../03.specs/006-messaging/spec.md)
+- [Data Tier Spec](../../03.specs/004-data/spec.md)
+- [Workflow Tier Spec](../../03.specs/008-workflow/spec.md)
 
 ## Validation Results
 

@@ -73,7 +73,7 @@ frontmatter population.
 
 | Surface Profile | Count | Representative Paths | Decision | Rationale |
 | --- | ---: | --- | --- | --- |
-| Stage folder README indexes | 100 | `docs/README.md`, `docs/03.specs/01-gateway/README.md`, `docs/05.operations/guides/README.md`, `docs/90.references/data/docker/README.md` | Optional | README role is derived from path and folder-index headings; adding target lifecycle status would blur README and leaf-document profiles. |
+| Stage folder README indexes | 100 | `docs/README.md`, `docs/03.specs/001-gateway/README.md`, `docs/05.operations/guides/README.md`, `docs/90.references/data/docker/README.md` | Optional | README role is derived from path and folder-index headings; adding target lifecycle status would blur README and leaf-document profiles. |
 | Infra README files | 66 | `infra/README.md`, `infra/01-gateway/traefik/README.md`, `infra/06-observability/grafana/README.md` | Optional | Infra README files are implementation and service indexes, not canonical docs target-stage leaf documents. |
 | Workspace README and utility README files | 6 | `projects/README.md`, `projects/storybook/README.md`, `scripts/README.md`, `secrets/README.md`, `tests/README.md` | Optional | The common README template is profile-driven and does not require target frontmatter after copying. |
 | Provider README files | 1 | `.agents/README.md` | Optional | `WDC-GAP-024` records provider README profiles as intentionally thinner than folder README profiles; `.agents/README.md` does not need frontmatter unless a provider metadata consumer is introduced. |

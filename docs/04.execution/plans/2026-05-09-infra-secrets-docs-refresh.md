@@ -91,7 +91,7 @@ The current repository has layered Docker Compose infrastructure and a stage-bas
 
 - **PRD**: No explicit PRD
 - **ARD**: No explicit ARD
-- **Spec**: [../03.specs/infra-secrets-docs-refresh/spec.md](../../03.specs/infra-secrets-docs-refresh/spec.md)
+- **Spec**: [../03.specs/095-infra-secrets-docs-refresh/spec.md](../../03.specs/095-infra-secrets-docs-refresh/spec.md)
 - **ADR**: No explicit ADR
 - **Task**: [../04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md](../tasks/2026-05-09-infra-secrets-docs-refresh.md)
 - **Operation**: [../05.operations/README.md](../../05.operations/README.md)

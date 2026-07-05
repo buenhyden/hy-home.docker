@@ -69,27 +69,27 @@ links without replacement evidence.
 
 | Candidate | Preliminary Disposition | Rationale | Future Batch |
 | --- | --- | --- | --- |
-| `docs/03.specs/docs-taxonomy-agent-first-migration/spec.md` | `historical-archive` candidate | Completed migration work product. | `PLN-DRA-004` |
-| `docs/03.specs/harness-agent-first-engineering/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed harness work may still support current governance references. | `PLN-DRA-004` |
-| `docs/03.specs/home-docker-revalidation-deferred-follow-up/spec.md` | `historical-archive` candidate | Completed follow-up design. | `PLN-DRA-004` |
-| `docs/03.specs/infra-secrets-docs-refresh/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed infra/secrets/docs work with redaction boundaries. | `PLN-DRA-004` |
-| `docs/03.specs/llm-wiki-agent-first-completion/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed LLM Wiki work may still explain generated index history. | `PLN-DRA-004` |
-| `docs/03.specs/standardize-infra-net/spec.md` | `historical-archive` candidate | Completed network standardization design. | `PLN-DRA-004` |
-| `docs/03.specs/workspace-audit-2026-05/spec.md` | `evidence-preserve` candidate | Historical audit snapshot; prior work warns not to rewrite audit history. | `PLN-DRA-004` |
-| `docs/03.specs/workspace-consistency-2026-05b/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed consistency design/audit work product. | `PLN-DRA-004` |
-| `docs/03.specs/workspace-doc-consistency-2026-05/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed consistency design/audit work product. | `PLN-DRA-004` |
+| `docs/03.specs/093-docs-taxonomy-agent-first-migration/spec.md` | `historical-archive` candidate | Completed migration work product. | `PLN-DRA-004` |
+| `docs/03.specs/094-harness-agent-first-engineering/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed harness work may still support current governance references. | `PLN-DRA-004` |
+| `docs/03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md` | `historical-archive` candidate | Completed follow-up design. | `PLN-DRA-004` |
+| `docs/03.specs/095-infra-secrets-docs-refresh/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed infra/secrets/docs work with redaction boundaries. | `PLN-DRA-004` |
+| `docs/03.specs/096-llm-wiki-agent-first-completion/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed LLM Wiki work may still explain generated index history. | `PLN-DRA-004` |
+| `docs/03.specs/098-standardize-infra-net/spec.md` | `historical-archive` candidate | Completed network standardization design. | `PLN-DRA-004` |
+| `docs/03.specs/090-workspace-audit-2026-05/spec.md` | `evidence-preserve` candidate | Historical audit snapshot; prior work warns not to rewrite audit history. | `PLN-DRA-004` |
+| `docs/03.specs/092-workspace-consistency-2026-05b/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed consistency design/audit work product. | `PLN-DRA-004` |
+| `docs/03.specs/091-workspace-doc-consistency-2026-05/spec.md` | `historical-archive` or `evidence-preserve` candidate | Completed consistency design/audit work product. | `PLN-DRA-004` |
 
 ## Draft Follow-Up List
 
 | Candidate | Preliminary Disposition | Rationale | Future Batch |
 | --- | --- | --- | --- |
-| `docs/03.specs/agentic-engineering-implementation-audit-pack/README.md` | `active-canonical` or `evidence-preserve` review | Draft audit-pack design; needs status review before archive. | `PLN-DRA-004` |
-| `docs/03.specs/agentic-engineering-implementation-audit-pack/spec.md` | `active-canonical` or `evidence-preserve` review | Draft audit-pack design; likely current research lineage. | `PLN-DRA-004` |
-| `docs/03.specs/document-restructure-audit-contract-archive/README.md` | `active-canonical` | Current approved design entrypoint. | No archive in current wave. |
-| `docs/03.specs/document-restructure-audit-contract-archive/spec.md` | `active-canonical` | Current approved design spec. | No archive in current wave. |
-| `docs/03.specs/template-system-contract-standardization/spec.md` | `historical-archive` or `evidence-preserve` review | Prior design work appears implemented; verify links before archive. | `PLN-DRA-004` |
-| `docs/03.specs/template-system-reorganization/README.md` | `historical-archive` or `evidence-preserve` review | Prior design work appears implemented; verify parent routing. | `PLN-DRA-004` |
-| `docs/03.specs/template-system-reorganization/spec.md` | `historical-archive` or `evidence-preserve` review | Prior design work appears implemented; verify parent routing. | `PLN-DRA-004` |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md` | `active-canonical` or `evidence-preserve` review | Draft audit-pack design; needs status review before archive. | `PLN-DRA-004` |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md` | `active-canonical` or `evidence-preserve` review | Draft audit-pack design; likely current research lineage. | `PLN-DRA-004` |
+| `docs/03.specs/103-document-restructure-audit-contract-archive/README.md` | `active-canonical` | Current approved design entrypoint. | No archive in current wave. |
+| `docs/03.specs/103-document-restructure-audit-contract-archive/spec.md` | `active-canonical` | Current approved design spec. | No archive in current wave. |
+| `docs/03.specs/100-template-system-contract-standardization/spec.md` | `historical-archive` or `evidence-preserve` review | Prior design work appears implemented; verify links before archive. | `PLN-DRA-004` |
+| `docs/03.specs/101-template-system-reorganization/README.md` | `historical-archive` or `evidence-preserve` review | Prior design work appears implemented; verify parent routing. | `PLN-DRA-004` |
+| `docs/03.specs/101-template-system-reorganization/spec.md` | `historical-archive` or `evidence-preserve` review | Prior design work appears implemented; verify parent routing. | `PLN-DRA-004` |
 
 ## PLN-DRA-004 Disposition Results
 
@@ -101,22 +101,22 @@ consume them.
 
 | Target | Final Disposition | Action | Replacement / Current Pointer |
 | --- | --- | --- | --- |
-| `docs/03.specs/docs-taxonomy-agent-first-migration/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Stage 04 taxonomy plan/task remain the evidence chain. |
-| `docs/03.specs/harness-agent-first-engineering/spec.md` | `active-canonical` / `evidence-preserve` | Kept in place because Stage 90 research and Stage 05 operations still reference it. | HAFE operations guide, policy, and validation runbook. |
-| `docs/03.specs/home-docker-revalidation-deferred-follow-up/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Stage 04 deferred follow-up plan/task. |
-| `docs/03.specs/infra-secrets-docs-refresh/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Stage 04 infra/secrets/docs refresh plan/task and docs index. |
-| `docs/03.specs/llm-wiki-agent-first-completion/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | LLM Wiki generator/index contract and Stage 04 evidence. |
-| `docs/03.specs/standardize-infra-net/spec.md` | `active-canonical` | Kept in place because operations runbooks use it as the current authoritative IP mapping contract. | Stage 05 infra_net guide/runbook and architecture requirements/decision. |
-| `docs/03.specs/workspace-audit-2026-05/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Historical audit chain and comparison guides. |
-| `docs/03.specs/workspace-consistency-2026-05b/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Follow-up governance consistency plan/task. |
-| `docs/03.specs/workspace-doc-consistency-2026-05/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Predecessor to `workspace-consistency-2026-05b`. |
-| `docs/03.specs/agentic-engineering-implementation-audit-pack/README.md` | `active-canonical` draft follow-up | Kept as draft; not archived because the Stage 90 audit pack has not been implemented. | Future agentic-engineering audit pack approval. |
-| `docs/03.specs/agentic-engineering-implementation-audit-pack/spec.md` | `active-canonical` draft follow-up | Kept as draft; not archived because the Stage 90 audit pack has not been implemented. | Future agentic-engineering audit pack approval. |
-| `docs/03.specs/document-restructure-audit-contract-archive/README.md` | `active-canonical` | Status changed to `active`. | Current `PLN-DRA-*` implementation chain. |
-| `docs/03.specs/document-restructure-audit-contract-archive/spec.md` | `active-canonical` | Status changed to `active`. | Current `PLN-DRA-*` implementation chain. |
-| `docs/03.specs/template-system-contract-standardization/spec.md` | `evidence-preserve` | Status changed to `completed`; kept as implementation evidence. | Stage 99 support contracts and Stage 04 standardization task. |
-| `docs/03.specs/template-system-reorganization/README.md` | `evidence-preserve` / `superseded` | Status changed to `superseded`; body points to the replacement spec. | `docs/03.specs/template-system-contract-standardization/spec.md` |
-| `docs/03.specs/template-system-reorganization/spec.md` | `evidence-preserve` / `superseded` | Status changed to `superseded`; body points to the replacement spec. | `docs/03.specs/template-system-contract-standardization/spec.md` |
+| `docs/03.specs/093-docs-taxonomy-agent-first-migration/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Stage 04 taxonomy plan/task remain the evidence chain. |
+| `docs/03.specs/094-harness-agent-first-engineering/spec.md` | `active-canonical` / `evidence-preserve` | Kept in place because Stage 90 research and Stage 05 operations still reference it. | HAFE operations guide, policy, and validation runbook. |
+| `docs/03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Stage 04 deferred follow-up plan/task. |
+| `docs/03.specs/095-infra-secrets-docs-refresh/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Stage 04 infra/secrets/docs refresh plan/task and docs index. |
+| `docs/03.specs/096-llm-wiki-agent-first-completion/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | LLM Wiki generator/index contract and Stage 04 evidence. |
+| `docs/03.specs/098-standardize-infra-net/spec.md` | `active-canonical` | Kept in place because operations runbooks use it as the current authoritative IP mapping contract. | Stage 05 infra_net guide/runbook and architecture requirements/decision. |
+| `docs/03.specs/090-workspace-audit-2026-05/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Historical audit chain and comparison guides. |
+| `docs/03.specs/092-workspace-consistency-2026-05b/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Follow-up governance consistency plan/task. |
+| `docs/03.specs/091-workspace-doc-consistency-2026-05/spec.md` | `evidence-preserve` | Kept in place; no archive tombstone. | Predecessor to `workspace-consistency-2026-05b`. |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/README.md` | `active-canonical` draft follow-up | Kept as draft; not archived because the Stage 90 audit pack has not been implemented. | Future agentic-engineering audit pack approval. |
+| `docs/03.specs/105-agentic-engineering-implementation-audit-pack/spec.md` | `active-canonical` draft follow-up | Kept as draft; not archived because the Stage 90 audit pack has not been implemented. | Future agentic-engineering audit pack approval. |
+| `docs/03.specs/103-document-restructure-audit-contract-archive/README.md` | `active-canonical` | Status changed to `active`. | Current `PLN-DRA-*` implementation chain. |
+| `docs/03.specs/103-document-restructure-audit-contract-archive/spec.md` | `active-canonical` | Status changed to `active`. | Current `PLN-DRA-*` implementation chain. |
+| `docs/03.specs/100-template-system-contract-standardization/spec.md` | `evidence-preserve` | Status changed to `completed`; kept as implementation evidence. | Stage 99 support contracts and Stage 04 standardization task. |
+| `docs/03.specs/101-template-system-reorganization/README.md` | `evidence-preserve` / `superseded` | Status changed to `superseded`; body points to the replacement spec. | `docs/03.specs/100-template-system-contract-standardization/spec.md` |
+| `docs/03.specs/101-template-system-reorganization/spec.md` | `evidence-preserve` / `superseded` | Status changed to `superseded`; body points to the replacement spec. | `docs/03.specs/100-template-system-contract-standardization/spec.md` |
 
 Current Stage 03 status count after `PLN-DRA-004`:
 
@@ -148,7 +148,7 @@ Current Stage 03 status count after `PLN-DRA-004`:
 
 ## Sources
 
-- [Document restructure design spec](../../../03.specs/document-restructure-audit-contract-archive/spec.md) - Defines the Stage 03 archive model.
+- [Document restructure design spec](../../../03.specs/103-document-restructure-audit-contract-archive/spec.md) - Defines the Stage 03 archive model.
 - [Stage 03 README](../../../03.specs/README.md) - Supplies current Stage 03 routing.
 - [Archive template](../../../99.templates/templates/common/archive.template.md) - Defines tombstone shape for future archive moves.
 - [Historical evidence preservation](../2026-07-03-workspace-document-contract-audit-pack/historical-evidence-preservation.md) - Supplies preservation rules for completed evidence.

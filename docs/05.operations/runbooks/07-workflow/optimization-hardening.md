@@ -18,7 +18,7 @@ status: active
 
 ### Canonical References
 
-- [Spec](../../../03.specs/07-workflow/spec.md)
+- [Spec](../../../03.specs/008-workflow/spec.md)
 - [Operations Policy](../../policies/07-workflow/optimization-hardening.md)
 - [Plan](../../../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)

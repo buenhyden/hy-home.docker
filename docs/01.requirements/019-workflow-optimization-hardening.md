@@ -81,7 +81,7 @@ status: active
 ## Related Documents
 
 - **ARD**: [../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md](../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/07-workflow/spec.md](../03.specs/07-workflow/spec.md)
+- **Spec**: [../03.specs/008-workflow/spec.md](../03.specs/008-workflow/spec.md)
 - **Plan**: [../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)

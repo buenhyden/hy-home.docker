@@ -81,7 +81,7 @@ status: active
 ## Related Documents
 
 - **ARD**: [../02.architecture/requirements/0019-data-optimization-hardening-architecture.md](../02.architecture/requirements/0019-data-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/04-data/spec.md](../03.specs/04-data/spec.md)
+- **Spec**: [../03.specs/004-data/spec.md](../03.specs/004-data/spec.md)
 - **Plan**: [../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md)

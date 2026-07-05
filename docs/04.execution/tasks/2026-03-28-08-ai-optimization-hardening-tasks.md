@@ -11,7 +11,7 @@ This document tracks the `08-ai` optimization and hardening execution tasks. It 
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/08-ai/spec.md](../../03.specs/08-ai/spec.md)
+- **Parent Spec**: [../../03.specs/009-ai/spec.md](../../03.specs/009-ai/spec.md)
 - **Parent Plan**: [../plans/2026-03-28-08-ai-optimization-hardening-plan.md](../plans/2026-03-28-08-ai-optimization-hardening-plan.md)
 
 ## Working Rules

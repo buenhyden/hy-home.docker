@@ -11,7 +11,7 @@ This document tracks the `09-tooling` optimization and hardening execution tasks
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/09-tooling/spec.md](../../03.specs/09-tooling/spec.md)
+- **Parent Spec**: [../../03.specs/010-tooling/spec.md](../../03.specs/010-tooling/spec.md)
 - **Parent Plan**: [../plans/2026-03-28-09-tooling-optimization-hardening-plan.md](../plans/2026-03-28-09-tooling-optimization-hardening-plan.md)
 
 ## Working Rules

@@ -84,7 +84,7 @@ non-template taxonomy drift in this task.
 | Surface | Evidence | Classification | Disposition | Notes |
 | --- | --- | --- | --- | --- |
 | Template reorganization plans and tasks | `docs/04.execution/plans/2026-07-02-template-system-reorganization.md` records the move from flat `docs/99.templates/*.template.*` to nested `templates/` and `support/` paths. | historical evidence | historical-evidence | Keep as migration evidence. |
-| Older workspace consistency specs/plans | `docs/03.specs/workspace-consistency-2026-05b/spec.md`, `docs/03.specs/workspace-doc-consistency-2026-05/spec.md`, and older Stage 04 plans mention `docs/99.templates/*.template.md` baselines. | historical evidence | historical-evidence | Do not rewrite completed historical design evidence for style only. |
+| Older workspace consistency specs/plans | `docs/03.specs/092-workspace-consistency-2026-05b/spec.md`, `docs/03.specs/091-workspace-doc-consistency-2026-05/spec.md`, and older Stage 04 plans mention `docs/99.templates/*.template.md` baselines. | historical evidence | historical-evidence | Do not rewrite completed historical design evidence for style only. |
 | Governance progress log | `docs/00.agent-governance/memory/progress.md` records prior template standardization and old-path cleanup work. | historical evidence | historical-evidence | Memory is advisory progress context, not active template policy. |
 | Prior execution tasks | Older `docs/04.execution/tasks/**` entries mention template list or old template paths as completed work evidence. | historical evidence | historical-evidence | Preserve unless a future task proves an entry is active guidance consumed today. |
 

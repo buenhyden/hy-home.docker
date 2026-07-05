@@ -3,7 +3,7 @@ status: archived
 archived_from: docs/05.operations/policies/07-workflow/airbyte.md
 archived_on: 2026-06-02
 archive_reason: Airbyte has no tracked infra implementation under infra/07-workflow/airbyte and must not remain an active operations policy.
-current_replacement: docs/03.specs/07-workflow/spec.md
+current_replacement: docs/03.specs/008-workflow/spec.md
 ---
 <!-- Target: docs/98.archive/05.operations/policies/07-workflow/airbyte.md -->
 
@@ -21,7 +21,7 @@ current_replacement: docs/03.specs/07-workflow/spec.md
 | Archived from | `docs/05.operations/policies/07-workflow/airbyte.md` |
 | Archived on | `2026-06-02` |
 | Archive reason | Airbyte has no tracked implementation under `infra/07-workflow/airbyte`. |
-| Current replacement | [Workflow spec](../../../../03.specs/07-workflow/spec.md) |
+| Current replacement | [Workflow spec](../../../../03.specs/008-workflow/spec.md) |
 
 ## Current Replacement
 

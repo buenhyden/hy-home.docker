@@ -11,7 +11,7 @@ This document tracks the `07-workflow` optimization and hardening execution task
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/07-workflow/spec.md](../../03.specs/07-workflow/spec.md)
+- **Parent Spec**: [../../03.specs/008-workflow/spec.md](../../03.specs/008-workflow/spec.md)
 - **Parent Plan**: [../plans/2026-03-28-07-workflow-optimization-hardening-plan.md](../plans/2026-03-28-07-workflow-optimization-hardening-plan.md)
 
 ## Working Rules

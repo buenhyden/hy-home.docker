@@ -91,7 +91,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 ## Related Documents
 
 - **PRD**: [../01.requirements/020-ai-optimization-hardening.md](../../01.requirements/020-ai-optimization-hardening.md)
-- **Spec**: [../03.specs/08-ai/spec.md](../../03.specs/08-ai/spec.md)
+- **Spec**: [../03.specs/009-ai/spec.md](../../03.specs/009-ai/spec.md)
 - **Plan**: [../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md](../decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)

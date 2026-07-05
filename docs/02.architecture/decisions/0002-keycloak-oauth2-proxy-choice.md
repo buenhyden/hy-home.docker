@@ -64,5 +64,5 @@ Existing rationale, positive/negative notes, and trade-off text in this ADR rema
 
 - **PRD**: [../../01.requirements/002-auth.md](../../01.requirements/002-auth.md)
 - **ARD**: [../requirements/0002-auth-architecture.md](../requirements/0002-auth-architecture.md)
-- **Spec**: [../../03.specs/02-auth/spec.md](../../03.specs/02-auth/spec.md)
+- **Spec**: [../../03.specs/002-auth/spec.md](../../03.specs/002-auth/spec.md)
 - **Plan**: [../../04.execution/plans/2026-03-26-02-auth-standardization.md](../../04.execution/plans/2026-03-26-02-auth-standardization.md)

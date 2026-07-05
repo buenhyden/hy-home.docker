@@ -13,7 +13,7 @@ This document is completion evidence confirming that the cross-validation system
 
 ## Inputs
 
-- **Parent Spec**: [Workflow cross-validation agent design](../../03.specs/07-workflow/agent-design.md)
+- **Parent Spec**: [Workflow cross-validation agent design](../../03.specs/008-workflow/agent-design.md)
 - **Parent Plan**: [Infra team agent cross-validation plan](../plans/2026-04-10-infra-team-agent-cross-validation.md)
 - **Subagent Protocol**: [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
 - **Agent Catalog**: [Agent and function catalog](../../00.agent-governance/agents/README.md)
@@ -29,7 +29,7 @@ This document is completion evidence confirming that the cross-validation system
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-INFRA-TEAM-001 | Confirm canonical agent design location | doc | Agent Design / Policy Contract | PLN-001 | `docs/03.specs/07-workflow/agent-design.md` exists and has Related Documents | doc-writer | Done |
+| T-INFRA-TEAM-001 | Confirm canonical agent design location | doc | Agent Design / Policy Contract | PLN-001 | `docs/03.specs/008-workflow/agent-design.md` exists and has Related Documents | doc-writer | Done |
 | T-INFRA-TEAM-002 | Confirm canonical execution plan location | doc | Agent Design / Linked Docs | PLN-002 | `docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md` exists | doc-writer | Done |
 | T-INFRA-TEAM-003 | Confirm non-stage active docs are absent | guardrail | Agent Design / Guardrails | PLN-003, PLN-005 | `test ! -d docs/superpowers` passes | doc-writer | Done |
 | T-INFRA-TEAM-004 | Confirm runtime handoff surfaces exist | eval | Agent Design / Orchestration Model | PLN-006 | `security-auditor`, `iac-reviewer`, `infra-implementer`, and `infra-cross-validate` files exist in runtime and catalog mirrors | doc-writer | Done |
@@ -61,11 +61,11 @@ This document is completion evidence confirming that the cross-validation system
 ## Verification Summary
 
 - **Test Commands**:
-  - PASS: `test -f docs/03.specs/07-workflow/agent-design.md`
+  - PASS: `test -f docs/03.specs/008-workflow/agent-design.md`
   - PASS: `test -f docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md`
   - PASS: `test ! -d docs/superpowers`
 - **Eval Commands**:
-  - PASS: `rg -n "infra-cross-validate|security-auditor|iac-reviewer" .claude .agents docs/00.agent-governance docs/03.specs/07-workflow docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md`
+  - PASS: `rg -n "infra-cross-validate|security-auditor|iac-reviewer" .claude .agents docs/00.agent-governance docs/03.specs/008-workflow docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md`
   - PASS: `rg -n "P6 .*Infra Team Agent cross-validation" docs/00.agent-governance/memory/progress.md`
 - **Logs / Evidence Location**:
   - Runtime files: `.claude/agents/security-auditor.md`, `.claude/agents/iac-reviewer.md`, `.claude/agents/infra-implementer.md`, `.claude/skills/infra-cross-validate/skill.md`
@@ -75,8 +75,8 @@ This document is completion evidence confirming that the cross-validation system
 
 ## Related Documents
 
-- **Parent Spec**: [Workflow cross-validation agent design](../../03.specs/07-workflow/agent-design.md)
+- **Parent Spec**: [Workflow cross-validation agent design](../../03.specs/008-workflow/agent-design.md)
 - **Parent Plan**: [Infra team agent cross-validation plan](../plans/2026-04-10-infra-team-agent-cross-validation.md)
-- **Workflow Spec**: [Workflow spec](../../03.specs/07-workflow/spec.md)
+- **Workflow Spec**: [Workflow spec](../../03.specs/008-workflow/spec.md)
 - **Subagent Protocol**: [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
 - **Agent Catalog**: [Agent and function catalog](../../00.agent-governance/agents/README.md)

@@ -91,7 +91,7 @@ Runtime start/stop은 root include 활성 상태와 운영자 승인 범위를 �
 - [PRD](../../docs/01.requirements/012-laboratory.md)
 - [ARD](../../docs/02.architecture/requirements/0011-laboratory-architecture.md)
 - [ADR](../../docs/02.architecture/decisions/0011-laboratory-services.md)
-- [Technical Spec](../../docs/03.specs/11-laboratory/spec.md)
+- [Technical Spec](../../docs/03.specs/012-laboratory/spec.md)
 - [Operations guide](../../docs/05.operations/guides/11-laboratory/README.md)
 - [Operations policy](../../docs/05.operations/policies/11-laboratory/README.md)
 - [Operations runbook](../../docs/05.operations/runbooks/11-laboratory/README.md)

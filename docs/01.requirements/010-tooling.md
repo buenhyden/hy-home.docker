@@ -68,6 +68,6 @@ N/A
 ## Related Documents
 
 - **ARD**: [0009-tooling-architecture.md](../02.architecture/requirements/0009-tooling-architecture.md)
-- **Spec**: [09-tooling/spec.md](../03.specs/09-tooling/spec.md)
+- **Spec**: [010-tooling/spec.md](../03.specs/010-tooling/spec.md)
 - **Plan**: [2026-03-26-09-tooling-standardization.md](../04.execution/plans/2026-03-26-09-tooling-standardization.md)
 - **ADR**: [0009-tooling-services.md](../02.architecture/decisions/0009-tooling-services.md)

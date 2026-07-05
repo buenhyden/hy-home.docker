@@ -21,7 +21,7 @@ status: active
 
 ### Canonical References
 
-- **Spec**: [04-data spec](../../../../03.specs/04-data/spec.md)
+- **Spec**: [04-data spec](../../../../03.specs/004-data/spec.md)
 - **Policy**: [MinIO policy](../../../policies/04-data/lake-and-object/minio.md)
 - **Guide**: [MinIO guide](../../../guides/04-data/lake-and-object/minio.md)
 - **Repo**: [MinIO infrastructure](../../../../../infra/04-data/lake-and-object/minio/README.md)

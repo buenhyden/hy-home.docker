@@ -11,7 +11,7 @@ This document tracks the `05-messaging` optimization and hardening implementatio
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/05-messaging/spec.md](../../03.specs/05-messaging/spec.md)
+- **Parent Spec**: [../../03.specs/006-messaging/spec.md](../../03.specs/006-messaging/spec.md)
 - **Parent Plan**: [../plans/2026-03-28-05-messaging-optimization-hardening-plan.md](../plans/2026-03-28-05-messaging-optimization-hardening-plan.md)
 
 ## Working Rules
@@ -24,17 +24,17 @@ This document tracks the `05-messaging` optimization and hardening implementatio
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-MSG-001 | Pin the Kafka UI image tag | impl | 05-messaging/spec.md / Contracts | PLN-MSG-001 | Confirm `rg 'kafbat/kafka-ui:v1.5.0' infra/05-messaging/kafka` | DevOps | Done |
-| T-MSG-002 | Apply the gateway chain to the Kafka management router | impl | 05-messaging/spec.md / Core Design | PLN-MSG-001 | Confirm label strings | DevOps | Done |
-| T-MSG-003 | Improve Kafka dev compose volume path consistency | impl | 05-messaging/spec.md / Contracts | PLN-MSG-002 | dev compose config passes | DevOps | Done |
-| T-MSG-004 | Apply chain+SSO to the Kafka dev router | impl | 05-messaging/spec.md / Core Design | PLN-MSG-002 | Confirm label strings | DevOps | Done |
-| T-MSG-005 | Apply chain+SSO to the RabbitMQ management router | impl | 05-messaging/spec.md / Contracts | PLN-MSG-003 | Confirm label strings | DevOps | Done |
-| T-MSG-006 | Add the messaging hardening validation script | ops | 05-messaging/spec.md / Governance | PLN-MSG-004 | `bash scripts/hardening/check-all-hardening.sh 05-messaging` | DevOps | Done |
-| T-MSG-007 | Add the CI `infrastructure-hardening` job | ops | 05-messaging/spec.md / Governance | PLN-MSG-005 | Confirm workflow definition | DevOps | Done |
-| T-MSG-008 | Refresh the scripts README index | doc | 05-messaging/spec.md / Related Docs | PLN-MSG-006 | Confirm README entries/examples | Docs | Done |
-| T-MSG-009 | Reflect PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook docs | doc | 05-messaging/spec.md / Related Docs | PLN-MSG-007 | Confirm document links/README sync | Docs | Done |
-| T-MSG-010 | Run static validation and record results | test | 05-messaging/spec.md / Verification | PLN-MSG-001~007 | Check compose + hardening + traceability | DevOps | Done |
-| T-MSG-011 | Collect runtime/disaster-recovery rehearsal evidence | test | 05-messaging/spec.md / Verification | PLN-MSG-001~007 | Live health/recovery logs require an approved runtime rehearsal | DevOps | Deferred |
+| T-MSG-001 | Pin the Kafka UI image tag | impl | 006-messaging/spec.md / Contracts | PLN-MSG-001 | Confirm `rg 'kafbat/kafka-ui:v1.5.0' infra/05-messaging/kafka` | DevOps | Done |
+| T-MSG-002 | Apply the gateway chain to the Kafka management router | impl | 006-messaging/spec.md / Core Design | PLN-MSG-001 | Confirm label strings | DevOps | Done |
+| T-MSG-003 | Improve Kafka dev compose volume path consistency | impl | 006-messaging/spec.md / Contracts | PLN-MSG-002 | dev compose config passes | DevOps | Done |
+| T-MSG-004 | Apply chain+SSO to the Kafka dev router | impl | 006-messaging/spec.md / Core Design | PLN-MSG-002 | Confirm label strings | DevOps | Done |
+| T-MSG-005 | Apply chain+SSO to the RabbitMQ management router | impl | 006-messaging/spec.md / Contracts | PLN-MSG-003 | Confirm label strings | DevOps | Done |
+| T-MSG-006 | Add the messaging hardening validation script | ops | 006-messaging/spec.md / Governance | PLN-MSG-004 | `bash scripts/hardening/check-all-hardening.sh 05-messaging` | DevOps | Done |
+| T-MSG-007 | Add the CI `infrastructure-hardening` job | ops | 006-messaging/spec.md / Governance | PLN-MSG-005 | Confirm workflow definition | DevOps | Done |
+| T-MSG-008 | Refresh the scripts README index | doc | 006-messaging/spec.md / Related Docs | PLN-MSG-006 | Confirm README entries/examples | Docs | Done |
+| T-MSG-009 | Reflect PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook docs | doc | 006-messaging/spec.md / Related Docs | PLN-MSG-007 | Confirm document links/README sync | Docs | Done |
+| T-MSG-010 | Run static validation and record results | test | 006-messaging/spec.md / Verification | PLN-MSG-001~007 | Check compose + hardening + traceability | DevOps | Done |
+| T-MSG-011 | Collect runtime/disaster-recovery rehearsal evidence | test | 006-messaging/spec.md / Verification | PLN-MSG-001~007 | Live health/recovery logs require an approved runtime rehearsal | DevOps | Deferred |
 
 ## Suggested Types
 

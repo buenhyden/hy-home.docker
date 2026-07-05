@@ -9,7 +9,7 @@ status: completed
 
 ## Overview
 
-This document is the implementation plan for closing the gap where `docs/03.specs/04-data-analytics/spec.md` is implemented in real infra and operations documents but is not directly connected to `docs/04.execution` plan/task evidence.
+This document is the implementation plan for closing the gap where `docs/03.specs/005-data-analytics/spec.md` is implemented in real infra and operations documents but is not directly connected to `docs/04.execution` plan/task evidence.
 
 ## Context
 
@@ -22,8 +22,8 @@ The `04-data-analytics` spec defines interface/storage/verification contracts fo
   - `DATA-ANA-TRACE-002`: record the current validation boundary for analytics compose files.
   - `DATA-ANA-TRACE-003`: make the new evidence discoverable from parent README indexes.
 - **In Scope**:
-  - `docs/03.specs/04-data-analytics/spec.md`
-  - `docs/03.specs/04-data-analytics/README.md`
+  - `docs/03.specs/005-data-analytics/spec.md`
+  - `docs/03.specs/005-data-analytics/README.md`
   - `docs/04.execution/plans/**`
   - `docs/04.execution/tasks/**`
 
@@ -43,7 +43,7 @@ The `04-data-analytics` spec defines interface/storage/verification contracts fo
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
 | PLN-DATA-ANA-001 | Add data analytics execution plan/task evidence | `docs/04.execution/plans`, `docs/04.execution/tasks` | DATA-ANA-TRACE-001 | plan/task files exist and link to spec |
-| PLN-DATA-ANA-002 | Link spec and README to execution evidence | `docs/03.specs/04-data-analytics/*` | DATA-ANA-TRACE-001 | Related Documents include plan/task links |
+| PLN-DATA-ANA-002 | Link spec and README to execution evidence | `docs/03.specs/005-data-analytics/*` | DATA-ANA-TRACE-001 | Related Documents include plan/task links |
 | PLN-DATA-ANA-003 | Record analytics compose validation boundary | `infra/04-data/analytics/**/docker-compose.yml` | DATA-ANA-TRACE-002 | optional analytics compose files are present and linked; service-local compose parsing requires root network/secret context or a local validation overlay |
 | PLN-DATA-ANA-004 | Update execution indexes | execution README files | DATA-ANA-TRACE-003 | parent READMEs expose new evidence |
 
@@ -83,7 +83,7 @@ The `04-data-analytics` spec defines interface/storage/verification contracts fo
 
 ## Related Documents
 
-- **Spec**: [Data analytics spec](../../03.specs/04-data-analytics/spec.md)
+- **Spec**: [Data analytics spec](../../03.specs/005-data-analytics/spec.md)
 - **Task**: [Data analytics execution traceability task](../tasks/2026-05-22-data-analytics-execution-traceability.md)
 - **Infra README**: [Analytics infra README](../../../infra/04-data/analytics/README.md)
 - **Operations Guide**: [Analytics guide index](../../05.operations/guides/04-data/analytics/README.md)

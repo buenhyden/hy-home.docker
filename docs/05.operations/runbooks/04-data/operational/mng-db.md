@@ -21,7 +21,7 @@ status: active
 
 ### Canonical References
 
-- **Spec**: [04-data spec](../../../../03.specs/04-data/spec.md)
+- **Spec**: [04-data spec](../../../../03.specs/004-data/spec.md)
 - **Policy**: [Management Database policy](../../../policies/04-data/operational/mng-db.md)
 - **Guide**: [Management Database guide](../../../guides/04-data/operational/mng-db.md)
 - **Repo**: [mng-db infrastructure](../../../../../infra/04-data/operational/mng-db/README.md)

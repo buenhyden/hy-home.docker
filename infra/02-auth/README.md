@@ -96,6 +96,6 @@ docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/
 ## AI Agent Guidance
 
 1. Always read this README to understand the relationship between Keycloak and OAuth2 Proxy.
-2. Refer to `docs/03.specs/02-auth` (if exists) for detailed protocol flows.
+2. Refer to `docs/03.specs/002-auth` (if exists) for detailed protocol flows.
 3. Do not modify secrets directly; use `scripts/operations/gen-secrets.sh` if available.
 4. Ensure all new services are integrated using the standard ForwardAuth pattern via Traefik labels.

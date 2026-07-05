@@ -58,7 +58,7 @@ move, remove, archive, or relink target documents.
 | DRA-TCD-001 | `git ls-files 'docs/99.templates/support/*.md' 'docs/99.templates/templates/**/*.md' 'docs/99.templates/templates/**/*.yaml' 'docs/99.templates/templates/**/*.graphql' 'docs/99.templates/templates/**/*.proto' \| wc -l` | 37 Stage 99 support/template files are tracked. | Establishes template-system surface size. |
 | DRA-TCD-002 | `rg -n 'historical-archive\|duplicate-remove\|conflict-remove-or-archive\|evidence-preserve\|archive-centered\|destructive\|tombstone\|frontmatter\|status: archived\|status: completed' docs/99.templates/support docs/99.templates/templates --glob '*.md'` | At audit capture, contracts mentioned frontmatter, archive tombstones, and template source rules, but not the full approved disposition model. | Identified the `PLN-DRA-003` contract gap. |
 | DRA-TCD-003 | Reads of `template-contract.md`, `frontmatter-contract.md`, `template-governance.md`, `template-selection.md`, `lifecycle-status.md`, and `archive.template.md` | Existing contracts cover template-source frontmatter, target status, archive tombstones, and lifecycle values. | Separates covered rules from missing restructure-specific rules. |
-| DRA-TCD-004 | Read of `docs/03.specs/document-restructure-audit-contract-archive/spec.md` | The approved design requires archive-centered dispositions before target moves. | Binds findings to the approved Stage 03 design. |
+| DRA-TCD-004 | Read of `docs/03.specs/103-document-restructure-audit-contract-archive/spec.md` | The approved design requires archive-centered dispositions before target moves. | Binds findings to the approved Stage 03 design. |
 
 ## Findings
 
@@ -87,7 +87,7 @@ move, remove, archive, or relink target documents.
 
 ## Sources
 
-- [Document restructure design spec](../../../03.specs/document-restructure-audit-contract-archive/spec.md) - Supplies the approved disposition model and implementation handoff.
+- [Document restructure design spec](../../../03.specs/103-document-restructure-audit-contract-archive/spec.md) - Supplies the approved disposition model and implementation handoff.
 - [Template contract](../../../99.templates/support/template-contract.md) - Defines template-source and target-document boundaries.
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - Defines lifecycle and archive frontmatter ownership.
 - [Template governance](../../../99.templates/support/template-governance.md) - Owns template-system governance rules.

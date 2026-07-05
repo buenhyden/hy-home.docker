@@ -63,6 +63,6 @@ N/A
 ## Related Documents
 
 - **ARD**: [Data architecture requirements](../02.architecture/requirements/0004-data-architecture.md)
-- **Spec**: [Data technical specification](../03.specs/04-data/spec.md)
+- **Spec**: [Data technical specification](../03.specs/004-data/spec.md)
 - **Plan**: [Data standardization plan](../04.execution/plans/2026-03-26-04-data-standardization.md)
 - **ADR**: [PostgreSQL HA Patroni decision](../02.architecture/decisions/0004-postgresql-ha-patroni.md)

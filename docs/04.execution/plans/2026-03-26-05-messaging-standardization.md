@@ -55,5 +55,5 @@ Existing messaging tier documentation is limited to service-level READMEs and do
 
 - **PRD**: [../../01.requirements/006-messaging.md](../../01.requirements/006-messaging.md)
 - **ARD**: [../../02.architecture/requirements/0005-messaging-architecture.md](../../02.architecture/requirements/0005-messaging-architecture.md)
-- **Spec**: [../../03.specs/05-messaging/spec.md](../../03.specs/05-messaging/spec.md)
+- **Spec**: [../../03.specs/006-messaging/spec.md](../../03.specs/006-messaging/spec.md)
 - **ADR**: [../../02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md](../../02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md)

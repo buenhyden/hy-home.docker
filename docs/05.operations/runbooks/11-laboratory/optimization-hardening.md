@@ -18,7 +18,7 @@ status: active
 
 ### Canonical References
 
-- [Spec](../../../03.specs/11-laboratory/spec.md)
+- [Spec](../../../03.specs/012-laboratory/spec.md)
 - [Operations Policy](../../policies/11-laboratory/optimization-hardening.md)
 - [Plan](../../../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)

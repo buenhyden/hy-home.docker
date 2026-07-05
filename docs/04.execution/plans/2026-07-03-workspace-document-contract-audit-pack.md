@@ -10,7 +10,7 @@ status: completed
 
 **Goal:** Produce a contract-first audit pack that inventories workspace document profiles, compares them with repo-local contracts, maps CI/CD and QA automation coverage, and records actionable gaps without rewriting the corpus.
 
-**Architecture:** The plan executes the approved spec in `docs/03.specs/workspace-document-contract-audit-pack/spec.md` as an audit-only pass. It creates execution evidence under `docs/04.execution/tasks/`, durable audit reports under `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/`, and a batch proposal that later implementation plans can execute with separate commits.
+**Architecture:** The plan executes the approved spec in `docs/03.specs/102-workspace-document-contract-audit-pack/spec.md` as an audit-only pass. It creates execution evidence under `docs/04.execution/tasks/`, durable audit reports under `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/`, and a batch proposal that later implementation plans can execute with separate commits.
 
 **Tech Stack:** Markdown, YAML frontmatter inspection, `git ls-files`, `rg`, Bash validation scripts, GitHub Actions YAML inspection, repo-local documentation validators.
 
@@ -119,7 +119,7 @@ not be treated as the same kind of gap.
 - Create: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md`
 - Modify: `docs/90.references/audits/README.md`
 - Modify: `docs/90.references/README.md` when the audit bundle is not listed
-- Read: `docs/03.specs/workspace-document-contract-audit-pack/spec.md`
+- Read: `docs/03.specs/102-workspace-document-contract-audit-pack/spec.md`
 - Read: `docs/90.references/audits/README.md`
 
 - [ ] **Step 1: Create the task evidence file**
@@ -144,7 +144,7 @@ automation coverage, and future implementation gaps.
 
 ## Inputs
 
-- Parent Spec: `docs/03.specs/workspace-document-contract-audit-pack/spec.md`
+- Parent Spec: `docs/03.specs/102-workspace-document-contract-audit-pack/spec.md`
 - Parent Plan: `docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md`
 - Template Contract: `docs/99.templates/support/template-contract.md`
 - Frontmatter Contract: `docs/99.templates/support/frontmatter-contract.md`
@@ -209,7 +209,7 @@ automation coverage, and future implementation gaps.
 
 ## Related Documents
 
-- Spec: `docs/03.specs/workspace-document-contract-audit-pack/spec.md`
+- Spec: `docs/03.specs/102-workspace-document-contract-audit-pack/spec.md`
 - Plan: `docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md`
 - Audit bundle: `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md`
 ```
@@ -294,7 +294,7 @@ This README is for:
 ## Related Documents
 
 - Audit references: `docs/90.references/audits/README.md`
-- Workspace document contract audit pack spec: `docs/03.specs/workspace-document-contract-audit-pack/spec.md`
+- Workspace document contract audit pack spec: `docs/03.specs/102-workspace-document-contract-audit-pack/spec.md`
 - Workspace document contract audit pack plan: `docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md`
 - Workspace document contract audit pack task: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 - Template contract: `docs/99.templates/support/template-contract.md`
@@ -1041,7 +1041,7 @@ Expected: commit succeeds.
 
 ## Related Documents
 
-- **Spec**: [Workspace document contract audit pack spec](../../03.specs/workspace-document-contract-audit-pack/spec.md)
+- **Spec**: [Workspace document contract audit pack spec](../../03.specs/102-workspace-document-contract-audit-pack/spec.md)
 - **Future Task Path**: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 - **Audit references**: [Audit references](../../90.references/audits/README.md)
 - **Template contract**: [Template contract](../../99.templates/support/template-contract.md)

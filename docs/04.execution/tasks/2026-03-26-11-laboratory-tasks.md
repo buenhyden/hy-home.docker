@@ -11,7 +11,7 @@ This document is the implementation and verification task list for the `11-labor
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/11-laboratory/spec.md](../../03.specs/11-laboratory/spec.md)
+- **Parent Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/012-laboratory/spec.md)
 - **Parent Plan**: [../plans/2026-03-26-11-laboratory-standardization.md](../plans/2026-03-26-11-laboratory-standardization.md)
 
 ## Working Rules
@@ -36,5 +36,5 @@ This document is the implementation and verification task list for the `11-labor
 
 ## Related Documents
 
-- **Parent Spec**: [../../03.specs/11-laboratory/spec.md](../../03.specs/11-laboratory/spec.md)
+- **Parent Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/012-laboratory/spec.md)
 - **Parent Plan**: [../plans/2026-03-26-11-laboratory-standardization.md](../plans/2026-03-26-11-laboratory-standardization.md)

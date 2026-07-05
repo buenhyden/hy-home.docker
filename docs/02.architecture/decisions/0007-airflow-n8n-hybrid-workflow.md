@@ -55,4 +55,4 @@ status: active
 
 - **PRD**: [008-workflow.md](../../01.requirements/008-workflow.md)
 - **ARD**: [0007-workflow-architecture.md](../requirements/0007-workflow-architecture.md)
-- **Spec**: [07-workflow/spec.md](../../03.specs/07-workflow/spec.md)
+- **Spec**: [008-workflow/spec.md](../../03.specs/008-workflow/spec.md)

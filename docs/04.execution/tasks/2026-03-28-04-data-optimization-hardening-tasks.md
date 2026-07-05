@@ -11,7 +11,7 @@ This document tracks the `04-data` optimization and hardening implementation tas
 
 ## Inputs
 
-- **Parent Spec**: [../../03.specs/04-data/spec.md](../../03.specs/04-data/spec.md)
+- **Parent Spec**: [../../03.specs/004-data/spec.md](../../03.specs/004-data/spec.md)
 - **Parent Plan**: [../plans/2026-03-28-04-data-optimization-hardening-plan.md](../plans/2026-03-28-04-data-optimization-hardening-plan.md)
 
 ## Working Rules
@@ -24,16 +24,16 @@ This document tracks the `04-data` optimization and hardening implementation tas
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-DATA-001 | Add healthchecks for core `supabase` services | impl | 04-data/spec.md / Contracts | PLN-DATA-001 | `docker compose ...supabase... config` | DevOps | Done |
-| T-DATA-002 | Align the Valkey exporter secret path | impl | 04-data/spec.md / Contracts | PLN-DATA-002 | No `rg mng_valkey_password` matches | DevOps | Done |
-| T-DATA-003 | Remove SeaweedFS expose typos | impl | 04-data/spec.md / Contracts | PLN-DATA-003 | No `rg ':-19333}]\|:-18085}]\|:-18888}]'` matches | DevOps | Done |
-| T-DATA-004 | Normalize the ksql tier label | impl | 04-data/spec.md / Contracts | PLN-DATA-004 | Confirm `hy-home.tier: data` | DevOps | Done |
-| T-DATA-005 | Create `check-all-hardening.sh 04-data` | ops | 04-data/spec.md / Governance | PLN-DATA-005 | `bash scripts/hardening/check-all-hardening.sh 04-data` | DevOps | Done |
-| T-DATA-006 | Add the CI `infrastructure-hardening` job | ops | 04-data/spec.md / Governance | PLN-DATA-006 | Confirm workflow changes | DevOps | Done |
-| T-DATA-007 | Refresh the scripts README index/examples | doc | 04-data/spec.md / Related Docs | PLN-DATA-007 | Confirm README entries | Docs | Done |
-| T-DATA-008 | Reflect PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook docs | doc | 04-data/spec.md / Related Docs | PLN-DATA-008 | Confirm document links/indexes | Docs | Done |
-| T-DATA-009 | Run static validation and record results | test | 04-data/spec.md / Verification | PLN-DATA-001~008 | Check compose + hardening + traceability | DevOps | Done |
-| T-DATA-010 | Collect runtime validation evidence where available | test | 04-data/spec.md / Verification | PLN-DATA-001~008 | Live service health evidence is collected only in an approved runtime session | DevOps | Deferred |
+| T-DATA-001 | Add healthchecks for core `supabase` services | impl | 004-data/spec.md / Contracts | PLN-DATA-001 | `docker compose ...supabase... config` | DevOps | Done |
+| T-DATA-002 | Align the Valkey exporter secret path | impl | 004-data/spec.md / Contracts | PLN-DATA-002 | No `rg mng_valkey_password` matches | DevOps | Done |
+| T-DATA-003 | Remove SeaweedFS expose typos | impl | 004-data/spec.md / Contracts | PLN-DATA-003 | No `rg ':-19333}]\|:-18085}]\|:-18888}]'` matches | DevOps | Done |
+| T-DATA-004 | Normalize the ksql tier label | impl | 004-data/spec.md / Contracts | PLN-DATA-004 | Confirm `hy-home.tier: data` | DevOps | Done |
+| T-DATA-005 | Create `check-all-hardening.sh 04-data` | ops | 004-data/spec.md / Governance | PLN-DATA-005 | `bash scripts/hardening/check-all-hardening.sh 04-data` | DevOps | Done |
+| T-DATA-006 | Add the CI `infrastructure-hardening` job | ops | 004-data/spec.md / Governance | PLN-DATA-006 | Confirm workflow changes | DevOps | Done |
+| T-DATA-007 | Refresh the scripts README index/examples | doc | 004-data/spec.md / Related Docs | PLN-DATA-007 | Confirm README entries | Docs | Done |
+| T-DATA-008 | Reflect PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook docs | doc | 004-data/spec.md / Related Docs | PLN-DATA-008 | Confirm document links/indexes | Docs | Done |
+| T-DATA-009 | Run static validation and record results | test | 004-data/spec.md / Verification | PLN-DATA-001~008 | Check compose + hardening + traceability | DevOps | Done |
+| T-DATA-010 | Collect runtime validation evidence where available | test | 004-data/spec.md / Verification | PLN-DATA-001~008 | Live service health evidence is collected only in an approved runtime session | DevOps | Deferred |
 
 ## Suggested Types
 

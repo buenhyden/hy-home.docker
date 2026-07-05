@@ -112,7 +112,7 @@ healthcheck:
 - **Guide**: [Keycloak Operations Guide](../../../docs/05.operations/guides/02-auth/keycloak.md)
 - **Operation**: [Keycloak Operations Policy](../../../docs/05.operations/policies/02-auth/keycloak.md)
 - **Runbook**: [Keycloak Recovery Runbook](../../../docs/05.operations/runbooks/02-auth/keycloak.md)
-- **Spec**: [02-auth Spec](../../../docs/03.specs/02-auth/spec.md)
+- **Spec**: [02-auth Spec](../../../docs/03.specs/002-auth/spec.md)
 
 ## AI Agent Guidance
 

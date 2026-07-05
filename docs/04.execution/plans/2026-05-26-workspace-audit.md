@@ -28,7 +28,7 @@ This audit is performed as part of the recurring workspace governance cycle. Thr
 
 | Task    | Description                             | Files / Docs Affected                                                                                                         | Risk | Validation Criteria                              |
 | ------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------ |
-| PLN-001 | Create Session Spec/Plan/Task | `docs/03.specs/workspace-audit-2026-05/spec.md`, `plans/2026-05-26-workspace-audit.md`, `tasks/2026-05-26-workspace-audit.md` | Low  | Required template sections included |
+| PLN-001 | Create Session Spec/Plan/Task | `docs/03.specs/090-workspace-audit-2026-05/spec.md`, `plans/2026-05-26-workspace-audit.md`, `tasks/2026-05-26-workspace-audit.md` | Low  | Required template sections included |
 | PLN-002 | Create 7 AI Agent skill stubs | `.claude/skills/*/skill.md` (7 files) | Low  | Each skill includes frontmatter and core sections |
 | PLN-003 | Create env key comparison report | `docs/05.operations/guides/00-workspace/env-key-comparison.md` | Low  | No secret values, key names only |
 | PLN-004 | Create secrets key comparison report | `docs/05.operations/guides/00-workspace/sensitive-env-vars-comparison.md` | Low  | No secret values, IDs/paths only |
@@ -60,6 +60,6 @@ This audit is performed as part of the recurring workspace governance cycle. Thr
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/workspace-audit-2026-05/spec.md](../../03.specs/workspace-audit-2026-05/spec.md)
+- **Spec**: [../../03.specs/090-workspace-audit-2026-05/spec.md](../../03.specs/090-workspace-audit-2026-05/spec.md)
 - **Task**: [../tasks/2026-05-26-workspace-audit.md](../tasks/2026-05-26-workspace-audit.md)
 - **Operations**: [../../05.operations/README.md](../../05.operations/README.md)

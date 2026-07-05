@@ -292,7 +292,7 @@ corpus remediation begins.
 - **Source Register**: [Document contract gap register](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/gap-register.md)
 - **Audit Pack Task**: [Workspace document contract audit pack task](./2026-07-03-workspace-document-contract-audit-pack.md)
 - **Audit Pack Plan**: [Workspace document contract audit pack plan](../plans/2026-07-03-workspace-document-contract-audit-pack.md)
-- **Audit Pack Spec**: [Workspace document contract audit pack spec](../../03.specs/workspace-document-contract-audit-pack/spec.md)
+- **Audit Pack Spec**: [Workspace document contract audit pack spec](../../03.specs/102-workspace-document-contract-audit-pack/spec.md)
 - **Examples Scaffold Remediation Task**: [Examples scaffold contract remediation](./2026-07-04-examples-scaffold-contract-remediation.md)
 - **GitHub Branch Protection Re-verification Task**: [GitHub branch protection re-verification](./2026-07-04-github-branch-protection-reverification.md)
 - **Infra Tech-Stack Version Refresh Task**: [Infra tech-stack version refresh](./2026-07-04-infra-tech-stack-version-refresh.md)

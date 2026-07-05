@@ -82,7 +82,7 @@ status: active
 ## Related Documents
 
 - **ARD**: [../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md](../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/06-observability/spec.md](../03.specs/06-observability/spec.md)
+- **Spec**: [../03.specs/007-observability/spec.md](../03.specs/007-observability/spec.md)
 - **Plan**: [../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)

@@ -68,6 +68,6 @@ N/A
 ## Related Documents
 
 - **ARD**: [0010-communication-architecture.md](../02.architecture/requirements/0010-communication-architecture.md)
-- **Spec**: [10-communication/spec.md](../03.specs/10-communication/spec.md)
+- **Spec**: [011-communication/spec.md](../03.specs/011-communication/spec.md)
 - **Plan**: [2026-03-26-10-communication-standardization.md](../04.execution/plans/2026-03-26-10-communication-standardization.md)
 - **ADR**: [0010-communication-services.md](../02.architecture/decisions/0010-communication-services.md)

@@ -190,7 +190,7 @@ No direct-fix candidates were approved in the source reports.
 - [Automation coverage map](./automation-coverage-map.md) - Supplies CI/CD, QA, security, supply-chain, remote, Graphify, provider-sync, and infra-drift rows.
 - [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) - Records execution evidence for this audit pack.
 - [Workspace document contract audit pack plan](../../../04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md) - Defines Task 5 and future batch requirements.
-- [Workspace document contract audit pack spec](../../../03.specs/workspace-document-contract-audit-pack/spec.md) - Defines the audit-only contract and approved dispositions.
+- [Workspace document contract audit pack spec](../../../03.specs/102-workspace-document-contract-audit-pack/spec.md) - Defines the audit-only contract and approved dispositions.
 - [Reference template](../../../99.templates/templates/common/reference.template.md) - Defines the Stage 90 reference report contract.
 
 ## Maintenance

@@ -30,7 +30,7 @@ The infrastructure configuration for the `04-data` tier is already complete, but
 | PLN-001 | Update PRD | `docs/01.requirements/004-data.md` | REQ-PRD-FUN-04 | Template compliance confirmed |
 | PLN-002 | Update ARD | `docs/02.architecture/requirements/0004-data-architecture.md` | - | Diagram presence confirmed |
 | PLN-003 | Update ADR | `docs/02.architecture/decisions/0004-postgresql-ha-patroni.md` | - | Decision context documented |
-| PLN-004 | Update Spec | `docs/03.specs/04-data/spec.md` | VAL-SPC-001 | Technical specification is concrete |
+| PLN-004 | Update Spec | `docs/03.specs/004-data/spec.md` | VAL-SPC-001 | Technical specification is concrete |
 | PLN-005 | Create Tasks | `docs/04.execution/tasks/2026-03-26-04-data-tasks.md` | - | Work traceability secured |
 
 ## Verification Plan
@@ -57,5 +57,5 @@ The infrastructure configuration for the `04-data` tier is already complete, but
 
 - **PRD**: [../../01.requirements/004-data.md](../../01.requirements/004-data.md)
 - **ARD**: [../../02.architecture/requirements/0004-data-architecture.md](../../02.architecture/requirements/0004-data-architecture.md)
-- **Spec**: [../../03.specs/04-data/spec.md](../../03.specs/04-data/spec.md)
+- **Spec**: [../../03.specs/004-data/spec.md](../../03.specs/004-data/spec.md)
 - **ADR**: [../../02.architecture/decisions/0004-postgresql-ha-patroni.md](../../02.architecture/decisions/0004-postgresql-ha-patroni.md)

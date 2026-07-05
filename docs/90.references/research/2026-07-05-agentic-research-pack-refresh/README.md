@@ -97,6 +97,6 @@ status: active
 - [research references](../README.md)
 - [90.references](../../README.md)
 - [agent governance hub](../../../00.agent-governance/README.md)
-- [HAFE specification](../../../03.specs/harness-agent-first-engineering/spec.md)
+- [HAFE specification](../../../03.specs/094-harness-agent-first-engineering/spec.md)
 - [HAFE operations guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md)
 - [HAFE operations policy](../../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)

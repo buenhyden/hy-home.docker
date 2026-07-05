@@ -12,7 +12,7 @@ This task records execution evidence for the Stage 99 template-system contract s
 
 ## Inputs
 
-- **Parent Spec**: [Template system contract standardization spec](../../03.specs/template-system-contract-standardization/spec.md)
+- **Parent Spec**: [Template system contract standardization spec](../../03.specs/100-template-system-contract-standardization/spec.md)
 - **Parent Plan**: [Template system contract standardization plan](../plans/2026-07-03-template-system-contract-standardization.md)
 - **Template Catalog**: [Template catalog](../../99.templates/README.md)
 - **Support Contracts**: [Template contract](../../99.templates/support/template-contract.md), [frontmatter contract](../../99.templates/support/frontmatter-contract.md)
@@ -90,7 +90,7 @@ This task records execution evidence for the Stage 99 template-system contract s
 
 ## Related Documents
 
-- Spec: [../../03.specs/template-system-contract-standardization/spec.md](../../03.specs/template-system-contract-standardization/spec.md)
+- Spec: [../../03.specs/100-template-system-contract-standardization/spec.md](../../03.specs/100-template-system-contract-standardization/spec.md)
 - Plan: [../plans/2026-07-03-template-system-contract-standardization.md](../plans/2026-07-03-template-system-contract-standardization.md)
 - Template contract: [../../99.templates/support/template-contract.md](../../99.templates/support/template-contract.md)
 - Frontmatter contract: [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)

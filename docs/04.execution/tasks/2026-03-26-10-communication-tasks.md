@@ -68,4 +68,4 @@ Existing task bullets and verification notes in this document remain the task li
 - **PRD**: [011-communication.md](../../01.requirements/011-communication.md)
 - **ARD**: [0010-communication-architecture.md](../../02.architecture/requirements/0010-communication-architecture.md)
 - **ADR**: [0010-communication-services.md](../../02.architecture/decisions/0010-communication-services.md)
-- **Spec**: [10-communication/spec.md](../../03.specs/10-communication/spec.md)
+- **Spec**: [011-communication/spec.md](../../03.specs/011-communication/spec.md)

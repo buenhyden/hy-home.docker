@@ -11,7 +11,7 @@ This task document records evidence that the harness engineering and Agent-first
 
 ## Inputs
 
-- [Specification](../../03.specs/harness-agent-first-engineering/spec.md)
+- [Specification](../../03.specs/094-harness-agent-first-engineering/spec.md)
 - [Plan](../plans/2026-05-09-harness-agent-first-engineering.md)
 - [Documentation Protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - [Stage Authoring Matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
@@ -101,7 +101,7 @@ Results:
 
 ## Related Documents
 
-- [Specification](../../03.specs/harness-agent-first-engineering/spec.md)
+- [Specification](../../03.specs/094-harness-agent-first-engineering/spec.md)
 - [Plan](../plans/2026-05-09-harness-agent-first-engineering.md)
 - [Guide](../../05.operations/guides/00-workspace/harness-agent-first-engineering.md)
 - [Operations Policy](../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)

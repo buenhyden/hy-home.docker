@@ -72,6 +72,6 @@ Internal services within the `hy-home.docker` environment often lack built-in au
 ## Related Documents
 
 - **ARD**: [Auth architecture requirements](../02.architecture/requirements/0002-auth-architecture.md)
-- **Spec**: [Auth technical specification](../03.specs/02-auth/spec.md)
+- **Spec**: [Auth technical specification](../03.specs/002-auth/spec.md)
 - **Plan**: [Auth standardization plan](../04.execution/plans/2026-03-26-02-auth-standardization.md)
 - **ADR**: [Keycloak and OAuth2 Proxy choice](../02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md)

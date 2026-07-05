@@ -200,7 +200,7 @@ bash scripts/validation/check-doc-traceability.sh
 
 | Evidence | Current State |
 | --- | --- |
-| Spec | [03.specs/infra-secrets-docs-refresh/spec.md](03.specs/infra-secrets-docs-refresh/spec.md) |
+| Spec | [03.specs/095-infra-secrets-docs-refresh/spec.md](03.specs/095-infra-secrets-docs-refresh/spec.md) |
 | Plan | [04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md](04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md) |
 | Task evidence | [04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md](04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md) |
 | Runtime scope | Docker Compose runtime, secret values, cert contents, agent runtime unchanged |
@@ -209,7 +209,7 @@ bash scripts/validation/check-doc-traceability.sh
 
 | Evidence | Current State |
 | --- | --- |
-| Spec | [03.specs/llm-wiki-agent-first-completion/spec.md](03.specs/llm-wiki-agent-first-completion/spec.md) |
+| Spec | [03.specs/096-llm-wiki-agent-first-completion/spec.md](03.specs/096-llm-wiki-agent-first-completion/spec.md) |
 | Plan | [04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md](04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md) |
 | Task evidence | [04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md](04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md) |
 | Repository map | [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/repository-map.md) |

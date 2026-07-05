@@ -11,7 +11,7 @@ This document is the implementation and verification task list for improving wor
 
 ## Inputs
 
-- **Parent Spec**: [workspace-doc-consistency-2026-05 spec](../../03.specs/workspace-doc-consistency-2026-05/spec.md)
+- **Parent Spec**: [workspace-doc-consistency-2026-05 spec](../../03.specs/091-workspace-doc-consistency-2026-05/spec.md)
 - **Parent Plan**: [2026-05-28 workspace doc consistency plan](../plans/2026-05-28-workspace-doc-consistency.md)
 
 ## Working Rules
@@ -111,7 +111,7 @@ This document is the implementation and verification task list for improving wor
 
 ## Related Documents
 
-- **Parent Spec**: [workspace-doc-consistency-2026-05 spec](../../03.specs/workspace-doc-consistency-2026-05/spec.md)
+- **Parent Spec**: [workspace-doc-consistency-2026-05 spec](../../03.specs/091-workspace-doc-consistency-2026-05/spec.md)
 - **Parent Plan**: [2026-05-28 workspace doc consistency plan](../plans/2026-05-28-workspace-doc-consistency.md)
-- **Upstream Audit**: [workspace-audit-2026-05 spec](../../03.specs/workspace-audit-2026-05/spec.md)
+- **Upstream Audit**: [workspace-audit-2026-05 spec](../../03.specs/090-workspace-audit-2026-05/spec.md)
 - **Templates**: [docs/99.templates/](../../99.templates/)

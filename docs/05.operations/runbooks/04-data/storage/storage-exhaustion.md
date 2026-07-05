@@ -21,7 +21,7 @@ status: active
 
 ### Canonical References
 
-- **Spec**: [04-data spec](../../../../03.specs/04-data/spec.md)
+- **Spec**: [04-data spec](../../../../03.specs/004-data/spec.md)
 - **Policy**: [04-data backup policy](../../../policies/04-data/backup/backup-policy.md)
 - **Guide**: [04-data guides index](../../../guides/04-data/README.md)
 

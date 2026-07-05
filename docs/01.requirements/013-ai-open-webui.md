@@ -68,6 +68,6 @@ Interacting with local LLMs often requires CLI knowledge or fragmented tools. Us
 ## Related Documents
 
 - **ARD**: [Open WebUI architecture requirements](../02.architecture/requirements/0013-open-webui-architecture.md)
-- **Spec**: [Open WebUI technical specification](../03.specs/08-ai/open-webui.md)
+- **Spec**: [Open WebUI technical specification](../03.specs/009-ai/open-webui.md)
 - **Plan**: [Open WebUI plan](../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md)
 - **ADR**: [Open WebUI implementation decision](../02.architecture/decisions/0016-open-webui-implementation.md)

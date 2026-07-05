@@ -21,7 +21,7 @@ status: active
 
 ### Canonical References
 
-- **Spec**: [../../../03.specs/08-ai/spec.md](../../../03.specs/08-ai/spec.md)
+- **Spec**: [../../../03.specs/009-ai/spec.md](../../../03.specs/009-ai/spec.md)
 - **Policy**: [../../policies/08-ai/ollama.md](../../policies/08-ai/ollama.md)
 - **Guide**: [../../guides/08-ai/ollama.md](../../guides/08-ai/ollama.md)
 

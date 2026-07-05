@@ -100,8 +100,8 @@ The purpose is to remove drift between the documents AI Agents consult during wo
 
 ## Related Documents
 
-- **Upstream Audit Spec**: [workspace-audit-2026-05 spec](../../03.specs/workspace-audit-2026-05/spec.md)
-- **Spec**: [workspace-doc-consistency-2026-05 spec](../../03.specs/workspace-doc-consistency-2026-05/spec.md)
+- **Upstream Audit Spec**: [workspace-audit-2026-05 spec](../../03.specs/090-workspace-audit-2026-05/spec.md)
+- **Spec**: [workspace-doc-consistency-2026-05 spec](../../03.specs/091-workspace-doc-consistency-2026-05/spec.md)
 - **Task**: [2026-05-28 workspace doc consistency tasks](../tasks/2026-05-28-workspace-doc-consistency.md)
 - **Templates**: [docs/99.templates/](../../99.templates/)
 - **Governance Rules**: [docs/00.agent-governance/rules/](../../00.agent-governance/rules/)
