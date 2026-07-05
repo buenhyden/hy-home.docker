@@ -10,8 +10,9 @@ status: active
 
 This report classifies current `docs/03.specs` surfaces and records the
 `PLN-DRA-004` disposition results. It identifies completed historical work
-products, active canonical specs, draft design/audit specs, and follow-up
-candidate groups.
+products, active canonical specs, prior draft design/audit specs, and follow-up
+candidate groups. Later lifecycle overlays update final dispositions when
+follow-up specs become completed evidence.
 
 ## Purpose
 
@@ -50,8 +51,8 @@ links without replacement evidence.
   the active chain.
 - **Historical archive candidate**: completed work product that may move to
   `docs/98.archive` after link and replacement evidence.
-- **Evidence preserve**: completed or draft audit evidence that should remain
-  readable in place unless a future plan proves it is no longer active.
+- **Evidence preserve**: completed or prior draft audit evidence that should
+  remain readable in place unless a future plan proves it is no longer active.
 - **Prior draft follow-up**: a design/audit spec that needed status or archive
   review before target mutation at the time of the original `PLN-DRA-004`
   candidate review.
@@ -62,7 +63,7 @@ links without replacement evidence.
 | --- | --- | --- | --- |
 | DRA-SDL-001 | `git ls-files 'docs/03.specs/**/*.md' \| wc -l` | 51 tracked Stage 03 Markdown files. | Stage 03 corpus baseline. |
 | DRA-SDL-002 | `git ls-files 'docs/03.specs/**/spec.md' \| wc -l` | 26 tracked Stage 03 `spec.md` files. | Spec-file baseline. |
-| DRA-SDL-003 | `rg --no-filename -o '^status: [a-z-]+' docs/03.specs --glob '*.md' \| sort \| uniq -c` | Audit baseline had 17 `active`, 9 `completed`, and 7 `draft` status rows. After `PLN-DRA-004`, current counts are recorded in the disposition results. | Candidate status split. |
+| DRA-SDL-003 | `rg --no-filename -o '^status: [a-z-]+' docs/03.specs --glob '*.md' \| sort \| uniq -c` | Audit baseline had 17 `active`, 9 `completed`, and 7 `draft` status rows. Current lifecycle overlay counts are recorded in the disposition results. | Candidate status split. |
 | DRA-SDL-004 | `rg -l '^status: completed' docs/03.specs --glob '*.md'` | 9 completed Stage 03 files were identified. | Historical archive candidate list. |
 | DRA-SDL-005 | `rg -l '^status: draft' docs/03.specs --glob '*.md'` | 7 draft Stage 03 files were identified. | Draft follow-up list. |
 | DRA-SDL-006 | Reads of Stage 03 README and parent design spec | Stage 03 README still routes to active/current specs, including recent design specs. | Confirms relink prerequisites before archive moves. |

@@ -269,6 +269,8 @@ targets. The future audit pack must classify them before any target mutation.
   Stage 03 current-truth document that should leave the active chain.
 - After T-DRA-004, Stage 03 status counts are: `active` 19, `completed` 10,
   `draft` 2, and `superseded` 2.
+- After the 2026-07-05 lifecycle evidence refresh, the current Stage 03 status
+  overlay is: `active` 19, `completed` 16, `draft` 0, and `superseded` 2.
 - T-DRA-004 did not move, remove, or relink any `docs/05.operations/**`,
   validator, workflow, provider runtime, runtime infra, secret material, or
   `.env` value.
