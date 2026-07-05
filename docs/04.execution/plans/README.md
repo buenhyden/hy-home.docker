@@ -83,7 +83,7 @@ docs/04.execution/plans/
 ├── 2026-07-05-agentic-engineering-implementation-audit-pack.md # Completed Stage 90 agentic engineering implementation audit pack plan
 ├── 2026-07-05-agentic-research-pack-refresh.md # Completed Stage 90 agentic research pack refresh plan
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration plan
-├── 2026-07-05-workspace-support-surface-contract.md # Active `_workspace` repo-support surface contract plan
+├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract plan
 └── README.md                               # This file
 ```
 

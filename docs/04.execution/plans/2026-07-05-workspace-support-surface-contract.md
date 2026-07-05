@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-05-workspace-support-surface-contract.md -->
@@ -101,7 +101,7 @@ in the same batch.
 - [x] Stage 00 and Stage 99 contract wording is aligned.
 - [x] Repository validator enforces the tracked `_workspace` allowlist and
       prohibited path segments.
-- [ ] Final verification is recorded in task evidence and progress memory.
+- [x] Final verification is recorded in task evidence and progress memory.
 
 ## Related Documents
 

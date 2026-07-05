@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/106-workspace-support-surface-contract/README.md -->
@@ -29,8 +29,7 @@ This README is for:
 
 ## Status
 
-This specification is active while the `_workspace` support-surface contract is
-being implemented on 2026-07-05.
+This specification is a completed design contract implemented on 2026-07-05.
 
 ## Scope
 

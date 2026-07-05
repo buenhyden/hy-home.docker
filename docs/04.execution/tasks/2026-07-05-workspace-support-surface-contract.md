@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-07-05-workspace-support-surface-contract.md -->
@@ -51,7 +51,7 @@ GitHub, and Docker Compose mutation remain out of scope.
 | T-WSC-002 | Add `_workspace` contract and ignore boundary | contract | `VAL-WSC-001`, `VAL-WSC-002` | `PLN-WSC-002` | `_workspace` README files; `.gitignore`; focused git status | Documentation Specialist | Done |
 | T-WSC-003 | Update Stage 00 and Stage 99 contract wording | governance | `VAL-WSC-003`, `VAL-WSC-004` | `PLN-WSC-003` | Direct fallout docs updated; focused `_workspace` reference search | Documentation Specialist | Done |
 | T-WSC-004 | Add validator enforcement | validation | `VAL-WSC-005` | `PLN-WSC-004` | `check-repo-contracts.sh`; positive contract behavior | QA / Validator Maintainer | Done |
-| T-WSC-005 | Validate, update progress, and close evidence | evidence | `VAL-WSC-006` | `PLN-WSC-005` | Final validation summary; progress memory | Documentation Specialist | Pending |
+| T-WSC-005 | Validate, update progress, and close evidence | evidence | `VAL-WSC-006` | `PLN-WSC-005` | Final validation summary; progress memory | Documentation Specialist | Done |
 
 ## Phase View
 
@@ -70,7 +70,7 @@ GitHub, and Docker Compose mutation remain out of scope.
 
 ### Phase 4: Closure
 
-- [ ] T-WSC-005 Validate, update progress, and close evidence.
+- [x] T-WSC-005 Validate, update progress, and close evidence.
 
 ## Evidence Inventory
 
@@ -87,7 +87,7 @@ GitHub, and Docker Compose mutation remain out of scope.
 
 | Deviation | Reason | Resolution |
 | --- | --- | --- |
-| None yet | N/A | N/A |
+| Final repo contract initially failed on Stage 04 README status wording. | The plan/task frontmatter was moved to `completed` before the README index descriptions were updated. | Updated the Stage 04 plan/task README index descriptions from active to completed and re-ran repo contracts successfully. |
 
 ## Verification Summary
 
@@ -111,6 +111,13 @@ Validation results will be appended as each logical unit completes.
 | `git diff --check` after validator update | PASS | No whitespace or conflict-marker issues. |
 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` after validator update | PASS | Generated LLM Wiki index is fresh. |
 | `bash scripts/validation/check-repo-contracts.sh` after validator update | PASS | New `_workspace protected surface` section ran; `failures=0`. |
+| `command -v graphify` final | SKIP | Graphify CLI is not available in PATH; existing Graphify report remains stale/advisory and was corroborated with tracked files. |
+| `git diff --check` final | PASS | No whitespace or conflict-marker issues. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` final | PASS | Generated LLM Wiki index is fresh. |
+| `bash scripts/operations/sync-provider-surfaces.sh --check` final | PASS | `sync-provider-surfaces: no drift`. |
+| `bash scripts/validation/check-doc-traceability.sh` final | PASS | `failures=0`. |
+| `bash scripts/validation/check-doc-implementation-alignment.sh` final | PASS | `failures=0`; `stage_docs_total=564`, `repo_local_markdown_links_checked=4395`. |
+| `bash scripts/validation/check-repo-contracts.sh` final | PASS | `failures=0`; `_workspace protected surface` included. |
 
 ## Related Documents
 
