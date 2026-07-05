@@ -61,7 +61,7 @@ docs/03.specs/
 ├── agentic-research-pack-refresh/       # Active Stage 90 agentic research refresh spec
 ├── document-restructure-audit-contract-archive/ # Active document restructure disposition contract
 ├── docs-taxonomy-agent-first-migration/ # Completed docs taxonomy migration spec
-├── agentic-engineering-implementation-audit-pack/ # Draft Stage 90 audit pack design spec
+├── agentic-engineering-implementation-audit-pack/ # Active Stage 90 implementation audit pack design spec
 ├── harness-agent-first-engineering/     # Completed agent-first harness spec
 ├── home-docker-revalidation-deferred-follow-up/ # Completed Home Docker revalidation and deferred-follow-up spec
 ├── infra-secrets-docs-refresh/          # Completed infra/secrets/docs refresh spec

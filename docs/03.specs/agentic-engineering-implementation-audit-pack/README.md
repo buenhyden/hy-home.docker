@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 
 <!-- Target: docs/03.specs/agentic-engineering-implementation-audit-pack/README.md -->
@@ -15,8 +15,9 @@ design contract for a documentation-only audit pack under `docs/90.references`.
 The audit pack will compare the existing source-backed research baseline with
 current repo-local implementation evidence.
 
-This folder is a planning-stage design surface only. The final reference and
-audit reports remain under `docs/90.references/`.
+This folder is the approved design surface for the current implementation
+status audit pack. The final reference and audit reports remain under
+`docs/90.references/`.
 
 ## Audience
 
@@ -29,8 +30,8 @@ This README is for:
 
 ## Status
 
-This specification is a draft design contract. It becomes the input to a Stage
-04 execution plan after user review and approval.
+This specification is an active design contract approved on 2026-07-05. It is
+the input to the Stage 04 execution plan and Stage 90 audit reports.
 
 ## Scope
 
@@ -63,12 +64,14 @@ agentic-engineering-implementation-audit-pack/
    spec folder.
 3. Record out-of-scope implementation improvements as gaps, not as active
    changes.
-4. Create the Stage 04 plan only after this design is reviewed and approved.
+4. Keep the Stage 04 plan and task evidence in `docs/04.execution/`.
 
 ## Related Documents
 
 - [spec.md](./spec.md)
 - [docs/03.specs README](../README.md)
+- [implementation plan](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
+- [task evidence](../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md)
 - [research pack](../../90.references/research/agentic-engineering/README.md)
 - [90.references](../../90.references/README.md)
 - [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

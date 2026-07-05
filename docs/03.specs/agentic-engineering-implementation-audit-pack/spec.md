@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 
 <!-- Target: docs/03.specs/agentic-engineering-implementation-audit-pack/spec.md -->
@@ -31,8 +31,9 @@ or scripts.
 
 ## Related Inputs
 
-- **User-approved design**: 2026-07-02 conversation approval for a Stage 90
-  reference-audit snapshot using an audit-pack structure.
+- **User-approved design**: 2026-07-05 conversation approval for approach A:
+  promote the existing Stage 03 draft and implement a Stage 90
+  reference-audit pack from the current research baseline.
 - **Research Pack**:
   [../../90.references/research/agentic-engineering/README.md](../../90.references/research/agentic-engineering/README.md)
 - **Workspace Baseline Reference**:
@@ -48,6 +49,10 @@ or scripts.
 - **Spec-Driven SDLC Reference**:
   [../../90.references/research/agentic-engineering/spec-driven-sdlc.md](../../90.references/research/agentic-engineering/spec-driven-sdlc.md)
 - **Stage 90 Contract**: [../../90.references/README.md](../../90.references/README.md)
+- **Execution Plan**:
+  [../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
+- **Task Evidence**:
+  [../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md)
 
 ## Contracts
 
@@ -206,13 +211,16 @@ out of scope instead of modifying infra files.
 - **VAL-SPC-003**: Each report has a clear source, evidence, gap, and automation
   candidate model.
 - **VAL-SPC-004**: The implementation work can be planned as separate logical
-  units with separate commits.
+  units with separate commits: Stage 03 activation, Stage 04 plan/task
+  evidence, Stage 90 audit reports, and final index/progress closure.
 - **VAL-SPC-005**: Validation commands and out-of-scope handling are defined.
 
 ## Related Documents
 
 - [spec README](./README.md)
 - [docs/03.specs README](../README.md)
+- [implementation plan](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
+- [task evidence](../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md)
 - [research pack](../../90.references/research/agentic-engineering/README.md)
 - [90.references](../../90.references/README.md)
 - [reference template](../../99.templates/templates/common/reference.template.md)

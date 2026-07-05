@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 <!-- Target: docs/04.execution/tasks/README.md -->
 
 # Execution Tasks
@@ -36,6 +40,37 @@ Task 문서는 plan을 다시 설명하는 문서가 아닙니다. 어떤 작업
 - 기술 스펙 또는 상세 명세 (`docs/03.specs/` 담당)
 - 운영 절차와 정책 (`docs/05.operations/` 담당)
 - 중장기 roadmap 또는 reference analysis (`docs/90.references/` 담당)
+
+## Inputs
+
+Task documents derive from approved specs and execution plans. The canonical
+inputs for this folder are:
+
+- [Spec stage](../../03.specs/README.md)
+- [Execution plans](../plans/README.md)
+- [Task template](../../99.templates/templates/sdlc/task.template.md)
+
+## Working Rules
+
+- Each task document records execution evidence rather than redesigning the
+  parent spec or plan.
+- Status and validation evidence must be updated as work proceeds.
+- Documentation-only work still records verification commands or explicit skip
+  reasons.
+- Raw logs, shell history, secret values, credentials, tokens, private keys,
+  and `.env` values are out of scope.
+
+## Task Table
+
+Individual task files own their task tables. New task documents should use the
+template columns: `Task ID`, `Description`, `Type`, `Parent Spec / Section`,
+`Parent Plan / Phase`, `Validation / Evidence`, `Owner`, and `Status`.
+
+## Verification Summary
+
+This README is an index and contract guide. Verification evidence for actual
+work belongs in the corresponding task file; changes to this README are checked
+through repository documentation validation.
 
 ## Structure
 
@@ -104,6 +139,7 @@ docs/04.execution/tasks/
 ├── 2026-07-04-frontmatter-routing-evidence-refresh.md # Completed frontmatter routing evidence refresh task record
 ├── 2026-07-04-github-branch-protection-reverification.md # Completed read-only GitHub branch protection re-verification task record
 ├── 2026-07-04-infra-tech-stack-version-refresh.md # Completed infra tech-stack Compose and registry version refresh evidence
+├── 2026-07-05-agentic-engineering-implementation-audit-pack.md # Active Stage 90 agentic engineering implementation audit pack evidence
 ├── 2026-07-05-agentic-research-pack-refresh.md # Active Stage 90 agentic research pack refresh evidence
 └── README.md                                # This file
 ```
@@ -211,4 +247,5 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Language Policy Reference Normalization Task**: [2026-06-05-language-policy-reference-normalization.md](./2026-06-05-language-policy-reference-normalization.md) — completed reference language normalization evidence
 - **Language Policy Hard Enforcement Task**: [2026-06-05-language-policy-hard-enforcement.md](./2026-06-05-language-policy-hard-enforcement.md) — completed language validation hardening evidence
 - **Frontmatter Routing Evidence Refresh Task**: [2026-07-04-frontmatter-routing-evidence-refresh.md](./2026-07-04-frontmatter-routing-evidence-refresh.md) — completed current-count and provider README routing evidence refresh
+- **Agentic Engineering Implementation Audit Pack Task**: [2026-07-05-agentic-engineering-implementation-audit-pack.md](./2026-07-05-agentic-engineering-implementation-audit-pack.md) — active implementation-status audit pack evidence
 - **Agentic Research Pack Refresh Task**: [2026-07-05-agentic-research-pack-refresh.md](./2026-07-05-agentic-research-pack-refresh.md) — active research refresh execution evidence
