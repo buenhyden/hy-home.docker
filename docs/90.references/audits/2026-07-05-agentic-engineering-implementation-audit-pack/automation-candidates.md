@@ -59,7 +59,7 @@ and audit gaps in the overview, harness, and loop reports.
 | Automation Area | Current Status | Evidence | Candidate |
 | --- | --- | --- | --- |
 | Local validation orchestration | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/recommend-qa-gates.sh`, `.github/workflows/ci-quality.yml` | Changed-path gate recommendations are available locally and published to GitHub Step Summary in CI. |
-| Repository contracts | Implemented | `scripts/validation/check-repo-contracts.sh` | Add audit-pack coverage output for implementation-status categories. |
+| Repository contracts | Implemented | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/report-audit-pack-coverage.sh` | Audit-pack implementation-status coverage output is now available locally and checked by repo contracts. |
 | Provider surface sync | Implemented | `scripts/operations/sync-provider-surfaces.sh`, `scripts/validation/check-repo-contracts.sh`, [Provider semantic parity validator spec](../../../03.specs/107-provider-semantic-parity-validator/spec.md) | Semantic role-scope parity is now enforced for Stage 00 catalog scope, Claude adapters, Codex TOML adapters, Gemini pointer adapters, and the subagent protocol. Future work can add deeper free-text clause comparison if needed. |
 | Provider hooks | Partially Implemented | `.claude/hooks/`, `.codex/hooks.json`, [Gemini provider notes](../../../00.agent-governance/providers/gemini.md) | Generate hook parity matrix and Gemini behavioral reminder checklist. |
 | LLM Wiki freshness | Implemented | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/llm-wiki-index.md` | Add report grouping by stage/category for audit consumers. |
@@ -73,7 +73,8 @@ and audit gaps in the overview, harness, and loop reports.
 
 - The repository already automates many structural checks: contracts, docs
   traceability, Compose validation, hardening, pre-commit, frontend quality,
-  generated index freshness, and workflow security scanning.
+  generated index freshness, audit-pack coverage reporting, and workflow
+  security scanning.
 - A local advisory changed-path QA recommendation report exists and is now
   published into GitHub Step Summary from the CI quality workflow.
 - Provider semantic role-scope parity, Compose profile coverage inventory,
@@ -93,6 +94,7 @@ and audit gaps in the overview, harness, and loop reports.
 | AEA-AUTO-004 | Gap-to-stage routing generator for the Stage 00 manual routing contract | Implemented by [Gap routing recommendation spec](../../../03.specs/109-gap-routing-recommendation/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md), [gap routing reference](../../data/governance/gap-to-stage-routing.md), and `scripts/validation/recommend-gap-routing.sh`. |
 | AEA-AUTO-005 | Compose profile/service coverage snapshot | Implemented by [Compose profile service coverage snapshot spec](../../../03.specs/108-compose-profile-service-coverage-snapshot/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md), [generated Docker data reference](../../data/docker/compose-profile-service-coverage.md), and `scripts/operations/generate-compose-profile-service-coverage.sh`. |
 | AEA-AUTO-006 | SSDF/SLSA maturity coverage matrix | Implemented by [Security framework maturity coverage](./security-framework-maturity.md); follow-up security tooling remains future Stage 03/04 work. |
+| AEA-AUTO-007 | Audit-pack implementation-status coverage output | Implemented by [Audit pack coverage report spec](../../../03.specs/112-audit-pack-coverage-report/spec.md), [task evidence](../../../04.execution/tasks/2026-07-05-audit-pack-coverage-report.md), `scripts/validation/report-audit-pack-coverage.sh`, and repo-contract `--check` coverage. |
 
 ## Automation Impact
 

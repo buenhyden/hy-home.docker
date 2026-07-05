@@ -103,9 +103,10 @@ or enforcement depth differs from repository policy.
 ## Automation Impact
 
 The highest-value remaining automation candidates are an executable
-agent-output eval runner, automated audit-matrix refresh from repo paths,
+agent-output eval runner, full automated audit-matrix refresh from repo paths,
 vulnerability gating, SBOM, and provenance/attestation automation. Changed-path
-QA recommendations are now surfaced in CI Step Summary.
+QA recommendations are now surfaced in CI Step Summary, and audit-pack
+implementation-status coverage is now reportable through repo contracts.
 
 ## Source Rules
 

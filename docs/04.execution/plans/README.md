@@ -88,6 +88,7 @@ docs/04.execution/plans/
 ├── 2026-07-05-gap-routing-recommendation.md # Completed gap-to-stage routing recommendation plan
 ├── 2026-07-05-agent-output-eval-fixtures.md # Completed agent-output eval fixture pack plan
 ├── 2026-07-05-qa-gate-recommendation-ci-summary.md # Completed QA gate recommendation CI summary plan
+├── 2026-07-05-audit-pack-coverage-report.md # Completed audit-pack coverage report plan
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration plan
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract plan
 └── README.md                               # This file
@@ -181,6 +182,7 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Gap Routing Recommendation Plan**: [2026-07-05-gap-routing-recommendation.md](./2026-07-05-gap-routing-recommendation.md)
 - **Agent Output Eval Fixtures Plan**: [2026-07-05-agent-output-eval-fixtures.md](./2026-07-05-agent-output-eval-fixtures.md)
 - **QA Gate Recommendation CI Summary Plan**: [2026-07-05-qa-gate-recommendation-ci-summary.md](./2026-07-05-qa-gate-recommendation-ci-summary.md)
+- **Audit Pack Coverage Report Plan**: [2026-07-05-audit-pack-coverage-report.md](./2026-07-05-audit-pack-coverage-report.md)
 - **Workspace Support Surface Contract Plan**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
 - **Template System Numbered SDLC Paths Plan**: [2026-07-05-template-system-numbered-sdlc-paths.md](./2026-07-05-template-system-numbered-sdlc-paths.md)
 - **Workspace Document Contract Audit Pack Plan**: [2026-07-03-workspace-document-contract-audit-pack.md](./2026-07-03-workspace-document-contract-audit-pack.md)

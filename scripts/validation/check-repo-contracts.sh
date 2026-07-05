@@ -3624,6 +3624,16 @@ elif ! grep -q 'input=\[redacted-sensitive-input\]' /tmp/check-repo-contracts-ga
 fi
 rm -f /tmp/check-repo-contracts-gap-routing-redaction.txt
 
+section "Audit pack coverage report"
+if ! bash scripts/validation/report-audit-pack-coverage.sh --check >/tmp/check-repo-contracts-audit-pack-coverage.txt 2>&1; then
+  fail "agentic engineering audit-pack coverage report failed"
+  cat /tmp/check-repo-contracts-audit-pack-coverage.txt >&2
+elif ! grep -q 'coverage_check=pass' /tmp/check-repo-contracts-audit-pack-coverage.txt; then
+  fail "agentic engineering audit-pack coverage report did not print a pass marker"
+  cat /tmp/check-repo-contracts-audit-pack-coverage.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-audit-pack-coverage.txt
+
 section "Script reference integrity"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -3809,6 +3819,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
     pathlib.Path("scripts/validation/recommend-gap-routing.sh"),
     pathlib.Path("scripts/validation/recommend-qa-gates.sh"),
+    pathlib.Path("scripts/validation/report-audit-pack-coverage.sh"),
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
