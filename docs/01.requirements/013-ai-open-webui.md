@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-27-08-ai-open-webui.md -->
+<!-- Target: docs/01.requirements/013-ai-open-webui.md -->
 
 # Open WebUI Product Requirements
 

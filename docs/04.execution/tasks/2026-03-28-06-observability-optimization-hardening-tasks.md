@@ -76,7 +76,7 @@ This document tracks the `06-observability` optimization and hardening implement
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/2026-03-28-06-observability-optimization-hardening.md](../../01.requirements/2026-03-28-06-observability-optimization-hardening.md)
+- **PRD**: [../01.requirements/018-observability-optimization-hardening.md](../../01.requirements/018-observability-optimization-hardening.md)
 - **ARD**: [../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md](../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Plan**: [../plans/2026-03-28-06-observability-optimization-hardening-plan.md](../plans/2026-03-28-06-observability-optimization-hardening-plan.md)

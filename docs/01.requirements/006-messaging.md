@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-26-05-messaging.md -->
+<!-- Target: docs/01.requirements/006-messaging.md -->
 
 # Messaging Tier (05-messaging) Product Requirements
 

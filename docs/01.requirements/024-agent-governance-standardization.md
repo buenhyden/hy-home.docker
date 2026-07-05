@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-06-01-agent-governance-standardization.md -->
+<!-- Target: docs/01.requirements/024-agent-governance-standardization.md -->
 
 # Agent Governance Standardization Product Requirements
 

@@ -16,7 +16,7 @@ This document defines the optimization/hardening implementation contract for the
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/2026-03-28-04-data-optimization-hardening.md](../../01.requirements/2026-03-28-04-data-optimization-hardening.md)
+- **PRD**: [../../01.requirements/016-data-optimization-hardening.md](../../01.requirements/016-data-optimization-hardening.md)
 - **ARD**: [../../02.architecture/requirements/0019-data-optimization-hardening-architecture.md](../../02.architecture/requirements/0019-data-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/0004-postgresql-ha-patroni.md](../../02.architecture/decisions/0004-postgresql-ha-patroni.md)

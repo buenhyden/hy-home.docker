@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-28-07-workflow-optimization-hardening.md -->
+<!-- Target: docs/01.requirements/019-workflow-optimization-hardening.md -->
 
 # 07-Workflow Optimization & Hardening Product Requirements
 

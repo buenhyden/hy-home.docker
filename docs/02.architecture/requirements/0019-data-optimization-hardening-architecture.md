@@ -88,7 +88,7 @@ status: active
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/2026-03-28-04-data-optimization-hardening.md](../../01.requirements/2026-03-28-04-data-optimization-hardening.md)
+- **PRD**: [../01.requirements/016-data-optimization-hardening.md](../../01.requirements/016-data-optimization-hardening.md)
 - **Spec**: [../03.specs/04-data/spec.md](../../03.specs/04-data/spec.md)
 - **Plan**: [../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md](../decisions/0019-04-data-hardening-and-ha-expansion-strategy.md)

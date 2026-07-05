@@ -12,7 +12,7 @@ This document records actual execution results and verification evidence for Age
 ## Inputs
 
 - **Parent Plan**: [Agent Governance Phase 1 Revalidation Plan](../plans/2026-06-02-agent-governance-phase-1-revalidation.md)
-- **Baseline PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/2026-06-01-agent-governance-standardization.md)
+- **Baseline PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/024-agent-governance-standardization.md)
 - **Baseline ARD**: [Agent Governance Canonical Adapter ARD](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
 - **Baseline ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
 - **Baseline Continuation Plan**: [Agent Governance Decision Items Implementation Plan](../plans/2026-06-02-agent-governance-decision-items-plan.md)
@@ -106,7 +106,7 @@ This document records actual execution results and verification evidence for Age
 ## Related Documents
 
 - **Parent Plan**: [Agent Governance Phase 1 Revalidation Plan](../plans/2026-06-02-agent-governance-phase-1-revalidation.md)
-- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/2026-06-01-agent-governance-standardization.md)
+- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/024-agent-governance-standardization.md)
 - **ARD**: [Agent Governance Canonical Adapter ARD](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
 - **ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
 - **Baseline Plan**: [Agent Governance Decision Items Implementation Plan](../plans/2026-06-02-agent-governance-decision-items-plan.md)

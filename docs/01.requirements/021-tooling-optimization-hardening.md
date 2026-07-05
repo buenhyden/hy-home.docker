@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-28-09-tooling-optimization-hardening.md -->
+<!-- Target: docs/01.requirements/021-tooling-optimization-hardening.md -->
 
 # 09-Tooling Optimization & Hardening Product Requirements
 

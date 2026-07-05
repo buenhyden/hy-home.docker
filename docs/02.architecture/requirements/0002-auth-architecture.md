@@ -92,6 +92,6 @@ The existing architecture diagram, component, constraint, or reliability section
 
 ## Related Documents
 
-- **PRD**: [Auth product requirements](../../01.requirements/2026-03-26-02-auth.md)
+- **PRD**: [Auth product requirements](../../01.requirements/002-auth.md)
 - **Spec**: [Auth technical specification](../../03.specs/02-auth/spec.md)
 - **ADR**: [Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)

@@ -162,7 +162,7 @@ check_03_security() {
   check_contains "$agent_hcl" "destination = \"/vault/out" "vault-agent output destination missing"
   check_contains "$agent_hcl" "static_secret_render_interval = \"5m\"" "vault-agent static secret render interval mismatch"
   check_not_contains "$agent_hcl" "secret/data/example" "vault-agent placeholder secret path"
-  check_contains "$spec_file" "../../01.requirements/2026-03-28-03-security-optimization-hardening.md" "tier 03 spec trace link missing"
+  check_contains "$spec_file" "../../01.requirements/015-security-optimization-hardening.md" "tier 03 spec trace link missing"
 
   local template_file
   for template_file in "$templates_dir"/*.ctmpl; do

@@ -46,7 +46,7 @@ evidence derived from the parent Spec and Plan.
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-NSP-001 | Create Stage 04 execution scaffold | doc | `Implementation Handoff` | `PLN-NSP-001` | This plan/task, Stage 04 indexes, progress memory, validation bundle | Documentation Specialist | Done |
-| T-NSP-002 | Move PRD corpus to numbered filenames | doc | `PRD Migration Map` | `PLN-NSP-002` | `git mv` path evidence; focused PRD path scan; link rewrite evidence | Documentation Specialist | Todo |
+| T-NSP-002 | Move PRD corpus to numbered filenames | doc | `PRD Migration Map` | `PLN-NSP-002` | `git mv` path evidence; focused PRD path scan; link rewrite evidence | Documentation Specialist | Done |
 | T-NSP-003 | Move Spec corpus to numbered folders | doc | `Spec Migration Map` | `PLN-NSP-003` | `git mv` path evidence; focused Spec folder scan; link rewrite evidence | Documentation Specialist | Todo |
 | T-NSP-004 | Update Stage 99 templates and support contracts | doc | `Contract Fallout Surfaces` | `PLN-NSP-004` | Template/support diff; stale target-pattern scan; repo contracts | Documentation Specialist | Todo |
 | T-NSP-005 | Update Stage 00 governance and repository validator | doc | `Validator Interfaces` | `PLN-NSP-005` | Validator diff; governance stale-pattern scan; repo contracts | Documentation Specialist | Todo |
@@ -60,7 +60,7 @@ evidence derived from the parent Spec and Plan.
 
 ### Phase 2: Corpus Moves
 
-- [ ] T-NSP-002 Move PRD corpus to numbered filenames.
+- [x] T-NSP-002 Move PRD corpus to numbered filenames.
 - [ ] T-NSP-003 Move Spec corpus to numbered folders.
 
 ### Phase 3: Contract and Validator Updates
@@ -91,6 +91,14 @@ Validation evidence is updated after each logical implementation batch.
 | `bash scripts/validation/check-doc-traceability.sh` after execution scaffold | PASS | `failures=0`. |
 | `bash scripts/validation/check-doc-implementation-alignment.sh` after execution scaffold | PASS | `failures=0`. |
 | `bash scripts/validation/check-repo-contracts.sh` after execution scaffold | PASS | `failures=0`; changed target-stage documents normalized. |
+| `git diff --check` after PRD migration | PASS | No whitespace or conflict-marker issues. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` after PRD migration | PASS | Generated LLM Wiki index is fresh with 1158 paths. |
+| Focused PRD filename regex scan after PRD migration | PASS | `bad_prd_filenames=0`; every PRD except `README.md` uses three-digit filename form. |
+| Focused stale PRD path scan after PRD migration | PASS | No active `docs/01.requirements/2026-...` PRD links or PRD target comments remain outside the parent migration table. |
+| `bash scripts/operations/sync-provider-surfaces.sh --check` after PRD migration | PASS | `sync-provider-surfaces: no drift`. |
+| `bash scripts/validation/check-doc-traceability.sh` after PRD migration | PASS | `failures=0`. |
+| `bash scripts/validation/check-doc-implementation-alignment.sh` after PRD migration | PASS | `failures=0`. |
+| `bash scripts/validation/check-repo-contracts.sh` after PRD migration | PASS | `failures=0`; 135 changed target-stage documents normalized. |
 
 ## Related Documents
 

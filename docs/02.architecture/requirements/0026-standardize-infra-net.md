@@ -59,7 +59,7 @@ status: active
 
 ## Related Documents
 
-- **PRD**: [infra_net product requirements](../../01.requirements/2026-04-01-standardize-infra-net.md)
+- **PRD**: [infra_net product requirements](../../01.requirements/023-standardize-infra-net.md)
 - **ADR**: [infra_net standardization decision](../decisions/0026-standardize-infra-net.md)
 - **Spec**: [infra_net technical specification](../../03.specs/standardize-infra-net/spec.md)
 - **Plan**: [infra_net implementation plan](../../04.execution/plans/2026-04-01-standardize-infra-net.md)

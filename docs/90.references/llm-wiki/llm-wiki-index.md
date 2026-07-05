@@ -279,30 +279,30 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 | Path | Role |
 | --- | --- |
-| [docs/01.requirements/2026-03-26-01-gateway.md](../../01.requirements/2026-03-26-01-gateway.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-02-auth.md](../../01.requirements/2026-03-26-02-auth.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-03-security.md](../../01.requirements/2026-03-26-03-security.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-04-data-analytics.md](../../01.requirements/2026-03-26-04-data-analytics.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-04-data.md](../../01.requirements/2026-03-26-04-data.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-05-messaging.md](../../01.requirements/2026-03-26-05-messaging.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-06-observability.md](../../01.requirements/2026-03-26-06-observability.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-07-workflow.md](../../01.requirements/2026-03-26-07-workflow.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-08-ai.md](../../01.requirements/2026-03-26-08-ai.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-09-tooling.md](../../01.requirements/2026-03-26-09-tooling.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-10-communication.md](../../01.requirements/2026-03-26-10-communication.md) | Markdown reference |
-| [docs/01.requirements/2026-03-26-11-laboratory.md](../../01.requirements/2026-03-26-11-laboratory.md) | Markdown reference |
-| [docs/01.requirements/2026-03-27-08-ai-open-webui.md](../../01.requirements/2026-03-27-08-ai-open-webui.md) | Markdown reference |
-| [docs/01.requirements/2026-03-28-02-auth-optimization-hardening.md](../../01.requirements/2026-03-28-02-auth-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/2026-03-28-03-security-optimization-hardening.md](../../01.requirements/2026-03-28-03-security-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/2026-03-28-04-data-optimization-hardening.md](../../01.requirements/2026-03-28-04-data-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/2026-03-28-05-messaging-optimization-hardening.md](../../01.requirements/2026-03-28-05-messaging-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/2026-03-28-06-observability-optimization-hardening.md](../../01.requirements/2026-03-28-06-observability-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/2026-03-28-07-workflow-optimization-hardening.md](../../01.requirements/2026-03-28-07-workflow-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/2026-03-28-08-ai-optimization-hardening.md](../../01.requirements/2026-03-28-08-ai-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/2026-03-28-09-tooling-optimization-hardening.md](../../01.requirements/2026-03-28-09-tooling-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/2026-03-28-11-laboratory-optimization-hardening.md](../../01.requirements/2026-03-28-11-laboratory-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/2026-04-01-standardize-infra-net.md](../../01.requirements/2026-04-01-standardize-infra-net.md) | Markdown reference |
-| [docs/01.requirements/2026-06-01-agent-governance-standardization.md](../../01.requirements/2026-06-01-agent-governance-standardization.md) | Markdown reference |
+| [docs/01.requirements/001-gateway.md](../../01.requirements/001-gateway.md) | Markdown reference |
+| [docs/01.requirements/002-auth.md](../../01.requirements/002-auth.md) | Markdown reference |
+| [docs/01.requirements/003-security.md](../../01.requirements/003-security.md) | Markdown reference |
+| [docs/01.requirements/004-data.md](../../01.requirements/004-data.md) | Markdown reference |
+| [docs/01.requirements/005-data-analytics.md](../../01.requirements/005-data-analytics.md) | Markdown reference |
+| [docs/01.requirements/006-messaging.md](../../01.requirements/006-messaging.md) | Markdown reference |
+| [docs/01.requirements/007-observability.md](../../01.requirements/007-observability.md) | Markdown reference |
+| [docs/01.requirements/008-workflow.md](../../01.requirements/008-workflow.md) | Markdown reference |
+| [docs/01.requirements/009-ai.md](../../01.requirements/009-ai.md) | Markdown reference |
+| [docs/01.requirements/010-tooling.md](../../01.requirements/010-tooling.md) | Markdown reference |
+| [docs/01.requirements/011-communication.md](../../01.requirements/011-communication.md) | Markdown reference |
+| [docs/01.requirements/012-laboratory.md](../../01.requirements/012-laboratory.md) | Markdown reference |
+| [docs/01.requirements/013-ai-open-webui.md](../../01.requirements/013-ai-open-webui.md) | Markdown reference |
+| [docs/01.requirements/014-auth-optimization-hardening.md](../../01.requirements/014-auth-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/015-security-optimization-hardening.md](../../01.requirements/015-security-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/016-data-optimization-hardening.md](../../01.requirements/016-data-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/017-messaging-optimization-hardening.md](../../01.requirements/017-messaging-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/018-observability-optimization-hardening.md](../../01.requirements/018-observability-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/019-workflow-optimization-hardening.md](../../01.requirements/019-workflow-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/020-ai-optimization-hardening.md](../../01.requirements/020-ai-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/021-tooling-optimization-hardening.md](../../01.requirements/021-tooling-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/022-laboratory-optimization-hardening.md](../../01.requirements/022-laboratory-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/023-standardize-infra-net.md](../../01.requirements/023-standardize-infra-net.md) | Markdown reference |
+| [docs/01.requirements/024-agent-governance-standardization.md](../../01.requirements/024-agent-governance-standardization.md) | Markdown reference |
 | [docs/01.requirements/README.md](../../01.requirements/README.md) | folder index |
 | [docs/02.architecture/README.md](../../02.architecture/README.md) | folder index |
 | [docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/0001-traefik-nginx-hybrid.md) | Markdown reference |
@@ -480,6 +480,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md](../../04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md](../../04.execution/plans/2026-07-05-agentic-research-pack-refresh.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/plans/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -575,6 +576,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-04-infra-tech-stack-version-refresh.md](../../04.execution/tasks/2026-07-04-infra-tech-stack-version-refresh.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md](../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md](../../04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md](../../04.execution/tasks/2026-07-05-template-system-numbered-sdlc-paths.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs

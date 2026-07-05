@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-26-07-workflow.md -->
+<!-- Target: docs/01.requirements/008-workflow.md -->
 
 # Workflow Tier (07-workflow) Product Requirements
 

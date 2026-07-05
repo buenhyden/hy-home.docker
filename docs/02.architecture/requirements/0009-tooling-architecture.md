@@ -61,7 +61,7 @@ status: active
 
 ## Related Documents
 
-- **PRD**: [2026-03-26-09-tooling.md](../../01.requirements/2026-03-26-09-tooling.md)
+- **PRD**: [010-tooling.md](../../01.requirements/010-tooling.md)
 - **Spec**: [09-tooling/spec.md](../../03.specs/09-tooling/spec.md)
 - **Plan**: [2026-03-26-09-tooling-standardization.md](../../04.execution/plans/2026-03-26-09-tooling-standardization.md)
 - **ADR**: [0009-tooling-services.md](../decisions/0009-tooling-services.md)

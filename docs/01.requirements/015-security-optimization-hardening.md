@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-28-03-security-optimization-hardening.md -->
+<!-- Target: docs/01.requirements/015-security-optimization-hardening.md -->
 
 # 03-Security (Vault) Optimization & Hardening Product Requirements
 

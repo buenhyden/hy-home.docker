@@ -24,7 +24,7 @@ Stage 00은 active policy와 catalog를 소유한다. Provider directories는 ru
   - Hook, validator, memory/progress, and task evidence relationships.
   - Graphify advisory boundary for knowledge navigation.
 - **Consumes**:
-  - Product requirements from `docs/01.requirements/2026-06-01-agent-governance-standardization.md`.
+  - Product requirements from `docs/01.requirements/024-agent-governance-standardization.md`.
   - Existing Stage 00 rules, scopes, provider overlays, and subagent protocol.
   - Runtime adapter files and sync/validation scripts.
   - Phase 1 diagnostic and Phase 2 alignment plan.
@@ -111,7 +111,7 @@ The Stage 00 canonical adapter model is the architecture boundary between policy
 
 ## Related Documents
 
-- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/2026-06-01-agent-governance-standardization.md)
+- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/024-agent-governance-standardization.md)
 - **ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../decisions/0027-stage-00-canonical-adapter-model.md)
 - **Current Plan**: [Agent Governance Decision Items and Attachment-Gap Plan](../../04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md)
 - **Current Task**: [Agent Governance Missing Items Implementation Task](../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md)

@@ -2,7 +2,7 @@
 status: active
 ---
 
-<!-- Target: docs/01.requirements/2026-03-26-09-tooling.md -->
+<!-- Target: docs/01.requirements/010-tooling.md -->
 
 # Tooling Tier (09-tooling) Product Requirements
 

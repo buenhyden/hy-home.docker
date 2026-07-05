@@ -20,7 +20,7 @@ This document defines the technical design and interface contracts for the `04-d
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/2026-03-26-04-data-analytics.md](../../01.requirements/2026-03-26-04-data-analytics.md)
+- **PRD**: [../../01.requirements/005-data-analytics.md](../../01.requirements/005-data-analytics.md)
 - **ARD**: [../../02.architecture/requirements/0012-data-analytics-architecture.md](../../02.architecture/requirements/0012-data-analytics-architecture.md)
 - **Related ADRs**: [../../02.architecture/decisions/0015-analytics-engine-selection.md](../../02.architecture/decisions/0015-analytics-engine-selection.md)
 

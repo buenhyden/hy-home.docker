@@ -75,7 +75,7 @@ runtime 시작/중지는 root include 활성화와 운영 승격 evidence가 준
 
 ### Related Documents
 
-- [PRD](../../docs/01.requirements/2026-03-26-10-communication.md)
+- [PRD](../../docs/01.requirements/011-communication.md)
 - [ARD](../../docs/02.architecture/requirements/0010-communication-architecture.md)
 - [ADR](../../docs/02.architecture/decisions/0010-communication-services.md)
 - [Technical Spec](../../docs/03.specs/10-communication/spec.md)

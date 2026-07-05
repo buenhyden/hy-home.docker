@@ -92,7 +92,7 @@ status: active
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/2026-03-28-03-security-optimization-hardening.md](../../01.requirements/2026-03-28-03-security-optimization-hardening.md)
+- **PRD**: [../01.requirements/015-security-optimization-hardening.md](../../01.requirements/015-security-optimization-hardening.md)
 - **Spec**: [../03.specs/03-security/spec.md](../../03.specs/03-security/spec.md)
 - **Plan**: [../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md](../decisions/0018-vault-hardening-and-ha-expansion-strategy.md)

@@ -53,6 +53,6 @@ status: active
 
 ## Related Documents
 
-- **PRD**: [2026-03-26-08-ai.md](../../01.requirements/2026-03-26-08-ai.md)
+- **PRD**: [009-ai.md](../../01.requirements/009-ai.md)
 - **ARD**: [0008-ai-architecture.md](../requirements/0008-ai-architecture.md)
 - **Spec**: [08-ai/spec.md](../../03.specs/08-ai/spec.md)

@@ -2,7 +2,7 @@
 status: active
 ---
 
-<!-- Target: docs/01.requirements/2026-03-26-04-data.md -->
+<!-- Target: docs/01.requirements/004-data.md -->
 
 # Data Tier (04-data) Product Requirements
 

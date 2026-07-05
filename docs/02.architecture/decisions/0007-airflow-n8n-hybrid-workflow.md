@@ -53,6 +53,6 @@ status: active
 
 ## Related Documents
 
-- **PRD**: [2026-03-26-07-workflow.md](../../01.requirements/2026-03-26-07-workflow.md)
+- **PRD**: [008-workflow.md](../../01.requirements/008-workflow.md)
 - **ARD**: [0007-workflow-architecture.md](../requirements/0007-workflow-architecture.md)
 - **Spec**: [07-workflow/spec.md](../../03.specs/07-workflow/spec.md)

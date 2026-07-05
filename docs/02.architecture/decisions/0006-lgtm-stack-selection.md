@@ -49,6 +49,6 @@ status: active
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/2026-03-26-06-observability.md](../../01.requirements/2026-03-26-06-observability.md)
+- **PRD**: [../../01.requirements/007-observability.md](../../01.requirements/007-observability.md)
 - **ARD**: [../requirements/0006-observability-architecture.md](../requirements/0006-observability-architecture.md)
 - **Spec**: [../../03.specs/06-observability/spec.md](../../03.specs/06-observability/spec.md)

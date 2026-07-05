@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-26-02-auth.md -->
+<!-- Target: docs/01.requirements/002-auth.md -->
 
 # 02-Auth Product Requirements
 

@@ -76,7 +76,7 @@ This document is the optimization/hardening implementation plan for `infra/09-to
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/2026-03-28-09-tooling-optimization-hardening.md](../../01.requirements/2026-03-28-09-tooling-optimization-hardening.md)
+- **PRD**: [../01.requirements/021-tooling-optimization-hardening.md](../../01.requirements/021-tooling-optimization-hardening.md)
 - **ARD**: [../02.architecture/requirements/0024-tooling-optimization-hardening-architecture.md](../../02.architecture/requirements/0024-tooling-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/09-tooling/spec.md](../../03.specs/09-tooling/spec.md)

@@ -26,7 +26,7 @@ This document lists the execution and verification tasks for standardizing docum
 
 | Task ID | Description | Type | Parent Spec | Parent Plan | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-001 | Create PRD | doc | §PRD Ref | PLN-001 | `docs/01.requirements/2026-03-26-06-observability.md` | AI Agent | Done |
+| T-001 | Create PRD | doc | §PRD Ref | PLN-001 | `docs/01.requirements/007-observability.md` | AI Agent | Done |
 | T-002 | Create ARD | doc | §ARD Ref | PLN-002 | `docs/02.architecture/requirements/0006-observability-architecture.md` | AI Agent | Done |
 | T-003 | Create ADR | doc | §ADR Ref | PLN-003 | `docs/02.architecture/decisions/0006-lgtm-stack-selection.md` | AI Agent | Done |
 | T-004 | Create Spec | doc | §Spec Ref | PLN-004 | `docs/03.specs/06-observability/spec.md` | AI Agent | Done |

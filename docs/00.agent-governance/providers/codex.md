@@ -109,7 +109,7 @@ touched.
 - `.codex/README.md`
 - `.codex/hooks.json`
 - `.claude/CLAUDE.md`
-- `docs/01.requirements/2026-06-01-agent-governance-standardization.md`
+- `docs/01.requirements/024-agent-governance-standardization.md`
 - `docs/02.architecture/requirements/0027-agent-governance-canonical-adapter.md`
 - `docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md`
 - `docs/00.agent-governance/agents/`

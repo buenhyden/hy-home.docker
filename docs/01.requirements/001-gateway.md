@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-26-01-gateway.md -->
+<!-- Target: docs/01.requirements/001-gateway.md -->
 
 # Gateway Tier (01-gateway) Product Requirements
 

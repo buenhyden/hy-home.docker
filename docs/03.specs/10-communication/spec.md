@@ -22,7 +22,7 @@ This document defines the technical specification for the `10-communication` tie
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/2026-03-26-10-communication.md](../../01.requirements/2026-03-26-10-communication.md)
+- **PRD**: [../../01.requirements/011-communication.md](../../01.requirements/011-communication.md)
 - **ARD**: [../../02.architecture/requirements/0010-communication-architecture.md](../../02.architecture/requirements/0010-communication-architecture.md)
 - **Related ADRs**: [../../02.architecture/decisions/0010-communication-services.md](../../02.architecture/decisions/0010-communication-services.md)
 
@@ -182,7 +182,7 @@ openssl s_client -starttls smtp -connect mail.${DEFAULT_URL}:587
 
 ## Related Documents
 
-- **PRD**: [2026-03-26-10-communication.md](../../01.requirements/2026-03-26-10-communication.md)
+- **PRD**: [011-communication.md](../../01.requirements/011-communication.md)
 - **ARD**: [0010-communication-architecture.md](../../02.architecture/requirements/0010-communication-architecture.md)
 - **ADR**: [0010-communication-services.md](../../02.architecture/decisions/0010-communication-services.md)
 - **Plan**: [../../04.execution/plans/2026-03-26-10-communication-standardization.md](../../04.execution/plans/2026-03-26-10-communication-standardization.md)

@@ -85,7 +85,7 @@ status: active
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/2026-03-28-02-auth-optimization-hardening.md](../../01.requirements/2026-03-28-02-auth-optimization-hardening.md)
+- **PRD**: [../01.requirements/014-auth-optimization-hardening.md](../../01.requirements/014-auth-optimization-hardening.md)
 - **Spec**: [../03.specs/02-auth/spec.md](../../03.specs/02-auth/spec.md)
 - **Plan**: [../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)

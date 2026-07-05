@@ -2,7 +2,7 @@
 status: active
 ---
 
-<!-- Target: docs/01.requirements/2026-03-26-11-laboratory.md -->
+<!-- Target: docs/01.requirements/012-laboratory.md -->
 
 # Laboratory Tier (11-laboratory) Product Requirements
 

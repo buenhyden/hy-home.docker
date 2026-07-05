@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-28-06-observability-optimization-hardening.md -->
+<!-- Target: docs/01.requirements/018-observability-optimization-hardening.md -->
 
 # 06-Observability Optimization & Hardening Product Requirements
 

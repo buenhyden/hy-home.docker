@@ -23,7 +23,7 @@ This document is the optimization/hardening technical specification for the `inf
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/2026-03-28-09-tooling-optimization-hardening.md](../../01.requirements/2026-03-28-09-tooling-optimization-hardening.md)
+- **PRD**: [../../01.requirements/021-tooling-optimization-hardening.md](../../01.requirements/021-tooling-optimization-hardening.md)
 - **ARD**: [../../02.architecture/requirements/0024-tooling-optimization-hardening-architecture.md](../../02.architecture/requirements/0024-tooling-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/0009-tooling-services.md](../../02.architecture/decisions/0009-tooling-services.md)

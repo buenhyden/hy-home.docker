@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-28-11-laboratory-optimization-hardening.md -->
+<!-- Target: docs/01.requirements/022-laboratory-optimization-hardening.md -->
 
 # 11-Laboratory Optimization & Hardening Product Requirements
 

@@ -55,6 +55,6 @@ status: active
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/2026-03-26-01-gateway.md](../../01.requirements/2026-03-26-01-gateway.md)
+- **PRD**: [../../01.requirements/001-gateway.md](../../01.requirements/001-gateway.md)
 - **ARD**: [../requirements/0001-gateway-architecture.md](../requirements/0001-gateway-architecture.md)
 - **Related Spec**: [../../03.specs/01-gateway/spec.md](../../03.specs/01-gateway/spec.md)

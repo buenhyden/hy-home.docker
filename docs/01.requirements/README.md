@@ -42,32 +42,32 @@ status: active
 ```text
 docs/01.requirements/
 ├── 기초 PRD (2026-03-26)
-│   ├── 2026-03-26-01-gateway.md             # Gateway Tier
-│   ├── 2026-03-26-02-auth.md                # Auth / IAM Tier
-│   ├── 2026-03-26-03-security.md            # Security (Vault) Tier
-│   ├── 2026-03-26-04-data.md                # Data Tier (core)
-│   ├── 2026-03-26-04-data-analytics.md      # Analytics Sub-tier
-│   ├── 2026-03-26-05-messaging.md           # Messaging Tier
-│   ├── 2026-03-26-06-observability.md       # Observability Tier
-│   ├── 2026-03-26-07-workflow.md            # Workflow Tier
-│   ├── 2026-03-26-08-ai.md                  # AI Infrastructure Tier
-│   ├── 2026-03-26-09-tooling.md             # Tooling Tier
-│   ├── 2026-03-26-10-communication.md       # Communication Tier
-│   └── 2026-03-26-11-laboratory.md          # Laboratory Tier
+│   ├── 001-gateway.md             # Gateway Tier
+│   ├── 002-auth.md                # Auth / IAM Tier
+│   ├── 003-security.md            # Security (Vault) Tier
+│   ├── 004-data.md                # Data Tier (core)
+│   ├── 005-data-analytics.md      # Analytics Sub-tier
+│   ├── 006-messaging.md           # Messaging Tier
+│   ├── 007-observability.md       # Observability Tier
+│   ├── 008-workflow.md            # Workflow Tier
+│   ├── 009-ai.md                  # AI Infrastructure Tier
+│   ├── 010-tooling.md             # Tooling Tier
+│   ├── 011-communication.md       # Communication Tier
+│   └── 012-laboratory.md          # Laboratory Tier
 ├── 추가 PRD
-│   ├── 2026-03-27-08-ai-open-webui.md       # Open WebUI (AI sub-feature)
-│   ├── 2026-04-01-standardize-infra-net.md  # infra_net 표준화
-│   └── 2026-06-01-agent-governance-standardization.md # Agent governance 표준화
+│   ├── 013-ai-open-webui.md       # Open WebUI (AI sub-feature)
+│   ├── 023-standardize-infra-net.md  # infra_net 표준화
+│   └── 024-agent-governance-standardization.md # Agent governance 표준화
 ├── 최적화/하드닝 PRD (2026-03-28)
-│   ├── 2026-03-28-02-auth-optimization-hardening.md
-│   ├── 2026-03-28-03-security-optimization-hardening.md
-│   ├── 2026-03-28-04-data-optimization-hardening.md
-│   ├── 2026-03-28-05-messaging-optimization-hardening.md
-│   ├── 2026-03-28-06-observability-optimization-hardening.md
-│   ├── 2026-03-28-07-workflow-optimization-hardening.md
-│   ├── 2026-03-28-08-ai-optimization-hardening.md
-│   ├── 2026-03-28-09-tooling-optimization-hardening.md
-│   └── 2026-03-28-11-laboratory-optimization-hardening.md
+│   ├── 014-auth-optimization-hardening.md
+│   ├── 015-security-optimization-hardening.md
+│   ├── 016-data-optimization-hardening.md
+│   ├── 017-messaging-optimization-hardening.md
+│   ├── 018-observability-optimization-hardening.md
+│   ├── 019-workflow-optimization-hardening.md
+│   ├── 020-ai-optimization-hardening.md
+│   ├── 021-tooling-optimization-hardening.md
+│   └── 022-laboratory-optimization-hardening.md
 │   # NOTE: 01-gateway, 10-communication 하드닝 PRD는 backlog/deferred 항목이며 별도 승인 전까지 새 PRD를 만들지 않음
 └── README.md                                # This file
 ```
@@ -116,7 +116,7 @@ PRD는 문제와 요구사항의 SSoT입니다. 구현 방법, 실행 순서, �
 - `prd.template.md` 없이 새 PRD 형식을 임의로 만들지 않는다.
 - 기존 구조 확인 없이 새 파일을 만들지 않는다.
 - 추적성 링크(`ARD`, `Spec`, `Plan`, `ADR`)가 필요한 영역에서 상위/하위 문서 연결을 누락하지 않는다.
-- `2026-03-26-04-data.md`와 `2026-03-26-04-data-analytics.md`는 별도 PRD이므로 혼용하지 않는다.
+- `004-data.md`와 `005-data-analytics.md`는 별도 PRD이므로 혼용하지 않는다.
 
 ### Validation
 
@@ -129,4 +129,4 @@ PRD는 문제와 요구사항의 SSoT입니다. 구현 방법, 실행 순서, �
 - [ARD README](../02.architecture/requirements/README.md)
 - [Spec README](../03.specs/README.md)
 - [Plan README](../04.execution/plans/README.md)
-- [Agent Governance Standardization PRD](./2026-06-01-agent-governance-standardization.md)
+- [Agent Governance Standardization PRD](./024-agent-governance-standardization.md)

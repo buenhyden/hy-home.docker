@@ -53,7 +53,7 @@ Existing `07-workflow` tier documentation was fragmented across service-level RE
 
 ## Related Documents
 
-- **PRD**: [2026-03-26-07-workflow.md](../../01.requirements/2026-03-26-07-workflow.md)
+- **PRD**: [008-workflow.md](../../01.requirements/008-workflow.md)
 - **ARD**: [0007-workflow-architecture.md](../../02.architecture/requirements/0007-workflow-architecture.md)
 - **Spec**: [07-workflow/spec.md](../../03.specs/07-workflow/spec.md)
 - **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../../02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)

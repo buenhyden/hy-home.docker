@@ -13,7 +13,7 @@ This document tracks detailed work items and progress for the `2026-03-26-07-wor
 ## Task List
 
 - [x] **TSK-01: Create PRD and align governance**
-  - [x] Create `docs/01.requirements/2026-03-26-07-workflow.md`
+  - [x] Create `docs/01.requirements/008-workflow.md`
   - [x] Refresh indexing in `docs/01.requirements/README.md`
 - [x] **TSK-02: Build ARD and map infrastructure**
   - [x] Create `docs/02.architecture/requirements/0007-workflow-architecture.md`

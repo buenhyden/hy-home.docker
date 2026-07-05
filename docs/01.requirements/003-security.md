@@ -2,7 +2,7 @@
 status: active
 ---
 
-<!-- Target: docs/01.requirements/2026-03-26-03-security.md -->
+<!-- Target: docs/01.requirements/003-security.md -->
 
 # Security Tier (03-security) Product Requirements
 

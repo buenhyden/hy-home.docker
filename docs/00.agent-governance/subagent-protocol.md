@@ -130,7 +130,7 @@ Dead `_workspace/` files are preserved for audit; do not delete without user app
 - `docs/00.agent-governance/rules/bootstrap.md`
 - `docs/00.agent-governance/rules/task-checklists.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
-- `docs/01.requirements/2026-06-01-agent-governance-standardization.md`
+- `docs/01.requirements/024-agent-governance-standardization.md`
 - `docs/02.architecture/requirements/0027-agent-governance-canonical-adapter.md`
 - `docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md`
 - `AGENTS.md` — Runtime Surfaces

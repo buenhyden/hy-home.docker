@@ -81,7 +81,7 @@
 
 ## Related Documents
 
-- **PRD**: [2026-03-26-09-tooling.md](../../docs/01.requirements/2026-03-26-09-tooling.md)
+- **PRD**: [010-tooling.md](../../docs/01.requirements/010-tooling.md)
 - **ARD**: [0009-tooling-architecture.md](../../docs/02.architecture/requirements/0009-tooling-architecture.md)
 - **Spec**: [09-tooling/spec.md](../../docs/03.specs/09-tooling/spec.md)
 - **Guide**: [09-tooling guide index](../../docs/05.operations/guides/09-tooling/README.md)

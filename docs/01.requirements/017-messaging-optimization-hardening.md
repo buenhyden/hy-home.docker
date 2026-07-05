@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-28-05-messaging-optimization-hardening.md -->
+<!-- Target: docs/01.requirements/017-messaging-optimization-hardening.md -->
 
 # 05-Messaging Optimization & Hardening Product Requirements
 

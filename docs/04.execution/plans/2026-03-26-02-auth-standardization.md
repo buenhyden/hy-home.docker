@@ -85,7 +85,7 @@ This historical plan exists to organize the work described in the existing goal 
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/2026-03-26-02-auth.md](../../01.requirements/2026-03-26-02-auth.md)
+- **PRD**: [../../01.requirements/002-auth.md](../../01.requirements/002-auth.md)
 - **ARD**: [../../02.architecture/requirements/0002-auth-architecture.md](../../02.architecture/requirements/0002-auth-architecture.md)
 - **Spec**: [../../03.specs/02-auth/spec.md](../../03.specs/02-auth/spec.md)
 - **Task**: [../tasks/2026-03-26-02-auth-tasks.md](../tasks/2026-03-26-02-auth-tasks.md)

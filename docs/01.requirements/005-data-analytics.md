@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-26-04-data-analytics.md -->
+<!-- Target: docs/01.requirements/005-data-analytics.md -->
 
 # Analytics Tier (04-data/analytics) Product Requirements
 

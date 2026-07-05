@@ -91,7 +91,7 @@ This document is the optimization/hardening implementation plan for `infra/04-da
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/2026-03-28-04-data-optimization-hardening.md](../../01.requirements/2026-03-28-04-data-optimization-hardening.md)
+- **PRD**: [../01.requirements/016-data-optimization-hardening.md](../../01.requirements/016-data-optimization-hardening.md)
 - **ARD**: [../02.architecture/requirements/0019-data-optimization-hardening-architecture.md](../../02.architecture/requirements/0019-data-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/04-data/spec.md](../../03.specs/04-data/spec.md)

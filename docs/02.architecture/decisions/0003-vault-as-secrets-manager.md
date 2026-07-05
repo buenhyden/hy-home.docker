@@ -57,7 +57,7 @@ status: active
 
 ## Related Documents
 
-- [Security PRD](../../01.requirements/2026-03-26-03-security.md)
+- [Security PRD](../../01.requirements/003-security.md)
 - [Security ARD](../requirements/0003-security-architecture.md)
 - [Security spec](../../03.specs/03-security/spec.md)
 - [Security standardization plan](../../04.execution/plans/2026-03-26-03-security-standardization.md)

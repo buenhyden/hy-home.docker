@@ -21,7 +21,7 @@ This specification defines the technical design and implementation details for t
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/2026-03-26-01-gateway.md](../../01.requirements/2026-03-26-01-gateway.md)
+- **PRD**: [../../01.requirements/001-gateway.md](../../01.requirements/001-gateway.md)
 - **ARD**: [../../02.architecture/requirements/0001-gateway-architecture.md](../../02.architecture/requirements/0001-gateway-architecture.md)
 - **Related ADRs**: [../../02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)
 

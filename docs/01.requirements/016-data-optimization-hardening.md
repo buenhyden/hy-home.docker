@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-28-04-data-optimization-hardening.md -->
+<!-- Target: docs/01.requirements/016-data-optimization-hardening.md -->
 
 # 04-Data Optimization & Hardening Product Requirements
 

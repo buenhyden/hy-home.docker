@@ -24,7 +24,7 @@ This document is the optimization/hardening technical specification for the `inf
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/2026-03-28-08-ai-optimization-hardening.md](../../01.requirements/2026-03-28-08-ai-optimization-hardening.md)
+- **PRD**: [../../01.requirements/020-ai-optimization-hardening.md](../../01.requirements/020-ai-optimization-hardening.md)
 - **ARD**: [../../02.architecture/requirements/0023-ai-optimization-hardening-architecture.md](../../02.architecture/requirements/0023-ai-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/0008-ollama-openwebui-local-ai.md](../../02.architecture/decisions/0008-ollama-openwebui-local-ai.md)

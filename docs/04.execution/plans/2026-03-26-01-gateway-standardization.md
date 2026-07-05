@@ -21,7 +21,7 @@ The current Gateway tier (`infra/01-gateway`) functionality and architecture are
   - Secure traceability between documents.
   - Replace each documentation layer `README.md` with the standard template.
 - **In Scope**:
-  - Create `docs/01.requirements/2026-03-26-01-gateway.md`.
+  - Create `docs/01.requirements/001-gateway.md`.
   - Create `docs/02.architecture/requirements/0001-gateway-architecture.md`.
   - Create `docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md`.
   - Update `docs/01.requirements/README.md`, `docs/02.architecture/requirements/README.md`, and `docs/02.architecture/decisions/README.md`.
@@ -39,7 +39,7 @@ The current Gateway tier (`infra/01-gateway`) functionality and architecture are
 
 | Task   | Description            | Files / Docs Affected                                                                                                       | Target REQ  | Validation Criteria            |
 | ------ | ---------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------------ |
-| PLN-01 | Write Gateway PRD       | `docs/01.requirements/2026-03-26-01-gateway.md`                                                                             | REQ-PRD-FUN | Template compliance and summary included |
+| PLN-01 | Write Gateway PRD       | `docs/01.requirements/001-gateway.md`                                                                             | REQ-PRD-FUN | Template compliance and summary included |
 | PLN-02 | Write Gateway ARD       | `docs/02.architecture/requirements/0001-gateway-architecture.md`                                                            | -           | System boundary and quality attributes defined |
 | PLN-03 | Write Gateway ADR       | `docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md`                                                               | -           | Hybrid structure decision background specified |
 | PLN-04 | Update layer READMEs | `docs/01.requirements/README.md`, `docs/02.architecture/requirements/README.md`, `docs/02.architecture/decisions/README.md` | -           | Standard template structure applied |
@@ -59,7 +59,7 @@ The current Gateway tier (`infra/01-gateway`) functionality and architecture are
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/2026-03-26-01-gateway.md](../../01.requirements/2026-03-26-01-gateway.md)
+- **PRD**: [../../01.requirements/001-gateway.md](../../01.requirements/001-gateway.md)
 - **ARD**: [../../02.architecture/requirements/0001-gateway-architecture.md](../../02.architecture/requirements/0001-gateway-architecture.md)
 - **ADR**: [../../02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)
 - **Spec**: [../../03.specs/01-gateway/spec.md](../../03.specs/01-gateway/spec.md)

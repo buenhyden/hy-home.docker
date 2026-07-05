@@ -77,7 +77,7 @@ This document tracks the `05-messaging` optimization and hardening implementatio
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/2026-03-28-05-messaging-optimization-hardening.md](../../01.requirements/2026-03-28-05-messaging-optimization-hardening.md)
+- **PRD**: [../01.requirements/017-messaging-optimization-hardening.md](../../01.requirements/017-messaging-optimization-hardening.md)
 - **ARD**: [../02.architecture/requirements/0020-messaging-optimization-hardening-architecture.md](../../02.architecture/requirements/0020-messaging-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Plan**: [../plans/2026-03-28-05-messaging-optimization-hardening-plan.md](../plans/2026-03-28-05-messaging-optimization-hardening-plan.md)

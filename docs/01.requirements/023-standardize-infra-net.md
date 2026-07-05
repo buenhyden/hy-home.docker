@@ -2,7 +2,7 @@
 status: active
 ---
 
-<!-- Target: docs/01.requirements/2026-04-01-standardize-infra-net.md -->
+<!-- Target: docs/01.requirements/023-standardize-infra-net.md -->
 
 # Standardize infra_net Network Product Requirements
 

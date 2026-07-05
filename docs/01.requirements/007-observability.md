@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/01.requirements/2026-03-26-06-observability.md -->
+<!-- Target: docs/01.requirements/007-observability.md -->
 
 # Observability Tier Product Requirements
 

@@ -62,7 +62,7 @@ current curated image registry is `infra/tech-stack.versions.json`.
 
 ## Related Documents
 
-- **PRD**: [2026-03-26-04-data-analytics.md](../../01.requirements/2026-03-26-04-data-analytics.md)
+- **PRD**: [005-data-analytics.md](../../01.requirements/005-data-analytics.md)
 - **ARD**: [0012-data-analytics-architecture.md](../requirements/0012-data-analytics-architecture.md)
 - **Spec**: [spec.md](../../03.specs/04-data-analytics/spec.md)
 - **Guide**: [README.md](../../05.operations/guides/04-data/analytics/README.md)

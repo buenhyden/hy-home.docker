@@ -2,7 +2,7 @@
 status: active
 ---
 
-<!-- Target: docs/01.requirements/2026-03-26-10-communication.md -->
+<!-- Target: docs/01.requirements/011-communication.md -->
 
 # Communication Tier (10-communication) Product Requirements
 
