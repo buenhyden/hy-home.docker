@@ -512,6 +512,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md](../../04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-provider-hook-parity-matrix.md](../../04.execution/plans/2026-07-06-provider-hook-parity-matrix.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-06-sdlc-document-contract-corpus-normalization.md](../../04.execution/plans/2026-07-06-sdlc-document-contract-corpus-normalization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-security-automation-readiness-snapshot.md](../../04.execution/plans/2026-07-06-security-automation-readiness-snapshot.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-tech-stack-version-provenance.md](../../04.execution/plans/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
@@ -622,6 +623,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md](../../04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md](../../04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md](../../04.execution/tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-security-automation-readiness-snapshot.md](../../04.execution/tasks/2026-07-06-security-automation-readiness-snapshot.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-tech-stack-version-provenance.md](../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |

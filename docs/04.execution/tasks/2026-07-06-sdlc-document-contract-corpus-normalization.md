@@ -46,7 +46,7 @@ residual gaps as the implementation proceeds.
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-SDCN-001 | Clean stale numbered PRD/Spec guidance text. | doc | `Initial Finding Seeds` | `PLN-SDCN-001` | Targeted stale-guidance scan; repo contracts | Documentation Specialist | Todo |
+| T-SDCN-001 | Clean stale numbered PRD/Spec guidance text. | doc | `Initial Finding Seeds` | `PLN-SDCN-001` | Targeted stale-guidance scan; repo contracts | Documentation Specialist | Done |
 | T-SDCN-002 | Extend validator coverage for stale active PRD/Spec guidance. | validation | `Validator Interfaces` | `PLN-SDCN-002` | Syntax, targeted stale-guidance fixtures, full repo contracts | Validator Maintainer | Todo |
 | T-SDCN-003 | Classify Stage 03 sibling README and Stage 04 plan/task lifecycle policy. | doc | `Traceability Interfaces` | `PLN-SDCN-003` | Classification evidence; no premature hard gate | Documentation Specialist | Todo |
 | T-SDCN-004 | Review and apply approved operations leaf naming polish. | ops | `Edge Cases & Error Handling` | `PLN-SDCN-004` | Link sync, traceability, implementation alignment | Operations Reviewer | Todo |
@@ -56,7 +56,7 @@ residual gaps as the implementation proceeds.
 
 ### Wave 1: Contract Text Cleanup
 
-- [ ] T-SDCN-001 Clean stale numbered PRD/Spec guidance text.
+- [x] T-SDCN-001 Clean stale numbered PRD/Spec guidance text.
 
 ### Wave 2: Validator Coverage
 
@@ -80,12 +80,13 @@ residual gaps as the implementation proceeds.
 | --- | --- | --- |
 | `git diff --check` | PASS | No whitespace or conflict-marker failures after adding the Stage 04 plan/task unit. |
 | `git diff --cached --check` | Pending | Run before each commit. |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS | Generated LLM Wiki index is fresh at 1228 paths. |
-| `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` | PASS | Generated LLM Wiki coverage snapshot is fresh at 1227 safe paths. |
+| `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS | Generated LLM Wiki index is fresh at 1230 paths after Wave 1. |
+| `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` | PASS | Generated LLM Wiki coverage snapshot is fresh at 1229 safe paths after Wave 1. |
 | `bash scripts/validation/check-doc-traceability.sh` | PASS | `catalog_pairs_total=46`, `failures=0`. |
 | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS | `stage_docs_total=609`, `repo_local_markdown_links_checked=4710`, `failures=0`. |
 | `bash -n scripts/validation/check-repo-contracts.sh` | PASS | Repository contract script syntax is valid. |
-| `bash scripts/validation/check-repo-contracts.sh` | PASS | Full repository contract gate passed with `failures=0`; changed target-stage docs normalized `6/6`, total target-stage docs normalized `697/697`. |
+| `bash scripts/validation/check-repo-contracts.sh` | PASS | Full repository contract gate passed with `failures=0`; changed target-stage docs normalized `4/4`, total target-stage docs normalized `697/697`. |
+| Targeted Wave 1 stale-guidance scan | PASS | No stale date-prefixed PRD, old example filename, mixed plan/PRD naming, blanket `layer:` requirement, or flat Stage 99 template-path guidance remains in the edited active guidance files. |
 
 ## Related Documents
 
