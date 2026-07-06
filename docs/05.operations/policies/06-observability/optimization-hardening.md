@@ -36,7 +36,7 @@ status: active
   - 관측성 변경은 `infrastructure-hardening` CI 게이트를 통과해야 한다.
   - 관측성 변경은 `check-template-security-baseline.sh`,
     `check-doc-traceability.sh`, 관련 compose validation 결과를 함께 확인한다.
-  - log/trace/profile retention 변경은 [retention policy](./01.retention.md)와
+  - log/trace/profile retention 변경은 [retention policy](./retention.md)와
     서비스별 policy/runbook에 함께 반영한다.
   - 대량 scrape 실패, trace/log ingestion 지연 급증, 관리경로 인증 실패 급증은
     runbook handoff 조건으로 취급한다.
@@ -85,4 +85,4 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/06-observability/optimization-hardening.md)
 - [Recovery runbook](../../runbooks/06-observability/optimization-hardening.md)
-- [Retention policy](./01.retention.md)
+- [Retention policy](./retention.md)

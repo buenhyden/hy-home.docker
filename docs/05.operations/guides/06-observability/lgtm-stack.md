@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/guides/06-observability/01.lgtm-stack.md -->
+<!-- Target: docs/05.operations/guides/06-observability/lgtm-stack.md -->
 
 # LGTM Stack Usage Guide
 

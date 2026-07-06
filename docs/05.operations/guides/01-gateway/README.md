@@ -35,7 +35,7 @@
 
 ```text
 guides/01-gateway/
-├── 01.setup.md
+├── setup.md
 ├── nginx.md
 ├── traefik.md
 └── README.md
@@ -50,7 +50,7 @@ guides/01-gateway/
 
 | Path | Purpose |
 | --- | --- |
-| [01.setup.md](./01.setup.md) | Root-active Traefik validation and profile-only Nginx setup boundary |
+| [setup.md](./setup.md) | Root-active Traefik validation and profile-only Nginx setup boundary |
 | [nginx.md](./nginx.md) | Nginx profile-only path proxy usage and runtime lint boundary |
 | [traefik.md](./traefik.md) | Traefik root-active router and middleware usage guide |
 

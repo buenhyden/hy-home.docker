@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/policies/06-observability/01.retention.md -->
+<!-- Target: docs/05.operations/policies/06-observability/retention.md -->
 
 # Retention and Performance Policies
 

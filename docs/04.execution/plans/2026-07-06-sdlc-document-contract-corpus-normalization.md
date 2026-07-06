@@ -122,7 +122,7 @@ runtime infrastructure, secrets, remote GitHub state, or CI hard gates.
 - [x] Wave 1 stale guidance cleanup is complete and verified.
 - [x] Wave 2 validator coverage is complete and verified.
 - [x] Wave 3 lifecycle classification is complete without premature hard gates.
-- [ ] Wave 4 operations naming polish is complete for exact approved
+- [x] Wave 4 operations naming polish is complete for exact approved
       candidates or recorded as residual evidence.
 - [ ] Wave 5 closure evidence, LLM Wiki, progress memory, and residual gaps are
       synchronized.

@@ -142,9 +142,6 @@ SERVICE_ALIAS = {
 }
 NON_SERVICE_STEMS = {
     "0012-standardize-infra-net",
-    "01.lgtm-stack",
-    "01.setup",
-    "01.retention",
     "02.n8n-automation",
     "02.rag-workflow",
     "airflow-dag-basics",
@@ -159,11 +156,14 @@ NON_SERVICE_STEMS = {
     "iac-deployment-policy",
     "infra-service-optimization-catalog",
     "llm-wiki-maintenance",
+    "lgtm-stack",
     "new-service-onboarding",
     "optimization-hardening",
     "performance-testing",
+    "retention",
     "release-management",
     "sensitive-env-vars-comparison",
+    "setup",
     "storage-exhaustion",
 }
 NON_SERVICE_TIERS = {

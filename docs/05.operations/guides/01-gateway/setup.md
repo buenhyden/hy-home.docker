@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/guides/01-gateway/01.setup.md -->
+<!-- Target: docs/05.operations/guides/01-gateway/setup.md -->
 
 # 01.Setup Operations
 

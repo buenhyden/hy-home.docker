@@ -50,7 +50,7 @@ config, and alert-rule surfaces.
   - Prometheus route must keep
     `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
   - TSDB retention changes must be paired with
-    [retention policy](./01.retention.md), volume impact review, and plan/task
+    [retention policy](./retention.md), volume impact review, and plan/task
     evidence. The current compose command does not declare an explicit
     `--storage.tsdb.retention.*` flag.
 - **Allowed**:
@@ -99,4 +99,4 @@ config, and alert-rule surfaces.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/06-observability/prometheus.md)
 - [Recovery runbook](../../runbooks/06-observability/prometheus.md)
-- [Retention policy](./01.retention.md)
+- [Retention policy](./retention.md)

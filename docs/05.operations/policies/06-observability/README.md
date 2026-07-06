@@ -35,7 +35,7 @@
 
 ```text
 policies/06-observability/
-├── 01.retention.md
+├── retention.md
 ├── alertmanager.md
 ├── alloy.md
 ├── grafana.md
@@ -57,7 +57,7 @@ policies/06-observability/
 
 | Path | Purpose |
 | --- | --- |
-| [01.retention.md](./01.retention.md) | Retention controls for Prometheus/Loki/Tempo/Pyroscope |
+| [retention.md](./retention.md) | Retention controls for Prometheus/Loki/Tempo/Pyroscope |
 | [alertmanager.md](./alertmanager.md) | Alertmanager routing and secret boundary policy |
 | [alloy.md](./alloy.md) | Alloy pipeline and Docker socket boundary policy |
 | [grafana.md](./grafana.md) | Grafana SSO, datasource, and provisioning policy |

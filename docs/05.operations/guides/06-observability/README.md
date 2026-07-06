@@ -35,7 +35,7 @@
 
 ```text
 guides/06-observability/
-├── 01.lgtm-stack.md
+├── lgtm-stack.md
 ├── alertmanager.md
 ├── alloy.md
 ├── grafana.md
@@ -58,7 +58,7 @@ guides/06-observability/
 
 | Path | Purpose |
 | --- | --- |
-| [01.lgtm-stack.md](./01.lgtm-stack.md) | Current LGTM/Alloy/alerting/profiling stack guide |
+| [lgtm-stack.md](./lgtm-stack.md) | Current LGTM/Alloy/alerting/profiling stack guide |
 | [alertmanager.md](./alertmanager.md) | Alertmanager Slack/SMTP routing guide |
 | [alloy.md](./alloy.md) | Alloy Docker log, OTLP, Prometheus, and Pyroscope pipeline guide |
 | [grafana.md](./grafana.md) | Grafana SSO, datasource, and dashboard provisioning guide |

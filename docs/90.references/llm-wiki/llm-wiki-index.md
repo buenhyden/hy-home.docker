@@ -640,9 +640,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md) | Markdown reference |
 | [docs/05.operations/guides/00-workspace/new-service-onboarding.md](../../05.operations/guides/00-workspace/new-service-onboarding.md) | Markdown reference |
 | [docs/05.operations/guides/00-workspace/sensitive-env-vars-comparison.md](../../05.operations/guides/00-workspace/sensitive-env-vars-comparison.md) | Markdown reference |
-| [docs/05.operations/guides/01-gateway/01.setup.md](../../05.operations/guides/01-gateway/01.setup.md) | Markdown reference |
 | [docs/05.operations/guides/01-gateway/README.md](../../05.operations/guides/01-gateway/README.md) | folder index |
 | [docs/05.operations/guides/01-gateway/nginx.md](../../05.operations/guides/01-gateway/nginx.md) | Markdown reference |
+| [docs/05.operations/guides/01-gateway/setup.md](../../05.operations/guides/01-gateway/setup.md) | Markdown reference |
 | [docs/05.operations/guides/01-gateway/traefik.md](../../05.operations/guides/01-gateway/traefik.md) | Markdown reference |
 | [docs/05.operations/guides/02-auth/README.md](../../05.operations/guides/02-auth/README.md) | folder index |
 | [docs/05.operations/guides/02-auth/keycloak.md](../../05.operations/guides/02-auth/keycloak.md) | Markdown reference |
@@ -678,11 +678,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/05-messaging/kafka.md](../../05.operations/guides/05-messaging/kafka.md) | Markdown reference |
 | [docs/05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/guides/05-messaging/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/guides/05-messaging/rabbitmq.md](../../05.operations/guides/05-messaging/rabbitmq.md) | Markdown reference |
-| [docs/05.operations/guides/06-observability/01.lgtm-stack.md](../../05.operations/guides/06-observability/01.lgtm-stack.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/README.md](../../05.operations/guides/06-observability/README.md) | folder index |
 | [docs/05.operations/guides/06-observability/alertmanager.md](../../05.operations/guides/06-observability/alertmanager.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/alloy.md](../../05.operations/guides/06-observability/alloy.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/grafana.md](../../05.operations/guides/06-observability/grafana.md) | Markdown reference |
+| [docs/05.operations/guides/06-observability/lgtm-stack.md](../../05.operations/guides/06-observability/lgtm-stack.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/loki.md](../../05.operations/guides/06-observability/loki.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/guides/06-observability/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/prometheus.md](../../05.operations/guides/06-observability/prometheus.md) | Markdown reference |
@@ -766,7 +766,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/05-messaging/kafka.md](../../05.operations/policies/05-messaging/kafka.md) | Markdown reference |
 | [docs/05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/policies/05-messaging/rabbitmq.md](../../05.operations/policies/05-messaging/rabbitmq.md) | Markdown reference |
-| [docs/05.operations/policies/06-observability/01.retention.md](../../05.operations/policies/06-observability/01.retention.md) | Markdown reference |
 | [docs/05.operations/policies/06-observability/README.md](../../05.operations/policies/06-observability/README.md) | folder index |
 | [docs/05.operations/policies/06-observability/alertmanager.md](../../05.operations/policies/06-observability/alertmanager.md) | Markdown reference |
 | [docs/05.operations/policies/06-observability/alloy.md](../../05.operations/policies/06-observability/alloy.md) | Markdown reference |
@@ -776,6 +775,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/06-observability/prometheus.md](../../05.operations/policies/06-observability/prometheus.md) | Markdown reference |
 | [docs/05.operations/policies/06-observability/pushgateway.md](../../05.operations/policies/06-observability/pushgateway.md) | Markdown reference |
 | [docs/05.operations/policies/06-observability/pyroscope.md](../../05.operations/policies/06-observability/pyroscope.md) | Markdown reference |
+| [docs/05.operations/policies/06-observability/retention.md](../../05.operations/policies/06-observability/retention.md) | Markdown reference |
 | [docs/05.operations/policies/06-observability/tempo.md](../../05.operations/policies/06-observability/tempo.md) | Markdown reference |
 | [docs/05.operations/policies/07-workflow/README.md](../../05.operations/policies/07-workflow/README.md) | folder index |
 | [docs/05.operations/policies/07-workflow/airflow.md](../../05.operations/policies/07-workflow/airflow.md) | Markdown reference |

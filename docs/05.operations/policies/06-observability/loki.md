@@ -75,4 +75,4 @@ Loki 운영 기준을 다룬다.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/06-observability/loki.md)
 - [Recovery runbook](../../runbooks/06-observability/loki.md)
-- [Retention policy](./01.retention.md)
+- [Retention policy](./retention.md)
