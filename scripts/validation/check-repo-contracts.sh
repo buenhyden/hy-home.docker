@@ -411,8 +411,22 @@ legacy_patterns = [
     re.compile(r"(?<![0-9])03\.specs/<feature-id>/"),
     re.compile(r"(?<![0-9])03\.specs/feature-id/"),
 ]
-for path in sorted(pathlib.Path("docs/99.templates").rglob("*")):
-    if not path.is_file() or path.suffix.lower() not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
+scan_roots = [
+    pathlib.Path("docs/99.templates"),
+    pathlib.Path("docs/00.agent-governance/rules"),
+    pathlib.Path("docs/00.agent-governance/scopes"),
+    pathlib.Path(".github/ISSUE_TEMPLATE"),
+]
+scan_files = {
+    pathlib.Path("docs/01.requirements/README.md"),
+    pathlib.Path("docs/03.specs/README.md"),
+}
+for root in scan_roots:
+    if root.exists():
+        scan_files.update(path for path in root.rglob("*") if path.is_file())
+
+for path in sorted(scan_files):
+    if path.suffix.lower() not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
         continue
     text = path.read_text(errors="ignore")
     for pattern in legacy_patterns:
