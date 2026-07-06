@@ -68,7 +68,7 @@ docs/90.references/learning/
 
 ## Related Documents
 
-- [90.references](../../README.md)
+- [90.references](../README.md)
 - [stable reference terms](../data/glossary/stable-reference-terms.md)
 - [docs index](../../README.md)
 - [reference template](../../99.templates/templates/common/reference.template.md)

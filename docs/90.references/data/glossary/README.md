@@ -64,6 +64,6 @@ docs/90.references/data/glossary/
 
 - [90.references](../../README.md)
 - [stable reference terms](./stable-reference-terms.md)
-- [docs index](../../README.md)
+- [docs index](../../../README.md)
 - [reference template](../../../99.templates/templates/common/reference.template.md)
 - [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
