@@ -103,13 +103,14 @@ or enforcement depth differs from repository policy.
 ## Automation Impact
 
 The highest-value remaining automation candidates are CI adoption for
-agent-output eval scoring, full automated audit-matrix refresh from repo paths,
-vulnerability gating, SBOM, and provenance/attestation automation. Changed-path
-QA recommendations are now surfaced in CI Step Summary, audit-pack
-implementation-status coverage is now reportable through repo contracts, LLM
-Wiki safe-path coverage is grouped by source bucket/category in Stage 90 data,
-tech-stack version source provenance is generated from the registry and listed
-Compose declarations, provider hook parity is generated with Gemini behavioral
+agent-output eval scoring, vulnerability gating, SBOM, and
+provenance/attestation automation. Changed-path QA recommendations are now
+surfaced in CI Step Summary, audit-pack implementation-status coverage is now
+reportable through repo contracts, audit implementation matrix consistency is
+generated from the audit pack and evidence surfaces, LLM Wiki safe-path
+coverage is grouped by source bucket/category in Stage 90 data, tech-stack
+version source provenance is generated from the registry and listed Compose
+declarations, provider hook parity is generated with Gemini behavioral
 reminders, agent-output eval fixtures have a local advisory runner, and
 security automation readiness is generated from tracked workflow/script
 surfaces.

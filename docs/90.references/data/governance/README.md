@@ -40,6 +40,7 @@ validation 작업을 보조합니다. 실행 절차나 policy 변경은 canonica
 - Advisory validation and recommendation tool references
 - Agent-output eval fixture and local advisory runner references for recurring task surfaces
 - Generated provider hook parity and behavioral reminder references
+- Generated audit implementation matrix references for Stage 90 audit maintenance
 - Governance inventory context used by audit reports
 
 ### Out of Scope
@@ -55,6 +56,7 @@ validation 작업을 보조합니다. 실행 절차나 policy 변경은 canonica
 governance/
 ├── README.md                       # This file
 ├── agent-output-eval-fixtures.md   # Agent-output eval fixture catalog
+├── audit-implementation-matrix.md  # Generated audit implementation matrix snapshot
 ├── gap-to-stage-routing.md         # Gap-to-stage routing advisory reference
 └── provider-hook-parity-matrix.md  # Generated provider hook parity matrix
 ```
@@ -62,6 +64,7 @@ governance/
 ## Current References
 
 - [agent-output-eval-fixtures.md](./agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for documentation, provider, and infrastructure tasks
+- [audit-implementation-matrix.md](./audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
 - [gap-to-stage-routing.md](./gap-to-stage-routing.md) - Stage 00 gap-to-stage routing table and recommender contract
 - [provider-hook-parity-matrix.md](./provider-hook-parity-matrix.md) - generated Claude/Codex/Gemini hook parity matrix and Gemini behavioral reminder checklist
 

@@ -79,6 +79,7 @@ This README is for:
 - [Automation candidates](./automation-candidates.md)
 - [SDLC quality formatting implementation](./sdlc-quality-formatting-implementation.md)
 - [Security framework maturity coverage](./security-framework-maturity.md)
+- [Generated audit implementation matrix](../../data/governance/audit-implementation-matrix.md)
 
 ## How to Work in This Area
 

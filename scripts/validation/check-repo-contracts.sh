@@ -3696,6 +3696,16 @@ elif ! grep -q 'coverage_check=pass' /tmp/check-repo-contracts-audit-pack-covera
 fi
 rm -f /tmp/check-repo-contracts-audit-pack-coverage.txt
 
+section "Audit implementation matrix snapshot"
+if ! bash scripts/validation/generate-audit-implementation-matrix.sh --check >/tmp/check-repo-contracts-audit-implementation-matrix.txt 2>&1; then
+  fail "generated audit implementation matrix is stale or generator check failed"
+  cat /tmp/check-repo-contracts-audit-implementation-matrix.txt >&2
+elif ! grep -q 'generated audit implementation matrix is fresh' /tmp/check-repo-contracts-audit-implementation-matrix.txt; then
+  fail "audit implementation matrix generator did not print a pass marker"
+  cat /tmp/check-repo-contracts-audit-implementation-matrix.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-audit-implementation-matrix.txt
+
 section "Provider hook parity matrix"
 if ! bash scripts/validation/report-provider-hook-parity.sh --check >/tmp/check-repo-contracts-provider-hook-parity.txt 2>&1; then
   fail "generated provider hook parity matrix is stale or generator check failed"
@@ -3909,6 +3919,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/check-doc-traceability.sh"),
     pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
+    pathlib.Path("scripts/validation/generate-audit-implementation-matrix.sh"),
     pathlib.Path("scripts/validation/generate-security-automation-readiness.sh"),
     pathlib.Path("scripts/validation/recommend-gap-routing.sh"),
     pathlib.Path("scripts/validation/recommend-qa-gates.sh"),

@@ -94,6 +94,7 @@ docs/04.execution/plans/
 ├── 2026-07-06-provider-hook-parity-matrix.md # Completed provider hook parity matrix plan
 ├── 2026-07-06-agent-output-eval-runner.md # Completed local advisory agent-output eval runner plan
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot plan
+├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot plan
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration plan
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract plan
 └── README.md                               # This file
@@ -189,6 +190,7 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **QA Gate Recommendation CI Summary Plan**: [2026-07-05-qa-gate-recommendation-ci-summary.md](./2026-07-05-qa-gate-recommendation-ci-summary.md)
 - **Audit Pack Coverage Report Plan**: [2026-07-05-audit-pack-coverage-report.md](./2026-07-05-audit-pack-coverage-report.md)
 - **LLM Wiki Stage Category Coverage Plan**: [2026-07-06-llm-wiki-stage-category-coverage.md](./2026-07-06-llm-wiki-stage-category-coverage.md)
+- **Audit Implementation Matrix Snapshot Plan**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **Workspace Support Surface Contract Plan**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
 - **Template System Numbered SDLC Paths Plan**: [2026-07-05-template-system-numbered-sdlc-paths.md](./2026-07-05-template-system-numbered-sdlc-paths.md)
 - **Workspace Document Contract Audit Pack Plan**: [2026-07-03-workspace-document-contract-audit-pack.md](./2026-07-03-workspace-document-contract-audit-pack.md)

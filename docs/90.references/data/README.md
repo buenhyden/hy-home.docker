@@ -34,6 +34,7 @@ status: active
 - Docker image/version interpretation references
 - Generated Docker Compose profile/service coverage inventory
 - Stable governance routing reference data
+- Stable audit implementation matrix reference data
 - Stable agent-output eval fixture reference data
 - Stable glossary and stage-boundary vocabulary
 - HADS profile and validation boundary
@@ -74,6 +75,7 @@ data/
 - [glossary/stable-reference-terms.md](./glossary/stable-reference-terms.md) - shared terms for reference-stage boundaries
 - [governance/README.md](./governance/README.md) - governance routing reference data category
 - [governance/agent-output-eval-fixtures.md](./governance/agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for docs, provider, and infra tasks
+- [governance/audit-implementation-matrix.md](./governance/audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
 - [governance/gap-to-stage-routing.md](./governance/gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
 - [governance/provider-hook-parity-matrix.md](./governance/provider-hook-parity-matrix.md) - generated provider hook parity matrix and Gemini behavioral reminder checklist
 - [hads/README.md](./hads/README.md) - HADS profile category

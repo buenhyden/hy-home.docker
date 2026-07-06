@@ -138,9 +138,10 @@ Not applicable. This change exposes no external API.
 
 ## Edge Cases & Error Handling
 
-- **Self-scan false positives**: The generator excludes itself from scanned
-  workflow/script surfaces so its explanatory text cannot satisfy readiness
-  controls.
+- **Self-scan false positives**: The generator excludes itself and generated
+  advisory-reference scripts with explanatory security-tooling text from
+  scanned workflow/script surfaces so boundary descriptions cannot satisfy
+  readiness controls.
 - **Remote-only controls**: Branch protection remains partial unless live
   remote GitHub state is re-verified in a dedicated task.
 - **Security gaps**: Missing vulnerability/SBOM/attestation/Scorecard commands

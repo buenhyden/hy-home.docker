@@ -103,6 +103,7 @@ SCRIPT_PATHS = tuple(
         if path.startswith("scripts/")
         and path.endswith(".sh")
         and path != "scripts/validation/generate-security-automation-readiness.sh"
+        and path != "scripts/validation/generate-audit-implementation-matrix.sh"
     )
 )
 SECURITY_CODE_SURFACES = WORKFLOW_PATHS + SCRIPT_PATHS + (".pre-commit-config.yaml",)
