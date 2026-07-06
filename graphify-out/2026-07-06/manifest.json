@@ -440,8 +440,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/check-doc-implementation-alignment.sh": {
-    "mtime": 1783326553.5274806,
-    "ast_hash": "24354f82ac64548f45fb79e112919a79",
+    "mtime": 1783326995.6218731,
+    "ast_hash": "52645e55770172dd444bace1ea7a78b6",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/check-doc-traceability.sh": {
@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1783326253.5212398,
-    "ast_hash": "730d79bfc7152d4b6280090b3d33ab39",
+    "mtime": 1783326913.4784095,
+    "ast_hash": "bf5500f96e52248fe635a4a6f08b72d5",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -3755,8 +3755,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/01-gateway/README.md": {
-    "mtime": 1783119927.8653147,
-    "ast_hash": "fe03999477eecd1166ff782c8c1a7ec6",
+    "mtime": 1783326831.0821157,
+    "ast_hash": "8e635607a2d05edd15a05bec3a30cc11",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/01-gateway/nginx/README.md": {
@@ -3875,8 +3875,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/04-data/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "2a788a983e59bff0d2d7bac621f2fb3f",
+    "mtime": 1783326831.4386911,
+    "ast_hash": "1830a99e448766e9156c534c6d5a5c83",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/04-data/analytics/README.md": {
@@ -4165,8 +4165,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/06-observability/README.md": {
-    "mtime": 1783218941.172129,
-    "ast_hash": "5a7d168985d2165d68d95d0ca0cdd556",
+    "mtime": 1783326831.252652,
+    "ast_hash": "9b19b1ca8bc4c02fcaedcf455b13f3f4",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/06-observability/alertmanager/README.md": {
