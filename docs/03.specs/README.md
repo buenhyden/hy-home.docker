@@ -87,6 +87,7 @@ docs/03.specs/
 ├── 116-agent-output-eval-runner/          # Active local advisory agent-output eval runner
 ├── 117-security-automation-readiness-snapshot/ # Active security automation readiness snapshot
 ├── 118-audit-implementation-matrix-snapshot/ # Active audit implementation matrix snapshot
+├── 119-sdlc-document-contract-corpus-normalization/ # Active SDLC document contract corpus normalization design
 └── README.md                            # This file
 ```
 
@@ -117,6 +118,7 @@ docs/03.specs/
 | Local advisory agent-output eval runner | `116-agent-output-eval-runner/spec.md` |
 | Security automation readiness snapshot | `117-security-automation-readiness-snapshot/spec.md` |
 | Audit implementation matrix snapshot | `118-audit-implementation-matrix-snapshot/spec.md` |
+| SDLC document contract corpus normalization | `119-sdlc-document-contract-corpus-normalization/spec.md` |
 | Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
 | Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
@@ -197,6 +199,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Agent Output Eval Runner Spec**: [116-agent-output-eval-runner/spec.md](./116-agent-output-eval-runner/spec.md)
 - **Security Automation Readiness Snapshot Spec**: [117-security-automation-readiness-snapshot/spec.md](./117-security-automation-readiness-snapshot/spec.md)
 - **Audit Implementation Matrix Snapshot Spec**: [118-audit-implementation-matrix-snapshot/spec.md](./118-audit-implementation-matrix-snapshot/spec.md)
+- **SDLC Document Contract Corpus Normalization Spec**: [119-sdlc-document-contract-corpus-normalization/spec.md](./119-sdlc-document-contract-corpus-normalization/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)
