@@ -123,6 +123,11 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 
 실제 수행 결과는 sibling [tasks README](../tasks/README.md)에 따라 task 문서로 기록합니다.
 
+Completed plan status must be supported by `## Completion Criteria`, explicit
+closure evidence, and sibling task evidence. Do not treat preserved execution
+recipe checkboxes inside older completed plans as current open work unless the
+task evidence or progress log records the same item as unresolved.
+
 ## Documentation Standards
 
 - 가능한 경우 승인된 템플릿에서 시작한다.

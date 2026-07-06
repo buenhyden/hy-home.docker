@@ -95,6 +95,8 @@ docs/04.execution/
 
 Plan/task 관계는 파일명 exact-stem 일치보다 parent/related-document link와 task evidence로 판단합니다. Historical plan-only 또는 task-only evidence는 즉시 실패로 만들지 않고, hard gate를 추가하려면 먼저 예외 목록과 migration/보존 기준을 별도 task evidence에 기록합니다.
 
+완료된 plan에서 원본 실행 레시피의 미체크 항목은 현재 open work로 간주하지 않습니다. 현재 완료 여부는 plan의 `## Completion Criteria`, 명시적인 closure evidence, sibling task evidence, progress log, 그리고 validator 결과로 판단합니다.
+
 ## How to Work in This Area
 
 1. 실행 전에는 [plan template](../99.templates/templates/sdlc/plan.template.md)을 사용해 `plans/YYYY-MM-DD-topic.md`를 작성합니다.
@@ -110,6 +112,7 @@ Plan/task 관계는 파일명 exact-stem 일치보다 parent/related-document li
 - Related Documents는 클릭 가능한 Markdown 링크로 작성합니다. 코드 span pseudo-link만 남기지 않습니다.
 - Plan은 작업 순서와 검증 기준을 설명하고, Task는 실행 evidence를 기록합니다.
 - Historical execution evidence는 문서 의미가 바뀌지 않는 범위에서만 정리합니다.
+- 완료된 plan을 정리할 때는 completion criteria와 closure evidence를 우선 갱신하고, 과거 실행 레시피 전체를 기계적으로 체크 처리하지 않습니다.
 
 ## AI Agent Guidance
 

@@ -11,6 +11,10 @@ status: draft
 >
 > - Every active plan must include explicit verification criteria.
 > - Plan explains execution order, risk control, and rollout strategy.
+> - When closing a copied plan, update `## Completion Criteria` and closure
+>   evidence; preserve detailed execution recipe checkboxes only when the task
+>   evidence records them as historical instructions rather than current open
+>   work.
 > - Write this document in English. Preserve code identifiers, command names,
 >   service names, environment variables, and quoted upstream terms exactly.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
