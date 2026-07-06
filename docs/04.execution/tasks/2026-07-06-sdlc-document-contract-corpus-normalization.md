@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md -->
@@ -14,6 +14,8 @@ document contract corpus normalization waves.
 The work begins after the Stage 03 design is approved and committed. This task
 file records wave status, protected-surface evidence, validation commands, and
 residual gaps as the implementation proceeds.
+
+All five waves are complete; this file now preserves final execution evidence.
 
 ## Inputs
 

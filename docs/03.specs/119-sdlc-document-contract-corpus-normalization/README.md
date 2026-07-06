@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/119-sdlc-document-contract-corpus-normalization/README.md -->
@@ -12,6 +12,8 @@ status: active
 
 이 폴더는 numbered PRD/Spec 경로 마이그레이션 이후에도 남아 있는 문서 계약
 drift를 정리하기 위한 Stage 03 설계 계약입니다.
+
+이 설계 wave는 Stage 04 plan/task evidence를 통해 완료되었습니다.
 
 범위는 stale PRD/Spec 규칙 문구, validator coverage, Stage 03/04 lifecycle
 decision, operations leaf naming polish, closure evidence입니다. 실제 파일 이동,

@@ -87,7 +87,7 @@ docs/03.specs/
 ├── 116-agent-output-eval-runner/          # Active local advisory agent-output eval runner
 ├── 117-security-automation-readiness-snapshot/ # Active security automation readiness snapshot
 ├── 118-audit-implementation-matrix-snapshot/ # Active audit implementation matrix snapshot
-├── 119-sdlc-document-contract-corpus-normalization/ # Active SDLC document contract corpus normalization design
+├── 119-sdlc-document-contract-corpus-normalization/ # Completed SDLC document contract corpus normalization design
 └── README.md                            # This file
 ```
 

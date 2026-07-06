@@ -154,7 +154,7 @@ docs/04.execution/tasks/
 ├── 2026-07-06-agent-output-eval-runner.md # Completed local advisory agent-output eval runner evidence
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
-├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Active SDLC document contract corpus normalization evidence
+├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration evidence
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract evidence
 └── README.md                                # This file

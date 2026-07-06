@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-06-sdlc-document-contract-corpus-normalization.md -->

@@ -95,7 +95,7 @@ docs/04.execution/plans/
 ├── 2026-07-06-agent-output-eval-runner.md # Completed local advisory agent-output eval runner plan
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot plan
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot plan
-├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Active SDLC document contract corpus normalization plan
+├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization plan
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration plan
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract plan
 └── README.md                               # This file

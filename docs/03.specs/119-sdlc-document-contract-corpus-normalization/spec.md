@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md -->
@@ -23,6 +23,9 @@ documentation system.
 The design is intentionally staged. This spec creates no target corpus edits by
 itself. Implementation must proceed through Stage 04 plan and task evidence,
 with logical commits per wave.
+
+Implementation for this wave is complete. Closure evidence is recorded in the
+paired Stage 04 plan and task files.
 
 ## Strategic Boundaries & Non-goals
 
