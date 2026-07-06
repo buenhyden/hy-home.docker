@@ -64,7 +64,7 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 
 ## How to Work in This Area
 
-1. Follow the [LGTM Stack Guide](../../docs/05.operations/guides/06-observability/01.lgtm-stack.md).
+1. Follow the [LGTM Stack Guide](../../docs/05.operations/guides/06-observability/lgtm-stack.md).
 2. Refer to the [Alloy Collector Guide](../../docs/05.operations/guides/06-observability/alloy.md) for data piping.
 3. Check the [Operations Policy](../../docs/05.operations/policies/06-observability/README.md) for retention.
 4. Consult the [Observability Runbook](../../docs/05.operations/runbooks/06-observability/README.md) for recovery.

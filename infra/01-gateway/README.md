@@ -60,7 +60,7 @@ The `01-gateway` tier is the unified entry point for traffic entering the `hy-ho
 
 1. Review the [Gateway operations guides](../../docs/05.operations/guides/01-gateway/README.md) to understand traffic flow.
 2. Ensure secrets are generated via `scripts/operations/gen-secrets.sh` before deployment.
-3. Follow the [Gateway setup guide](../../docs/05.operations/guides/01-gateway/01.setup.md) for initial deployment boundaries.
+3. Follow the [Gateway setup guide](../../docs/05.operations/guides/01-gateway/setup.md) for initial deployment boundaries.
 4. Verify static readiness with `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` and `bash scripts/hardening/check-all-hardening.sh 01-gateway`; use runtime health commands only against an approved running stack.
 
 ## Related Documents

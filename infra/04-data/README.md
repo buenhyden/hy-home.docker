@@ -65,8 +65,8 @@ docker exec valkey-node-0 valkey-cli -p 6379 cluster nodes
 
 ### Integration Guidelines
 
-1. Read the [Relational Databases Guide](../../docs/05.operations/guides/04-data/01.relational-dbs.md) for cluster setup.
-2. Follow the [Cache & KV Stores Guide](../../docs/05.operations/guides/04-data/02.cache-kv-dbs.md) for cache management.
+1. Read the [Relational Databases Guide](../../docs/05.operations/guides/04-data/relational/README.md) for cluster setup.
+2. Follow the [Cache & KV Stores Guide](../../docs/05.operations/guides/04-data/cache-and-kv/README.md) for cache management.
 
 ## 5. Maintenance & Safety
 
