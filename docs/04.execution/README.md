@@ -93,6 +93,8 @@ docs/04.execution/
 
 같은 문장을 plan과 task에 중복해서 복사하지 않습니다. Plan은 “무엇을 어떤 순서로 할지”를 유지하고, Task는 “무엇을 실제로 했고 무엇으로 검증했는지”를 유지합니다.
 
+Plan/task 관계는 파일명 exact-stem 일치보다 parent/related-document link와 task evidence로 판단합니다. Historical plan-only 또는 task-only evidence는 즉시 실패로 만들지 않고, hard gate를 추가하려면 먼저 예외 목록과 migration/보존 기준을 별도 task evidence에 기록합니다.
+
 ## How to Work in This Area
 
 1. 실행 전에는 [plan template](../99.templates/templates/sdlc/plan.template.md)을 사용해 `plans/YYYY-MM-DD-topic.md`를 작성합니다.

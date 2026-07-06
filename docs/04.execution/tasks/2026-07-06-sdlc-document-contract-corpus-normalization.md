@@ -39,7 +39,7 @@ residual gaps as the implementation proceeds.
 | --- | --- | --- | --- | --- | --- | --- |
 | Stage 00/01 guidance | User approved A: contract-first cleanup and then requested next execution | `docs/01.requirements/README.md`, `docs/00.agent-governance/scopes/meta.md` | Subagent and local discovery found stale date-based PRD guidance after numbered PRD migration | Wave 1 updated numbered PRD naming and metadata scope guidance; targeted stale-guidance scan and repo contracts passed. | Revert Wave 1 commit | Tracked guidance text only |
 | Validator and GitHub issue template | Same approval; validator changes are protected and require evidence | `scripts/validation/check-repo-contracts.sh`, `.github/ISSUE_TEMPLATE/bug_report.yml` | Existing validator passes but does not catch all stale active guidance surfaces | Wave 2 updated the issue-template Spec placeholder and expanded active stale-guidance scan surfaces; targeted scan returned no matches and repo contracts passed. | Revert Wave 2 commit | Tracked examples, no remote GitHub mutation |
-| Stage 03/04 lifecycle policy | Same approval; policy remains advisory until classified | Stage 90/task evidence and affected README indexes if needed | Sibling README and plan/task pairing questions are not hard-gated | To be recorded in Wave 3 | Revert Wave 3 commit | Tracked path metadata only |
+| Stage 03/04 lifecycle policy | Same approval; policy remains advisory until classified | Stage 90/task evidence and affected README indexes if needed | Sibling README and plan/task pairing questions are not hard-gated | Wave 3 classified sibling README gaps and plan/task filename asymmetry as evidence-preserve surfaces; Stage 03/04 README guidance now states no premature hard gate. | Revert Wave 3 commit | Tracked path metadata only |
 | Operations leaf naming | Same approval; destructive path changes require exact candidates | exact `docs/05.operations/**` candidates | Numeric-dot operations leaf names remain in a small candidate set | To be recorded in Wave 4 | Revert Wave 4 commit or `git mv` back | Tracked document paths and links only |
 
 ## Task Table
@@ -48,7 +48,7 @@ residual gaps as the implementation proceeds.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-SDCN-001 | Clean stale numbered PRD/Spec guidance text. | doc | `Initial Finding Seeds` | `PLN-SDCN-001` | Targeted stale-guidance scan; repo contracts | Documentation Specialist | Done |
 | T-SDCN-002 | Extend validator coverage for stale active PRD/Spec guidance. | validation | `Validator Interfaces` | `PLN-SDCN-002` | Syntax, targeted stale-guidance fixtures, full repo contracts | Validator Maintainer | Done |
-| T-SDCN-003 | Classify Stage 03 sibling README and Stage 04 plan/task lifecycle policy. | doc | `Traceability Interfaces` | `PLN-SDCN-003` | Classification evidence; no premature hard gate | Documentation Specialist | Todo |
+| T-SDCN-003 | Classify Stage 03 sibling README and Stage 04 plan/task lifecycle policy. | doc | `Traceability Interfaces` | `PLN-SDCN-003` | Classification evidence; no premature hard gate | Documentation Specialist | Done |
 | T-SDCN-004 | Review and apply approved operations leaf naming polish. | ops | `Edge Cases & Error Handling` | `PLN-SDCN-004` | Link sync, traceability, implementation alignment | Operations Reviewer | Todo |
 | T-SDCN-005 | Close progress, generated indexes, and residual gaps. | validation | `Success Criteria & Verification Plan` | `PLN-SDCN-005` | Final verification summary | QA Engineer | Todo |
 
@@ -64,7 +64,7 @@ residual gaps as the implementation proceeds.
 
 ### Wave 3: Lifecycle Classification
 
-- [ ] T-SDCN-003 Classify Stage 03 sibling README and Stage 04 plan/task lifecycle policy.
+- [x] T-SDCN-003 Classify Stage 03 sibling README and Stage 04 plan/task lifecycle policy.
 
 ### Wave 4: Operations Naming Polish
 
@@ -73,6 +73,14 @@ residual gaps as the implementation proceeds.
 ### Wave 5: Closure
 
 - [ ] T-SDCN-005 Close progress, generated indexes, and residual gaps.
+
+## Lifecycle Classification Evidence
+
+| Surface | Current Evidence | Classification | Decision |
+| --- | --- | --- | --- |
+| Stage 03 sibling README policy | `42` numbered spec folders exist; `30` have sibling README files; `12` historical/generated snapshot folders currently have `spec.md` without sibling README files. | `evidence-preserve` | Keep sibling README optional for historical folders with valid `spec.md`; recommend README for new/current workstreams that need routing context. Do not add a hard validator until Stage 00/99 records an exception model. |
+| Stage 04 plan/task filename pairing | `84` plan docs and `110` task docs exist; exact filename overlap is `60`, with `24` plan-only filenames and `50` task-only filenames by exact-name comparison. | `evidence-preserve` | Keep current link-based traceability as the contract. Do not add exact-stem pairing as a hard gate until historical plan-only/task-only evidence is explicitly migrated, archived, or excepted. |
+| Stage 04 README guidance | README already separates plan and task responsibility but did not state filename-pairing limits. | `active-canonical` for routing guidance | Add concise routing guidance that plan/task relation is proven by parent/related links and task evidence, not exact filename equality. |
 
 ## Verification Summary
 
@@ -90,6 +98,9 @@ residual gaps as the implementation proceeds.
 | `.github` Spec placeholder update | PASS | Bug report issue-template placeholder now uses a concrete numbered Spec example path. |
 | Extended numbered SDLC guidance scan | PASS | Repo contracts now scan Stage 99, Stage 00 rules/scopes, Stage 01/03 README files, and GitHub issue templates for stale active PRD/Spec target guidance. |
 | Targeted Wave 2 stale-guidance scan | PASS | No unapproved legacy PRD date-prefix or unnumbered Spec placeholder guidance remains in the expanded active scan set. |
+| Stage 03 sibling README classification | PASS | `42` numbered spec folders checked; `30` have sibling README files and `12` historical/generated snapshot folders remain valid with `spec.md` only. |
+| Stage 04 plan/task filename classification | PASS | `84` plan docs, `110` task docs, `60` exact filename overlaps, `24` plan-only filenames, and `50` task-only filenames by exact-name comparison; link-based traceability remains the active contract. |
+| No premature lifecycle hard gate | PASS | Wave 3 updated routing guidance and task evidence only; no validator hard gate was added for Stage 03 README or Stage 04 exact-stem pairing. |
 
 ## Related Documents
 

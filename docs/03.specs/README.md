@@ -133,7 +133,7 @@ docs/03.specs/
 
 1. 새 spec을 만들기 전에 상위 PRD, ARD, ADR이 있는지 확인합니다.
 2. 새 `spec.md`는 [spec template](../99.templates/templates/sdlc/spec.template.md)을 복사해 작성합니다.
-3. README는 [README template](../99.templates/templates/common/readme.template.md)을 기준으로 작성하고, 링크는 대상 README 위치 기준으로 계산합니다.
+3. README는 [README template](../99.templates/templates/common/readme.template.md)을 기준으로 작성하고, 링크는 대상 README 위치 기준으로 계산합니다. Sibling README가 없는 historical spec folder는 `spec.md`가 유효하면 즉시 실패로 보지 않고, 새/current workstream에서 routing context가 필요할 때 README를 둡니다.
 4. Agent 전용 설계가 필요하면 [agent design template](../99.templates/templates/spec-contracts/agent-design.template.md)을 사용해 해당 feature 디렉터리의 `agent-design.md`에 둡니다.
 5. API, schema, proto, tests, data model 계약은 같은 feature 디렉터리 아래 child document로 둡니다.
 6. `## Related Documents`는 실제 Markdown 링크로 작성합니다. 문서 경로를 코드 span 안에만 남기지 않습니다.
