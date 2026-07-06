@@ -142,7 +142,6 @@ SERVICE_ALIAS = {
 }
 NON_SERVICE_STEMS = {
     "0012-standardize-infra-net",
-    "02.n8n-automation",
     "airflow-dag-basics",
     "backup-policy",
     "common-optimizations-template-exceptions",
