@@ -59,9 +59,9 @@ management procedures.
 
 | Status | Count |
 | --- | ---: |
-| Implemented | 6 |
+| Implemented | 7 |
 | Partially Implemented | 1 |
-| Gap | 4 |
+| Gap | 3 |
 
 ## Readiness Matrix
 
@@ -73,8 +73,8 @@ management procedures.
 | SEC-AUTO-004 | Dependency update automation | Implemented | [.github/dependabot.yml](../../../../.github/dependabot.yml) | Dependabot coverage exists; vulnerability severity gating remains separate. |
 | SEC-AUTO-005 | Infrastructure hardening baseline | Implemented | [scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) | Hardening script is wired into CI quality checks. |
 | SEC-AUTO-006 | Tracked image/version provenance snapshot | Implemented | [infra/tech-stack.versions.json](../../../../infra/tech-stack.versions.json)<br>[infra/image-tag-policy.exceptions.json](../../../../infra/image-tag-policy.exceptions.json)<br>[scripts/operations/generate-tech-stack-version-provenance.sh](../../../../scripts/operations/generate-tech-stack-version-provenance.sh)<br>[docs/90.references/data/docker/tech-stack-version-provenance.md](../../../../docs/90.references/data/docker/tech-stack-version-provenance.md) | Generated provenance describes tracked registry/Compose evidence, not SBOMs, signatures, or SLSA attestations. |
+| SEC-AUTO-008 | OSV/SCA vulnerability gate | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | A vulnerability gate command is present in tracked workflow/script surfaces. |
 | SEC-AUTO-007 | Branch protection and review evidence | Partially Implemented | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/rulesets/main-protection.md](../../../../.github/rulesets/main-protection.md) | Local and last-recorded branch-protection evidence exist; live remote enforcement must be re-verified before current claims. |
-| SEC-AUTO-008 | OSV/SCA vulnerability gate | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked OSV/SCA vulnerability gate command was found in workflow/script surfaces. Scanned tracked workflow/script surfaces: 6 workflows, 28 scripts, and `.pre-commit-config.yaml`. |
 | SEC-AUTO-009 | SBOM generation | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked SBOM generator command was found in workflow/script surfaces. Scanned tracked workflow/script surfaces: 6 workflows, 28 scripts, and `.pre-commit-config.yaml`. |
 | SEC-AUTO-010 | Artifact signing or provenance attestation | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked signing, SLSA provenance, or attestation workflow command was found. Scanned tracked workflow/script surfaces: 6 workflows, 28 scripts, and `.pre-commit-config.yaml`. |
 | SEC-AUTO-011 | OpenSSF Scorecard automation | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked OpenSSF Scorecard automation command was found. Scanned tracked workflow/script surfaces: 6 workflows, 28 scripts, and `.pre-commit-config.yaml`. |
@@ -87,15 +87,12 @@ management procedures.
 - Branch protection and review evidence is partial because the repository
   stores CODEOWNERS and last-recorded ruleset evidence, but this generator
   does not query live remote GitHub settings.
-- Vulnerability gating, SBOM generation, artifact signing/provenance
-  attestation, and OpenSSF Scorecard automation are still gaps in tracked
-  workflow/script surfaces.
+- SBOM generation, artifact signing/provenance attestation, and OpenSSF Scorecard automation are still gaps in tracked workflow/script surfaces.
 
 ## Gap / Follow-up
 
 | Gap ID | Gap | Suggested Future Stage |
 | --- | --- | --- |
-| SEC-AUTO-008 | Add OSV/SCA vulnerability gate or advisory report with severity thresholds and exception handling. | Stage 03 security spec + Stage 04 plan |
 | SEC-AUTO-009 | Add SBOM generation and storage rules for build or release artifacts. | Stage 03 security spec + Stage 04 plan |
 | SEC-AUTO-010 | Add artifact signing, SLSA provenance, or attestation design for artifact-producing workflows. | Stage 03 security spec + Stage 04 plan |
 | SEC-AUTO-011 | Add OpenSSF Scorecard advisory reporting if maintainers want an external security-health signal. | Stage 03 security spec + Stage 04 plan |

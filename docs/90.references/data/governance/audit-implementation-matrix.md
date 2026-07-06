@@ -102,8 +102,8 @@ Compose files, and registry references.
 | Normalized Status | Count |
 | --- | ---: |
 | Implemented | 80 |
-| Partially Implemented | 40 |
-| Gap / Not Implemented | 9 |
+| Partially Implemented | 41 |
+| Gap / Not Implemented | 8 |
 | Unknown / Needs Revalidation | 0 |
 | Other | 0 |
 
@@ -113,14 +113,14 @@ Compose files, and registry references.
 | --- | ---: |
 | Fixture CI Gate Implemented / Scoring Advisory | 2 |
 | Fixture Pack Implemented / Runner Partial | 2 |
-| Gap | 3 |
+| Gap | 2 |
 | Implemented | 80 |
 | Implemented / Tooling Partial | 1 |
 | Mapped / Readiness Snapshot Implemented / Partially Implemented | 1 |
 | Not Implemented / Behavioral | 3 |
 | Not Implemented / Needs Revalidation | 2 |
 | Not Implemented / Out of Scope | 1 |
-| Partially Implemented | 34 |
+| Partially Implemented | 35 |
 
 ## Automation Candidate Closure Matrix
 
@@ -137,7 +137,7 @@ Compose files, and registry references.
 | AEA-AUTO-009 | Tech-stack version drift severity and source provenance summary | Closed with evidence |
 | AEA-AUTO-010 | Provider hook parity matrix and Gemini behavioral reminder checklist | Closed with evidence |
 | AEA-AUTO-011 | Local advisory agent-output eval runner and fixture freshness CI gate | Closed with residual gap |
-| AEA-AUTO-012 | Security automation readiness snapshot | Closed with residual gap |
+| AEA-AUTO-012 | Security automation readiness snapshot and scoped dependency vulnerability gate | Closed with residual gap |
 | AEA-AUTO-013 | Audit implementation matrix snapshot | Closed with residual gap |
 
 ## Generated Evidence Surface Matrix
@@ -156,8 +156,7 @@ Compose files, and registry references.
 
 | Signal | Canonical Routing |
 | --- | --- |
-| Agent-output eval CI gate adoption remains future work. | Stage 03 security/QA/automation spec plus Stage 04 plan/task before implementation |
-| OSV/SCA vulnerability gate automation remains future work. | Stage 03 security/QA/automation spec plus Stage 04 plan/task before implementation |
+| Broader ecosystem/container vulnerability scanning remains future work. | Stage 03 security/QA/automation spec plus Stage 04 plan/task before implementation |
 | SBOM generation remains future work. | Stage 03 security/QA/automation spec plus Stage 04 plan/task before implementation |
 | Signing, provenance, and attestation automation remain future work. | Stage 03 security/QA/automation spec plus Stage 04 plan/task before implementation |
 | OpenSSF Scorecard automation remains future work. | Stage 03 security/QA/automation spec plus Stage 04 plan/task before implementation |
@@ -167,7 +166,7 @@ Compose files, and registry references.
 - Regenerate this file after changing the agentic engineering implementation audit pack, generated audit/data references, or related automation-candidate evidence.
 - Treat this snapshot as consistency evidence, not as the canonical audit conclusion.
 - Re-check the underlying audit reports before using this generated summary for prioritization.
-- Keep vulnerability gates, SBOM, signing, attestation, Scorecard, remote jobs, and CI gate adoption in separate approved Stage 03/04 work.
+- Keep broader vulnerability scanning, SBOM, signing, attestation, Scorecard, and remote jobs in separate approved Stage 03/04 work.
 
 ## Sources
 

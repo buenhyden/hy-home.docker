@@ -87,7 +87,7 @@ in `.github/rulesets/main-protection.md`.
 | --- | --- | --- | --- |
 | Prepare the Organization (PO) | Implemented | [security scope](../../../00.agent-governance/scopes/security.md), [quality standards](../../../00.agent-governance/rules/quality-standards.md), [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md), [GitHub governance](../../../00.agent-governance/rules/github-governance.md), [CODEOWNERS](../../../../.github/CODEOWNERS) | Governance exists locally, but formal external SSDF adoption and control-owner attestation are not claimed. |
 | Protect the Software (PS) | Partially Implemented | [Security Policy](../../../../.github/SECURITY.md), `.gitleaks.toml`, `.pre-commit-config.yaml`, [template security baseline](../../../../scripts/validation/check-template-security-baseline.sh), [hardening script](../../../../scripts/hardening/check-all-hardening.sh), [security scope](../../../00.agent-governance/scopes/security.md) | Secret scanning and secret-boundary rules exist; SBOM generation, artifact signing, provenance distribution, and release-asset protection are not implemented as framework controls. |
-| Produce Well-Secured Software (PW) | Partially Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [repo contracts](../../../../scripts/validation/check-repo-contracts.sh), [local QA runner](../../../../scripts/validation/run-local-qa-gates.sh), `.pre-commit-config.yaml`, [Dependabot](../../../../.github/dependabot.yml) | CI, lint, hardening, workflow-security, and dependency-update surfaces exist; systematic SAST/SCA vulnerability gating, threat-model evidence per change, and security regression suites are not complete across all surfaces. |
+| Produce Well-Secured Software (PW) | Partially Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [repo contracts](../../../../scripts/validation/check-repo-contracts.sh), [local QA runner](../../../../scripts/validation/run-local-qa-gates.sh), `.pre-commit-config.yaml`, [Dependabot](../../../../.github/dependabot.yml) | CI, lint, hardening, workflow-security, dependency-update, and scoped Storybook Next.js npm vulnerability audit surfaces exist; systematic SAST, container/image vulnerability scanning, threat-model evidence per change, and security regression suites are not complete across all surfaces. |
 | Respond to Vulnerabilities (RV) | Partially Implemented | [Security Policy](../../../../.github/SECURITY.md), [incident operations](../../../05.operations/incidents/README.md), [security scope](../../../00.agent-governance/scopes/security.md) | Disclosure intake and incident structure exist; no current evidence of vulnerability triage automation, advisory workflow drill evidence, SLA dashboards, or post-remediation vulnerability metrics. |
 
 ## SLSA Coverage Matrix
@@ -98,7 +98,7 @@ in `.github/rulesets/main-protection.md`.
 | Workflow token and action integrity | Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [repo contracts](../../../../scripts/validation/check-repo-contracts.sh), [GitHub governance](../../../00.agent-governance/rules/github-governance.md) | Workflows use explicit permissions and SHA-pinned actions; continue checking any new workflow action references through repo contracts and workflow review. |
 | Build track and artifact production | Gap | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [quality audit](./sdlc-quality-formatting-implementation.md) | CI validates docs, Compose, hardening, frontend build, coverage, and workflow security, but does not publish SLSA build provenance or declare SLSA build-level compliance. |
 | Provenance, attestations, and verification | Gap | [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | No tracked provenance, attestation, signing, verification summary, or consumer verification workflow was found. |
-| Dependency and image update hygiene | Partially Implemented | [Dependabot](../../../../.github/dependabot.yml), [tech-stack registry](../../../../infra/tech-stack.versions.json), [tech-stack sync script](../../../../scripts/operations/sync-tech-stack-versions.sh), [image tag policy](../../../../infra/image-tag-policy.exceptions.json) | Dependency update and version-drift controls exist; SBOM, OSV/SCA vulnerability gating, and signed dependency provenance are not implemented. |
+| Dependency and image update hygiene | Partially Implemented | [Dependabot](../../../../.github/dependabot.yml), [tech-stack registry](../../../../infra/tech-stack.versions.json), [tech-stack sync script](../../../../scripts/operations/sync-tech-stack-versions.sh), [image tag policy](../../../../infra/image-tag-policy.exceptions.json), `.github/workflows/ci-quality.yml` | Dependency update, version-drift, and scoped Storybook Next.js npm vulnerability audit controls exist; SBOM, broad OSV/container vulnerability scanning, and signed dependency provenance are not implemented. |
 
 ## OpenSSF Scorecard Readiness Matrix
 
@@ -110,7 +110,7 @@ in `.github/rulesets/main-protection.md`.
 | Dependency Update Tool | Implemented | [Dependabot](../../../../.github/dependabot.yml) | Dependabot coverage exists for GitHub Actions, Docker, Docker Compose, and Storybook npm dependencies. |
 | CI Tests | Partially Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [local QA runner](../../../../scripts/validation/run-local-qa-gates.sh) | CI is broad for docs, infra, frontend, and workflow security, but not a universal runtime or vulnerability test suite. |
 | Code Review | Partially Implemented | [GitHub governance](../../../00.agent-governance/rules/github-governance.md), [main protection record](../../../../.github/rulesets/main-protection.md), [CODEOWNERS](../../../../.github/CODEOWNERS) | Local and last-recorded remote evidence exist; current remote enforcement must be rechecked before making live enforcement claims. |
-| Vulnerabilities | Gap | `.pre-commit-config.yaml`, [Security Policy](../../../../.github/SECURITY.md) | Secret scanning exists through gitleaks, but no current Scorecard/OSV/SCA vulnerability gate or vulnerability dashboard is implemented. |
+| Vulnerabilities | Partially Implemented | `.pre-commit-config.yaml`, [Security Policy](../../../../.github/SECURITY.md), `.github/workflows/ci-quality.yml` | Secret scanning exists through gitleaks and Storybook Next.js has a high-severity npm audit gate; Scorecard vulnerability reporting, OSV/container scanning, and vulnerability dashboards are not implemented. |
 
 ## Findings
 
@@ -123,12 +123,14 @@ in `.github/rulesets/main-protection.md`.
   certification, score, or external attestation.
 - The largest SLSA gaps are artifact provenance, build attestations, signing,
   and verification. These cannot be inferred from CI build success.
-- The largest SSDF gaps are formal vulnerability-management automation,
+- The largest SSDF gaps are broad vulnerability-management automation,
   repeatable threat-model evidence, and release/artifact supply-chain
-  assurance.
+  assurance; the scoped Storybook Next.js npm gate does not cover non-npm or
+  container/image risk.
 - The generated security automation readiness snapshot now makes the local
-  workflow/script readiness state explicit; it does not close actual
-  vulnerability-gate, SBOM, signing, attestation, or Scorecard gaps.
+  workflow/script readiness state explicit; the scoped npm vulnerability gate
+  closes the tracked `SEC-AUTO-008` absence signal, while SBOM, signing,
+  attestation, Scorecard, and broad ecosystem/container scanning remain gaps.
 - Remote GitHub protection should be described as last-recorded evidence unless
   re-verified in a dedicated GitHub governance pass.
 
@@ -136,7 +138,7 @@ in `.github/rulesets/main-protection.md`.
 
 | Gap ID | Gap | Suggested Future Stage |
 | --- | --- | --- |
-| SEC-MAT-001 | Add OSV/SCA vulnerability gate or advisory report for dependency and container-image risk. | Stage 03 security spec + Stage 04 plan |
+| SEC-MAT-001 | Broaden vulnerability automation beyond the scoped Storybook Next.js npm audit gate to cover OSV/SCA and container-image risk. | Stage 03 security spec + Stage 04 plan |
 | SEC-MAT-002 | Add SBOM generation and storage rules for build or release artifacts. | Stage 03 security spec + Stage 04 plan |
 | SEC-MAT-003 | Add SLSA provenance/attestation design for any artifact-producing workflow. | Stage 03 security spec + Stage 04 plan |
 | SEC-MAT-004 | Define change-scoped threat-model evidence requirements for protected surfaces. | Stage 00 governance update + Stage 04 task evidence |
@@ -146,10 +148,11 @@ in `.github/rulesets/main-protection.md`.
 
 This report closes the audit-matrix part of `AEA-AUTO-006`. The generated
 security readiness snapshot provides repo-local planning evidence for the
-remaining tooling gaps. Neither document implements security tooling. Future
-automation should start with an approved security spec that chooses whether the
-next investment is vulnerability gating, SBOM generation, SLSA provenance,
-Scorecard reporting, or threat-model evidence.
+remaining tooling gaps. The scoped npm vulnerability gate is now implemented,
+but neither document implements SBOM, signing, attestation, Scorecard, or broad
+scanner coverage. Future automation should start with an approved security spec
+that chooses whether the next investment is broader vulnerability scanning,
+SBOM generation, SLSA provenance, Scorecard reporting, or threat-model evidence.
 
 ## Source Rules
 

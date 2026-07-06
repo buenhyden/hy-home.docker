@@ -110,6 +110,23 @@ jobs:
       - name: Check agent-output eval fixture catalog
         run: bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
 
+  # ── Dependency Vulnerability Audit ─────────────────────────
+  dependency-vulnerability-audit:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - *checkout
+      - name: Set up Node.js for dependency audit
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: projects/storybook/nextjs/package-lock.json
+      - name: Audit Storybook Next.js dependencies
+        run: npm audit --audit-level=high --prefix projects/storybook/nextjs
+
   # ── Git Flow Contract ───────────────────────────────────────
   git-flow-contract:
     if: github.event_name == 'pull_request'

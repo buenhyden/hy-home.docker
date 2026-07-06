@@ -77,7 +77,7 @@ or enforcement depth differs from repository policy.
 | Docker Compose / infrastructure | Implemented | [infra README](../../../../infra/README.md), `docker-compose.yml`, `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json`, [tech-stack version provenance](../../data/docker/tech-stack-version-provenance.md) | Modular Compose topology, profiles, root-active inventory, service READMEs, version registry, generated provenance, validation, and hardening checks exist. |
 | CI/CD | Implemented | `.github/workflows/ci-quality.yml`, [GitHub governance](../../../00.agent-governance/rules/github-governance.md) | CI quality gates cover docs, repo contracts, Compose, hardening, template/security, pre-commit, frontend quality, coverage, and workflow security. |
 | QA, formatting, linting, syntax | Partially Implemented | `.github/workflows/ci-quality.yml`, [scripts README](../../../../scripts/README.md), [Codex provider notes](../../../00.agent-governance/providers/codex.md) | Strong docs, shell, Compose, frontend, pre-commit, and contract checks exist; universal language-specific formatting/linting coverage is not complete across every surface. |
-| Security | Partially Implemented | [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md), `.github/SECURITY.md`, `.github/workflows/ci-quality.yml`, [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md), [security automation readiness](../../data/security/security-automation-readiness.md) | Secret boundaries, workflow permissions, hardening, security reporting, approvals, and readiness mapping exist; vulnerability gates, SBOM generation, and attestation automation are not fully adopted. |
+| Security | Partially Implemented | [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md), `.github/SECURITY.md`, `.github/workflows/ci-quality.yml`, [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md), [security automation readiness](../../data/security/security-automation-readiness.md) | Secret boundaries, workflow permissions, hardening, security reporting, approvals, readiness mapping, and a scoped Storybook Next.js dependency vulnerability audit gate exist; SBOM generation, provenance/attestation automation, Scorecard, and broader ecosystem/container vulnerability scanning are not fully adopted. |
 
 ## Findings
 
@@ -98,13 +98,13 @@ or enforcement depth differs from repository policy.
 | Semantic parity checks across provider adapter content are limited. | Provider surfaces can match catalog shape while drifting in detailed behavior. | Stage 00 governance / validation follow-up |
 | Gemini native hook and subagent parity is not proven by official sources. | Gemini must remain behavioral/pointer parity, not first-class parity. | Provider research follow-up |
 | Agent-result eval harness now has fixtures, a local advisory runner, and a CI fixture freshness gate, but no required semantic scoring gate. | Loop engineering maturity still depends on manual review and task evidence for many agent outputs. | [Agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) |
-| Security framework adoption is reference-backed and readiness-mapped, but not fully automated. | SSDF/SLSA maturity cannot be claimed as fully implemented because SBOM, provenance, attestation, and vulnerability-gate automation is still incomplete. | [Security framework maturity coverage](./security-framework-maturity.md); [security automation readiness](../../data/security/security-automation-readiness.md) |
+| Security framework adoption is reference-backed and readiness-mapped, but not fully automated. | SSDF/SLSA maturity cannot be claimed as fully implemented because SBOM, provenance, attestation, Scorecard, and broad ecosystem/container vulnerability automation are still incomplete. | [Security framework maturity coverage](./security-framework-maturity.md); [security automation readiness](../../data/security/security-automation-readiness.md) |
 
 ## Automation Impact
 
 The highest-value remaining automation candidates are required semantic
-agent-output eval scoring, vulnerability gating, SBOM, and
-provenance/attestation automation. Changed-path QA recommendations are now
+agent-output eval scoring, SBOM, provenance/attestation automation, Scorecard,
+and broader ecosystem/container vulnerability scanning. Changed-path QA recommendations are now
 surfaced in CI Step Summary, audit-pack implementation-status coverage is now
 reportable through repo contracts, audit implementation matrix consistency is
 generated from the audit pack and evidence surfaces, LLM Wiki safe-path
@@ -112,7 +112,8 @@ coverage is grouped by source bucket/category in Stage 90 data, tech-stack
 version source provenance is generated from the registry and listed Compose
 declarations, provider hook parity is generated with Gemini behavioral
 reminders, agent-output eval fixtures have a local advisory runner and CI
-fixture freshness gate, and security automation readiness is generated from
+fixture freshness gate, the Storybook Next.js dependency surface has a high
+severity npm audit gate, and security automation readiness is generated from
 tracked workflow/script surfaces.
 
 ## Source Rules

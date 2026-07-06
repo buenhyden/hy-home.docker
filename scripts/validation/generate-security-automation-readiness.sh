@@ -270,6 +270,60 @@ ready_count = status_counts["Implemented"]
 partial_count = status_counts["Partially Implemented"]
 gap_count = status_counts["Gap"]
 
+residual_security_gaps: list[str] = []
+if not has_vulnerability_gate:
+    residual_security_gaps.append("vulnerability gating")
+if not has_sbom_generation:
+    residual_security_gaps.append("SBOM generation")
+if not has_attestation:
+    residual_security_gaps.append("artifact signing/provenance attestation")
+if not has_scorecard:
+    residual_security_gaps.append("OpenSSF Scorecard automation")
+
+follow_up_rows: list[tuple[str, str, str]] = []
+if not has_vulnerability_gate:
+    follow_up_rows.append(
+        (
+            "SEC-AUTO-008",
+            "Add OSV/SCA vulnerability gate or advisory report with severity thresholds and exception handling.",
+            "Stage 03 security spec + Stage 04 plan",
+        )
+    )
+if not has_sbom_generation:
+    follow_up_rows.append(
+        (
+            "SEC-AUTO-009",
+            "Add SBOM generation and storage rules for build or release artifacts.",
+            "Stage 03 security spec + Stage 04 plan",
+        )
+    )
+if not has_attestation:
+    follow_up_rows.append(
+        (
+            "SEC-AUTO-010",
+            "Add artifact signing, SLSA provenance, or attestation design for artifact-producing workflows.",
+            "Stage 03 security spec + Stage 04 plan",
+        )
+    )
+if not has_scorecard:
+    follow_up_rows.append(
+        (
+            "SEC-AUTO-011",
+            "Add OpenSSF Scorecard advisory reporting if maintainers want an external security-health signal.",
+            "Stage 03 security spec + Stage 04 plan",
+        )
+    )
+
+if residual_security_gaps:
+    if len(residual_security_gaps) == 1:
+        residual_sentence = residual_security_gaps[0]
+    else:
+        residual_sentence = ", ".join(residual_security_gaps[:-1])
+        residual_sentence = f"{residual_sentence}, and {residual_security_gaps[-1]}"
+    residual_finding = f"- {residual_sentence} are still gaps in tracked workflow/script surfaces."
+else:
+    residual_finding = "- No tracked security automation gap remains in this readiness snapshot."
+
 lines: list[str] = [
     "---",
     "status: active",
@@ -368,18 +422,23 @@ lines.extend(
         "- Branch protection and review evidence is partial because the repository",
         "  stores CODEOWNERS and last-recorded ruleset evidence, but this generator",
         "  does not query live remote GitHub settings.",
-        "- Vulnerability gating, SBOM generation, artifact signing/provenance",
-        "  attestation, and OpenSSF Scorecard automation are still gaps in tracked",
-        "  workflow/script surfaces.",
+        residual_finding,
         "",
         "## Gap / Follow-up",
         "",
         "| Gap ID | Gap | Suggested Future Stage |",
         "| --- | --- | --- |",
-        "| SEC-AUTO-008 | Add OSV/SCA vulnerability gate or advisory report with severity thresholds and exception handling. | Stage 03 security spec + Stage 04 plan |",
-        "| SEC-AUTO-009 | Add SBOM generation and storage rules for build or release artifacts. | Stage 03 security spec + Stage 04 plan |",
-        "| SEC-AUTO-010 | Add artifact signing, SLSA provenance, or attestation design for artifact-producing workflows. | Stage 03 security spec + Stage 04 plan |",
-        "| SEC-AUTO-011 | Add OpenSSF Scorecard advisory reporting if maintainers want an external security-health signal. | Stage 03 security spec + Stage 04 plan |",
+    ]
+)
+
+if follow_up_rows:
+    for gap_id, gap, stage in follow_up_rows:
+        lines.append(f"| {gap_id} | {gap} | {stage} |")
+else:
+    lines.append("| N/A | No tracked security automation gap remains in this snapshot. | N/A |")
+
+lines.extend(
+    [
         "",
         "## Source Rules",
         "",

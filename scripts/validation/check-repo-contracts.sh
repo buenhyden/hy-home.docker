@@ -896,6 +896,7 @@ required_jobs = {
     "docs-implementation-alignment",
     "repo-contracts",
     "agent-output-eval-fixture-gate",
+    "dependency-vulnerability-audit",
     "git-flow-contract",
     "compose-validation",
     "compose-all-profiles-validation",

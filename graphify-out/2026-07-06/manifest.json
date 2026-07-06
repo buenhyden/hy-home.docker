@@ -455,8 +455,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/check-repo-contracts.sh": {
-    "mtime": 1783310642.468699,
-    "ast_hash": "5edb93bd45747c9c7ae8b53e95cea10c",
+    "mtime": 1783328030.1589155,
+    "ast_hash": "e9408a5ccfc39eac1a0e9ff6ea4de9d2",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/check-storybook-contract.sh": {
@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1783327101.297914,
-    "ast_hash": "d900c5cc3852c8a6dcde85356e4efe28",
+    "mtime": 1783327316.2376633,
+    "ast_hash": "e74b060c8eaa1bb95b49a482bd404b11",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -845,8 +845,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/rules/github-governance.md": {
-    "mtime": 1783220707.161066,
-    "ast_hash": "504e08d8358babbffd5a29463492d36d",
+    "mtime": 1783328030.4554965,
+    "ast_hash": "6a1fd1bd619caab449f6d46f053804ae",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/rules/hooks/hookify.block-absolute-file-link.md": {
@@ -1315,8 +1315,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/03.specs/README.md": {
-    "mtime": 1783325650.4941523,
-    "ast_hash": "1bb76f467be180774d804d4651c9a476",
+    "mtime": 1783327859.3481677,
+    "ast_hash": "e8aa9f31734749331ce0ae287aea9b24",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/README.md": {
@@ -1645,8 +1645,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/plans/README.md": {
-    "mtime": 1783325213.947682,
-    "ast_hash": "aeb1f426e29cb20b8e9a9feb4aaaf743",
+    "mtime": 1783327859.498562,
+    "ast_hash": "2bd9c0422846e2e8b20266c2485109ee",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md": {
@@ -2095,8 +2095,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/README.md": {
-    "mtime": 1783325221.2221248,
-    "ast_hash": "6a7254751b8cdee723297035aba0576f",
+    "mtime": 1783327859.6451,
+    "ast_hash": "f62a44525f3f0242eeb0ac2a0a649587",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/README.md": {
@@ -3445,7 +3445,7 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/llm-wiki/llm-wiki-index.md": {
-    "mtime": 1783326559.6447837,
+    "mtime": 1783327866.8079295,
     "ast_hash": "1f78da0abc131acffc06bb720fa75d58",
     "semantic_hash": ""
   },
@@ -5150,8 +5150,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md": {
-    "mtime": 1783308004.911194,
-    "ast_hash": "a36b9556763407e4667b7dad3e24d22b",
+    "mtime": 1783327859.7916381,
+    "ast_hash": "bdac2345125466416d9fbd4bcfd274cd",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md": {
@@ -5160,13 +5160,13 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md": {
-    "mtime": 1783308005.0633593,
-    "ast_hash": "bcc8a1fb5fc7df84d0dc1eec067a9276",
+    "mtime": 1783327859.9381762,
+    "ast_hash": "0fc2dec16ef1dba422350ff5465ff882",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md": {
-    "mtime": 1783260872.2873652,
-    "ast_hash": "82b5b890ef59323a3cefcbc42188ce00",
+    "mtime": 1783327860.0885706,
+    "ast_hash": "421754c74853f808edf6628b773f018b",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md": {
@@ -5415,7 +5415,7 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md": {
-    "mtime": 1783326566.298961,
+    "mtime": 1783327867.0711374,
     "ast_hash": "2c39482e838ee9b1318416f172167469",
     "semantic_hash": ""
   },
@@ -5545,8 +5545,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/governance/audit-implementation-matrix.md": {
-    "mtime": 1783308072.0438924,
-    "ast_hash": "e0ff4ff85b10fbe866c7dc8c6428b9f6",
+    "mtime": 1783328056.4147317,
+    "ast_hash": "210a51668456af3af6e31f229cf84dad",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/03.specs/119-sdlc-document-contract-corpus-normalization/README.md": {
@@ -5587,6 +5587,26 @@
   "/home/hy/projects/hy-home.docker/docs/05.operations/guides/08-ai/rag-workflow.md": {
     "mtime": 1783326553.042254,
     "ast_hash": "50d49a0eaabbaff657a3ba81e7080e4b",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/03.specs/120-agent-output-eval-ci-gate/README.md": {
+    "mtime": 1783328030.6100307,
+    "ast_hash": "4345c9f15d3d7790696a798beb4d93f4",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/03.specs/120-agent-output-eval-ci-gate/spec.md": {
+    "mtime": 1783328030.7951035,
+    "ast_hash": "6586423e4c5fae806daa9d11bd0ff614",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md": {
+    "mtime": 1783328048.4571197,
+    "ast_hash": "7414744b17fd1a82bd5d5b02b74ac9ab",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md": {
+    "mtime": 1783328048.5998194,
+    "ast_hash": "b20ca5e7a75ad76e66c005159fdceeaa",
     "semantic_hash": ""
   }
 }

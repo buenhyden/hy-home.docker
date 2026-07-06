@@ -233,7 +233,7 @@ def extract_candidates(path: pathlib.Path) -> dict[str, Candidate]:
             if not re.fullmatch(r"AEA-AUTO-[0-9]{3}", candidate_id):
                 continue
             detail = " ".join(row[2:])
-            if "Implemented by" in detail:
+            if re.search(r"implemented by", detail, flags=re.I):
                 disposition = "Closed with evidence"
                 if re.search(r"remain|future work|optional future|deferred", detail, flags=re.I):
                     disposition = "Closed with residual gap"
@@ -258,8 +258,7 @@ def extract_gap_signals() -> list[str]:
         ]
     ).lower()
     checks = [
-        ("Agent-output eval CI gate adoption remains future work.", ("eval ci gate", "ci gate adoption")),
-        ("OSV/SCA vulnerability gate automation remains future work.", ("vulnerability gate", "vulnerability gating")),
+        ("Broader ecosystem/container vulnerability scanning remains future work.", ("broader ecosystem/container vulnerability", "broad ecosystem/container vulnerability")),
         ("SBOM generation remains future work.", ("sbom",)),
         ("Signing, provenance, and attestation automation remain future work.", ("provenance", "attestation", "signing")),
         ("OpenSSF Scorecard automation remains future work.", ("scorecard",)),
@@ -483,7 +482,7 @@ def build_output() -> str:
             "- Regenerate this file after changing the agentic engineering implementation audit pack, generated audit/data references, or related automation-candidate evidence.",
             "- Treat this snapshot as consistency evidence, not as the canonical audit conclusion.",
             "- Re-check the underlying audit reports before using this generated summary for prioritization.",
-            "- Keep vulnerability gates, SBOM, signing, attestation, Scorecard, remote jobs, and CI gate adoption in separate approved Stage 03/04 work.",
+            "- Keep broader vulnerability scanning, SBOM, signing, attestation, Scorecard, and remote jobs in separate approved Stage 03/04 work.",
             "",
             "## Sources",
             "",
