@@ -111,11 +111,11 @@ Compose files, and registry references.
 
 | Raw Status | Count |
 | --- | ---: |
-| Fixture Pack Implemented / Runner Partial | 3 |
+| Fixture CI Gate Implemented / Scoring Advisory | 2 |
+| Fixture Pack Implemented / Runner Partial | 2 |
 | Gap | 3 |
 | Implemented | 80 |
 | Implemented / Tooling Partial | 1 |
-| Local Runner Implemented / CI Gate Deferred | 1 |
 | Mapped / Readiness Snapshot Implemented / Partially Implemented | 1 |
 | Not Implemented / Behavioral | 3 |
 | Not Implemented / Needs Revalidation | 2 |
@@ -136,7 +136,7 @@ Compose files, and registry references.
 | AEA-AUTO-008 | LLM Wiki stage/category coverage report | Closed with evidence |
 | AEA-AUTO-009 | Tech-stack version drift severity and source provenance summary | Closed with evidence |
 | AEA-AUTO-010 | Provider hook parity matrix and Gemini behavioral reminder checklist | Closed with evidence |
-| AEA-AUTO-011 | Local advisory agent-output eval runner | Closed with residual gap |
+| AEA-AUTO-011 | Local advisory agent-output eval runner and fixture freshness CI gate | Closed with residual gap |
 | AEA-AUTO-012 | Security automation readiness snapshot | Closed with residual gap |
 | AEA-AUTO-013 | Audit implementation matrix snapshot | Closed with residual gap |
 

@@ -1,7 +1,7 @@
 # Graph Report - hy-home.docker  (2026-07-06)
 
 ## Corpus Check
-- 1021 files · ~935,671 words
+- 1021 files · ~935,869 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `edd70d21`
+- Built from commit: `f21d645b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1573,8 +1573,8 @@ Cohesion: 0.22
 Nodes (11): OpenSearch Security Action Groups Defaults, OpenSearch Security Basic Internal Auth Domain, OpenSearch Security OpenID Auth Domain, Keycloak PostgreSQL Identity Database, Keycloak Compose Service, Keycloak Traefik Router, OpenSearch Dashboards Compose Service, OpenSearch Single Node Compose Service (+3 more)
 
 ### Community 26 - "Community 26"
-Cohesion: 0.20
-Nodes (10): ADR-0005 Polyglot Messaging, Apache Kafka Event Backbone, Kafka KRaft Mode, RabbitMQ Task Queue, Kafka UI Pinned Image, Messaging Gateway SSO Policy, Messaging Optimization Hardening PRD, Observability Gateway SSO Policy (+2 more)
+Cohesion: 0.25
+Nodes (8): ADR-0005 Polyglot Messaging, Apache Kafka Event Backbone, Kafka KRaft Mode, RabbitMQ Task Queue, Messaging Gateway SSO Policy, Observability Gateway SSO Policy, Workflow Gateway SSO Policy, AI Gateway SSO Policy
 
 ### Community 27 - "Tooling Adr Laboratory Locust"
 Cohesion: 0.22
@@ -1613,8 +1613,8 @@ Cohesion: 0.10
 Nodes (21): Ollama Exporter Service, Ollama GPU Reservation, Ollama Model Volume, Ollama Service, Ollama Traefik Router, Open WebUI RAG Environment, Open WebUI Compose Service, Open WebUI Traefik Router (+13 more)
 
 ### Community 36 - "Hardening Oauth2 Proxy Gate"
-Cohesion: 0.17
-Nodes (12): ADR-0004 PostgreSQL HA Patroni, Etcd Cluster State, HAProxy pg-router, Spilo Patroni PostgreSQL HA, Auto-Unseal Transition Policy, Security Hardening Gate, Security Vault Optimization Hardening PRD, Vault Agent Secret Contract (+4 more)
+Cohesion: 0.29
+Nodes (7): ADR-0004 PostgreSQL HA Patroni, Etcd Cluster State, HAProxy pg-router, Spilo Patroni PostgreSQL HA, Data Optimization Hardening PRD, Supabase Healthcheck Contract, Valkey Secret Contract
 
 ### Community 37 - "Gateway Proxy Auth Architecture"
 Cohesion: 0.12
@@ -4953,8 +4953,8 @@ Cohesion: 0.20
 Nodes (9): Deferred Items, Inputs, Overview, Overview (KR), Related Documents, Task Table, Task: Workspace Audit 2026-05, Verification Summary (+1 more)
 
 ### Community 905 - "Community 905"
-Cohesion: 0.29
-Nodes (8): ADR-0002 Keycloak OAuth2 Proxy, Keycloak Identity Provider, OAuth2 Proxy ForwardAuth, OIDC Discovery Endpoint, Auth Hardening Gate, Auth Optimization Hardening PRD, Fail-Closed Authentication, OAuth2 Proxy Secret Entrypoint
+Cohesion: 0.33
+Nodes (7): ADR-0002 Keycloak OAuth2 Proxy, Keycloak Identity Provider, OAuth2 Proxy ForwardAuth, OIDC Discovery Endpoint, Auth Optimization Hardening PRD, Fail-Closed Authentication, OAuth2 Proxy Secret Entrypoint
 
 ### Community 906 - "Community 906"
 Cohesion: 0.25
@@ -5041,8 +5041,8 @@ Cohesion: 0.25
 Nodes (8): 1. 저장소 클론, 2. 환경 파일 준비, 3. 사전 점검 실행, 4. Compose 구조 검증, 5. Repository contract 검증, 6. 코어 인프라 실행, 7. 주요 진입 문서 확인, Getting Started
 
 ### Community 927 - "Community 927"
-Cohesion: 0.29
-Nodes (8): ADR Process, ADR Traceability to ARD and Spec, Architecture, Architecture Decision Records, Architecture Requirements, New ADR Before Conflicting Change, PRD Traceability, Product Requirements Documents
+Cohesion: 0.17
+Nodes (13): Tooling infra_net Boundary, 172.19.0.0/16 IPAM, infra_net Network, k3d-hyhome Network, Standardize infra_net PRD, ADR Process, ADR Traceability to ARD and Spec, Architecture (+5 more)
 
 ### Community 928 - "Community 928"
 Cohesion: 0.25
@@ -5385,8 +5385,8 @@ Cohesion: 0.33
 Nodes (4): JIT Markers, Related Documents, Rule Markers, Stage Markers
 
 ### Community 1013 - "Community 1013"
-Cohesion: 0.38
-Nodes (7): ADR-0001 Traefik Nginx Hybrid Gateway, Hybrid Gateway Flow, Nginx Path Proxy, Traefik v3 Edge Router, Dashboard Traefik-only Exposure, Dozzle Read-only Docker Socket, Laboratory Optimization Hardening PRD
+Cohesion: 0.83
+Nodes (4): ADR-0001 Traefik Nginx Hybrid Gateway, Hybrid Gateway Flow, Nginx Path Proxy, Traefik v3 Edge Router
 
 ### Community 1014 - "Community 1014"
 Cohesion: 0.50
@@ -6573,8 +6573,8 @@ Cohesion: 0.20
 Nodes (9): Audience, Compose Profile Service Coverage Snapshot, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
 
 ### Community 1356 - "Community 1356"
-Cohesion: 0.25
-Nodes (8): Tooling Gateway SSO Policy, Tooling infra_net Boundary, Tooling Optimization Hardening PRD, Laboratory Gateway SSO Allowlist, 172.19.0.0/16 IPAM, infra_net Network, k3d-hyhome Network, Standardize infra_net PRD
+Cohesion: 0.29
+Nodes (8): Tooling Gateway SSO Policy, Tooling Hardening Gate, Tooling Optimization Hardening PRD, Dashboard Traefik-only Exposure, Dozzle Read-only Docker Socket, Laboratory Gateway SSO Allowlist, Laboratory Hardening Gate, Laboratory Optimization Hardening PRD
 
 ### Community 1358 - "Community 1358"
 Cohesion: 0.13
@@ -6781,12 +6781,12 @@ Cohesion: 0.33
 Nodes (6): Audit Handoff Artifacts, Delegated Agent Facility, Runtime Model Roles, Single Primary Scope Import, Subagent Protocol, TaskUpdate Lifecycle
 
 ### Community 1417 - "Community 1417"
-Cohesion: 0.33
-Nodes (6): ADR-0006 LGTM Stack Alloy, Grafana Alloy, Grafana LGTM Stack, MinIO S3 Backend, Loki Tempo Runtime Hardening, Observability Optimization Hardening PRD
+Cohesion: 0.22
+Nodes (9): ADR-0006 LGTM Stack Alloy, Grafana Alloy, Grafana LGTM Stack, MinIO S3 Backend, Loki Tempo Runtime Hardening, Observability Hardening Gate, Observability Optimization Hardening PRD, Workflow Hardening Gate (+1 more)
 
 ### Community 1418 - "Community 1418"
-Cohesion: 0.33
-Nodes (6): Messaging Hardening Gate, Observability Hardening Gate, Workflow Hardening Gate, AI Hardening Gate, Tooling Hardening Gate, Laboratory Hardening Gate
+Cohesion: 0.22
+Nodes (9): Auth Hardening Gate, Auto-Unseal Transition Policy, Security Hardening Gate, Security Vault Optimization Hardening PRD, Vault Agent Secret Contract, Data Hardening Gate, Kafka UI Pinned Image, Messaging Hardening Gate (+1 more)
 
 ## Ambiguous Edges - Review These
 - `Alertmanager Critical Route` → `Alertmanager SMTP Placeholders`  [AMBIGUOUS]

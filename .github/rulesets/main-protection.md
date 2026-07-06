@@ -14,11 +14,11 @@ itself.
   `docs-traceability`, `repo-contracts`, `git-flow-contract`, `compose-validation`,
   `compose-all-profiles-validation`, `infrastructure-hardening`, `template-security-baseline`,
   `quickwin-baseline`, `pre-commit`, `zizmor`, `frontend-quality`, `storybook-coverage`.
-- Local CI contract includes `docs-implementation-alignment`, but the
-  2026-07-04 read-only verification confirmed that context is not currently a
-  remote required check. Agents must not assert remote enforcement for
-  `docs-implementation-alignment` until repository protection is updated and
-  reverified.
+- Local CI contract includes `docs-implementation-alignment` and
+  `agent-output-eval-fixture-gate`, but the 2026-07-04 read-only verification
+  confirmed those contexts are not currently remote required checks. Agents
+  must not assert remote enforcement for either context until repository
+  protection is updated and reverified.
 - Pull request review protection: 1 approving review required; CODEOWNERS review required.
 - Conversation resolution: required before merge.
 - Force pushes: disabled.
@@ -51,6 +51,7 @@ Use the CI Quality Gates workflow job names as required checks:
 - `docs-traceability`
 - `docs-implementation-alignment`
 - `repo-contracts`
+- `agent-output-eval-fixture-gate`
 - `git-flow-contract`
 - `compose-validation`
 - `compose-all-profiles-validation`

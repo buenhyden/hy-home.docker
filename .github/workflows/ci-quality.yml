@@ -99,6 +99,17 @@ jobs:
       - name: Check repository contracts
         run: bash scripts/validation/check-repo-contracts.sh
 
+  # ── Agent Output Eval Fixture Gate ─────────────────────────
+  agent-output-eval-fixture-gate:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - *checkout
+      - name: Check agent-output eval fixture catalog
+        run: bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
+
   # ── Git Flow Contract ───────────────────────────────────────
   git-flow-contract:
     if: github.event_name == 'pull_request'

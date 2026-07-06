@@ -127,6 +127,7 @@ declarations and `infra/tech-stack.versions.json` as the implementation signal.
 | `docs-traceability`               | `scripts/validation/check-doc-traceability.sh`         |
 | `docs-implementation-alignment`   | `scripts/validation/check-doc-implementation-alignment.sh` |
 | `repo-contracts`                  | `scripts/validation/check-repo-contracts.sh`           |
+| `agent-output-eval-fixture-gate`  | `scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures` |
 | `git-flow-contract`               | inline PR title and source-branch shell check          |
 | `compose-validation`              | `scripts/validation/validate-docker-compose.sh`        |
 | `compose-all-profiles-validation` | `validate-docker-compose.sh` with all governed profiles |

@@ -74,7 +74,7 @@ indexes.
 | Generated index freshness loop | Implemented | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/llm-wiki-index.md` | LLM Wiki freshness is checked by repo contracts. |
 | Human approval loop | Implemented | [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md), task approved-surface evidence | Protected surfaces and hard stops require explicit approval and evidence. |
 | Operations learning loop | Partially Implemented | `docs/05.operations/**`, [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), [HAFE guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md), incidents structure | Operations docs, postmortem routing, and manual gap-to-stage routing exist; not every audit gap has generated closure review or operational feedback evidence. |
-| Eval / semantic scoring loop | Fixture Pack Implemented / Runner Partial | [loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md), [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md), scripts/CI surface | Docs/provider/infra fixtures exist; general-purpose executable agent-output eval is not a full CI gate. |
+| Eval / semantic scoring loop | Fixture CI Gate Implemented / Scoring Advisory | [loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md), [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md), `scripts/validation/run-agent-output-eval-fixtures.sh`, `.github/workflows/ci-quality.yml` | Docs/provider/infra fixtures, a local advisory runner, and CI fixture catalog freshness gate exist; required semantic scoring for arbitrary agent outputs is still manual/advisory. |
 
 ## Findings
 
@@ -93,7 +93,7 @@ indexes.
 
 | Gap | Impact | Follow-up Direction |
 | --- | --- | --- |
-| Agent-output eval loop has fixtures but no runner. | Regression risk remains for agent behavior that passes structural checks. | Use [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md); add executable runner only through future Stage 03/04 work. |
+| Agent-output eval loop has fixtures, a local runner, and a CI fixture freshness gate, but no required semantic scoring gate. | Regression risk remains for agent behavior that passes structural checks. | Keep [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) and the runner fresh; add required scoring only through future Stage 03/04 work. |
 | Provider semantic parity loop is partial. | Adapter files may drift in behavioral detail even when catalog parity passes. | Add diff/extraction checks for critical clauses. |
 | Operations learning loop is selective. | Audit findings may not consistently become policies, runbooks, or backlog items. | Manual gap-to-stage routing now exists in Stage 00; add a recurring audit closure review or generated routing report if stronger automation is needed. |
 | Gemini behavioral parity loop is manual. | Gemini users must remember hook-equivalent obligations. | Keep explicit Gemini gap rows and revalidate official docs periodically. |
@@ -101,8 +101,8 @@ indexes.
 ## Automation Impact
 
 Future loop automation should focus on semantic checks: provider-adapter clause
-diffing, automated audit-gap routing, agent-output eval fixtures, and a generated loop
-coverage matrix that is refreshed from repository paths.
+diffing, recurring audit-gap closure review, required agent-output scoring
+gates, and generated loop coverage that is refreshed from repository paths.
 
 ## Source Rules
 
