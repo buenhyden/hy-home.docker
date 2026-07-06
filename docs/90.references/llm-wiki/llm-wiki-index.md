@@ -427,6 +427,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/116-agent-output-eval-runner/spec.md](../../03.specs/116-agent-output-eval-runner/spec.md) | Markdown reference |
 | [docs/03.specs/117-security-automation-readiness-snapshot/spec.md](../../03.specs/117-security-automation-readiness-snapshot/spec.md) | Markdown reference |
 | [docs/03.specs/118-audit-implementation-matrix-snapshot/spec.md](../../03.specs/118-audit-implementation-matrix-snapshot/spec.md) | Markdown reference |
+| [docs/03.specs/119-sdlc-document-contract-corpus-normalization/README.md](../../03.specs/119-sdlc-document-contract-corpus-normalization/README.md) | folder index |
+| [docs/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md](../../03.specs/119-sdlc-document-contract-corpus-normalization/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |

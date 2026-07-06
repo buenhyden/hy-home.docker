@@ -154,6 +154,7 @@ docs/04.execution/tasks/
 ├── 2026-07-06-agent-output-eval-runner.md # Completed local advisory agent-output eval runner evidence
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
+├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Active SDLC document contract corpus normalization evidence
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration evidence
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract evidence
 └── README.md                                # This file
@@ -240,6 +241,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Audit Pack Coverage Report Task**: [2026-07-05-audit-pack-coverage-report.md](./2026-07-05-audit-pack-coverage-report.md)
 - **LLM Wiki Stage Category Coverage Task**: [2026-07-06-llm-wiki-stage-category-coverage.md](./2026-07-06-llm-wiki-stage-category-coverage.md)
 - **Audit Implementation Matrix Snapshot Task**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
+- **SDLC Document Contract Corpus Normalization Task**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
 - **Agent Governance Phase 4 Closure Reconciliation Task**: [2026-06-02-agent-governance-phase-4-closure-reconciliation.md](./2026-06-02-agent-governance-phase-4-closure-reconciliation.md)
 - **Docs Implementation Reconciliation Task**: [2026-06-02-docs-implementation-reconciliation.md](./2026-06-02-docs-implementation-reconciliation.md)
