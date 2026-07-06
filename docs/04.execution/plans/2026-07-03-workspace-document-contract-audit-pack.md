@@ -1027,22 +1027,30 @@ Expected: commit succeeds.
 - **Prompt / Model Promotion Criteria**: N/A; no model or prompt artifact is
   promoted by this audit pack.
 
+## Closure Evidence
+
+This plan is complete. The authoritative execution evidence is recorded in
+the paired Stage 04 task file, which marks all six tasks as `Done`, records the
+final validation matrix, and lists the audit-pack commit trail. The unchecked
+step-by-step instructions above are preserved as the original execution recipe,
+not as current open work.
+
 ## Completion Criteria
 
-- [ ] Task evidence exists and records all six tasks.
-- [ ] Audit bundle exists under `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/`.
-- [ ] Frontmatter, section, README, governance, template-gap, automation, and
+- [x] Task evidence exists and records all six tasks.
+- [x] Audit bundle exists under `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/`.
+- [x] Frontmatter, section, README, governance, template-gap, automation, and
       gap-register reports are complete.
-- [ ] No target corpus normalization is mixed into this audit pack.
-- [ ] LLM Wiki index is regenerated and fresh.
-- [ ] Required validation commands pass, or full repo contract fails only on
+- [x] No target corpus normalization is mixed into this audit pack.
+- [x] LLM Wiki index is regenerated and fresh.
+- [x] Required validation commands pass, or full repo contract fails only on
       known out-of-scope infra drift.
-- [ ] Work is committed in logical task-level commits.
+- [x] Work is committed in logical task-level commits.
 
 ## Related Documents
 
 - **Spec**: [Workspace document contract audit pack spec](../../03.specs/102-workspace-document-contract-audit-pack/spec.md)
-- **Future Task Path**: `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
+- **Task Evidence**: [Workspace document contract audit pack task](../tasks/2026-07-03-workspace-document-contract-audit-pack.md)
 - **Audit references**: [Audit references](../../90.references/audits/README.md)
 - **Template contract**: [Template contract](../../99.templates/support/template-contract.md)
 - **Frontmatter contract**: [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
