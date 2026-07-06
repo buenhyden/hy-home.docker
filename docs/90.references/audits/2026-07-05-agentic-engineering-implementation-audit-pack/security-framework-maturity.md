@@ -126,6 +126,9 @@ in `.github/rulesets/main-protection.md`.
 - The largest SSDF gaps are formal vulnerability-management automation,
   repeatable threat-model evidence, and release/artifact supply-chain
   assurance.
+- The generated security automation readiness snapshot now makes the local
+  workflow/script readiness state explicit; it does not close actual
+  vulnerability-gate, SBOM, signing, attestation, or Scorecard gaps.
 - Remote GitHub protection should be described as last-recorded evidence unless
   re-verified in a dedicated GitHub governance pass.
 
@@ -141,11 +144,12 @@ in `.github/rulesets/main-protection.md`.
 
 ## Automation Impact
 
-This report closes the audit-matrix part of `AEA-AUTO-006`. It does not
-implement security tooling. Future automation should start with an approved
-security spec that chooses whether the next investment is vulnerability
-gating, SBOM generation, SLSA provenance, Scorecard reporting, or threat-model
-evidence.
+This report closes the audit-matrix part of `AEA-AUTO-006`. The generated
+security readiness snapshot provides repo-local planning evidence for the
+remaining tooling gaps. Neither document implements security tooling. Future
+automation should start with an approved security spec that chooses whether the
+next investment is vulnerability gating, SBOM generation, SLSA provenance,
+Scorecard reporting, or threat-model evidence.
 
 ## Source Rules
 
@@ -171,6 +175,7 @@ evidence.
 - [Dependabot config](../../../../.github/dependabot.yml) - dependency update automation coverage.
 - [Security Policy](../../../../.github/SECURITY.md) - repo-local vulnerability reporting boundary.
 - [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - workflow action pinning and required quality-gate contract.
+- [Security automation readiness](../../data/security/security-automation-readiness.md) - generated repo-local security automation readiness snapshot.
 
 ## Maintenance
 
@@ -189,3 +194,4 @@ evidence.
 - [SDLC quality formatting implementation](./sdlc-quality-formatting-implementation.md)
 - [Automation candidates](./automation-candidates.md)
 - [Security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
+- [Security automation readiness](../../data/security/security-automation-readiness.md)

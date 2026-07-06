@@ -3716,6 +3716,16 @@ elif ! grep -q 'fixtures_check=pass' /tmp/check-repo-contracts-agent-output-eval
 fi
 rm -f /tmp/check-repo-contracts-agent-output-eval.txt
 
+section "Security automation readiness snapshot"
+if ! bash scripts/validation/generate-security-automation-readiness.sh --check >/tmp/check-repo-contracts-security-readiness.txt 2>&1; then
+  fail "generated security automation readiness snapshot is stale or generator check failed"
+  cat /tmp/check-repo-contracts-security-readiness.txt >&2
+elif ! grep -q 'generated security automation readiness snapshot is fresh' /tmp/check-repo-contracts-security-readiness.txt; then
+  fail "security automation readiness generator did not print a pass marker"
+  cat /tmp/check-repo-contracts-security-readiness.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-security-readiness.txt
+
 section "Script reference integrity"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -3899,6 +3909,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/check-doc-traceability.sh"),
     pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
+    pathlib.Path("scripts/validation/generate-security-automation-readiness.sh"),
     pathlib.Path("scripts/validation/recommend-gap-routing.sh"),
     pathlib.Path("scripts/validation/recommend-qa-gates.sh"),
     pathlib.Path("scripts/validation/report-audit-pack-coverage.sh"),

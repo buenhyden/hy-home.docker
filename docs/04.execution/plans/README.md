@@ -93,6 +93,7 @@ docs/04.execution/plans/
 ├── 2026-07-06-tech-stack-version-provenance.md # Completed tech-stack version provenance plan
 ├── 2026-07-06-provider-hook-parity-matrix.md # Completed provider hook parity matrix plan
 ├── 2026-07-06-agent-output-eval-runner.md # Completed local advisory agent-output eval runner plan
+├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot plan
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration plan
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract plan
 └── README.md                               # This file

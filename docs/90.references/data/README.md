@@ -39,6 +39,7 @@ status: active
 - HADS profile and validation boundary
 - Generated LLM Wiki coverage and knowledge-index reference data
 - Kubernetes/k3s/k3d migration reference context
+- Generated security automation readiness reference data
 
 ### Out of Scope
 
@@ -59,7 +60,8 @@ data/
 ├── governance/    # Governance routing and validation reference data
 ├── hads/          # HADS reference profile and validator boundary
 ├── knowledge/     # Generated LLM Wiki coverage and knowledge-index data
-└── kubernetes/    # Kubernetes and k3s/k3d migration reference context
+├── kubernetes/    # Kubernetes and k3s/k3d migration reference context
+└── security/      # Generated security automation readiness data
 ```
 
 ## Current References
@@ -80,6 +82,8 @@ data/
 - [knowledge/llm-wiki-stage-category-coverage.md](./knowledge/llm-wiki-stage-category-coverage.md) - generated LLM Wiki source-bucket/category coverage snapshot
 - [kubernetes/README.md](./kubernetes/README.md) - Kubernetes and k3s/k3d migration reference context
 - [kubernetes/docker-compose-to-k3s-migration.md](./kubernetes/docker-compose-to-k3s-migration.md) - Docker Compose to k3s/k3d migration suitability snapshot
+- [security/README.md](./security/README.md) - generated security automation readiness data category
+- [security/security-automation-readiness.md](./security/security-automation-readiness.md) - generated security automation readiness snapshot for vulnerability gate, SBOM, provenance/attestation, Scorecard, workflow security, secret scanning, Dependabot, and hardening coverage
 
 ## How to Work in This Area
 

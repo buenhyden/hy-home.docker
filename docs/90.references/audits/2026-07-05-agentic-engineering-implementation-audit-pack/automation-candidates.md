@@ -67,7 +67,7 @@ and audit gaps in the overview, harness, and loop reports.
 | Tech-stack version sync | Implemented | `scripts/operations/sync-tech-stack-versions.sh`, `infra/tech-stack.versions.json`, [tech-stack version provenance](../../data/docker/tech-stack-version-provenance.md) | Drift severity and source provenance are generated and freshness-checked locally. |
 | Agent-output eval | Local Runner Implemented / CI Gate Deferred | [loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md), Stage 04 evidence patterns, [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md), `scripts/validation/run-agent-output-eval-fixtures.sh` | Small docs/provider/infra fixtures and a local advisory runner now exist; CI gate adoption remains future work. |
 | Gap routing | Implemented | Stage 04 task evidence, audit gap tables, [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), [gap routing reference](../../data/governance/gap-to-stage-routing.md), `scripts/validation/recommend-gap-routing.sh` | Gap-to-stage suggestions are now available locally for text and path inputs; future work can decide whether to publish routing summaries into audit reports. |
-| Security maturity | Mapped / Partially Implemented | `.github/workflows/ci-quality.yml`, [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md), [security framework maturity coverage](./security-framework-maturity.md) | SSDF/SLSA/OpenSSF Scorecard coverage is now mapped; tooling adoption, SBOM, provenance, and vulnerability gates remain future work. |
+| Security maturity | Mapped / Readiness Snapshot Implemented / Partially Implemented | `.github/workflows/ci-quality.yml`, [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md), [security framework maturity coverage](./security-framework-maturity.md), [security automation readiness](../../data/security/security-automation-readiness.md) | SSDF/SLSA/OpenSSF Scorecard coverage and repo-local readiness are now mapped; actual tooling adoption, SBOM generation, provenance/attestation, and vulnerability gates remain future work. |
 
 ## Findings
 
@@ -80,9 +80,10 @@ and audit gaps in the overview, harness, and loop reports.
 - Provider semantic role-scope parity, provider hook parity, LLM Wiki
   source-bucket/category coverage, Compose profile coverage inventory,
   tech-stack version provenance, agent-output eval fixtures/local runner, and
-  security framework maturity mapping are now covered. The remaining
-  highest-value gaps are eval CI gate adoption, vulnerability gating, SBOM, and
-  provenance/attestation automation.
+  security framework maturity mapping, and security automation readiness
+  snapshot are now covered. The remaining highest-value gaps are eval CI gate
+  adoption, vulnerability gating, SBOM generation, and provenance/attestation
+  automation.
 - Gemini-specific automation should remain reminder/checklist based until
   native hook/subagent support is confirmed by official sources.
 
@@ -101,6 +102,7 @@ and audit gaps in the overview, harness, and loop reports.
 | AEA-AUTO-009 | Tech-stack version drift severity and source provenance summary | Implemented by [Tech-stack version provenance spec](../../../03.specs/114-tech-stack-version-provenance/spec.md), [task evidence](../../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md), [generated provenance snapshot](../../data/docker/tech-stack-version-provenance.md), `scripts/operations/generate-tech-stack-version-provenance.sh`, and repo-contract freshness coverage. |
 | AEA-AUTO-010 | Provider hook parity matrix and Gemini behavioral reminder checklist | Implemented by [Provider hook parity matrix spec](../../../03.specs/115-provider-hook-parity-matrix/spec.md), [task evidence](../../../04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md), [generated hook matrix](../../data/governance/provider-hook-parity-matrix.md), `scripts/validation/report-provider-hook-parity.sh`, and repo-contract freshness coverage. |
 | AEA-AUTO-011 | Local advisory agent-output eval runner | Implemented by [Agent output eval runner spec](../../../03.specs/116-agent-output-eval-runner/spec.md), [task evidence](../../../04.execution/tasks/2026-07-06-agent-output-eval-runner.md), [fixture reference](../../data/governance/agent-output-eval-fixtures.md), `scripts/validation/run-agent-output-eval-fixtures.sh`, and repo-contract fixture catalog checks; CI gate adoption remains optional future work. |
+| AEA-AUTO-012 | Security automation readiness snapshot | Implemented by [Security automation readiness snapshot spec](../../../03.specs/117-security-automation-readiness-snapshot/spec.md), [task evidence](../../../04.execution/tasks/2026-07-06-security-automation-readiness-snapshot.md), [generated security readiness data](../../data/security/security-automation-readiness.md), `scripts/validation/generate-security-automation-readiness.sh`, and repo-contract freshness coverage; vulnerability gates, SBOM generation, signing/provenance attestation, and Scorecard automation remain future work. |
 
 ## Automation Impact
 

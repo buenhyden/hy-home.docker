@@ -425,6 +425,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/114-tech-stack-version-provenance/spec.md](../../03.specs/114-tech-stack-version-provenance/spec.md) | Markdown reference |
 | [docs/03.specs/115-provider-hook-parity-matrix/spec.md](../../03.specs/115-provider-hook-parity-matrix/spec.md) | Markdown reference |
 | [docs/03.specs/116-agent-output-eval-runner/spec.md](../../03.specs/116-agent-output-eval-runner/spec.md) | Markdown reference |
+| [docs/03.specs/117-security-automation-readiness-snapshot/spec.md](../../03.specs/117-security-automation-readiness-snapshot/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -507,6 +508,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-06-agent-output-eval-runner.md](../../04.execution/plans/2026-07-06-agent-output-eval-runner.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-provider-hook-parity-matrix.md](../../04.execution/plans/2026-07-06-provider-hook-parity-matrix.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-06-security-automation-readiness-snapshot.md](../../04.execution/plans/2026-07-06-security-automation-readiness-snapshot.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-tech-stack-version-provenance.md](../../04.execution/plans/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
@@ -615,6 +617,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-06-agent-output-eval-runner.md](../../04.execution/tasks/2026-07-06-agent-output-eval-runner.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md](../../04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-06-security-automation-readiness-snapshot.md](../../04.execution/tasks/2026-07-06-security-automation-readiness-snapshot.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-tech-stack-version-provenance.md](../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
@@ -934,6 +937,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md](../data/knowledge/llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/90.references/data/kubernetes/README.md](../data/kubernetes/README.md) | folder index |
 | [docs/90.references/data/kubernetes/docker-compose-to-k3s-migration.md](../data/kubernetes/docker-compose-to-k3s-migration.md) | Markdown reference |
+| [docs/90.references/data/security/README.md](../data/security/README.md) | folder index |
+| [docs/90.references/data/security/security-automation-readiness.md](../data/security/security-automation-readiness.md) | Markdown reference |
 | [docs/90.references/learning/README.md](../learning/README.md) | folder index |
 | [docs/90.references/learning/roadmap-v1.md](../learning/roadmap-v1.md) | Markdown reference |
 | [docs/90.references/learning/roadmap.md](../learning/roadmap.md) | Markdown reference |
@@ -1268,6 +1273,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
 | [scripts/validation/check-storybook-contract.sh](../../../scripts/validation/check-storybook-contract.sh) | script |
 | [scripts/validation/check-template-security-baseline.sh](../../../scripts/validation/check-template-security-baseline.sh) | script |
+| [scripts/validation/generate-security-automation-readiness.sh](../../../scripts/validation/generate-security-automation-readiness.sh) | script |
 | [scripts/validation/recommend-gap-routing.sh](../../../scripts/validation/recommend-gap-routing.sh) | script |
 | [scripts/validation/recommend-qa-gates.sh](../../../scripts/validation/recommend-qa-gates.sh) | script |
 | [scripts/validation/report-audit-pack-coverage.sh](../../../scripts/validation/report-audit-pack-coverage.sh) | script |

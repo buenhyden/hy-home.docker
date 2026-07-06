@@ -152,6 +152,7 @@ docs/04.execution/tasks/
 ├── 2026-07-06-tech-stack-version-provenance.md # Completed tech-stack version provenance evidence
 ├── 2026-07-06-provider-hook-parity-matrix.md # Completed provider hook parity matrix evidence
 ├── 2026-07-06-agent-output-eval-runner.md # Completed local advisory agent-output eval runner evidence
+├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-05-template-system-numbered-sdlc-paths.md # Completed numbered PRD/Spec path migration evidence
 ├── 2026-07-05-workspace-support-surface-contract.md # Completed `_workspace` repo-support surface contract evidence
 └── README.md                                # This file
