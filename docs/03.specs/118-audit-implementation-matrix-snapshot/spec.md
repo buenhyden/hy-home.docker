@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/118-audit-implementation-matrix-snapshot/spec.md -->

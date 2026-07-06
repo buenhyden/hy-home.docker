@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md -->

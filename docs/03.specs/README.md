@@ -75,18 +75,18 @@ docs/03.specs/
 ├── 104-agentic-research-pack-refresh/   # Completed Stage 90 agentic research refresh spec
 ├── 105-agentic-engineering-implementation-audit-pack/ # Completed Stage 90 implementation audit pack design spec
 ├── 106-workspace-support-surface-contract/ # Active `_workspace` repo-support surface contract
-├── 107-provider-semantic-parity-validator/ # Active provider adapter semantic parity validator
-├── 108-compose-profile-service-coverage-snapshot/ # Active generated Compose profile/service coverage snapshot
-├── 109-gap-routing-recommendation/      # Active gap-to-stage routing recommendation
-├── 110-agent-output-eval-fixtures/       # Active agent-output eval fixture pack
-├── 111-qa-gate-recommendation-ci-summary/ # Active QA gate recommendation CI summary
-├── 112-audit-pack-coverage-report/       # Active audit-pack implementation-status coverage report
-├── 113-llm-wiki-stage-category-coverage/ # Active LLM Wiki stage/category coverage snapshot
-├── 114-tech-stack-version-provenance/     # Active tech-stack version provenance snapshot
-├── 115-provider-hook-parity-matrix/       # Active provider hook parity matrix
-├── 116-agent-output-eval-runner/          # Active local advisory agent-output eval runner
-├── 117-security-automation-readiness-snapshot/ # Active security automation readiness snapshot
-├── 118-audit-implementation-matrix-snapshot/ # Active audit implementation matrix snapshot
+├── 107-provider-semantic-parity-validator/ # Completed provider adapter semantic parity validator
+├── 108-compose-profile-service-coverage-snapshot/ # Completed generated Compose profile/service coverage snapshot
+├── 109-gap-routing-recommendation/      # Completed gap-to-stage routing recommendation
+├── 110-agent-output-eval-fixtures/       # Completed agent-output eval fixture pack
+├── 111-qa-gate-recommendation-ci-summary/ # Completed QA gate recommendation CI summary
+├── 112-audit-pack-coverage-report/       # Completed audit-pack implementation-status coverage report
+├── 113-llm-wiki-stage-category-coverage/ # Completed LLM Wiki stage/category coverage snapshot
+├── 114-tech-stack-version-provenance/     # Completed tech-stack version provenance snapshot
+├── 115-provider-hook-parity-matrix/       # Completed provider hook parity matrix
+├── 116-agent-output-eval-runner/          # Completed local advisory agent-output eval runner
+├── 117-security-automation-readiness-snapshot/ # Completed security automation readiness snapshot
+├── 118-audit-implementation-matrix-snapshot/ # Completed audit implementation matrix snapshot
 ├── 119-sdlc-document-contract-corpus-normalization/ # Completed SDLC document contract corpus normalization design
 └── README.md                            # This file
 ```
