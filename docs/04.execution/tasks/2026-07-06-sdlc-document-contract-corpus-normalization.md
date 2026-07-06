@@ -50,7 +50,7 @@ residual gaps as the implementation proceeds.
 | T-SDCN-002 | Extend validator coverage for stale active PRD/Spec guidance. | validation | `Validator Interfaces` | `PLN-SDCN-002` | Syntax, targeted stale-guidance fixtures, full repo contracts | Validator Maintainer | Done |
 | T-SDCN-003 | Classify Stage 03 sibling README and Stage 04 plan/task lifecycle policy. | doc | `Traceability Interfaces` | `PLN-SDCN-003` | Classification evidence; no premature hard gate | Documentation Specialist | Done |
 | T-SDCN-004 | Review and apply approved operations leaf naming polish. | ops | `Edge Cases & Error Handling` | `PLN-SDCN-004` | Link sync, traceability, implementation alignment | Operations Reviewer | Done |
-| T-SDCN-005 | Close progress, generated indexes, and residual gaps. | validation | `Success Criteria & Verification Plan` | `PLN-SDCN-005` | Final verification summary | QA Engineer | Todo |
+| T-SDCN-005 | Close progress, generated indexes, and residual gaps. | validation | `Success Criteria & Verification Plan` | `PLN-SDCN-005` | Final verification summary | QA Engineer | Done |
 
 ## Phase View
 
@@ -72,7 +72,7 @@ residual gaps as the implementation proceeds.
 
 ### Wave 5: Closure
 
-- [ ] T-SDCN-005 Close progress, generated indexes, and residual gaps.
+- [x] T-SDCN-005 Close progress, generated indexes, and residual gaps.
 
 ## Lifecycle Classification Evidence
 
@@ -102,7 +102,7 @@ residual gaps as the implementation proceeds.
 | `bash scripts/validation/check-doc-traceability.sh` | PASS | `catalog_pairs_total=46`, `failures=0`. |
 | `bash scripts/validation/check-doc-implementation-alignment.sh` | PASS | `stage_docs_total=609`, `repo_local_markdown_links_checked=4710`, `failures=0`. |
 | `bash -n scripts/validation/check-repo-contracts.sh` | PASS | Repository contract script syntax is valid. |
-| `bash scripts/validation/check-repo-contracts.sh` | PASS | Full repository contract gate passed with `failures=0`; changed target-stage docs normalized `13/13`, total target-stage docs normalized `697/697`. |
+| `bash scripts/validation/check-repo-contracts.sh` | PASS | Final full repository contract gate passed with `failures=0`; changed target-stage docs normalized `2/2`, total target-stage docs normalized `697/697`. |
 | Targeted Wave 1 stale-guidance scan | PASS | No stale date-prefixed PRD, old example filename, mixed plan/PRD naming, blanket `layer:` requirement, or flat Stage 99 template-path guidance remains in the edited active guidance files. |
 | `.github` Spec placeholder update | PASS | Bug report issue-template placeholder now uses a concrete numbered Spec example path. |
 | Extended numbered SDLC guidance scan | PASS | Repo contracts now scan Stage 99, Stage 00 rules/scopes, Stage 01/03 README files, and GitHub issue templates for stale active PRD/Spec target guidance. |
@@ -113,6 +113,16 @@ residual gaps as the implementation proceeds.
 | Operations numeric-dot leaf scan | PASS | `find docs/05.operations -type f -name '01.*.md'` returned no active Stage 05 paths after Wave 4. |
 | Operations link sync | PASS | Active Stage 05 README, Target comments, policy links, and implementation-alignment non-service stems now use `setup.md`, `lgtm-stack.md`, and `retention.md`; historical evidence references were preserved. |
 | `bash -n scripts/validation/check-doc-implementation-alignment.sh` | PASS | Implementation-alignment validator syntax is valid after non-service stem updates. |
+
+## Closure and Residual Gaps
+
+| Area | Closure Result | Follow-up |
+| --- | --- | --- |
+| Wave 1 stale PRD/Spec guidance | Closed; active guidance now uses numbered PRD/Spec paths. | None for this program. |
+| Wave 2 validator coverage | Closed; stale active PRD/Spec guidance scan covers Stage 99, Stage 00 rules/scopes, Stage 01/03 READMEs, and GitHub issue templates. | Future PRD/Spec path changes must update validators in the same protected-surface wave. |
+| Wave 3 lifecycle classification | Closed without hard gates; Stage 03 README gaps and Stage 04 exact filename asymmetry are classified as `evidence-preserve`. | Add hard gates only after a separate Stage 00/99 rule defines exception handling. |
+| Wave 4 operations naming | Closed; active Stage 05 numeric-dot leaf filenames were renamed and active links were synchronized. | Historical task/audit/progress mentions remain preserved evidence, not active path guidance. |
+| Wave 5 final validation | Closed; final local checks passed with no residual failures. | None. |
 
 ## Related Documents
 

@@ -124,9 +124,9 @@ runtime infrastructure, secrets, remote GitHub state, or CI hard gates.
 - [x] Wave 3 lifecycle classification is complete without premature hard gates.
 - [x] Wave 4 operations naming polish is complete for exact approved
       candidates or recorded as residual evidence.
-- [ ] Wave 5 closure evidence, LLM Wiki, progress memory, and residual gaps are
+- [x] Wave 5 closure evidence, LLM Wiki, progress memory, and residual gaps are
       synchronized.
-- [ ] Final verification plan passes or any residual failure is recorded with
+- [x] Final verification plan passes or any residual failure is recorded with
       owner, scope, and follow-up.
 
 ## Related Documents
