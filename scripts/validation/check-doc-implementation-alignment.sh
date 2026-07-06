@@ -143,7 +143,6 @@ SERVICE_ALIAS = {
 NON_SERVICE_STEMS = {
     "0012-standardize-infra-net",
     "02.n8n-automation",
-    "02.rag-workflow",
     "airflow-dag-basics",
     "backup-policy",
     "common-optimizations-template-exceptions",
@@ -160,6 +159,7 @@ NON_SERVICE_STEMS = {
     "new-service-onboarding",
     "optimization-hardening",
     "performance-testing",
+    "rag-workflow",
     "retention",
     "release-management",
     "sensitive-env-vars-comparison",

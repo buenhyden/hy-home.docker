@@ -694,11 +694,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/07-workflow/airflow.md](../../05.operations/guides/07-workflow/airflow.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/n8n.md](../../05.operations/guides/07-workflow/n8n.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/guides/07-workflow/optimization-hardening.md) | Markdown reference |
-| [docs/05.operations/guides/08-ai/02.rag-workflow.md](../../05.operations/guides/08-ai/02.rag-workflow.md) | Markdown reference |
 | [docs/05.operations/guides/08-ai/README.md](../../05.operations/guides/08-ai/README.md) | folder index |
 | [docs/05.operations/guides/08-ai/ollama.md](../../05.operations/guides/08-ai/ollama.md) | Markdown reference |
 | [docs/05.operations/guides/08-ai/open-webui.md](../../05.operations/guides/08-ai/open-webui.md) | Markdown reference |
 | [docs/05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/guides/08-ai/optimization-hardening.md) | Markdown reference |
+| [docs/05.operations/guides/08-ai/rag-workflow.md](../../05.operations/guides/08-ai/rag-workflow.md) | Markdown reference |
 | [docs/05.operations/guides/09-tooling/README.md](../../05.operations/guides/09-tooling/README.md) | folder index |
 | [docs/05.operations/guides/09-tooling/k6.md](../../05.operations/guides/09-tooling/k6.md) | Markdown reference |
 | [docs/05.operations/guides/09-tooling/locust.md](../../05.operations/guides/09-tooling/locust.md) | Markdown reference |

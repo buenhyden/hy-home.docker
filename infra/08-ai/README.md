@@ -41,7 +41,7 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 ## How to Work in This Area
 
 1. Read the [Ollama Usage Guide](../../docs/05.operations/guides/08-ai/ollama.md).
-2. Follow the [Open WebUI Usage Guide](../../docs/05.operations/guides/08-ai/open-webui.md) and [RAG Workflow Guide](../../docs/05.operations/guides/08-ai/02.rag-workflow.md).
+2. Follow the [Open WebUI Usage Guide](../../docs/05.operations/guides/08-ai/open-webui.md) and [RAG Workflow Guide](../../docs/05.operations/guides/08-ai/rag-workflow.md).
 3. Check the [operations policy index](../../docs/05.operations/policies/08-ai/README.md) for GPU, model, access, and logging controls.
 4. Consult the [AI Runbooks](../../docs/05.operations/runbooks/08-ai/README.md) for NVIDIA driver, OOM, or Open WebUI troubleshooting.
 

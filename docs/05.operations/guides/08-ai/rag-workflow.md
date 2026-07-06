@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/guides/08-ai/02.rag-workflow.md -->
+<!-- Target: docs/05.operations/guides/08-ai/rag-workflow.md -->
 
 # RAG Workflow Usage Guide
 

@@ -440,8 +440,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/check-doc-implementation-alignment.sh": {
-    "mtime": 1783218941.1849008,
-    "ast_hash": "e5dca995e36890fdd2ac66da4930bd4a",
+    "mtime": 1783311694.4833062,
+    "ast_hash": "3fa4bd36a8e88367d97c53efa6867eb5",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/check-doc-traceability.sh": {
@@ -455,8 +455,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/check-repo-contracts.sh": {
-    "mtime": 1783307895.1857123,
-    "ast_hash": "e714e7864f1eb93fe365124d5e4050e5",
+    "mtime": 1783310642.468699,
+    "ast_hash": "5edb93bd45747c9c7ae8b53e95cea10c",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/check-storybook-contract.sh": {
@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1783308556.8053696,
-    "ast_hash": "cd65152938735ab134ffedd8be8b5f9c",
+    "mtime": 1783312012.943437,
+    "ast_hash": "57306f84a0c8757ae853f9d1bf9e2139",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -1025,8 +1025,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/scopes/meta.md": {
-    "mtime": 1783220707.1715488,
-    "ast_hash": "e44f1a6b3c6299f3006b51d2959af046",
+    "mtime": 1783310363.8115754,
+    "ast_hash": "397b3620b461efaccfd9eb00c4377584",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/scopes/mobile.md": {
@@ -1060,8 +1060,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/01.requirements/README.md": {
-    "mtime": 1783222563.8237793,
-    "ast_hash": "ba14301cea93ff470e1e76b1bcaaaf7b",
+    "mtime": 1783310363.652329,
+    "ast_hash": "57e41758e25d42eed656c972629255e2",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/02.architecture/README.md": {
@@ -1315,13 +1315,13 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/03.specs/README.md": {
-    "mtime": 1783307963.0060585,
-    "ast_hash": "aa153b8877268e5ad9f58ef422c8009f",
+    "mtime": 1783311192.6814282,
+    "ast_hash": "c91b6226cf9ff623bfa70049a33ee003",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/README.md": {
-    "mtime": 1783220707.2005925,
-    "ast_hash": "c851c95821fd1839bed75240ae13aa4e",
+    "mtime": 1783311192.8283913,
+    "ast_hash": "5a1302f4f953e273e610d2f4204c12c0",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/plans/2026-03-26-01-gateway-standardization.md": {
@@ -1645,8 +1645,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/plans/README.md": {
-    "mtime": 1783307963.1525004,
-    "ast_hash": "c2440ce269834c9ca3861f83c2595c40",
+    "mtime": 1783310154.8482928,
+    "ast_hash": "e2a204335d7c274bdd3bc7209fc239ce",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md": {
@@ -2095,8 +2095,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/README.md": {
-    "mtime": 1783307963.302796,
-    "ast_hash": "8bd20cbb4ecb68fb43118d52b7e7f4bd",
+    "mtime": 1783310155.004171,
+    "ast_hash": "b26f7b351e7a640b96f4b2562c09bc46",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/README.md": {
@@ -2134,14 +2134,9 @@
     "ast_hash": "71372e55c07b28bbbadfeb91a8481b40",
     "semantic_hash": ""
   },
-  "/home/hy/projects/hy-home.docker/docs/05.operations/guides/01-gateway/01.setup.md": {
-    "mtime": 1783220707.2382107,
-    "ast_hash": "0cf329201299a8e1d55ab1fd3fb4fe84",
-    "semantic_hash": ""
-  },
   "/home/hy/projects/hy-home.docker/docs/05.operations/guides/01-gateway/README.md": {
-    "mtime": 1783220707.2383559,
-    "ast_hash": "a824a13add779013a228f4d85cf0e2a1",
+    "mtime": 1783311522.355851,
+    "ast_hash": "c61177c3c33be16ee132213e48dfdbef",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/guides/01-gateway/nginx.md": {
@@ -2324,14 +2319,9 @@
     "ast_hash": "9315ad59485f2fccc12387c086c94637",
     "semantic_hash": ""
   },
-  "/home/hy/projects/hy-home.docker/docs/05.operations/guides/06-observability/01.lgtm-stack.md": {
-    "mtime": 1783220707.2466557,
-    "ast_hash": "fb2f5af2c44bdc6503478390b94027d4",
-    "semantic_hash": ""
-  },
   "/home/hy/projects/hy-home.docker/docs/05.operations/guides/06-observability/README.md": {
-    "mtime": 1783220707.2467659,
-    "ast_hash": "31e18bea8bcf71bd2e79876a49602fac",
+    "mtime": 1783311522.6498466,
+    "ast_hash": "197bc108ad858c353e4b46813d834326",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/guides/06-observability/alertmanager.md": {
@@ -2759,14 +2749,9 @@
     "ast_hash": "336df02f6961651ed95bac6b977e01ee",
     "semantic_hash": ""
   },
-  "/home/hy/projects/hy-home.docker/docs/05.operations/policies/06-observability/01.retention.md": {
-    "mtime": 1783220707.2600155,
-    "ast_hash": "79b241ef7925e1069379298bb5afe5ec",
-    "semantic_hash": ""
-  },
   "/home/hy/projects/hy-home.docker/docs/05.operations/policies/06-observability/README.md": {
-    "mtime": 1783220707.2600946,
-    "ast_hash": "a5eac7c66bfec62ae359549f63934d53",
+    "mtime": 1783311522.939974,
+    "ast_hash": "124dca5f4a515d2be6753ad691cdaf10",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/policies/06-observability/alertmanager.md": {
@@ -2785,18 +2770,18 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/policies/06-observability/loki.md": {
-    "mtime": 1783220707.260482,
-    "ast_hash": "091d711c863150b848cdb99224a4a9af",
+    "mtime": 1783311523.4854136,
+    "ast_hash": "1a1ebc612aab703e7ca26b2d3bf0b6a0",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/policies/06-observability/optimization-hardening.md": {
-    "mtime": 1783220707.2605615,
-    "ast_hash": "dad157f4216868bd990b0475cf56369d",
+    "mtime": 1783311523.6246746,
+    "ast_hash": "5b8dceed54cb10c543a833cc10ff8cc3",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/policies/06-observability/prometheus.md": {
-    "mtime": 1783220707.2606921,
-    "ast_hash": "6a9de6ff4437aacc5d7579555ad7cb5b",
+    "mtime": 1783311523.2301013,
+    "ast_hash": "2f6a30bfc8c271d1f2e53068bbfebfe4",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/policies/06-observability/pushgateway.md": {
@@ -2805,8 +2790,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/policies/06-observability/pyroscope.md": {
-    "mtime": 1783220707.2608423,
-    "ast_hash": "f7b48d1ed2cfc73a3131e9fa1b27ba7f",
+    "mtime": 1783311523.353889,
+    "ast_hash": "79489983548f1868d9c4877b737b3a5c",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/05.operations/policies/06-observability/tempo.md": {
@@ -3465,8 +3450,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/llm-wiki/llm-wiki-index.md": {
-    "mtime": 1783308215.1901038,
-    "ast_hash": "6988d9a2249815283e997e2e2b154cf6",
+    "mtime": 1783311563.1998386,
+    "ast_hash": "f30b8ffceb0e7e49859df67d711df22b",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/llm-wiki/repository-map.md": {
@@ -5435,8 +5420,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md": {
-    "mtime": 1783308215.2079058,
-    "ast_hash": "2745d700a2c87fa63d525219bfc1dd41",
+    "mtime": 1783311563.3236377,
+    "ast_hash": "2c39482e838ee9b1318416f172167469",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/operations/generate-tech-stack-version-provenance.sh": {
@@ -5560,13 +5545,48 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md": {
-    "mtime": 1783308556.62137,
-    "ast_hash": "8fbdc8bbf54e2b6a68ca0a0ebcb042b0",
+    "mtime": 1783308669.5370057,
+    "ast_hash": "024f4d02051cbdedd5f0cccc6ee4c07f",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/governance/audit-implementation-matrix.md": {
     "mtime": 1783308072.0438924,
     "ast_hash": "e0ff4ff85b10fbe866c7dc8c6428b9f6",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/03.specs/119-sdlc-document-contract-corpus-normalization/README.md": {
+    "mtime": 1783309685.1560166,
+    "ast_hash": "e3b06e0812e395110e34dac426c7a4a5",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md": {
+    "mtime": 1783309793.3046236,
+    "ast_hash": "5ddb05161e4294921c37edf9eb65a65a",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/04.execution/plans/2026-07-06-sdlc-document-contract-corpus-normalization.md": {
+    "mtime": 1783311931.6805882,
+    "ast_hash": "92e0c77390c49e89699db32c97fb38d9",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/04.execution/tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md": {
+    "mtime": 1783312012.7847068,
+    "ast_hash": "a374f8cf49a76bef6ad65ed2ac4cc464",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/05.operations/guides/01-gateway/setup.md": {
+    "mtime": 1783311522.495112,
+    "ast_hash": "d86f990c97c5b8baa7788c267b8710ac",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/05.operations/guides/06-observability/lgtm-stack.md": {
+    "mtime": 1783311522.7929761,
+    "ast_hash": "ae1cc3b639c2834cc8f8cdacc6611aaa",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/docs/05.operations/policies/06-observability/retention.md": {
+    "mtime": 1783311523.0831034,
+    "ast_hash": "7a3a7e3c831d2daf843c53218f2fe3dd",
     "semantic_hash": ""
   }
 }

@@ -35,10 +35,10 @@
 
 ```text
 guides/08-ai/
-├── 02.rag-workflow.md
 ├── ollama.md
 ├── open-webui.md
 ├── optimization-hardening.md
+├── rag-workflow.md
 └── README.md
 ```
 
@@ -53,8 +53,8 @@ guides/08-ai/
 | --- | --- |
 | [ollama.md](./ollama.md) | Ollama model lifecycle, GPU, API, and exporter usage guide |
 | [open-webui.md](./open-webui.md) | Open WebUI access, model selection, and RAG usage guide |
-| [02.rag-workflow.md](./02.rag-workflow.md) | Focused RAG document upload, embedding, and Qdrant workflow guide |
 | [optimization-hardening.md](./optimization-hardening.md) | 08-ai hardening usage and validation guide |
+| [rag-workflow.md](./rag-workflow.md) | Focused RAG document upload, embedding, and Qdrant workflow guide |
 
 ## Related Documents
 
