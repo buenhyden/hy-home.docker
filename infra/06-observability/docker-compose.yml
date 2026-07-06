@@ -429,7 +429,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-low
-    image: prom/alertmanager:v0.33.0
+    image: prom/alertmanager:v0.33.1
     container_name: infra-alertmanager
     tmpfs:
       - /tmp

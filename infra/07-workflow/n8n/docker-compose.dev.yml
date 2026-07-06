@@ -165,7 +165,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: n8nio/runners:2.29.5
+    image: n8nio/runners:2.29.6
     container_name: n8n-task-runner
     read_only: false
     depends_on:
@@ -202,7 +202,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: n8nio/runners:2.29.5
+    image: n8nio/runners:2.29.6
     container_name: n8n-task-runner-worker
     read_only: false
     depends_on:
