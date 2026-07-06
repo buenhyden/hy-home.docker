@@ -74,7 +74,7 @@ docs/03.specs/
 ├── 103-document-restructure-audit-contract-archive/ # Active document restructure disposition contract
 ├── 104-agentic-research-pack-refresh/   # Completed Stage 90 agentic research refresh spec
 ├── 105-agentic-engineering-implementation-audit-pack/ # Completed Stage 90 implementation audit pack design spec
-├── 106-workspace-support-surface-contract/ # Active `_workspace` repo-support surface contract
+├── 106-workspace-support-surface-contract/ # Completed `_workspace` repo-support surface contract
 ├── 107-provider-semantic-parity-validator/ # Completed provider adapter semantic parity validator
 ├── 108-compose-profile-service-coverage-snapshot/ # Completed generated Compose profile/service coverage snapshot
 ├── 109-gap-routing-recommendation/      # Completed gap-to-stage routing recommendation
