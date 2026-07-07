@@ -431,6 +431,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md](../../03.specs/119-sdlc-document-contract-corpus-normalization/spec.md) | Markdown reference |
 | [docs/03.specs/120-agent-output-eval-ci-gate/README.md](../../03.specs/120-agent-output-eval-ci-gate/README.md) | folder index |
 | [docs/03.specs/120-agent-output-eval-ci-gate/spec.md](../../03.specs/120-agent-output-eval-ci-gate/spec.md) | Markdown reference |
+| [docs/03.specs/121-dependency-vulnerability-audit-gate/README.md](../../03.specs/121-dependency-vulnerability-audit-gate/README.md) | folder index |
+| [docs/03.specs/121-dependency-vulnerability-audit-gate/spec.md](../../03.specs/121-dependency-vulnerability-audit-gate/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -513,6 +515,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md](../../04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-agent-output-eval-runner.md](../../04.execution/plans/2026-07-06-agent-output-eval-runner.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md](../../04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-06-dependency-vulnerability-audit-gate.md](../../04.execution/plans/2026-07-06-dependency-vulnerability-audit-gate.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-provider-hook-parity-matrix.md](../../04.execution/plans/2026-07-06-provider-hook-parity-matrix.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-sdlc-document-contract-corpus-normalization.md](../../04.execution/plans/2026-07-06-sdlc-document-contract-corpus-normalization.md) | Markdown reference |
@@ -625,6 +628,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md](../../04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-agent-output-eval-runner.md](../../04.execution/tasks/2026-07-06-agent-output-eval-runner.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md](../../04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-06-dependency-vulnerability-audit-gate.md](../../04.execution/tasks/2026-07-06-dependency-vulnerability-audit-gate.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md](../../04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md](../../04.execution/tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md) | Markdown reference |
@@ -930,6 +934,12 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md) | Markdown reference |
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md) | Markdown reference |
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md) | Markdown reference |
+| [docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md](../audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md) | folder index |
+| [docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/agent-catalog-audit.md](../audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/agent-catalog-audit.md) | Markdown reference |
+| [docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/automation-candidates.md](../audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/automation-candidates.md) | Markdown reference |
+| [docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/harness-loop-audit.md](../audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/harness-loop-audit.md) | Markdown reference |
+| [docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/implementation-overview.md](../audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/implementation-overview.md) | Markdown reference |
+| [docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/sdlc-qa-security-audit.md](../audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/sdlc-qa-security-audit.md) | Markdown reference |
 | [docs/90.references/audits/README.md](../audits/README.md) | folder index |
 | [docs/90.references/data/README.md](../data/README.md) | folder index |
 | [docs/90.references/data/docker/README.md](../data/docker/README.md) | folder index |
@@ -965,6 +975,12 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md](../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md](../research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md](../research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md) | Markdown reference |
+| [docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md](../research/2026-07-07-agentic-research-pack-update/README.md) | folder index |
+| [docs/90.references/research/2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md](../research/2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md) | Markdown reference |
+| [docs/90.references/research/2026-07-07-agentic-research-pack-update/harness-engineering.md](../research/2026-07-07-agentic-research-pack-update/harness-engineering.md) | Markdown reference |
+| [docs/90.references/research/2026-07-07-agentic-research-pack-update/loop-engineering.md](../research/2026-07-07-agentic-research-pack-update/loop-engineering.md) | Markdown reference |
+| [docs/90.references/research/2026-07-07-agentic-research-pack-update/provider-implementation-comparison.md](../research/2026-07-07-agentic-research-pack-update/provider-implementation-comparison.md) | Markdown reference |
+| [docs/90.references/research/2026-07-07-agentic-research-pack-update/workspace-baseline.md](../research/2026-07-07-agentic-research-pack-update/workspace-baseline.md) | Markdown reference |
 | [docs/90.references/research/README.md](../research/README.md) | folder index |
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |
 | [docs/99.templates/support/README.md](../../99.templates/support/README.md) | folder index |

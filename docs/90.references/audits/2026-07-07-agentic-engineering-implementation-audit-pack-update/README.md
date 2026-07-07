@@ -18,6 +18,31 @@ status: active
 
 본 오딧 팩은 워크스페이스 거버넌스 및 파이프라인의 성숙도를 정기 감사하고 격차를 식별하기 위한 스냅샷 참조 문서입니다. Stage 00 정책, Stage 04 실행 이력, Stage 05 운영 가이드를 물리적으로 우회하지 않습니다.
 
+## Audience
+
+이 README의 주요 독자:
+
+- 개발자 (Developers)
+- 인프라 및 운영 엔지니어 (Operators)
+- 문서화 작성자 (Documentation Writers)
+- AI 에이전트 (AI Agents)
+
+## Scope
+
+### In Scope
+
+- 하네스 엔지니어링 및 루프 엔지니어링 구현 현황에 대한 진단 결과 요약
+- SDLC, CI/CD, QA(Formatting, Linting, Syntax) 및 보안 성숙도 조사 결과
+- `msitarzewski/agency-agents`와의 카탈로그 비교 및 보완점 분석
+- 14대 자동화 개선 후보 로드맵 정리
+
+### Out of Scope
+
+- `docs/00.agent-governance/` 정책 직접 변경
+- `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/` 콘텐츠 직접 수정
+- 런타임 인프라 환경 변수 설정값 직접 변경
+- 실제 비밀값, 크리덴셜, 프라이빗 키 등 민감 정보 취급
+
 ## Structure
 
 ```text
@@ -38,11 +63,11 @@ status: active
 - [agent-catalog-audit.md](./agent-catalog-audit.md) - 에이전트 지침 구조, 외부 카탈로그 비교 및 추가 권고 에이전트 명세
 - [automation-candidates.md](./automation-candidates.md) - 향후 자동화(Pipeline, Workflow, Tooling)를 위한 14대 구체적 개선 후보군
 
-## Gap Severity definitions
+## How to Work in This Area
 
-- **Implemented**: 워크스페이스 내에 검증 가능하며 활성화된 구현체가 존재하고 올바르게 작동 중임.
-- **Partially Implemented**: 메커니즘은 존재하나, 자동화 수준이 낮거나 특정 프로바이더(예: Gemini) 환경에서의 parity가 미흡함.
-- **Gap (Not Implemented)**: 개선 기회가 확인되었으나 현재 리포지토리 내에 구현된 산출물이 존재하지 않음.
+1. 본 오딧 팩 문서는 감사 요약 레퍼런스이며, 직접적인 실시간 규칙 변경이나 배포 액션은 Stage 03/04를 따릅니다.
+2. 각 오딧 문서들은 마크다운 계약에 따른 필수 표준 헤더 구조를 유지해야 합니다.
+3. 문서 내에 하이퍼링크가 깨지지 않았는지 `check-repo-contracts.sh` 스크립트를 통해 상시 검증해야 합니다.
 
 ## Related Documents
 

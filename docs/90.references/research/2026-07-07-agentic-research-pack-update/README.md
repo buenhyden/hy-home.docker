@@ -70,10 +70,16 @@ status: active
 
 ## Reading Order
 
-1. [workspace-baseline.md](./workspace-baseline.md)를 먼저 확인하여 이 워크스페이스의 규칙적 체계와 기본 기준을 파악합니다.
+1. [workspace-baseline.md](./workspace-baseline.md)에서 이 워크스페이스의 규칙적 체계와 기본 기준을 파악합니다.
 2. [harness-engineering.md](./harness-engineering.md)와 [loop-engineering.md](./loop-engineering.md)에서 하네스와 피드백 루프의 설계 방향을 분석합니다.
 3. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 세 가지 LLM 어댑터의 런타임 특성을 대조합니다.
 4. [ai-agent-catalogs.md](./ai-agent-catalogs.md)에서 `msitarzewski/agency-agents`와의 카탈로그 매핑을 검토하고 에이전트 인스트럭션 추가 기회를 발견합니다.
+
+## How to Work in This Area
+
+1. 본 연구 팩의 문서는 직접적인 활성 정책이 아닌, 참조용(Reference) 연구 자료 성격을 유지합니다.
+2. 새로운 문서를 추가할 때 반드시 마크다운 표준 헤더 스펙을 준수해야 합니다.
+3. 작업 변경 사항이 생기면 이 README 파일의 링크 상태를 재확인하고, 상위 README에도 등록해야 합니다.
 
 ## Related Documents
 
