@@ -60,7 +60,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
-    image: quay.io/coreos/etcd:v3.6.12
+    image: quay.io/coreos/etcd:v3.6.13
     container_name: etcd-1
     command:
       - /usr/local/bin/etcd
@@ -99,7 +99,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
-    image: quay.io/coreos/etcd:v3.6.12
+    image: quay.io/coreos/etcd:v3.6.13
     container_name: etcd-2
     command:
       - /usr/local/bin/etcd
@@ -138,7 +138,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
-    image: quay.io/coreos/etcd:v3.6.12
+    image: quay.io/coreos/etcd:v3.6.13
     container_name: etcd-3
     command:
       - /usr/local/bin/etcd

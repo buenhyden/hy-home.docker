@@ -10,7 +10,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-    image: azbuilder/api-server:2.32.0
+    image: azbuilder/api-server:2.32.1
     container_name: terrakube-api
     secrets:
       - terrakube_db_password
@@ -68,7 +68,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-    image: azbuilder/terrakube-ui:2.32.0
+    image: azbuilder/terrakube-ui:2.32.1
     container_name: terrakube-ui
     environment:
       REACT_APP_TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}/api/v1/
@@ -105,7 +105,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
-    image: azbuilder/executor:2.32.0
+    image: azbuilder/executor:2.32.1
     container_name: terrakube-executor
     secrets:
       - terrakube_internal_secret
