@@ -115,25 +115,29 @@ active governance document differ, the governance document wins.
   documentation.
 - **Release documentation**: Communicates notable changes per version to
   humans (release notes / changelog), anchored by Keep a Changelog and Semantic
-  Versioning. Repo-local status: **no dedicated template and no canonical stage
-  home** exists today (see Potential Follow-up / Gap).
+  Versioning. Repo-local status: the artifact is the root `CHANGELOG.md`
+  (Keep a Changelog style), the process lives in the Stage 05
+  `release-management.md` runbook (tag readiness, evidence, rollback), and
+  `.github/workflows/generate-changelog.yml` automates changelog generation. The
+  only absent piece is a dedicated `docs/99.templates/` template, which is
+  optional because the changelog follows an external convention.
 
 ## Repo-local Document-Type Mapping
 
-| Document   | Role (answers)                                                | Stage           | Owner                | Template                            |
-| ---------- | ------------------------------------------------------------- | --------------- | -------------------- | ----------------------------------- |
-| PRD        | What to build and why; users, requirements, success criteria  | 01              | Product Manager      | `sdlc/prd.template.md`              |
-| ARD        | Architecture boundaries and quality attributes                | 02/requirements | System Architect     | `sdlc/ard.template.md`              |
-| ADR        | One architectural decision, its alternatives and consequences | 02/decisions    | System Architect     | `sdlc/adr.template.md`              |
-| Spec       | Technical design, interfaces, contracts, verification         | 03              | Impl Engineer        | `sdlc/spec.template.md`             |
-| Plan       | Implementation sequencing, risks, verification, done criteria | 04/plans        | Project/Eng Lead     | `sdlc/plan.template.md`             |
-| Task       | Execution state and validation evidence                       | 04/tasks        | Impl/QA Engineer     | `sdlc/task.template.md`             |
-| Guide      | How to use and routinely check a service; runbook handoff     | 05/guides       | Doc Specialist / SRE | `operations/guide.template.md`      |
-| Policy     | Controls, exceptions, verification, review cadence            | 05/policies     | Doc Specialist / SRE | `operations/policy.template.md`     |
-| Runbook    | Ordered steps, evidence, recovery, escalation                 | 05/runbooks     | Operations/SRE       | `operations/runbook.template.md`    |
-| Incident   | Incident timeline and response state                          | 05/incidents    | Operations/SRE       | `operations/incident.template.md`   |
-| Postmortem | Impact, root cause, action items, prevention                  | 05/incidents    | Operations/SRE       | `operations/postmortem.template.md` |
-| Release    | Notable changes per version for humans                        | — (none)        | —                    | — (gap)                             |
+| Document   | Role (answers)                                                | Stage                             | Owner                | Template                            |
+| ---------- | ------------------------------------------------------------- | --------------------------------- | -------------------- | ----------------------------------- |
+| PRD        | What to build and why; users, requirements, success criteria  | 01                                | Product Manager      | `sdlc/prd.template.md`              |
+| ARD        | Architecture boundaries and quality attributes                | 02/requirements                   | System Architect     | `sdlc/ard.template.md`              |
+| ADR        | One architectural decision, its alternatives and consequences | 02/decisions                      | System Architect     | `sdlc/adr.template.md`              |
+| Spec       | Technical design, interfaces, contracts, verification         | 03                                | Impl Engineer        | `sdlc/spec.template.md`             |
+| Plan       | Implementation sequencing, risks, verification, done criteria | 04/plans                          | Project/Eng Lead     | `sdlc/plan.template.md`             |
+| Task       | Execution state and validation evidence                       | 04/tasks                          | Impl/QA Engineer     | `sdlc/task.template.md`             |
+| Guide      | How to use and routinely check a service; runbook handoff     | 05/guides                         | Doc Specialist / SRE | `operations/guide.template.md`      |
+| Policy     | Controls, exceptions, verification, review cadence            | 05/policies                       | Doc Specialist / SRE | `operations/policy.template.md`     |
+| Runbook    | Ordered steps, evidence, recovery, escalation                 | 05/runbooks                       | Operations/SRE       | `operations/runbook.template.md`    |
+| Incident   | Incident timeline and response state                          | 05/incidents                      | Operations/SRE       | `operations/incident.template.md`   |
+| Postmortem | Impact, root cause, action items, prevention                  | 05/incidents                      | Operations/SRE       | `operations/postmortem.template.md` |
+| Release    | Notable changes per version for humans                        | root `CHANGELOG.md` + 05/runbooks | Operations/SRE       | — (no template; optional)           |
 
 ## Analysis
 
@@ -163,11 +167,14 @@ the guide explains routine use and hands off to procedures, and the runbook
 carries the ordered recovery and escalation steps. Industry runbook practice
 draws the same policy-versus-runbook line the repo templates already encode.
 
-Release documentation is the one requested type with no repo-local home. There is
-no `release.template.md` and no stage folder that owns per-version, human-readable
-release notes. Conventional-commit history and CI provide raw change data, but a
-curated changelog (the Keep a Changelog / Semantic Versioning practice) is a
-distinct human-facing artifact that the current taxonomy does not template.
+Release documentation does have a repo-local home, spread across three existing
+mechanisms rather than a single doc type: the root `CHANGELOG.md` holds the
+human-readable release notes, the Stage 05 `release-management.md` runbook governs
+tag readiness and evidence, and `generate-changelog.yml` automates changelog
+generation. What it lacks is only a `docs/99.templates/` template; because the
+changelog follows the external Keep a Changelog / Semantic Versioning convention,
+a template is an optional refinement, not a missing artifact. Introducing a new
+release document type would duplicate these homes rather than fill a gap.
 
 ## Application Notes for This Workspace
 
@@ -177,17 +184,17 @@ distinct human-facing artifact that the current taxonomy does not template.
   timeline in incident records, and blameless analysis in postmortems.
 - Treat a guide as usage-and-handoff and a runbook as ordered recovery; do not
   merge them.
-- Release notes currently have no template; until a decision is made, record any
-  release-note content through an approved stage rather than inventing an
-  untracked location.
+- Record release notes in the root `CHANGELOG.md` and drive the release through
+  the Stage 05 `release-management.md` runbook; do not invent a separate release
+  document type.
 
 ## Potential Follow-up / Gap
 
-- **Release documentation has no template or stage home.** A future governance
-  decision (ADR) could either add a `release`/changelog template under
-  `docs/99.templates/` mapped to a Stage 05 operations subfolder, or explicitly
-  delegate release notes to an external changelog convention. Either path is a
-  separate approved change, not part of this reference.
+- **Release documentation has a home but no template.** Release is already
+  handled by the root `CHANGELOG.md`, the Stage 05 `release-management.md`
+  runbook, and `generate-changelog.yml`. Adding an optional changelog template
+  under `docs/99.templates/` mapped to those homes is a minor refinement, not a
+  missing artifact; a new release document type is not warranted.
 - Mapping incident and postmortem practice to a formal framework (NIST SP 800-61
   Rev. 3, which superseded the withdrawn Rev. 2, or SRE incident management)
   would require a separate approved policy or spec.
@@ -234,5 +241,6 @@ distinct human-facing artifact that the current taxonomy does not template.
 - [research pack index](./README.md)
 - [spec-driven development and SDLC](./spec-driven-sdlc.md)
 - [quality, CI, and formatting](./quality-ci-formatting.md)
+- [release management runbook](../../../05.operations/runbooks/00-workspace/release-management.md)
 - [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
