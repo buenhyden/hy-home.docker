@@ -56,7 +56,7 @@ The primary audience of this research pack includes:
 
 ## How to Work in This Area
 
-1. Reference documents are read-only and serve as snapshots. Do not modify the existing content unless fixing structural validation or incorrect facts.
+1. These are living references, not active policy or plans. Improve or supplement them in place when analysis reveals gaps, drift, or incorrect facts; preserve the reference boundary and record any change that would alter another stage as a gap rather than editing that stage from here.
 2. Ensure target-relative links use relative Markdown syntax rather than absolute paths or `file://` schemes.
 3. Validate changes against repository contracts by running `./scripts/validation/check-repo-contracts.sh`.
 
