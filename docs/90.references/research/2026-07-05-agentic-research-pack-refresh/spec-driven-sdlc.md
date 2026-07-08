@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md -->
 
 # Reference: Spec-Driven Development and SDLC
@@ -46,16 +47,16 @@ This reference provides background for Stage 00 governance and the lifecycle acr
 
 ## Repo-local SDLC Mapping
 
-| SDLC Concern | External Pattern | Repo-local Stage |
-| --- | --- | --- |
-| intent and scope | requirements engineering | `docs/01.requirements/` |
+| SDLC Concern             | External Pattern                     | Repo-local Stage                                                        |
+| ------------------------ | ------------------------------------ | ----------------------------------------------------------------------- |
+| intent and scope         | requirements engineering             | `docs/01.requirements/`                                                 |
 | architecture constraints | lifecycle architecture and decisions | `docs/02.architecture/requirements/`, `docs/02.architecture/decisions/` |
-| implementation contract | spec-driven / contract-first | `docs/03.specs/` |
-| work sequencing | implementation planning | `docs/04.execution/plans/` |
-| evidence capture | task execution and verification | `docs/04.execution/tasks/` |
-| operations readiness | runbook/policy/guide lifecycle | `docs/05.operations/` |
-| stable context | reference stage | `docs/90.references/` |
-| document contract | templates | `docs/99.templates/` |
+| implementation contract  | spec-driven / contract-first         | `docs/03.specs/`                                                        |
+| work sequencing          | implementation planning              | `docs/04.execution/plans/`                                              |
+| evidence capture         | task execution and verification      | `docs/04.execution/tasks/`                                              |
+| operations readiness     | runbook/policy/guide lifecycle       | `docs/05.operations/`                                                   |
+| stable context           | reference stage                      | `docs/90.references/`                                                   |
+| document contract        | templates                            | `docs/99.templates/`                                                    |
 
 ## Analysis
 
@@ -116,6 +117,7 @@ QA evidence should keep formatting, linting, syntax checks, documentation contra
 
 - [research pack index](./README.md)
 - [workspace baseline](./workspace-baseline.md)
+- [SDLC and operations document-type roles](./sdlc-document-roles.md)
 - [quality, CI, and formatting](./quality-ci-formatting.md)
 - [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
