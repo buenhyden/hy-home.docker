@@ -104,9 +104,12 @@ active governance document differ, the governance document wins.
   distinct from a policy (rules) and a broader playbook (multi-runbook response).
 - **Incident (Incident Record)**: Records an active or resolved incident
   timeline and response state. Repo-local Stage 05
-  (`operations/incidents/YYYY/INC-###-*`). Anchored by security incident-handling
-  guidance (NIST SP 800-61) and SRE incident-management practice; it captures
-  what happened and when, distinct from the learning artifact.
+  (`operations/incidents/YYYY/INC-###-*`). Anchored by NIST SP 800-61 Rev. 3
+  (2025), which reframes incident response as a CSF 2.0 Community Profile
+  superseding the withdrawn Rev. 2 handling guide, and by Google SRE incident
+  management (SRE Book Ch. 14) with its Incident Commander / Ops / Comms roles. It
+  captures what happened and when under a defined command structure, distinct from
+  the postmortem learning artifact.
 - **Postmortem**: Analyzes incident impact, root cause, action items, and
   prevention. Repo-local Stage 05, co-located with its incident as
   `postmortem.md`. Google SRE defines a postmortem as a written record of an
@@ -219,11 +222,12 @@ release document type would duplicate these homes rather than fill a gap.
 - [SDLC templates README](../../../99.templates/templates/sdlc/README.md) - repo-local PRD/ARD/ADR/spec/plan/task template intent and targets
 - [Operations templates README](../../../99.templates/templates/operations/README.md) - repo-local guide/policy/runbook/incident/postmortem template intent and targets
 - [ADR homepage (adr.github.io)](https://adr.github.io/) - ADR definition and curated practice
-- [Michael Nygard: Documenting Architecture Decisions](https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions.html) - origin of the ADR practice
+- [Michael Nygard: Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) - origin of the ADR practice
 - [ISO/IEC/IEEE 42010:2022](https://www.iso.org/standard/74393.html) - architecture description standard metadata
-- [ISO/IEC/IEEE 29148](https://www.iso.org/standard/72089.html) - requirements engineering standard metadata
+- [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) - requirements engineering standard metadata
+- [Google SRE Book: Managing Incidents](https://sre.google/sre-book/managing-incidents/) - incident-management roles and command structure
 - [Google SRE Book: Postmortem Culture](https://sre.google/sre-book/postmortem-culture/) - postmortem definition, triggers, blameless culture
-- [NIST SP 800-61](https://csrc.nist.gov/pubs/sp/800/61) - computer security incident handling guidance (Rev. 2 withdrawn; see Rev. 3)
+- [NIST SP 800-61 Rev. 3 (final, 2025)](https://csrc.nist.gov/pubs/sp/800/61/r3/final) - incident response recommendations as a CSF 2.0 Community Profile, superseding the withdrawn Rev. 2
 - [PagerDuty: What is a runbook](https://www.pagerduty.com/resources/learn/what-is-a-runbook/) - runbook definition and runbook-vs-policy distinction
 - [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) - release-notes/changelog convention
 - [Semantic Versioning](https://semver.org/) - version-signal convention for releases
