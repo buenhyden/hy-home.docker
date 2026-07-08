@@ -91,7 +91,7 @@ jobs:
     steps:
       - *checkout
       - name: Set up Python for repository contracts
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.12'
       - name: Install repository contract Python dependencies
@@ -240,7 +240,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
       - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.12'
       - name: Install Storybook Next.js lint dependencies

@@ -48,12 +48,14 @@ status: active
 ```text
 research/
 ├── README.md # This file
-└── 2026-07-05-agentic-research-pack-refresh/ # Harness, loop, provider, SDLC, QA research pack
+├── 2026-07-05-agentic-research-pack-refresh/ # Harness, loop, provider, SDLC, QA research pack
+└── 2026-07-07-agentic-research-pack-update/  # Updated detailed 23-point comparative research pack
 ```
 
 ## Current References
 
 - [2026-07-05-agentic-research-pack-refresh/README.md](./2026-07-05-agentic-research-pack-refresh/README.md) - 하네스/루프/agent-first engineering research pack index, including targeted Docker Compose/infrastructure, security governance, automation/pipeline/workflow, and AI agent catalog references
+- [2026-07-07-agentic-research-pack-update/README.md](./2026-07-07-agentic-research-pack-update/README.md) - Updated agentic engineering research pack index, including details on harness, loops, provider parity, SDLC, formatting, and agency-agents comparative analysis
 
 ## Naming Rules
 
