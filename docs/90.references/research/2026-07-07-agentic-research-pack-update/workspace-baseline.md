@@ -50,8 +50,8 @@ The workspace maps its documentation stages to software and systems engineering 
 | **Requirements Definition**  | Define stakeholder needs and identify bounds    | [docs/01.requirements/](../../../01.requirements/)       | Product Requirements Document (PRD) & Acceptance Criteria      |
 | **Architecture Design**      | Design system boundaries and document ADRs      | [docs/02.architecture/](../../../02.architecture/)       | Architecture Requirements (ARD) & Architecture Decisions (ADR) |
 | **Detailed Design / Specs**  | Define interface contracts and validation rules | [docs/03.specs/](../../../03.specs/)                     | Technical Specifications (Specs) & schema contracts            |
-| **Execution Planning**       | Break down work and establish risk rollbacks    | [docs/04.execution/plans/](../../../04.execution/plans/) | Implementation Plans (`YYYY-MM-DD-<feature>.md`)               |
-| **Implementation / Work**    | Apply surgical code changes and record tasks    | [docs/04.execution/tasks/](../../../04.execution/tasks/) | Task evidence (`YYYY-MM-DD-<feature>-tasks.md`)                |
+| **Execution Planning**       | Break down work and establish risk rollbacks    | [docs/04.execution/plans/](../../../04.execution/plans/) | Implementation Plans (`YYYY-MM-DD-feature.md`)                 |
+| **Implementation / Work**    | Apply surgical code changes and record tasks    | [docs/04.execution/tasks/](../../../04.execution/tasks/) | Task evidence (`YYYY-MM-DD-feature-tasks.md`)                  |
 | **Operations / Maintenance** | Establish guides, policies, and runbooks        | [docs/05.operations/](../../../05.operations/)           | Operation Guides, Policies, Runbooks, & Incidents              |
 
 ### 2. Spec-Driven Development (SDD) Model
