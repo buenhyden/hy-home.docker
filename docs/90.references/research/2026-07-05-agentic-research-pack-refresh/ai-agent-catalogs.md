@@ -47,8 +47,8 @@ model policy, or modify provider runtime directories.
   roles, capabilities, and invocation conventions. Catalogs can be curated
   (small, governed) or community-scale (large, general-purpose).
 - **agency-agents**: A community MIT-licensed repository publishing a large
-  role-based agent pack. At the 2026-07-05 review, its README described roughly
-  232 Markdown agent personas across 16 divisions (engineering, design,
+  role-based agent pack. At the 2026-07-05 review, its README described 230+
+  Markdown agent personas across 16 divisions (engineering, design,
   marketing, product, testing, security, game development, GIS, and others).
 - **Persona-style definition**: agency-agents agents are Markdown documents
   combining identity, mission, workflows, deliverables, and communication
@@ -69,7 +69,7 @@ model policy, or modify provider runtime directories.
 
 | Dimension        | agency-agents (community pack)                | `hy-home.docker` (curated catalog)                            |
 | ---------------- | --------------------------------------------- | ------------------------------------------------------------- |
-| Size and scope   | ~232 agents, 16 business divisions            | 15 agents scoped to this workspace                            |
+| Size and scope   | 230+ agents, 16 business divisions            | 15 agents scoped to this workspace                            |
 | Source of truth  | Per-tool copies after install scripts         | Stage 00 catalog with provider adapter projections            |
 | Definition style | Personality-driven persona Markdown           | Role, scope, tools, and model policy per governance templates |
 | Distribution     | Install/convert scripts into tool directories | Tracked repo surfaces with parity validation                  |
