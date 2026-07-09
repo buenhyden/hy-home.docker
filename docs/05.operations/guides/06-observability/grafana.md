@@ -88,7 +88,6 @@ status: active
 - `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
 - `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`
 
-
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/06-observability/grafana.md)을 따른다.

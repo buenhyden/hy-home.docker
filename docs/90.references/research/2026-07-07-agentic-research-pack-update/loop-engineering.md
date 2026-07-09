@@ -26,6 +26,7 @@ Loop Engineering focuses on establishing structural feedback loops that govern h
 ```
 
 The cycle consists of:
+
 - **Observe**: Gathering target files, compiler outputs, and error outputs (stdout/stderr).
 - **Plan**: Designing targeted, surgical adjustments (Surgical Changes) to minimize system churn.
 - **Execute**: Modifying code surfaces using sandboxed tool capabilities.
@@ -42,6 +43,7 @@ This document acts as an advisory technical reference. It does not replace activ
 ## Scope
 
 ### In Scope
+
 - Theoretical definition and cycles of Loop Engineering.
 - Workspace's multi-tier loops (Inner ReAct, Outer Validation, CI Pipeline, and Human-in-the-loop).
 - Architecture of automated Diagnostic Parsers for refining terminal tracebacks.
@@ -49,6 +51,7 @@ This document acts as an advisory technical reference. It does not replace activ
 - Diagnostic gaps (unstructured error streams, lack of self-correction circuit breakers).
 
 ### Out of Scope
+
 - Direct alterations to GitHub Actions workflows or pre-commit hooks.
 - Execution of active plans or logging of task checklists.
 - Plaintext secrets or credentials.
@@ -56,6 +59,7 @@ This document acts as an advisory technical reference. It does not replace activ
 ## Definitions / Facts
 
 ### 1. Multi-Tier Feedback Loops
+
 The `hy-home.docker` workspace combines four feedback loops to guarantee high code and documentation quality:
 
 ```mermaid
@@ -73,6 +77,7 @@ graph TD
 - **Human-in-the-Loop (HITL)**: Enforced via [approval-boundaries.md](../../../00.agent-governance/rules/approval-boundaries.md). Humans review plans (`implementation_plan.md`) and verify completed evidence (`walkthrough.md`).
 
 ### 2. Automated Diagnostic Parser
+
 A diagnostic parser structures terminal tracebacks to guide agent adjustments:
 
 ```text
@@ -98,12 +103,15 @@ A diagnostic parser structures terminal tracebacks to guide agent adjustments:
 3. **Actionable Suggestions**: Maps error codes to specific solutions, reducing repetitive trial-and-error edits.
 
 ### 3. Provider Self-Correction Comparison
+
 The three runtimes handle correction feedback differently:
+
 - **Claude Code**: Native ReAct logic handles multi-step tool calls. It dynamically adapts when a command returns an error exit code, resolving compiler errors on the fly.
 - **OpenAI Codex**: Relies on hooks to capture validator outputs. The system feeds JSON-formatted error maps directly into the prompt frame for corrective editing.
 - **Gemini Code Assist**: Lacks native error interceptors. Users must manually copy terminal tracebacks or compiler errors into the chat session to trigger self-correction.
 
 ### 4. Identified Gaps
+
 - **Unstructured Terminal Output**: Raw terminal texts are fed into the prompt, bloating context sizes.
 - **Lack of Circuit Breakers**: No auto-rollback limits (Auto-checkout) exist to stop agents stuck in infinite ReAct loop cycles.
 

@@ -119,8 +119,8 @@ To prevent parsing issues and maintain style consistency, the following tools ar
   - `scripts/operations/` - backup and setup runbooks.
 - **Integration Flow**:
   - 1. Read `docs/00.agent-governance/rules/bootstrap.md` to load the current worker persona.
-  - 2. Map compose inclusions and environment parameters.
-  - 3. Consult Graphify outputs for cross-component dependencies.
+  - 1. Map compose inclusions and environment parameters.
+  - 1. Consult Graphify outputs for cross-component dependencies.
 
 ### 7. Follow-up Gaps and Future Actions
 
