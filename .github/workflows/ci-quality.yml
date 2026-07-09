@@ -121,7 +121,7 @@ jobs:
       - name: Set up Node.js for dependency audit
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
       - name: Audit Storybook Next.js dependencies
@@ -236,7 +236,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
       - name: Set up Python
@@ -261,7 +261,7 @@ jobs:
       - name: Set up Node.js for frontend quality
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
       - name: Install Storybook Next.js dependencies
@@ -286,7 +286,7 @@ jobs:
       - name: Set up Node.js for Storybook coverage
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
       - name: Install Storybook Next.js test dependencies
