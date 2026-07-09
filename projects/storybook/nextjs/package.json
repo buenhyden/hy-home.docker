@@ -14,7 +14,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "next": "16.2.9",
+    "next": "16.2.10",
     "react": "19.2.7",
     "react-dom": "19.2.7"
   },
@@ -27,7 +27,7 @@
     "@storybook/addon-vitest": "^10.4.6",
     "@storybook/nextjs-vite": "^10.4.6",
     "@tailwindcss/postcss": "^4.3.2",
-    "@types/node": "^26.0.1",
+    "@types/node": "^26.1.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitest/browser": "^4.1.9",
@@ -38,10 +38,10 @@
     "eslint-plugin-storybook": "^10.4.6",
     "playwright": "^1.61.1",
     "storybook": "^10.4.6",
-    "tailwindcss": "^4.3.0",
+    "tailwindcss": "^4.3.2",
     "typescript": "^6.0.3",
-    "vite": "^8.1.0",
-    "vitest": "^4.1.8"
+    "vite": "^8.1.4",
+    "vitest": "^4.1.10"
   },
      "overrides": {
     "postcss": "^8.5.10",
