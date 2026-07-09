@@ -125,7 +125,7 @@ regenerate it with `bash scripts/operations/generate-tech-stack-version-provenan
 | Vault | `hashicorp/vault:2.0.3` | `declared-pinned` | `none` | `infra/03-security/vault/docker-compose.yml:33` (direct)<br>`infra/03-security/vault/docker-compose.yml:91` (direct) | N/A |
 | PostgreSQL | `ghcr.io/zalando/spilo-17:4.0-p3` | `declared-pinned` | `none` | `infra/04-data/relational/postgresql-cluster/docker-compose.yml:293` (direct)<br>`infra/04-data/relational/postgresql-cluster/docker-compose.yml:337` (direct)<br>`infra/04-data/relational/postgresql-cluster/docker-compose.yml:381` (direct) | N/A |
 | PostgreSQL | `postgres:18.4-alpine` | `declared-pinned` | `none` | `infra/04-data/operational/mng-db/docker-compose.yml:111` (direct)<br>`infra/04-data/operational/mng-db/docker-compose.yml:148` (direct)<br>`infra/04-data/relational/postgresql-cluster/docker-compose.yml:241` (direct) | N/A |
-| PostgreSQL | `supabase/postgres:17.6.1.142` | `declared-pinned` | `none` | `infra/04-data/operational/supabase/docker-compose.yml:364` (direct) | N/A |
+| PostgreSQL | `supabase/postgres:17.6.1.143` | `declared-pinned` | `none` | `infra/04-data/operational/supabase/docker-compose.yml:364` (direct) | N/A |
 | Valkey | `valkey/valkey:9.1.0-alpine` | `declared-pinned` | `none` | `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml:11` (direct)<br>`infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml:188` (direct)<br>`infra/04-data/operational/mng-db/docker-compose.yml:25` (direct)<br>`infra/07-workflow/airflow/docker-compose.yml:364` (direct)<br>`infra/07-workflow/n8n/docker-compose.yml:245` (direct) | N/A |
 | Kafbat UI | `kafbat/kafka-ui:v1.5.0` | `declared-pinned` | `none` | `infra/05-messaging/kafka/docker-compose.yml:309` (direct) | N/A |
 | Kafka | `confluentinc/cp-kafka:8.3.0` | `declared-pinned` | `none` | `infra/05-messaging/kafka/docker-compose.yml:31` (direct)<br>`infra/05-messaging/kafka/docker-compose.yml:409` (direct) | N/A |
@@ -134,9 +134,9 @@ regenerate it with `bash scripts/operations/generate-tech-stack-version-provenan
 | Loki | `hy/loki:3.7.3-custom` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:107` (direct) | N/A |
 | Prometheus | `prom/prometheus:v3.13.0` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:56` (direct) | N/A |
 | Tempo | `hy/tempo:3.0.2-custom` | `declared-pinned` | `none` | `infra/06-observability/docker-compose.yml:156` (direct) | N/A |
-| Airflow | `apache/airflow:3.2.2` | `declared-pinned` | `none` | `infra/07-workflow/airflow/docker-compose.yml:30` (env-default) | N/A |
+| Airflow | `apache/airflow:3.3.0` | `declared-pinned` | `none` | `infra/07-workflow/airflow/docker-compose.yml:30` (env-default) | N/A |
 | n8n | `hyhome/n8n:2.29.5-local` | `declared-pinned` | `none` | `infra/07-workflow/n8n/docker-compose.yml:68` (direct)<br>`infra/07-workflow/n8n/docker-compose.yml:130` (direct) | N/A |
-| n8n | `n8nio/runners:2.29.5` | `declared-pinned` | `none` | `infra/07-workflow/n8n/docker-compose.yml:172` (direct)<br>`infra/07-workflow/n8n/docker-compose.yml:209` (direct) | N/A |
+| n8n | `n8nio/runners:2.29.6` | `declared-pinned` | `none` | `infra/07-workflow/n8n/docker-compose.yml:172` (direct)<br>`infra/07-workflow/n8n/docker-compose.yml:209` (direct) | N/A |
 | Ollama | `ollama/ollama:0.31.1` | `declared-pinned` | `none` | `infra/08-ai/ollama/docker-compose.yml:26` (direct) | N/A |
 | Open WebUI | `ghcr.io/open-webui/open-webui:v0.10.2-cuda` | `declared-pinned` | `none` | `infra/08-ai/open-webui/docker-compose.yml:20` (direct) | N/A |
 | Open Notebook | `lfnovo/open_notebook:v1-latest-single` | `floating-exception` | `advisory` | `infra/11-laboratory/open-notebook/docker-compose.yml:56` (direct) | Laboratory Operator / monthly |

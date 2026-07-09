@@ -302,7 +302,7 @@ check_11_laboratory() {
 
   check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
   check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file" "dozzle middleware chain mismatch"
-  check_contains "$dozzle_compose" "image: amir20/dozzle:v10.6.6" "dozzle image tag mismatch"
+  check_contains "$dozzle_compose" "image: amir20/dozzle:v10.6.7" "dozzle image tag mismatch"
   check_contains "$dozzle_compose" "ipv4_address: 172.19.0.221" "dozzle infra_net IP mismatch"
 
   check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file,sso-errors@file,sso-auth@file" "open-notebook middleware chain mismatch"

@@ -30,7 +30,7 @@
       "images": [
         "postgres:18.4-alpine",
         "ghcr.io/zalando/spilo-17:4.0-p3",
-        "supabase/postgres:17.6.1.142"
+        "supabase/postgres:17.6.1.143"
       ],
       "compose_files": [
         "infra/04-data/operational/mng-db/docker-compose.yml",
@@ -94,13 +94,13 @@
     {
       "component": "Airflow",
       "tier": "07-workflow",
-      "images": ["apache/airflow:3.2.2"],
+      "images": ["apache/airflow:3.3.0"],
       "compose_files": ["infra/07-workflow/airflow/docker-compose.yml"]
     },
     {
       "component": "n8n",
       "tier": "07-workflow",
-      "images": ["hyhome/n8n:2.29.5-local", "n8nio/runners:2.29.5"],
+      "images": ["hyhome/n8n:2.29.5-local", "n8nio/runners:2.29.6"],
       "compose_files": ["infra/07-workflow/n8n/docker-compose.yml"]
     },
     {
