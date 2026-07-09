@@ -385,13 +385,13 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/tech-stack.versions.json": {
-    "mtime": 1783119927.8719485,
-    "ast_hash": "4b961c3a3add59e34756b75daeed84f3",
+    "mtime": 1783572428.0159466,
+    "ast_hash": "b1cb0fcc91272a4c942d0bf15bb6b0dc",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/hardening/check-all-hardening.sh": {
-    "mtime": 1783329283.2155142,
-    "ast_hash": "b232cf8a7eed41635fdacb3e1bc249b4",
+    "mtime": 1783572409.9440875,
+    "ast_hash": "dc5ddbd338589009e39ae3a9acd187f5",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/hooks/agent-event-hook.sh": {
@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1783511230.1490102,
-    "ast_hash": "6be5f1084a1dda6f86ab1d76fa27d280",
+    "mtime": 1783590402.9562201,
+    "ast_hash": "afdf286b8291d05d31d1141f17e480d3",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -3445,8 +3445,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/llm-wiki/llm-wiki-index.md": {
-    "mtime": 1783392294.4163144,
-    "ast_hash": "66eed095fc896e4b5b4bb132501f6573",
+    "mtime": 1783511484.1588235,
+    "ast_hash": "3e5b04985a48364c4eea59758d09e905",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/llm-wiki/repository-map.md": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/04-data/lake-and-object/seaweedfs/docker-compose.yml": {
-    "mtime": 1782887826.773949,
-    "ast_hash": "5adb1125072bd269e272256f9898afb0",
+    "mtime": 1783551059.3503723,
+    "ast_hash": "c8f0a62c9319d352d02cba28882e2faa",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/04-data/nosql/README.md": {
@@ -4080,8 +4080,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/04-data/operational/supabase/docker-compose.yml": {
-    "mtime": 1783119927.8675332,
-    "ast_hash": "405c99f8b6371fa8a7a902494bd3ee49",
+    "mtime": 1783551059.3503723,
+    "ast_hash": "2a2ec4b531cb12584d902497b6eed7e1",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/04-data/relational/README.md": {
@@ -4095,8 +4095,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/04-data/relational/postgresql-cluster/docker-compose.yml": {
-    "mtime": 1783119927.8678424,
-    "ast_hash": "baad09f52155d3e2113286429f9aac72",
+    "mtime": 1783551059.3503723,
+    "ast_hash": "dfb5f568b8762174180cd24736e62f2b",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/04-data/specialized/README.md": {
@@ -4110,8 +4110,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/04-data/specialized/neo4j/docker-compose.yml": {
-    "mtime": 1781078496.5417123,
-    "ast_hash": "e8bc3ffeac87979cf10544c7820ed691",
+    "mtime": 1783551059.351079,
+    "ast_hash": "e07375b24368ffbc104a14c9ee9a2af7",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/04-data/specialized/qdrant/README.md": {
@@ -4185,13 +4185,13 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/06-observability/docker-compose.dev.yml": {
-    "mtime": 1783119927.86903,
-    "ast_hash": "bbef6ce507df2dbcc7dc72592a274ceb",
+    "mtime": 1783551059.351079,
+    "ast_hash": "8976f5717dd24ef257423c229ccabe97",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/06-observability/docker-compose.yml": {
-    "mtime": 1783119927.8692136,
-    "ast_hash": "1c54bba41b2ba3337211d41737f56721",
+    "mtime": 1783551059.351079,
+    "ast_hash": "da331f53c26dd6b4db95aefc260b4d0d",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/06-observability/grafana/README.md": {
@@ -4335,13 +4335,13 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/07-workflow/airflow/docker-compose.dev.yml": {
-    "mtime": 1780478383.8849835,
-    "ast_hash": "737ccc26b86f027e737af67d5c544648",
+    "mtime": 1783551059.351079,
+    "ast_hash": "3d4b25e1ce753d17ac688ddf2d736e71",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/07-workflow/airflow/docker-compose.yml": {
-    "mtime": 1781078496.5417123,
-    "ast_hash": "0861ee17b7e8b75e0f210f0fa9190ff0",
+    "mtime": 1783551059.351079,
+    "ast_hash": "1fab4678d3c1612e1d79b2601eac3e44",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/07-workflow/n8n/README.md": {
@@ -4350,13 +4350,13 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/07-workflow/n8n/docker-compose.dev.yml": {
-    "mtime": 1783119927.8707812,
-    "ast_hash": "5052af964209f411401d40b61834d70e",
+    "mtime": 1783551059.351079,
+    "ast_hash": "8e5909d2e291829a962eb14351633cde",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/07-workflow/n8n/docker-compose.yml": {
-    "mtime": 1783119927.8707812,
-    "ast_hash": "211cfa4d07a570f3550201790b57ea40",
+    "mtime": 1783551059.351079,
+    "ast_hash": "9ed440bdc8b73930955b9af8f7ec5386",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/08-ai/README.md": {
@@ -4455,8 +4455,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/09-tooling/terrakube/docker-compose.yml": {
-    "mtime": 1782887826.7761111,
-    "ast_hash": "5309142ef51d5b7f6a85483221efa556",
+    "mtime": 1783551059.351079,
+    "ast_hash": "83a1c08900167f81f7082e5320847233",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/10-communication/README.md": {
@@ -4470,8 +4470,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/10-communication/mail/docker-compose.yml": {
-    "mtime": 1782887826.7764938,
-    "ast_hash": "0b73cd0736fb100da9dc4e70266859ff",
+    "mtime": 1783551059.351079,
+    "ast_hash": "aa1563a638e99b749682fd175d7fe7cd",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/11-laboratory/README.md": {
@@ -4500,8 +4500,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/11-laboratory/dozzle/docker-compose.yml": {
-    "mtime": 1782367837.5432532,
-    "ast_hash": "80d843db6493bfc669ed86fb8b49ac0e",
+    "mtime": 1783551059.351079,
+    "ast_hash": "3101b4f8a3a7558a98c83b3c74378c09",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/infra/11-laboratory/open-notebook/README.md": {
@@ -5285,13 +5285,13 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/.impeccable/hook.cache.json": {
-    "mtime": 1783511228.2001128,
+    "mtime": 1783590403.1790833,
     "ast_hash": "afff01f34c72a33048cbd5579165d047",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md": {
-    "mtime": 1783329283.1230621,
-    "ast_hash": "502ae179529fa92321c1e6ac6ebc85e0",
+    "mtime": 1783571926.438868,
+    "ast_hash": "830f3880aac7b746fb0077756502006f",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/recommend-gap-routing.sh": {
@@ -5415,8 +5415,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md": {
-    "mtime": 1783392297.1352081,
-    "ast_hash": "c58a2fcda1256cff27660b87a80b4a6a",
+    "mtime": 1783511484.2064004,
+    "ast_hash": "3ee8d0a638a758018702e25b5064e09c",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/operations/generate-tech-stack-version-provenance.sh": {
@@ -5440,8 +5440,8 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/data/docker/tech-stack-version-provenance.md": {
-    "mtime": 1783329283.1153576,
-    "ast_hash": "6d44ac9eef360646ceeff69d705ef03f",
+    "mtime": 1783590155.9597697,
+    "ast_hash": "aaa9acd2a9c5874c6668cfdc1be74a24",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/scripts/validation/report-provider-hook-parity.sh": {
@@ -5660,13 +5660,13 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md": {
-    "mtime": 1783411508.4629557,
-    "ast_hash": "1bed50760b6ed0c0e7f1f2907951bf2d",
+    "mtime": 1783511431.6121087,
+    "ast_hash": "238e366744b2ff79b1f318886b728bfc",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/research/2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md": {
-    "mtime": 1783411665.8717186,
-    "ast_hash": "0b864803648b07f7268f0058d2886273",
+    "mtime": 1783571727.314765,
+    "ast_hash": "f2bf89b68ebc02f5eaec9f85f42749a6",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/research/2026-07-07-agentic-research-pack-update/harness-engineering.md": {
@@ -5685,13 +5685,23 @@
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/research/2026-07-07-agentic-research-pack-update/workspace-baseline.md": {
-    "mtime": 1783411712.9344904,
-    "ast_hash": "e01428649814b8fcc5d99d5d1c1c979e",
+    "mtime": 1783590321.2964945,
+    "ast_hash": "d87c45468aa5b1b5887ba8ec651510a3",
     "semantic_hash": ""
   },
   "/home/hy/projects/hy-home.docker/docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md": {
-    "mtime": 1783493926.8477838,
-    "ast_hash": "6689a20ba06da134121d1fe25f8db4de",
+    "mtime": 1783550677.4249887,
+    "ast_hash": "051aa5ab0fe64549929bd8f3d7ace0e9",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/sessions/2026-07-09-hy-home-docker.md": {
+    "mtime": 1783589972.8022363,
+    "ast_hash": "bafc11a4ccce8a642b6f2634d8922704",
+    "semantic_hash": ""
+  },
+  "/home/hy/projects/hy-home.docker/sessions/2026-07-09-infra.md": {
+    "mtime": 1783582497.3577478,
+    "ast_hash": "bfb987c4cc3d553906321b7d8d533a72",
     "semantic_hash": ""
   }
 }
