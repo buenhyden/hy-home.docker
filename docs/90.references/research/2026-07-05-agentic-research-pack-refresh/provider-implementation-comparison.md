@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md -->
 
 # Reference: Claude, Codex, and Gemini Provider Implementation Comparison
@@ -48,19 +49,19 @@ This reference provides background for `providers/claude.md`, `providers/codex.m
 
 ## Provider Comparison Matrix
 
-| Capability | Claude Code | OpenAI Codex | Gemini CLI | Repo-local Normalization |
-| --- | --- | --- | --- | --- |
-| Shared entry context | `CLAUDE.md`, memory docs | `AGENTS.md`, `.codex/config.toml`, project config | `GEMINI.md`, configurable context file names | root shims delegate to Stage 00 |
-| Agent/subagent model | first-class custom subagents and parallel agents | first-class subagents and `.codex/agents/*.toml` | no confirmed first-class equivalent in official docs | `subagent-protocol.md` defines provider-equivalent roles, but Gemini is reference-index oriented |
-| Hooks/lifecycle | rich lifecycle hooks | hooks with events such as PreToolUse/PostToolUse/Stop/Subagent events | no same hook parity in repo notes; manual behavioral contract | shared behavioral hooks contract, provider-specific mechanics |
-| Sandbox/approval | permissions and sandbox docs | explicit sandbox/approval docs and permission profiles | sandbox/trust/config docs in official repo | approval boundaries and environment constraints |
-| MCP | supported | supported | supported via `mcpServers` | project-local MCP baseline stays config-governed |
-| Automation/CI | provider hooks and workflows | noninteractive mode, GitHub Action, hooks | official `run-gemini-cli` GitHub Action | external actions remain approval-gated |
-| Docker/infra awareness | tool-driven through shell and project docs | sandboxed local shell plus project docs | tool-driven ReAct/MCP workflow | Stage 00 infra scope and scripts are provider-neutral |
-| Security/approval model | permissions, hooks, human approval | sandbox/approval modes, hooks, config | trust/config/tool confirmation surfaces | approval boundaries and protected surface evidence |
-| Common rule substrate | root shim and provider docs | `AGENTS.md`, `.codex/`, provider docs | `GEMINI.md`, `.agents/`, provider docs | Stage 00 remains the SSoT |
-| Skills/functions | Claude skills standard extensions | Codex skill adapters in repo-local surface | `.agents/skills` reference indexes in this repo | Stage 00 function catalog is canonical |
-| Model policy | Claude aliases and provider model names | Codex GPT model and reasoning effort | Gemini model selection | `subagent-protocol.md` mapping |
+| Capability              | Claude Code                                      | OpenAI Codex                                                          | Gemini CLI                                                    | Repo-local Normalization                                                                         |
+| ----------------------- | ------------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Shared entry context    | `CLAUDE.md`, memory docs                         | `AGENTS.md`, `.codex/config.toml`, project config                     | `GEMINI.md`, configurable context file names                  | root shims delegate to Stage 00                                                                  |
+| Agent/subagent model    | first-class custom subagents and parallel agents | first-class subagents and `.codex/agents/*.toml`                      | no confirmed first-class equivalent in official docs          | `subagent-protocol.md` defines provider-equivalent roles, but Gemini is reference-index oriented |
+| Hooks/lifecycle         | rich lifecycle hooks                             | hooks with events such as PreToolUse/PostToolUse/Stop/Subagent events | no same hook parity in repo notes; manual behavioral contract | shared behavioral hooks contract, provider-specific mechanics                                    |
+| Sandbox/approval        | permissions and sandbox docs                     | explicit sandbox/approval docs and permission profiles                | sandbox/trust/config docs in official repo                    | approval boundaries and environment constraints                                                  |
+| MCP                     | supported                                        | supported                                                             | supported via `mcpServers`                                    | project-local MCP baseline stays config-governed                                                 |
+| Automation/CI           | provider hooks and workflows                     | noninteractive mode, GitHub Action, hooks                             | official `run-gemini-cli` GitHub Action                       | external actions remain approval-gated                                                           |
+| Docker/infra awareness  | tool-driven through shell and project docs       | sandboxed local shell plus project docs                               | tool-driven ReAct/MCP workflow                                | Stage 00 infra scope and scripts are provider-neutral                                            |
+| Security/approval model | permissions, hooks, human approval               | sandbox/approval modes, hooks, config                                 | trust/config/tool confirmation surfaces                       | approval boundaries and protected surface evidence                                               |
+| Common rule substrate   | root shim and provider docs                      | `AGENTS.md`, `.codex/`, provider docs                                 | `GEMINI.md`, `.agents/`, provider docs                        | Stage 00 remains the SSoT                                                                        |
+| Skills/functions        | Claude skills standard extensions                | Codex skill adapters in repo-local surface                            | `.agents/skills` reference indexes in this repo               | Stage 00 function catalog is canonical                                                           |
+| Model policy            | Claude aliases and provider model names          | Codex GPT model and reasoning effort                                  | Gemini model selection                                        | `subagent-protocol.md` mapping                                                                   |
 
 ## Analysis
 
@@ -135,4 +136,5 @@ This matches the repo-local Provider Adapter Model. `.claude/` can be a richer r
 - [workspace baseline](./workspace-baseline.md)
 - [harness engineering](./harness-engineering.md)
 - [loop engineering](./loop-engineering.md)
+- [agent model selection](./agent-model-selection.md)
 - [subagent protocol](../../../00.agent-governance/subagent-protocol.md)

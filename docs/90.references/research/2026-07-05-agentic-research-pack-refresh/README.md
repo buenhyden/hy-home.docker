@@ -60,6 +60,7 @@ status: active
 ├── sdlc-document-roles.md               # Role and purpose of each SDLC/operations document type
 ├── quality-ci-formatting.md             # QA, CI/CD, formatting, secure quality gates
 ├── provider-implementation-comparison.md # Claude, Codex, Gemini comparison
+├── agent-model-selection.md              # Task-characteristic model tier and reasoning-effort selection
 ├── docker-compose-infrastructure.md      # Docker Compose and infrastructure harness analysis
 ├── security-governance.md                # Secure SDLC and security governance analysis
 ├── automation-pipeline-workflow.md       # Automation, pipeline, and workflow analysis
@@ -75,6 +76,7 @@ status: active
 - [sdlc-document-roles.md](./sdlc-document-roles.md) - PRD, ARD, ADR, spec, plan, task, guide, policy, runbook, incident, postmortem, release 문서 유형별 역할과 목적 분석
 - [quality-ci-formatting.md](./quality-ci-formatting.md) - CI/CD, QA, formatting, secure quality gate 분석
 - [provider-implementation-comparison.md](./provider-implementation-comparison.md) - Claude, Codex, Gemini provider 현황과 공통 체계 분석
+- [agent-model-selection.md](./agent-model-selection.md) - 작업 특성에 맞는 모델 tier와 reasoning-effort 선택, per-provider 메커니즘, 변경 프로토콜 분석
 - [docker-compose-infrastructure.md](./docker-compose-infrastructure.md) - Docker Compose, infrastructure harness, profiles, networks, secrets, validation, hardening 분석
 - [security-governance.md](./security-governance.md) - secure SDLC reference frameworks, workflow security, secret boundaries, approval evidence 분석
 - [automation-pipeline-workflow.md](./automation-pipeline-workflow.md) - automation, pipeline, workflow loop, provider hook, local/remote action boundary 분석
@@ -86,7 +88,7 @@ status: active
 2. [harness-engineering.md](./harness-engineering.md)와 [loop-engineering.md](./loop-engineering.md)에서 개념적 구조를 확인합니다.
 3. [spec-driven-sdlc.md](./spec-driven-sdlc.md)와 [quality-ci-formatting.md](./quality-ci-formatting.md)에서 stage-gate와 검증 루프를 비교하고, [sdlc-document-roles.md](./sdlc-document-roles.md)에서 각 문서 유형의 역할과 목적을 확인합니다.
 4. [docker-compose-infrastructure.md](./docker-compose-infrastructure.md), [security-governance.md](./security-governance.md), [automation-pipeline-workflow.md](./automation-pipeline-workflow.md)에서 targeted reference를 확인합니다.
-5. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인합니다.
+5. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인하고, [agent-model-selection.md](./agent-model-selection.md)에서 작업 특성에 맞는 모델 tier와 reasoning-effort 설정을 확인합니다.
 6. [ai-agent-catalogs.md](./ai-agent-catalogs.md)에서 외부 agent catalog와 repo-local catalog의 import 경계를 확인합니다.
 
 ## How to Work in This Area
