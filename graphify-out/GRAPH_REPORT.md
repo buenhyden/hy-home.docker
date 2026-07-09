@@ -1,16 +1,16 @@
-# Graph Report - hy-home.docker  (2026-07-08)
+# Graph Report - hy-home.docker  (2026-07-09)
 
 ## Corpus Check
-- 1042 files · ~951,620 words
+- 1044 files · ~952,231 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 21175 nodes · 22176 edges · 1439 communities (1351 shown, 88 thin omitted)
+- 21191 nodes · 22190 edges · 1441 communities (1353 shown, 88 thin omitted)
 - Extraction: 98% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e2b535c0`
+- Built from commit: `806bc0e2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1453,6 +1453,8 @@
 - [[_COMMUNITY_Community 1436|Community 1436]]
 - [[_COMMUNITY_Community 1437|Community 1437]]
 - [[_COMMUNITY_Community 1438|Community 1438]]
+- [[_COMMUNITY_Community 1439|Community 1439]]
+- [[_COMMUNITY_Community 1440|Community 1440]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Agent Progress Log` - 57 edges
@@ -1486,7 +1488,7 @@
 - **Workspace Audit Revalidation Skill Catalog Sync** — workspace_audit_revalidation_bounded_revalidation_workflow, workspace_audit_revalidation_runtime_skill, readme_agent_and_function_catalog, readme_runtime_skill_mirror, progress_workspace_audit_revalidation_skill_creation [EXTRACTED 1.00]
 - **Advisory Graph Boundary** — index_llm_wiki_generated_index, index_tracked_source_boundary, index_runtime_truth, index_advisory_graph_context, progress_graphify_health_advisory, 2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence [EXTRACTED 1.00]
 
-## Communities (1439 total, 88 thin omitted)
+## Communities (1441 total, 88 thin omitted)
 
 ### Community 0 - "Prometheus Alert Rule Group"
 Cohesion: 0.10
@@ -6888,6 +6890,14 @@ Nodes (5): Kafka KRaft Quorum Recovery, Kafka Partition Rebalancing, Kafka Clust
 Cohesion: 0.25
 Nodes (8): infra-secrets-docs-refresh Specifications, Infra Secrets Docs Refresh Specification, LLM Wiki Safe Path Filters, README Base Headings, Root-active Optional Standalone Compose Boundary, Secret Inventory Classification, Secret Value Non-access Guardrail, Stage Document Template Families
 
+### Community 1439 - "Community 1439"
+Cohesion: 0.25
+Nodes (7): Actions Taken, Key Decisions, Open Questions / Follow-ups, Related Files, Session: Session, Summary, Technical Notes
+
+### Community 1440 - "Community 1440"
+Cohesion: 0.25
+Nodes (7): Actions Taken, Key Decisions, Open Questions / Follow-ups, Related Files, Session: infra 태그 동기화 착수, Summary, Technical Notes
+
 ## Ambiguous Edges - Review These
 - `Alertmanager Critical Route` → `Alertmanager SMTP Placeholders`  [AMBIGUOUS]
   infra/06-observability/alertmanager/config/config.yml · relation: references
@@ -6895,7 +6905,7 @@ Nodes (8): infra-secrets-docs-refresh Specifications, Infra Secrets Docs Refresh
   infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **13707 isolated node(s):** `version`, `sessions`, `printWidth`, `singleQuote`, `semi` (+13702 more)
+- **13719 isolated node(s):** `version`, `sessions`, `printWidth`, `singleQuote`, `semi` (+13714 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **88 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -6908,11 +6918,11 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **Why does `Secret Exposure Escalation` connect `Airflow Airbyte Failure Worker` to `Community 583`, `Data Cluster Cassandra Hardening`, `Community 365`, `Community 157`, `Community 1437`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `03-Security Vault Runbook` connect `Data Cluster Cassandra Hardening` to `Airflow Airbyte Failure Worker`?**
+- **Why does `04-Data Optimization Hardening Runbook` connect `Data Cluster Cassandra Hardening` to `Opensearch Starrocks Influxdb Ksqldb`, `Community 365`, `Community 890`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **Why does `Qdrant Runbook` connect `Airflow Airbyte Failure Worker` to `Community 821`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **What connects `version`, `sessions`, `printWidth` to the rest of the system?**
-  _14280 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _14292 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Prometheus Alert Rule Group` be split into smaller, more focused modules?**
   _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._
