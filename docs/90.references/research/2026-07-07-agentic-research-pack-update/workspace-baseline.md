@@ -25,6 +25,7 @@ This document acts as an advisory architectural reference. It does not replace a
 ## Scope
 
 ### In Scope
+
 - Mapping of the workspace SDLC directories to ISO/IEC/IEEE lifecycle standards.
 - Spec-Driven Development (SDD) guidelines and validation hooks.
 - CI/CD workflow pipeline architecture (GitHub Actions) and DORA alignment.
@@ -33,6 +34,7 @@ This document acts as an advisory architectural reference. It does not replace a
 - Procedural conventions for scripts, templates, and bootstrap configurations.
 
 ### Out of Scope
+
 - Active policies under `docs/00.agent-governance/`.
 - Executable shell wrappers or runtime compose profiles.
 - Plaintext secrets or credentials.
@@ -40,29 +42,34 @@ This document acts as an advisory architectural reference. It does not replace a
 ## Definitions / Facts
 
 ### 1. ISO/IEC/IEEE Standard-Based SDLC Mapping
+
 The workspace maps its documentation stages to software and systems engineering standards such as **ISO/IEC/IEEE 12207** (Lifecycle Processes) and **ISO/IEC/IEEE 29148** (Requirements Engineering):
 
-| SDLC Stage | Purpose & Responsibility (ISO Definition) | Workspace Path | Artifacts & Rules |
-| :--- | :--- | :--- | :--- |
-| **Requirements Definition** | Define stakeholder needs and identify bounds | [docs/01.requirements/](../../../01.requirements/) | Product Requirements Document (PRD) & Acceptance Criteria |
-| **Architecture Design** | Design system boundaries and document ADRs | [docs/02.architecture/](../../../02.architecture/) | Architecture Requirements (ARD) & Architecture Decisions (ADR) |
-| **Detailed Design / Specs** | Define interface contracts and validation rules | [docs/03.specs/](../../../03.specs/) | Technical Specifications (Specs) & schema contracts |
-| **Execution Planning** | Break down work and establish risk rollbacks | [docs/04.execution/plans/](../../../04.execution/plans/) | Implementation Plans (`implementation_plan.md`) |
-| **Implementation / Work** | Apply surgical code changes and record tasks | [docs/04.execution/tasks/](../../../04.execution/tasks/) | Task checklist and validation evidence (`task.md` / `walkthrough.md`) |
-| **Operations / Maintenance** | Establish guides, policies, and runbooks | [docs/05.operations/](../../../05.operations/) | Operation Guides, Policies, Runbooks, & Incidents |
+| SDLC Stage                   | Purpose & Responsibility (ISO Definition)       | Workspace Path                                           | Artifacts & Rules                                              |
+| :--------------------------- | :---------------------------------------------- | :------------------------------------------------------- | :------------------------------------------------------------- |
+| **Requirements Definition**  | Define stakeholder needs and identify bounds    | [docs/01.requirements/](../../../01.requirements/)       | Product Requirements Document (PRD) & Acceptance Criteria      |
+| **Architecture Design**      | Design system boundaries and document ADRs      | [docs/02.architecture/](../../../02.architecture/)       | Architecture Requirements (ARD) & Architecture Decisions (ADR) |
+| **Detailed Design / Specs**  | Define interface contracts and validation rules | [docs/03.specs/](../../../03.specs/)                     | Technical Specifications (Specs) & schema contracts            |
+| **Execution Planning**       | Break down work and establish risk rollbacks    | [docs/04.execution/plans/](../../../04.execution/plans/) | Implementation Plans (`YYYY-MM-DD-<feature>.md`)               |
+| **Implementation / Work**    | Apply surgical code changes and record tasks    | [docs/04.execution/tasks/](../../../04.execution/tasks/) | Task evidence (`YYYY-MM-DD-<feature>-tasks.md`)                |
+| **Operations / Maintenance** | Establish guides, policies, and runbooks        | [docs/05.operations/](../../../05.operations/)           | Operation Guides, Policies, Runbooks, & Incidents              |
 
 ### 2. Spec-Driven Development (SDD) Model
+
 Adhering to Fowler's Spec-Driven Development, specifications serve as the ultimate single source of truth (Spec-as-Source):
+
 1. **Spec-Anchored Control**: Changes to source code must trace directly to an approved technical specification ([docs/03.specs/](../../../03.specs/)).
 2. **Behavior-Driven Verification**: Acceptance criteria inside specs are programmatically checked against actual infrastructure using validation tools (e.g. `check-doc-implementation-alignment.sh`).
 
 ### 3. CI/CD Pipeline & QA Architecture
+
 Workspace verification is governed via a two-tier feedback loop (remote CI and local scripts):
+
 - **DORA Metrics Alignment**:
-  - *Deployment Frequency*: Kept high by ensuring all main-branch changes are verified locally and in CI prior to merge.
-  - *Lead Time for Changes*: Minimized through pre-commit and post-tool validate hooks that catch formatting/linting errors instantly.
-  - *Change Failure Rate*: Kept low by enforcing strict Compose and hardening checks.
-  - *Time to Restore Service*: Accelerated by structured recovery runbooks and postmortems.
+  - _Deployment Frequency_: Kept high by ensuring all main-branch changes are verified locally and in CI prior to merge.
+  - _Lead Time for Changes_: Minimized through pre-commit and post-tool validate hooks that catch formatting/linting errors instantly.
+  - _Change Failure Rate_: Kept low by enforcing strict Compose and hardening checks.
+  - _Time to Restore Service_: Accelerated by structured recovery runbooks and postmortems.
 - **GitHub Actions Pipeline**: Enforced via [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) with parallelized quality jobs:
   - `docs-traceability`: Verifies doc-to-doc link consistency (`check-doc-traceability.sh`).
   - `repo-contracts`: Audits templates, catalog synchronization, and folder structures (`check-repo-contracts.sh`).
@@ -73,32 +80,36 @@ Workspace verification is governed via a two-tier feedback loop (remote CI and l
 - **Local QA Gate Runner**: Program execution can be run locally via [run-local-qa-gates.sh](../../../../scripts/validation/run-local-qa-gates.sh) to replicate CI conditions. Skipped check justifications must be signed and logged in `memory/progress.md`.
 
 ### 4. Formatting and Linting Controls
+
 To prevent parsing issues and maintain style consistency, the following tools are integrated:
+
 - **EditorConfig**: Standardizes line endings and indents ([.editorconfig](../../../../.editorconfig)).
 - **Prettier**: Resolves spacing and syntax alignment ([.prettierrc.json](../../../../.prettierrc.json)).
 - **Shellcheck**: Flags bash anti-patterns and uninitialized variables ([.shellcheckrc](../../../../.shellcheckrc)).
 - **Yamllint**: Prevents duplicate keys and syntax errors ([.yamllint](../../../../.yamllint)).
 - **Markdown Lint**: Enforces header nesting and layout rules ([.markdownlint-cli2.yaml](../../../../.markdownlint-cli2.yaml)).
 - **Automated Hooks**:
-  - *Pre-commit*: Blocks commits containing style violations.
-  - *Post-Tool Validation*: Run after file modifications by agents to auto-format workspace surfaces (`post-tool-validate.sh`).
+  - _Pre-commit_: Blocks commits containing style violations.
+  - _Post-Tool Validation_: Run after file modifications by agents to auto-format workspace surfaces (`post-tool-validate.sh`).
 
 ### 5. Security Governance & Credential Isolation
+
 - **NIST SSDF & OWASP SAMM Mapping**:
-  - *Prepare the Organization (PO)*: Vulnerability reporting guidelines ([.github/SECURITY.md](../../../../.github/SECURITY.md)) and secret redaction rules.
-  - *Protect the Software (PS)*: Automated scanners (`gitleaks`, `zizmor`) intercept credentials and workflow configurations.
-  - *Produce Well-Secured Software (PW)*: Mandatory checks ([check-template-security-baseline.sh](../../../../scripts/validation/check-template-security-baseline.sh)) audit container minimum privileges.
-  - *OWASP Governance / Implementation*: Third-party actions are pinned to SHA hashes for secure builds.
+  - _Prepare the Organization (PO)_: Vulnerability reporting guidelines ([.github/SECURITY.md](../../../../.github/SECURITY.md)) and secret redaction rules.
+  - _Protect the Software (PS)_: Automated scanners (`gitleaks`, `zizmor`) intercept credentials and workflow configurations.
+  - _Produce Well-Secured Software (PW)_: Mandatory checks ([check-template-security-baseline.sh](../../../../scripts/validation/check-template-security-baseline.sh)) audit container minimum privileges.
+  - _OWASP Governance / Implementation_: Third-party actions are pinned to SHA hashes for secure builds.
 - **Credential Separation**:
   - Non-sensitive variables are declared in [.env.example](../../../../.env.example). Real secrets are stored in untracked `.env` files.
   - Sensitive Docker configurations use files mounted via Docker secrets (`secrets:`) rather than bare environment keys.
-  - *Redaction Boundaries*: Agents must never write private keys, plain secrets, or raw token logs into repository reports; only existence or exit status may be documented.
+  - _Redaction Boundaries_: Agents must never write private keys, plain secrets, or raw token logs into repository reports; only existence or exit status may be documented.
 - **Mitigating "Vibe Coding"**:
-  - *Mandatory Planning*: `implementation_plan.md` must be reviewed and approved by a human operator before core code changes occur.
-  - *Surgical Changes*: Agents must only modify files specified by their current task scope.
-  - *Evidence Logs*: Code additions must be validated with shell and test output logs appended to execution tasks.
+  - _Mandatory Planning_: `implementation_plan.md` must be reviewed and approved by a human operator before core code changes occur.
+  - _Surgical Changes_: Agents must only modify files specified by their current task scope.
+  - _Evidence Logs_: Code additions must be validated with shell and test output logs appended to execution tasks.
 
 ### 6. Templates and Script Rules
+
 - **Templates**: All newly authored documentation must adopt standard layouts in [docs/99.templates/](../../../99.templates/).
 - **Script Purpose Folders**: Per [scripts/README.md](../../../../scripts/README.md), scripts must reside in designated subdirectories:
   - `scripts/validation/` - verification tools.
@@ -112,6 +123,7 @@ To prevent parsing issues and maintain style consistency, the following tools ar
   - 3. Consult Graphify outputs for cross-component dependencies.
 
 ### 7. Follow-up Gaps and Future Actions
+
 - **Automate Graphify Updates**: Link `graphify update .` to post-commit hooks or PR pipelines.
 - **DORA Analytics Dashboard**: Establish Grafana boards tracking deployment metrics.
 - **Deep Security Scans**: Integrate image vulnerability assessments (`Trivy`) directly into QA pipelines.
