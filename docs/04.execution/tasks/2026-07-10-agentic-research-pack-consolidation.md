@@ -103,6 +103,11 @@ prove an applicable model cutoff must use `historical state unverified`.
 | <https://developers.openai.com/api/docs/deprecations> | OpenAI / official lifecycle page | Deprecated, shut down/sunset, Legacy definitions and dated model/snapshot transitions. | Latest model notice 2026-06-11 | 2026-07-10 | Included; dated notices precede cutoff where the exact model/alias matches | `gpt-audio-mini` and `gpt-4o-mini-tts` entries date snapshots, not the mutable aliases. | T-ARC-002 |
 | <https://developers.openai.com/api/docs/changelog> | OpenAI / official changelog | Unzoned `Jul 9` GPT-5.6 entry and July 6 Realtime 2.1 release. | `Jul 9` | 2026-07-10 | GPT-5.6 retained structurally but excluded from exact-cutoff-qualified count | An unzoned July 9 time can fall after 2026-07-10 01:00 UTC; official-web fallback route. | T-ARC-002 |
 | <https://developers.openai.com/codex/config-reference> | OpenAI / official Codex configuration entry point | Model and reasoning-effort configuration surface. | No visible page date | 2026-07-10 | Included as surface evidence | Redirected to current ChatGPT Learn docs; does not establish API/Codex entitlement. | T-ARC-002 |
+| <https://github.com/openai/openai-go/commit/ee32400f70d6d16c583978c574806648bdeecd91> | OpenAI / official OpenAI-owned SDK commit | Adds exact `gpt-4o-transcribe-diarize` support on the audio transcriptions endpoint. | 2025-10-16 (included in `openai-go` v3.4.0) | 2026-07-10 | Included; exact-ID endpoint existence before cutoff | Immutable existence evidence only; it is not used as the model's launch date or lifecycle state. | T-ARC-002 |
+| <https://openai.com/index/new-models-and-developer-products-announced-at-devday/> | OpenAI / official dated product announcement | Names `tts-1` and `tts-1-hd` as the two TTS model variants. | 2023-11-06 | 2026-07-10 | Included; both exact IDs existed before cutoff | Establishes existence, not retrieval-time listing state or lifecycle maturity. | T-ARC-002 |
+| <https://openai.com/index/introducing-gpt-oss/> | OpenAI / official dated release announcement | Names and releases `gpt-oss-120b` and `gpt-oss-20b`. | 2025-08-05 | 2026-07-10 | Included; both exact IDs existed before cutoff | Open-weight release does not imply hosted API availability or a stable/GA lifecycle label. | T-ARC-002 |
+| <https://openai.com/index/new-embedding-models-and-api-updates/> | OpenAI / official dated product announcement | Names `text-embedding-3-small` and `text-embedding-3-large`. | 2024-01-25 | 2026-07-10 | Included; both exact IDs existed before cutoff | Establishes existence, not retrieval-time listing state or lifecycle maturity. | T-ARC-002 |
+| <https://openai.com/index/new-and-improved-embedding-model/> | OpenAI / official dated product announcement | Names `text-embedding-ada-002` as the new embedding model. | 2022-12-15 | 2026-07-10 | Included; exact ID existed before cutoff | Establishes existence, not retrieval-time listing state or lifecycle maturity. | T-ARC-002 |
 | <https://ai.google.dev/gemini-api/docs/models> | Google / official model catalog | 35 official catalog cards, exact IDs, Stable/Preview/Experimental terms, and previous-model cards. | Last updated 2026-07-09 UTC | 2026-07-10 | Included; page date precedes cutoff date | Exact update time is not shown; `latest` aliases remain mutable. | T-ARC-002 |
 | <https://ai.google.dev/gemini-api/docs/deprecations> | Google / official lifecycle page | Release/shutdown schedules and recommended replacements. | Last updated 2026-07-02 UTC | 2026-07-10 | Included; dated before cutoff | Shutdown date can coexist with Stable maturity. | T-ARC-002 |
 | <https://ai.google.dev/gemini-api/docs/changelog> | Google / official changelog | Dated releases, redirects, deprecations, and shutdown evidence. | Through cutoff-relevant 2026-06-30 model entries | 2026-07-10 | Included; no post-cutoff entry used | Mutable log; dates have no time of day. | T-ARC-002 |
@@ -217,12 +222,20 @@ This task is documentation-only; code TDD is not applicable. No active Model
 Policy, provider adapter/generator, configuration, runtime, CI, script,
 credential, remote state, or unrelated document changed.
 
+The final bounded OpenAI gap search used Docs MCP search/fetch first and then
+dated first-party gap sources where the MCP index exposed only mutable current
+pages. It rescued all eight rows named by the final independent re-review:
+`gpt-4o-transcribe-diarize`, `tts-1`, `tts-1-hd`, `gpt-oss-120b`,
+`gpt-oss-20b`, `text-embedding-3-large`, `text-embedding-3-small`, and
+`text-embedding-ada-002`. No row in that exact subset remains unrescued; the
+three GPT-5.6 rows remain retrieval-only.
+
 ### Provider, Model, and Lifecycle Coverage
 
 | Provider | Structural rows | Cutoff-qualified rows | Provider-native structural totals | Normalized structural totals | Cutoff-qualified normalized totals | Cutoff exception |
 | --- | ---: | ---: | --- | --- | --- | --- |
 | Anthropic | 17 | 17 | Active 7; generally available 1; current/launched 1; limited 1; Deprecated 1; Retired 5; scheduled-retirement/current-offer conflict 1 | stable 9; deprecated 6; not normalized 2 | stable 9; deprecated 6; not normalized 2 | The status table supplies 13 rows: seven Active states are historical state unverified and six dated Deprecated/Retired transitions are proven; Mythos Preview remains a disclosed official-page conflict |
-| OpenAI | 93 | 90 | Listed without maturity label 45; Latest alias 1; Deprecated 47 | not normalized 46; deprecated 47 | not normalized 43; deprecated 47 | GPT-5.6 Sol/Terra/Luna are retrieval-only; 46 non-deprecated and five deprecated alias/card states are historical state unverified; official-web fallback used because Docs MCP was unavailable |
+| OpenAI | 93 | 90 | Listed without maturity label 45; Latest alias 1; Deprecated 47 | not normalized 46; deprecated 47 | not normalized 43; deprecated 47 | GPT-5.6 Sol/Terra/Luna are retrieval-only; all final exact-eight gaps have dated first-party existence proof; 46 non-deprecated and five deprecated alias/card states remain historical state unverified for lifecycle/listing state |
 | Google | 35 | 35 | Stable 11; Preview 18; Experimental 1; Deprecated 1; Shut down 4 | stable 11; preview 18; not normalized 1; deprecated 5 | stable 11; preview 18; not normalized 1; deprecated 5 | Catalog's last-updated date is 2026-07-09 UTC, wholly before the cutoff |
 | **Total** | **145** | **142** | — | stable 20; preview 18; deprecated 58; not normalized 49 | stable 20; preview 18; deprecated 58; not normalized 46 | Three structural rows are not exact-cutoff-qualified |
 
@@ -278,13 +291,62 @@ reference as missing from the generated LLM Wiki index and coverage snapshot.
 The prescribed generators refreshed those two derived artifacts; the full final
 gate rerun then passed with the results above.
 
+### Final Exact-ID Remediation Validation Evidence
+
+The final remediation changed exactly this task record,
+`provider-model-landscape.md`, and `agent-model-selection.md`; no generated
+artifact required another refresh. The final pre-commit gate recorded:
+
+- Exact-ID/date scan — exit 0; all eight remediated rows name a dated
+  first-party source before the cutoff, and all five source-ledger records carry
+  owner/source class, publication date, retrieval date, cutoff disposition, and
+  caveat.
+- Catalog census/schema audit — exit 0; Anthropic `17/17`, OpenAI `93/90`,
+  Google `35/35`, total `145/142` structural/cutoff-qualified; zero malformed
+  rows and zero empty required cells. Structural normalized totals are
+  `stable 20; preview 18; deprecated 58; not normalized 49`; qualified totals
+  are `stable 20; preview 18; deprecated 58; not normalized 46`.
+- GPT-5.6 disposition scan — exit 0; Sol, Terra, and Luna remain retrieval-only
+  with exact cutoff inclusion `historical state unverified`.
+- `git diff --check` — exit 0.
+- Required cutoff/lifecycle scan from the Task 2 brief — exit 0.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — exit 0; fresh.
+- `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` — exit 0;
+  fresh.
+- `bash scripts/operations/sync-provider-surfaces.sh --check` — exit 0; no
+  drift.
+- `bash scripts/validation/check-doc-traceability.sh` — exit 0;
+  `catalog_pairs_total=46`, `failures=0`.
+- `bash scripts/validation/check-doc-implementation-alignment.sh` — exit 0;
+  `stage_docs_total=621`, `repo_local_markdown_links_checked=4807`,
+  `failures=0`.
+- `bash scripts/validation/check-repo-contracts.sh` — exit 0;
+  `changed_template_docs_total=3`, `normalized_changed_template_docs_total=3`,
+  `failures=0`.
+- Full diff from `ff17d4d40d834bc01faf17faf9dce72e22c77a4e` — inspected;
+  exactly the three authored Task 2 documents and the two previously approved,
+  canonically generated Wiki artifacts are present.
+
 ### Commit and Review Evidence
 
 - Task brief: `.superpowers/sdd/task-2-brief.md`.
 - Implementer report: `.superpowers/sdd/task-2-implementer-report.md`.
 - Base commit: `ff17d4d40d834bc01faf17faf9dce72e22c77a4e`.
-- Implementation range: `ff17d4d40d834bc01faf17faf9dce72e22c77a4e..3c029db4be1f4196b77de22599697e33aea02651`
-  at the Task 2 commit with subject `docs(research): add provider model landscape`.
+- Original implementation range:
+  `ff17d4d40d834bc01faf17faf9dce72e22c77a4e..3c029db4be1f4196b77de22599697e33aea02651`
+  with subject `docs(research): add provider model landscape`.
+- First controller-finding fix commit:
+  `5a398988e5b0c433db9f1fb971ab7990bd9b7c84`; full fix review range:
+  `ff17d4d40d834bc01faf17faf9dce72e22c77a4e..5a398988e5b0c433db9f1fb971ab7990bd9b7c84`.
+- The final independent re-review of that range returned **Spec Compliance:
+  FAIL** and **Document Quality: CHANGES_REQUESTED**, with `Critical=0`,
+  `Important=1`, and `Minor=1`. The Important finding was the exact eight-row
+  cutoff-evidence gap; the Minor finding was this incomplete commit/review
+  ledger.
+- This exact-ID remediation began from clean commit
+  `5a398988e5b0c433db9f1fb971ab7990bd9b7c84`. Its resulting commit SHA is
+  captured in the ignored implementer report after commit because a commit
+  cannot contain its own final SHA.
 - Implementer spec-compliance self-review: **PASS** — exact cutoff, provider
   schemas, complete provider-card inventory, lifecycle/cutoff disposition,
   task-fit inference label, workspace comparison, sources, and maintenance are
@@ -293,7 +355,8 @@ gate rerun then passed with the results above.
   separated from inference; mutable-state uncertainty and source-route caveats
   are explicit; no benchmark, price, entitlement, or cross-provider parity is
   invented.
-- Independent controller verdict: pending after this implementer commit.
+- Next independent controller verdict: **pending**. The controller must add the
+  verdict after reviewing this remediation; no verdict is fabricated here.
 
 ## Task Review Evidence Contract
 

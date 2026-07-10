@@ -13,8 +13,10 @@ catalog rows retrieved on 2026-07-10 and evaluates them against the evidence
 cutoff **2026-07-10 10:00 KST (01:00 UTC)**. Exactly 142 rows have release or
 existence evidence that proves they preceded the cutoff; three GPT-5.6 rows are
 retained only as retrieval-time context because their unzoned `Jul 9` release
-date does not prove release by 01:00 UTC. Provider-native names and maturity
-terms are preserved before a deliberately narrow cross-provider normalization.
+date does not prove release by 01:00 UTC. The final exact-ID remediation added
+dated first-party existence evidence for eight OpenAI rows that had previously
+relied only on mutable model pages. Provider-native names and maturity terms are
+preserved before a deliberately narrow cross-provider normalization.
 
 ## Purpose
 
@@ -72,12 +74,14 @@ particular account, region, product surface, or provider adapter.
 - Use direct official pages only. Anthropic evidence uses `platform.claude.com`
   and `code.claude.com`; Google evidence uses `ai.google.dev` and the official
   Gemini CLI site.
-- The required OpenAI Docs MCP tools were not exposed in this live agent
-  session. Following the `openai-docs` skill fallback, OpenAI research is
-  restricted to `developers.openai.com`; this is an official-web fallback, not
-  Docs MCP evidence.
+- The original implementation used the `openai-docs` skill's official-web
+  fallback because OpenAI Docs MCP was not exposed in that session. The final
+  exact-ID remediation used Docs MCP search/fetch first; where its index exposed
+  only mutable current pages, the bounded gap search used dated OpenAI-owned
+  `openai.com` announcements and one immutable `openai/openai-go` commit.
 - The OpenAI latest-model guide was fetched before the all-models and
-  deprecations pages. Model pages are linked directly from the inventory.
+  deprecations pages in the original implementation. Model pages are linked
+  directly from the inventory, but they remain retrieval-time evidence only.
 - Mutable retrieval state is not backdated. A dated changelog/deprecation entry
   may establish a release or transition before the cutoff; otherwise the row
   says `historical state unverified`.
@@ -91,7 +95,7 @@ particular account, region, product surface, or provider adapter.
 | Provider | Structural rows | Cutoff-qualified rows | Provider-native structural totals | Normalized structural totals | Cutoff-qualified normalized totals | Cutoff exceptions |
 | --- | ---: | ---: | --- | --- | --- | --- |
 | Anthropic | 17 | 17 | Active 7; generally available 1; current/launched 1; limited availability 1; Deprecated 1; Retired 5; scheduled-retirement/current-offer conflict 1 | stable 9; deprecated 6; not normalized 2 | stable 9; deprecated 6; not normalized 2 | The status table supplies 13 rows: seven mutable Active states say `historical state unverified`, while six Deprecated/Retired states have dated transition evidence; Mythos Preview has conflicting official lifecycle/offer statements |
-| OpenAI | 93 | 90 | Listed without maturity label 45; Latest alias 1; Deprecated 47 | not normalized 46; deprecated 47 | not normalized 43; deprecated 47 | GPT-5.6 Sol/Terra/Luna are retrieval-only; 46 non-deprecated listing states and five deprecated alias/card states say `historical state unverified` |
+| OpenAI | 93 | 90 | Listed without maturity label 45; Latest alias 1; Deprecated 47 | not normalized 46; deprecated 47 | not normalized 43; deprecated 47 | GPT-5.6 Sol/Terra/Luna are retrieval-only; dated first-party sources prove pre-cutoff existence for the remediated exact eight, while 46 non-deprecated listing states and five deprecated alias/card states still say `historical state unverified` for lifecycle/listing state |
 | Google | 35 | 35 | Stable 11; Preview 18; Experimental 1; Deprecated 1; Shut down 4 | stable 11; preview 18; not normalized 1; deprecated 5 | stable 11; preview 18; not normalized 1; deprecated 5 | Main catalog says last updated 2026-07-09 UTC, which precedes the cutoff even without a time of day |
 | **Total** | **145** | **142** | — | stable 20; preview 18; deprecated 58; not normalized 49 | stable 20; preview 18; deprecated 58; not normalized 46 | Every structural row has a lifecycle and cutoff disposition; three are not exact-cutoff-qualified |
 
@@ -163,8 +167,12 @@ stable/GA status to an unqualified listing. Those rows therefore remain
 label is retained. The GPT-5.6 changelog entry says only `Jul 9`, without time or
 timezone, so Sol, Terra, and Luna remain in structural retrieval coverage but
 are excluded from the 142 exact-cutoff-qualified rows. Realtime 2.1 has an
-earlier July 6 release date. Exact account/Codex-surface availability is not
-inferred from API documentation.
+earlier July 6 release date. Dated OpenAI announcements establish the exact TTS,
+gpt-oss, and embedding IDs before the cutoff. An OpenAI-owned SDK commit dated
+2025-10-16 establishes that `gpt-4o-transcribe-diarize` existed on the
+transcriptions endpoint by then; it is not treated as the model's launch date or
+lifecycle state. Exact account/Codex-surface availability is not inferred from
+API documentation.
 
 | Provider | Official name | Model ID / alias | Provider-native status | Normalized lifecycle | Release / cutoff evidence | Availability surfaces | Context / modalities | Reasoning control | Tool / agent / coding characteristics | Cutoff disposition | Caveat |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -195,9 +203,9 @@ inferred from API documentation.
 | OpenAI | [gpt-audio](https://developers.openai.com/api/docs/models/gpt-audio) | `gpt-audio` | Listed; audio | not normalized (listed) | All-models and model page | Chat Completions | Audio/text input and output | Model page | Audio workflows | Included; historical state unverified | Mutable listing does not prove exact cutoff state |
 | OpenAI | [GPT-4o Transcribe](https://developers.openai.com/api/docs/models/gpt-4o-transcribe) | `gpt-4o-transcribe` | Listed; transcription | not normalized (listed) | All-models and model page | Audio/transcription API surfaces | Audio input; text output | — | Speech-to-text | Included; historical state unverified | — |
 | OpenAI | [GPT-4o mini Transcribe](https://developers.openai.com/api/docs/models/gpt-4o-mini-transcribe) | `gpt-4o-mini-transcribe` | Listed; transcription | not normalized (listed) | All-models and model page | Audio/transcription API surfaces | Audio input; text output | — | Speech-to-text | Included; historical state unverified | Alias snapshot may change |
-| OpenAI | [GPT-4o Transcribe Diarize](https://developers.openai.com/api/docs/models/gpt-4o-transcribe-diarize) | `gpt-4o-transcribe-diarize` | Listed; transcription | not normalized (listed) | All-models and model page | Transcription | Audio input; diarized text output | — | Speaker diarization | Included; historical state unverified | — |
-| OpenAI | [TTS-1](https://developers.openai.com/api/docs/models/tts-1) | `tts-1` | Listed; speech | not normalized (listed) | All-models and model page | Speech API | Text input; audio output | — | Text-to-speech, speed positioning | Included; historical state unverified | — |
-| OpenAI | [TTS-1 HD](https://developers.openai.com/api/docs/models/tts-1-hd) | `tts-1-hd` | Listed; speech | not normalized (listed) | All-models and model page | Speech API | Text input; audio output | — | Text-to-speech, quality positioning | Included; historical state unverified | — |
+| OpenAI | [GPT-4o Transcribe Diarize](https://developers.openai.com/api/docs/models/gpt-4o-transcribe-diarize) | `gpt-4o-transcribe-diarize` | Listed; transcription | not normalized (listed) | [OpenAI-owned SDK support commit](https://github.com/openai/openai-go/commit/ee32400f70d6d16c583978c574806648bdeecd91), included in v3.4.0 dated 2025-10-16 | Transcription | Audio input; diarized text output | — | Speaker diarization | Included; exact-ID endpoint existence dated before cutoff; listing state historical state unverified | SDK support proves existence by date, not the model's launch date or lifecycle state |
+| OpenAI | [TTS-1](https://developers.openai.com/api/docs/models/tts-1) | `tts-1` | Listed; speech | not normalized (listed) | [OpenAI DevDay announcement](https://openai.com/index/new-models-and-developer-products-announced-at-devday/) dated 2023-11-06 names `tts-1` and `tts-1-hd` | Speech API | Text input; audio output | — | Text-to-speech, speed positioning | Included; dated exact-ID family evidence before cutoff; listing state historical state unverified | Announcement proves existence, not the mutable listing state |
+| OpenAI | [TTS-1 HD](https://developers.openai.com/api/docs/models/tts-1-hd) | `tts-1-hd` | Listed; speech | not normalized (listed) | [OpenAI DevDay announcement](https://openai.com/index/new-models-and-developer-products-announced-at-devday/) dated 2023-11-06 names `tts-1` and `tts-1-hd` | Speech API | Text input; audio output | — | Text-to-speech, quality positioning | Included; dated exact-ID family evidence before cutoff; listing state historical state unverified | Announcement proves existence, not the mutable listing state |
 | OpenAI | [Whisper](https://developers.openai.com/api/docs/models/whisper-1) | `whisper-1` | Listed; transcription | not normalized (listed) | All-models and model page | Audio API | Audio input; text output | — | General speech recognition | Included; historical state unverified | — |
 | OpenAI | [GPT-Realtime mini](https://developers.openai.com/api/docs/models/gpt-realtime-mini) | `gpt-realtime-mini` | Listed; realtime/audio | not normalized (listed) | Current alias listed; older snapshot deprecation documented | Realtime API | Text/audio input and output | Model page | Cost-efficient realtime | Included; historical state unverified | Do not transfer deprecated snapshot status to current alias |
 | OpenAI | [gpt-audio-mini](https://developers.openai.com/api/docs/models/gpt-audio-mini) | `gpt-audio-mini` | Deprecated at retrieval | deprecated | Mutable all-models label; dated deprecation names `gpt-audio-mini-2025-10-06` only | Chat Completions subject to alias-specific lifecycle | Audio/text input and output | — | Previous small audio model | Included structurally; alias lifecycle at cutoff historical state unverified | Snapshot evidence does not date the mutable alias transition |
@@ -206,11 +214,11 @@ inferred from API documentation.
 | OpenAI | [GPT-4o Realtime](https://developers.openai.com/api/docs/models/gpt-4o-realtime-preview) | `gpt-4o-realtime-preview` | Deprecated; shut down | deprecated | Shut down 2026-05-07 | Unavailable | Realtime text/audio | — | Historical realtime preview | Included as shut down at cutoff | — |
 | OpenAI | [GPT-4o mini Realtime](https://developers.openai.com/api/docs/models/gpt-4o-mini-realtime-preview) | `gpt-4o-mini-realtime-preview` | Deprecated; shut down | deprecated | Shut down 2026-05-07 | Unavailable | Realtime text/audio | — | Historical realtime preview | Included as shut down at cutoff | — |
 | OpenAI | [GPT-4o mini TTS](https://developers.openai.com/api/docs/models/gpt-4o-mini-tts) | `gpt-4o-mini-tts` | Deprecated at retrieval | deprecated | Mutable all-models label; dated deprecation names `gpt-4o-mini-tts-2025-03-20` only | Speech API subject to alias-specific lifecycle | Text input; audio output | — | Previous text-to-speech model | Included structurally; alias lifecycle at cutoff historical state unverified | Snapshot evidence does not date the mutable alias transition |
-| OpenAI | [gpt-oss-120b](https://developers.openai.com/api/docs/models/gpt-oss-120b) | `gpt-oss-120b` | Listed; open-weight | not normalized (listed) | All-models and model page | Self-hosted/open-weight distribution | Model page | Reasoning model family | Open-weight model | Included; historical state unverified | API availability is not implied by open weights |
-| OpenAI | [gpt-oss-20b](https://developers.openai.com/api/docs/models/gpt-oss-20b) | `gpt-oss-20b` | Listed; open-weight | not normalized (listed) | All-models and model page | Self-hosted/open-weight distribution | Model page | Reasoning model family | Lower-latency open-weight positioning | Included; historical state unverified | — |
-| OpenAI | [text-embedding-3-large](https://developers.openai.com/api/docs/models/text-embedding-3-large) | `text-embedding-3-large` | Listed; embedding | not normalized (listed) | All-models and model page | Embeddings API | Text input; vector output | — | Embeddings | Included; historical state unverified | Not a generative agent model |
-| OpenAI | [text-embedding-3-small](https://developers.openai.com/api/docs/models/text-embedding-3-small) | `text-embedding-3-small` | Listed; embedding | not normalized (listed) | All-models and model page | Embeddings API | Text input; vector output | — | Embeddings | Included; historical state unverified | Not a generative agent model |
-| OpenAI | [text-embedding-ada-002](https://developers.openai.com/api/docs/models/text-embedding-ada-002) | `text-embedding-ada-002` | Listed; older embedding | not normalized (listed) | All-models and model page | Embeddings API | Text input; vector output | — | Embeddings | Included; historical state unverified | “Older” is a description, not a deprecation label |
+| OpenAI | [gpt-oss-120b](https://developers.openai.com/api/docs/models/gpt-oss-120b) | `gpt-oss-120b` | Listed; open-weight | not normalized (listed) | [OpenAI release](https://openai.com/index/introducing-gpt-oss/) dated 2025-08-05 names `gpt-oss-120b` and `gpt-oss-20b` | Self-hosted/open-weight distribution | Model page | Reasoning model family | Open-weight model | Included; dated exact-ID family evidence before cutoff; listing state historical state unverified | Open-weight release does not imply hosted API availability or lifecycle maturity |
+| OpenAI | [gpt-oss-20b](https://developers.openai.com/api/docs/models/gpt-oss-20b) | `gpt-oss-20b` | Listed; open-weight | not normalized (listed) | [OpenAI release](https://openai.com/index/introducing-gpt-oss/) dated 2025-08-05 names `gpt-oss-120b` and `gpt-oss-20b` | Self-hosted/open-weight distribution | Model page | Reasoning model family | Lower-latency open-weight positioning | Included; dated exact-ID family evidence before cutoff; listing state historical state unverified | Open-weight release does not establish lifecycle maturity |
+| OpenAI | [text-embedding-3-large](https://developers.openai.com/api/docs/models/text-embedding-3-large) | `text-embedding-3-large` | Listed; embedding | not normalized (listed) | [OpenAI announcement](https://openai.com/index/new-embedding-models-and-api-updates/) dated 2024-01-25 names both v3 embedding IDs | Embeddings API | Text input; vector output | — | Embeddings | Included; dated exact-ID family evidence before cutoff; listing state historical state unverified | Announcement proves existence, not current lifecycle; not a generative agent model |
+| OpenAI | [text-embedding-3-small](https://developers.openai.com/api/docs/models/text-embedding-3-small) | `text-embedding-3-small` | Listed; embedding | not normalized (listed) | [OpenAI announcement](https://openai.com/index/new-embedding-models-and-api-updates/) dated 2024-01-25 names both v3 embedding IDs | Embeddings API | Text input; vector output | — | Embeddings | Included; dated exact-ID family evidence before cutoff; listing state historical state unverified | Announcement proves existence, not current lifecycle; not a generative agent model |
+| OpenAI | [text-embedding-ada-002](https://developers.openai.com/api/docs/models/text-embedding-ada-002) | `text-embedding-ada-002` | Listed; older embedding | not normalized (listed) | [OpenAI announcement](https://openai.com/index/new-and-improved-embedding-model/) dated 2022-12-15 names `text-embedding-ada-002` | Embeddings API | Text input; vector output | — | Embeddings | Included; dated exact-ID evidence before cutoff; listing state historical state unverified | “Older” is a description, not a deprecation label; announcement proves existence, not current lifecycle |
 | OpenAI | [GPT-5.3-Codex](https://developers.openai.com/api/docs/models/gpt-5.3-codex) | `gpt-5.3-codex` | Listed | not normalized (listed) | Released 2026-02-24 | Responses API | Model page | Model-specific | Agentic coding | Included; release before cutoff; listing historical state unverified | API model listing does not prove Codex product entitlement |
 | OpenAI | [GPT-5.2](https://developers.openai.com/api/docs/models/gpt-5.2) | `gpt-5.2` | Listed; previous frontier | not normalized (listed) | Released 2025-12-11 | Responses; Chat Completions | Multimodal/model page | Configurable; `xhigh` introduced | Coding, tool calling, context management | Included; release before cutoff; listing historical state unverified | — |
 | OpenAI | [GPT-5.2 Pro](https://developers.openai.com/api/docs/models/gpt-5.2-pro) | `gpt-5.2-pro` | Listed; previous pro | not normalized (listed) | All-models and model page | Responses | Model page | Pro variant | Professional-work positioning | Included; historical state unverified | — |
@@ -353,6 +361,11 @@ or measured workspace results are supplied.
 - [Deprecations](https://developers.openai.com/api/docs/deprecations) — provider definitions of Deprecated, shut down/sunset, and Legacy plus dated model transitions through 2026-06-11.
 - [API changelog](https://developers.openai.com/api/docs/changelog) — dated releases, including an unzoned `Jul 9` GPT-5.6 entry that does not prove release by the 01:00 UTC cutoff, and Realtime 2.1 on July 6.
 - [Codex configuration reference](https://developers.openai.com/codex/config-reference) — model and reasoning-effort configuration surface; redirected at retrieval to the current ChatGPT Learn documentation.
+- [OpenAI Go SDK exact-ID support commit](https://github.com/openai/openai-go/commit/ee32400f70d6d16c583978c574806648bdeecd91) — OpenAI-owned immutable commit included in v3.4.0 on 2025-10-16; proves `gpt-4o-transcribe-diarize` endpoint support existed before the cutoff, not its launch date or lifecycle state.
+- [DevDay model announcement](https://openai.com/index/new-models-and-developer-products-announced-at-devday/) — OpenAI, published 2023-11-06; names `tts-1` and `tts-1-hd` as the two TTS variants.
+- [Introducing gpt-oss](https://openai.com/index/introducing-gpt-oss/) — OpenAI, published 2025-08-05; names and releases `gpt-oss-120b` and `gpt-oss-20b`.
+- [New embedding models and API updates](https://openai.com/index/new-embedding-models-and-api-updates/) — OpenAI, published 2024-01-25; names `text-embedding-3-small` and `text-embedding-3-large`.
+- [New and improved embedding model](https://openai.com/index/new-and-improved-embedding-model/) — OpenAI, published 2022-12-15; names `text-embedding-ada-002`.
 
 ### Google source notes
 
