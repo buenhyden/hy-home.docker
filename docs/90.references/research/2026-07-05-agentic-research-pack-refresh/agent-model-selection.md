@@ -12,8 +12,9 @@ This reference explains how an agent's model and reasoning effort are chosen to
 match a task's characteristics in `hy-home.docker`. It connects the repo-local
 Model Policy in `subagent-protocol.md` to the general engineering practice of
 right-sizing a model to task complexity, latency tolerance, and cost, and to the
-per-provider mechanics that express that choice. The complete official catalog
-and lifecycle evidence is maintained in
+per-provider mechanics that express that choice. The provider landscape's 145
+retrieval-time structural rows and 142 exact-cutoff-qualified rows, with their
+lifecycle evidence, are maintained in
 [`provider-model-landscape.md`](./provider-model-landscape.md) at the fixed
 **2026-07-10 10:00 KST (01:00 UTC)** cutoff.
 
@@ -89,6 +90,11 @@ the single source of truth.
   `scripts/validation/check-repo-contracts.sh`; provider adapters must keep
   parity with the Stage 00 catalog. This validation does not prove provider
   availability.
+- **Catalog/cutoff boundary**: The linked landscape has 145 structural rows from
+  the 2026-07-10 retrieval, but only 142 have evidence proving release or
+  existence before 01:00 UTC. GPT-5.6 Sol, Terra, and Luna remain retrieval-time
+  context because their official changelog entry says only `Jul 9`, without a
+  time or timezone.
 - **Cutoff finding**: At the cutoff, `gemini-3.5-flash` is an official Stable
   model ID. The official Pro ID is `gemini-3.1-pro-preview`; the workspace
   Supervisor value `gemini-3.1-pro` lacks `-preview` and is recorded as an
@@ -163,8 +169,9 @@ selection.
 
 - Prefer the repo-local Model Policy in `subagent-protocol.md` for all tier,
   model, and effort facts; it is the single source of truth.
-- Use `provider-model-landscape.md` for the full cutoff catalog and lifecycle,
-  not a partial list copied into this analysis.
+- Use `provider-model-landscape.md` for the full structural catalog,
+  cutoff-qualified subset, and lifecycle evidence, not a partial list copied
+  into this analysis.
 - Treat external model-selection guidance as background practice, not as
   authority over repo values.
 - Re-check external model names, effort levels, and defaults before using them
@@ -175,7 +182,7 @@ selection.
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md) - repo-local Model Policy, tier mapping, reasoning-effort policy, and change protocol
 - [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) - vendor feature and boundary SSOT relevant to model configuration
 - [Repository contract check](../../../../scripts/validation/check-repo-contracts.sh) - enforces name/model/scope parity across provider adapters
-- [Provider model landscape](./provider-model-landscape.md) - complete cutoff inventory, lifecycle normalization, official sources, and task-fit inference
+- [Provider model landscape](./provider-model-landscape.md) - 145-row structural catalog, 142-row exact-cutoff-qualified subset, lifecycle normalization, official sources, and task-fit inference
 - [Choosing a Claude model](https://platform.claude.com/docs/en/about-claude/models/choosing-a-model) - provider capability/speed/effort guidance
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents) - subagent model field and alias resolution
 - [Codex configuration reference](https://developers.openai.com/codex/config-reference) - `model_reasoning_effort` values and default

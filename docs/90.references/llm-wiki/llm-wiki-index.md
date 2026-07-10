@@ -976,6 +976,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md](../research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md](../research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md) | Markdown reference |
+| [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md](../research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md](../research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md](../research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md](../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | Markdown reference |

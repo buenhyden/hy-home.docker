@@ -93,15 +93,15 @@ prove an applicable model cutoff must use `historical state unverified`.
 | <https://www.pagerduty.com/resources/learn/what-is-a-runbook/> | PagerDuty / vendor practice guide | A runbook is detailed repeatable operational how-to guidance and may be manual or automated. | Not shown | 2026-07-10 | Not applicable (non-model source) | Redirects to `/resources/automation/learn/what-is-a-runbook/`; mutable vendor guidance, not policy. | T-ARC-001 |
 | <https://keepachangelog.com/en/1.1.0/> | Keep a Changelog / official convention page | Changelogs communicate notable human-readable changes and maintain an Unreleased section. | 2019-02-15 (v1.1.0) | 2026-07-10 | Not applicable (non-model source) | Convention only; site content includes later maintenance updates. | T-ARC-001 |
 | <https://semver.org/> | Semantic Versioning / official specification page | MAJOR, MINOR, and PATCH communicate incompatible, compatible feature, and compatible fix changes. | Not shown (2.0.0) | 2026-07-10 | Not applicable (non-model source) | Requires a declared public API; does not define workspace release approval. | T-ARC-001 |
-| <https://platform.claude.com/docs/en/about-claude/models/overview> | Anthropic / official mutable model catalog | Current Claude names, API IDs/aliases, surfaces, latest-model context/modalities, and reasoning notes. | No visible page date | 2026-07-10 | Included; dated releases corroborated separately; historical state unverified where only current-page state exists | Mutable page; does not prove account or exact cutoff availability. | T-ARC-002 |
+| <https://platform.claude.com/docs/en/about-claude/models/overview> | Anthropic / official mutable model catalog | Current Claude names, IDs/surfaces, Fable general availability, Sonnet 5 current-model placement, and a statement that Mythos Preview is offered separately. | No visible page date | 2026-07-10 | Included; dated releases corroborated separately; historical state unverified where only current-page state exists | Conflicts with the Mythos Preview scheduled-retirement statement; does not prove account availability. | T-ARC-002 |
 | <https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions> | Anthropic / official model-ID guide | Dateless 4.6+ IDs are pinned; older convenience aliases may resolve to dated snapshots. | No visible page date | 2026-07-10 | Included; versioning rule | Mutable guide; not a lifecycle status table. | T-ARC-002 |
-| <https://platform.claude.com/docs/en/about-claude/model-deprecations> | Anthropic / official lifecycle page | Active, Legacy, Deprecated, Retired definitions plus dated first-party retirement history. | Through 2026-06-05 notice | 2026-07-10 | Included; transitions dated before cutoff | Mutable status table; partner-operated platform schedules differ. | T-ARC-002 |
+| <https://platform.claude.com/docs/en/about-claude/model-deprecations> | Anthropic / official lifecycle page | Seven literal Active rows, one Deprecated row, five Retired rows, dated transitions, and a statement Mythos Preview “will be retired” June 30. | Through 2026-06-05 notice | 2026-07-10 | Included; six Deprecated/Retired transitions dated before cutoff; seven Active states historical state unverified | No dated Mythos retirement-completion statement; partner-operated platform schedules differ. | T-ARC-002 |
 | <https://platform.claude.com/docs/en/release-notes/overview> | Anthropic / official changelog | Dated Fable 5, Mythos 5, Sonnet 5, Opus 4.8, and retirement evidence. | Latest visible entry 2026-07-08 | 2026-07-10 | Included; no post-cutoff entry used | Changelog dates give no time of day. | T-ARC-002 |
 | <https://code.claude.com/docs/en/configuration> | Anthropic / official Claude Code configuration | Claude Code model, fallback, advisor, teammate, and available-model surfaces. | No visible page date | 2026-07-10 | Included as surface evidence | Does not prove account model availability or API ID maturity. | T-ARC-002 |
-| <https://developers.openai.com/api/docs/guides/latest-model> | OpenAI / official latest-model guide | GPT-5.6 family, native reasoning/tool features, and latest model guidance. | Current page includes 2026-07-09 family release | 2026-07-10 | Included; release calendar date precedes cutoff | Official-web fallback because Docs MCP was not exposed; mutable page, no release time shown. | T-ARC-002 |
-| <https://developers.openai.com/api/docs/models/all> | OpenAI / official mutable model catalog | 93 official model cards and explicit Deprecated labels. | No visible page date | 2026-07-10 | Included; 46 non-deprecated listing states marked historical state unverified | Available/listed is not normalized to stable/GA; exact cutoff page state not provable. | T-ARC-002 |
-| <https://developers.openai.com/api/docs/deprecations> | OpenAI / official lifecycle page | Deprecated, shut down/sunset, Legacy definitions and dated model transitions. | Latest model notice 2026-06-11 | 2026-07-10 | Included; dated notices precede cutoff | Snapshot and alias schedules must remain distinct. | T-ARC-002 |
-| <https://developers.openai.com/api/docs/changelog> | OpenAI / official changelog | Dated model releases, including GPT-5.6 on July 9 and Realtime 2.1 on July 6. | 2026-07-09 | 2026-07-10 | Included; no post-cutoff entry used | Dates have no time of day; official-web fallback route. | T-ARC-002 |
+| <https://developers.openai.com/api/docs/guides/latest-model> | OpenAI / official latest-model guide | GPT-5.6 family, native reasoning/tool features, and latest model guidance. | Current page includes a `Jul 9` family release | 2026-07-10 | Retrieval-time context only for GPT-5.6; exact cutoff inclusion historical state unverified | Official-web fallback because Docs MCP was not exposed; no release time or timezone. | T-ARC-002 |
+| <https://developers.openai.com/api/docs/models/all> | OpenAI / official mutable model catalog | 93 retrieval-time model cards and explicit Deprecated labels. | No visible page date | 2026-07-10 | Structural coverage 93; exact-cutoff-qualified subset 90 | 46 non-deprecated and five deprecated alias/card states are historical state unverified; listed is not normalized to stable/GA. | T-ARC-002 |
+| <https://developers.openai.com/api/docs/deprecations> | OpenAI / official lifecycle page | Deprecated, shut down/sunset, Legacy definitions and dated model/snapshot transitions. | Latest model notice 2026-06-11 | 2026-07-10 | Included; dated notices precede cutoff where the exact model/alias matches | `gpt-audio-mini` and `gpt-4o-mini-tts` entries date snapshots, not the mutable aliases. | T-ARC-002 |
+| <https://developers.openai.com/api/docs/changelog> | OpenAI / official changelog | Unzoned `Jul 9` GPT-5.6 entry and July 6 Realtime 2.1 release. | `Jul 9` | 2026-07-10 | GPT-5.6 retained structurally but excluded from exact-cutoff-qualified count | An unzoned July 9 time can fall after 2026-07-10 01:00 UTC; official-web fallback route. | T-ARC-002 |
 | <https://developers.openai.com/codex/config-reference> | OpenAI / official Codex configuration entry point | Model and reasoning-effort configuration surface. | No visible page date | 2026-07-10 | Included as surface evidence | Redirected to current ChatGPT Learn docs; does not establish API/Codex entitlement. | T-ARC-002 |
 | <https://ai.google.dev/gemini-api/docs/models> | Google / official model catalog | 35 official catalog cards, exact IDs, Stable/Preview/Experimental terms, and previous-model cards. | Last updated 2026-07-09 UTC | 2026-07-10 | Included; page date precedes cutoff date | Exact update time is not shown; `latest` aliases remain mutable. | T-ARC-002 |
 | <https://ai.google.dev/gemini-api/docs/deprecations> | Google / official lifecycle page | Release/shutdown schedules and recommended replacements. | Last updated 2026-07-02 UTC | 2026-07-10 | Included; dated before cutoff | Shutdown date can coexist with Stable maturity. | T-ARC-002 |
@@ -210,24 +210,28 @@ covering command:
 
 ### Status and Scope
 
-Status is **Done** because every one of the 145 model rows has both a lifecycle
-value and a cutoff disposition. This task is documentation-only; code TDD is not
-applicable. No active Model Policy, provider adapter/generator, configuration,
-runtime, CI, script, credential, remote state, or unrelated document changed.
+Status is **Done** because every one of the 145 retrieval-time structural rows
+has a lifecycle value and explicit cutoff disposition, and the three rows that
+lack exact-cutoff proof are excluded from the 142-row cutoff-qualified subset.
+This task is documentation-only; code TDD is not applicable. No active Model
+Policy, provider adapter/generator, configuration, runtime, CI, script,
+credential, remote state, or unrelated document changed.
 
 ### Provider, Model, and Lifecycle Coverage
 
-| Provider | Rows | Provider-native totals | Normalized totals | Cutoff exception |
-| --- | ---: | --- | --- | --- |
-| Anthropic | 17 | Active 9; limited availability 1; Deprecated 1; Retired 6 | stable 9; deprecated 7; not normalized 1 | 13 mutable status-table rows say `historical state unverified`; newer dated releases are joined from release notes |
-| OpenAI | 93 | Listed without maturity label 45; Latest alias 1; Deprecated 47 | not normalized 46; deprecated 47 | 46 non-deprecated mutable listing states say `historical state unverified`; official-web fallback used because Docs MCP was not exposed |
-| Google | 35 | Stable 11; Preview 18; Experimental 1; Deprecated 1; Shut down 4 | stable 11; preview 18; not normalized 1; deprecated 5 | Catalog says last updated 2026-07-09 UTC but gives no update time |
-| **Total** | **145** | — | stable 20; preview 18; deprecated 59; not normalized 48 | No post-cutoff announcement included |
+| Provider | Structural rows | Cutoff-qualified rows | Provider-native structural totals | Normalized structural totals | Cutoff-qualified normalized totals | Cutoff exception |
+| --- | ---: | ---: | --- | --- | --- | --- |
+| Anthropic | 17 | 17 | Active 7; generally available 1; current/launched 1; limited 1; Deprecated 1; Retired 5; scheduled-retirement/current-offer conflict 1 | stable 9; deprecated 6; not normalized 2 | stable 9; deprecated 6; not normalized 2 | The status table supplies 13 rows: seven Active states are historical state unverified and six dated Deprecated/Retired transitions are proven; Mythos Preview remains a disclosed official-page conflict |
+| OpenAI | 93 | 90 | Listed without maturity label 45; Latest alias 1; Deprecated 47 | not normalized 46; deprecated 47 | not normalized 43; deprecated 47 | GPT-5.6 Sol/Terra/Luna are retrieval-only; 46 non-deprecated and five deprecated alias/card states are historical state unverified; official-web fallback used because Docs MCP was unavailable |
+| Google | 35 | 35 | Stable 11; Preview 18; Experimental 1; Deprecated 1; Shut down 4 | stable 11; preview 18; not normalized 1; deprecated 5 | stable 11; preview 18; not normalized 1; deprecated 5 | Catalog's last-updated date is 2026-07-09 UTC, wholly before the cutoff |
+| **Total** | **145** | **142** | — | stable 20; preview 18; deprecated 58; not normalized 49 | stable 20; preview 18; deprecated 58; not normalized 46 | Three structural rows are not exact-cutoff-qualified |
 
 The inventory uses one row per official provider catalog card. When an official
 card groups multiple endpoints (for example Imagen 4), every exact endpoint is
-preserved in that row. OpenAI's all-models page contains 93 cards: 46 current or
-latest rows without a stable/GA label and 47 explicit Deprecated rows.
+preserved in that row. OpenAI's all-models page contains 93 retrieval-time cards:
+46 current or latest rows without a stable/GA label and 47 explicit Deprecated
+rows. Sol, Terra, and Luna remain in that structural count but not the
+exact-cutoff-qualified subset.
 
 ### Workspace Comparison and Gaps
 
@@ -247,6 +251,8 @@ latest rows without a stable/GA label and 47 explicit Deprecated rows.
 ### Changed Files
 
 - `docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md`
+- `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`
+- `docs/90.references/llm-wiki/llm-wiki-index.md`
 - `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md`
 - `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md`
 
@@ -254,7 +260,8 @@ latest rows without a stable/GA label and 47 explicit Deprecated rows.
 
 The clean pre-edit base `ff17d4d40d834bc01faf17faf9dce72e22c77a4e`
 passed `git diff --check`, LLM Wiki freshness, provider sync (no drift), and the
-full repository-contract gate (`failures=0`). The final post-edit results are:
+full repository-contract gate (`failures=0`). The final controller-finding
+remediation results are:
 
 - `git diff --check` — exit 0.
 - Targeted cutoff/lifecycle scan from the parent plan — exit 0; matched the
@@ -263,15 +270,20 @@ full repository-contract gate (`failures=0`). The final post-edit results are:
   index reported fresh.
 - `bash scripts/operations/sync-provider-surfaces.sh --check` — exit 0; no drift.
 - `bash scripts/validation/check-repo-contracts.sh` — exit 0;
-  `changed_template_docs_total=3`, `normalized_changed_template_docs_total=3`,
+  `changed_template_docs_total=5`, `normalized_changed_template_docs_total=5`,
   repository `failures=0`.
+
+The controller-finding fix rerun initially exposed the newly tracked provider
+reference as missing from the generated LLM Wiki index and coverage snapshot.
+The prescribed generators refreshed those two derived artifacts; the full final
+gate rerun then passed with the results above.
 
 ### Commit and Review Evidence
 
 - Task brief: `.superpowers/sdd/task-2-brief.md`.
 - Implementer report: `.superpowers/sdd/task-2-implementer-report.md`.
 - Base commit: `ff17d4d40d834bc01faf17faf9dce72e22c77a4e`.
-- Implementation range: `ff17d4d40d834bc01faf17faf9dce72e22c77a4e..HEAD`
+- Implementation range: `ff17d4d40d834bc01faf17faf9dce72e22c77a4e..3c029db4be1f4196b77de22599697e33aea02651`
   at the Task 2 commit with subject `docs(research): add provider model landscape`.
 - Implementer spec-compliance self-review: **PASS** — exact cutoff, provider
   schemas, complete provider-card inventory, lifecycle/cutoff disposition,
@@ -328,6 +340,16 @@ report is the explicit out-of-band task artifact. Graphify refresh was not
 required because no code file changed. No active policy, runtime, CI, template,
 script, provider/model configuration, remote state, or unrelated document was
 modified.
+
+For `T-ARC-002`, the controller approved one necessary generated-collateral
+scope deviation: the fix commit includes
+`docs/90.references/llm-wiki/llm-wiki-index.md` and
+`docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`. The
+new provider reference was untracked when the first implementation's pre-commit
+Wiki check ran, so its missing generated entries became observable only after
+the first commit made it tracked. Both files were refreshed solely with their
+canonical generators and were not hand-edited. Task 6 may regenerate them again
+after later research-pack changes.
 
 ## Related Documents
 

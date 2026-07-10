@@ -8,10 +8,13 @@ status: active
 
 ## Overview
 
-This reference records the lifecycle-relevant Claude, OpenAI/Codex, and Gemini
-catalogs at the evidence cutoff **2026-07-10 10:00 KST (01:00 UTC)**. Retrieval
-date is 2026-07-10. It preserves provider-native names and maturity terms before
-making a deliberately narrow cross-provider normalization.
+This reference records 145 lifecycle-relevant Claude, OpenAI/Codex, and Gemini
+catalog rows retrieved on 2026-07-10 and evaluates them against the evidence
+cutoff **2026-07-10 10:00 KST (01:00 UTC)**. Exactly 142 rows have release or
+existence evidence that proves they preceded the cutoff; three GPT-5.6 rows are
+retained only as retrieval-time context because their unzoned `Jul 9` release
+date does not prove release by 01:00 UTC. Provider-native names and maturity
+terms are preserved before a deliberately narrow cross-provider normalization.
 
 ## Purpose
 
@@ -47,10 +50,17 @@ particular account, region, product surface, or provider adapter.
 
 ## Definitions / Facts
 
-- **Cutoff disposition** states whether the row is included at the cutoff and
-  whether its state is dated proof or only a mutable retrieval-time view.
-- **`historical state unverified`** means an official mutable page was retrieved
-  on 2026-07-10 but does not prove its exact contents at 01:00 UTC.
+- **Structural row** is a catalog card/model page present at retrieval. Structural
+  coverage is not, by itself, proof that the row existed before the cutoff.
+- **Cutoff-qualified row** has dated or UTC-bounded official evidence proving
+  release or existence before 01:00 UTC. Its mutable lifecycle state may still
+  be `historical state unverified`.
+- **Cutoff disposition** states whether the row is cutoff-qualified or retained
+  only as retrieval-time context and whether its lifecycle state is dated proof
+  or a mutable retrieval-time view.
+- **`historical state unverified`** means the official evidence retrieved on
+  2026-07-10 does not prove the exact state/event at 01:00 UTC, because the page
+  is mutable, the event lacks a cutoff-safe timestamp, or official pages conflict.
 - **Model row** is one official catalog card/model page. A card may carry
   multiple exact endpoints when the provider presents them as one family.
 - **No maturity parity**: `Active`, an unqualified OpenAI listing, Gemini
@@ -71,25 +81,29 @@ particular account, region, product surface, or provider adapter.
 - Mutable retrieval state is not backdated. A dated changelog/deprecation entry
   may establish a release or transition before the cutoff; otherwise the row
   says `historical state unverified`.
-- No post-cutoff announcement is included. A calendar-day entry dated before
-  2026-07-10 is included, while its exact time remains unstated when the source
-  gives no time of day.
+- An unzoned calendar-day entry is cutoff-qualified only when its entire possible
+  date range precedes 01:00 UTC. The GPT-5.6 `Jul 9` entry overlaps the cutoff in
+  some time zones, so those rows remain structural retrieval context and their
+  exact cutoff inclusion is `historical state unverified`.
 
 ## Coverage Summary
 
-| Provider | Model rows | Provider-native lifecycle totals | Normalized lifecycle totals | Cutoff exceptions |
-| --- | ---: | --- | --- | --- |
-| Anthropic | 17 | Active 9; limited availability 1; Deprecated 1; Retired 6 | stable 9; deprecated 7; not normalized (limited) 1 | 13 mutable status-table rows carry `historical state unverified`; dated release/deprecation notes corroborate transitions |
-| OpenAI | 93 | Listed without maturity label 45; Latest alias 1; Deprecated 47 | not normalized (listed) 45; not normalized (latest alias) 1; deprecated 47 | 46 non-deprecated listing states carry `historical state unverified`; dated changelog establishes releases but not the exact mutable listing state |
-| Google | 35 | Stable 11; Preview 18; Experimental 1; Deprecated 1; Shut down 4 | stable 11; preview 18; not normalized (experimental) 1; deprecated 5 | Main catalog says last updated 2026-07-09 UTC; exact time is not shown |
-| **Total** | **145** | — | stable 20; preview 18; deprecated 59; not normalized 48 | No row lacks a lifecycle or cutoff disposition |
+| Provider | Structural rows | Cutoff-qualified rows | Provider-native structural totals | Normalized structural totals | Cutoff-qualified normalized totals | Cutoff exceptions |
+| --- | ---: | ---: | --- | --- | --- | --- |
+| Anthropic | 17 | 17 | Active 7; generally available 1; current/launched 1; limited availability 1; Deprecated 1; Retired 5; scheduled-retirement/current-offer conflict 1 | stable 9; deprecated 6; not normalized 2 | stable 9; deprecated 6; not normalized 2 | The status table supplies 13 rows: seven mutable Active states say `historical state unverified`, while six Deprecated/Retired states have dated transition evidence; Mythos Preview has conflicting official lifecycle/offer statements |
+| OpenAI | 93 | 90 | Listed without maturity label 45; Latest alias 1; Deprecated 47 | not normalized 46; deprecated 47 | not normalized 43; deprecated 47 | GPT-5.6 Sol/Terra/Luna are retrieval-only; 46 non-deprecated listing states and five deprecated alias/card states say `historical state unverified` |
+| Google | 35 | 35 | Stable 11; Preview 18; Experimental 1; Deprecated 1; Shut down 4 | stable 11; preview 18; not normalized 1; deprecated 5 | stable 11; preview 18; not normalized 1; deprecated 5 | Main catalog says last updated 2026-07-09 UTC, which precedes the cutoff even without a time of day |
+| **Total** | **145** | **142** | — | stable 20; preview 18; deprecated 58; not normalized 49 | stable 20; preview 18; deprecated 58; not normalized 46 | Every structural row has a lifecycle and cutoff disposition; three are not exact-cutoff-qualified |
 
 ## Cross-provider Terminology Map
 
 | Provider-native term | Normalized lifecycle | Rule |
 | --- | --- | --- |
 | Claude `Active` | `stable` | Anthropic defines Active as fully supported and recommended. This does not imply Gemini GA semantics. |
+| Claude generally available / widely released | `stable` | Applied to Fable 5 only, based on Anthropic's explicit generally-available and widely-released wording. It is not counted as `Active`. |
+| Claude current / launched | `stable` | Applied to Sonnet 5 only, based on its dated launch plus placement in Anthropic's current/latest model comparison. It is not counted as `Active`. |
 | Claude limited availability | not normalized | Access scope is not a maturity term. |
+| Claude scheduled-retirement/current-offer conflict | not normalized | Conflicting official pages do not support a definitive current lifecycle or availability state. |
 | Claude `Legacy` | `deprecated` only after a deprecation notice; otherwise not normalized | Anthropic says Legacy may be deprecated later. No Legacy row is relabeled without a notice. |
 | Claude `Deprecated` / `Retired` | `deprecated` | The normalized bucket means leaving/left service; provider-native state retains whether requests still work. |
 | OpenAI unqualified all-models listing | not normalized | “Available” is not an official stable/GA label. |
@@ -113,16 +127,19 @@ particular account, region, product surface, or provider adapter.
 
 ### Anthropic / Claude
 
-Anthropic defines `Active`, `Legacy`, `Deprecated`, and `Retired`. Its status
-page is mutable and omits the newer Fable 5, Mythos 5, and Sonnet 5 rows that are
-documented by dated June release notes; those releases are added from the
-official changelog rather than inferred from the status table.
+Anthropic defines `Active`, `Legacy`, `Deprecated`, and `Retired`. Its mutable
+status table supplies 13 rows: seven literal Active states and six states backed
+by dated deprecation/retirement transitions. The table omits Fable 5, Mythos 5,
+and Sonnet 5, whose distinct provider-native wording comes from the model
+overview and dated June release notes. Mythos Preview is retained as a conflict:
+the lifecycle page schedules retirement for June 30, while the current overview
+still says it is offered separately; no dated completion notice resolves this.
 
 | Provider | Official name | Model ID / alias | Provider-native status | Normalized lifecycle | Release / cutoff evidence | Availability surfaces | Context / modalities | Reasoning control | Tool / agent / coding characteristics | Cutoff disposition | Caveat |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Anthropic | Claude Fable 5 | `claude-fable-5` | generally available | stable | Released 2026-06-09; access restored 2026-07-01 | Claude API; Claude Platform on AWS; Bedrock; Google Cloud; Microsoft Foundry | 1M; text/image input, text output | adaptive thinking always on | Long-running-agent positioning; tool support is model-page specific | Included; dated before cutoff | Requires 30-day retention; no zero-data-retention support |
 | Anthropic | Claude Mythos 5 | `claude-mythos-5` | limited availability | not normalized (limited) | Released 2026-06-09; access restored 2026-07-01 | Project Glasswing; approved customers | 1M; text/image input, text output | adaptive thinking always on | Defensive-cybersecurity limited offering | Included; dated before cutoff | Invitation-only; availability is not maturity |
-| Anthropic | Claude Sonnet 5 | `claude-sonnet-5` | current / generally released | stable | Released 2026-06-30 | Claude API and documented partner surfaces | 1M; text/image input, text output | adaptive thinking default; manual extended thinking removed | Same documented tools/platform features as Sonnet 4.6 except Priority Tier | Included; dated before cutoff | Changelog is dated; exact release time is not shown |
+| Anthropic | Claude Sonnet 5 | `claude-sonnet-5` | current / launched | stable | Launched 2026-06-30; current/latest comparison at retrieval | Claude API and documented partner surfaces | 1M; text/image input, text output | adaptive thinking default; manual extended thinking removed | Same documented tools/platform features as Sonnet 4.6 except Priority Tier | Included; dated before cutoff | Stable normalization is limited to the dated launch plus current-model placement; it is not Anthropic `Active` |
 | Anthropic | Claude Opus 4.8 | `claude-opus-4-8`; Claude Code `opus` | Active | stable | Released 2026-05-28; status table Active | Claude API; Claude Platform on AWS; Bedrock; Google Cloud; Microsoft Foundry; Claude Code | 1M; text/image input, text output | effort defaults `high`; adaptive thinking | Computer use; advisor; task budgets; agentic coding description | Included; dated release; status historical state unverified | Claude Code alias is a product surface, not the API ID |
 | Anthropic | Claude Opus 4.7 | `claude-opus-4-7` | Active | stable | Released 2026-04-16; status table Active | Claude API and documented partner surfaces | Model page; high-resolution image input documented | `xhigh` effort documented; adaptive thinking | Agentic coding; task budgets; computer-use support documented | Included; dated release; status historical state unverified | Fast mode was deprecated 2026-06-25; model itself was not |
 | Anthropic | Claude Opus 4.6 | `claude-opus-4-6` | Active | stable | Released 2026-02-05; status table Active | Claude API and documented partner surfaces | 1M GA; text/image input, text output | effort; adaptive thinking recommended | Complex agentic/long-horizon positioning | Included; dated release; status historical state unverified | Fast mode removal is not model deprecation |
@@ -136,25 +153,27 @@ official changelog rather than inferred from the status table.
 | Anthropic | Claude Haiku 4.5 | `claude-haiku-4-5-20251001`; `claude-haiku-4-5` alias | Active | stable | Status table Active | Claude API and documented partner surfaces | 200k; text/image input, text output | Extended thinking documented | Fast/current Haiku; tool support is model-page specific | Included; historical state unverified | Mutable status page does not prove exact cutoff state |
 | Anthropic | Claude Haiku 3.5 | `claude-3-5-haiku-20241022`; `claude-3-5-haiku-latest` alias | Retired | deprecated | Deprecated 2025-12-19; retired 2026-02-19 | Unavailable on first-party API | — | — | Historical only | Included as Retired at cutoff | — |
 | Anthropic | Claude Haiku 3 | `claude-3-haiku-20240307` | Retired | deprecated | Deprecated 2026-02-19; retired 2026-04-20 | Unavailable on first-party API | — | — | Historical only | Included as Retired at cutoff | — |
-| Anthropic | Claude Mythos Preview | `claude-mythos-preview` | Retired | deprecated | Preview released 2026-04-07; retired 2026-06-30 | Unavailable; replaced by limited Mythos 5 | — | — | Historical defensive-cybersecurity preview | Included as Retired at cutoff | Preview maturity and limited access were distinct |
+| Anthropic | Claude Mythos Preview | `claude-mythos-preview` | Scheduled retirement / current-offer conflict | not normalized (conflict) | Preview launched 2026-04-07; lifecycle page says “will be retired” 2026-06-30; overview still says offered separately | Official pages conflict; availability at cutoff is unverified | — | — | Defensive-cybersecurity research preview | Included structurally; exact lifecycle and availability at cutoff historical state unverified | No dated retirement-completion notice or endpoint evidence was found |
 
 ### OpenAI / Codex
 
 OpenAI's all-models page calls the catalog “available” but does not assign a
 stable/GA status to an unqualified listing. Those rows therefore remain
-`not normalized (listed)`. The page's explicit `Deprecated` label is retained.
-`gpt-5.6-*` (July 9) and `gpt-realtime-2.1*` (July 6) precede the cutoff; no
-later announcement is included. Exact account/Codex-surface availability is not
+`not normalized (listed)`. The page's explicit retrieval-time `Deprecated`
+label is retained. The GPT-5.6 changelog entry says only `Jul 9`, without time or
+timezone, so Sol, Terra, and Luna remain in structural retrieval coverage but
+are excluded from the 142 exact-cutoff-qualified rows. Realtime 2.1 has an
+earlier July 6 release date. Exact account/Codex-surface availability is not
 inferred from API documentation.
 
 | Provider | Official name | Model ID / alias | Provider-native status | Normalized lifecycle | Release / cutoff evidence | Availability surfaces | Context / modalities | Reasoning control | Tool / agent / coding characteristics | Cutoff disposition | Caveat |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| OpenAI | [GPT-5.6 Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol) | `gpt-5.6-sol`; `gpt-5.6` alias | Listed; frontier | not normalized (listed) | Changelog 2026-07-09 | Responses; Chat Completions; Batch | 1M; text/image input, text output | Configurable; `max` documented | Programmatic tool calling; multi-agent beta; professional-work positioning | Included; release dated before cutoff; listing historical state unverified | Changelog gives no time of day |
-| OpenAI | [GPT-5.6 Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra) | `gpt-5.6-terra` | Listed; frontier | not normalized (listed) | Changelog 2026-07-09 | Responses; Chat Completions; Batch | Model page; text/image input, text output | Configurable | GPT-5.6 tool/coding family; balance positioning | Included; release dated before cutoff; listing historical state unverified | No benchmark or account availability inferred |
-| OpenAI | [GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) | `gpt-5.6-luna` | Listed; frontier | not normalized (listed) | Changelog 2026-07-09 | Responses; Chat Completions; Batch | Model page; text/image input, text output | Configurable | GPT-5.6 family; high-volume positioning | Included; release dated before cutoff; listing historical state unverified | No price claim carried forward |
-| OpenAI | [GPT-5.5](https://developers.openai.com/api/docs/models/gpt-5.5) | `gpt-5.5` | Listed; frontier | not normalized (listed) | Released 2026-04-24 | Responses; Chat Completions | 1M; text/image input, text output | Defaults `medium` per changelog | Structured outputs, function calling, tools, computer use, shell, apply patch, skills, MCP, web search | Included; listing historical state unverified | API listing does not prove Codex entitlement |
+| OpenAI | [GPT-5.6 Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol) | `gpt-5.6-sol`; `gpt-5.6` alias | Listed; frontier | not normalized (listed) | Changelog says `Jul 9`; no time or timezone | Responses; Chat Completions; Batch | 1,050,000; text/image input, text output | Configurable; `max` documented | Programmatic tool calling; multi-agent beta; professional-work positioning | Retrieval-time row only; exact cutoff inclusion historical state unverified | An unzoned July 9 time can fall after 2026-07-10 01:00 UTC |
+| OpenAI | [GPT-5.6 Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra) | `gpt-5.6-terra` | Listed; frontier | not normalized (listed) | Changelog says `Jul 9`; no time or timezone | Responses; Chat Completions; Batch | Model page; text/image input, text output | Configurable | GPT-5.6 tool/coding family; balance positioning | Retrieval-time row only; exact cutoff inclusion historical state unverified | An unzoned July 9 time can fall after 2026-07-10 01:00 UTC |
+| OpenAI | [GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) | `gpt-5.6-luna` | Listed; frontier | not normalized (listed) | Changelog says `Jul 9`; no time or timezone | Responses; Chat Completions; Batch | Model page; text/image input, text output | Configurable | GPT-5.6 family; high-volume positioning | Retrieval-time row only; exact cutoff inclusion historical state unverified | An unzoned July 9 time can fall after 2026-07-10 01:00 UTC |
+| OpenAI | [GPT-5.5](https://developers.openai.com/api/docs/models/gpt-5.5) | `gpt-5.5` | Listed; frontier | not normalized (listed) | Released 2026-04-24 | Responses; Chat Completions | 1,050,000; text/image input, text output | Defaults `medium` per changelog | Structured outputs, function calling, tools, computer use, shell, apply patch, skills, MCP, web search | Included; listing historical state unverified | API listing does not prove Codex entitlement |
 | OpenAI | [GPT-5.5 Pro](https://developers.openai.com/api/docs/models/gpt-5.5-pro) | `gpt-5.5-pro` | Listed; frontier | not normalized (listed) | All-models and model page | Responses | Model page | Pro-mode control is provider-native | Higher-compute GPT-5.5 variant | Included; historical state unverified | No benchmark superiority asserted |
-| OpenAI | [GPT-5.4](https://developers.openai.com/api/docs/models/gpt-5.4) | `gpt-5.4` | Listed; frontier | not normalized (listed) | Released 2026-03-05 | Responses; Chat Completions | 1M; multimodal input documented | Configurable | Tool search, computer use, compaction; coding/professional-work positioning | Included; release before cutoff; listing historical state unverified | — |
+| OpenAI | [GPT-5.4](https://developers.openai.com/api/docs/models/gpt-5.4) | `gpt-5.4` | Listed; frontier | not normalized (listed) | Released 2026-03-05 | Responses; Chat Completions | 1,050,000; multimodal input documented | Configurable | Tool search, computer use, compaction; coding/professional-work positioning | Included; release before cutoff; listing historical state unverified | — |
 | OpenAI | [GPT-5.4 Pro](https://developers.openai.com/api/docs/models/gpt-5.4-pro) | `gpt-5.4-pro` | Listed; frontier | not normalized (listed) | Released 2026-03-05 | Responses | Model page | Pro variant | Tougher-problem positioning | Included; release before cutoff; listing historical state unverified | — |
 | OpenAI | [GPT-5.4 mini](https://developers.openai.com/api/docs/models/gpt-5.4-mini) | `gpt-5.4-mini` | Listed; frontier | not normalized (listed) | Released 2026-03-17 | Responses; Chat Completions | Model page | Model-specific | Tool search, computer use, compaction; coding and subagent positioning | Included; release before cutoff; listing historical state unverified | Workspace Worker value; availability not locally proven |
 | OpenAI | [GPT-5.4 nano](https://developers.openai.com/api/docs/models/gpt-5.4-nano) | `gpt-5.4-nano` | Listed; frontier | not normalized (listed) | Released 2026-03-17 | Responses; Chat Completions | Model page | Model-specific | Compaction; simple high-volume positioning; no tool search/computer use per changelog | Included; release before cutoff; listing historical state unverified | — |
@@ -181,12 +200,12 @@ inferred from API documentation.
 | OpenAI | [TTS-1 HD](https://developers.openai.com/api/docs/models/tts-1-hd) | `tts-1-hd` | Listed; speech | not normalized (listed) | All-models and model page | Speech API | Text input; audio output | — | Text-to-speech, quality positioning | Included; historical state unverified | — |
 | OpenAI | [Whisper](https://developers.openai.com/api/docs/models/whisper-1) | `whisper-1` | Listed; transcription | not normalized (listed) | All-models and model page | Audio API | Audio input; text output | — | General speech recognition | Included; historical state unverified | — |
 | OpenAI | [GPT-Realtime mini](https://developers.openai.com/api/docs/models/gpt-realtime-mini) | `gpt-realtime-mini` | Listed; realtime/audio | not normalized (listed) | Current alias listed; older snapshot deprecation documented | Realtime API | Text/audio input and output | Model page | Cost-efficient realtime | Included; historical state unverified | Do not transfer deprecated snapshot status to current alias |
-| OpenAI | [gpt-audio-mini](https://developers.openai.com/api/docs/models/gpt-audio-mini) | `gpt-audio-mini` | Deprecated | deprecated | All-models label; older snapshot shutdown 2026-07-23 | Chat Completions until applicable shutdown | Audio/text input and output | — | Previous small audio model | Included as Deprecated at cutoff | Alias/snapshot schedule is page-specific |
+| OpenAI | [gpt-audio-mini](https://developers.openai.com/api/docs/models/gpt-audio-mini) | `gpt-audio-mini` | Deprecated at retrieval | deprecated | Mutable all-models label; dated deprecation names `gpt-audio-mini-2025-10-06` only | Chat Completions subject to alias-specific lifecycle | Audio/text input and output | — | Previous small audio model | Included structurally; alias lifecycle at cutoff historical state unverified | Snapshot evidence does not date the mutable alias transition |
 | OpenAI | [GPT-4o Audio](https://developers.openai.com/api/docs/models/gpt-4o-audio-preview) | `gpt-4o-audio-preview` | Deprecated; shut down | deprecated | Shut down 2026-05-07 | Unavailable | Audio/text input and output | — | Historical audio preview | Included as shut down at cutoff | — |
 | OpenAI | [GPT-4o mini Audio](https://developers.openai.com/api/docs/models/gpt-4o-mini-audio-preview) | `gpt-4o-mini-audio-preview` | Deprecated; shut down | deprecated | Shut down 2026-05-07 | Unavailable | Audio/text input and output | — | Historical audio preview | Included as shut down at cutoff | — |
 | OpenAI | [GPT-4o Realtime](https://developers.openai.com/api/docs/models/gpt-4o-realtime-preview) | `gpt-4o-realtime-preview` | Deprecated; shut down | deprecated | Shut down 2026-05-07 | Unavailable | Realtime text/audio | — | Historical realtime preview | Included as shut down at cutoff | — |
 | OpenAI | [GPT-4o mini Realtime](https://developers.openai.com/api/docs/models/gpt-4o-mini-realtime-preview) | `gpt-4o-mini-realtime-preview` | Deprecated; shut down | deprecated | Shut down 2026-05-07 | Unavailable | Realtime text/audio | — | Historical realtime preview | Included as shut down at cutoff | — |
-| OpenAI | [GPT-4o mini TTS](https://developers.openai.com/api/docs/models/gpt-4o-mini-tts) | `gpt-4o-mini-tts` | Deprecated | deprecated | All-models label; 2025-03-20 snapshot shutdown 2026-07-23 | Speech API | Text input; audio output | — | Previous text-to-speech model | Included as Deprecated at cutoff | Current alias and dated snapshot must not be conflated |
+| OpenAI | [GPT-4o mini TTS](https://developers.openai.com/api/docs/models/gpt-4o-mini-tts) | `gpt-4o-mini-tts` | Deprecated at retrieval | deprecated | Mutable all-models label; dated deprecation names `gpt-4o-mini-tts-2025-03-20` only | Speech API subject to alias-specific lifecycle | Text input; audio output | — | Previous text-to-speech model | Included structurally; alias lifecycle at cutoff historical state unverified | Snapshot evidence does not date the mutable alias transition |
 | OpenAI | [gpt-oss-120b](https://developers.openai.com/api/docs/models/gpt-oss-120b) | `gpt-oss-120b` | Listed; open-weight | not normalized (listed) | All-models and model page | Self-hosted/open-weight distribution | Model page | Reasoning model family | Open-weight model | Included; historical state unverified | API availability is not implied by open weights |
 | OpenAI | [gpt-oss-20b](https://developers.openai.com/api/docs/models/gpt-oss-20b) | `gpt-oss-20b` | Listed; open-weight | not normalized (listed) | All-models and model page | Self-hosted/open-weight distribution | Model page | Reasoning model family | Lower-latency open-weight positioning | Included; historical state unverified | — |
 | OpenAI | [text-embedding-3-large](https://developers.openai.com/api/docs/models/text-embedding-3-large) | `text-embedding-3-large` | Listed; embedding | not normalized (listed) | All-models and model page | Embeddings API | Text input; vector output | — | Embeddings | Included; historical state unverified | Not a generative agent model |
@@ -321,18 +340,18 @@ or measured workspace results are supplied.
 
 ### Anthropic source notes
 
-- [Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) — current names, IDs, surfaces, latest-model context/modalities, and reasoning notes; mutable page, retrieval state only where a dated release note is absent.
+- [Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) — current names, IDs, surfaces, latest-model context/modalities, and reasoning notes; also says Mythos Preview is offered separately, conflicting with its scheduled-retirement notice.
 - [Model IDs and versioning](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions) — pinned IDs versus pre-4.6 convenience aliases; no visible page date.
-- [Model deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations) — provider lifecycle definitions and dated status/retirement history; mutable status table, partner schedules separate.
+- [Model deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations) — seven literal Active rows, one Deprecated row, five Retired rows, dated transition history, and a statement that Mythos Preview “will be retired” June 30; it does not state that retirement completed.
 - [Claude Platform release notes](https://platform.claude.com/docs/en/release-notes/overview) — dated releases through 2026-07-08; retrieval 2026-07-10.
 - [Claude Code settings](https://code.claude.com/docs/en/configuration) — `model`, available-model, fallback, advisor, and teammate configuration surfaces; mutable product docs.
 
 ### OpenAI source notes
 
 - [Latest-model guide](https://developers.openai.com/api/docs/guides/latest-model) — required first fetch; GPT-5.6 family guidance and provider-native controls; mutable page.
-- [All models](https://developers.openai.com/api/docs/models/all) — 93 official catalog cards and explicit Deprecated labels; mutable page, exact cutoff listing state is `historical state unverified` for 46 non-deprecated rows.
+- [All models](https://developers.openai.com/api/docs/models/all) — 93 retrieval-time catalog cards and explicit Deprecated labels; 46 non-deprecated rows and five deprecated alias/card rows have mutable lifecycle/listing states marked `historical state unverified`.
 - [Deprecations](https://developers.openai.com/api/docs/deprecations) — provider definitions of Deprecated, shut down/sunset, and Legacy plus dated model transitions through 2026-06-11.
-- [API changelog](https://developers.openai.com/api/docs/changelog) — dated releases, including GPT-5.6 on 2026-07-09 and Realtime 2.1 on 2026-07-06; dates have no time of day.
+- [API changelog](https://developers.openai.com/api/docs/changelog) — dated releases, including an unzoned `Jul 9` GPT-5.6 entry that does not prove release by the 01:00 UTC cutoff, and Realtime 2.1 on July 6.
 - [Codex configuration reference](https://developers.openai.com/codex/config-reference) — model and reasoning-effort configuration surface; redirected at retrieval to the current ChatGPT Learn documentation.
 
 ### Google source notes
