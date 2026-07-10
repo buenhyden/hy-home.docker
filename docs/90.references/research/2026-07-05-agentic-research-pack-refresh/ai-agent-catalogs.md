@@ -57,9 +57,12 @@ agent, skill, model mapping, or runtime adapter.
 - Its Codex converter maps source name/description/body into current minimal
   `name`, `description`, and `developer_instructions` TOML fields.
 - Its Gemini CLI integration says it installs Markdown agents under
-  `~/.gemini/agents/`. That is an upstream integration claim; the assigned
-  official Gemini CLI entry points reviewed in this task did not independently
-  establish an equivalent custom-agent schema.
+  `~/.gemini/agents/`. Official Gemini CLI documentation independently
+  confirms user-level `~/.gemini/agents/*.md` and project-level
+  `.gemini/agents/*.md` custom definitions with required `name`/`description`
+  frontmatter and optional tool/MCP/model/run controls; public support was
+  announced in v0.38.1 on 2026-04-16. This corroborates the upstream target,
+  but does not mean the workspace's separate `.agents` projection adopts it.
 - The upstream README calls the catalog “Production-Ready” and
   “battle-tested.” Those are publisher claims, not independent evaluation or
   workspace adoption evidence.
@@ -137,6 +140,8 @@ agent, skill, model mapping, or runtime adapter.
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
 - [Codex subagents](https://developers.openai.com/codex/subagents)
 - [Gemini CLI documentation](https://google-gemini.github.io/gemini-cli/docs/)
+- [Gemini CLI subagents](https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md)
+- [Gemini CLI v0.38.1 subagent announcement](https://github.com/google-gemini/gemini-cli/discussions/25562)
 - [Agent catalog](../../../00.agent-governance/agents/README.md)
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
 - [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md)

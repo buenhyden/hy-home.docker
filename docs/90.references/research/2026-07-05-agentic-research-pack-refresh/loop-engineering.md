@@ -93,13 +93,17 @@ comparison and routing aid.
 
 ## Provider and Research Boundary
 
-Claude and Codex document custom-agent and lifecycle mechanisms, while the
-reviewed Gemini CLI sources document context, tools, MCP, approvals, sandbox,
-checkpointing, telemetry, and headless execution. The assigned Gemini sources
-did not establish first-class hooks/subagents equivalent to Claude/Codex, so
-this reference records an evidence gap rather than a universal “unsupported”
-claim. ReAct and Reflexion are research foundations only; neither paper
-defines repository retry limits, approvals, or evidence policy.
+Claude, Codex, and Gemini CLI all document native custom-agent and lifecycle
+mechanisms, but their schemas and events differ. Gemini CLI public subagent
+support was announced in v0.38.1 on 2026-04-16; project/user definitions use
+`.gemini/agents/*.md` with isolated context and bounded tool/MCP/model/run
+controls. Gemini CLI hooks were announced with v0.26.0 on 2026-01-28 and now
+document tool, agent, session, model, and tool-selection events. This
+establishes the provider capability, not workspace adoption: no tracked
+`.gemini` agent or hook configuration wires those mechanisms, and `.agents`
+remains a separate Antigravity/reference surface. ReAct and Reflexion are
+research foundations only; neither paper defines repository retry limits,
+approvals, or evidence policy.
 
 Provider pages were retrieved on 2026-07-10. Mutable documentation proves the
 current described surface, not historical availability at an earlier cutoff.
@@ -121,6 +125,12 @@ current described surface, not historical availability at an earlier cutoff.
 - [Codex hooks](https://developers.openai.com/codex/hooks)
 - [Codex subagents](https://developers.openai.com/codex/subagents)
 - [Gemini CLI documentation](https://google-gemini.github.io/gemini-cli/docs/)
+- [Gemini CLI subagents](https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md)
+- [Gemini CLI v0.38.1 subagent announcement](https://github.com/google-gemini/gemini-cli/discussions/25562)
+- [Gemini CLI hooks](https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/writing-hooks.md)
+- [Gemini CLI hook configuration](https://github.com/google-gemini/gemini-cli/blob/main/docs/reference/configuration.md)
+- [Gemini CLI hook commands](https://github.com/google-gemini/gemini-cli/blob/main/docs/reference/commands.md)
+- [Gemini CLI v0.26.0 hook announcement](https://github.com/google-gemini/gemini-cli/discussions/17790)
 - [Gemini CLI checkpointing](https://google-gemini.github.io/gemini-cli/docs/cli/checkpointing.html)
 - [OpenAI evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices)
 - [OpenAI Agents SDK human-in-the-loop](https://openai.github.io/openai-agents-python/human_in_the_loop/)
