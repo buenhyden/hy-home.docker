@@ -67,6 +67,8 @@ official Claude, OpenAI/Codex, and Gemini model catalogs as of
 ## Related Documents
 
 - [Technical specification](./spec.md)
+- [Implementation plan](../../04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md)
+- [Task evidence](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md)
 - [Previous research refresh specification](../104-agentic-research-pack-refresh/spec.md)
 - [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Duplicate research pack to supersede](../../90.references/research/2026-07-07-agentic-research-pack-update/README.md)

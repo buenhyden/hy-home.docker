@@ -433,6 +433,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/120-agent-output-eval-ci-gate/spec.md](../../03.specs/120-agent-output-eval-ci-gate/spec.md) | Markdown reference |
 | [docs/03.specs/121-dependency-vulnerability-audit-gate/README.md](../../03.specs/121-dependency-vulnerability-audit-gate/README.md) | folder index |
 | [docs/03.specs/121-dependency-vulnerability-audit-gate/spec.md](../../03.specs/121-dependency-vulnerability-audit-gate/spec.md) | Markdown reference |
+| [docs/03.specs/122-agentic-research-pack-consolidation/README.md](../../03.specs/122-agentic-research-pack-consolidation/README.md) | folder index |
+| [docs/03.specs/122-agentic-research-pack-consolidation/spec.md](../../03.specs/122-agentic-research-pack-consolidation/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -521,6 +523,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-06-sdlc-document-contract-corpus-normalization.md](../../04.execution/plans/2026-07-06-sdlc-document-contract-corpus-normalization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-security-automation-readiness-snapshot.md](../../04.execution/plans/2026-07-06-security-automation-readiness-snapshot.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-06-tech-stack-version-provenance.md](../../04.execution/plans/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md](../../04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -634,6 +637,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md](../../04.execution/tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-security-automation-readiness-snapshot.md](../../04.execution/tasks/2026-07-06-security-automation-readiness-snapshot.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-tech-stack-version-provenance.md](../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs

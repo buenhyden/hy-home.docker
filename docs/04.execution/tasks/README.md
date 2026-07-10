@@ -154,6 +154,7 @@ docs/04.execution/tasks/
 ├── 2026-07-06-agent-output-eval-runner.md # Completed local advisory agent-output eval runner evidence
 ├── 2026-07-06-agent-output-eval-ci-gate.md # Completed agent-output eval fixture freshness CI gate evidence
 ├── 2026-07-06-dependency-vulnerability-audit-gate.md # Completed Storybook Next.js dependency vulnerability audit gate evidence
+├── 2026-07-10-agentic-research-pack-consolidation.md # Active canonical research-pack consolidation evidence
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence
@@ -244,6 +245,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **LLM Wiki Stage Category Coverage Task**: [2026-07-06-llm-wiki-stage-category-coverage.md](./2026-07-06-llm-wiki-stage-category-coverage.md)
 - **Agent Output Eval CI Gate Task**: [2026-07-06-agent-output-eval-ci-gate.md](./2026-07-06-agent-output-eval-ci-gate.md)
 - **Dependency Vulnerability Audit Gate Task**: [2026-07-06-dependency-vulnerability-audit-gate.md](./2026-07-06-dependency-vulnerability-audit-gate.md)
+- **Agentic Research Pack Consolidation Task**: [2026-07-10-agentic-research-pack-consolidation.md](./2026-07-10-agentic-research-pack-consolidation.md)
 - **Audit Implementation Matrix Snapshot Task**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **SDLC Document Contract Corpus Normalization Task**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
