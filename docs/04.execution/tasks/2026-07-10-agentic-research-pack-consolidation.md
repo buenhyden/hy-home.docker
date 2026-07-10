@@ -43,7 +43,7 @@ plan.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-ARC-001 | Refresh workspace baseline, spec-driven SDLC, document roles, and source evidence | doc | VAL-ARC-002, VAL-ARC-007, VAL-ARC-009 | PLN-ARC-001 | Category/role coverage, validators, commit range, task review | Documentation implementer | Done |
 | T-ARC-002 | Add cutoff-bound provider model landscape and refresh task selection | doc/eval | VAL-ARC-003, VAL-ARC-004 | PLN-ARC-002 | Model/lifecycle totals, cutoff exceptions, provider sources, validators, task review | Documentation implementer | Done |
-| T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Ready for Review |
+| T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Done |
 | T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Todo |
 | T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Todo |
 | T-ARC-006 | Finalize indexes, supersede duplicate pack, close lifecycle and validation | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, whole-branch review, closure commit | Workflow supervisor | Todo |
@@ -57,8 +57,8 @@ plan.
 ### Phase 2: Provider and Agent Research
 
 - [x] T-ARC-002 Add provider model landscape and task-selection analysis.
-- [ ] T-ARC-003 Consolidate harness, loop, provider, and AI agent research
-      (**Ready for Review**; independent verdict pending).
+- [x] T-ARC-003 Consolidate harness, loop, provider, and AI agent research
+      (**Done**; final independent review PASS / APPROVED).
 
 ### Phase 3: Quality, Infrastructure, and Security
 
@@ -398,14 +398,14 @@ artifact required another refresh. The final pre-commit gate recorded:
 
 ### Status and Scope
 
-Status is **Ready for Review**. The initial independent review requested
-changes, and the next independent remediation verdict is pending, so the phase
-checkbox remains open and this task is not `Done`. The work is
-documentation-only; code TDD and Graphify refresh are not applicable. The
-editable tracked scope is exactly this task record plus the four canonical
-Stage 90 references listed below. Stage 00, provider adapters, scripts,
-Compose, runtime configuration, CI, credentials, remote state, and unrelated
-documents were inspected but not changed.
+Status is **Done**. The initial independent review requested changes; the
+remediation fixed all three Important findings, and the final independent
+review returned Spec Compliance **PASS** and Document Quality **APPROVED** with
+no remaining findings. The work is documentation-only; code TDD and Graphify
+refresh are not applicable. The editable tracked scope was exactly this task
+record plus the four canonical Stage 90 references listed below. Stage 00,
+provider adapters, scripts, Compose, runtime configuration, CI, credentials,
+remote state, and unrelated documents were inspected but not changed.
 
 ### Source and Coverage Inventory
 
@@ -483,9 +483,30 @@ documents were inspected but not changed.
 - I-3 fixed: the nonexistent hook owner is replaced by the tracked provider
   capability matrix/Hook Parity Contracts, with configuration and scripts kept
   as implementation evidence rather than policy ownership.
-- Remediation state: implementation self-review is complete and the task is
-  **Ready for Review**; the next independent spec-compliance and
-  document-quality verdicts remain **PENDING**.
+- Remediation state at commit `7aa07accc00770dd4e18cd37ddd77d9f92236848`:
+  implementation self-review was complete and the task was **Ready for
+  Review**; the final independent result is recorded below.
+
+### Final Independent Re-review
+
+- Exact cumulative content-review range:
+  `1a80b6989304fa7b6a179861a9cad795dd875ca3..7aa07accc00770dd4e18cd37ddd77d9f92236848`.
+- Final verdicts: **Spec Compliance: PASS** and **Document Quality:
+  APPROVED**, with `Critical=0`, `Important=0`, and `Minor=0`.
+- All three prior Important findings are resolved: Gemini CLI native
+  subagents/hooks now have direct official evidence without local-adoption or
+  parity overclaim; the absent project `.codex/config.toml` is an explicit
+  tracked-state gap; and hook ownership resolves to the existing provider
+  capability matrix/Hook Parity Contracts.
+- Reviewer-reproduced counts: harness `14`, loop `10`, provider capabilities
+  `17`, official provider evidence `18`, catalog concerns `12`, and T-ARC-003
+  source records `28`.
+- The stale Stage 00 Gemini fallback wording and absent `.gemini` adoption are
+  disclosed future policy/adoption work, not a remaining Task 3 research
+  defect; no active-policy or adapter change was authorized here.
+- Final re-review report: `.superpowers/sdd/task-3-rereview-report.md` (ignored
+  controller evidence; intentionally not part of tracked documentation
+  commits).
 
 ### Changed Files
 
@@ -532,18 +553,21 @@ documents were inspected but not changed.
 - Original implementation commit:
   `6747cbe3585ea2851c60d16704b8f0e6c97f3a91`, subject
   `docs(research): consolidate harness and agent research`.
-- Remediation commit: the commit containing this record; its immutable hash and
-  `6747cbe3..remediation` review range are recorded in the ignored implementer
-  report after commit.
+- Remediation commit:
+  `7aa07accc00770dd4e18cd37ddd77d9f92236848`, subject
+  `docs(research): remediate Task 3 review findings`.
+- Remediation range:
+  `6747cbe3585ea2851c60d16704b8f0e6c97f3a91..7aa07accc00770dd4e18cd37ddd77d9f92236848`.
 - Implementer spec-compliance self-review: **PASS** — required source classes,
   matrix schemas/counts, tracked inventory, stale corrections, status
   vocabulary, owners, confidence, caveats, and no-import boundary are present.
 - Implementer document-quality self-review: **PASS** — official fact,
   workspace implementation, inference/gap, and recommendation are separated;
   every reference retains the canonical template headings and direct sources.
-- Independent remediation verdict: **PENDING**. The task must remain **Ready
-  for Review** until a separate reviewer records spec-compliance and
-  document-quality verdicts for the exact committed remediation range.
+- Final independent remediation verdict: **Spec Compliance PASS** and
+  **Document Quality APPROVED**, with `Critical=0`, `Important=0`, and
+  `Minor=0`, for the exact cumulative range recorded above. All three prior
+  Important findings are resolved; T-ARC-003 is **Done**.
 
 ## Task Review Evidence Contract
 
