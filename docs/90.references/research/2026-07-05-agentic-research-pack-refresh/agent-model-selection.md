@@ -12,7 +12,10 @@ This reference explains how an agent's model and reasoning effort are chosen to
 match a task's characteristics in `hy-home.docker`. It connects the repo-local
 Model Policy in `subagent-protocol.md` to the general engineering practice of
 right-sizing a model to task complexity, latency tolerance, and cost, and to the
-per-provider mechanics that express that choice.
+per-provider mechanics that express that choice. The complete official catalog
+and lifecycle evidence is maintained in
+[`provider-model-landscape.md`](./provider-model-landscape.md) at the fixed
+**2026-07-10 10:00 KST (01:00 UTC)** cutoff.
 
 ## Purpose
 
@@ -40,13 +43,15 @@ the single source of truth.
 - Per-provider mechanics for expressing tier and effort (Claude, Codex, Gemini).
 - How the choice is enforced and what a change to it requires.
 - The external right-sizing practice that motivates the policy.
+- Cutoff-bound catalog gaps that affect the literal configured values.
 
 ### Out of Scope
 
 - Changing any model value, reasoning effort, or provider adapter.
 - The Model Policy table itself (owned by `subagent-protocol.md`).
 - Active policy, runbooks, incident timelines, or runtime configuration truth.
-- Proving provider model availability on any date.
+- Replacing the complete provider inventory in `provider-model-landscape.md`.
+- Proving account, region, or product-surface entitlement.
 
 ## Definitions / Facts
 
@@ -69,36 +74,40 @@ the single source of truth.
 - **Claude mechanics**: `.claude/agents/*.md` carry the Claude Code aliases
   `opus` (Supervisor) and `sonnet` (Worker), which resolve to `opus-4.8` and
   `sonnet-4.6`. Claude expresses reasoning effort with an effort parameter that
-  defaults to `high` on `opus-4.8`; `xhigh` is the recommended level for coding
-  and high-autonomy agentic work.
+  defaults to `high` on `opus-4.8`. Provider-native effort behavior is not
+  normalized to the Codex effort policy.
 - **Codex mechanics**: `.codex/agents/*.toml` carry the literal model identifier
   plus a required `model_reasoning_effort`. `workflow-supervisor` uses `xhigh`;
   default workers use `medium`; an approved task may raise a worker to `high`;
   repetitive formatting-only work may drop to `low` through a task-specific
-  override. Codex accepts `minimal`, `low`, `medium`, `high`, and `xhigh`, with a
-  default of `medium`.
+  override. These are workspace values; model support remains model-specific.
 - **Gemini mechanics**: The Antigravity IDE manages reasoning effort strictly
   through model selection. `gemini-3.1-pro` is mandated for high-effort work
   (planning, complex refactors); `gemini-3.5-flash` handles standard or low-effort
   work (repetitive edits, text classification).
 - **Enforcement**: The name/model/scope mapping is machine-checked by
   `scripts/validation/check-repo-contracts.sh`; provider adapters must keep
-  parity with the Stage 00 catalog.
+  parity with the Stage 00 catalog. This validation does not prove provider
+  availability.
+- **Cutoff finding**: At the cutoff, `gemini-3.5-flash` is an official Stable
+  model ID. The official Pro ID is `gemini-3.1-pro-preview`; the workspace
+  Supervisor value `gemini-3.1-pro` lacks `-preview` and is recorded as an
+  unsupported-availability gap, not silently corrected here.
 
 ## Task-Characteristic to Configuration Mapping
 
-| Task characteristic                         | Tier       | Claude       | Codex effort                  | Gemini             |
-| ------------------------------------------- | ---------- | ------------ | ----------------------------- | ------------------ |
-| Routing, arbitration, final synthesis       | Supervisor | `opus-4.8`   | `xhigh`                       | `gemini-3.1-pro`   |
-| Planning, architecture, complex refactoring | Supervisor | `opus-4.8`   | `xhigh`                       | `gemini-3.1-pro`   |
-| Scoped implementation within one domain     | Worker     | `sonnet-4.6` | `medium` (`high` if approved) | `gemini-3.5-flash` |
-| Doc organizing, summarization, review       | Worker     | `sonnet-4.6` | `medium`                      | `gemini-3.5-flash` |
-| Repetitive, formatting-only editing         | Worker     | `sonnet-4.6` | `low` (task override)         | `gemini-3.5-flash` |
+This table is **analysis inferred from official capability descriptions plus
+the workspace task taxonomy**. It does not rank providers or guarantee a
+workspace result. The complete inference matrix, including specialized models,
+lives in `provider-model-landscape.md`.
 
-The tier column is fixed by the role (only `workflow-supervisor` is Supervisor),
-so in practice task characteristics drive the effort column: the same Worker
-model spends more or less reasoning effort depending on how demanding the scoped
-task is.
+| Task characteristic | Required capabilities | Claude option | OpenAI/Codex option | Gemini option | Latency/cost consideration | Evidence basis | Confidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Routing, arbitration, final synthesis | Long-horizon reasoning, synthesis, tools | Policy `opus-4.8` via `opus` | Policy `gpt-5.5`, `xhigh` | Policy `gemini-3.1-pro`; official API ID gap noted | Capability is prioritized; no cross-provider cost rank | Stage 00 policy plus official descriptions | High for policy; Medium for equivalence |
+| Planning, architecture, complex refactoring | Reasoning, coding, context, verification | Policy `opus-4.8` via `opus` | Policy `gpt-5.5`, `xhigh` | Policy `gemini-3.1-pro`; official ID is Preview | Capability is prioritized; no price claim | Stage 00 policy plus cutoff catalog | High for policy; Medium for availability |
+| Scoped implementation within one domain | Coding, tools, bounded execution | Policy `sonnet-4.6` via `sonnet` | Policy `gpt-5.4-mini`, `medium` (`high` only if approved) | Policy `gemini-3.5-flash` | Mini/Flash official descriptions emphasize efficiency | Stage 00 Worker taxonomy plus model pages | High |
+| Doc organizing, summarization, review | Instruction following, context, structured output | Policy `sonnet-4.6` | Policy `gpt-5.4-mini`, `medium` | Policy `gemini-3.5-flash` | No provider cost rank; evaluate representative docs | Stage 00 taxonomy | High |
+| Repetitive formatting-only editing | Low-latency bounded edits | Policy `sonnet-4.6` | Policy `gpt-5.4-mini`, task override `low` | Policy `gemini-3.5-flash` | Lower effort is the approved workspace lever | Stage 00 reasoning policy | High |
 
 ## Analysis
 
@@ -114,8 +123,9 @@ The workspace resolves the first axis structurally: because only
 `workflow-supervisor` is Supervisor tier, top-spec models are reserved for
 orchestration, planning, architecture, and refactoring, and all scoped execution
 runs on the right-sized Worker tier. This keeps the expensive model on the small
-set of tasks whose accuracy outweighs cost, and it removes per-invocation
-model-shopping from worker agents. The second axis, reasoning effort, is where
+set of tasks where the policy prioritizes capability, and it removes
+per-invocation model-shopping from worker agents. The second axis, reasoning
+effort, is where
 task characteristics still vary the configuration at run time, most visibly in
 the Codex adapter's `model_reasoning_effort` and in Gemini's model-as-effort
 selection.
@@ -127,26 +137,34 @@ selection.
 - Vary effort, not model, for a worker whose task is unusually hard: request an
   approved `high` Codex effort for that task instead of promoting the tier.
 - Treat any change to a model value, reasoning effort default, or provider
-  mapping as a Model Policy change: it is valid only when the policy table,
-  adapter generation, generated adapters, validators, and Stage 04 task evidence
-  are updated together, per the change protocol.
+  mapping as a Model Policy change. The exact approved-change surfaces are the
+  Stage 00 Model Policy, provider adapter generator, generated adapters,
+  validators, Stage 04 evidence, and provider sync. All must be updated together
+  under the change protocol.
 - Keep provider model identifiers native to each surface; never copy one
   provider's model name onto another provider's adapter.
 - Record any model-selection decision as active-stage work, not inside this
   reference.
+- Treat the `gemini-3.1-pro` literal as a tracked gap until an approved task
+  supplies the concrete value, role, provider evidence, and validation path.
+- Treat newer catalog entries as candidates for evaluation, not automatic
+  replacements for the current Supervisor or Worker values.
 
 ## Potential Follow-up / Gap
 
-- A future note could document a lightweight decision aid for choosing an
-  approved Codex `high` effort override, so worker effort escalation stays
-  evidence-backed rather than ad hoc.
-- Provider model baselines change; the concrete identifiers and effort defaults
-  cited here must be rechecked against `subagent-protocol.md` before reuse.
+- The Gemini Supervisor string is unsupported by the official cutoff catalog;
+  the official API page exposes `gemini-3.1-pro-preview` instead.
+- Account/product availability for the configured Claude and OpenAI/Codex values
+  is not proven by repository validators or public model catalogs.
+- There is no workspace cross-provider eval establishing task-quality, latency,
+  or cost equivalence for the provider mapping.
 
 ## Source Rules
 
 - Prefer the repo-local Model Policy in `subagent-protocol.md` for all tier,
   model, and effort facts; it is the single source of truth.
+- Use `provider-model-landscape.md` for the full cutoff catalog and lifecycle,
+  not a partial list copied into this analysis.
 - Treat external model-selection guidance as background practice, not as
   authority over repo values.
 - Re-check external model names, effort levels, and defaults before using them
@@ -157,9 +175,11 @@ selection.
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md) - repo-local Model Policy, tier mapping, reasoning-effort policy, and change protocol
 - [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) - vendor feature and boundary SSOT relevant to model configuration
 - [Repository contract check](../../../../scripts/validation/check-repo-contracts.sh) - enforces name/model/scope parity across provider adapters
-- [Choosing the right Claude model](https://platform.claude.com/docs/en/docs/about-claude/models/choosing-a-model) - capabilities/speed/cost/effort selection guidance and the effort lever
+- [Provider model landscape](./provider-model-landscape.md) - complete cutoff inventory, lifecycle normalization, official sources, and task-fit inference
+- [Choosing a Claude model](https://platform.claude.com/docs/en/about-claude/models/choosing-a-model) - provider capability/speed/effort guidance
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents) - subagent model field and alias resolution
 - [Codex configuration reference](https://developers.openai.com/codex/config-reference) - `model_reasoning_effort` values and default
+- [Gemini models](https://ai.google.dev/gemini-api/docs/models) - official IDs, Stable/Preview/Experimental terms, and capability cards
 
 ## Maintenance
 
@@ -167,11 +187,12 @@ selection.
 - **Review Cadence**: Review when the Stage 00 Model Policy, subagent protocol, or
   provider adapter model surfaces change materially
 - **Update Trigger**: Update when model tiers, reasoning-effort policy, provider
-  model identifiers, or the model-change protocol change
+  model identifiers, the cutoff catalog, or the model-change protocol change
 
 ## Related Documents
 
 - [research pack index](./README.md)
+- [provider model landscape](./provider-model-landscape.md)
 - [provider implementation comparison](./provider-implementation-comparison.md)
 - [ai agent catalogs](./ai-agent-catalogs.md)
 - [harness engineering](./harness-engineering.md)

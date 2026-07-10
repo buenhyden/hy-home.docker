@@ -42,7 +42,7 @@ plan.
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-ARC-001 | Refresh workspace baseline, spec-driven SDLC, document roles, and source evidence | doc | VAL-ARC-002, VAL-ARC-007, VAL-ARC-009 | PLN-ARC-001 | Category/role coverage, validators, commit range, task review | Documentation implementer | Done |
-| T-ARC-002 | Add cutoff-bound provider model landscape and refresh task selection | doc/eval | VAL-ARC-003, VAL-ARC-004 | PLN-ARC-002 | Model/lifecycle totals, cutoff exceptions, provider sources, validators, task review | Documentation implementer | Todo |
+| T-ARC-002 | Add cutoff-bound provider model landscape and refresh task selection | doc/eval | VAL-ARC-003, VAL-ARC-004 | PLN-ARC-002 | Model/lifecycle totals, cutoff exceptions, provider sources, validators, task review | Documentation implementer | Done |
 | T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Todo |
 | T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Todo |
 | T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Todo |
@@ -56,7 +56,7 @@ plan.
 
 ### Phase 2: Provider and Agent Research
 
-- [ ] T-ARC-002 Add provider model landscape and task-selection analysis.
+- [x] T-ARC-002 Add provider model landscape and task-selection analysis.
 - [ ] T-ARC-003 Consolidate harness, loop, provider, and AI agent research.
 
 ### Phase 3: Quality, Infrastructure, and Security
@@ -93,6 +93,20 @@ prove an applicable model cutoff must use `historical state unverified`.
 | <https://www.pagerduty.com/resources/learn/what-is-a-runbook/> | PagerDuty / vendor practice guide | A runbook is detailed repeatable operational how-to guidance and may be manual or automated. | Not shown | 2026-07-10 | Not applicable (non-model source) | Redirects to `/resources/automation/learn/what-is-a-runbook/`; mutable vendor guidance, not policy. | T-ARC-001 |
 | <https://keepachangelog.com/en/1.1.0/> | Keep a Changelog / official convention page | Changelogs communicate notable human-readable changes and maintain an Unreleased section. | 2019-02-15 (v1.1.0) | 2026-07-10 | Not applicable (non-model source) | Convention only; site content includes later maintenance updates. | T-ARC-001 |
 | <https://semver.org/> | Semantic Versioning / official specification page | MAJOR, MINOR, and PATCH communicate incompatible, compatible feature, and compatible fix changes. | Not shown (2.0.0) | 2026-07-10 | Not applicable (non-model source) | Requires a declared public API; does not define workspace release approval. | T-ARC-001 |
+| <https://platform.claude.com/docs/en/about-claude/models/overview> | Anthropic / official mutable model catalog | Current Claude names, API IDs/aliases, surfaces, latest-model context/modalities, and reasoning notes. | No visible page date | 2026-07-10 | Included; dated releases corroborated separately; historical state unverified where only current-page state exists | Mutable page; does not prove account or exact cutoff availability. | T-ARC-002 |
+| <https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions> | Anthropic / official model-ID guide | Dateless 4.6+ IDs are pinned; older convenience aliases may resolve to dated snapshots. | No visible page date | 2026-07-10 | Included; versioning rule | Mutable guide; not a lifecycle status table. | T-ARC-002 |
+| <https://platform.claude.com/docs/en/about-claude/model-deprecations> | Anthropic / official lifecycle page | Active, Legacy, Deprecated, Retired definitions plus dated first-party retirement history. | Through 2026-06-05 notice | 2026-07-10 | Included; transitions dated before cutoff | Mutable status table; partner-operated platform schedules differ. | T-ARC-002 |
+| <https://platform.claude.com/docs/en/release-notes/overview> | Anthropic / official changelog | Dated Fable 5, Mythos 5, Sonnet 5, Opus 4.8, and retirement evidence. | Latest visible entry 2026-07-08 | 2026-07-10 | Included; no post-cutoff entry used | Changelog dates give no time of day. | T-ARC-002 |
+| <https://code.claude.com/docs/en/configuration> | Anthropic / official Claude Code configuration | Claude Code model, fallback, advisor, teammate, and available-model surfaces. | No visible page date | 2026-07-10 | Included as surface evidence | Does not prove account model availability or API ID maturity. | T-ARC-002 |
+| <https://developers.openai.com/api/docs/guides/latest-model> | OpenAI / official latest-model guide | GPT-5.6 family, native reasoning/tool features, and latest model guidance. | Current page includes 2026-07-09 family release | 2026-07-10 | Included; release calendar date precedes cutoff | Official-web fallback because Docs MCP was not exposed; mutable page, no release time shown. | T-ARC-002 |
+| <https://developers.openai.com/api/docs/models/all> | OpenAI / official mutable model catalog | 93 official model cards and explicit Deprecated labels. | No visible page date | 2026-07-10 | Included; 46 non-deprecated listing states marked historical state unverified | Available/listed is not normalized to stable/GA; exact cutoff page state not provable. | T-ARC-002 |
+| <https://developers.openai.com/api/docs/deprecations> | OpenAI / official lifecycle page | Deprecated, shut down/sunset, Legacy definitions and dated model transitions. | Latest model notice 2026-06-11 | 2026-07-10 | Included; dated notices precede cutoff | Snapshot and alias schedules must remain distinct. | T-ARC-002 |
+| <https://developers.openai.com/api/docs/changelog> | OpenAI / official changelog | Dated model releases, including GPT-5.6 on July 9 and Realtime 2.1 on July 6. | 2026-07-09 | 2026-07-10 | Included; no post-cutoff entry used | Dates have no time of day; official-web fallback route. | T-ARC-002 |
+| <https://developers.openai.com/codex/config-reference> | OpenAI / official Codex configuration entry point | Model and reasoning-effort configuration surface. | No visible page date | 2026-07-10 | Included as surface evidence | Redirected to current ChatGPT Learn docs; does not establish API/Codex entitlement. | T-ARC-002 |
+| <https://ai.google.dev/gemini-api/docs/models> | Google / official model catalog | 35 official catalog cards, exact IDs, Stable/Preview/Experimental terms, and previous-model cards. | Last updated 2026-07-09 UTC | 2026-07-10 | Included; page date precedes cutoff date | Exact update time is not shown; `latest` aliases remain mutable. | T-ARC-002 |
+| <https://ai.google.dev/gemini-api/docs/deprecations> | Google / official lifecycle page | Release/shutdown schedules and recommended replacements. | Last updated 2026-07-02 UTC | 2026-07-10 | Included; dated before cutoff | Shutdown date can coexist with Stable maturity. | T-ARC-002 |
+| <https://ai.google.dev/gemini-api/docs/changelog> | Google / official changelog | Dated releases, redirects, deprecations, and shutdown evidence. | Through cutoff-relevant 2026-06-30 model entries | 2026-07-10 | Included; no post-cutoff entry used | Mutable log; dates have no time of day. | T-ARC-002 |
+| <https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html> | Google / official Gemini CLI configuration | CLI model/configuration surface. | No visible page date | 2026-07-10 | Included as surface evidence | Does not prove Gemini API or Antigravity model availability. | T-ARC-002 |
 
 ## T-ARC-001 Evidence
 
@@ -191,6 +205,83 @@ covering command:
 - Final review report:
   `.superpowers/sdd/task-1-final-review-report.md` (ignored controller evidence;
   intentionally not part of the tracked documentation commits).
+
+## T-ARC-002 Evidence
+
+### Status and Scope
+
+Status is **Done** because every one of the 145 model rows has both a lifecycle
+value and a cutoff disposition. This task is documentation-only; code TDD is not
+applicable. No active Model Policy, provider adapter/generator, configuration,
+runtime, CI, script, credential, remote state, or unrelated document changed.
+
+### Provider, Model, and Lifecycle Coverage
+
+| Provider | Rows | Provider-native totals | Normalized totals | Cutoff exception |
+| --- | ---: | --- | --- | --- |
+| Anthropic | 17 | Active 9; limited availability 1; Deprecated 1; Retired 6 | stable 9; deprecated 7; not normalized 1 | 13 mutable status-table rows say `historical state unverified`; newer dated releases are joined from release notes |
+| OpenAI | 93 | Listed without maturity label 45; Latest alias 1; Deprecated 47 | not normalized 46; deprecated 47 | 46 non-deprecated mutable listing states say `historical state unverified`; official-web fallback used because Docs MCP was not exposed |
+| Google | 35 | Stable 11; Preview 18; Experimental 1; Deprecated 1; Shut down 4 | stable 11; preview 18; not normalized 1; deprecated 5 | Catalog says last updated 2026-07-09 UTC but gives no update time |
+| **Total** | **145** | — | stable 20; preview 18; deprecated 59; not normalized 48 | No post-cutoff announcement included |
+
+The inventory uses one row per official provider catalog card. When an official
+card groups multiple endpoints (for example Imagen 4), every exact endpoint is
+preserved in that row. OpenAI's all-models page contains 93 cards: 46 current or
+latest rows without a stable/GA label and 47 explicit Deprecated rows.
+
+### Workspace Comparison and Gaps
+
+- Stage 00 `subagent-protocol.md` remains the current workspace model-policy
+  SSoT; Supervisor/Worker values and reasoning effort were compared, not edited.
+- Claude `opus-4.8` / `sonnet-4.6` correspond to Active API IDs through Claude
+  Code aliases.
+- OpenAI `gpt-5.5` / `gpt-5.4-mini` are listed, but OpenAI does not label those
+  unqualified catalog rows Stable/GA and public docs do not prove entitlement.
+- Gemini Worker `gemini-3.5-flash` is Stable. The official Pro API ID is
+  `gemini-3.1-pro-preview`; Stage 00 `gemini-3.1-pro` is recorded as an
+  unsupported-availability gap and remains unchanged.
+- An approved future model change must update the Model Policy, adapter
+  generator, generated adapters, validators, Stage 04 evidence, and provider
+  sync in one task.
+
+### Changed Files
+
+- `docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md`
+- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md`
+- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md`
+
+### Validation Evidence
+
+The clean pre-edit base `ff17d4d40d834bc01faf17faf9dce72e22c77a4e`
+passed `git diff --check`, LLM Wiki freshness, provider sync (no drift), and the
+full repository-contract gate (`failures=0`). The final post-edit results are:
+
+- `git diff --check` — exit 0.
+- Targeted cutoff/lifecycle scan from the parent plan — exit 0; matched the
+  cutoff, lifecycle terms, uncertainty label, and both required table headings.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — exit 0; generated
+  index reported fresh.
+- `bash scripts/operations/sync-provider-surfaces.sh --check` — exit 0; no drift.
+- `bash scripts/validation/check-repo-contracts.sh` — exit 0;
+  `changed_template_docs_total=3`, `normalized_changed_template_docs_total=3`,
+  repository `failures=0`.
+
+### Commit and Review Evidence
+
+- Task brief: `.superpowers/sdd/task-2-brief.md`.
+- Implementer report: `.superpowers/sdd/task-2-implementer-report.md`.
+- Base commit: `ff17d4d40d834bc01faf17faf9dce72e22c77a4e`.
+- Implementation range: `ff17d4d40d834bc01faf17faf9dce72e22c77a4e..HEAD`
+  at the Task 2 commit with subject `docs(research): add provider model landscape`.
+- Implementer spec-compliance self-review: **PASS** — exact cutoff, provider
+  schemas, complete provider-card inventory, lifecycle/cutoff disposition,
+  task-fit inference label, workspace comparison, sources, and maintenance are
+  present.
+- Implementer document-quality self-review: **PASS** — official facts are
+  separated from inference; mutable-state uncertainty and source-route caveats
+  are explicit; no benchmark, price, entitlement, or cross-provider parity is
+  invented.
+- Independent controller verdict: pending after this implementer commit.
 
 ## Task Review Evidence Contract
 
