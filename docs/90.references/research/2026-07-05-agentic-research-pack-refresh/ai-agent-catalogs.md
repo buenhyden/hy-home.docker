@@ -8,142 +8,147 @@ status: active
 
 ## Overview
 
-This reference analyzes external AI agent catalogs, using the `agency-agents`
-community pack as the anchor example, and compares catalog-style agent
-distribution with the curated, governance-first agent catalog used in
-`hy-home.docker`.
+External catalogs can supply useful role taxonomies and prompt patterns, but
+agent definitions are executable instructions once installed. This reference
+uses the community `agency-agents` repository as a point-in-time comparison
+with the small, governance-first catalog in `hy-home.docker`.
+
+The upstream evidence is pinned to commit
+`9f3e401ccd09aa0ee0ef8e015226d0647908e01e` (committed 2026-07-09) and was
+retrieved on 2026-07-10. Nothing from that repository was installed, converted,
+vendored, or executed.
 
 ## Purpose
 
-Explain how large external agent-persona catalogs are structured, what value
-and risk they carry, and which import path any external agent definition must
-follow before it can become part of this workspace.
+Define an evidence-backed import boundary: external personas may inform
+design, but adoption starts in Stage 00, receives narrow controls, and only
+then becomes provider projections.
 
 ## Repository Role
 
-This reference supports the Stage 00 agent catalog, the subagent protocol, and
-provider adapter surfaces. It does not add, rename, or import agents, change
-model policy, or modify provider runtime directories.
+This reference supports the Stage 00 catalog, subagent protocol, approval
+boundaries, provider comparison, and future agent proposals. It changes no
+agent, skill, model mapping, or runtime adapter.
 
 ## Scope
 
 ### In Scope
 
-- External role-based agent catalog structure and conventions
-- Multi-tool agent distribution and conversion patterns
-- Comparison with the repo-local canonical agent catalog
-- Import boundary and security review considerations
+- Upstream catalog breadth, source format, conversion, and distribution
+- Local catalog/projection implementation
+- Portability, permissions, security, evidence, and evaluation risks
 
 ### Out of Scope
 
-- Installing or converting external agent definitions
-- Agent catalog, model policy, or subagent protocol changes
-- Provider runtime configuration changes
-- Endorsement of any external catalog as adopted tooling
+- Running upstream installers/converters
+- Importing, renaming, or adding agents
+- Endorsing upstream “production-ready” claims
+- Changing provider settings or active model policy
 
 ## Definitions / Facts
 
-- **Agent catalog**: A maintained inventory of agent definitions with names,
-  roles, capabilities, and invocation conventions. Catalogs can be curated
-  (small, governed) or community-scale (large, general-purpose).
-- **agency-agents**: A community MIT-licensed repository publishing a large
-  role-based agent pack. At the 2026-07-05 review, its README described 230+
-  Markdown agent personas across 16 divisions (engineering, design,
-  marketing, product, testing, security, game development, GIS, and others).
-- **Persona-style definition**: agency-agents agents are Markdown documents
-  combining identity, mission, workflows, deliverables, and communication
-  style, intended to be copied or adapted per tool.
-- **Multi-tool conversion**: agency-agents ships install/convert scripts that
-  detect installed AI coding tools and place agent files into tool-specific
-  directories such as `~/.claude/agents/`, with converters for Claude Code,
-  Codex, Gemini-based tools, Cursor, and other runtimes.
-- **Repo-local canonical catalog**: `docs/00.agent-governance/agents/` defines
-  one `workflow-supervisor` and fourteen worker agents. `.claude/agents/*.md`,
-  `.codex/agents/*.toml`, and `.agents/` are provider adapters, not separate
-  governance.
-- **Repo-local model policy**: `subagent-protocol.md` assigns the supervisor
-  and worker model tiers; provider adapters must keep name/model/scope parity,
-  and `check-repo-contracts.sh` checks the machine-checkable parts.
+- The pinned upstream README says “230+” specialized agents and exposes 17
+  headings named as divisions: Engineering, Design, Paid Media, Sales,
+  Marketing, Product, Project Management, Testing, Security, Support, Spatial
+  Computing, Specialized, Finance, Game Development, Academic, GIS, and
+  Healthcare. The prior “16 divisions” statement is stale.
+- The upstream project is MIT-licensed and publishes persona-oriented Markdown
+  definitions plus conversion/install paths for multiple tools.
+- Its Codex converter maps source name/description/body into current minimal
+  `name`, `description`, and `developer_instructions` TOML fields.
+- Its Gemini CLI integration says it installs Markdown agents under
+  `~/.gemini/agents/`. That is an upstream integration claim; the assigned
+  official Gemini CLI entry points reviewed in this task did not independently
+  establish an equivalent custom-agent schema.
+- The upstream README calls the catalog “Production-Ready” and
+  “battle-tested.” Those are publisher claims, not independent evaluation or
+  workspace adoption evidence.
+- The workspace catalog contains 15 roles (one workflow supervisor and
+  fourteen workers) and 22 tracked skills. Stage 00 is canonical.
+- `scripts/operations/sync-provider-surfaces.sh` generates Codex role TOMLs
+  and Gemini/Antigravity agent/skill pointers from canonical/local sources;
+  `--check` currently reports no drift.
 
-## Catalog Model Comparison
+## Catalog Comparison Matrix
 
-| Dimension        | agency-agents (community pack)                | `hy-home.docker` (curated catalog)                            |
-| ---------------- | --------------------------------------------- | ------------------------------------------------------------- |
-| Size and scope   | 230+ agents, 16 business divisions            | 15 agents scoped to this workspace                            |
-| Source of truth  | Per-tool copies after install scripts         | Stage 00 catalog with provider adapter projections            |
-| Definition style | Personality-driven persona Markdown           | Role, scope, tools, and model policy per governance templates |
-| Distribution     | Install/convert scripts into tool directories | Tracked repo surfaces with parity validation                  |
-| Governance       | User discretion, MIT license                  | Subagent protocol, approval boundaries, contract checks       |
-| Model policy     | Not centrally enforced                        | Supervisor/worker model tiers defined in Stage 00             |
+| Catalog concern | agency-agents pattern | Workspace pattern | Importability | Required wrapper/control | Recommendation | Owner |
+| --- | --- | --- | --- | --- | --- | --- |
+| Persona breadth | 230+ role personas across 17 observed division headings optimize for broad business coverage | 15 repository-specific roles optimize for bounded recurring work | Reference only | Candidate role must correspond to a demonstrated workspace gap and avoid duplicate ownership | Use division taxonomy for discovery; add no role without an approved Stage 00 proposal | `docs/00.agent-governance/agents/README.md` |
+| Role boundaries | Persona files emphasize identity, mission, workflows, deliverables, and voice; boundary precision varies by role | Each canonical role is tied to purpose, scope, model policy, delegation, and repository rules | Adapt after review | Rewrite mission into explicit in-scope/out-of-scope and canonical-owner boundaries | Import the job to be done, not the persona's assumed authority | `docs/00.agent-governance/agents/README.md` |
+| Prompt portability | Markdown bodies are copied or converted across many tool formats | Provider adapters are projections of Stage 00 and shared Claude skill content where applicable | Adapt after review | Normalize provider-required fields and remove tool-specific invocation assumptions | Maintain one reviewed canonical role, then generate/test each adapter | `scripts/operations/sync-provider-surfaces.sh` |
+| Scope imports | Upstream personas may refer to generic projects, departments, files, or external systems | Stage 00 scopes route work by repository surface and lifecycle owner | Do not direct-import | Replace all generic scope text with tracked repo paths, stage owners, and explicit exclusions | Reject any definition whose target scope cannot be expressed in the Stage 00 model | `docs/00.agent-governance/scopes/README.md` |
+| Tools and permissions | Installer/converter targets provider-native agent directories; persona/tool assumptions may be broad | Repository approvals and environment rules govern actions; local metadata is not an enforced allowlist | Do not direct-import | Apply least privilege in the native provider schema and preserve repository approval boundaries | Review every command, MCP, web, external-action, and protected-path request before adaptation | `docs/00.agent-governance/rules/approval-boundaries.md` |
+| Model tier | Upstream roles are portable and do not centrally enforce this workspace's supervisor/worker mappings | `subagent-protocol.md` assigns active provider tiers and reasoning settings | Adapt after review | Select model only through current policy and Task 2 evidence; validate projection parity | Never preserve an upstream model assumption by default | `docs/00.agent-governance/subagent-protocol.md` |
+| Lifecycle behavior | Upstream distribution focuses on installing/invoking agent definitions across tools | Stage 00 task/review protocol, hooks, checklists, memory, and provider notes constrain lifecycle | Reference only | Wrap the role with bootstrap, evidence, completion, and independent-review requirements | Treat persona workflow prose as advisory until mapped to an owned repository loop | `docs/00.agent-governance/rules/agentic.md` |
+| Handoffs and delegation | Roles can be selected by name, but a shared repository-specific handoff contract is not established by the README | Supervisor/worker delegation and cross-role evidence are defined by the subagent protocol | Adapt after review | Declare caller, deliverable, allowed files, base commit, evidence, and return path | Use the existing supervisor protocol instead of importing a parallel orchestration model | `docs/00.agent-governance/subagent-protocol.md` |
+| Evidence and provenance | Pinned Git history, Markdown sources, README, license, and converter code provide upstream provenance; per-agent outcome evidence varies | Task cards, diffs, checks, commits, review reports, and source ledgers provide adoption evidence | Reference only until pinned | Pin upstream commit, record exact source file/license, retain review rationale, and never cite self-claims as independent proof | Require a source ledger and lifecycle artifact for any proposed adaptation | `docs/04.execution/tasks/README.md` |
+| Security review | Agent text and installation scripts are third-party instruction/code surfaces; direct global-directory installation changes runtime behavior | Security scope, approval boundaries, sandbox rules, and protected adapter surfaces constrain adoption | Do not direct-import | Review prompt injection, secrets, external actions, commands, dependency/install behavior, and permission escalation | Inspect offline at a pin; adapt manually; do not run upstream installers against provider directories | `docs/00.agent-governance/scopes/security.md` |
+| Evaluations | Upstream “production-ready”/“battle-tested” language is a publisher claim; no independent workspace benchmark follows from it | Deterministic contract fixtures exist, but new-role semantic quality requires task-specific acceptance evidence | Adapt only with evaluation | Define representative tasks, rubric/scorer, failure cases, baseline, privacy boundary, and reviewer calibration | Pilot a candidate role against existing generalist roles before catalog adoption | `docs/00.agent-governance/scopes/qa.md` |
+| Direct-import risks | Convert/install flows can write many definitions into user-global provider directories and later auto-update through the desktop app | Tracked adapters are reviewable, generated in-repo, parity-checked, and subordinate to Stage 00 | Prohibited without separate explicit approval | No global install; no auto-update; pin source; narrow text/tools; generate locally; review diff; run repository contracts | Use external catalogs as design references by default; propose one bounded role at a time | `docs/00.agent-governance/rules/approval-boundaries.md` |
 
-## Analysis
+## Workspace Implementation Status
 
-Catalog packs such as agency-agents optimize for breadth: many ready-made
-personas, quick installation, and portability across AI coding tools. That
-breadth is useful as a design reference for role decomposition, naming, and
-division taxonomy when new worker agents are considered.
+| Category | Current state | External primary | Comparison | Status | Gap | Recommendation | Canonical owner | Evidence | Confidence |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Agent catalog and import boundary | Stage 00 owns 15 roles and provider projections; 22 skills and generated pointer/TOML surfaces are tracked and parity-checked. | Pinned `agency-agents` repository, README, license, and integration documentation | Upstream optimizes for catalog breadth and cross-tool installation; the workspace optimizes for bounded ownership and reviewed projections. | Partially Implemented | No dedicated third-party-agent intake checklist or semantic candidate-role benchmark is adopted. | Keep reference-only as the default; route one pinned candidate through security, QA, Stage 00 proposal, generation, and independent review. | `docs/00.agent-governance/agents/README.md` | Catalog files; sync `--check`; repository contracts; pinned upstream sources | High |
 
-This workspace optimizes for the opposite property: a small catalog whose every
-entry has a defined scope, tool surface, and model tier, with provider adapters
-kept in parity by validators. Directly running an external install script
-against `.claude/agents/` or `.codex/agents/` would bypass Stage 00 governance
-and create untracked runtime behavior, so the catalogs differ in import path,
-not only in size.
+## Safe Adaptation Sequence
 
-Agent definitions are also instructions, and imported instructions are
-untrusted input. An external persona can request broad tool access or embed
-behavior that conflicts with approval boundaries. Any adoption therefore needs
-the same review posture as other third-party code: read the definition, strip
-or narrow tool grants, and record the decision in the active lifecycle.
+1. Identify a verified role gap and name the Stage 00 owner.
+2. Pin the upstream commit, exact agent file, license, and retrieval date.
+3. Read the prompt and any converter/installer code as untrusted third-party
+   input; do not execute it or grant global-directory writes.
+4. Extract only useful role knowledge. Remove provider assumptions, broad
+   commands, external actions, secrets access, and conflicting instructions.
+5. Define scope, exclusions, model tier, handoff contract, evidence, and
+   evaluation cases in an approved lifecycle artifact.
+6. Add the canonical Stage 00 role first, generate provider projections, and
+   inspect native-schema compatibility.
+7. Run sync parity and repository-contract checks, then obtain independent
+   review. No upstream auto-update path remains after adoption.
 
-## Application Notes for This Workspace
+## Importability Interpretation
 
-- Treat external catalogs as design references for role taxonomy, not as
-  installable runtime content.
-- Route any new agent through Stage 00: catalog entry first, then provider
-  adapters, then parity validation via `check-repo-contracts.sh`.
-- Review imported agent text for tool access, external action requests, and
-  conflicts with approval boundaries before adaptation.
-- Keep persona style subordinate to scope: a repo-local agent definition needs
-  clear scope, tools, and model policy more than personality voice.
-- Record catalog-derived adoption decisions as active-stage work, not inside
-  this reference.
-
-## Potential Follow-up / Gap
-
-- A future review could compare the agency-agents division taxonomy against the
-  repo-local worker roster to identify missing roles (for example, dedicated
-  performance or accessibility reviewers) as candidate catalog entries.
-- Community catalog contents change quickly; counts and division names cited
-  here must be rechecked against the upstream README before reuse.
-- A future governance note could define a checklist for vetting third-party
-  agent definitions before adaptation.
+- **Reference only**: useful for taxonomy or design, but not executable.
+- **Adapt after review**: a small pattern may be rewritten into the canonical
+  local contract after scoped security/governance review.
+- **Adapt only with evaluation**: adoption also needs representative outcome
+  evidence against an explicit baseline.
+- **Do not direct-import / Prohibited without separate explicit approval**:
+  never copy/install into active provider directories as an ordinary research
+  step.
 
 ## Source Rules
 
-- Prefer the upstream repository README and license text for catalog facts.
-- Treat community catalog claims (agent counts, tool support) as
-  point-in-time observations that require recheck before reuse.
-- Repo-local catalog facts must be verified against Stage 00 agents, the
-  subagent protocol, and provider notes.
+- Pin external catalog claims to an immutable commit and prefer upstream
+  repository files over secondary descriptions.
+- Label publisher maturity claims as self-claims unless independent evidence
+  exists.
+- Verify workspace facts against Stage 00 and tracked generator/validator
+  implementations.
 
 ## Sources
 
-- [agency-agents repository](https://github.com/msitarzewski/agency-agents) - community agent pack structure, divisions, conversion scripts, MIT license
-- [Claude Code subagents](https://code.claude.com/docs/en/sub-agents) - provider-native subagent definition and tool-access model
-- [Codex subagents](https://developers.openai.com/codex/subagents) - Codex subagent and `.codex/agents/*.toml` model
-- [Agent catalog](../../../00.agent-governance/agents/README.md) - repo-local canonical agent inventory
-- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md) - repo-local model policy and provider adapter mapping
-- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - protected surfaces relevant to agent tool grants
-- [Repository contract check](../../../../scripts/validation/check-repo-contracts.sh) - runtime catalog parity gate
+- [agency-agents pinned repository](https://github.com/msitarzewski/agency-agents/tree/9f3e401ccd09aa0ee0ef8e015226d0647908e01e)
+- [pinned README](https://github.com/msitarzewski/agency-agents/blob/9f3e401ccd09aa0ee0ef8e015226d0647908e01e/README.md)
+- [pinned MIT license](https://github.com/msitarzewski/agency-agents/blob/9f3e401ccd09aa0ee0ef8e015226d0647908e01e/LICENSE)
+- [pinned Codex integration](https://github.com/msitarzewski/agency-agents/blob/9f3e401ccd09aa0ee0ef8e015226d0647908e01e/integrations/codex/README.md)
+- [pinned Gemini CLI integration](https://github.com/msitarzewski/agency-agents/blob/9f3e401ccd09aa0ee0ef8e015226d0647908e01e/integrations/gemini-cli/README.md)
+- [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
+- [Codex subagents](https://developers.openai.com/codex/subagents)
+- [Gemini CLI documentation](https://google-gemini.github.io/gemini-cli/docs/)
+- [Agent catalog](../../../00.agent-governance/agents/README.md)
+- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
+- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md)
+- [Repository contract check](../../../../scripts/validation/check-repo-contracts.sh)
 
 ## Maintenance
 
 - **Owner**: Documentation maintainers
-- **Review Cadence**: Review when the Stage 00 agent catalog, subagent
-  protocol, or referenced external catalogs change materially
-- **Update Trigger**: Update when agent import policy, provider adapter
-  surfaces, or upstream catalog structure changes
+- **Review Cadence**: Recheck on any proposed import or material upstream/local
+  catalog change
+- **Update Trigger**: Upstream count/schema/license changes, local catalog
+  changes, or new provider adapter behavior
 
 ## Related Documents
 

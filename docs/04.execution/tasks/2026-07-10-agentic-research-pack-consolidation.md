@@ -43,7 +43,7 @@ plan.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-ARC-001 | Refresh workspace baseline, spec-driven SDLC, document roles, and source evidence | doc | VAL-ARC-002, VAL-ARC-007, VAL-ARC-009 | PLN-ARC-001 | Category/role coverage, validators, commit range, task review | Documentation implementer | Done |
 | T-ARC-002 | Add cutoff-bound provider model landscape and refresh task selection | doc/eval | VAL-ARC-003, VAL-ARC-004 | PLN-ARC-002 | Model/lifecycle totals, cutoff exceptions, provider sources, validators, task review | Documentation implementer | Done |
-| T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Todo |
+| T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Ready for Review |
 | T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Todo |
 | T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Todo |
 | T-ARC-006 | Finalize indexes, supersede duplicate pack, close lifecycle and validation | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, whole-branch review, closure commit | Workflow supervisor | Todo |
@@ -57,7 +57,8 @@ plan.
 ### Phase 2: Provider and Agent Research
 
 - [x] T-ARC-002 Add provider model landscape and task-selection analysis.
-- [ ] T-ARC-003 Consolidate harness, loop, provider, and AI agent research.
+- [ ] T-ARC-003 Consolidate harness, loop, provider, and AI agent research
+      (**Ready for Review**; independent verdict pending).
 
 ### Phase 3: Quality, Infrastructure, and Security
 
@@ -112,6 +113,34 @@ prove an applicable model cutoff must use `historical state unverified`.
 | <https://ai.google.dev/gemini-api/docs/deprecations> | Google / official lifecycle page | Release/shutdown schedules and recommended replacements. | Last updated 2026-07-02 UTC | 2026-07-10 | Included; dated before cutoff | Shutdown date can coexist with Stable maturity. | T-ARC-002 |
 | <https://ai.google.dev/gemini-api/docs/changelog> | Google / official changelog | Dated releases, redirects, deprecations, and shutdown evidence. | Through cutoff-relevant 2026-06-30 model entries | 2026-07-10 | Included; no post-cutoff entry used | Mutable log; dates have no time of day. | T-ARC-002 |
 | <https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html> | Google / official Gemini CLI configuration | CLI model/configuration surface. | No visible page date | 2026-07-10 | Included as surface evidence | Does not prove Gemini API or Antigravity model availability. | T-ARC-002 |
+| <https://code.claude.com/docs/en/overview> | Anthropic / official mutable Claude Code documentation | Current product, instruction, tool, MCP, automation, and multi-agent surface. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Retrieval-time documentation; feature-specific maturity labels and version notes take precedence. | T-ARC-003 |
+| <https://code.claude.com/docs/en/sub-agents> | Anthropic / official mutable Claude Code documentation | Custom subagent context, schema, tools, permissions, MCP, skills, hooks, memory, foreground/background, and worktree isolation. | No visible page date; page contains feature-specific version notes | 2026-07-10 | Not applicable (non-model source) | Current behavior only; local Claude agents remain workspace projections. | T-ARC-003 |
+| <https://code.claude.com/docs/en/hooks> | Anthropic / official mutable Claude Code documentation | Command, HTTP, and prompt lifecycle hooks; agent hooks are marked experimental. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Hook configuration does not prove complete enforcement or runtime enablement. | T-ARC-003 |
+| <https://code.claude.com/docs/en/configuration> | Anthropic / official mutable Claude Code documentation | User/project/local/managed configuration layers. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Tracked project settings do not prove user/managed configuration. | T-ARC-003 |
+| <https://code.claude.com/docs/en/permissions> | Anthropic / official mutable Claude Code documentation | Allow/ask/deny rules and permission modes. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Native permissions complement and do not replace repository approval boundaries. | T-ARC-003 |
+| <https://code.claude.com/docs/en/security> | Anthropic / official mutable Claude Code documentation | Security and sandbox/permission framing. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Local files cannot prove that optional sandbox controls are enabled. | T-ARC-003 |
+| <https://code.claude.com/docs/en/mcp> | Anthropic / official mutable Claude Code documentation | MCP configuration and tool integration. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Does not prove locally installed servers, credentials, or transports. | T-ARC-003 |
+| <https://developers.openai.com/codex/guides/agents-md> | OpenAI / official mutable Codex documentation | Global and project `AGENTS.md` discovery and precedence. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Retrieved through official Docs MCP after the local manual helper rejected a response missing `x-content-sha256`. | T-ARC-003 |
+| <https://developers.openai.com/codex/subagents> | OpenAI / official mutable Codex documentation | Current custom-agent required fields, optional runtime fields, parallel execution, sandbox inheritance, and approval propagation. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Tracked TOMLs omit current required description/instructions; documentation does not prove adapter compatibility. | T-ARC-003 |
+| <https://developers.openai.com/codex/hooks> | OpenAI / official mutable Codex documentation | Current hook event list and interception limitations. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Tracked `SessionEnd` lacks current official-list support; Pre/Post interception is not universal. | T-ARC-003 |
+| <https://developers.openai.com/codex/config-reference> | OpenAI / official mutable Codex documentation | Configuration layers, MCP, model/effort, agent, and opt-in telemetry fields. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Current documentation; global operator configuration remains unknown. | T-ARC-003 |
+| <https://learn.chatgpt.com/docs/agent-approvals-security> | OpenAI / official mutable Codex security documentation | Sandbox and approval separation, protected paths, filesystem/network profiles, and beta permission profiles. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Beta/current labels are retrieval-time; repository metadata is not a permission profile. | T-ARC-003 |
+| <https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html> | Google / official mutable Gemini CLI documentation | Settings layers, tool controls, approval modes, and model/config surfaces. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Does not prove local `.gemini` settings or Antigravity behavior. | T-ARC-003 |
+| <https://google-gemini.github.io/gemini-cli/docs/cli/gemini-md.html> | Google / official mutable Gemini CLI documentation | Hierarchical `GEMINI.md` context, imports, and configurable context filenames. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Context discovery is not tool/permission enforcement. | T-ARC-003 |
+| <https://google-gemini.github.io/gemini-cli/docs/tools/mcp-server.html> | Google / official mutable Gemini CLI documentation | MCP server/tool configuration and include/exclude controls. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Does not establish installed servers or native subagents/hooks. | T-ARC-003 |
+| <https://google-gemini.github.io/gemini-cli/docs/cli/sandbox.html> | Google / official mutable Gemini CLI documentation | Optional Seatbelt and container sandboxing, disabled by default. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Described capability is not evidence that the workspace enables it. | T-ARC-003 |
+| <https://google-gemini.github.io/gemini-cli/docs/cli/checkpointing.html> | Google / official mutable Gemini CLI documentation | Optional shadow-Git checkpointing, disabled by default. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Provider checkpointing is not a shared repository rollback contract. | T-ARC-003 |
+| <https://google-gemini.github.io/gemini-cli/docs/cli/telemetry.html> | Google / official mutable Gemini CLI documentation | Opt-in telemetry and local/GCP OTLP metrics. | No visible page date | 2026-07-10 | Not applicable (non-model source) | Telemetry may be disabled and remains privacy/secret constrained. | T-ARC-003 |
+| <https://arxiv.org/abs/2210.03629> | Princeton/Google / original ReAct paper | Interleaved reasoning traces and environment actions as a research loop pattern. | 2022-10-06; revised 2023-03-10 | 2026-07-10 | Not applicable (non-model source) | Research foundation only; no repository authority, retry, or evidence policy is adopted from it. | T-ARC-003 |
+| <https://arxiv.org/abs/2303.11366> | Northeastern/MIT / original Reflexion paper | Verbal feedback and episodic memory across trials without weight updates. | 2023-03-20; revised 2023-10-10 | 2026-07-10 | Not applicable (non-model source) | Research foundation only; workspace memory remains advisory. | T-ARC-003 |
+| <https://github.com/msitarzewski/agency-agents/tree/9f3e401ccd09aa0ee0ef8e015226d0647908e01e> | agency-agents / pinned upstream repository | Point-in-time catalog, agent definitions, integration structure, and MIT-licensed distribution. | Commit 2026-07-09 | 2026-07-10 | Not applicable (non-model source) | Community source; upstream “production-ready” claims are self-claims, not independent evaluation. | T-ARC-003 |
+| <https://github.com/msitarzewski/agency-agents/blob/9f3e401ccd09aa0ee0ef8e015226d0647908e01e/README.md> | agency-agents / pinned upstream README | “230+” agents, 17 observed division headings, multi-tool install/conversion, global-directory targets, and desktop auto-update claim. | Commit 2026-07-09 | 2026-07-10 | Not applicable (non-model source) | Counts are point-in-time; README claims do not authorize installation or import. | T-ARC-003 |
+| <https://github.com/msitarzewski/agency-agents/blob/9f3e401ccd09aa0ee0ef8e015226d0647908e01e/integrations/codex/README.md> | agency-agents / pinned upstream integration documentation | Converter maps name, description, and Markdown body to minimal Codex TOML fields. | Commit 2026-07-09 | 2026-07-10 | Not applicable (non-model source) | Upstream conversion pattern is comparative only and was not executed. | T-ARC-003 |
+| <https://github.com/msitarzewski/agency-agents/blob/9f3e401ccd09aa0ee0ef8e015226d0647908e01e/integrations/gemini-cli/README.md> | agency-agents / pinned upstream integration documentation | Upstream claims Markdown agent installation under `~/.gemini/agents/`. | Commit 2026-07-09 | 2026-07-10 | Not applicable (non-model source) | Third-party integration claim was not independently established by assigned official Gemini CLI entry points. | T-ARC-003 |
+| `scripts/operations/sync-provider-surfaces.sh` | Workspace / tracked generator | Generates Codex agent TOMLs and Gemini/Antigravity agent/skill pointers; `--check` detects drift. | Baseline `1a80b698` | 2026-07-10 | Not applicable (repo-local source) | Generation proves projection parity, not provider-native schema acceptance or runtime enforcement. | T-ARC-003 |
+| `scripts/hooks/post-tool-validate.sh` | Workspace / tracked hook implementation | Whitespace/newline normalization plus conditional shell/YAML checks, `git diff --check`, and repository validators. | Baseline `1a80b698` | 2026-07-10 | Not applicable (repo-local source) | It does not run `prettier --check` and is selective by changed-file type. | T-ARC-003 |
+| `docker-compose.yml` | Workspace / tracked runtime source | Root network definitions: ordinary `infra_net` bridge and three external networks. | Baseline `1a80b698` | 2026-07-10 | Not applicable (repo-local source) | Definition does not prove external-network existence, live connectivity, or egress policy. | T-ARC-003 |
+| `docs/00.agent-governance/agents/README.md` and `docs/00.agent-governance/subagent-protocol.md` | Workspace / canonical governance | Fifteen canonical roles, provider projection model, handoff boundary, and active model tiers. | Baseline `1a80b698` | 2026-07-10 | Not applicable (repo-local source) | Active policy remains unchanged; provider runtime compatibility requires separate evidence. | T-ARC-003 |
 
 ## T-ARC-001 Evidence
 
@@ -364,6 +393,115 @@ artifact required another refresh. The final pre-commit gate recorded:
 - Final review report: `.superpowers/sdd/task-2-final-review-report.md` (ignored
   controller evidence; intentionally not part of tracked documentation
   commits).
+
+## T-ARC-003 Evidence
+
+### Status and Scope
+
+Status is **Ready for Review**. The independent spec-compliance and
+document-quality verdicts are pending, so the phase checkbox remains open and
+this task is not `Done`. The work is documentation-only; code TDD and Graphify
+refresh are not applicable. The editable tracked scope is exactly this task
+record plus the four canonical Stage 90 references listed below. Stage 00,
+provider adapters, scripts, Compose, runtime configuration, CI, credentials,
+remote state, and unrelated documents were inspected but not changed.
+
+### Source and Coverage Inventory
+
+- Source-ledger additions: 28 records — 7 Anthropic official pages, 5 OpenAI
+  official pages, 6 Google Gemini CLI official pages, 2 original papers, 4
+  immutable upstream `agency-agents` records, and 4 tracked workspace source
+  records.
+- OpenAI route: the fresh local manual helper rejected a response missing
+  `x-content-sha256`, so current Codex pages were retrieved through the
+  official Docs MCP search/fetch route. Mutable pages are retrieval-time
+  evidence only.
+- Workspace inventory: 15 canonical agents (one supervisor and fourteen
+  workers), 22 tracked skills, three provider entry shims, provider notes,
+  Claude/Codex adapters, Gemini/Antigravity pointers and native rules/workflows,
+  hook scripts/settings, sync generator, validation scripts, Compose networks,
+  and advisory Graphify report.
+- Matrix coverage: 14 harness-element rows, 10 exact loop-contract rows, 17
+  provider-capability rows, 18 provider official-evidence rows, and 12 external
+  catalog-comparison rows. Every required owner/status/confidence field is
+  populated.
+- `agency-agents` is pinned to
+  `9f3e401ccd09aa0ee0ef8e015226d0647908e01e`. Its README reports 230+ agents
+  and exposes 17 observed division headings. No installer, converter,
+  auto-update path, or imported definition was executed.
+
+### Stale-Claim Disposition
+
+- `post-tool-validate.sh` is recorded as selective whitespace/newline,
+  shell/YAML, diff, and repository validation; it does not run
+  `prettier --check`.
+- `sync-provider-surfaces.sh` already generates Codex TOMLs and
+  Gemini/Antigravity agent/skill pointers; auto-scaffolding is not missing.
+- Stage 04 plans/tasks are the canonical execution artifacts; generic
+  `implementation_plan.md` and `walkthrough.md` names are explicitly rejected.
+- Codex `scope`/`source_catalog` metadata is not a strict path/tool allowlist.
+  Current official Codex custom-agent requirements also expose a tracked
+  description/instructions schema gap.
+- Current official Codex hook evidence does not list tracked `SessionEnd` and
+  documents incomplete Pre/Post interception coverage.
+- Root Compose has an ordinary `infra_net` bridge plus three external
+  networks; the prior blanket internal-network claim is rejected.
+- Gemini CLI capability gaps are labeled “not established by assigned official
+  sources,” and `.agents` is distinguished from tracked `.gemini` CLI config.
+- The prior upstream “16 divisions” claim is corrected to 17 observed README
+  division headings at the pinned commit; upstream maturity language remains
+  a self-claim.
+
+### Changed Files
+
+- `docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md`
+- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md`
+- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md`
+- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md`
+- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md`
+
+### Validation Evidence
+
+- `git diff --check` — exit 0.
+- Matrix schema/count check — exit 0: harness `14/14`, loops `10/10`,
+  provider capabilities `17/17`, and catalog concerns `12/12`.
+- Stale-claim disposition scan — exit 0; matches occur only in explicit
+  corrections/gap statements, with no stale affirmative claim retained.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — exit 0; fresh.
+- `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` — exit 0;
+  fresh.
+- `bash scripts/operations/sync-provider-surfaces.sh --check` — exit 0; no
+  drift.
+- `bash scripts/validation/check-doc-traceability.sh` — exit 0;
+  `catalog_pairs_total=46`, `failures=0`.
+- `bash scripts/validation/check-doc-implementation-alignment.sh` — exit 0;
+  `stage_docs_total=621`, `repo_local_markdown_links_checked=4807`,
+  `failures=0`.
+- `bash scripts/validation/check-repo-contracts.sh` — exit 0;
+  `changed_template_docs_total=5`, all five normalized,
+  `legacy_changed_template_docs_skipped=0`, repository `failures=0`.
+- Full diff from `1a80b6989304fa7b6a179861a9cad795dd875ca3` — inspected;
+  exactly the five assigned tracked files are present.
+
+### Commit and Review Evidence
+
+- Task brief: `.superpowers/sdd/task-3-brief.md`.
+- Implementer report: `.superpowers/sdd/task-3-implementer-report.md`
+  (ignored evidence; exact implementation commit is added after commit).
+- Base commit: `1a80b6989304fa7b6a179861a9cad795dd875ca3`.
+- Implementation subject:
+  `docs(research): consolidate harness and agent research`. The immutable head
+  and exact review range are pending commit and will be handed to the
+  independent reviewer through the ignored implementer report.
+- Implementer spec-compliance self-review: **PASS** — required source classes,
+  matrix schemas/counts, tracked inventory, stale corrections, status
+  vocabulary, owners, confidence, caveats, and no-import boundary are present.
+- Implementer document-quality self-review: **PASS** — official fact,
+  workspace implementation, inference/gap, and recommendation are separated;
+  every reference retains the canonical template headings and direct sources.
+- Independent verdict: **PENDING**. The task must remain **Ready for Review**
+  until a separate reviewer records spec-compliance and document-quality
+  verdicts for the exact committed range.
 
 ## Task Review Evidence Contract
 
