@@ -7,128 +7,162 @@ status: active
 
 ## Overview
 
-This reference analyzes automation, pipelines, and workflows for an agent-first
-workspace. It compares GitHub Actions workflow concepts and provider hook
-surfaces with repo-local scripts, hooks, CI gates, task evidence, and approval
-boundaries.
+This reference maps tracked local scripts, hooks, generated-reference checks,
+GitHub workflows, and agent orchestration to their triggers, authorities,
+evidence, retry behavior, and external-action boundaries. The inventory is from
+tracked source at `505277817eee0de4270bc03ae7fb789ef9d02ad3`, not from the
+older advisory Graphify report.
 
 ## Purpose
 
-Explain how local and remote automation support loop engineering without
-granting authority for external actions or protected-surface changes.
+Make automation loops inspectable without confusing capability with authority,
+or local/CI evidence with current remote enforcement.
 
 ## Repository Role
 
-This reference supports the loop-engineering research, QA scope, scripts README,
-provider notes, HAFE documents, and future active-stage automation work. It does
-not create new workflows, hooks, scripts, provider settings, CI jobs, or remote
-automation behavior.
+This Stage 90 reference explains current automation. It does not create or
+change scripts, hooks, workflows, provider settings, task policy, protected
+GitHub settings, or external resources.
 
 ## Scope
 
 ### In Scope
 
-- GitHub Actions workflow, job, and step concepts
-- Provider hook and automation surfaces as reference context
-- Repo-local script, hook, CI, and task-evidence loops
-- Local versus remote automation boundaries
+- Actual workflow/job inventory from all tracked workflow YAML
+- Local validation, recommendation, hook, synchronization, and generation loops
+- CI quality, changelog, version-drift, contributor, labeling, and stale loops
+- Task/subagent orchestration and explicit remote approval boundaries
 
 ### Out of Scope
 
-- CI workflow edits
-- Provider runtime configuration changes
-- Remote action dispatch, merge, publish, or paid job execution
-- New script or hook implementation
+- Workflow, script, provider, runtime, credential, or remote-state mutation
+- Claims that workflow YAML proves branch protection or required-check settings
+- Adoption of DORA, continuous-delivery, or vendor guidance as policy
 
 ## Definitions / Facts
 
-- **Workflow**: GitHub Actions workflows are YAML-defined automated processes
-  triggered by repository events or manual dispatch.
-- **Job and step**: GitHub Actions organizes work into jobs and steps, with jobs
-  running on runners and steps executing commands or actions.
-- **Provider hooks**: Claude Code and Codex document hook surfaces that can run
-  at lifecycle or tool-use events. Their event models differ, so repo-local
-  governance treats them as adapters rather than policy sources.
-- **Provider context substrate**: Codex uses `AGENTS.md` guidance, Claude uses
-  Claude Code context and hook surfaces, and Gemini CLI uses `GEMINI.md`,
-  settings, commands, and MCP surfaces. Stage 00 remains the policy SSoT.
-- **Automation evidence**: This repository records automation results through
-  command output summaries, task evidence, generated indexes, progress memory,
-  PR checks, SARIF, or skipped-check rationale.
+- **Automation** repeats a bounded action; its authority comes from the tracked
+  owner and user approval boundary, not from its ability to execute.
+- **Pipeline** means an ordered or parallel set of checks/actions. In the
+  tracked quality workflow no job declares `needs:`, so the YAML does not define
+  an inter-job dependency chain.
+- **Evidence** is a named exit result, generated freshness result, task record,
+  workflow status, or remote observation. A generated artifact must be refreshed
+  by its canonical generator, never hand-edited.
+- **External boundary** distinguishes local repository state, GitHub-hosted CI,
+  and actions that change remote resources or require explicit approval.
+
+## Tracked Workflow and Job Inventory
+
+The following count is derived from job mappings under `jobs:` in each tracked
+YAML file, not from workflow filenames or Graphify.
+
+| Workflow | Trigger | Tracked job IDs | Count | Class / caveat |
+| --- | --- | --- | --- | --- |
+| [`ci-quality.yml`](../../../../.github/workflows/ci-quality.yml) | push/PR to `main`; manual dispatch | `docs-traceability`, `docs-implementation-alignment`, `repo-contracts`, `agent-output-eval-fixture-gate`, `dependency-vulnerability-audit`, `git-flow-contract`, `compose-validation`, `compose-all-profiles-validation`, `infrastructure-hardening`, `template-security-baseline`, `quickwin-baseline`, `pre-commit`, `frontend-quality`, `storybook-coverage`, `zizmor` | 15 | CI jobs; tracked presence does not prove remote required-check enforcement. |
+| [`generate-changelog.yml`](../../../../.github/workflows/generate-changelog.yml) | pushed `v*.*.*` tag | `changelog` | 1 | Remote verifier; checks tag coverage in `CHANGELOG.md` and does not generate it. |
+| [`greetings.yml`](../../../../.github/workflows/greetings.yml) | newly opened issue/PR | `issue-greeting`, `pull-request-greeting` | 2 | Remote write automation with scoped token permissions. |
+| [`pr-labeler.yml`](../../../../.github/workflows/pr-labeler.yml) | opened/synchronized/reopened PR to `main` | `triage` | 1 | Remote PR-label mutation. |
+| [`stale.yml`](../../../../.github/workflows/stale.yml) | daily schedule | `stale` | 1 | Remote issue/PR label/close mutation. |
+| [`tech-stack-version-sync.yml`](../../../../.github/workflows/tech-stack-version-sync.yml) | PR paths affecting Compose/version registry | `drift-gate` | 1 | Read-only CI drift gate; does not auto-commit. |
+
+Total: **6 workflows, 21 job IDs**. The 15-job local CI contract is distinct
+from the historical 12 required remote contexts recorded on 2026-07-04 in
+[`main-protection.md`](../../../../.github/rulesets/main-protection.md). This
+task did not reverify remote settings, so current enforcement is remote-only and
+unknown.
+
+## Automation Loop Matrix
+
+| Automation | Trigger | Authority | Inputs | Actions | Evidence | Failure / retry | Rollback / escalation | External boundary |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Local QA gate runner | Manual `--script-backed`, `--all-profiles`, or `--harness` invocation | [`run-local-qa-gates.sh`](../../../../scripts/validation/run-local-qa-gates.sh) | Worktree plus tracked scripts/config | Runs 12 script-backed checks; lists CI/local-tooling and remote-only responsibilities separately | Named command exits and task summary | Fix the failing owner, then rerun the named gate or runner | Revert authored change; escalate CI/remote-only gaps rather than simulating them | Local only; no SARIF upload, dependency install, branch query, or merge authority |
+| QA gate recommender | Working/staged/base diff or explicit paths; CI summary step | [`recommend-qa-gates.sh`](../../../../scripts/validation/recommend-qa-gates.sh) | Changed path list | Prints deduplicated recommendations and remote/manual notes; executes no gate | Advisory stdout or `GITHUB_STEP_SUMMARY` | Correct path selection and rerun; recommendation failure is not gate evidence | Escalate unsupported mappings to the QA owner | Local/CI advisory; no repository, runtime, remote, or secret mutation |
+| Post-tool validation | Provider file-edit hook payload | [`post-tool-validate.sh`](../../../../scripts/hooks/post-tool-validate.sh) | JSON payload and changed paths | Normalizes basic whitespace/newlines unless check-only; conditionally runs shfmt, ShellCheck, yamllint, diff, JSON, Compose, repo-contract, and traceability checks | Hook exit and named validator output | Fix changed-path failure and replay payload or run validator directly | `--check` disables writes; revert hook formatting if inappropriate | Local hook; it does not run Prettier or prove CI/remote state |
+| Provider-neutral event dispatcher | Session/tool/stop event from a provider adapter | [`agent-event-hook.sh`](../../../../scripts/hooks/agent-event-hook.sh) | Event name, JSON payload, tracked governance and paths | Produces context, warnings, or validation dispatch based on event/path | Hook JSON/output and exit | Correct adapter/event/payload; rerun without inventing unsupported event parity | Escalate provider incompatibility to Stage 00 provider owner | Local adapter; provider behavior is not policy authority |
+| Provider-surface sync | Manual default verify or approved `--write` | [`sync-provider-surfaces.sh`](../../../../scripts/operations/sync-provider-surfaces.sh) | Canonical agent catalog, Claude skills, model policy | Compares or generates Codex TOMLs and Gemini pointers | `no drift`, drift list, or write summary | Resolve canonical-source mismatch; verify again | Revert generated projection; policy/model changes need approved Stage 00/04 evidence | Verify is local/read-only; write changes tracked provider adapters, never external accounts |
+| Tech-stack version sync script | Manual default write, `--check`, or `--dry-run` | [`sync-tech-stack-versions.sh`](../../../../scripts/operations/sync-tech-stack-versions.sh) | Compose image declarations and curated registry | Detects or updates registry tag drift | `changes=N`, check exit, or written file | Resolve missing/ambiguous image mapping; rerun check | Revert generated registry; runtime changes require separate approval | Local tracked file only; no registry query or deployment |
+| LLM Wiki index freshness | Docs path change or explicit generator/check | [`generate-llm-wiki-index.sh`](../../../../scripts/knowledge/generate-llm-wiki-index.sh) | Indexed tracked paths | Generates or verifies Wiki path index | Fresh/stale result; `repo-contracts` coverage | Run generator, inspect generated diff, rerun check | Revert generated output and fix source/index rules | Local generated reference; never hand-edit |
+| LLM Wiki coverage freshness | Stage/category coverage change or explicit generator/check | [`generate-llm-wiki-coverage.sh`](../../../../scripts/knowledge/generate-llm-wiki-coverage.sh) | Tracked stage paths and Wiki data | Generates or verifies coverage snapshot | Fresh/stale result | Run canonical generator and rerun check | Revert generated output and escalate schema drift | Local generated reference; never hand-edit |
+| Other generated evidence checks | Repo-contract execution or explicit generator `--check` | Canonical scripts listed in [`scripts/README.md`](../../../../scripts/README.md) | Audit pack, security/workflow surfaces, Compose and version registry | Generate/check audit matrix, security readiness, profile coverage, and version provenance | Generator check output and `repo-contracts` | Use only the owning generator; inspect source drift | Report stale generated data before any scope expansion | Local reference generation; does not run scanners, sign artifacts, query registries, or query GitHub |
+| CI quality workflow | push/PR to `main` or manual dispatch | [`ci-quality.yml`](../../../../.github/workflows/ci-quality.yml) | Checked-out commit, pinned actions, GitHub runner context | Runs 15 independent job definitions, including docs, contracts, Compose, frontend, coverage, dependency, and `zizmor` evidence | GitHub job/check status and SARIF for `zizmor` | Fix job-specific failure and rerun through GitHub controls | Revert offending commit; permissions/workflow changes require review | Remote GitHub CI; YAML presence does not prove required-check enforcement |
+| Tech-stack drift workflow | Relevant PR path filter | [`tech-stack-version-sync.yml`](../../../../.github/workflows/tech-stack-version-sync.yml) | PR Compose/version-registry diff | Runs sync script in read-only `--check` mode | `drift-gate` status | Author updates the registry locally and pushes through approved workflow | Revert mismatched registry/Compose edit; no auto-commit | Remote CI read-only content permission |
+| Changelog tag-coverage verification | Push of a semantic-looking `v*.*.*` tag | [`generate-changelog.yml`](../../../../.github/workflows/generate-changelog.yml) | Tag name and tracked `CHANGELOG.md` | Verifies that the pushed release tag already appears in the changelog | `changelog` job status and error naming absent tag | Update changelog through a release-branch PR before repushing tag | Delete/correct an erroneous tag only with explicit remote approval | Remote verifier; despite filename, it does not generate or commit a changelog |
+| PR labeler | PR opened, synchronized, or reopened | [`pr-labeler.yml`](../../../../.github/workflows/pr-labeler.yml) | PR file paths and labeler config | Applies path-based labels | `triage` job and resulting labels | Correct config/permissions and rerun via GitHub event/action controls | Remove incorrect labels with approved remote mutation | Remote PR mutation; no local equivalent |
+| Stale issue/PR automation | Daily scheduled event | [`stale.yml`](../../../../.github/workflows/stale.yml) | Issue/PR activity age and configured labels/messages | Marks stale, waits seven days, then closes inactive threads | `stale` job plus issue/PR state | Correct workflow/config and rerun on schedule/manual GitHub control if authorized | Reopen/remove label with approved remote mutation; escalate false positives | Remote issue/PR mutation |
+| First-interaction greetings | Newly opened issue or PR | [`greetings.yml`](../../../../.github/workflows/greetings.yml) | Event actor/thread and messages | Posts first-interaction message | Two conditional job statuses and comment | Correct permission/message and retrigger only through valid GitHub event | Remove erroneous comment with approved remote mutation | Remote issue/PR write |
+| Task and subagent orchestration | Approved Stage 04 task and explicit delegation | [`subagent-protocol.md`](../../../00.agent-governance/subagent-protocol.md) | Spec/plan/task, [`workflows.md`](../../../00.agent-governance/rules/workflows.md), role catalog, handoff/evidence boundary | Routes bounded work, handoff, review, and task evidence | Stage 04 record, implementer report, commit, reviewer verdict | Return to earliest failed owner; do not self-record an independent verdict | Stop/escalate on ambiguity, protected surfaces, or incompatible adapter | Local/repository orchestration; dispatching remote agents or paid jobs requires explicit approval |
+| Remote approval and merge boundary | Explicit user authorization plus named remote target | [`approval-boundaries.md`](../../../00.agent-governance/rules/approval-boundaries.md) | Approval source, repository/surface, [GitHub governance](../../../00.agent-governance/rules/github-governance.md), before evidence, rollback path | Permits only the specifically approved read/write action | Before/after remote evidence and task record | Stop when approval or current remote evidence is absent | Roll back through approved GitHub mechanism; never bypass checks/review | Remote-only; current branch protection remains unknown in this task |
+
+## Workspace Comparison and Ownership
+
+| Category | Current state | Primary comparison | Status | Gap | Recommendation | Canonical owner | Evidence | Confidence |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Local automation | Purpose-folder scripts and hook dispatchers expose bounded validate/recommend/sync/generate loops. | pre-commit shows configurable local/CI hooks; EditorConfig/Prettier show tool-specific style automation. | Implemented | Consumers can be mistaken for owners, and advisory output for a gate. | Cite the purpose-folder script and state whether it checks, writes, or only recommends. | `scripts/README.md` | Matrix above and tracked scripts | High |
+| GitHub workflows | Six YAML workflows define 21 job IDs and scoped permissions. | GitHub syntax defines triggers/jobs/steps; secure-use guidance frames permissions and action pinning. | Partially Implemented | Current remote required checks and branch protection were not verified on 2026-07-11. | Keep tracked implementation and remote enforcement as separate evidence classes. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/*.yml`, historical local proposal | High |
+| Delivery feedback | Quality, drift, release-tag, and contributor loops produce inspectable feedback. | Fowler frames fast automated readiness feedback; DORA defines service-level delivery outcomes. | Partially Implemented | No deployment pipeline or DORA data collection is proven here. | Do not label CI validation as continuous delivery or measured DORA performance. | `docs/00.agent-governance/rules/workflows.md` | Workflow inventory and fixed external sources | High |
 
 ## Analysis
 
-Automation loops are useful because they turn repeated work into bounded,
-inspectable feedback. Local scripts can validate docs, Compose, hardening,
-provider surfaces, and generated indexes. Provider hooks can guide or validate
-agent behavior around tool use. GitHub Actions can run required gates and
-security analysis in a remote CI environment.
+The repository has multiple loops rather than one pipeline. Local validators
+fail fast; recommenders only advise; hooks react to provider events; generators
+own derived data; CI supplies remote runner evidence; issue/PR workflows mutate
+GitHub state. The explicit boundary prevents a green local run from being
+presented as SARIF upload, required-check satisfaction, merge readiness, or
+continuous-delivery performance.
 
-The same automation surfaces do not grant authority. A workflow trigger, hook,
-or script can produce feedback, but posting, publishing, pushing, merging,
-opening paid jobs, changing credentials, changing provider runtime config, or
-modifying protected GitHub settings still requires explicit user approval and
-task evidence.
+## Application Notes for This Workspace
 
-| Loop Surface | Repo-local Evidence | Boundary |
-| --- | --- | --- |
-| Local validation | `scripts/validation/**`, `scripts/hardening/**` | Runs local checks and records pass/fail evidence; does not change runtime services. |
-| Provider hooks | `scripts/hooks/**`, `.codex/hooks.json`, provider notes | Adapts Stage 00 behavior to provider mechanics; does not redefine policy. |
-| CI pipeline | `.github/workflows/ci-quality.yml` | Runs remote checks and SARIF upload; local docs cannot prove remote branch protection by themselves. |
-| Knowledge generation | `scripts/knowledge/generate-llm-wiki-index.sh` | Regenerates reference navigation when indexed docs change. |
-| Operations scripts | `scripts/operations/**` | May require explicit approval when touching provider surfaces, secrets, versions, or generated files. |
-| Task evidence | `docs/04.execution/tasks/**` | Records what ran, what passed, what was skipped, and why. |
-
-For this research pack, automation and workflow analysis remains advisory. New
-automation should enter the active lifecycle through the correct requirements,
-architecture, spec, plan, task, and operations documents.
+- Name the trigger, canonical authority, mutation behavior, and evidence for
+  every automation claim.
+- Treat the local runner as a subset, not a full CI replica.
+- Treat `generate-changelog.yml` as pushed-tag coverage verification.
+- Treat current branch protection/required checks as unknown until a direct
+  read-only remote check is recorded.
+- Never repair stale generated data by hand; run the canonical generator or
+  report the scope expansion needed.
 
 ## Potential Follow-up / Gap
 
-- A future active automation spec could define a workflow inventory report that
-  links GitHub jobs, local validators, and provider hooks.
-- A future provider-surface audit could compare Claude, Codex, and Gemini hook
-  parity against Stage 00 behavior.
-- A future runbook could separate locally reproducible QA gates from CI-only and
-  remote-only responsibilities for operators.
+- Reverify remote branch protection and required contexts in a separately
+  authorized GitHub audit.
+- Keep the tracked 15-job CI contract and any remote required-check list coupled
+  only through approved governance/workflow work.
+- Define delivery metrics only when an application/service deployment and
+  incident data source exists.
 
 ## Source Rules
 
-- Prefer official GitHub Actions docs, official provider docs, and repo-local
-  canonical scripts/workflows.
-- Treat provider hooks and GitHub workflows as execution adapters, not policy
-  sources.
-- Record remote actions as approval-gated; do not infer authority from
-  automation capability.
+- Fixed external sources were retrieved on **2026-07-11**; the Task 4 source
+  ledger records supported claim, local/CI/remote class, and caveat.
+- GitHub and tool pages are mutable retrieval-time guidance.
+- Repo-local facts come from tracked workflow/job/script/config definitions;
+  Graphify is advisory and was not used for counts.
+- No source listed here is adopted policy.
 
 ## Sources
 
-- [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - workflow, job, step, trigger, and YAML syntax reference
-- [GitHub Actions secure use reference](https://docs.github.com/en/actions/reference/security/secure-use) - workflow security and secret-handling guidance
-- [Claude Code hooks](https://code.claude.com/docs/en/hooks) - provider lifecycle and tool-use hook reference
-- [Codex hooks](https://developers.openai.com/codex/hooks) - Codex hook events and execution model
-- [Codex CLI](https://developers.openai.com/codex/cli) - Codex local and noninteractive coding agent context
-- [Codex AGENTS.md guide](https://developers.openai.com/codex/guides/agents-md) - project instruction discovery
-- [Gemini CLI docs](https://google-gemini.github.io/gemini-cli/docs/) - Gemini CLI context, command, and tool documentation entrypoint
-- [Scripts README](../../../../scripts/README.md) - repo-local validation, hardening, hooks, knowledge, operations, and library inventory
-- [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - repo-local CI pipeline
-- [QA scope](../../../00.agent-governance/scopes/qa.md) - local versus remote QA evidence model
-- [GitHub governance](../../../00.agent-governance/rules/github-governance.md) - workflow security, protected-branch, and remote mutation boundaries
-- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - protected-surface approval matrix
-- [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) - repo-local provider-neutral capability framing
+- [Task 4 source ledger](../../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md) - fixed-source retrieval and caveats
+- [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - triggers, permissions, jobs, and steps
+- [GitHub secure use](https://docs.github.com/en/actions/reference/security/secure-use) - least privilege, untrusted input, secrets, and action pinning
+- [pre-commit](https://pre-commit.com/) - local/CI hook orchestration and skip behavior
+- [EditorConfig](https://editorconfig.org/) and [specification](https://spec.editorconfig.org/) - editor-level style automation and precedence
+- [Prettier overview](https://prettier.io/docs) and [CLI](https://prettier.io/docs/cli) - formatter and check-mode behavior
+- [DORA metrics](https://dora.dev/guides/dora-metrics/) - five service-level delivery metrics and context caveat
+- [Martin Fowler: Continuous Delivery](https://martinfowler.com/bliki/ContinuousDelivery.html) - releasability and automated pipeline feedback
+- [Scripts README](../../../../scripts/README.md) - canonical script inventory and lifecycle
+- [Tracked workflows](../../../../.github/workflows/ci-quality.yml) - workflow/job implementation entry point
 
 ## Maintenance
 
 - **Owner**: Documentation maintainers
-- **Review Cadence**: Review when workflows, provider hooks, scripts, QA scope,
-  or provider documentation changes
-- **Update Trigger**: Update when automation authority, pipeline structure, or
-  provider hook assumptions change
+- **Review Cadence**: Review when workflows, scripts, hooks, generated references, remote evidence, or primary guidance changes
+- **Update Trigger**: Re-enumerate every `jobs:` mapping and every local runner step from tracked source
 
 ## Related Documents
 
 - [research pack index](./README.md)
+- [quality, CI/CD, QA, and formatting](./quality-ci-formatting.md)
 - [loop engineering](./loop-engineering.md)
-- [quality, CI, and formatting](./quality-ci-formatting.md)
-- [provider implementation comparison](./provider-implementation-comparison.md)
 - [workspace baseline](./workspace-baseline.md)
+- [GitHub governance](../../../00.agent-governance/rules/github-governance.md)

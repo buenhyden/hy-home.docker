@@ -44,7 +44,7 @@ plan.
 | T-ARC-001 | Refresh workspace baseline, spec-driven SDLC, document roles, and source evidence | doc | VAL-ARC-002, VAL-ARC-007, VAL-ARC-009 | PLN-ARC-001 | Category/role coverage, validators, commit range, task review | Documentation implementer | Done |
 | T-ARC-002 | Add cutoff-bound provider model landscape and refresh task selection | doc/eval | VAL-ARC-003, VAL-ARC-004 | PLN-ARC-002 | Model/lifecycle totals, cutoff exceptions, provider sources, validators, task review | Documentation implementer | Done |
 | T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Done |
-| T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Todo |
+| T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Ready for Review |
 | T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Todo |
 | T-ARC-006 | Finalize indexes, supersede duplicate pack, close lifecycle and validation | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, whole-branch review, closure commit | Workflow supervisor | Todo |
 
@@ -62,7 +62,8 @@ plan.
 
 ### Phase 3: Quality, Infrastructure, and Security
 
-- [ ] T-ARC-004 Refresh QA/CI/formatting and automation research.
+- [x] T-ARC-004 Refresh QA/CI/formatting and automation research
+      (**Ready for Review**; independent verdict not yet recorded).
 - [ ] T-ARC-005 Refresh Compose/infrastructure and security research.
 
 ### Phase 4: Consolidation Closure
@@ -141,6 +142,15 @@ prove an applicable model cutoff must use `historical state unverified`.
 | `scripts/hooks/post-tool-validate.sh` | Workspace / tracked hook implementation | Whitespace/newline normalization plus conditional shell/YAML checks, `git diff --check`, and repository validators. | Baseline `1a80b698` | 2026-07-10 | Not applicable (repo-local source) | It does not run `prettier --check` and is selective by changed-file type. | T-ARC-003 |
 | `docker-compose.yml` | Workspace / tracked runtime source | Root network definitions: ordinary `infra_net` bridge and three external networks. | Baseline `1a80b698` | 2026-07-10 | Not applicable (repo-local source) | Definition does not prove external-network existence, live connectivity, or egress policy. | T-ARC-003 |
 | `docs/00.agent-governance/agents/README.md` and `docs/00.agent-governance/subagent-protocol.md` | Workspace / canonical governance | Fifteen canonical roles, provider projection model, handoff boundary, and active model tiers. | Baseline `1a80b698` | 2026-07-10 | Not applicable (repo-local source) | Active policy remains unchanged; provider runtime compatibility requires separate evidence. | T-ARC-003 |
+| <https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax> | GitHub / official mutable documentation | Class: CI/remote. Workflows are YAML automation made of one or more jobs; the syntax defines triggers, permissions, job IDs, dependencies, and steps. | Not shown | 2026-07-11 | Not applicable (non-model source) | Retrieval-time syntax only; it does not prove that tracked jobs ran or are remotely required. | T-ARC-004 |
+| <https://docs.github.com/en/actions/reference/security/secure-use> | GitHub / official mutable documentation | Class: CI/remote security. Supports least-privilege token permissions, caution for untrusted input/secrets, and full-SHA action pinning. | Not shown | 2026-07-11 | Not applicable (non-model source) | Guidance only; no remote setting, scanner result, or workspace control adoption is proved. | T-ARC-004 |
+| <https://pre-commit.com/> | pre-commit / official mutable documentation | Class: local/CI. A configured multi-language hook set can run at Git stages or in CI; hook IDs, file filters, stages, and `SKIP` determine execution. | Page showed pre-commit 4.6.0 at retrieval | 2026-07-11 | Not applicable (non-model source) | Upstream capability does not prove installation, every hook run, or this repository's local-runner count. | T-ARC-004 |
+| <https://editorconfig.org/> | EditorConfig / official project site | Class: local/editor. EditorConfig files and plugins support consistent coding style across editors and IDEs. | Not shown | 2026-07-11 | Not applicable (non-model source) | File presence does not prove every editor/plugin applies the settings. | T-ARC-004 |
+| <https://spec.editorconfig.org/> | EditorConfig / official specification 0.17.2 | Class: local/editor. Defines hierarchical file search, `root`, section precedence, and supported style pairs. | Version 0.17.2 shown | 2026-07-11 | Not applicable (non-model source) | Specification behavior is editor-core behavior, not a standalone repository blocking gate. | T-ARC-004 |
+| <https://prettier.io/docs> | Prettier / official stable documentation | Class: local/CI capability. Prettier parses and reprints supported inputs to a consistent style. | Stable docs; no visible page date | 2026-07-11 | Not applicable (non-model source) | The tracked shared post-tool hook does not invoke Prettier, and configuration alone is not execution evidence. | T-ARC-004 |
+| <https://prettier.io/docs/cli> | Prettier / official stable CLI documentation | Class: local/CI capability. The CLI's check mode reports unformatted files and uses non-zero exit codes suitable for CI. | Stable docs; no visible page date | 2026-07-11 | Not applicable (non-model source) | Upstream command behavior is not an adopted or tracked shared gate in this workspace. | T-ARC-004 |
+| <https://dora.dev/guides/dora-metrics/> | DORA / official mutable guide | Class: remote operational measurement. Current model groups change lead time, deployment frequency, failed deployment recovery time, change fail rate, and deployment rework rate into throughput/instability. | No visible page date | 2026-07-11 | Not applicable (non-model source) | Best applied to one application/service at a time; this task collected no production deployment or recovery data. | T-ARC-004 |
+| <https://martinfowler.com/bliki/ContinuousDelivery.html> | Martin Fowler / original practice article | Class: pipeline/delivery comparison. Continuous delivery emphasizes releasability, fast automated production-readiness feedback, builds/tests, and a deployment pipeline. | 2013-05-30 | 2026-07-11 | Not applicable (non-model source) | Practice framing only; tracked CI checks do not prove production deployability or continuous deployment. | T-ARC-004 |
 
 ## T-ARC-001 Evidence
 
@@ -569,6 +579,109 @@ remote state, and unrelated documents were inspected but not changed.
   `Minor=0`, for the exact cumulative range recorded above. All three prior
   Important findings are resolved; T-ARC-003 is **Done**.
 
+## T-ARC-004 Evidence
+
+### Status and Scope
+
+Status is **Ready for Review**. No independent spec-compliance or
+document-quality verdict is pre-recorded. This implementation is documentation
+only, so code TDD and domain coverage are N/A. The tracked editable scope is
+exactly this task record plus the two assigned Stage 90 references. Workflows,
+scripts, hooks, pre-commit/tool configuration, runtime, provider adapters,
+credentials, and remote GitHub state were inspected but not changed.
+
+### Tracked Inventory and Derivation
+
+- Workflow inventory: **6 tracked workflow files and 21 job IDs**. The count is
+  derived from mappings directly under each YAML `jobs:` key: 15 in
+  `ci-quality.yml`, 1 changelog job, 2 greeting jobs, 1 PR-labeler job, 1 stale
+  job, and 1 tech-stack drift job.
+- Local runner inventory: **12 executed local script-backed gates**. The count
+  is the 12 `run_step` calls in `run_script_backed_gates`; the `--list` output
+  adds `recommend-qa-gates.sh` as **1 advisory recommendation**, but the runner
+  does not execute it.
+- Pre-commit inventory: **23 hook IDs** in `.pre-commit-config.yaml`. It is
+  recorded separately because hook stages/file filters and the local runner are
+  different execution surfaces.
+- Quality matrix: **28 gate rows** using the required Gate/Purpose/Local/CI/
+  Evidence class/Blocking/External basis/Gap schema.
+- Automation matrix: **17 loop rows** using the required Automation/Trigger/
+  Authority/Inputs/Actions/Evidence/Failure/Rollback/External boundary schema.
+
+### Source Route and Corrected Claims
+
+All nine fixed external entry points were opened directly from their official
+URLs and revalidated on 2026-07-11. The source ledger records supported claim,
+local/CI/remote class, and caveat. Mutable pages provide retrieval-time
+comparison only, and no source is adopted policy.
+
+The refresh corrects these tracked-evidence drifts:
+
+- the security job ID is `zizmor`;
+- the quality inventory includes `docs-implementation-alignment`,
+  `agent-output-eval-fixture-gate`, and `dependency-vulnerability-audit`;
+- `run-local-qa-gates.sh` is a 12-gate local subset with explicit
+  CI/local-tooling and remote-only responsibility classes, not a complete CI
+  reproduction;
+- the shared post-tool hook performs basic text normalization and selective
+  shell/YAML/diff/repository checks, but does not invoke Prettier;
+- `generate-changelog.yml` verifies that a pushed release tag already appears
+  in `CHANGELOG.md`; it does not generate or commit the changelog;
+- formatting, linting, syntax, type, test, build, coverage, security,
+  traceability, eval, and freshness are separate evidence classes; and
+- current branch protection/required-check enforcement is remote-only and
+  unknown for this task. The tracked 2026-07-04 observation is historical and
+  was not promoted to current evidence.
+
+### Changed Files
+
+- `docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md`
+- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md`
+- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md`
+
+### Validation Evidence
+
+The clean pre-edit base `505277817eee0de4270bc03ae7fb789ef9d02ad3`
+passed diff hygiene, document implementation alignment, repository contracts,
+LLM Wiki freshness, document traceability, and provider-surface verification.
+The stale-phrase scan returned exit 1 with no matches, which is the expected
+success condition for that negative scan.
+
+The post-draft covering pass recorded:
+
+- `git diff --check` — exit 0.
+- Required stale-phrase scan — exit 1 with no output/matches.
+- `bash scripts/validation/check-doc-implementation-alignment.sh` — exit 0;
+  `stage_docs_total=621`, `repo_local_markdown_links_checked=4807`,
+  `failures=0`.
+- `bash scripts/validation/check-repo-contracts.sh` — exit 0;
+  `changed_template_docs_total=3`, `normalized_changed_template_docs_total=3`,
+  repository `failures=0`.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — exit 0; fresh.
+- `bash scripts/validation/check-doc-traceability.sh` — exit 0;
+  `catalog_pairs_total=46`, `failures=0`.
+- `bash scripts/operations/sync-provider-surfaces.sh` — exit 0; no drift.
+
+### Commit and Review Evidence
+
+- Task brief: `.superpowers/sdd/task-4-brief.md`.
+- Implementer report: `.superpowers/sdd/task-4-implementer-report.md` (ignored
+  out-of-band evidence; it records the immutable implementation commit after
+  commit creation).
+- Base commit: `505277817eee0de4270bc03ae7fb789ef9d02ad3`.
+- Review handoff range: `505277817eee0de4270bc03ae7fb789ef9d02ad3..HEAD`
+  on the Task 4 implementation branch.
+- Logical subject: `docs(research): refresh QA and automation references`.
+- Implementer spec-compliance self-review: **PASS** — fixed source set,
+  tracked counts/derivation, exact schemas, evidence taxonomy, known-drift
+  corrections, one canonical owner per applicable row, remote uncertainty, and
+  scope boundaries are present.
+- Implementer document-quality self-review: **PASS** — repository evidence,
+  external comparison, blocking behavior, status/gap/recommendation, and
+  caveats are separated and directly sourced.
+- Independent spec-compliance verdict: **Pending**.
+- Independent document-quality verdict: **Pending**.
+
 ## Task Review Evidence Contract
 
 For each task, record:
@@ -624,6 +737,14 @@ Wiki check ran, so its missing generated entries became observable only after
 the first commit made it tracked. Both files were refreshed solely with their
 canonical generators and were not hand-edited. Task 6 may regenerate them again
 after later research-pack changes.
+
+For `T-ARC-004`, no content-scope deviation occurred. The bootstrap progress
+log was not edited because the task brief restricted tracked mutation to the
+three named documentation files; the required implementer report is the
+explicit out-of-band artifact. Graphify was already stale relative to the base
+and remained advisory; no code file changed, and refreshing generated Graphify
+artifacts would have expanded the approved scope. No generated artifact became
+stale under the covering freshness checks.
 
 ## Related Documents
 
