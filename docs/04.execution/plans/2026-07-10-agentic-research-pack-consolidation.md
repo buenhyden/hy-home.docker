@@ -192,7 +192,7 @@ retrieval time and separately decide whether it proves the approved cutoff.
 | PLN-ARC-003 | Consolidate harness, loop, provider, and agent-catalog research | Four canonical research references plus task evidence | VAL-ARC-002, VAL-ARC-005 | Provider capabilities match official sources and current adapters; duplicate valid content exists once. |
 | PLN-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | Two canonical research references plus task evidence | VAL-ARC-002, VAL-ARC-008 | Local/CI/remote boundaries and actual gate names match tracked implementation. |
 | PLN-ARC-005 | Refresh Docker Compose/infrastructure and security governance research | Two canonical research references plus task evidence | VAL-ARC-002, VAL-ARC-008 | Compose/security claims match tracked files and primary guidance; policy conflicts remain advisory gaps. |
-| PLN-ARC-006 | Finalize canonical indexes, supersede duplicate pack, close lifecycle and validation evidence | Pack/index/supersession files, Stage 03/04 status, generated index if needed, progress memory | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | Only one active pack remains; all checks and final reviews pass. |
+| PLN-ARC-006 | Finalize canonical indexes and supersede duplicate pack, then close lifecycle after broad review | Pack/index/supersession files, Stage 03/04 status, generated outputs if needed, progress memory | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | Only one active pack remains; Task 6 review passes; a later closure commit records clean broad review and all final checks. |
 
 ## Task Details
 
@@ -833,18 +833,20 @@ language. In the parent research README:
 - list 2026-07-07 under a `Superseded References` section;
 - explain that readers must use the canonical pack for current facts.
 
-- [ ] **Step 5: Close Stage 03 and Stage 04 lifecycle**
+- [ ] **Step 5: Prepare provisional closure evidence**
 
-After all task reviews and final whole-branch review are clean:
+After Tasks 1-5 reviews are clean and the Task 6 coverage audit passes:
 
-- set Spec 122 `spec.md` and folder README to `status: completed`;
-- change the Stage 03 index description from Active to Completed;
-- set this Plan and its task evidence to `status: completed`;
-- check every Completion Criteria item;
-- mark all task-table and phase-view entries Done;
-- record commit ranges, reviewer verdicts, final checks, source cutoff caveats,
-  and deviations;
-- update the progress entry from In Progress to Done.
+- record Tasks 1-5 commit ranges and task-review verdicts;
+- keep Spec 122, this Plan, and task evidence `status: active`;
+- keep `T-ARC-006` and the final Completion Criteria open;
+- record source cutoff caveats, deviations, generated-output state, and the
+  exact broad-review command that will follow Task 6 review;
+- leave the progress entry In Progress.
+
+Lifecycle completion is intentionally deferred until the post-task broad review
+and closure sequence below. This avoids claiming completion before the review
+that proves it.
 
 - [ ] **Step 6: Regenerate LLM Wiki outputs only when stale**
 
@@ -905,6 +907,48 @@ Expected:
 git add docs/00.agent-governance/memory/progress.md docs/03.specs/122-agentic-research-pack-consolidation docs/03.specs/README.md docs/04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md docs/90.references/research/README.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md docs/90.references/research/2026-07-07-agentic-research-pack-update docs/90.references/llm-wiki/llm-wiki-index.md docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
 git commit -m "docs(research): supersede duplicate research pack"
 ```
+
+- [ ] **Step 10: Run the first whole-branch review**
+
+After the Task 6 task-scoped reviewer approves both spec compliance and document
+quality, generate a review package from the branch merge base through current
+HEAD and dispatch the final whole-branch reviewer.
+
+Expected: no open Critical or Important finding. If findings exist, dispatch
+one fix subagent with the complete finding list, rerun covering checks, and
+repeat the broad review before lifecycle closure.
+
+- [ ] **Step 11: Record closure in a separate logical commit**
+
+After the first whole-branch review is clean, dispatch one closure subagent to:
+
+- set Spec 122 `spec.md` and folder README to `status: completed`;
+- change the Stage 03 index description from Active to Completed;
+- set this Plan and its task evidence to `status: completed`;
+- mark every task-table and phase-view entry Done;
+- check every Completion Criteria item;
+- record all task commit ranges, task-review verdicts, the clean broad-review
+  package/verdict, final validation results, source cutoff caveats, and
+  deviations;
+- update the progress entry from In Progress to Done;
+- run the complete final verification command set.
+
+Commit:
+
+```bash
+git add docs/00.agent-governance/memory/progress.md docs/03.specs/122-agentic-research-pack-consolidation docs/03.specs/README.md docs/04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md
+git commit -m "docs(task): close agentic research consolidation"
+```
+
+- [ ] **Step 12: Re-run the whole-branch review after closure**
+
+Generate a new whole-branch package that includes the closure commit and
+dispatch the final reviewer again. If it returns findings, dispatch one fix
+subagent for the complete list, require covering test evidence, and re-review
+until the branch is clean.
+
+Expected: final reviewer reports the branch ready to merge with no open
+Critical or Important finding.
 
 ## Verification Plan
 
@@ -967,9 +1011,10 @@ git commit -m "docs(research): supersede duplicate research pack"
 - [ ] Completed historical Stage 03/04 and audit evidence remains linked.
 - [ ] No out-of-scope active policy, runtime, CI, provider, model, hook, script,
       secret, remote, or branch-protection change occurred.
-- [ ] Stage 03/04 lifecycle, task evidence, indexes, and progress memory are
-      complete.
-- [ ] Final validation and whole-branch review pass with no open
+- [ ] The first whole-branch review is clean before lifecycle closure.
+- [ ] A separate closure commit completes Stage 03/04 lifecycle, task evidence,
+      indexes, and progress memory.
+- [ ] Final validation and post-closure whole-branch review pass with no open
       Critical/Important finding.
 
 ## Related Documents
