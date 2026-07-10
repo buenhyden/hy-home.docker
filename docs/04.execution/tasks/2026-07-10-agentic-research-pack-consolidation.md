@@ -80,7 +80,7 @@ prove an applicable model cutoff must use `historical state unverified`.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | <https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax> | GitHub / official mutable documentation | A workflow is YAML automation composed of jobs and steps with triggers and permissions. | Not shown | 2026-07-10 | Not applicable (non-model source) | Mutable page; retrieval-time syntax only, not proof of remote enforcement. | T-ARC-001 |
 | <https://csrc.nist.gov/pubs/sp/800/218/final> | NIST / official standard publication page | SSDF v1.1 provides high-level secure-development practices integrable into an SDLC. | 2022-02 | 2026-07-10 | Not applicable (non-model source) | Framework comparison only; no workspace control mapping or adoption. | T-ARC-001 |
-| <https://github.github.com/spec-kit/> | GitHub / official mutable project documentation | Current core flow is Spec → Plan → Tasks → Implement, with each Markdown artifact feeding the next. | Not shown | 2026-07-10 | Not applicable (non-model source) | Mutable tool documentation; no Spec Kit runtime or policy is adopted. | T-ARC-001 |
+| <https://github.github.com/spec-kit/> | GitHub / official mutable project documentation | Current core flow is Spec → Plan → Tasks → Implement, with each Markdown artifact feeding the next. | 2026-05-27 | 2026-07-10 | Not applicable (non-model source) | Page displays “Last updated: May 27, 2026”; mutable retrieval-time content only, and no Spec Kit runtime or policy is adopted. | T-ARC-001 |
 | <https://github.com/github/spec-kit/blob/main/spec-driven.md> | GitHub / official repository document | Specifications provide implementation context and a constitution supplies cross-phase principles. | Not shown | 2026-07-10 | Not applicable (non-model source) | `main` is mutable; retrieval-time content only. | T-ARC-001 |
 | <https://www.iso.org/standard/63712.html> | ISO / official standards metadata | ISO/IEC/IEEE 12207:2017 identifies software lifecycle-process framing. | 2017-11 | 2026-07-10 | Not applicable (non-model source) | Page now marks the edition withdrawn; historical metadata only, not a current normative basis. | T-ARC-001 |
 | <https://www.iso.org/standard/72089.html> | ISO / official standards metadata | ISO/IEC/IEEE 29148:2018 supplies requirements-engineering framing. | 2018-11 | 2026-07-10 | Not applicable (non-model source) | Public metadata/summary is not full standard text; page says the standard is to be revised. | T-ARC-001 |
@@ -138,6 +138,23 @@ recorded:
 - `bash scripts/validation/check-repo-contracts.sh` — exit 0; four changed
   template-mapped docs normalized, repository `failures=0`.
 
+### Review-Fix Validation Evidence
+
+After addressing I-1 through I-3 and M-1, the review-fix cycle reran every
+covering command:
+
+- `git diff --check` — exit 0.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — exit 0; generated
+  index reported fresh.
+- `bash scripts/validation/check-doc-traceability.sh` — exit 0;
+  `catalog_pairs_total=46`, `failures=0`.
+- `bash scripts/validation/check-doc-implementation-alignment.sh` — exit 0;
+  `stage_docs_total=621`, `repo_local_markdown_links_checked=4807`,
+  `failures=0`.
+- `bash scripts/validation/check-repo-contracts.sh` — exit 0;
+  `changed_template_docs_total=3`, `normalized_changed_template_docs_total=3`,
+  repository `failures=0`.
+
 ### Commit and Implementer Review Evidence
 
 - Task brief: `.superpowers/sdd/task-1-brief.md`.
@@ -161,8 +178,14 @@ recorded:
   `./model-selection.md` was fixed to `./agent-model-selection.md`, then the
   repository-contract gate passed. The matching non-link filename was corrected
   during diff review. Remaining Minor findings: none.
-- Independent reviewer verdict: **Pending**. The controller will run the
-  separate review/fix cycle and is the owner of the final `Done` transition.
+- Initial independent review of `6136c57d`: **Spec Compliance: FAIL** and
+  **Document Quality: CHANGES_REQUESTED**. Findings I-1 through I-3 and M-1
+  are addressed in a separate review-fix commit.
+- Independent re-review verdict: **Pending**. The controller will run the
+  re-review and owns the final `Done` transition.
+- Review-fix range: `6136c57da53a6562cf73600d86d7fc1b159b4879..HEAD`
+  evaluated immediately after the review-fix commit; its immutable head hash
+  is recorded in the implementer report.
 
 ## Task Review Evidence Contract
 
