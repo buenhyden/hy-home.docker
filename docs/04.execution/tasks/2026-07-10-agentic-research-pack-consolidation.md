@@ -41,7 +41,7 @@ plan.
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-ARC-001 | Refresh workspace baseline, spec-driven SDLC, document roles, and source evidence | doc | VAL-ARC-002, VAL-ARC-007, VAL-ARC-009 | PLN-ARC-001 | Category/role coverage, validators, commit range, task review | Documentation implementer | Ready for Review |
+| T-ARC-001 | Refresh workspace baseline, spec-driven SDLC, document roles, and source evidence | doc | VAL-ARC-002, VAL-ARC-007, VAL-ARC-009 | PLN-ARC-001 | Category/role coverage, validators, commit range, task review | Documentation implementer | Done |
 | T-ARC-002 | Add cutoff-bound provider model landscape and refresh task selection | doc/eval | VAL-ARC-003, VAL-ARC-004 | PLN-ARC-002 | Model/lifecycle totals, cutoff exceptions, provider sources, validators, task review | Documentation implementer | Todo |
 | T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Todo |
 | T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Todo |
@@ -52,7 +52,7 @@ plan.
 
 ### Phase 1: Workspace and Lifecycle Baseline
 
-- [ ] T-ARC-001 Refresh workspace baseline, SDLC, document roles, and evidence.
+- [x] T-ARC-001 Refresh workspace baseline, SDLC, document roles, and evidence.
 
 ### Phase 2: Provider and Agent Research
 
@@ -98,10 +98,11 @@ prove an applicable model cutoff must use `historical state unverified`.
 
 ### Status and Scope
 
-Status is **Ready for Review**. The implementation is documentation-only; code
-TDD is not applicable. The editable scope was exactly this task record and the
-three canonical Stage 90 references below. Per the task completion contract,
-`T-ARC-001` remains open until the controller records the independent review.
+Status is **Done**. The implementation is documentation-only; code TDD is not
+applicable. The editable scope was exactly this task record and the three
+canonical Stage 90 references below. The controller's final independent review
+returned Spec Compliance **PASS** and Document Quality **APPROVED** for the exact
+reviewed range recorded below.
 
 ### Source and Coverage Inventory
 
@@ -160,11 +161,13 @@ covering command:
 - Task brief: `.superpowers/sdd/task-1-brief.md`.
 - Implementer report: `.superpowers/sdd/task-1-implementer-report.md`.
 - Base commit: `341282da13c2ff4aec5c5415dbdde9efeac5b0dd`.
-- Closure range: `341282da13c2ff4aec5c5415dbdde9efeac5b0dd..HEAD`
-  evaluated immediately after the single Task 1 commit, subject
-  `docs(research): refresh workspace and SDLC references`. The immutable head
-  hash is recorded in the implementer report because a commit cannot contain
-  its own final hash.
+- Initial implementation commit:
+  `6136c57da53a6562cf73600d86d7fc1b159b4879`.
+- Review-fix commits:
+  `96c1c4059c04a1c412a3aea5a7c15eaa8930e98c` and
+  `b60fd1f1c4418c6b6b1e36c81c064fb69b10c7b3`.
+- Final independent review range:
+  `341282da13c2ff4aec5c5415dbdde9efeac5b0dd..b60fd1f1c4418c6b6b1e36c81c064fb69b10c7b3`.
 - Implementer spec-compliance self-review: **PASS** — exact category/document
   table columns,
   25 requested categories, required lifecycle flow, 7 transitions, 19 document
@@ -181,11 +184,13 @@ covering command:
 - Initial independent review of `6136c57d`: **Spec Compliance: FAIL** and
   **Document Quality: CHANGES_REQUESTED**. Findings I-1 through I-3 and M-1
   are addressed in a separate review-fix commit.
-- Independent re-review verdict: **Pending**. The controller will run the
-  re-review and owns the final `Done` transition.
-- Review-fix range: `6136c57da53a6562cf73600d86d7fc1b159b4879..HEAD`
-  evaluated immediately after the review-fix commit; its immutable head hash
-  is recorded in the implementer report.
+- Final independent verdicts: **Spec Compliance: PASS** and
+  **Document Quality: APPROVED**.
+- Final findings: `Critical=0`, `Important=0`, `Minor=0`; all five prior
+  findings (I-1, I-2, I-3, M-1, and M-2) are resolved.
+- Final review report:
+  `.superpowers/sdd/task-1-final-review-report.md` (ignored controller evidence;
+  intentionally not part of the tracked documentation commits).
 
 ## Task Review Evidence Contract
 
