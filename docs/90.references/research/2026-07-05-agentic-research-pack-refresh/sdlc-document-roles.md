@@ -8,243 +8,161 @@ status: active
 
 ## Overview
 
-This reference defines the role and purpose of each document type used across the
-`hy-home.docker` SDLC and operations lifecycle: PRD, ARD, ADR, spec, plan, task,
-guide, policy, runbook, incident, postmortem, and release documentation. For each
-type it records what the document answers, when it is authored, who owns it, its
-repo-local template and stage, and the external practice that anchors it.
-
-The other files in this pack analyze the lifecycle as a flow of stages
-(`spec-driven-sdlc.md`) and the quality gates that protect it
-(`quality-ci-formatting.md`). This file complements them by treating each
-document type as a distinct artifact with its own contract, so authors can answer
-"which document am I writing, and what is it for?" without inferring the answer
-from a stage-to-concern table.
+This reference maps each tracked workspace document type to the question it
+answers, its authoring trigger and owner, its inputs and consumers, its lifecycle
+status, its canonical template/path, and its external or repo-template basis.
+Supporting API, agent, data, and test contracts are separate rows because they
+answer different questions and serve different consumers.
 
 ## Purpose
 
-Give authors and agents a single source-backed map of document-type intent so
-that:
-
-- The right template is selected for the right artifact.
-- Content lands in the artifact that owns it (decisions in ADRs, procedures in
-  runbooks, learning in postmortems) rather than blurring across types.
-- External standards and community practices behind each type are traceable.
+Help authors choose the earliest correct document owner and prevent requirements,
+decisions, technical contracts, execution evidence, operating controls,
+procedures, incidents, learning, releases, references, audits, and archive
+tombstones from being conflated.
 
 ## Repository Role
 
-This reference supports Stage 00 governance and the lifecycle across `docs/01`
-through `docs/05`, `docs/90`, and `docs/99`. It restates and cites the authoring
-intent already fixed by `stage-authoring-matrix.md` and the template READMEs; it
-does not create new requirements, decisions, specifications, plans, or operations
-procedures, and it does not override the matrix. Where this reference and an
-active governance document differ, the governance document wins.
+This Stage 90 reference restates the active stage authoring matrix and template
+catalog. Those tracked governance/template files remain authoritative. External
+sources are comparison bases only and do not become workspace policy through
+this matrix.
 
 ## Scope
 
 ### In Scope
 
-- Role, purpose, authoring timing, and owner for each SDLC and operations
-  document type
-- Repo-local template and target-stage mapping for each type
-- External standard or community practice that anchors each type
-- The gap that release documentation has no dedicated template or stage home
+- Active Stage 01-05 document roles
+- Optional Stage 03 supporting contracts
+- Root release notes plus Stage 90 reference/audit and Stage 98 tombstone roles
+- External or repo-template basis and source caveats
 
 ### Out of Scope
 
-- New PRD, ARD, ADR, spec, plan, task, or operations document authoring
-- Active policy, runbook, incident timeline, or runtime config source of truth
-- Changes to templates or to the stage-authoring matrix
-- Adoption of any external standard as active policy
+- Creating a new document type, stage, template, or release procedure
+- Adopting an external standard, framework, tool, or provider workflow
+- Reclassifying historical artifacts outside the approved task scope
 
 ## Definitions / Facts
 
-- **PRD (Product Requirements Document)**: Captures product need, users,
-  requirements, and success criteria. Repo-local Stage 01, authored by a Product
-  Manager at discovery and scope definition; template `sdlc/prd.template.md`,
-  target `docs/01.requirements/NNN-<feature-or-system>.md`. As a requirements
-  artifact it is anchored by requirements-engineering practice
-  (ISO/IEC/IEEE 29148).
-- **ARD (Architecture Requirements Document)**: Describes system or domain
-  architecture boundaries and quality attributes derived from the PRD.
-  Repo-local Stage 02 (`architecture/requirements`), authored by a System
-  Architect after the PRD baseline; template `sdlc/ard.template.md`. It is an
-  architecture description artifact in the sense standardized by
-  ISO/IEC/IEEE 42010, scoped to the requirements/quality-attribute view rather
-  than full architecture description.
-- **ADR (Architecture Decision Record)**: Records a single architectural
-  decision, its alternatives, and its consequences. Repo-local Stage 02
-  (`architecture/decisions`), authored by a System Architect when a non-trivial
-  trade-off is made; template `sdlc/adr.template.md`. The practice was
-  popularized by Michael Nygard (2011) and is curated at `adr.github.io`.
-- **Spec (Specification)**: Defines the technical design, interfaces, data
-  contracts, and verification criteria for a feature or workspace change.
-  Repo-local Stage 03, authored by an implementing engineer before tasks start;
-  template `sdlc/spec.template.md` plus optional contract templates. Anchored by
-  contract-first / executable-specification practice (OpenAPI, BDD).
-- **Plan (Implementation Plan)**: Sequences approved implementation work with
-  risks, verification commands, and completion criteria. Repo-local Stage 04
-  (`execution/plans`), authored by a Project/Engineering Lead after specs are
-  stable.
-- **Task (Task Evidence)**: Tracks execution state, validation evidence, and
-  gaps during implementation. Repo-local Stage 04 (`execution/tasks`), authored
-  by the Implementation/QA Engineer during work; it is the auditable evidence
-  record, not a plan.
-- **Guide (Operations Guide)**: Explains usage context, common checks, and
-  handoff to runbooks for a service or process. Repo-local Stage 05
-  (`operations/guides`). A guide is oriented to understanding and routine use;
-  it hands off step-by-step recovery to a runbook.
-- **Policy (Operations Policy)**: Defines controls, exceptions, verification,
-  and review cadence. Repo-local Stage 05 (`operations/policies`). A policy
-  states the rules; a runbook states how to execute them.
-- **Runbook**: Provides ordered execution steps, evidence, recovery, and
-  escalation for a specific repeatable operation or incident response.
-  Repo-local Stage 05 (`operations/runbooks`). Industry practice defines a
-  runbook as step-by-step procedures for commonly repeated operations tasks,
-  distinct from a policy (rules) and a broader playbook (multi-runbook response).
-- **Incident (Incident Record)**: Records an active or resolved incident
-  timeline and response state. Repo-local Stage 05
-  (`operations/incidents/YYYY/INC-###-*`). Anchored by NIST SP 800-61 Rev. 3
-  (2025), which reframes incident response as a CSF 2.0 Community Profile
-  superseding the withdrawn Rev. 2 handling guide, and by Google SRE incident
-  management (SRE Book Ch. 14) with its Incident Commander / Ops / Comms roles. It
-  captures what happened and when under a defined command structure, distinct from
-  the postmortem learning artifact.
-- **Postmortem**: Analyzes incident impact, root cause, action items, and
-  prevention. Repo-local Stage 05, co-located with its incident as
-  `postmortem.md`. Google SRE defines a postmortem as a written record of an
-  incident, its impact, mitigation, root cause, and follow-up, produced under a
-  blameless culture; it is a learning tool requiring review, not mere
-  documentation.
-- **Release documentation**: Communicates notable changes per version to
-  humans (release notes / changelog), anchored by Keep a Changelog and Semantic
-  Versioning. Repo-local status: the artifact is the root `CHANGELOG.md`
-  (Keep a Changelog style), the process lives in the Stage 05
-  `release-management.md` runbook (tag readiness, evidence, rollback), and
-  `.github/workflows/generate-changelog.yml` automates changelog generation. The
-  only absent piece is a dedicated `docs/99.templates/` template, which is
-  optional because the changelog follows an external convention.
+- **Primary question** is the one question the artifact owns; related context
+  should link rather than duplicate ownership.
+- **Authoring trigger** is the condition that justifies creating or updating the
+  artifact.
+- **Lifecycle status** describes the repo-local stage role, not the YAML
+  frontmatter value of an individual file.
+- **External basis** can state a repo-template basis when no external source is
+  necessary or adopted for that document role.
+- **Release notes/changelog** communicate changes; the release runbook owns
+  procedure. They are not interchangeable.
+- **Incident** preserves contemporaneous state; **postmortem** preserves reviewed
+  learning and preventive actions.
 
-## Repo-local Document-Type Mapping
+## Canonical Document-Role Matrix
 
-| Document   | Role (answers)                                                | Stage                             | Owner                | Template                            |
-| ---------- | ------------------------------------------------------------- | --------------------------------- | -------------------- | ----------------------------------- |
-| PRD        | What to build and why; users, requirements, success criteria  | 01                                | Product Manager      | `sdlc/prd.template.md`              |
-| ARD        | Architecture boundaries and quality attributes                | 02/requirements                   | System Architect     | `sdlc/ard.template.md`              |
-| ADR        | One architectural decision, its alternatives and consequences | 02/decisions                      | System Architect     | `sdlc/adr.template.md`              |
-| Spec       | Technical design, interfaces, contracts, verification         | 03                                | Impl Engineer        | `sdlc/spec.template.md`             |
-| Plan       | Implementation sequencing, risks, verification, done criteria | 04/plans                          | Project/Eng Lead     | `sdlc/plan.template.md`             |
-| Task       | Execution state and validation evidence                       | 04/tasks                          | Impl/QA Engineer     | `sdlc/task.template.md`             |
-| Guide      | How to use and routinely check a service; runbook handoff     | 05/guides                         | Doc Specialist / SRE | `operations/guide.template.md`      |
-| Policy     | Controls, exceptions, verification, review cadence            | 05/policies                       | Doc Specialist / SRE | `operations/policy.template.md`     |
-| Runbook    | Ordered steps, evidence, recovery, escalation                 | 05/runbooks                       | Operations/SRE       | `operations/runbook.template.md`    |
-| Incident   | Incident timeline and response state                          | 05/incidents                      | Operations/SRE       | `operations/incident.template.md`   |
-| Postmortem | Impact, root cause, action items, prevention                  | 05/incidents                      | Operations/SRE       | `operations/postmortem.template.md` |
-| Release    | Notable changes per version for humans                        | root `CHANGELOG.md` + 05/runbooks | Operations/SRE       | — (no template; optional)           |
+| Document | Primary question | Authoring trigger | Owner | Inputs | Outputs / consumers | Lifecycle status | Workspace template / path | External basis |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| PRD | What problem, users, value, scope, requirements, and success criteria should the workspace address? | New or materially changed stakeholder intent | Product Manager | Stakeholder intent, constraints, verified current state | ARD/ADR, Spec, reviewers | Active Stage 01 requirements | `docs/99.templates/templates/sdlc/prd.template.md` → `docs/01.requirements/NNN-feature-or-system.md` | ISO/IEC/IEEE 29148:2018 requirements-engineering metadata; public page is not full standard text and is marked “to be revised.” |
+| ARD | What architecture boundaries, stakeholders, concerns, and quality attributes constrain the solution? | Stable PRD needs enduring architecture requirements | System Architect | PRD, existing architecture/runtime, quality attributes | ADRs, Specs, architecture reviewers | Active Stage 02 architecture requirements | `sdlc/ard.template.md` → `docs/02.architecture/requirements/NNNN-short-title.md` | ISO/IEC/IEEE 42010:2022 architecture-description metadata; the repo ARD is narrower than a full standard-conforming description. |
+| ADR | Which non-trivial architecture option was chosen, why, and with what consequences? | Architecturally significant trade-off or reversal | System Architect | PRD/ARD, alternatives, constraints, evidence | Specs, plans, future decision reviewers | Active Stage 02 decision record | `sdlc/adr.template.md` → `docs/02.architecture/decisions/NNNN-short-title.md` | ADR homepage definition plus Michael Nygard's 2011-11-15 original practice article. |
+| Spec | What technical design, interfaces, contracts, and verification criteria will be implemented? | PRD/architecture baseline is sufficient for implementation design | Implementing engineer | PRD, ARD, ADRs, current implementation evidence | Supporting contracts, Plan, implementers, QA | Active Stage 03 technical contract | `sdlc/spec.template.md` → `docs/03.specs/NNN-feature-id/spec.md` | GitHub Spec Kit treats the specification as the context anchor that feeds Plan and Tasks; no Spec Kit runtime is adopted. |
+| API Spec | What callable operations, schemas, auth rules, errors, and compatibility contract apply? | A Spec exposes or changes an API/interface | Backend/API owner | Parent Spec, architecture, security and data constraints | Implementers, clients, contract tests | Optional supporting Stage 03 contract | `spec-contracts/api-spec.template.md` → feature `api-spec.md`; machine contracts under `contracts/` | Repo-template basis; no separate external API standard is adopted by this task. |
+| Agent Design | What agent purpose, inputs, outputs, tools, permissions, failure modes, and eval contract apply? | A Spec creates or materially changes agent behavior | Agent/feature owner | Parent Spec, Stage 00 governance, provider constraints | Runtime adapter work, tests/evals, reviewers | Optional supporting Stage 03 contract | `spec-contracts/agent-design.template.md` → feature `agent-design.md` | Repo-template basis; GitHub Spec Kit only supplies comparison for structured agent context, not this provider-neutral contract. |
+| Data Model | What entities, relationships, integrity, storage, privacy, and migration rules apply? | A Spec creates or changes durable data shape | Data/feature owner | Parent Spec, architecture, privacy/security constraints | Implementers, migrations, API contracts, tests | Optional supporting Stage 03 contract | `spec-contracts/data-model.template.md` → feature `data-model.md` | Repo-template basis; no external data-model standard is adopted by this task. |
+| Test Contract | What must be verified, with which fixtures, expected results, non-functional checks, and evals? | A Spec needs executable acceptance/verification detail | QA/feature owner | Parent Spec, API/agent/data contracts, risks | Plan, Task, CI, reviewers | Optional supporting Stage 03 contract | `spec-contracts/tests.template.md` → feature `tests.md` | Repo-template basis; Spec Kit quality checklists and NIST SSDF verification practices are comparison lenses only. |
+| Plan | In what sequence will the approved Spec be implemented, controlled, verified, and completed? | Spec and supporting contracts are stable enough to schedule work | Project/Engineering Lead | PRD/ARD/ADR/Spec, dependencies, risks | Tasks, implementers, reviewers | Active Stage 04 execution plan | `sdlc/plan.template.md` → `docs/04.execution/plans/` | GitHub Spec Kit has a distinct Plan phase feeding Tasks; ISO 12207:2017 supplies withdrawn historical lifecycle metadata only. |
+| Task | What was attempted, changed, validated, reviewed, committed, deferred, or blocked? | Approved plan work begins | Implementation/QA Engineer | Plan, Spec, task brief, baseline evidence | Reviewers, operations, release, audit trail | Active Stage 04 execution evidence | `sdlc/task.template.md` → `docs/04.execution/tasks/` | GitHub Spec Kit separates Tasks and Implement; the repo task additionally owns auditable execution evidence. |
+| Guide | How should a person understand, use, and routinely check the service/process, and where do procedures live? | User/operator-facing usage or onboarding changes | Documentation Specialist / Operations/SRE | Spec, task evidence, actual behavior | Users/operators; policy/runbook handoff | Active Stage 05 operations guidance | `operations/guide.template.md` → `docs/05.operations/guides/` | Repo-template basis; external runbook sources do not replace a usage guide. |
+| Policy | Which operational controls are required or prohibited, how are exceptions handled, and how is compliance reviewed? | An approved operational control or exception changes | Documentation Specialist / Operations/SRE, with policy approver | Requirements, architecture, security/compliance constraints, task evidence | Guides, runbooks, audits, operators | Active Stage 05 operating control | `operations/policy.template.md` → `docs/05.operations/policies/` | Repo-template basis; NIST SSDF is high-level comparison and is not adopted policy. |
+| Runbook | What ordered, repeatable steps, evidence, recovery, rollback, and escalation execute an operation? | Repeatable operation, recovery, or incident response needs a procedure | Operations/SRE | Policy, Guide, Spec, task/incident evidence | Operators, incident responders, audits | Active Stage 05 operational procedure | `operations/runbook.template.md` → `docs/05.operations/runbooks/` | PagerDuty defines a runbook as a detailed how-to for a repeated operations task; the page is mutable vendor guidance with no visible update date. |
+| Incident | What happened, when, with what impact/current state, command roles, actions, and handoffs? | A qualifying operational/security event begins | Operations/SRE or Security incident owner | Alerts, observations, commands, communications | Responders, stakeholders, Postmortem | Active/resolved Stage 05 incident record | `operations/incident.template.md` → `docs/05.operations/incidents/YYYY/INC-###-title/` | Google SRE incident command/live-state practice; NIST SP 800-61 Rev. 3 (April 2025) CSF 2.0 incident-response profile. |
+| Postmortem | Why did the incident occur, what was learned, and which owned actions prevent recurrence? | Incident is stabilized and meets postmortem criteria | Operations/SRE with contributing owners/reviewers | Incident timeline, impact, mitigation, evidence | Requirements/architecture/spec/plan/runbook improvements | Stage 05 reviewed learning artifact | `operations/postmortem.template.md` → incident-folder `postmortem.md` | Google SRE defines a reviewed, blameless record of impact, mitigation, root causes, and preventive actions. |
+| Release notes/changelog | What notable user/operator-facing changes are in a version? | A release/tag has notable changes to communicate | Release owner / Operations/SRE | Completed tasks, version, compatibility/upgrade notes | Users, operators, future release review | Root release communication plus Stage 05 release procedure | Root `CHANGELOG.md`; procedure at `docs/05.operations/runbooks/00-workspace/release-management.md` | Keep a Changelog 1.1.0 (2019-02-15 convention page) and Semantic Versioning 2.0.0; neither defines repo release approval. |
+| Reference | What stable, source-backed context helps active work without owning decisions or procedures? | Durable facts, inventory, glossary, or research context is needed | Documentation maintainer / subject owner | Primary sources and tracked current evidence | Active stages, authors, reviewers | Supporting Stage 90 context | `common/reference.template.md` → `docs/90.references/` | Repo-template basis; external sources support each reference's facts but do not make the reference policy. |
+| Audit | What was inspected, against which criteria, with what evidence, findings, severity, and disposition? | A bounded current-state/compliance review is authorized | Auditor / subject reviewer | Scope, criteria, tracked evidence, approved external benchmarks | Canonical gap owners, Specs/Plans/Tasks | Supporting Stage 90 evidence snapshot | `common/audit.template.md` → `docs/90.references/audits/` | Repo-template basis; any external benchmark must be named and remains comparison unless adopted elsewhere. |
+| Archive tombstone | What active document was removed, why, and what current replacement should be followed? | A whole document conflicts with current implementation and must leave the active chain | Documentation Specialist / Agentic Workflow Specialist | Original path/status, archive reason, replacement | Maintainers and migration audit trail; active docs must not link back | Stage 98 tombstone; `status: archived` only | `common/archive.template.md` → `docs/98.archive/original-stage/original-path.md` | Repo-template basis; a tombstone preserves migration traceability, not historical current truth. |
 
 ## Analysis
 
-The repository's document types cluster into three intents. Intent-and-design
-types (PRD, ARD, ADR, spec) fix what to build and how before code exists.
-Execution types (plan, task) sequence the work and hold the evidence that it was
-done and verified. Operations types (guide, policy, runbook, incident,
-postmortem) govern and sustain the running system. This mirrors the external
-lifecycle: requirements engineering feeds architecture description and decisions,
-which feed specification and contract-first design, which feed implementation and
-then operations and incident learning.
+The 19 rows form five ownership bands:
 
-Two boundaries are worth stating explicitly because they are the most common
-places content lands in the wrong artifact:
+1. PRD, ARD, and ADR own intent and architecture rationale.
+2. Spec plus API, agent, data, and test contracts own implementable technical
+   and verification contracts.
+3. Plan and Task separate intended sequencing from actual execution evidence.
+4. Guide, Policy, Runbook, Incident, Postmortem, and Release separate use,
+   controls, procedure, live state, learning, and communication.
+5. Reference, Audit, and Archive tombstone preserve supporting context,
+   bounded findings, and migration traceability without becoming active truth.
 
-- **Decision vs. specification.** An ADR captures why a path was chosen and what
-  it costs; a spec captures the resulting design. Rationale that drifts into a
-  spec, or design that drifts into an ADR, breaks traceability.
-- **Incident vs. postmortem.** The incident record is the contemporaneous
-  timeline and state; the postmortem is the after-the-fact, blameless analysis
-  and prevention plan. Google SRE treats them as separate artifacts for exactly
-  this reason, and the repo co-locates them under one incident folder while
-  keeping them as distinct files.
-
-Guide, policy, and runbook form a deliberate triad: the policy sets the rules,
-the guide explains routine use and hands off to procedures, and the runbook
-carries the ordered recovery and escalation steps. Industry runbook practice
-draws the same policy-versus-runbook line the repo templates already encode.
-
-Release documentation does have a repo-local home, spread across three existing
-mechanisms rather than a single doc type: the root `CHANGELOG.md` holds the
-human-readable release notes, the Stage 05 `release-management.md` runbook governs
-tag readiness and evidence, and `generate-changelog.yml` automates changelog
-generation. What it lacks is only a `docs/99.templates/` template; because the
-changelog follows the external Keep a Changelog / Semantic Versioning convention,
-a template is an optional refinement, not a missing artifact. Introducing a new
-release document type would duplicate these homes rather than fill a gap.
+Three boundaries are especially important. An ADR records why; a Spec records
+what design results. A Policy states controls; a Runbook executes procedures.
+An Incident records current chronology/state; a Postmortem is reviewed learning.
+Crossing any of these boundaries weakens ownership and makes validation evidence
+harder to interpret.
 
 ## Application Notes for This Workspace
 
-- Select the document type first, then load its template from `docs/99.templates/`
-  before authoring; the stage-authoring matrix row is the binding contract.
-- Keep decision rationale in ADRs, technical design in specs, contemporaneous
-  timeline in incident records, and blameless analysis in postmortems.
-- Treat a guide as usage-and-handoff and a runbook as ordered recovery; do not
-  merge them.
-- Record release notes in the root `CHANGELOG.md` and drive the release through
-  the Stage 05 `release-management.md` runbook; do not invent a separate release
-  document type.
+- Choose the document by its primary question, then load its mapped template.
+- Route a new gap to the earliest owner and link downstream consumers.
+- Keep optional supporting contracts separate when their interface, agent, data,
+  or test question is material.
+- Put notable release communication in `CHANGELOG.md` and procedure in the
+  release runbook.
+- Keep Stage 90 references/audits advisory and Stage 98 tombstones out of the
+  active link chain.
 
 ## Potential Follow-up / Gap
 
-- **Release documentation has a home but no template.** Release is already
-  handled by the root `CHANGELOG.md`, the Stage 05 `release-management.md`
-  runbook, and `generate-changelog.yml`. Adding an optional changelog template
-  under `docs/99.templates/` mapped to those homes is a minor refinement, not a
-  missing artifact; a new release document type is not warranted.
-- Mapping incident and postmortem practice to a formal framework (NIST SP 800-61
-  Rev. 3, which superseded the withdrawn Rev. 2, or SRE incident management)
-  would require a separate approved policy or spec.
-- The ARD-to-42010 relationship is partial: the repo ARD is scoped to
-  architecture requirements and quality attributes, not a full 42010 architecture
-  description. Any move toward fuller architecture-description conformance would
-  be a separate decision.
+- Release notes have a tracked home and convention but no dedicated workspace
+  template; any template addition requires separately approved Stage 99 work.
+- Formal ISO/NIST conformance or control mapping requires an approved policy,
+  specification, and task rather than a Stage 90 role description.
+- Optional supporting-contract adoption should remain feature-driven; a template
+  does not prove that every feature needs every support file.
 
 ## Source Rules
 
-- Repo-local role, stage, owner, and template facts are taken from
-  `stage-authoring-matrix.md` and the template READMEs, not inferred.
-- External standard pages provide framing only; public metadata is not full
-  access to the standard text.
-- Re-check product-documentation and SRE sources before using them for current
-  decisions, and prefer the current revision (for example NIST SP 800-61 Rev. 3
-  over the withdrawn Rev. 2).
+- Repo-local roles come from the tracked stage matrix, documentation protocol,
+  and template catalog.
+- External sources were retrieved on `2026-07-10`; mutable pages without a
+  displayed update date prove retrieval-time content only.
+- ISO pages provide metadata and summaries rather than full standards.
+- ISO/IEC/IEEE 12207:2017 is withdrawn and is not a current normative basis.
+- External sources remain comparisons; repo-template bases are labeled explicitly.
 
 ## Sources
 
-- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - repo-local per-stage purpose, timing, persona, template, done criteria
-- [SDLC templates README](../../../99.templates/templates/sdlc/README.md) - repo-local PRD/ARD/ADR/spec/plan/task template intent and targets
-- [Operations templates README](../../../99.templates/templates/operations/README.md) - repo-local guide/policy/runbook/incident/postmortem template intent and targets
-- [ADR homepage (adr.github.io)](https://adr.github.io/) - ADR definition and curated practice
-- [Michael Nygard: Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) - origin of the ADR practice
-- [ISO/IEC/IEEE 42010:2022](https://www.iso.org/standard/74393.html) - architecture description standard metadata
-- [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) - requirements engineering standard metadata
-- [Google SRE Book: Managing Incidents](https://sre.google/sre-book/managing-incidents/) - incident-management roles and command structure
-- [Google SRE Book: Postmortem Culture](https://sre.google/sre-book/postmortem-culture/) - postmortem definition, triggers, blameless culture
-- [NIST SP 800-61 Rev. 3 (final, 2025)](https://csrc.nist.gov/pubs/sp/800/61/r3/final) - incident response recommendations as a CSF 2.0 Community Profile, superseding the withdrawn Rev. 2
-- [PagerDuty: What is a runbook](https://www.pagerduty.com/resources/learn/what-is-a-runbook/) - runbook definition and runbook-vs-policy distinction
-- [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) - release-notes/changelog convention
-- [Semantic Versioning](https://semver.org/) - version-signal convention for releases
+- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - stage purpose, timing, owner, inputs, outputs, and templates
+- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - type-to-template and gap-routing contracts
+- [SDLC templates](../../../99.templates/templates/sdlc/README.md) - PRD through Task template intent
+- [Supporting contract templates](../../../99.templates/templates/spec-contracts/README.md) - API, agent, data, and test roles
+- [Operations templates](../../../99.templates/templates/operations/README.md) - Guide through Postmortem roles
+- [Common templates](../../../99.templates/templates/common/README.md) - Reference, Audit, and Archive roles
+- [GitHub Spec Kit documentation](https://github.github.com/spec-kit/) - Spec → Plan → Tasks → Implement artifacts
+- [ISO/IEC/IEEE 12207:2017](https://www.iso.org/standard/63712.html) - withdrawn lifecycle-process metadata
+- [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) - requirements-engineering metadata
+- [ISO/IEC/IEEE 42010:2022](https://www.iso.org/standard/74393.html) - architecture-description metadata
+- [ADR homepage](https://adr.github.io/) - single-decision record definition
+- [Michael Nygard: Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) - original ADR practice
+- [Google SRE incident management](https://sre.google/sre-book/managing-incidents/) - incident roles and state document
+- [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/) - blameless reviewed learning
+- [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final) - incident-response CSF profile
+- [PagerDuty runbook overview](https://www.pagerduty.com/resources/learn/what-is-a-runbook/) - repeatable operations procedure
+- [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) - changelog convention
+- [Semantic Versioning 2.0.0](https://semver.org/) - version signal convention
 
 ## Maintenance
 
 - **Owner**: Documentation maintainers
-- **Review Cadence**: Review when the stage-authoring matrix, templates, or
-  document taxonomy change
-- **Update Trigger**: Update when a document type is added or removed, or when a
-  template target or owner changes
+- **Review Cadence**: Review when the stage matrix, templates, or cited role sources change
+- **Update Trigger**: Update when a document role, canonical owner, path, or lifecycle status changes
 
 ## Related Documents
 
 - [research pack index](./README.md)
+- [workspace baseline](./workspace-baseline.md)
 - [spec-driven development and SDLC](./spec-driven-sdlc.md)
-- [quality, CI, and formatting](./quality-ci-formatting.md)
 - [release management runbook](../../../05.operations/runbooks/00-workspace/release-management.md)
 - [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
