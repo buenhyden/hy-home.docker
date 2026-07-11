@@ -3813,6 +3813,115 @@ elif ! grep -q 'generated security automation readiness snapshot is fresh' /tmp/
 fi
 rm -f /tmp/check-repo-contracts-security-readiness.txt
 
+section "Controlled agent pre-commit wrapper contract"
+wrapper_script="scripts/validation/run-agent-precommit-all-files.sh"
+wrapper_tests="tests/validation/test_run_agent_precommit_all_files.sh"
+[[ -x "$wrapper_script" ]] || fail "controlled agent pre-commit wrapper is missing or not executable: $wrapper_script"
+[[ -x "$wrapper_tests" ]] || fail "controlled agent pre-commit wrapper tests are missing or not executable: $wrapper_tests"
+if [[ -x "$wrapper_script" && -x "$wrapper_tests" ]]; then
+  if ! bash -n "$wrapper_script" "$wrapper_tests"; then
+    fail "controlled agent pre-commit wrapper or tests failed Bash syntax validation"
+  fi
+  wrapper_test_output="$(mktemp "${TMPDIR:-/tmp}/check-repo-contracts-agent-precommit.XXXXXX")"
+  if ! bash "$wrapper_tests" >"$wrapper_test_output" 2>&1; then
+    fail "controlled agent pre-commit wrapper tests failed"
+    cat "$wrapper_test_output" >&2
+  elif ! grep -q 'passed=17 failed=0' "$wrapper_test_output"; then
+    fail "controlled agent pre-commit wrapper tests did not print the expected pass marker"
+    cat "$wrapper_test_output" >&2
+  fi
+  rm -f "$wrapper_test_output"
+fi
+
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import sys
+
+wrapper = pathlib.Path("scripts/validation/run-agent-precommit-all-files.sh")
+required_wrapper_fragments = [
+    "pre-commit run --all-files --show-diff-on-failure",
+    "git rev-parse --absolute-git-dir",
+    "git rev-parse --path-format=absolute --git-common-dir",
+    "git status --porcelain=v1 -z --untracked-files=all",
+    "EXIT_UNEXPECTED_PATHS=20",
+]
+
+required_surface_fragments = {
+    pathlib.Path("scripts/README.md"): [
+        "scripts/validation/run-agent-precommit-all-files.sh",
+        "Direct all-files execution is prohibited",
+        "never writes task evidence",
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/environment-constraints.md"): [
+        "Direct `pre-commit run` execution by agents is prohibited",
+        "scripts/validation/run-agent-precommit-all-files.sh",
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/postflight-checklist.md"): [
+        "Direct `pre-commit run` was not used",
+        "Controlled wrapper reports exit 20",
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/task-checklists.md"): [
+        "Never run `pre-commit run` directly",
+        "scripts/validation/run-agent-precommit-all-files.sh",
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/github-governance.md"): [
+        "must not invoke `pre-commit run` directly",
+        "scripts/validation/run-agent-precommit-all-files.sh",
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/workflows.md"): [
+        "run all-files pre-commit only through",
+        "scripts/validation/run-agent-precommit-all-files.sh",
+    ],
+    pathlib.Path("docs/00.agent-governance/scopes/common.md"): [
+        "direct `pre-commit run`",
+        "scripts/validation/run-agent-precommit-all-files.sh",
+    ],
+    pathlib.Path("docs/00.agent-governance/scopes/qa.md"): [
+        "must not invoke `pre-commit run` directly",
+        "scripts/validation/run-agent-precommit-all-files.sh",
+        "unexpected-path exit",
+    ],
+    pathlib.Path("docs/99.templates/templates/sdlc/task.template.md"): [
+        "## Controlled Agent Pre-commit Evidence (If Applicable)",
+        "| Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |",
+        "The wrapper never writes this evidence automatically",
+    ],
+}
+
+forbidden_ambiguous_fragments = [
+    "do not run `pre-commit` manually",
+    "hooks will pass (never run manually)",
+    "`pre-commit` for formatting/linting",
+]
+
+failures: list[str] = []
+wrapper_text = wrapper.read_text(encoding="utf-8") if wrapper.is_file() else ""
+for fragment in required_wrapper_fragments:
+    if fragment not in wrapper_text:
+        failures.append(f"{wrapper}: missing controlled-wrapper fragment: {fragment}")
+
+for path, fragments in required_surface_fragments.items():
+    if not path.is_file():
+        failures.append(f"missing controlled-wrapper contract surface: {path}")
+        continue
+    text = path.read_text(encoding="utf-8")
+    for fragment in fragments:
+        if fragment not in text:
+            failures.append(f"{path}: missing controlled-wrapper contract fragment: {fragment}")
+    for fragment in forbidden_ambiguous_fragments:
+        if fragment in text:
+            failures.append(f"{path}: retains ambiguous direct-agent pre-commit instruction: {fragment}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
 section "Script reference integrity"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -4003,6 +4112,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/report-audit-pack-coverage.sh"),
     pathlib.Path("scripts/validation/report-provider-hook-parity.sh"),
     pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"),
+    pathlib.Path("scripts/validation/run-agent-precommit-all-files.sh"),
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),

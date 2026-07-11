@@ -98,6 +98,18 @@ adapters. Delete the section when no such surface is in scope.
 - **Eval Commands**:
 - **Logs / Evidence Location**:
 
+## Controlled Agent Pre-commit Evidence (If Applicable)
+
+Use only for an approved final QA all-files gate. Direct `pre-commit run` is
+prohibited for agents; invoke
+`scripts/validation/run-agent-precommit-all-files.sh` from an initially clean
+linked worktree. The wrapper never writes this evidence automatically. Delete
+this section when the gate is not applicable.
+
+| Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |
+| --- | --- | ---: | --- | --- | --- |
+| [exact wrapper command] | [repo-relative prefixes] | [exit code] | [before/after/new/unexpected paths] | [accepted, separate commit, scope escalation, or blocked] | [reason, or N/A when executed] |
+
 ## Related Documents
 
 - **Parent Spec**: [Feature spec](../../03.specs/NNN-<feature-id>/spec.md)

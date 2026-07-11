@@ -61,7 +61,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 
 | Purpose    | Canonical paths                                                                                                                                                                                                                                                                                                                                                                                                    |
 | :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/validate-harness.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-document-metadata.py`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `scripts/validation/recommend-gap-routing.sh`, `scripts/validation/recommend-qa-gates.sh`, `scripts/validation/report-audit-pack-coverage.sh`, `scripts/validation/report-provider-hook-parity.sh`, `scripts/validation/run-agent-output-eval-fixtures.sh`, `scripts/validation/run-local-qa-gates.sh` |
+| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/validate-harness.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-document-metadata.py`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `scripts/validation/recommend-gap-routing.sh`, `scripts/validation/recommend-qa-gates.sh`, `scripts/validation/report-audit-pack-coverage.sh`, `scripts/validation/report-provider-hook-parity.sh`, `scripts/validation/run-agent-output-eval-fixtures.sh`, `scripts/validation/run-agent-precommit-all-files.sh`, `scripts/validation/run-local-qa-gates.sh` |
 | Hardening  | `scripts/hardening/check-all-hardening.sh`                                                                                                                                                                                                                                                                                                                                                                         |
 | Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/patch-graphify-post-commit.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                          |
 | Knowledge  | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/generate-llm-wiki-coverage.sh`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                      |
@@ -114,6 +114,7 @@ script.
 | Audit Pack Coverage Report             | [report-audit-pack-coverage.sh](./validation/report-audit-pack-coverage.sh)                 | Report and check implementation-status coverage for the agentic engineering audit pack without mutating audit reports                                                                                            |
 | Provider Hook Parity Report            | [report-provider-hook-parity.sh](./validation/report-provider-hook-parity.sh)               | Generate and check the Stage 90 provider hook parity matrix and Gemini behavioral reminder checklist from tracked provider/governance surfaces                                                                  |
 | Agent Output Eval Fixture Runner       | [run-agent-output-eval-fixtures.sh](./validation/run-agent-output-eval-fixtures.sh)         | List, check, and locally score advisory agent-output eval fixtures without model calls, CI gates, or runtime mutation                                                                                           |
+| Controlled Agent Pre-commit Wrapper    | [run-agent-precommit-all-files.sh](./validation/run-agent-precommit-all-files.sh)           | Run the configured all-files hook suite only at an approved final QA gate in a clean linked worktree, with tracked task evidence and explicit allowed path prefixes                                             |
 | Documentation Implementation Alignment | [check-doc-implementation-alignment.sh](./validation/check-doc-implementation-alignment.sh) | Validate active Stage 01-05 docs against tracked implementation surfaces, removed template names, archive index-only links, operations service coverage, scripts, and workflow paths                            |
 | Documentation Traceability Check       | [check-doc-traceability.sh](./validation/check-doc-traceability.sh)                         | Enforce sync links across 04.execution/plans ↔ 05.operations                                                                                                                                                    |
 | Local QA Gate Runner                   | [run-local-qa-gates.sh](./validation/run-local-qa-gates.sh)                                 | Run locally reproducible script-backed QA/CI gates and list remote-only CI responsibilities                                                                                                                     |
@@ -217,6 +218,19 @@ selected paths. The report exposes deterministic semantic states for every
 Task 4 inventory field and normalizes YAML/configuration defects without raw
 tracebacks or unsafe metadata values.
 
+`scripts/validation/run-agent-precommit-all-files.sh` is the only approved
+agent entrypoint for `pre-commit run --all-files`. Use it only at the approved
+final QA gate, from an initially clean linked worktree, with one tracked
+`docs/04.execution/tasks/` path and one or more narrow repository-relative
+`--allow-prefix` values. Direct all-files execution is prohibited. The wrapper
+captures hook output in ephemeral files, reports only the command, prefixes,
+hook exit, before/after/newly changed paths, and unexpected paths.
+The wrapper never writes task evidence. Exit `20` means a hook changed a newly
+observed path
+outside every prefix; otherwise the wrapper returns the hook's exit status.
+Review and record hook-managed edits separately. Never use reset, checkout, or
+clean to conceal an unexpected result.
+
 `scripts/validation/report-audit-pack-coverage.sh` reads the agentic engineering
 implementation audit pack through the shared contract and prints exact
 criterion coverage by report and prefix, normalized/raw status, and overview
@@ -311,6 +325,12 @@ bash scripts/validation/report-provider-hook-parity.sh --check
 # List and check local advisory agent-output eval fixtures
 bash scripts/validation/run-agent-output-eval-fixtures.sh --list
 bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
+
+# Approved final QA only; prefixes must match the task's reviewed scope
+bash scripts/validation/run-agent-precommit-all-files.sh \
+  --task docs/04.execution/tasks/YYYY-MM-DD-feature.md \
+  --allow-prefix docs/ \
+  --allow-prefix scripts/
 
 # Recommend canonical-stage routing for a gap description
 ./scripts/validation/recommend-gap-routing.sh --text "runbook recovery procedure is missing rollback evidence"

@@ -51,7 +51,13 @@ Repo-local stricter rules always override this document; never weaken them on th
 ## 5. Execution Boundary (Local vs Remote)
 
 - **Anti-Duplication**: Do not execute heavy workloads (e.g., Zizmor, Storybook ESLint) redundantly across both local `pre-commit` and dedicated GitHub Action jobs.
-- **Local Responsibility**: Fail-fast static analysis (formatting, simple linting, pre-push contract scripts, and `scripts/validation/run-local-qa-gates.sh` for locally reproducible script-backed QA/CI gates).
+- **Local Responsibility**: Fail-fast static analysis (formatting, simple
+  linting, pre-push contract scripts, and
+  `scripts/validation/run-local-qa-gates.sh` for locally reproducible
+  script-backed QA/CI gates). Agents must not invoke `pre-commit run` directly.
+  An approved final QA all-files run uses only
+  `scripts/validation/run-agent-precommit-all-files.sh` in an initially clean
+  linked worktree with Stage 04 evidence and minimal allowed prefixes.
 - **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
 - **Implementation**: If a tool requires a dedicated CI job (e.g., for SARIF uploads), it must be removed from the local `.pre-commit-config.yaml` or skipped in the CI `pre-commit` runner via the `SKIP` environment variable.
 

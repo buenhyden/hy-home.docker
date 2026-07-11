@@ -62,7 +62,7 @@ and `docs/99`.
 | Systematic debugging               | Establish root cause before fixes; incidents and recurring failures use Stage 05 incident/postmortem paths where applicable.                                                                                                           |
 | Verification before completion     | Completion claims require command output, manual evidence, or explicit skipped-check rationale.                                                                                                                                        |
 | Requesting / receiving code review | Request review only after self-review and local checks pass; resolve or reply to each finding, re-run affected checks, and record incorporated changes before re-requesting. Follow the `rules/git-workflow.md` Pull Request Protocol. |
-| Finishing a branch                 | Follow `rules/github-governance.md` and `rules/git-workflow.md`: verify, inspect diff/status, stage scoped files only, and commit/PR by approval.                                                                                      |
+| Finishing a branch                 | Follow `rules/github-governance.md` and `rules/git-workflow.md`: verify, inspect diff/status, stage scoped files only, and commit/PR by approval. When approved, run all-files pre-commit only through `scripts/validation/run-agent-precommit-all-files.sh` in a clean linked worktree and record its evidence manually. |
 
 HADS is mandatory only for the approved `docs/90.references/data/hads/` reference
 profile. It may guide AI-readable documentation elsewhere, but existing

@@ -599,6 +599,62 @@ zero violations, the approved chain at 30 IDs / 31 edges / zero errors, Wiki and
 audit freshness, traceability/alignment with `failures=0`, repository contracts
 with `failures=0`, diff hygiene, and the Graphify refresh above.
 
+### T-AER-009 Controlled Agent Pre-commit Wrapper Evidence
+
+Task 9 is **In Review** at implementation baseline `dce3ea60`. The task
+registry remains `Todo` and the Phase 4 checkbox remains unchecked until
+independent Spec-compliance and quality/security review approve the change.
+
+The Senior `qa-engineer` role implemented the approved wrapper without a model
+selector; the collaboration runtime owns concrete model selection. No provider
+or model policy changed. Tests create temporary Git repositories and linked
+worktrees and place a fake `pre-commit` on `PATH`; neither the tests nor this
+task invoke the repository's real hooks.
+
+| Evidence family | Result | Interpretation |
+| --- | --- | --- |
+| Test-first RED | The shell suite exited `1` because `scripts/validation/run-agent-precommit-all-files.sh` did not exist. | Establishes that the focused suite exercised the missing controlled-wrapper capability. |
+| Focused GREEN | 17/17 fake-hook shell cases pass. | Covers missing/non-task/untracked task paths, primary rejection, linked acceptance, missing tool, absolute/traversing/empty prefixes, dirty start, exact command, hook exit propagation, expected edits, unexpected modified/untracked/renamed/deleted paths, prefix boundaries, NUL-safe control-character paths, cleanup, and redacted summaries. |
+| Isolation and snapshot | The wrapper compares absolute Git directory and common directory, requires a clean start, and parses `git status --porcelain=v1 -z --untracked-files=all` into sorted NUL-delimited before/after/new path sets. | Pre-existing dirty paths cannot mask hook mutations; rename source and destination paths are both reviewed. |
+| Exit contract | Input/worktree/task/dirty failures use `2`/`3`/`4`/`5`, missing `pre-commit` uses `127`, unexpected paths use distinct exit `20`, and all other results preserve the hook exit. | Unexpected paths take precedence while the summary retains the actual hook exit for review. |
+| Governance contract | Stage 00 QA/common/workflow/GitHub/environment/postflight/checklist rules and the Stage 99 task template prohibit direct agent execution and require the wrapper only at the approved final QA gate. | Task evidence remains human-reviewed and records command, prefixes, exit, paths, disposition, or skipped rationale; the wrapper never writes it. |
+
+The wrapper runs exactly `pre-commit run --all-files --show-diff-on-failure`,
+captures hook output only in a trapped temporary file, and emits a concise
+command/prefix/result/path summary. Every newly changed path must equal an
+allowed prefix or be its descendant. Unexpected changes remain visible; the
+wrapper never resets, checks out, cleans, deletes repository paths, expands
+scope, or writes task evidence.
+
+| Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |
+| --- | --- | ---: | --- | --- | --- |
+| Full-repository wrapper not executed in Task 9 | N/A | N/A | N/A | Reserved for Task 12 after Task 9 review | Task 9 uses temporary repositories and a fake hook only; direct or real all-files execution remains prohibited. |
+
+- **Task 9 implementation validation**:
+  - required RED — expected exit `1` for the absent wrapper
+  - focused fake-hook shell suite — PASS, 17/17
+  - Bash syntax for wrapper, shell tests, and repository contracts — PASS
+  - ShellCheck for wrapper and shell tests — PASS with no findings
+  - full validation unittest discovery — PASS, 70/70
+  - changed-document metadata gate from explicit base `dce3ea60` — PASS,
+    zero violations
+  - LLM Wiki index/coverage freshness — PASS
+  - document traceability and implementation alignment — PASS with
+    `failures=0`
+  - repository contracts — PASS with the executable script/test inventory,
+    fake-hook suite, exact wrapper literals, governance/template fields, and
+    ambiguous direct-agent wording checks; `failures=0`
+  - Graphify refresh — PASS, 1,081 files / 21,988 nodes / 22,443 edges /
+    1,488 communities; built from committed implementation base `dce3ea60`
+    while extraction includes the Task 9 working tree, and advisory only for
+    two corroborated cross-root inferred edges
+  - real/full-repository pre-commit — not run; Task 12 retains ownership
+
+Scope is limited to the approved wrapper/test, script inventory/contract,
+Stage 00/99 governance/template surfaces, task/progress evidence, and generated
+Graphify refresh. There is no Task 10+ provider, CI workflow, model, runtime,
+Compose, secret, remote, or branch-protection mutation.
+
 ### Task Review Ledger
 
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |

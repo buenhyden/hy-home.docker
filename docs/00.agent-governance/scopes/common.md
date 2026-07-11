@@ -20,7 +20,10 @@ title: 'Common Engineering Scope'
   - Classes/Types: `PascalCase`
   - Constants: `SCREAMING_SNAKE_CASE`
   - Files: `kebab-case.ext`
-- **Formatting**: Follow repository-configured lint/format behavior mediated by `.pre-commit-config.yaml`; do not rely on ad hoc manual commands.
+- **Formatting**: Follow repository-configured lint/format behavior mediated by
+  `.pre-commit-config.yaml`; direct `pre-commit run` and ad hoc formatter
+  commands are prohibited for agents. The approved final QA all-files gate uses
+  only `scripts/validation/run-agent-precommit-all-files.sh`.
 
 ## 3. Implementation Flow
 
@@ -30,9 +33,12 @@ title: 'Common Engineering Scope'
 
 ## 4. Operational Procedures
 
-- **Linting and Formatting**: All lint and format checks are managed by `.pre-commit-config.yaml` — never invoke them manually.
-  Hooks run automatically on commit. Agents must not run `npm run lint`, `npm run format`, or equivalent commands directly.
-  See the Verification section in `AGENTS.md` for the authoritative statement.
+- **Linting and Formatting**: Hooks run automatically on commit. Agents must not
+  run `pre-commit run`, `npm run lint`, `npm run format`, or equivalent commands
+  directly. At an approved final QA gate, the controlled wrapper may run the
+  configured all-files suite from an initially clean linked worktree with a
+  tracked task and reviewed prefixes; its edits require explicit review and
+  manual task evidence.
 
 ## 5. Maintenance & Safety
 
@@ -45,7 +51,7 @@ title: 'Common Engineering Scope'
 | ---------------------------- | --------------- | ------------------------------ |
 | `common/`, `lib/`, `shared/` | `code-reviewer` | read; changes by layer agent   |
 | `docs/03.specs/`             | `code-reviewer` | `infra-implementer` (read)     |
-| `.pre-commit-config.yaml`    | `code-reviewer` | all — never run hooks manually |
+| `.pre-commit-config.yaml`    | `code-reviewer` | all — direct runs prohibited; controlled final-QA wrapper only |
 
 ## 7. Subagent Bridge
 

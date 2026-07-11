@@ -20,7 +20,13 @@ title: 'Quality Assurance Scope'
   - **E2E**: Critical paths verified via **Playwright**.
   - **Load**: API performance verified via **k6** or **Locust**.
 - **Execution Boundary (Local vs Remote)**:
-  - **Local**: Fail-fast validation (e.g., `scripts/validation/run-local-qa-gates.sh` for script-backed QA/CI gates, `pre-commit` for formatting/linting, `pre-push` for structural contract scripts).
+  - **Local**: Fail-fast validation (e.g.,
+    `scripts/validation/run-local-qa-gates.sh` for script-backed QA/CI gates,
+    automatic commit hooks for formatting/linting, and pre-push structural
+    contract scripts). Agents must not invoke `pre-commit run` directly.
+    Approved final QA all-files execution uses only
+    `scripts/validation/run-agent-precommit-all-files.sh` from an initially
+    clean linked worktree with a tracked Stage 04 task and reviewed prefixes.
   - **Remote (GitHub CI)**: The ultimate SSoT quality gate. Heavy analysis (e.g., E2E, Zizmor SARIF upload, SonarQube) belongs here.
   - **Anti-Duplication**: Do not execute the same heavy workloads redundantly. If a dedicated CI job exists for a task (e.g., `zizmor`, `eslint`), skip it in the CI `pre-commit` runner.
 - **Applicability**: Mark coverage N/A for docs-only, policy-only, infrastructure configuration, or validation-script changes when no domain-code coverage signal applies.
@@ -47,7 +53,7 @@ not applicable, record the skipped-check rationale in the task evidence.
 | Documentation-only stage docs                | `git diff --check`, `check-doc-implementation-alignment.sh`, `check-repo-contracts.sh`, `check-doc-traceability.sh`, and LLM Wiki index regeneration via `scripts/knowledge/generate-llm-wiki-index.sh` when docs are added, removed, or renamed | Remote docs implementation-alignment, traceability, and repo contracts | Post-edit validation hook, task evidence, progress log                 | Domain tests, coverage, Docker runtime checks                        |
 | Archive/tombstone migration                  | Documentation checks plus `check-doc-implementation-alignment.sh`, stale active-reference scans for archived subjects, and `docs/98.archive` status/template checks                                                                               | Remote docs implementation-alignment, traceability, and repo contracts | Archive ledger update, tombstone metadata, task evidence, progress log | Domain tests, coverage, Docker runtime checks                        |
 | Governance or provider policy docs           | Documentation checks plus `sync-provider-surfaces.sh` when provider surfaces are affected                                                                                                               | Remote repo contracts and required checks                        | Provider sync output and policy-gate evidence                          | Runtime tests unless behavior/config changed                         |
-| Provider adapter, hook, or validation script | Targeted script self-check, `run-local-qa-gates.sh` when the change affects shared script/CI behavior, repo contracts, provider sync, quickwin/template-security baselines when relevant                | Required GitHub quality gates and security scans                 | Hook validation or script command output                               | CI-only tools such as SARIF upload are named, not duplicated locally |
+| Provider adapter, hook, or validation script | Targeted script self-check, `run-local-qa-gates.sh` when the change affects shared script/CI behavior, repo contracts, provider sync, quickwin/template-security baselines when relevant; controlled all-files wrapper only at an approved final QA gate | Required GitHub quality gates and security scans | Wrapper command/prefix/exit/path/review evidence or targeted script output | CI-only tools such as SARIF upload are named, not duplicated locally; skipped wrapper rationale is explicit |
 | Runtime, Docker, or Compose config           | Compose validation, hardening scripts, targeted service smoke checks when safe                                                                                                                          | Compose and hardening jobs, any protected-branch required checks | Docker/Compose command output or explicit approval gate                | Live service mutation skipped unless approved                        |
 | CI workflow or GitHub protection             | Static workflow validation, repo contracts, ruleset documentation review                                                                                                                                | GitHub Actions jobs, branch protection/ruleset verification      | `gh` or workflow evidence where approved                               | Local execution of GitHub-only jobs such as `zizmor` SARIF upload    |
 | Model policy or reasoning-effort config      | Stage 00 policy review, provider sync, validator support check                                                                                                                                          | Required repo contracts after generated surfaces update          | Validator output and task evidence                                     | Any unsupported value remains blocked, not skipped                   |
@@ -93,6 +99,10 @@ literals aligned with current compose declarations and
 - **Regression**: Add regression tests for every bug fix.
 - **Refactor evidence**: For behavior-preserving refactors, run checks that cover the touched behavior and state that no behavior change is intended.
 - **Reporting**: Publish test results to the session summary or `docs/04.execution/tasks/`.
+- **Controlled all-files hooks**: Run the wrapper only at the approved final QA
+  gate. Preserve its hook exit unless it reports distinct unexpected-path exit
+  `20`; review all hook-managed edits and record evidence manually. Never reset,
+  checkout, clean, or expand prefixes to hide unexpected changes.
 
 ## 5. Maintenance & Safety
 

@@ -34,7 +34,12 @@ Run after every agent task before declaring completion.
 
 ## Lint Gate (all layers)
 
-- [ ] `.pre-commit-config.yaml` hooks will pass (never run manually)
+- [ ] Direct `pre-commit run` was not used; normal commit hooks remain automatic
+- [ ] At an approved final QA all-files gate,
+      `scripts/validation/run-agent-precommit-all-files.sh` ran from a clean
+      linked worktree, or task evidence records why it was skipped
+- [ ] Wrapper evidence records command, allowed prefixes, hook exit, modified
+      paths, unexpected paths, and human review disposition
 - [ ] No linter suppressions added without comment explaining why
 
 ## Completion Blockers (HALT if any fail)
@@ -47,6 +52,7 @@ Run after every agent task before declaring completion.
 | `README.md` not updated            | Update before closing                |
 | `## Related Documents` missing     | Add before closing                   |
 | Changed/new metadata check fails   | Correct typed metadata or approved transition evidence |
+| Controlled wrapper reports exit 20 | Stop and review unexpected paths; do not reset, checkout, or clean |
 | Plaintext secret found             | Replace with Docker Secret reference |
 
 ## Related Documents

@@ -34,6 +34,8 @@ Unified task execution checklists for all agent work.
       recovery path, and redaction boundary.
 - [ ] Identify key risks (security, data loss, breaking changes, governance drift).
 - [ ] Define verification commands and acceptance criteria before edits.
+- [ ] If full-repository pre-commit is planned, confirm that it is the approved
+      final QA gate and name the tracked task path plus minimal allowed prefixes.
 
 ## 2. In-Task Checklist
 
@@ -61,6 +63,9 @@ Unified task execution checklists for all agent work.
       discovery -> applicability -> provider loading -> canonical artifact ->
       validation evidence.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` for material task progress.
+- [ ] Never run `pre-commit run` directly. The approved final QA all-files gate
+      uses only `scripts/validation/run-agent-precommit-all-files.sh` from an
+      initially clean linked worktree; stop on unexpected paths without cleanup.
 - [ ] Record out-of-scope issues instead of patching read-only stages.
 
 ## 3. Completion Checklist
@@ -84,6 +89,9 @@ Unified task execution checklists for all agent work.
       provider adapter state was actually changed or only verified.
 - [ ] Confirm QA/CI/CD evidence includes local checks, CI-only gates, and
       skipped-check rationale appropriate to the change type.
+- [ ] When the controlled pre-commit gate applies, record command, allowed
+      prefixes, hook exit, modified paths, unexpected-path review disposition,
+      and skipped rationale; the wrapper never writes this evidence itself.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` with final status, verification evidence, and memory note links.
 - [ ] Create/update out-of-scope or durable finding reports from `docs/99.templates/templates/governance/memory.template.md` when needed.
 - [ ] For completed repository-modifying agent work, create logical Conventional Commits or record why commits were intentionally skipped.

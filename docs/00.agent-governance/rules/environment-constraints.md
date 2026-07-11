@@ -27,7 +27,12 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
 
 - For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
 - For governance/root changes, run `bash scripts/validation/check-doc-traceability.sh` and link/stale-reference checks for edited files.
-- Lint and format are managed by `.pre-commit-config.yaml`; do not run `pre-commit` manually.
+- Direct `pre-commit run` execution by agents is prohibited. At an approved
+  final QA gate, use only
+  `scripts/validation/run-agent-precommit-all-files.sh` from an initially clean
+  linked worktree with a tracked Stage 04 task and reviewed allowed prefixes.
+  Record its concise result and review hook-managed edits; never auto-reset,
+  checkout, clean, or write task evidence from the wrapper.
 - Run the completion checklist in `docs/00.agent-governance/rules/task-checklists.md` before declaring done.
 
 ## 3. Graphify
