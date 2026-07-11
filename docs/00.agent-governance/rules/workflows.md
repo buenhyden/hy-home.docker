@@ -89,6 +89,15 @@ runtime:
 Provider-local skill files may describe runtime mechanics, but they do not own
 the lifecycle policy above.
 
+The exact provider-neutral lifecycle is
+`discovery -> applicability -> provider loading -> canonical artifact -> validation evidence`.
+For changed or new target Markdown, validation evidence includes
+`python3 scripts/validation/check-document-metadata.py --mode check-changed`
+with a safe base. At an approved final QA gate, all-files pre-commit uses only
+`scripts/validation/run-agent-precommit-all-files.sh`; direct agent execution
+remains prohibited, and evidence is limited to reviewed Git-visible,
+non-ignored repository paths.
+
 ## 5. Routing Rules
 
 1. `workflow-supervisor` selects the workflow and delegates each step to the right

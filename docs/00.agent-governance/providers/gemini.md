@@ -52,12 +52,22 @@ policy directories.
 ## 6. Hook Parity Contract
 
 - Gemini follows the shared `rules/output-style.md`, `rules/provider-capability-matrix.md`, and `rules/workflows.md` as behavioral contracts.
-- While Gemini CLI does not natively support the same programmatic hooks as Claude or Codex, Gemini agents MUST manually follow the same behavioral contracts documented for hooks.
+- Current Gemini CLI releases expose provider-native hooks, but this repository
+  has no tracked `.gemini` hook or agent adapter. The `.agents/` surface remains
+  a behavioral pointer/reminder, not a tracked native hook adapter, and must not
+  be presented as interception parity with Claude or Codex.
 - **Pre-edit validation**: Review requirements and guardrails before mutating files.
-- **Post-edit validation**: Validate style (formatting, trimming) and run repository contract checks before declaring completion.
+- **Post-edit validation**: Validate style (formatting, trimming), run repository
+  contracts, and for changed or new target Markdown run
+  `python3 scripts/validation/check-document-metadata.py --mode check-changed`
+  with a safe comparison base before declaring completion.
 - **Template-first guidance**: Use `docs/99.templates/` before creating new target-stage documentation.
 - **Commit discipline**: Create logical Conventional Commits for completed repository-modifying work.
 - **README guidance**: Follow the provider-neutral README readiness rules.
+- **Controlled all-files QA**: Direct agent execution of all-files pre-commit is
+  prohibited. At an approved final QA gate, invoke only
+  `scripts/validation/run-agent-precommit-all-files.sh` and record the reviewed
+  Git-visible, non-ignored repository paths in Stage 04 evidence.
 
 ## 7. Operational Practices
 

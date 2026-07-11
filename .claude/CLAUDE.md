@@ -30,6 +30,13 @@ This file keeps Claude-specific runtime routing local to `.claude/` while the sh
 - Runtime skills are invoked from their nested canonical paths only.
 - In Claude Code, use the delegated-agent facility and pass the primary scope path explicitly.
 - Keep runtime behavior aligned with `docs/00.agent-governance/agents/` and `docs/00.agent-governance/subagent-protocol.md`.
+- For changed or new target Markdown, run
+  `python3 scripts/validation/check-document-metadata.py --mode check-changed`
+  with a safe comparison base.
+- Direct agent execution of all-files pre-commit is prohibited. At an approved
+  final QA gate, use only
+  `scripts/validation/run-agent-precommit-all-files.sh` and record the reviewed
+  Git-visible, non-ignored repository paths in Stage 04 evidence.
 
 ## Related Documents
 

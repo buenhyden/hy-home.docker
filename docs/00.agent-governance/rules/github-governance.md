@@ -128,6 +128,16 @@ template/status checks. The same gate also blocks stage-document runtime version
 drift for implementation-pinned images and components, using current compose
 declarations and `infra/tech-stack.versions.json` as the implementation signal.
 
+The existing `repo-contracts` job also runs
+`python3 scripts/validation/check-document-metadata.py --mode check-changed`
+immediately after installing `scripts/requirements.txt`. The job binds
+`TEMPLATE_GATE_BASE` to the pull-request base SHA for pull requests and the
+push-before SHA for pushes. `fetch-depth: 0` keeps history available, and an
+event-only preflight requires that SHA to resolve to a commit with a merge base
+before the checker runs. An all-zero, missing, or unrelated event base therefore
+fails closed. Manual dispatches have no event delta and use the checker's normal
+safe-base resolution chain.
+
 ### Required Quality Gates
 
 | Job ID                            | Execution Surface                                      |

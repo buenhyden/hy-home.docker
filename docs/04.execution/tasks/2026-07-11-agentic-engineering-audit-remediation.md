@@ -667,6 +667,65 @@ Stage 00/99 governance/template surfaces, task/progress evidence, and generated
 Graphify refresh. There is no Task 10+ provider, CI workflow, model, runtime,
 Compose, secret, remote, or branch-protection mutation.
 
+### T-AER-010 Provider Adapter and CI Synchronization Evidence
+
+Task 10 is **In Review** at implementation baseline `aa5cbd36`. The task
+registry remains `Todo` and the Phase 4 checkbox remains unchecked until
+independent Spec-compliance and quality/security review approve the change.
+
+The Senior `ci-cd-engineer` role implemented the approved provider and existing
+CI-job synchronization without a model selector. No provider model literal,
+reasoning effort, runtime agent identity, required job, status context, local
+branch-protection proposal, remote GitHub setting, secret, credential, Compose
+service, or deployment state changed.
+
+| Evidence family | Result | Interpretation |
+| --- | --- | --- |
+| Contract-first RED | Repository contracts failed on the absent exact metadata step/base binding and missing lifecycle, metadata, and wrapper fragments across every planned provider surface. | Establishes that the Task 10 contract did not pass before canonical provider and workflow changes. |
+| Provider lifecycle | Stage 00 and provider notes preserve `discovery -> applicability -> provider loading -> canonical artifact -> validation evidence`. | Provider-local mechanics do not redefine typed metadata or controlled-wrapper policy. |
+| Native/adoption boundary | Gemini CLI native support is recorded separately from the workspace's `.agents` behavioral pointer/reminder and absent tracked `.gemini` hook/agent adapter. | The change corrects the obsolete no-native-hooks claim without asserting local interception parity. |
+| Generated adapters | Sync write/check updates exactly three Codex skill copies, three Gemini skill pointers, and `.agents/README.md`; check mode reports `no drift`. | Claude skill sources and generator-owned projections remain byte-coupled while Gemini stays pointer/reminder-only. |
+| CI placement | The existing `repo-contracts` job contains one exact changed/new metadata step immediately after `scripts/requirements.txt` installation. | No job or required status context is added or renamed. |
+| Event base | `TEMPLATE_GATE_BASE` selects the pull-request base SHA or push-before SHA; an event-only preflight verifies the commit and merge base under `fetch-depth: 0`. | PR/push events use a reachable safe base; all-zero, missing, or unrelated event bases fail closed before validation. |
+
+Provider-hook parity generation was minimally updated to recognize the tracked
+adoption boundary instead of the obsolete provider-capability claim. Its fresh
+snapshot remains 7 Claude native wrappers, 7 Codex native dispatches, and 7
+Gemini behavioral reminders.
+
+- **Task 10 implementation validation**:
+  - required RED — PASS, repository contracts failed on only the new Task 10
+    provider/CI assertions before source and workflow edits
+  - provider sync `--write` and `--check` — PASS, `no drift`
+  - focused metadata unittest discovery — PASS, 63/63
+  - full validation unittest discovery — PASS, 70/70
+  - Bash syntax and workflow PyYAML parse — PASS
+  - exact existing-job metadata step count/placement and base-env contract —
+    PASS, one step after dependency installation
+  - valid base simulation — PASS, baseline `aa5cbd36`, 7 selected paths / zero
+    violations
+  - invalid event-base preflight — PASS, all-zero SHA rejected with exit 128
+  - local `actionlint` — PASS
+  - local `zizmor` — PASS, no findings; YAML-anchor warning and 16 configured
+    suppressions remain informational
+  - ShellCheck — PASS with only SC2016 informational notes on intentional
+    single-quoted literals
+  - provider hook parity, Wiki index/coverage, audit matrix/coverage,
+    traceability, implementation alignment, and repository contracts — PASS;
+    `failures=0`
+  - model/reasoning/runtime identity diff scan — PASS, no literal changes and
+    no diff under `.codex/agents`, `.agents/agents`, or `subagent-protocol.md`
+  - Graphify refresh — PASS, 1,083 files / 22,021 nodes / 22,555 edges / 1,489
+    communities; HTML visualization skipped at the configured size limit and
+    the graph remains advisory
+  - real/full-repository pre-commit — not run; Task 12 retains ownership
+
+Scope is limited to the approved Stage 00/provider source surfaces, generated
+provider projections, existing CI job, repository/provider parity contracts,
+task/progress evidence, and Graphify refresh. Task 11+ follow-up artifacts and
+all runtime, secret, remote, and branch-protection mutations remain out of
+scope.
+
 ### Task Review Ledger
 
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |

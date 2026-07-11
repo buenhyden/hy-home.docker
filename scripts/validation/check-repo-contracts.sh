@@ -912,7 +912,8 @@ ci_jobs: set[str] = set()
 if ci_quality.is_file():
     data = yaml.safe_load(ci_quality.read_text()) or {}
     ci_text = ci_quality.read_text()
-    ci_jobs = set((data.get("jobs") or {}).keys())
+    jobs = data.get("jobs") or {}
+    ci_jobs = set(jobs.keys())
     missing_jobs = sorted(required_jobs - ci_jobs)
     for job_id in missing_jobs:
         failures.append(f"{ci_quality}: missing required QA/CI job: {job_id}")
@@ -926,6 +927,66 @@ if ci_quality.is_file():
     ]:
         if literal not in ci_text:
             failures.append(f"{ci_quality}: missing QA recommendation summary literal: {literal}")
+
+    repo_contracts = jobs.get("repo-contracts") or {}
+    repo_contract_steps = repo_contracts.get("steps") or []
+    expected_base_step = {
+        "name": "Verify document metadata comparison base",
+        "if": "github.event_name == 'pull_request' || github.event_name == 'push'",
+        "shell": "bash",
+        "run": (
+            "set -euo pipefail\n"
+            'git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}"\n'
+            'git merge-base HEAD "$TEMPLATE_GATE_BASE" >/dev/null\n'
+        ),
+    }
+    base_steps = [
+        (index, step)
+        for index, step in enumerate(repo_contract_steps)
+        if isinstance(step, dict) and step.get("name") == "Verify document metadata comparison base"
+    ]
+    if base_steps != [(1, expected_base_step)]:
+        failures.append(
+            f"{ci_quality}: repo-contracts must fail closed on an unreachable PR/push metadata base"
+        )
+    metadata_steps = [
+        (index, step)
+        for index, step in enumerate(repo_contract_steps)
+        if isinstance(step, dict) and step.get("name") == "Check changed and new document metadata"
+    ]
+    expected_metadata_step = {
+        "name": "Check changed and new document metadata",
+        "run": "python3 scripts/validation/check-document-metadata.py --mode check-changed",
+    }
+    if len(metadata_steps) != 1:
+        failures.append(
+            f"{ci_quality}: repo-contracts must contain exactly one changed/new document metadata step"
+        )
+    else:
+        metadata_index, metadata_step = metadata_steps[0]
+        if metadata_step != expected_metadata_step:
+            failures.append(
+                f"{ci_quality}: repo-contracts changed/new document metadata step must match the approved command exactly"
+            )
+        previous_name = (
+            repo_contract_steps[metadata_index - 1].get("name")
+            if metadata_index > 0 and isinstance(repo_contract_steps[metadata_index - 1], dict)
+            else None
+        )
+        if previous_name != "Install repository contract Python dependencies":
+            failures.append(
+                f"{ci_quality}: changed/new document metadata step must follow dependency installation"
+            )
+
+    template_gate_base = (repo_contracts.get("env") or {}).get("TEMPLATE_GATE_BASE")
+    expected_template_gate_base = (
+        "${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || "
+        "github.event_name == 'push' && github.event.before || '' }}"
+    )
+    if template_gate_base != expected_template_gate_base:
+        failures.append(
+            f"{ci_quality}: repo-contracts must bind TEMPLATE_GATE_BASE to the PR base or push-before SHA"
+        )
 else:
     failures.append("missing required workflow: .github/workflows/ci-quality.yml")
 
@@ -1359,6 +1420,95 @@ for fn in gemini_functions:
         failures.append(f"{path}: missing Gemini reference-index marker")
     if len(text.splitlines()) > 15:
         failures.append(f"{path}: too long ({len(text.splitlines())} lines); Gemini surface must be a pointer, not a full copy")
+
+# 4. Provider metadata and controlled-wrapper semantics.
+metadata_command = "python3 scripts/validation/check-document-metadata.py --mode check-changed"
+wrapper_path = "scripts/validation/run-agent-precommit-all-files.sh"
+lifecycle = "discovery -> applicability -> provider loading -> canonical artifact -> validation evidence"
+provider_contracts = {
+    pathlib.Path("docs/00.agent-governance/rules/provider-capability-matrix.md"): [
+        metadata_command,
+        wrapper_path,
+        lifecycle,
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/workflows.md"): [
+        metadata_command,
+        wrapper_path,
+        lifecycle,
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/github-governance.md"): [
+        metadata_command,
+        "TEMPLATE_GATE_BASE",
+        "pull-request base SHA",
+        "push-before SHA",
+    ],
+    pathlib.Path("docs/00.agent-governance/providers/agents-md.md"): [
+        metadata_command,
+        wrapper_path,
+        lifecycle,
+    ],
+    pathlib.Path("docs/00.agent-governance/providers/claude.md"): [
+        metadata_command,
+        wrapper_path,
+    ],
+    pathlib.Path("docs/00.agent-governance/providers/codex.md"): [
+        metadata_command,
+        wrapper_path,
+    ],
+    pathlib.Path("docs/00.agent-governance/providers/gemini.md"): [
+        metadata_command,
+        wrapper_path,
+        "behavioral pointer/reminder",
+        "not a tracked native hook adapter",
+    ],
+    pathlib.Path(".claude/CLAUDE.md"): [
+        metadata_command,
+        wrapper_path,
+    ],
+    pathlib.Path(".claude/skills/style-validation/skill.md"): [metadata_command, wrapper_path],
+    pathlib.Path(".claude/skills/test-automator/skill.md"): [metadata_command, wrapper_path],
+    pathlib.Path(".claude/skills/ci-cd-patterns/skill.md"): [
+        metadata_command,
+        "Check changed and new document metadata",
+        "TEMPLATE_GATE_BASE",
+    ],
+    pathlib.Path(".codex/skills/style-validation/skill.md"): [metadata_command, wrapper_path],
+    pathlib.Path(".codex/skills/test-automator/skill.md"): [metadata_command, wrapper_path],
+    pathlib.Path(".codex/skills/ci-cd-patterns/skill.md"): [
+        metadata_command,
+        "Check changed and new document metadata",
+        "TEMPLATE_GATE_BASE",
+    ],
+    pathlib.Path(".agents/skills/style-validation/skill.md"): [
+        metadata_command,
+        wrapper_path,
+        "Behavioral reminder",
+    ],
+    pathlib.Path(".agents/skills/test-automator/skill.md"): [
+        metadata_command,
+        wrapper_path,
+        "Behavioral reminder",
+    ],
+    pathlib.Path(".agents/skills/ci-cd-patterns/skill.md"): [
+        "Check changed and new document metadata",
+        "TEMPLATE_GATE_BASE",
+        "Behavioral reminder",
+    ],
+    pathlib.Path(".agents/README.md"): [
+        metadata_command,
+        wrapper_path,
+        "behavioral pointer/reminder",
+        "not a tracked native hook adapter",
+    ],
+}
+for path, required_fragments in provider_contracts.items():
+    text = read(path)
+    if not text:
+        failures.append(f"missing provider metadata/wrapper contract surface: {path}")
+        continue
+    for fragment in required_fragments:
+        if fragment not in text:
+            failures.append(f"{path}: missing provider metadata/wrapper contract fragment: {fragment}")
 
 codex_readme = pathlib.Path(".codex/README.md")
 codex_provider = pathlib.Path("docs/00.agent-governance/providers/codex.md")

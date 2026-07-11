@@ -85,6 +85,19 @@ agent roles, model tiers, QA rules, template rules, or workflow policy.
   `scripts/operations/sync-provider-surfaces.sh` enforce or report drift from
   this model.
 
+### Shared Lifecycle and QA Contract
+
+Every adapter preserves
+`discovery -> applicability -> provider loading -> canonical artifact -> validation evidence`.
+For changed or new target Markdown, run
+`python3 scripts/validation/check-document-metadata.py --mode check-changed`
+with a safe base. Direct agent execution of all-files pre-commit is prohibited;
+an approved final QA gate uses only
+`scripts/validation/run-agent-precommit-all-files.sh` and records reviewed
+Git-visible, non-ignored repository paths. Provider-native hooks may route these
+obligations, while pointer/reminder surfaces remain behavioral and must not be
+described as native interception.
+
 ## Related Documents
 
 - `../../01.requirements/024-agent-governance-standardization.md`

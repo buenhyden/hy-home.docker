@@ -196,7 +196,7 @@ missing_gemini_literals = [
     literal for literal in required_gemini_literals if literal not in gemini_notes
 ]
 
-matrix_hooks_declared = "behavioral contract (no native hooks)" in matrix_text
+matrix_hooks_declared = "no tracked `.gemini` adapter" in matrix_text
 agents_rules_declared = "rules/" in agents_readme and "workflows/" in agents_readme
 dispatcher_present = DISPATCHER.is_file()
 
@@ -212,7 +212,7 @@ for event, purpose in EVENTS:
         gemini_status = "needs-contract-review"
         problems = missing_gemini_literals[:]
         if not matrix_hooks_declared:
-            problems.append("provider matrix lacks Gemini no-native-hooks hook contract")
+            problems.append("provider matrix lacks the no-tracked-Gemini-adapter hook contract")
         if not agents_rules_declared:
             problems.append(".agents README lacks rules/workflows reminder")
         gemini_note = "Contract review required: " + "; ".join(problems)

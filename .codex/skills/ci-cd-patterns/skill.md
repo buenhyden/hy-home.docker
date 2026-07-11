@@ -241,6 +241,23 @@ labels:
   run: bash scripts/validation/validate-docker-compose.sh
 ```
 
+### Repository Metadata Gate
+
+Keep changed/new document metadata validation inside the existing
+`repo-contracts` job. The checkout uses `fetch-depth: 0`; job-level
+`TEMPLATE_GATE_BASE` selects the pull-request base SHA or push-before SHA.
+Place this exact step immediately after installing `scripts/requirements.txt`:
+
+```yaml
+- name: Check changed and new document metadata
+  run: python3 scripts/validation/check-document-metadata.py --mode check-changed
+```
+
+Do not create another required job or status context. An invalid explicit event
+base fails the existing job's commit/merge-base preflight before validation;
+manual dispatches have no event delta and use the checker's normal safe-base
+resolution chain.
+
 ### Vulnerability SLA (CVSS v3.1)
 
 | Rating | CVSS | Fix Deadline | Pipeline Action |

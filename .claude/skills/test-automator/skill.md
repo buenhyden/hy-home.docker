@@ -28,13 +28,22 @@ Use when validating service or tooling changes before marking work complete.
    bash scripts/validation/check-repo-contracts.sh
    ```
 
-4. Capture results as task evidence under `docs/04.execution/tasks/` (template-first) or
+4. For changed or new target Markdown, run the typed metadata gate with a safe base:
+
+   ```bash
+   python3 scripts/validation/check-document-metadata.py --mode check-changed
+   ```
+
+5. Capture results as task evidence under `docs/04.execution/tasks/` (template-first) or
    `_workspace/repo-support/test_<date>.md` for intermediate runs.
 
 ## Rules
 
 - Reuse existing scripts; do not introduce parallel test runners.
 - Report failures with the failing command output; never mark complete on red.
+- Direct agent execution of all-files pre-commit is prohibited. At an approved
+  final QA gate, use `scripts/validation/run-agent-precommit-all-files.sh` and
+  record the reviewed Git-visible, non-ignored repository paths.
 
 ## Related Documents
 

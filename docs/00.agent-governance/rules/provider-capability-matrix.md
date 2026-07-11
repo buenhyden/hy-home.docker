@@ -16,7 +16,7 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 | Subagents          | `agents/agents/*.md`                                       | `.claude/agents/*.md` (adapter)                | `.codex/agents/*.toml` (adapter)            | `.agents/agents/*.md` (pointer adapter) |
 | Skills / Functions | `agents/functions/*.md`                                    | `.claude/skills/*/skill.md` (adapter)          | `.codex/skills/*/skill.md` (adapter)        | `.agents/skills/*/skill.md` (pointer)   |
 | Rules              | `rules/*.md`                                               | `.claude/hookify.*.local.md` + `settings.json` | governance + `.codex/hooks.json`            | governance (behavioral contract)        |
-| Hooks              | `providers/*.md` Hook Parity Contract                      | `.claude/hooks/*.sh` + `settings.json`         | `.codex/hooks.json`                         | behavioral contract (no native hooks)   |
+| Hooks              | `providers/*.md` Hook Parity Contract                      | `.claude/hooks/*.sh` + `settings.json`         | `.codex/hooks.json`                         | provider-native support exists; no tracked `.gemini` adapter, so workspace behavior is reminder-only |
 | Output style       | `rules/output-style.md`                                    | `.claude/output-styles/*.md` + `settings.json` | behavioral contract                         | behavioral contract                     |
 | Workflows          | `rules/workflows.md` (+ `rules/stage-authoring-matrix.md`) | orchestration skills / commands                | orchestration skills (mirror)               | orchestration skills (pointer)          |
 | Memory             | `memory/` (`progress.md`, notes)                           | read/write `memory/progress.md` + notes        | read/write `memory/progress.md` + notes     | read/write `memory/progress.md` + notes |
@@ -27,8 +27,10 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 
 1. A capability's behavior is defined once in its Governance SSOT; provider rows
    describe only the surface and mechanism, never divergent policy.
-2. Where a runtime lacks a native primitive (Gemini hooks, Codex/Gemini output style),
-   the runtime follows the governance contract as a behavioral obligation.
+2. Where the workspace has no tracked provider-native adapter (Gemini hooks) or
+   the runtime lacks the primitive (Codex/Gemini output style), the runtime
+   follows the governance contract as a behavioral obligation. Provider support
+   does not prove workspace adoption.
 3. Stage 00 is the canonical runtime catalog. Claude, Codex, and Gemini expose
    provider adapters and must not redefine governance. See the Stage 00
    Canonical Adapter Model for enforcement details.
@@ -41,7 +43,7 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 | --------------------------------- | --------------------------------------------- | --------------------------------- | ------------------------------------ |
 | Custom subagents                  | Supported (`.claude/agents`)                  | Supported (`.codex/agents/*.toml`) | Supported (reference-index pointers) |
 | Skills                            | Supported (`.claude/skills`)                  | Supported (adapter)               | Supported (pointers)                 |
-| Programmatic hooks                | Supported (`settings.json` + `.claude/hooks`) | Supported (`.codex/hooks.json`)   | Unsupported → behavioral contract    |
+| Programmatic hooks                | Supported (`settings.json` + `.claude/hooks`) | Supported (`.codex/hooks.json`)   | Provider-supported, not tracked here → behavioral reminder |
 | Per-agent model                   | Supported (alias)                             | Supported (model id + effort)     | Supported (pointer frontmatter)      |
 | Native output style               | Supported (`.claude/output-styles`)           | Unsupported → behavioral contract | Unsupported → behavioral contract    |
 | Per-subagent tools/permissionMode | Supported (frontmatter)                       | Mirror (advisory)                 | Pointer (advisory)                   |
@@ -50,7 +52,23 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
   behavioral contract rather than implemented divergently. Do not add provider-specific
   primitives that have no governance contract behind them.
 
-## 4. Output-Style Placement
+## 4. Shared Development-Harness Gates
+
+All provider adapters preserve the same lifecycle contract:
+`discovery -> applicability -> provider loading -> canonical artifact -> validation evidence`.
+Provider-specific hook or reminder mechanics do not change these gates:
+
+- For changed or new target Markdown, run
+  `python3 scripts/validation/check-document-metadata.py --mode check-changed`
+  with a safe comparison base supplied by the execution surface.
+- Direct agent execution of all-files pre-commit remains prohibited. At an
+  approved final QA gate, use only
+  `scripts/validation/run-agent-precommit-all-files.sh` and record the reviewed
+  Git-visible, non-ignored repository paths in Stage 04 evidence.
+- A provider reminder, pointer, or hook reports the obligation; it does not
+  create policy or prove that a provider-native interception occurred.
+
+## 5. Output-Style Placement
 
 - **Global contract** (all runtimes): `rules/output-style.md` — the workspace-wide style.
 - **Claude-native binding**: `.claude/output-styles/hy-home.md`, registered via

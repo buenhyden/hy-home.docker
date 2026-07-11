@@ -64,6 +64,14 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 
 - Keep instructions short, specific, and executable.
 - Prefer path-scoped instruction files instead of large monolithic root files.
+- For changed or new target Markdown, run
+  `python3 scripts/validation/check-document-metadata.py --mode check-changed`
+  with the task's safe comparison base. Claude hooks may surface validation
+  guidance, but the command result is the evidence boundary.
+- Direct agent execution of all-files pre-commit is prohibited. At the approved
+  final QA gate, use only
+  `scripts/validation/run-agent-precommit-all-files.sh` and record the reviewed
+  Git-visible, non-ignored repository paths in Stage 04 evidence.
 - After instruction updates, start a fresh run or reload context so new guidance is effective.
 
 ## Related Documents

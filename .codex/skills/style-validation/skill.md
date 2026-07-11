@@ -24,14 +24,23 @@ Use after edits to normalize and validate style before completion.
    bash scripts/validation/check-repo-contracts.sh
    ```
 
-3. Confirm output conforms to `rules/output-style.md` (structured findings, `file:line`
+3. For changed or new target Markdown, validate typed metadata with a safe base:
+
+   ```bash
+   python3 scripts/validation/check-document-metadata.py --mode check-changed
+   ```
+
+4. Confirm output conforms to `rules/output-style.md` (structured findings, `file:line`
    citations, active voice, English governance / Korean human-facing docs).
-4. Report residual blocking issues; never mark complete while style/contract checks fail.
+5. Report residual blocking issues; never mark complete while style/contract checks fail.
 
 ## Rules
 
 - Style normalization is deterministic — prefer the hook/script over manual reformatting.
 - Do not change document content or policy under the guise of style.
+- Do not run all-files pre-commit directly. At an approved final QA gate, use
+  `scripts/validation/run-agent-precommit-all-files.sh` and record its reviewed
+  Git-visible, non-ignored repository paths in Stage 04 evidence.
 
 ## Related Documents
 

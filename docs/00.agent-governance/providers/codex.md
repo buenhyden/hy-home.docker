@@ -81,6 +81,14 @@ Docs-only and governance-only changes still require diff hygiene, repository
 contracts, traceability checks, and provider sync when provider surfaces are
 touched.
 
+For changed or new target Markdown, run
+`python3 scripts/validation/check-document-metadata.py --mode check-changed`
+with a safe comparison base. Codex hooks provide routing and advisory context;
+the checked command output is the validation evidence. Direct agent execution
+of all-files pre-commit remains prohibited. At an approved final QA gate, use
+only `scripts/validation/run-agent-precommit-all-files.sh` and record the
+reviewed Git-visible, non-ignored repository paths in Stage 04 evidence.
+
 ## 6. Current Hook Contract
 
 - `SessionStart` uses `scripts/hooks/agent-event-hook.sh` to emit project context when the event is supported.
