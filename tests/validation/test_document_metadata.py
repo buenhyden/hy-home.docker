@@ -993,6 +993,32 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assertNotIn("metadata check-changed:", result.stdout)
             self.assertNotIn("Traceback", combined)
 
+    def test_non_utf8_markdown_path_in_explicit_base_is_sanitized(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            raw_directory = os.fsencode(root / "docs/03.specs")
+            raw_path = raw_directory + b"/private-base-path-\xff.md"
+            descriptor = os.open(raw_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(b"private-base-body\n")
+            commit_all(root, "non-UTF-8 base path")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+
+            readme = root / "docs/03.specs/README.md"
+            readme.write_text("# Specifications\n\nOrdinary current change.\n", encoding="utf-8")
+            commit_all(root, "ordinary current change")
+
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            combined = result.stdout + result.stderr
+            self.assertEqual(2, result.returncode, combined)
+            self.assertIn("configuration-error:", result.stderr)
+            self.assertIn("base Markdown discovery returned a non-UTF-8 path", result.stderr)
+            self.assertNotIn("metadata check-changed:", result.stdout)
+            self.assertNotIn("Traceback", combined)
+            self.assertNotIn("private-base-path", combined)
+            self.assertNotIn("private-base-body", combined)
+            self.assertNotIn("fatal:", combined)
+
     def test_staged_invalid_document_fails(self) -> None:
         directory, root = self.new_repo()
         with directory:

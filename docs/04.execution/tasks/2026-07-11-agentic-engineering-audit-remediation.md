@@ -63,7 +63,7 @@ independent task/branch reviews.
 | T-AER-009 | Implement controlled agent pre-commit wrapper and governance contract | impl/test | Spec 123 / Controlled Pre-commit Wrapper | PLN-AER-009 | Shell tests; syntax/shellcheck; wrapper contract; task review | qa-engineer | Done |
 | T-AER-010 | Synchronize provider adapters and add metadata validation to the existing CI job | impl/test | Spec 123 / Provider Synchronization | PLN-AER-010 | Provider no-drift; workflow checks; repo contracts; task review | ci-cd-engineer | Done |
 | T-AER-011 | Author four independent runtime follow-up specs/plans without runtime mutation | doc | Spec 123 / W5 Runtime Follow-up | PLN-AER-011 | Template/traceability/rollback/approval gates; task review | doc-writer | Done |
-| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | In Progress |
+| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Todo |
 
 ## Phase View
 
@@ -92,7 +92,7 @@ independent task/branch reviews.
 ### Phase 5 — Follow-up and Closure
 
 - [x] T-AER-011 Runtime follow-up specs/plans
-- [ ] T-AER-012 Full verification, review, and closure — I-03 fixed locally; exact-range re-review pending
+- [ ] T-AER-012 Full verification, review, and closure — I-03-R1 fixed locally; exact-range re-review pending
 
 ## Verification Summary
 
@@ -803,11 +803,11 @@ runtime requirement set.
 
 ### T-AER-012 Verification and Current Reopening Evidence
 
-Task 12 is **In Progress** after final merge-readiness review found I-03. The
-earlier I-01 and I-02 fixes remain resolved. The I-03 fail-closed Git discovery
-fix is locally implemented and verified, but T-AER-012, its Phase 5 checkbox,
-Spec 123, and the umbrella Plan/Task remain active pending independent
-exact-range re-review.
+Task 12 remains **Todo** after the I-03 postfix review found residual I-03-R1.
+The earlier I-01 and I-02 fixes remain resolved, and the original I-03 seven-case
+matrix remains fixed. The I-03-R1 base-path decoding fix is locally implemented
+and verified, but T-AER-012, its Phase 5 checkbox, Spec 123, and the umbrella
+Plan/Task remain open or active pending independent exact-range re-review.
 
 #### Postclosure Finding and Focused Fix
 
@@ -916,8 +916,39 @@ selection, including `selected=0 violations=0` with exit zero.
   traceability PASS at 46 pairs; alignment PASS at 637 docs / 5,001 links;
   repository contracts PASS at 8/8 changed and 747/747 normalized targets;
   diff hygiene and protected-surface scan PASS.
-- Review boundary: no re-review or lifecycle closure is claimed. Task 12 stays
-  active until a new independent exact-range review approves the fix.
+- Review boundary: no re-review or lifecycle closure is claimed. Lifecycle
+  artifacts stay active and Task 12 remains open until a new independent
+  exact-range review approves the fix.
+
+#### I-03 Postfix Finding and Base Path Decode Fix
+
+The postfix review of
+`3e92b39fa02767dafff612fcfa5b3670998471be..b08d6576` confirmed the original
+I-03 matrix at 7/7 but returned Spec FAIL / Quality CHANGES_REQUESTED, Critical
+0, Important 1, Minor 0, and `READY_FOR_RECLOSURE: NO` for I-03-R1. The base
+corpus collector manually decoded `git ls-tree -z` entries instead of using the
+bounded shared path decoder, so an unchanged non-UTF-8 Markdown filename in an
+explicit base plus an ordinary current change returned exit one with a raw
+`UnicodeDecodeError` traceback.
+
+- RED evidence: the executable CLI regression committed a base with a raw
+  non-UTF-8 Markdown filename, committed an ordinary UTF-8 README change, and
+  reproduced exit one plus a traceback from `collect_records_at_ref`.
+- Focused GREEN evidence: base `ls-tree -z` output now passes once through
+  `_decode_git_paths(..., "base Markdown discovery")`; filtering reuses only
+  the decoded paths. The regression returns exit two with a bounded
+  `configuration-error`, no success summary, no traceback, and no raw fixture
+  filename, body, or Git stderr marker.
+- Adjacent boundary: no other manual Git path-byte decoders remain. Text-mode
+  Git operations read refs or Markdown bodies rather than path lists. The
+  Stage 99 contract already requires complete NUL-delimited path discovery and
+  bounded output, so its wording did not change.
+- Lifecycle boundary: Task 12 remains `Todo`; Phase 5 and the two affected Plan
+  completion criteria remain unchecked. No re-review or reclosure is claimed.
+- Scope boundary: no real wrapper, Graphify refresh, service, runtime, Compose,
+  infrastructure, secret, credential, remote, provider-runtime, model-policy,
+  or protected-surface action was performed. Full local gate evidence is in
+  `.superpowers/sdd/task-12-git-path-decode-fix-report.md`.
 
 #### Historical Preclosure Evidence
 
@@ -1057,7 +1088,7 @@ values, credentials, and secret material were not persisted.
 | T-AER-009 | `dce3ea60..4d0a8eaf` | PASS | APPROVED | Initial C0/I3/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-9-report.md`; `.superpowers/sdd/review-dce3ea60..4d0a8eaf.diff` |
 | T-AER-010 | `aa5cbd36..0e030ab1` | PASS | APPROVED | Initial C0/I1/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-10-report.md`; `.superpowers/sdd/review-aa5cbd36..0e030ab1.diff` |
 | T-AER-011 | `4937ae99..03119741` | PASS | APPROVED | C0/I0/M0 | `.superpowers/sdd/task-11-report.md`; `.superpowers/sdd/review-4937ae99..03119741.diff` |
-| T-AER-012 | `3e92b39f..132418a4`; I-03 fix pending commit/re-review | FAIL | CHANGES_REQUESTED | I-01 and I-02 remain resolved; final review found I-03, C0/I1/M0; local fix GREEN, exact-range re-review pending | `.superpowers/sdd/branch-review-final-report.md`; `.superpowers/sdd/task-12-git-discovery-fix-report.md`; prior postclosure/postfix reports preserved |
+| T-AER-012 | `3e92b39f..b08d6576`; I-03-R1 fix pending commit/re-review | FAIL | CHANGES_REQUESTED | I-01/I-02 remain resolved; original I-03 matrix remains 7/7; postfix review found I-03-R1, C0/I1/M0; local fix GREEN, exact-range re-review pending | `.superpowers/sdd/branch-review-i03-postfix-report.md`; `.superpowers/sdd/task-12-git-path-decode-fix-report.md`; prior Task 12 reports preserved |
 
 - **Baseline Commands**:
   - `git diff --check` — PASS

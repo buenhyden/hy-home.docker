@@ -1038,12 +1038,11 @@ def collect_records_at_ref(
         raise ProfileError(f"cannot enumerate Markdown records at base ref: {base_ref}")
     paths = sorted(
         {
-            pathlib.Path(item.decode("utf-8"))
-            for item in result.stdout.split(b"\0")
-            if item
-            and item.decode("utf-8").endswith(".md")
-            and item.decode("utf-8").startswith(TARGET_MARKDOWN_PREFIXES)
-            and item.decode("utf-8") not in excluded
+            path
+            for path in _decode_git_paths(result.stdout, "base Markdown discovery")
+            if path.as_posix().endswith(".md")
+            and path.as_posix().startswith(TARGET_MARKDOWN_PREFIXES)
+            and path.as_posix() not in excluded
         },
         key=lambda path: path.as_posix(),
     )
