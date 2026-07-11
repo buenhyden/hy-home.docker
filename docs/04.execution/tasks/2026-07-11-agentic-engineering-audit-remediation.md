@@ -53,7 +53,7 @@ independent task/branch reviews.
 | T-AER-004 | Audit SDLC, document roles, numbering, transitions, frontmatter, templates, and README profiles | doc | Spec 123 / Canonical Audit Categories | PLN-AER-004 | Reproducible counts; audit matrices; repo contracts; task review | doc-writer | Done |
 | T-AER-005 | Audit harness, loops/evals, providers/models, workspace rules, instructions, catalogs, and vibe coding | doc | Spec 123 / Canonical Audit Categories | PLN-AER-005 | Criterion coverage; provider evidence; task review | code-reviewer | Done |
 | T-AER-006 | Audit QA/CI/CD, automation, Compose/infrastructure, security; consolidate audit lifecycle | doc | Spec 123 / Canonical Audit Categories | PLN-AER-006 | One-current-pack scan; audit generators; Compose/hardening; task review | code-reviewer | Done |
-| T-AER-007 | Implement typed metadata profiles, advisory validator, tests, and exhaustive inventory | impl/test | Spec 123 / Typed Document Metadata | PLN-AER-007 | Python unit tests; advisory report; repo contracts; task review | rules-engineer | Todo |
+| T-AER-007 | Implement typed metadata profiles, advisory validator, tests, and exhaustive inventory | impl/test | Spec 123 / Typed Document Metadata | PLN-AER-007 | Python unit tests; advisory report; repo contracts; task review | rules-engineer | Done |
 | T-AER-008 | Migrate the approved active chain and enforce metadata for changed/new documents | impl/test | Spec 123 / Metadata Rollout | PLN-AER-008 | Changed-mode tests; before/after inventory; pre-push contract; task review | rules-engineer | Todo |
 | T-AER-009 | Implement controlled agent pre-commit wrapper and governance contract | impl/test | Spec 123 / Controlled Pre-commit Wrapper | PLN-AER-009 | Shell tests; syntax/shellcheck; wrapper contract; task review | qa-engineer | Todo |
 | T-AER-010 | Synchronize provider adapters and add metadata validation to the existing CI job | impl/test | Spec 123 / Provider Synchronization | PLN-AER-010 | Provider no-drift; workflow checks; repo contracts; task review | ci-cd-engineer | Todo |
@@ -76,7 +76,7 @@ independent task/branch reviews.
 
 ### Phase 3 — Typed Metadata
 
-- [ ] T-AER-007 Profiles, validator, tests, and advisory inventory
+- [x] T-AER-007 Profiles, validator, tests, and advisory inventory
 - [ ] T-AER-008 Active-chain migration and changed/new enforcement
 
 ### Phase 4 — Development Harness
@@ -526,6 +526,7 @@ algorithm.
 | T-AER-004 | `e4c92fa1..f72e0998` | PASS | APPROVED | Initial C0/I2/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-4-report.md`; `.superpowers/sdd/review-e4c92fa1..f72e0998.diff` |
 | T-AER-005 | `507cd505..f87b800c` | PASS | APPROVED | C0/I0/M0 | `.superpowers/sdd/task-5-report.md`; `.superpowers/sdd/review-507cd505..f87b800c.diff` |
 | T-AER-006 | `0a7a5f9f..3c96c64c` | PASS | APPROVED | Initial C0/I1/M0; completeness contract enforced; re-review C0/I0/M0 | `.superpowers/sdd/task-6-report.md`; `.superpowers/sdd/review-0a7a5f9f..3c96c64c.diff` |
+| T-AER-007 | `33141734..c2444f2f` | PASS | APPROVED | Initial C0/I4/M1; first re-review C0/I1/M0; all resolved; final C0/I0/M0 | `.superpowers/sdd/task-7-report.md`; `.superpowers/sdd/review-33141734..c2444f2f.diff` |
 
 - **Baseline Commands**:
   - `git diff --check` — PASS
