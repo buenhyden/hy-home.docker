@@ -68,6 +68,51 @@ def git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def failing_git_probe_env(directory: pathlib.Path, probe_name: str) -> dict[str, str]:
+    """Return an environment whose Git delegates except for one discovery probe."""
+
+    real_git = shutil.which("git")
+    if real_git is None:
+        raise RuntimeError("Git is required for metadata fixtures")
+    bin_dir = directory / "bin"
+    bin_dir.mkdir()
+    wrapper = bin_dir / "git"
+    wrapper.write_text(
+        f"""#!{sys.executable}
+import subprocess
+import sys
+
+args = sys.argv[1:]
+probe = args[2:] if len(args) >= 2 and args[0] == "-C" else args
+probe_name = {probe_name!r}
+should_fail = (
+    probe_name == "tracked"
+    and probe[:2] == ["ls-files", "-z"]
+    and "--others" not in probe
+) or (
+    probe_name == "unstaged"
+    and probe[:1] == ["diff"]
+    and "--cached" not in probe
+    and not any(item.endswith("...HEAD") for item in probe)
+) or (
+    probe_name == "staged"
+    and probe[:1] == ["diff"]
+    and "--cached" in probe
+) or (
+    probe_name == "untracked"
+    and probe[:1] == ["ls-files"]
+    and "--others" in probe
+)
+if should_fail:
+    raise SystemExit(73)
+raise SystemExit(subprocess.run([{real_git!r}, *args], check=False).returncode)
+""",
+        encoding="utf-8",
+    )
+    wrapper.chmod(0o755)
+    return {"PATH": f"{bin_dir}{os.pathsep}{os.environ.get('PATH', '')}"}
+
+
 def init_git(root: pathlib.Path) -> None:
     self_check = git(root, "init", "-q")
     if self_check.returncode != 0:
@@ -614,6 +659,7 @@ class CheckerCliTests(unittest.TestCase):
     def test_changed_mode_fails_only_selected_violations(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
+            init_git(root)
             invalid = root / "docs/03.specs/123-example/spec.md"
             valid = root / "docs/03.specs/README.md"
             write_doc(invalid, {"status": "active"})
@@ -727,6 +773,21 @@ class ChangedPathGitTests(unittest.TestCase):
         result = run_checker(root, "check-changed", *extra)
         self.assertEqual(1, result.returncode, result.stdout + result.stderr)
         self.assertIn("missing-required-key", result.stdout)
+
+    def assert_git_probe_failure(self, probe_name: str, expected_label: str) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            result = run_checker(
+                root,
+                "check-changed",
+                env=failing_git_probe_env(root, probe_name),
+            )
+            combined = result.stdout + result.stderr
+            self.assertEqual(2, result.returncode, combined)
+            self.assertIn("configuration-error:", result.stderr)
+            self.assertIn(expected_label, result.stderr)
+            self.assertNotIn("metadata check-changed:", result.stdout)
+            self.assertNotIn("Traceback", combined)
 
     def write_parent_relation_fixture(self, root: pathlib.Path) -> pathlib.Path:
         parent = root / "docs/01.requirements/123-parent.md"
@@ -896,6 +957,41 @@ class ChangedPathGitTests(unittest.TestCase):
         with directory:
             write_doc(root / "docs/03.specs/123-new/spec.md", {"status": "active"})
             self.assert_changed_failure(root)
+
+    def test_failed_tracked_file_discovery_fails_closed(self) -> None:
+        self.assert_git_probe_failure("tracked", "tracked Markdown")
+
+    def test_failed_unstaged_diff_discovery_fails_closed(self) -> None:
+        self.assert_git_probe_failure("unstaged", "unstaged Markdown")
+
+    def test_failed_staged_diff_discovery_fails_closed(self) -> None:
+        self.assert_git_probe_failure("staged", "staged Markdown")
+
+    def test_failed_untracked_file_discovery_fails_closed(self) -> None:
+        self.assert_git_probe_failure("untracked", "untracked Markdown")
+
+    def test_non_git_root_fails_closed_without_success_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            write_doc(root / "docs/03.specs/123-new/spec.md", {"status": "active"})
+            result = run_checker(root, "check-changed")
+            combined = result.stdout + result.stderr
+            self.assertEqual(2, result.returncode, combined)
+            self.assertIn("configuration-error:", result.stderr)
+            self.assertIn("Git worktree", result.stderr)
+            self.assertNotIn("metadata check-changed:", result.stdout)
+            self.assertNotIn("Traceback", combined)
+
+    def test_missing_git_executable_fails_closed_without_traceback(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            result = run_checker(root, "check-changed", env={"PATH": ""})
+            combined = result.stdout + result.stderr
+            self.assertEqual(2, result.returncode, combined)
+            self.assertIn("configuration-error:", result.stderr)
+            self.assertIn("Git executable", result.stderr)
+            self.assertNotIn("metadata check-changed:", result.stdout)
+            self.assertNotIn("Traceback", combined)
 
     def test_staged_invalid_document_fails(self) -> None:
         directory, root = self.new_repo()

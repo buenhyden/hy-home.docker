@@ -46,11 +46,17 @@ metadata rollout.
   findings as advisory. It fails only when profile configuration or YAML parsing
   prevents a trustworthy inventory.
 - `check-changed` is the blocking pre-push contract for safely selected
-  changed/new Markdown paths. Base selection uses explicit `--base-ref`, then
-  `TEMPLATE_GATE_BASE`, `GITHUB_BASE_REF`, upstream, `origin/main`, and local
-  `main`. When none resolves, it emits a diagnostic and evaluates only local
-  staged, unstaged, untracked, renamed, and deleted paths; it never substitutes
-  a repository-wide gate. Deleted paths are selected evidence but are not
+  changed/new Markdown paths. It requires a valid Git worktree and a complete
+  local snapshot: tracked Markdown, unstaged changes, staged changes, and
+  untracked files must all be discovered successfully with NUL-delimited path
+  output. A nonzero Git result or Git execution error in any required probe is
+  a configuration error; partial or empty discovery never produces a success
+  summary, including when `--changed-path` is supplied. Base selection uses
+  explicit `--base-ref`, then `TEMPLATE_GATE_BASE`, `GITHUB_BASE_REF`, upstream,
+  `origin/main`, and local `main`. When none resolves, it emits a diagnostic and
+  evaluates the successfully established working-tree-only snapshot; this
+  narrower fallback never excuses local discovery failure or substitutes a
+  repository-wide gate. Deleted paths are selected evidence but are not
   parsed as existing violations. When a selected deletion or in-place identity
   change removes a typed `artifact_id`, the checker compares selected current
   and absent paths with their HEAD and merge-base records, then blocks only

@@ -830,14 +830,61 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
     return loaded
 
 
-def _tracked_markdown(root: pathlib.Path) -> list[pathlib.Path]:
-    result = subprocess.run(
-        ["git", "-C", str(root), "ls-files", "-z", "--", "*.md"],
-        capture_output=True,
-        check=False,
+def _run_git(
+    root: pathlib.Path,
+    args: Sequence[str],
+    *,
+    operation: str,
+    text: bool = False,
+) -> subprocess.CompletedProcess[bytes] | subprocess.CompletedProcess[str]:
+    try:
+        return subprocess.run(
+            ["git", "-C", str(root), *args],
+            capture_output=True,
+            text=text,
+            check=False,
+        )
+    except OSError:
+        raise ProfileError(
+            f"cannot establish local Git snapshot: Git executable unavailable during {operation}"
+        ) from None
+
+
+def _decode_git_paths(output: bytes, operation: str) -> list[pathlib.Path]:
+    try:
+        return [pathlib.Path(item.decode("utf-8")) for item in output.split(b"\0") if item]
+    except UnicodeDecodeError:
+        raise ProfileError(
+            f"cannot establish local Git snapshot: {operation} returned a non-UTF-8 path"
+        ) from None
+
+
+def _require_git_worktree(root: pathlib.Path) -> None:
+    result = _run_git(
+        root,
+        ["rev-parse", "--is-inside-work-tree"],
+        operation="Git worktree validation",
+        text=True,
     )
-    if result.returncode == 0:
-        paths = [pathlib.Path(item.decode("utf-8")) for item in result.stdout.split(b"\0") if item]
+    if result.returncode != 0 or result.stdout.strip() != "true":
+        raise ProfileError("cannot establish local Git snapshot: --root is not a Git worktree")
+
+
+def _tracked_markdown(root: pathlib.Path, *, require_git: bool = False) -> list[pathlib.Path]:
+    try:
+        result = _run_git(
+            root,
+            ["ls-files", "-z", "--", "*.md"],
+            operation="tracked Markdown discovery",
+        )
+    except ProfileError:
+        if require_git:
+            raise
+        result = None
+    if result is not None and result.returncode == 0:
+        paths = _decode_git_paths(result.stdout, "tracked Markdown discovery")
+    elif require_git:
+        raise ProfileError("cannot establish local Git snapshot: tracked Markdown discovery failed")
     else:
         paths = [path.relative_to(root) for path in root.rglob("*.md") if path.is_file()]
     return sorted(
@@ -863,11 +910,11 @@ def _normalized_target_path(path_text: str) -> pathlib.Path | None:
 
 
 def _git_lines(root: pathlib.Path, args: Sequence[str]) -> list[str]:
-    result = subprocess.run(
-        ["git", "-C", str(root), *args],
-        capture_output=True,
+    result = _run_git(
+        root,
+        args,
+        operation="base resolution",
         text=True,
-        check=False,
     )
     if result.returncode != 0:
         return []
@@ -927,11 +974,11 @@ def resolve_base_selection(root: pathlib.Path, explicit_ref: str | None) -> Base
 def _metadata_at_ref(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> dict[str, object] | None:
     if not base_ref:
         return None
-    result = subprocess.run(
-        ["git", "-C", str(root), "show", f"{base_ref}:{path.as_posix()}"],
-        capture_output=True,
+    result = _run_git(
+        root,
+        ["show", f"{base_ref}:{path.as_posix()}"],
+        operation="prior metadata discovery",
         text=True,
-        check=False,
     )
     if result.returncode != 0:
         return None
@@ -982,10 +1029,10 @@ def collect_records_at_ref(
 
     common, _ = _profile_mapping(profiles)
     excluded = set(common.get("inventory_excludes", []))
-    result = subprocess.run(
-        ["git", "-C", str(root), "ls-tree", "-r", "-z", "--name-only", base_ref, "--", "docs"],
-        capture_output=True,
-        check=False,
+    result = _run_git(
+        root,
+        ["ls-tree", "-r", "-z", "--name-only", base_ref, "--", "docs"],
+        operation="base Markdown discovery",
     )
     if result.returncode != 0:
         raise ProfileError(f"cannot enumerate Markdown records at base ref: {base_ref}")
@@ -1002,11 +1049,11 @@ def collect_records_at_ref(
     )
     records: list[Record] = []
     for relative_path in paths:
-        shown = subprocess.run(
-            ["git", "-C", str(root), "show", f"{base_ref}:{relative_path.as_posix()}"],
-            capture_output=True,
+        shown = _run_git(
+            root,
+            ["show", f"{base_ref}:{relative_path.as_posix()}"],
+            operation="base Markdown record discovery",
             text=True,
-            check=False,
         )
         if shown.returncode != 0:
             raise ProfileError(f"cannot read base Markdown record: {relative_path.as_posix()}")
@@ -1026,11 +1073,11 @@ def collect_selected_records_at_ref(
         relative_path = _normalized_target_path(path_text)
         if relative_path is None:
             continue
-        shown = subprocess.run(
-            ["git", "-C", str(root), "show", f"{ref}:{relative_path.as_posix()}"],
-            capture_output=True,
+        shown = _run_git(
+            root,
+            ["show", f"{ref}:{relative_path.as_posix()}"],
+            operation="selected historical record discovery",
             text=True,
-            check=False,
         )
         if shown.returncode == 0:
             records[relative_path.as_posix()] = _record_from_text(relative_path, shown.stdout)
@@ -1043,12 +1090,13 @@ def collect_records(
     base_ref: str | None = None,
     selected_paths: Sequence[str] = (),
     previous_records: Mapping[str, Record] | None = None,
+    require_git: bool = False,
 ) -> list[Record]:
     """Collect tracked records plus selected existing new paths, excluding deletions."""
 
     common, _ = _profile_mapping(profiles)
     excluded = set(common.get("inventory_excludes", []))
-    candidates = set(_tracked_markdown(root))
+    candidates = set(_tracked_markdown(root, require_git=require_git))
     for path_text in selected_paths:
         candidate = _normalized_target_path(path_text)
         if candidate is not None and (root / candidate).is_file():
@@ -1504,41 +1552,52 @@ def _changed_paths(
     explicit: Sequence[str],
     base: BaseSelection,
 ) -> set[str]:
+    changed: set[str] = set()
+    commands = [
+        (
+            "unstaged Markdown discovery",
+            ["diff", "--name-only", "-z", "--diff-filter=ACDMRT", "--", "*.md"],
+        ),
+        (
+            "staged Markdown discovery",
+            ["diff", "--cached", "--name-only", "-z", "--diff-filter=ACDMRT", "--", "*.md"],
+        ),
+        (
+            "untracked Markdown discovery",
+            ["ls-files", "-z", "--others", "--exclude-standard", "--", "*.md"],
+        ),
+    ]
+    if base.merge_base:
+        commands.insert(
+            0,
+            (
+                "committed branch Markdown discovery",
+                [
+                    "diff",
+                    "--name-only",
+                    "-z",
+                    "--diff-filter=ACDMRT",
+                    f"{base.merge_base}...HEAD",
+                    "--",
+                    "*.md",
+                ],
+            ),
+        )
+    for operation, command in commands:
+        result = _run_git(root, command, operation=operation)
+        if result.returncode != 0:
+            raise ProfileError(f"cannot establish local Git snapshot: {operation} failed")
+        changed.update(
+            normalized.as_posix()
+            for path in _decode_git_paths(result.stdout, operation)
+            if (normalized := _normalized_target_path(path.as_posix())) is not None
+        )
     if explicit:
         return {
             normalized.as_posix()
             for path in explicit
             if (normalized := _normalized_target_path(path)) is not None
         }
-    changed: set[str] = set()
-    commands = [
-        ["git", "-C", str(root), "diff", "--name-only", "--diff-filter=ACDMRT", "HEAD", "--", "*.md"],
-        ["git", "-C", str(root), "diff", "--cached", "--name-only", "--diff-filter=ACDMRT", "--", "*.md"],
-        ["git", "-C", str(root), "ls-files", "--others", "--exclude-standard", "--", "*.md"],
-    ]
-    if base.merge_base:
-        commands.insert(
-            0,
-            [
-                "git",
-                "-C",
-                str(root),
-                "diff",
-                "--name-only",
-                "--diff-filter=ACDMRT",
-                f"{base.merge_base}...HEAD",
-                "--",
-                "*.md",
-            ],
-        )
-    for command in commands:
-        result = subprocess.run(command, capture_output=True, text=True, check=False)
-        if result.returncode == 0:
-            changed.update(
-                normalized.as_posix()
-                for line in result.stdout.splitlines()
-                if line.strip() and (normalized := _normalized_target_path(line.strip())) is not None
-            )
     return changed
 
 
@@ -1578,8 +1637,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
     base = BaseSelection("not-applicable", None, None)
     transition_overrides: dict[tuple[str, str, str], TransitionOverride] = {}
+    changed_selection: set[str] = set()
     if args.mode == "check-changed":
         try:
+            _require_git_worktree(root)
             base = resolve_base_selection(root, args.base_ref)
             if args.transition_override_file:
                 transition_overrides = load_transition_overrides(
@@ -1587,6 +1648,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     root,
                     profiles,
                 )
+            changed_selection = _changed_paths(root, args.changed_path, base)
         except ProfileError as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
@@ -1603,7 +1665,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     elif args.transition_override_file:
         print("configuration-error: --transition-override-file requires --mode check-changed", file=sys.stderr)
         return 2
-    changed_selection = _changed_paths(root, args.changed_path, base) if args.mode == "check-changed" else set()
     base_records: list[Record] = []
     if base.merge_base:
         try:
@@ -1612,12 +1673,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
     base_records_by_path = {record.path.as_posix(): record for record in base_records}
-    records = collect_records(
-        root,
-        profiles,
-        selected_paths=sorted(changed_selection),
-        previous_records=base_records_by_path,
-    )
+    try:
+        records = collect_records(
+            root,
+            profiles,
+            selected_paths=sorted(changed_selection),
+            previous_records=base_records_by_path,
+            require_git=args.mode == "check-changed",
+        )
+    except ProfileError as error:
+        print(f"configuration-error: {error}", file=sys.stderr)
+        return 2
     manifest = build_manifest(records)
     base_manifest = build_manifest(base_records)
     base_findings_by_path = {
@@ -1637,11 +1703,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     records_by_path = {record.path.as_posix(): record for record in records}
     relation_impact_findings: dict[str, list[Finding]] = {}
     if args.mode == "check-changed":
-        head_records_by_path = collect_selected_records_at_ref(
-            root,
-            changed_selection,
-            "HEAD",
-        )
+        try:
+            head_records_by_path = collect_selected_records_at_ref(
+                root,
+                changed_selection,
+                "HEAD",
+            )
+        except ProfileError as error:
+            print(f"configuration-error: {error}", file=sys.stderr)
+            return 2
         relation_impact_findings = _relation_impact_findings(
             changed_selection,
             records_by_path,

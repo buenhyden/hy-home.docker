@@ -1,5 +1,5 @@
 ---
-status: completed
+status: active
 artifact_id: task:2026-07-11-agentic-engineering-audit-remediation
 artifact_type: task
 parent_ids:
@@ -63,7 +63,7 @@ independent task/branch reviews.
 | T-AER-009 | Implement controlled agent pre-commit wrapper and governance contract | impl/test | Spec 123 / Controlled Pre-commit Wrapper | PLN-AER-009 | Shell tests; syntax/shellcheck; wrapper contract; task review | qa-engineer | Done |
 | T-AER-010 | Synchronize provider adapters and add metadata validation to the existing CI job | impl/test | Spec 123 / Provider Synchronization | PLN-AER-010 | Provider no-drift; workflow checks; repo contracts; task review | ci-cd-engineer | Done |
 | T-AER-011 | Author four independent runtime follow-up specs/plans without runtime mutation | doc | Spec 123 / W5 Runtime Follow-up | PLN-AER-011 | Template/traceability/rollback/approval gates; task review | doc-writer | Done |
-| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Done |
+| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | In Progress |
 
 ## Phase View
 
@@ -92,7 +92,7 @@ independent task/branch reviews.
 ### Phase 5 — Follow-up and Closure
 
 - [x] T-AER-011 Runtime follow-up specs/plans
-- [x] T-AER-012 Full verification, review, and closure
+- [ ] T-AER-012 Full verification, review, and closure — I-03 fixed locally; exact-range re-review pending
 
 ## Verification Summary
 
@@ -801,13 +801,13 @@ runtime requirement set.
 - **Graphify decision**: docs-only work does not trigger the repository's
   code-file refresh rule; no Graphify refresh is planned for Task 11.
 
-### T-AER-012 Verification and Final Reclosure Evidence
+### T-AER-012 Verification and Current Reopening Evidence
 
-Task 12 is **Done** after two postclosure Important findings were fixed in
-separate commits and the exact-range re-review returned Spec PASS, Quality
-APPROVED, Critical 0, Important 0, Minor 0, and `READY_FOR_RECLOSURE: YES`.
-T-AER-012, its Phase 5 checkbox, Spec 123, and the umbrella Plan/Task are
-completed again.
+Task 12 is **In Progress** after final merge-readiness review found I-03. The
+earlier I-01 and I-02 fixes remain resolved. The I-03 fail-closed Git discovery
+fix is locally implemented and verified, but T-AER-012, its Phase 5 checkbox,
+Spec 123, and the umbrella Plan/Task remain active pending independent
+exact-range re-review.
 
 #### Postclosure Finding and Focused Fix
 
@@ -884,6 +884,40 @@ of the deletion-only impact collector, so unchanged `parent_ids` or
   Quality APPROVED, Critical 0, Important 0, Minor 0, resolved I-01 and I-02,
   and `READY_FOR_RECLOSURE: YES`. Report:
   `.superpowers/sdd/branch-review-postfix2-report.md`.
+
+#### Final Merge-Readiness Finding and Git Discovery Fix
+
+The final merge-readiness review of
+`3e92b39fa02767dafff612fcfa5b3670998471be..132418a4` preserved I-01 and I-02
+as resolved but returned Spec FAIL / Quality CHANGES_REQUESTED, Critical 0,
+Important 1, Minor 0, and `READY_FOR_FINISHING: NO` for I-03. Required Git
+path-discovery failures could be silently converted into partial or empty
+selection, including `selected=0 violations=0` with exit zero.
+
+- RED evidence: four executable-boundary fixtures independently failed tracked
+  Markdown, unstaged diff, staged diff, and untracked-file discovery; each
+  reproduced exit zero with the success summary. A non-Git root also returned
+  the same false green, while a missing Git executable leaked a traceback and
+  returned exit one. The valid unavailable-base fixture remained GREEN.
+- Focused GREEN evidence: `check-changed` now requires a valid Git worktree,
+  validates every local discovery probe even with explicit changed paths,
+  reports sanitized configuration errors on Git nonzero/OS failures, and uses
+  NUL-delimited path output. Advisory modes retain their filesystem fallback.
+- Fallback boundary: unavailable branch-base resolution may still select the
+  complete local working-tree snapshot; it never excuses failed tracked,
+  unstaged, staged, or untracked discovery.
+- Preservation boundary: I-01/I-02 relation-impact behavior, rename/deletion
+  semantics, legacy exceptions, explicit-base selection, deterministic output,
+  and unrelated advisory-noise filtering retain their coverage.
+- Local evidence: targeted I-03 matrix PASS 7/7; metadata discovery PASS 82/82;
+  full validation PASS 89/89; explicit lifecycle reopening PASS at 10 selected /
+  0 violations / 4 overrides; branch-base `3e92b39f` PASS at 97 selected /
+  0 violations; inventory fresh at 888 records / 2,025 advisory findings;
+  traceability PASS at 46 pairs; alignment PASS at 637 docs / 5,001 links;
+  repository contracts PASS at 8/8 changed and 747/747 normalized targets;
+  diff hygiene and protected-surface scan PASS.
+- Review boundary: no re-review or lifecycle closure is claimed. Task 12 stays
+  active until a new independent exact-range review approves the fix.
 
 #### Historical Preclosure Evidence
 
@@ -1023,7 +1057,7 @@ values, credentials, and secret material were not persisted.
 | T-AER-009 | `dce3ea60..4d0a8eaf` | PASS | APPROVED | Initial C0/I3/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-9-report.md`; `.superpowers/sdd/review-dce3ea60..4d0a8eaf.diff` |
 | T-AER-010 | `aa5cbd36..0e030ab1` | PASS | APPROVED | Initial C0/I1/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-10-report.md`; `.superpowers/sdd/review-aa5cbd36..0e030ab1.diff` |
 | T-AER-011 | `4937ae99..03119741` | PASS | APPROVED | C0/I0/M0 | `.superpowers/sdd/task-11-report.md`; `.superpowers/sdd/review-4937ae99..03119741.diff` |
-| T-AER-012 | `3e92b39f..746be1be` | PASS | APPROVED | Postclosure I-01 and I-02 resolved; final C0/I0/M0; `READY_FOR_RECLOSURE: YES` | `.superpowers/sdd/branch-review-postclosure-report.md`; `.superpowers/sdd/branch-review-postfix-report.md`; `.superpowers/sdd/branch-review-postfix2-report.md`; `.superpowers/sdd/task-12-postclosure-fix-report.md`; `.superpowers/sdd/task-12-identity-change-fix-report.md` |
+| T-AER-012 | `3e92b39f..132418a4`; I-03 fix pending commit/re-review | FAIL | CHANGES_REQUESTED | I-01 and I-02 remain resolved; final review found I-03, C0/I1/M0; local fix GREEN, exact-range re-review pending | `.superpowers/sdd/branch-review-final-report.md`; `.superpowers/sdd/task-12-git-discovery-fix-report.md`; prior postclosure/postfix reports preserved |
 
 - **Baseline Commands**:
   - `git diff --check` — PASS

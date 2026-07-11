@@ -1,5 +1,5 @@
 ---
-status: completed
+status: active
 artifact_id: plan:2026-07-11-agentic-engineering-audit-remediation
 artifact_type: plan
 parent_ids:
@@ -1191,7 +1191,7 @@ git add docs scripts .claude .codex .agents .github .pre-commit-config.yaml test
 git commit -m "docs(task): close agentic audit remediation"
 ```
 
-### Postclosure Remediation and Reclosure Evidence
+### Postclosure Remediation and Current Reopening Evidence
 
 - Tasks 1-11 have task-scoped Spec PASS / Quality APPROVED verdicts with all
   findings resolved to Critical 0, Important 0, Minor 0.
@@ -1212,6 +1212,11 @@ git commit -m "docs(task): close agentic audit remediation"
   `3e92b39fa02767dafff612fcfa5b3670998471be..746be1be`
   returned Spec PASS / Quality APPROVED, Critical 0, Important 0, Minor 0,
   resolved I-01 and I-02, and `READY_FOR_RECLOSURE: YES`.
+- The later final merge-readiness review of
+  `3e92b39fa02767dafff612fcfa5b3670998471be..132418a4` found I-03: required
+  local Git discovery could fail open as `selected=0 violations=0`. The
+  fail-closed implementation and tests are locally complete, but Task 12 and
+  this plan remain active until a new exact-range review approves them.
 - Specs 124-127 and their plans remain `draft`; no runtime or remote mutation
   is authorized by this lifecycle reclosure.
 
@@ -1286,14 +1291,14 @@ git commit -m "docs(task): close agentic audit remediation"
 - [x] Canonical audit covers every category/subcategory with the shared status/depth/disposition model.
 - [x] The 2026-07-07 audit pack is mapping-only superseded history; 2026-07-03/04 boundaries are explicit.
 - [x] Exhaustive semantic frontmatter inventory is reproducible and current.
-- [x] Typed metadata profiles, lifecycle rules, unit tests, and identity-removal-safe changed/new enforcement pass and receive exact-range re-review approval.
+- [ ] Typed metadata profiles, lifecycle rules, unit tests, identity-removal handling, and fail-closed Git discovery pass; I-03 still requires exact-range re-review approval.
 - [x] Approved active agentic chain carries valid typed metadata and parent relations.
 - [x] Controlled agent pre-commit wrapper and evidence contract pass tests and final full-repository execution.
 - [x] Stage 00/99, provider adapters, validators, pre-push, and CI repo-contracts step are synchronized.
 - [x] No model literal changes occur without separate exact approval.
 - [x] Four runtime follow-up specs/plans exist with explicit approval and rollback boundaries; runtime remains unchanged.
 - [x] Every task has logical commits and independent spec/quality reviews.
-- [x] Full affected validation and the new exact-range whole-branch review pass; Spec/Plan/Task indexes and progress log are closed again.
+- [ ] Full affected validation passes for the I-03 fix; a new exact-range whole-branch review and lifecycle reclosure remain pending.
 
 ## Related Documents
 
