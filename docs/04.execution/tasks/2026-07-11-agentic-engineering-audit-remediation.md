@@ -126,6 +126,12 @@ the canonical research pack.
   - `bash scripts/knowledge/generate-llm-wiki-coverage.sh` — PASS, 1,262 safe paths
   - `bash scripts/validation/check-repo-contracts.sh` — PASS, `failures=0`
 
+### Task Review Ledger
+
+| Task | Commit range | Spec compliance | Quality | Findings | Review evidence |
+| --- | --- | --- | --- | --- | --- |
+| T-AER-001 | `84d88ee4..9755e9e1` | PASS | APPROVED | Initial C0/I1/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-1-report.md`; `.superpowers/sdd/review-84d88ee4..9755e9e1.diff` |
+
 - **Baseline Commands**:
   - `git diff --check` — PASS
   - `bash scripts/validation/check-doc-traceability.sh` — PASS, `failures=0`
