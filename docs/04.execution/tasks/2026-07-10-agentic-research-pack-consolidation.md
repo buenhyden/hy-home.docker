@@ -44,7 +44,7 @@ plan.
 | T-ARC-001 | Refresh workspace baseline, spec-driven SDLC, document roles, and source evidence | doc | VAL-ARC-002, VAL-ARC-007, VAL-ARC-009 | PLN-ARC-001 | Category/role coverage, validators, commit range, task review | Documentation implementer | Done |
 | T-ARC-002 | Add cutoff-bound provider model landscape and refresh task selection | doc/eval | VAL-ARC-003, VAL-ARC-004 | PLN-ARC-002 | Model/lifecycle totals, cutoff exceptions, provider sources, validators, task review | Documentation implementer | Done |
 | T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Done |
-| T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Ready for Review |
+| T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Done |
 | T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Todo |
 | T-ARC-006 | Finalize indexes, supersede duplicate pack, close lifecycle and validation | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, whole-branch review, closure commit | Workflow supervisor | Todo |
 
@@ -63,7 +63,7 @@ plan.
 ### Phase 3: Quality, Infrastructure, and Security
 
 - [x] T-ARC-004 Refresh QA/CI/formatting and automation research
-      (**Ready for Review**; independent verdict not yet recorded).
+      (**Done**; final independent review PASS / APPROVED).
 - [ ] T-ARC-005 Refresh Compose/infrastructure and security research.
 
 ### Phase 4: Consolidation Closure
@@ -149,8 +149,8 @@ prove an applicable model cutoff must use `historical state unverified`.
 | <https://spec.editorconfig.org/> | EditorConfig / official specification 0.17.2 | Class: local/editor. Defines hierarchical file search, `root`, section precedence, and supported style pairs. | Version 0.17.2 shown | 2026-07-11 | Not applicable (non-model source) | Specification behavior is editor-core behavior, not a standalone repository blocking gate. | T-ARC-004 |
 | <https://prettier.io/docs> | Prettier / official stable documentation | Class: local/CI capability. Prettier parses and reprints supported inputs to a consistent style. | Stable docs; no visible page date | 2026-07-11 | Not applicable (non-model source) | The tracked shared post-tool hook does not invoke Prettier, and configuration alone is not execution evidence. | T-ARC-004 |
 | <https://prettier.io/docs/cli> | Prettier / official stable CLI documentation | Class: local/CI capability. The CLI's check mode reports unformatted files and uses non-zero exit codes suitable for CI. | Stable docs; no visible page date | 2026-07-11 | Not applicable (non-model source) | Upstream command behavior is not an adopted or tracked shared gate in this workspace. | T-ARC-004 |
-| <https://dora.dev/guides/dora-metrics/> | DORA / official mutable guide | Class: remote operational measurement. Current model groups change lead time, deployment frequency, failed deployment recovery time, change fail rate, and deployment rework rate into throughput/instability. | No visible page date | 2026-07-11 | Not applicable (non-model source) | Best applied to one application/service at a time; this task collected no production deployment or recovery data. | T-ARC-004 |
-| <https://martinfowler.com/bliki/ContinuousDelivery.html> | Martin Fowler / original practice article | Class: pipeline/delivery comparison. Continuous delivery emphasizes releasability, fast automated production-readiness feedback, builds/tests, and a deployment pipeline. | 2013-05-30 | 2026-07-11 | Not applicable (non-model source) | Practice framing only; tracked CI checks do not prove production deployability or continuous deployment. | T-ARC-004 |
+| <https://dora.dev/guides/dora-metrics/> | DORA / official mutable guide | Class: remote operational measurement. Current model groups change lead time, deployment frequency, failed deployment recovery time, change fail rate, and deployment rework rate into throughput/instability. | Last updated 2026-01-05 | 2026-07-11 | Not applicable (non-model source) | Best applied to one application/service at a time; this task collected no production deployment or recovery data. | T-ARC-004 |
+| <https://martinfowler.com/bliki/ContinuousDelivery.html> | Martin Fowler / original practice article | Class: pipeline/delivery comparison. Continuous delivery emphasizes releasability, fast automated production-readiness feedback, builds/tests, and a deployment pipeline. | Published 2013-05-30; updated 2014-08-12 | 2026-07-11 | Not applicable (non-model source) | Practice framing only; tracked CI checks do not prove production deployability or continuous deployment. | T-ARC-004 |
 
 ## T-ARC-001 Evidence
 
@@ -583,17 +583,21 @@ remote state, and unrelated documents were inspected but not changed.
 
 ### Status and Scope
 
-Status is **Ready for Review** after remediation. The initial independent review
-of exact range
+Status is **Done**. The initial independent review of exact range
 `505277817eee0de4270bc03ae7fb789ef9d02ad3..0e400ec2022575fcecb35f9054c9a35a8501d7f9`
 returned Spec Compliance **FAIL** and Document Quality
 **CHANGES_REQUESTED**, with **Critical 0 · Important 2 · Minor 0**. Both
-Important findings are remediated below; the next independent verdict remains
-**Pending**. This implementation is documentation only, so code TDD and domain
-coverage are N/A. The tracked editable scope is exactly this task record plus
-the two assigned Stage 90 references. Workflows, scripts, hooks,
-pre-commit/tool configuration, runtime, provider adapters, credentials, and
-remote GitHub state were inspected but not changed.
+Important findings were remediated in `ef97a8c1`. The final independent
+re-review of exact content range
+`505277817eee0de4270bc03ae7fb789ef9d02ad3..ef97a8c148359b7ee1af5948921156a3ab1fa1b1`
+returned Spec Compliance **PASS** and Document Quality **APPROVED**, with
+**Critical 0 · Important 0 · Minor 1**; I-01 and I-02 are resolved. The sole
+M-01 source-date metadata finding is corrected in this bookkeeping update.
+This implementation is documentation only, so code TDD and domain coverage are
+N/A. The tracked editable scope is exactly this task record plus the two
+assigned Stage 90 references. Workflows, scripts, hooks, pre-commit/tool
+configuration, runtime, provider adapters, credentials, and remote GitHub state
+were inspected but not changed.
 
 ### Tracked Inventory and Derivation
 
@@ -649,8 +653,8 @@ The refresh corrects these tracked-evidence drifts:
 
 | Finding | Initial evidence | Remediation | Disposition |
 | --- | --- | --- | --- |
-| I-01 — inaccurate local-runner mode mapping | The automation row assigned 12 actions to `--harness`, but tracked functions contain 12 script-backed and 8 harness `run_step` calls. | The two Stage 90 references now state default/`--script-backed`/`--all-profiles` = 12 executed gates, `--harness` = 8, and `--list` = 0 with 1 advisory non-executed recommender. | Fixed; next independent verdict pending. |
-| I-02 — omitted changelog governance drift | The workflow only verifies pushed-tag coverage, while active Stage 00 governance says “generate release changelog.” | The automation comparison and follow-up sections record the contradiction, name `docs/00.agent-governance/rules/github-governance.md` as canonical owner, and recommend a separately approved Stage 00 correction. No active policy or workflow changed. | Fixed in Task 4 evidence; residual Stage 00 gap remains pending separate approval. |
+| I-01 — inaccurate local-runner mode mapping | The automation row assigned 12 actions to `--harness`, but tracked functions contain 12 script-backed and 8 harness `run_step` calls. | The two Stage 90 references now state default/`--script-backed`/`--all-profiles` = 12 executed gates, `--harness` = 8, and `--list` = 0 with 1 advisory non-executed recommender. | Resolved; final independent review PASS / APPROVED. |
+| I-02 — omitted changelog governance drift | The workflow only verifies pushed-tag coverage, while active Stage 00 governance says “generate release changelog.” | The automation comparison and follow-up sections record the contradiction, name `docs/00.agent-governance/rules/github-governance.md` as canonical owner, and recommend a separately approved Stage 00 correction. No active policy or workflow changed. | Resolved in Task 4; residual Stage 00 gap remains pending separate approval. |
 
 ### Changed Files
 
@@ -720,9 +724,12 @@ The remediation covering pass recorded:
   `0e400ec2022575fcecb35f9054c9a35a8501d7f9`.
 - Initial review range:
   `505277817eee0de4270bc03ae7fb789ef9d02ad3..0e400ec2022575fcecb35f9054c9a35a8501d7f9`.
-- Remediation handoff range:
-  `505277817eee0de4270bc03ae7fb789ef9d02ad3..HEAD` on the Task 4
-  implementation branch.
+- Remediation commit:
+  `ef97a8c148359b7ee1af5948921156a3ab1fa1b1`.
+- Final independent review range:
+  `505277817eee0de4270bc03ae7fb789ef9d02ad3..ef97a8c148359b7ee1af5948921156a3ab1fa1b1`.
+- Final independent review report:
+  `.superpowers/sdd/task-4-rereview-report.md` (ignored out-of-band evidence).
 - Logical subject: `docs(research): refresh QA and automation references`.
 - Implementer spec-compliance self-review: **PASS** — fixed source set,
   tracked counts/derivation, exact schemas, evidence taxonomy, known-drift
@@ -734,8 +741,14 @@ The remediation covering pass recorded:
 - Initial independent spec-compliance verdict: **FAIL**.
 - Initial independent document-quality verdict: **CHANGES_REQUESTED**.
 - Initial finding counts: **Critical 0 · Important 2 · Minor 0**.
-- Remediation status: **Ready for Review**; next independent spec-compliance
-  and document-quality verdicts are **Pending**.
+- Final independent spec-compliance verdict: **PASS**.
+- Final independent document-quality verdict: **APPROVED**.
+- Final finding counts: **Critical 0 · Important 0 · Minor 1**; I-01 and I-02
+  are resolved.
+- M-01 disposition: corrected in this bookkeeping update by recording DORA as
+  `Last updated 2026-01-05` and Fowler as
+  `Published 2013-05-30; updated 2014-08-12`.
+- Final status: **Done**.
 
 ## Task Review Evidence Contract
 
