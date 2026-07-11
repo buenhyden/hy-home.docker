@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: spec:128-agentic-audit-harness-consolidation
 artifact_type: spec
 parent_ids:
@@ -390,6 +390,8 @@ prefixes before execution.
 
 ## Related Documents
 
+- [Implementation plan](../../04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md)
+- [Execution task](../../04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md)
 - [Parent agentic audit remediation spec](../123-agentic-engineering-audit-remediation/spec.md)
 - [Canonical agentic implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Audit references index](../../90.references/audits/README.md)
