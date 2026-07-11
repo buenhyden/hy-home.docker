@@ -66,6 +66,12 @@ category dates remain in their responsibility reports. The assessment favors
 conservative status labels when syntax, semantic correctness, provider-native
 behavior, or enforcement depth differ.
 
+The generated audit implementation matrix is fresh for the generator's
+historical eight-report input list, not for the complete canonical pack now
+listed by the README. It omits the two Task 4 reports and their 36 criterion
+rows (22 SDLC/document-contract plus 14 DML). Use those reports directly for
+complete Task 4 semantic coverage until Task 6 consolidates the generator.
+
 ## Implementation Status Matrix
 
 | Category | Status | Evidence | Summary |
@@ -118,7 +124,7 @@ agent-output eval scoring, SBOM, provenance/attestation automation, Scorecard,
 and broader ecosystem/container vulnerability scanning. Changed-path QA recommendations are now
 surfaced in CI Step Summary, audit-pack implementation-status coverage is now
 reportable through repo contracts, audit implementation matrix consistency is
-generated from the audit pack and evidence surfaces, LLM Wiki safe-path
+generated for its historical eight-report subset, LLM Wiki safe-path
 coverage is grouped by source bucket/category in Stage 90 data, tech-stack
 version source provenance is generated from the registry and listed Compose
 declarations, provider hook parity is generated with Gemini behavioral

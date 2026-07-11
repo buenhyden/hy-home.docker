@@ -88,6 +88,18 @@ This README is for:
 - [Security framework maturity coverage](./security-framework-maturity.md)
 - [Generated audit implementation matrix](../../data/governance/audit-implementation-matrix.md)
 
+### Generated Matrix Interim Limitation
+
+The generated matrix is byte-fresh against its current historical
+eight-report generator input list, but that list does not yet include
+[`sdlc-document-contracts-implementation.md`](./sdlc-document-contracts-implementation.md)
+or
+[`frontmatter-template-readme-implementation.md`](./frontmatter-template-readme-implementation.md).
+It therefore omits 36 Task 4 criterion rows: 22 SDLC/document-contract rows
+and DML-01 through DML-14. Until Task 6 consolidates the generator, the matrix
+must not be cited as complete current semantic audit coverage; use the two
+canonical reports directly.
+
 ## How to Work in This Area
 
 1. Keep audit reports source-attributed and evidence-only.
@@ -97,6 +109,8 @@ This README is for:
    as gaps unless separately approved.
 4. Update this README when audit report files are added, renamed, or removed.
 5. Refresh the generated LLM Wiki index after adding tracked report files.
+6. Treat the generated audit matrix as an interim historical-eight-report
+   snapshot until Task 6 adds the two Task 4 reports to generator ownership.
 
 ## Evidence Freshness Boundary
 

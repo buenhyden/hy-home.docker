@@ -65,12 +65,29 @@ All values below were reproduced from tracked files at baseline
 | `git ls-files 'docs/**/*.md' \| wc -l` | 872 | Current docs-only Markdown count required by the Task 4 brief. |
 | `git ls-files '*.md' \| wc -l` | 1,073 | Current repo-wide Markdown count; use this scope when comparing later repo-wide snapshots. |
 | Allowed-status `rg -l` over Stage 01/02/03/04/05/90/98 | 635 | Exact brief command result. Top-frontmatter parsing gives the same total: 366 active, 240 completed, 9 superseded, 20 archived, and 0 draft. |
-| Stage 01/02/03/04/05/90/98 Markdown | 723 total: 598 non-README leaves and 125 READMEs | Every one of the 598 leaves has an allowed top-frontmatter status. README behavior is profiled separately. |
+| Stage 01/02/03/04/05/90/98 Markdown | 730 total: 598 non-README leaves and 132 READMEs | Every one of the 598 leaves has an allowed top-frontmatter status. README behavior is profiled separately. The count includes the seven stage-root README files omitted by the narrower recursive glob used during initial drafting. |
 | Type counts | 24 PRDs; 24 ARDs; 24 ADRs; 46 Spec folders and 46 `spec.md`; 88 Plans; 114 Tasks; 66 Guides; 64 Policies; 61 Runbooks; 0 Incident/Postmortem leaves; 20 Archive tombstones | Counts prove corpus presence, not semantic necessity or freshness. |
 | Number/path checks | 0 invalid PRD, ARD, ADR, Spec-folder, Plan, or Task names | Three-digit PRD/Spec, four-digit ARD/ADR, and dated Plan/Task schemes coexist without requiring equal suffixes. |
 | Parent-link signals | 41/46 Specs mention PRD paths/fields; 40/46 mention ARD and ADR; 63/88 Plans mention a Spec path; 112/114 Tasks mention a Plan path; 69/114 mention a Spec path | Text signals are not a semantic parent manifest. Optional or N/A predecessors also require type-aware treatment. |
 | Operations/release | Only `docs/05.operations/incidents/README.md` exists under incidents; `CHANGELOG.md` contains only `Unreleased`; one release runbook exists; no workflow `environment:` or deployment job signal was found | Incident/Postmortem absence is event-driven. Release readiness is documented, but no actual Release record or CD execution evidence exists. |
 | Validator evidence | `check-doc-traceability.sh`: 46 catalog pairs, failures 0; `check-doc-implementation-alignment.sh`: 625 stage docs, 4,906 links, failures 0 | Current validators prove catalog/link and implementation alignment, not typed parents or lifecycle history. |
+
+The parent-link signals use literal text patterns, not semantic parsing. These
+exact commands reproduce the numerators and denominators:
+
+```bash
+find docs/03.specs -mindepth 2 -maxdepth 2 -type f -name spec.md | wc -l
+rg -l '01\.requirements|\*\*PRD\*\*|\*\*Parent PRD\*\*' docs/03.specs/*/spec.md | wc -l
+rg -l '02\.architecture/requirements|\*\*ARD\*\*|\*\*Related ARD' docs/03.specs/*/spec.md | wc -l
+rg -l '02\.architecture/decisions|\*\*ADR|Related ADR' docs/03.specs/*/spec.md | wc -l
+find docs/04.execution/plans -maxdepth 1 -type f -name '*.md' ! -name README.md | wc -l
+rg -l '03\.specs/' docs/04.execution/plans/*.md -g '!README.md' | wc -l
+find docs/04.execution/tasks -maxdepth 1 -type f -name '*.md' ! -name README.md | wc -l
+rg -l '\.\./plans/|04\.execution/plans/' docs/04.execution/tasks/*.md -g '!README.md' | wc -l
+rg -l '03\.specs/' docs/04.execution/tasks/*.md -g '!README.md' | wc -l
+```
+
+In order, the results are 46, 41, 40, 40, 88, 63, 114, 112, and 69.
 
 The 930-file snapshot in the 2026-07-03 task and the 948-file snapshot in the
 2026-07-04 frontmatter report are dated, repo-wide evidence from their own
@@ -115,6 +132,11 @@ the narrower 872-file `docs/**/*.md` result.
   gap is enforcement against a future replacement-free supersession.
 - Parent coverage, transition history, README profile semantics, and a distinct
   actual Release record are the principal Task 7/8 inputs.
+- The generated audit implementation matrix is byte-fresh for its historical
+  eight-report input list, but it omits this report's 22 rows and the
+  frontmatter report's 14 DML rows. Until Task 6 consolidates the generator,
+  these two canonical reports—not the matrix—are the complete Task 4 semantic
+  coverage source.
 - Zero Incident/Postmortem leaves and justified PRD/ARD/ADR N/A decisions are
   not missing-artifact defects.
 

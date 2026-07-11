@@ -224,6 +224,7 @@ concrete model; no provider or model policy was changed.
 | --- | --- | --- |
 | Current Markdown scope | 872 tracked `docs/**/*.md`; 1,073 tracked repo-wide `*.md` | The 930 count from 2026-07-03 and 948 count from 2026-07-04 remain dated repo-wide evidence, not current facts. |
 | Stage lifecycle syntax | 635 allowed top statuses: 366 active, 240 completed, 9 superseded, 20 archived; 0 draft | All 598 non-README Stage 01/02/03/04/05/90/98 leaves have valid top status. Syntax does not prove transition history or semantic freshness. |
+| Full stage corpus | 730 baseline Markdown files: 598 non-README leaves and 132 READMEs | Includes all seven stage-root README files; the initial narrower recursive-glob draft undercount was corrected after independent review. |
 | README profiles | 140 READMEs in the brief's Stage 01-05/90/98/99 search scope; 37 status-bearing and 103 status-free | No copied `status: draft` README exists; the status-bearing indexes need explicit consumer/profile semantics before remediation. |
 | Metadata keys | 0 proposed typed-key or generic legacy-key matches from the brief scan | Stable IDs, typed parents, freshness, and transition metadata are not implemented; generic duplicate-purpose keys are not currently signaled. |
 | Generated documents | 6 Stage 90 outputs declare generator-owned `generated_by` | Freshness remains generator-owned and was verified in write/check modes. |
@@ -247,15 +248,26 @@ correctness and define the deterministic advisory inventory required by Tasks
 - **Lifecycle boundary**: implementation validation is complete, but
   T-AER-004 remains `Todo` and its phase checkbox remains unchecked until the
   independent task review approves Spec compliance and quality.
+- **Independent review remediation**: the initial review returned Critical 0,
+  Important 2, Minor 1. The focused fix corrects the full-stage baseline to
+  730/598/132, adds exact parent-signal reproduction commands, and discloses
+  that the byte-fresh generated matrix omits the two Task 4 reports and their
+  36 criterion rows until Task 6 generator consolidation. No script or later
+  task surface changed.
 - **Task 4 implementation validation**:
   - `git diff --check` — PASS
   - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — PASS, 1,265 paths
   - `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` — PASS, 1,264 safe paths
   - `bash scripts/validation/generate-audit-implementation-matrix.sh --check` — PASS
-  - `bash scripts/validation/report-audit-pack-coverage.sh --check` — PASS, 8 expected reports, 14 overview categories, 133 status cells
+  - `bash scripts/validation/report-audit-pack-coverage.sh --check` — PASS for the generator's historical eight-report subset, 14 overview categories, 133 status cells; not complete Task 4 semantic coverage
   - `bash scripts/validation/check-doc-traceability.sh` — PASS, `catalog_pairs_total=46`, `failures=0`
   - `bash scripts/validation/check-doc-implementation-alignment.sh` — PASS, `stage_docs_total=625`, `repo_local_markdown_links_checked=4906`, `failures=0`
   - `bash scripts/validation/check-repo-contracts.sh` — PASS, `changed_template_docs_total=9`, `normalized_target_stage_docs_total=732`, `failures=0`
+- **Task 4 review-fix validation**:
+  - exact parent-signal reproduction — PASS, ordered results `46, 41, 40, 40, 88, 63, 114, 112, 69`
+  - LLM Wiki index/coverage and audit matrix write/check modes — PASS, 1,265 paths / 1,264 safe paths; matrix remains explicitly limited to its historical eight-report input
+  - audit coverage, traceability, and alignment — PASS, historical subset `reports_checked=8`, `catalog_pairs_total=46`, `stage_docs_total=625`, `failures=0`
+  - repository contracts — PASS, `changed_template_docs_total=5`, `normalized_target_stage_docs_total=732`, `failures=0`
 
 ### Task Review Ledger
 
