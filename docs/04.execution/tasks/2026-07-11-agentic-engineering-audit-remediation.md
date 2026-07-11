@@ -801,6 +801,125 @@ runtime requirement set.
 - **Graphify decision**: docs-only work does not trigger the repository's
   code-file refresh rule; no Graphify refresh is planned for Task 11.
 
+### T-AER-012 Preclosure Verification Evidence
+
+Task 12 is **In Review**. Steps 1-3 are complete, but T-AER-012 remains
+`Todo`, its Phase 5 checkbox remains unchecked, and Spec 123 plus the umbrella
+Plan/Task remain `active` until an independent whole-branch review returns
+Spec PASS, Quality APPROVED, Critical 0, and Important 0.
+
+The Senior `workflow-supervisor` role ran the verification bundle without a
+model selector. The collaboration runtime owns concrete model selection; no
+model policy or exact model literal changed. The provider catalog remains
+bound to the approved **2026-07-10 10:00 KST (01:00 UTC)** cutoff: 145
+structural rows, 142 cutoff-qualified rows, and three GPT-5.6 retrieval-only
+rows whose exact cutoff state remains `historical state unverified`.
+
+#### Generator and Inventory Results
+
+- Baseline: clean linked worktree at
+  `7d4697502b9d8b12f257db4982e22d597c46f47e`.
+- Provider sync write/check: PASS, `no drift`.
+- LLM Wiki index/coverage write/check: PASS, 1,282 indexed paths / 1,281 safe
+  paths.
+- Audit matrix/coverage write/check: PASS, 11/11 criterion reports, 161/161
+  unique rows, 13 exact prefixes, and 15/15 overview categories.
+- Provider hook parity write/check: PASS, 7 Claude native wrappers / 7 Codex
+  native dispatches / 7 Gemini behavioral reminders.
+- Security automation readiness write/check: PASS, 11 controls.
+- Agent-output fixture catalog: PASS, 3/3 fixtures.
+- Initial metadata inventory: fresh at 888 records / 2,045 advisory findings.
+  Generator writes produced no tracked drift.
+
+#### Cross-task Integration Correction
+
+The explicit PR-base metadata gate initially selected 97 paths and found 20
+violations across the five Task 6 mapping-only 2026-07-07 audit leaves: each
+lacked `artifact_id`, `artifact_type`, and `parent_ids`, and each had no
+machine-resolvable current replacement. The correction gives only those five
+mapping leaves stable audit IDs, `artifact_type: audit`, and a resolved parent
+to the canonical audit overview. The five current primary destination reports
+declare the contract's forward `supersedes` relation; the old mapping leaves
+remain `status: superseded` and retain their human-readable multi-destination
+routes.
+
+- Fix commit: `a8eff440` (`fix(metadata): type superseded audit mappings`).
+- Final branch-base metadata gate: PASS, 97 selected / 0 violations / 0 legacy
+  exceptions / 0 transition overrides.
+- Final inventory: fresh at 888 records / 2,025 advisory findings, 546 records
+  with findings, zero parser failures.
+- Affected Wiki, audit, traceability, alignment, repository-contract, and diff
+  gates were rerun and passed.
+
+#### Local Verification Bundle
+
+| Gate | Result |
+| --- | --- |
+| Metadata focused module suite | PASS, 63/63 |
+| Metadata discovery suite | PASS, 63/63 |
+| Full validation discovery | PASS, 70/70 |
+| Wrapper fake-hook suite | PASS, 29/29 |
+| Wrapper Bash syntax and ShellCheck | PASS, no findings |
+| `actionlint` 1.7.12 | PASS |
+| `zizmor` 1.25.2 | PASS, no findings; YAML-anchor warning and 16 configured suppressions informational |
+| Python / Bash / pre-commit runtime | Python 3.12.3; Bash 5.2.21; pre-commit 4.5.1 |
+| Provider/Wiki/audit/parity/security freshness | PASS |
+| Document traceability | PASS, 46 catalog pairs, `failures=0` |
+| Document implementation alignment | PASS, 637 stage docs / 5,001 repo-local links, `failures=0` |
+| Docker Compose structural validation | PASS, core profile / 5 services; no service startup |
+| Infrastructure hardening | PASS, all 11 governed tiers |
+| Template/security and QuickWin baselines | PASS, 5 services / zero missing governed controls |
+| Repository contracts | PASS, 747/747 normalized target documents, `failures=0` |
+| Full script-backed local QA runner | PASS |
+| Diff hygiene and clean pre-wrapper state | PASS |
+
+Available local tools were used; no `actionlint`, `zizmor`, ShellCheck, or
+hook-environment skip was required.
+
+#### Controlled Agent Pre-commit Attempts
+
+Every attempt used this exact wrapper invocation and prefix set from a clean
+linked worktree:
+
+```bash
+bash scripts/validation/run-agent-precommit-all-files.sh \
+  --task docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md \
+  --allow-prefix docs/ \
+  --allow-prefix scripts/ \
+  --allow-prefix tests/ \
+  --allow-prefix .claude/ \
+  --allow-prefix .codex/ \
+  --allow-prefix .agents/ \
+  --allow-prefix .github/ \
+  --allow-prefix .pre-commit-config.yaml
+```
+
+| Attempt | Hook / snapshot result | Git-visible non-ignored path sets | Review disposition | Skipped rationale |
+| --- | --- | --- | --- | --- |
+| 1 | hook exit 1 / snapshot PASS | before none; after/changed `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md`; unexpected none | Accepted deterministic ordered-list renumbering and committed separately as `20f3e014` (`fix(docs): normalize research reading order`) | N/A |
+| 2 | hook exit 1 / snapshot PASS | before none; after none; changed none; unexpected none | Direct configured-entry diagnosis, without direct pre-commit execution, found two Task 1 Markdownlint findings: MD056 table cell parsing and MD033 inline HTML. Fixed and committed as `5111d27c` (`fix(docs): satisfy research markdownlint`) | N/A |
+| 3 | hook exit 0 / snapshot PASS | before none; after none; changed none; unexpected none | PASS; no hook-managed edit or scope escalation | N/A |
+
+The final wrapper result is approved: all configured hooks pass and no
+Git-visible non-ignored repository path changed. Raw hook logs, environment
+values, credentials, and secret material were not persisted.
+
+#### Protected Surfaces and Remaining Gate
+
+- The branch-level protected-surface scan reports no diff under root
+  `docker-compose.yml`, `infra/**`, `secrets/**`, `.env*`,
+  `.codex/agents/**`, `.agents/agents/**`, or
+  `docs/00.agent-governance/subagent-protocol.md`.
+- No service was started; no runtime, deployment, secret, credential, remote
+  GitHub, branch-protection, required-context, or CODEOWNERS state was read or
+  mutated.
+- Task 12 verification fixes are documentation/metadata evidence only.
+  Graphify was not refreshed because no Task 12 code file changed; its report
+  remains advisory and conclusions were corroborated against tracked source,
+  Stage 00, and stage documents.
+- Independent whole-branch review and lifecycle closure remain pending. No
+  completion criterion or lifecycle status is closed by this evidence.
+
 ### Task Review Ledger
 
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |

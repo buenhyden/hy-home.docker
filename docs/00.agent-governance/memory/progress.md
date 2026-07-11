@@ -872,6 +872,16 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | runtime, Compose, scripts, validators, workflows, secrets, docs content | ✅ Preserved  | No runtime config, Compose behavior, script logic, secret material, or document content has been modified.                                                                   |
 | Validation         | Pre-commit check                                                        | ✅ Pass       | `pre-commit run --all-files` successfully runs and passes with zero failures.                                                                                                |
 
+## Agentic Engineering Audit Remediation Preclosure (2026-07-11)
+
+| Item | Area | Status | Notes |
+| --- | --- | --- | --- |
+| Task 12 local verification | Spec 123 / T-AER-012 Steps 1-3 | In Review | Generator write/check, metadata 63/63, full validation 70/70, fake wrapper 29/29, provider/Wiki/audit/parity/security freshness, workflow linters, traceability, alignment, core Compose structural validation, all 11 hardening tiers, and repository contracts pass. |
+| Metadata integration fix | Superseded 2026-07-07 audit mappings | Resolved | Branch-base changed/new validation exposed 20 violations across five mapping leaves. Commit `a8eff440` adds honest typed IDs/parents and forward replacement relations; final explicit-base result is 97 selected / 0 violations and the inventory is fresh at 888 records / 2,025 advisory findings. |
+| Controlled wrapper | Clean linked worktree / approved Task 12 prefixes | Pass | Attempt 1 accepted one allowed ordered-list edit (`20f3e014`); attempt 2 had no path changes and identified two Markdownlint defects fixed in `5111d27c`; attempt 3 passed with hook exit 0, snapshot PASS, and no before/after/changed/unexpected paths. |
+| Protected surfaces | Runtime, Compose, secrets, remote GitHub, model policy | Preserved | No diff under runtime Compose/infra/secret/model-identity surfaces; no service startup, runtime mutation, secret read, deployment, remote setting, branch-protection, or exact model-literal change. The approved provider cutoff remains 2026-07-10 10:00 KST. |
+| Lifecycle boundary | Spec/Plan/Task and T-AER-012 | Pending review | Spec/Plan/Task remain active, T-AER-012 remains Todo/unchecked, and closure waits for independent whole-branch Spec PASS / Quality APPROVED / C0 / I0 review. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
