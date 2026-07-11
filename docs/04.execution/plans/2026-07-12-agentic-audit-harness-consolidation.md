@@ -126,7 +126,7 @@ boundary block on each dated report.
 - [ ] **Step 1: Capture historical literals before editing**
 
 ```bash
-rg -n '930|948|872|1,073|6 workflows|failures=2|active 19|completed 16|superseded 2' docs/90.references/audits/2026-07-0{3,4}-* > /tmp/ahc-historical-before.txt
+rg -H '930|948|872|1,073|6 workflows|failures=2|active 19|completed 16|superseded 2' docs/90.references/audits/2026-07-0{3,4}-* | LC_ALL=C sort > /tmp/ahc-historical-before.txt
 ```
 
 - [ ] **Step 2: Replace the root routing sections with exact content**
@@ -171,14 +171,15 @@ Rename the 2026-07-03 README's `Planned References` to `Included Reports`.
 - [ ] **Step 4: Verify preservation**
 
 ```bash
-rg -L '^## Evidence Snapshot Boundary$' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/*.md docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/*.md
-rg -n '930|948|872|1,073|6 workflows|failures=2|active 19|completed 16|superseded 2' docs/90.references/audits/2026-07-0{3,4}-* > /tmp/ahc-historical-after.txt
+rg --files-without-match '^## Evidence Snapshot Boundary$' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/*.md docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/*.md
+rg -H '930|948|872|1,073|6 workflows|failures=2|active 19|completed 16|superseded 2' docs/90.references/audits/2026-07-0{3,4}-* | LC_ALL=C sort > /tmp/ahc-historical-after.txt
 diff -u /tmp/ahc-historical-before.txt /tmp/ahc-historical-after.txt
 bash scripts/validation/check-repo-contracts.sh
 git diff --check
 ```
 
-Expected: `rg -L` and `diff` produce no output; contracts have zero failures.
+Expected: `rg --files-without-match` and `diff` produce no output; contracts
+have zero failures.
 
 - [ ] **Step 5: Commit**
 
