@@ -1,5 +1,12 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: archive
+parent_ids: []
+archived_from: docs/<original-path>.md
+archived_on: YYYY-MM-DD
+archive_reason: <archive-reason>
+current_replacement: docs/<replacement-path>.md
 ---
 
 <!-- Target: docs/98.archive/<original-stage>/<original-path>.md -->

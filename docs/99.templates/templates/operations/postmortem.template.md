@@ -1,5 +1,9 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: postmortem
+parent_ids: [<parent-artifact-id>]
+reviewed_at: <reviewed-at>
 ---
 <!-- Target: docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md -->
 

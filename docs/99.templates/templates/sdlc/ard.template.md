@@ -1,5 +1,8 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: ard
+parent_ids: [<parent-artifact-id>]
 ---
 <!-- Target: docs/02.architecture/requirements/####-<system-or-domain>.md -->
 

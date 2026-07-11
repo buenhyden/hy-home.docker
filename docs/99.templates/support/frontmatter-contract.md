@@ -14,14 +14,15 @@ surface.
 The machine-readable application profiles live in
 [`document-metadata-profiles.yaml`](./document-metadata-profiles.yaml). They
 define required, optional, forbidden, parent, lifecycle, and exception rules
-per artifact type. The profile matrix is advisory for the pre-migration corpus;
-Task 8 owns active-chain migration and changed/new blocking activation.
+per artifact type. The exhaustive historical inventory remains advisory; the
+approved active chain and safely selected changed/new documents are enforced.
 
 ## Role Matrix
 
 | Surface | Required Keys | Disallowed Duplicate-Purpose Keys |
 | --- | --- | --- |
-| Markdown template source | `status: draft` | `type`, `owner`, `updated`, `links`, `document_type`, `template_type` |
+| Markdown leaf template source | `status: draft` plus target-profile keys using exact Stage 99 placeholders | `type`, `owner`, `updated`, `links`, `document_type`, `template_type` |
+| README template source | `status: draft`; remove the source frontmatter when copied | typed leaf identity/relation/freshness keys |
 | Machine-readable template source | none; use comments | YAML frontmatter fences, `type`, `owner`, `updated`, `links` |
 | Stage 99 support document | `layer: agentic` | `status`, `type`, `owner`, `updated`, `links` |
 | Target stage document | path-derived role plus lifecycle `status` | `type`, `document_type`, `template_type` |
@@ -39,20 +40,30 @@ and explicit unsupported paths. Generic `type` remains forbidden;
 `artifact_type` is the stable profiled key introduced only through the approved
 metadata rollout.
 
-## Advisory Validation Contract
+## Validation Contract
 
 - `report` renders the exhaustive sorted inventory and treats current semantic
   findings as advisory. It fails only when profile configuration or YAML parsing
   prevents a trustworthy inventory.
-- `check-changed` evaluates only selected changed/new Markdown paths. It is
-  implemented for Task 8 but has no blocking repository-contract call site yet.
-  Selection covers tracked modifications, staged additions, unstaged new files,
-  renames, explicit paths, and deletions; deleted paths are recorded as selected
-  but are not parsed as existing violations.
+- `check-changed` is the blocking pre-push contract for safely selected
+  changed/new Markdown paths. Base selection uses explicit `--base-ref`, then
+  `TEMPLATE_GATE_BASE`, `GITHUB_BASE_REF`, upstream, `origin/main`, and local
+  `main`. When none resolves, it emits a diagnostic and evaluates only local
+  staged, unstaged, untracked, renamed, and deleted paths; it never substitutes
+  a repository-wide gate. Deleted paths are selected evidence but are not
+  parsed as existing violations.
+- A base-existing legacy leaf outside the exact Task 8 migration allowlist may
+  retain only its pre-existing missing typed-key/freshness/replacement deficits
+  when it had no migration keys before or after the edit. New documents,
+  approved-chain paths, partial typed migrations, parser failures, forbidden
+  keys, and newly introduced typed errors cannot use the exception.
+- Reverse or otherwise unlisted lifecycle transitions require a separate
+  override manifest with exact path, previous/new status, existing Stage 04
+  task path, approval, and reason. The default hook provides no override.
 - `check-active` evaluates active records for review and remains non-gating.
 - Parser output and reports expose bounded paths, IDs, counts, and finding codes;
   they must not print raw bodies, logs, credentials, or secret values.
-- The canonical pre-migration snapshot is
+- The canonical pre/post-migration snapshot is
   `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md`.
 
 Each inventory row explicitly records frontmatter state (missing fence,
@@ -68,6 +79,13 @@ integer `1`, status and transition members are consistent strings, review dates
 are strict ISO dates or timezone-aware date-times, generator ownership is a
 safe canonical `scripts/` path, and archive provenance uses typed canonical
 `docs/` paths, an ISO date, and a non-empty reason.
+
+The 13 typed leaf template sources declare their target `artifact_type` and
+use only the placeholder forms registered in the machine-readable profile.
+Template validation checks target-required keys without resolving placeholder
+IDs. Instantiated non-template documents reject those placeholder values.
+Spec 123 is the sole approved cross-cutting root exception in this rollout; its
+empty `parent_ids` is explicit and does not authorize arbitrary root Specs.
 
 Archive tombstones are target stage documents with the archive lifecycle profile:
 `status: archived` plus archive-specific provenance keys when that profile

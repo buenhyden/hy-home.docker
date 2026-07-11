@@ -69,6 +69,8 @@ routed to independent specifications and plans for later approval.
    independent reviewers.
 5. Record exact checks, deviations, and protected-surface decisions in Stage
    04 task evidence.
+6. Keep the typed Spec/Plan/Task, canonical research, and canonical audit leaf
+   chain internally resolvable; READMEs remain explicit metadata exceptions.
 
 ## Related Documents
 

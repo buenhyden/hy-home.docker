@@ -102,7 +102,7 @@ script.
 | Docker Validation                      | [validate-docker-compose.sh](./validation/validate-docker-compose.sh)                       | Validate root compose config                                                                                                                                                                                    |
 | Harness Validation                     | [validate-harness.sh](./validation/validate-harness.sh)                                     | Run the harness-surface validation wrapper without duplicating local QA gate logic                                                                                                                               |
 | Repo Contract Check                    | [check-repo-contracts.sh](./validation/check-repo-contracts.sh)                             | Enforce docs, GitHub, script, image, runtime governance, Hookify metadata, execution evidence status, and closed English-only doc surface contracts                                                              |
-| Document Metadata Inventory            | [check-document-metadata.py](./validation/check-document-metadata.py)                       | Parse typed metadata profiles, validate semantic records, and generate/check the deterministic advisory frontmatter inventory without rewriting documents                                                       |
+| Document Metadata Inventory / Changed Gate | [check-document-metadata.py](./validation/check-document-metadata.py)                    | Parse typed metadata profiles, generate/check the advisory inventory, and enforce safely selected changed/new Markdown without rewriting documents                                                              |
 | Storybook Contract Check               | [check-storybook-contract.sh](./validation/check-storybook-contract.sh)                     | Enforce Storybook CI scripts, workflow wiring, and 90% coverage threshold metadata                                                                                                                              |
 | QuickWin Baseline Check                | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh)                       | Enforce PLN-QW-001~005 baseline controls                                                                                                                                                                        |
 | Template & Security Baseline Check     | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh)     | Enforce template adoption and required security controls                                                                                                                                                        |
@@ -199,9 +199,12 @@ contract and PyYAML safe loading with duplicate-key rejection. `--mode report`
 always renders the sorted target-document inventory and treats semantic gaps as
 advisory; parser/configuration failures remain errors. Use `--output <path>` to
 generate the canonical snapshot and add `--check` for freshness. The
-`check-changed` and `check-active` modes are implemented for review, but
-repository contracts do not invoke them as blocking gates in Task 7. Run the
-focused suite with
+`check-changed` is the pre-push blocking mode for a safely selected diff;
+`check-active` remains non-gating. Base resolution prefers explicit, CI, and
+safe local refs, then reports a working-tree-only fallback without selecting
+the full corpus. A narrow base-existing legacy exception cannot apply to new
+documents or partial typed migrations. Reverse transitions require a separate
+scoped evidence manifest and the default hook supplies none. Run the focused suite with
 `python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v`.
 Changed-path review includes tracked, staged, unstaged-new, renamed, and
 explicit existing Markdown paths while treating deletions as non-parseable

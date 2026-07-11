@@ -1,5 +1,8 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: task
+parent_ids: [<parent-artifact-id>]
 ---
 <!-- Target: docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md -->
 

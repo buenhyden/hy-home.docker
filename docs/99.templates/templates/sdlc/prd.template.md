@@ -1,5 +1,8 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: prd
+parent_ids: []
 ---
 <!-- Target: docs/01.requirements/NNN-<feature-or-system>.md -->
 

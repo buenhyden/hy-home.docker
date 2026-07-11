@@ -29,7 +29,7 @@ follow.
 - Template source contract
 - Template governance and protected-surface rules
 - Frontmatter key and value policy
-- Typed document metadata profiles and advisory rollout rules
+- Typed document metadata profiles, target-safe placeholders, and changed/new enforcement rules
 - Lifecycle status vocabulary
 - Template selection rules
 - Archive-centered disposition and destructive-change rules
@@ -76,8 +76,8 @@ support/
    rules here.
 4. Record validation evidence in the relevant Stage 04 task when support rules
    change.
-5. Keep typed metadata validation advisory until the approved changed/new
-   rollout task activates a blocking call site.
+5. Keep the exhaustive metadata inventory advisory; enforce only the safely
+   selected changed/new set and the explicitly approved migrated active chain.
 
 ## Related Documents
 

@@ -108,7 +108,9 @@ provisional ten-report disclosures are superseded.
 
 The generated frontmatter semantic inventory is an exhaustive advisory
 snapshot, not a twelfth criterion report. Its freshness check is separate from
-the exact eleven-report / 161-row audit criterion contract.
+the exact eleven-report / 161-row audit criterion contract. The audit overview
+and eleven criterion leaves form a typed, internally resolved chain; this README
+remains a folder-index exception.
 
 ## How to Work in This Area
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import pathlib
 import shutil
 import subprocess
@@ -32,7 +33,12 @@ def write_doc(path: pathlib.Path, frontmatter: dict[str, object] | None, body: s
     path.write_text(f"---\n{rendered}\n---\n\n{body}", encoding="utf-8")
 
 
-def run_checker(root: pathlib.Path, mode: str = "report", *extra: str) -> subprocess.CompletedProcess[str]:
+def run_checker(
+    root: pathlib.Path,
+    mode: str = "report",
+    *extra: str,
+    env: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [
             sys.executable,
@@ -46,6 +52,7 @@ def run_checker(root: pathlib.Path, mode: str = "report", *extra: str) -> subpro
             *extra,
         ],
         cwd=ROOT,
+        env={**os.environ, **(env or {})},
         capture_output=True,
         text=True,
         check=False,
@@ -206,6 +213,19 @@ class MetadataValidationTests(unittest.TestCase):
             "spec",
         )
         self.assertEqual([], self.codes(spec_record, [parent]))
+
+    def test_approved_crosscutting_spec_root_is_explicitly_permitted(self) -> None:
+        record = self.record(
+            "docs/03.specs/123-agentic-engineering-audit-remediation/spec.md",
+            {
+                "status": "active",
+                "artifact_id": "spec:123-agentic-engineering-audit-remediation",
+                "artifact_type": "spec",
+                "parent_ids": [],
+            },
+            "spec",
+        )
+        self.assertNotIn("missing-parent", self.codes(record))
 
     def test_readme_without_frontmatter_is_an_explicit_exception(self) -> None:
         record = self.record("docs/03.specs/README.md", {}, "readme")
@@ -410,6 +430,85 @@ class MetadataValidationTests(unittest.TestCase):
         self.assertIn("invalid-archived-on", codes)
         self.assertIn("invalid-archive-reason", codes)
         self.assertIn("invalid-current-replacement", codes)
+
+    def test_instantiated_document_rejects_template_placeholders(self) -> None:
+        record = self.record(
+            "docs/03.specs/124-example/spec.md",
+            {
+                "status": "draft",
+                "artifact_id": "<artifact-id>",
+                "artifact_type": "spec",
+                "parent_ids": ["<parent-artifact-id>"],
+            },
+            "spec",
+        )
+        self.assertIn("template-placeholder-in-target", self.codes(record))
+
+
+class TemplateMetadataTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = metadata.load_profiles(PROFILES)
+
+    def test_leaf_templates_declare_valid_target_profiles_with_safe_placeholders(self) -> None:
+        expected = {
+            "docs/99.templates/templates/sdlc/prd.template.md": "prd",
+            "docs/99.templates/templates/sdlc/ard.template.md": "ard",
+            "docs/99.templates/templates/sdlc/adr.template.md": "adr",
+            "docs/99.templates/templates/sdlc/spec.template.md": "spec",
+            "docs/99.templates/templates/sdlc/plan.template.md": "plan",
+            "docs/99.templates/templates/sdlc/task.template.md": "task",
+            "docs/99.templates/templates/operations/guide.template.md": "guide",
+            "docs/99.templates/templates/operations/policy.template.md": "policy",
+            "docs/99.templates/templates/operations/runbook.template.md": "runbook",
+            "docs/99.templates/templates/operations/incident.template.md": "incident",
+            "docs/99.templates/templates/operations/postmortem.template.md": "postmortem",
+            "docs/99.templates/templates/common/reference.template.md": "reference",
+            "docs/99.templates/templates/common/archive.template.md": "archive",
+        }
+        for path_text, target_profile in expected.items():
+            with self.subTest(path=path_text):
+                values = metadata.parse_frontmatter(ROOT / path_text)
+                self.assertEqual("draft", values.get("status"))
+                self.assertEqual(target_profile, values.get("artifact_type"))
+                self.assertEqual("<artifact-id>", values.get("artifact_id"))
+                record = metadata.Record(
+                    pathlib.Path(path_text),
+                    values,
+                    "template-source",
+                    frontmatter_present=True,
+                )
+                self.assertEqual(
+                    [],
+                    metadata.validate_record(record, self.profiles, metadata.build_manifest([record])),
+                )
+
+    def test_readme_template_remains_a_readme_exception_source(self) -> None:
+        path_text = "docs/99.templates/templates/common/readme.template.md"
+        values = metadata.parse_frontmatter(ROOT / path_text)
+        self.assertEqual({"status": "draft"}, values)
+
+    def test_unmapped_template_source_rejects_typed_leaf_metadata(self) -> None:
+        record = metadata.Record(
+            pathlib.Path("docs/99.templates/templates/governance/memory.template.md"),
+            {
+                "status": "draft",
+                "artifact_id": "template-source:invalid",
+                "artifact_type": "template-source",
+                "parent_ids": [],
+            },
+            "template-source",
+            frontmatter_present=True,
+        )
+        codes = {
+            finding.code
+            for finding in metadata.validate_record(
+                record,
+                self.profiles,
+                metadata.build_manifest([record]),
+            )
+        }
+        self.assertIn("type-inappropriate-key", codes)
 
 
 class CheckerCliTests(unittest.TestCase):
@@ -645,6 +744,267 @@ class ChangedPathGitTests(unittest.TestCase):
             relative = "docs/03.specs/123-explicit/spec.md"
             write_doc(root / relative, {"status": "active"})
             self.assert_changed_failure(root, "--changed-path", relative)
+
+
+class ChangedModeRolloutTests(unittest.TestCase):
+    def new_repo(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path]:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        init_git(root)
+        self.assertEqual(0, git(root, "branch", "-M", "main").returncode)
+        write_doc(root / "docs/03.specs/README.md", None)
+        commit_all(root, "base")
+        return directory, root
+
+    def test_committed_new_invalid_document_is_blocked_from_explicit_base(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(root / "docs/03.specs/124-new/spec.md", {"status": "active"})
+            commit_all(root, "invalid new doc")
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("missing-required-key", result.stdout)
+            self.assertIn(f"metadata base: source=explicit ref={base}", result.stderr)
+
+    def test_changed_legacy_document_outside_migration_scope_is_explicitly_excepted(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            path = root / "docs/03.specs/122-legacy/spec.md"
+            write_doc(path, {"status": "active"}, "# Legacy\n")
+            commit_all(root, "legacy baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(path, {"status": "active"}, "# Legacy\n\nEditorial correction.\n")
+            commit_all(root, "edit legacy doc")
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("legacy_exceptions=1", result.stdout)
+            self.assertIn("legacy metadata exception", result.stderr)
+
+    def test_partial_typed_migration_cannot_use_legacy_exception(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            path = root / "docs/03.specs/122-legacy/spec.md"
+            write_doc(path, {"status": "active"})
+            commit_all(root, "legacy baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(path, {"status": "active", "artifact_id": "spec:partial"})
+            commit_all(root, "partial migration")
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("legacy_exceptions=0", result.stdout)
+            self.assertIn("missing-required-key", result.stdout)
+
+    def test_committed_valid_parent_chain_passes_and_is_selected(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(
+                root / "docs/01.requirements/124-parent.md",
+                {
+                    "status": "active",
+                    "artifact_id": "prd:124-parent",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+            )
+            write_doc(
+                root / "docs/03.specs/124-child/spec.md",
+                {
+                    "status": "active",
+                    "artifact_id": "spec:124-child",
+                    "artifact_type": "spec",
+                    "parent_ids": ["prd:124-parent"],
+                },
+            )
+            commit_all(root, "valid typed chain")
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("selected=2", result.stdout)
+            self.assertIn("violations=0", result.stdout)
+
+    def test_committed_replacement_free_superseded_document_is_blocked(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(
+                root / "docs/01.requirements/124-parent.md",
+                {
+                    "status": "active",
+                    "artifact_id": "prd:124-parent",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+            )
+            write_doc(
+                root / "docs/03.specs/124-old/spec.md",
+                {
+                    "status": "superseded",
+                    "artifact_id": "spec:124-old",
+                    "artifact_type": "spec",
+                    "parent_ids": ["prd:124-parent"],
+                },
+            )
+            commit_all(root, "replacement-free supersession")
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("replacement-free-supersession", result.stdout)
+
+    def test_reverse_transition_without_override_is_blocked(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            write_doc(
+                root / "docs/03.specs/124-parent/spec.md",
+                {
+                    "status": "active",
+                    "artifact_id": "spec:124-parent",
+                    "artifact_type": "spec",
+                    "parent_ids": ["spec:124-parent-root"],
+                },
+            )
+            write_doc(
+                root / "docs/03.specs/124-parent-root/spec.md",
+                {
+                    "status": "active",
+                    "artifact_id": "spec:124-parent-root",
+                    "artifact_type": "spec",
+                    "parent_ids": ["spec:124-parent-root"],
+                },
+            )
+            task = root / "docs/04.execution/tasks/2026-07-11-transition.md"
+            write_doc(
+                task,
+                {
+                    "status": "completed",
+                    "artifact_id": "task:transition",
+                    "artifact_type": "task",
+                    "parent_ids": ["spec:124-parent"],
+                },
+            )
+            commit_all(root, "completed task")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(
+                task,
+                {
+                    "status": "active",
+                    "artifact_id": "task:transition",
+                    "artifact_type": "task",
+                    "parent_ids": ["spec:124-parent"],
+                },
+            )
+            commit_all(root, "reverse task transition")
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("invalid-transition", result.stdout)
+
+    def test_scoped_transition_override_requires_complete_stage04_evidence(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            parent = root / "docs/03.specs/124-parent/spec.md"
+            write_doc(
+                parent,
+                {
+                    "status": "active",
+                    "artifact_id": "spec:124-parent",
+                    "artifact_type": "spec",
+                    "parent_ids": ["spec:124-parent"],
+                },
+            )
+            task = root / "docs/04.execution/tasks/2026-07-11-transition.md"
+            values = {
+                "status": "completed",
+                "artifact_id": "task:transition",
+                "artifact_type": "task",
+                "parent_ids": ["spec:124-parent"],
+            }
+            write_doc(task, values)
+            evidence = root / "docs/04.execution/tasks/2026-07-11-transition-approval.md"
+            write_doc(evidence, {"status": "active"}, "# Task: Transition Approval\n")
+            commit_all(root, "completed task and evidence")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(task, {**values, "status": "active"})
+            commit_all(root, "approved reverse transition")
+            override = root / "override.yaml"
+            override.write_text(
+                yaml.safe_dump(
+                    {
+                        "transition_overrides": [
+                            {
+                                "path": task.relative_to(root).as_posix(),
+                                "previous_status": "completed",
+                                "new_status": "active",
+                                "evidence_task": evidence.relative_to(root).as_posix(),
+                                "approval": "Spec 123 Task 8 fixture approval",
+                                "reason": "Reopened to correct incomplete evidence",
+                            }
+                        ]
+                    },
+                    sort_keys=False,
+                ),
+                encoding="utf-8",
+            )
+            result = run_checker(
+                root,
+                "check-changed",
+                "--base-ref",
+                base,
+                "--transition-override-file",
+                str(override),
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("transition_overrides=1", result.stdout)
+
+    def test_environment_base_is_used_before_local_candidates(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(root / "docs/03.specs/124-new/spec.md", {"status": "active"})
+            commit_all(root, "invalid branch doc")
+            result = run_checker(
+                root,
+                "check-changed",
+                env={"TEMPLATE_GATE_BASE": base, "GITHUB_BASE_REF": "does-not-exist"},
+            )
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("source=env:TEMPLATE_GATE_BASE", result.stderr)
+
+    def test_invalid_explicit_base_is_a_configuration_error_without_fallback(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            write_doc(root / "docs/03.specs/124-new/spec.md", {"status": "active"})
+            result = run_checker(root, "check-changed", "--base-ref", "missing-ref")
+            self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+            self.assertIn("explicit --base-ref is not a commit", result.stderr)
+            self.assertNotIn("fallback=working-tree-only", result.stderr)
+
+    def test_local_main_base_selects_committed_branch_delta(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            self.assertEqual(0, git(root, "switch", "-qc", "feature").returncode)
+            write_doc(root / "docs/03.specs/124-new/spec.md", {"status": "active"})
+            commit_all(root, "invalid branch doc")
+            result = run_checker(
+                root,
+                "check-changed",
+                env={"TEMPLATE_GATE_BASE": "", "GITHUB_BASE_REF": ""},
+            )
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("source=local:main", result.stderr)
+
+    def test_missing_base_falls_back_to_local_delta_without_whole_repo_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            write_doc(root / "docs/03.specs/README.md", None)
+            write_doc(root / "docs/03.specs/124-new/spec.md", {"status": "active"})
+            result = run_checker(
+                root,
+                "check-changed",
+                env={"TEMPLATE_GATE_BASE": "", "GITHUB_BASE_REF": ""},
+            )
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("metadata base: fallback=working-tree-only", result.stderr)
+            self.assertIn("selected=2", result.stdout)
 
 
 if __name__ == "__main__":

@@ -24,7 +24,10 @@ This document defines the non-copyable contract for template source files under
 - Markdown template files use the `*.template.md` suffix.
 - Machine-readable contract templates use `*.template.yaml`,
   `*.template.graphql`, or `*.template.proto`.
-- Markdown template sources start with `status: draft` frontmatter.
+- Markdown template sources start with `status: draft` frontmatter. The 13
+  typed leaf templates also declare the copied target's `artifact_type` and
+  exact Stage 99 placeholders for its required typed keys; README template
+  source remains status-only.
 - Machine-readable templates use comments for `Target:` and cross-link ownership
   instead of YAML frontmatter.
 - Every Markdown template includes target path guidance, target-relative link
@@ -59,7 +62,7 @@ This document defines the non-copyable contract for template source files under
 - Target documents inherit from exactly one primary template role.
 - Purpose-specific child templates may supplement a parent spec when the target
   path and role require them.
-- Target document frontmatter follows [frontmatter contract](./frontmatter-contract.md), not the template source metadata.
+- Target document frontmatter follows [frontmatter contract](./frontmatter-contract.md): replace every template placeholder and select the honest target lifecycle status rather than retaining source-only `status: draft` mechanically.
 - Intentional template deviation must be recorded in Stage 04 task evidence.
 - `_workspace` runtime artifacts are ignored repo-support scratch files. Promote
   durable outcomes to canonical stages instead of treating `_workspace` as a

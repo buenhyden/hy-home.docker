@@ -11,6 +11,9 @@ Target: {folder}/README.md
 이 템플릿은 리포지토리 전반에서 공통으로 사용하는 README 원본 템플릿이다.
 모든 README가 공유해야 하는 최소 구조(Base Structure)를 제공하고,
 경로의 목적에 따라 필요한 확장 섹션(Snippet)만 선택적으로 추가할 수 있도록 설계되었다.
+README는 typed leaf metadata 예외다. 복사한 대상에서는 template-source
+`status: draft` frontmatter를 제거하고 `artifact_id`, `artifact_type`,
+`parent_ids`를 추가하지 않는다.
 
 ## Selection Guide
 - Repository Root (`/`) -> `Base Structure` + `Root Snippet`

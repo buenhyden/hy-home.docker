@@ -65,7 +65,7 @@ Protocol for maintaining documentation consistency and governance traceability.
   unless a document type or approved plan explicitly requires them. Do not
   convert existing templates or active stage documents to HADS as incidental
   cleanup.
-- **Template frontmatter exemption**: Markdown template source files under `docs/99.templates/templates/**/*.template.md` use `status: draft` in YAML frontmatter instead of `layer:`. This is intentional. Agents performing `layer:` compliance audits must exempt those template source files from that check. `docs/99.templates/README.md` is an active folder README and may use repository README frontmatter such as `layer: agentic`. `docs/99.templates/templates/governance/memory.template.md` and `docs/99.templates/templates/governance/progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
+- **Template frontmatter exemption**: Markdown template source files under `docs/99.templates/templates/**/*.template.md` use `status: draft` in YAML frontmatter instead of `layer:`. Typed leaf templates additionally declare their copied target profile with the exact Stage 99 placeholder forms; the metadata checker validates those placeholders without resolving them through the active artifact manifest. Copied target documents must replace every placeholder, and README template source remains a status-only exception. `docs/99.templates/README.md` is an active folder README and may use repository README frontmatter such as `layer: agentic`. `docs/99.templates/templates/governance/memory.template.md` and `docs/99.templates/templates/governance/progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
 - **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
   and `docs/90` MUST include YAML frontmatter with
   `status: draft | active | completed | superseded`.
@@ -75,15 +75,18 @@ Protocol for maintaining documentation consistency and governance traceability.
   always use `status: draft` and are exempt from the `layer:` requirement.
   A document without this frontmatter is **INCOMPLETE**. Retired aliases such
   as `approved`, `done`, and `archived` must be normalized when found.
-- **Typed metadata profiles (advisory rollout):**
+- **Typed metadata profiles (changed/new enforcement):**
   `docs/99.templates/support/document-metadata-profiles.yaml` is the
   machine-readable application-profile contract for stable identity, typed
   parents, supersession, review evidence, lifecycle transitions, and explicit
   README/generated/template/governance/archive exceptions. Task 7 inventory
-  findings are advisory for the existing corpus. Do not add typed keys to
-  active documents or invoke blocking `check-changed` enforcement until the
-  separately approved Task 8 migration reviews false positives and activates
-  the changed/new call site.
+  findings remain advisory for the full historical corpus. The approved
+  agentic active chain is migrated, and `check-changed` blocks invalid new
+  documents plus migrated or typed changed documents at pre-push. A changed
+  legacy leaf outside the approved migration set is exempt only when it existed
+  at the selected base, had no migration keys before or after the edit, and has
+  no parser, forbidden-key, or newly introduced typed-profile error. New
+  documents can never use this exception.
 
 ## 3. Document Type ↔ Template Mapping
 
@@ -185,10 +188,10 @@ Trigger documentation updates when:
 - policy and repository reality diverge.
 
 For completion, ensure affected README files and governance pointers remain accurate.
-For typed metadata profile or parser changes, run the focused Python unit suite
-and regenerate/check the canonical frontmatter semantic inventory. Repository
-contracts currently enforce profile syntax, script/test presence, and snapshot
-freshness only; semantic changed/new blocking remains deferred to Task 8.
+For typed metadata profile or parser changes, run the focused Python unit suite,
+run `check-changed` with an explicit safe base, and regenerate/check the
+canonical frontmatter semantic inventory. The full inventory remains advisory;
+the pre-push hook enforces only the safely selected changed/new set.
 For Stage 01-05 implementation reconciliation, also run
 `bash scripts/validation/check-doc-implementation-alignment.sh`; it verifies
 tracked implementation paths, removed template names, archive index-only links,

@@ -1,5 +1,10 @@
 ---
 status: active
+artifact_id: task:2026-07-11-agentic-engineering-audit-remediation
+artifact_type: task
+parent_ids:
+  - spec:123-agentic-engineering-audit-remediation
+  - plan:2026-07-11-agentic-engineering-audit-remediation
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md -->
@@ -515,6 +520,59 @@ algorithm.
     edges / 1,482 communities; built from review-fix base `80e78db3` and
     advisory-only
   - direct `pre-commit` — not run; Task 9 retains controlled-wrapper ownership
+
+### T-AER-008 Active-Chain Metadata and Changed/New Enforcement Evidence
+
+Task 8 is **In Review** at implementation baseline `8c08cb82`. The task
+registry remains `Todo` and the Phase 3 checkbox remains unchecked until the
+independent task review approves the implementation.
+
+The approved consistency dependency extends the Task 7 profile and Stage 99
+template-source contract so the 13 listed leaf templates declare their target
+profile with exact safe placeholders. `readme.template.md` remains status-only
+and explains the README exception. Instantiated non-template documents reject
+those placeholder values.
+
+| Evidence family | Result | Interpretation |
+| --- | --- | --- |
+| RED | 54 focused tests ran with 11 failing methods / 23 failure records while all 42 Task 7 tests stayed green. | The missing committed-diff selection, legacy exception, base diagnostics, override input, placeholder enforcement, and template metadata were exercised before production edits. |
+| Focused GREEN | 58/58 metadata tests pass. | Covers explicit/environment/local/fallback bases, invalid new documents, exact legacy exception and partial-migration rejection, parent resolution, supersession, reverse transition, scoped override evidence, and mapped/unmapped template placeholder boundaries. |
+| Typed active chain | 30 leaf artifacts / 30 unique stable IDs / 31 direct parent edges / one explicit Spec 123 root / zero typed-profile errors. | Spec, Plan, Task, 15 research leaves, audit overview, and 11 audit leaves resolve internally; three READMEs remain index exceptions. |
+| Inventory comparison | 876 records remains stable; records with findings 581 -> 551; total findings 2,135 -> 2,045; missing-required-key 1,998 -> 1,908. | The 30 approved leaves are clean while historical stale-active 125 and replacement-free-supersession 12 findings remain advisory. |
+| Changed/new enforcement | Explicit base `8c08cb82` selects 56 Markdown paths with zero violations and zero legacy exceptions. | The default hook supplies no transition override and never promotes the full inventory into a gate. |
+
+Base selection is deterministic: explicit `--base-ref`,
+`TEMPLATE_GATE_BASE`, `GITHUB_BASE_REF`, upstream, `origin/main`, then local
+`main`. If none resolves, the checker reports `fallback=working-tree-only` and
+uses only staged, unstaged, untracked, renamed, and deleted paths. An invalid
+explicit base is a configuration error rather than a silent fallback.
+
+The legacy exception applies only to a base-existing, non-allowlisted leaf with
+no migration keys before or after the change and only pre-existing
+missing/freshness/replacement deficits. New documents, approved-chain paths,
+partial migrations, parser failures, forbidden keys, and newly introduced typed
+errors remain blocking. Reverse transitions require an explicit override
+manifest with exact path, previous/new state, existing Stage 04 task,
+approval, and reason; no override is present in the pre-push hook.
+
+Scope remains limited to documentation metadata, validators/tests, Stage 00/99
+contracts, the exact pre-push hook, generated inventory, and task/progress
+evidence. There is no Task 9 wrapper, CI workflow/provider/model/runtime,
+Compose, secret, remote, or branch-protection mutation, and direct pre-commit
+execution remains prohibited.
+
+Current implementation validation passes: 65/65 full validation unit tests;
+Python compile; Bash syntax; exact PyYAML hook/profile checks; metadata snapshot
+freshness; explicit-base changed/new enforcement; Wiki index/coverage freshness
+at 1,269/1,268 paths; audit matrix/coverage at 11 reports, 161 unique rows, and
+15 overview categories; traceability with 46 catalog pairs and `failures=0`;
+implementation alignment with 625 stage documents, 4,908 links, and
+`failures=0`; repository contracts with 34/34 changed and 735/735 total
+normalized documents and `failures=0`; and diff hygiene. Graphify refresh and
+the implementation commit are recorded in the Task 8 report after completion.
+The Graphify refresh currently reports 1,078 files, 21,919 nodes, 22,218 edges,
+and 1,485 communities; it remains advisory and records committed base
+`8c08cb82` while extraction includes the Task 8 working tree.
 
 ### Task Review Ledger
 

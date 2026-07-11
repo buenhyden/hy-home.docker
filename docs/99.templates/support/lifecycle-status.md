@@ -63,10 +63,12 @@ completed      -> superseded
 
 `superseded` is terminal for active-stage artifacts and `archived` is terminal
 for Stage 98 tombstones. A same-status edit is not a transition. Any reverse or
-otherwise unlisted transition requires explicit Stage 04 task evidence,
-approval, reason, previous state, and a scoped validator override. Task 7
-implements transition comparison and fixtures in advisory modes; Task 8 owns
-the first changed/new blocking call site.
+otherwise unlisted transition requires an explicit override manifest containing
+the document path, previous and new states, existing Stage 04 task path,
+approval, and reason. The validator accepts that manifest only through the
+scoped `--transition-override-file` input; the default pre-push hook supplies no
+override. Changed/new enforcement therefore blocks undocumented reverse
+transitions while the full historical inventory remains advisory.
 
 ## Related Documents
 

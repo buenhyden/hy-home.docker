@@ -100,6 +100,14 @@ repos:
         pass_filenames: false
         stages: [pre-push]
 
+      - id: check-document-metadata
+        name: Document metadata changed/new contract
+        entry: python3 scripts/validation/check-document-metadata.py --mode check-changed
+        language: system
+        files: ^docs/.*\.md$
+        pass_filenames: false
+        stages: [pre-push]
+
       - id: check-doc-traceability
         name: Doc traceability (execution <-> operations)
         entry: ./scripts/validation/check-doc-traceability.sh

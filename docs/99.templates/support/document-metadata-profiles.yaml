@@ -13,6 +13,32 @@ common:
   typed_keys: [status, artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle]
   inventory_excludes:
     - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
+  template_placeholders:
+    artifact_id: <artifact-id>
+    parent_id: <parent-artifact-id>
+    reviewed_at: <reviewed-at>
+    review_cycle: <review-cycle>
+    archived_from: docs/<original-path>.md
+    archived_on: YYYY-MM-DD
+    archive_reason: <archive-reason>
+    current_replacement: docs/<replacement-path>.md
+  root_exceptions:
+    docs/03.specs/123-agentic-engineering-audit-remediation/spec.md: Cross-cutting umbrella spec approved without a manufactured PRD, ARD, or ADR parent.
+
+template_sources:
+  docs/99.templates/templates/sdlc/prd.template.md: prd
+  docs/99.templates/templates/sdlc/ard.template.md: ard
+  docs/99.templates/templates/sdlc/adr.template.md: adr
+  docs/99.templates/templates/sdlc/spec.template.md: spec
+  docs/99.templates/templates/sdlc/plan.template.md: plan
+  docs/99.templates/templates/sdlc/task.template.md: task
+  docs/99.templates/templates/operations/guide.template.md: guide
+  docs/99.templates/templates/operations/policy.template.md: policy
+  docs/99.templates/templates/operations/runbook.template.md: runbook
+  docs/99.templates/templates/operations/incident.template.md: incident
+  docs/99.templates/templates/operations/postmortem.template.md: postmortem
+  docs/99.templates/templates/common/reference.template.md: reference
+  docs/99.templates/templates/common/archive.template.md: archive
 
 profiles:
   prd:

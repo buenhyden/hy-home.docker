@@ -101,6 +101,8 @@ status: active
 1. [workspace-baseline.md](./workspace-baseline.md)에서 이 저장소의 현재 체계를 먼저 확인합니다.
 2. [harness-engineering.md](./harness-engineering.md)와 [loop-engineering.md](./loop-engineering.md)에서 개념적 구조를 확인합니다.
 3. [spec-driven-sdlc.md](./spec-driven-sdlc.md)에서 stage-gate를, [sdlc-document-roles.md](./sdlc-document-roles.md)에서 문서 역할을, [document-metadata-lifecycle.md](./document-metadata-lifecycle.md)에서 metadata/lifecycle 기준을 확인합니다.
+4. Pack leaf metadata는 stable `artifact_id`와 direct `parent_ids`를 통해
+   Spec 123에 연결하며, 이 README는 folder-index 예외로 유지합니다.
 4. [agent-instructions-vibe-coding.md](./agent-instructions-vibe-coding.md)에서 instruction/vibe 기준을 확인하고 [quality-ci-formatting.md](./quality-ci-formatting.md)에서 실제 QA evidence surface를 확인합니다.
 5. [docker-compose-infrastructure.md](./docker-compose-infrastructure.md), [security-governance.md](./security-governance.md), [automation-pipeline-workflow.md](./automation-pipeline-workflow.md)에서 targeted reference를 확인합니다.
 6. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인하고, [provider-model-landscape.md](./provider-model-landscape.md)에서 cutoff-bound 공식 model/lifecycle evidence를 확인한 뒤 [agent-model-selection.md](./agent-model-selection.md)에서 작업 특성에 맞는 model tier와 reasoning-effort 분석을 읽습니다.

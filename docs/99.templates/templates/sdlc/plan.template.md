@@ -1,5 +1,8 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: plan
+parent_ids: [<parent-artifact-id>]
 ---
 <!-- Target: docs/04.execution/plans/YYYY-MM-DD-<feature>.md -->
 

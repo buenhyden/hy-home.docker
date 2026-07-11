@@ -1,5 +1,10 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: runbook
+parent_ids: [<parent-artifact-id>]
+reviewed_at: <reviewed-at>
+review_cycle: <review-cycle>
 ---
 
 <!-- Target: docs/05.operations/runbooks/<tier>/<topic>.md -->

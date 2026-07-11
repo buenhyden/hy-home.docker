@@ -1,5 +1,8 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: adr
+parent_ids: [<parent-artifact-id>]
 ---
 <!-- Target: docs/02.architecture/decisions/####-<short-title>.md -->
 

@@ -173,10 +173,10 @@ def nearby_routes_to_support(lines: list[str], index: int, window: int = 2) -> b
 
 for path in sorted(templates_root.rglob("*.template.md")):
     text = path.read_text(errors="ignore")
-    first_three = text.splitlines()[:3]
-    if first_three != ["---", "status: draft", "---"]:
+    frontmatter = top_frontmatter(text)
+    if not frontmatter or frontmatter[0][1] != "status: draft":
         failures.append(
-            f"{path}: Markdown template must start exactly with '---', 'status: draft', '---'"
+            f"{path}: Markdown template frontmatter must start with status: draft"
         )
     if "Target:" not in text:
         failures.append(f"{path}: Markdown template missing Target path guidance")
@@ -1804,7 +1804,8 @@ import sys
 failures: list[str] = []
 for path in sorted(pathlib.Path("docs/99.templates/templates").rglob("*.template.md")):
     text = path.read_text(errors="ignore")
-    if not text.startswith("---\nstatus: draft\n---"):
+    lines = text.splitlines()
+    if len(lines) < 3 or lines[:2] != ["---", "status: draft"] or "---" not in lines[2:]:
         failures.append(f"{path}: Markdown template frontmatter must start with status: draft")
     if "Target:" not in text:
         failures.append(f"{path}: template missing Target path guidance")
@@ -3712,7 +3713,7 @@ elif ! grep -q 'coverage_check=pass' /tmp/check-repo-contracts-audit-pack-covera
 fi
 rm -f /tmp/check-repo-contracts-audit-pack-coverage.txt
 
-section "Advisory document metadata inventory"
+section "Document metadata inventory and changed/new hook contract"
 metadata_profiles="docs/99.templates/support/document-metadata-profiles.yaml"
 metadata_checker="scripts/validation/check-document-metadata.py"
 metadata_tests="tests/validation/test_document_metadata.py"
@@ -3722,6 +3723,38 @@ metadata_inventory="docs/90.references/audits/2026-07-05-agentic-engineering-imp
 [[ -f "$metadata_checker" ]] || fail "missing document metadata checker: $metadata_checker"
 [[ -f "$metadata_tests" ]] || fail "missing document metadata tests: $metadata_tests"
 [[ -f "$metadata_inventory" ]] || fail "missing document metadata inventory: $metadata_inventory"
+
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import sys
+
+import yaml
+
+config = yaml.safe_load(pathlib.Path(".pre-commit-config.yaml").read_text(encoding="utf-8"))
+hooks = [
+    hook
+    for repository in config.get("repos", [])
+    if repository.get("repo") == "local"
+    for hook in repository.get("hooks", [])
+    if hook.get("id") == "check-document-metadata"
+]
+expected = {
+    "id": "check-document-metadata",
+    "name": "Document metadata changed/new contract",
+    "entry": "python3 scripts/validation/check-document-metadata.py --mode check-changed",
+    "language": "system",
+    "files": r"^docs/.*\.md$",
+    "pass_filenames": False,
+    "stages": ["pre-push"],
+}
+if hooks != [expected]:
+    print("FAIL: changed/new document metadata hook must match the approved pre-push contract", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
 
 metadata_check_output="$(mktemp "${TMPDIR:-/tmp}/check-repo-contracts-document-metadata.XXXXXX")"
 cleanup_metadata_check_output() {

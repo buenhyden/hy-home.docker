@@ -1,5 +1,10 @@
 ---
 status: active
+artifact_id: reference:agentic-research:sdlc-document-roles
+artifact_type: reference
+parent_ids: [spec:123-agentic-engineering-audit-remediation]
+reviewed_at: 2026-07-11
+review_cycle: on-source-change
 ---
 
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md -->

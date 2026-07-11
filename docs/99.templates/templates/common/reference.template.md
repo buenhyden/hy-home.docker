@@ -1,5 +1,8 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: reference
+parent_ids: []
 ---
 <!-- Target: docs/90.references/{audits,data,research,learning}/**/*.md -->
 

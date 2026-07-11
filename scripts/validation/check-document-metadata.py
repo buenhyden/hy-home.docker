@@ -7,11 +7,12 @@ import argparse
 import collections
 import dataclasses
 import datetime as dt
+import os
 import pathlib
 import re
 import subprocess
 import sys
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Any
 
 import yaml
@@ -51,6 +52,75 @@ TARGET_MARKDOWN_PREFIXES = (
     "docs/90.references/",
     "docs/98.archive/",
     "docs/99.templates/",
+)
+MIGRATION_TYPED_KEYS = frozenset(
+    {"artifact_id", "artifact_type", "parent_ids", "supersedes", "reviewed_at", "review_cycle"}
+)
+APPROVED_MIGRATION_PATHS = frozenset(
+    {
+        "docs/03.specs/123-agentic-engineering-audit-remediation/README.md",
+        "docs/03.specs/123-agentic-engineering-audit-remediation/spec.md",
+        "docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md",
+        "docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-instructions-vibe-coding.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md",
+        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md",
+        "docs/99.templates/templates/sdlc/prd.template.md",
+        "docs/99.templates/templates/sdlc/ard.template.md",
+        "docs/99.templates/templates/sdlc/adr.template.md",
+        "docs/99.templates/templates/sdlc/spec.template.md",
+        "docs/99.templates/templates/sdlc/plan.template.md",
+        "docs/99.templates/templates/sdlc/task.template.md",
+        "docs/99.templates/templates/operations/guide.template.md",
+        "docs/99.templates/templates/operations/policy.template.md",
+        "docs/99.templates/templates/operations/runbook.template.md",
+        "docs/99.templates/templates/operations/incident.template.md",
+        "docs/99.templates/templates/operations/postmortem.template.md",
+        "docs/99.templates/templates/common/reference.template.md",
+        "docs/99.templates/templates/common/readme.template.md",
+        "docs/99.templates/templates/common/archive.template.md",
+    }
+)
+LEGACY_EXCEPTION_CODES = frozenset(
+    {"missing-required-key", "replacement-free-supersession", "stale-active"}
+)
+EXPECTED_TEMPLATE_PLACEHOLDER_KEYS = frozenset(
+    {
+        "artifact_id",
+        "parent_id",
+        "reviewed_at",
+        "review_cycle",
+        "archived_from",
+        "archived_on",
+        "archive_reason",
+        "current_replacement",
+    }
 )
 
 
@@ -128,6 +198,23 @@ class Record:
     parse_error: str | None = None
     parse_error_code: str | None = None
     frontmatter_present: bool = False
+
+
+@dataclasses.dataclass(frozen=True)
+class BaseSelection:
+    source: str
+    ref: str | None
+    merge_base: str | None
+
+
+@dataclasses.dataclass(frozen=True)
+class TransitionOverride:
+    path: str
+    previous_status: str
+    new_status: str
+    evidence_task: str
+    approval: str
+    reason: str
 
 
 class Manifest(dict[str, pathlib.Path]):
@@ -320,10 +407,83 @@ def _has_parent_cycle(record: Record, parent_ids: list[str], manifest: Manifest)
     return False
 
 
+def _template_placeholder_values(profiles: dict[str, object]) -> dict[str, str]:
+    common, _ = _profile_mapping(profiles)
+    values = common.get("template_placeholders", {})
+    return dict(values) if isinstance(values, dict) else {}
+
+
+def _contains_template_placeholder(value: object, placeholders: set[str]) -> bool:
+    if isinstance(value, str):
+        return value in placeholders
+    if isinstance(value, list):
+        return any(_contains_template_placeholder(item, placeholders) for item in value)
+    if isinstance(value, dict):
+        return any(_contains_template_placeholder(item, placeholders) for item in value.values())
+    return False
+
+
+def _validate_template_source(
+    record: Record,
+    profiles: dict[str, object],
+) -> list[Finding] | None:
+    template_sources = profiles.get("template_sources", {})
+    if not isinstance(template_sources, dict):
+        return None
+    target_type = template_sources.get(record.path.as_posix())
+    if not isinstance(target_type, str):
+        return None
+    _, profile_map = _profile_mapping(profiles)
+    target_profile = profile_map.get(target_type)
+    if not isinstance(target_profile, dict):
+        return [_finding(record, "unknown-template-target", f"template target profile is unknown: {target_type}")]
+    placeholders = _template_placeholder_values(profiles)
+    findings: list[Finding] = []
+    required = set(target_profile.get("required", []))
+    optional = set(target_profile.get("optional", []))
+    forbidden = set(target_profile.get("forbidden", []))
+    allowed_template_keys = required | optional | {"status"}
+    for key in sorted(required - set(record.metadata)):
+        findings.append(_finding(record, "missing-template-key", f"target-profile key is missing: {key}"))
+    for key in sorted(set(record.metadata) & forbidden):
+        findings.append(_finding(record, "forbidden-template-key", f"key is forbidden for {target_type}: {key}"))
+    for key in sorted(set(record.metadata) - allowed_template_keys):
+        findings.append(_finding(record, "type-inappropriate-key", f"key is not declared for target {target_type}: {key}"))
+    if record.metadata.get("status") != "draft":
+        findings.append(_finding(record, "invalid-template-status", "template sources must keep status: draft"))
+    if record.metadata.get("artifact_type") != target_type:
+        findings.append(
+            _finding(record, "artifact-type-mismatch", f"template must declare target artifact_type {target_type}")
+        )
+    if record.metadata.get("artifact_id") != placeholders.get("artifact_id"):
+        findings.append(_finding(record, "invalid-template-placeholder", "artifact_id must use the Stage 99 placeholder"))
+    parents = _string_list(record.metadata.get("parent_ids"))
+    parent_placeholder = placeholders.get("parent_id")
+    if parents is None:
+        findings.append(_finding(record, "invalid-template-placeholder", "parent_ids must be a placeholder list"))
+    elif not parents and not target_profile.get("allow_empty_parents", False):
+        findings.append(_finding(record, "missing-parent", f"{target_type} template requires a direct parent placeholder"))
+    elif any(parent != parent_placeholder for parent in parents):
+        findings.append(_finding(record, "invalid-template-placeholder", "parent_ids contains a noncanonical placeholder"))
+    placeholder_keys = {
+        "reviewed_at": "reviewed_at",
+        "review_cycle": "review_cycle",
+        "archived_from": "archived_from",
+        "archived_on": "archived_on",
+        "archive_reason": "archive_reason",
+        "current_replacement": "current_replacement",
+    }
+    for key, placeholder_key in placeholder_keys.items():
+        if key in required and record.metadata.get(key) != placeholders.get(placeholder_key):
+            findings.append(_finding(record, "invalid-template-placeholder", f"{key} must use the Stage 99 placeholder"))
+    return sorted(set(findings))
+
+
 def validate_record(
     record: Record,
     profiles: dict[str, object],
     manifest: dict[str, pathlib.Path],
+    transition_overrides: Mapping[tuple[str, str, str], TransitionOverride] | None = None,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
 
@@ -337,6 +497,9 @@ def validate_record(
         parse_code = record.parse_error_code or "malformed-yaml"
         findings.append(_finding(record, f"frontmatter-{parse_code}", record.parse_error))
         return findings
+    template_findings = _validate_template_source(record, profiles)
+    if template_findings is not None:
+        return template_findings
     if record.artifact_type == "unsupported":
         findings.append(
             _finding(
@@ -344,6 +507,18 @@ def validate_record(
                 "unsupported-profile",
                 "path is outside the typed document corpus",
                 severity="warning",
+            )
+        )
+
+    placeholder_values = set(_template_placeholder_values(profiles).values())
+    if record.artifact_type != "template-source" and any(
+        _contains_template_placeholder(value, placeholder_values) for value in record.metadata.values()
+    ):
+        findings.append(
+            _finding(
+                record,
+                "template-placeholder-in-target",
+                "Stage 99 template placeholders must be replaced in instantiated documents",
             )
         )
 
@@ -375,7 +550,8 @@ def validate_record(
     if isinstance(status, str) and previous_status and status != previous_status:
         transitions = common.get("transitions", {})
         allowed_next = transitions.get(previous_status, []) if isinstance(transitions, dict) else []
-        if status not in allowed_next:
+        override_key = (record.path.as_posix(), previous_status, status)
+        if status not in allowed_next and override_key not in (transition_overrides or {}):
             findings.append(
                 _finding(
                     record,
@@ -409,7 +585,11 @@ def validate_record(
     if parent_ids is not None:
         if len(parent_ids) != len(set(parent_ids)):
             findings.append(_finding(record, "duplicate-parent", "parent_ids contains duplicate IDs"))
-        if not parent_ids and not raw_profile.get("allow_empty_parents", False):
+        root_exceptions = common.get("root_exceptions", {})
+        root_permitted = raw_profile.get("allow_empty_parents", False) or (
+            isinstance(root_exceptions, dict) and record.path.as_posix() in root_exceptions
+        )
+        if not parent_ids and not root_permitted:
             findings.append(_finding(record, "missing-parent", "this artifact profile does not permit a root"))
         allowed_parent_types = set(raw_profile.get("allowed_parent_types", []))
         for parent_id in parent_ids:
@@ -548,6 +728,19 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
         if len(value) != len(set(value)):
             raise ProfileError(f"common.{key} must not contain duplicates")
         common_lists[key] = value
+    template_placeholders = common.get("template_placeholders")
+    if not isinstance(template_placeholders, dict) or set(template_placeholders) != EXPECTED_TEMPLATE_PLACEHOLDER_KEYS:
+        raise ProfileError("common.template_placeholders must define the exact Stage 99 placeholder keys")
+    if not all(isinstance(value, str) and value.strip() for value in template_placeholders.values()):
+        raise ProfileError("common.template_placeholders values must be non-empty strings")
+    root_exceptions = common.get("root_exceptions")
+    if not isinstance(root_exceptions, dict):
+        raise ProfileError("common.root_exceptions must be a path-to-reason mapping")
+    for root_path, reason in root_exceptions.items():
+        if not isinstance(root_path, str) or _normalized_target_path(root_path) is None:
+            raise ProfileError("common.root_exceptions keys must be canonical target Markdown paths")
+        if not isinstance(reason, str) or not reason.strip():
+            raise ProfileError("common.root_exceptions reasons must be non-empty strings")
     allowed_statuses = set(common_lists["allowed_statuses"])
     terminal_statuses = set(common_lists["terminal_statuses"])
     if not terminal_statuses <= allowed_statuses:
@@ -610,6 +803,18 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
         disposition = raw_profile.get("disposition")
         if not isinstance(disposition, str) or not disposition.strip():
             raise ProfileError(f"profile {name} disposition must be a non-empty string")
+    template_sources = loaded.get("template_sources")
+    if not isinstance(template_sources, dict) or not template_sources:
+        raise ProfileError("template_sources must be a non-empty path-to-profile mapping")
+    for source_path, target_type in template_sources.items():
+        if (
+            not isinstance(source_path, str)
+            or not _safe_repo_path(source_path, "docs/99.templates/templates/")
+            or not source_path.endswith(".template.md")
+        ):
+            raise ProfileError("template_sources keys must be safe canonical Markdown template paths")
+        if target_type not in EXPECTED_PROFILE_TYPES - {"template-source", "readme", "generated", "governance", "unsupported"}:
+            raise ProfileError(f"template_sources has unsupported target profile: {target_type}")
     return loaded
 
 
@@ -645,7 +850,69 @@ def _normalized_target_path(path_text: str) -> pathlib.Path | None:
     return pathlib.Path(normalized)
 
 
-def _previous_status(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> str | None:
+def _git_lines(root: pathlib.Path, args: Sequence[str]) -> list[str]:
+    result = subprocess.run(
+        ["git", "-C", str(root), *args],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return []
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
+def _verified_commit(root: pathlib.Path, ref: str) -> str | None:
+    lines = _git_lines(root, ["rev-parse", "--verify", "--end-of-options", f"{ref}^{{commit}}"])
+    return lines[0] if len(lines) == 1 and re.fullmatch(r"[0-9a-fA-F]{40,64}", lines[0]) else None
+
+
+def resolve_base_selection(root: pathlib.Path, explicit_ref: str | None) -> BaseSelection:
+    """Resolve a safe comparison base without ever falling back to the full corpus."""
+
+    if explicit_ref:
+        commit = _verified_commit(root, explicit_ref)
+        if commit is None:
+            raise ProfileError(f"explicit --base-ref is not a commit: {explicit_ref}")
+        merge_base = _git_lines(root, ["merge-base", "HEAD", commit])
+        if not merge_base:
+            raise ProfileError(f"explicit --base-ref has no merge base with HEAD: {explicit_ref}")
+        return BaseSelection("explicit", explicit_ref, merge_base[0])
+
+    candidates: list[tuple[str, str]] = []
+    template_base = os.environ.get("TEMPLATE_GATE_BASE", "").strip()
+    if template_base:
+        candidates.append(("env:TEMPLATE_GATE_BASE", template_base))
+    github_base = os.environ.get("GITHUB_BASE_REF", "").strip()
+    if github_base:
+        candidates.extend(
+            [
+                ("env:GITHUB_BASE_REF", f"origin/{github_base}"),
+                ("env:GITHUB_BASE_REF", github_base),
+            ]
+        )
+    candidates.extend(
+        [
+            ("local:upstream", "@{upstream}"),
+            ("local:origin/main", "origin/main"),
+            ("local:main", "main"),
+        ]
+    )
+    seen: set[str] = set()
+    for source, ref in candidates:
+        if ref in seen:
+            continue
+        seen.add(ref)
+        commit = _verified_commit(root, ref)
+        if commit is None:
+            continue
+        merge_base = _git_lines(root, ["merge-base", "HEAD", commit])
+        if merge_base:
+            return BaseSelection(source, ref, merge_base[0])
+    return BaseSelection("fallback:working-tree-only", None, None)
+
+
+def _metadata_at_ref(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> dict[str, object] | None:
     if not base_ref:
         return None
     result = subprocess.run(
@@ -658,14 +925,19 @@ def _previous_status(root: pathlib.Path, path: pathlib.Path, base_ref: str | Non
         return None
     lines = result.stdout.splitlines()
     if not lines or lines[0].strip() != "---":
-        return None
+        return {}
     closing = next((index for index in range(1, len(lines)) if lines[index].strip() == "---"), None)
     if closing is None:
-        return None
+        return {}
     try:
         loaded = _safe_load_unique("\n".join(lines[1:closing]))
     except yaml.YAMLError:
         return None
+    return dict(loaded) if isinstance(loaded, dict) and all(isinstance(key, str) for key in loaded) else None
+
+
+def _previous_status(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> str | None:
+    loaded = _metadata_at_ref(root, path, base_ref)
     return loaded.get("status") if isinstance(loaded, dict) and isinstance(loaded.get("status"), str) else None
 
 
@@ -716,6 +988,88 @@ def collect_records(
             )
         )
     return records
+
+
+def load_transition_overrides(
+    path: pathlib.Path,
+    root: pathlib.Path,
+    profiles: dict[str, object],
+) -> dict[tuple[str, str, str], TransitionOverride]:
+    """Load explicit, path-scoped reverse-transition approval evidence."""
+
+    try:
+        loaded = _safe_load_unique(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as error:
+        raise ProfileError(f"cannot load transition override file: {error}") from error
+    if not isinstance(loaded, dict) or set(loaded) != {"transition_overrides"}:
+        raise ProfileError("transition override file must contain only transition_overrides")
+    rows = loaded.get("transition_overrides")
+    if not isinstance(rows, list) or not rows:
+        raise ProfileError("transition_overrides must be a non-empty list")
+    common, _ = _profile_mapping(profiles)
+    allowed_statuses = set(common.get("allowed_statuses", []))
+    expected_keys = {
+        "path",
+        "previous_status",
+        "new_status",
+        "evidence_task",
+        "approval",
+        "reason",
+    }
+    overrides: dict[tuple[str, str, str], TransitionOverride] = {}
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict) or set(row) != expected_keys:
+            raise ProfileError(f"transition override row {index} must define the exact evidence fields")
+        if not all(isinstance(row[key], str) and row[key].strip() for key in expected_keys):
+            raise ProfileError(f"transition override row {index} values must be non-empty strings")
+        target = _normalized_target_path(row["path"])
+        evidence = _normalized_target_path(row["evidence_task"])
+        if target is None or not (root / target).is_file():
+            raise ProfileError(f"transition override row {index} target path is not an existing canonical document")
+        if (
+            evidence is None
+            or not evidence.as_posix().startswith("docs/04.execution/tasks/")
+            or not (root / evidence).is_file()
+        ):
+            raise ProfileError(f"transition override row {index} evidence_task must be an existing Stage 04 task")
+        previous_status = row["previous_status"].strip()
+        new_status = row["new_status"].strip()
+        if previous_status not in allowed_statuses or new_status not in allowed_statuses:
+            raise ProfileError(f"transition override row {index} uses an unknown lifecycle status")
+        if previous_status == new_status:
+            raise ProfileError(f"transition override row {index} does not describe a transition")
+        override = TransitionOverride(
+            target.as_posix(),
+            previous_status,
+            new_status,
+            evidence.as_posix(),
+            row["approval"].strip(),
+            row["reason"].strip(),
+        )
+        key = (override.path, override.previous_status, override.new_status)
+        if key in overrides:
+            raise ProfileError(f"duplicate transition override scope: {' -> '.join(key)}")
+        overrides[key] = override
+    return overrides
+
+
+def _legacy_exception_eligible(
+    root: pathlib.Path,
+    record: Record,
+    findings: Sequence[Finding],
+    base_ref: str | None,
+) -> bool:
+    if not base_ref or record.path.as_posix() in APPROVED_MIGRATION_PATHS or record.parse_error:
+        return False
+    if record.artifact_type in {"readme", "generated", "template-source", "governance", "archive", "unsupported"}:
+        return False
+    previous = _metadata_at_ref(root, record.path, base_ref)
+    if previous is None:
+        return False
+    if MIGRATION_TYPED_KEYS & set(previous) or MIGRATION_TYPED_KEYS & set(record.metadata):
+        return False
+    error_codes = {finding.code for finding in findings if finding.severity == "error"}
+    return bool(error_codes) and error_codes <= LEGACY_EXCEPTION_CODES
 
 
 def _escape_cell(value: object) -> str:
@@ -898,9 +1252,9 @@ def render_report(
         "",
         "## Purpose",
         "",
-        "Provide the deterministic pre-migration baseline for Spec 123 Tasks 7 and 8.",
-        "Semantic findings are advisory here and do not authorize metadata migration or",
-        "changed/new blocking enforcement.",
+        "Provide the deterministic pre/post-migration comparison for Spec 123 Tasks 7 and 8.",
+        "Historical semantic findings remain advisory here; the separate changed/new",
+        "checker enforces only its safely selected diff scope.",
         "",
         "## Repository Role",
         "",
@@ -916,7 +1270,7 @@ def render_report(
         "",
         "### Out of Scope",
         "",
-        "- Automatic document rewrites or lifecycle changes",
+        "- Automatic document rewrites, corpus-wide blocking, or lifecycle changes",
         "- Filesystem modification times as freshness evidence",
         "- Raw document bodies, logs, credentials, or secret values",
         "",
@@ -925,7 +1279,7 @@ def render_report(
         f"- **Tracked records**: {len(records)}",
         f"- **Records with findings**: {semantic_count}",
         f"- **Frontmatter parser failures**: {parse_count}",
-        "- **Enforcement state**: advisory-only; repository contracts check syntax, tests, and snapshot freshness only",
+        "- **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking",
         "",
         "## Profile Summary",
         "",
@@ -1002,7 +1356,11 @@ def render_report(
     return "\n".join(lines)
 
 
-def _changed_paths(root: pathlib.Path, explicit: Sequence[str]) -> set[str]:
+def _changed_paths(
+    root: pathlib.Path,
+    explicit: Sequence[str],
+    base: BaseSelection,
+) -> set[str]:
     if explicit:
         return {
             normalized.as_posix()
@@ -1010,10 +1368,27 @@ def _changed_paths(root: pathlib.Path, explicit: Sequence[str]) -> set[str]:
             if (normalized := _normalized_target_path(path)) is not None
         }
     changed: set[str] = set()
-    for command in (
+    commands = [
         ["git", "-C", str(root), "diff", "--name-only", "--diff-filter=ACDMRT", "HEAD", "--", "*.md"],
+        ["git", "-C", str(root), "diff", "--cached", "--name-only", "--diff-filter=ACDMRT", "--", "*.md"],
         ["git", "-C", str(root), "ls-files", "--others", "--exclude-standard", "--", "*.md"],
-    ):
+    ]
+    if base.merge_base:
+        commands.insert(
+            0,
+            [
+                "git",
+                "-C",
+                str(root),
+                "diff",
+                "--name-only",
+                "--diff-filter=ACDMRT",
+                f"{base.merge_base}...HEAD",
+                "--",
+                "*.md",
+            ],
+        )
+    for command in commands:
         result = subprocess.run(command, capture_output=True, text=True, check=False)
         if result.returncode == 0:
             changed.update(
@@ -1044,6 +1419,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--check", action="store_true", help="compare --output without writing")
     parser.add_argument("--changed-path", action="append", default=[])
     parser.add_argument("--base-ref", default=None, help="optional Git ref for lifecycle transition comparison")
+    parser.add_argument(
+        "--transition-override-file",
+        type=pathlib.Path,
+        help="explicit scoped reverse-transition approval evidence",
+    )
     args = parser.parse_args(argv)
     if args.check and args.output is None:
         parser.error("--check requires --output")
@@ -1053,16 +1433,49 @@ def main(argv: Sequence[str] | None = None) -> int:
     except ProfileError as error:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
-    changed_selection = _changed_paths(root, args.changed_path) if args.mode == "check-changed" else set()
+    base = BaseSelection("not-applicable", None, None)
+    transition_overrides: dict[tuple[str, str, str], TransitionOverride] = {}
+    if args.mode == "check-changed":
+        try:
+            base = resolve_base_selection(root, args.base_ref)
+            if args.transition_override_file:
+                transition_overrides = load_transition_overrides(
+                    args.transition_override_file.resolve(),
+                    root,
+                    profiles,
+                )
+        except ProfileError as error:
+            print(f"configuration-error: {error}", file=sys.stderr)
+            return 2
+        if base.merge_base:
+            print(
+                f"metadata base: source={base.source} ref={base.ref} merge_base={base.merge_base}",
+                file=sys.stderr,
+            )
+        else:
+            print(
+                "metadata base: fallback=working-tree-only; committed branch delta unavailable; full corpus not selected",
+                file=sys.stderr,
+            )
+    elif args.transition_override_file:
+        print("configuration-error: --transition-override-file requires --mode check-changed", file=sys.stderr)
+        return 2
+    changed_selection = _changed_paths(root, args.changed_path, base) if args.mode == "check-changed" else set()
     records = collect_records(
         root,
         profiles,
-        base_ref=args.base_ref,
+        base_ref=base.merge_base,
         selected_paths=sorted(changed_selection),
     )
     manifest = build_manifest(records)
     findings_by_path = {
-        record.path.as_posix(): validate_record(record, profiles, manifest) for record in records
+        record.path.as_posix(): validate_record(
+            record,
+            profiles,
+            manifest,
+            transition_overrides=transition_overrides,
+        )
+        for record in records
     }
     parser_failures = [record for record in records if record.parse_error]
     rendered = render_report(records, profiles, findings_by_path)
@@ -1085,16 +1498,34 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.mode == "check-changed"
         else {record.path.as_posix() for record in records if record.metadata.get("status") == "active"}
     )
+    records_by_path = {record.path.as_posix(): record for record in records}
+    legacy_exceptions = {
+        path
+        for path in selected_paths
+        if path in records_by_path
+        and _legacy_exception_eligible(
+            root,
+            records_by_path[path],
+            findings_by_path.get(path, []),
+            base.merge_base,
+        )
+    }
+    for path in sorted(legacy_exceptions):
+        print(
+            f"{path}: legacy metadata exception: base-existing unmigrated document outside approved Task 8 scope",
+            file=sys.stderr,
+        )
     selected_findings = sorted(
         finding
-        for path in selected_paths
+        for path in selected_paths - legacy_exceptions
         for finding in findings_by_path.get(path, [])
         if finding.severity == "error"
     )
     for finding in selected_findings:
         print(f"{finding.path}: {finding.code}: {finding.message}")
     print(
-        f"metadata {args.mode}: selected={len(selected_paths)} violations={len(selected_findings)}"
+        f"metadata {args.mode}: selected={len(selected_paths)} violations={len(selected_findings)} "
+        f"legacy_exceptions={len(legacy_exceptions)} transition_overrides={len(transition_overrides)}"
     )
     return 1 if selected_findings else 0
 

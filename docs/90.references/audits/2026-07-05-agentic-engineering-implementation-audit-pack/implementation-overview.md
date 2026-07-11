@@ -1,5 +1,12 @@
 ---
 status: active
+artifact_id: audit:agentic-engineering-implementation:overview
+artifact_type: audit
+parent_ids:
+  - spec:123-agentic-engineering-audit-remediation
+  - task:2026-07-11-agentic-engineering-audit-remediation
+reviewed_at: 2026-07-11
+review_cycle: per-remediation-task
 ---
 
 <!-- Target: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md -->

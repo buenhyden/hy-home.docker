@@ -1,5 +1,9 @@
 ---
 status: active
+artifact_id: plan:2026-07-11-agentic-engineering-audit-remediation
+artifact_type: plan
+parent_ids:
+  - spec:123-agentic-engineering-audit-remediation
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md -->

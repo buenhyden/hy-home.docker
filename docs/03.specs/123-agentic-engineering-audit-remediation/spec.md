@@ -1,5 +1,8 @@
 ---
 status: active
+artifact_id: spec:123-agentic-engineering-audit-remediation
+artifact_type: spec
+parent_ids: []
 ---
 
 <!-- Target: docs/03.specs/123-agentic-engineering-audit-remediation/spec.md -->

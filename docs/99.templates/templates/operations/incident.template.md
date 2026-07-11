@@ -1,5 +1,8 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: incident
+parent_ids: [<parent-artifact-id>]
 ---
 <!-- Target: docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md -->
 

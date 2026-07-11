@@ -24,6 +24,7 @@ Run after every agent task before declaring completion.
 - [ ] R1: Template loaded, required sections filled, and lifecycle `status` set according to the target template/stage
 - [ ] R2: Parent `README.md` updated for any folder-level change (including content modifications that affect folder-level descriptions)
 - [ ] R3: `## Related Documents` section present with upstream links
+- [ ] Changed/new target Markdown passes `check-document-metadata.py --mode check-changed` with a safe explicit base
 
 ## Secrets Gate (all layers)
 
@@ -45,6 +46,7 @@ Run after every agent task before declaring completion.
 | Template not used                  | Apply template before closing        |
 | `README.md` not updated            | Update before closing                |
 | `## Related Documents` missing     | Add before closing                   |
+| Changed/new metadata check fails   | Correct typed metadata or approved transition evidence |
 | Plaintext secret found             | Replace with Docker Secret reference |
 
 ## Related Documents

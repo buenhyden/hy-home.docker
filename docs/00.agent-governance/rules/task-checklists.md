@@ -47,6 +47,8 @@ Unified task execution checklists for all agent work.
 - [ ] Maintain language policy consistency (English governance, Korean human-facing docs).
 - [ ] Keep assumptions explicit and update them when repository evidence disproves them.
 - [ ] Validate new/changed links as edits are made.
+- [ ] For changed/new target Markdown, run the typed metadata checker with an
+      explicit safe base; do not treat the advisory full inventory as a gate.
 - [ ] When a document is modified, update the parent folder `README.md` if the change affects the folder's description of that document (title, status, scope, or summary-level content); see DOCS 3 R2 in `rules/documentation-protocol.md`.
 - [ ] Remove stale, conflicting, or nonexistent references in editable scope.
 - [ ] Record template deviations or explicit N/A rationale in task evidence; do
@@ -67,6 +69,8 @@ Unified task execution checklists for all agent work.
 - [ ] Confirm each implemented change is traceable to the approved plan when an approved-plan gate applies.
 - [ ] Validate link integrity for changed root/governance files.
 - [ ] Inspect the post-edit diff after hook-managed formatting or style checks.
+- [ ] Confirm new documents cannot use the legacy metadata exception and any
+      reverse lifecycle transition has explicit scoped Stage 04 override evidence.
 - [ ] Confirm no contradictory policy statements were introduced.
 - [ ] Confirm any HADS usage follows the mandatory
       `docs/90.references/data/hads/` profile when applicable, or is explicitly
