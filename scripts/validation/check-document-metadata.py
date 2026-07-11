@@ -1183,14 +1183,14 @@ def _relation_impact_findings(
     manifest: Manifest,
     findings_by_path: Mapping[str, Sequence[Finding]],
 ) -> dict[str, list[Finding]]:
-    """Return only relation findings newly caused by selected typed deletions."""
+    """Return only relation findings newly caused by selected typed identity removal."""
 
     removed_ids: set[str] = set()
-    for path in sorted(selected_paths - set(records_by_path)):
-        previous = head_records_by_path.get(path) or base_records_by_path.get(path)
-        artifact_id = previous.metadata.get("artifact_id") if previous else None
-        if isinstance(artifact_id, str) and artifact_id.strip() and artifact_id.strip() not in manifest:
-            removed_ids.add(artifact_id.strip())
+    for path in sorted(selected_paths):
+        for previous in (head_records_by_path.get(path), base_records_by_path.get(path)):
+            artifact_id = previous.metadata.get("artifact_id") if previous else None
+            if isinstance(artifact_id, str) and artifact_id.strip() and artifact_id.strip() not in manifest:
+                removed_ids.add(artifact_id.strip())
     if not removed_ids:
         return {}
 
@@ -1639,7 +1639,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.mode == "check-changed":
         head_records_by_path = collect_selected_records_at_ref(
             root,
-            changed_selection - set(records_by_path),
+            changed_selection,
             "HEAD",
         )
         relation_impact_findings = _relation_impact_findings(

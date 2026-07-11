@@ -853,6 +853,36 @@ tracked code, tests, governance, and stage evidence corroborate the fix. No
 runtime, service, Compose, infrastructure, secret, credential, remote GitHub,
 branch-protection, provider-runtime, or model-policy surface changed.
 
+#### Second Exact-Range Finding and Identity Fix
+
+The exact-range postfix review of
+`3e92b39fa02767dafff612fcfa5b3670998471be..52fa67cf089c81933679a757d7a02f6787c7f72b`
+confirmed I-01 resolved but returned Spec FAIL / Quality CHANGES_REQUESTED,
+Critical 0, Important 1, Minor 0, and `READY_FOR_RECLOSURE: NO` for I-02.
+Changing a selected typed record's `artifact_id` in place left its prior ID out
+of the deletion-only impact collector, so unchanged `parent_ids` or
+`supersedes` dependents could become unresolved while the gate exited zero.
+
+- RED evidence: the targeted matrix ran seven cases; the coherent dependent
+  update passed and exactly six unstaged/staged/explicit-base identity-change
+  cases failed with `selected=1 violations=0`.
+- Focused GREEN evidence: the impact collector now considers both HEAD and
+  merge-base prior records for every selected path, including current records.
+  A prior non-empty ID contributes only when it no longer exists anywhere in
+  the current manifest, and only exact newly unresolved relation findings are
+  promoted.
+- Preservation boundary: deletion handling, coherent updates, path renames,
+  duplicate-ID survivors, legacy exceptions, deterministic ordering, and
+  unrelated advisory-noise filtering retain their existing behavior.
+- Validation: targeted identity matrix PASS 7/7; metadata discovery PASS 76/76;
+  full validation discovery PASS 83/83; explicit branch-base metadata PASS at
+  97 selected / zero violations; deterministic inventory fresh at 888 records /
+  2,025 advisory findings; traceability PASS at 46 pairs; implementation
+  alignment PASS at 637 docs / 5,001 links; repository contracts PASS at 1/1
+  changed target and 747/747 normalized targets; diff hygiene PASS.
+- Re-review boundary: lifecycle remains active/Todo and the next exact-range
+  re-review is pending; no closure verdict is claimed.
+
 #### Historical Preclosure Evidence
 
 The remaining Task 12 evidence below records the earlier preclosure run. It is

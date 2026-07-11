@@ -51,12 +51,13 @@ metadata rollout.
   `main`. When none resolves, it emits a diagnostic and evaluates only local
   staged, unstaged, untracked, renamed, and deleted paths; it never substitutes
   a repository-wide gate. Deleted paths are selected evidence but are not
-  parsed as existing violations. When a selected deletion removes a typed
-  `artifact_id`, the checker also blocks only current dependents whose
-  `parent_ids` or `supersedes` relation becomes unresolved because of that
-  deletion. A rename or surviving duplicate ID does not create deletion
-  impact, and unrelated historical findings on an impacted dependent remain
-  advisory.
+  parsed as existing violations. When a selected deletion or in-place identity
+  change removes a typed `artifact_id`, the checker compares selected current
+  and absent paths with their HEAD and merge-base records, then blocks only
+  current dependents whose `parent_ids` or `supersedes` relation becomes
+  unresolved because the prior ID disappeared. A rename, coherent dependent
+  update, or surviving duplicate ID does not create relation impact, and
+  unrelated historical findings on an impacted dependent remain advisory.
 - A base-existing legacy leaf outside the exact Task 8 migration allowlist may
   retain only its pre-existing missing typed-key/freshness/replacement deficits
   when it had no migration keys before or after the edit. New documents,
