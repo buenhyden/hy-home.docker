@@ -113,6 +113,59 @@ close generated evidence.
   boundaries, canonical/snapshot/supersession routing, historical preservation,
   pending-before-review lifecycle discipline, and the docs-only boundary.
 
+### T-AHC-002 Canonical Current-State Reassessment Evidence
+
+- **Implementation base**: The Task 2 implementation starts from reviewed Task
+  1 base `ee64b3a7`; T-AHC-002 remains `Todo`, its Phase 1 checkbox remains
+  unchecked, and its Review Ledger row remains `Pending` until independent Spec
+  compliance and quality review approve the implementation commit.
+- **Complete reassessment**: All eleven criterion reports and all 161 unique
+  ten-field rows were reviewed against current tracked source and completed
+  T-AER-008 through T-AER-012 evidence. Structural baseline was already green at
+  11 reports / 161 rows while the required semantic stale-phrase scan identified
+  the pre-implementation metadata, wrapper, provider-task, and lifecycle wording.
+- **Evidence-backed state changes**: `DML-01`, `DML-02`, `DML-03`, `DML-04`,
+  `DML-05`, `DML-07`, `DML-08`, `DML-11`, `DML-14`, `QAF-12`, and `AUT-09`
+  changed to `Implemented`, depth `3`, disposition `Retain`. Each row now cites
+  the tracked profile/checker/wrapper source, focused tests, and T-AER review
+  evidence; no other criterion state changed.
+- **Metadata boundary**: T-AER-008 supplies typed profiles, stable IDs, direct
+  relations, freshness, transitions, explicit reverse overrides, active-chain
+  migration, and changed/new enforcement. T-AER-012 supplies deletion,
+  identity-change, explicit-base, and impacted-dependent referential-integrity
+  hardening. The full historical inventory remains advisory; `DML-09` and
+  `DML-12` remain `Partial`, and no corpus-wide migration is claimed.
+- **Wrapper boundary**: T-AER-009 supplies the controlled wrapper and its
+  independently approved 29-case fake-hook suite. Direct agent all-files
+  execution remains prohibited, and wrapper evidence covers only Git-visible,
+  non-ignored repository paths; ignored/outside writes and process/filesystem
+  sandboxing are not claimed.
+- **Conservative provider/eval/live scope**: Completed provider synchronization,
+  semantic lifecycle parity, 7/7/7 hook parity, and existing CI metadata-step
+  evidence replace stale Task 10 future tense. Native acceptance, `.gemini`
+  adoption, general semantic scoring, live execution, remote enforcement, model
+  entitlement, runtime/CD, and broad supply-chain gaps retain their prior
+  `Partial`, `Missing`, or `Needs Revalidation` states.
+- **Exact final distribution**: `Implemented=67`, `Partial=69`, `Missing=14`,
+  `Not Applicable=2`, `Needs Revalidation=9`; total `161`.
+- **Validation**: Matrix write/check passed; audit coverage check passed with
+  11/11 reports, 161/161 unique rows, and 15/15 overview categories; criterion
+  contract passed at 11/161; the exact five distribution rows were found; the
+  required stale-phrase scan returned no matches; the full validation suite
+  passed 90/90; the fake-hook wrapper suite passed 29/29; changed-document
+  metadata selected 12 paths with zero violations; provider sync and hook-parity
+  freshness passed; traceability passed at 46 pairs / zero failures;
+  implementation alignment passed at 640 stage docs / 5,041 links / zero
+  failures; repository contracts passed with `failures=0`; `git diff --check`
+  passed.
+- **Protected surfaces**: Documentation and the generator-owned matrix only.
+  No 2026-07-03, 2026-07-04, or 2026-07-07 audit file, runtime, Compose,
+  infrastructure, secret, credential, remote GitHub, CI workflow, provider/model
+  policy, `.gemini` adoption, or deployment state changed. Direct pre-commit was
+  not run, and docs-only changes do not trigger the code-file Graphify refresh.
+- **Independent review**: Pending. This implementation evidence is not a review
+  verdict and must not advance the task row, Phase checkbox, or Review Ledger.
+
 ## Verification Summary
 
 - **Baseline**: `codex/audit-harness-consolidation` from

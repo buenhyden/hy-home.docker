@@ -17,8 +17,9 @@ review_cycle: per-remediation-task
 ## Overview
 
 This reference summarizes how much of the researched agentic engineering model
-is currently implemented in `hy-home.docker`. It is a point-in-time audit
-snapshot built from the Stage 90 research pack and repo-local evidence.
+is currently implemented in `hy-home.docker`. It is the canonical current-state
+audit built from the Stage 90 research pack, tracked source, and completed
+T-AER-008 through T-AER-012 evidence.
 
 ## Purpose
 
@@ -64,40 +65,57 @@ runtime Compose files.
 - **Needs Revalidation**: required current/provider/runtime evidence is absent
   or cannot safely establish the claim.
 
+## Current Criterion Distribution
+
+| State | Criteria |
+| --- | ---: |
+| Implemented | 67 |
+| Partial | 69 |
+| Missing | 14 |
+| Not Applicable | 2 |
+| Needs Revalidation | 9 |
+| **Total** | **161** |
+
 ## Assessment Method
 
 The audit uses canonical research as criteria and tracked repository files as
-implementation evidence. Task 5 revalidated the agentic surfaces on 2026-07-11
-at baseline `507cd505d4e77f71b4675aab1b67520d964d1fcc`: 15 role adapters and
-22 skills on each provider surface, provider sync with no drift, and 3/3 eval
-fixture freshness. Provider facts, repository adoption, policy, and inference
-remain separate. The model catalog remains fixed at 2026-07-10 10:00 KST.
+implementation evidence. The reassessment reviewed all 161 rows against current
+source and T-AER-008 through T-AER-012. Implemented closures include typed
+metadata profiles and changed/new enforcement, referential-integrity hardening,
+and the controlled agent all-files wrapper. The full historical metadata
+inventory remains advisory rather than corpus-wide blocking.
 
-Task 6 consolidated the generated audit implementation matrix and coverage
-report around the complete current pack: one README index, one overview, and
-eleven criterion reports containing 161 unique rows. The scripts validate the
-Spec 123 schema, state/depth/disposition vocabularies, ID uniqueness, exact
-per-report counts, and all 15 overview categories. Historical eight-report and
-provisional ten-report limitations no longer describe current coverage.
+Provider synchronization, lifecycle semantics, hook-parity generation, the
+existing CI metadata step, and 3/3 eval fixture freshness are current tracked
+evidence. Native provider acceptance, `.gemini` adoption, general semantic
+scoring, live execution, remote enforcement, and model entitlement remain
+Partial or Needs Revalidation as appropriate. The model catalog remains fixed
+at 2026-07-10 10:00 KST and no model policy is changed by this audit.
+
+The generated matrix and coverage report consume one overview and eleven
+criterion reports containing 161 unique rows. The shared parser validates the
+ten-field schema, vocabularies, ID uniqueness, exact per-report counts, and all
+15 overview categories. Historical Task 4-6 baseline facts remain dated context,
+not current implementation state.
 
 ## Implementation Status Matrix
 
 | Category | Status | Evidence | Summary |
 | --- | --- | --- | --- |
-| Harness engineering | Partial | [Harness audit](./harness-engineering-implementation.md) | All seven HAR criteria have surfaces; native compatibility, runtime isolation facts, exact model evidence, and semantic eval remain incomplete. |
-| Loop engineering | Partial | [Loop audit](./loop-engineering-implementation.md) | All six LOOP criteria are partial; fixture freshness reaches depth 3, but no loop has measured depth-4 closure. |
+| Harness engineering | Partial | [Harness audit](./harness-engineering-implementation.md) | All seven HAR criteria have surfaces and tracked provider lifecycle/hook parity is synchronized; native acceptance, live isolation facts, exact model evidence, and semantic eval remain incomplete. |
+| Loop engineering | Partial | [Loop audit](./loop-engineering-implementation.md) | All six LOOP criteria remain partial; tracked Claude/Codex feedback routing and fixture freshness reach depth 3, but Gemini native adoption and measured depth-4 closure are absent. |
 | Claude provider harness/loop | Partial | [Provider audit](./provider-harness-loop-implementation.md), `.claude/settings.json`, `.claude/agents/`, `.claude/hooks/` | Native agents/hooks and tracked adapters exist; actual global permissions, sandbox, MCP, entitlement, and complete semantic enforcement are unobserved. |
 | Codex provider harness/loop | Partial | [Provider audit](./provider-harness-loop-implementation.md), `.codex/hooks.json`, `.codex/agents/` | Tracked agents/hooks exist, but current native schema fields and event/interception compatibility have direct gaps. |
 | Gemini provider harness/loop | Partial | [Provider audit](./provider-harness-loop-implementation.md), `.agents/` | Official Gemini CLI now has native agents/hooks, but the tracked workspace has only Antigravity/reference pointers and no `.gemini` native wiring. |
 | Common provider-neutral rules/environment | Partial | [Workspace rules audit](./workspace-rules-environment-implementation.md) | Authority, catalog parity, skills, and validation are strong; live/global environment facts and measured evidence closure remain incomplete. |
 | Agent instructions, catalogs, vibe coding, and model routing | Partial | [Instruction/catalog/model audit](./agent-instructions-catalog-vibe-models.md) | Sixteen AIV, seven AIC, and seven AMS rows cover authority, safe iteration, catalog add/merge/reject, exact literals, cutoff integrity, and eval gaps without importing identities or changing policy. |
-| Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json`, [provider hook parity matrix](../../data/governance/provider-hook-parity-matrix.md), [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) | Local scripts, CI gates, provider hook matrix, generated indexes, sync checks, a local advisory agent-output eval runner, and a CI fixture freshness gate exist; required semantic eval scoring and Gemini native hooks remain partial. |
+| Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json`, [provider hook parity matrix](../../data/governance/provider-hook-parity-matrix.md), [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) | Local scripts, CI gates, provider hook matrix, generated indexes, sync checks, the controlled pre-commit wrapper, a local advisory agent-output eval runner, and a CI fixture freshness gate exist; required semantic eval scoring and Gemini native hooks remain partial. |
 | Spec-driven SDLC | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [Stage 04 tasks README](../../../04.execution/tasks/README.md) | Stage taxonomy, document roles, type-specific numbering, templates, and broad traceability are active and validator-backed; typed direct parents, semantic entry/exit transitions, and lifecycle history are not. |
-| Frontmatter, templates, and README profiles | Partially Implemented | [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [frontmatter contract](../../../99.templates/support/frontmatter-contract.md), `scripts/validation/check-repo-contracts.sh` | All 598 non-README Stage 01/02/03/04/05/90/98 leaves have valid top status, mapped template checks exist, and six generated outputs declare ownership. Stable artifact IDs, typed relations, freshness, transition validation, and explicit README consumer profiles are not implemented. |
+| Frontmatter, templates, and README profiles | Partially Implemented | [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml), `scripts/validation/check-document-metadata.py` | Typed profiles, stable IDs, direct relations, freshness fields, transition overrides, and changed/new blocking are implemented for migrated/changed documents. The full historical inventory remains advisory, and README consumer intent plus distinct Release execution evidence remain partial. |
 | Release communication and records | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [release runbook](../../../05.operations/runbooks/00-workspace/release-management.md), `CHANGELOG.md`, `.github/workflows/generate-changelog.yml` | Manual readiness and tag-string changelog verification exist. `CHANGELOG.md` has no released entry, and no typed Release execution record or CD deployment evidence exists. |
 | Docker Compose / infrastructure | Partial | [Compose/infrastructure/operations readiness](./compose-infrastructure-operations-readiness.md), [Compose coverage](../../data/docker/compose-profile-service-coverage.md) | Inventory, static render, hardening, and tracked version provenance are strong. Startup, observed health, migration, and promotion are missing; recovery, upgrade, backup/restore, and rollback have procedure evidence without current rehearsal. |
 | CI/CD | Partial | [SDLC quality audit](./sdlc-quality-formatting-implementation.md), `.github/workflows/ci-quality.yml` | Six workflows define 21 jobs and `ci-quality.yml` defines 15 quality jobs. No tracked environment, promotion, deployment, Release asset, or automated rollback job exists, so CI must not be labeled complete CD. |
-| QA, formatting, linting, syntax | Partially Implemented | [SDLC quality audit](./sdlc-quality-formatting-implementation.md), `.pre-commit-config.yaml`, [scripts README](../../../../scripts/README.md) | Sixteen QAF rows separate local, CI, and remote evidence; formatting/linting/type/test coverage remains surface-specific, and the controlled agent all-files wrapper remains Missing until Task 9. |
+| QA, formatting, linting, syntax | Partially Implemented | [SDLC quality audit](./sdlc-quality-formatting-implementation.md), `.pre-commit-config.yaml`, [controlled wrapper](../../../../scripts/validation/run-agent-precommit-all-files.sh) | Sixteen QAF rows separate local, CI, and remote evidence; formatting/linting/type/test coverage remains surface-specific, while the controlled wrapper is implemented and verified by its 29-case fake-hook suite. Its observation boundary is Git-visible, non-ignored repository paths only. |
 | Security | Partially Implemented | [security maturity audit](./security-framework-maturity.md), [security readiness](../../data/security/security-automation-readiness.md) | Disclosure, approvals, workflow controls, secret scanning, Dependabot, and one scoped npm vulnerability gate exist. Broader SCA/container scanning, SBOM, provenance/attestation, signing/verification, and Scorecard are missing; live remote protection needs revalidation. |
 
 ## Findings
@@ -105,34 +123,37 @@ provisional ten-report limitations no longer describe current coverage.
 - The workspace has a mature documentation and validation harness. Stage 00,
   Stage 03, Stage 04, Stage 90, Stage 99, CI, scripts, provider surfaces, and
   operations documents are connected by explicit contracts.
-- Current naming, template, link, and leaf-status syntax is stronger than
-  semantic metadata enforcement: parent resolution, transition history,
-  freshness, README consumer intent, and actual Release records remain gaps.
-- The strongest Task 5 implementation areas are instruction authority,
-  role/skill projection, provider sync, deterministic QA, and bounded review.
-- The main Task 5 partial areas are semantic scoring, Codex native schema/event
-  compatibility, Gemini native workspace adoption, live sandbox/network/MCP
-  evidence, exact Gemini supervisor-model evidence, and task-fit evaluation.
+- Changed/new typed metadata is now machine-enforced, including stable identity,
+  direct relations, lifecycle transitions, explicit reverse overrides, freshness,
+  and referential-integrity impact. Historical inventory findings stay advisory.
+- The controlled all-files wrapper is implemented and independently approved;
+  it observes Git-visible, non-ignored repository paths and is not a process or
+  filesystem sandbox.
+- Provider sync, semantic lifecycle parity, hook parity, and existing CI metadata
+  wiring are current. Native schema acceptance, Gemini `.gemini` adoption,
+  semantic scoring, live sandbox/network/MCP facts, exact entitlement, and
+  task-fit evaluation remain conservative Partial or Needs Revalidation states.
 
 ## Gap / Follow-up
 
 | Gap | Impact | Candidate Owner |
 | --- | --- | --- |
-| Native schema/event compatibility checks are limited. | Provider surfaces can match catalog shape while failing current native schema or event coverage. | Task 10 provider synchronization |
+| Native schema/event acceptance remains unproved. | Synchronized provider surfaces and parity checks do not prove live native acceptance or complete interception. | Separate approved provider/runtime verification |
 | Gemini native workspace adoption is absent despite official CLI support. | `.agents` pointers must not be presented as `.gemini` native agents/hooks. | Separate approved provider decision |
 | Agent-result eval harness now has fixtures, a local advisory runner, and a CI fixture freshness gate, but no required semantic scoring gate. | Loop engineering maturity still depends on manual review and task evidence for many agent outputs. | [Agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) |
 | Product discovery and general semantic eval have no bounded catalog owner. | Adding broad personas would duplicate authority or import untested instructions. | Future Stage 00 catalog proposal after demand/eval |
 | Exact model task fit and entitlement are unproven. | Current literals cannot be changed or described as equivalent from catalog prose. | AMS-01..07 coupled model-change protocol |
-| Document identity, parent, transition, and freshness semantics are not machine-enforced. | Valid paths/status words can still hide stale state, invalid transition history, or incomplete parent coverage. | [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md) |
+| Historical metadata findings remain advisory. | Changed/new and impacted-dependent violations block, but legacy artifacts are not silently treated as migrated. | [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md) |
 | Release communication/procedure exists without an actual Release-record profile. | Changelog/tag readiness can be mistaken for release or deployment execution evidence. | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md) |
 | Security framework adoption is reference-backed and readiness-mapped, but not fully automated. | SSDF/SLSA maturity cannot be claimed as fully implemented because SBOM, provenance, attestation, Scorecard, and broad ecosystem/container vulnerability automation are still incomplete. | [Security framework maturity coverage](./security-framework-maturity.md); [security automation readiness](../../data/security/security-automation-readiness.md) |
 
 ## Automation Impact
 
 The highest-value remaining automation candidates are provider native-schema/
-event compatibility, semantic agent-output/model scoring, SBOM,
+event acceptance, semantic agent-output/model scoring, SBOM,
 provenance/attestation automation, Scorecard,
-and broader ecosystem/container vulnerability scanning. Changed-path QA recommendations are now
+and broader ecosystem/container vulnerability scanning. Changed/new metadata
+enforcement and the controlled all-files wrapper are implemented. Changed-path QA recommendations are now
 surfaced in CI Step Summary, audit-pack implementation-status coverage and the
 complete 161-row audit implementation matrix are generated and freshness-checked
 through repo contracts, LLM Wiki safe-path
