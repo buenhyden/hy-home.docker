@@ -46,7 +46,7 @@ plan.
 | T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Done |
 | T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Done |
 | T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Done |
-| T-ARC-006 | Finalize indexes and supersede the duplicate pack; keep lifecycle closure pending broad review | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, Task 6 review; whole-branch review and closure remain open | Workflow supervisor | Ready for Review |
+| T-ARC-006 | Finalize indexes and supersede the duplicate pack; keep lifecycle closure pending broad review | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, Task 6 review; whole-branch review and closure remain open | Workflow supervisor | Done |
 
 ## Phase View
 
@@ -69,8 +69,8 @@ plan.
 
 ### Phase 4: Consolidation Closure
 
-- [ ] T-ARC-006 Supersede the duplicate pack and prepare provisional evidence
-      (**Ready for Review**; Task 6 independent verdict, broad review, and
+- [x] T-ARC-006 Supersede the duplicate pack and prepare provisional evidence
+      (**Done**; independent Task 6 review PASS / APPROVED; broad review and
       lifecycle closure remain pending).
 
 ## Source Evidence Contract
@@ -936,10 +936,13 @@ not changed.
 
 ### Status and Lifecycle Boundary
 
-T-ARC-006 is **Ready for Review**. Steps 1-8 produced the coverage audit,
-supersession records, routing updates, and provisional validation evidence.
-The Task 6 independent verdict has not been issued. Spec 122, its plan, and
-this task remain `status: active`; the Phase 4 checkbox, T-ARC-006, every final
+T-ARC-006 is **Done** at the task-scoped implementation and review gate. Steps
+1-9 produced the coverage audit, supersession records, routing updates,
+validation evidence, and logical implementation commit. Independent review of
+`00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd`
+returned Spec **PASS** / Quality **APPROVED** with Critical 0, Important 0,
+and Minor 1. The non-blocking Minor count-wording finding is corrected below.
+Spec 122, its plan, and this task remain `status: active`; every final
 Completion Criteria item, the first whole-branch review, lifecycle-closure
 commit, and post-closure review remain open.
 
@@ -981,11 +984,11 @@ assigned owner rather than restating vendor facts here.
 | VAL-ARC-002 | every category has the complete comparison record | [Workspace baseline — Workspace Category Map](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md#workspace-category-map) | 25 rows with the required eight fields; CAT-001 through CAT-025 above route detailed ownership | Covered; no category is unowned. |
 | VAL-ARC-003 | cutoff-bound provider model catalog | [Provider model landscape — Provider Catalogs](../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md#provider-catalogs) | [Official provider source notes](../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md#sources) and T-ARC-002 ledger | Covered; 145 structural / 142 cutoff-qualified with three disclosed exceptions. |
 | VAL-ARC-004 | separate model landscape and task selection | [Agent model selection — Repository Role](../../90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md#repository-role) | Full catalog link plus inference-only mapping boundary | Covered; no catalog duplication in selection reference. |
-| VAL-ARC-005 | verified duplicate content exists once; unsupported content removed | [T-ARC-006 — Duplicate Claim Disposition](#duplicate-claim-disposition) | Thirty-family ledger below and superseded leaf mappings | Covered provisionally; reviewer verdict pending. |
-| VAL-ARC-006 | duplicate pack and every child superseded/mapped | [T-ARC-006 — Supersession Result](#supersession-result) | Duplicate README mapping plus five template-compliant leaf records | Covered provisionally; targeted scan evidence recorded below. |
+| VAL-ARC-005 | verified duplicate content exists once; unsupported content removed | [T-ARC-006 — Duplicate Claim Disposition](#duplicate-claim-disposition) | Thirty-family ledger below and superseded leaf mappings | Covered; independent review reproduced all 30/30 dispositions. |
+| VAL-ARC-006 | duplicate pack and every child superseded/mapped | [T-ARC-006 — Supersession Result](#supersession-result) | Duplicate README mapping plus five template-compliant leaf records | Covered; independent review approved the README and 5/5 leaf tombstones. |
 | VAL-ARC-007 | completed Stage 03/04 and audits preserved as history | [Canonical pack README — Consolidation and Lifecycle Boundary](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md#consolidation-and-lifecycle-boundary) | Direct links to completed Spec 104, its Stage 04 plan/task, and both audit packs | Covered; no historical body deleted or copied. |
-| VAL-ARC-008 | no active policy/runtime/CI/provider/model/hook/script/secret/remote change | [Spec 122 — Guardrails](../../03.specs/122-agentic-research-pack-consolidation/spec.md#guardrails-if-applicable) | Task 6 changed-file inventory and full diff inspection | Covered provisionally; exact scope is documentation/index output only. |
-| VAL-ARC-009 | logical commits and task reviews | [Tasks 1-5 Commit and Review Ledger](#tasks-1-5-commit-and-review-ledger) | Exact ranges and final PASS/APPROVED reports below | Covered for Tasks 1-5; Task 6 review remains pending. |
+| VAL-ARC-008 | no active policy/runtime/CI/provider/model/hook/script/secret/remote change | [Spec 122 — Guardrails](../../03.specs/122-agentic-research-pack-consolidation/spec.md#guardrails-if-applicable) | Task 6 changed-file inventory and full diff inspection | Covered; independent review confirmed 14 scoped documentation paths and no out-of-scope mutation. |
+| VAL-ARC-009 | logical commits and task reviews | [Tasks 1-6 Commit and Review Ledger](#tasks-1-6-commit-and-review-ledger) | Exact ranges and final PASS/APPROVED reports below | Covered for Tasks 1-6; whole-branch reviews remain lifecycle gates. |
 | VAL-ARC-010 | specified checks pass or unrelated failure recorded | [Provisional Validation Evidence](#provisional-validation-evidence) | Exact Step 6-8 command results | Covered provisionally; lifecycle closure still requires later broad reviews. |
 
 Coverage result: **35/35 rows covered**, **35/35 with one primary canonical
@@ -1049,7 +1052,7 @@ leaf bodies and were not promoted to current canonical truth.
   Current References, and Reading Order, and records the only-active-pack,
   historical-evidence, and policy/runtime boundaries.
 
-### Tasks 1-5 Commit and Review Ledger
+### Tasks 1-6 Commit and Review Ledger
 
 | Task | Full task range | Final content review range | Final verdict | Findings / report |
 | --- | --- | --- | --- | --- |
@@ -1058,6 +1061,13 @@ leaf bodies and were not promoted to current canonical truth.
 | T-ARC-003 | `1a80b6989304fa7b6a179861a9cad795dd875ca3..505277817eee0de4270bc03ae7fb789ef9d02ad3` | `1a80b6989304fa7b6a179861a9cad795dd875ca3..7aa07accc00770dd4e18cd37ddd77d9f92236848` | Spec **PASS** / Quality **APPROVED** | `0/0/0`; `.superpowers/sdd/task-3-rereview-report.md` |
 | T-ARC-004 | `505277817eee0de4270bc03ae7fb789ef9d02ad3..34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6` | `505277817eee0de4270bc03ae7fb789ef9d02ad3..ef97a8c148359b7ee1af5948921156a3ab1fa1b1` | Spec **PASS** / Quality **APPROVED** | `0` blocking; reviewer M-01 corrected in bookkeeping; `.superpowers/sdd/task-4-rereview-report.md` |
 | T-ARC-005 | `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..00190fc97b003c9beedc5af79d195532bc181dde` | `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..26fb9d227da49594c04967ccc4830d722463468b` | Spec **PASS** / Quality **APPROVED** | `0/0/0`; `.superpowers/sdd/task-5-review-report.md` |
+| T-ARC-006 | `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd` | `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd` | Spec **PASS** / Quality **APPROVED** | `0/0/1`; non-blocking M-01 count wording corrected in this bookkeeping; `.superpowers/sdd/task-6-review-report.md` |
+
+Task 6 independent review reproduced **35/35** coverage rows with one primary
+owner each and the **30/30** disposition split (`merged` 8, `duplicate` 4,
+`unsupported` 15, `historical-only` 3). Canonical index/history routing,
+README plus 5/5 tombstone contracts, active lifecycle boundaries, and the
+fourteen-path mutation scope all passed.
 
 ### Cutoff Caveats, Deviations, and Broad-Review Gate
 
@@ -1071,8 +1081,8 @@ leaf bodies and were not promoted to current canonical truth.
   tracked. Task 6 follows the same generator-only rule.
 - No new content-scope deviation is introduced. Graphify remains stale and
   advisory; this documentation-only task does not refresh it.
-- After Task 6 receives PASS/APPROVED, the exact first broad-review package
-  command is:
+- Task 6 received PASS/APPROVED. The exact first broad-review package command
+  for Step 10 is:
 
 ```bash
 git diff --binary 940eae305da0c29e10957bdd80c95d5e6530927a..HEAD -- . > .superpowers/sdd/whole-branch-pre-closure.diff
@@ -1112,13 +1122,14 @@ Documentation-only TDD and code coverage are not applicable. The final Step
 - Duplicate-path scan — exit 0; matches are limited to supersession/history
   routing, target comments, plan scope/check instructions, and task/spec
   traceability. No current-reading route presents the duplicate as active.
-- Exact stale-phrase scan — exit 0 with six matches, all already present at
-  base `00190fc97b003c9beedc5af79d195532bc181dde` in the out-of-scope canonical
-  `harness-engineering.md` and `loop-engineering.md`. Every match is an explicit
-  negative correction (not a current affirmative claim); the five new
-  tombstones add zero matches. Rewording those previously reviewed Task 3
-  canonical leaves would exceed the fourteen-file Task 6 scope, so the semantic
-  result is recorded rather than hidden.
+- Exact stale-phrase scan — exit 0 with five matching lines / eight
+  occurrences, all already present at base
+  `00190fc97b003c9beedc5af79d195532bc181dde` in the out-of-scope canonical
+  `harness-engineering.md` and `loop-engineering.md`. Every occurrence is an
+  explicit negative correction (not a current affirmative claim); the five new
+  tombstones contribute zero occurrences. Rewording those previously reviewed
+  Task 3 canonical leaves would exceed the fourteen-file Task 6 scope, so the
+  semantic result is recorded rather than hidden.
 - Full changed-file and diff review — fourteen always-scoped documentation
   files only; zero generated files; no policy, runtime, CI, provider/model,
   hook, script, secret, credential, operations, remote, or branch-protection
@@ -1126,8 +1137,8 @@ Documentation-only TDD and code coverage are not applicable. The final Step
 
 Graphify remains built from `30df271a` and advisory. No code file changed, so
 the graph refresh was skipped under the approved documentation-only scope.
-These results make T-ARC-006 reviewable but do not close the lifecycle or
-fabricate a reviewer verdict.
+These results and the independent PASS/APPROVED review close T-ARC-006 at its
+task-scoped gate but do not close the overall lifecycle.
 
 ## Task Review Evidence Contract
 
