@@ -52,7 +52,7 @@ close generated evidence.
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-AHC-001 | Clarify canonical, snapshot, and superseded lifecycle routes. | doc | Audit Lifecycle | Task 1 | Snapshot preservation, contracts, review | Documentation Specialist | Todo |
+| T-AHC-001 | Clarify canonical, snapshot, and superseded lifecycle routes. | doc | Audit Lifecycle | Task 1 | Snapshot preservation, contracts, review | Documentation Specialist | Done |
 | T-AHC-002 | Reassess all 161 criteria and canonical overview. | doc/eval | Criterion Contract | Task 2 | State distribution, 11/161, review | Agentic Workflow Specialist | Todo |
 | T-AHC-003 | Implement semantic closure contract and adversarial tests. | impl/test | Semantic Freshness | Task 3 | RED/GREEN, CLI PASS, review | QA Engineer | Todo |
 | T-AHC-004 | Split scoped and broad security readiness signals. | impl/test | Security Readiness | Task 4 | 13 controls, negative test, review | Security Auditor | Todo |
@@ -63,7 +63,7 @@ close generated evidence.
 
 ### Phase 1 — Evidence Organization
 
-- [ ] T-AHC-001 Audit lifecycle organization
+- [x] T-AHC-001 Audit lifecycle organization
 - [ ] T-AHC-002 Canonical current-state reassessment
 
 ### Phase 2 — Enforced Precision
@@ -80,7 +80,7 @@ close generated evidence.
 
 | Task | Implementation Commit(s) | Spec Verdict | Quality Verdict | Findings / Resolution | Review Package |
 | --- | --- | --- | --- | --- | --- |
-| T-AHC-001 | Pending | Pending | Pending | Pending | Pending |
+| T-AHC-001 | `2579560b..38ead5f3` | PASS | APPROVED | C0/I0/M0; no findings | `.superpowers/sdd/task-1-review.md` |
 | T-AHC-002 | Pending | Pending | Pending | Pending | Pending |
 | T-AHC-003 | Pending | Pending | Pending | Pending | Pending |
 | T-AHC-004 | Pending | Pending | Pending | Pending | Pending |
@@ -108,9 +108,10 @@ close generated evidence.
   `2579560b`; both corrected checks pass.
 - **Protected surfaces**: No runtime, remote, secret, provider, model, CI,
   validator, generated artifact, or infrastructure surface changed.
-- **Review boundary**: Implementation is pending independent Spec-compliance
-  and quality review. T-AHC-001 remains `Todo`, its Phase 1 checkbox remains
-  unchecked, and the Review Ledger remains `Pending` until approval.
+- **Independent review**: Spec compliance PASS and task quality APPROVED with
+  Critical 0, Important 0, and Minor 0. The reviewer confirmed 18/18 snapshot
+  boundaries, canonical/snapshot/supersession routing, historical preservation,
+  pending-before-review lifecycle discipline, and the docs-only boundary.
 
 ## Verification Summary
 
