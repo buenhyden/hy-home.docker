@@ -4,7 +4,7 @@ artifact_id: audit:agentic-engineering-implementation:provider-harness-loop
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
 supersedes: [audit:agentic-engineering-implementation-2026-07-07:harness-loop]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-07-12
 review_cycle: per-remediation-task
 ---
 

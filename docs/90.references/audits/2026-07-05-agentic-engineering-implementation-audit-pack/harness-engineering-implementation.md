@@ -3,7 +3,7 @@ status: active
 artifact_id: audit:agentic-engineering-implementation:harness-engineering
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-07-12
 review_cycle: per-remediation-task
 ---
 

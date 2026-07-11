@@ -4,7 +4,7 @@ artifact_id: audit:agentic-engineering-implementation:sdlc-quality-formatting
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
 supersedes: [audit:agentic-engineering-implementation-2026-07-07:sdlc-qa-security]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-07-12
 review_cycle: per-remediation-task
 ---
 
@@ -94,10 +94,10 @@ do not prove remote runs or branch-protection enforcement.
 
 | Area | Status | Evidence | Notes |
 | --- | --- | --- | --- |
-| Spec-driven development | Partially Implemented | [SDLC and document-contract audit](./sdlc-document-contracts-implementation.md), [Stage 03 README](../../../03.specs/README.md) | Stage roles, numbering, templates, tasks, and broad traceability are implemented; typed direct parents, transition history, and release execution records are not. |
+| Spec-driven development | Partially Implemented | [SDLC and document-contract audit](./sdlc-document-contracts-implementation.md), [Stage 03 README](../../../03.specs/README.md) | Stage roles, numbering, templates, tasks, broad traceability, and typed direct-parent/transition checks are implemented for the migrated active chain and changed/new documents. Historical lifecycle reconstruction and release execution records remain incomplete. |
 | Execution planning | Implemented | [Stage 04 plans README](../../../04.execution/plans/README.md), [audit pack plan](../../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Plans define WBS, verification, risk, and completion criteria. |
 | Task evidence | Implemented | [Stage 04 tasks README](../../../04.execution/tasks/README.md), [audit pack task](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Task files record evidence, status, deviation, and validation results. |
-| Documentation contracts | Partially Implemented | [frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, leaf-status syntax, language boundaries, links, and Reference contracts are validator-backed; artifact identity, typed parents, lifecycle history, freshness, and README consumer semantics are not. |
+| Documentation contracts | Partially Implemented | [frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, lifecycle syntax, links, typed identity/parents, freshness, and transition checks are validator-backed for migrated/changed scope. The historical inventory remains advisory, and README consumer semantics are incomplete. |
 | CI quality gates | Implemented | `.github/workflows/ci-quality.yml` | CI defines docs, repo, Compose, hardening, template/security, pre-commit, frontend, coverage, dependency, and workflow-security checks; tracked definitions do not prove remote runs. |
 | Local QA orchestration | Implemented | `scripts/validation/run-local-qa-gates.sh`, [scripts README](../../../../scripts/README.md) | Local gate runner lists local, CI/local-tooling, and remote-only responsibilities. |
 | Formatting | Partially Implemented | `scripts/hooks/post-tool-validate.sh`, pre-commit workflow, provider notes | Text-file trim/newline and selected shell/frontend formatting/linting exist; global formatting across all languages is not complete. |
@@ -112,8 +112,10 @@ do not prove remote runs or branch-protection enforcement.
 
 - SDLC structure is strong: specs, plans, tasks, operations, references,
   templates, and validators form a coherent lifecycle. Semantic identity,
-  parent, transition, freshness, README-profile, and actual Release-record
-  checks remain partial or missing.
+  parent, transition, and freshness checks are implemented for the migrated
+  active chain and changed/new documents; historical corpus reconstruction
+  remains advisory, while README-profile and actual Release-record evidence
+  remain partial or missing.
 - CI implementation is strong for quality gates. CD, environment promotion,
   deployment records, release assets, and automated rollback are missing and
   must not be inferred from green builds or tag-string validation.
