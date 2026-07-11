@@ -170,6 +170,7 @@ parity or user-global runtime configuration.
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |
 | --- | --- | --- | --- | --- | --- |
 | T-AER-001 | `84d88ee4..9755e9e1` | PASS | APPROVED | Initial C0/I1/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-1-report.md`; `.superpowers/sdd/review-84d88ee4..9755e9e1.diff` |
+| T-AER-002 | `3feb2c69..2b0bc6f0` | PASS | APPROVED | C0/I0/M0 | `.superpowers/sdd/task-2-report.md`; `.superpowers/sdd/review-3feb2c69..2b0bc6f0.diff` |
 
 - **Baseline Commands**:
   - `git diff --check` — PASS
