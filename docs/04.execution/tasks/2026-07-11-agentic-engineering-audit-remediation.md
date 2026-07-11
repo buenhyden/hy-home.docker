@@ -1,5 +1,5 @@
 ---
-status: completed
+status: active
 artifact_id: task:2026-07-11-agentic-engineering-audit-remediation
 artifact_type: task
 parent_ids:
@@ -63,7 +63,7 @@ independent task/branch reviews.
 | T-AER-009 | Implement controlled agent pre-commit wrapper and governance contract | impl/test | Spec 123 / Controlled Pre-commit Wrapper | PLN-AER-009 | Shell tests; syntax/shellcheck; wrapper contract; task review | qa-engineer | Done |
 | T-AER-010 | Synchronize provider adapters and add metadata validation to the existing CI job | impl/test | Spec 123 / Provider Synchronization | PLN-AER-010 | Provider no-drift; workflow checks; repo contracts; task review | ci-cd-engineer | Done |
 | T-AER-011 | Author four independent runtime follow-up specs/plans without runtime mutation | doc | Spec 123 / W5 Runtime Follow-up | PLN-AER-011 | Template/traceability/rollback/approval gates; task review | doc-writer | Done |
-| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Done |
+| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Todo |
 
 ## Phase View
 
@@ -92,7 +92,7 @@ independent task/branch reviews.
 ### Phase 5 — Follow-up and Closure
 
 - [x] T-AER-011 Runtime follow-up specs/plans
-- [x] T-AER-012 Full verification, review, and closure
+- [ ] T-AER-012 Full verification, review, and closure
 
 ## Verification Summary
 
@@ -801,12 +801,63 @@ runtime requirement set.
 - **Graphify decision**: docs-only work does not trigger the repository's
   code-file refresh rule; no Graphify refresh is planned for Task 11.
 
-### T-AER-012 Verification and Closure Evidence
+### T-AER-012 Verification and Reopened Closure Evidence
 
-Task 12 is **Done**. Steps 1-3 passed, and the independent whole-branch review
-returned Spec PASS, Quality APPROVED, Critical 0, Important 0, Minor 0, and
-`READY_FOR_CLOSURE: YES`. T-AER-012 and its Phase 5 checkbox are closed, and
-Spec 123 plus the umbrella Plan/Task are `completed`.
+Task 12 is **Todo** after the postclosure whole-branch review returned Spec
+FAIL, Quality CHANGES_REQUESTED, Critical 0, Important 1, Minor 0, and
+`READY_FOR_FINISHING: NO`. T-AER-012 and its Phase 5 checkbox are reopened, and
+Spec 123 plus the umbrella Plan/Task are `active` pending a new exact-range
+whole-branch review.
+
+#### Postclosure Finding and Focused Fix
+
+- Review range:
+  `3e92b39fa02767dafff612fcfa5b3670998471be..74945d22898b9005d5f5450231c8c45980f6c0d7`.
+- Finding I-01: deleting a selected typed artifact removed its current manifest
+  record, while unchanged dependents were filtered out of `check-changed`.
+- RED evidence: the changed-path Git suite passed seven existing cases and
+  failed exactly four new adversarial cases for staged/unstaged `parent_ids`
+  and `supersedes` deletion impact; both standalone typed deletion cases passed.
+- Focused GREEN evidence: the checker derives removed IDs from the immediate
+  HEAD record or explicit-base record, ignores IDs still present after rename
+  or duplicate survival, and adds only the newly unresolved relation findings
+  on current dependents. The focused metadata suite passes 69/69, including an
+  explicit-base committed deletion and a staged typed rename.
+- Historical advisory boundary: pre-existing unrelated findings on an impacted
+  dependent are not promoted into the blocking result; the 2,025-finding
+  inventory remains advisory.
+- Re-review boundary: affected repository gates pass as recorded below. The
+  final exact-range whole-branch re-review is pending; no replacement verdict
+  is claimed.
+
+#### Postclosure Fix Validation
+
+| Gate | Result |
+| --- | --- |
+| Required RED changed-path class | Expected FAIL: 7 existing cases passed and exactly 4 staged/unstaged parent/supersedes cases exposed `selected=1 violations=0` |
+| Focused metadata discovery | PASS, 69/69 |
+| Full validation discovery | PASS, 76/76 |
+| Current-HEAD lifecycle reopening | PASS, 9 selected / 0 violations / 4 explicit user-approved transition overrides |
+| Explicit branch-base metadata from `3e92b39f` | PASS, 97 selected / 0 violations / 0 legacy exceptions / 0 overrides |
+| Deterministic semantic inventory write/check | PASS, 888 records / 2,025 advisory findings |
+| Document traceability | PASS, 46 catalog pairs / `failures=0` |
+| Document implementation alignment | PASS, 637 stage docs / 5,001 links / `failures=0` |
+| Repository contracts | PASS, 8/8 changed target documents, 747/747 normalized target documents / `failures=0` |
+| Diff hygiene | PASS |
+
+The real full-repository pre-commit wrapper was intentionally not rerun. The
+focused fix changes only the metadata validator/tests, its human-readable
+contract, generated inventory state, and explicitly reopened Stage 00/03/04
+evidence. Graphify remains advisory/stale and was not refreshed by instruction;
+tracked code, tests, governance, and stage evidence corroborate the fix. No
+runtime, service, Compose, infrastructure, secret, credential, remote GitHub,
+branch-protection, provider-runtime, or model-policy surface changed.
+
+#### Historical Preclosure Evidence
+
+The remaining Task 12 evidence below records the earlier preclosure run. It is
+retained as historical verification but does not override the later postclosure
+failure or authorize lifecycle closure.
 
 The Senior `workflow-supervisor` role ran the verification bundle without a
 model selector. The collaboration runtime owns concrete model selection; no
@@ -815,7 +866,7 @@ bound to the approved **2026-07-10 10:00 KST (01:00 UTC)** cutoff: 145
 structural rows, 142 cutoff-qualified rows, and three GPT-5.6 retrieval-only
 rows whose exact cutoff state remains `historical state unverified`.
 
-#### Generator and Inventory Results
+#### Historical Generator and Inventory Results
 
 - Baseline: clean linked worktree at
   `7d4697502b9d8b12f257db4982e22d597c46f47e`.
@@ -920,8 +971,9 @@ values, credentials, and secret material were not persisted.
 - The independent whole-branch review covered
   `3e92b39fa02767dafff612fcfa5b3670998471be..6a73dddb6fe95df2c2cf022d27ab0878d3773213`
   and returned Spec PASS / Quality APPROVED, Critical 0, Important 0, Minor 0,
-  and `READY_FOR_CLOSURE: YES`. No review fix was required. This result closes
-  the umbrella lifecycle but does not authorize the four draft runtime
+  and `READY_FOR_CLOSURE: YES`. No review fix was required at that preclosure
+  boundary. The later postclosure failure supersedes its lifecycle conclusion;
+  the historical result still does not authorize the four draft runtime
   follow-up specifications or plans.
 
 ### Task Review Ledger
@@ -939,7 +991,7 @@ values, credentials, and secret material were not persisted.
 | T-AER-009 | `dce3ea60..4d0a8eaf` | PASS | APPROVED | Initial C0/I3/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-9-report.md`; `.superpowers/sdd/review-dce3ea60..4d0a8eaf.diff` |
 | T-AER-010 | `aa5cbd36..0e030ab1` | PASS | APPROVED | Initial C0/I1/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-10-report.md`; `.superpowers/sdd/review-aa5cbd36..0e030ab1.diff` |
 | T-AER-011 | `4937ae99..03119741` | PASS | APPROVED | C0/I0/M0 | `.superpowers/sdd/task-11-report.md`; `.superpowers/sdd/review-4937ae99..03119741.diff` |
-| T-AER-012 | `3e92b39f..6a73dddb` | PASS | APPROVED | C0/I0/M0; `READY_FOR_CLOSURE: YES` | `.superpowers/sdd/task-12-report.md`; `.superpowers/sdd/branch-review-preclosure-3e92b39f..6a73dddb.diff`; `.superpowers/sdd/branch-review-preclosure-report.md` |
+| T-AER-012 | `3e92b39f..74945d22` | FAIL | CHANGES_REQUESTED | Postclosure C0/I1/M0; `READY_FOR_FINISHING: NO`; focused fix re-review pending | `.superpowers/sdd/branch-review-postclosure-report.md`; `.superpowers/sdd/task-12-postclosure-fix-report.md` |
 
 - **Baseline Commands**:
   - `git diff --check` — PASS

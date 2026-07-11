@@ -728,6 +728,84 @@ class ChangedPathGitTests(unittest.TestCase):
         self.assertEqual(1, result.returncode, result.stdout + result.stderr)
         self.assertIn("missing-required-key", result.stdout)
 
+    def write_parent_relation_fixture(self, root: pathlib.Path) -> pathlib.Path:
+        parent = root / "docs/01.requirements/123-parent.md"
+        write_doc(
+            parent,
+            {
+                "status": "active",
+                "artifact_id": "prd:123-parent",
+                "artifact_type": "prd",
+                "parent_ids": [],
+            },
+        )
+        write_doc(
+            root / "docs/03.specs/123-child/spec.md",
+            {
+                "status": "active",
+                "artifact_id": "spec:123-child",
+                "artifact_type": "spec",
+                "parent_ids": ["prd:123-parent"],
+                "reviewed_at": "preexisting-invalid-date",
+            },
+        )
+        commit_all(root, "typed parent relation")
+        return parent
+
+    def write_supersedes_relation_fixture(self, root: pathlib.Path) -> pathlib.Path:
+        write_doc(
+            root / "docs/01.requirements/123-root.md",
+            {
+                "status": "active",
+                "artifact_id": "prd:123-root",
+                "artifact_type": "prd",
+                "parent_ids": [],
+            },
+        )
+        replaced = root / "docs/03.specs/123-replaced/spec.md"
+        write_doc(
+            replaced,
+            {
+                "status": "superseded",
+                "artifact_id": "spec:123-replaced",
+                "artifact_type": "spec",
+                "parent_ids": ["prd:123-root"],
+            },
+        )
+        write_doc(
+            root / "docs/03.specs/123-replacement/spec.md",
+            {
+                "status": "active",
+                "artifact_id": "spec:123-replacement",
+                "artifact_type": "spec",
+                "parent_ids": ["prd:123-root"],
+                "supersedes": ["spec:123-replaced"],
+                "reviewed_at": "preexisting-invalid-date",
+            },
+        )
+        commit_all(root, "typed supersedes relation")
+        return replaced
+
+    def assert_relation_deletion_failure(
+        self,
+        root: pathlib.Path,
+        deleted: pathlib.Path,
+        dependent: str,
+        finding_code: str,
+        *,
+        staged: bool,
+    ) -> None:
+        relative = deleted.relative_to(root).as_posix()
+        if staged:
+            self.assertEqual(0, git(root, "rm", relative).returncode)
+        else:
+            deleted.unlink()
+        result = run_checker(root, "check-changed")
+        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+        self.assertIn(f"{dependent}: {finding_code}", result.stdout)
+        self.assertNotIn("invalid-reviewed-at", result.stdout)
+        self.assertIn("selected=2 violations=1", result.stdout)
+
     def test_untracked_invalid_document_fails(self) -> None:
         directory, root = self.new_repo()
         with directory:
@@ -766,8 +844,16 @@ class ChangedPathGitTests(unittest.TestCase):
     def test_deleted_document_is_not_parsed_as_violation(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            path = root / "docs/03.specs/123-deleted/spec.md"
-            write_doc(path, {"status": "active"})
+            path = root / "docs/01.requirements/123-deleted.md"
+            write_doc(
+                path,
+                {
+                    "status": "active",
+                    "artifact_id": "prd:123-deleted",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+            )
             commit_all(root)
             path.unlink()
             result = run_checker(root, "check-changed")
@@ -777,13 +863,82 @@ class ChangedPathGitTests(unittest.TestCase):
     def test_staged_deleted_document_is_retained_as_nonviolating_evidence(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            path = root / "docs/03.specs/123-staged-deleted/spec.md"
-            write_doc(path, {"status": "active"})
+            path = root / "docs/01.requirements/123-staged-deleted.md"
+            write_doc(
+                path,
+                {
+                    "status": "active",
+                    "artifact_id": "prd:123-staged-deleted",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+            )
             commit_all(root)
             self.assertEqual(0, git(root, "rm", path.relative_to(root).as_posix()).returncode)
             result = run_checker(root, "check-changed")
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             self.assertIn("selected=1 violations=0", result.stdout)
+
+    def test_unstaged_parent_deletion_blocks_unchanged_dependent(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            deleted = self.write_parent_relation_fixture(root)
+            self.assert_relation_deletion_failure(
+                root,
+                deleted,
+                "docs/03.specs/123-child/spec.md",
+                "unresolved-parent",
+                staged=False,
+            )
+
+    def test_staged_parent_deletion_blocks_unchanged_dependent(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            deleted = self.write_parent_relation_fixture(root)
+            self.assert_relation_deletion_failure(
+                root,
+                deleted,
+                "docs/03.specs/123-child/spec.md",
+                "unresolved-parent",
+                staged=True,
+            )
+
+    def test_unstaged_supersedes_deletion_blocks_unchanged_dependent(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            deleted = self.write_supersedes_relation_fixture(root)
+            self.assert_relation_deletion_failure(
+                root,
+                deleted,
+                "docs/03.specs/123-replacement/spec.md",
+                "unresolved-supersedes",
+                staged=False,
+            )
+
+    def test_staged_supersedes_deletion_blocks_unchanged_dependent(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            deleted = self.write_supersedes_relation_fixture(root)
+            self.assert_relation_deletion_failure(
+                root,
+                deleted,
+                "docs/03.specs/123-replacement/spec.md",
+                "unresolved-supersedes",
+                staged=True,
+            )
+
+    def test_staged_typed_parent_rename_keeps_relation_resolved(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            source = self.write_parent_relation_fixture(root)
+            target = root / "docs/01.requirements/123-parent-renamed.md"
+            self.assertEqual(
+                0,
+                git(root, "mv", source.relative_to(root).as_posix(), target.relative_to(root).as_posix()).returncode,
+            )
+            result = run_checker(root, "check-changed")
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("violations=0", result.stdout)
 
     def test_explicit_untracked_path_is_parsed(self) -> None:
         directory, root = self.new_repo()
@@ -910,6 +1065,42 @@ class ChangedModeRolloutTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             self.assertIn("selected=2", result.stdout)
             self.assertIn("violations=0", result.stdout)
+
+    def test_committed_parent_deletion_blocks_dependent_from_explicit_base(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            parent = root / "docs/01.requirements/124-parent.md"
+            write_doc(
+                parent,
+                {
+                    "status": "active",
+                    "artifact_id": "prd:124-parent",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+            )
+            write_doc(
+                root / "docs/03.specs/124-child/spec.md",
+                {
+                    "status": "active",
+                    "artifact_id": "spec:124-child",
+                    "artifact_type": "spec",
+                    "parent_ids": ["prd:124-parent"],
+                    "reviewed_at": "preexisting-invalid-date",
+                },
+            )
+            commit_all(root, "typed parent chain")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            self.assertEqual(0, git(root, "rm", parent.relative_to(root).as_posix()).returncode)
+            commit_all(root, "delete typed parent")
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn(
+                "docs/03.specs/124-child/spec.md: unresolved-parent",
+                result.stdout,
+            )
+            self.assertNotIn("invalid-reviewed-at", result.stdout)
+            self.assertIn("selected=2 violations=1", result.stdout)
 
     def test_committed_replacement_free_superseded_document_is_blocked(self) -> None:
         directory, root = self.new_repo()

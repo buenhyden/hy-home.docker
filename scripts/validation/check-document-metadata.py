@@ -1014,6 +1014,29 @@ def collect_records_at_ref(
     return records
 
 
+def collect_selected_records_at_ref(
+    root: pathlib.Path,
+    selected_paths: Sequence[str],
+    ref: str,
+) -> dict[str, Record]:
+    """Collect selected records that exist at a ref without scanning its full corpus."""
+
+    records: dict[str, Record] = {}
+    for path_text in sorted(set(selected_paths)):
+        relative_path = _normalized_target_path(path_text)
+        if relative_path is None:
+            continue
+        shown = subprocess.run(
+            ["git", "-C", str(root), "show", f"{ref}:{relative_path.as_posix()}"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if shown.returncode == 0:
+            records[relative_path.as_posix()] = _record_from_text(relative_path, shown.stdout)
+    return records
+
+
 def collect_records(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -1150,6 +1173,46 @@ def _legacy_exception_evidence(
     if not current_deficits <= base_deficits:
         return None
     return len(current_deficits), len(base_deficits)
+
+
+def _relation_impact_findings(
+    selected_paths: set[str],
+    records_by_path: Mapping[str, Record],
+    head_records_by_path: Mapping[str, Record],
+    base_records_by_path: Mapping[str, Record],
+    manifest: Manifest,
+    findings_by_path: Mapping[str, Sequence[Finding]],
+) -> dict[str, list[Finding]]:
+    """Return only relation findings newly caused by selected typed deletions."""
+
+    removed_ids: set[str] = set()
+    for path in sorted(selected_paths - set(records_by_path)):
+        previous = head_records_by_path.get(path) or base_records_by_path.get(path)
+        artifact_id = previous.metadata.get("artifact_id") if previous else None
+        if isinstance(artifact_id, str) and artifact_id.strip() and artifact_id.strip() not in manifest:
+            removed_ids.add(artifact_id.strip())
+    if not removed_ids:
+        return {}
+
+    expected_messages = {
+        "unresolved-parent": {
+            f"parent artifact_id is unresolved: {artifact_id}" for artifact_id in removed_ids
+        },
+        "unresolved-supersedes": {
+            f"superseded artifact_id is unresolved: {artifact_id}" for artifact_id in removed_ids
+        },
+    }
+    impacted: dict[str, list[Finding]] = {}
+    for path, findings in sorted(findings_by_path.items()):
+        relation_findings = [
+            finding
+            for finding in findings
+            if finding.severity == "error"
+            and finding.message in expected_messages.get(finding.code, set())
+        ]
+        if relation_findings:
+            impacted[path] = sorted(relation_findings)
+    return impacted
 
 
 def _escape_cell(value: object) -> str:
@@ -1571,6 +1634,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         for record in records
     }
+    records_by_path = {record.path.as_posix(): record for record in records}
+    relation_impact_findings: dict[str, list[Finding]] = {}
+    if args.mode == "check-changed":
+        head_records_by_path = collect_selected_records_at_ref(
+            root,
+            changed_selection - set(records_by_path),
+            "HEAD",
+        )
+        relation_impact_findings = _relation_impact_findings(
+            changed_selection,
+            records_by_path,
+            head_records_by_path,
+            base_records_by_path,
+            manifest,
+            findings_by_path,
+        )
     parser_failures = [record for record in records if record.parse_error]
     rendered = render_report(records, profiles, findings_by_path)
 
@@ -1587,12 +1666,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             sys.stdout.write(rendered)
         return 2 if parser_failures else 0
 
-    selected_paths = (
+    directly_selected_paths = (
         changed_selection
         if args.mode == "check-changed"
         else {record.path.as_posix() for record in records if record.metadata.get("status") == "active"}
     )
-    records_by_path = {record.path.as_posix(): record for record in records}
+    selected_paths = directly_selected_paths | set(relation_impact_findings)
     legacy_exception_evidence = {
         path: evidence
         for path in selected_paths
@@ -1615,10 +1694,18 @@ def main(argv: Sequence[str] | None = None) -> int:
             file=sys.stderr,
         )
     selected_findings = sorted(
-        finding
-        for path in selected_paths - legacy_exceptions
-        for finding in findings_by_path.get(path, [])
-        if finding.severity == "error"
+        {
+            finding
+            for path in directly_selected_paths - legacy_exceptions
+            for finding in findings_by_path.get(path, [])
+            if finding.severity == "error"
+        }
+        | {
+            finding
+            for path, findings in relation_impact_findings.items()
+            if path not in legacy_exceptions
+            for finding in findings
+        }
     )
     for finding in selected_findings:
         print(f"{finding.path}: {finding.code}: {finding.message}")
