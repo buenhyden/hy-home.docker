@@ -435,6 +435,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/121-dependency-vulnerability-audit-gate/spec.md](../../03.specs/121-dependency-vulnerability-audit-gate/spec.md) | Markdown reference |
 | [docs/03.specs/122-agentic-research-pack-consolidation/README.md](../../03.specs/122-agentic-research-pack-consolidation/README.md) | folder index |
 | [docs/03.specs/122-agentic-research-pack-consolidation/spec.md](../../03.specs/122-agentic-research-pack-consolidation/spec.md) | Markdown reference |
+| [docs/03.specs/123-agentic-engineering-audit-remediation/README.md](../../03.specs/123-agentic-engineering-audit-remediation/README.md) | folder index |
+| [docs/03.specs/123-agentic-engineering-audit-remediation/spec.md](../../03.specs/123-agentic-engineering-audit-remediation/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |

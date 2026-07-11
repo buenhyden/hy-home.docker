@@ -91,6 +91,7 @@ docs/03.specs/
 ├── 120-agent-output-eval-ci-gate/          # Completed agent-output eval fixture freshness CI gate
 ├── 121-dependency-vulnerability-audit-gate/ # Completed Storybook Next.js dependency vulnerability audit gate
 ├── 122-agentic-research-pack-consolidation/ # Completed agentic research-pack consolidation; post-closure review PASS/APPROVED
+├── 123-agentic-engineering-audit-remediation/ # Active staged research/audit consolidation and approved harness remediation design
 └── README.md                            # This file
 ```
 
@@ -125,6 +126,7 @@ docs/03.specs/
 | Agent-output eval fixture freshness CI gate | `120-agent-output-eval-ci-gate/spec.md` |
 | Storybook Next.js dependency vulnerability audit gate | `121-dependency-vulnerability-audit-gate/spec.md` |
 | Canonical agentic research-pack consolidation and provider-model cutoff | `122-agentic-research-pack-consolidation/spec.md` |
+| Staged agentic implementation audit, typed metadata, and harness remediation | `123-agentic-engineering-audit-remediation/spec.md` |
 | Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
 | Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
@@ -209,6 +211,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Agent Output Eval CI Gate Spec**: [120-agent-output-eval-ci-gate/spec.md](./120-agent-output-eval-ci-gate/spec.md)
 - **Dependency Vulnerability Audit Gate Spec**: [121-dependency-vulnerability-audit-gate/spec.md](./121-dependency-vulnerability-audit-gate/spec.md)
 - **Agentic Research Pack Consolidation Spec**: [122-agentic-research-pack-consolidation/spec.md](./122-agentic-research-pack-consolidation/spec.md)
+- **Agentic Engineering Audit and Remediation Spec**: [123-agentic-engineering-audit-remediation/spec.md](./123-agentic-engineering-audit-remediation/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)
