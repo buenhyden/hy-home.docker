@@ -22,7 +22,8 @@ partial implementation is recorded as gap evidence for later active-stage work.
 
 `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack` holds implementation-status
 reports for harness engineering, loop engineering, provider parity, workspace
-rules, automation, spec-driven SDLC/document roles, frontmatter/templates/README
+rules, agent instructions, catalogs, vibe coding, model routing, automation,
+spec-driven SDLC/document roles, frontmatter/templates/README
 profiles, Docker Compose, infrastructure, CI/CD, QA, formatting, linting,
 release boundaries, and security.
 
@@ -47,6 +48,8 @@ This README is for:
 - Provider comparison across Claude, Codex, and Gemini.
 - Current criterion-level SDLC and document-metadata evidence, including
   syntax/semantic separation and typed-inventory requirements.
+- Criterion-level harness, loop, provider, workspace, instruction, catalog,
+  vibe-coding, and model-routing evidence using the Spec 123 fields.
 
 ### Out of Scope
 
@@ -67,6 +70,7 @@ This README is for:
 ├── loop-engineering-implementation.md
 ├── provider-harness-loop-implementation.md
 ├── workspace-rules-environment-implementation.md
+├── agent-instructions-catalog-vibe-models.md
 ├── automation-candidates.md
 ├── sdlc-document-contracts-implementation.md
 ├── frontmatter-template-readme-implementation.md
@@ -81,6 +85,7 @@ This README is for:
 - [Loop engineering implementation](./loop-engineering-implementation.md)
 - [Provider harness and loop implementation](./provider-harness-loop-implementation.md)
 - [Workspace rules and environment implementation](./workspace-rules-environment-implementation.md)
+- [Agent instructions, catalog, vibe coding, and model routing](./agent-instructions-catalog-vibe-models.md)
 - [Automation candidates](./automation-candidates.md)
 - [SDLC and document-contract implementation](./sdlc-document-contracts-implementation.md)
 - [Frontmatter, template, and README implementation](./frontmatter-template-readme-implementation.md)
@@ -94,11 +99,16 @@ The generated matrix is byte-fresh against its current historical
 eight-report generator input list, but that list does not yet include
 [`sdlc-document-contracts-implementation.md`](./sdlc-document-contracts-implementation.md)
 or
-[`frontmatter-template-readme-implementation.md`](./frontmatter-template-readme-implementation.md).
-It therefore omits 36 Task 4 criterion rows: 22 SDLC/document-contract rows
-and DML-01 through DML-14. Until Task 6 consolidates the generator, the matrix
-must not be cited as complete current semantic audit coverage; use the two
-canonical reports directly.
+[`frontmatter-template-readme-implementation.md`](./frontmatter-template-readme-implementation.md),
+and it does not list
+[`agent-instructions-catalog-vibe-models.md`](./agent-instructions-catalog-vibe-models.md).
+It therefore omits 36 Task 4 criterion rows and 30 Task 5 rows: AIV 16,
+AIC 7, and AMS 7. The four listed Task 5 reports contribute HAR 7, LOOP 6,
+PIC 17, and WRE 10 through their Spec 123 implementation-state `Status`
+fields. Until Task 6
+consolidates the ten criterion reports and the parser, the matrix must not be
+cited as complete current semantic audit coverage; use the canonical reports
+directly.
 
 ## How to Work in This Area
 
@@ -110,7 +120,8 @@ canonical reports directly.
 4. Update this README when audit report files are added, renamed, or removed.
 5. Refresh the generated LLM Wiki index after adding tracked report files.
 6. Treat the generated audit matrix as an interim historical-eight-report
-   snapshot until Task 6 adds the two Task 4 reports to generator ownership.
+   snapshot until Task 6 consolidates all ten criterion reports and their
+   Spec 123 status fields.
 
 ## Evidence Freshness Boundary
 

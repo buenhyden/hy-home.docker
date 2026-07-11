@@ -269,6 +269,75 @@ correctness and define the deterministic advisory inventory required by Tasks
   - audit coverage, traceability, and alignment — PASS, historical subset `reports_checked=8`, `catalog_pairs_total=46`, `stage_docs_total=625`, `failures=0`
   - repository contracts — PASS, `changed_template_docs_total=5`, `normalized_target_stage_docs_total=732`, `failures=0`
 
+### T-AER-005 Agentic Harness and Provider Audit Evidence
+
+Task 5 implementation evidence is **In Review** at baseline `507cd505`. The
+task registry remains `Todo` and the phase checkbox remains unchecked until
+independent Spec-compliance and quality review approve the implementation.
+Graphify remained advisory because its report was built from older commit
+`30df271a`; all conclusions were corroborated against tracked Stage 00,
+provider/runtime, research, eval, and generator sources.
+
+The active repository role for this implementation is `code-reviewer` at the
+requested Senior tier. The collaboration runtime exposed no per-agent model
+selector, so the dispatch recorded the repository role/tier while the platform
+selected the concrete model. No provider or model policy changed.
+
+| Evidence family | Reproduced result | Interpretation |
+| --- | --- | --- |
+| Provider roles | 15 Claude agents, 15 Codex TOMLs, and 15 `.agents` pointers | Name parity is tracked; native schema/runtime parity is a separate claim. |
+| Provider skills | 22 Claude, 22 Codex, and 22 `.agents` skill directories | Claude/Codex content and `.agents` pointers stay provider-specific. |
+| Model/reasoning literals | Claude `opus`/`sonnet` aliases map to policy `opus-4.8`/`sonnet-4.6`; Codex supervisor `gpt-5.5` + `xhigh`, workers `gpt-5.4-mini` + `medium`; Gemini/Antigravity supervisor `gemini-3.1-pro`, workers `gemini-3.5-flash` | Values are reported without changing policy. Entitlement, cross-provider equivalence, and the researched Gemini exact-ID concern remain unproven. |
+| Provider sync | `sync-provider-surfaces.sh --check` reports `no drift` | Proves tracked projection consistency, not provider-native acceptance or semantic enforcement. |
+| Eval fixtures | `run-agent-output-eval-fixtures.sh --check-fixtures` reports 3 expected / 3 found / pass | Proves fixture catalog freshness, not semantic scoring, calibration, or regression thresholds. |
+| Criterion coverage | HAR 7, LOOP 6, PIC 17, WRE 10, AIV 16, AIC 7, AMS 7 = 70 rows | Every relevant Task 1-2 criterion/family has all Spec 123 audit fields. |
+
+Task 5 keeps provider-native features separate from workspace adoption:
+official Gemini CLI now documents native agents/hooks, but the tracked
+workspace has no `.gemini` native wiring and `.agents` remains an
+Antigravity/reference projection. Codex native-schema and hook-event gaps are
+recorded directly. Mutable/provider evidence was not backdated into the
+2026-07-10 10:00 KST cutoff catalog.
+
+The pinned `agency-agents` comparison recommends bounded future additions only
+for product-discovery and semantic-eval capabilities after demand/evaluation;
+it merges performance, reliability, release, software-supply-chain, and model-
+routing methods into existing owners and rejects direct persona imports,
+overlapping umbrella roles, the business supply-chain persona, and autonomous
+model-policy mutation.
+
+- **Files changed**: five Task 5 category reports, one new instruction/catalog/
+  vibe/model report, audit-pack README/overview, canonical generated Wiki/data
+  outputs when their generators detect changes, this task evidence, and
+  progress memory.
+- **Scope boundary**: no Stage 00/provider adapter/runtime identity/model policy,
+  CI/script, Compose/runtime, secret, remote state, or branch protection changed.
+- **Interim generator limitation**: Task 6 owns consolidation of all ten
+  criterion reports. The current eight-report generated matrix includes 40
+  Task 5 HAR/LOOP/PIC/WRE rows but omits 36 Task 4 and 30 Task 5 AIV/AIC/AMS
+  rows; the canonical reports are the complete direct evidence.
+- **Lifecycle boundary**: Task 5 is `In Review`; T-AER-005 stays `Todo` and its
+  checkbox stays unchecked until independent review approval.
+- **Validation-shape correction**: the initial coverage/contracts run rejected
+  the label `Implementation state` because the existing parser recognizes
+  `Status`. The reports now use `Status` for that same required Spec 123 field;
+  no generator or validator was changed. The complete rerun passes.
+- **Task 5 implementation validation**:
+  - `git diff --check` — PASS
+  - `bash scripts/operations/sync-provider-surfaces.sh --check` — PASS, `no drift`
+  - `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures` — PASS, 3/3
+  - LLM Wiki index/coverage write and check modes — PASS, 1,266 paths / 1,265 safe paths
+  - audit matrix write/check — PASS, interim eight-report snapshot fresh
+  - audit-pack coverage — PASS, 8/8 reports, 100 parsed status cells, including 40 Task 5 rows
+    (the prior 133 included duplicate/composite status-like cells from summary,
+    provider, and gap tables; the new four reports intentionally expose one
+    implementation status per canonical HAR/LOOP/PIC/WRE criterion)
+  - document traceability — PASS, `catalog_pairs_total=46`, `failures=0`
+  - implementation alignment — PASS, `stage_docs_total=625`, 4,906 links, `failures=0`
+  - repository contracts — PASS, `normalized_target_stage_docs_total=733`, `failures=0`
+  - direct `pre-commit` — not run; prohibited and owned by the later controlled-wrapper task
+  - Graphify refresh — not required because Task 5 changed documentation/generated references only; its existing report remains advisory
+
 ### Task Review Ledger
 
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |

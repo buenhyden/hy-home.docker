@@ -59,9 +59,9 @@ Compose files, and registry references.
 | --- | ---: |
 | Reports expected | 8 |
 | Reports present | 8 |
-| Status cells parsed | 133 |
+| Status cells parsed | 100 |
 | Overview categories expected | 12 |
-| Overview categories found | 14 |
+| Overview categories found | 15 |
 | Automation candidates expected | 13 |
 | Automation candidates found | 13 |
 | Closed candidates with residual gaps | 5 |
@@ -71,12 +71,12 @@ Compose files, and registry references.
 
 | Category | Status |
 | --- | --- |
-| Harness engineering | Implemented |
-| Loop engineering | Partially Implemented |
-| Claude provider harness/loop | Implemented |
-| Codex provider harness/loop | Implemented |
-| Gemini provider harness/loop | Partially Implemented |
-| Common provider-neutral rules/environment | Implemented |
+| Harness engineering | Partial |
+| Loop engineering | Partial |
+| Claude provider harness/loop | Partial |
+| Codex provider harness/loop | Partial |
+| Gemini provider harness/loop | Partial |
+| Common provider-neutral rules/environment | Partial |
 | Automation, pipeline, workflow | Partially Implemented |
 | Spec-driven SDLC | Partially Implemented |
 | Docker Compose / infrastructure | Implemented |
@@ -88,11 +88,11 @@ Compose files, and registry references.
 
 | Report | File State | Status Cells |
 | --- | --- | ---: |
-| implementation-overview.md | present | 14 |
-| harness-engineering-implementation.md | present | 15 |
-| loop-engineering-implementation.md | present | 11 |
-| provider-harness-loop-implementation.md | present | 37 |
-| workspace-rules-environment-implementation.md | present | 11 |
+| implementation-overview.md | present | 15 |
+| harness-engineering-implementation.md | present | 7 |
+| loop-engineering-implementation.md | present | 6 |
+| provider-harness-loop-implementation.md | present | 17 |
+| workspace-rules-environment-implementation.md | present | 10 |
 | automation-candidates.md | present | 11 |
 | sdlc-quality-formatting-implementation.md | present | 18 |
 | security-framework-maturity.md | present | 16 |
@@ -101,27 +101,27 @@ Compose files, and registry references.
 
 | Normalized Status | Count |
 | --- | ---: |
-| Implemented | 77 |
-| Partially Implemented | 47 |
-| Gap / Not Implemented | 9 |
-| Unknown / Needs Revalidation | 0 |
+| Implemented | 33 |
+| Partially Implemented | 59 |
+| Gap / Not Implemented | 4 |
+| Unknown / Needs Revalidation | 4 |
 | Other | 0 |
 
 ## Raw Status Counts
 
 | Raw Status | Count |
 | --- | ---: |
-| Fixture CI Gate Implemented / Scoring Advisory | 2 |
-| Fixture Pack Implemented / Runner Partial | 2 |
+| Fixture CI Gate Implemented / Scoring Advisory | 1 |
+| Fixture Pack Implemented / Runner Partial | 1 |
 | Gap | 2 |
-| Implemented | 77 |
+| Implemented | 33 |
 | Implemented / Tooling Partial | 1 |
 | Mapped / Readiness Snapshot Implemented / Partially Implemented | 1 |
+| Needs Revalidation | 4 |
 | Not Implemented | 1 |
-| Not Implemented / Behavioral | 3 |
-| Not Implemented / Needs Revalidation | 2 |
 | Not Implemented / Out of Scope | 1 |
-| Partially Implemented | 41 |
+| Partial | 34 |
+| Partially Implemented | 21 |
 
 ## Automation Candidate Closure Matrix
 

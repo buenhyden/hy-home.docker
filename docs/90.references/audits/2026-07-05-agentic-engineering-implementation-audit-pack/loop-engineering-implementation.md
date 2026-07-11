@@ -8,135 +8,105 @@ status: active
 
 ## Overview
 
-This reference audits how feedback loops from the loop-engineering research
-baseline are implemented in `hy-home.docker`.
+This reference assesses `LOOP-01` through `LOOP-06` against tracked context,
+delegation, hook, validation, eval, approval, memory, and evidence surfaces at
+baseline `507cd505` on 2026-07-11.
 
 ## Purpose
 
-The purpose is to separate implemented loops from partially implemented or
-manual loops so follow-up automation can target the right gaps.
+Identify which feedback loops are documented, applied, automated, or measured
+without treating provider executability as a repository evaluation contract.
 
 ## Repository Role
 
-This document supports future planning for agent feedback, validation, memory,
-CI, approval, operations, and evaluation loops. It does not define active
-workflow policy or replace scripts, CI workflows, provider adapters, or task
-evidence.
+The report supports later Stage 03/04 improvement work. It does not replace
+Stage 00 workflow rules, provider hooks, validation scripts, CI, or task review.
 
 ## Scope
 
 ### In Scope
 
-- Agent context and planning loops.
-- Subagent/delegation loops.
-- Validation and CI loops.
-- Memory and evidence loops.
-- Human approval loops.
-- Eval and semantic feedback loops.
-- Operations and incident learning loops.
+- Observation/action, pre/post action, validation/eval, retry/stop,
+  approval/resume, and evidence/observability loops.
 
 ### Out of Scope
 
-- Implementing new eval jobs or CI gates.
-- Changing runtime hooks or provider configuration.
-- Changing incident, postmortem, runbook, or operations policy content.
-- Secret values, credentials, tokens, private keys, raw logs, shell history, or
-  `.env` values.
+- New eval jobs, provider hooks, CI gates, telemetry, or runtime mutation.
+- Hidden-reasoning inspection or persistence of raw provider/runtime logs.
 
 ## Definitions / Facts
 
-- **Loop engineering** means designing feedback cycles that turn observation
-  into safer next action: context -> action -> validation -> evidence ->
-  memory or follow-up.
-- **Human approval loop** means protected state changes require explicit user
-  approval and recorded evidence.
-- **Eval loop** means a repeatable check of agent output against criteria or
-  fixtures, not just a one-time manual review.
+- A loop is depth 4 only when measured results feed a closed corrective cycle.
+- Three fixed fixtures have automated freshness checks. Their presence does
+  not supply a general semantic scorer or regression threshold.
+- Independent SDD review is required by Spec 123; Task 5 remains `In Review`
+  and `Todo` until that review approves it.
 
 ## Assessment Method
 
-The audit compared loop-engineering research criteria with Stage 00 workflow
-rules, subagent protocol, provider hooks, validation scripts, CI jobs, Stage 04
-task evidence, memory/progress, operations docs, and generated reference
-indexes.
+The audit mapped every canonical `LOOP-*` criterion to Stage 00 workflow and
+approval rules, provider hook surfaces, validation/CI, memory, task evidence,
+and fixture checks. Graphify was stale/advisory and did not support any status.
 
-## Implementation Status Matrix
+## Audit Criteria
 
-| Loop | Status | Evidence | Notes |
-| --- | --- | --- | --- |
-| Bootstrap / context loop | Implemented | `AGENTS.md`, [Stage 00 governance hub](../../../00.agent-governance/README.md), [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) | Root shims and Stage 00 define loading sequence, scope, memory, and stage rules. |
-| Brainstorm / spec / plan loop | Implemented | [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [audit pack spec](../../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md) | Design and execution artifacts are routed through canonical stages. |
-| Delegation / subagent loop | Partially Implemented | [subagent protocol](../../../00.agent-governance/subagent-protocol.md), `.claude/agents/`, `.codex/agents/`, `.agents/agents/` | Governance and adapters exist; runtime-native parity differs by provider. |
-| Hook pre/post edit loop | Partially Implemented | `.claude/hooks/`, `.codex/hooks.json`, [provider notes](../../../00.agent-governance/providers/gemini.md) | Claude/Codex hooks exist; Gemini follows behavioral contract. |
-| Local validation loop | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/**` | Local checks cover docs, contracts, Compose, hardening, templates, and QA bundles. |
-| CI feedback loop | Implemented | `.github/workflows/ci-quality.yml` | CI repeats quality gates on push and pull request. |
-| Memory / progress loop | Implemented | [progress memory](../../../00.agent-governance/memory/progress.md), [memory README](../../../00.agent-governance/memory/README.md) | Agents must review and update progress memory during repository work. |
-| Generated index freshness loop | Implemented | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/llm-wiki-index.md` | LLM Wiki freshness is checked by repo contracts. |
-| Human approval loop | Implemented | [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md), task approved-surface evidence | Protected surfaces and hard stops require explicit approval and evidence. |
-| Operations learning loop | Partially Implemented | `docs/05.operations/**`, [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), [HAFE guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md), incidents structure | Operations docs, postmortem routing, and manual gap-to-stage routing exist; not every audit gap has generated closure review or operational feedback evidence. |
-| Eval / semantic scoring loop | Fixture CI Gate Implemented / Scoring Advisory | [loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md), [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md), `scripts/validation/run-agent-output-eval-fixtures.sh`, `.github/workflows/ci-quality.yml` | Docs/provider/infra fixtures, a local advisory runner, and CI fixture catalog freshness gate exist; required semantic scoring for arbitrary agent outputs is still manual/advisory. |
+| Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
+| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
+| LOOP-01 | Run a bounded observe/action loop and return evidence to a controller. | Subagent protocol defines supervisor/worker handoff, scoped execution, result reporting, and separate review; provider-native execution differs and `.agents` remains pointer-based. | Partial | 2 | Improve | Stage 00 workflow supervisor and subagent protocol | Keep task review ledger; native execution compatibility is a provider follow-up. | Inspect `subagent-protocol.md`, active plan, task evidence, and provider role surfaces. | High for governance; medium for cross-provider runtime behavior. |
+| LOOP-02 | Apply pre/post action feedback without assuming event-name parity. | Claude and Codex tracked hooks call shared scripts for selected events; Codex coverage is partial and no tracked native Gemini hook adapter exists. | Partial | 2 | Fix | Stage 00 hook contract and provider adapters | Candidate semantic/event compatibility check in approved Task 10 scope. | Inspect `.claude/settings.json`, `.codex/hooks.json`, and shared hook scripts. | High: direct tracked evidence and current provider research. |
+| LOOP-03 | Combine validation with versioned semantic eval evidence. | Local validators, CI, task review, and three fixed fixtures exist; fixture freshness is automated, while scoring arbitrary output remains manual/advisory. | Partial | 3 | Improve | QA scope and eval follow-up owner | Retain fixture freshness; add scorer/baseline/threshold only after an approved eval contract. | `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures` reports `3/3`. | High. |
+| LOOP-04 | Diagnose before retry, bound attempts, and stop/escalate on unchanged failure. | Stage 00 subagent protocol allows one narrower retry then failure; task checklists and SDD review define stop/review behavior. No cross-provider mechanism measures retry causes or enforces identical stop semantics. | Partial | 2 | Improve | Workflow supervisor and task owner | Candidate structured attempt/result fields in future task evidence; no autonomous retry expansion. | Inspect subagent protocol error handling and current SDD task ledger. | High for written contract; medium for runtime enforcement. |
+| LOOP-05 | Pause protected actions for exact approval and refresh state on resume. | Approval boundaries and task checklists require concrete scope/evidence; actual provider prompt state and durable resume behavior vary and are not uniformly tracked. | Partial | 2 | Improve | Stage 00 approval boundaries | Add scoped approval/resume evidence where high-risk tasks require it; avoid global-state inference. | Inspect `approval-boundaries.md`, `task-checklists.md`, and high-risk task evidence contract. | High for policy; runtime prompt propagation is provider-dependent. |
+| LOOP-06 | Preserve reviewable observations while respecting redaction/privacy. | Diffs, commands, CI/SARIF, Stage 04 evidence, progress memory, and review packages exist. No unified trace backend, task-quality time series, or depth-4 feedback metric is tracked. | Partial | 2 | Improve | Stage 04 evidence owner and QA | Prefer concise generated evidence; a trace backend is not required absent a justified use case. | Inspect task/review ledgers, memory policy, and CI evidence surfaces. | High for tracked evidence; telemetry enablement is unknown. |
 
 ## Findings
 
-- The repository has strong structural loops: context loading, stage-gated
-  design and plan handoff, validation scripts, CI repetition, progress memory,
-  generated-index freshness, and approval boundaries.
-- The repository has partial semantic loops: subagent result review, provider
-  adapter semantic parity, agent-output evals, and operations-to-governance
-  learning depend on task evidence and human judgment more than automated
-  scoring.
-- Loop maturity is intentionally conservative where providers differ. Gemini
-  can participate through shared context and pointer adapters, but native
-  hooks/subagents should not be claimed.
+- All six loops have a repository surface, so none is `Missing`; each remains
+  `Partial` because native parity, semantic scoring, enforcement, or measurement
+  is incomplete.
+- The strongest loop is deterministic validation/fixture freshness at depth 3.
+  No loop reaches depth 4.
+- Review and task evidence close individual work items, but the repository does
+  not yet measure semantic agent performance across versions.
 
 ## Gap / Follow-up
 
-| Gap | Impact | Follow-up Direction |
+| Gap | Disposition | Canonical owner |
 | --- | --- | --- |
-| Agent-output eval loop has fixtures, a local runner, and a CI fixture freshness gate, but no required semantic scoring gate. | Regression risk remains for agent behavior that passes structural checks. | Keep [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) and the runner fresh; add required scoring only through future Stage 03/04 work. |
-| Provider semantic parity loop is partial. | Adapter files may drift in behavioral detail even when catalog parity passes. | Add diff/extraction checks for critical clauses. |
-| Operations learning loop is selective. | Audit findings may not consistently become policies, runbooks, or backlog items. | Manual gap-to-stage routing now exists in Stage 00; add a recurring audit closure review or generated routing report if stronger automation is needed. |
-| Gemini behavioral parity loop is manual. | Gemini users must remember hook-equivalent obligations. | Keep explicit Gemini gap rows and revalidate official docs periodically. |
+| Provider hook/event semantic mismatch | Fix through the approved provider-sync task, with current official evidence. | Task 10 / Stage 00 provider owners |
+| General semantic scorer and calibrated regression threshold | Improve only after dataset/privacy/scorer design. | QA/eval follow-up |
+| Cross-provider retry/resume observability | Improve task evidence first; do not add telemetry without a justified contract. | Workflow supervisor |
+| Closed-loop depth measurement | Add only if actionable metrics and an owner are defined. | Stage 03/04 future work |
 
 ## Automation Impact
 
-Future loop automation should focus on semantic checks: provider-adapter clause
-diffing, recurring audit-gap closure review, required agent-output scoring
-gates, and generated loop coverage that is refreshed from repository paths.
+Current automation covers fixture catalog integrity and deterministic checks.
+Provider-semantic checks and scored agent evals are candidates, not adopted
+requirements.
 
 ## Source Rules
 
-- Loop implementation claims must cite repo-local scripts, CI, provider notes,
-  Stage 00 governance, Stage 04 evidence, operations docs, or generated-index
-  maintenance scripts.
-- External loop-engineering papers and vendor docs remain criteria sources,
-  not active policy.
+- Provider features are facts from the canonical research ledger.
+- Workspace loop status is derived from tracked files and reproduced commands.
+- Provider telemetry and hidden reasoning are never inferred as workspace evidence.
 
 ## Sources
 
-- [Loop engineering research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md) - criteria source.
-- [Stage 00 governance hub](../../../00.agent-governance/README.md) - context, workflow, memory, and policy loop evidence.
-- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md) - delegation loop evidence.
-- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - human approval loop evidence.
-- [scripts README](../../../../scripts/README.md) - local validation, hook, and generated-index loops.
-- [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - remote CI feedback loop.
-- [HAFE guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md) - operational audit usage loop.
-- [Task evidence](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) - audit execution loop evidence.
-- [ReAct paper](https://arxiv.org/abs/2210.03629) - external reason/action loop concept.
-- [Reflexion paper](https://arxiv.org/abs/2303.11366) - external verbal feedback and memory loop concept.
+- [Loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md)
+- [Agent-output fixtures](../../data/governance/agent-output-eval-fixtures.md)
+- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
+- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md)
+- [Task evidence](../../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md)
 
 ## Maintenance
 
 - **Owner**: Agentic Workflow Specialist / QA Engineer.
-- **Review Cadence**: Review after provider, hook, CI, validation, operations,
-  or task-evidence workflow changes.
-- **Update Trigger**: Update when new eval automation, provider-native loops,
-  or operational feedback loops are introduced.
+- **Review Cadence**: After provider, hook, validation, review, or eval changes.
+- **Update Trigger**: Any `LOOP-*` state, depth, or evidence changes.
 
 ## Related Documents
 
 - [Audit pack README](./README.md)
-- [Implementation overview](./implementation-overview.md)
 - [Harness implementation audit](./harness-engineering-implementation.md)
-- [Research pack](../../research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Audit pack task evidence](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md)
+- [Provider implementation audit](./provider-harness-loop-implementation.md)
+- [Agent instruction/catalog/model audit](./agent-instructions-catalog-vibe-models.md)

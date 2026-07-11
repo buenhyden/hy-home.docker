@@ -8,134 +8,114 @@ status: active
 
 ## Overview
 
-This reference audits the current implementation status of harness engineering
-in `hy-home.docker`. It compares the researched harness model with repo-local
-governance, validation, provider, CI, script, infrastructure, and evidence
-surfaces.
+This reference assesses every `HAR-*` criterion in the canonical harness
+research against tracked workspace evidence at baseline `507cd505` on
+2026-07-11. It is advisory Stage 90 evidence, not active harness policy.
 
 ## Purpose
 
-The purpose is to identify which harness elements are implemented, which are
-partial, and which should become future automation or governance work.
+Distinguish a provider feature from repository adoption, and distinguish both
+from Stage 00 policy or an inference about live runtime behavior.
 
 ## Repository Role
 
-This document supports future Stage 03/04 planning for harness improvements.
-It does not replace Stage 00 governance, the HAFE operations policy, CI
-workflow source, scripts, infrastructure files, or task evidence.
+This report feeds approved Stage 03/04 follow-up. Stage 00, provider adapters,
+scripts, CI, and runtime configuration remain authoritative for behavior.
 
 ## Scope
 
 ### In Scope
 
-- Governance harness.
-- Runtime/provider harness.
-- Validation and CI harness.
-- Infrastructure and Docker Compose harness.
-- Evidence and approval harness.
-- Security and secret-boundary harness.
+- Instruction discovery, subagents, tools/MCP, lifecycle interception,
+  isolation/approval, model routing, and evaluation/evidence.
+- Tracked `.claude`, `.codex`, and `.agents` surfaces and canonical validators.
 
 ### Out of Scope
 
-- Changing protected surfaces.
-- Adding new validators or CI jobs.
-- Running deployments or service restarts.
-- Secret values, credentials, tokens, private keys, raw logs, shell history, or
-  `.env` values.
+- Provider, model-policy, hook, CI, script, runtime, secret, or remote changes.
+- Claims about user-global configuration, account entitlement, or live egress.
 
 ## Definitions / Facts
 
-- **Harness engineering** means the surrounding system of rules, adapters,
-  scripts, CI gates, evidence, and approval boundaries that makes agentic work
-  repeatable and auditable.
-- **Runtime harness** in this repository is provider-adapter wiring plus shared
-  governance, not a separate provider-local policy source.
-- **Evidence harness** is primarily Stage 04 task evidence, progress memory,
-  PR validation evidence, and generated indexes.
+- States use `Implemented`, `Partial`, `Missing`, `Not Applicable`, and
+  `Needs Revalidation` exactly.
+- Enforcement depth is `0` absent, `1` documented, `2` partially applied,
+  `3` automated/enforced, and `4` measured with a closed feedback loop.
+- The tracked tree contains 15 role files per provider surface and 22 skill
+  directories per provider surface. `sync-provider-surfaces.sh --check`
+  reports no name/model/projection drift; this does not prove native-schema
+  compatibility or runtime execution.
 
 ## Assessment Method
 
-The audit compared the harness research reference with local canonical paths:
-Stage 00 governance, HAFE operations docs, provider notes, provider adapter
-directories, scripts, CI workflow, infrastructure inventory, template support
-contracts, and task evidence.
+The audit read the canonical `HAR-01` through `HAR-07` research rows, Stage 00
+governance, provider notes, all tracked role/model literals, hook definitions,
+the sync generator, and the agent-output fixture runner. Graphify was built
+from older commit `30df271a` and was used only for navigation; every finding
+below is corroborated by tracked source.
 
-## Implementation Status Matrix
+## Audit Criteria
 
-| Harness Element | Status | Evidence | Notes |
-| --- | --- | --- | --- |
-| Governance SSoT | Implemented | [Stage 00 governance hub](../../../00.agent-governance/README.md) | Stage 00 owns policy, provider overlays, agent catalog, memory, QA/CI/CD, model policy, template contract, and clarification duty. |
-| Root entry shims | Implemented | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | Root shims route into Stage 00 and remain thin by contract. |
-| Provider adapter model | Implemented | [provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md), [subagent protocol](../../../00.agent-governance/subagent-protocol.md) | Claude, Codex, and Gemini map to shared catalog and model tiers. |
-| Runtime provider surfaces | Partially Implemented | `.claude/`, `.codex/`, `.agents/` | Claude and Codex have native hooks/subagents; Gemini is pointer/behavioral for hooks and first-class subagent parity. |
-| Validation harness | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/**` | Repo contracts, doc alignment, traceability, Compose validation, local QA gate, and template/security checks exist. |
-| CI harness | Implemented | `.github/workflows/ci-quality.yml` | CI runs docs, contracts, Compose, hardening, pre-commit, frontend, coverage, and workflow-security jobs. |
-| Docker Compose / infrastructure harness | Implemented | [infra README](../../../../infra/README.md), `docker-compose.yml`, `infra/**/docker-compose*.yml` | Modular include/profile topology, service READMEs, version registry, and validation scripts exist. |
-| Hook harness | Partially Implemented | [Claude provider notes](../../../00.agent-governance/providers/claude.md), [Codex provider notes](../../../00.agent-governance/providers/codex.md), [Gemini provider notes](../../../00.agent-governance/providers/gemini.md) | Claude/Codex use runtime hooks; Gemini follows behavioral contracts because official/native parity is absent. |
-| Approval harness | Implemented | [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) | Protected surfaces and hard stops are explicit. |
-| Evidence harness | Implemented | [task evidence](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md), [progress memory](../../../00.agent-governance/memory/progress.md) | Stage 04 task evidence and progress memory record work and validation. |
-| Security harness | Partially Implemented | [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md), `.github/SECURITY.md`, `.github/workflows/ci-quality.yml` | Secret and workflow controls exist; full supply-chain attestation maturity is not claimed. |
+| Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
+| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
+| HAR-01 | Discover hierarchical provider instructions with explicit precedence. | Thin `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` shims route to `docs/00.agent-governance/rules/bootstrap.md`; provider sync validates projections. | Implemented | 3 | Retain | Stage 00 bootstrap and provider notes | Existing sync/contracts; add no parallel instruction layer. | `bash scripts/operations/sync-provider-surfaces.sh --check`; inspect root shims. | High: direct tracked evidence; loading still does not prove compliance. |
+| HAR-02 | Use native isolated subagents with bounded schema, tools, model, and handoff. | Stage 00 defines one supervisor and fourteen workers; 15 Claude agents, 15 Codex TOMLs, and 15 `.agents` pointers exist. Codex TOMLs omit currently documented native `description` and `developer_instructions`; `.agents` is not `.gemini/agents`. | Partial | 2 | Fix | Stage 00 subagent protocol plus provider adapters | Task 10 may align approved adapters/validators; native compatibility needs provider-specific checks. | Compare `subagent-protocol.md` with all three role directories and current PIC evidence. | High for tracked gaps; live provider acceptance is unobserved. |
+| HAR-03 | Bound tools/MCP by native controls and repository authority. | Approval/environment rules and canonical scripts bound actions, but tracked role metadata is not a tool/path allowlist and no shared tracked project MCP baseline exists. | Partial | 2 | Improve | Stage 00 approval boundaries and provider configuration owners | Candidate denied-action/tool-boundary tests; do not inspect or overwrite user-global config. | Inspect `approval-boundaries.md`, role adapters, and tracked provider config paths. | High for policy; runtime MCP/permissions are unknown. |
+| HAR-04 | Intercept lifecycle events without inventing cross-provider event parity. | Claude hooks and Codex `hooks.json` route to shared scripts. Codex interception is partial and tracked `SessionEnd` lacks current official event support. No `.gemini` hook wiring exists; `.agents` behavior is pointer/manual. | Partial | 2 | Fix | Stage 00 hook contract and provider adapters | Extend semantic/native compatibility validation only through Task 10 approval. | Inspect `.claude/settings.json`, `.claude/hooks`, `.codex/hooks.json`, and provider research PIC-04/PIC-05. | High: direct tracked and current official evidence. |
+| HAR-05 | Separate sandbox isolation, approval, network, and repository authority. | Stage 00 documents protected actions and environment constraints; provider settings expose different controls. Tracked files cannot prove the executing sandbox profile, unattended mode, egress, or user-global settings. | Partial | 2 | Improve | Stage 00 environment and approval rules | Record actual execution mode in task evidence where available; do not infer global state. | Inspect `environment-constraints.md`, `approval-boundaries.md`, and task evidence. | Medium-high: policy is direct; runtime mode is intentionally unobserved. |
+| HAR-06 | Select exact models and provider-native reasoning controls with coupled validation. | Policy maps Claude `opus-4.8`/`sonnet-4.6` via `opus`/`sonnet`; Codex `gpt-5.5` `xhigh` and `gpt-5.4-mini` `medium`; Gemini `gemini-3.1-pro` and `gemini-3.5-flash`. Contracts enforce literals, but entitlement is unproven and research flags the Gemini supervisor literal. | Partial | 3 | Improve | `subagent-protocol.md` model policy | Keep current values; any change requires AMS-01..07 evidence, generator/validator coupling, and rollback. | `rg` model literals; provider sync; repo contracts. | High for tracked policy, medium for provider availability/correctness. |
+| HAR-07 | Connect deterministic validation, task evidence, and semantic evaluation. | Validators/CI/task review exist. Three agent-output fixtures and a freshness runner exist; arbitrary-output scoring, baseline, threshold, and regression history do not. | Partial | 3 | Improve | QA scope and Stage 04 task owner | Existing fixture freshness automation; future scored eval requires an approved dataset/scorer contract. | `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures`. | High: direct runner result `3/3`; semantic coverage is explicitly absent. |
 
 ## Findings
 
-- The repository implements harness engineering as a multi-layer system:
-  governance, provider adapters, validation scripts, CI, infrastructure
-  inventory, hooks, evidence, and operations guidance.
-- The harness is strongest where it can be validated statically: template
-  shape, provider catalog parity, script inventory, Compose syntax, hardening,
-  and documentation traceability.
-- The harness is weaker where runtime semantics are provider-specific:
-  Gemini hook/subagent behavior, semantic equivalence of generated adapters,
-  and agent-output quality scoring.
+- Structural projection and deterministic validation are stronger than native
+  compatibility, live permission evidence, and semantic output measurement.
+- No row reaches depth 4: the repository does not yet maintain a measured
+  harness feedback loop with baselines and closed regression history.
+- Provider facts in the research pack do not change Stage 00 policy. In
+  particular, native Gemini CLI agents/hooks do not make `.agents` a native
+  `.gemini` implementation.
 
 ## Gap / Follow-up
 
-| Gap | Status | Follow-up Direction |
+| Gap | Owner | Follow-up boundary |
 | --- | --- | --- |
-| Provider adapter semantic parity | Partially Implemented | Add a validator that compares important behavioral clauses, not only names, models, and scope imports. |
-| Gemini native hooks and subagents | Partially Implemented | Keep Gemini as behavioral/pointer parity until official sources support native parity. |
-| Agent eval harness | Fixture Pack Implemented / Runner Partial | [Agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) cover common docs, provider, and infra tasks; report scoring automation and regression tracking remain future work. |
-| Supply-chain evidence | Partially Implemented | Consider SLSA/attestation mapping as a separate security plan. |
+| Codex native agent schema and tracked hook-event compatibility | Task 10 / provider synchronization | Fix only with coupled Stage 00, generator, adapter, and validator evidence. |
+| Gemini CLI native adoption versus Antigravity pointer behavior | Future approved provider task | Decide explicitly; do not relabel pointers as native adoption. |
+| Semantic agent-output scoring | QA/eval follow-up | Define versioned tasks, scorer, threshold, privacy, and calibration before blocking. |
+| Runtime sandbox, entitlement, MCP, and egress facts | Executing task/provider owner | Record scoped observations only; leave unobserved global state unknown. |
 
 ## Automation Impact
 
-Current automation is strong for structural validation. The next automation
-layer should produce machine-readable harness coverage summaries from Stage 00,
-provider adapters, scripts, CI, and infrastructure paths so audit reports can
-be refreshed with less manual interpretation.
+Retain structural sync and fixture freshness. Improve native-schema/event
+compatibility and semantic scoring only through approved active-stage work;
+no new audit-only automation is introduced here.
 
 ## Source Rules
 
-- Repo-local harness implementation claims must cite Stage 00, scripts, CI,
-  provider surfaces, HAFE operations docs, or infrastructure files.
-- External harness concepts remain research criteria and are not adopted
-  policy without a separate active-stage change.
+- Provider features come from the current primary-source ledger in the
+  canonical research pack; mutable pages prove retrieval-time facts only.
+- Workspace adoption comes from tracked files and command results.
+- Stage 00 policy is neither inferred from provider features nor changed by
+  this audit.
 
 ## Sources
 
-- [Harness engineering research](../../research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md) - research criteria.
-- [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md) - surface-to-source routing.
-- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - protected-surface matrix.
-- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md) - provider model and delegation policy.
-- [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) - provider adapter mapping.
-- [scripts README](../../../../scripts/README.md) - validation and automation harness.
-- [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - remote CI harness.
-- [infra README](../../../../infra/README.md) - infrastructure harness.
-- [HAFE guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md) - operational usage.
-- [HAFE policy](../../../05.operations/policies/00-workspace/harness-agent-first-engineering.md) - operational controls.
+- [Harness research](../../research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md)
+- [Provider comparison research](../../research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md)
+- [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md)
+- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
+- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md)
 
 ## Maintenance
 
 - **Owner**: Agentic Workflow Specialist.
-- **Review Cadence**: Review after Stage 00, provider adapter, scripts, CI, or
-  infrastructure validation changes.
-- **Update Trigger**: Update when a harness surface is added, removed, or
-  changes validation depth.
+- **Review Cadence**: After Stage 00, provider adapter, hook, model, or eval changes.
+- **Update Trigger**: Any `HAR-*` criterion evidence or enforcement depth changes.
 
 ## Related Documents
 
 - [Audit pack README](./README.md)
-- [Implementation overview](./implementation-overview.md)
 - [Loop implementation audit](./loop-engineering-implementation.md)
-- [Research pack](../../research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Audit pack task evidence](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md)
+- [Provider implementation audit](./provider-harness-loop-implementation.md)
+- [Agent instruction/catalog/model audit](./agent-instructions-catalog-vibe-models.md)
