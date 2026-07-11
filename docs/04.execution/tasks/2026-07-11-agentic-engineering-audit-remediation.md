@@ -207,6 +207,56 @@ tier while the platform selected the concrete model.
   - `bash scripts/hardening/check-all-hardening.sh` — PASS, all eleven tiers
   - `bash scripts/validation/check-repo-contracts.sh` — PASS, `failures=0`
 
+### T-AER-004 SDLC and Document-Contract Audit Evidence
+
+Task 4 audited the current tracked SDLC/document corpus at baseline
+`e4c92fa1e0e4e59af20efa9f1fcb104e3a8698eb`. Graphify remained advisory: its
+report was built from `30df271a`, so every conclusion was corroborated against
+tracked stage documents, Stage 00/99 contracts, templates, validators,
+`CHANGELOG.md`, the release runbook, and Task 1 source-backed criteria.
+
+The active repository role for this implementation is `doc-writer` at the
+Worker tier. The collaboration runtime exposes no per-agent model selector, so
+the dispatch recorded the repository tier while the platform selected the
+concrete model; no provider or model policy was changed.
+
+| Inventory | Reproduced result | Interpretation |
+| --- | --- | --- |
+| Current Markdown scope | 872 tracked `docs/**/*.md`; 1,073 tracked repo-wide `*.md` | The 930 count from 2026-07-03 and 948 count from 2026-07-04 remain dated repo-wide evidence, not current facts. |
+| Stage lifecycle syntax | 635 allowed top statuses: 366 active, 240 completed, 9 superseded, 20 archived; 0 draft | All 598 non-README Stage 01/02/03/04/05/90/98 leaves have valid top status. Syntax does not prove transition history or semantic freshness. |
+| README profiles | 140 READMEs in the brief's Stage 01-05/90/98/99 search scope; 37 status-bearing and 103 status-free | No copied `status: draft` README exists; the status-bearing indexes need explicit consumer/profile semantics before remediation. |
+| Metadata keys | 0 proposed typed-key or generic legacy-key matches from the brief scan | Stable IDs, typed parents, freshness, and transition metadata are not implemented; generic duplicate-purpose keys are not currently signaled. |
+| Generated documents | 6 Stage 90 outputs declare generator-owned `generated_by` | Freshness remains generator-owned and was verified in write/check modes. |
+| Supersession | 9 current superseded documents; all have manual replacement routes | Replacement-free supersession was not observed, but no semantic validator prevents it. |
+| Document roles | 24 PRDs; 24 ARDs; 24 ADRs; 46 Spec folders; 88 Plans; 114 Tasks; 66 Guides; 64 Policies; 61 Runbooks; 0 Incident/Postmortem leaves; 20 Archive tombstones | Number formats all conform. Incident/Postmortem absence is event-driven N/A, not evidence that unnecessary artifacts should be created. |
+| Release boundary | `CHANGELOG.md` contains only `Unreleased`; pushed-tag workflow verifies an exact tag; one manual release runbook; no Release record or CD environment/deploy job | Communication, procedure, and actual release execution evidence remain distinct. |
+
+Task 4 added a 22-row SDLC/document-role audit and a complete DML-01 through
+DML-14 metadata audit. Every criterion uses the Spec 123 fields for
+implementation state, depth, disposition, owner, automation, verification, and
+confidence. The reports explicitly separate syntax compliance from semantic
+correctness and define the deterministic advisory inventory required by Tasks
+7 and 8.
+
+- **Files changed**: two new canonical audit references; audit-pack README,
+  overview, and SDLC/quality cross-category summary; canonical audit matrix and
+  LLM Wiki/data outputs; this task evidence and progress memory.
+- **Scope boundary**: no Stage 00/99 rule/template/validator, runtime,
+  Compose/infrastructure declaration, provider adapter, model policy, CI
+  workflow, script, secret, remote state, or branch protection was changed.
+- **Lifecycle boundary**: implementation validation is complete, but
+  T-AER-004 remains `Todo` and its phase checkbox remains unchecked until the
+  independent task review approves Spec compliance and quality.
+- **Task 4 implementation validation**:
+  - `git diff --check` — PASS
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — PASS, 1,265 paths
+  - `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` — PASS, 1,264 safe paths
+  - `bash scripts/validation/generate-audit-implementation-matrix.sh --check` — PASS
+  - `bash scripts/validation/report-audit-pack-coverage.sh --check` — PASS, 8 expected reports, 14 overview categories, 133 status cells
+  - `bash scripts/validation/check-doc-traceability.sh` — PASS, `catalog_pairs_total=46`, `failures=0`
+  - `bash scripts/validation/check-doc-implementation-alignment.sh` — PASS, `stage_docs_total=625`, `repo_local_markdown_links_checked=4906`, `failures=0`
+  - `bash scripts/validation/check-repo-contracts.sh` — PASS, `changed_template_docs_total=9`, `normalized_target_stage_docs_total=732`, `failures=0`
+
 ### Task Review Ledger
 
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |

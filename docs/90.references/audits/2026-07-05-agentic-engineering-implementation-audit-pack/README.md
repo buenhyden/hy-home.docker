@@ -22,8 +22,9 @@ partial implementation is recorded as gap evidence for later active-stage work.
 
 `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack` holds implementation-status
 reports for harness engineering, loop engineering, provider parity, workspace
-rules, automation, spec-driven SDLC, Docker Compose, infrastructure, CI/CD, QA,
-formatting, linting, and security.
+rules, automation, spec-driven SDLC/document roles, frontmatter/templates/README
+profiles, Docker Compose, infrastructure, CI/CD, QA, formatting, linting,
+release boundaries, and security.
 
 ## Audience
 
@@ -44,6 +45,8 @@ This README is for:
   infrastructure, and operations.
 - Gap and automation-candidate summaries for future work.
 - Provider comparison across Claude, Codex, and Gemini.
+- Current criterion-level SDLC and document-metadata evidence, including
+  syntax/semantic separation and typed-inventory requirements.
 
 ### Out of Scope
 
@@ -65,6 +68,8 @@ This README is for:
 ├── provider-harness-loop-implementation.md
 ├── workspace-rules-environment-implementation.md
 ├── automation-candidates.md
+├── sdlc-document-contracts-implementation.md
+├── frontmatter-template-readme-implementation.md
 ├── sdlc-quality-formatting-implementation.md
 └── security-framework-maturity.md
 ```
@@ -77,6 +82,8 @@ This README is for:
 - [Provider harness and loop implementation](./provider-harness-loop-implementation.md)
 - [Workspace rules and environment implementation](./workspace-rules-environment-implementation.md)
 - [Automation candidates](./automation-candidates.md)
+- [SDLC and document-contract implementation](./sdlc-document-contracts-implementation.md)
+- [Frontmatter, template, and README implementation](./frontmatter-template-readme-implementation.md)
 - [SDLC quality formatting implementation](./sdlc-quality-formatting-implementation.md)
 - [Security framework maturity coverage](./security-framework-maturity.md)
 - [Generated audit implementation matrix](../../data/governance/audit-implementation-matrix.md)
@@ -90,6 +97,15 @@ This README is for:
    as gaps unless separately approved.
 4. Update this README when audit report files are added, renamed, or removed.
 5. Refresh the generated LLM Wiki index after adding tracked report files.
+
+## Evidence Freshness Boundary
+
+The 930 tracked-Markdown count from the 2026-07-03 workspace document-contract
+audit and the 948 count from the 2026-07-04 restructure audit are dated,
+repo-wide snapshots. They remain useful historical evidence but are not current
+corpus facts. Task 4 reproduced 872 tracked `docs/**/*.md` and 1,073 tracked
+repo-wide `*.md` files at baseline `e4c92fa1` on 2026-07-11; retain the command
+scope whenever comparing counts.
 
 ## Related Documents
 

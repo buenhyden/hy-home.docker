@@ -59,9 +59,9 @@ Compose files, and registry references.
 | --- | ---: |
 | Reports expected | 8 |
 | Reports present | 8 |
-| Status cells parsed | 129 |
+| Status cells parsed | 133 |
 | Overview categories expected | 12 |
-| Overview categories found | 12 |
+| Overview categories found | 14 |
 | Automation candidates expected | 13 |
 | Automation candidates found | 13 |
 | Closed candidates with residual gaps | 5 |
@@ -78,7 +78,7 @@ Compose files, and registry references.
 | Gemini provider harness/loop | Partially Implemented |
 | Common provider-neutral rules/environment | Implemented |
 | Automation, pipeline, workflow | Partially Implemented |
-| Spec-driven SDLC | Implemented |
+| Spec-driven SDLC | Partially Implemented |
 | Docker Compose / infrastructure | Implemented |
 | CI/CD | Implemented |
 | QA, formatting, linting, syntax | Partially Implemented |
@@ -88,22 +88,22 @@ Compose files, and registry references.
 
 | Report | File State | Status Cells |
 | --- | --- | ---: |
-| implementation-overview.md | present | 12 |
+| implementation-overview.md | present | 14 |
 | harness-engineering-implementation.md | present | 15 |
 | loop-engineering-implementation.md | present | 11 |
 | provider-harness-loop-implementation.md | present | 37 |
 | workspace-rules-environment-implementation.md | present | 11 |
 | automation-candidates.md | present | 11 |
-| sdlc-quality-formatting-implementation.md | present | 16 |
+| sdlc-quality-formatting-implementation.md | present | 18 |
 | security-framework-maturity.md | present | 16 |
 
 ## Normalized Status Counts
 
 | Normalized Status | Count |
 | --- | ---: |
-| Implemented | 80 |
-| Partially Implemented | 41 |
-| Gap / Not Implemented | 8 |
+| Implemented | 77 |
+| Partially Implemented | 47 |
+| Gap / Not Implemented | 9 |
 | Unknown / Needs Revalidation | 0 |
 | Other | 0 |
 
@@ -114,13 +114,14 @@ Compose files, and registry references.
 | Fixture CI Gate Implemented / Scoring Advisory | 2 |
 | Fixture Pack Implemented / Runner Partial | 2 |
 | Gap | 2 |
-| Implemented | 80 |
+| Implemented | 77 |
 | Implemented / Tooling Partial | 1 |
 | Mapped / Readiness Snapshot Implemented / Partially Implemented | 1 |
+| Not Implemented | 1 |
 | Not Implemented / Behavioral | 3 |
 | Not Implemented / Needs Revalidation | 2 |
 | Not Implemented / Out of Scope | 1 |
-| Partially Implemented | 35 |
+| Partially Implemented | 41 |
 
 ## Automation Candidate Closure Matrix
 

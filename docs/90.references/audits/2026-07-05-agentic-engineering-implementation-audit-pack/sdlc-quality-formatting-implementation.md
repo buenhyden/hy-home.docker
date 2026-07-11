@@ -8,9 +8,10 @@ status: active
 
 ## Overview
 
-This reference audits implementation status for spec-driven development, SDLC,
+This reference retains the cross-category summary for spec-driven development,
 CI/CD, QA, formatting, linting, syntax checks, Docker Compose validation,
-infrastructure validation, and security quality gates.
+infrastructure validation, and security quality gates. Detailed current SDLC
+and metadata criteria now live in the two focused Task 4 audit reports.
 
 ## Purpose
 
@@ -27,7 +28,9 @@ or Stage 05 operations docs.
 
 ### In Scope
 
-- Spec-driven development and stage-gated SDLC.
+- Spec-driven development and stage-gated SDLC summary; detailed role,
+  numbering, parent, transition, frontmatter, template, and README findings are
+  delegated to the focused Task 4 reports.
 - CI/CD and local QA gates.
 - Formatting, linting, syntax, and contract validation.
 - Docker Compose and infrastructure validation.
@@ -51,18 +54,20 @@ or Stage 05 operations docs.
 
 ## Assessment Method
 
-The audit read Stage 03/04 READMEs, the audit pack spec and plan, scripts,
-CI workflow, documentation protocol, repo contracts, infra README, Compose
-validation/hardening surfaces, and quality-related research.
+The Task 4 SDLC portion was revalidated on 2026-07-11 at baseline
+`e4c92fa1e0e4e59af20efa9f1fcb104e3a8698eb` against tracked stage documents,
+templates, validators, `CHANGELOG.md`, the release runbook, and source-backed
+Task 1 criteria. Quality, CI/CD, Compose, infrastructure, and security rows
+remain cross-category summaries pending their dedicated canonical audit tasks.
 
 ## Implementation Status Matrix
 
 | Area | Status | Evidence | Notes |
 | --- | --- | --- | --- |
-| Spec-driven development | Implemented | [Stage 03 README](../../../03.specs/README.md), [audit pack spec](../../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md) | Active specs define contracts, verification, and handoff paths. |
+| Spec-driven development | Partially Implemented | [SDLC and document-contract audit](./sdlc-document-contracts-implementation.md), [Stage 03 README](../../../03.specs/README.md) | Stage roles, numbering, templates, tasks, and broad traceability are implemented; typed direct parents, transition history, and release execution records are not. |
 | Execution planning | Implemented | [Stage 04 plans README](../../../04.execution/plans/README.md), [audit pack plan](../../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Plans define WBS, verification, risk, and completion criteria. |
 | Task evidence | Implemented | [Stage 04 tasks README](../../../04.execution/tasks/README.md), [audit pack task](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Task files record evidence, status, deviation, and validation results. |
-| Documentation contracts | Implemented | [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, frontmatter, language boundaries, links, and reference contracts are validator-backed. |
+| Documentation contracts | Partially Implemented | [frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, leaf-status syntax, language boundaries, links, and Reference contracts are validator-backed; artifact identity, typed parents, lifecycle history, freshness, and README consumer semantics are not. |
 | CI/CD quality gates | Implemented | `.github/workflows/ci-quality.yml` | CI runs docs, repo, Compose, hardening, template/security, pre-commit, frontend, coverage, and workflow-security checks. |
 | Local QA orchestration | Implemented | `scripts/validation/run-local-qa-gates.sh`, [scripts README](../../../../scripts/README.md) | Local gate runner lists local, CI/local-tooling, and remote-only responsibilities. |
 | Formatting | Partially Implemented | `scripts/hooks/post-tool-validate.sh`, pre-commit workflow, provider notes | Text-file trim/newline and selected shell/frontend formatting/linting exist; global formatting across all languages is not complete. |
@@ -74,8 +79,10 @@ validation/hardening surfaces, and quality-related research.
 
 ## Findings
 
-- SDLC implementation is strong: specs, plans, tasks, operations, references,
-  templates, and validators form a coherent lifecycle.
+- SDLC structure is strong: specs, plans, tasks, operations, references,
+  templates, and validators form a coherent lifecycle. Semantic identity,
+  parent, transition, freshness, README-profile, and actual Release-record
+  checks remain partial or missing.
 - CI/CD implementation is strong for quality gates but is primarily validation
   and audit oriented, not deployment/CD release automation.
 - QA coverage is strong for documentation, Compose, infrastructure hardening,
@@ -90,6 +97,8 @@ validation/hardening surfaces, and quality-related research.
 | Gap | Status | Follow-up Direction |
 | --- | --- | --- |
 | Universal formatting/linting coverage | Partially Implemented | Add a scoped formatting/linting inventory before introducing new gates. |
+| Typed document identity, parents, lifecycle, and README profiles | Partially Implemented | Use the [frontmatter/template/README audit](./frontmatter-template-readme-implementation.md) as the advisory inventory contract for Tasks 7 and 8. |
+| Actual Release record | Not Implemented | Keep changelog communication and the release runbook distinct; add a typed Release evidence profile only through approved Stage 99/04 work. |
 | Agent-output eval as QA | Fixture Pack Implemented / Runner Partial | Use [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) for recurring docs, provider, and infra tasks; executable QA gating remains future work. |
 | CI/CD release/deploy automation | Not Implemented / Out of Scope | Keep deployment automation separate from validation CI unless explicitly approved. |
 | Security maturity framework mapping | Implemented / Tooling Partial | SSDF/SLSA/OpenSSF Scorecard mapping exists in [security framework maturity coverage](./security-framework-maturity.md); SBOM, provenance, attestation, and vulnerability gates remain future work. |
@@ -137,6 +146,8 @@ runtime cost before adding new gates.
 
 - [Audit pack README](./README.md)
 - [Implementation overview](./implementation-overview.md)
+- [SDLC and document-contract implementation audit](./sdlc-document-contracts-implementation.md)
+- [Frontmatter, template, and README implementation audit](./frontmatter-template-readme-implementation.md)
 - [Automation candidates](./automation-candidates.md)
 - [Security framework maturity coverage](./security-framework-maturity.md)
 - [Workspace rules/environment audit](./workspace-rules-environment-implementation.md)

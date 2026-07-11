@@ -34,7 +34,8 @@ runtime Compose files.
 - Provider harness and loop parity.
 - Common workspace rules and environment.
 - Automation, pipeline, workflow, spec-driven SDLC, Docker Compose,
-  infrastructure, CI/CD, QA, formatting, linting, and security status.
+  infrastructure, document contracts/metadata, release records, CI/CD, QA,
+  formatting, linting, and security status.
 
 ### Out of Scope
 
@@ -57,10 +58,13 @@ runtime Compose files.
 
 ## Assessment Method
 
-The audit used the research pack as the criteria source, read repo-local
-canonical surfaces, and rechecked fast-moving provider sources on 2026-07-05.
-The assessment favors conservative status labels when provider-native behavior
-or enforcement depth differs from repository policy.
+The audit uses the canonical research pack as its criteria source and tracked
+repository files as implementation evidence. Task 4 revalidated SDLC and
+document-contract rows on 2026-07-11 at baseline
+`e4c92fa1e0e4e59af20efa9f1fcb104e3a8698eb`. Fast-moving provider and other
+category dates remain in their responsibility reports. The assessment favors
+conservative status labels when syntax, semantic correctness, provider-native
+behavior, or enforcement depth differ.
 
 ## Implementation Status Matrix
 
@@ -73,7 +77,9 @@ or enforcement depth differs from repository policy.
 | Gemini provider harness/loop | Partially Implemented | [Gemini provider notes](../../../00.agent-governance/providers/gemini.md), `.agents/`, official Gemini CLI docs | Repo-local pointer adapters and behavioral contracts exist; official Gemini CLI evidence supports ReAct/MCP/context, not Claude/Codex-style native subagents or hooks. |
 | Common provider-neutral rules/environment | Implemented | [Stage 00 governance hub](../../../00.agent-governance/README.md), [provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md), [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) | Shared policy, templates, scopes, model tiers, memory, and provider-adapter routing exist. |
 | Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json`, [provider hook parity matrix](../../data/governance/provider-hook-parity-matrix.md), [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) | Local scripts, CI gates, provider hook matrix, generated indexes, sync checks, a local advisory agent-output eval runner, and a CI fixture freshness gate exist; required semantic eval scoring and Gemini native hooks remain partial. |
-| Spec-driven SDLC | Implemented | [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [Stage 04 tasks README](../../../04.execution/tasks/README.md) | Stage-gated spec, plan, task, operations, and reference taxonomy is active and validator-backed. |
+| Spec-driven SDLC | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [Stage 04 tasks README](../../../04.execution/tasks/README.md) | Stage taxonomy, document roles, type-specific numbering, templates, and broad traceability are active and validator-backed; typed direct parents, semantic entry/exit transitions, and lifecycle history are not. |
+| Frontmatter, templates, and README profiles | Partially Implemented | [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [frontmatter contract](../../../99.templates/support/frontmatter-contract.md), `scripts/validation/check-repo-contracts.sh` | All 598 non-README Stage 01/02/03/04/05/90/98 leaves have valid top status, mapped template checks exist, and six generated outputs declare ownership. Stable artifact IDs, typed relations, freshness, transition validation, and explicit README consumer profiles are not implemented. |
+| Release communication and records | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [release runbook](../../../05.operations/runbooks/00-workspace/release-management.md), `CHANGELOG.md`, `.github/workflows/generate-changelog.yml` | Manual readiness and tag-string changelog verification exist. `CHANGELOG.md` has no released entry, and no typed Release execution record or CD deployment evidence exists. |
 | Docker Compose / infrastructure | Implemented | [infra README](../../../../infra/README.md), `docker-compose.yml`, `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json`, [tech-stack version provenance](../../data/docker/tech-stack-version-provenance.md) | Modular Compose topology, profiles, root-active inventory, service READMEs, version registry, generated provenance, validation, and hardening checks exist. |
 | CI/CD | Implemented | `.github/workflows/ci-quality.yml`, [GitHub governance](../../../00.agent-governance/rules/github-governance.md) | CI quality gates cover docs, repo contracts, Compose, hardening, template/security, pre-commit, frontend quality, coverage, and workflow security. |
 | QA, formatting, linting, syntax | Partially Implemented | `.github/workflows/ci-quality.yml`, [scripts README](../../../../scripts/README.md), [Codex provider notes](../../../00.agent-governance/providers/codex.md) | Strong docs, shell, Compose, frontend, pre-commit, and contract checks exist; universal language-specific formatting/linting coverage is not complete across every surface. |
@@ -84,6 +90,9 @@ or enforcement depth differs from repository policy.
 - The workspace has a mature documentation and validation harness. Stage 00,
   Stage 03, Stage 04, Stage 90, Stage 99, CI, scripts, provider surfaces, and
   operations documents are connected by explicit contracts.
+- Current naming, template, link, and leaf-status syntax is stronger than
+  semantic metadata enforcement: parent resolution, transition history,
+  freshness, README consumer intent, and actual Release records remain gaps.
 - The strongest implementation areas are governance, template contracts,
   documentation traceability, Compose validation, local/remote quality gates,
   and Claude/Codex runtime adapters.
@@ -98,6 +107,8 @@ or enforcement depth differs from repository policy.
 | Semantic parity checks across provider adapter content are limited. | Provider surfaces can match catalog shape while drifting in detailed behavior. | Stage 00 governance / validation follow-up |
 | Gemini native hook and subagent parity is not proven by official sources. | Gemini must remain behavioral/pointer parity, not first-class parity. | Provider research follow-up |
 | Agent-result eval harness now has fixtures, a local advisory runner, and a CI fixture freshness gate, but no required semantic scoring gate. | Loop engineering maturity still depends on manual review and task evidence for many agent outputs. | [Agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) |
+| Document identity, parent, transition, and freshness semantics are not machine-enforced. | Valid paths/status words can still hide stale state, invalid transition history, or incomplete parent coverage. | [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md) |
+| Release communication/procedure exists without an actual Release-record profile. | Changelog/tag readiness can be mistaken for release or deployment execution evidence. | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md) |
 | Security framework adoption is reference-backed and readiness-mapped, but not fully automated. | SSDF/SLSA maturity cannot be claimed as fully implemented because SBOM, provenance, attestation, Scorecard, and broad ecosystem/container vulnerability automation are still incomplete. | [Security framework maturity coverage](./security-framework-maturity.md); [security automation readiness](../../data/security/security-automation-readiness.md) |
 
 ## Automation Impact
@@ -150,6 +161,8 @@ tracked workflow/script surfaces.
 - [Audit pack README](./README.md)
 - [Harness implementation audit](./harness-engineering-implementation.md)
 - [Loop implementation audit](./loop-engineering-implementation.md)
+- [SDLC and document-contract implementation audit](./sdlc-document-contracts-implementation.md)
+- [Frontmatter, template, and README implementation audit](./frontmatter-template-readme-implementation.md)
 - [Security framework maturity coverage](./security-framework-maturity.md)
 - [Research pack](../../research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Audit pack spec](../../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md)
