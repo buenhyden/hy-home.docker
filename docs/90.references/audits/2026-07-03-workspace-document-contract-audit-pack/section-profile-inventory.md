@@ -12,6 +12,12 @@ This inventory records heading distribution by repository surface. It preserves
 the command evidence needed to compare observed section profiles with the
 document contract, while leaving all target documents unchanged.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-03
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 This reference preserves the Task 2 section-profile measurements for the

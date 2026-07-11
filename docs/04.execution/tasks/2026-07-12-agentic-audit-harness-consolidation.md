@@ -87,6 +87,31 @@ close generated evidence.
 | T-AHC-005 | Pending | Pending | Pending | Pending | Pending |
 | T-AHC-006 | Pending | Pending | Pending | Pending | Pending |
 
+### T-AHC-001 Audit Lifecycle Organization Evidence
+
+- **Implementation commit / base**: This Task 1 logical commit is based on
+  `2579560b` (`docs(plan): correct historical evidence checks`).
+- **Changed scope**: Replaced the root audit lifecycle routes, added one dated
+  evidence boundary to each of the eighteen 2026-07-03/04 Markdown reports,
+  and renamed the 2026-07-03 pack's `Planned References` heading to
+  `Included Reports`.
+- **Historical preservation**: The corrected
+  `rg --files-without-match '^## Evidence Snapshot Boundary$' ...` check and
+  sorted before/after historical-literal `diff -u` produced no output. The
+  before and after captures each contain seven preserved payloads.
+- **Validation**: `bash scripts/validation/check-repo-contracts.sh` passed with
+  `failures=0`; `git diff --check` passed.
+- **Approved command corrections**: The original `rg -L` used ripgrep's
+  follow-symlink option rather than a files-without-match check, and the
+  original `rg -n` comparison included shifted line numbers and nondeterministic
+  file order. Human-approved corrections are recorded in plan-fix commit
+  `2579560b`; both corrected checks pass.
+- **Protected surfaces**: No runtime, remote, secret, provider, model, CI,
+  validator, generated artifact, or infrastructure surface changed.
+- **Review boundary**: Implementation is pending independent Spec-compliance
+  and quality review. T-AHC-001 remains `Todo`, its Phase 1 checkbox remains
+  unchecked, and the Review Ledger remains `Pending` until approval.
+
 ## Verification Summary
 
 - **Baseline**: `codex/audit-harness-consolidation` from

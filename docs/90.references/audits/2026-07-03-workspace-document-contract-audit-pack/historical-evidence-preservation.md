@@ -13,6 +13,12 @@ through `WDC-GAP-015`. It closes the historical-evidence batch without
 rewriting completed specifications, plans, tasks, archive tombstones, legacy
 archive material, or historical progress rows.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-03
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 The document-contract remediation plan needed a decision for gaps that point at

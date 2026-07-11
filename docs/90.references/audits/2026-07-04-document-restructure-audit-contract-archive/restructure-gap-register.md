@@ -12,6 +12,12 @@ This register consolidates the document restructure audit findings into stable
 `DRA-GAP-*` rows. It records implementation closure and preserves future
 triggers without applying new target document changes.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-04
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 Future document restructure batches need a single reference for contract gaps,

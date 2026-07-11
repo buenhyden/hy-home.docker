@@ -12,6 +12,12 @@ This report compares the approved document restructure design with current
 Stage 99 template and support surfaces. It records contract gaps that should be
 handled before destructive archive, remove, or relink batches.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-04
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 The restructure design requires audit-first and template-contract-first

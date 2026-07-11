@@ -12,6 +12,12 @@ This report classifies stale template-path guidance and broad Stage 99 template
 references found during Task 3. It records application gaps without editing the
 matched files.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-03
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 This reference preserves the Task 3 template-application evidence needed for

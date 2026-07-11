@@ -13,6 +13,12 @@ the Task 2 through Task 4 reports. It assigns stable `WDC-GAP-*` identifiers,
 groups each row by disposition, and proposes later implementation batches
 without applying target corpus fixes.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-03
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 This reference gives future remediation plans one source for document-contract

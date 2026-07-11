@@ -15,6 +15,12 @@ contracts. It supports active execution evidence in
 `docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md`
 without replacing that task evidence.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-03
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Category Role
 
 `docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack` holds document-contract audit
@@ -65,7 +71,7 @@ This README is for:
 └── gap-register.md
 ```
 
-## Planned References
+## Included Reports
 
 - `frontmatter-inventory.md`
 - `frontmatter-routing-profile.md`

@@ -14,6 +14,12 @@ products, active canonical specs, prior draft design/audit specs, and follow-up
 candidate groups. Later lifecycle overlays update final dispositions when
 follow-up specs become completed evidence.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-04
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 The approved restructure design says historical specs default to archive when

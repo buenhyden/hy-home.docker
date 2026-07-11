@@ -12,6 +12,12 @@ This reference classifies the tracked Markdown files that lack top YAML
 frontmatter into surface-specific routing decisions. It closes the profile
 decision needed by `WDC-GAP-006` without rewriting the Markdown corpus.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-03
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 The original frontmatter inventory found 185 tracked Markdown files without top

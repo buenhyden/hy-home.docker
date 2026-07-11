@@ -12,6 +12,12 @@ This inventory records tracked README surfaces and counts the expected README
 profile headings named by the task prompt. It supports later contract
 comparison without changing README content.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-03
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 This reference preserves the Task 2 README-profile measurements for the

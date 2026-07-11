@@ -12,6 +12,12 @@ This report inventories the current operations buckets under guides, policies,
 and runbooks. It records candidate evidence for an operations restructure batch
 and the `PLN-DRA-005` implementation result after the approved move.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-04
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 The approved design requires historical operations bucket restructuring while

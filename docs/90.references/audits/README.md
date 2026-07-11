@@ -54,15 +54,19 @@ audits/
 └── README.md # This file
 ```
 
-## Current References
+## Canonical Current Audit
 
-- [Workspace document contract audit references](./2026-07-03-workspace-document-contract-audit-pack/README.md)
-- [Document restructure audit references](./2026-07-04-document-restructure-audit-contract-archive/README.md)
 - [Agentic engineering implementation audit references](./2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- Role: the sole current implementation-status audit.
 
-## Superseded References
+## Dated Historical Snapshots
 
-- [2026-07-07 implementation audit update mapping](./2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md) - mapping-only history; current status and counts live in the 2026-07-05 canonical pack.
+- [Workspace document contract audit references](./2026-07-03-workspace-document-contract-audit-pack/README.md) — evidence as of 2026-07-03; not current corpus truth.
+- [Document restructure audit references](./2026-07-04-document-restructure-audit-contract-archive/README.md) — evidence as of 2026-07-04; not current corpus truth.
+
+## Supersession Ledgers
+
+- [2026-07-07 implementation audit update mapping](./2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md) — mapping-only history; never a current status, count, or recommendation source.
 
 ## Naming Rules
 

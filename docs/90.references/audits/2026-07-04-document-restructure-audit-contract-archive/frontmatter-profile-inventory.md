@@ -13,6 +13,12 @@ restructure work began. It records baseline counts, keys, status values, and
 frontmatter gaps without editing any target document, then carries lifecycle
 overlays when later cleanup changes the status distribution.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-04
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 The restructure design requires frontmatter standardization by document type,

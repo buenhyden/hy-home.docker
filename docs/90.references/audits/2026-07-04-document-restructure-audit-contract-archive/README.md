@@ -23,6 +23,12 @@ It does not mutate `docs/03.specs/**`, `docs/05.operations/**`, Stage 99
 contracts, validators, workflows, provider runtime configuration, runtime
 infrastructure, or secret material.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-04
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Category Role
 
 `docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive` holds audit reports as stable

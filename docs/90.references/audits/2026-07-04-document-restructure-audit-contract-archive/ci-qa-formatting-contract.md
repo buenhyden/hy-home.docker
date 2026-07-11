@@ -13,6 +13,12 @@ the document restructure implementation batches. It records which checks are
 hard gates today and closes the `PLN-DRA-006` decision without mutating
 workflow or validator surfaces.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-04
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 The approved design requires the audit pack to separate current hard gates,

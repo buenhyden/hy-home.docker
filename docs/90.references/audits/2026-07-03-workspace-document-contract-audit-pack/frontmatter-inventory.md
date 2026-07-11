@@ -13,6 +13,12 @@ workspace document contract audit pack. It uses repository-local commands only
 and records evidence for later gap registration without editing the target
 document corpus.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-03
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 This reference preserves the Task 2 frontmatter measurements for the workspace

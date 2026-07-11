@@ -13,6 +13,12 @@ This reference records the T-005 decision for `WDC-GAP-010`,
 GitHub workflows, validation scripts, pre-commit hooks, Graphify output, or
 Markdown content.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-03
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 The document-contract remediation plan requires a decision before adding

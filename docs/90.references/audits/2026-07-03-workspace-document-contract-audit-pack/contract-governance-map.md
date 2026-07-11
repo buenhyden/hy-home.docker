@@ -13,6 +13,12 @@ shims, Stage 00 governance, Stage 99 template support, provider adapters,
 GitHub workflow surfaces, and repository validators. It records ownership and
 duplication risks without moving rules or editing the target corpus.
 
+## Evidence Snapshot Boundary
+
+- **Evidence as of**: 2026-07-03
+- **Current implementation route**: [canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- **Citation rule**: Preserve the counts, findings, commands, and dispositions below as dated evidence. Do not cite them as the current workspace state without current tracked-source revalidation.
+
 ## Purpose
 
 This reference preserves Task 3 governance comparison evidence for the
