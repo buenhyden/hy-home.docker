@@ -64,6 +64,10 @@ and `docs/99`.
 | Requesting / receiving code review | Request review only after self-review and local checks pass; resolve or reply to each finding, re-run affected checks, and record incorporated changes before re-requesting. Follow the `rules/git-workflow.md` Pull Request Protocol. |
 | Finishing a branch                 | Follow `rules/github-governance.md` and `rules/git-workflow.md`: verify, inspect diff/status, stage scoped files only, and commit/PR by approval. When approved, run all-files pre-commit only through `scripts/validation/run-agent-precommit-all-files.sh` in a clean linked worktree and record its evidence manually. |
 
+Controlled-wrapper evidence is limited to Git-visible, non-ignored repository
+paths. It does not claim ignored/outside-write detection or process/filesystem
+sandboxing.
+
 HADS is mandatory only for the approved `docs/90.references/data/hads/` reference
 profile. It may guide AI-readable documentation elsewhere, but existing
 templates are not converted and HADS block tags are not required outside that

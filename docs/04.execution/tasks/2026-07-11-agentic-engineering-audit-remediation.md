@@ -614,17 +614,26 @@ task invoke the repository's real hooks.
 | Evidence family | Result | Interpretation |
 | --- | --- | --- |
 | Test-first RED | The shell suite exited `1` because `scripts/validation/run-agent-precommit-all-files.sh` did not exist. | Establishes that the focused suite exercised the missing controlled-wrapper capability. |
-| Focused GREEN | 17/17 fake-hook shell cases pass. | Covers missing/non-task/untracked task paths, primary rejection, linked acceptance, missing tool, absolute/traversing/empty prefixes, dirty start, exact command, hook exit propagation, expected edits, unexpected modified/untracked/renamed/deleted paths, prefix boundaries, NUL-safe control-character paths, cleanup, and redacted summaries. |
-| Isolation and snapshot | The wrapper compares absolute Git directory and common directory, requires a clean start, and parses `git status --porcelain=v1 -z --untracked-files=all` into sorted NUL-delimited before/after/new path sets. | Pre-existing dirty paths cannot mask hook mutations; rename source and destination paths are both reviewed. |
-| Exit contract | Input/worktree/task/dirty failures use `2`/`3`/`4`/`5`, missing `pre-commit` uses `127`, unexpected paths use distinct exit `20`, and all other results preserve the hook exit. | Unexpected paths take precedence while the summary retains the actual hook exit for review. |
+| Focused GREEN | 29/29 fake-hook shell cases pass after review remediation. | Adds canonical task/index/parent and allow-prefix symlink boundaries, nonexistent output tails, checked before/after Git failures, TERM cleanup, signal declarations, and ignored/outside observation-boundary fixtures to the original 17 cases. |
+| Isolation and snapshot | The wrapper compares absolute Git directory and common directory, requires a clean start, captures raw NUL status with a directly checked Git command, then parses sorted before/after/new path sets. | Pre-existing dirty paths cannot mask hook mutations; rename source/destination are reviewed; Git failure never becomes an empty-set success. |
+| Path trust | The task stays under the exact Stage 04 task prefix, has no symlink component, and has index mode `100644` or `100755`; existing allow-prefix components cannot be symlinks while nonexistent tails remain valid. | Task evidence and allow scopes cannot redirect through symlinks or non-regular Git entries. |
+| Exit contract | Input/worktree/task/dirty failures use `2`/`3`/`4`/`5`, snapshot failure uses `6`, missing `pre-commit` uses `127`, unexpected paths use distinct exit `20`, and all other results preserve the hook exit. | After-hook snapshot failure reports the hook exit and fails closed; HUP/INT/TERM clean and re-raise as `129`/`130`/`143`. |
 | Governance contract | Stage 00 QA/common/workflow/GitHub/environment/postflight/checklist rules and the Stage 99 task template prohibit direct agent execution and require the wrapper only at the approved final QA gate. | Task evidence remains human-reviewed and records command, prefixes, exit, paths, disposition, or skipped rationale; the wrapper never writes it. |
 
 The wrapper runs exactly `pre-commit run --all-files --show-diff-on-failure`,
 captures hook output only in a trapped temporary file, and emits a concise
-command/prefix/result/path summary. Every newly changed path must equal an
-allowed prefix or be its descendant. Unexpected changes remain visible; the
+command/prefix/result/path summary. Every newly Git-visible, non-ignored
+repository path must equal an allowed prefix or be its descendant. Ignored and
+outside-repository writes are not observed, and the wrapper is not a process or
+filesystem sandbox. Unexpected observed changes remain visible; the
 wrapper never resets, checks out, cleans, deletes repository paths, expands
 scope, or writes task evidence.
+
+The initial independent review returned FAIL/CHANGES_REQUESTED with Critical 0,
+Important 3, Minor 1. The remediation rejects symlink/non-blob task evidence,
+rejects symlinked existing prefix components, makes Git status failures
+fail-closed before and after the hook, installs conventional signal cleanup,
+and narrows every evidence claim to the tested Git observation boundary.
 
 | Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |
 | --- | --- | ---: | --- | --- | --- |
@@ -632,20 +641,23 @@ scope, or writes task evidence.
 
 - **Task 9 implementation validation**:
   - required RED — expected exit `1` for the absent wrapper
-  - focused fake-hook shell suite — PASS, 17/17
+  - focused fake-hook shell suite — PASS, 29/29
   - Bash syntax for wrapper, shell tests, and repository contracts — PASS
   - ShellCheck for wrapper and shell tests — PASS with no findings
   - full validation unittest discovery — PASS, 70/70
   - changed-document metadata gate from explicit base `dce3ea60` — PASS,
     zero violations
-  - LLM Wiki index/coverage freshness — PASS
+  - LLM Wiki index/coverage regeneration and freshness — PASS, 1,270 indexed /
+    1,269 safe paths
+  - security automation readiness and audit matrix regeneration/freshness —
+    PASS; tracked script inventory is now 29
   - document traceability and implementation alignment — PASS with
     `failures=0`
   - repository contracts — PASS with the executable script/test inventory,
     fake-hook suite, exact wrapper literals, governance/template fields, and
     ambiguous direct-agent wording checks; `failures=0`
-  - Graphify refresh — PASS, 1,081 files / 21,988 nodes / 22,443 edges /
-    1,488 communities; built from committed implementation base `dce3ea60`
+  - Graphify review-fix refresh — PASS, 1,082 files / 22,013 nodes / 22,547
+    edges / 1,489 communities; built from committed implementation base `afe9d88a`
     while extraction includes the Task 9 working tree, and advisory only for
     two corroborated cross-root inferred edges
   - real/full-repository pre-commit — not run; Task 12 retains ownership

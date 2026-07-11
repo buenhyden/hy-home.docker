@@ -38,7 +38,9 @@ title: 'Common Engineering Scope'
   directly. At an approved final QA gate, the controlled wrapper may run the
   configured all-files suite from an initially clean linked worktree with a
   tracked task and reviewed prefixes; its edits require explicit review and
-  manual task evidence.
+  manual task evidence. Evidence covers only Git-visible, non-ignored repository
+  paths and does not claim ignored/outside-write detection or
+  process/filesystem sandboxing.
 
 ## 5. Maintenance & Safety
 

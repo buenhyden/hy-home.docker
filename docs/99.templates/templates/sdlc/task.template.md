@@ -106,9 +106,13 @@ prohibited for agents; invoke
 linked worktree. The wrapper never writes this evidence automatically. Delete
 this section when the gate is not applicable.
 
+Evidence covers only Git-visible, non-ignored repository paths. Do not claim
+that the wrapper observes ignored/outside-repository writes or provides a
+process/filesystem sandbox.
+
 | Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |
 | --- | --- | ---: | --- | --- | --- |
-| [exact wrapper command] | [repo-relative prefixes] | [exit code] | [before/after/new/unexpected paths] | [accepted, separate commit, scope escalation, or blocked] | [reason, or N/A when executed] |
+| [exact wrapper command] | [repo-relative prefixes] | [exit code] | [Git-visible before/after/new/unexpected paths] | [accepted, separate commit, scope escalation, or blocked] | [reason, or N/A when executed] |
 
 ## Related Documents
 

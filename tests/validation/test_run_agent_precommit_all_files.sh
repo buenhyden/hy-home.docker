@@ -59,11 +59,16 @@ new_fixture() {
   git -C "$primary" init -q
   git -C "$primary" config user.name "Wrapper Test"
   git -C "$primary" config user.email "wrapper-test@example.invalid"
-  mkdir -p "$primary/docs/04.execution/tasks" "$primary/allowed" "$primary/outside"
+  mkdir -p "$primary/docs/04.execution/tasks/nested" "$primary/allowed" "$primary/outside"
   printf '%s\n' '# Task evidence' >"$primary/docs/04.execution/tasks/task.md"
+  printf '%s\n' '# Nested task evidence' >"$primary/docs/04.execution/tasks/nested/task.md"
+  ln -s task.md "$primary/docs/04.execution/tasks/task-index-link.md"
   printf '%s\n' 'allowed baseline' >"$primary/allowed/tracked.txt"
   printf '%s\n' 'outside baseline' >"$primary/outside/tracked.txt"
   printf '%s\n' '# Repository' >"$primary/README.md"
+  printf '%s\n' 'ignored-output/' >"$primary/.gitignore"
+  ln -s allowed "$primary/allowed-link"
+  ln -s allowed "$primary/prefix-parent"
   git -C "$primary" add .
   git -C "$primary" commit -qm "test fixture"
   git -C "$primary" worktree add -q --detach "$linked" HEAD
@@ -92,6 +97,9 @@ case "${FAKE_PRECOMMIT_ACTION:-pass}" in
   delete)
     rm "${FAKE_PRECOMMIT_PATH:?}"
     ;;
+  signal-term)
+    kill -TERM "$PPID"
+    ;;
   *)
     printf '%s\n' "unsupported fake action" >&2
     exit 98
@@ -101,6 +109,27 @@ esac
 exit "${FAKE_PRECOMMIT_EXIT:-0}"
 FAKE
   chmod +x "$fake_bin/pre-commit"
+
+  cat >"$fake_bin/git" <<'FAKEGIT'
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "${1:-}" == "status" && -n "${FAKE_GIT_STATUS_FAILURE:-}" ]]; then
+  count=0
+  if [[ -f "${FAKE_GIT_STATUS_COUNT_FILE:?}" ]]; then
+    count="$(<"$FAKE_GIT_STATUS_COUNT_FILE")"
+  fi
+  count=$((count + 1))
+  printf '%s\n' "$count" >"$FAKE_GIT_STATUS_COUNT_FILE"
+  if [[ "$FAKE_GIT_STATUS_FAILURE" == "before" && "$count" -eq 1 ]] \
+    || [[ "$FAKE_GIT_STATUS_FAILURE" == "after" && "$count" -eq 2 ]]; then
+    exit 73
+  fi
+fi
+
+exec "${REAL_GIT_BIN:?}" "$@"
+FAKEGIT
+  chmod +x "$fake_bin/git"
 
   FIXTURE="$fixture"
   PRIMARY="$primary"
@@ -128,6 +157,9 @@ invoke() {
       FAKE_PRECOMMIT_PATH="${FAKE_PRECOMMIT_PATH:-}" \
       FAKE_PRECOMMIT_PATH_FROM="${FAKE_PRECOMMIT_PATH_FROM:-}" \
       FAKE_PRECOMMIT_PATH_TO="${FAKE_PRECOMMIT_PATH_TO:-}" \
+      REAL_GIT_BIN="$(command -v git)" \
+      FAKE_GIT_STATUS_FAILURE="${FAKE_GIT_STATUS_FAILURE:-}" \
+      FAKE_GIT_STATUS_COUNT_FILE="$FIXTURE/git-status-count" \
       TMPDIR="$wrapper_tmpdir" \
       bash "$WRAPPER" "$@"
   ) >"$OUTPUT" 2>&1
@@ -164,6 +196,54 @@ test_untracked_task_path() {
   printf '%s\n' '# Untracked task' >"$LINKED/docs/04.execution/tasks/untracked.md"
   invoke "$LINKED" --task docs/04.execution/tasks/untracked.md --allow-prefix allowed
   if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "tracked task"; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_noncanonical_task_path() {
+  local name="noncanonical task alias is rejected"
+  new_fixture "noncanonical-task"
+  invoke "$LINKED" --task docs/04.execution/tasks//task.md --allow-prefix allowed
+  if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "canonical Git index path" && [[ ! -e "$ARGS_FILE" ]]; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_index_symlink_task_rejected() {
+  local name="Git-index symlink task is rejected"
+  new_fixture "index-symlink-task"
+  invoke "$LINKED" --task docs/04.execution/tasks/task-index-link.md --allow-prefix allowed
+  if assert_exit 4 "$INVOKE_STATUS" && [[ ! -e "$ARGS_FILE" ]]; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_worktree_symlink_task_rejected() {
+  local name="working-tree symlink task is rejected"
+  new_fixture "worktree-symlink-task"
+  rm "$LINKED/docs/04.execution/tasks/task.md"
+  ln -s nested/task.md "$LINKED/docs/04.execution/tasks/task.md"
+  invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "symlink" && [[ ! -e "$ARGS_FILE" ]]; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_symlink_parent_task_rejected() {
+  local name="task path with symlink parent is rejected"
+  new_fixture "symlink-parent-task"
+  mv "$LINKED/docs/04.execution/tasks/nested" "$FIXTURE/nested-target"
+  ln -s "$FIXTURE/nested-target" "$LINKED/docs/04.execution/tasks/nested"
+  invoke "$LINKED" --task docs/04.execution/tasks/nested/task.md --allow-prefix allowed
+  if assert_exit 4 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "symlink" && [[ ! -e "$ARGS_FILE" ]]; then
     pass_test "$name"
   else
     fail_test "$name" "status=$INVOKE_STATUS"
@@ -240,6 +320,40 @@ test_invalid_prefixes() {
   fi
 }
 
+test_symlink_allow_prefix_rejected() {
+  local name="symlink allow prefix is rejected"
+  new_fixture "symlink-prefix"
+  invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed-link
+  if assert_exit 2 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "symlink" && [[ ! -e "$ARGS_FILE" ]]; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_symlink_parent_allow_prefix_rejected() {
+  local name="allow prefix with symlink parent is rejected"
+  new_fixture "symlink-parent-prefix"
+  invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix prefix-parent/new-output
+  if assert_exit 2 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "symlink" && [[ ! -e "$ARGS_FILE" ]]; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_nonexistent_allow_prefix_tail() {
+  local name="nonexistent allow-prefix tail accepts new output"
+  new_fixture "nonexistent-prefix-tail"
+  FAKE_PRECOMMIT_ACTION=untracked FAKE_PRECOMMIT_PATH="$LINKED/new-output/nested/file.txt" \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix new-output/nested
+  if assert_exit 0 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "changed_count=1"; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
 test_dirty_start_rejected() {
   local name="pre-existing dirty paths cannot mask hook changes"
   new_fixture "dirty-start"
@@ -260,6 +374,58 @@ test_hook_exit_propagation() {
     pass_test "$name"
   else
     fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_before_snapshot_failure() {
+  local name="before snapshot Git failure aborts before hook"
+  new_fixture "before-snapshot-failure"
+  FAKE_GIT_STATUS_FAILURE=before \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  if assert_exit 6 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "before" \
+    && [[ ! -e "$ARGS_FILE" ]] \
+    && [[ -z "$(find "$FIXTURE/wrapper-tmp" -mindepth 1 -print -quit)" ]]; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_after_snapshot_failure() {
+  local name="after snapshot Git failure fails closed and reports hook exit"
+  new_fixture "after-snapshot-failure"
+  FAKE_GIT_STATUS_FAILURE=after FAKE_PRECOMMIT_EXIT=41 \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  if assert_exit 6 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "snapshot_result=failed-after-hook" \
+    && assert_contains "$OUTPUT" "hook_exit=41" && [[ -e "$ARGS_FILE" ]] \
+    && [[ -z "$(find "$FIXTURE/wrapper-tmp" -mindepth 1 -print -quit)" ]]; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_term_cleanup_and_exit() {
+  local name="TERM cleans temporary files and exits 143"
+  new_fixture "term-signal"
+  FAKE_PRECOMMIT_ACTION=signal-term \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  if assert_exit 143 "$INVOKE_STATUS" \
+    && [[ -z "$(find "$FIXTURE/wrapper-tmp" -mindepth 1 -print -quit)" ]]; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_signal_handlers_declared() {
+  local name="HUP INT and TERM handlers use conventional exits"
+  if grep -Fq "handle_signal HUP 129" "$WRAPPER" \
+    && grep -Fq "handle_signal INT 130" "$WRAPPER" \
+    && grep -Fq "handle_signal TERM 143" "$WRAPPER"; then
+    pass_test "$name"
+  else
+    fail_test "$name" "signal handler declarations are incomplete"
   fi
 }
 
@@ -345,6 +511,28 @@ break.txt"
   fi
 }
 
+test_observation_boundary() {
+  local name="ignored and outside-repository writes are outside observation"
+  new_fixture "observation-boundary-ignored"
+  FAKE_PRECOMMIT_ACTION=untracked FAKE_PRECOMMIT_PATH="$LINKED/ignored-output/file.txt" \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  local ignored_status="$INVOKE_STATUS"
+  local ignored_output="$OUTPUT"
+  if ! assert_exit 0 "$ignored_status" || ! assert_contains "$ignored_output" "changed_count=0"; then
+    fail_test "$name" "ignored write was not handled as outside Git-visible scope"
+    return
+  fi
+
+  new_fixture "observation-boundary-outside"
+  FAKE_PRECOMMIT_ACTION=untracked FAKE_PRECOMMIT_PATH="$FIXTURE/outside-repository-write.txt" \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  if assert_exit 0 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "changed_count=0"; then
+    pass_test "$name"
+  else
+    fail_test "$name" "outside-repository write was incorrectly claimed as observed"
+  fi
+}
+
 test_unexpected_overrides_hook_exit() {
   local name="unexpected-path status remains distinct from hook failure"
   new_fixture "unexpected-and-hook-failure"
@@ -360,12 +548,23 @@ test_unexpected_overrides_hook_exit() {
 test_missing_task_argument
 test_non_task_path
 test_untracked_task_path
+test_noncanonical_task_path
+test_index_symlink_task_rejected
+test_worktree_symlink_task_rejected
+test_symlink_parent_task_rejected
 test_primary_checkout_rejected
 test_linked_worktree_accepts_exact_command
 test_missing_precommit
 test_invalid_prefixes
+test_symlink_allow_prefix_rejected
+test_symlink_parent_allow_prefix_rejected
+test_nonexistent_allow_prefix_tail
 test_dirty_start_rejected
 test_hook_exit_propagation
+test_before_snapshot_failure
+test_after_snapshot_failure
+test_term_cleanup_and_exit
+test_signal_handlers_declared
 test_expected_edit
 run_unexpected_path_case "unexpected modified path is rejected" "unexpected-modified" 1 unexpected_modified
 run_unexpected_path_case "unexpected untracked path is rejected" "unexpected-untracked" 1 unexpected_untracked
@@ -373,6 +572,7 @@ run_unexpected_path_case "unexpected renamed paths are rejected" "unexpected-ren
 run_unexpected_path_case "unexpected deleted path is rejected" "unexpected-deleted" 1 unexpected_deleted
 test_prefix_boundary
 test_nul_safe_path
+test_observation_boundary
 test_unexpected_overrides_hook_exit
 
 echo

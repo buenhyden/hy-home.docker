@@ -224,12 +224,20 @@ final QA gate, from an initially clean linked worktree, with one tracked
 `docs/04.execution/tasks/` path and one or more narrow repository-relative
 `--allow-prefix` values. Direct all-files execution is prohibited. The wrapper
 captures hook output in ephemeral files, reports only the command, prefixes,
-hook exit, before/after/newly changed paths, and unexpected paths.
+hook exit, and before/after/newly changed Git-visible paths.
 The wrapper never writes task evidence. Exit `20` means a hook changed a newly
-observed path
-outside every prefix; otherwise the wrapper returns the hook's exit status.
+observed path outside every prefix; otherwise the wrapper returns the hook's
+exit status.
 Review and record hook-managed edits separately. Never use reset, checkout, or
 clean to conceal an unexpected result.
+
+The observation boundary is limited to Git-visible, non-ignored repository
+paths reported by `git status`. Ignored paths and writes outside the repository
+are not observed, and the wrapper is not a process or filesystem sandbox. Task
+evidence must use this same narrow claim. Task and existing allow-prefix path
+components must not be symlinks; a nonexistent allow-prefix tail remains valid
+for new output. Any before/after Git snapshot failure exits `6` rather than
+treating an empty path set as success.
 
 `scripts/validation/report-audit-pack-coverage.sh` reads the agentic engineering
 implementation audit pack through the shared contract and prints exact

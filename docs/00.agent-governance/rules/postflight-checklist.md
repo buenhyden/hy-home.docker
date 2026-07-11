@@ -38,8 +38,10 @@ Run after every agent task before declaring completion.
 - [ ] At an approved final QA all-files gate,
       `scripts/validation/run-agent-precommit-all-files.sh` ran from a clean
       linked worktree, or task evidence records why it was skipped
-- [ ] Wrapper evidence records command, allowed prefixes, hook exit, modified
-      paths, unexpected paths, and human review disposition
+- [ ] Wrapper evidence covers only Git-visible, non-ignored repository paths and
+      records command, allowed prefixes, hook exit, unexpected paths, and review
+- [ ] Evidence does not claim ignored/outside-repository observation or process/
+      filesystem sandboxing
 - [ ] No linter suppressions added without comment explaining why
 
 ## Completion Blockers (HALT if any fail)

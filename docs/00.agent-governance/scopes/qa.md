@@ -103,6 +103,9 @@ literals aligned with current compose declarations and
   gate. Preserve its hook exit unless it reports distinct unexpected-path exit
   `20`; review all hook-managed edits and record evidence manually. Never reset,
   checkout, clean, or expand prefixes to hide unexpected changes.
+- **Observation boundary**: Report only Git-visible, non-ignored repository
+  paths. Ignored paths and outside-repository writes are not observed; this
+  wrapper is not a process or filesystem sandbox.
 
 ## 5. Maintenance & Safety
 

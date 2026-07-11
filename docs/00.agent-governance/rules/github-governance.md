@@ -58,6 +58,8 @@ Repo-local stricter rules always override this document; never weaken them on th
   An approved final QA all-files run uses only
   `scripts/validation/run-agent-precommit-all-files.sh` in an initially clean
   linked worktree with Stage 04 evidence and minimal allowed prefixes.
+  Its evidence covers only Git-visible, non-ignored repository paths; it does
+  not observe ignored/outside writes or provide process/filesystem sandboxing.
 - **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
 - **Implementation**: If a tool requires a dedicated CI job (e.g., for SARIF uploads), it must be removed from the local `.pre-commit-config.yaml` or skipped in the CI `pre-commit` runner via the `SKIP` environment variable.
 

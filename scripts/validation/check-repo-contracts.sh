@@ -3826,7 +3826,7 @@ if [[ -x "$wrapper_script" && -x "$wrapper_tests" ]]; then
   if ! bash "$wrapper_tests" >"$wrapper_test_output" 2>&1; then
     fail "controlled agent pre-commit wrapper tests failed"
     cat "$wrapper_test_output" >&2
-  elif ! grep -q 'passed=17 failed=0' "$wrapper_test_output"; then
+  elif ! grep -q 'passed=29 failed=0' "$wrapper_test_output"; then
     fail "controlled agent pre-commit wrapper tests did not print the expected pass marker"
     cat "$wrapper_test_output" >&2
   fi
@@ -3845,7 +3845,13 @@ required_wrapper_fragments = [
     "git rev-parse --absolute-git-dir",
     "git rev-parse --path-format=absolute --git-common-dir",
     "git status --porcelain=v1 -z --untracked-files=all",
+    "path_has_symlink_component",
+    "TASK_INDEX_MODE",
+    "EXIT_SNAPSHOT=6",
     "EXIT_UNEXPECTED_PATHS=20",
+    "handle_signal HUP 129",
+    "handle_signal INT 130",
+    "handle_signal TERM 143",
 ]
 
 required_surface_fragments = {
@@ -3853,40 +3859,49 @@ required_surface_fragments = {
         "scripts/validation/run-agent-precommit-all-files.sh",
         "Direct all-files execution is prohibited",
         "never writes task evidence",
+        "Git-visible, non-ignored repository",
     ],
     pathlib.Path("docs/00.agent-governance/rules/environment-constraints.md"): [
         "Direct `pre-commit run` execution by agents is prohibited",
         "scripts/validation/run-agent-precommit-all-files.sh",
+        "Git-visible, non-ignored repository",
     ],
     pathlib.Path("docs/00.agent-governance/rules/postflight-checklist.md"): [
         "Direct `pre-commit run` was not used",
         "Controlled wrapper reports exit 20",
+        "Git-visible, non-ignored repository",
     ],
     pathlib.Path("docs/00.agent-governance/rules/task-checklists.md"): [
         "Never run `pre-commit run` directly",
         "scripts/validation/run-agent-precommit-all-files.sh",
+        "Git-visible, non-ignored repository",
     ],
     pathlib.Path("docs/00.agent-governance/rules/github-governance.md"): [
         "must not invoke `pre-commit run` directly",
         "scripts/validation/run-agent-precommit-all-files.sh",
+        "Git-visible, non-ignored repository",
     ],
     pathlib.Path("docs/00.agent-governance/rules/workflows.md"): [
         "run all-files pre-commit only through",
         "scripts/validation/run-agent-precommit-all-files.sh",
+        "Git-visible, non-ignored repository",
     ],
     pathlib.Path("docs/00.agent-governance/scopes/common.md"): [
         "direct `pre-commit run`",
         "scripts/validation/run-agent-precommit-all-files.sh",
+        "Git-visible, non-ignored repository",
     ],
     pathlib.Path("docs/00.agent-governance/scopes/qa.md"): [
         "must not invoke `pre-commit run` directly",
         "scripts/validation/run-agent-precommit-all-files.sh",
         "unexpected-path exit",
+        "Git-visible, non-ignored repository",
     ],
     pathlib.Path("docs/99.templates/templates/sdlc/task.template.md"): [
         "## Controlled Agent Pre-commit Evidence (If Applicable)",
         "| Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |",
         "The wrapper never writes this evidence automatically",
+        "Git-visible, non-ignored repository",
     ],
 }
 

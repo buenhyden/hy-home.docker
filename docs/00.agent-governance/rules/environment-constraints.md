@@ -33,6 +33,9 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
   linked worktree with a tracked Stage 04 task and reviewed allowed prefixes.
   Record its concise result and review hook-managed edits; never auto-reset,
   checkout, clean, or write task evidence from the wrapper.
+- Wrapper evidence covers only Git-visible, non-ignored repository paths.
+  Ignored or outside-repository writes are not observed, and the wrapper is not
+  a process or filesystem sandbox.
 - Run the completion checklist in `docs/00.agent-governance/rules/task-checklists.md` before declaring done.
 
 ## 3. Graphify
