@@ -444,6 +444,53 @@ class MetadataValidationTests(unittest.TestCase):
         )
         self.assertIn("template-placeholder-in-target", self.codes(record))
 
+    def test_instantiated_document_rejects_composed_angle_bracket_placeholders(self) -> None:
+        cases = (
+            {
+                "status": "draft",
+                "artifact_id": "spec:<artifact-id>",
+                "artifact_type": "spec",
+                "parent_ids": ["prd:real-parent"],
+            },
+            {
+                "status": "draft",
+                "artifact_id": "spec:real-child",
+                "artifact_type": "spec",
+                "parent_ids": ["prefix:<parent-artifact-id>"],
+            },
+            {
+                "status": "active",
+                "artifact_id": "policy:real",
+                "artifact_type": "policy",
+                "parent_ids": ["spec:real-parent"],
+                "reviewed_at": "reviewed-<reviewed-at>",
+                "review_cycle": "annual",
+            },
+        )
+        paths = (
+            "docs/03.specs/124-example/spec.md",
+            "docs/03.specs/124-example/spec.md",
+            "docs/05.operations/policies/00-workspace/example.md",
+        )
+        types = ("spec", "spec", "policy")
+        for values, path, artifact_type in zip(cases, paths, types, strict=True):
+            with self.subTest(values=values):
+                record = self.record(path, values, artifact_type)
+                self.assertIn("template-placeholder-in-target", self.codes(record))
+
+    def test_non_angle_date_marker_is_not_a_global_placeholder_token(self) -> None:
+        record = self.record(
+            "docs/01.requirements/124-example.md",
+            {
+                "status": "active",
+                "artifact_id": "prd:release-YYYY-MM-DD",
+                "artifact_type": "prd",
+                "parent_ids": [],
+            },
+            "prd",
+        )
+        self.assertNotIn("template-placeholder-in-target", self.codes(record))
+
 
 class TemplateMetadataTests(unittest.TestCase):
     @classmethod
@@ -794,6 +841,47 @@ class ChangedModeRolloutTests(unittest.TestCase):
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("legacy_exceptions=0", result.stdout)
             self.assertIn("missing-required-key", result.stdout)
+
+    def test_new_stale_active_deficit_cannot_use_legacy_exception(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            path = root / "docs/05.operations/policies/00-workspace/legacy.md"
+            write_doc(path, {"status": "draft"})
+            commit_all(root, "legacy draft policy")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(path, {"status": "active"})
+            commit_all(root, "activate legacy policy")
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("legacy_exceptions=0", result.stdout)
+            self.assertIn("stale-active", result.stdout)
+
+    def test_new_replacement_free_deficit_cannot_use_legacy_exception(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            path = root / "docs/03.specs/122-legacy/spec.md"
+            write_doc(path, {"status": "active"})
+            commit_all(root, "legacy active spec")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(path, {"status": "superseded"})
+            commit_all(root, "supersede without replacement")
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("legacy_exceptions=0", result.stdout)
+            self.assertIn("replacement-free-supersession", result.stdout)
+
+    def test_disappearing_legacy_deficit_remains_eligible(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            path = root / "docs/05.operations/policies/00-workspace/legacy.md"
+            write_doc(path, {"status": "active"})
+            commit_all(root, "legacy active policy")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(path, {"status": "completed"})
+            commit_all(root, "complete legacy policy")
+            result = run_checker(root, "check-changed", "--base-ref", base)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("legacy_exceptions=1", result.stdout)
 
     def test_committed_valid_parent_chain_passes_and_is_selected(self) -> None:
         directory, root = self.new_repo()

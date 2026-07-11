@@ -204,7 +204,12 @@ generate the canonical snapshot and add `--check` for freshness. The
 safe local refs, then reports a working-tree-only fallback without selecting
 the full corpus. A narrow base-existing legacy exception cannot apply to new
 documents or partial typed migrations. Reverse transitions require a separate
-scoped evidence manifest and the default hook supplies none. Run the focused suite with
+scoped evidence manifest and the default hook supplies none. The legacy
+exception validates a base record against the base manifest and admits only
+stable current deficit identities already present at the merge base. Template
+placeholder checks recursively detect registered angle-bracket tokens inside
+composed scalars and lists without treating date-like ID text as a global
+placeholder. Run the focused suite with
 `python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v`.
 Changed-path review includes tracked, staged, unstaged-new, renamed, and
 explicit existing Markdown paths while treating deletions as non-parseable

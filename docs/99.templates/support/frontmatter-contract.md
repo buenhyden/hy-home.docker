@@ -56,7 +56,10 @@ metadata rollout.
   retain only its pre-existing missing typed-key/freshness/replacement deficits
   when it had no migration keys before or after the edit. New documents,
   approved-chain paths, partial typed migrations, parser failures, forbidden
-  keys, and newly introduced typed errors cannot use the exception.
+  keys, transitions, and newly introduced typed errors cannot use the exception.
+  The checker parses a base record corpus, builds its manifest, and compares
+  stable finding code plus key/message identities; current eligible deficits
+  must be a subset of base deficits, while resolved deficits may disappear.
 - Reverse or otherwise unlisted lifecycle transitions require a separate
   override manifest with exact path, previous/new status, existing Stage 04
   task path, approval, and reason. The default hook provides no override.
@@ -83,7 +86,9 @@ safe canonical `scripts/` path, and archive provenance uses typed canonical
 The 13 typed leaf template sources declare their target `artifact_type` and
 use only the placeholder forms registered in the machine-readable profile.
 Template validation checks target-required keys without resolving placeholder
-IDs. Instantiated non-template documents reject those placeholder values.
+IDs. Instantiated non-template documents recursively reject every registered
+angle-bracket token even when composed inside a larger scalar or nested list;
+non-angle markers such as `YYYY-MM-DD` remain field-specific.
 Spec 123 is the sole approved cross-cutting root exception in this rollout; its
 empty `parent_ids` is explicit and does not authorize arbitrary root Specs.
 

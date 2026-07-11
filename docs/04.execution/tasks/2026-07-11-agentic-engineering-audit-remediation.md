@@ -536,7 +536,7 @@ those placeholder values.
 | Evidence family | Result | Interpretation |
 | --- | --- | --- |
 | RED | 54 focused tests ran with 11 failing methods / 23 failure records while all 42 Task 7 tests stayed green. | The missing committed-diff selection, legacy exception, base diagnostics, override input, placeholder enforcement, and template metadata were exercised before production edits. |
-| Focused GREEN | 58/58 metadata tests pass. | Covers explicit/environment/local/fallback bases, invalid new documents, exact legacy exception and partial-migration rejection, parent resolution, supersession, reverse transition, scoped override evidence, and mapped/unmapped template placeholder boundaries. |
+| Focused GREEN | 63/63 metadata tests pass. | Covers explicit/environment/local/fallback bases, invalid new documents, exact base-deficit legacy comparison, partial-migration rejection, parent resolution, supersession, reverse transition, scoped override evidence, and composed mapped/unmapped template placeholder boundaries. |
 | Typed active chain | 30 leaf artifacts / 30 unique stable IDs / 31 direct parent edges / one explicit Spec 123 root / zero typed-profile errors. | Spec, Plan, Task, 15 research leaves, audit overview, and 11 audit leaves resolve internally; three READMEs remain index exceptions. |
 | Inventory comparison | 876 records remains stable; records with findings 581 -> 551; total findings 2,135 -> 2,045; missing-required-key 1,998 -> 1,908. | The 30 approved leaves are clean while historical stale-active 125 and replacement-free-supersession 12 findings remain advisory. |
 | Changed/new enforcement | Explicit base `8c08cb82` selects 56 Markdown paths with zero violations and zero legacy exceptions. | The default hook supplies no transition override and never promotes the full inventory into a gate. |
@@ -551,7 +551,9 @@ The legacy exception applies only to a base-existing, non-allowlisted leaf with
 no migration keys before or after the change and only pre-existing
 missing/freshness/replacement deficits. New documents, approved-chain paths,
 partial migrations, parser failures, forbidden keys, and newly introduced typed
-errors remain blocking. Reverse transitions require an explicit override
+errors remain blocking. Base and current deficit identities use stable finding
+code plus key/message evidence, and every current deficit must already exist at
+the base; resolved deficits may disappear. Reverse transitions require an explicit override
 manifest with exact path, previous/new state, existing Stage 04 task,
 approval, and reason; no override is present in the pre-push hook.
 
@@ -561,7 +563,7 @@ evidence. There is no Task 9 wrapper, CI workflow/provider/model/runtime,
 Compose, secret, remote, or branch-protection mutation, and direct pre-commit
 execution remains prohibited.
 
-Current implementation validation passes: 65/65 full validation unit tests;
+Current implementation validation passes: 70/70 full validation unit tests;
 Python compile; Bash syntax; exact PyYAML hook/profile checks; metadata snapshot
 freshness; explicit-base changed/new enforcement; Wiki index/coverage freshness
 at 1,269/1,268 paths; audit matrix/coverage at 11 reports, 161 unique rows, and
@@ -570,9 +572,30 @@ implementation alignment with 625 stage documents, 4,908 links, and
 `failures=0`; repository contracts with 34/34 changed and 735/735 total
 normalized documents and `failures=0`; and diff hygiene. Graphify refresh and
 the implementation commit are recorded in the Task 8 report after completion.
-The Graphify refresh currently reports 1,078 files, 21,919 nodes, 22,218 edges,
-and 1,485 communities; it remains advisory and records committed base
+The Graphify review-fix refresh reports 1,078 files, 21,941 nodes, 22,290 edges,
+and 1,486 communities; it remains advisory and records committed base
 `8c08cb82` while extraction includes the Task 8 working tree.
+
+The first independent Task 8 review returned FAIL/CHANGES_REQUESTED with
+Critical 0, Important 2, Minor 0. The focused remediation closes both findings:
+
+1. Legacy exceptions now parse the base-ref corpus, build its manifest, validate
+   the base candidate, and compare exact eligible deficit identities. Editorial
+   edits with unchanged deficits pass; newly introduced `stale-active` and
+   `replacement-free-supersession` findings block; disappearing deficits remain
+   eligible.
+2. Instantiated metadata now recursively rejects registered angle-bracket
+   tokens anywhere inside composed scalar/list/mapping values. Canonical
+   template fields still require exact placeholder forms, while non-angle
+   markers such as `YYYY-MM-DD` stay field-specific and legitimate date-like IDs
+   are not rejected globally.
+
+Review-fix validation passes: focused metadata 63/63, full validation 70/70,
+the six-test adversarial subset, Python compile, Bash syntax, inventory
+freshness at 876 records / 2,045 findings, explicit-base selection at 56 paths /
+zero violations, the approved chain at 30 IDs / 31 edges / zero errors, Wiki and
+audit freshness, traceability/alignment with `failures=0`, repository contracts
+with `failures=0`, diff hygiene, and the Graphify refresh above.
 
 ### Task Review Ledger
 

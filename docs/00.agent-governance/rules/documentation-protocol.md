@@ -85,8 +85,11 @@ Protocol for maintaining documentation consistency and governance traceability.
   documents plus migrated or typed changed documents at pre-push. A changed
   legacy leaf outside the approved migration set is exempt only when it existed
   at the selected base, had no migration keys before or after the edit, and has
-  no parser, forbidden-key, or newly introduced typed-profile error. New
-  documents can never use this exception.
+  no parser, forbidden-key, transition, or newly introduced typed-profile
+  error. The checker validates the base record against a base manifest and
+  requires every current legacy deficit's stable code/key-message identity to
+  have existed at that base; disappearing deficits are allowed. New documents
+  can never use this exception.
 
 ## 3. Document Type ↔ Template Mapping
 

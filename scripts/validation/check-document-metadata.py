@@ -231,13 +231,7 @@ class Manifest(dict[str, pathlib.Path]):
         self.records_by_id = records_by_id
 
 
-def parse_frontmatter(path: pathlib.Path) -> dict[str, object]:
-    """Return top-of-file YAML frontmatter, or an empty mapping when absent."""
-
-    try:
-        text = path.read_text(encoding="utf-8")
-    except (OSError, UnicodeError) as error:
-        raise FrontmatterError(f"cannot read UTF-8 Markdown: {error}") from error
+def _parse_frontmatter_text(text: str) -> dict[str, object]:
     lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
         return {}
@@ -256,6 +250,16 @@ def parse_frontmatter(path: pathlib.Path) -> dict[str, object]:
     if not isinstance(loaded, dict) or not all(isinstance(key, str) for key in loaded):
         raise FrontmatterError("frontmatter must be a string-keyed YAML mapping", code="malformed-yaml")
     return dict(loaded)
+
+
+def parse_frontmatter(path: pathlib.Path) -> dict[str, object]:
+    """Return top-of-file YAML frontmatter, or an empty mapping when absent."""
+
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        raise FrontmatterError(f"cannot read UTF-8 Markdown: {error}") from error
+    return _parse_frontmatter_text(text)
 
 
 def infer_artifact_type(path: pathlib.Path) -> str:
@@ -413,13 +417,21 @@ def _template_placeholder_values(profiles: dict[str, object]) -> dict[str, str]:
     return dict(values) if isinstance(values, dict) else {}
 
 
-def _contains_template_placeholder(value: object, placeholders: set[str]) -> bool:
+def _template_angle_tokens(profiles: dict[str, object]) -> set[str]:
+    return {
+        token
+        for value in _template_placeholder_values(profiles).values()
+        for token in re.findall(r"<[^<>]+>", value)
+    }
+
+
+def _contains_template_placeholder(value: object, angle_tokens: set[str]) -> bool:
     if isinstance(value, str):
-        return value in placeholders
+        return any(token in value for token in angle_tokens)
     if isinstance(value, list):
-        return any(_contains_template_placeholder(item, placeholders) for item in value)
+        return any(_contains_template_placeholder(item, angle_tokens) for item in value)
     if isinstance(value, dict):
-        return any(_contains_template_placeholder(item, placeholders) for item in value.values())
+        return any(_contains_template_placeholder(item, angle_tokens) for item in value.values())
     return False
 
 
@@ -510,7 +522,7 @@ def validate_record(
             )
         )
 
-    placeholder_values = set(_template_placeholder_values(profiles).values())
+    placeholder_values = _template_angle_tokens(profiles)
     if record.artifact_type != "template-source" and any(
         _contains_template_placeholder(value, placeholder_values) for value in record.metadata.values()
     ):
@@ -923,17 +935,10 @@ def _metadata_at_ref(root: pathlib.Path, path: pathlib.Path, base_ref: str | Non
     )
     if result.returncode != 0:
         return None
-    lines = result.stdout.splitlines()
-    if not lines or lines[0].strip() != "---":
-        return {}
-    closing = next((index for index in range(1, len(lines)) if lines[index].strip() == "---"), None)
-    if closing is None:
-        return {}
     try:
-        loaded = _safe_load_unique("\n".join(lines[1:closing]))
-    except yaml.YAMLError:
+        return _parse_frontmatter_text(result.stdout)
+    except FrontmatterError:
         return None
-    return dict(loaded) if isinstance(loaded, dict) and all(isinstance(key, str) for key in loaded) else None
 
 
 def _previous_status(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> str | None:
@@ -941,11 +946,80 @@ def _previous_status(root: pathlib.Path, path: pathlib.Path, base_ref: str | Non
     return loaded.get("status") if isinstance(loaded, dict) and isinstance(loaded.get("status"), str) else None
 
 
+def _record_from_text(
+    relative_path: pathlib.Path,
+    text: str,
+    previous_status: str | None = None,
+) -> Record:
+    lines = text.splitlines()
+    frontmatter_present = bool(lines and lines[0].strip() == "---")
+    try:
+        values = _parse_frontmatter_text(text)
+        parse_error = None
+        parse_error_code = None
+    except FrontmatterError as error:
+        values = {}
+        parse_error = str(error)
+        parse_error_code = error.code
+    artifact_type = "generated" if "generated_by" in values else infer_artifact_type(relative_path)
+    return Record(
+        relative_path,
+        values,
+        artifact_type,
+        previous_status=previous_status,
+        parse_error=parse_error,
+        parse_error_code=parse_error_code,
+        frontmatter_present=frontmatter_present,
+    )
+
+
+def collect_records_at_ref(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    base_ref: str,
+) -> list[Record]:
+    """Collect and parse the exact target Markdown corpus stored at a Git ref."""
+
+    common, _ = _profile_mapping(profiles)
+    excluded = set(common.get("inventory_excludes", []))
+    result = subprocess.run(
+        ["git", "-C", str(root), "ls-tree", "-r", "-z", "--name-only", base_ref, "--", "docs"],
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise ProfileError(f"cannot enumerate Markdown records at base ref: {base_ref}")
+    paths = sorted(
+        {
+            pathlib.Path(item.decode("utf-8"))
+            for item in result.stdout.split(b"\0")
+            if item
+            and item.decode("utf-8").endswith(".md")
+            and item.decode("utf-8").startswith(TARGET_MARKDOWN_PREFIXES)
+            and item.decode("utf-8") not in excluded
+        },
+        key=lambda path: path.as_posix(),
+    )
+    records: list[Record] = []
+    for relative_path in paths:
+        shown = subprocess.run(
+            ["git", "-C", str(root), "show", f"{base_ref}:{relative_path.as_posix()}"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if shown.returncode != 0:
+            raise ProfileError(f"cannot read base Markdown record: {relative_path.as_posix()}")
+        records.append(_record_from_text(relative_path, shown.stdout))
+    return records
+
+
 def collect_records(
     root: pathlib.Path,
     profiles: dict[str, object],
     base_ref: str | None = None,
     selected_paths: Sequence[str] = (),
+    previous_records: Mapping[str, Record] | None = None,
 ) -> list[Record]:
     """Collect tracked records plus selected existing new paths, excluding deletions."""
 
@@ -964,29 +1038,25 @@ def collect_records(
         if not absolute_path.is_file():
             continue
         try:
-            frontmatter_present = absolute_path.read_text(encoding="utf-8").splitlines()[0].strip() == "---"
-        except (OSError, UnicodeError, IndexError):
-            frontmatter_present = False
-        try:
-            values = parse_frontmatter(absolute_path)
-            parse_error = None
-            parse_error_code = None
-        except FrontmatterError as error:
-            values = {}
-            parse_error = str(error)
-            parse_error_code = error.code
-        artifact_type = "generated" if "generated_by" in values else infer_artifact_type(relative_path)
-        records.append(
-            Record(
-                relative_path,
-                values,
-                artifact_type,
-                previous_status=_previous_status(root, relative_path, base_ref),
-                parse_error=parse_error,
-                parse_error_code=parse_error_code,
-                frontmatter_present=frontmatter_present,
+            text = absolute_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            records.append(
+                Record(
+                    relative_path,
+                    {},
+                    infer_artifact_type(relative_path),
+                    parse_error=f"cannot read UTF-8 Markdown: {error}",
+                    parse_error_code="malformed-yaml",
+                )
             )
+            continue
+        previous_record = (previous_records or {}).get(relative_path.as_posix())
+        previous_status = (
+            previous_record.metadata.get("status")
+            if previous_record and isinstance(previous_record.metadata.get("status"), str)
+            else _previous_status(root, relative_path, base_ref)
         )
+        records.append(_record_from_text(relative_path, text, previous_status=previous_status))
     return records
 
 
@@ -1053,23 +1123,33 @@ def load_transition_overrides(
     return overrides
 
 
-def _legacy_exception_eligible(
-    root: pathlib.Path,
+def _legacy_deficit_identity(finding: Finding) -> tuple[str, str]:
+    return finding.code, finding.message
+
+
+def _legacy_exception_evidence(
     record: Record,
     findings: Sequence[Finding],
-    base_ref: str | None,
-) -> bool:
-    if not base_ref or record.path.as_posix() in APPROVED_MIGRATION_PATHS or record.parse_error:
-        return False
+    base_record: Record | None,
+    base_findings: Sequence[Finding],
+) -> tuple[int, int] | None:
+    if record.path.as_posix() in APPROVED_MIGRATION_PATHS or record.parse_error or base_record is None:
+        return None
     if record.artifact_type in {"readme", "generated", "template-source", "governance", "archive", "unsupported"}:
-        return False
-    previous = _metadata_at_ref(root, record.path, base_ref)
-    if previous is None:
-        return False
-    if MIGRATION_TYPED_KEYS & set(previous) or MIGRATION_TYPED_KEYS & set(record.metadata):
-        return False
-    error_codes = {finding.code for finding in findings if finding.severity == "error"}
-    return bool(error_codes) and error_codes <= LEGACY_EXCEPTION_CODES
+        return None
+    if base_record.parse_error or MIGRATION_TYPED_KEYS & set(base_record.metadata) or MIGRATION_TYPED_KEYS & set(record.metadata):
+        return None
+    current_errors = [finding for finding in findings if finding.severity == "error"]
+    base_errors = [finding for finding in base_findings if finding.severity == "error"]
+    if not current_errors:
+        return None
+    if any(finding.code not in LEGACY_EXCEPTION_CODES for finding in [*base_errors, *current_errors]):
+        return None
+    current_deficits = {_legacy_deficit_identity(finding) for finding in current_errors}
+    base_deficits = {_legacy_deficit_identity(finding) for finding in base_errors}
+    if not current_deficits <= base_deficits:
+        return None
+    return len(current_deficits), len(base_deficits)
 
 
 def _escape_cell(value: object) -> str:
@@ -1461,13 +1541,27 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("configuration-error: --transition-override-file requires --mode check-changed", file=sys.stderr)
         return 2
     changed_selection = _changed_paths(root, args.changed_path, base) if args.mode == "check-changed" else set()
+    base_records: list[Record] = []
+    if base.merge_base:
+        try:
+            base_records = collect_records_at_ref(root, profiles, base.merge_base)
+        except ProfileError as error:
+            print(f"configuration-error: {error}", file=sys.stderr)
+            return 2
+    base_records_by_path = {record.path.as_posix(): record for record in base_records}
     records = collect_records(
         root,
         profiles,
-        base_ref=base.merge_base,
         selected_paths=sorted(changed_selection),
+        previous_records=base_records_by_path,
     )
     manifest = build_manifest(records)
+    base_manifest = build_manifest(base_records)
+    base_findings_by_path = {
+        record.path.as_posix(): validate_record(record, profiles, base_manifest)
+        for record in base_records
+        if record.path.as_posix() in changed_selection
+    }
     findings_by_path = {
         record.path.as_posix(): validate_record(
             record,
@@ -1499,20 +1593,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         else {record.path.as_posix() for record in records if record.metadata.get("status") == "active"}
     )
     records_by_path = {record.path.as_posix(): record for record in records}
-    legacy_exceptions = {
-        path
+    legacy_exception_evidence = {
+        path: evidence
         for path in selected_paths
         if path in records_by_path
-        and _legacy_exception_eligible(
-            root,
-            records_by_path[path],
-            findings_by_path.get(path, []),
-            base.merge_base,
+        and (
+            evidence := _legacy_exception_evidence(
+                records_by_path[path],
+                findings_by_path.get(path, []),
+                base_records_by_path.get(path),
+                base_findings_by_path.get(path, []),
+            )
         )
+        is not None
     }
-    for path in sorted(legacy_exceptions):
+    legacy_exceptions = set(legacy_exception_evidence)
+    for path, (current_count, base_count) in sorted(legacy_exception_evidence.items()):
         print(
-            f"{path}: legacy metadata exception: base-existing unmigrated document outside approved Task 8 scope",
+            f"{path}: legacy metadata exception: base-existing unmigrated document outside approved Task 8 scope; "
+            f"current_deficits={current_count} base_deficits={base_count} new_deficits=0",
             file=sys.stderr,
         )
     selected_findings = sorted(
