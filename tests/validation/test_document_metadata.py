@@ -626,6 +626,18 @@ class ChangedPathGitTests(unittest.TestCase):
             path.unlink()
             result = run_checker(root, "check-changed")
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("selected=1 violations=0", result.stdout)
+
+    def test_staged_deleted_document_is_retained_as_nonviolating_evidence(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            path = root / "docs/03.specs/123-staged-deleted/spec.md"
+            write_doc(path, {"status": "active"})
+            commit_all(root)
+            self.assertEqual(0, git(root, "rm", path.relative_to(root).as_posix()).returncode)
+            result = run_checker(root, "check-changed")
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("selected=1 violations=0", result.stdout)
 
     def test_explicit_untracked_path_is_parsed(self) -> None:
         directory, root = self.new_repo()

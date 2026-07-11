@@ -494,6 +494,28 @@ confirmed finding while retaining advisory-only rollout:
     review-fix source set, so the graph remains advisory
   - direct `pre-commit` — not run; Task 9 retains controlled-wrapper ownership
 
+The second independent Task 7 review returned FAIL/CHANGES_REQUESTED with
+Critical 0, Important 1, Minor 0. The sole residual was that automatic diff
+selection omitted deleted paths even though explicit deletion selection was
+retained. The narrow remediation adds `D` to the metadata checker's only
+automatic diff filter. Both unstaged deletion and `git rm` staged deletion now
+report exactly `selected=1 violations=0`; the absent file is not parsed.
+`git diff HEAD` continues to cover staged and unstaged changes, while
+`--base-ref` remains lifecycle-history input rather than a second selection
+algorithm.
+
+- **Task 7 second-review validation**:
+  - deletion regression fixtures — PASS, unstaged and staged deletion each
+    report `selected=1 violations=0`
+  - focused metadata suite — PASS, 42/42
+  - full validation unittest discovery — PASS, 49/49
+  - Python compile, diff hygiene, inventory freshness, and repository contracts
+    — PASS; 876 records / 2,135 findings / zero parser failures / `failures=0`
+  - Graphify second-review refresh — PASS, 1,076 files / 21,857 nodes / 22,031
+    edges / 1,482 communities; built from review-fix base `80e78db3` and
+    advisory-only
+  - direct `pre-commit` — not run; Task 9 retains controlled-wrapper ownership
+
 ### Task Review Ledger
 
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |

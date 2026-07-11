@@ -1011,7 +1011,7 @@ def _changed_paths(root: pathlib.Path, explicit: Sequence[str]) -> set[str]:
         }
     changed: set[str] = set()
     for command in (
-        ["git", "-C", str(root), "diff", "--name-only", "--diff-filter=ACMRT", "HEAD", "--", "*.md"],
+        ["git", "-C", str(root), "diff", "--name-only", "--diff-filter=ACDMRT", "HEAD", "--", "*.md"],
         ["git", "-C", str(root), "ls-files", "--others", "--exclude-standard", "--", "*.md"],
     ):
         result = subprocess.run(command, capture_output=True, text=True, check=False)
