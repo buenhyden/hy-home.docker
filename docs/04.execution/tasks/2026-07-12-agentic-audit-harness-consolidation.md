@@ -53,7 +53,7 @@ close generated evidence.
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-AHC-001 | Clarify canonical, snapshot, and superseded lifecycle routes. | doc | Audit Lifecycle | Task 1 | Snapshot preservation, contracts, review | Documentation Specialist | Done |
-| T-AHC-002 | Reassess all 161 criteria and canonical overview. | doc/eval | Criterion Contract | Task 2 | State distribution, 11/161, review | Agentic Workflow Specialist | Todo |
+| T-AHC-002 | Reassess all 161 criteria and canonical overview. | doc/eval | Criterion Contract | Task 2 | State distribution, 11/161, review | Agentic Workflow Specialist | Done |
 | T-AHC-003 | Implement semantic closure contract and adversarial tests. | impl/test | Semantic Freshness | Task 3 | RED/GREEN, CLI PASS, review | QA Engineer | Todo |
 | T-AHC-004 | Split scoped and broad security readiness signals. | impl/test | Security Readiness | Task 4 | 13 controls, negative test, review | Security Auditor | Todo |
 | T-AHC-005 | Wire semantic freshness into generator, contracts, and CI. | impl/ci | QA and CI | Task 5 | Unit/matrix/workflow/contracts, review | CI/CD Engineer | Todo |
@@ -64,7 +64,7 @@ close generated evidence.
 ### Phase 1 — Evidence Organization
 
 - [x] T-AHC-001 Audit lifecycle organization
-- [ ] T-AHC-002 Canonical current-state reassessment
+- [x] T-AHC-002 Canonical current-state reassessment
 
 ### Phase 2 — Enforced Precision
 
@@ -81,7 +81,7 @@ close generated evidence.
 | Task | Implementation Commit(s) | Spec Verdict | Quality Verdict | Findings / Resolution | Review Package |
 | --- | --- | --- | --- | --- | --- |
 | T-AHC-001 | `2579560b..38ead5f3` | PASS | APPROVED | C0/I0/M0; no findings | `.superpowers/sdd/task-1-review.md` |
-| T-AHC-002 | Pending | Pending | Pending | Pending | Pending |
+| T-AHC-002 | `ee64b3a7..699eda00` | PASS | APPROVED | Initial I1/M1 resolved by `699eda00`; re-review C0/I0/M0 | `.superpowers/sdd/task-2-rereview.md` |
 | T-AHC-003 | Pending | Pending | Pending | Pending | Pending |
 | T-AHC-004 | Pending | Pending | Pending | Pending | Pending |
 | T-AHC-005 | Pending | Pending | Pending | Pending | Pending |
@@ -163,8 +163,16 @@ close generated evidence.
   infrastructure, secret, credential, remote GitHub, CI workflow, provider/model
   policy, `.gemini` adoption, or deployment state changed. Direct pre-commit was
   not run, and docs-only changes do not trigger the code-file Graphify refresh.
-- **Independent review**: Pending. This implementation evidence is not a review
-  verdict and must not advance the task row, Phase checkbox, or Review Ledger.
+- **Independent review**: The initial review returned Critical 0, Important 1,
+  Minor 1: scoped metadata summaries contradicted the implemented rows and the
+  reassessed documents retained `reviewed_at: 2026-07-11`. Fix commit
+  `699eda00` aligned all affected summaries, set the overview and eleven
+  criterion leaves to `reviewed_at: 2026-07-12`, preserved 67/69/14/2/9, and
+  passed metadata 15/0 plus repository contracts. A fresh full-diff re-review
+  returned Spec PASS, Quality APPROVED, C0/I0/M0. The original reviewer thread
+  could not be re-triggered because of the collaboration thread limit, so the
+  approved subagent workflow used a new independent reviewer and recorded the
+  platform constraint.
 
 ## Verification Summary
 
