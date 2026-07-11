@@ -36,6 +36,9 @@
 
 ```text
 tests/
+├── validation/
+│   ├── test_audit_criterion_contract.py
+│   └── test_document_metadata.py
 └── README.md  # This file
 ```
 
@@ -45,6 +48,11 @@ tests/
 2. repository contract, doc traceability, Compose validation처럼 전역 검증에 가까운 항목은 [`../scripts/README.md`](../scripts/README.md)에 있는 기존 진입점을 우선 사용합니다.
 3. 새 테스트 파일을 추가하면 실행 명령, 기대 결과, CI 연결 여부를 이 README 또는 관련 stage 문서에 기록합니다.
 4. 테스트가 특정 service 또는 package에만 해당하면 해당 디렉터리 README에 위치와 실행법을 기록합니다.
+
+문서 메타데이터 검증 테스트는
+`python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v`로
+실행합니다. 이 테스트는 advisory inventory와 profile semantics를 검증하며,
+Task 8 승인 전에는 changed/new blocking gate를 활성화하지 않습니다.
 
 ## Related Documents
 

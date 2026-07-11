@@ -937,6 +937,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md) | Markdown reference |
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md) | Markdown reference |
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md) | Markdown reference |
+| [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md) | Markdown reference |
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md) | Markdown reference |
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md) | Markdown reference |
 | [docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md](../audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md) | Markdown reference |
@@ -1001,6 +1002,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/README.md](../research/README.md) | folder index |
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |
 | [docs/99.templates/support/README.md](../../99.templates/support/README.md) | folder index |
+| [docs/99.templates/support/document-metadata-profiles.yaml](../../99.templates/support/document-metadata-profiles.yaml) | YAML config |
 | [docs/99.templates/support/external-source-rationale.md](../../99.templates/support/external-source-rationale.md) | Markdown reference |
 | [docs/99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md) | Markdown reference |
 | [docs/99.templates/support/lifecycle-status.md](../../99.templates/support/lifecycle-status.md) | Markdown reference |

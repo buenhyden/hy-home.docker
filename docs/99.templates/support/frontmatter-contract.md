@@ -11,6 +11,12 @@ documents. Frontmatter is a Markdown-adjacent preprocessing convention, not core
 CommonMark syntax, so the repository treats it as a small structured metadata
 surface.
 
+The machine-readable application profiles live in
+[`document-metadata-profiles.yaml`](./document-metadata-profiles.yaml). They
+define required, optional, forbidden, parent, lifecycle, and exception rules
+per artifact type. The profile matrix is advisory for the pre-migration corpus;
+Task 8 owns active-chain migration and changed/new blocking activation.
+
 ## Role Matrix
 
 | Surface | Required Keys | Disallowed Duplicate-Purpose Keys |
@@ -24,6 +30,27 @@ surface.
 | Repo-support contract README (`_workspace/**/README.md`) | none; role is path-derived | lifecycle `status`, `layer`, `type`, `owner`, `updated`, `links` |
 | Generated tracked document | generator-owned metadata such as `generated_by` | human-authored lifecycle keys unless the generator owns them |
 | Generated report without metadata consumer | none; omit YAML frontmatter | human-authored lifecycle keys |
+
+Typed profiles cover PRD, ARD, ADR, Spec/support contract, Plan, Task, Guide,
+Policy, Runbook, Incident, Postmortem, Release, Reference, Audit, and README.
+Separate exception profiles cover generator-owned documents, Markdown template
+sources, Stage 00/Stage 99 governance contracts, Stage 98 archive tombstones,
+and explicit unsupported paths. Generic `type` remains forbidden;
+`artifact_type` is the stable profiled key introduced only through the approved
+metadata rollout.
+
+## Advisory Validation Contract
+
+- `report` renders the exhaustive sorted inventory and treats current semantic
+  findings as advisory. It fails only when profile configuration or YAML parsing
+  prevents a trustworthy inventory.
+- `check-changed` evaluates only selected changed/new Markdown paths. It is
+  implemented for Task 8 but has no blocking repository-contract call site yet.
+- `check-active` evaluates active records for review and remains non-gating.
+- Parser output and reports expose bounded paths, IDs, counts, and finding codes;
+  they must not print raw bodies, logs, credentials, or secret values.
+- The canonical pre-migration snapshot is
+  `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md`.
 
 Archive tombstones are target stage documents with the archive lifecycle profile:
 `status: archived` plus archive-specific provenance keys when that profile
@@ -94,4 +121,5 @@ profiles: `archived_from`, `archived_on`, `archive_reason`, and
 - [support README](./README.md)
 - [template contract](./template-contract.md)
 - [lifecycle status](./lifecycle-status.md)
+- [document metadata profiles](./document-metadata-profiles.yaml)
 - [external source rationale](./external-source-rationale.md)

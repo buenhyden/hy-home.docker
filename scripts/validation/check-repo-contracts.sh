@@ -3712,6 +3712,28 @@ elif ! grep -q 'coverage_check=pass' /tmp/check-repo-contracts-audit-pack-covera
 fi
 rm -f /tmp/check-repo-contracts-audit-pack-coverage.txt
 
+section "Advisory document metadata inventory"
+metadata_profiles="docs/99.templates/support/document-metadata-profiles.yaml"
+metadata_checker="scripts/validation/check-document-metadata.py"
+metadata_tests="tests/validation/test_document_metadata.py"
+metadata_inventory="docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md"
+
+[[ -f "$metadata_profiles" ]] || fail "missing document metadata profiles: $metadata_profiles"
+[[ -f "$metadata_checker" ]] || fail "missing document metadata checker: $metadata_checker"
+[[ -f "$metadata_tests" ]] || fail "missing document metadata tests: $metadata_tests"
+[[ -f "$metadata_inventory" ]] || fail "missing document metadata inventory: $metadata_inventory"
+
+if [[ -f "$metadata_profiles" && -f "$metadata_checker" && -f "$metadata_inventory" ]]; then
+  if ! python3 "$metadata_checker" --mode report --output "$metadata_inventory" --check >/tmp/check-repo-contracts-document-metadata.txt 2>&1; then
+    fail "document metadata profile syntax or advisory inventory freshness check failed"
+    cat /tmp/check-repo-contracts-document-metadata.txt >&2
+  elif ! grep -q 'metadata inventory fresh:' /tmp/check-repo-contracts-document-metadata.txt; then
+    fail "document metadata inventory check did not print a freshness marker"
+    cat /tmp/check-repo-contracts-document-metadata.txt >&2
+  fi
+fi
+rm -f /tmp/check-repo-contracts-document-metadata.txt
+
 section "Audit implementation matrix snapshot"
 if ! bash scripts/validation/generate-audit-implementation-matrix.sh --check >/tmp/check-repo-contracts-audit-implementation-matrix.txt 2>&1; then
   fail "generated audit implementation matrix is stale or generator check failed"

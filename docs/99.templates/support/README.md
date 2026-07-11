@@ -29,6 +29,7 @@ follow.
 - Template source contract
 - Template governance and protected-surface rules
 - Frontmatter key and value policy
+- Typed document metadata profiles and advisory rollout rules
 - Lifecycle status vocabulary
 - Template selection rules
 - Archive-centered disposition and destructive-change rules
@@ -47,6 +48,7 @@ follow.
 | [template-contract.md](./template-contract.md) | Defines copyable template shape and source requirements. |
 | [template-governance.md](./template-governance.md) | Defines template change workflow, protected surfaces, archive/remove dispositions, and commit boundaries. |
 | [frontmatter-contract.md](./frontmatter-contract.md) | Defines frontmatter key sets and legacy-key cleanup rules. |
+| [document-metadata-profiles.yaml](./document-metadata-profiles.yaml) | Defines machine-readable required, optional, forbidden, lifecycle, parent, and exception profiles. |
 | [lifecycle-status.md](./lifecycle-status.md) | Defines lifecycle status values, transition rules, and archive status boundaries. |
 | [template-selection.md](./template-selection.md) | Maps document purpose, target path, and restructure disposition to a canonical template or action. |
 | [external-source-rationale.md](./external-source-rationale.md) | Records external source rationale behind local template rules. |
@@ -57,6 +59,7 @@ follow.
 support/
 ├── README.md
 ├── external-source-rationale.md
+├── document-metadata-profiles.yaml
 ├── frontmatter-contract.md
 ├── lifecycle-status.md
 ├── template-contract.md
@@ -73,6 +76,8 @@ support/
    rules here.
 4. Record validation evidence in the relevant Stage 04 task when support rules
    change.
+5. Keep typed metadata validation advisory until the approved changed/new
+   rollout task activates a blocking call site.
 
 ## Related Documents
 

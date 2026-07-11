@@ -75,6 +75,15 @@ Protocol for maintaining documentation consistency and governance traceability.
   always use `status: draft` and are exempt from the `layer:` requirement.
   A document without this frontmatter is **INCOMPLETE**. Retired aliases such
   as `approved`, `done`, and `archived` must be normalized when found.
+- **Typed metadata profiles (advisory rollout):**
+  `docs/99.templates/support/document-metadata-profiles.yaml` is the
+  machine-readable application-profile contract for stable identity, typed
+  parents, supersession, review evidence, lifecycle transitions, and explicit
+  README/generated/template/governance/archive exceptions. Task 7 inventory
+  findings are advisory for the existing corpus. Do not add typed keys to
+  active documents or invoke blocking `check-changed` enforcement until the
+  separately approved Task 8 migration reviews false positives and activates
+  the changed/new call site.
 
 ## 3. Document Type ↔ Template Mapping
 
@@ -176,6 +185,10 @@ Trigger documentation updates when:
 - policy and repository reality diverge.
 
 For completion, ensure affected README files and governance pointers remain accurate.
+For typed metadata profile or parser changes, run the focused Python unit suite
+and regenerate/check the canonical frontmatter semantic inventory. Repository
+contracts currently enforce profile syntax, script/test presence, and snapshot
+freshness only; semantic changed/new blocking remains deferred to Task 8.
 For Stage 01-05 implementation reconciliation, also run
 `bash scripts/validation/check-doc-implementation-alignment.sh`; it verifies
 tracked implementation paths, removed template names, archive index-only links,

@@ -1,0 +1,198 @@
+schema_version: 1
+
+common:
+  allowed_statuses: [draft, active, completed, superseded, archived]
+  terminal_statuses: [superseded, archived]
+  transitions:
+    draft: [active]
+    active: [completed, superseded]
+    completed: [superseded]
+    superseded: []
+    archived: []
+  globally_forbidden: [type, document_type, template_type, owner, updated, links]
+  typed_keys: [status, artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle]
+  inventory_excludes:
+    - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
+
+profiles:
+  prd:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes]
+    forbidden: [type, document_type, template_type, owner, updated, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: []
+    allow_empty_parents: true
+    disposition: migration candidate
+
+  ard:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes]
+    forbidden: [type, document_type, template_type, owner, updated, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [prd]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  adr:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes]
+    forbidden: [type, document_type, template_type, owner, updated, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [prd, ard]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  spec:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes, reviewed_at, review_cycle]
+    forbidden: [type, document_type, template_type, owner, updated, links, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [prd, ard, adr, spec]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  plan:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes]
+    forbidden: [type, document_type, template_type, owner, updated, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [prd, ard, adr, spec]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  task:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes]
+    forbidden: [type, document_type, template_type, owner, updated, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [spec, plan, task]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  guide:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes, reviewed_at, review_cycle]
+    forbidden: [type, document_type, template_type, owner, updated, links, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [spec, plan, task, policy]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  policy:
+    required: [status, artifact_id, artifact_type, parent_ids, reviewed_at, review_cycle]
+    optional: [supersedes]
+    forbidden: [type, document_type, template_type, owner, updated, links, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [prd, ard, adr, spec, plan, task]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  runbook:
+    required: [status, artifact_id, artifact_type, parent_ids, reviewed_at, review_cycle]
+    optional: [supersedes]
+    forbidden: [type, document_type, template_type, owner, updated, links, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [spec, plan, task, guide, policy]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  incident:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes]
+    forbidden: [type, document_type, template_type, owner, updated, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [runbook]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  postmortem:
+    required: [status, artifact_id, artifact_type, parent_ids, reviewed_at]
+    optional: [supersedes]
+    forbidden: [type, document_type, template_type, owner, updated, links, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [incident]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  release:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes, reviewed_at]
+    forbidden: [type, document_type, template_type, owner, updated, links, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [spec, plan, task]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  reference:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes, reviewed_at, review_cycle]
+    forbidden: [type, document_type, template_type, owner, updated, links, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [prd, ard, adr, spec, plan, task, guide, policy, runbook, reference]
+    allow_empty_parents: true
+    disposition: migration candidate
+
+  audit:
+    required: [status, artifact_id, artifact_type, parent_ids]
+    optional: [supersedes, reviewed_at, review_cycle]
+    forbidden: [type, document_type, template_type, owner, updated, links, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [spec, plan, task, reference, audit]
+    allow_empty_parents: true
+    disposition: migration candidate
+
+  readme:
+    required: []
+    optional: [status, layer, generated_by]
+    forbidden: [artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [active, completed, superseded, archived]
+    allowed_parent_types: []
+    allow_empty_parents: true
+    disposition: README exception
+
+  generated:
+    required: [generated_by]
+    optional: [status]
+    forbidden: [artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [active, completed, superseded]
+    allowed_parent_types: []
+    allow_empty_parents: true
+    disposition: generated exception
+
+  template-source:
+    required: [status]
+    optional: []
+    forbidden: [artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft]
+    allowed_parent_types: []
+    allow_empty_parents: true
+    disposition: template-source exception
+
+  governance:
+    required: []
+    optional: [layer, title, status, runtime]
+    forbidden: [artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, generated_by, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: []
+    allow_empty_parents: true
+    allow_additional: true
+    disposition: governance exception
+
+  archive:
+    required: [status, archived_from, archived_on, archive_reason, current_replacement]
+    optional: [layer, artifact_id, artifact_type, parent_ids, supersedes]
+    forbidden: [reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, generated_by]
+    allowed_statuses: [archived]
+    allowed_parent_types: [prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release, reference, audit]
+    allow_empty_parents: true
+    disposition: archive exception
+
+  unsupported:
+    required: []
+    optional: [status, layer, generated_by]
+    forbidden: [artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links]
+    allowed_statuses: []
+    allowed_parent_types: []
+    allow_empty_parents: true
+    allow_additional: true
+    disposition: justified N/A

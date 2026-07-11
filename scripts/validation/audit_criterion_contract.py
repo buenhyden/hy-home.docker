@@ -29,7 +29,11 @@ REPORT_PREFIX_COUNTS: dict[str, dict[str, int]] = {
     "security-framework-maturity.md": {"SEC": 14},
 }
 
-NON_CRITERION_FILES = {"README.md", "implementation-overview.md"}
+NON_CRITERION_FILES = {
+    "README.md",
+    "implementation-overview.md",
+    "frontmatter-semantic-inventory.md",
+}
 EXPECTED_PACK_FILES = NON_CRITERION_FILES | set(REPORT_PREFIX_COUNTS)
 EXPECTED_TOTAL = sum(
     count for prefix_counts in REPORT_PREFIX_COUNTS.values() for count in prefix_counts.values()

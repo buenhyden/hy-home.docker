@@ -50,8 +50,27 @@ target stage.
 - Do not mark a document `completed` merely because it is old.
 - Do not mark a document `archived` outside `docs/98.archive/**`.
 
+## Transition Validation
+
+The typed profile contract records the default forward transitions separately
+from the status vocabulary:
+
+```text
+draft -> active -> completed
+                -> superseded
+completed      -> superseded
+```
+
+`superseded` is terminal for active-stage artifacts and `archived` is terminal
+for Stage 98 tombstones. A same-status edit is not a transition. Any reverse or
+otherwise unlisted transition requires explicit Stage 04 task evidence,
+approval, reason, previous state, and a scoped validator override. Task 7
+implements transition comparison and fixtures in advisory modes; Task 8 owns
+the first changed/new blocking call site.
+
 ## Related Documents
 
 - [support README](./README.md)
 - [frontmatter contract](./frontmatter-contract.md)
+- [document metadata profiles](./document-metadata-profiles.yaml)
 - [template governance](./template-governance.md)

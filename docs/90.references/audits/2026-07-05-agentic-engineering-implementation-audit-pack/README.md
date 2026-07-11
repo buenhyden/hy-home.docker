@@ -74,6 +74,7 @@ This README is for:
 ├── automation-candidates.md
 ├── sdlc-document-contracts-implementation.md
 ├── frontmatter-template-readme-implementation.md
+├── frontmatter-semantic-inventory.md
 ├── sdlc-quality-formatting-implementation.md
 ├── compose-infrastructure-operations-readiness.md
 └── security-framework-maturity.md
@@ -90,6 +91,7 @@ This README is for:
 - [Automation candidates](./automation-candidates.md)
 - [SDLC and document-contract implementation](./sdlc-document-contracts-implementation.md)
 - [Frontmatter, template, and README implementation](./frontmatter-template-readme-implementation.md)
+- [Generated frontmatter semantic inventory](./frontmatter-semantic-inventory.md)
 - [SDLC quality formatting implementation](./sdlc-quality-formatting-implementation.md)
 - [Compose, infrastructure, and operations readiness](./compose-infrastructure-operations-readiness.md)
 - [Security framework maturity coverage](./security-framework-maturity.md)
@@ -104,6 +106,10 @@ report validate this exact set and keep README/overview counts separate from
 criterion-report and criterion-row counts. Historical eight-report and
 provisional ten-report disclosures are superseded.
 
+The generated frontmatter semantic inventory is an exhaustive advisory
+snapshot, not a twelfth criterion report. Its freshness check is separate from
+the exact eleven-report / 161-row audit criterion contract.
+
 ## How to Work in This Area
 
 1. Keep audit reports source-attributed and evidence-only.
@@ -115,6 +121,8 @@ provisional ten-report disclosures are superseded.
 5. Refresh the generated LLM Wiki index after adding tracked report files.
 6. Run both audit scripts after changing a criterion report; they must retain
    eleven reports, 161 unique rows, and the complete Spec 123 schema.
+7. Regenerate and freshness-check the frontmatter semantic inventory after
+   changing tracked target documents, metadata profiles, or the metadata parser.
 
 ## Evidence Freshness Boundary
 

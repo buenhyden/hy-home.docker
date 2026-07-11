@@ -401,6 +401,58 @@ unique evidence; current counts route to the canonical pack.
   - Graphify review-fix refresh — completed after final code changes, 1,071 files / 21,680 nodes / 21,593 edges / 1,477 communities; advisory only for two corroborated cross-root inferred edges. `Built from commit: 25c29140` records the committed base at refresh time while the graph extraction includes the staged/uncommitted review-fix working tree; the later fix commit changes only the marker's Git comparison, not the extracted source set.
   - direct `pre-commit` — not run; prohibited until the Task 9 controlled wrapper exists
 
+### T-AER-007 Typed Metadata Validator Evidence
+
+Task 7 implementation evidence is **In Review** at baseline `33141734`. The
+task registry remains `Todo` and the Phase 3 checkbox remains unchecked until
+independent Spec-compliance and quality/security review approve this change.
+
+The active repository role is `rules-engineer` at the requested Senior tier.
+The collaboration runtime exposes no per-agent model selector, so the role and
+tier are recorded while the platform selects the concrete model; no provider or
+model policy changed. The worktree contains no tracked SDD or `tdd-workflow`
+skill artifact, so the implementation followed the approved Task 7 brief's
+explicit RED-to-GREEN sequence directly without treating that missing runtime
+artifact as a blocker.
+
+| Evidence family | Result | Interpretation |
+| --- | --- | --- |
+| Test-first RED | The exact unittest discovery command failed with `FileNotFoundError` for the absent checker before implementation. | Establishes that the focused suite exercised a missing capability rather than a pre-existing implementation. |
+| Typed profiles | 20 profiles: 15 Spec 123 roles plus generated, template-source, governance, archive, and unsupported exceptions. | Required, optional, forbidden, status, transition, parent-type, root, freshness, and disposition rules are machine-readable. |
+| Focused GREEN | 24 unit tests pass. | Covers valid/malformed/duplicate-key YAML, inference, README/generated exceptions, duplicate IDs, unresolved/wrong/cyclic parents, forbidden/type-inappropriate keys, type mismatch, forward/reverse transitions, supersession coherence, changed/active/report modes, output freshness, and ordering. |
+| Pre-migration inventory | 876 sorted records; 581 records with findings; 2,135 findings: 1,998 missing required keys, 125 stale-active freshness signals, and 12 replacement-free supersessions; zero parser failures. | Current target/governance/template corpus remains intentionally unmigrated. Zero-record profiles for Incident, Postmortem, and Release remain explicit rather than being conflated with Runbook or changelog surfaces. |
+| Advisory integration | Repository contracts check profile syntax, checker/test/report presence, and inventory freshness only. | Neither `check-changed` nor `check-active` is invoked as a blocking repository gate; Task 8 retains changed/new activation ownership. |
+
+- **Scope boundary**: no active document received typed metadata; no Task 8+
+  template migration or blocking call site was added; no provider/runtime/model,
+  CI workflow, Compose/runtime, secret, remote, or branch-protection state changed.
+- **Graphify boundary**: the validator is a new code/script surface, so Graphify
+  must be refreshed after validation. Its report remains advisory and all
+  conclusions are corroborated against tracked Stage 00/03/04/90/99 sources.
+- **Lifecycle boundary**: T-AER-007 stays `Todo` and unchecked while this
+  implementation remains In Review.
+- **Task 7 implementation validation**:
+  - required RED discovery — expected failure before implementation because
+    `check-document-metadata.py` did not exist
+  - focused metadata suite — PASS, 24/24
+  - full validation unittest discovery — PASS, 31/31
+  - Python compile and Bash repository-contract syntax — PASS
+  - metadata inventory generate/freshness — PASS, 876 records / 2,135 advisory
+    findings / zero parser failures
+  - LLM Wiki index/coverage write and check — PASS, 1,269 / 1,268 paths
+  - audit matrix and audit-pack coverage — PASS, 11 reports / 161 rows / 15
+    overview categories; generated inventory remains a named non-criterion file
+  - document traceability — PASS, `catalog_pairs_total=46`, `failures=0`
+  - implementation alignment — PASS, 625 stage docs / 4,908 links,
+    `failures=0`
+  - repository contracts — PASS, 5/5 changed target documents normalized,
+    735/735 total, `failures=0`
+  - Graphify refresh — PASS, 1,075 files / 21,791 nodes / 21,837 edges /
+    1,481 communities; report built from committed base `33141734` while the
+    extraction includes the staged Task 7 source set, so it remains advisory
+  - direct `pre-commit` — not run; prohibited and owned by the later controlled
+    wrapper task
+
 ### Task Review Ledger
 
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |

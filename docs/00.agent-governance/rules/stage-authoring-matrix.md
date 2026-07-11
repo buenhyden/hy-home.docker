@@ -29,6 +29,16 @@ Single source of truth for stage-level authoring expectations.
 | 98    | Archive tombstones for old, deprecated, legacy, or implementation-conflicting documents removed from active chains. This stage preserves migration traceability, not historical current-truth.                                                       | `docs/99.templates/templates/common/archive.template.md`                    |
 | 99    | Source templates for all stages                                                                                                                                                                                                                      | `docs/99.templates/templates/common/readme.template.md` and stage templates |
 
+### Typed Metadata Profile Overlay
+
+`docs/99.templates/support/document-metadata-profiles.yaml` overlays the
+human-readable stage matrix with machine-readable required, optional,
+forbidden, parent, lifecycle, and exception rules. Human numbering and template
+selection remain stage-specific. Stable `artifact_id`, `artifact_type`, and
+`parent_ids` are migration fields, not permission to rewrite existing stage
+documents. Task 7 keeps the exhaustive inventory advisory; Task 8 owns the
+approved active-chain migration and first changed/new blocking activation.
+
 ## 3. Language Boundary by Stage
 
 | Stage / Folder | Language Boundary |

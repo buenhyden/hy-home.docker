@@ -1,16 +1,16 @@
 # Graph Report - agentic-engineering-audit-remediation  (2026-07-11)
 
 ## Corpus Check
-- 1071 files · ~1,055,749 words
+- 1075 files · ~1,079,110 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 21680 nodes · 21593 edges · 1477 communities (1389 shown, 88 thin omitted)
+- 21791 nodes · 21837 edges · 1481 communities (1392 shown, 89 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 338 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `25c29140`
+- Built from commit: `33141734`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1491,6 +1491,10 @@
 - [[_COMMUNITY_Community 1474|Community 1474]]
 - [[_COMMUNITY_Community 1475|Community 1475]]
 - [[_COMMUNITY_Community 1476|Community 1476]]
+- [[_COMMUNITY_Community 1477|Community 1477]]
+- [[_COMMUNITY_Community 1478|Community 1478]]
+- [[_COMMUNITY_Community 1479|Community 1479]]
+- [[_COMMUNITY_Community 1480|Community 1480]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Agent Progress Log` - 58 edges
@@ -1524,7 +1528,7 @@
 - **Workspace Audit Revalidation Skill Catalog Sync** — workspace_audit_revalidation_bounded_revalidation_workflow, workspace_audit_revalidation_runtime_skill, readme_agent_and_function_catalog, readme_runtime_skill_mirror, progress_workspace_audit_revalidation_skill_creation [EXTRACTED 1.00]
 - **Advisory Graph Boundary** — index_llm_wiki_generated_index, index_tracked_source_boundary, index_runtime_truth, index_advisory_graph_context, progress_graphify_health_advisory, 2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence [EXTRACTED 1.00]
 
-## Communities (1477 total, 88 thin omitted)
+## Communities (1481 total, 89 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.10
@@ -1539,8 +1543,8 @@ Cohesion: 0.20
 Nodes (12): AI Documentation Standardization Plan, Ollama Open WebUI Local AI, GPU OOM Mitigation, Open WebUI Implementation Plan, Open WebUI RAG Ollama Qdrant Integration, SSO and Healthcheck Separation, AI Hardening CI Gate, AI Optimization Hardening Plan (+4 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.07
-Nodes (48): Airbyte Runbook, Airbyte Sync Failure, Airbyte Worker Failure, Airflow Admin Password Reset, Airflow Metadata DB Error, Airflow n8n Hybrid Workflow Decision, Airflow Runbook, Airflow Valkey Broker (+40 more)
+Cohesion: 0.08
+Nodes (44): Alertmanager Notification Failure, Alertmanager Operational Policy Runbook, Alertmanager Silence Misconfiguration, Alloy OTLP Connectivity, Alloy Operational Policy Runbook, CouchDB Cluster, CouchDB Operation Policy Runbook, Apache Airflow DAG Lifecycle (+36 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.13
@@ -1559,20 +1563,20 @@ Cohesion: 0.18
 Nodes (17): 11-laboratory Architecture Reference Document, Non-intrusive Management Layer, Auth Optimization Hardening Architecture Reference Document, AI Optimization Hardening Architecture Reference Document, Tooling Catalog Expansion Policy, Tooling Control Plane, Tooling Optimization Hardening Architecture Reference Document, Laboratory Optimization Hardening Architecture Reference Document (+9 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.18
-Nodes (12): infra_net Collision Detection, infra_net Dictionary Network Definition, infra_net IP Mapping Validation and Update Procedure, Tooling infra_net External Boundary, Dozzle Read-only Docker Socket, Laboratory Gateway Allowlist SSO Boundary, No Direct Dashboard Exposure, 11-Laboratory Optimization Hardening Operations Policy (+4 more)
+Cohesion: 0.20
+Nodes (11): infra_net Collision Detection, infra_net Dictionary Network Definition, infra_net IP Mapping Validation and Update Procedure, Dozzle Read-only Docker Socket, Laboratory Gateway Allowlist SSO Boundary, No Direct Dashboard Exposure, 11-Laboratory Optimization Hardening Operations Policy, 11-laboratory Operations Policies (+3 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.22
 Nodes (10): Agent Design Child Document Pattern, Component Specifications, llm-wiki-agent-first-completion Specifications, Stage Specification Taxonomy, Stage Traceability Contract, Active Stage Taxonomy Contract, generate-llm-wiki-index Script, LLM Wiki Agent-first Completion Specification (+2 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.10
-Nodes (35): AppRole Bootstrap Procedure, Cassandra Operation Policy Runbook, Cassandra Service, data-hardening CI Job, Document Traceability Validation, Execution Plan, Execution Tasks, gateway-standard-chain Middleware (+27 more)
+Cohesion: 0.11
+Nodes (31): AppRole Bootstrap Procedure, Cassandra Operation Policy Runbook, Cassandra Service, Execution Plan, Execution Tasks, gateway-standard-chain Middleware, Graphify Health Report, Hardening Validation (+23 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.15
-Nodes (13): Neo4j Secret Aware Entrypoint, Neo4j Container Service, Neo4j Traefik HTTP and Bolt Routing, Qdrant Container Service, Qdrant Snapshot Storage, Qdrant REST and gRPC Traefik Routing, Supabase Kong Gateway, Neo4j Graph Database Service (+5 more)
+Cohesion: 0.20
+Nodes (10): Neo4j Secret Aware Entrypoint, Neo4j Container Service, Neo4j Traefik HTTP and Bolt Routing, Qdrant Container Service, Qdrant Snapshot Storage, Qdrant REST and gRPC Traefik Routing, Neo4j Graph Database Service, Qdrant Vector Database Service (+2 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.19
@@ -1695,8 +1699,8 @@ Cohesion: 0.13
 Nodes (15): SonarQube PostgreSQL Connection, SonarQube Compose Service, SonarQube Storage Volumes, SonarQube Traefik Router, Locust Load Generator, Private Registry Image Storage, SonarQube Code Quality, SonarQube PostgreSQL Integration (+7 more)
 
 ### Community 42 - "Community 42"
-Cohesion: 0.19
-Nodes (15): Data Analytics Architecture Document, Grafana Dashboard, InfluxDB Runbook, InfluxDB Service, Kafka Broker, ksqlDB Runbook, ksqlDB Stream Processing, OpenSearch Cluster (+7 more)
+Cohesion: 0.25
+Nodes (11): Data Analytics Architecture Document, Grafana Dashboard, InfluxDB Runbook, InfluxDB Service, OpenSearch Cluster, OpenSearch Runbook, OpenSearch Shards, StarRocks Cluster (+3 more)
 
 ### Community 43 - "Community 43"
 Cohesion: 0.20
@@ -2019,8 +2023,8 @@ Cohesion: 0.09
 Nodes (28): 1. Admin Password Reset, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Implementation Snippet (+20 more)
 
 ### Community 157 - "Community 157"
-Cohesion: 0.10
-Nodes (23): Alloy OTLP Connectivity, Alloy Operational Policy Runbook, Grafana Dashboard Provisioning, Grafana Datasource Connection Issue, Grafana Operational Policy Runbook, Grafana SSO Authentication Failure, Keycloak Recovery Procedure, Loki Ingester OOM (+15 more)
+Cohesion: 0.18
+Nodes (11): Data Architecture ARD, etcd Quorum Recovery, Neo4j Database Dump and Restore, Neo4j Password Rotation, Neo4j Runbook, Patroni and etcd PostgreSQL Cluster, pg-cluster-init, postgresql-cluster Runbook (+3 more)
 
 ### Community 158 - "Community 158"
 Cohesion: 0.08
@@ -2851,8 +2855,8 @@ Cohesion: 0.11
 Nodes (17): 1. 클러스터 초기화 및 상태 확인, 2. 클라이언트 연결 설정 (Cluster Mode), 3. 데이터 파티셔닝 이해, Common Checks, Common Pitfalls, Common Pitfalls, Prerequisites, Runbook Handoff (+9 more)
 
 ### Community 365 - "Community 365"
-Cohesion: 0.18
-Nodes (17): Cache and KV Valkey Cluster Runbook, Data Architecture Document, 04-Data Specification, etcd Cluster, MongoDB Replica Set, MongoDB Operation Policy Runbook, NodeDiskSpaceFilled Alert, Patroni Failover (+9 more)
+Cohesion: 0.29
+Nodes (12): Cache and KV Valkey Cluster Runbook, Data Architecture Document, 04-Data Specification, etcd Cluster, NodeDiskSpaceFilled Alert, Patroni Failover, pg-router Traffic Routing, PostgreSQL HA Cluster (+4 more)
 
 ### Community 366 - "Community 366"
 Cohesion: 0.11
@@ -3727,8 +3731,8 @@ Cohesion: 0.20
 Nodes (12): Doc Traceability Check, Hardening Check All, Messaging Gateway SSO Hardening, messaging-hardening CI Gate, Observability Gateway SSO Hardening, observability-hardening CI Gate, 05-Messaging Optimization Hardening Runbook, 06-Observability Optimization Hardening Runbook (+4 more)
 
 ### Community 584 - "Community 584"
-Cohesion: 0.17
-Nodes (12): mng-pg, mng-pg-exporter, mng-pg-init, mng-valkey, mng-valkey-exporter, Management Generic Service Database, Management Platform Service Databases, Management Database (+4 more)
+Cohesion: 0.13
+Nodes (15): mng-pg, mng-pg-exporter, mng-pg-init, mng-valkey, mng-valkey-exporter, Supabase Kong Gateway, Management Generic Service Database, Management Platform Service Databases (+7 more)
 
 ### Community 585 - "Community 585"
 Cohesion: 0.15
@@ -4951,8 +4955,8 @@ Cohesion: 0.33
 Nodes (6): sync-provider-surfaces.sh script, sync-provider-surfaces.sh script, gen_codex_agent(), gen_gemini_agent(), gen_gemini_skill(), sync_file()
 
 ### Community 890 - "Community 890"
-Cohesion: 0.31
-Nodes (9): Loki MinIO Connection Failure, MinIO Object Storage, MinIO Object Storage Runbook, S3 API, SeaweedFS Cluster, SeaweedFS Filer, SeaweedFS Master, SeaweedFS Runbook (+1 more)
+Cohesion: 0.12
+Nodes (22): data-hardening CI Job, Document Traceability Validation, Kafka Broker, ksqlDB Runbook, ksqlDB Stream Processing, Loki MinIO Connection Failure, MinIO Object Storage, MinIO Object Storage Runbook (+14 more)
 
 ### Community 891 - "Community 891"
 Cohesion: 0.20
@@ -5059,8 +5063,8 @@ Cohesion: 0.25
 Nodes (8): MinIO Cluster Common Settings, MinIO Four Node Cluster, MinIO Create Buckets Job, MinIO Data Volume, MinIO Single Node Service, MinIO Traefik API and Console Routes, MinIO Initialized Buckets, MinIO Secrets Management
 
 ### Community 917 - "Community 917"
-Cohesion: 0.33
-Nodes (7): IaC Deployment Policy, Plan Verification and Remote State, Tooling Gateway SSO Boundary, 09-Tooling Optimization Hardening Operations Policy, k6 Locust Test Runtime Contract, Tool Expansion Approval Gates, 09-tooling Operations Policies
+Cohesion: 0.29
+Nodes (8): IaC Deployment Policy, Plan Verification and Remote State, Tooling Gateway SSO Boundary, Tooling infra_net External Boundary, 09-Tooling Optimization Hardening Operations Policy, k6 Locust Test Runtime Contract, Tool Expansion Approval Gates, 09-tooling Operations Policies
 
 ### Community 918 - "Community 918"
 Cohesion: 0.25
@@ -5315,8 +5319,8 @@ Cohesion: 0.25
 Nodes (6): 1. Matrix, 2. Rules, 3. Supported / Unsupported / Deferred, 4. Output-Style Placement, Provider Capability Matrix, Related Documents
 
 ### Community 981 - "Community 981"
-Cohesion: 0.22
-Nodes (8): 1. Matrix, 2. Appendix: Supporting Stages, 3. Language Boundary by Stage, 3. Usage Rules, 4. Agent Skills by Stage, 5. Usage Rules, Related Documents, Stage Authoring Matrix (00-05, 90, 98, 99)
+Cohesion: 0.20
+Nodes (9): 1. Matrix, 2. Appendix: Supporting Stages, 3. Language Boundary by Stage, 3. Usage Rules, 4. Agent Skills by Stage, 5. Usage Rules, Related Documents, Stage Authoring Matrix (00-05, 90, 98, 99) (+1 more)
 
 ### Community 982 - "Community 982"
 Cohesion: 0.25
@@ -5995,8 +5999,8 @@ Cohesion: 0.25
 Nodes (7): Agent Progress Log, Current Work Log, Layer Audit, Open Issues, Phase Tracker, Related Documents, Usage Contract
 
 ### Community 1194 - "Community 1194"
-Cohesion: 0.22
-Nodes (8): Corpus Routing Rules, Disposition and Archive Metadata Rules, Duplicate-Purpose Key Rules, Frontmatter Contract, Legacy Cleanup Rules, Overview, Related Documents, Role Matrix
+Cohesion: 0.20
+Nodes (9): Advisory Validation Contract, Corpus Routing Rules, Disposition and Archive Metadata Rules, Duplicate-Purpose Key Rules, Frontmatter Contract, Legacy Cleanup Rules, Overview, Related Documents (+1 more)
 
 ### Community 1195 - "Community 1195"
 Cohesion: 0.22
@@ -6027,8 +6031,8 @@ Cohesion: 0.06
 Nodes (31): Agent Rollout & Evaluation Gates, Agentic Engineering Audit and Remediation Implementation Plan, Completion Criteria, Context, File Structure, Global Constraints, Goals & In-Scope, Metadata and Harness Automation (+23 more)
 
 ### Community 1202 - "Community 1202"
-Cohesion: 0.25
-Nodes (7): Archive-Centered Lifecycle Rules, Generated Metadata, Lifecycle Status, Overview, Related Documents, Status Selection Rules, Status Vocabulary
+Cohesion: 0.22
+Nodes (8): Archive-Centered Lifecycle Rules, Generated Metadata, Lifecycle Status, Overview, Related Documents, Status Selection Rules, Status Vocabulary, Transition Validation
 
 ### Community 1203 - "Community 1203"
 Cohesion: 0.33
@@ -6947,8 +6951,8 @@ Cohesion: 0.20
 Nodes (10): Workflow Hardening Gate, AI Hardening Gate, Tooling Hardening Gate, Tooling infra_net Boundary, Tooling Optimization Hardening PRD, Laboratory Hardening Gate, 172.19.0.0/16 IPAM, infra_net Network (+2 more)
 
 ### Community 1437 - "Community 1437"
-Cohesion: 0.40
-Nodes (5): Kafka KRaft Quorum Recovery, Kafka Partition Rebalancing, Kafka Cluster Operations Policy Runbook, Messaging Architecture ARD, Schema Registry Incompatibility
+Cohesion: 0.15
+Nodes (16): Airbyte Runbook, Airbyte Sync Failure, Airbyte Worker Failure, Airflow Admin Password Reset, Airflow Metadata DB Error, Airflow n8n Hybrid Workflow Decision, Airflow Runbook, Airflow Valkey Broker (+8 more)
 
 ### Community 1438 - "Community 1438"
 Cohesion: 0.25
@@ -6984,7 +6988,7 @@ Nodes (22): Agent Rollout & Evaluation Gates, Agentic Research Pack Consolidatio
 
 ### Community 1446 - "Community 1446"
 Cohesion: 0.09
-Nodes (21): Approved Surface Evidence, Deviation Notes, Inputs, Overview, Phase 1 — Canonical Research, Phase 2 — Canonical Audit, Phase 3 — Typed Metadata, Phase 4 — Development Harness (+13 more)
+Nodes (22): Approved Surface Evidence, Deviation Notes, Inputs, Overview, Phase 1 — Canonical Research, Phase 2 — Canonical Audit, Phase 3 — Typed Metadata, Phase 4 — Development Harness (+14 more)
 
 ### Community 1447 - "Community 1447"
 Cohesion: 0.10
@@ -7071,12 +7075,24 @@ Cohesion: 0.40
 Nodes (5): Phase 1: Workspace and Lifecycle Baseline, Phase 2: Provider and Agent Research, Phase 3: Quality, Infrastructure, and Security, Phase 4: Consolidation Closure, Phase View
 
 ### Community 1475 - "Community 1475"
-Cohesion: 0.12
-Nodes (20): bool, int, Path, str, Path, str, AuditCriterionContract, AuditCriterionContractError (+12 more)
+Cohesion: 0.06
+Nodes (68): bool, int, MappingNode, bool, int, Path, str, bool (+60 more)
 
 ### Community 1476 - "Community 1476"
-Cohesion: 0.15
-Nodes (12): Commit, Concerns, Exact Canonical Cardinality, Files, Graphify, QA, Compose, Security, and Delivery Findings, Residual Task 11 Risks, Self-Review (+4 more)
+Cohesion: 0.14
+Nodes (13): Commit, Concerns, Exact Canonical Cardinality, Files, Graphify, Independent Review Fix, QA, Compose, Security, and Delivery Findings, Residual Task 11 Risks (+5 more)
+
+### Community 1477 - "Community 1477"
+Cohesion: 0.13
+Nodes (10): CompletedProcess, object, Path, str, ArtifactInferenceTests, CheckerCliTests, FrontmatterParsingTests, MetadataValidationTests (+2 more)
+
+### Community 1478 - "Community 1478"
+Cohesion: 0.12
+Nodes (15): Definitions / Facts, Finding Summary, In Scope, Inventory, Maintenance, Out of Scope, Overview, Profile Summary (+7 more)
+
+### Community 1479 - "Community 1479"
+Cohesion: 0.40
+Nodes (5): Kafka KRaft Quorum Recovery, Kafka Partition Rebalancing, Kafka Cluster Operations Policy Runbook, Messaging Architecture ARD, Schema Registry Incompatibility
 
 ## Ambiguous Edges - Review These
 - `Alertmanager Critical Route` → `Alertmanager SMTP Placeholders`  [AMBIGUOUS]
@@ -7085,9 +7101,9 @@ Nodes (12): Commit, Concerns, Exact Canonical Cardinality, Files, Graphify, QA, 
   infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **15133 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+15128 more)
+- **15155 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+15150 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **88 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **89 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -7096,13 +7112,13 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `cadvisor Compose Service` and `pyroscope Compose Service`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `Prometheus Production Scrape And Alerting Config` connect `Community 129` to `Community 0`, `Community 358`, `Community 39`, `Community 233`, `Community 458`, `Community 427`, `Community 715`, `Community 842`, `Community 526`, `Community 525`, `Community 570`?**
-  _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `Grafana Alloy Telemetry Pipeline` connect `Community 21` to `Community 157`?**
+- **Why does `Qdrant Runbook` connect `Community 157` to `Community 3`, `Community 821`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **What connects `printWidth`, `singleQuote`, `semi` to the rest of the system?**
-  _15707 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _15745 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.125 - nodes in this community are weakly interconnected._
+- **Should `Community 3` be split into smaller, more focused modules?**
+  _Cohesion score 0.07716701902748414 - nodes in this community are weakly interconnected._
