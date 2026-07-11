@@ -207,7 +207,7 @@ task evidence or progress log records the same item as unresolved.
 - **Agent Output Eval CI Gate Plan**: [2026-07-06-agent-output-eval-ci-gate.md](./2026-07-06-agent-output-eval-ci-gate.md)
 - **Dependency Vulnerability Audit Gate Plan**: [2026-07-06-dependency-vulnerability-audit-gate.md](./2026-07-06-dependency-vulnerability-audit-gate.md)
 - **Agentic Research Pack Consolidation Plan**: [2026-07-10-agentic-research-pack-consolidation.md](./2026-07-10-agentic-research-pack-consolidation.md)
-- **Agentic Engineering Audit and Remediation Plan (active; I-03 fix pending exact-range re-review)**: [2026-07-11-agentic-engineering-audit-remediation.md](./2026-07-11-agentic-engineering-audit-remediation.md)
+- **Agentic Engineering Audit and Remediation Plan (completed; I-01 through I-03-R1 resolved)**: [2026-07-11-agentic-engineering-audit-remediation.md](./2026-07-11-agentic-engineering-audit-remediation.md)
 - **Compose Runtime Readiness Remediation Plan**: [2026-07-11-compose-runtime-readiness-remediation.md](./2026-07-11-compose-runtime-readiness-remediation.md)
 - **Infrastructure Operations Readiness Remediation Plan**: [2026-07-11-infrastructure-operations-readiness-remediation.md](./2026-07-11-infrastructure-operations-readiness-remediation.md)
 - **Security Supply-Chain Remediation Plan**: [2026-07-11-security-supply-chain-remediation.md](./2026-07-11-security-supply-chain-remediation.md)

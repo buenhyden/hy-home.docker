@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-11-agentic-engineering-audit-remediation
 artifact_type: task
 parent_ids:
@@ -63,7 +63,7 @@ independent task/branch reviews.
 | T-AER-009 | Implement controlled agent pre-commit wrapper and governance contract | impl/test | Spec 123 / Controlled Pre-commit Wrapper | PLN-AER-009 | Shell tests; syntax/shellcheck; wrapper contract; task review | qa-engineer | Done |
 | T-AER-010 | Synchronize provider adapters and add metadata validation to the existing CI job | impl/test | Spec 123 / Provider Synchronization | PLN-AER-010 | Provider no-drift; workflow checks; repo contracts; task review | ci-cd-engineer | Done |
 | T-AER-011 | Author four independent runtime follow-up specs/plans without runtime mutation | doc | Spec 123 / W5 Runtime Follow-up | PLN-AER-011 | Template/traceability/rollback/approval gates; task review | doc-writer | Done |
-| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Todo |
+| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Done |
 
 ## Phase View
 
@@ -92,7 +92,7 @@ independent task/branch reviews.
 ### Phase 5 — Follow-up and Closure
 
 - [x] T-AER-011 Runtime follow-up specs/plans
-- [ ] T-AER-012 Full verification, review, and closure — I-03-R1 fixed locally; exact-range re-review pending
+- [x] T-AER-012 Full verification, review, and closure — I-01 through I-03-R1 resolved
 
 ## Verification Summary
 
@@ -801,13 +801,13 @@ runtime requirement set.
 - **Graphify decision**: docs-only work does not trigger the repository's
   code-file refresh rule; no Graphify refresh is planned for Task 11.
 
-### T-AER-012 Verification and Current Reopening Evidence
+### T-AER-012 Verification and Final Reclosure Evidence
 
-Task 12 remains **Todo** after the I-03 postfix review found residual I-03-R1.
-The earlier I-01 and I-02 fixes remain resolved, and the original I-03 seven-case
-matrix remains fixed. The I-03-R1 base-path decoding fix is locally implemented
-and verified, but T-AER-012, its Phase 5 checkbox, Spec 123, and the umbrella
-Plan/Task remain open or active pending independent exact-range re-review.
+Task 12 is **Done** after the exact-range review of
+`3e92b39fa02767dafff612fcfa5b3670998471be..10ffce8f` returned Spec PASS,
+Quality APPROVED, Critical 0, Important 0, Minor 0, resolved I-01, I-02, I-03,
+and I-03-R1, and declared `READY_FOR_RECLOSURE: YES`. T-AER-012, its Phase 5
+checkbox, Spec 123, and the umbrella Plan/Task are completed again.
 
 #### Postclosure Finding and Focused Fix
 
@@ -943,8 +943,10 @@ explicit base plus an ordinary current change returned exit one with a raw
   Git operations read refs or Markdown bodies rather than path lists. The
   Stage 99 contract already requires complete NUL-delimited path discovery and
   bounded output, so its wording did not change.
-- Lifecycle boundary: Task 12 remains `Todo`; Phase 5 and the two affected Plan
-  completion criteria remain unchecked. No re-review or reclosure is claimed.
+- Final re-review: the combined I-03/I-03-R1 matrix passed 8/8. Independent raw
+  non-UTF-8 base-path reproduction returned bounded exit two with no traceback,
+  success summary, raw filename/body, or Git stderr. Report:
+  `.superpowers/sdd/branch-review-i03-r1-postfix-report.md`.
 - Scope boundary: no real wrapper, Graphify refresh, service, runtime, Compose,
   infrastructure, secret, credential, remote, provider-runtime, model-policy,
   or protected-surface action was performed. Full local gate evidence is in
@@ -1088,7 +1090,7 @@ values, credentials, and secret material were not persisted.
 | T-AER-009 | `dce3ea60..4d0a8eaf` | PASS | APPROVED | Initial C0/I3/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-9-report.md`; `.superpowers/sdd/review-dce3ea60..4d0a8eaf.diff` |
 | T-AER-010 | `aa5cbd36..0e030ab1` | PASS | APPROVED | Initial C0/I1/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-10-report.md`; `.superpowers/sdd/review-aa5cbd36..0e030ab1.diff` |
 | T-AER-011 | `4937ae99..03119741` | PASS | APPROVED | C0/I0/M0 | `.superpowers/sdd/task-11-report.md`; `.superpowers/sdd/review-4937ae99..03119741.diff` |
-| T-AER-012 | `3e92b39f..b08d6576`; I-03-R1 fix pending commit/re-review | FAIL | CHANGES_REQUESTED | I-01/I-02 remain resolved; original I-03 matrix remains 7/7; postfix review found I-03-R1, C0/I1/M0; local fix GREEN, exact-range re-review pending | `.superpowers/sdd/branch-review-i03-postfix-report.md`; `.superpowers/sdd/task-12-git-path-decode-fix-report.md`; prior Task 12 reports preserved |
+| T-AER-012 | `3e92b39f..10ffce8f` | PASS | APPROVED | I-01, I-02, I-03, and I-03-R1 resolved; final C0/I0/M0; `READY_FOR_RECLOSURE: YES` | `.superpowers/sdd/branch-review-final-report.md`; `.superpowers/sdd/branch-review-i03-postfix-report.md`; `.superpowers/sdd/branch-review-i03-r1-postfix-report.md`; all Task 12 fix reports preserved |
 
 - **Baseline Commands**:
   - `git diff --check` — PASS

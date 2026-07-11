@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:123-agentic-engineering-audit-remediation
 artifact_type: spec
 parent_ids: []
@@ -440,7 +440,7 @@ secret access, remote GitHub mutation, or direct manual pre-commit execution.
   freshness, repository contracts, and locally applicable QA/security checks
   pass before branch completion.
 
-## Postclosure Remediation and Current Reopening
+## Postclosure Remediation and Final Reclosure
 
 The postclosure review of
 `3e92b39fa02767dafff612fcfa5b3670998471be..74945d22898b9005d5f5450231c8c45980f6c0d7`
@@ -457,15 +457,23 @@ pass 76/76, full validation passes 83/83, and the branch-base gate selects 97
 paths with zero violations. That historical result remains evidence that I-01
 and I-02 are resolved.
 
-The later final merge-readiness review of
+The later merge-readiness review of
 `3e92b39fa02767dafff612fcfa5b3670998471be..132418a4`
 found I-03: failed tracked-file, unstaged, staged, or untracked Git discovery
 could collapse the blocking selection to an empty successful result. The local
 fix now requires a valid Git worktree and a complete fail-closed local snapshot,
 preserves working-tree-only fallback only when base resolution is unavailable,
-and adds executable-boundary regression coverage. This specification is active
-pending a new independent exact-range review and must not be reclosed from local
-verification alone.
+and adds executable-boundary regression coverage. Its postfix review found
+I-03-R1, an unbounded non-UTF-8 explicit-base path decode; commit `10ffce8f`
+routes base path bytes through the shared bounded decoder.
+
+The exact re-review of
+`3e92b39fa02767dafff612fcfa5b3670998471be..10ffce8f`
+returned Spec **PASS**, Quality **APPROVED**, Critical 0, Important 0, Minor 0,
+resolved I-01, I-02, I-03, and I-03-R1, and declared
+`READY_FOR_RECLOSURE: YES`. Metadata tests pass 83/83, full validation passes
+90/90, and the branch-base gate selects 97 paths with zero violations. This
+specification is therefore completed again.
 
 Runtime, Compose, infrastructure, deployment, secret, remote GitHub,
 branch-protection, and model-policy changes remain outside this specification;

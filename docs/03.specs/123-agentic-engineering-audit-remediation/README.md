@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/123-agentic-engineering-audit-remediation/README.md -->
@@ -16,13 +16,13 @@ external criteria and performs a repository-wide audit, then introduces typed
 document metadata, lifecycle validation, controlled full-repository
 pre-commit execution, and synchronized provider and CI governance.
 
-The program is reopened after final merge-readiness review found I-03: required
-Git discovery failures could produce an empty successful `check-changed`
-selection. The fail-closed fix and regression suite are locally complete, while
-Spec 123 and Task 12 remain active pending independent exact-range re-review.
-The earlier I-01 typed-artifact deletion and I-02 in-place `artifact_id`
-replacement fixes remain resolved. The four runtime follow-up specifications
-and plans remain `draft` and require separate approval.
+The program is complete after postclosure findings I-01, I-02, I-03, and
+I-03-R1 were resolved. Changed/new metadata enforcement now propagates removed
+identities, fails closed on required Git discovery errors, and bounds invalid
+base-path decoding without tracebacks. The final exact-range re-review returned
+Spec PASS, Quality APPROVED, and no Critical, Important, or Minor findings. The
+four runtime follow-up specifications and plans remain `draft` and require
+separate approval.
 
 Docker Compose services, infrastructure runtime, deployment state, secrets,
 and remote GitHub settings are audit-only in this program. Their findings are
