@@ -941,7 +941,10 @@ T-ARC-006 is **Done** at the task-scoped implementation and review gate. Steps
 validation evidence, and logical implementation commit. Independent review of
 `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd`
 returned Spec **PASS** / Quality **APPROVED** with Critical 0, Important 0,
-and Minor 1. The non-blocking Minor count-wording finding is corrected below.
+and Minor 1. The reviewer reported five matching lines / eight occurrences;
+exact controller verification after bookkeeping establishes six physical
+matching lines / eight occurrences and supersedes that count while preserving
+the review's non-blocking semantic disposition.
 Spec 122, its plan, and this task remain `status: active`; every final
 Completion Criteria item, the first whole-branch review, lifecycle-closure
 commit, and post-closure review remain open.
@@ -1061,7 +1064,7 @@ leaf bodies and were not promoted to current canonical truth.
 | T-ARC-003 | `1a80b6989304fa7b6a179861a9cad795dd875ca3..505277817eee0de4270bc03ae7fb789ef9d02ad3` | `1a80b6989304fa7b6a179861a9cad795dd875ca3..7aa07accc00770dd4e18cd37ddd77d9f92236848` | Spec **PASS** / Quality **APPROVED** | `0/0/0`; `.superpowers/sdd/task-3-rereview-report.md` |
 | T-ARC-004 | `505277817eee0de4270bc03ae7fb789ef9d02ad3..34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6` | `505277817eee0de4270bc03ae7fb789ef9d02ad3..ef97a8c148359b7ee1af5948921156a3ab1fa1b1` | Spec **PASS** / Quality **APPROVED** | `0` blocking; reviewer M-01 corrected in bookkeeping; `.superpowers/sdd/task-4-rereview-report.md` |
 | T-ARC-005 | `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..00190fc97b003c9beedc5af79d195532bc181dde` | `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..26fb9d227da49594c04967ccc4830d722463468b` | Spec **PASS** / Quality **APPROVED** | `0/0/0`; `.superpowers/sdd/task-5-review-report.md` |
-| T-ARC-006 | `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd` | `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd` | Spec **PASS** / Quality **APPROVED** | `0/0/1`; non-blocking M-01 count wording corrected in this bookkeeping; `.superpowers/sdd/task-6-review-report.md` |
+| T-ARC-006 | `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd` | `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd` | Spec **PASS** / Quality **APPROVED** | `0/0/1`; reviewer reported `5 lines / 8 occurrences`, corrected by exact controller verification to `6 physical lines / 8 occurrences`; `.superpowers/sdd/task-6-review-report.md` |
 
 Task 6 independent review reproduced **35/35** coverage rows with one primary
 owner each and the **30/30** disposition split (`merged` 8, `duplicate` 4,
@@ -1122,8 +1125,9 @@ Documentation-only TDD and code coverage are not applicable. The final Step
 - Duplicate-path scan — exit 0; matches are limited to supersession/history
   routing, target comments, plan scope/check instructions, and task/spec
   traceability. No current-reading route presents the duplicate as active.
-- Exact stale-phrase scan — exit 0 with five matching lines / eight
-  occurrences, all already present at base
+- Exact stale-phrase scan — exit 0 with six physical matching lines / eight
+  occurrences, superseding the review report's five-line count. All were
+  already present at base
   `00190fc97b003c9beedc5af79d195532bc181dde` in the out-of-scope canonical
   `harness-engineering.md` and `loop-engineering.md`. Every occurrence is an
   explicit negative correction (not a current affirmative claim); the five new
