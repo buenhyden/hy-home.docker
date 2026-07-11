@@ -453,6 +453,47 @@ artifact as a blocker.
   - direct `pre-commit` — not run; prohibited and owned by the later controlled
     wrapper task
 
+The first independent Task 7 review returned FAIL/CHANGES_REQUESTED with
+Critical 0, Important 4, Minor 1. The focused remediation resolves every
+confirmed finding while retaining advisory-only rollout:
+
+1. `check-changed` now collects existing untracked, staged, modified, renamed,
+   and explicit selected Markdown paths; deleted paths remain selected evidence
+   but are not parsed as existing violations. Real temporary Git repositories
+   cover all six states.
+2. Unhashable YAML keys are normalized to deterministic malformed-YAML parser
+   findings without tracebacks; duplicate keys retain a distinct state/code.
+3. Every inventory row now exposes explicit frontmatter, identity, relation,
+   lifecycle, transition-evidence, freshness, README/generated context,
+   finding, and disposition states. Missing historical transition evidence is
+   reported as unavailable and never inferred.
+4. Profile configuration, ISO review dates/date-times, safe canonical
+   generator ownership paths, and archive provenance scalars/paths are strictly
+   typed and validated.
+5. The repository-contract freshness capture uses `mktemp` plus EXIT cleanup
+   instead of a predictable path.
+
+- **Task 7 review-fix validation**:
+  - focused metadata suite — PASS, 41/41, including adversarial Git/YAML/schema
+    fixtures
+  - full validation unittest discovery — PASS, 48/48
+  - Python compile and Bash repository-contract syntax — PASS
+  - metadata inventory generate/freshness — PASS, 876 records / 2,135 advisory
+    findings / zero parser failures; expanded semantic row schema is fresh
+  - LLM Wiki index/coverage freshness — PASS, 1,269 / 1,268 paths
+  - audit matrix and audit-pack coverage — PASS, 11 reports / 161 rows / 15
+    overview categories
+  - document traceability — PASS, `catalog_pairs_total=46`, `failures=0`
+  - implementation alignment — PASS, 625 stage docs / 4,908 links,
+    `failures=0`
+  - repository contracts — PASS, 2/2 changed target documents normalized,
+    735/735 total, `failures=0`
+  - Graphify review-fix refresh — PASS, 1,076 files / 21,855 nodes / 22,024
+    edges / 1,482 communities; `Built from commit: e8c3be03` records the
+    committed implementation base while extraction includes the uncommitted
+    review-fix source set, so the graph remains advisory
+  - direct `pre-commit` — not run; Task 9 retains controlled-wrapper ownership
+
 ### Task Review Ledger
 
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |

@@ -203,6 +203,11 @@ generate the canonical snapshot and add `--check` for freshness. The
 repository contracts do not invoke them as blocking gates in Task 7. Run the
 focused suite with
 `python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v`.
+Changed-path review includes tracked, staged, unstaged-new, renamed, and
+explicit existing Markdown paths while treating deletions as non-parseable
+selected paths. The report exposes deterministic semantic states for every
+Task 4 inventory field and normalizes YAML/configuration defects without raw
+tracebacks or unsafe metadata values.
 
 `scripts/validation/report-audit-pack-coverage.sh` reads the agentic engineering
 implementation audit pack through the shared contract and prints exact

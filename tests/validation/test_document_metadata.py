@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import pathlib
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -51,6 +52,32 @@ def run_checker(root: pathlib.Path, mode: str = "report", *extra: str) -> subpro
     )
 
 
+def git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", "-C", str(root), *args],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def init_git(root: pathlib.Path) -> None:
+    self_check = git(root, "init", "-q")
+    if self_check.returncode != 0:
+        raise RuntimeError(self_check.stderr)
+    git(root, "config", "user.name", "Metadata Fixture")
+    git(root, "config", "user.email", "metadata@example.invalid")
+
+
+def commit_all(root: pathlib.Path, message: str = "fixture") -> None:
+    staged = git(root, "add", ".")
+    if staged.returncode != 0:
+        raise RuntimeError(staged.stderr)
+    committed = git(root, "commit", "-qm", message)
+    if committed.returncode != 0:
+        raise RuntimeError(committed.stderr)
+
+
 class FrontmatterParsingTests(unittest.TestCase):
     def test_valid_yaml_frontmatter_is_parsed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -80,6 +107,34 @@ class FrontmatterParsingTests(unittest.TestCase):
             path.write_text("---\nstatus: active\nstatus: completed\n---\n", encoding="utf-8")
             with self.assertRaises(metadata.FrontmatterError):
                 metadata.parse_frontmatter(path)
+
+    def test_unhashable_yaml_mapping_key_is_normalized(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "unhashable.md"
+            path.write_text("---\n? [a, b]: c\n---\n", encoding="utf-8")
+            with self.assertRaises(metadata.FrontmatterError) as context:
+                metadata.parse_frontmatter(path)
+            self.assertEqual("malformed-yaml", context.exception.code)
+
+
+class ProfileSchemaTests(unittest.TestCase):
+    def mutate_and_load(self, mutate) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            target = pathlib.Path(directory) / "profiles.yaml"
+            values = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
+            mutate(values)
+            target.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
+            with self.assertRaises(metadata.ProfileError):
+                metadata.load_profiles(target)
+
+    def test_schema_version_rejects_boolean(self) -> None:
+        self.mutate_and_load(lambda values: values.__setitem__("schema_version", True))
+
+    def test_profile_lists_reject_non_string_members(self) -> None:
+        self.mutate_and_load(lambda values: values["profiles"]["spec"]["required"].append(7))
+
+    def test_transitions_reject_unknown_statuses(self) -> None:
+        self.mutate_and_load(lambda values: values["common"]["transitions"]["active"].append("retired"))
 
 
 class ArtifactInferenceTests(unittest.TestCase):
@@ -313,6 +368,49 @@ class MetadataValidationTests(unittest.TestCase):
         )
         self.assertIn("type-inappropriate-key", self.codes(record))
 
+    def test_freshness_requires_strict_iso_date_or_datetime(self) -> None:
+        record = self.record(
+            "docs/05.operations/policies/00-workspace/example.md",
+            {
+                "status": "active",
+                "artifact_id": "POLICY-EXAMPLE",
+                "artifact_type": "policy",
+                "parent_ids": [],
+                "reviewed_at": "yesterday",
+                "review_cycle": "annual",
+            },
+            "policy",
+        )
+        self.assertIn("invalid-reviewed-at", self.codes(record))
+
+    def test_generator_owner_rejects_absolute_and_traversal_paths(self) -> None:
+        for generated_by in ("/tmp/generator.py", "scripts/../generator.py", "scripts\\generator.py"):
+            with self.subTest(generated_by=generated_by):
+                record = self.record(
+                    "docs/90.references/data/example.md",
+                    {"status": "active", "generated_by": generated_by},
+                    "generated",
+                )
+                self.assertIn("invalid-generator", self.codes(record))
+
+    def test_archive_provenance_types_are_validated(self) -> None:
+        record = self.record(
+            "docs/98.archive/04.execution/example.md",
+            {
+                "status": "archived",
+                "archived_from": ["docs/04.execution/example.md"],
+                "archived_on": "not-a-date",
+                "archive_reason": 7,
+                "current_replacement": "/absolute.md",
+            },
+            "archive",
+        )
+        codes = self.codes(record)
+        self.assertIn("invalid-archived-from", codes)
+        self.assertIn("invalid-archived-on", codes)
+        self.assertIn("invalid-archive-reason", codes)
+        self.assertIn("invalid-current-replacement", codes)
+
 
 class CheckerCliTests(unittest.TestCase):
     def test_duplicate_artifact_id_is_reported(self) -> None:
@@ -329,6 +427,18 @@ class CheckerCliTests(unittest.TestCase):
             result = run_checker(root, "report")
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertIn("duplicate-artifact-id", result.stdout)
+            self.assertIn("| duplicate |", result.stdout)
+
+    def test_duplicate_yaml_key_has_distinct_inventory_state(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            path = root / "docs/03.specs/123-example/spec.md"
+            path.parent.mkdir(parents=True)
+            path.write_text("---\nstatus: active\nstatus: completed\n---\n", encoding="utf-8")
+            result = run_checker(root, "report")
+            self.assertEqual(2, result.returncode)
+            self.assertIn("frontmatter-duplicate-key", result.stdout)
+            self.assertIn("| duplicate-key |", result.stdout)
 
     def test_report_returns_nonzero_for_parser_failure_but_renders_inventory(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -338,8 +448,22 @@ class CheckerCliTests(unittest.TestCase):
             path.write_text("---\nstatus: [active\n---\n", encoding="utf-8")
             result = run_checker(root, "report")
             self.assertNotEqual(0, result.returncode)
-            self.assertIn("frontmatter-parse-error", result.stdout)
+            self.assertIn("frontmatter-malformed-yaml", result.stdout)
             self.assertIn(path.relative_to(root).as_posix(), result.stdout)
+
+    def test_unhashable_mapping_key_has_no_traceback_and_writes_inventory(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            path = root / "docs/03.specs/123-example/spec.md"
+            path.parent.mkdir(parents=True)
+            path.write_text("---\n? [a, b]: c\n---\n", encoding="utf-8")
+            output = root / "inventory.md"
+            result = run_checker(root, "report", "--output", str(output))
+            self.assertEqual(2, result.returncode)
+            self.assertNotIn("Traceback", result.stderr)
+            rendered = output.read_text(encoding="utf-8")
+            self.assertIn("frontmatter-malformed-yaml", rendered)
+            self.assertIn("malformed-yaml", rendered)
 
     def test_changed_mode_fails_only_selected_violations(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -393,6 +517,122 @@ class CheckerCliTests(unittest.TestCase):
             result = run_checker(root, "check-active")
             self.assertNotEqual(0, result.returncode)
             self.assertIn("metadata check-active", result.stdout)
+
+    def test_inventory_exposes_all_semantic_state_columns(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            write_doc(root / "docs/03.specs/README.md", None)
+            write_doc(
+                root / "docs/90.references/data/generated.md",
+                {"status": "active", "generated_by": "scripts/example.py"},
+            )
+            result = run_checker(root, "report")
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertIn(
+                "| Path | Profile | Frontmatter | Identity | Relations | Lifecycle | Transition Evidence | Freshness | Exception Context | Findings | Disposition |",
+                result.stdout,
+            )
+            self.assertIn("missing-fence", result.stdout)
+            self.assertIn("README profile; consumer=not-declared; role=folder-index", result.stdout)
+            self.assertIn("generated profile; owner=scripts/example.py", result.stdout)
+            self.assertIn("reviewed_at=forbidden:not-applicable", result.stdout)
+
+    def test_inventory_records_identity_relations_and_transition_evidence(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        parent = metadata.Record(
+            pathlib.Path("docs/01.requirements/123-parent.md"),
+            {"status": "active", "artifact_id": "PRD-123", "artifact_type": "prd", "parent_ids": []},
+            "prd",
+            frontmatter_present=True,
+        )
+        child = metadata.Record(
+            pathlib.Path("docs/03.specs/123-child/spec.md"),
+            {
+                "status": "completed",
+                "artifact_id": "SPEC-123",
+                "artifact_type": "spec",
+                "parent_ids": ["PRD-123"],
+            },
+            "spec",
+            previous_status="active",
+            frontmatter_present=True,
+        )
+        records = [parent, child]
+        manifest = metadata.build_manifest(records)
+        findings = {
+            record.path.as_posix(): metadata.validate_record(record, profiles, manifest) for record in records
+        }
+        report = metadata.render_report(records, profiles, findings)
+        child_row = next(line for line in report.splitlines() if "docs/03.specs/123-child/spec.md" in line)
+        self.assertIn("| valid | parents=resolved:1; order=declared-list; supersedes=not-provided |", child_row)
+        self.assertIn("available:active->completed; valid", child_row)
+
+
+class ChangedPathGitTests(unittest.TestCase):
+    def new_repo(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path]:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        init_git(root)
+        write_doc(root / "docs/03.specs/README.md", None)
+        commit_all(root)
+        return directory, root
+
+    def assert_changed_failure(self, root: pathlib.Path, *extra: str) -> None:
+        result = run_checker(root, "check-changed", *extra)
+        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+        self.assertIn("missing-required-key", result.stdout)
+
+    def test_untracked_invalid_document_fails(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            write_doc(root / "docs/03.specs/123-new/spec.md", {"status": "active"})
+            self.assert_changed_failure(root)
+
+    def test_staged_invalid_document_fails(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            path = root / "docs/03.specs/123-new/spec.md"
+            write_doc(path, {"status": "active"})
+            self.assertEqual(0, git(root, "add", path.relative_to(root).as_posix()).returncode)
+            self.assert_changed_failure(root)
+
+    def test_modified_invalid_document_fails(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            path = root / "docs/03.specs/123-existing/spec.md"
+            write_doc(
+                path,
+                {"status": "active", "artifact_id": "SPEC-123", "artifact_type": "spec", "parent_ids": []},
+            )
+            commit_all(root)
+            write_doc(path, {"status": "active"})
+            self.assert_changed_failure(root)
+
+    def test_renamed_invalid_document_fails_at_new_path(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            source = root / "docs/03.specs/README.md"
+            target = root / "docs/03.specs/123-renamed/spec.md"
+            target.parent.mkdir(parents=True)
+            self.assertEqual(0, git(root, "mv", source.relative_to(root).as_posix(), target.relative_to(root).as_posix()).returncode)
+            self.assert_changed_failure(root)
+
+    def test_deleted_document_is_not_parsed_as_violation(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            path = root / "docs/03.specs/123-deleted/spec.md"
+            write_doc(path, {"status": "active"})
+            commit_all(root)
+            path.unlink()
+            result = run_checker(root, "check-changed")
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_explicit_untracked_path_is_parsed(self) -> None:
+        directory, root = self.new_repo()
+        with directory:
+            relative = "docs/03.specs/123-explicit/spec.md"
+            write_doc(root / relative, {"status": "active"})
+            self.assert_changed_failure(root, "--changed-path", relative)
 
 
 if __name__ == "__main__":

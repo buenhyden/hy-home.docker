@@ -46,11 +46,28 @@ metadata rollout.
   prevents a trustworthy inventory.
 - `check-changed` evaluates only selected changed/new Markdown paths. It is
   implemented for Task 8 but has no blocking repository-contract call site yet.
+  Selection covers tracked modifications, staged additions, unstaged new files,
+  renames, explicit paths, and deletions; deleted paths are recorded as selected
+  but are not parsed as existing violations.
 - `check-active` evaluates active records for review and remains non-gating.
 - Parser output and reports expose bounded paths, IDs, counts, and finding codes;
   they must not print raw bodies, logs, credentials, or secret values.
 - The canonical pre-migration snapshot is
   `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md`.
+
+Each inventory row explicitly records frontmatter state (missing fence,
+malformed YAML, duplicate key, allowed syntax, or profile-semantic error),
+identity state, parent/supersession resolution and declared ordering,
+lifecycle state, transition-evidence availability, freshness field
+disposition/evidence, README consumer context or generated owner, findings, and
+enforcement disposition. `unavailable-no-history` is an evidence gap, not an
+inferred transition result.
+
+Profile configuration uses exact scalar/list types: `schema_version` is the
+integer `1`, status and transition members are consistent strings, review dates
+are strict ISO dates or timezone-aware date-times, generator ownership is a
+safe canonical `scripts/` path, and archive provenance uses typed canonical
+`docs/` paths, an ISO date, and a non-empty reason.
 
 Archive tombstones are target stage documents with the archive lifecycle profile:
 `status: archived` plus archive-specific provenance keys when that profile

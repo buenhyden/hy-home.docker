@@ -8,6 +8,7 @@ import collections
 import dataclasses
 import datetime as dt
 import pathlib
+import re
 import subprocess
 import sys
 from collections.abc import Sequence
@@ -56,6 +57,10 @@ TARGET_MARKDOWN_PREFIXES = (
 class FrontmatterError(ValueError):
     """Raised when a Markdown frontmatter block cannot be parsed safely."""
 
+    def __init__(self, message: str, code: str = "malformed-yaml") -> None:
+        self.code = code
+        super().__init__(message)
+
 
 class ProfileError(ValueError):
     """Raised when the machine-readable profile contract is invalid."""
@@ -73,7 +78,16 @@ def _construct_unique_mapping(
     mapping: dict[object, object] = {}
     for key_node, value_node in node.value:
         key = loader.construct_object(key_node, deep=deep)
-        if key in mapping:
+        try:
+            duplicate = key in mapping
+        except TypeError as error:
+            raise yaml.constructor.ConstructorError(
+                "while constructing a mapping",
+                node.start_mark,
+                "mapping key must be a hashable scalar",
+                key_node.start_mark,
+            ) from error
+        if duplicate:
             raise yaml.constructor.ConstructorError(
                 "while constructing a mapping",
                 node.start_mark,
@@ -112,6 +126,8 @@ class Record:
     artifact_type: str
     previous_status: str | None = None
     parse_error: str | None = None
+    parse_error_code: str | None = None
+    frontmatter_present: bool = False
 
 
 class Manifest(dict[str, pathlib.Path]):
@@ -146,11 +162,12 @@ def parse_frontmatter(path: pathlib.Path) -> dict[str, object]:
         loaded = _safe_load_unique(source)
     except yaml.YAMLError as error:
         summary = str(error).splitlines()[0]
-        raise FrontmatterError(f"invalid YAML frontmatter: {summary}") from error
+        code = "duplicate-key" if getattr(error, "problem", "").startswith("duplicate key:") else "malformed-yaml"
+        raise FrontmatterError(f"invalid YAML frontmatter: {summary}", code=code) from error
     if loaded is None:
         return {}
     if not isinstance(loaded, dict) or not all(isinstance(key, str) for key in loaded):
-        raise FrontmatterError("frontmatter must be a string-keyed YAML mapping")
+        raise FrontmatterError("frontmatter must be a string-keyed YAML mapping", code="malformed-yaml")
     return dict(loaded)
 
 
@@ -237,6 +254,49 @@ def _string_list(value: object) -> list[str] | None:
     return [item.strip() for item in value]
 
 
+DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+DATETIME_RE = re.compile(
+    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})"
+)
+
+
+def _valid_iso_date(value: object) -> bool:
+    if isinstance(value, dt.datetime):
+        return False
+    if isinstance(value, dt.date):
+        return True
+    if not isinstance(value, str) or DATE_RE.fullmatch(value) is None:
+        return False
+    try:
+        dt.date.fromisoformat(value)
+    except ValueError:
+        return False
+    return True
+
+
+def _valid_iso_temporal(value: object) -> bool:
+    if _valid_iso_date(value):
+        return True
+    if isinstance(value, dt.datetime):
+        return value.tzinfo is not None
+    if not isinstance(value, str) or DATETIME_RE.fullmatch(value) is None:
+        return False
+    try:
+        parsed = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return parsed.tzinfo is not None
+
+
+def _safe_repo_path(value: object, required_prefix: str | None = None) -> bool:
+    if not isinstance(value, str) or not value or "\\" in value or "://" in value:
+        return False
+    pure = pathlib.PurePosixPath(value)
+    if pure.is_absolute() or value != pure.as_posix() or any(part in {"", ".", ".."} for part in pure.parts):
+        return False
+    return required_prefix is None or value.startswith(required_prefix)
+
+
 def _has_parent_cycle(record: Record, parent_ids: list[str], manifest: Manifest) -> bool:
     artifact_id = record.metadata.get("artifact_id")
     if not isinstance(artifact_id, str) or not artifact_id.strip():
@@ -274,7 +334,8 @@ def validate_record(
     typed_manifest = manifest if isinstance(manifest, Manifest) else Manifest(dict(manifest), {}, {})
     findings: list[Finding] = []
     if record.parse_error:
-        findings.append(_finding(record, "frontmatter-parse-error", record.parse_error))
+        parse_code = record.parse_error_code or "malformed-yaml"
+        findings.append(_finding(record, f"frontmatter-{parse_code}", record.parse_error))
         return findings
     if record.artifact_type == "unsupported":
         findings.append(
@@ -413,14 +474,34 @@ def validate_record(
         findings.append(
             _finding(record, "stale-active", "active freshness-managed artifact lacks reviewed_at evidence")
         )
-    if reviewed_at is not None and not isinstance(reviewed_at, (str, dt.date)):
-        findings.append(_finding(record, "invalid-reviewed-at", "reviewed_at must be an ISO date"))
+    if reviewed_at is not None and not _valid_iso_temporal(reviewed_at):
+        findings.append(
+            _finding(record, "invalid-reviewed-at", "reviewed_at must be a strict ISO date or timezone-aware date-time")
+        )
     review_cycle = record.metadata.get("review_cycle")
     if review_cycle is not None and (not isinstance(review_cycle, str) or not review_cycle.strip()):
         findings.append(_finding(record, "invalid-review-cycle", "review_cycle must be a non-empty string"))
     generated_by = record.metadata.get("generated_by")
-    if generated_by is not None and (not isinstance(generated_by, str) or not generated_by.strip()):
-        findings.append(_finding(record, "invalid-generator", "generated_by must be a non-empty script path"))
+    if generated_by is not None and not _safe_repo_path(generated_by, "scripts/"):
+        findings.append(
+            _finding(record, "invalid-generator", "generated_by must be a safe canonical scripts/ repository path")
+        )
+
+    if record.artifact_type == "archive":
+        archive_path_fields = {
+            "archived_from": "invalid-archived-from",
+            "current_replacement": "invalid-current-replacement",
+        }
+        for key, code in archive_path_fields.items():
+            value = record.metadata.get(key)
+            if value is not None and not _safe_repo_path(value, "docs/"):
+                findings.append(_finding(record, code, f"{key} must be a safe canonical docs/ repository path"))
+        archived_on = record.metadata.get("archived_on")
+        if archived_on is not None and not _valid_iso_date(archived_on):
+            findings.append(_finding(record, "invalid-archived-on", "archived_on must be a strict ISO date"))
+        archive_reason = record.metadata.get("archive_reason")
+        if archive_reason is not None and (not isinstance(archive_reason, str) or not archive_reason.strip()):
+            findings.append(_finding(record, "invalid-archive-reason", "archive_reason must be a non-empty string"))
 
     if not raw_profile.get("allow_additional", False):
         known = required | optional | forbidden
@@ -441,34 +522,94 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
         raise ProfileError(f"cannot load profile YAML: {error}") from error
     if not isinstance(loaded, dict):
         raise ProfileError("profile document must be a mapping")
-    if loaded.get("schema_version") != 1:
-        raise ProfileError("schema_version must equal 1")
+    schema_version = loaded.get("schema_version")
+    if type(schema_version) is not int or schema_version != 1:
+        raise ProfileError("schema_version must be the integer 1")
     common, profile_map = _profile_mapping(loaded)
+    if not all(isinstance(name, str) for name in profile_map):
+        raise ProfileError("profile names must be strings")
     actual_types = set(profile_map)
     if actual_types != EXPECTED_PROFILE_TYPES:
         missing = ", ".join(sorted(EXPECTED_PROFILE_TYPES - actual_types)) or "none"
         unexpected = ", ".join(sorted(actual_types - EXPECTED_PROFILE_TYPES)) or "none"
         raise ProfileError(f"profile type mismatch; missing={missing}; unexpected={unexpected}")
-    if not isinstance(common.get("transitions"), dict):
+    common_list_names = (
+        "allowed_statuses",
+        "terminal_statuses",
+        "globally_forbidden",
+        "typed_keys",
+        "inventory_excludes",
+    )
+    common_lists: dict[str, list[str]] = {}
+    for key in common_list_names:
+        value = common.get(key)
+        if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
+            raise ProfileError(f"common.{key} must be a list of non-empty strings")
+        if len(value) != len(set(value)):
+            raise ProfileError(f"common.{key} must not contain duplicates")
+        common_lists[key] = value
+    allowed_statuses = set(common_lists["allowed_statuses"])
+    terminal_statuses = set(common_lists["terminal_statuses"])
+    if not terminal_statuses <= allowed_statuses:
+        raise ProfileError("common.terminal_statuses must be a subset of allowed_statuses")
+    transitions = common.get("transitions")
+    if not isinstance(transitions, dict) or not all(isinstance(key, str) for key in transitions):
         raise ProfileError("common.transitions must be a mapping")
+    if set(transitions) != allowed_statuses:
+        raise ProfileError("common.transitions must define every and only allowed status")
+    for state, targets in transitions.items():
+        if not isinstance(targets, list) or not all(isinstance(item, str) and item for item in targets):
+            raise ProfileError(f"common.transitions.{state} must be a list of non-empty strings")
+        if len(targets) != len(set(targets)):
+            raise ProfileError(f"common.transitions.{state} must not contain duplicates")
+        unknown_targets = set(targets) - allowed_statuses
+        if unknown_targets:
+            raise ProfileError(
+                f"common.transitions.{state} has unknown statuses: {', '.join(sorted(unknown_targets))}"
+            )
+        if state in terminal_statuses and targets:
+            raise ProfileError(f"terminal status {state} must not have outgoing transitions")
     for name, raw_profile in sorted(profile_map.items()):
         if not isinstance(raw_profile, dict):
             raise ProfileError(f"profile {name} must be a mapping")
         required = raw_profile.get("required")
         optional = raw_profile.get("optional")
         forbidden = raw_profile.get("forbidden")
-        if not all(isinstance(value, list) and all(isinstance(item, str) for item in value) for value in (required, optional, forbidden)):
+        if not all(
+            isinstance(value, list) and all(isinstance(item, str) and item for item in value)
+            for value in (required, optional, forbidden)
+        ):
             raise ProfileError(f"profile {name} required/optional/forbidden must be string lists")
+        if any(len(value) != len(set(value)) for value in (required, optional, forbidden)):
+            raise ProfileError(f"profile {name} key disposition lists must not contain duplicates")
         overlap = (set(required) & set(optional)) | (set(required) & set(forbidden)) | (set(optional) & set(forbidden))
         if overlap:
             raise ProfileError(f"profile {name} has overlapping key dispositions: {', '.join(sorted(overlap))}")
-        if not isinstance(raw_profile.get("allowed_statuses"), list):
-            raise ProfileError(f"profile {name} allowed_statuses must be a list")
-        if not isinstance(raw_profile.get("allowed_parent_types"), list):
-            raise ProfileError(f"profile {name} allowed_parent_types must be a list")
-        unknown_parents = set(raw_profile["allowed_parent_types"]) - EXPECTED_PROFILE_TYPES
+        profile_statuses = raw_profile.get("allowed_statuses")
+        if not isinstance(profile_statuses, list) or not all(
+            isinstance(item, str) and item for item in profile_statuses
+        ):
+            raise ProfileError(f"profile {name} allowed_statuses must be a string list")
+        if len(profile_statuses) != len(set(profile_statuses)):
+            raise ProfileError(f"profile {name} allowed_statuses must not contain duplicates")
+        unknown_statuses = set(profile_statuses) - allowed_statuses
+        if unknown_statuses:
+            raise ProfileError(f"profile {name} has unknown statuses: {', '.join(sorted(unknown_statuses))}")
+        parent_types = raw_profile.get("allowed_parent_types")
+        if not isinstance(parent_types, list) or not all(isinstance(item, str) and item for item in parent_types):
+            raise ProfileError(f"profile {name} allowed_parent_types must be a string list")
+        if len(parent_types) != len(set(parent_types)):
+            raise ProfileError(f"profile {name} allowed_parent_types must not contain duplicates")
+        unknown_parents = set(parent_types) - EXPECTED_PROFILE_TYPES
         if unknown_parents:
             raise ProfileError(f"profile {name} has unknown parent types: {', '.join(sorted(unknown_parents))}")
+        if type(raw_profile.get("allow_empty_parents")) is not bool:
+            raise ProfileError(f"profile {name} allow_empty_parents must be boolean")
+        if "allow_additional" in raw_profile and type(raw_profile["allow_additional"]) is not bool:
+            raise ProfileError(f"profile {name} allow_additional must be boolean")
+        disposition = raw_profile.get("disposition")
+        if not isinstance(disposition, str) or not disposition.strip():
+            raise ProfileError(f"profile {name} disposition must be a non-empty string")
     return loaded
 
 
@@ -490,6 +631,18 @@ def _tracked_markdown(root: pathlib.Path) -> list[pathlib.Path]:
         },
         key=lambda path: path.as_posix(),
     )
+
+
+def _normalized_target_path(path_text: str) -> pathlib.Path | None:
+    if not path_text.endswith(".md") or "\\" in path_text:
+        return None
+    pure = pathlib.PurePosixPath(path_text)
+    if pure.is_absolute() or any(part in {"", ".", ".."} for part in pure.parts):
+        return None
+    normalized = pure.as_posix()
+    if not normalized.startswith(TARGET_MARKDOWN_PREFIXES):
+        return None
+    return pathlib.Path(normalized)
 
 
 def _previous_status(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> str | None:
@@ -520,22 +673,36 @@ def collect_records(
     root: pathlib.Path,
     profiles: dict[str, object],
     base_ref: str | None = None,
+    selected_paths: Sequence[str] = (),
 ) -> list[Record]:
-    """Collect sorted tracked Markdown records without reading document bodies into output."""
+    """Collect tracked records plus selected existing new paths, excluding deletions."""
 
     common, _ = _profile_mapping(profiles)
     excluded = set(common.get("inventory_excludes", []))
+    candidates = set(_tracked_markdown(root))
+    for path_text in selected_paths:
+        candidate = _normalized_target_path(path_text)
+        if candidate is not None and (root / candidate).is_file():
+            candidates.add(candidate)
     records: list[Record] = []
-    for relative_path in _tracked_markdown(root):
+    for relative_path in sorted(candidates, key=lambda path: path.as_posix()):
         if relative_path.as_posix() in excluded:
             continue
         absolute_path = root / relative_path
+        if not absolute_path.is_file():
+            continue
+        try:
+            frontmatter_present = absolute_path.read_text(encoding="utf-8").splitlines()[0].strip() == "---"
+        except (OSError, UnicodeError, IndexError):
+            frontmatter_present = False
         try:
             values = parse_frontmatter(absolute_path)
             parse_error = None
+            parse_error_code = None
         except FrontmatterError as error:
             values = {}
             parse_error = str(error)
+            parse_error_code = error.code
         artifact_type = "generated" if "generated_by" in values else infer_artifact_type(relative_path)
         records.append(
             Record(
@@ -544,6 +711,8 @@ def collect_records(
                 artifact_type,
                 previous_status=_previous_status(root, relative_path, base_ref),
                 parse_error=parse_error,
+                parse_error_code=parse_error_code,
+                frontmatter_present=frontmatter_present,
             )
         )
     return records
@@ -552,6 +721,149 @@ def collect_records(
 def _escape_cell(value: object) -> str:
     rendered = str(value).replace("|", "\\|").replace("\n", " ")
     return rendered or "—"
+
+
+def _profile_sets(profile: dict[str, object]) -> tuple[set[str], set[str], set[str]]:
+    return (
+        set(profile.get("required", [])),
+        set(profile.get("optional", [])),
+        set(profile.get("forbidden", [])),
+    )
+
+
+def _frontmatter_state(record: Record, findings: Sequence[Finding]) -> str:
+    if record.parse_error_code:
+        return record.parse_error_code
+    if not record.frontmatter_present:
+        return "missing-fence"
+    if any(finding.severity == "error" for finding in findings):
+        return "profile-semantic-error"
+    return "allowed-syntax"
+
+
+def _identity_state(record: Record, profile: dict[str, object], codes: set[str]) -> str:
+    if record.parse_error:
+        return "unavailable-parser-error"
+    required, optional, forbidden = _profile_sets(profile)
+    value = record.metadata.get("artifact_id")
+    if "artifact_id" in forbidden:
+        return "not-applicable"
+    if value is None:
+        return "missing" if "artifact_id" in required else "not-provided-optional"
+    if "invalid-artifact-id" in codes:
+        return "invalid"
+    if "duplicate-artifact-id" in codes:
+        return "duplicate"
+    return "valid" if "artifact_id" in required | optional else "type-inappropriate"
+
+
+def _relation_state(record: Record, profile: dict[str, object], codes: set[str]) -> str:
+    if record.parse_error:
+        return "unavailable-parser-error"
+    required, optional, forbidden = _profile_sets(profile)
+    if "parent_ids" in forbidden:
+        parent_state = "not-applicable"
+        order_state = "not-applicable"
+    elif "parent_ids" not in record.metadata:
+        parent_state = "missing" if "parent_ids" in required else "not-provided-optional"
+        order_state = "not-provided"
+    else:
+        relation_errors = sorted(
+            codes
+            & {
+                "invalid-parent-ids",
+                "duplicate-parent",
+                "missing-parent",
+                "self-parent",
+                "unresolved-parent",
+                "invalid-parent-type",
+                "parent-cycle",
+            }
+        )
+        parents = _string_list(record.metadata.get("parent_ids"))
+        order_state = "declared-list" if parents is not None else "invalid"
+        if relation_errors:
+            parent_state = "invalid:" + ",".join(relation_errors)
+        elif parents:
+            parent_state = f"resolved:{len(parents)}"
+        else:
+            parent_state = "root-permitted"
+    if "supersedes" not in record.metadata:
+        return f"parents={parent_state}; order={order_state}; supersedes=not-provided"
+    supersession_errors = sorted(code for code in codes if "supersed" in code or "supersession" in code)
+    supersedes_state = "invalid:" + ",".join(supersession_errors) if supersession_errors else "resolved"
+    return f"parents={parent_state}; order={order_state}; supersedes={supersedes_state}"
+
+
+def _lifecycle_state(record: Record, profile: dict[str, object], codes: set[str]) -> str:
+    if record.parse_error:
+        return "unavailable-parser-error"
+    required, optional, forbidden = _profile_sets(profile)
+    if "status" in forbidden:
+        return "not-applicable"
+    status = record.metadata.get("status")
+    if status is None:
+        return "missing" if "status" in required else "not-provided-optional"
+    signals = sorted(
+        codes & {"invalid-status", "stale-active", "replacement-free-supersession", "archived-outside-stage-98"}
+    )
+    state = "invalid" if "invalid-status" in signals else "allowed"
+    suffix = "; signals=" + ",".join(signals) if signals else ""
+    rendered_status = "invalid-value" if "invalid-status" in signals else status
+    return f"status={rendered_status}; {state}{suffix}"
+
+
+def _transition_state(record: Record, profile: dict[str, object], codes: set[str]) -> str:
+    if record.parse_error:
+        return "unavailable-parser-error"
+    if record.artifact_type in {"readme", "generated", "template-source", "governance", "unsupported"}:
+        return "not-applicable"
+    required, optional, forbidden = _profile_sets(profile)
+    if "status" in forbidden or "status" not in required | optional:
+        return "not-applicable"
+    status = record.metadata.get("status")
+    if not isinstance(status, str):
+        return "not-applicable"
+    if record.previous_status is None:
+        return "unavailable-no-history"
+    if record.previous_status == status:
+        return "available-unchanged"
+    verdict = "invalid" if "invalid-transition" in codes else "valid"
+    return f"available:{record.previous_status}->{status}; {verdict}"
+
+
+def _freshness_state(record: Record, profile: dict[str, object], codes: set[str]) -> str:
+    if record.parse_error:
+        return "unavailable-parser-error"
+    required, optional, forbidden = _profile_sets(profile)
+    states: list[str] = []
+    invalid_codes = {"reviewed_at": "invalid-reviewed-at", "review_cycle": "invalid-review-cycle"}
+    for key in ("reviewed_at", "review_cycle"):
+        disposition = "required" if key in required else "optional" if key in optional else "forbidden"
+        if key in forbidden and key not in record.metadata:
+            evidence = "not-applicable"
+        elif key not in record.metadata:
+            evidence = "missing" if disposition == "required" else "not-provided"
+        elif invalid_codes[key] in codes:
+            evidence = "invalid"
+        else:
+            evidence = "present"
+        states.append(f"{key}={disposition}:{evidence}")
+    return "; ".join(states)
+
+
+def _exception_context(record: Record, codes: set[str]) -> str:
+    if record.parse_error:
+        return "unavailable-parser-error"
+    if record.artifact_type == "readme":
+        return "README profile; consumer=not-declared; role=folder-index"
+    if record.artifact_type == "generated":
+        owner = record.metadata.get("generated_by")
+        rendered = owner if isinstance(owner, str) and "invalid-generator" not in codes else "invalid-or-missing"
+        return f"generated profile; owner={rendered}"
+    if record.artifact_type in {"template-source", "governance", "archive", "unsupported"}:
+        return f"{record.artifact_type} profile"
+    return "not-applicable"
 
 
 def render_report(
@@ -631,23 +943,26 @@ def render_report(
             "",
             "## Inventory",
             "",
-            "| Path | Profile | Parse | Status | Artifact ID | Parent Count | Findings | Disposition |",
-            "| --- | --- | --- | --- | --- | ---: | --- | --- |",
+            "| Path | Profile | Frontmatter | Identity | Relations | Lifecycle | Transition Evidence | Freshness | Exception Context | Findings | Disposition |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
         ]
     )
     for record in sorted(records, key=lambda item: item.path.as_posix()):
         findings = findings_by_path.get(record.path.as_posix(), [])
-        codes = ", ".join(sorted({finding.code for finding in findings})) or "none"
-        parent_ids = _string_list(record.metadata.get("parent_ids")) or []
+        code_set = {finding.code for finding in findings}
+        codes = ", ".join(sorted(code_set)) or "none"
         raw_profile = profile_map.get(record.artifact_type, {})
         disposition = raw_profile.get("disposition", "advisory-only") if isinstance(raw_profile, dict) else "advisory-only"
         row = [
             f"`{record.path.as_posix()}`",
             f"`{record.artifact_type}`",
-            "error" if record.parse_error else ("valid" if record.metadata else "missing"),
-            record.metadata.get("status", "—"),
-            record.metadata.get("artifact_id", "—"),
-            len(parent_ids),
+            _frontmatter_state(record, findings),
+            _identity_state(record, raw_profile, code_set),
+            _relation_state(record, raw_profile, code_set),
+            _lifecycle_state(record, raw_profile, code_set),
+            _transition_state(record, raw_profile, code_set),
+            _freshness_state(record, raw_profile, code_set),
+            _exception_context(record, code_set),
             codes,
             disposition,
         ]
@@ -659,7 +974,8 @@ def render_report(
             "",
             "- Paths come from sorted `git ls-files '*.md'` output filtered to canonical docs stages; non-Git fixtures use sorted recursive discovery.",
             "- YAML is parsed with PyYAML `safe_load` behavior plus duplicate-key rejection.",
-            "- The report shows only bounded metadata fields, counts, and finding codes.",
+            "- Every row states parse, identity, relation, lifecycle, transition-evidence, freshness, and exception semantics; unavailable history is never inferred.",
+            "- The report shows only bounded metadata states, safe repository paths, counts, and finding codes.",
             "- Graphify is advisory and is not used as inventory proof.",
             "",
             "## Sources",
@@ -688,7 +1004,11 @@ def render_report(
 
 def _changed_paths(root: pathlib.Path, explicit: Sequence[str]) -> set[str]:
     if explicit:
-        return {pathlib.PurePosixPath(path).as_posix().lstrip("./") for path in explicit if path.endswith(".md")}
+        return {
+            normalized.as_posix()
+            for path in explicit
+            if (normalized := _normalized_target_path(path)) is not None
+        }
     changed: set[str] = set()
     for command in (
         ["git", "-C", str(root), "diff", "--name-only", "--diff-filter=ACMRT", "HEAD", "--", "*.md"],
@@ -696,7 +1016,11 @@ def _changed_paths(root: pathlib.Path, explicit: Sequence[str]) -> set[str]:
     ):
         result = subprocess.run(command, capture_output=True, text=True, check=False)
         if result.returncode == 0:
-            changed.update(line.strip() for line in result.stdout.splitlines() if line.strip())
+            changed.update(
+                normalized.as_posix()
+                for line in result.stdout.splitlines()
+                if line.strip() and (normalized := _normalized_target_path(line.strip())) is not None
+            )
     return changed
 
 
@@ -729,7 +1053,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     except ProfileError as error:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
-    records = collect_records(root, profiles, base_ref=args.base_ref)
+    changed_selection = _changed_paths(root, args.changed_path) if args.mode == "check-changed" else set()
+    records = collect_records(
+        root,
+        profiles,
+        base_ref=args.base_ref,
+        selected_paths=sorted(changed_selection),
+    )
     manifest = build_manifest(records)
     findings_by_path = {
         record.path.as_posix(): validate_record(record, profiles, manifest) for record in records
@@ -751,7 +1081,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2 if parser_failures else 0
 
     selected_paths = (
-        _changed_paths(root, args.changed_path)
+        changed_selection
         if args.mode == "check-changed"
         else {record.path.as_posix() for record in records if record.metadata.get("status") == "active"}
     )

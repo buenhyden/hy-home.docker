@@ -3723,16 +3723,22 @@ metadata_inventory="docs/90.references/audits/2026-07-05-agentic-engineering-imp
 [[ -f "$metadata_tests" ]] || fail "missing document metadata tests: $metadata_tests"
 [[ -f "$metadata_inventory" ]] || fail "missing document metadata inventory: $metadata_inventory"
 
+metadata_check_output="$(mktemp "${TMPDIR:-/tmp}/check-repo-contracts-document-metadata.XXXXXX")"
+cleanup_metadata_check_output() {
+  rm -f "$metadata_check_output"
+}
+trap cleanup_metadata_check_output EXIT
 if [[ -f "$metadata_profiles" && -f "$metadata_checker" && -f "$metadata_inventory" ]]; then
-  if ! python3 "$metadata_checker" --mode report --output "$metadata_inventory" --check >/tmp/check-repo-contracts-document-metadata.txt 2>&1; then
+  if ! python3 "$metadata_checker" --mode report --output "$metadata_inventory" --check >"$metadata_check_output" 2>&1; then
     fail "document metadata profile syntax or advisory inventory freshness check failed"
-    cat /tmp/check-repo-contracts-document-metadata.txt >&2
-  elif ! grep -q 'metadata inventory fresh:' /tmp/check-repo-contracts-document-metadata.txt; then
+    cat "$metadata_check_output" >&2
+  elif ! grep -q 'metadata inventory fresh:' "$metadata_check_output"; then
     fail "document metadata inventory check did not print a freshness marker"
-    cat /tmp/check-repo-contracts-document-metadata.txt >&2
+    cat "$metadata_check_output" >&2
   fi
 fi
-rm -f /tmp/check-repo-contracts-document-metadata.txt
+cleanup_metadata_check_output
+trap - EXIT
 
 section "Audit implementation matrix snapshot"
 if ! bash scripts/validation/generate-audit-implementation-matrix.sh --check >/tmp/check-repo-contracts-audit-implementation-matrix.txt 2>&1; then
