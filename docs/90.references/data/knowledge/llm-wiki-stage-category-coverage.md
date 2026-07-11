@@ -49,7 +49,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 ## Coverage Summary
 
-- Safe tracked source paths: `1265`
+- Safe tracked source paths: `1266`
 - Source buckets: `17`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -67,7 +67,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | `docs/03.specs` | 83 | [docs/03.specs/001-gateway/README.md](../../../03.specs/001-gateway/README.md)<br>[docs/03.specs/001-gateway/spec.md](../../../03.specs/001-gateway/spec.md)<br>[docs/03.specs/002-auth/README.md](../../../03.specs/002-auth/README.md) |
 | `docs/04.execution` | 205 | [docs/04.execution/README.md](../../../04.execution/README.md)<br>[docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../../04.execution/plans/2026-03-26-01-gateway-standardization.md)<br>[docs/04.execution/plans/2026-03-26-02-auth-standardization.md](../../../04.execution/plans/2026-03-26-02-auth-standardization.md) |
 | `docs/05.operations` | 261 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/guides/00-workspace/README.md](../../../05.operations/guides/00-workspace/README.md)<br>[docs/05.operations/guides/00-workspace/developer-setup.md](../../../05.operations/guides/00-workspace/developer-setup.md) |
-| `docs/90.references` | 85 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md) |
+| `docs/90.references` | 86 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md) |
 | `docs/98.archive` | 21 | [docs/98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md](../../../98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md)<br>[docs/98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md](../../../98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md)<br>[docs/98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md](../../../98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md) |
 | `docs/99.templates` | 39 | [docs/99.templates/README.md](../../../99.templates/README.md)<br>[docs/99.templates/support/README.md](../../../99.templates/support/README.md)<br>[docs/99.templates/support/external-source-rationale.md](../../../99.templates/support/external-source-rationale.md) |
 | `docs/README.md` | 1 | [docs/README.md](../../../README.md) |
@@ -86,7 +86,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | Runtime surfaces | 86 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
 | Active stage docs | 364 | [docs/01.requirements/001-gateway.md](../../../01.requirements/001-gateway.md)<br>[docs/01.requirements/002-auth.md](../../../01.requirements/002-auth.md)<br>[docs/01.requirements/003-security.md](../../../01.requirements/003-security.md) |
 | Operations docs | 261 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/guides/00-workspace/README.md](../../../05.operations/guides/00-workspace/README.md)<br>[docs/05.operations/guides/00-workspace/developer-setup.md](../../../05.operations/guides/00-workspace/developer-setup.md) |
-| Reference and template docs | 123 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md) |
+| Reference and template docs | 124 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md) |
 | Infrastructure source | 247 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | Scripts and validators | 32 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
 | GitHub workflow surface | 14 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
@@ -98,7 +98,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | Role | Paths |
 | --- | ---: |
 | JSON registry | 68 |
-| Markdown reference | 798 |
+| Markdown reference | 799 |
 | YAML config | 102 |
 | folder index | 216 |
 | script | 49 |

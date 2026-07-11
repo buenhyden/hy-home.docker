@@ -132,11 +132,9 @@ the narrower 872-file `docs/**/*.md` result.
   gap is enforcement against a future replacement-free supersession.
 - Parent coverage, transition history, README profile semantics, and a distinct
   actual Release record are the principal Task 7/8 inputs.
-- The generated audit implementation matrix is byte-fresh for its historical
-  eight-report input list, but it omits this report's 22 rows and the
-  frontmatter report's 14 DML rows. Until Task 6 consolidates the generator,
-  these two canonical reports—not the matrix—are the complete Task 4 semantic
-  coverage source.
+- The Task 6 generator now includes this report's 22 rows, the frontmatter
+  report's 14 rows, and all other current canonical criteria in an exact
+  eleven-report / 161-row matrix with unique-ID and schema checks.
 - Zero Incident/Postmortem leaves and justified PRD/ARD/ADR N/A decisions are
   not missing-artifact defects.
 

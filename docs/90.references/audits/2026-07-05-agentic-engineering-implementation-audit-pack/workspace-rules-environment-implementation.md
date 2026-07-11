@@ -79,16 +79,15 @@ against tracked source and was never treated as implementation truth.
 | Gap | Action | Owner |
 | --- | --- | --- |
 | Native provider schema/event compatibility | Fix in approved provider synchronization work. | Task 10 |
-| Evidence-ledger consistency and full audit-matrix coverage | Improve generator only in its planned owner task. | Task 6 |
+| Evidence-ledger consistency and full audit-matrix coverage | Retain the eleven-report / 161-row generator contract and freshness checks. | Canonical audit generator owner |
 | Live/global environment facts | Retain unknown unless a task needs and is authorized to observe them. | Executing task owner |
 | Semantic behavior coverage | Improve through a separately designed eval contract. | QA/eval follow-up |
 
 ## Automation Impact
 
-Retain provider sync and deterministic repository checks. Task 6 owns the
-ten-report audit-generator consolidation; this Task 5 report does not modify
-that generator and any generated audit matrix remains an interim historical
-subset.
+Retain provider sync, deterministic repository checks, and the Task 6 complete
+eleven-report audit-generator contract. The generated matrix now contains every
+canonical criterion row; README and overview counts remain separate.
 
 ## Source Rules
 

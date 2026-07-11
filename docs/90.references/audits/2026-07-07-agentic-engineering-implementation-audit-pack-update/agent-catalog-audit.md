@@ -1,66 +1,58 @@
 ---
-status: active
+status: superseded
 ---
 
 <!-- Target: docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/agent-catalog-audit.md -->
 
-# Reference: AI Agent Catalog and Instruction Audit
+# Reference: Superseded Agent Catalog Audit Mapping
 
 ## Overview
 
-This audit evaluates the instruction completeness of local AI agents, compares local configurations with `msitarzewski/agency-agents`, and details the specifications of three proposed agent roles.
+This leaf maps the former catalog/persona audit to the current capability-family audit.
 
 ## Purpose
 
-Verify that local agent instructions define clear execution boundaries and select optimal roles to coordinate multi-agent operations.
+Preserve bounded catalog comparison themes without importing identities or unsupported roles.
 
 ## Repository Role
 
-This document is an audit reference. It does not replace or modify active agent definitions or provider-specific configuration files.
+Superseded provenance only; not a current catalog or agent-definition source.
 
 ## Scope
 
 ### In Scope
 
-- Audit of agent instruction layouts (purpose, covers/excludes, metadata)
-- Comparison of local agent scope against community persona catalogs
-- Detailed specification of three proposed specialized agent roles
+- Capability-family merge/reject disposition.
 
 ### Out of Scope
 
-- Modifying active subagent structures or protocols
-- Rewriting provider configuration adapters
-- Installing community scripts or agents directly
+- Agent creation, persona import, model routing changes, or catalog counts.
 
 ## Definitions / Facts
 
-- **Agent Instruction Layouts**:
-  - *Status*: The 15 local agents define clear scopes (Covers/Excludes) to enforce single-task focuses and prevent overlapping operations.
-  - *Gaps*: Instructions are maintained manually; they lack compilers to automatically synchronize markdown specifications with provider runtime files.
-- **agency-agents Comparison**:
-  - *Status*: Compared local agents against the 140+ community personas.
-  - *Gaps*: Local agents lack granular domain expertise, and interaction checklists for failure-handling scenarios are missing.
-- **Proposed Specialized Agents Specifications**:
-  - **Performance Optimizer**: Manages container resource settings, execution profile checks, and file processing performance.
-  - **Dependency Vulnerability Guardian**: Manages SBOM validation, package vulnerability audits, and CVE fix recommendations.
-  - **Prompt/Context Refiner**: Manages JIT context window pruning, history compression, and prompt optimization.
+| Field | Disposition |
+| --- | --- |
+| Canonical destination | [Instruction, catalog, vibe-coding, and model audit](../2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md). |
+| Verified merged claims | Local role scopes need bounded interfaces; external catalogs are pattern sources; performance, dependency/security, and context methods should merge into existing owners when evidence supports demand. |
+| Rejected unsupported claims | “140+” persona count, automatic compiler absence as a role gap, three proposed specialized agents as required additions, and direct persona import. |
+| Current-truth warning | The current audit uses AIV/AIC/AMS criteria and a pinned catalog commit; no role was added and no model policy changed. |
+
+## Source Rules
+
+- Compare capabilities, not names or marketing counts.
+- Require recurring demand and representative evaluation before adding roles.
 
 ## Sources
 
-- [Agent catalog directory](../../../00.agent-governance/agents/README.md) - Local agent metadata catalog
-- [Subagent protocol specification](../../../00.agent-governance/subagent-protocol.md) - Model tier assignment rules
-- [agency-agents github](https://github.com/msitarzewski/agency-agents) - Community agent persona repository
+- [Canonical agent audit](../2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md) - current criteria and dispositions.
 
 ## Maintenance
 
-- **Owner**: Workspace Agent Architect
-- **Review Cadence**: Review when new subagent protocols are drafted or when new roles are introduced
-- **Update Trigger**: Update when agent instructions are updated or upstream persona catalogs change
+- **Owner**: Agentic Workflow Specialist.
+- **Review Cadence**: None for current status.
+- **Update Trigger**: Supersession-route correction only.
 
 ## Related Documents
 
-- [README.md](./README.md)
-- [implementation-overview.md](./implementation-overview.md)
-- [harness-loop-audit.md](./harness-loop-audit.md)
-- [sdlc-qa-security-audit.md](./sdlc-qa-security-audit.md)
-- [../../research/2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md](../../research/2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md)
+- [Superseded pack README](./README.md)
+- [Canonical audit README](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)

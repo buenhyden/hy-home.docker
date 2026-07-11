@@ -1,69 +1,59 @@
 ---
-status: active
+status: superseded
 ---
 
 <!-- Target: docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/sdlc-qa-security-audit.md -->
 
-# Reference: SDLC, QA, Security, and Vibe Coding Audit
+# Reference: Superseded SDLC, QA, and Security Audit Mapping
 
 ## Overview
 
-This report evaluates the spec-driven SDLC, multi-stage QA gates, security maturity levels, and vibe coding controls in the `hy-home.docker` workspace.
+This leaf maps the former combined SDLC/QA/security narrative to focused current reports.
 
 ## Purpose
 
-Verify structural and syntax integrity across codes and docs, ensuring that both human and AI edits conform to repository standard gates.
+Preserve verified themes while removing unsupported combined maturity claims.
 
 ## Repository Role
 
-This document is an audit reference. It does not replace or modify active CI/CD actions (`ci-quality.yml`), static linter configs, or security frameworks.
+Superseded provenance only; not a current quality, security, or runtime source.
 
 ## Scope
 
 ### In Scope
 
-- Audit of stage-gated SDLC lifecycle and link traceability
-- Evaluation of QA gates (formatting, style linting, syntax parse checks)
-- Assessment of security controls (credential masking, approval boundaries, SBOM/SLSA)
-- Diagnostic of vibe coding prevention rules (surgical edits, checklist evidence)
+- Canonical destinations and claim disposition.
 
 ### Out of Scope
 
-- Directly updating GitHub workflow configuration files
-- Modifying pre-commit YAML or eslint setups
-- Managing credentials or docker volumes
+- Current CI, CD, QA, security, Compose, or runtime status.
 
 ## Definitions / Facts
 
-- **SDLC and Spec-driven Development**:
-  - *Status*: Clean lifecycle templates (Stage 00-05) are active, and link-based plan-to-task traceability is configured.
-  - *Gaps*: Traceability checking (`check-doc-traceability.sh`) is advisory; it lacks a hard gate that blocks builds when specifications are missing.
-- **QA Gates (Formatting, Linting, Syntax)**:
-  - *Status*: `ci-quality.yml` runs parallel style checks, format validation, and docker-compose parse checks.
-  - *Gaps*: Environment version drift (local Node/Python vs CI containers) can cause lint variances, and eslint-bypass approvals are not structured.
-- **Security Maturity**:
-  - *Status*: Credentials are isolated using `secrets/` mounts and `.env.example`, and approvals are enforced via `approval-boundaries.md`.
-  - *Gaps*: Supply chain security integrations (SBOM generation, SLSA attestation, and container vulnerability checks via Trivy) are missing.
-- **Vibe Coding Controls**:
-  - *Status*: Surgical edit requirements and checklist-based execution evidence in `rules/agentic.md` limit unguided coding.
-  - *Gaps*: Automated tools to verify the contents of check check logs (preventing placeholder "Pass" inputs) are not implemented.
+| Field | Disposition |
+| --- | --- |
+| Canonical destinations | [SDLC](../2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md), [quality/CI](../2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md), [security](../2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md), and [Compose/operations](../2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md). |
+| Verified merged claims | Stage-gated documents, scoped quality gates, secret/approval boundaries, and missing SBOM/attestation/container-scanning themes. |
+| Rejected unsupported claims | Traceability being merely advisory, parallel CI style/format claims without exact jobs, environment drift conclusions, credential masking as secret isolation proof, mandatory Trivy selection, and automated check-log fraud detection claims. |
+| Current-truth warning | CI is not CD; structural Compose/hardening is not runtime readiness; one scoped npm audit is not broad SCA/container coverage. |
+
+## Source Rules
+
+- Use exact tracked commands/jobs for QA claims.
+- Use observed evidence for runtime/security outcomes.
 
 ## Sources
 
-- [GitHub CI quality workflow](../../../../.github/workflows/ci-quality.yml) - CI/CD pipeline definition
-- [Security disclosure contract](../../../../.github/SECURITY.md) - Security guidelines
-- [Agentic implementation rules](../../../00.agent-governance/rules/agentic.md) - Inner loop control rules
-- [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - Protected paths and command scopes
+- [Canonical quality audit](../2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md) - exact gate boundaries.
+- [Canonical security audit](../2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md) - supply-chain boundaries.
 
 ## Maintenance
 
-- **Owner**: DevOps & Process Lead
-- **Review Cadence**: Review when CI infrastructure or workspace security protocols undergo major updates
-- **Update Trigger**: Update when stage lifecycle rules are updated or security checks are integrated
+- **Owner**: QA Engineer / Security Auditor.
+- **Review Cadence**: None for current status.
+- **Update Trigger**: Supersession-route correction only.
 
 ## Related Documents
 
-- [README.md](./README.md)
-- [implementation-overview.md](./implementation-overview.md)
-- [harness-loop-audit.md](./harness-loop-audit.md)
-- [agent-catalog-audit.md](./agent-catalog-audit.md)
+- [Superseded pack README](./README.md)
+- [Canonical audit README](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)

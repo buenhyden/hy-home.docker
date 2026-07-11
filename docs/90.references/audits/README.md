@@ -50,7 +50,7 @@ audits/
 ├── 2026-07-03-workspace-document-contract-audit-pack/ # Workspace document contract audit reports
 ├── 2026-07-04-document-restructure-audit-contract-archive/ # Document restructure audit, archive, contract, and QA reports
 ├── 2026-07-05-agentic-engineering-implementation-audit-pack/ # Agentic engineering implementation-status audit reports
-├── 2026-07-07-agentic-engineering-implementation-audit-pack-update/ # Updated implementation status audits for 23 items
+├── 2026-07-07-agentic-engineering-implementation-audit-pack-update/ # Superseded mapping-only audit history
 └── README.md # This file
 ```
 
@@ -59,7 +59,10 @@ audits/
 - [Workspace document contract audit references](./2026-07-03-workspace-document-contract-audit-pack/README.md)
 - [Document restructure audit references](./2026-07-04-document-restructure-audit-contract-archive/README.md)
 - [Agentic engineering implementation audit references](./2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Agentic engineering implementation audit update references](./2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)
+
+## Superseded References
+
+- [2026-07-07 implementation audit update mapping](./2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md) - mapping-only history; current status and counts live in the 2026-07-05 canonical pack.
 
 ## Naming Rules
 

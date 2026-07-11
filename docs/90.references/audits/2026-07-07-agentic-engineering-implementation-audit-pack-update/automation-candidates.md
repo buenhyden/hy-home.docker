@@ -1,59 +1,58 @@
 ---
-status: active
+status: superseded
 ---
 
 <!-- Target: docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/automation-candidates.md -->
 
-# Reference: Automation Candidates and Implementation Roadmap
+# Reference: Superseded Automation Candidate Mapping
 
 ## Overview
 
-This reference identifies 14 automation candidates and proposes an implementation roadmap to enhance harness validation, loop pipelines, and agent orchestration.
+This leaf maps the former 14-candidate roadmap to verified canonical automation evidence.
 
 ## Purpose
 
-Define actionable roadmap goals to reduce manual steps and enforce consistent validation constraints across all agent runtimes.
+Preserve useful themes while rejecting unverified IDs, priorities, and implied approvals.
 
 ## Repository Role
 
-This document is a roadmap reference. It does not replace or modify active validation scripts, CI workflows, or tool configurations.
+Superseded provenance only; not an active roadmap or current automation inventory.
 
 ## Scope
 
 ### In Scope
 
-- Listing 14 automation candidates across pipelines, workflows, and tools
-- Structuring priority recommendations and immediate action items
+- Canonical destination and candidate-theme disposition.
 
 ### Out of Scope
 
-- Directly implementing proposed automation codes or scripts
-- Deploying new third-party pipeline integrations
-- Modifying live branch protection rules
+- Authorizing scripts, CI, hooks, Graphify integration, scanners, release work, or agents.
 
 ## Definitions / Facts
 
-- **14 Automation Candidates**:
-  - `AEA-AUTO-014` (CVE Scan), `AEA-AUTO-015` (Multi-agent Orchestrator), `AEA-AUTO-016` (Semantic Eval CI Integration), `AEA-AUTO-017` (Universal CLI Wrapper), `AEA-AUTO-018` (SBOM Generator), `AEA-AUTO-019` (attestation signing), `AEA-AUTO-020` (Instruction TOML Compiler), `AEA-AUTO-021` (Link integrity daemon), `AEA-AUTO-022` (eslint-disable abuse checker), `AEA-AUTO-023` (Git Hook Graphify integration), `AEA-AUTO-024` (Developer tool version check), `AEA-AUTO-025` (Template migration utilities), `AEA-AUTO-026` (check log validation parser), `AEA-AUTO-027` (release notes automation).
-- **Roadmap Priorities**:
-  - *High*: `AEA-AUTO-016` (Semantic Eval) and `AEA-AUTO-017` (Universal CLI Wrapper) to automate meaning-level code reviews and enforce consistent post-tool validation.
-  - *Medium*: `AEA-AUTO-020` (Instruction Compiler) and `AEA-AUTO-023` (Git Hook Graphify) to maintain parity between agent instructions and knowledge graphs.
+| Field | Disposition |
+| --- | --- |
+| Canonical destination | [Canonical automation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md). |
+| Verified merged claims | Semantic eval, controlled all-files pre-commit, SBOM/provenance/signing, broader vulnerability scanning, instruction/provider compatibility, and release/deployment automation are valid bounded themes. |
+| Rejected unsupported claims | `AEA-AUTO-014` through `027` as canonical IDs, High/Medium priorities, multi-agent orchestrator requirement, Graphify git-hook adoption, daemon requirements, chosen tool implementations, and immediate roadmap status. |
+| Current-truth warning | Use AUT-01 through AUT-11 and the existing AEA-AUTO-001 through 013 disposition ledger; Task 9 owns the wrapper and Task 11 owns runtime/supply-chain/deployment follow-ups. |
+
+## Source Rules
+
+- Candidate status requires tracked evidence and one canonical owner.
+- Security/runtime/remote automation requires a separate approved spec/plan.
 
 ## Sources
 
-- [QA scope](../../../00.agent-governance/scopes/qa.md) - QA/CI automation guidelines
-- [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md) - Local automation script SSoT
-- [Scripts contract README](../../../../scripts/README.md) - Script inventory definitions
+- [Canonical automation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md) - current automation criteria and candidates.
 
 ## Maintenance
 
-- **Owner**: DevOps & Workflow Specialist
-- **Review Cadence**: Review when local pipelines or build chains are updated
-- **Update Trigger**: Update when new automation features are proposed or integrated
+- **Owner**: Agentic Workflow Specialist / QA Engineer.
+- **Review Cadence**: None for current status.
+- **Update Trigger**: Supersession-route correction only.
 
 ## Related Documents
 
-- [README.md](./README.md)
-- [implementation-overview.md](./implementation-overview.md)
-- [harness-loop-audit.md](./harness-loop-audit.md)
-- [sdlc-qa-security-audit.md](./sdlc-qa-security-audit.md)
+- [Superseded pack README](./README.md)
+- [Canonical audit README](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)

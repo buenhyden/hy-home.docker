@@ -53,14 +53,17 @@ MODE = sys.argv[1]
 OUTPUT = pathlib.Path(sys.argv[2])
 PACK = pathlib.Path("docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack")
 
-EXPECTED_REPORTS = [
-    "implementation-overview.md",
+CRITERION_REPORTS = [
     "harness-engineering-implementation.md",
     "loop-engineering-implementation.md",
     "provider-harness-loop-implementation.md",
     "workspace-rules-environment-implementation.md",
+    "agent-instructions-catalog-vibe-models.md",
     "automation-candidates.md",
+    "sdlc-document-contracts-implementation.md",
+    "frontmatter-template-readme-implementation.md",
     "sdlc-quality-formatting-implementation.md",
+    "compose-infrastructure-operations-readiness.md",
     "security-framework-maturity.md",
 ]
 
@@ -71,8 +74,11 @@ EXPECTED_OVERVIEW_CATEGORIES = [
     "Codex provider harness/loop",
     "Gemini provider harness/loop",
     "Common provider-neutral rules/environment",
+    "Agent instructions, catalogs, vibe coding, and model routing",
     "Automation, pipeline, workflow",
     "Spec-driven SDLC",
+    "Frontmatter, templates, and README profiles",
+    "Release communication and records",
     "Docker Compose / infrastructure",
     "CI/CD",
     "QA, formatting, linting, syntax",
@@ -80,16 +86,36 @@ EXPECTED_OVERVIEW_CATEGORIES = [
 ]
 
 EXPECTED_CANDIDATES = [f"AEA-AUTO-{index:03d}" for index in range(1, 14)]
-STATUS_HEADERS = {"status", "current status", "claude", "codex", "gemini"}
+CRITERION_FIELDS = [
+    "criterion id",
+    "external criterion",
+    "workspace evidence",
+    "implementation state",
+    "enforcement depth",
+    "disposition",
+    "canonical owner",
+    "automation impact",
+    "verification",
+    "confidence",
+]
+VALID_STATES = {"Implemented", "Partial", "Missing", "Not Applicable", "Needs Revalidation"}
+VALID_DISPOSITIONS = {"Retain", "Fix", "Improve", "Add", "Remove"}
 
 
 @dataclass(frozen=True)
-class StatusCell:
+class CriterionRow:
     report: pathlib.Path
-    row_label: str
-    header: str
+    criterion_id: str
+    external_criterion: str
+    workspace_evidence: str
     raw_status: str
     normalized_status: str
+    enforcement_depth: str
+    disposition: str
+    canonical_owner: str
+    automation_impact: str
+    verification: str
+    confidence: str
 
 
 @dataclass(frozen=True)
@@ -163,8 +189,10 @@ def iter_tables(text: str) -> list[tuple[list[str], list[list[str]]]]:
 
 def normalize_status(value: str) -> str:
     value_lower = value.lower()
-    if "not implemented" in value_lower or value_lower == "gap" or value_lower.startswith("gap "):
+    if value_lower == "missing" or "not implemented" in value_lower or value_lower == "gap" or value_lower.startswith("gap "):
         return "Gap / Not Implemented"
+    if value_lower == "not applicable":
+        return "Not Applicable"
     if (
         "partial" in value_lower
         or "partially" in value_lower
@@ -181,33 +209,51 @@ def normalize_status(value: str) -> str:
     return "Other"
 
 
-def extract_status_cells(path: pathlib.Path) -> list[StatusCell]:
+def extract_criterion_rows(path: pathlib.Path) -> tuple[list[CriterionRow], list[str]]:
     text = read(path)
-    cells: list[StatusCell] = []
+    criteria: list[CriterionRow] = []
+    failures: list[str] = []
     for header, rows in iter_tables(text):
-        status_indexes = [
-            index
-            for index, name in enumerate(header)
-            if name.strip().lower() in STATUS_HEADERS
-        ]
-        if not status_indexes:
+        normalized_header = [name.strip().lower() for name in header]
+        if not normalized_header or normalized_header[0] != "criterion id":
             continue
+        if "status" in normalized_header and "implementation state" not in normalized_header:
+            normalized_header[normalized_header.index("status")] = "implementation state"
+        if normalized_header != CRITERION_FIELDS:
+            failures.append(f"invalid criterion schema in {path}: {' | '.join(header)}")
+            continue
+        field_index = {name: index for index, name in enumerate(normalized_header)}
         for row in rows:
-            row_label = row[0]
-            for index in status_indexes:
-                raw_status = row[index]
-                if not raw_status or raw_status == "---":
-                    continue
-                cells.append(
-                    StatusCell(
-                        report=path,
-                        row_label=row_label,
-                        header=header[index],
-                        raw_status=raw_status,
-                        normalized_status=normalize_status(raw_status),
-                    )
+            criterion_id = row[field_index["criterion id"]]
+            raw_status = row[field_index["implementation state"]]
+            depth = row[field_index["enforcement depth"]]
+            disposition = row[field_index["disposition"]]
+            if not re.fullmatch(r"[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-[0-9]{2}", criterion_id):
+                failures.append(f"invalid criterion ID in {path}: {criterion_id}")
+            if raw_status not in VALID_STATES:
+                failures.append(f"invalid implementation state for {criterion_id}: {raw_status}")
+            depth_match = re.match(r"^([0-4])(?:\b|\s)", depth)
+            if not depth_match:
+                failures.append(f"invalid enforcement depth for {criterion_id}: {depth}")
+            if disposition not in VALID_DISPOSITIONS:
+                failures.append(f"invalid disposition for {criterion_id}: {disposition}")
+            criteria.append(
+                CriterionRow(
+                    report=path,
+                    criterion_id=criterion_id,
+                    external_criterion=row[field_index["external criterion"]],
+                    workspace_evidence=row[field_index["workspace evidence"]],
+                    raw_status=raw_status,
+                    normalized_status=normalize_status(raw_status),
+                    enforcement_depth=depth_match.group(1) if depth_match else depth,
+                    disposition=disposition,
+                    canonical_owner=row[field_index["canonical owner"]],
+                    automation_impact=row[field_index["automation impact"]],
+                    verification=row[field_index["verification"]],
+                    confidence=row[field_index["confidence"]],
                 )
-    return cells
+            )
+    return criteria, failures
 
 
 def extract_overview_categories(path: pathlib.Path) -> dict[str, str]:
@@ -272,19 +318,25 @@ def extract_gap_signals() -> list[str]:
 
 def build_output() -> str:
     failures: list[str] = []
-    report_paths = [PACK / name for name in EXPECTED_REPORTS]
+    report_paths = [PACK / name for name in CRITERION_REPORTS]
     for report in report_paths:
         if not report.is_file():
             failures.append(f"missing required audit report: {report}")
 
-    all_status_cells: list[StatusCell] = []
+    all_criteria: list[CriterionRow] = []
     per_report_counts: dict[pathlib.Path, int] = {}
     for report in report_paths:
-        cells = extract_status_cells(report)
-        per_report_counts[report] = len(cells)
-        all_status_cells.extend(cells)
-        if report.is_file() and not cells:
-            failures.append(f"no parseable implementation-status cells in required audit report: {report}")
+        criteria, criterion_failures = extract_criterion_rows(report)
+        failures.extend(criterion_failures)
+        per_report_counts[report] = len(criteria)
+        all_criteria.extend(criteria)
+        if report.is_file() and not criteria:
+            failures.append(f"no parseable criterion rows in required audit report: {report}")
+
+    criterion_ids = [criterion.criterion_id for criterion in all_criteria]
+    duplicate_ids = sorted(identifier for identifier, count in collections.Counter(criterion_ids).items() if count > 1)
+    for criterion_id in duplicate_ids:
+        failures.append(f"duplicate criterion ID: {criterion_id}")
 
     overview_categories = extract_overview_categories(PACK / "implementation-overview.md")
     for category in EXPECTED_OVERVIEW_CATEGORIES:
@@ -296,8 +348,8 @@ def build_output() -> str:
         if candidate_id not in candidates:
             failures.append(f"missing automation candidate row: {candidate_id}")
 
-    normalized_counts = collections.Counter(cell.normalized_status for cell in all_status_cells)
-    raw_counts = collections.Counter(cell.raw_status for cell in all_status_cells)
+    normalized_counts = collections.Counter(criterion.normalized_status for criterion in all_criteria)
+    raw_counts = collections.Counter(criterion.raw_status for criterion in all_criteria)
     disposition_counts = collections.Counter(candidate.disposition for candidate in candidates.values())
     gap_signals = extract_gap_signals()
 
@@ -331,7 +383,7 @@ def build_output() -> str:
         "",
         "The purpose is to make audit maintenance repeatable without rewriting audit",
         "conclusions. The snapshot gives maintainers a single generated view of",
-        "required audit reports, overview categories, automation candidate rows, and",
+        "the complete canonical criterion set, overview categories, automation candidate rows, and",
         "residual gap signals that still require separate Stage 03/04 work.",
         "",
         "## Repository Role",
@@ -346,8 +398,8 @@ def build_output() -> str:
         "",
         "### In Scope",
         "",
-        "- Required report presence for the agentic engineering implementation audit pack.",
-        "- Parseable implementation-status cells from audit report tables.",
+        "- Required criterion-report presence for the agentic engineering implementation audit pack.",
+        "- Complete, unique Spec 123 criterion rows and schema/vocabulary validation.",
         "- Required implementation-overview categories.",
         "- `AEA-AUTO-*` automation candidate closure rows.",
         "- Generated evidence surfaces that support audit automation follow-ups.",
@@ -362,7 +414,8 @@ def build_output() -> str:
         "",
         "## Definitions / Facts",
         "",
-        f"- **Required audit reports**: {len(EXPECTED_REPORTS)} reports are expected under `{PACK}`.",
+        f"- **Criterion reports**: {len(CRITERION_REPORTS)} criterion-bearing reports are expected under `{PACK}`.",
+        "- **Non-criterion pack files**: `README.md` is the index and `implementation-overview.md` is the cross-category overview; neither is counted as a criterion report.",
         f"- **Required overview categories**: {len(EXPECTED_OVERVIEW_CATEGORIES)} categories are expected in `implementation-overview.md`.",
         f"- **Required automation candidates**: {len(EXPECTED_CANDIDATES)} `AEA-AUTO-*` rows are expected in `automation-candidates.md`.",
         "- **Closed with residual gap**: candidate has implementation evidence, but its row still names follow-up work that remains outside this generated snapshot.",
@@ -371,9 +424,12 @@ def build_output() -> str:
         "",
         "| Metric | Value |",
         "| --- | ---: |",
-        f"| Reports expected | {len(EXPECTED_REPORTS)} |",
-        f"| Reports present | {sum(1 for report in report_paths if report.is_file())} |",
-        f"| Status cells parsed | {len(all_status_cells)} |",
+        f"| Criterion reports expected | {len(CRITERION_REPORTS)} |",
+        f"| Criterion reports present | {sum(1 for report in report_paths if report.is_file())} |",
+        "| README indexes | 1 |",
+        "| Overview reports | 1 |",
+        f"| Criterion rows parsed | {len(all_criteria)} |",
+        f"| Unique criterion IDs | {len(set(criterion_ids))} |",
         f"| Overview categories expected | {len(EXPECTED_OVERVIEW_CATEGORIES)} |",
         f"| Overview categories found | {len(overview_categories)} |",
         f"| Automation candidates expected | {len(EXPECTED_CANDIDATES)} |",
@@ -395,12 +451,47 @@ def build_output() -> str:
             "",
             "## Audit Report Coverage",
             "",
-            "| Report | File State | Status Cells |",
+            "| Criterion Report | File State | Criterion Rows |",
             "| --- | --- | ---: |",
         ]
     )
     for report in report_paths:
         lines.append(f"| {report.name} | {file_state(report)} | {per_report_counts.get(report, 0)} |")
+
+    lines.extend(
+        [
+            "",
+            "## Complete Criterion Matrix",
+            "",
+            "| Report | Criterion ID | External criterion | Workspace evidence | Status | Depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |",
+            "| --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |",
+        ]
+    )
+
+    def escape(value: str) -> str:
+        return value.replace("|", "\\|").replace("\n", " ")
+
+    for criterion in all_criteria:
+        lines.append(
+            "| "
+            + " | ".join(
+                escape(value)
+                for value in [
+                    criterion.report.name,
+                    criterion.criterion_id,
+                    criterion.external_criterion,
+                    criterion.workspace_evidence,
+                    criterion.raw_status,
+                    criterion.enforcement_depth,
+                    criterion.disposition,
+                    criterion.canonical_owner,
+                    criterion.automation_impact,
+                    criterion.verification,
+                    criterion.confidence,
+                ]
+            )
+            + " |"
+        )
 
     lines.extend(
         [
@@ -411,7 +502,7 @@ def build_output() -> str:
             "| --- | ---: |",
         ]
     )
-    for status in ["Implemented", "Partially Implemented", "Gap / Not Implemented", "Unknown / Needs Revalidation", "Other"]:
+    for status in ["Implemented", "Partially Implemented", "Gap / Not Implemented", "Not Applicable", "Unknown / Needs Revalidation", "Other"]:
         lines.append(f"| {status} | {normalized_counts.get(status, 0)} |")
 
     lines.extend(

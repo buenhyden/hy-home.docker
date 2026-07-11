@@ -78,6 +78,13 @@ This README is for:
 - `historical-evidence-preservation.md`
 - `gap-register.md`
 
+## Dated Evidence Boundary
+
+This pack preserves the 2026-07-03 repo-wide 930-Markdown snapshot and its
+unique contract evidence. That count is not current corpus truth. Current
+document-contract counts and implementation status route to the
+[canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md).
+
 ## How to Work in This Area
 
 1. Keep reports source-attributed with command or file evidence.

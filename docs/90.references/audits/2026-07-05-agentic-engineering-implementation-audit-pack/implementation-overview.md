@@ -65,11 +65,12 @@ at baseline `507cd505d4e77f71b4675aab1b67520d964d1fcc`: 15 role adapters and
 fixture freshness. Provider facts, repository adoption, policy, and inference
 remain separate. The model catalog remains fixed at 2026-07-10 10:00 KST.
 
-The generated audit implementation matrix is fresh for the generator's
-historical eight-report input/parser, not for the complete canonical pack.
-It omits 36 Task 4 rows and 30 Task 5 AIV/AIC/AMS rows because Task 6 owns the
-ten-report consolidation. The listed Task 5 reports contribute the other 40
-HAR/LOOP/PIC/WRE rows. Use the canonical reports directly for complete coverage.
+Task 6 consolidated the generated audit implementation matrix and coverage
+report around the complete current pack: one README index, one overview, and
+eleven criterion reports containing 161 unique rows. The scripts validate the
+Spec 123 schema, state/depth/disposition vocabularies, ID uniqueness, exact
+per-report counts, and all 15 overview categories. Historical eight-report and
+provisional ten-report limitations no longer describe current coverage.
 
 ## Implementation Status Matrix
 
@@ -86,10 +87,10 @@ HAR/LOOP/PIC/WRE rows. Use the canonical reports directly for complete coverage.
 | Spec-driven SDLC | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [Stage 04 tasks README](../../../04.execution/tasks/README.md) | Stage taxonomy, document roles, type-specific numbering, templates, and broad traceability are active and validator-backed; typed direct parents, semantic entry/exit transitions, and lifecycle history are not. |
 | Frontmatter, templates, and README profiles | Partially Implemented | [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [frontmatter contract](../../../99.templates/support/frontmatter-contract.md), `scripts/validation/check-repo-contracts.sh` | All 598 non-README Stage 01/02/03/04/05/90/98 leaves have valid top status, mapped template checks exist, and six generated outputs declare ownership. Stable artifact IDs, typed relations, freshness, transition validation, and explicit README consumer profiles are not implemented. |
 | Release communication and records | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [release runbook](../../../05.operations/runbooks/00-workspace/release-management.md), `CHANGELOG.md`, `.github/workflows/generate-changelog.yml` | Manual readiness and tag-string changelog verification exist. `CHANGELOG.md` has no released entry, and no typed Release execution record or CD deployment evidence exists. |
-| Docker Compose / infrastructure | Implemented | [infra README](../../../../infra/README.md), `docker-compose.yml`, `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json`, [tech-stack version provenance](../../data/docker/tech-stack-version-provenance.md) | Modular Compose topology, profiles, root-active inventory, service READMEs, version registry, generated provenance, validation, and hardening checks exist. |
-| CI/CD | Implemented | `.github/workflows/ci-quality.yml`, [GitHub governance](../../../00.agent-governance/rules/github-governance.md) | CI quality gates cover docs, repo contracts, Compose, hardening, template/security, pre-commit, frontend quality, coverage, and workflow security. |
-| QA, formatting, linting, syntax | Partially Implemented | `.github/workflows/ci-quality.yml`, [scripts README](../../../../scripts/README.md), [Codex provider notes](../../../00.agent-governance/providers/codex.md) | Strong docs, shell, Compose, frontend, pre-commit, and contract checks exist; universal language-specific formatting/linting coverage is not complete across every surface. |
-| Security | Partially Implemented | [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md), `.github/SECURITY.md`, `.github/workflows/ci-quality.yml`, [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md), [security automation readiness](../../data/security/security-automation-readiness.md) | Secret boundaries, workflow permissions, hardening, security reporting, approvals, readiness mapping, and a scoped Storybook Next.js dependency vulnerability audit gate exist; SBOM generation, provenance/attestation automation, Scorecard, and broader ecosystem/container vulnerability scanning are not fully adopted. |
+| Docker Compose / infrastructure | Partial | [Compose/infrastructure/operations readiness](./compose-infrastructure-operations-readiness.md), [Compose coverage](../../data/docker/compose-profile-service-coverage.md) | Inventory, static render, hardening, and tracked version provenance are strong. Startup, observed health, migration, and promotion are missing; recovery, upgrade, backup/restore, and rollback have procedure evidence without current rehearsal. |
+| CI/CD | Partial | [SDLC quality audit](./sdlc-quality-formatting-implementation.md), `.github/workflows/ci-quality.yml` | Six workflows define 21 jobs and `ci-quality.yml` defines 15 quality jobs. No tracked environment, promotion, deployment, Release asset, or automated rollback job exists, so CI must not be labeled complete CD. |
+| QA, formatting, linting, syntax | Partially Implemented | [SDLC quality audit](./sdlc-quality-formatting-implementation.md), `.pre-commit-config.yaml`, [scripts README](../../../../scripts/README.md) | Sixteen QAF rows separate local, CI, and remote evidence; formatting/linting/type/test coverage remains surface-specific, and the controlled agent all-files wrapper remains Missing until Task 9. |
+| Security | Partially Implemented | [security maturity audit](./security-framework-maturity.md), [security readiness](../../data/security/security-automation-readiness.md) | Disclosure, approvals, workflow controls, secret scanning, Dependabot, and one scoped npm vulnerability gate exist. Broader SCA/container scanning, SBOM, provenance/attestation, signing/verification, and Scorecard are missing; live remote protection needs revalidation. |
 
 ## Findings
 
@@ -124,9 +125,9 @@ The highest-value remaining automation candidates are provider native-schema/
 event compatibility, semantic agent-output/model scoring, SBOM,
 provenance/attestation automation, Scorecard,
 and broader ecosystem/container vulnerability scanning. Changed-path QA recommendations are now
-surfaced in CI Step Summary, audit-pack implementation-status coverage is now
-reportable through repo contracts, audit implementation matrix consistency is
-generated for its interim historical eight-report subset, LLM Wiki safe-path
+surfaced in CI Step Summary, audit-pack implementation-status coverage and the
+complete 161-row audit implementation matrix are generated and freshness-checked
+through repo contracts, LLM Wiki safe-path
 coverage is grouped by source bucket/category in Stage 90 data, tech-stack
 version source provenance is generated from the registry and listed Compose
 declarations, provider hook parity is generated with Gemini behavioral

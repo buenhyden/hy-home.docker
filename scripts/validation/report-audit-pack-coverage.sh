@@ -16,14 +16,17 @@ from dataclasses import dataclass
 
 DEFAULT_PACK = pathlib.Path("docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack")
 
-EXPECTED_REPORTS = [
-    "implementation-overview.md",
+CRITERION_REPORTS = [
     "harness-engineering-implementation.md",
     "loop-engineering-implementation.md",
     "provider-harness-loop-implementation.md",
     "workspace-rules-environment-implementation.md",
+    "agent-instructions-catalog-vibe-models.md",
     "automation-candidates.md",
+    "sdlc-document-contracts-implementation.md",
+    "frontmatter-template-readme-implementation.md",
     "sdlc-quality-formatting-implementation.md",
+    "compose-infrastructure-operations-readiness.md",
     "security-framework-maturity.md",
 ]
 
@@ -34,22 +37,26 @@ EXPECTED_OVERVIEW_CATEGORIES = [
     "Codex provider harness/loop",
     "Gemini provider harness/loop",
     "Common provider-neutral rules/environment",
+    "Agent instructions, catalogs, vibe coding, and model routing",
     "Automation, pipeline, workflow",
     "Spec-driven SDLC",
+    "Frontmatter, templates, and README profiles",
+    "Release communication and records",
     "Docker Compose / infrastructure",
     "CI/CD",
     "QA, formatting, linting, syntax",
     "Security",
 ]
 
-STATUS_HEADERS = {"status", "current status", "claude", "codex", "gemini"}
+CRITERION_FIELDS = ["criterion id", "external criterion", "workspace evidence", "implementation state", "enforcement depth", "disposition", "canonical owner", "automation impact", "verification", "confidence"]
+VALID_STATES = {"Implemented", "Partial", "Missing", "Not Applicable", "Needs Revalidation"}
+VALID_DISPOSITIONS = {"Retain", "Fix", "Improve", "Add", "Remove"}
 
 
 @dataclass(frozen=True)
-class StatusCell:
+class CriterionRow:
     report: pathlib.Path
-    row_label: str
-    header: str
+    criterion_id: str
     raw_status: str
     normalized_status: str
 
@@ -78,8 +85,10 @@ def is_separator(line: str) -> bool:
 
 def normalize_status(value: str) -> str:
     value_lower = value.lower()
-    if "not implemented" in value_lower or value_lower == "gap" or value_lower.startswith("gap "):
+    if value_lower == "missing" or "not implemented" in value_lower or value_lower == "gap" or value_lower.startswith("gap "):
         return "Gap / Not Implemented"
+    if value_lower == "not applicable":
+        return "Not Applicable"
     if "partial" in value_lower or "partially" in value_lower or "fixture" in value_lower or "mapped" in value_lower:
         return "Partially Implemented"
     if "implemented" in value_lower:
@@ -111,33 +120,42 @@ def iter_tables(text: str) -> list[tuple[list[str], list[list[str]]]]:
     return tables
 
 
-def extract_status_cells(path: pathlib.Path) -> list[StatusCell]:
+def extract_criterion_rows(path: pathlib.Path) -> tuple[list[CriterionRow], list[str]]:
     text = path.read_text(errors="ignore")
-    status_cells: list[StatusCell] = []
+    criteria: list[CriterionRow] = []
+    failures: list[str] = []
     for header, rows in iter_tables(text):
-        status_indexes = [
-            index
-            for index, name in enumerate(header)
-            if name.strip().lower() in STATUS_HEADERS
-        ]
-        if not status_indexes:
+        normalized_header = [name.strip().lower() for name in header]
+        if not normalized_header or normalized_header[0] != "criterion id":
             continue
+        if "status" in normalized_header and "implementation state" not in normalized_header:
+            normalized_header[normalized_header.index("status")] = "implementation state"
+        if normalized_header != CRITERION_FIELDS:
+            failures.append(f"invalid criterion schema in {path}: {' | '.join(header)}")
+            continue
+        index = {name: position for position, name in enumerate(normalized_header)}
         for row in rows:
-            row_label = row[0]
-            for index in status_indexes:
-                raw_status = row[index]
-                if not raw_status or raw_status == "---":
-                    continue
-                status_cells.append(
-                    StatusCell(
-                        report=path,
-                        row_label=row_label,
-                        header=header[index],
-                        raw_status=raw_status,
-                        normalized_status=normalize_status(raw_status),
-                    )
+            criterion_id = row[index["criterion id"]]
+            raw_status = row[index["implementation state"]]
+            depth = row[index["enforcement depth"]]
+            disposition = row[index["disposition"]]
+            if not re.fullmatch(r"[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-[0-9]{2}", criterion_id):
+                failures.append(f"invalid criterion ID in {path}: {criterion_id}")
+            if raw_status not in VALID_STATES:
+                failures.append(f"invalid implementation state for {criterion_id}: {raw_status}")
+            if not re.match(r"^([0-4])(?:\b|\s)", depth):
+                failures.append(f"invalid enforcement depth for {criterion_id}: {depth}")
+            if disposition not in VALID_DISPOSITIONS:
+                failures.append(f"invalid disposition for {criterion_id}: {disposition}")
+            criteria.append(
+                CriterionRow(
+                    report=path,
+                    criterion_id=criterion_id,
+                    raw_status=raw_status,
+                    normalized_status=normalize_status(raw_status),
                 )
-    return status_cells
+            )
+    return criteria, failures
 
 
 def extract_overview_categories(path: pathlib.Path) -> dict[str, str]:
@@ -159,21 +177,27 @@ def main() -> int:
         failures.append(f"missing audit pack directory: {pack}")
         report_paths: list[pathlib.Path] = []
     else:
-        report_paths = [pack / name for name in EXPECTED_REPORTS]
+        report_paths = [pack / name for name in CRITERION_REPORTS]
         for report in report_paths:
             if not report.is_file():
                 failures.append(f"missing required audit report: {report}")
 
-    all_status_cells: list[StatusCell] = []
+    all_criteria: list[CriterionRow] = []
     per_report_counts: dict[pathlib.Path, int] = {}
     for report in report_paths:
         if not report.is_file():
             continue
-        cells = extract_status_cells(report)
-        per_report_counts[report] = len(cells)
-        all_status_cells.extend(cells)
-        if len(cells) == 0:
-            failures.append(f"no parseable implementation-status cells in required audit report: {report}")
+        criteria, criterion_failures = extract_criterion_rows(report)
+        failures.extend(criterion_failures)
+        per_report_counts[report] = len(criteria)
+        all_criteria.extend(criteria)
+        if len(criteria) == 0:
+            failures.append(f"no parseable criterion rows in required audit report: {report}")
+
+    criterion_ids = [criterion.criterion_id for criterion in all_criteria]
+    for criterion_id, count in sorted(collections.Counter(criterion_ids).items()):
+        if count > 1:
+            failures.append(f"duplicate criterion ID: {criterion_id}")
 
     overview_path = pack / "implementation-overview.md"
     overview_categories = extract_overview_categories(overview_path) if overview_path.is_file() else {}
@@ -181,23 +205,26 @@ def main() -> int:
         if category not in overview_categories:
             failures.append(f"missing implementation-overview category: {category}")
 
-    normalized_counts = collections.Counter(cell.normalized_status for cell in all_status_cells)
-    raw_counts = collections.Counter(cell.raw_status for cell in all_status_cells)
+    normalized_counts = collections.Counter(criterion.normalized_status for criterion in all_criteria)
+    raw_counts = collections.Counter(criterion.raw_status for criterion in all_criteria)
 
     print("Audit pack implementation-status coverage")
     print(f"pack={pack}")
-    print(f"reports_expected={len(EXPECTED_REPORTS)}")
-    print(f"reports_checked={sum(1 for report in report_paths if report.is_file())}")
-    print(f"status_cells_total={len(all_status_cells)}")
+    print(f"criterion_reports_expected={len(CRITERION_REPORTS)}")
+    print(f"criterion_reports_checked={sum(1 for report in report_paths if report.is_file())}")
+    print("readme_indexes=1")
+    print("overview_reports=1")
+    print(f"criterion_rows_total={len(all_criteria)}")
+    print(f"criterion_ids_unique={len(set(criterion_ids))}")
     print(f"overview_categories_expected={len(EXPECTED_OVERVIEW_CATEGORIES)}")
     print(f"overview_categories_found={len(overview_categories)}")
     print()
     print("Report coverage")
     for report in report_paths:
-        print(f"- {report.name}: status_cells={per_report_counts.get(report, 0)}")
+        print(f"- {report.name}: criterion_rows={per_report_counts.get(report, 0)}")
     print()
     print("Normalized status counts")
-    for status in ["Implemented", "Partially Implemented", "Gap / Not Implemented", "Unknown / Needs Revalidation", "Other"]:
+    for status in ["Implemented", "Partially Implemented", "Gap / Not Implemented", "Not Applicable", "Unknown / Needs Revalidation", "Other"]:
         print(f"- {status}: {normalized_counts.get(status, 0)}")
     print()
     print("Raw status counts")

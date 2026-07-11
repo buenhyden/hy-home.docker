@@ -312,10 +312,10 @@ model-policy mutation.
   progress memory.
 - **Scope boundary**: no Stage 00/provider adapter/runtime identity/model policy,
   CI/script, Compose/runtime, secret, remote state, or branch protection changed.
-- **Interim generator limitation**: Task 6 owns consolidation of all ten
-  criterion reports. The current eight-report generated matrix includes 40
-  Task 5 HAR/LOOP/PIC/WRE rows but omits 36 Task 4 and 30 Task 5 AIV/AIC/AMS
-  rows; the canonical reports are the complete direct evidence.
+- **Historical generator limitation, resolved by Task 6**: Task 5's
+  eight-report snapshot omitted 36 Task 4 and 30 Task 5 AIV/AIC/AMS rows. Task
+  6 replaced that provisional parser with the complete eleven-report / 161-row
+  criterion contract.
 - **Lifecycle boundary**: Task 5 is `In Review`; T-AER-005 stays `Todo` and its
   checkbox stays unchecked until independent review approval.
 - **Validation-shape correction**: the initial coverage/contracts run rejected
@@ -327,7 +327,7 @@ model-policy mutation.
   - `bash scripts/operations/sync-provider-surfaces.sh --check` — PASS, `no drift`
   - `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures` — PASS, 3/3
   - LLM Wiki index/coverage write and check modes — PASS, 1,266 paths / 1,265 safe paths
-  - audit matrix write/check — PASS, interim eight-report snapshot fresh
+  - audit matrix write/check — PASS for the Task 5 historical eight-report snapshot; superseded by Task 6's complete matrix
   - audit-pack coverage — PASS, 8/8 reports, 100 parsed status cells, including 40 Task 5 rows
     (the prior 133 included duplicate/composite status-like cells from summary,
     provider, and gap tables; the new four reports intentionally expose one
@@ -337,6 +337,60 @@ model-policy mutation.
   - repository contracts — PASS, `normalized_target_stage_docs_total=733`, `failures=0`
   - direct `pre-commit` — not run; prohibited and owned by the later controlled-wrapper task
   - Graphify refresh — not required because Task 5 changed documentation/generated references only; its existing report remains advisory
+
+Task 6 implementation evidence is **In Review** at baseline `0a7a5f9f`. The
+active repository role is `code-reviewer` at the requested Senior tier. The
+collaboration runtime exposes no per-agent model selector, so the role/tier is
+recorded while the platform selects the concrete model; no provider/model
+policy changed.
+
+| Evidence family | Reproduced result | Interpretation |
+| --- | --- | --- |
+| QA/CI inventory | 6 workflows / 21 jobs; `ci-quality.yml` 15 jobs; 23 pre-commit hook IDs; local runner 12 script-backed steps plus one non-executed advisory recommender | Definitions and local commands do not prove remote execution or required-check enforcement. |
+| Compose inventory | 49 files, 48 with services, 169 service entries, 25 profiles, 9 default entries, 160 profile-gated entries | Deterministic tracked topology, not runtime health. |
+| Structural gates | Core Compose render PASS with 5 services; all 11 hardening tiers PASS | Static render/hardening only; no service started. |
+| Security readiness | Generated snapshot fresh; 7 Implemented, 1 Partial, 3 Gap before the scoped Task 6 interpretation | One npm audit is scoped; broader SCA/container scanning, SBOM, signing/provenance attestation, and Scorecard remain missing. |
+| Canonical criteria | 11 criterion reports / 161 unique rows: prior 106 plus QAF 16, AUT 11, CIO 14, SEC 14 | README index and overview are counted separately; the historical 8 and provisional 10 report counts are not current. |
+
+Task 6 added criterion-complete QA/CI/CD, automation, Compose/infrastructure/
+operations, and security rows. It keeps the controlled agent all-files
+pre-commit wrapper `Missing` until Task 9 and separates local, CI-defined,
+remote-only, advisory, and missing evidence. CI remains distinct from CD. The
+Compose audit separates inventory/render/hardening/version declarations from
+startup, observed health, recovery, upgrade, migration, backup/restore,
+promotion, and rollback. The security audit separates repository controls and
+one scoped npm gate from broader SCA/container scanning, SBOM, provenance,
+attestation, signing/verification, and Scorecard.
+
+The 2026-07-07 README and all five leaves are now mapping-only
+`status: superseded` records. Each names canonical destinations, verified
+merged themes, rejected unsupported claims, and a current-truth warning. The
+2026-07-03 930-Markdown and 2026-07-04 948-Markdown snapshots remain dated
+unique evidence; current counts route to the canonical pack.
+
+- **Scope boundary**: no Stage 00/99/provider/model/CI workflow/runtime Compose
+  declaration/secret/remote/branch-protection surface changed; no direct
+  pre-commit or service startup occurred.
+- **Task 11 routing**: CIO-06..14 route independently to Compose runtime,
+  infrastructure operations, and deployment/release work; SEC-07..11 route to
+  security supply-chain work. Task 6 creates no follow-up spec/plan itself.
+- **Lifecycle boundary**: T-AER-006 remains `Todo` and its checkbox remains
+  unchecked pending independent review approval.
+- **Graphify boundary**: generator scripts changed, so Task 6 runs
+  `graphify update .` after validation when available and corroborates the
+  advisory report against tracked sources.
+- **Task 6 implementation validation**:
+  - Bash syntax for both changed audit scripts — PASS
+  - audit matrix write/check and coverage check — PASS, 11 criterion reports / 161 unique rows / 15 overview categories
+  - LLM Wiki index/coverage write/check — PASS, 1,267 paths / 1,266 safe paths
+  - one-current-pack scan — PASS, 2026-07-05 pack active; 2026-07-07 README + 5 leaves superseded
+  - document traceability — PASS, `catalog_pairs_total=46`, `failures=0`
+  - implementation alignment — PASS, 625 stage docs / 4,906 links, `failures=0`
+  - Compose structural render — PASS, `services_total=5`, no startup
+  - infrastructure hardening — PASS, all eleven tiers
+  - repository contracts — PASS, 23/23 changed target-stage docs normalized, 734/734 total, `failures=0`
+  - Graphify refresh — completed, 21,632 nodes / 21,507 edges / 1,475 communities; advisory only for two corroborated cross-root inferred edges
+  - direct `pre-commit` — not run; prohibited until the Task 9 controlled wrapper exists
 
 ### Task Review Ledger
 

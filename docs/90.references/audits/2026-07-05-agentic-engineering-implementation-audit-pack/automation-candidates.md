@@ -52,7 +52,26 @@ not change scripts, CI, provider hooks, workflows, or runtime behavior.
 
 The audit compared the automation research reference, scripts inventory, CI
 quality workflow, provider hook surfaces, generated LLM Wiki loop, HAFE docs,
-and audit gaps in the overview, harness, and loop reports.
+and audit gaps in the overview, harness, loop, quality, Compose, and security
+reports. Tracked automation is classified as executable local, CI-defined,
+remote-only, advisory, or missing; the presence of a script or workflow is not
+treated as execution evidence.
+
+## Criterion Matrix
+
+| Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
+| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
+| AUT-01 | Orchestrate locally safe, deterministic validation without duplicating every CI responsibility. | The local runner executes 12 script-backed steps, supports an 8-step harness subset, and lists CI/remote-only work separately. | Implemented | 3 | Retain | Local QA runner owner | Existing orchestration; preserve one runner rather than adding wrappers. | Inspect `run_step` calls and `--list` output. | High. |
+| AUT-02 | Recommend change-scoped QA gates without presenting recommendations as executed results. | The changed-path recommender prints deduplicated advice locally and to GitHub Step Summary; it executes no gate. | Implemented | 3 | Retain | QA recommendation script and CI summary step | Existing advisory automation. | Run with explicit paths and confirm output contains no gate execution. | High. |
+| AUT-03 | Regenerate provider projections and fail on tracked drift without asserting runtime acceptance. | Provider sync generates/checks Codex and `.agents` projections and reports no drift; semantic/native compatibility remains separate. | Implemented | 3 | Retain | Stage 00 catalog and provider sync | Existing deterministic sync/check. | `bash scripts/operations/sync-provider-surfaces.sh --check`. | High. |
+| AUT-04 | Generate tracked reference inventories with canonical write/check modes. | Wiki, Compose coverage, version provenance, hook parity, security readiness, and audit matrix generators have freshness checks. | Implemented | 3 | Retain | Individual generator owners and repo contracts | Existing generated-data automation; generated outputs are not hand-edited. | Run each applicable generator `--check` and repo contracts. | High. |
+| AUT-05 | Keep agent-output fixtures reproducible while separating fixture freshness from semantic quality. | Three fixtures and a CI freshness gate exist; arbitrary-output scoring remains advisory and no model call occurs. | Partial | 3 | Improve | Eval runner owner and future eval spec | Retain freshness; semantic thresholds require separate approval. | `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures`. | High. |
+| AUT-06 | Route findings to one canonical stage before automating remediation. | Documentation protocol, gap tables, and a local advisory routing script exist. | Implemented | 2 | Retain | Stage 00 documentation protocol | Existing advisory routing; never auto-create or mutate owner artifacts. | Run routing script on representative text/path and review destination. | High. |
+| AUT-07 | Generate a complete criterion-level audit matrix from every canonical criterion report. | Task 6 updates both audit scripts to require eleven criterion reports and validate/emit the complete 161-row set. | Implemented | 3 | Retain | Audit generator and coverage report owners | Existing canonical write/check modes after Task 6 consolidation. | Run generator write/check and coverage `--check`; confirm 11 reports / 161 unique rows. | High. |
+| AUT-08 | Produce security readiness signals without running scanners or claiming security outcomes. | The readiness generator maps tracked controls and gaps; its output explicitly excludes scan/SBOM/signing/attestation execution. | Implemented | 3 | Retain | Security readiness generator owner | Existing advisory snapshot and freshness gate. | `bash scripts/validation/generate-security-automation-readiness.sh --check`. | High. |
+| AUT-09 | Run agent all-files pre-commit only through an isolated, Stage-04-evidenced, changed-path-aware wrapper. | Direct execution remains prohibited and the controlled wrapper is absent until Task 9. | Missing | 0 | Add | Task 9 QA wrapper implementation | Wrapper/tests will be new automation; Task 6 performs no direct pre-commit. | Require wrapper contract tests and independent review before changing status. | High. |
+| AUT-10 | Automate CD promotion/deployment only with environments, approvals, evidence, and rollback. | No tracked workflow deploys/promotes a target or performs rollback. | Missing | 0 | Add | Task 11 deployment/release engineering spec/plan | Future CD automation is independent from CI quality gates. | Require approved environment/promotion/deployment/rollback design and execution evidence. | High. |
+| AUT-11 | Distinguish tracked automation definitions from remote enforcement and current run state. | Workflow/config definitions exist; Task 6 did not query current runs, required checks, branch protection, or CODEOWNERS enforcement. | Needs Revalidation | 1 | Improve | GitHub governance owner | Separately approved read-only remote verification, not a local inference. | Timestamped remote query with repository identity and named check contexts. | High for uncertainty boundary. |
 
 ## Implementation Status Matrix
 

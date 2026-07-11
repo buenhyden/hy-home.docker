@@ -75,6 +75,7 @@ This README is for:
 ├── sdlc-document-contracts-implementation.md
 ├── frontmatter-template-readme-implementation.md
 ├── sdlc-quality-formatting-implementation.md
+├── compose-infrastructure-operations-readiness.md
 └── security-framework-maturity.md
 ```
 
@@ -90,25 +91,18 @@ This README is for:
 - [SDLC and document-contract implementation](./sdlc-document-contracts-implementation.md)
 - [Frontmatter, template, and README implementation](./frontmatter-template-readme-implementation.md)
 - [SDLC quality formatting implementation](./sdlc-quality-formatting-implementation.md)
+- [Compose, infrastructure, and operations readiness](./compose-infrastructure-operations-readiness.md)
 - [Security framework maturity coverage](./security-framework-maturity.md)
 - [Generated audit implementation matrix](../../data/governance/audit-implementation-matrix.md)
 
-### Generated Matrix Interim Limitation
+### Current Canonical Cardinality
 
-The generated matrix is byte-fresh against its current historical
-eight-report generator input list, but that list does not yet include
-[`sdlc-document-contracts-implementation.md`](./sdlc-document-contracts-implementation.md)
-or
-[`frontmatter-template-readme-implementation.md`](./frontmatter-template-readme-implementation.md),
-and it does not list
-[`agent-instructions-catalog-vibe-models.md`](./agent-instructions-catalog-vibe-models.md).
-It therefore omits 36 Task 4 criterion rows and 30 Task 5 rows: AIV 16,
-AIC 7, and AMS 7. The four listed Task 5 reports contribute HAR 7, LOOP 6,
-PIC 17, and WRE 10 through their Spec 123 implementation-state `Status`
-fields. Until Task 6
-consolidates the ten criterion reports and the parser, the matrix must not be
-cited as complete current semantic audit coverage; use the canonical reports
-directly.
+The pack contains one README index, one cross-category overview, and eleven
+criterion reports. Those eleven reports contain 161 unique Spec 123 criterion
+rows: 106 from Tasks 4-5 and 55 from Task 6. The generated matrix and coverage
+report validate this exact set and keep README/overview counts separate from
+criterion-report and criterion-row counts. Historical eight-report and
+provisional ten-report disclosures are superseded.
 
 ## How to Work in This Area
 
@@ -119,9 +113,8 @@ directly.
    as gaps unless separately approved.
 4. Update this README when audit report files are added, renamed, or removed.
 5. Refresh the generated LLM Wiki index after adding tracked report files.
-6. Treat the generated audit matrix as an interim historical-eight-report
-   snapshot until Task 6 consolidates all ten criterion reports and their
-   Spec 123 status fields.
+6. Run both audit scripts after changing a criterion report; they must retain
+   eleven reports, 161 unique rows, and the complete Spec 123 schema.
 
 ## Evidence Freshness Boundary
 

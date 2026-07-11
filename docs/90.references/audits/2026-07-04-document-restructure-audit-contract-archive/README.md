@@ -81,6 +81,13 @@ This README is for:
 - [CI, QA, and formatting contract](./ci-qa-formatting-contract.md)
 - [Restructure gap register](./restructure-gap-register.md)
 
+## Dated Evidence Boundary
+
+This pack preserves the 2026-07-04 repo-wide 948-Markdown snapshot and its
+unique restructure/archive decisions. That count is not current corpus truth.
+Current document-contract counts and implementation status route to the
+[canonical agentic implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md).
+
 ## How to Work in This Area
 
 1. Keep reports source-attributed with command or file evidence.
