@@ -1,16 +1,16 @@
 # Graph Report - agentic-engineering-audit-remediation  (2026-07-11)
 
 ## Corpus Check
-- 1083 files · ~1,107,606 words
+- 1084 files · ~1,108,502 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 22021 nodes · 22555 edges · 1489 communities (1397 shown, 92 thin omitted)
+- 22030 nodes · 22563 edges · 1490 communities (1398 shown, 92 thin omitted)
 - Extraction: 98% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 338 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `aa5cbd36`
+- Built from commit: `67276b16`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1503,6 +1503,7 @@
 - [[_COMMUNITY_Community 1486|Community 1486]]
 - [[_COMMUNITY_Community 1487|Community 1487]]
 - [[_COMMUNITY_Community 1488|Community 1488]]
+- [[_COMMUNITY_Community 1489|Community 1489]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Agent Progress Log` - 58 edges
@@ -1536,7 +1537,7 @@
 - **Workspace Audit Revalidation Skill Catalog Sync** — workspace_audit_revalidation_bounded_revalidation_workflow, workspace_audit_revalidation_runtime_skill, readme_agent_and_function_catalog, readme_runtime_skill_mirror, progress_workspace_audit_revalidation_skill_creation [EXTRACTED 1.00]
 - **Advisory Graph Boundary** — index_llm_wiki_generated_index, index_tracked_source_boundary, index_runtime_truth, index_advisory_graph_context, progress_graphify_health_advisory, 2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence [EXTRACTED 1.00]
 
-## Communities (1489 total, 92 thin omitted)
+## Communities (1490 total, 92 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.10
@@ -7122,6 +7123,10 @@ Nodes (16): ADR-0005 Polyglot Messaging, Apache Kafka Event Backbone, Kafka KRaf
 Cohesion: 0.25
 Nodes (8): infra-secrets-docs-refresh Specifications, Infra Secrets Docs Refresh Specification, LLM Wiki Safe Path Filters, README Base Headings, Root-active Optional Standalone Compose Boundary, Secret Inventory Classification, Secret Value Non-access Guardrail, Stage Document Template Families
 
+### Community 1489 - "Community 1489"
+Cohesion: 0.22
+Nodes (8): Canonical and Generated Provider Surfaces, Commit, RED / GREEN, Residual Remote Enforcement, Status, Task 10 Implementation Report, Validation, Workflow and Safe-Base Evidence
+
 ## Ambiguous Edges - Review These
 - `Alertmanager Critical Route` → `Alertmanager SMTP Placeholders`  [AMBIGUOUS]
   infra/06-observability/alertmanager/config/config.yml · relation: references
@@ -7129,7 +7134,7 @@ Nodes (8): infra-secrets-docs-refresh Specifications, Infra Secrets Docs Refresh
   infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **15201 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+15196 more)
+- **15208 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+15203 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **92 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -7142,11 +7147,11 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **Why does `Grafana Alloy Telemetry Pipeline` connect `Community 21` to `Community 3`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
+- **Why does `Loki Runtime Configuration` connect `Community 237` to `Community 0`?**
+  _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **Why does `Alloy Operational Policy Runbook` connect `Community 3` to `Community 21`, `Community 1437`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `Prometheus Production Scrape And Alerting Config` connect `Community 129` to `Community 0`, `Community 358`, `Community 39`, `Community 233`, `Community 458`, `Community 427`, `Community 715`, `Community 842`, `Community 526`, `Community 525`, `Community 570`?**
-  _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **What connects `printWidth`, `singleQuote`, `semi` to the rest of the system?**
-  _15827 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _15834 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._

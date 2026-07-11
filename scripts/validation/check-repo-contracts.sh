@@ -3943,6 +3943,37 @@ elif ! grep -q 'generated provider hook parity matrix is fresh' /tmp/check-repo-
 fi
 rm -f /tmp/check-repo-contracts-provider-hook-parity.txt
 
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import sys
+
+path = pathlib.Path("docs/90.references/data/governance/provider-hook-parity-matrix.md")
+text = path.read_text(encoding="utf-8") if path.is_file() else ""
+required = [
+    "Gemini CLI exposes provider-native hooks and subagents.",
+    "no tracked `.gemini` hook or agent adapter",
+    "`.agents/` surfaces are behavioral pointers/reminders",
+    "| Claude native wrapper events | 7 |",
+    "| Codex native dispatch events | 7 |",
+    "| Gemini behavioral reminder events | 7 |",
+]
+forbidden = [
+    "Gemini hooks as a non-native capability",
+    "New native Gemini hook claims",
+    "until Stage 00 provider governance is updated with verified native hook support",
+]
+failures = [f"missing Gemini provider/adoption evidence: {literal}" for literal in required if literal not in text]
+failures.extend(f"obsolete Gemini non-native claim remains: {literal}" for literal in forbidden if literal in text)
+if failures:
+    for failure in failures:
+        print(f"FAIL: {path}: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
 section "Agent output eval fixture runner"
 if ! bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures >/tmp/check-repo-contracts-agent-output-eval.txt 2>&1; then
   fail "agent-output eval fixture runner catalog check failed"

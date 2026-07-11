@@ -11,8 +11,10 @@ generated_by: scripts/validation/report-provider-hook-parity.sh
 
 This generated reference compares the repository's Claude, Codex, and Gemini
 hook surfaces. Claude and Codex expose programmatic hook configuration;
-Gemini is represented as a behavioral reminder checklist because the Stage 00
-provider capability matrix treats Gemini hooks as a non-native capability.
+Gemini CLI exposes provider-native hooks and subagents.
+This repository has no tracked `.gemini` hook or agent adapter, and its
+`.agents/` surfaces are behavioral pointers/reminders rather than native
+interception or subagent-adoption evidence.
 
 ## Purpose
 
@@ -39,14 +41,14 @@ in `.claude/`, `.codex/`, `.agents/`, and `scripts/hooks/`.
 
 - Personal settings such as `.claude/settings.local.json`.
 - Live provider runtime state, telemetry, shell history, or raw hook logs.
-- New native Gemini hook claims beyond the current Stage 00 contract.
+- Adopting a tracked `.gemini` hook or agent adapter without a separately approved task.
 - Mutating provider configuration, model policy, secrets, credentials, or remote state.
 
 ## Definitions / Facts
 
 - **native-wrapper**: Claude event is configured and delegates through a tracked wrapper script.
 - **native-dispatch**: Codex event is configured and dispatches directly through `scripts/hooks/agent-event-hook.sh`.
-- **behavioral-reminder**: Gemini has no tracked native hook event and must manually follow the shared hook contract.
+- **behavioral-reminder**: Gemini CLI has provider-native hooks and subagents, but this repository has no tracked `.gemini` adapter; `.agents/` remains reminder-only.
 - **needs-contract-review**: A required Stage 00 Gemini behavioral contract literal is missing.
 
 ## Snapshot Summary
@@ -101,8 +103,9 @@ in `.claude/`, `.codex/`, `.agents/`, and `scripts/hooks/`.
 - Regenerate this file after changing Claude/Codex hook configs, Claude hook
   wrappers, Gemini provider notes, provider capability matrix rules, or
   `.agents/` runtime guidance.
-- Treat Gemini rows as manual behavioral reminders until Stage 00 provider
-  governance is updated with verified native hook support.
+- Treat Gemini rows as manual behavioral reminders because this repository
+  has no tracked `.gemini` hook or agent adapter; provider-native capability
+  is not workspace-adoption evidence.
 - Do not read personal settings, hook logs, shell history, credentials,
   tokens, `.env` values, or live provider runtime state.
 

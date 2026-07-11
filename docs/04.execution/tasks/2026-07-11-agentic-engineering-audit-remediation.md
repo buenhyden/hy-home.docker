@@ -702,7 +702,7 @@ Gemini behavioral reminders.
   - Bash syntax and workflow PyYAML parse — PASS
   - exact existing-job metadata step count/placement and base-env contract —
     PASS, one step after dependency installation
-  - valid base simulation — PASS, baseline `aa5cbd36`, 7 selected paths / zero
+  - valid base simulation — PASS, baseline `aa5cbd36`, 9 selected paths / zero
     violations
   - invalid event-base preflight — PASS, all-zero SHA rejected with exit 128
   - local `actionlint` — PASS
@@ -719,6 +719,26 @@ Gemini behavioral reminders.
     communities; HTML visualization skipped at the configured size limit and
     the graph remains advisory
   - real/full-repository pre-commit — not run; Task 12 retains ownership
+
+The initial independent Task 10 review returned FAIL/CHANGES_REQUESTED with
+Critical 0, Important 1, Minor 1. The focused remediation corrects both evidence
+defects without expanding provider or workflow behavior:
+
+1. The generated parity overview now states that Gemini CLI has provider-native
+   hooks and subagents while this repository has no tracked `.gemini` hook or
+   agent adapter and `.agents/` remains a behavioral pointer/reminder surface.
+   Repository contracts require those semantic facts, preserve the 7/7/7
+   adoption counts, and ban the obsolete non-native wording so byte freshness
+   alone cannot pass the matrix.
+2. The valid committed-base result is recorded consistently as 9 selected paths
+   with zero violations.
+
+Review-fix validation passes: semantic-contract RED before the generator fix;
+provider parity write/check at 7 Claude native / 7 Codex native / 7 Gemini
+behavioral; provider sync `no drift`; focused metadata 63/63; full validation
+70/70; committed-base metadata 9 selected / zero violations; Bash/YAML,
+actionlint, zizmor, repository contracts, diff hygiene, and Graphify refresh at
+1,084 files / 22,030 nodes / 22,563 edges / 1,490 communities.
 
 Scope is limited to the approved Stage 00/provider source surfaces, generated
 provider projections, existing CI job, repository/provider parity contracts,
