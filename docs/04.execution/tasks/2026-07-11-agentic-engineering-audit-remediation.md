@@ -573,8 +573,10 @@ implementation alignment with 625 stage documents, 4,908 links, and
 normalized documents and `failures=0`; and diff hygiene. Graphify refresh and
 the implementation commit are recorded in the Task 8 report after completion.
 The Graphify review-fix refresh reports 1,078 files, 21,941 nodes, 22,290 edges,
-and 1,486 communities; it remains advisory and records committed base
-`8c08cb82` while extraction includes the Task 8 working tree.
+and 1,486 communities. Its marker was built from implementation commit
+`58024426`, while extraction included the review-fix working tree later
+committed as `1a7c80af`; it remains advisory for two corroborated cross-root
+inferred edges.
 
 The first independent Task 8 review returned FAIL/CHANGES_REQUESTED with
 Critical 0, Important 2, Minor 0. The focused remediation closes both findings:
