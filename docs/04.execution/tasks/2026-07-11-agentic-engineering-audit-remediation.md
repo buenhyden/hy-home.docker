@@ -62,7 +62,7 @@ independent task/branch reviews.
 | T-AER-008 | Migrate the approved active chain and enforce metadata for changed/new documents | impl/test | Spec 123 / Metadata Rollout | PLN-AER-008 | Changed-mode tests; before/after inventory; pre-push contract; task review | rules-engineer | Done |
 | T-AER-009 | Implement controlled agent pre-commit wrapper and governance contract | impl/test | Spec 123 / Controlled Pre-commit Wrapper | PLN-AER-009 | Shell tests; syntax/shellcheck; wrapper contract; task review | qa-engineer | Done |
 | T-AER-010 | Synchronize provider adapters and add metadata validation to the existing CI job | impl/test | Spec 123 / Provider Synchronization | PLN-AER-010 | Provider no-drift; workflow checks; repo contracts; task review | ci-cd-engineer | Done |
-| T-AER-011 | Author four independent runtime follow-up specs/plans without runtime mutation | doc | Spec 123 / W5 Runtime Follow-up | PLN-AER-011 | Template/traceability/rollback/approval gates; task review | doc-writer | Todo |
+| T-AER-011 | Author four independent runtime follow-up specs/plans without runtime mutation | doc | Spec 123 / W5 Runtime Follow-up | PLN-AER-011 | Template/traceability/rollback/approval gates; task review | doc-writer | Done |
 | T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Todo |
 
 ## Phase View
@@ -91,7 +91,7 @@ independent task/branch reviews.
 
 ### Phase 5 — Follow-up and Closure
 
-- [ ] T-AER-011 Runtime follow-up specs/plans
+- [x] T-AER-011 Runtime follow-up specs/plans
 - [ ] T-AER-012 Full verification, review, and closure
 
 ## Verification Summary
@@ -815,6 +815,7 @@ runtime requirement set.
 | T-AER-008 | `8c08cb82..cccce5d8` | PASS | APPROVED | Initial C0/I2/M0; re-review C0/I0/M1; all resolved; final C0/I0/M0 | `.superpowers/sdd/task-8-report.md`; `.superpowers/sdd/review-8c08cb82..cccce5d8.diff` |
 | T-AER-009 | `dce3ea60..4d0a8eaf` | PASS | APPROVED | Initial C0/I3/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-9-report.md`; `.superpowers/sdd/review-dce3ea60..4d0a8eaf.diff` |
 | T-AER-010 | `aa5cbd36..0e030ab1` | PASS | APPROVED | Initial C0/I1/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-10-report.md`; `.superpowers/sdd/review-aa5cbd36..0e030ab1.diff` |
+| T-AER-011 | `4937ae99..03119741` | PASS | APPROVED | C0/I0/M0 | `.superpowers/sdd/task-11-report.md`; `.superpowers/sdd/review-4937ae99..03119741.diff` |
 
 - **Baseline Commands**:
   - `git diff --check` — PASS
