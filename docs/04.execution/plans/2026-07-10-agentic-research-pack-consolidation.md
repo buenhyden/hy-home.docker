@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md -->
@@ -213,7 +213,7 @@ retrieval time and separately decide whether it proves the approved cutoff.
 - Produces: The shared workspace category map, comparison-record vocabulary,
   canonical document-role matrix, and source ledger used by later tasks.
 
-- [ ] **Step 1: Establish the tracked workspace evidence inventory**
+- [x] **Step 1: Establish the tracked workspace evidence inventory**
 
 Run:
 
@@ -225,7 +225,7 @@ Expected: paths and headings for workspace purpose, stages, provider rules,
 quality gates, automation, infrastructure, and security are visible; no claim
 is taken from Graphify without a tracked-file match.
 
-- [ ] **Step 2: Revalidate external SDLC and document-role sources**
+- [x] **Step 2: Revalidate external SDLC and document-role sources**
 
 Open every URL under `Spec-driven SDLC and document roles` in
 `## Source Entry Points`, plus the GitHub Actions workflow syntax and NIST
@@ -237,7 +237,7 @@ Expected: PRD, ARD, ADR, Spec, Plan, Task, Guide, Policy, Runbook, Incident,
 Postmortem, and Release each have an external or repo-template basis; no source
 is treated as adopted policy.
 
-- [ ] **Step 3: Normalize the workspace comparison map**
+- [x] **Step 3: Normalize the workspace comparison map**
 
 Update `workspace-baseline.md` so each requested category has these exact
 columns:
@@ -253,7 +253,7 @@ contracts, templates, scripts, integration guides, SDLC, governance, system
 structure, rules, security, Docker Compose/infrastructure, AI agents, harness
 engineering, loop engineering, and task-characteristic model selection.
 
-- [ ] **Step 4: Refresh spec-driven lifecycle analysis**
+- [x] **Step 4: Refresh spec-driven lifecycle analysis**
 
 Update `spec-driven-sdlc.md` with one evidence-backed flow:
 
@@ -266,7 +266,7 @@ For each transition, state the repo-local owner, entry/exit evidence, validation
 gate, feedback loop, and external comparison. Keep Compose, CI, and secure SDLC
 as lifecycle participants, not replacements for stage documents.
 
-- [ ] **Step 5: Refresh the document-role matrix**
+- [x] **Step 5: Refresh the document-role matrix**
 
 Update `sdlc-document-roles.md` with these exact columns:
 
@@ -279,14 +279,14 @@ Include separate rows for PRD, ARD, ADR, Spec, API/agent/data/test supporting
 contracts, Plan, Task, Guide, Policy, Runbook, Incident, Postmortem, Release
 notes/changelog, Reference, Audit, and Archive tombstone.
 
-- [ ] **Step 6: Record task evidence**
+- [x] **Step 6: Record task evidence**
 
 In the Stage 04 task document, mark `T-ARC-001` Done only after recording:
 source inventory, changed files, the workspace category count, document-role
 row count, exact verification commands, results, commit range, and reviewer
 verdicts. Do not paste raw web or shell output.
 
-- [ ] **Step 7: Run covering documentation checks**
+- [x] **Step 7: Run covering documentation checks**
 
 Run:
 
@@ -300,7 +300,7 @@ bash scripts/validation/check-repo-contracts.sh
 
 Expected: all commands exit 0; repository validators report `failures=0`.
 
-- [ ] **Step 8: Commit Task 1**
+- [x] **Step 8: Commit Task 1**
 
 ```bash
 git add docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md
@@ -323,7 +323,7 @@ git commit -m "docs(research): refresh workspace and SDLC references"
 - Produces: The complete cutoff inventory and task-fit matrix referenced by the
   provider, agent-catalog, and pack-index tasks.
 
-- [ ] **Step 1: Build the cutoff evidence ledger**
+- [x] **Step 1: Build the cutoff evidence ledger**
 
 For Anthropic, OpenAI, and Google, inspect the official model list, model ID,
 release-note/changelog, deprecation, and CLI configuration pages in
@@ -335,7 +335,7 @@ Expected: the ledger distinguishes page retrieval state from cutoff proof; any
 post-cutoff announcement is excluded from the comparison and any mutable page
 without historical proof is labeled `historical state unverified`.
 
-- [ ] **Step 2: Create the provider model reference from the Stage 90 template**
+- [x] **Step 2: Create the provider model reference from the Stage 90 template**
 
 Create `provider-model-landscape.md` with all reference-template sections and
 this exact provider table schema:
@@ -350,7 +350,7 @@ workspace-policy comparison, source rules, maintenance date, and direct source
 notes. Do not normalize provider-native reasoning or maturity terms into false
 parity.
 
-- [ ] **Step 3: Separate fact from task-fit inference**
+- [x] **Step 3: Separate fact from task-fit inference**
 
 For every task-fit recommendation, add:
 
@@ -363,7 +363,7 @@ Label the table as analysis inferred from official capability descriptions plus
 the workspace task taxonomy. Do not present benchmark rank, marketing language,
 or provider recommendation as a guaranteed workspace result.
 
-- [ ] **Step 4: Refresh workspace model-selection analysis**
+- [x] **Step 4: Refresh workspace model-selection analysis**
 
 Update `agent-model-selection.md` so it:
 
@@ -375,14 +375,14 @@ Update `agent-model-selection.md` so it:
   generated adapters, validators, Stage 04 evidence, and provider sync;
 - records stale values or unsupported availability as gaps.
 
-- [ ] **Step 5: Record model evidence and coverage**
+- [x] **Step 5: Record model evidence and coverage**
 
 In the task document, record per-provider model-row totals, lifecycle totals,
 cutoff exceptions, source URLs, mutable-page caveats, changed files, commands,
 commit range, and reviewer verdicts. Mark `T-ARC-002` Done only when no model
 row lacks a lifecycle and cutoff disposition.
 
-- [ ] **Step 6: Run covering checks**
+- [x] **Step 6: Run covering checks**
 
 Run:
 
@@ -397,7 +397,7 @@ bash scripts/validation/check-repo-contracts.sh
 Expected: the targeted scan finds the cutoff and lifecycle contract; all scripts
 exit 0; provider sync reports no drift; repo contracts report `failures=0`.
 
-- [ ] **Step 7: Commit Task 2**
+- [x] **Step 7: Commit Task 2**
 
 ```bash
 git add docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md
@@ -422,7 +422,7 @@ git commit -m "docs(research): add provider model landscape"
 - Produces: Current harness/loop/provider matrices and the curated external-agent
   import boundary.
 
-- [ ] **Step 1: Inventory current provider implementation**
+- [x] **Step 1: Inventory current provider implementation**
 
 Read:
 
@@ -444,7 +444,7 @@ Record only tracked facts: adapter fields, context discovery, hooks, subagents,
 sandbox/approval, tool permissions, model selection, lifecycle events, and
 provider sync/generation behavior.
 
-- [ ] **Step 2: Revalidate provider capabilities**
+- [x] **Step 2: Revalidate provider capabilities**
 
 Use only the official Claude Code, Codex, Gemini CLI, and Gemini API entry
 points in this plan. For every capability row, record provider, surface,
@@ -454,7 +454,7 @@ confidence.
 Expected: lack of evidence is recorded as unknown or missing, not provider
 parity.
 
-- [ ] **Step 3: Refresh the harness matrix**
+- [x] **Step 3: Refresh the harness matrix**
 
 In `harness-engineering.md`, use:
 
@@ -468,7 +468,7 @@ loading, agent catalog, model routing, hooks, approvals, test/eval harnesses,
 Compose/infrastructure harness, security harness, observability/evidence,
 rollback, and human escalation.
 
-- [ ] **Step 4: Refresh the loop matrix**
+- [x] **Step 4: Refresh the loop matrix**
 
 In `loop-engineering.md`, describe exact inputs, actions, evidence, exit
 conditions, retry limits, and escalation for:
@@ -486,7 +486,7 @@ conditions, retry limits, and escalation for:
 
 Use ReAct and Reflexion as research foundations, not product-policy authority.
 
-- [ ] **Step 5: Refresh provider implementation comparison**
+- [x] **Step 5: Refresh provider implementation comparison**
 
 In `provider-implementation-comparison.md`, use:
 
@@ -504,7 +504,7 @@ Explicitly prevent these stale claims from being carried forward:
 - canonical execution artifacts are `implementation_plan.md` and
   `walkthrough.md`.
 
-- [ ] **Step 6: Refresh AI agent catalog analysis**
+- [x] **Step 6: Refresh AI agent catalog analysis**
 
 Compare `msitarzewski/agency-agents` with the curated local catalog using:
 
@@ -517,14 +517,14 @@ Cover persona breadth, role boundaries, prompt portability, scope imports,
 tools/permissions, model tier, lifecycle, handoffs, evidence, security, evals,
 and direct-import risks. Do not vendor external agent identities or prompts.
 
-- [ ] **Step 7: Record evidence and review**
+- [x] **Step 7: Record evidence and review**
 
 Update `T-ARC-003` with source URLs, current adapter paths, corrected stale
 claims, changed files, commands, commit range, and reviewer verdicts. Mark Done
 only when every provider capability row has a direct official source or an
 explicit evidence gap.
 
-- [ ] **Step 8: Run covering checks**
+- [x] **Step 8: Run covering checks**
 
 ```bash
 git diff --check
@@ -537,7 +537,7 @@ bash scripts/validation/check-repo-contracts.sh
 Expected: targeted output contains no unsupported current-state assertion; all
 scripts exit 0 and repo contracts report `failures=0`.
 
-- [ ] **Step 9: Commit Task 3**
+- [x] **Step 9: Commit Task 3**
 
 ```bash
 git add docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md
@@ -559,7 +559,7 @@ git commit -m "docs(research): consolidate harness and agent research"
   primary sources, and Task 1 workspace categories.
 - Produces: Accurate local/CI/remote gate taxonomy and automation-loop mapping.
 
-- [ ] **Step 1: Inventory actual local and CI gates**
+- [x] **Step 1: Inventory actual local and CI gates**
 
 Run:
 
@@ -572,7 +572,7 @@ rg -n "^(#|##|###) |run-local-qa-gates|recommend-qa-gates|post-tool|provider" sc
 Expected: actual workflow job IDs, local gates, format/lint/syntax/type/build/
 coverage/security tools, and provider hook entrypoints are enumerated.
 
-- [ ] **Step 2: Revalidate external quality and workflow sources**
+- [x] **Step 2: Revalidate external quality and workflow sources**
 
 Use these exact sources: GitHub Actions workflow syntax and secure-use URLs
 from `## Source Entry Points`, <https://pre-commit.com/>,
@@ -582,7 +582,7 @@ from `## Source Entry Points`, <https://pre-commit.com/>,
 <https://martinfowler.com/bliki/ContinuousDelivery.html>. Record what each
 source supports and which checks are local, CI-only, or remote-only.
 
-- [ ] **Step 3: Refresh the quality-gate matrix**
+- [x] **Step 3: Refresh the quality-gate matrix**
 
 Use:
 
@@ -597,7 +597,7 @@ Compose validation, hardening, docs traceability/alignment, agent-output eval
 fixtures, dependency vulnerability audit, provider drift, generated-data
 freshness, and remote branch protection.
 
-- [ ] **Step 4: Correct known QA drift**
+- [x] **Step 4: Correct known QA drift**
 
 Ensure the document:
 
@@ -611,7 +611,7 @@ Ensure the document:
 - distinguishes formatting, linting, syntax, type, test, build, coverage, and
   security evidence.
 
-- [ ] **Step 5: Refresh automation and workflow loops**
+- [x] **Step 5: Refresh automation and workflow loops**
 
 Use:
 
@@ -626,13 +626,13 @@ PR labeling/stale automation, task/subagent orchestration, and remote approval
 boundaries. State that `generate-changelog.yml` verifies pushed-tag coverage
 rather than generating the changelog when that matches tracked workflow.
 
-- [ ] **Step 6: Record task evidence**
+- [x] **Step 6: Record task evidence**
 
 Update `T-ARC-004` with workflow job count, local gate count, evidence-class
 mapping, corrected claims, sources, changed files, commands, commit range, and
 reviewer verdicts.
 
-- [ ] **Step 7: Run covering checks**
+- [x] **Step 7: Run covering checks**
 
 ```bash
 git diff --check
@@ -644,7 +644,7 @@ bash scripts/validation/check-repo-contracts.sh
 Expected: no unsupported stale phrase remains; validators exit 0 with
 `failures=0`.
 
-- [ ] **Step 8: Commit Task 4**
+- [x] **Step 8: Commit Task 4**
 
 ```bash
 git add docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md
@@ -667,7 +667,7 @@ git commit -m "docs(research): refresh QA and automation references"
 - Produces: Current infrastructure-harness and security-governance comparisons
   with advisory gap ownership.
 
-- [ ] **Step 1: Revalidate tracked Compose and infrastructure truth**
+- [x] **Step 1: Revalidate tracked Compose and infrastructure truth**
 
 Run:
 
@@ -680,14 +680,14 @@ Expected: root includes, variants, service directories, profiles, networks,
 secrets, healthchecks, and validation surfaces are derived from tracked files.
 Recheck all counts instead of copying the prior 17/48/40 observations.
 
-- [ ] **Step 2: Revalidate Docker guidance**
+- [x] **Step 2: Revalidate Docker guidance**
 
 Use the Compose overview, profiles, networking, secrets, production, and trust
 model pages. Record which recommendation applies to local development,
 single-host production, multi-project networking, secret delivery, or untrusted
 Compose execution. Do not treat a Docker example as a workspace mandate.
 
-- [ ] **Step 3: Refresh the infrastructure comparison**
+- [x] **Step 3: Refresh the infrastructure comparison**
 
 Use:
 
@@ -701,7 +701,7 @@ networks, service discovery, ports, volumes, secrets, healthchecks,
 dependencies, restart behavior, production overlays, hardening, validation,
 observability, backup/restore handoff, rollback, and runbook linkage.
 
-- [ ] **Step 4: Revalidate security sources and controls**
+- [x] **Step 4: Revalidate security sources and controls**
 
 Read Stage 00 approval boundaries/security scope, `.github/SECURITY.md`,
 workflow security, pre-commit secret scanning, hardening scripts, dependency
@@ -711,7 +711,7 @@ secrets, and Compose trust model.
 Expected: active control, reference framework, implementation gap, and remote
 or human approval are distinct.
 
-- [ ] **Step 5: Refresh the security comparison**
+- [x] **Step 5: Refresh the security comparison**
 
 Use:
 
@@ -729,13 +729,13 @@ Record, but do not resolve, the current tension between an unconditional ban on
 secret-value reads in `approval-boundaries.md` and approved scoped reads
 described by `scopes/security.md`.
 
-- [ ] **Step 6: Record task evidence**
+- [x] **Step 6: Record task evidence**
 
 Update `T-ARC-005` with rechecked Compose counts, source inventory, security
 control/gap totals, explicit out-of-scope policy conflict, changed files,
 commands, commit range, and reviewer verdicts.
 
-- [ ] **Step 7: Run covering checks**
+- [x] **Step 7: Run covering checks**
 
 ```bash
 git diff --check
@@ -748,7 +748,7 @@ bash scripts/validation/check-repo-contracts.sh
 Expected: documentation-only changes do not alter Compose; all applicable checks
 exit 0 and repo contracts report `failures=0`.
 
-- [ ] **Step 8: Commit Task 5**
+- [x] **Step 8: Commit Task 5**
 
 ```bash
 git add docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md
@@ -786,12 +786,13 @@ git commit -m "docs(research): refresh infrastructure and security references"
 **Current implementation state:** Tasks 1-6 have final PASS/APPROVED
 task-scoped reviews. The 35-row category/criterion ownership audit, 30-family
 duplicate-claim disposition ledger, canonical/superseded routing, and required
-gate evidence satisfy T-ARC-006/VAL-ARC-006 at that gate. The first
-whole-branch preclosure review returned findings, so its clean repeat, the
-separate lifecycle-closure commit, the post-closure review, all Completion
-Criteria, Steps 10-12, and lifecycle completion remain open.
+gate evidence satisfy T-ARC-006/VAL-ARC-006. The clean preclosure rerun of
+`940eae305da0c29e10957bdd80c95d5e6530927a..20e0b1037ba44dbb98c2d04998f4d9df85e6d3b2`
+returned PASS/APPROVED, Critical 0, Important 0, Minor 0, and
+`READY_FOR_CLOSURE: YES`. Step 11 closes Stage 03/04 lifecycle state. Step 12,
+the post-closure whole-branch audit, remains open and no verdict is claimed.
 
-- [ ] **Step 1: Run the requested-category coverage audit**
+- [x] **Step 1: Run the requested-category coverage audit**
 
 Build a task-evidence matrix mapping every original user category and Spec 122
 success criterion to one canonical document and section. Reject:
@@ -804,7 +805,7 @@ success criterion to one canonical document and section. Reject:
 
 Expected: every item has exactly one primary owner and an evidence link.
 
-- [ ] **Step 2: Update the canonical pack README**
+- [x] **Step 2: Update the canonical pack README**
 
 Add `provider-model-landscape.md` to Structure, Current References, and Reading
 Order. Add a consolidation note stating:
@@ -815,7 +816,7 @@ Order. Add a consolidation note stating:
 - completed Stage 03/04 and audits remain historical evidence;
 - current policy/runtime truth remains outside Stage 90.
 
-- [ ] **Step 3: Replace duplicate leaf bodies with supersession records**
+- [x] **Step 3: Replace duplicate leaf bodies with supersession records**
 
 For each 2026-07-07 non-README reference:
 
@@ -832,7 +833,7 @@ For each 2026-07-07 non-README reference:
 Expected: old links remain resolvable while the body cannot be mistaken for
 current research.
 
-- [ ] **Step 4: Supersede the duplicate pack README and update parent routing**
+- [x] **Step 4: Supersede the duplicate pack README and update parent routing**
 
 Set the duplicate README to `status: superseded`, replace Current References
 and reading guidance with a canonical mapping table, and remove active-work
@@ -842,7 +843,7 @@ language. In the parent research README:
 - list 2026-07-07 under a `Superseded References` section;
 - explain that readers must use the canonical pack for current facts.
 
-- [ ] **Step 5: Prepare provisional closure evidence**
+- [x] **Step 5: Prepare provisional closure evidence**
 
 After Tasks 1-5 reviews are clean and the Task 6 coverage audit passes:
 
@@ -857,7 +858,7 @@ Lifecycle completion is intentionally deferred until the post-task broad review
 and closure sequence below. This avoids claiming completion before the review
 that proves it.
 
-- [ ] **Step 6: Regenerate LLM Wiki outputs only when stale**
+- [x] **Step 6: Regenerate LLM Wiki outputs only when stale**
 
 Run:
 
@@ -878,7 +879,7 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 
 Expected: both final checks exit 0. Do not edit either generated file by hand.
 
-- [ ] **Step 7: Run final verification**
+- [x] **Step 7: Run final verification**
 
 ```bash
 git diff --check
@@ -895,7 +896,7 @@ bash scripts/validation/check-repo-contracts.sh
 Expected: all commands exit 0; sync reports no drift; repository validators
 report `failures=0`.
 
-- [ ] **Step 8: Run targeted closure scans**
+- [x] **Step 8: Run targeted closure scans**
 
 ```bash
 rg -n "status: active" docs/90.references/research/2026-07-07-agentic-research-pack-update
@@ -910,14 +911,14 @@ Expected:
   links;
 - the third returns no unresolved placeholder or unsupported stale claim.
 
-- [ ] **Step 9: Commit Task 6**
+- [x] **Step 9: Commit Task 6**
 
 ```bash
 git add docs/00.agent-governance/memory/progress.md docs/03.specs/122-agentic-research-pack-consolidation docs/03.specs/README.md docs/04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md docs/90.references/research/README.md docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md docs/90.references/research/2026-07-07-agentic-research-pack-update docs/90.references/llm-wiki/llm-wiki-index.md docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
 git commit -m "docs(research): supersede duplicate research pack"
 ```
 
-- [ ] **Step 10: Run the first whole-branch review**
+- [x] **Step 10: Run the first whole-branch review**
 
 After the Task 6 task-scoped reviewer approves both spec compliance and document
 quality, generate a review package from the branch merge base through current
@@ -927,7 +928,7 @@ Expected: no open Critical or Important finding. If findings exist, dispatch
 one fix subagent with the complete finding list, rerun covering checks, and
 repeat the broad review before lifecycle closure.
 
-- [ ] **Step 11: Record closure in a separate logical commit**
+- [x] **Step 11: Record closure in a separate logical commit**
 
 After the first whole-branch review is clean, dispatch one closure subagent to:
 
@@ -958,6 +959,35 @@ until the branch is clean.
 
 Expected: final reviewer reports the branch ready to merge with no open
 Critical or Important finding.
+
+### Lifecycle Closure Evidence
+
+- Tasks 1-6 are Done with exact full/content ranges and final review reports in
+  the paired [task ledger](../tasks/2026-07-10-agentic-research-pack-consolidation.md#tasks-1-6-commit-and-review-ledger).
+- The first preclosure review of
+  `940eae305da0c29e10957bdd80c95d5e6530927a..38cf5e87857d647a02a0e3e34d56619a260bf328`
+  returned FAIL/CHANGES_REQUESTED with Critical 0, Important 2, Minor 1. Commit
+  `20e0b1037ba44dbb98c2d04998f4d9df85e6d3b2` remediated all three findings.
+- The clean rerun of
+  `940eae305da0c29e10957bdd80c95d5e6530927a..20e0b1037ba44dbb98c2d04998f4d9df85e6d3b2`
+  returned PASS/APPROVED with Critical 0, Important 0, Minor 0, and
+  `READY_FOR_CLOSURE: YES`; report:
+  `.superpowers/sdd/branch-review-preclosure-rerun-report.md`.
+- The complete Step 7 command set passes at closure. The task ledger records
+  exact results, cutoff caveats, the Task 2 generator-only deviation, stale
+  advisory Graphify disposition, the controller-approved two-entry Stage 04
+  parent-index synchronization required by repository contracts, and the
+  unchanged behavioral no-mutation boundary.
+- Closure commit: `pending (self-hash unavailable inside the commit being
+  described)`; commit subject is
+  `docs(task): close agentic research consolidation`.
+- Step 12 remains external to implementation closure. After the closure commit,
+  generate `.superpowers/sdd/branch-review-postclosure-940eae30..closure.diff`
+  with
+  `git diff --binary 940eae305da0c29e10957bdd80c95d5e6530927a..HEAD -- .`
+  and record the independent verdict in
+  `.superpowers/sdd/branch-review-postclosure-report.md`. Neither report nor a
+  PASS verdict exists yet.
 
 ## Verification Plan
 
@@ -1010,21 +1040,22 @@ Critical or Important finding.
 
 ## Completion Criteria
 
-- [ ] All six tasks have clean spec-compliance and document-quality reviews.
-- [ ] Every requested category and subcategory has one canonical owner and
+- [x] All six tasks have clean spec-compliance and document-quality reviews.
+- [x] Every requested category and subcategory has one canonical owner and
       workspace/external comparison.
-- [ ] Provider model catalog satisfies the exact cutoff and lifecycle contract.
-- [ ] Task-fit recommendations are labeled evidence-backed analysis.
-- [ ] Verified duplicate content is merged once; unsupported content is removed.
-- [ ] The 2026-07-07 pack and all leaf references are superseded and mapped.
-- [ ] Completed historical Stage 03/04 and audit evidence remains linked.
-- [ ] No out-of-scope active policy, runtime, CI, provider, model, hook, script,
+- [x] Provider model catalog satisfies the exact cutoff and lifecycle contract.
+- [x] Task-fit recommendations are labeled evidence-backed analysis.
+- [x] Verified duplicate content is merged once; unsupported content is removed.
+- [x] The 2026-07-07 pack and all leaf references are superseded and mapped.
+- [x] Completed historical Stage 03/04 and audit evidence remains linked.
+- [x] No out-of-scope active policy, runtime, CI, provider, model, hook, script,
       secret, remote, or branch-protection change occurred.
-- [ ] The first whole-branch review is clean before lifecycle closure.
-- [ ] A separate closure commit completes Stage 03/04 lifecycle, task evidence,
+- [x] The first whole-branch review is clean before lifecycle closure.
+- [x] A separate closure commit completes Stage 03/04 lifecycle, task evidence,
       indexes, and progress memory.
-- [ ] Final validation and post-closure whole-branch review pass with no open
-      Critical/Important finding.
+- [x] Final validation passes at lifecycle closure.
+- [ ] Post-closure whole-branch review passes with no open Critical/Important
+      finding. This external Step 12 audit has not run; no verdict is claimed.
 
 ## Related Documents
 

@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/122-agentic-research-pack-consolidation/spec.md -->
@@ -328,10 +328,12 @@ implementer mutates a task's files.
 ## Implementation State
 
 Tasks 1-6 have final PASS/APPROVED task-scoped reviews, and
-T-ARC-006/VAL-ARC-006 are satisfied at that gate. This specification remains
-`status: active`; the first whole-branch preclosure review returned findings,
-so overall lifecycle acceptance remains open until its clean repeat, a
-separate closure commit, and the post-closure whole-branch review complete.
+T-ARC-006/VAL-ARC-006 are satisfied. The clean preclosure rerun for
+`940eae305da0c29e10957bdd80c95d5e6530927a..20e0b1037ba44dbb98c2d04998f4d9df85e6d3b2`
+returned PASS/APPROVED with Critical 0, Important 0, Minor 0, and
+`READY_FOR_CLOSURE: YES`. Step 11 completes this specification and its paired
+Stage 04 lifecycle. The Step 12 post-closure whole-branch review remains a
+separate external audit gate and has not run; merge readiness is not claimed.
 
 ## Verification
 

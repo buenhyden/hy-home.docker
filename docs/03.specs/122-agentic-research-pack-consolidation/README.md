@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/122-agentic-research-pack-consolidation/README.md -->
@@ -67,10 +67,13 @@ official Claude, OpenAI/Codex, and Gemini model catalogs as of
 ## Implementation State
 
 Tasks 1-6 have clean task-scoped reviews, and T-ARC-006/VAL-ARC-006 are
-satisfied at that gate. This specification remains active: the first
-whole-branch preclosure review returned findings, so its clean repeat, the
-separate lifecycle-closure commit, and the post-closure review are still
-required. No completed status or merge-readiness claim is made here.
+satisfied. The clean whole-branch preclosure rerun of
+`940eae305da0c29e10957bdd80c95d5e6530927a..20e0b1037ba44dbb98c2d04998f4d9df85e6d3b2`
+returned PASS/APPROVED with Critical 0, Important 0, Minor 0, and
+`READY_FOR_CLOSURE: YES`. Step 11 therefore completes the specification and
+paired Stage 04 lifecycle. The Step 12 post-closure whole-branch review has not
+run and remains the external merge-readiness audit gate; no result is claimed
+for it here.
 
 ## Related Documents
 

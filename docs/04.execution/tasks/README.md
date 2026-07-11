@@ -154,7 +154,7 @@ docs/04.execution/tasks/
 ├── 2026-07-06-agent-output-eval-runner.md # Completed local advisory agent-output eval runner evidence
 ├── 2026-07-06-agent-output-eval-ci-gate.md # Completed agent-output eval fixture freshness CI gate evidence
 ├── 2026-07-06-dependency-vulnerability-audit-gate.md # Completed Storybook Next.js dependency vulnerability audit gate evidence
-├── 2026-07-10-agentic-research-pack-consolidation.md # Active canonical research-pack consolidation evidence
+├── 2026-07-10-agentic-research-pack-consolidation.md # Completed canonical research-pack consolidation evidence; post-closure audit pending
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence

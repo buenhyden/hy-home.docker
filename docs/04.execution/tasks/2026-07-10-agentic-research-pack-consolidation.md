@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md -->
@@ -46,7 +46,7 @@ plan.
 | T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Done |
 | T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Done |
 | T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Done |
-| T-ARC-006 | Finalize indexes and supersede the duplicate pack; keep lifecycle closure pending broad review | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, Task 6 review; clean whole-branch review and closure remain open | Workflow supervisor | Done |
+| T-ARC-006 | Finalize indexes, supersede the duplicate pack, and close lifecycle after clean preclosure review | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, Task 6 review, clean preclosure review, lifecycle closure | Workflow supervisor | Done |
 
 ## Phase View
 
@@ -70,8 +70,8 @@ plan.
 ### Phase 4: Consolidation Closure
 
 - [x] T-ARC-006 Supersede the duplicate pack and prepare provisional evidence
-      (**Done**; independent Task 6 review PASS / APPROVED; broad review and
-      lifecycle closure remain pending).
+      (**Done**; Task 6 and clean preclosure reviews PASS / APPROVED; lifecycle
+      closure completed; post-closure audit pending).
 
 ## Source Evidence Contract
 
@@ -932,22 +932,22 @@ not changed.
   policy conflict remains an explicit gap rather than a Task 5 review defect.
 - Final status: **Done**.
 
-## T-ARC-006 Provisional Evidence
+## T-ARC-006 Closure Evidence
 
 ### Status and Lifecycle Boundary
 
-T-ARC-006 is **Done** at the task-scoped implementation and review gate. Steps
-1-9 produced the coverage audit, supersession records, routing updates,
-validation evidence, and logical implementation commit. Independent review of
+T-ARC-006 is **Done**. Steps 1-9 produced the coverage audit, supersession
+records, routing updates, validation evidence, and logical implementation
+commit. Independent review of
 `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd`
 returned Spec **PASS** / Quality **APPROVED** with Critical 0, Important 0,
 and Minor 1. The reviewer reported five matching lines / eight occurrences;
 exact controller verification after bookkeeping establishes six physical
 matching lines / eight occurrences and supersedes that count while preserving
-the review's non-blocking semantic disposition.
-Spec 122, its plan, and this task remain `status: active`; every final
-Completion Criteria item, the clean repeat of the first whole-branch preclosure
-review, lifecycle-closure commit, and post-closure review remain open.
+the review's non-blocking semantic disposition. The clean preclosure rerun then
+authorized closure, and Step 11 sets Spec 122, its Plan, and this task to
+`status: completed`. The post-closure Step 12 audit has not run and remains the
+only pending completion criterion and merge-readiness gate.
 
 ### Requested-Category and Spec Coverage Audit
 
@@ -992,7 +992,7 @@ assigned owner rather than restating vendor facts here.
 | VAL-ARC-007 | completed Stage 03/04 and audits preserved as history | [Canonical pack README — Consolidation and Lifecycle Boundary](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md#consolidation-and-lifecycle-boundary) | Direct links to completed Spec 104, its Stage 04 plan/task, and both audit packs | Covered; no historical body deleted or copied. |
 | VAL-ARC-008 | no active policy/runtime/CI/provider/model/hook/script/secret/remote change | [Spec 122 — Guardrails](../../03.specs/122-agentic-research-pack-consolidation/spec.md#guardrails-if-applicable) | Task 6 changed-file inventory and full diff inspection | Covered; independent review confirmed 14 scoped documentation paths and no out-of-scope mutation. |
 | VAL-ARC-009 | logical commits and task reviews | [Tasks 1-6 Commit and Review Ledger](#tasks-1-6-commit-and-review-ledger) | Exact ranges and final PASS/APPROVED reports below | Covered for Tasks 1-6; whole-branch reviews remain lifecycle gates. |
-| VAL-ARC-010 | specified checks pass or unrelated failure recorded | [Provisional Validation Evidence](#provisional-validation-evidence) | Exact Step 6-8 command results | Covered provisionally; lifecycle closure still requires later broad reviews. |
+| VAL-ARC-010 | specified checks pass or unrelated failure recorded | [Final Lifecycle-Closure Validation Evidence](#final-lifecycle-closure-validation-evidence) | Exact Step 6-8 and closure command results | Covered for lifecycle closure; the separate post-closure audit remains pending. |
 
 Coverage result: **35/35 rows covered**, **35/35 with one primary canonical
 owner/section**, **0 uncovered**, and **0 duplicate primary owners**. Provider
@@ -1069,7 +1069,7 @@ leaf bodies and were not promoted to current canonical truth.
 Task 6 independent review reproduced **35/35** coverage rows with one primary
 owner each and the **30/30** disposition split (`merged` 8, `duplicate` 4,
 `unsupported` 15, `historical-only` 3). Canonical index/history routing,
-README plus 5/5 tombstone contracts, active lifecycle boundaries, and the
+README plus 5/5 tombstone contracts, lifecycle boundaries, and the
 fourteen-path mutation scope all passed.
 
 ### First Whole-Branch Preclosure Review and Remediation
@@ -1087,11 +1087,18 @@ fourteen-path mutation scope all passed.
 - M-01 is remediated by extending Task 6's full range through the two
   review-bookkeeping commits while retaining the content-review range, verdict,
   and authoritative six-lines/eight-occurrences result.
-- The clean repeat of the first whole-branch preclosure review is pending.
-  Lifecycle closure and post-closure review remain forbidden until that repeat
-  has no open Critical or Important finding.
+- Remediation commit:
+  `20e0b1037ba44dbb98c2d04998f4d9df85e6d3b2`.
+- Clean rerun range:
+  `940eae305da0c29e10957bdd80c95d5e6530927a..20e0b1037ba44dbb98c2d04998f4d9df85e6d3b2`.
+- Clean rerun verdict: Spec **PASS** / Quality **APPROVED** with
+  **Critical 0 · Important 0 · Minor 0** and `READY_FOR_CLOSURE: YES`.
+- Clean rerun report:
+  `.superpowers/sdd/branch-review-preclosure-rerun-report.md`.
+- This clean rerun satisfies Step 10 and authorizes the separate Step 11
+  lifecycle-closure commit. It does not provide a Step 12 post-closure verdict.
 
-### Cutoff Caveats, Deviations, and Broad-Review Gate
+### Cutoff Caveats, Deviations, and Review Gates
 
 - The model ledger remains fixed at `2026-07-10 10:00 KST (01:00 UTC)`:
   145 structural rows, 142 cutoff-qualified rows, and three GPT-5.6 rows kept
@@ -1110,11 +1117,25 @@ fourteen-path mutation scope all passed.
 git diff --binary 940eae305da0c29e10957bdd80c95d5e6530927a..38cf5e87857d647a02a0e3e34d56619a260bf328 -- . > .superpowers/sdd/branch-review-preclosure-940eae30..38cf5e87.diff
 ```
 
-That review returned the findings recorded above. The remediation does not
-close Step 10: its clean repeat is still pending, and lifecycle completion is
-forbidden until that repeat is clean.
+That review returned the findings recorded above. The remediation commit and
+clean rerun now close Step 10 with PASS/APPROVED, Critical 0, Important 0,
+Minor 0, and `READY_FOR_CLOSURE: YES`.
 
-### Provisional Validation Evidence
+The Step 11 closure commit is
+`pending (self-hash unavailable inside the commit being described)` with subject
+`docs(task): close agentic research consolidation`. After it exists, Step 12
+must generate the ignored review package
+`.superpowers/sdd/branch-review-postclosure-940eae30..closure.diff` with:
+
+```bash
+git diff --binary 940eae305da0c29e10957bdd80c95d5e6530927a..HEAD -- . > .superpowers/sdd/branch-review-postclosure-940eae30..closure.diff
+```
+
+The independent reviewer must write
+`.superpowers/sdd/branch-review-postclosure-report.md`. Neither a Step 12 report
+nor verdict exists at closure authoring time; merge readiness is not claimed.
+
+### Final Lifecycle-Closure Validation Evidence
 
 Documentation-only TDD and code coverage are not applicable. The final Step
 6-8 evidence is:
@@ -1129,18 +1150,18 @@ Documentation-only TDD and code coverage are not applicable. The final Step
 - `bash scripts/validation/check-doc-traceability.sh` — exit 0;
   `catalog_pairs_total=46`, `failures=0`.
 - `bash scripts/validation/check-doc-implementation-alignment.sh` — exit 0;
-  `stage_docs_total=621`, `repo_local_markdown_links_checked=4856`,
+  `stage_docs_total=621`, `repo_local_markdown_links_checked=4857`,
   `failures=0`.
 - `bash scripts/validation/validate-docker-compose.sh` — exit 0;
   `services_total=5` for the core profile.
 - `bash scripts/hardening/check-all-hardening.sh` — exit 0; all eleven tier
   baselines passed.
 - `bash scripts/validation/check-repo-contracts.sh` — final exit 0;
-  `changed_template_docs_total=13`, `normalized_changed_template_docs_total=13`,
+  `changed_template_docs_total=7`, `normalized_changed_template_docs_total=7`,
   `target_stage_docs_total=724`, `legacy_target_stage_docs_skipped=0`, and
-  repository `failures=0`. The first pass reported the duplicate README's
-  missing `## Structure` heading; it was fixed in scope and the complete Step 7
-  bundle was rerun successfully.
+  repository `failures=0`. The first closure pass exposed the two stale Stage
+  04 parent-index entries described in Deviation Notes; after the authorized
+  synchronization, the complete Step 7 bundle passed.
 - Duplicate-active scan — exit 1 with no matches, the expected negative result.
 - Duplicate-path scan — exit 0; matches are limited to supersession/history
   routing, target comments, plan scope/check instructions, and task/spec
@@ -1161,8 +1182,9 @@ Documentation-only TDD and code coverage are not applicable. The final Step
 
 Graphify remains built from `30df271a` and advisory. No code file changed, so
 the graph refresh was skipped under the approved documentation-only scope.
-These results and the independent PASS/APPROVED review close T-ARC-006 at its
-task-scoped gate but do not close the overall lifecycle.
+These results, the independent task reviews, and the clean preclosure rerun
+close the implementation lifecycle in Step 11. They do not substitute for the
+still-pending Step 12 post-closure whole-branch audit.
 
 ## Task Review Evidence Contract
 
@@ -1236,6 +1258,15 @@ not resolved because Stage 00 policy edits require separate approval. Graphify
 was already stale/advisory and was not refreshed for documentation-only work.
 No Compose, infra, workflow, script, policy, configuration, credential, secret,
 runtime, provider/model, or remote state changed.
+
+For Step 11 lifecycle closure, the controller approved one necessary
+parent-index synchronization deviation after the first closure verification
+run. Changing the Plan and task frontmatter to `completed` caused
+`check-repo-contracts.sh` to reject the stale `active` descriptions in
+`docs/04.execution/plans/README.md` and `docs/04.execution/tasks/README.md`.
+Only those two entries were changed, from active to completed with the truthful
+post-closure-audit-pending caveat. The subsequent complete Step 7 rerun passes;
+no other path or behavior entered closure scope.
 
 ## Related Documents
 
