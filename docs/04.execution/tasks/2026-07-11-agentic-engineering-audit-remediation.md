@@ -376,11 +376,20 @@ unique evidence; current counts route to the canonical pack.
   security supply-chain work. Task 6 creates no follow-up spec/plan itself.
 - **Lifecycle boundary**: T-AER-006 remains `Todo` and its checkbox remains
   unchecked pending independent review approval.
+- **Independent review remediation**: the first Task 6 review returned Critical
+  0, Important 1, Minor 0 because both audit scripts accepted missing or blank
+  criteria and the generator did not fail on accumulated structural errors.
+  The focused fix introduces one shared exact manifest/parser, makes both
+  callers fail nonzero on structural/cardinality defects, corrects two malformed
+  AIC/AMS table separators, and adds seven temp-copy regression fixtures.
 - **Graphify boundary**: generator scripts changed, so Task 6 runs
   `graphify update .` after validation when available and corroborates the
   advisory report against tracked sources.
 - **Task 6 implementation validation**:
   - Bash syntax for both changed audit scripts — PASS
+  - shared audit criterion contract — PASS, exact 11 reports / 161 rows / 13 prefixes
+  - audit criterion regression fixtures — PASS, 7/7 (valid, deleted row, malformed row, blank field, duplicate ID, generator negative, coverage negative)
+  - manual temp-copy negative confirmation — PASS; deleted QAF-16 and blank External criterion each return generator rc=1 and coverage rc=1 without changing canonical reports
   - audit matrix write/check and coverage check — PASS, 11 criterion reports / 161 unique rows / 15 overview categories
   - LLM Wiki index/coverage write/check — PASS, 1,267 paths / 1,266 safe paths
   - one-current-pack scan — PASS, 2026-07-05 pack active; 2026-07-07 README + 5 leaves superseded
@@ -389,7 +398,7 @@ unique evidence; current counts route to the canonical pack.
   - Compose structural render — PASS, `services_total=5`, no startup
   - infrastructure hardening — PASS, all eleven tiers
   - repository contracts — PASS, 23/23 changed target-stage docs normalized, 734/734 total, `failures=0`
-  - Graphify refresh — completed, 21,632 nodes / 21,507 edges / 1,475 communities; advisory only for two corroborated cross-root inferred edges
+  - Graphify review-fix refresh — completed after final code changes, 1,071 files / 21,680 nodes / 21,593 edges / 1,477 communities; advisory only for two corroborated cross-root inferred edges. `Built from commit: 25c29140` records the committed base at refresh time while the graph extraction includes the staged/uncommitted review-fix working tree; the later fix commit changes only the marker's Git comparison, not the extracted source set.
   - direct `pre-commit` — not run; prohibited until the Task 9 controlled wrapper exists
 
 ### Task Review Ledger

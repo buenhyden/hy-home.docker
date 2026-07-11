@@ -43,29 +43,23 @@ python3 - "$mode" "$OUTPUT" <<'PY'
 from __future__ import annotations
 
 import collections
+import os
 import pathlib
 import re
 import subprocess
 import sys
 from dataclasses import dataclass
 
+sys.path.insert(0, str(pathlib.Path("scripts/validation").resolve()))
+from audit_criterion_contract import (  # noqa: E402
+    AuditCriterionContractError,
+    REPORT_PREFIX_COUNTS,
+    validate_pack,
+)
+
 MODE = sys.argv[1]
 OUTPUT = pathlib.Path(sys.argv[2])
-PACK = pathlib.Path("docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack")
-
-CRITERION_REPORTS = [
-    "harness-engineering-implementation.md",
-    "loop-engineering-implementation.md",
-    "provider-harness-loop-implementation.md",
-    "workspace-rules-environment-implementation.md",
-    "agent-instructions-catalog-vibe-models.md",
-    "automation-candidates.md",
-    "sdlc-document-contracts-implementation.md",
-    "frontmatter-template-readme-implementation.md",
-    "sdlc-quality-formatting-implementation.md",
-    "compose-infrastructure-operations-readiness.md",
-    "security-framework-maturity.md",
-]
+PACK = pathlib.Path(os.environ.get("AUDIT_PACK_DIR", "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack"))
 
 EXPECTED_OVERVIEW_CATEGORIES = [
     "Harness engineering",
@@ -86,36 +80,6 @@ EXPECTED_OVERVIEW_CATEGORIES = [
 ]
 
 EXPECTED_CANDIDATES = [f"AEA-AUTO-{index:03d}" for index in range(1, 14)]
-CRITERION_FIELDS = [
-    "criterion id",
-    "external criterion",
-    "workspace evidence",
-    "implementation state",
-    "enforcement depth",
-    "disposition",
-    "canonical owner",
-    "automation impact",
-    "verification",
-    "confidence",
-]
-VALID_STATES = {"Implemented", "Partial", "Missing", "Not Applicable", "Needs Revalidation"}
-VALID_DISPOSITIONS = {"Retain", "Fix", "Improve", "Add", "Remove"}
-
-
-@dataclass(frozen=True)
-class CriterionRow:
-    report: pathlib.Path
-    criterion_id: str
-    external_criterion: str
-    workspace_evidence: str
-    raw_status: str
-    normalized_status: str
-    enforcement_depth: str
-    disposition: str
-    canonical_owner: str
-    automation_impact: str
-    verification: str
-    confidence: str
 
 
 @dataclass(frozen=True)
@@ -187,75 +151,6 @@ def iter_tables(text: str) -> list[tuple[list[str], list[list[str]]]]:
     return tables
 
 
-def normalize_status(value: str) -> str:
-    value_lower = value.lower()
-    if value_lower == "missing" or "not implemented" in value_lower or value_lower == "gap" or value_lower.startswith("gap "):
-        return "Gap / Not Implemented"
-    if value_lower == "not applicable":
-        return "Not Applicable"
-    if (
-        "partial" in value_lower
-        or "partially" in value_lower
-        or "fixture" in value_lower
-        or "mapped" in value_lower
-        or "deferred" in value_lower
-        or "readiness" in value_lower
-    ):
-        return "Partially Implemented"
-    if "implemented" in value_lower:
-        return "Implemented"
-    if "unknown" in value_lower or "needs revalidation" in value_lower:
-        return "Unknown / Needs Revalidation"
-    return "Other"
-
-
-def extract_criterion_rows(path: pathlib.Path) -> tuple[list[CriterionRow], list[str]]:
-    text = read(path)
-    criteria: list[CriterionRow] = []
-    failures: list[str] = []
-    for header, rows in iter_tables(text):
-        normalized_header = [name.strip().lower() for name in header]
-        if not normalized_header or normalized_header[0] != "criterion id":
-            continue
-        if "status" in normalized_header and "implementation state" not in normalized_header:
-            normalized_header[normalized_header.index("status")] = "implementation state"
-        if normalized_header != CRITERION_FIELDS:
-            failures.append(f"invalid criterion schema in {path}: {' | '.join(header)}")
-            continue
-        field_index = {name: index for index, name in enumerate(normalized_header)}
-        for row in rows:
-            criterion_id = row[field_index["criterion id"]]
-            raw_status = row[field_index["implementation state"]]
-            depth = row[field_index["enforcement depth"]]
-            disposition = row[field_index["disposition"]]
-            if not re.fullmatch(r"[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-[0-9]{2}", criterion_id):
-                failures.append(f"invalid criterion ID in {path}: {criterion_id}")
-            if raw_status not in VALID_STATES:
-                failures.append(f"invalid implementation state for {criterion_id}: {raw_status}")
-            depth_match = re.match(r"^([0-4])(?:\b|\s)", depth)
-            if not depth_match:
-                failures.append(f"invalid enforcement depth for {criterion_id}: {depth}")
-            if disposition not in VALID_DISPOSITIONS:
-                failures.append(f"invalid disposition for {criterion_id}: {disposition}")
-            criteria.append(
-                CriterionRow(
-                    report=path,
-                    criterion_id=criterion_id,
-                    external_criterion=row[field_index["external criterion"]],
-                    workspace_evidence=row[field_index["workspace evidence"]],
-                    raw_status=raw_status,
-                    normalized_status=normalize_status(raw_status),
-                    enforcement_depth=depth_match.group(1) if depth_match else depth,
-                    disposition=disposition,
-                    canonical_owner=row[field_index["canonical owner"]],
-                    automation_impact=row[field_index["automation impact"]],
-                    verification=row[field_index["verification"]],
-                    confidence=row[field_index["confidence"]],
-                )
-            )
-    return criteria, failures
-
-
 def extract_overview_categories(path: pathlib.Path) -> dict[str, str]:
     categories: dict[str, str] = {}
     for header, rows in iter_tables(read(path)):
@@ -316,27 +211,16 @@ def extract_gap_signals() -> list[str]:
     ]
 
 
-def build_output() -> str:
+def build_output() -> tuple[str, list[str]]:
     failures: list[str] = []
-    report_paths = [PACK / name for name in CRITERION_REPORTS]
-    for report in report_paths:
-        if not report.is_file():
-            failures.append(f"missing required audit report: {report}")
-
-    all_criteria: list[CriterionRow] = []
-    per_report_counts: dict[pathlib.Path, int] = {}
-    for report in report_paths:
-        criteria, criterion_failures = extract_criterion_rows(report)
-        failures.extend(criterion_failures)
-        per_report_counts[report] = len(criteria)
-        all_criteria.extend(criteria)
-        if report.is_file() and not criteria:
-            failures.append(f"no parseable criterion rows in required audit report: {report}")
-
+    contract = validate_pack(PACK)
+    report_paths = [PACK / name for name in REPORT_PREFIX_COUNTS]
+    all_criteria = list(contract.rows)
+    per_report_counts = {
+        PACK / report_name: count
+        for report_name, count in contract.per_report_counts.items()
+    }
     criterion_ids = [criterion.criterion_id for criterion in all_criteria]
-    duplicate_ids = sorted(identifier for identifier, count in collections.Counter(criterion_ids).items() if count > 1)
-    for criterion_id in duplicate_ids:
-        failures.append(f"duplicate criterion ID: {criterion_id}")
 
     overview_categories = extract_overview_categories(PACK / "implementation-overview.md")
     for category in EXPECTED_OVERVIEW_CATEGORIES:
@@ -414,8 +298,9 @@ def build_output() -> str:
         "",
         "## Definitions / Facts",
         "",
-        f"- **Criterion reports**: {len(CRITERION_REPORTS)} criterion-bearing reports are expected under `{PACK}`.",
+        f"- **Criterion reports**: {len(REPORT_PREFIX_COUNTS)} criterion-bearing reports are expected under `{PACK}`.",
         "- **Non-criterion pack files**: `README.md` is the index and `implementation-overview.md` is the cross-category overview; neither is counted as a criterion report.",
+        "- **Completeness contract**: every expected ID is present exactly once in its declared report/prefix; every row has the exact ten-field schema with non-empty values and allowed state/depth/disposition vocabulary.",
         f"- **Required overview categories**: {len(EXPECTED_OVERVIEW_CATEGORIES)} categories are expected in `implementation-overview.md`.",
         f"- **Required automation candidates**: {len(EXPECTED_CANDIDATES)} `AEA-AUTO-*` rows are expected in `automation-candidates.md`.",
         "- **Closed with residual gap**: candidate has implementation evidence, but its row still names follow-up work that remains outside this generated snapshot.",
@@ -424,7 +309,7 @@ def build_output() -> str:
         "",
         "| Metric | Value |",
         "| --- | ---: |",
-        f"| Criterion reports expected | {len(CRITERION_REPORTS)} |",
+        f"| Criterion reports expected | {len(REPORT_PREFIX_COUNTS)} |",
         f"| Criterion reports present | {sum(1 for report in report_paths if report.is_file())} |",
         "| README indexes | 1 |",
         "| Overview reports | 1 |",
@@ -581,6 +466,7 @@ def build_output() -> str:
             f"- {link(PACK / 'automation-candidates.md', 'automation candidates')} - `AEA-AUTO-*` candidate rows and closure evidence.",
             f"- {link(PACK / 'security-framework-maturity.md', 'security framework maturity')} - residual security automation gap signals.",
             f"- {link(pathlib.Path('scripts/validation/report-audit-pack-coverage.sh'), 'audit pack coverage report')} - existing implementation-status coverage parser.",
+            f"- {link(pathlib.Path('scripts/validation/audit_criterion_contract.py'), 'audit criterion completeness contract')} - shared exact report/ID/schema/cardinality parser used by both audit scripts.",
             f"- {link(pathlib.Path('scripts/validation/generate-audit-implementation-matrix.sh'), 'audit implementation matrix generator')} - generator for this snapshot.",
             "",
             "## Maintenance",
@@ -601,11 +487,21 @@ def build_output() -> str:
         ]
     )
 
-    return "\n".join(lines)
+    return "\n".join(lines), failures
 
 
 def main() -> int:
-    generated = build_output()
+    try:
+        generated, failures = build_output()
+    except AuditCriterionContractError as exc:
+        for failure in exc.errors:
+            print(f"FAIL: {failure}", file=sys.stderr)
+        return 1
+
+    if failures:
+        for failure in failures:
+            print(f"FAIL: {failure}", file=sys.stderr)
+        return 1
 
     if MODE == "dry-run":
         print(generated, end="")

@@ -88,7 +88,7 @@ These `AIC-*` audit IDs stabilize the seven capability families already
 defined in the canonical Task 2 research; they do not create active catalog roles.
 
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
-| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | AIC-01 | Product discovery, outcome ownership, and specification planning. | Workflow/doc/rules roles cover artifact mechanics; no role owns product discovery or outcome validation. | Missing | 0 | Add | Product scope and Stage 00 catalog | Add only after recurring demand, bounded IO, and representative eval; merge spec conversion into existing skills. | Compare 15 roles/22 functions with pinned product/spec family. | High. |
 | AIC-02 | Performance baseline, load/speed analysis, and regression ownership. | QA/infra roles validate correctness/drift; no dedicated benchmark baseline owner exists. | Partial | 1 | Improve | QA and infra scopes | First add benchmark/evidence function to existing roles; add a role only after workload/eval proves need. | Inspect QA/infra catalogs and benchmark evidence. | High. |
 | AIC-03 | Reliability, SLO/capacity, observability, incident, and postmortem capability. | Incident responder, drift detector, IAC reviewer, CI/CD engineer, and Stage 05 split ownership; SLO/capacity/chaos depth is uneven. | Partial | 2 | Improve | Ops/infra existing roles | Merge missing methods into existing roles; reject an overlapping umbrella SRE persona. | Map pinned reliability roles to current catalog owners. | High. |
@@ -100,7 +100,7 @@ defined in the canonical Task 2 research; they do not create active catalog role
 ## Model-Routing Change Criteria
 
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
-| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | AMS-01 | Prove exact identifier/alias and provider-native lifecycle. | Exact policy/adapter literals are tracked and enforced; Claude alias mapping is documented, while research flags `gemini-3.1-pro` as lacking the official `-preview` suffix. | Partial | 3 | Improve | Model policy owner | Keep current values; require exact primary evidence before any change. | Model `rg`, provider landscape, repo contracts. | High for literals; medium for Gemini exact-ID support. |
 | AMS-02 | Prove the exact product/API/CLI/IDE/account surface. | Adapters name repository surfaces, but provider/account entitlement and the collaboration platform's selected concrete model are not exposed per agent. | Needs Revalidation | 1 | Retain | Provider/runtime owner | Explicit non-automation unless authorized account/runtime evidence is available. | Authorized provider/runtime observation. | Medium. |
 | AMS-03 | Preserve lifecycle state and historical cutoff without backdating. | Canonical landscape retains 145 structural/142 cutoff-qualified rows at 2026-07-10 10:00 KST; mutable/later evidence does not resolve every historical exact-ID state. | Needs Revalidation | 2 | Retain | Canonical provider landscape | Retain cutoff ledger; do not alter counts/status from mutable current pages. | Research source ledger and cutoff notes. | High for ledger; deliberately conservative for mutable history. |

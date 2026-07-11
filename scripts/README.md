@@ -106,6 +106,7 @@ script.
 | QuickWin Baseline Check                | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh)                       | Enforce PLN-QW-001~005 baseline controls                                                                                                                                                                        |
 | Template & Security Baseline Check     | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh)     | Enforce template adoption and required security controls                                                                                                                                                        |
 | Audit Implementation Matrix Snapshot   | [generate-audit-implementation-matrix.sh](./validation/generate-audit-implementation-matrix.sh) | Generate and check the Stage 90 audit implementation matrix snapshot for audit report coverage, overview categories, automation candidate closure, generated evidence surfaces, and residual gap signals |
+| Audit Criterion Completeness Contract  | [audit_criterion_contract.py](./validation/audit_criterion_contract.py)                           | Enforce the shared exact 11-report / 161-row manifest, 10-field schema, non-empty fields, IDs/prefixes, vocabularies, cardinalities, and uniqueness used by both audit scripts                         |
 | Security Automation Readiness Snapshot | [generate-security-automation-readiness.sh](./validation/generate-security-automation-readiness.sh) | Generate and check the Stage 90 security automation readiness snapshot for vulnerability gate, SBOM, provenance/attestation, Scorecard, workflow security, secret scanning, Dependabot, and hardening coverage |
 | Gap Routing Recommendation Report      | [recommend-gap-routing.sh](./validation/recommend-gap-routing.sh)                           | Print advisory canonical-stage routing suggestions for gap descriptions or related paths without mutating repository/runtime state                                                                               |
 | QA Gate Recommendation Report          | [recommend-qa-gates.sh](./validation/recommend-qa-gates.sh)                                 | Print changed-path-based local QA gate recommendations without executing gates or mutating repository/runtime state                                                                                             |
@@ -184,15 +185,23 @@ executing checks or mutating repository, runtime, remote, or secret state. The
 CI quality workflow publishes the same advisory report to `GITHUB_STEP_SUMMARY`
 without changing the required job set.
 
+`scripts/validation/audit_criterion_contract.py` is the shared parser and exact
+manifest for both audit scripts. It rejects missing/unexpected reports, malformed
+headers/separators/rows, any criterion row that does not have ten non-empty
+trimmed fields, invalid state/depth/disposition values, missing/unexpected IDs,
+wrong report/prefix/total counts, and duplicate IDs.
+
 `scripts/validation/report-audit-pack-coverage.sh` reads the agentic engineering
-implementation audit pack and prints implementation-status coverage by report,
-normalized status, raw status, and overview category. Its `--check` mode is used
-by repo contracts to catch missing required reports or overview categories
-without modifying audit files.
+implementation audit pack through the shared contract and prints exact
+criterion coverage by report and prefix, normalized/raw status, and overview
+category. Its `--check` mode is used by repo contracts to catch structural or
+cardinality defects without modifying audit files.
 
 `scripts/validation/generate-audit-implementation-matrix.sh` reads the agentic
-engineering implementation audit pack and generated evidence surfaces to create
-a Stage 90 governance data snapshot. It does not rewrite audit conclusions,
+engineering implementation audit pack through the shared contract and reads
+generated evidence surfaces to create a Stage 90 governance data snapshot. It
+fails before write or freshness comparison when the criterion contract or its
+overview/candidate structure is invalid. It does not rewrite audit conclusions,
 change CI gates, run model calls, run scanners, generate SBOMs, sign artifacts,
 attest builds, query remote GitHub, or read secrets. Its `--check` mode is used
 by repo contracts to keep the generated matrix fresh.
