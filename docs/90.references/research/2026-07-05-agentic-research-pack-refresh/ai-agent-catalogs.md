@@ -15,8 +15,8 @@ with the small, governance-first catalog in `hy-home.docker`.
 
 The upstream evidence is pinned to commit
 `9f3e401ccd09aa0ee0ef8e015226d0647908e01e` (committed 2026-07-09) and was
-retrieved on 2026-07-10. Nothing from that repository was installed, converted,
-vendored, or executed.
+retrieved on 2026-07-10 and revalidated at the same immutable pin on 2026-07-11.
+Nothing from that repository was installed, converted, vendored, or executed.
 
 ## Purpose
 
@@ -74,6 +74,22 @@ review, escalation, and vibe-coding criteria are canonical in
 - `scripts/operations/sync-provider-surfaces.sh` generates Codex role TOMLs
   and Gemini/Antigravity agent/skill pointers from canonical/local sources;
   `--check` currently reports no drift.
+
+## Capability-Family Gap Analysis
+
+The comparison unit is a recurring capability family, not the number of
+upstream names. Upstream evidence is limited to the pinned commit; the local
+disposition is task-fit analysis and does not add or rename a role.
+
+| Capability family | Pinned `agency-agents` evidence | Workspace coverage | Gap / overlap | Disposition |
+| --- | --- | --- | --- | --- |
+| Product and specification | `Product Manager` owns discovery, PRDs, roadmaps, GTM, and outcomes; `Senior Project Manager` converts specs to tasks; `Workflow Architect` maps system paths before code. | `workflow-supervisor`, `doc-writer`, `rules-engineer`, and requirements/design/task skills cover orchestration and document mechanics, but no catalog role owns product discovery or outcome validation. | Product intent is a real capability gap; spec/task conversion overlaps existing skills and should not become another generic agent. | Candidate: a bounded product/spec capability under the product scope, only after recurring demand and evaluation; merge spec conversion into existing roles/skills. |
+| Performance | `Performance Benchmarker` covers load/speed testing and optimization; `Infrastructure Maintainer` also names performance optimization. | `qa-engineer`, `iac-reviewer`, `drift-detector`, and infra validation skills cover correctness and drift, not a dedicated benchmark baseline/regression owner. | Performance evidence is under-specified; a broad new infra persona would overlap current ownership. | First add benchmark/evidence capability to QA/infra workflow; propose a dedicated role only if workload and independent eval justify it. |
+| Reliability | `SRE`, `Infrastructure Maintainer`, and `Incident Response Commander` span SLOs, observability, capacity, incidents, and postmortems. | `incident-responder`, `drift-detector`, `iac-reviewer`, `ci-cd-engineer`, and Stage 05 artifacts already split prevention, detection, delivery, and response. | Upstream SRE breadth would duplicate several canonical owners; SLO/capacity/chaos depth may remain a skill gap. | Merge missing reliability methods into existing roles/scopes; do not add an umbrella SRE role without an ownership redesign. |
+| Release and deployment | `DevOps Automator` covers CI/CD, deployment automation, cloud operations, and monitoring; `Reality Checker` covers production/release readiness. | `ci-cd-engineer`, `qa-engineer`, deployment-pipeline skill, task review, and Stage 04/05 gates cover the family. | Release certification and deployment execution must remain distinct from CI configuration and remote authority. | Merge readiness rubrics into existing QA/CI workflows; no new role now. |
+| Software supply chain | The pinned `Supply Chain Strategist` is a business procurement/logistics role, while `Senior SecOps Engineer` and `Application Security Engineer` are closer to dependency/provenance controls. | `security-auditor`, `ci-cd-engineer`, security skills, workflow governance, and approval boundaries own software supply-chain checks. | Name matching would import the wrong domain; dependency provenance/release artifact review may still need sharper checklist coverage. | Do not import the business supply-chain persona; merge software supply-chain checks into security/CI and evaluate a specialist only for demonstrated recurring gaps. |
+| Evaluation | `Test Results Analyzer`, `Reality Checker`, `Experiment Tracker`, `Tool Evaluator`, and `Model QA Specialist` cover result analysis, readiness, experiments, tools, and model QA. | `qa-engineer`, `code-reviewer`, `workflow-supervisor`, deterministic validators, and agent-output fixtures cover gates, but no general semantic agent/model eval owner or baseline exists. | A dedicated eval capability is missing; multiple upstream names overlap and should be consolidated by job-to-be-done. | Strong candidate for one bounded eval function/role after dataset, scorer, privacy, calibration, and baseline contracts exist. |
+| Model routing | `Autonomous Optimization Architect` explicitly covers LLM routing, cost optimization, and shadow testing; `Agents Orchestrator` covers multi-agent coordination. | `workflow-supervisor` routes work and `subagent-protocol.md` fixes provider model tiers/effort; no autonomous cost/quality router is adopted. | Orchestration overlaps. Automatic routing would conflict with fixed policy and lacks cross-provider task evals. | Keep routing policy with the supervisor; treat shadow evaluation as a future eval capability and prohibit autonomous policy mutation. |
 
 ## Catalog Comparison Matrix
 

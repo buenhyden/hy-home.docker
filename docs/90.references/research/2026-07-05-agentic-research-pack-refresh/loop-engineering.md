@@ -54,6 +54,21 @@ comparison and routing aid.
   permissions, hooks, and resume mechanics. Provider mechanics are adapters;
   the repository's stop and approval rules remain controlling.
 
+## Provider Loop Criteria
+
+Provider cells state current official mechanisms revalidated on 2026-07-11;
+the workspace column states tracked policy/evidence, and the final column keeps
+task-fit inference and unresolved implementation gaps explicit.
+
+| Criterion | Claude | Codex | Gemini | Workspace common contract | Gap / caveat |
+| --- | --- | --- | --- | --- | --- |
+| LOOP-01 — Observe and act | A subagent runs an isolated context/tool loop and returns a result to its caller. | Built-in/custom agents run bounded tool loops and propagate results, sandbox, and approvals through the parent session. | Native subagents have independent context loops and may delegate automatically or by name. | Every action is bounded by the user request, loaded Stage 00 scope, latest observation, and approval boundary. | Hidden reasoning is not auditable; only actions, observations, decisions, and evidence may support completion. |
+| LOOP-02 — Pre/post action feedback | Lifecycle hooks can block or enrich pre-tool behavior and inspect successful or failed post-tool behavior. | Current command hooks intercept documented shell/patch/MCP paths, with explicit coverage limitations. | Native hooks include before/after tool and agent events plus model/tool-selection events. | Desired pre-edit guidance and post-change validation are provider-neutral behaviors owned by Stage 00 and shared scripts. | Event-name parity is false. Gemini workspace notes currently require manual reminder/pointer behavior because no native hook adapter is tracked. |
+| LOOP-03 — Validation and eval | Hooks and agents can invoke tests; provider capability does not adopt a scorer. | Agents/skills/hooks can invoke local checks and eval tooling. | Headless/tools/hooks/subagents can invoke checks. | Changed-file validation, CI, fixed agent-output fixtures, task evidence, and independent review define exit evidence. | A general semantic task set, scorer, baseline, and regression threshold remain missing. |
+| LOOP-04 — Retry and stop | Stop/SubagentStop hooks can return a blocking decision; retry semantics remain event-specific. | A parent can continue or re-dispatch after evidence, but current hook interception is partial. | Agent/tool hooks and checkpointing can support continuation; checkpointing is optional. | A retry must follow diagnosis or a changed input; repeated unchanged blockers escalate, and only the controller closes reviewed work. | Provider continuation is not permission for unlimited retry, and a checkpoint is not repository rollback. |
+| LOOP-05 — Approval pause/resume | Permissions and hooks can pause sensitive actions for a decision. | Approval policy is separate from sandbox; approval state propagates to subagents. | Confirmation modes and optional sandboxing govern tool execution. | Protected/external mutations pause before action, bind approval to exact scope, then refresh state before resume. | Unattended modes can suppress provider prompts but never broaden repository authority; durable cross-provider resume evidence is not uniform. |
+| LOOP-06 — Evidence and observability | Hook inputs, transcripts, and provider logs expose selected lifecycle data. | Command output, optional OpenTelemetry, thread state, and hook records expose selected data. | Hook payloads and opt-in telemetry expose selected data. | Diffs, exact checks, task/PR evidence, SARIF, and canonical lifecycle records support review. | No unified trace backend is tracked; telemetry can be disabled and must respect privacy/redaction boundaries. |
+
 ## Loop Contract Matrix
 
 | Loop | Exact input | Action | Evidence | Exit condition | Retry limit | Escalation | Status | Gap / risk | Canonical owner | Confidence |
@@ -105,8 +120,10 @@ remains a separate Antigravity/reference surface. ReAct and Reflexion are
 research foundations only; neither paper defines repository retry limits,
 approvals, or evidence policy.
 
-Provider pages were retrieved on 2026-07-10. Mutable documentation proves the
-current described surface, not historical availability at an earlier cutoff.
+Provider pages were originally retrieved on 2026-07-10 and revalidated on
+2026-07-11. Mutable documentation proves only the latest described surface;
+later announcements cannot be backdated into the fixed 2026-07-10 10:00 KST
+model cutoff.
 
 ## Source Rules
 

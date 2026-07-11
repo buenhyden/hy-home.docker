@@ -48,7 +48,7 @@ independent task/branch reviews.
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-AER-001 | Research metadata, lifecycle, document roles, agent instructions, and vibe coding | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-001 | Primary-source ledger; LLM Wiki; repo contracts; task review | wiki-curator | Done |
-| T-AER-002 | Revalidate harness, loop, provider, model, and agent-catalog research | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-002 | Cutoff ledger; provider no-drift; repo contracts; task review | wiki-curator | Todo |
+| T-AER-002 | Revalidate harness, loop, provider, model, and agent-catalog research | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-002 | Cutoff ledger; provider no-drift; repo contracts; task review | wiki-curator | Done |
 | T-AER-003 | Revalidate workspace, QA, automation, Compose, security, release, and deployment research | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-003 | Tracked inventory; Compose/hardening; repo contracts; task review | wiki-curator | Todo |
 | T-AER-004 | Audit SDLC, document roles, numbering, transitions, frontmatter, templates, and README profiles | doc | Spec 123 / Canonical Audit Categories | PLN-AER-004 | Reproducible counts; audit matrices; repo contracts; task review | doc-writer | Todo |
 | T-AER-005 | Audit harness, loops/evals, providers/models, workspace rules, instructions, catalogs, and vibe coding | doc | Spec 123 / Canonical Audit Categories | PLN-AER-005 | Criterion coverage; provider evidence; task review | code-reviewer | Todo |
@@ -65,7 +65,7 @@ independent task/branch reviews.
 ### Phase 1 — Canonical Research
 
 - [x] T-AER-001 Metadata, lifecycle, instructions, and vibe-coding research
-- [ ] T-AER-002 Harness, loop, provider, model, and catalog research
+- [x] T-AER-002 Harness, loop, provider, model, and catalog research
 - [ ] T-AER-003 Workspace, QA, automation, Compose, security, and release research
 
 ### Phase 2 — Canonical Audit
@@ -121,6 +121,45 @@ the canonical research pack.
 - **Scope boundary**: no runtime, provider adapter, model policy, CI, script,
   secret, remote state, or active Stage 00/99 policy was changed.
 - **Task 1 validation**:
+  - `git diff --check` — PASS
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — PASS, 1,263 paths
+  - `bash scripts/knowledge/generate-llm-wiki-coverage.sh` — PASS, 1,262 safe paths
+  - `bash scripts/validation/check-repo-contracts.sh` — PASS, `failures=0`
+
+### T-AER-002 Research Evidence
+
+The tracked provider inventory was run at baseline
+`3feb2c69df37894472e3028e0f126115a9fc9956`. It found 47 `.claude` files, 39
+`.codex` files, 40 `.agents` files, four Stage 00 provider documents, and 38
+Stage 00 agent-catalog/function documents at maximum depth four. Direct
+inspection and `sync-provider-surfaces.sh --check` reported no projection drift;
+that result establishes tracked catalog parity only, not native capability
+parity or user-global runtime configuration.
+
+| Claim family | Primary sources revalidated 2026-07-11 | Applicability and caveat |
+| --- | --- | --- |
+| Claude harness and loop | Official Claude Code instructions, subagents, hooks, configuration, permissions, sandbox/security, and MCP pages | Mutable pages prove retrieval-time mechanisms only; handler types and optional sandboxing do not establish local enablement. |
+| Codex harness and loop | Official `AGENTS.md`, subagent schema, hooks, configuration reference, and approval/sandbox documentation | Current schema requires native description/instructions fields absent from tracked TOMLs; hook coverage is partial and current docs do not list tracked `SessionEnd`. |
+| Gemini harness and loop | Official Gemini CLI context/configuration, tools/MCP, subagents, hooks, sandboxing, checkpointing, and telemetry pages plus dated hook/subagent announcements | Native CLI agents/hooks are provider facts; no tracked `.gemini` adapter wires them. The workspace `.agents` projection and Stage 00 reminder behavior are distinct. |
+| Model cutoff and lifecycle | Official Anthropic model overview/lifecycle/release notes, OpenAI all-models/changelog/deprecations/exact-ID sources, and Google models/deprecations/changelog | The cutoff remains 2026-07-10 10:00 KST. The 2026-07-11 pass changed no row/count and did not backdate later or mutable evidence. |
+| External agent catalog | Immutable `agency-agents` commit `9f3e401ccd09aa0ee0ef8e015226d0647908e01e`, pinned README/license, and pinned provider integrations | Capability families inform candidate/merge decisions; publisher claims and name counts are not evaluation or adoption evidence. |
+
+| Research result | Task 2 disposition |
+| --- | --- |
+| Harness/loop/provider comparison | Added shared `Criterion / Claude / Codex / Gemini / Workspace common contract / Gap` matrices with stable HAR, LOOP, and PIC identifiers and explicit provider-fact/workspace-policy/inference separation. |
+| Gemini execution boundary | Kept official Gemini CLI native subagents/hooks separate from the tracked Antigravity pointer surface and manual reminder/fallback contract. |
+| Exact model approval | Added AMS-01 through AMS-07 for exact ID, product surface, lifecycle/cutoff, capability, reasoning, task eval, coupled change, and rollback evidence; Stage 00 values remain unchanged. |
+| Cutoff integrity | Revalidated 145 structural and 142 cutoff-qualified rows without changing counts. GPT-5.6 Sol/Terra/Luna remain retrieval-only because unzoned `Jul 9` does not prove release by 01:00 UTC. |
+| Catalog families | Compared product/spec, performance, reliability, release/deployment, software supply chain, evaluation, and model routing by capability; recorded merge/candidate/hold dispositions without importing an agent. |
+
+- **Files changed**: six canonical Task 2 research references plus this task
+  evidence; canonical LLM Wiki generator outputs only if their generators
+  detect a content-derived change.
+- **Scope boundary**: no runtime, provider adapter, model policy, CI, script,
+  secret, remote state, branch protection, or user-global provider config was
+  changed.
+- **Task 2 validation**:
+  - `bash scripts/operations/sync-provider-surfaces.sh --check` — PASS, `no drift`
   - `git diff --check` — PASS
   - `bash scripts/knowledge/generate-llm-wiki-index.sh` — PASS, 1,263 paths
   - `bash scripts/knowledge/generate-llm-wiki-coverage.sh` — PASS, 1,262 safe paths

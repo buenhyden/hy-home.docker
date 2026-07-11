@@ -103,6 +103,29 @@ the single source of truth.
   Supervisor value `gemini-3.1-pro` lacks `-preview` and is recorded as an
   unsupported-availability gap, not silently corrected here.
 
+## Exact Model-Approval Evidence Contract
+
+These criteria are advisory inputs to any later exact-value approval gate.
+Provider facts establish what a surface documents, workspace policy establishes
+what is currently configured, and task-fit inference remains an eval hypothesis.
+Passing this table does not itself authorize a model or adapter change.
+
+| Criterion | Provider fact required | Workspace policy evidence | Task-fit / evaluation evidence | Reject or hold when |
+| --- | --- | --- | --- | --- |
+| AMS-01 — Exact identifier | Direct official model page, dated release/existence evidence, and provider-native lifecycle label for the exact ID or documented alias | Current Stage 00 literal, adapter target, generator mapping, and validator expectation | N/A; identity is not a quality inference | Only a family nickname, moving alias, secondary source, or `historical state unverified` existence is available. |
+| AMS-02 — Product surface | Official evidence for the exact API, CLI, IDE, agent, region/account, or partner surface being proposed | The concrete provider adapter and invocation surface are named | Representative execution on the same surface when public docs cannot prove entitlement | Catalog presence is being used to infer Codex/Claude Code/Antigravity/account availability. |
+| AMS-03 — Lifecycle and cutoff | Provider-native maturity/deprecation state plus a cutoff-safe timestamp when the decision is historical | Proposed baseline date and rollback model remain explicit | Migration/churn risk is part of the rubric for Preview, deprecated, scheduled-shutdown, or mutable aliases | A later announcement would need to be backdated, or lifecycle state is mutable and material to approval. |
+| AMS-04 — Capability and tools | Official context, modality, reasoning-control, tool, coding, and agent support for the exact model/surface | Required role, tools, sandbox, approvals, and reasoning policy are enumerated | Fixtures exercise every capability the task actually depends on | Capability is inferred from family branding, another endpoint, or another provider surface. |
+| AMS-05 — Reasoning control | Official supported effort/thinking values and defaults for the proposed model/surface | Exact Supervisor/Worker effort and approved override path are named | Same task set is compared at the proposed effort, including latency/token observations where allowed | Effort values are copied across providers or unsupported values are accepted by schema but ignored at runtime. |
+| AMS-06 — Task fit | Provider descriptions are cited only as hypotheses, not benchmarks | Role taxonomy and task class identify why the current tier is insufficient or should remain | Versioned representative tasks, baseline, scorer/rubric, failure cases, privacy boundary, and reviewer calibration | Selection rests on provider prose, anecdote, or unmeasured “newer is better” reasoning. |
+| AMS-07 — Coupled change and rollback | Current provider deprecation/migration guidance is recorded | Stage 00, generator, generated adapters, validators, Stage 04 evidence, and provider sync are one atomic proposal | Regression threshold, rollback literal, and post-change verification are defined before mutation | Any coupled surface, rollback path, or independent review is absent. |
+
+The fixed cutoff ledger currently holds GPT-5.6 Sol/Terra/Luna at AMS-01 because
+their unzoned `Jul 9` changelog entry does not prove release before 01:00 UTC.
+It holds the Gemini Supervisor literal at AMS-01/AMS-02 because the official API
+ID is `gemini-3.1-pro-preview`, not the workspace string. Those are evidence
+gaps, not authorization to edit Stage 00.
+
 ## Task-Characteristic to Configuration Mapping
 
 This table is **analysis inferred from official capability descriptions plus

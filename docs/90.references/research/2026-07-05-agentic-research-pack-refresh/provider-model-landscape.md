@@ -9,8 +9,8 @@ status: active
 ## Overview
 
 This reference records 145 lifecycle-relevant Claude, OpenAI/Codex, and Gemini
-catalog rows retrieved on 2026-07-10 and evaluates them against the evidence
-cutoff **2026-07-10 10:00 KST (01:00 UTC)**. Exactly 142 rows have release or
+catalog rows retrieved on 2026-07-10, revalidated on 2026-07-11, and evaluated
+against the evidence cutoff **2026-07-10 10:00 KST (01:00 UTC)**. Exactly 142 rows have release or
 existence evidence that proves they preceded the cutoff; three GPT-5.6 rows are
 retained only as retrieval-time context because their unzoned `Jul 9` release
 date does not prove release by 01:00 UTC. The final exact-ID remediation added
@@ -89,6 +89,24 @@ particular account, region, product surface, or provider adapter.
   date range precedes 01:00 UTC. The GPT-5.6 `Jul 9` entry overlaps the cutoff in
   some time zones, so those rows remain structural retrieval context and their
   exact cutoff inclusion is `historical state unverified`.
+
+## 2026-07-11 Cutoff Integrity Revalidation
+
+The revalidation checked current official catalogs and lifecycle pages without
+moving the cutoff or rewriting historical state. No model row or count changed:
+current presence can confirm retrieval-time availability, but it cannot supply
+a missing pre-cutoff timestamp.
+
+| Provider | Current primary-source observation | Cutoff treatment | Result |
+| --- | --- | --- | --- |
+| Anthropic | The current overview still lists Fable 5, Opus 4.8, Sonnet 5, and Haiku 4.5; the lifecycle page still conflicts with the overview for Mythos Preview. | Dated releases/transitions remain cutoff evidence; mutable Active/current/conflicting states retain `historical state unverified` where already recorded. | 17 structural and 17 cutoff-qualified rows unchanged. |
+| OpenAI | The current all-models page lists GPT-5.6 Sol/Terra/Luna; the changelog still gives only unzoned `Jul 9`. | Current listing does not prove release by 01:00 UTC, so all three GPT-5.6 rows remain retrieval-only. Dated exact-ID evidence for the previously remediated eight remains valid. | 93 structural and 90 cutoff-qualified rows unchanged. |
+| Google | The current model page still lists Gemini 3.5 Flash as Stable and Gemini 3.1 Pro as Preview; the deprecation page still identifies the exact IDs and dated lifecycle rows used here. | Dated pages already bounded the catalog before the cutoff; no later announcement was imported. | 35 structural and 35 cutoff-qualified rows unchanged. |
+
+Provider fact, workspace policy, and task-fit inference remain separate: the
+catalog tables preserve provider-native facts, the Workspace-policy Comparison
+quotes Stage 00 without changing it, and Task-fit Analysis is explicitly an
+evaluation hypothesis rather than approval evidence.
 
 ## Coverage Summary
 
@@ -378,7 +396,7 @@ or measured workspace results are supplied.
 
 - **Owner**: Documentation maintainers with Stage 00 model-policy owners
 - **Evidence Cutoff**: 2026-07-10 10:00 KST (01:00 UTC)
-- **Retrieved**: 2026-07-10
+- **Retrieved**: 2026-07-10; mutable official pages revalidated 2026-07-11
 - **Review Cadence**: On provider lifecycle announcement or workspace Model Policy proposal
 - **Update Trigger**: Rebuild a new explicitly dated ledger; never silently rewrite this cutoff as if a mutable current page proved historical state
 

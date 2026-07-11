@@ -60,6 +60,23 @@ notes, scripts, and execution evidence. It defines no new control.
   only; every implementation claim below was corroborated against tracked
   sources.
 
+## Provider Harness Criteria
+
+Provider cells in this matrix are retrieval-time **provider facts** revalidated
+on 2026-07-11. The workspace column is the tracked **workspace contract**. The
+final column records gaps or **task-fit inference**; it must not be read as a
+provider guarantee or a policy change.
+
+| Criterion | Claude | Codex | Gemini | Workspace common contract | Gap / caveat |
+| --- | --- | --- | --- | --- | --- |
+| HAR-01 — Instruction discovery | `CLAUDE.md`, imports, and memory provide hierarchical context. | `AGENTS.md` is discovered from global scope and then root-to-CWD, with nearer files taking precedence. | `GEMINI.md`, imports, and configurable context filenames provide hierarchical context. | Thin provider shims route to Stage 00 bootstrap, one scope, and JIT stage evidence. | Context loading is not proof that an instruction was followed; precedence and trust mechanics differ. |
+| HAR-02 — Native subagents | Markdown subagents have separate context and can declare tools, permissions, model, skills/MCP, hooks, memory, and isolation. | TOML agents require `name`, `description`, and `developer_instructions`; optional model, effort, sandbox, MCP, and skill fields inherit when omitted. | Gemini CLI documents project/user `.gemini/agents/*.md` agents with separate context and bounded tools/MCP/model/run controls. | Stage 00 owns one supervisor and fourteen worker roles plus the delegation contract. | Tracked Codex TOMLs omit current native description/instructions fields. Tracked `.agents` pointers are not native Gemini CLI agents. |
+| HAR-03 — Tools and MCP | Built-in file/shell/web tools and MCP can be restricted through permissions and agent definitions. | Shell/file/web/MCP execution is subject to sandbox and approval configuration. | Built-in file/shell/web tools, allow/exclude settings, MCP, and confirmation modes are documented. | Repository scripts and change-type gates are preferred entry points; external actions remain approval-gated. | Provider tool names and local role metadata do not enforce repository ownership or authority. |
+| HAR-04 — Lifecycle interception | Command, HTTP, prompt, MCP-tool, and agent handlers cover a broad event lifecycle; handler trust properties differ. | Command hooks cover a documented partial interception surface; current docs do not list tracked `SessionEnd`. | Gemini CLI documents synchronous command hooks across tool, agent, session, model, compression, and tool-selection events. | Claude and Codex tracked adapters invoke shared scripts for selected behaviors; Stage 00 owns desired behavior. | No tracked `.gemini/settings.json` or `.gemini/hooks` wires native Gemini hooks. The current Gemini provider note is a manual reminder/fallback contract, not native execution. |
+| HAR-05 — Isolation and approval | Permissions and optional sandboxing are distinct controls whose active configuration is environment-specific. | Sandbox and approval policy are separate; `workspace-write` allows workspace edits while network/out-of-workspace actions require the configured approval path. | Seatbelt/container sandboxing is optional and disabled by default; confirmation modes can separately allow edits or all tools. | Stage 00 approval and environment rules remain authoritative regardless of provider mode. | Tracked files cannot prove user-global configuration, actual runtime mode, network reachability, or unattended-mode safety. |
+| HAR-06 — Models and reasoning | Agent definitions can select model/`inherit`; effort behavior is model-specific. | Agent TOMLs can set exact model and `model_reasoning_effort` (`minimal` through `xhigh`, subject to model support). | CLI model selection and API thinking controls exist, but Antigravity selection is a separate surface. | `subagent-protocol.md` owns exact workspace tiers and approved change protocol. | Catalog presence and capability prose do not prove account availability, task quality, cost, or cross-provider equivalence. |
+| HAR-07 — Evaluation and evidence | Hooks/subagents can run checks and expose lifecycle observations. | Agents, skills, hooks, telemetry, and eval tooling can be composed, but adoption is repository-specific. | Headless execution, hooks, tools, and telemetry can support checks and observations. | Deterministic validators, CI, task evidence, and agent-output fixtures are tracked. | No provider feature supplies the missing repo-wide semantic dataset/scorer/baseline; telemetry may be disabled. |
+
 ## Harness Implementation Matrix
 
 | Harness element | Workspace implementation | External/provider pattern | Status | Required environment/rule | Gap / risk | Canonical owner | Confidence |
@@ -126,6 +143,7 @@ run, but they cannot replace Stage 00 authority or grant an external action.
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code hooks](https://code.claude.com/docs/en/hooks)
 - [Claude Code permissions](https://code.claude.com/docs/en/permissions)
+- [Claude Code sandboxing](https://code.claude.com/docs/en/sandboxing)
 - [Codex subagents](https://developers.openai.com/codex/subagents)
 - [Codex hooks](https://developers.openai.com/codex/hooks)
 - [Codex configuration reference](https://developers.openai.com/codex/config-reference)
@@ -143,10 +161,11 @@ run, but they cannot replace Stage 00 authority or grant an external action.
 - [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md)
 - [HAFE policy](../../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)
 
-External provider pages were retrieved on 2026-07-10. OpenAI evidence was
-retrieved through the official Docs MCP after the local manual helper rejected
-a response without `x-content-sha256`. Mutable provider pages prove current
-documentation, not historical availability at an earlier cutoff.
+External provider pages were originally retrieved on 2026-07-10 and
+revalidated on 2026-07-11. OpenAI evidence was retrieved through official
+OpenAI documentation. Mutable provider pages prove only the content visible at
+the latest retrieval; they do not backdate a feature or model to the fixed
+2026-07-10 10:00 KST model cutoff.
 
 ## Maintenance
 
