@@ -42,6 +42,7 @@ status: active
 - 하네스 엔지니어링 구성 요소 분석
 - 루프 엔지니어링과 feedback loop 분석
 - spec-driven development와 SDLC 분석
+- document metadata, lifecycle, agent instruction, safe vibe-coding criteria 분석
 - CI/CD, QA, formatting, quality gate 분석
 - Docker Compose, infrastructure harness, security governance, automation, pipeline, workflow 분석
 - Claude, Codex, Gemini provider 구현 비교
@@ -65,6 +66,8 @@ status: active
 ├── loop-engineering.md                  # Agent/eval/CI/human feedback loop analysis
 ├── spec-driven-sdlc.md                  # Spec-driven development and SDLC mapping
 ├── sdlc-document-roles.md               # Role and purpose of each SDLC/operations document type
+├── document-metadata-lifecycle.md        # Typed metadata and semantic lifecycle criteria
+├── agent-instructions-vibe-coding.md     # Agent instruction and safe vibe-coding criteria
 ├── quality-ci-formatting.md             # QA, CI/CD, formatting, secure quality gates
 ├── provider-implementation-comparison.md # Claude, Codex, Gemini comparison
 ├── provider-model-landscape.md           # Cutoff-bound official provider model catalog and lifecycle evidence
@@ -82,6 +85,8 @@ status: active
 - [loop-engineering.md](./loop-engineering.md) - agent loop, eval loop, CI loop, human approval loop 분석
 - [spec-driven-sdlc.md](./spec-driven-sdlc.md) - spec-driven development, SDLC, traceability 분석
 - [sdlc-document-roles.md](./sdlc-document-roles.md) - PRD, ARD, ADR, spec, plan, task, guide, policy, runbook, incident, postmortem, release 문서 유형별 역할과 목적 분석
+- [document-metadata-lifecycle.md](./document-metadata-lifecycle.md) - artifact identity, type profile, parent/supersession, freshness, numbering, lifecycle, README/generated-document, semantic validation 기준
+- [agent-instructions-vibe-coding.md](./agent-instructions-vibe-coding.md) - instruction authority/context/tools/permissions, generated-code ownership/review, debt/escalation, safe vibe-coding 경계
 - [quality-ci-formatting.md](./quality-ci-formatting.md) - CI/CD, QA, formatting, secure quality gate 분석
 - [provider-implementation-comparison.md](./provider-implementation-comparison.md) - Claude, Codex, Gemini provider 현황과 공통 체계 분석
 - [provider-model-landscape.md](./provider-model-landscape.md) - 2026-07-10 10:00 KST cutoff 기준 Claude, OpenAI/Codex, Gemini 공식 model catalog, lifecycle, ID, source caveat 분석
@@ -95,10 +100,11 @@ status: active
 
 1. [workspace-baseline.md](./workspace-baseline.md)에서 이 저장소의 현재 체계를 먼저 확인합니다.
 2. [harness-engineering.md](./harness-engineering.md)와 [loop-engineering.md](./loop-engineering.md)에서 개념적 구조를 확인합니다.
-3. [spec-driven-sdlc.md](./spec-driven-sdlc.md)와 [quality-ci-formatting.md](./quality-ci-formatting.md)에서 stage-gate와 검증 루프를 비교하고, [sdlc-document-roles.md](./sdlc-document-roles.md)에서 각 문서 유형의 역할과 목적을 확인합니다.
-4. [docker-compose-infrastructure.md](./docker-compose-infrastructure.md), [security-governance.md](./security-governance.md), [automation-pipeline-workflow.md](./automation-pipeline-workflow.md)에서 targeted reference를 확인합니다.
-5. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인하고, [provider-model-landscape.md](./provider-model-landscape.md)에서 cutoff-bound 공식 model/lifecycle evidence를 확인한 뒤 [agent-model-selection.md](./agent-model-selection.md)에서 작업 특성에 맞는 model tier와 reasoning-effort 분석을 읽습니다.
-6. [ai-agent-catalogs.md](./ai-agent-catalogs.md)에서 외부 agent catalog와 repo-local catalog의 import 경계를 확인합니다.
+3. [spec-driven-sdlc.md](./spec-driven-sdlc.md)에서 stage-gate를, [sdlc-document-roles.md](./sdlc-document-roles.md)에서 문서 역할을, [document-metadata-lifecycle.md](./document-metadata-lifecycle.md)에서 metadata/lifecycle 기준을 확인합니다.
+4. [agent-instructions-vibe-coding.md](./agent-instructions-vibe-coding.md)에서 instruction/vibe 기준을 확인하고 [quality-ci-formatting.md](./quality-ci-formatting.md)에서 실제 QA evidence surface를 확인합니다.
+5. [docker-compose-infrastructure.md](./docker-compose-infrastructure.md), [security-governance.md](./security-governance.md), [automation-pipeline-workflow.md](./automation-pipeline-workflow.md)에서 targeted reference를 확인합니다.
+6. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인하고, [provider-model-landscape.md](./provider-model-landscape.md)에서 cutoff-bound 공식 model/lifecycle evidence를 확인한 뒤 [agent-model-selection.md](./agent-model-selection.md)에서 작업 특성에 맞는 model tier와 reasoning-effort 분석을 읽습니다.
+7. [ai-agent-catalogs.md](./ai-agent-catalogs.md)에서 외부 agent catalog와 repo-local catalog의 import 경계를 확인합니다.
 
 ## How to Work in This Area
 

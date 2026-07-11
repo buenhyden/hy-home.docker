@@ -47,7 +47,7 @@ independent task/branch reviews.
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-AER-001 | Research metadata, lifecycle, document roles, agent instructions, and vibe coding | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-001 | Primary-source ledger; LLM Wiki; repo contracts; task review | wiki-curator | Todo |
+| T-AER-001 | Research metadata, lifecycle, document roles, agent instructions, and vibe coding | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-001 | Primary-source ledger; LLM Wiki; repo contracts; task review | wiki-curator | Done |
 | T-AER-002 | Revalidate harness, loop, provider, model, and agent-catalog research | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-002 | Cutoff ledger; provider no-drift; repo contracts; task review | wiki-curator | Todo |
 | T-AER-003 | Revalidate workspace, QA, automation, Compose, security, release, and deployment research | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-003 | Tracked inventory; Compose/hardening; repo contracts; task review | wiki-curator | Todo |
 | T-AER-004 | Audit SDLC, document roles, numbering, transitions, frontmatter, templates, and README profiles | doc | Spec 123 / Canonical Audit Categories | PLN-AER-004 | Reproducible counts; audit matrices; repo contracts; task review | doc-writer | Todo |
@@ -64,7 +64,7 @@ independent task/branch reviews.
 
 ### Phase 1 — Canonical Research
 
-- [ ] T-AER-001 Metadata, lifecycle, instructions, and vibe-coding research
+- [x] T-AER-001 Metadata, lifecycle, instructions, and vibe-coding research
 - [ ] T-AER-002 Harness, loop, provider, model, and catalog research
 - [ ] T-AER-003 Workspace, QA, automation, Compose, security, and release research
 
@@ -90,6 +90,41 @@ independent task/branch reviews.
 - [ ] T-AER-012 Full verification, review, and closure
 
 ## Verification Summary
+
+### T-AER-001 Research Evidence
+
+The required tracked inventory was run at baseline
+`84d88ee48085304ad5aa3adce0a9e74b574758b0`. Graphify was not used as proof:
+its report was built from older commit `30df271a`, so conclusions were
+corroborated against Stage 00/99 rules, stage READMEs/templates, Spec 123, and
+the canonical research pack.
+
+| Claim family | Primary sources revalidated 2026-07-11 | Applicability and caveat |
+| --- | --- | --- |
+| Metadata identity, relations, provenance, validation | DCMI Metadata Terms; W3C PROV-O; RFC 8288; JSON Schema conditional validation | Supplies comparison vocabulary and profile mechanics; does not define the repo schema. |
+| SDLC and document roles | GitHub Spec Kit; ISO public metadata pages; Nygard ADR article; tracked stage matrix/templates | ISO pages are summaries, not full standards; current workspace stages remain authoritative. |
+| Incident, postmortem, runbook, release | Google SRE incident/postmortem chapters; NIST SP 800-61 Rev. 3; PagerDuty runbook; Keep a Changelog 1.1.0; SemVer 2.0.0 | Separates live state, reviewed learning, procedure, release communication, and version signals; no framework adoption is inferred. |
+| Agent instructions and loop | OpenAI Codex `AGENTS.md` and practical agent guide; Claude Code memory/security; GitHub repository instructions; Anthropic effective-agent/eval guidance | Mutable product docs prove retrieval-time behavior only; Stage 00 remains canonical. |
+| Generated code and vibe coding | GitHub Review AI-generated code and vibe-coding tutorial; NIST SSDF v1.1 | Official workflow/security guidance supports review boundaries, not blanket production suitability. |
+
+| Inventory finding | Conflict or missing claim | Task 1 resolution |
+| --- | --- | --- |
+| Frontmatter vocabulary exists, but semantic transition history does not. | Valid `status` syntax can mask stale or invalid lifecycle state. | DML-07/DML-08 require before/after evidence, approval, and reverse-transition override. |
+| Path-derived role is current; Spec 123 proposes typed identity. | Generic `type` is forbidden while `artifact_type` is proposed. | DML-01/DML-02 preserve generic-key prohibition and require a profiled `artifact_type`. |
+| Cross-stage numbers differ by family. | Equal numeric suffixes cannot reliably express parentage. | DML-03/DML-06 retain numbering and use stable IDs for relations. |
+| README and generated documents have exceptions. | Leaf-document normalization would add invalid copied or human-owned metadata. | DML-09/DML-10 define separate README and generator-owned profiles. |
+| Agent/catalog documents mention permissions and review but no complete vibe-coding criterion set existed. | Ownership, review threshold, debt, retry escalation, and unsafe surfaces were distributed or missing. | AIV-01 through AIV-16 are now the single canonical criteria set; catalog and QA references link to it. |
+| Release, lifecycle flow, document roles, and QA evidence overlapped across references. | Repeating criteria would create competing owners. | `sdlc-document-roles.md` owns roles, `spec-driven-sdlc.md` flow, `quality-ci-formatting.md` evidence surfaces, and the two new leaves own their focused criteria. |
+
+- **Files changed**: two new canonical criteria leaves; pack index; SDLC flow,
+  document-role, QA-evidence, and agent-catalog integration leaves; this task evidence.
+- **Scope boundary**: no runtime, provider adapter, model policy, CI, script,
+  secret, remote state, or active Stage 00/99 policy was changed.
+- **Task 1 validation**:
+  - `git diff --check` — PASS
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — PASS, 1,263 paths
+  - `bash scripts/knowledge/generate-llm-wiki-coverage.sh` — PASS, 1,262 safe paths
+  - `bash scripts/validation/check-repo-contracts.sh` — PASS, `failures=0`
 
 - **Baseline Commands**:
   - `git diff --check` — PASS

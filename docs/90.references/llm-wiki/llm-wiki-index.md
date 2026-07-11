@@ -973,10 +973,12 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/learning/roadmap-v1.md](../learning/roadmap-v1.md) | Markdown reference |
 | [docs/90.references/learning/roadmap.md](../learning/roadmap.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../research/2026-07-05-agentic-research-pack-refresh/README.md) | folder index |
+| [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-instructions-vibe-coding.md](../research/2026-07-05-agentic-research-pack-refresh/agent-instructions-vibe-coding.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md](../research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md](../research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md](../research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md](../research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md) | Markdown reference |
+| [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md](../research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md](../research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md](../research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md) | Markdown reference |

@@ -28,7 +28,10 @@ then becomes provider projections.
 
 This reference supports the Stage 00 catalog, subagent protocol, approval
 boundaries, provider comparison, and future agent proposals. It changes no
-agent, skill, model mapping, or runtime adapter.
+agent, skill, model mapping, or runtime adapter. It owns catalog intake and
+adaptation only; instruction authority, tools/permissions, generated-code
+review, escalation, and vibe-coding criteria are canonical in
+[`agent-instructions-vibe-coding.md`](./agent-instructions-vibe-coding.md).
 
 ## Scope
 
@@ -161,4 +164,5 @@ agent, skill, model mapping, or runtime adapter.
 - [provider implementation comparison](./provider-implementation-comparison.md)
 - [harness engineering](./harness-engineering.md)
 - [workspace baseline](./workspace-baseline.md)
+- [agent instructions and safe vibe coding](./agent-instructions-vibe-coding.md)
 - [subagent protocol](../../../00.agent-governance/subagent-protocol.md)

@@ -26,7 +26,10 @@ tombstones from being conflated.
 This Stage 90 reference restates the active stage authoring matrix and template
 catalog. Those tracked governance/template files remain authoritative. External
 sources are comparison bases only and do not become workspace policy through
-this matrix.
+this matrix. This file is the canonical research owner for document and release
+roles; [`document-metadata-lifecycle.md`](./document-metadata-lifecycle.md) owns
+identity, profile, relation, freshness, transition, README, generator, and
+semantic-validation criteria.
 
 ## Scope
 
@@ -111,6 +114,8 @@ harder to interpret.
   release runbook.
 - Keep Stage 90 references/audits advisory and Stage 98 tombstones out of the
   active link chain.
+- Use the DML criterion IDs for metadata audits; do not infer metadata
+  requirements from the role matrix's descriptive lifecycle column.
 
 ## Potential Follow-up / Gap
 
@@ -164,6 +169,7 @@ harder to interpret.
 - [research pack index](./README.md)
 - [workspace baseline](./workspace-baseline.md)
 - [spec-driven development and SDLC](./spec-driven-sdlc.md)
+- [document metadata and lifecycle criteria](./document-metadata-lifecycle.md)
 - [release management runbook](../../../05.operations/runbooks/00-workspace/release-management.md)
 - [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)

@@ -25,6 +25,10 @@ This Stage 90 reference explains tracked QA evidence. It does not define new
 jobs, hooks, required checks, branch protection, formatter adoption, or scanner
 policy. The [QA scope](../../../00.agent-governance/scopes/qa.md), tracked
 scripts/configuration, and GitHub governance remain the active owners.
+Generated-code ownership, review thresholds, escalation, and safe vibe-coding
+criteria belong to
+[`agent-instructions-vibe-coding.md`](./agent-instructions-vibe-coding.md);
+this file owns only the concrete QA evidence-surface inventory.
 
 ## Scope
 
@@ -149,6 +153,8 @@ data this repository task did not collect.
 - Do not claim that post-tool validation runs Prettier.
 - Keep remote required-check and branch-protection state unknown unless a
   current direct query is recorded.
+- Apply AIV-06 through AIV-10 when generated code is reviewed, then cite the
+  exact command, hook, or CI job from this inventory as verification evidence.
 
 ## Potential Follow-up / Gap
 
@@ -196,5 +202,6 @@ data this repository task did not collect.
 - [research pack index](./README.md)
 - [automation, pipeline, and workflow loops](./automation-pipeline-workflow.md)
 - [workspace baseline](./workspace-baseline.md)
+- [agent instructions and safe vibe coding](./agent-instructions-vibe-coding.md)
 - [QA scope](../../../00.agent-governance/scopes/qa.md)
 - [GitHub governance](../../../00.agent-governance/rules/github-governance.md)

@@ -24,6 +24,11 @@ This Stage 90 reference interprets the active stage taxonomy defined by
 `stage-authoring-matrix.md`. The matrix, active stage artifacts, tracked
 runtime, and validators remain authoritative. This document creates no policy,
 specification, plan, task, release procedure, or framework adoption.
+Document-type responsibility is canonical in
+[`sdlc-document-roles.md`](./sdlc-document-roles.md), while metadata and
+transition semantics are canonical in
+[`document-metadata-lifecycle.md`](./document-metadata-lifecycle.md). This file
+owns only the end-to-end transition flow and does not duplicate those criteria.
 
 ## Scope
 
@@ -125,6 +130,8 @@ operations.
 - Distinguish tracked CI definitions from remote execution/enforcement evidence.
 - Do not claim ISO, NIST, Spec Kit, SRE, PagerDuty, Keep a Changelog, or SemVer
   adoption from a Stage 90 comparison.
+- Apply metadata and lifecycle audits through the stable DML criterion IDs in
+  `document-metadata-lifecycle.md`, not ad hoc transition checks in this flow.
 
 ## Potential Follow-up / Gap
 
@@ -175,6 +182,7 @@ operations.
 - [research pack index](./README.md)
 - [workspace baseline](./workspace-baseline.md)
 - [SDLC and operations document-type roles](./sdlc-document-roles.md)
+- [document metadata and lifecycle criteria](./document-metadata-lifecycle.md)
 - [quality, CI, and formatting](./quality-ci-formatting.md)
 - [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
