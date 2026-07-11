@@ -77,12 +77,14 @@ The [pre-commit configuration](../../../../.pre-commit-config.yaml) defines
 count is not the local-runner count.
 
 The [`run_script_backed_gates` function](../../../../scripts/validation/run-local-qa-gates.sh)
-contains **12 executed `run_step` calls**. Its `--list` output also names
-`recommend-qa-gates.sh`, but labels that script advisory; the runner does not
-execute it. Therefore the actual local runner inventory is **12 executed gates
-+ 1 advisory recommendation**, not 13 executed gates. The runner separates
-local checks from CI/local-tooling and remote-only responsibilities; it is not a
-full CI replica.
+contains **12 executed `run_step` calls**. The default, `--script-backed`, and
+`--all-profiles` modes all execute those 12 gates; `--harness` executes the 8
+calls in `run_harness_gates`; and `--list` executes no gate. The list output
+names `recommend-qa-gates.sh`, but labels that script advisory and does not
+execute it. Therefore the headline local runner inventory remains **12 executed
+default/script-backed gates + 1 non-executed advisory recommendation**, not 13
+executed gates. The runner separates local checks from CI/local-tooling and
+remote-only responsibilities; it is not a full CI replica.
 
 ## Quality Gate Matrix
 
@@ -95,7 +97,7 @@ full CI replica.
 | YAML lint | Check YAML style rules | `yamllint` with [`.yamllint`](../../../../.yamllint) | `pre-commit` | lint | Blocks applicable hook/CI execution | pre-commit supports file-filtered hooks | Relaxed rules do not prove workflow semantics. Owner: [pre-commit config](../../../../.pre-commit-config.yaml). |
 | JSON syntax | Parse JSON files accepted by the configured hook | `check-json`; selective `python3 -m json.tool` in [post-tool validation](../../../../scripts/hooks/post-tool-validate.sh) | `pre-commit` | syntax | Blocks applicable hook/CI execution | pre-commit supports per-hook file selection | Post-tool parsing covers only three named JSON surfaces. Owner: [pre-commit config](../../../../.pre-commit-config.yaml). |
 | TOML syntax | Parse TOML inputs | `check-toml` in [pre-commit](../../../../.pre-commit-config.yaml) | `pre-commit` | syntax | Blocks applicable hook/CI execution | pre-commit supports configured parser hooks | Syntax does not prove tool-specific semantics. Owner: [pre-commit config](../../../../.pre-commit-config.yaml). |
-| Shell syntax | Parse tracked shell scripts and Claude hooks | `bash -n` in [local runner](../../../../scripts/validation/run-local-qa-gates.sh) | None directly | syntax | Blocks the 12-gate local run | No fixed external source mandates this repository command | Keep separate from ShellCheck. Owner: [`run-local-qa-gates.sh`](../../../../scripts/validation/run-local-qa-gates.sh). |
+| Shell syntax | Parse tracked shell scripts and Claude hooks | `bash -n` in [local runner](../../../../scripts/validation/run-local-qa-gates.sh) | None directly | syntax | Blocks the script-backed or harness run | No fixed external source mandates this repository command | Keep separate from ShellCheck. Owner: [`run-local-qa-gates.sh`](../../../../scripts/validation/run-local-qa-gates.sh). |
 | ShellCheck | Detect shell correctness and portability issues | `shellcheck` in [pre-commit](../../../../.pre-commit-config.yaml); conditional post-tool check | `pre-commit` | lint | Blocks applicable hook/CI execution | pre-commit supports multi-language hooks | `recommend-qa-gates.sh` is explicitly excluded. Owner: [pre-commit config](../../../../.pre-commit-config.yaml). |
 | actionlint | Validate GitHub Actions syntax/expressions | `actionlint` in [pre-commit](../../../../.pre-commit-config.yaml) | `pre-commit` | syntax/lint | Blocks workflow-file hook/CI execution | [Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) defines keys, triggers, jobs, and steps | Local validation cannot prove a remote run. Owner: [pre-commit config](../../../../.pre-commit-config.yaml). |
 | Hadolint | Lint Dockerfiles | `hadolint-docker` in [pre-commit](../../../../.pre-commit-config.yaml) | `pre-commit` | lint/security | Blocks applicable hook/CI execution | pre-commit supports file-filtered hooks | Applies only to matching Dockerfiles. Owner: [pre-commit config](../../../../.pre-commit-config.yaml). |
@@ -127,10 +129,12 @@ full CI replica.
 
 ## Analysis
 
-The tracked layers intentionally differ. The 12-step local runner provides a
-safe script-backed subset; pre-commit adds 23 file/stage-filtered hook IDs; CI
-adds heavy frontend, coverage, dependency, and SARIF behavior. None of those
-layers proves current branch-protection enforcement. DORA's current five
+The tracked layers intentionally differ. The default/script-backed/all-profile
+runner modes provide a 12-step subset, the harness mode provides 8 steps, and
+list mode provides advisory inventory without execution. Pre-commit adds 23
+file/stage-filtered hook IDs; CI adds heavy frontend, coverage, dependency, and
+SARIF behavior. None of those layers proves current branch-protection
+enforcement. DORA's current five
 metrics—change lead time, deployment frequency, failed deployment recovery
 time, change fail rate, and deployment rework rate—require production delivery
 data this repository task did not collect.
@@ -139,7 +143,9 @@ data this repository task did not collect.
 
 - Cite the exact script, hook ID, or workflow job for every QA claim.
 - Record `zizmor` as GitHub-only SARIF evidence.
-- Record the local runner as 12 executed gates plus one advisory recommender.
+- Record the local runner by mode: 12 gates for default, `--script-backed`, and
+  `--all-profiles`; 8 for `--harness`; and 0 for `--list`, whose one recommender
+  entry remains advisory and non-executed.
 - Do not claim that post-tool validation runs Prettier.
 - Keep remote required-check and branch-protection state unknown unless a
   current direct query is recorded.

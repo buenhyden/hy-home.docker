@@ -583,12 +583,17 @@ remote state, and unrelated documents were inspected but not changed.
 
 ### Status and Scope
 
-Status is **Ready for Review**. No independent spec-compliance or
-document-quality verdict is pre-recorded. This implementation is documentation
-only, so code TDD and domain coverage are N/A. The tracked editable scope is
-exactly this task record plus the two assigned Stage 90 references. Workflows,
-scripts, hooks, pre-commit/tool configuration, runtime, provider adapters,
-credentials, and remote GitHub state were inspected but not changed.
+Status is **Ready for Review** after remediation. The initial independent review
+of exact range
+`505277817eee0de4270bc03ae7fb789ef9d02ad3..0e400ec2022575fcecb35f9054c9a35a8501d7f9`
+returned Spec Compliance **FAIL** and Document Quality
+**CHANGES_REQUESTED**, with **Critical 0 · Important 2 · Minor 0**. Both
+Important findings are remediated below; the next independent verdict remains
+**Pending**. This implementation is documentation only, so code TDD and domain
+coverage are N/A. The tracked editable scope is exactly this task record plus
+the two assigned Stage 90 references. Workflows, scripts, hooks,
+pre-commit/tool configuration, runtime, provider adapters, credentials, and
+remote GitHub state were inspected but not changed.
 
 ### Tracked Inventory and Derivation
 
@@ -597,9 +602,12 @@ credentials, and remote GitHub state were inspected but not changed.
   `ci-quality.yml`, 1 changelog job, 2 greeting jobs, 1 PR-labeler job, 1 stale
   job, and 1 tech-stack drift job.
 - Local runner inventory: **12 executed local script-backed gates**. The count
-  is the 12 `run_step` calls in `run_script_backed_gates`; the `--list` output
-  adds `recommend-qa-gates.sh` as **1 advisory recommendation**, but the runner
-  does not execute it.
+  is the 12 `run_step` calls in `run_script_backed_gates`; default,
+  `--script-backed`, and `--all-profiles` execute all 12. The `--harness` mode
+  executes its separate 8 `run_step` calls. The `--list` mode executes 0 gates
+  and only lists responsibilities, including `recommend-qa-gates.sh` as **1
+  advisory recommendation** that the runner does not execute. The headline
+  census remains 12 default/script-backed gates plus 1 non-executed advisory.
 - Pre-commit inventory: **23 hook IDs** in `.pre-commit-config.yaml`. It is
   recorded separately because hook stages/file filters and the local runner are
   different execution surfaces.
@@ -627,11 +635,22 @@ The refresh corrects these tracked-evidence drifts:
   shell/YAML/diff/repository checks, but does not invoke Prettier;
 - `generate-changelog.yml` verifies that a pushed release tag already appears
   in `CHANGELOG.md`; it does not generate or commit the changelog;
+- active `docs/00.agent-governance/rules/github-governance.md:147-155` still
+  labels that workflow “generate release changelog,” so the reference records
+  the live contradiction, Stage 00 canonical owner, separately approved policy
+  correction, and residual gap without editing policy or workflow;
 - formatting, linting, syntax, type, test, build, coverage, security,
   traceability, eval, and freshness are separate evidence classes; and
 - current branch protection/required-check enforcement is remote-only and
   unknown for this task. The tracked 2026-07-04 observation is historical and
   was not promoted to current evidence.
+
+### Initial Findings and Remediation Mapping
+
+| Finding | Initial evidence | Remediation | Disposition |
+| --- | --- | --- | --- |
+| I-01 — inaccurate local-runner mode mapping | The automation row assigned 12 actions to `--harness`, but tracked functions contain 12 script-backed and 8 harness `run_step` calls. | The two Stage 90 references now state default/`--script-backed`/`--all-profiles` = 12 executed gates, `--harness` = 8, and `--list` = 0 with 1 advisory non-executed recommender. | Fixed; next independent verdict pending. |
+| I-02 — omitted changelog governance drift | The workflow only verifies pushed-tag coverage, while active Stage 00 governance says “generate release changelog.” | The automation comparison and follow-up sections record the contradiction, name `docs/00.agent-governance/rules/github-governance.md` as canonical owner, and recommend a separately approved Stage 00 correction. No active policy or workflow changed. | Fixed in Task 4 evidence; residual Stage 00 gap remains pending separate approval. |
 
 ### Changed Files
 
@@ -662,6 +681,34 @@ The post-draft covering pass recorded:
   `catalog_pairs_total=46`, `failures=0`.
 - `bash scripts/operations/sync-provider-surfaces.sh` — exit 0; no drift.
 
+The remediation covering pass recorded:
+
+- Tracked runner source recount — 12 `run_step` calls in
+  `run_script_backed_gates`, 8 in `run_harness_gates`, and list-only output with
+  1 explicitly advisory recommender; the dispatch maps default/
+  `--script-backed`/`--all-profiles` to 12, `--harness` to 8, and `--list` to 0.
+- Changelog contradiction check — workflow lines 15-42 verify tag coverage;
+  active Stage 00 governance lines 147-155 retain the conflicting generation
+  label; the Stage 90 gap and separately approved owner route are present.
+- Matrix recount — 28 quality rows and 17 automation rows.
+- `git diff --check` and original-base
+  `505277817eee0de4270bc03ae7fb789ef9d02ad3..HEAD` diff inspection — PASS;
+  exactly the three approved Task 4 files changed.
+- Required stale-phrase scan — exit 1 with no output/matches.
+- `bash scripts/validation/check-doc-implementation-alignment.sh` — exit 0;
+  `stage_docs_total=621`, `repo_local_markdown_links_checked=4807`,
+  `failures=0`.
+- `bash scripts/validation/check-repo-contracts.sh` — exit 0;
+  `changed_template_docs_total=3`, `normalized_changed_template_docs_total=3`,
+  repository `failures=0`.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` and
+  `generate-llm-wiki-coverage.sh --check` — exit 0; both generated artifacts
+  fresh.
+- `bash scripts/validation/check-doc-traceability.sh` — exit 0;
+  `catalog_pairs_total=46`, `failures=0`.
+- `bash scripts/operations/sync-provider-surfaces.sh --check` — exit 0; no
+  drift.
+
 ### Commit and Review Evidence
 
 - Task brief: `.superpowers/sdd/task-4-brief.md`.
@@ -669,8 +716,13 @@ The post-draft covering pass recorded:
   out-of-band evidence; it records the immutable implementation commit after
   commit creation).
 - Base commit: `505277817eee0de4270bc03ae7fb789ef9d02ad3`.
-- Review handoff range: `505277817eee0de4270bc03ae7fb789ef9d02ad3..HEAD`
-  on the Task 4 implementation branch.
+- Original implementation commit:
+  `0e400ec2022575fcecb35f9054c9a35a8501d7f9`.
+- Initial review range:
+  `505277817eee0de4270bc03ae7fb789ef9d02ad3..0e400ec2022575fcecb35f9054c9a35a8501d7f9`.
+- Remediation handoff range:
+  `505277817eee0de4270bc03ae7fb789ef9d02ad3..HEAD` on the Task 4
+  implementation branch.
 - Logical subject: `docs(research): refresh QA and automation references`.
 - Implementer spec-compliance self-review: **PASS** — fixed source set,
   tracked counts/derivation, exact schemas, evidence taxonomy, known-drift
@@ -679,8 +731,11 @@ The post-draft covering pass recorded:
 - Implementer document-quality self-review: **PASS** — repository evidence,
   external comparison, blocking behavior, status/gap/recommendation, and
   caveats are separated and directly sourced.
-- Independent spec-compliance verdict: **Pending**.
-- Independent document-quality verdict: **Pending**.
+- Initial independent spec-compliance verdict: **FAIL**.
+- Initial independent document-quality verdict: **CHANGES_REQUESTED**.
+- Initial finding counts: **Critical 0 · Important 2 · Minor 0**.
+- Remediation status: **Ready for Review**; next independent spec-compliance
+  and document-quality verdicts are **Pending**.
 
 ## Task Review Evidence Contract
 

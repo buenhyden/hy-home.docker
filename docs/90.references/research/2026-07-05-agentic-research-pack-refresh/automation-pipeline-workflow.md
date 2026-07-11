@@ -76,7 +76,7 @@ unknown.
 
 | Automation | Trigger | Authority | Inputs | Actions | Evidence | Failure / retry | Rollback / escalation | External boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Local QA gate runner | Manual `--script-backed`, `--all-profiles`, or `--harness` invocation | [`run-local-qa-gates.sh`](../../../../scripts/validation/run-local-qa-gates.sh) | Worktree plus tracked scripts/config | Runs 12 script-backed checks; lists CI/local-tooling and remote-only responsibilities separately | Named command exits and task summary | Fix the failing owner, then rerun the named gate or runner | Revert authored change; escalate CI/remote-only gaps rather than simulating them | Local only; no SARIF upload, dependency install, branch query, or merge authority |
+| Local QA gate runner | Manual invocation: default, `--script-backed`, `--all-profiles`, `--harness`, or `--list` | [`run-local-qa-gates.sh`](../../../../scripts/validation/run-local-qa-gates.sh) | Worktree plus tracked scripts/config | Default, `--script-backed`, and `--all-profiles` execute 12 script-backed gates; `--harness` executes 8; `--list` executes none and only lists responsibilities, including 1 advisory non-executed recommender | Named gate exits for executing modes; list-only stdout for `--list` is not gate evidence | Fix the failing owner, then rerun the named gate or executing mode; correct list ownership separately | Revert authored change; escalate CI/remote-only gaps rather than simulating them | Local only; no SARIF upload, dependency install, branch query, or merge authority |
 | QA gate recommender | Working/staged/base diff or explicit paths; CI summary step | [`recommend-qa-gates.sh`](../../../../scripts/validation/recommend-qa-gates.sh) | Changed path list | Prints deduplicated recommendations and remote/manual notes; executes no gate | Advisory stdout or `GITHUB_STEP_SUMMARY` | Correct path selection and rerun; recommendation failure is not gate evidence | Escalate unsupported mappings to the QA owner | Local/CI advisory; no repository, runtime, remote, or secret mutation |
 | Post-tool validation | Provider file-edit hook payload | [`post-tool-validate.sh`](../../../../scripts/hooks/post-tool-validate.sh) | JSON payload and changed paths | Normalizes basic whitespace/newlines unless check-only; conditionally runs shfmt, ShellCheck, yamllint, diff, JSON, Compose, repo-contract, and traceability checks | Hook exit and named validator output | Fix changed-path failure and replay payload or run validator directly | `--check` disables writes; revert hook formatting if inappropriate | Local hook; it does not run Prettier or prove CI/remote state |
 | Provider-neutral event dispatcher | Session/tool/stop event from a provider adapter | [`agent-event-hook.sh`](../../../../scripts/hooks/agent-event-hook.sh) | Event name, JSON payload, tracked governance and paths | Produces context, warnings, or validation dispatch based on event/path | Hook JSON/output and exit | Correct adapter/event/payload; rerun without inventing unsupported event parity | Escalate provider incompatibility to Stage 00 provider owner | Local adapter; provider behavior is not policy authority |
@@ -100,6 +100,7 @@ unknown.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Local automation | Purpose-folder scripts and hook dispatchers expose bounded validate/recommend/sync/generate loops. | pre-commit shows configurable local/CI hooks; EditorConfig/Prettier show tool-specific style automation. | Implemented | Consumers can be mistaken for owners, and advisory output for a gate. | Cite the purpose-folder script and state whether it checks, writes, or only recommends. | `scripts/README.md` | Matrix above and tracked scripts | High |
 | GitHub workflows | Six YAML workflows define 21 job IDs and scoped permissions. | GitHub syntax defines triggers/jobs/steps; secure-use guidance frames permissions and action pinning. | Partially Implemented | Current remote required checks and branch protection were not verified on 2026-07-11. | Keep tracked implementation and remote enforcement as separate evidence classes. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/*.yml`, historical local proposal | High |
+| Changelog authority | `generate-changelog.yml` only verifies that a pushed tag already appears in `CHANGELOG.md`, while active Stage 00 governance labels it “generate release changelog.” | GitHub syntax distinguishes the tracked steps actually executed from a workflow filename or governance summary. | Partially Implemented | The active governance claim contradicts the tracked workflow and can reintroduce the stale generation claim. | Correct `docs/00.agent-governance/rules/github-governance.md` in separately approved Stage 00 work; do not change policy or workflow in this Stage 90 task. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/generate-changelog.yml:15-42`; `docs/00.agent-governance/rules/github-governance.md:147-155` | High |
 | Delivery feedback | Quality, drift, release-tag, and contributor loops produce inspectable feedback. | Fowler frames fast automated readiness feedback; DORA defines service-level delivery outcomes. | Partially Implemented | No deployment pipeline or DORA data collection is proven here. | Do not label CI validation as continuous delivery or measured DORA performance. | `docs/00.agent-governance/rules/workflows.md` | Workflow inventory and fixed external sources | High |
 
 ## Analysis
@@ -117,6 +118,9 @@ continuous-delivery performance.
   every automation claim.
 - Treat the local runner as a subset, not a full CI replica.
 - Treat `generate-changelog.yml` as pushed-tag coverage verification.
+- Keep the contradictory Stage 00 “generate release changelog” label visible as
+  an unresolved governance gap until separately approved policy work corrects
+  `docs/00.agent-governance/rules/github-governance.md`.
 - Treat current branch protection/required checks as unknown until a direct
   read-only remote check is recorded.
 - Never repair stale generated data by hand; run the canonical generator or
@@ -128,6 +132,10 @@ continuous-delivery performance.
   authorized GitHub audit.
 - Keep the tracked 15-job CI contract and any remote required-check list coupled
   only through approved governance/workflow work.
+- In separately approved Stage 00 work, correct the non-gating automation table
+  in `docs/00.agent-governance/rules/github-governance.md` so it describes
+  pushed-tag coverage verification; the workflow itself needs no behavior
+  change for this documentation drift.
 - Define delivery metrics only when an application/service deployment and
   incident data source exists.
 
