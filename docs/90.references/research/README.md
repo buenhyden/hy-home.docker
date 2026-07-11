@@ -49,13 +49,16 @@ status: active
 research/
 ├── README.md # This file
 ├── 2026-07-05-agentic-research-pack-refresh/ # Harness, loop, provider, SDLC, QA research pack
-└── 2026-07-07-agentic-research-pack-update/  # Updated detailed 23-point comparative research pack
+└── 2026-07-07-agentic-research-pack-update/  # Superseded duplicate retained for link/history routing
 ```
 
 ## Current References
 
-- [2026-07-05-agentic-research-pack-refresh/README.md](./2026-07-05-agentic-research-pack-refresh/README.md) - 하네스/루프/agent-first engineering research pack index, including targeted Docker Compose/infrastructure, security governance, automation/pipeline/workflow, and AI agent catalog references
-- [2026-07-07-agentic-research-pack-update/README.md](./2026-07-07-agentic-research-pack-update/README.md) - Updated agentic engineering research pack index, including details on harness, loops, provider parity, SDLC, formatting, and agency-agents comparative analysis
+- [2026-07-05-agentic-research-pack-refresh/README.md](./2026-07-05-agentic-research-pack-refresh/README.md) - 현재 agentic engineering의 유일한 active canonical research pack입니다. current facts와 source-backed comparison은 이 pack에서 읽어야 합니다.
+
+## Superseded References
+
+- [2026-07-07-agentic-research-pack-update/README.md](./2026-07-07-agentic-research-pack-update/README.md) - canonical destination mapping과 historical traceability만 유지하는 superseded duplicate입니다. 현재 사실의 근거로 사용하지 않습니다.
 
 ## Naming Rules
 
@@ -66,12 +69,13 @@ research/
 ## How to Work in This Area
 
 1. 새 research 문서가 active decision, policy, plan, runbook을 대체하지 않는지 확인합니다.
-2. 새 non-README reference는 [reference.template.md](../../99.templates/templates/common/reference.template.md)의 필수 섹션을 따릅니다.
-3. 새 non-README reference는 closed-surface contract에 맞춰 영어로 작성합니다.
-4. 외부 자료는 공식 vendor docs, 표준 기관 문서, 원 논문, 공식 repository를 우선합니다.
-5. source가 빠르게 변하는 제품 문서이면 문서 안에 재검증 필요성을 명시합니다.
-6. 새 category나 pack을 추가하면 이 README와 [90.references](../README.md)를 함께 갱신합니다.
-7. 변경 후 `bash scripts/validation/check-repo-contracts.sh`를 실행합니다.
+2. agentic engineering의 current facts는 2026-07-05 canonical pack에서만 읽고, superseded pack은 mapping/history 확인에만 사용합니다.
+3. 새 non-README reference는 [reference.template.md](../../99.templates/templates/common/reference.template.md)의 필수 섹션을 따릅니다.
+4. 새 non-README reference는 closed-surface contract에 맞춰 영어로 작성합니다.
+5. 외부 자료는 공식 vendor docs, 표준 기관 문서, 원 논문, 공식 repository를 우선합니다.
+6. source가 빠르게 변하는 제품 문서이면 문서 안에 재검증 필요성을 명시합니다.
+7. 새 category나 pack을 추가하면 이 README와 [90.references](../README.md)를 함께 갱신합니다.
+8. 변경 후 `bash scripts/validation/check-repo-contracts.sh`를 실행합니다.
 
 ## Related Documents
 

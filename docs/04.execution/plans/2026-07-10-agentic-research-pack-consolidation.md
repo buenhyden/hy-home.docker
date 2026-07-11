@@ -779,8 +779,16 @@ git commit -m "docs(research): refresh infrastructure and security references"
 **Interfaces:**
 
 - Consumes: Approved outputs and clean task reviews from Tasks 1-5.
-- Produces: One active canonical pack, a complete supersession ledger, closed
-  Stage 03/04 lifecycle, final validation evidence, and the final review package.
+- Produces in Steps 1-9: one active canonical pack, a complete supersession
+  ledger, and provisional validation evidence for Task 6 review. Closed Stage
+  03/04 lifecycle and whole-branch review packages are deferred to Steps 10-12.
+
+**Provisional implementation state:** Tasks 1-5 have final PASS/APPROVED
+reviews. Task 6 Steps 1-8 prepare a 35-row category/criterion ownership audit,
+a 30-family duplicate-claim disposition ledger, canonical/superseded routing,
+and the required gate evidence. Step 9 is the logical implementation commit.
+T-ARC-006, all Completion Criteria, the Task 6 reviewer verdict, Steps 10-12,
+and lifecycle completion remain open.
 
 - [ ] **Step 1: Run the requested-category coverage audit**
 

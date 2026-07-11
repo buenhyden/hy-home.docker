@@ -46,7 +46,7 @@ plan.
 | T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Done |
 | T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Done |
 | T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Done |
-| T-ARC-006 | Finalize indexes, supersede duplicate pack, close lifecycle and validation | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, whole-branch review, closure commit | Workflow supervisor | Todo |
+| T-ARC-006 | Finalize indexes and supersede the duplicate pack; keep lifecycle closure pending broad review | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, Task 6 review; whole-branch review and closure remain open | Workflow supervisor | Ready for Review |
 
 ## Phase View
 
@@ -69,8 +69,9 @@ plan.
 
 ### Phase 4: Consolidation Closure
 
-- [ ] T-ARC-006 Supersede the duplicate pack, close indexes/lifecycle, and
-      record final evidence.
+- [ ] T-ARC-006 Supersede the duplicate pack and prepare provisional evidence
+      (**Ready for Review**; Task 6 independent verdict, broad review, and
+      lifecycle closure remain pending).
 
 ## Source Evidence Contract
 
@@ -930,6 +931,203 @@ not changed.
 - Runtime/remote state remains intentionally unknown, and the unresolved
   policy conflict remains an explicit gap rather than a Task 5 review defect.
 - Final status: **Done**.
+
+## T-ARC-006 Provisional Evidence
+
+### Status and Lifecycle Boundary
+
+T-ARC-006 is **Ready for Review**. Steps 1-8 produced the coverage audit,
+supersession records, routing updates, and provisional validation evidence.
+The Task 6 independent verdict has not been issued. Spec 122, its plan, and
+this task remain `status: active`; the Phase 4 checkbox, T-ARC-006, every final
+Completion Criteria item, the first whole-branch review, lifecycle-closure
+commit, and post-closure review remain open.
+
+### Requested-Category and Spec Coverage Audit
+
+Each row below has exactly one primary canonical owner and section. A routing
+summary or downstream evidence link does not create a second owner. Provider
+and model rows resolve to the official-source ledger/source notes in their
+assigned owner rather than restating vendor facts here.
+
+| ID | Original category or Spec criterion | Primary canonical owner and section | Evidence | Ownership / coverage result |
+| --- | --- | --- | --- | --- |
+| CAT-001 | purpose | [Workspace baseline — Workspace Category Map, `purpose`](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md#workspace-category-map) | Root README evidence and external sources linked from that reference | Covered; baseline owns the comparative purpose record. |
+| CAT-002 | overview | [Workspace baseline — Workspace Category Map, `overview`](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md#workspace-category-map) | Tracked root/docs/infra/scripts entry points cited there | Covered; baseline owns workspace routing context. |
+| CAT-003 | roles | [Workspace baseline — Workspace Category Map, `roles`](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md#workspace-category-map) | Stage 00 persona/catalog evidence cited there | Covered; role policy remains outside Stage 90. |
+| CAT-004 | CI/CD | [Quality reference — Quality Gate Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md#quality-gate-matrix) | [Tracked Inventory](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md#tracked-inventory) and official GitHub sources | Covered; automation doc links but does not own gate facts. |
+| CAT-005 | QA | [Quality reference — Workspace Comparison and Ownership](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md#workspace-comparison-and-ownership) | Exact gate taxonomy and tracked commands | Covered; one quality owner. |
+| CAT-006 | formatting | [Quality reference — Quality Gate Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md#quality-gate-matrix) | EditorConfig/Prettier primary sources and tracked configuration cited there | Covered; configuration and enforcement remain distinct. |
+| CAT-007 | linting | [Quality reference — Quality Gate Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md#quality-gate-matrix) | Pre-commit and tracked linter evidence | Covered. |
+| CAT-008 | syntax/type checks | [Quality reference — Quality Gate Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md#quality-gate-matrix) | Parser, TypeScript, workflow, and Compose gate rows | Covered. |
+| CAT-009 | automation | [Automation reference — Automation Loop Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md#automation-loop-matrix) | Tracked scripts/hooks/workflows and official workflow sources | Covered; quality owns gate semantics, automation owns trigger/action loops. |
+| CAT-010 | pipeline | [Automation reference — Tracked Workflow and Job Inventory](../../90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md#tracked-workflow-and-job-inventory) | Six-workflow/21-job census and caveats | Covered; remote enforcement remains unknown. |
+| CAT-011 | workflow | [Automation reference — Automation Loop Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md#automation-loop-matrix) | Trigger, authority, action, evidence, retry, rollback, and external-boundary fields | Covered. |
+| CAT-012 | operating contracts | [Document roles — Canonical Document-Role Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md#canonical-document-role-matrix) | Guide/Policy/Runbook/Incident/Postmortem/Release rows and source bases | Covered; Stage 05 remains active owner. |
+| CAT-013 | templates | [Document roles — Canonical Document-Role Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md#canonical-document-role-matrix) | Tracked Stage 99 template paths in each row | Covered; no template mutation. |
+| CAT-014 | scripts | [Automation reference — Automation Loop Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md#automation-loop-matrix) | Scripts README and exact script entry points cited there | Covered; scripts own actions, not policy. |
+| CAT-015 | integration guides | [Document roles — Canonical Document-Role Matrix, `Guide`](../../90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md#canonical-document-role-matrix) | Guide template/path and role basis | Covered. |
+| CAT-016 | SDLC | [Spec-driven SDLC — Lifecycle Flow](../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md#lifecycle-flow) | [Transition Evidence Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md#transition-evidence-matrix) | Covered; Compose/CI/security are participants, not duplicate owners. |
+| CAT-017 | governance | [Workspace baseline — Workspace Category Map, `governance`](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md#workspace-category-map) | Stage 00 hub and NIST/Spec Kit comparison cited there | Covered; active governance remains Stage 00. |
+| CAT-018 | system structure | [Workspace baseline — Workspace Category Map, `system structure`](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md#workspace-category-map) | Root map and tracked implementation entry points | Covered. |
+| CAT-019 | rules | [Workspace baseline — Workspace Category Map, `rules`](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md#workspace-category-map) | Stage 00 hierarchy/provider-adapter evidence | Covered. |
+| CAT-020 | security | [Security reference — Security Comparison](../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md#security-comparison) | [External Framework Position](../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md#external-framework-position) and tracked control census | Covered; active controls and reference frameworks remain distinct. |
+| CAT-021 | Docker Compose/infrastructure | [Compose reference — Infrastructure Comparison](../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md#infrastructure-comparison) | Recomputed topology census and official Docker sources | Covered; tracked Compose remains runtime truth. |
+| CAT-022 | AI agents | [AI agent catalogs — Catalog Comparison Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md#catalog-comparison-matrix) | Immutable upstream pin and tracked Stage 00 catalog | Covered; no agent import/adoption. |
+| CAT-023 | harness engineering | [Harness reference — Harness Implementation Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md#harness-implementation-matrix) | Official provider/framework and tracked harness sources | Covered. |
+| CAT-024 | loop engineering | [Loop reference — Loop Contract Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md#loop-contract-matrix) | ReAct/Reflexion papers plus tracked loop owners | Covered; research foundations are not authority. |
+| CAT-025 | task-characteristic model selection | [Agent model selection — Task-Characteristic to Configuration Mapping](../../90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md#task-characteristic-to-configuration-mapping) | Official provider capability sources and Stage 00 taxonomy linked there | Covered; recommendations are explicitly inference. |
+| VAL-ARC-001 | only one active canonical pack | [Canonical pack README — Consolidation and Lifecycle Boundary](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md#consolidation-and-lifecycle-boundary) | Parent research README current/superseded routing | Covered; 2026-07-05 is the only current pack. |
+| VAL-ARC-002 | every category has the complete comparison record | [Workspace baseline — Workspace Category Map](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md#workspace-category-map) | 25 rows with the required eight fields; CAT-001 through CAT-025 above route detailed ownership | Covered; no category is unowned. |
+| VAL-ARC-003 | cutoff-bound provider model catalog | [Provider model landscape — Provider Catalogs](../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md#provider-catalogs) | [Official provider source notes](../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md#sources) and T-ARC-002 ledger | Covered; 145 structural / 142 cutoff-qualified with three disclosed exceptions. |
+| VAL-ARC-004 | separate model landscape and task selection | [Agent model selection — Repository Role](../../90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md#repository-role) | Full catalog link plus inference-only mapping boundary | Covered; no catalog duplication in selection reference. |
+| VAL-ARC-005 | verified duplicate content exists once; unsupported content removed | [T-ARC-006 — Duplicate Claim Disposition](#duplicate-claim-disposition) | Thirty-family ledger below and superseded leaf mappings | Covered provisionally; reviewer verdict pending. |
+| VAL-ARC-006 | duplicate pack and every child superseded/mapped | [T-ARC-006 — Supersession Result](#supersession-result) | Duplicate README mapping plus five template-compliant leaf records | Covered provisionally; targeted scan evidence recorded below. |
+| VAL-ARC-007 | completed Stage 03/04 and audits preserved as history | [Canonical pack README — Consolidation and Lifecycle Boundary](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md#consolidation-and-lifecycle-boundary) | Direct links to completed Spec 104, its Stage 04 plan/task, and both audit packs | Covered; no historical body deleted or copied. |
+| VAL-ARC-008 | no active policy/runtime/CI/provider/model/hook/script/secret/remote change | [Spec 122 — Guardrails](../../03.specs/122-agentic-research-pack-consolidation/spec.md#guardrails-if-applicable) | Task 6 changed-file inventory and full diff inspection | Covered provisionally; exact scope is documentation/index output only. |
+| VAL-ARC-009 | logical commits and task reviews | [Tasks 1-5 Commit and Review Ledger](#tasks-1-5-commit-and-review-ledger) | Exact ranges and final PASS/APPROVED reports below | Covered for Tasks 1-5; Task 6 review remains pending. |
+| VAL-ARC-010 | specified checks pass or unrelated failure recorded | [Provisional Validation Evidence](#provisional-validation-evidence) | Exact Step 6-8 command results | Covered provisionally; lifecycle closure still requires later broad reviews. |
+
+Coverage result: **35/35 rows covered**, **35/35 with one primary canonical
+owner/section**, **0 uncovered**, and **0 duplicate primary owners**. Provider
+and model facts are owned by the cutoff landscape and its direct official-source
+notes; the comparison and selection documents link rather than reproduce the
+catalog.
+
+### Duplicate Claim Disposition
+
+The former five leaves were audited as thirty substantive claim families. A
+family groups claims that share one evidence basis and destination; mixed
+verified/stale material was split so no unsupported statement inherits a valid
+disposition.
+
+| ID | Former document / claim family | Disposition | Canonical destination or retained evidence |
+| --- | --- | --- | --- |
+| DUP-001 | Workspace stage-to-lifecycle mapping | merged | [Lifecycle flow](../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md#lifecycle-flow) |
+| DUP-002 | Spec/evidence transition and validation chain | merged | [Transition Evidence Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md#transition-evidence-matrix) |
+| DUP-003 | Claimed DORA outcome attainment from repository controls | unsupported | Not carried; [quality analysis](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md#analysis) requires production data. |
+| DUP-004 | CI and local gate inventory | merged | Corrected [Quality Gate Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md#quality-gate-matrix) |
+| DUP-005 | Formatter/linter configuration presence | duplicate | Already owned by the same quality matrix; no second body retained. |
+| DUP-006 | External security frameworks described as applied workspace controls | unsupported | Not carried; [External Framework Position](../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md#external-framework-position) preserves comparison-only status. |
+| DUP-007 | Secret-delivery and redaction boundary | merged | [Security Comparison](../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md#security-comparison) and [Infrastructure Comparison](../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md#infrastructure-comparison) |
+| DUP-008 | Generic execution filenames, signed skip records, and appended raw output assertions | unsupported | Not carried; Stage 04 task evidence and QA scope remain authoritative. |
+| DUP-009 | Template, script-purpose, and bootstrap routing | duplicate | Already covered by [Workspace Category Map](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md#workspace-category-map). |
+| DUP-010 | Future Graphify, delivery-dashboard, and scanner proposals | historical-only | Preserved only by this disposition; no adopted requirement or implementation is claimed. |
+| DUP-011 | Four-part harness concept | duplicate | Canonical definitions already exist in [Harness Definitions / Facts](../../90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md#definitions--facts). |
+| DUP-012 | Root shim and contract-validator implementation | merged | [Harness Implementation Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md#harness-implementation-matrix) |
+| DUP-013 | Blanket network-isolation assertion | unsupported | Not carried; corrected network evidence is in the harness and Compose matrices. |
+| DUP-014 | Provider capability and maturity rankings | unsupported | Not carried; [Provider Capability Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md#provider-capability-matrix) uses official provider-specific evidence. |
+| DUP-015 | Proposed universal command wrapper | historical-only | Preserved only as a former proposal disposition; no tracked implementation or approval exists. |
+| DUP-016 | Automatic destructive rollback on validation failure | unsupported | Not carried; canonical rollback requires evidence and approval. |
+| DUP-017 | Claimed provider-hook absence and unverified resource-quota gap | unsupported | Not carried; official capability and local-adoption gaps are separated in the provider/harness references. |
+| DUP-018 | Observe/plan/execute/verify loop concept | duplicate | Canonical loop definitions already cover the concept without duplicating ownership. |
+| DUP-019 | Four workspace feedback-loop summary | merged | Expanded into the ten-row [Loop Contract Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md#loop-contract-matrix). |
+| DUP-020 | Proposed diagnostic-parser architecture | historical-only | Preserved only by this disposition; no current implementation is asserted. |
+| DUP-021 | Provider self-correction rankings | unsupported | Not carried; official mechanisms and evidence gaps replace rankings. |
+| DUP-022 | Unverified terminal-output and circuit-breaker gaps | unsupported | Not carried as current fact; canonical loop gaps require tracked evidence. |
+| DUP-023 | Cross-provider parity ratings and delivery-risk scoring | unsupported | Not carried; provider facts remain provider-native and non-ranked. |
+| DUP-024 | Claimed compiler projections and enforced adapter restrictions | unsupported | Not carried; generated metadata and native enforcement are explicitly separated. |
+| DUP-025 | Claimed shared formatting wrapper behavior | unsupported | Not carried; tracked hook behavior is owned by the quality/harness references. |
+| DUP-026 | Claimed absent adapter generation and unsupported context-limit comparison | unsupported | Not carried; generation is tracked and provider context claims require primary evidence. |
+| DUP-027 | External catalog breadth and reference-only comparison | merged | [Catalog Comparison Matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md#catalog-comparison-matrix) with immutable upstream pin |
+| DUP-028 | Unverified upstream structure, orchestration, and sandbox claims | unsupported | Not carried; publisher claims and verified repository facts are separated. |
+| DUP-029 | Local catalog and subagent-routing facts | merged | [Workspace Implementation Status](../../90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md#workspace-implementation-status) |
+| DUP-030 | Claimed missing profile lint/tracing plus proposed local message-log path | unsupported | Not carried; no tracked evidence or approved logging contract supports it. |
+
+Disposition totals: **merged 8 · duplicate 4 · unsupported 15 ·
+historical-only 3 = 30/30**. Unsupported claims are absent from the superseded
+leaf bodies and were not promoted to current canonical truth.
+
+### Supersession Result
+
+- Duplicate pack README and all five leaves now declare `status: superseded`.
+- Every leaf retains its original H1 and the complete Stage 90 reference
+  section contract while containing only mapping/lifecycle facts.
+- The duplicate README maps all five leaves; the parent research README lists
+  one current pack plus a separate `Superseded References` route.
+- The canonical README includes the provider model landscape in Structure,
+  Current References, and Reading Order, and records the only-active-pack,
+  historical-evidence, and policy/runtime boundaries.
+
+### Tasks 1-5 Commit and Review Ledger
+
+| Task | Full task range | Final content review range | Final verdict | Findings / report |
+| --- | --- | --- | --- | --- |
+| T-ARC-001 | `341282da13c2ff4aec5c5415dbdde9efeac5b0dd..ff17d4d40d834bc01faf17faf9dce72e22c77a4e` | `341282da13c2ff4aec5c5415dbdde9efeac5b0dd..b60fd1f1c4418c6b6b1e36c81c064fb69b10c7b3` | Spec **PASS** / Quality **APPROVED** | `0/0/0`; `.superpowers/sdd/task-1-final-review-report.md` |
+| T-ARC-002 | `ff17d4d40d834bc01faf17faf9dce72e22c77a4e..1a80b6989304fa7b6a179861a9cad795dd875ca3` | `ff17d4d40d834bc01faf17faf9dce72e22c77a4e..4c7671c40def61e41a2d3b556cb3fb5a09aef4ee` | Spec **PASS** / Quality **APPROVED** | `0/0/0`; `.superpowers/sdd/task-2-final-review-report.md` |
+| T-ARC-003 | `1a80b6989304fa7b6a179861a9cad795dd875ca3..505277817eee0de4270bc03ae7fb789ef9d02ad3` | `1a80b6989304fa7b6a179861a9cad795dd875ca3..7aa07accc00770dd4e18cd37ddd77d9f92236848` | Spec **PASS** / Quality **APPROVED** | `0/0/0`; `.superpowers/sdd/task-3-rereview-report.md` |
+| T-ARC-004 | `505277817eee0de4270bc03ae7fb789ef9d02ad3..34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6` | `505277817eee0de4270bc03ae7fb789ef9d02ad3..ef97a8c148359b7ee1af5948921156a3ab1fa1b1` | Spec **PASS** / Quality **APPROVED** | `0` blocking; reviewer M-01 corrected in bookkeeping; `.superpowers/sdd/task-4-rereview-report.md` |
+| T-ARC-005 | `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..00190fc97b003c9beedc5af79d195532bc181dde` | `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..26fb9d227da49594c04967ccc4830d722463468b` | Spec **PASS** / Quality **APPROVED** | `0/0/0`; `.superpowers/sdd/task-5-review-report.md` |
+
+### Cutoff Caveats, Deviations, and Broad-Review Gate
+
+- The model ledger remains fixed at `2026-07-10 10:00 KST (01:00 UTC)`:
+  145 structural rows, 142 cutoff-qualified rows, and three GPT-5.6 rows kept
+  as retrieval-only context because their unzoned date does not prove the exact
+  cutoff. Mutable provider states retain `historical state unverified` where
+  applicable; account/region/product entitlement remains unproven.
+- Prior approved deviation: Task 2 refreshed the two generated LLM Wiki outputs
+  only through their canonical generators after the new model reference became
+  tracked. Task 6 follows the same generator-only rule.
+- No new content-scope deviation is introduced. Graphify remains stale and
+  advisory; this documentation-only task does not refresh it.
+- After Task 6 receives PASS/APPROVED, the exact first broad-review package
+  command is:
+
+```bash
+git diff --binary 940eae305da0c29e10957bdd80c95d5e6530927a..HEAD -- . > .superpowers/sdd/whole-branch-pre-closure.diff
+```
+
+That command and the whole-branch reviewer dispatch are Step 10 and were not
+run in this task. Lifecycle completion is forbidden until that review is clean.
+
+### Provisional Validation Evidence
+
+Documentation-only TDD and code coverage are not applicable. The final Step
+6-8 evidence is:
+
+- `git diff --check` — exit 0.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — exit 0; fresh.
+- `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` — exit 0;
+  fresh. Both generated outputs were unchanged; no generated file was
+  hand-edited or regenerated.
+- `bash scripts/operations/sync-provider-surfaces.sh --check` — exit 0;
+  `no drift`.
+- `bash scripts/validation/check-doc-traceability.sh` — exit 0;
+  `catalog_pairs_total=46`, `failures=0`.
+- `bash scripts/validation/check-doc-implementation-alignment.sh` — exit 0;
+  `stage_docs_total=621`, `repo_local_markdown_links_checked=4856`,
+  `failures=0`.
+- `bash scripts/validation/validate-docker-compose.sh` — exit 0;
+  `services_total=5` for the core profile.
+- `bash scripts/hardening/check-all-hardening.sh` — exit 0; all eleven tier
+  baselines passed.
+- `bash scripts/validation/check-repo-contracts.sh` — final exit 0;
+  `changed_template_docs_total=13`, `normalized_changed_template_docs_total=13`,
+  `target_stage_docs_total=724`, `legacy_target_stage_docs_skipped=0`, and
+  repository `failures=0`. The first pass reported the duplicate README's
+  missing `## Structure` heading; it was fixed in scope and the complete Step 7
+  bundle was rerun successfully.
+- Duplicate-active scan — exit 1 with no matches, the expected negative result.
+- Duplicate-path scan — exit 0; matches are limited to supersession/history
+  routing, target comments, plan scope/check instructions, and task/spec
+  traceability. No current-reading route presents the duplicate as active.
+- Exact stale-phrase scan — exit 0 with six matches, all already present at
+  base `00190fc97b003c9beedc5af79d195532bc181dde` in the out-of-scope canonical
+  `harness-engineering.md` and `loop-engineering.md`. Every match is an explicit
+  negative correction (not a current affirmative claim); the five new
+  tombstones add zero matches. Rewording those previously reviewed Task 3
+  canonical leaves would exceed the fourteen-file Task 6 scope, so the semantic
+  result is recorded rather than hidden.
+- Full changed-file and diff review — fourteen always-scoped documentation
+  files only; zero generated files; no policy, runtime, CI, provider/model,
+  hook, script, secret, credential, operations, remote, or branch-protection
+  surface changed.
+
+Graphify remains built from `30df271a` and advisory. No code file changed, so
+the graph refresh was skipped under the approved documentation-only scope.
+These results make T-ARC-006 reviewable but do not close the lifecycle or
+fabricate a reviewer verdict.
 
 ## Task Review Evidence Contract
 

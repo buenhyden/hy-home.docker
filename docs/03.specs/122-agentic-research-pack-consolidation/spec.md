@@ -325,6 +325,15 @@ implementer mutates a task's files.
 | Critical or important review finding remains open | Dispatch one scoped fixer, rerun covering checks, and re-review. | Required if the finding conflicts with approved scope. |
 | Repository checks fail repeatedly | Narrow the check, diagnose, and stop after the skill-defined blocker threshold. | Required when no safe in-scope resolution remains. |
 
+## Implementation State
+
+The research-domain Tasks 1-5 have final PASS/APPROVED task reviews. Task 6 is
+at the provisional Ready-for-Review boundary after its coverage audit,
+supersession records, routing updates, and validation candidate were prepared.
+This specification remains `status: active`; VAL-ARC-006 and overall lifecycle
+acceptance remain open until Task 6 review, the first whole-branch review, a
+separate closure commit, and the post-closure whole-branch review complete.
+
 ## Verification
 
 ```bash

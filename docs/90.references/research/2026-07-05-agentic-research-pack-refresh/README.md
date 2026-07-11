@@ -18,6 +18,13 @@ status: active
 
 `docs/90.references/research/2026-07-05-agentic-research-pack-refresh`는 하네스 엔지니어링과 루프 엔지니어링을 중심으로 한 agent-first workspace research pack입니다. 이 category는 현재 provider/runtime/governance 상태를 설명하는 보조 reference이며, Stage 00 policy, Stage 04 execution evidence, Stage 05 operations procedure를 대체하지 않습니다.
 
+## Consolidation and Lifecycle Boundary
+
+- 이 2026-07-05 pack은 현재 agentic engineering research의 **유일한 active canonical pack**입니다.
+- 검증된 2026-07-07 자료는 책임이 분명한 이 pack의 canonical 문서에 한 번만 반영했으며, [2026-07-07 duplicate pack](../2026-07-07-agentic-research-pack-update/README.md)은 superseded 상태입니다.
+- 이전에 완료된 [Stage 03 research refresh spec](../../../03.specs/104-agentic-research-pack-refresh/spec.md), [Stage 04 plan](../../../04.execution/plans/2026-07-05-agentic-research-pack-refresh.md), [Stage 04 task evidence](../../../04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md), [2026-07-05 implementation audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md), [2026-07-07 audit update](../../audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)는 삭제하거나 본문을 복제하지 않고 historical evidence로 유지합니다.
+- Stage 90은 source-backed comparison과 routing을 제공할 뿐입니다. 현재 policy는 Stage 00/05 policy 문서, execution evidence는 Stage 04, runtime truth는 tracked provider/Compose/script/config surface가 계속 담당합니다.
+
 ## Audience
 
 이 README의 주요 독자:
@@ -60,6 +67,7 @@ status: active
 ├── sdlc-document-roles.md               # Role and purpose of each SDLC/operations document type
 ├── quality-ci-formatting.md             # QA, CI/CD, formatting, secure quality gates
 ├── provider-implementation-comparison.md # Claude, Codex, Gemini comparison
+├── provider-model-landscape.md           # Cutoff-bound official provider model catalog and lifecycle evidence
 ├── agent-model-selection.md              # Task-characteristic model tier and reasoning-effort selection
 ├── docker-compose-infrastructure.md      # Docker Compose and infrastructure harness analysis
 ├── security-governance.md                # Secure SDLC and security governance analysis
@@ -76,6 +84,7 @@ status: active
 - [sdlc-document-roles.md](./sdlc-document-roles.md) - PRD, ARD, ADR, spec, plan, task, guide, policy, runbook, incident, postmortem, release 문서 유형별 역할과 목적 분석
 - [quality-ci-formatting.md](./quality-ci-formatting.md) - CI/CD, QA, formatting, secure quality gate 분석
 - [provider-implementation-comparison.md](./provider-implementation-comparison.md) - Claude, Codex, Gemini provider 현황과 공통 체계 분석
+- [provider-model-landscape.md](./provider-model-landscape.md) - 2026-07-10 10:00 KST cutoff 기준 Claude, OpenAI/Codex, Gemini 공식 model catalog, lifecycle, ID, source caveat 분석
 - [agent-model-selection.md](./agent-model-selection.md) - 작업 특성에 맞는 모델 tier와 reasoning-effort 선택, per-provider 메커니즘, 변경 프로토콜 분석
 - [docker-compose-infrastructure.md](./docker-compose-infrastructure.md) - Docker Compose, infrastructure harness, profiles, networks, secrets, validation, hardening 분석
 - [security-governance.md](./security-governance.md) - secure SDLC reference frameworks, workflow security, secret boundaries, approval evidence 분석
@@ -88,7 +97,7 @@ status: active
 2. [harness-engineering.md](./harness-engineering.md)와 [loop-engineering.md](./loop-engineering.md)에서 개념적 구조를 확인합니다.
 3. [spec-driven-sdlc.md](./spec-driven-sdlc.md)와 [quality-ci-formatting.md](./quality-ci-formatting.md)에서 stage-gate와 검증 루프를 비교하고, [sdlc-document-roles.md](./sdlc-document-roles.md)에서 각 문서 유형의 역할과 목적을 확인합니다.
 4. [docker-compose-infrastructure.md](./docker-compose-infrastructure.md), [security-governance.md](./security-governance.md), [automation-pipeline-workflow.md](./automation-pipeline-workflow.md)에서 targeted reference를 확인합니다.
-5. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인하고, [agent-model-selection.md](./agent-model-selection.md)에서 작업 특성에 맞는 모델 tier와 reasoning-effort 설정을 확인합니다.
+5. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인하고, [provider-model-landscape.md](./provider-model-landscape.md)에서 cutoff-bound 공식 model/lifecycle evidence를 확인한 뒤 [agent-model-selection.md](./agent-model-selection.md)에서 작업 특성에 맞는 model tier와 reasoning-effort 분석을 읽습니다.
 6. [ai-agent-catalogs.md](./ai-agent-catalogs.md)에서 외부 agent catalog와 repo-local catalog의 import 경계를 확인합니다.
 
 ## How to Work in This Area

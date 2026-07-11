@@ -64,6 +64,14 @@ official Claude, OpenAI/Codex, and Gemini model catalogs as of
    instead of copying their bodies.
 5. Record runtime, policy, CI, security, or provider changes as follow-up gaps.
 
+## Implementation State
+
+Tasks 1-5 have clean final task reviews. Task 6 has produced the provisional
+coverage/disposition audit and supersession/index changes and is Ready for
+Review. This specification remains active: the Task 6 verdict, first
+whole-branch review, separate lifecycle-closure commit, and post-closure review
+are still required. No completed status or merge-readiness claim is made here.
+
 ## Related Documents
 
 - [Technical specification](./spec.md)

@@ -1,84 +1,68 @@
 ---
-status: active
+status: superseded
 ---
 
 <!-- Target: docs/90.references/research/2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md -->
 
 # Reference: AI Agent Catalogs and Workspace Alignment
 
-This document analyzes public agent repositories, compares open-source agent libraries with the workspace's agent architecture, and establishes patterns for scaling localized agent catalogs.
-
----
-
 ## Overview
 
-AI Agent Catalogs are centralized registers of agent personas, specifications, capabilities, and execution contexts. By standardizing agent specifications, teams can configure and spawn subagents for specialized tasks (e.g. security audits, refactoring, code formatting) with predictable behaviors:
-
-- **Public Agent Pools**: Open-source libraries like `msitarzewski/agency-agents` collect various agent personas. While useful for general brainstorming, they lack the strict constraints, sandbox requirements, and local validation hooks needed for secure production use.
-- **Workspace Agent Catalogs**: Located in [docs/00.agent-governance/agents/](../../../00.agent-governance/agents/), the workspace uses a single source of truth (SSoT) to define local agent capabilities. Every agent has explicit boundaries, file permission controls, and target validation scripts.
+This superseded record preserves the former catalog-reference path and routes
+all current catalog and import-boundary analysis to the canonical pack.
 
 ## Purpose
 
-This reference baseline studies the architecture of open-source agent catalogs to determine how to scale the local agent directory while maintaining security, compliance, and isolation boundaries.
+Prevent historical catalog descriptions, gaps, or proposed controls from being
+mistaken for current Stage 00 roles or approved provider/runtime behavior.
 
 ## Repository Role
 
-This document serves as an advisory reference for scaling agent directories. It does not replace the Stage 00 agent governance profiles or the execution instructions in [subagent-protocol.md](../../../00.agent-governance/subagent-protocol.md).
+This file records supersession only. The Stage 00 agent catalog and subagent
+protocol remain active authority; the canonical Stage 90 reference supplies the
+current external comparison.
 
 ## Scope
 
 ### In Scope
 
-- Analysis of public agent repositories (`msitarzewski/agency-agents`).
-- Workspace agent catalog layout and synchronization mechanisms.
-- Verification checks for agent profile integrity.
-- Gaps in agent catalog governance (lack of profile linters, subagent trace logging).
+- Historical path continuity
+- Canonical catalog and import-boundary mapping
 
 ### Out of Scope
 
-- Creation of new executable subagent roles or modifications to model routing.
-- Mutating active agent profiles under `docs/00.agent-governance/agents/`.
-- Credentials, private keys, or API secrets.
+- Current agent-role, permission, model, installer, logging, or evaluation claims
+- Agent, skill, adapter, or policy adoption
 
 ## Definitions / Facts
 
-### 1. Analysis of `msitarzewski/agency-agents`
+- **Canonical destination**: [Catalog comparison matrix](../2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md#catalog-comparison-matrix).
+- The canonical document pins external evidence, separates publisher claims
+  from verified facts, and keeps direct import outside ordinary research work.
+- Claims that lacked verified tracked or primary-source evidence were not
+  carried forward.
 
-`msitarzewski/agency-agents` is a structured repository grouping agents by agency roles (e.g., Tech Agency, Writing Agency, QA Agency):
+## Source Rules
 
-- **Structure**: Uses YAML/Markdown definitions containing the agent's name, system instruction prompt, and a list of allowed tools.
-- **Execution**: Employs a chat-centric orchestration wrapper where agents converse with each other to complete goals.
-- **Parity Gap**: Lacks sandboxing, terminal-level hook attachments, and deterministic rollbacks, making it unsuitable for direct deployment in our isolated Docker Compose environments without wrapping.
-
-### 2. Local Workspace Catalog Alignment
-
-The workspace implements a structured, localized catalog in [docs/00.agent-governance/agents/](../../../00.agent-governance/agents/):
-
-- **Specification Compliance**: Each profile defines specific `Covers` (files the agent is allowed to write) and `Excludes` (files the agent is blocked from modifying) to prevent credential leaks or unauthorized code alterations.
-- **Subagent Spawning**: Governed by [subagent-protocol.md](../../../00.agent-governance/subagent-protocol.md). Spawning routes scoped tasks to dedicated worker agents through the provider's delegated-agent facility (in Claude Code, the built-in Agent/Task tools with an explicit scope path), not a custom `invoke_subagent` API.
-
-### 3. Identified Gaps
-
-- **Missing Instruction Linters**: The repository lacks static linters to verify that new agent profiles include all required safety fields (e.g., permission bounds, role descriptions).
-- **Subagent Logging**: No centralized tracing exists for inter-agent communication, making auditing difficult. Message exchanges should be mirrored to `.agent-work/logs/`.
+- Use immutable upstream pins and tracked Stage 00 sources through the
+  canonical reference.
+- Do not install or import an external agent from this record.
+- Treat this record as lifecycle evidence only.
 
 ## Sources
 
-- [msitarzewski/agency-agents Repository](https://github.com/msitarzewski/agency-agents) - Open-source agent persona library
-- [Agent Catalog Overview](../../../00.agent-governance/agents/README.md) - SSOT for local agent catalogs
-- [Subagent Protocol Specifications](../../../00.agent-governance/subagent-protocol.md) - Subagent execution and communication architectures
+- [Canonical AI agent catalog research](../2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md) - current source-backed comparison
+- [Stage 00 agent catalog](../../../00.agent-governance/agents/README.md) - active workspace role authority
+- [Consolidation task](../../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md) - disposition evidence
 
 ## Maintenance
 
-- **Owner**: Workspace Platform Agent Governance Architect
-- **Review Cadence**: Semi-annually, or upon approval of new agent roles.
-- **Update Trigger**: Triggered by changes to the schema rules in the `docs/00.agent-governance/agents/` directory.
+- **Owner**: Documentation maintainers
+- **Review Cadence**: When the canonical destination moves
+- **Update Trigger**: Broken mapping or changed supersession metadata
 
 ## Related Documents
 
-- [Research Index README](./README.md)
-- [References Category README](../README.md)
-- [workspace-baseline.md](./workspace-baseline.md)
-- [harness-engineering.md](./harness-engineering.md)
-- [loop-engineering.md](./loop-engineering.md)
-- [provider-implementation-comparison.md](./provider-implementation-comparison.md)
+- [Superseded pack index](./README.md)
+- [Canonical pack](../2026-07-05-agentic-research-pack-refresh/README.md)
+- [Research references](../README.md)
