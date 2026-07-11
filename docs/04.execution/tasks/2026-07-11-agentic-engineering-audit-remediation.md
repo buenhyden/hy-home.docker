@@ -50,7 +50,7 @@ independent task/branch reviews.
 | T-AER-001 | Research metadata, lifecycle, document roles, agent instructions, and vibe coding | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-001 | Primary-source ledger; LLM Wiki; repo contracts; task review | wiki-curator | Done |
 | T-AER-002 | Revalidate harness, loop, provider, model, and agent-catalog research | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-002 | Cutoff ledger; provider no-drift; repo contracts; task review | wiki-curator | Done |
 | T-AER-003 | Revalidate workspace, QA, automation, Compose, security, release, and deployment research | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-003 | Tracked inventory; Compose/hardening; repo contracts; task review | wiki-curator | Done |
-| T-AER-004 | Audit SDLC, document roles, numbering, transitions, frontmatter, templates, and README profiles | doc | Spec 123 / Canonical Audit Categories | PLN-AER-004 | Reproducible counts; audit matrices; repo contracts; task review | doc-writer | Todo |
+| T-AER-004 | Audit SDLC, document roles, numbering, transitions, frontmatter, templates, and README profiles | doc | Spec 123 / Canonical Audit Categories | PLN-AER-004 | Reproducible counts; audit matrices; repo contracts; task review | doc-writer | Done |
 | T-AER-005 | Audit harness, loops/evals, providers/models, workspace rules, instructions, catalogs, and vibe coding | doc | Spec 123 / Canonical Audit Categories | PLN-AER-005 | Criterion coverage; provider evidence; task review | code-reviewer | Todo |
 | T-AER-006 | Audit QA/CI/CD, automation, Compose/infrastructure, security; consolidate audit lifecycle | doc | Spec 123 / Canonical Audit Categories | PLN-AER-006 | One-current-pack scan; audit generators; Compose/hardening; task review | code-reviewer | Todo |
 | T-AER-007 | Implement typed metadata profiles, advisory validator, tests, and exhaustive inventory | impl/test | Spec 123 / Typed Document Metadata | PLN-AER-007 | Python unit tests; advisory report; repo contracts; task review | rules-engineer | Todo |
@@ -70,7 +70,7 @@ independent task/branch reviews.
 
 ### Phase 2 — Canonical Audit
 
-- [ ] T-AER-004 SDLC and document-contract audit
+- [x] T-AER-004 SDLC and document-contract audit
 - [ ] T-AER-005 Harness/provider/agent audit
 - [ ] T-AER-006 Quality/runtime-readiness/security audit and pack consolidation
 
@@ -276,6 +276,7 @@ correctness and define the deterministic advisory inventory required by Tasks
 | T-AER-001 | `84d88ee4..9755e9e1` | PASS | APPROVED | Initial C0/I1/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-1-report.md`; `.superpowers/sdd/review-84d88ee4..9755e9e1.diff` |
 | T-AER-002 | `3feb2c69..2b0bc6f0` | PASS | APPROVED | C0/I0/M0 | `.superpowers/sdd/task-2-report.md`; `.superpowers/sdd/review-3feb2c69..2b0bc6f0.diff` |
 | T-AER-003 | `cf8790ca..398eda53` | PASS | APPROVED | Initial C0/I1/M0; lifecycle evidence corrected; re-review C0/I0/M0 | `.superpowers/sdd/task-3-report.md`; `.superpowers/sdd/review-cf8790ca..398eda53.diff` |
+| T-AER-004 | `e4c92fa1..f72e0998` | PASS | APPROVED | Initial C0/I2/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-4-report.md`; `.superpowers/sdd/review-e4c92fa1..f72e0998.diff` |
 
 - **Baseline Commands**:
   - `git diff --check` — PASS
