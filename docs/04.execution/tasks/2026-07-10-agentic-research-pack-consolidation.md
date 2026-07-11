@@ -45,7 +45,7 @@ plan.
 | T-ARC-002 | Add cutoff-bound provider model landscape and refresh task selection | doc/eval | VAL-ARC-003, VAL-ARC-004 | PLN-ARC-002 | Model/lifecycle totals, cutoff exceptions, provider sources, validators, task review | Documentation implementer | Done |
 | T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Done |
 | T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Done |
-| T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Ready for Review |
+| T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Done |
 | T-ARC-006 | Finalize indexes, supersede duplicate pack, close lifecycle and validation | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, whole-branch review, closure commit | Workflow supervisor | Todo |
 
 ## Phase View
@@ -64,7 +64,8 @@ plan.
 
 - [x] T-ARC-004 Refresh QA/CI/formatting and automation research
       (**Done**; final independent review PASS / APPROVED).
-- [ ] T-ARC-005 Refresh Compose/infrastructure and security research.
+- [x] T-ARC-005 Refresh Compose/infrastructure and security research
+      (**Done**; final independent review PASS / APPROVED).
 
 ### Phase 4: Consolidation Closure
 
@@ -769,13 +770,15 @@ The remediation covering pass recorded:
 
 ### Status and Scope
 
-Status is **Ready for Review**. Independent spec-compliance and document-quality
-verdicts are **Pending**; no reviewer verdict is fabricated. The implementation
-is documentation only, so code TDD and domain coverage are N/A. The exact
-tracked editable scope is this task record plus the two assigned Stage 90
-references. Compose, infrastructure, workflows, scripts, policy, provider/model
-configuration, credentials, secrets, runtime, and remote state were inspected
-read-only and not changed.
+Status is **Done**. The final independent review of exact content range
+`34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..26fb9d227da49594c04967ccc4830d722463468b`
+returned Spec Compliance **PASS** and Document Quality **APPROVED**, with
+**Critical 0 · Important 0 · Minor 0**. The implementation is documentation
+only, so code TDD and domain coverage are N/A. The exact tracked implementation
+scope was this task record plus the two assigned Stage 90 references. Compose,
+infrastructure, workflows, scripts, policy, provider/model configuration,
+credentials, secrets, runtime, and remote state were inspected read-only and
+not changed.
 
 ### Tracked Topology and Derivation
 
@@ -899,8 +902,12 @@ read-only and not changed.
 - Task brief: `.superpowers/sdd/task-5-brief.md`.
 - Implementer report: `.superpowers/sdd/task-5-implementer-report.md` (ignored
   out-of-band evidence; finalized after the implementation commit).
+- Final independent review report: `.superpowers/sdd/task-5-review-report.md`
+  (ignored out-of-band evidence).
 - Base commit: `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6`.
-- Implementation review range: `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..HEAD`.
+- Implementation commit: `26fb9d227da49594c04967ccc4830d722463468b`.
+- Final independent review range:
+  `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..26fb9d227da49594c04967ccc4830d722463468b`.
 - Logical subject: `docs(research): refresh infrastructure and security references`.
 - Implementer spec-compliance self-review: **PASS** — required topology/control
   concerns, exact schemas, recomputed counts, status vocabulary, one existing
@@ -910,10 +917,19 @@ read-only and not changed.
   evidence, external comparison, current control, implementation gap,
   recommendation, and human/remote authority remain distinguishable; no secret
   value or fabricated review/runtime verdict is present.
-- Independent spec-compliance verdict: **Pending**.
-- Independent document-quality verdict: **Pending**.
-- Final task transition to Done is owned by the controller after independent
-  review; this implementation truthfully remains **Ready for Review**.
+- Independent spec-compliance verdict: **PASS**.
+- Independent document-quality verdict: **APPROVED**.
+- Independent finding counts: **Critical 0 · Important 0 · Minor 0**.
+- Reviewer reproduced the tracked topology, the infrastructure matrix at
+  **19 rows (`6/12/1/0`)**, the security matrix at **15 rows (`3/9/3/0`)**,
+  **34/34 existing canonical-owner paths**, and **16 supported external
+  sources**.
+- Reviewer confirmed that the secret-read conflict is accurately recorded,
+  the stricter no-read boundary was conservatively followed, and resolution is
+  correctly assigned to a separate approved policy follow-up.
+- Runtime/remote state remains intentionally unknown, and the unresolved
+  policy conflict remains an explicit gap rather than a Task 5 review defect.
+- Final status: **Done**.
 
 ## Task Review Evidence Contract
 
