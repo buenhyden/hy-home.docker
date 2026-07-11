@@ -441,6 +441,7 @@ secret access, remote GitHub mutation, or direct manual pre-commit execution.
 
 - [Specification folder](./README.md)
 - [Implementation plan](../../04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md)
+- [Task evidence](../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md)
 - [Previous research consolidation specification](../122-agentic-research-pack-consolidation/spec.md)
 - [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Canonical implementation audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)

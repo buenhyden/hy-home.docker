@@ -662,7 +662,7 @@ def test_duplicate_artifact_id_is_reported(tmp_path):
 Run:
 
 ```bash
-python3 -m unittest tests.validation.test_document_metadata -v
+python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v
 ```
 
 Expected: FAIL because the checker module and profile file do not exist.
@@ -713,7 +713,7 @@ diff. `check-active` is implemented but remains non-gating in this program.
 - [ ] **Step 4: Run tests and generate the pre-migration inventory**
 
 ```bash
-python3 -m unittest tests.validation.test_document_metadata -v
+python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v
 python3 scripts/validation/check-document-metadata.py --mode report --output docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
 ```
 
@@ -1191,7 +1191,7 @@ git commit -m "docs(task): close agentic audit remediation"
 
 | ID | Level | Command / Evidence | Pass Criteria |
 | --- | --- | --- | --- |
-| VAL-AER-001 | Unit | `python3 -m unittest tests.validation.test_document_metadata -v` | All metadata parser/profile/manifest/transition/report tests pass. |
+| VAL-AER-001 | Unit | `python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v` | All metadata parser/profile/manifest/transition/report tests pass. |
 | VAL-AER-002 | Unit | `bash tests/validation/test_run_agent_precommit_all_files.sh` | All wrapper safety and fake-pre-commit tests pass. |
 | VAL-AER-003 | Provider | `bash scripts/operations/sync-provider-surfaces.sh --check` | Reports `no drift`. |
 | VAL-AER-004 | Metadata | `python3 scripts/validation/check-document-metadata.py --mode report --output docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md` | Inventory is deterministic and fresh; approved active chain is clean after migration. |
@@ -1271,6 +1271,7 @@ git commit -m "docs(task): close agentic audit remediation"
 
 - [Parent specification](../../03.specs/123-agentic-engineering-audit-remediation/spec.md)
 - [Specification folder](../../03.specs/123-agentic-engineering-audit-remediation/README.md)
+- [Task evidence](../tasks/2026-07-11-agentic-engineering-audit-remediation.md)
 - [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Canonical implementation audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

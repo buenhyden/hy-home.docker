@@ -641,6 +641,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-06-security-automation-readiness-snapshot.md](../../04.execution/tasks/2026-07-06-security-automation-readiness-snapshot.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-06-tech-stack-version-provenance.md](../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md](../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
