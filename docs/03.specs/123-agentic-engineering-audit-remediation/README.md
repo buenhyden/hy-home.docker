@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/123-agentic-engineering-audit-remediation/README.md -->
@@ -15,6 +15,11 @@ agentic research and implementation-audit packs. The program first refreshes
 external criteria and performs a repository-wide audit, then introduces typed
 document metadata, lifecycle validation, controlled full-repository
 pre-commit execution, and synchronized provider and CI governance.
+
+The program completed after all twelve implementation tasks and the exact-range
+preclosure whole-branch review passed with Spec PASS, Quality APPROVED, and no
+Critical, Important, or Minor findings. The four runtime follow-up
+specifications and plans remain `draft` and require separate approval.
 
 Docker Compose services, infrastructure runtime, deployment state, secrets,
 and remote GitHub settings are audit-only in this program. Their findings are

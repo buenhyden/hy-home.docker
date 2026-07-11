@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: plan:2026-07-11-agentic-engineering-audit-remediation
 artifact_type: plan
 parent_ids:
@@ -1100,7 +1100,7 @@ git commit -m "docs(plan): route runtime remediation followups"
 - Produces: Final verification evidence, whole-branch verdict, closed lifecycle
   statuses, and clean worktree.
 
-- [ ] **Step 1: Re-run every generator in write and check mode**
+- [x] **Step 1: Re-run every generator in write and check mode**
 
 Run:
 
@@ -1121,7 +1121,7 @@ python3 scripts/validation/check-document-metadata.py --mode report --output doc
 Expected: provider surfaces report `no drift`; LLM Wiki, audit, metadata, and
 coverage outputs are fresh.
 
-- [ ] **Step 2: Run targeted and repository-wide local checks**
+- [x] **Step 2: Run targeted and repository-wide local checks**
 
 Run:
 
@@ -1145,7 +1145,7 @@ Expected: every available local check passes. If `actionlint` or `zizmor` is
 unavailable, record the missing tool and CI-only verification requirement;
 do not report that check as passed. No service is started.
 
-- [ ] **Step 3: Run the approved full-repository pre-commit wrapper**
+- [x] **Step 3: Run the approved full-repository pre-commit wrapper**
 
 Run:
 
@@ -1169,19 +1169,19 @@ the task evidence records exit status, hook summary, before/after paths, and
 review disposition. On unexpected paths, stop without reset and return to the
 responsible task.
 
-- [ ] **Step 4: Dispatch whole-branch independent review**
+- [x] **Step 4: Dispatch whole-branch independent review**
 
 The reviewer receives the exact base..HEAD range, Spec 123, this plan, task
 evidence, source/cutoff ledger, protected-surface list, test output summary,
 and all task-level verdicts. Required result: Spec PASS, Quality APPROVED,
 Critical 0, Important 0.
 
-- [ ] **Step 5: Apply review fixes in a separate commit and re-run affected gates**
+- [x] **Step 5: Apply review fixes in a separate commit and re-run affected gates**
 
 Do not close lifecycle while any critical/important finding or unverified
 required check remains.
 
-- [ ] **Step 6: Close lifecycle and commit final evidence**
+- [x] **Step 6: Close lifecycle and commit final evidence**
 
 Set Spec/Plan/Task statuses to `completed` only after all criteria pass. Update
 indexes and progress memory, verify a clean worktree, then commit:
@@ -1190,6 +1190,19 @@ indexes and progress memory, verify a clean worktree, then commit:
 git add docs scripts .claude .codex .agents .github .pre-commit-config.yaml tests
 git commit -m "docs(task): close agentic audit remediation"
 ```
+
+### Lifecycle Closure Evidence
+
+- Tasks 1-11 have task-scoped Spec PASS / Quality APPROVED verdicts with all
+  findings resolved to Critical 0, Important 0, Minor 0.
+- Task 12 Steps 1-3 passed, including the controlled wrapper's final zero-exit
+  attempt with no Git-visible changed or unexpected path.
+- The exact preclosure whole-branch range
+  `3e92b39fa02767dafff612fcfa5b3670998471be..6a73dddb6fe95df2c2cf022d27ab0878d3773213`
+  returned Spec PASS / Quality APPROVED, Critical 0, Important 0, Minor 0, and
+  `READY_FOR_CLOSURE: YES`; no review-fix commit was required.
+- This closure changes lifecycle documentation only. Specs 124-127 and their
+  plans remain `draft`; no runtime or remote mutation is authorized.
 
 ## Verification Plan
 
@@ -1258,18 +1271,18 @@ git commit -m "docs(task): close agentic audit remediation"
 
 ## Completion Criteria
 
-- [ ] Canonical research includes all requested external criteria and two new focused criteria documents.
-- [ ] Canonical audit covers every category/subcategory with the shared status/depth/disposition model.
-- [ ] The 2026-07-07 audit pack is mapping-only superseded history; 2026-07-03/04 boundaries are explicit.
-- [ ] Exhaustive semantic frontmatter inventory is reproducible and current.
-- [ ] Typed metadata profiles, lifecycle rules, unit tests, and changed/new enforcement pass.
-- [ ] Approved active agentic chain carries valid typed metadata and parent relations.
-- [ ] Controlled agent pre-commit wrapper and evidence contract pass tests and final full-repository execution.
-- [ ] Stage 00/99, provider adapters, validators, pre-push, and CI repo-contracts step are synchronized.
-- [ ] No model literal changes occur without separate exact approval.
-- [ ] Four runtime follow-up specs/plans exist with explicit approval and rollback boundaries; runtime remains unchanged.
-- [ ] Every task has logical commits and independent spec/quality reviews.
-- [ ] Full validation and whole-branch review pass; Spec/Plan/Task indexes and progress log are closed.
+- [x] Canonical research includes all requested external criteria and two new focused criteria documents.
+- [x] Canonical audit covers every category/subcategory with the shared status/depth/disposition model.
+- [x] The 2026-07-07 audit pack is mapping-only superseded history; 2026-07-03/04 boundaries are explicit.
+- [x] Exhaustive semantic frontmatter inventory is reproducible and current.
+- [x] Typed metadata profiles, lifecycle rules, unit tests, and changed/new enforcement pass.
+- [x] Approved active agentic chain carries valid typed metadata and parent relations.
+- [x] Controlled agent pre-commit wrapper and evidence contract pass tests and final full-repository execution.
+- [x] Stage 00/99, provider adapters, validators, pre-push, and CI repo-contracts step are synchronized.
+- [x] No model literal changes occur without separate exact approval.
+- [x] Four runtime follow-up specs/plans exist with explicit approval and rollback boundaries; runtime remains unchanged.
+- [x] Every task has logical commits and independent spec/quality reviews.
+- [x] Full validation and whole-branch review pass; Spec/Plan/Task indexes and progress log are closed.
 
 ## Related Documents
 

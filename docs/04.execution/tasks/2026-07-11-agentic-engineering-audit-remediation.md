@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-11-agentic-engineering-audit-remediation
 artifact_type: task
 parent_ids:
@@ -63,7 +63,7 @@ independent task/branch reviews.
 | T-AER-009 | Implement controlled agent pre-commit wrapper and governance contract | impl/test | Spec 123 / Controlled Pre-commit Wrapper | PLN-AER-009 | Shell tests; syntax/shellcheck; wrapper contract; task review | qa-engineer | Done |
 | T-AER-010 | Synchronize provider adapters and add metadata validation to the existing CI job | impl/test | Spec 123 / Provider Synchronization | PLN-AER-010 | Provider no-drift; workflow checks; repo contracts; task review | ci-cd-engineer | Done |
 | T-AER-011 | Author four independent runtime follow-up specs/plans without runtime mutation | doc | Spec 123 / W5 Runtime Follow-up | PLN-AER-011 | Template/traceability/rollback/approval gates; task review | doc-writer | Done |
-| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Todo |
+| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Done |
 
 ## Phase View
 
@@ -92,7 +92,7 @@ independent task/branch reviews.
 ### Phase 5 — Follow-up and Closure
 
 - [x] T-AER-011 Runtime follow-up specs/plans
-- [ ] T-AER-012 Full verification, review, and closure
+- [x] T-AER-012 Full verification, review, and closure
 
 ## Verification Summary
 
@@ -801,12 +801,12 @@ runtime requirement set.
 - **Graphify decision**: docs-only work does not trigger the repository's
   code-file refresh rule; no Graphify refresh is planned for Task 11.
 
-### T-AER-012 Preclosure Verification Evidence
+### T-AER-012 Verification and Closure Evidence
 
-Task 12 is **In Review**. Steps 1-3 are complete, but T-AER-012 remains
-`Todo`, its Phase 5 checkbox remains unchecked, and Spec 123 plus the umbrella
-Plan/Task remain `active` until an independent whole-branch review returns
-Spec PASS, Quality APPROVED, Critical 0, and Important 0.
+Task 12 is **Done**. Steps 1-3 passed, and the independent whole-branch review
+returned Spec PASS, Quality APPROVED, Critical 0, Important 0, Minor 0, and
+`READY_FOR_CLOSURE: YES`. T-AER-012 and its Phase 5 checkbox are closed, and
+Spec 123 plus the umbrella Plan/Task are `completed`.
 
 The Senior `workflow-supervisor` role ran the verification bundle without a
 model selector. The collaboration runtime owns concrete model selection; no
@@ -904,7 +904,7 @@ The final wrapper result is approved: all configured hooks pass and no
 Git-visible non-ignored repository path changed. Raw hook logs, environment
 values, credentials, and secret material were not persisted.
 
-#### Protected Surfaces and Remaining Gate
+#### Protected Surfaces and Closure Gate
 
 - The branch-level protected-surface scan reports no diff under root
   `docker-compose.yml`, `infra/**`, `secrets/**`, `.env*`,
@@ -917,8 +917,12 @@ values, credentials, and secret material were not persisted.
   Graphify was not refreshed because no Task 12 code file changed; its report
   remains advisory and conclusions were corroborated against tracked source,
   Stage 00, and stage documents.
-- Independent whole-branch review and lifecycle closure remain pending. No
-  completion criterion or lifecycle status is closed by this evidence.
+- The independent whole-branch review covered
+  `3e92b39fa02767dafff612fcfa5b3670998471be..6a73dddb6fe95df2c2cf022d27ab0878d3773213`
+  and returned Spec PASS / Quality APPROVED, Critical 0, Important 0, Minor 0,
+  and `READY_FOR_CLOSURE: YES`. No review fix was required. This result closes
+  the umbrella lifecycle but does not authorize the four draft runtime
+  follow-up specifications or plans.
 
 ### Task Review Ledger
 
@@ -935,6 +939,7 @@ values, credentials, and secret material were not persisted.
 | T-AER-009 | `dce3ea60..4d0a8eaf` | PASS | APPROVED | Initial C0/I3/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-9-report.md`; `.superpowers/sdd/review-dce3ea60..4d0a8eaf.diff` |
 | T-AER-010 | `aa5cbd36..0e030ab1` | PASS | APPROVED | Initial C0/I1/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-10-report.md`; `.superpowers/sdd/review-aa5cbd36..0e030ab1.diff` |
 | T-AER-011 | `4937ae99..03119741` | PASS | APPROVED | C0/I0/M0 | `.superpowers/sdd/task-11-report.md`; `.superpowers/sdd/review-4937ae99..03119741.diff` |
+| T-AER-012 | `3e92b39f..6a73dddb` | PASS | APPROVED | C0/I0/M0; `READY_FOR_CLOSURE: YES` | `.superpowers/sdd/task-12-report.md`; `.superpowers/sdd/branch-review-preclosure-3e92b39f..6a73dddb.diff`; `.superpowers/sdd/branch-review-preclosure-report.md` |
 
 - **Baseline Commands**:
   - `git diff --check` — PASS
