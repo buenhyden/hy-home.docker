@@ -332,8 +332,13 @@ T-ARC-006/VAL-ARC-006 are satisfied. The clean preclosure rerun for
 `940eae305da0c29e10957bdd80c95d5e6530927a..20e0b1037ba44dbb98c2d04998f4d9df85e6d3b2`
 returned PASS/APPROVED with Critical 0, Important 0, Minor 0, and
 `READY_FOR_CLOSURE: YES`. Step 11 completes this specification and its paired
-Stage 04 lifecycle. The Step 12 post-closure whole-branch review remains a
-separate external audit gate and has not run; merge readiness is not claimed.
+Stage 04 lifecycle. The Step 12 post-closure whole-branch review of
+`940eae305da0c29e10957bdd80c95d5e6530927a..b228f5a4d888dbd019b8815392d430308a13c4e6`
+returned Spec PASS / Quality APPROVED with Critical 0, Important 0, Minor 1;
+`.superpowers/sdd/branch-review-postclosure-report.md` records the verdict.
+Its sole M-01 bookkeeping finding is resolved by
+`28047a5e5d947dbcda2ab2371fd347cd4a106aa9`. No research or lifecycle
+merge-readiness gate remains in this consolidation scope.
 
 ## Verification
 

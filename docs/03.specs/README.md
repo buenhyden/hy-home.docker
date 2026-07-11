@@ -90,7 +90,7 @@ docs/03.specs/
 ├── 119-sdlc-document-contract-corpus-normalization/ # Completed SDLC document contract corpus normalization design
 ├── 120-agent-output-eval-ci-gate/          # Completed agent-output eval fixture freshness CI gate
 ├── 121-dependency-vulnerability-audit-gate/ # Completed Storybook Next.js dependency vulnerability audit gate
-├── 122-agentic-research-pack-consolidation/ # Completed agentic research-pack consolidation; post-closure audit pending
+├── 122-agentic-research-pack-consolidation/ # Completed agentic research-pack consolidation; post-closure review PASS/APPROVED
 └── README.md                            # This file
 ```
 
