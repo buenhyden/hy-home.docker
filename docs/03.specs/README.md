@@ -91,7 +91,7 @@ docs/03.specs/
 ├── 120-agent-output-eval-ci-gate/          # Completed agent-output eval fixture freshness CI gate
 ├── 121-dependency-vulnerability-audit-gate/ # Completed Storybook Next.js dependency vulnerability audit gate
 ├── 122-agentic-research-pack-consolidation/ # Completed agentic research-pack consolidation; post-closure review PASS/APPROVED
-├── 123-agentic-engineering-audit-remediation/ # Active postclosure metadata-integrity remediation pending exact-range re-review
+├── 123-agentic-engineering-audit-remediation/ # Completed agentic audit remediation; postclosure metadata findings resolved
 ├── 124-compose-runtime-readiness-remediation/ # Draft Compose startup, readiness, recovery, and teardown contract
 ├── 125-infrastructure-operations-readiness-remediation/ # Draft upgrade, migration, backup, restore, and recovery contract
 ├── 126-security-supply-chain-remediation/ # Draft scanning, SBOM, provenance, signing, and verification contract
@@ -130,7 +130,7 @@ docs/03.specs/
 | Agent-output eval fixture freshness CI gate | `120-agent-output-eval-ci-gate/spec.md` |
 | Storybook Next.js dependency vulnerability audit gate | `121-dependency-vulnerability-audit-gate/spec.md` |
 | Canonical agentic research-pack consolidation and provider-model cutoff | `122-agentic-research-pack-consolidation/spec.md` |
-| Active agentic audit remediation and postclosure metadata-integrity re-review | `123-agentic-engineering-audit-remediation/spec.md` |
+| Completed agentic audit remediation and postclosure metadata-integrity fixes | `123-agentic-engineering-audit-remediation/spec.md` |
 | Compose runtime startup, observed readiness, recovery, and teardown | `124-compose-runtime-readiness-remediation/spec.md` |
 | Infrastructure upgrade, migration, backup, restore, and recovery readiness | `125-infrastructure-operations-readiness-remediation/spec.md` |
 | Security supply-chain scanning, SBOM, provenance, signing, and verification | `126-security-supply-chain-remediation/spec.md` |

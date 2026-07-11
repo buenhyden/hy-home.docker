@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-11-agentic-engineering-audit-remediation
 artifact_type: task
 parent_ids:
@@ -63,7 +63,7 @@ independent task/branch reviews.
 | T-AER-009 | Implement controlled agent pre-commit wrapper and governance contract | impl/test | Spec 123 / Controlled Pre-commit Wrapper | PLN-AER-009 | Shell tests; syntax/shellcheck; wrapper contract; task review | qa-engineer | Done |
 | T-AER-010 | Synchronize provider adapters and add metadata validation to the existing CI job | impl/test | Spec 123 / Provider Synchronization | PLN-AER-010 | Provider no-drift; workflow checks; repo contracts; task review | ci-cd-engineer | Done |
 | T-AER-011 | Author four independent runtime follow-up specs/plans without runtime mutation | doc | Spec 123 / W5 Runtime Follow-up | PLN-AER-011 | Template/traceability/rollback/approval gates; task review | doc-writer | Done |
-| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Todo |
+| T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Done |
 
 ## Phase View
 
@@ -92,7 +92,7 @@ independent task/branch reviews.
 ### Phase 5 — Follow-up and Closure
 
 - [x] T-AER-011 Runtime follow-up specs/plans
-- [ ] T-AER-012 Full verification, review, and closure
+- [x] T-AER-012 Full verification, review, and closure
 
 ## Verification Summary
 
@@ -801,13 +801,13 @@ runtime requirement set.
 - **Graphify decision**: docs-only work does not trigger the repository's
   code-file refresh rule; no Graphify refresh is planned for Task 11.
 
-### T-AER-012 Verification and Reopened Closure Evidence
+### T-AER-012 Verification and Final Reclosure Evidence
 
-Task 12 is **Todo** after the postclosure whole-branch review returned Spec
-FAIL, Quality CHANGES_REQUESTED, Critical 0, Important 1, Minor 0, and
-`READY_FOR_FINISHING: NO`. T-AER-012 and its Phase 5 checkbox are reopened, and
-Spec 123 plus the umbrella Plan/Task are `active` pending a new exact-range
-whole-branch review.
+Task 12 is **Done** after two postclosure Important findings were fixed in
+separate commits and the exact-range re-review returned Spec PASS, Quality
+APPROVED, Critical 0, Important 0, Minor 0, and `READY_FOR_RECLOSURE: YES`.
+T-AER-012, its Phase 5 checkbox, Spec 123, and the umbrella Plan/Task are
+completed again.
 
 #### Postclosure Finding and Focused Fix
 
@@ -826,9 +826,8 @@ whole-branch review.
 - Historical advisory boundary: pre-existing unrelated findings on an impacted
   dependent are not promoted into the blocking result; the 2,025-finding
   inventory remains advisory.
-- Re-review boundary: affected repository gates pass as recorded below. The
-  final exact-range whole-branch re-review is pending; no replacement verdict
-  is claimed.
+- Re-review boundary: this first fix later received exact-range review; I-01 was
+  resolved and I-02 was discovered as recorded below.
 
 #### Postclosure Fix Validation
 
@@ -880,8 +879,11 @@ of the deletion-only impact collector, so unchanged `parent_ids` or
   2,025 advisory findings; traceability PASS at 46 pairs; implementation
   alignment PASS at 637 docs / 5,001 links; repository contracts PASS at 1/1
   changed target and 747/747 normalized targets; diff hygiene PASS.
-- Re-review boundary: lifecycle remains active/Todo and the next exact-range
-  re-review is pending; no closure verdict is claimed.
+- Final re-review: exact range
+  `3e92b39fa02767dafff612fcfa5b3670998471be..746be1be` returned Spec PASS /
+  Quality APPROVED, Critical 0, Important 0, Minor 0, resolved I-01 and I-02,
+  and `READY_FOR_RECLOSURE: YES`. Report:
+  `.superpowers/sdd/branch-review-postfix2-report.md`.
 
 #### Historical Preclosure Evidence
 
@@ -1021,7 +1023,7 @@ values, credentials, and secret material were not persisted.
 | T-AER-009 | `dce3ea60..4d0a8eaf` | PASS | APPROVED | Initial C0/I3/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-9-report.md`; `.superpowers/sdd/review-dce3ea60..4d0a8eaf.diff` |
 | T-AER-010 | `aa5cbd36..0e030ab1` | PASS | APPROVED | Initial C0/I1/M1; all resolved; re-review C0/I0/M0 | `.superpowers/sdd/task-10-report.md`; `.superpowers/sdd/review-aa5cbd36..0e030ab1.diff` |
 | T-AER-011 | `4937ae99..03119741` | PASS | APPROVED | C0/I0/M0 | `.superpowers/sdd/task-11-report.md`; `.superpowers/sdd/review-4937ae99..03119741.diff` |
-| T-AER-012 | `3e92b39f..74945d22` | FAIL | CHANGES_REQUESTED | Postclosure C0/I1/M0; `READY_FOR_FINISHING: NO`; focused fix re-review pending | `.superpowers/sdd/branch-review-postclosure-report.md`; `.superpowers/sdd/task-12-postclosure-fix-report.md` |
+| T-AER-012 | `3e92b39f..746be1be` | PASS | APPROVED | Postclosure I-01 and I-02 resolved; final C0/I0/M0; `READY_FOR_RECLOSURE: YES` | `.superpowers/sdd/branch-review-postclosure-report.md`; `.superpowers/sdd/branch-review-postfix-report.md`; `.superpowers/sdd/branch-review-postfix2-report.md`; `.superpowers/sdd/task-12-postclosure-fix-report.md`; `.superpowers/sdd/task-12-identity-change-fix-report.md` |
 
 - **Baseline Commands**:
   - `git diff --check` — PASS

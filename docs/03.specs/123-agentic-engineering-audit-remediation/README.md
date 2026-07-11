@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/123-agentic-engineering-audit-remediation/README.md -->
@@ -16,12 +16,12 @@ external criteria and performs a repository-wide audit, then introduces typed
 document metadata, lifecycle validation, controlled full-repository
 pre-commit execution, and synchronized provider and CI governance.
 
-The program is active again after the postclosure whole-branch review found one
-Important changed/new metadata defect: deleting a typed artifact could leave an
-unchanged dependent relation unresolved without failing the gate. The focused
-fix and affected local gates are being completed before a new exact-range
-whole-branch review. The four runtime follow-up specifications and plans remain
-`draft` and require separate approval.
+The program is complete after two postclosure Important findings were resolved:
+typed-artifact deletion and in-place `artifact_id` replacement now propagate
+relation impact to unchanged dependents without promoting unrelated historical
+advisory findings. The exact-range re-review passed with Spec PASS, Quality
+APPROVED, and no Critical, Important, or Minor findings. The four runtime
+follow-up specifications and plans remain `draft` and require separate approval.
 
 Docker Compose services, infrastructure runtime, deployment state, secrets,
 and remote GitHub settings are audit-only in this program. Their findings are

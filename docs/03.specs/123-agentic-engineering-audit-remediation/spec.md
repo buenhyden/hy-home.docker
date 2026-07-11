@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:123-agentic-engineering-audit-remediation
 artifact_type: spec
 parent_ids: []
@@ -440,17 +440,21 @@ secret access, remote GitHub mutation, or direct manual pre-commit execution.
   freshness, repository contracts, and locally applicable QA/security checks
   pass before branch completion.
 
-## Lifecycle Reopened After Postclosure Review
+## Postclosure Remediation and Lifecycle Reclosure
 
-The preclosure review of
-`3e92b39fa02767dafff612fcfa5b3670998471be..6a73dddb6fe95df2c2cf022d27ab0878d3773213`
-was a historical PASS/APPROVED result. The later postclosure review of
+The postclosure review of
 `3e92b39fa02767dafff612fcfa5b3670998471be..74945d22898b9005d5f5450231c8c45980f6c0d7`
-returned Spec **FAIL**, Quality **CHANGES_REQUESTED**, Critical 0, Important 1,
-Minor 0, and `READY_FOR_FINISHING: NO` because typed-artifact deletion could
-bypass dependent `parent_ids` or `supersedes` enforcement. This specification
-is active while the focused validator fix, affected gates, and a new exact-range
-whole-branch review are completed. No new review verdict is claimed yet.
+found I-01, a typed-artifact deletion relation-impact bypass. Commit `52fa67cf`
+fixed deletion impact; the next exact-range review found I-02, the equivalent
+in-place `artifact_id` replacement bypass. Commit `746be1be` generalized
+identity-removal impact across unstaged, staged, and explicit-base changes.
+
+The final re-review of
+`3e92b39fa02767dafff612fcfa5b3670998471be..746be1be`
+returned Spec **PASS**, Quality **APPROVED**, Critical 0, Important 0, Minor 0,
+resolved I-01 and I-02, and declared `READY_FOR_RECLOSURE: YES`. Metadata tests
+pass 76/76, full validation passes 83/83, and the branch-base gate selects 97
+paths with zero violations. This specification is therefore completed again.
 
 Runtime, Compose, infrastructure, deployment, secret, remote GitHub,
 branch-protection, and model-policy changes remain outside this specification;

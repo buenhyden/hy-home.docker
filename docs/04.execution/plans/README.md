@@ -96,7 +96,7 @@ docs/04.execution/plans/
 ├── 2026-07-06-agent-output-eval-ci-gate.md # Completed agent-output eval fixture freshness CI gate plan
 ├── 2026-07-06-dependency-vulnerability-audit-gate.md # Completed Storybook Next.js dependency vulnerability audit gate plan
 ├── 2026-07-10-agentic-research-pack-consolidation.md # Completed canonical research-pack consolidation plan; post-closure review PASS/APPROVED
-├── 2026-07-11-agentic-engineering-audit-remediation.md # Active postclosure metadata-integrity fix and exact-range re-review plan
+├── 2026-07-11-agentic-engineering-audit-remediation.md # Completed postclosure metadata-integrity fixes and exact-range re-review plan
 ├── 2026-07-11-compose-runtime-readiness-remediation.md # Draft Compose runtime evidence plan; later runtime approval required
 ├── 2026-07-11-infrastructure-operations-readiness-remediation.md # Draft stateful operations/recovery plan; later runtime approval required
 ├── 2026-07-11-security-supply-chain-remediation.md # Draft supply-chain evidence plan; later security/remote approval required
