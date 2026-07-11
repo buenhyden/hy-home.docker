@@ -96,6 +96,7 @@ docs/04.execution/plans/
 ├── 2026-07-06-agent-output-eval-ci-gate.md # Completed agent-output eval fixture freshness CI gate plan
 ├── 2026-07-06-dependency-vulnerability-audit-gate.md # Completed Storybook Next.js dependency vulnerability audit gate plan
 ├── 2026-07-10-agentic-research-pack-consolidation.md # Completed canonical research-pack consolidation plan; post-closure review PASS/APPROVED
+├── 2026-07-11-agentic-engineering-audit-remediation.md # Active staged research/audit, typed metadata, and harness remediation plan
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot plan
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot plan
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization plan
@@ -202,6 +203,7 @@ task evidence or progress log records the same item as unresolved.
 - **Agent Output Eval CI Gate Plan**: [2026-07-06-agent-output-eval-ci-gate.md](./2026-07-06-agent-output-eval-ci-gate.md)
 - **Dependency Vulnerability Audit Gate Plan**: [2026-07-06-dependency-vulnerability-audit-gate.md](./2026-07-06-dependency-vulnerability-audit-gate.md)
 - **Agentic Research Pack Consolidation Plan**: [2026-07-10-agentic-research-pack-consolidation.md](./2026-07-10-agentic-research-pack-consolidation.md)
+- **Agentic Engineering Audit and Remediation Plan**: [2026-07-11-agentic-engineering-audit-remediation.md](./2026-07-11-agentic-engineering-audit-remediation.md)
 - **Audit Implementation Matrix Snapshot Plan**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **SDLC Document Contract Corpus Normalization Plan**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Plan**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
