@@ -71,7 +71,8 @@ plan.
 
 - [x] T-ARC-006 Supersede the duplicate pack and prepare provisional evidence
       (**Done**; Task 6 and clean preclosure reviews PASS / APPROVED; lifecycle
-      closure completed; post-closure audit pending).
+      closure completed; post-closure review PASS / APPROVED with Critical 0,
+      Important 0, Minor 1; M-01 resolved by final bookkeeping).
 
 ## Source Evidence Contract
 
@@ -946,8 +947,14 @@ exact controller verification after bookkeeping establishes six physical
 matching lines / eight occurrences and supersedes that count while preserving
 the review's non-blocking semantic disposition. The clean preclosure rerun then
 authorized closure, and Step 11 sets Spec 122, its Plan, and this task to
-`status: completed`. The post-closure Step 12 audit has not run and remains the
-only pending completion criterion and merge-readiness gate.
+`status: completed`. The Step 12 review of
+`940eae305da0c29e10957bdd80c95d5e6530927a..b228f5a4d888dbd019b8815392d430308a13c4e6`
+returned Spec **PASS** / Quality **APPROVED** with Critical 0, Important 0,
+Minor 1, `POSTCLOSURE_REVIEW_PASS: YES`, and
+`READY_FOR_FINAL_BOOKKEEPING: YES`. M-01 is resolved in this bookkeeping
+update, so no completion criterion or merge-readiness research gate remains.
+The bookkeeping commit's planned external final confirmation has not supplied
+a verdict and is not represented as an open implementation criterion.
 
 ### Requested-Category and Spec Coverage Audit
 
@@ -992,7 +999,7 @@ assigned owner rather than restating vendor facts here.
 | VAL-ARC-007 | completed Stage 03/04 and audits preserved as history | [Canonical pack README — Consolidation and Lifecycle Boundary](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md#consolidation-and-lifecycle-boundary) | Direct links to completed Spec 104, its Stage 04 plan/task, and both audit packs | Covered; no historical body deleted or copied. |
 | VAL-ARC-008 | no active policy/runtime/CI/provider/model/hook/script/secret/remote change | [Spec 122 — Guardrails](../../03.specs/122-agentic-research-pack-consolidation/spec.md#guardrails-if-applicable) | Task 6 changed-file inventory and full diff inspection | Covered; independent review confirmed 14 scoped documentation paths and no out-of-scope mutation. |
 | VAL-ARC-009 | logical commits and task reviews | [Tasks 1-6 Commit and Review Ledger](#tasks-1-6-commit-and-review-ledger) | Exact ranges and final PASS/APPROVED reports below | Covered for Tasks 1-6; whole-branch reviews remain lifecycle gates. |
-| VAL-ARC-010 | specified checks pass or unrelated failure recorded | [Final Lifecycle-Closure Validation Evidence](#final-lifecycle-closure-validation-evidence) | Exact Step 6-8 and closure command results | Covered for lifecycle closure; the separate post-closure audit remains pending. |
+| VAL-ARC-010 | specified checks pass or unrelated failure recorded | [Final Lifecycle-Closure Validation Evidence](#final-lifecycle-closure-validation-evidence) | Exact Step 6-8, closure, and postclosure review results | Covered; lifecycle validation and Step 12 postclosure review pass. |
 
 Coverage result: **35/35 rows covered**, **35/35 with one primary canonical
 owner/section**, **0 uncovered**, and **0 duplicate primary owners**. Provider
@@ -1122,18 +1129,24 @@ clean rerun now close Step 10 with PASS/APPROVED, Critical 0, Important 0,
 Minor 0, and `READY_FOR_CLOSURE: YES`.
 
 The Step 11 closure commit is
-`pending (self-hash unavailable inside the commit being described)` with subject
-`docs(task): close agentic research consolidation`. After it exists, Step 12
-must generate the ignored review package
-`.superpowers/sdd/branch-review-postclosure-940eae30..closure.diff` with:
+`b228f5a4d888dbd019b8815392d430308a13c4e6` with subject
+`docs(task): close agentic research consolidation`. Step 12 generated the
+ignored review package
+`.superpowers/sdd/branch-review-postclosure-940eae30..b228f5a4.diff` with:
 
 ```bash
-git diff --binary 940eae305da0c29e10957bdd80c95d5e6530927a..HEAD -- . > .superpowers/sdd/branch-review-postclosure-940eae30..closure.diff
+git diff --binary 940eae305da0c29e10957bdd80c95d5e6530927a..b228f5a4d888dbd019b8815392d430308a13c4e6 -- . > .superpowers/sdd/branch-review-postclosure-940eae30..b228f5a4.diff
 ```
 
-The independent reviewer must write
-`.superpowers/sdd/branch-review-postclosure-report.md`. Neither a Step 12 report
-nor verdict exists at closure authoring time; merge readiness is not claimed.
+The independent report
+`.superpowers/sdd/branch-review-postclosure-report.md` records Spec **PASS** /
+Quality **APPROVED**, **Critical 0 · Important 0 · Minor 1**,
+`POSTCLOSURE_REVIEW_PASS: YES`, and `READY_FOR_FINAL_BOOKKEEPING: YES`.
+Postclosure M1 (M-01) requested replacement of the closure self-hash and generic
+closure package placeholders; this bookkeeping update applies the exact
+SHA/range/package and resolves the finding. The bookkeeping commit still
+requires the planned
+external final whole-branch confirmation, whose verdict is not claimed here.
 
 ### Final Lifecycle-Closure Validation Evidence
 
@@ -1183,8 +1196,9 @@ Documentation-only TDD and code coverage are not applicable. The final Step
 Graphify remains built from `30df271a` and advisory. No code file changed, so
 the graph refresh was skipped under the approved documentation-only scope.
 These results, the independent task reviews, and the clean preclosure rerun
-close the implementation lifecycle in Step 11. They do not substitute for the
-still-pending Step 12 post-closure whole-branch audit.
+close the implementation lifecycle in Step 11. The subsequent exact-range Step
+12 review returned PASS/APPROVED with Critical 0, Important 0, and Minor 1; its
+M-01 bookkeeping correction is resolved in this update.
 
 ## Task Review Evidence Contract
 
@@ -1265,8 +1279,10 @@ run. Changing the Plan and task frontmatter to `completed` caused
 `check-repo-contracts.sh` to reject the stale `active` descriptions in
 `docs/04.execution/plans/README.md` and `docs/04.execution/tasks/README.md`.
 Only those two entries were changed, from active to completed with the truthful
-post-closure-audit-pending caveat. The subsequent complete Step 7 rerun passes;
-no other path or behavior entered closure scope.
+then-current post-closure-audit-pending caveat. The subsequent complete Step 7
+rerun passed, and the later Step 12 review returned PASS/APPROVED. This final
+bookkeeping supersedes that historical pending state; no other path or behavior
+entered closure scope.
 
 ## Related Documents
 

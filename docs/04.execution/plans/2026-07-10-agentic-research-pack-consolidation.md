@@ -789,8 +789,15 @@ duplicate-claim disposition ledger, canonical/superseded routing, and required
 gate evidence satisfy T-ARC-006/VAL-ARC-006. The clean preclosure rerun of
 `940eae305da0c29e10957bdd80c95d5e6530927a..20e0b1037ba44dbb98c2d04998f4d9df85e6d3b2`
 returned PASS/APPROVED, Critical 0, Important 0, Minor 0, and
-`READY_FOR_CLOSURE: YES`. Step 11 closes Stage 03/04 lifecycle state. Step 12,
-the post-closure whole-branch audit, remains open and no verdict is claimed.
+`READY_FOR_CLOSURE: YES`. Step 11 closed Stage 03/04 lifecycle state in commit
+`b228f5a4d888dbd019b8815392d430308a13c4e6`. The Step 12 review of
+`940eae305da0c29e10957bdd80c95d5e6530927a..b228f5a4d888dbd019b8815392d430308a13c4e6`
+returned Spec PASS / Quality APPROVED, Critical 0, Important 0, Minor 1,
+`POSTCLOSURE_REVIEW_PASS: YES`, and `READY_FOR_FINAL_BOOKKEEPING: YES`. Its
+single Minor requested the closure SHA/package precision corrections recorded
+in this bookkeeping update. Step 12 is complete. This update still requires
+the planned external final whole-branch confirmation; no confirmation verdict
+for the bookkeeping commit is claimed here.
 
 - [x] **Step 1: Run the requested-category coverage audit**
 
@@ -950,15 +957,17 @@ git add docs/00.agent-governance/memory/progress.md docs/03.specs/122-agentic-re
 git commit -m "docs(task): close agentic research consolidation"
 ```
 
-- [ ] **Step 12: Re-run the whole-branch review after closure**
+- [x] **Step 12: Re-run the whole-branch review after closure**
 
-Generate a new whole-branch package that includes the closure commit and
-dispatch the final reviewer again. If it returns findings, dispatch one fix
-subagent for the complete list, require covering test evidence, and re-review
-until the branch is clean.
+The exact whole-branch package through the closure commit was generated and an
+independent reviewer returned Spec PASS / Quality APPROVED with Critical 0,
+Important 0, and Minor 1. M-01 was limited to the closure SHA and package-path
+placeholders and is resolved by this bookkeeping update.
 
-Expected: final reviewer reports the branch ready to merge with no open
-Critical or Important finding.
+Expected criterion achieved: the reviewer reported no open Critical or
+Important finding. Because this bookkeeping update postdates the reviewed
+range, its planned final whole-branch confirmation remains external and has no
+verdict in this document.
 
 ### Lifecycle Closure Evidence
 
@@ -978,16 +987,21 @@ Critical or Important finding.
   advisory Graphify disposition, the controller-approved two-entry Stage 04
   parent-index synchronization required by repository contracts, and the
   unchanged behavioral no-mutation boundary.
-- Closure commit: `pending (self-hash unavailable inside the commit being
-  described)`; commit subject is
+- Closure commit: `b228f5a4d888dbd019b8815392d430308a13c4e6`; commit subject is
   `docs(task): close agentic research consolidation`.
-- Step 12 remains external to implementation closure. After the closure commit,
-  generate `.superpowers/sdd/branch-review-postclosure-940eae30..closure.diff`
-  with
-  `git diff --binary 940eae305da0c29e10957bdd80c95d5e6530927a..HEAD -- .`
-  and record the independent verdict in
-  `.superpowers/sdd/branch-review-postclosure-report.md`. Neither report nor a
-  PASS verdict exists yet.
+- Step 12 reviewed exact range
+  `940eae305da0c29e10957bdd80c95d5e6530927a..b228f5a4d888dbd019b8815392d430308a13c4e6`
+  from package
+  `.superpowers/sdd/branch-review-postclosure-940eae30..b228f5a4.diff`. The
+  independent report `.superpowers/sdd/branch-review-postclosure-report.md`
+  records Spec PASS / Quality APPROVED, Critical 0, Important 0, Minor 1,
+  `POSTCLOSURE_REVIEW_PASS: YES`, and `READY_FOR_FINAL_BOOKKEEPING: YES`.
+- Postclosure M1 (M-01) requested replacement of the closure self-hash and
+  generic closure package placeholders with the exact closure commit and
+  package. This bookkeeping update applies both corrections and resolves M-01.
+  A final whole-branch
+  confirmation of this bookkeeping commit remains external; no such verdict is
+  fabricated here.
 
 ## Verification Plan
 
@@ -1054,8 +1068,11 @@ Critical or Important finding.
 - [x] A separate closure commit completes Stage 03/04 lifecycle, task evidence,
       indexes, and progress memory.
 - [x] Final validation passes at lifecycle closure.
-- [ ] Post-closure whole-branch review passes with no open Critical/Important
-      finding. This external Step 12 audit has not run; no verdict is claimed.
+- [x] Post-closure whole-branch review passes with no open Critical/Important
+      finding. The exact closure range returned PASS/APPROVED with Critical 0,
+      Important 0, Minor 1; M-01 is resolved in this bookkeeping update. The
+      update's external final confirmation remains unclaimed and is not a
+      separate open completion criterion.
 
 ## Related Documents
 
