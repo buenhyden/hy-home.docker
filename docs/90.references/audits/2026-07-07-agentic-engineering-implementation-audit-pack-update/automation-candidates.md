@@ -1,5 +1,8 @@
 ---
 status: superseded
+artifact_id: audit:agentic-engineering-implementation-2026-07-07:automation-candidates
+artifact_type: audit
+parent_ids: [audit:agentic-engineering-implementation:overview]
 ---
 
 <!-- Target: docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/automation-candidates.md -->

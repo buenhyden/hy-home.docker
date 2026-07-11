@@ -3,6 +3,7 @@ status: active
 artifact_id: audit:agentic-engineering-implementation:automation-candidates
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
+supersedes: [audit:agentic-engineering-implementation-2026-07-07:automation-candidates]
 reviewed_at: 2026-07-11
 review_cycle: per-remediation-task
 ---
