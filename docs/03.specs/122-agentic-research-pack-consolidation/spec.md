@@ -327,11 +327,10 @@ implementer mutates a task's files.
 
 ## Implementation State
 
-The research-domain Tasks 1-5 have final PASS/APPROVED task reviews. Task 6 is
-at the provisional Ready-for-Review boundary after its coverage audit,
-supersession records, routing updates, and validation candidate were prepared.
-This specification remains `status: active`; VAL-ARC-006 and overall lifecycle
-acceptance remain open until Task 6 review, the first whole-branch review, a
+Tasks 1-6 have final PASS/APPROVED task-scoped reviews, and
+T-ARC-006/VAL-ARC-006 are satisfied at that gate. This specification remains
+`status: active`; the first whole-branch preclosure review returned findings,
+so overall lifecycle acceptance remains open until its clean repeat, a
 separate closure commit, and the post-closure whole-branch review complete.
 
 ## Verification

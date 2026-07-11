@@ -39,8 +39,9 @@ configuration.
 
 - Active policy, runtime, workflow, template, script, or provider changes
 - Formal adoption of ISO, NIST, GitHub Spec Kit, SRE, or other external practice
-- Provider model cutoff inventory, which is assigned to `T-ARC-002`
-- Detailed provider/harness and Compose/security comparisons assigned to later tasks
+- Repeating the completed provider/model, harness/loop/catalog, QA/automation,
+  Compose, or security comparison bodies that are linked from this baseline
+- Implementing any residual gap identified by those specialized references
 
 ## Definitions / Facts
 
@@ -83,11 +84,11 @@ configuration.
 | system structure | The root README owns the repository map; `docker-compose.yml`, `infra/README.md`, docs, scripts, secrets, projects, tests, and provider surfaces supply tracked implementation evidence. | ISO 42010 supports explicit architecture descriptions and stakeholder concerns; its public page is metadata, not the full standard. | Implemented | The root map may lag implementation inventories. | Update the root map first and corroborate it against tracked Compose, infra, docs, and script evidence. | `README.md` | High |
 | rules | Stage 00 bootstrap, agentic, documentation, task-checklist, GitHub, and scope rules define deterministic execution boundaries; provider files are adapters. | Spec Kit's constitution illustrates stable cross-phase principles; NIST SSDF illustrates practice-level secure-development guidance. | Implemented | Duplicate provider-local rules can conflict with the canonical adapter model. | Apply the provider-neutral instruction hierarchy before changing any provider adapter. | `docs/00.agent-governance/providers/agents-md.md` | High |
 | security | Security scope owns enforcement boundaries; secret handling, workflow controls, template baseline, hardening checks, and disclosure guidance are downstream implementation evidence. | NIST SSDF v1.1 recommends integrating secure practices into any SDLC; NIST SP 800-61 Rev. 3 frames incident response within CSF 2.0. | Partially Implemented | No formal SSDF mapping is adopted; remote-enforcement uncertainty is owned by the CI/CD row. | Route any framework mapping through an approved security-scope change before downstream policy/spec work. | `docs/00.agent-governance/scopes/security.md` | High |
-| Docker Compose/infrastructure | Root `docker-compose.yml`, tiered `infra/`, version registry, validation, and hardening scripts are current tracked runtime evidence. | The Task 1 source set provides lifecycle framing, not Compose-specific requirements; official Docker comparison is assigned to `T-ARC-005`. | Implemented | The canonical Docker research reference lacks Task 5's official-source revalidation. | Refresh that Stage 90 comparison in Task 5 while preserving runtime-source precedence. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md` | High |
-| AI agents | Stage 00 catalog defines roles; Claude, Codex, and Gemini adapter surfaces are provider-specific implementation evidence. | GitHub Spec Kit states that phase artifacts feed an AI coding agent structured context; it does not define this workspace's multi-provider catalog. | Implemented | The AI-agent catalog comparison needs Task 3 provider-source revalidation. | Refresh the Stage 90 catalog in Task 3 and keep adopted role policy in Stage 00. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md` | High |
-| harness engineering | HAFE spec, implementation map, operations documents, scripts, hooks, CI, and evidence stages are tracked inputs to the canonical harness research reference. | Spec Kit combines templates, checklists, cross-artifact analysis, and agent context; GitHub Actions supplies automation primitives. | Implemented | The Task 1 source set has no single external normative harness definition. | Keep the repo-local definition in the canonical reference and label external analogies as comparison. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md` | High |
-| loop engineering | Agentic rules, QA, CI, incidents, postmortems, and evals supply tracked inputs to the canonical loop research reference. | Spec Kit provides a forward artifact loop; Google SRE makes incident state and reviewed postmortems learning inputs. | Partially Implemented | The loop comparison still needs Task 3 provider evidence; automation-specific comparison remains in Task 4's own category. | Refresh the loop reference with Task 3 evidence and link the separate automation comparison rather than bundling ownership. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md` | High |
-| task-characteristic model selection | `agent-model-selection.md` records task traits, evidence requirements, and risk caveats without changing model policy. | The Task 1 sources show structured agent context but do not compare provider models or prove task fit. Official cutoff research is assigned to `T-ARC-002`. | Partially Implemented | Current provider catalogs and cutoff state are not established by this task. | Refresh the Stage 90 selection reference at the fixed cutoff, label task-fit mappings as inference, and leave active policy unchanged. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md` | Medium |
+| Docker Compose/infrastructure | Root `docker-compose.yml` and tiered `infra/` remain runtime truth; the completed [Compose comparison](./docker-compose-infrastructure.md) and [security comparison](./security-governance.md) provide the recomputed topology, validation, hardening, and control evidence. | Current official Docker guidance covers includes, profiles, networking, secrets, dependencies, production, and trusted-input review. | Partially Implemented | Live service/port/volume/health evidence, external-network existence and ACLs, a production-overlay contract, and current backup/restore proof remain unestablished. | Keep static reference evidence separate from approved runtime preflight, production design, and Stage 05 backup/restore evidence. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md` | High |
+| AI agents | Stage 00 owns 15 roles and 22 skills; the completed [catalog comparison](./ai-agent-catalogs.md) records the pinned external catalog, provider projections, and no-direct-import boundary. | The pinned `agency-agents` repository and official provider agent schemas show broader catalog and native-agent patterns without proving workspace suitability. | Partially Implemented | No dedicated third-party-agent intake checklist or semantic candidate-role benchmark is adopted. | Keep external catalogs reference-only until one pinned candidate passes security, QA, Stage 00 proposal, projection, and independent review. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md` | High |
+| harness engineering | The completed [harness matrix](./harness-engineering.md) and [provider comparison](./provider-implementation-comparison.md) map tracked Stage 00, scripts, hooks, CI, evidence, and provider projections. | Official Claude, Codex, and Gemini sources establish native agents, hooks, sandbox/approval, context, and checkpoint surfaces without establishing cross-provider parity. | Partially Implemented | Generated Codex TOMLs omit the current required description/instructions schema, and Gemini CLI native agents/hooks are not wired through tracked `.gemini` surfaces. | Validate native schema compatibility separately from projection parity; require approved Stage 00 work before Codex schema or Gemini native-wiring changes. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md` | High |
+| loop engineering | The completed [loop matrix](./loop-engineering.md) links tracked action, validation, CI, eval, memory, review, approval, automation, incident, and human-feedback loops; [QA](./quality-ci-formatting.md) and [automation](./automation-pipeline-workflow.md) own their detailed evidence. | ReAct and Reflexion supply research foundations; official provider, CI, eval, and checkpoint sources establish mechanisms rather than workspace enforcement. | Partially Implemented | General semantic evals, current remote-enforcement proof, uniform cross-provider checkpoint/resume, and tested service recovery remain incomplete. | Route each gap through its listed active owner and keep loop research descriptive rather than encoding new enforcement or recovery policy. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md` | High |
+| task-characteristic model selection | The completed [provider landscape](./provider-model-landscape.md) records 145 structural / 142 cutoff-qualified rows, while [model selection](./agent-model-selection.md) keeps task fit explicitly inferential and Stage 00 policy unchanged. | Official provider catalogs and capability sources establish cutoff evidence and provider-native controls, not account entitlement or benchmark parity. | Partially Implemented | The Gemini Supervisor literal `gemini-3.1-pro` lacks the official `-preview` suffix, provider/account entitlement is unproven, and no cross-provider task-quality/latency/cost eval exists. | Preserve the current policy as SSoT; require the full approved model-change protocol and representative evaluation before changing literals or claiming equivalence. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md` | High |
 
 ## Analysis
 
@@ -97,12 +98,17 @@ one canonical owner, and a confidence judgment. The dominant pattern is a
 multi-surface workspace: active stages own decisions and evidence, runtime files
 own execution truth, and Stage 90 explains rather than governs.
 
-The comparison also exposes three evidence boundaries. First, tracked workflow
-YAML does not prove remote branch protection or required-check enforcement.
-Second, secure-SDLC references do not create an SSDF control mapping. Third,
-Task 1's SDLC/document-role sources cannot prove provider model cutoff state,
-provider feature parity, or Docker-specific best practice; those remain assigned
-to Tasks 2, 3, and 5.
+Completed specialized evidence now resides in the
+[provider](./provider-implementation-comparison.md),
+[harness](./harness-engineering.md), [loop](./loop-engineering.md),
+[catalog](./ai-agent-catalogs.md), [QA](./quality-ci-formatting.md),
+[automation](./automation-pipeline-workflow.md),
+[Compose](./docker-compose-infrastructure.md), and
+[security](./security-governance.md) references. Those documents close the
+former Tasks 2-5 research assignments while preserving three evidence
+boundaries: tracked files do not prove live/runtime or remote enforcement,
+provider catalogs do not prove entitlement or cross-provider parity, and
+external frameworks do not become adopted policy through Stage 90.
 
 ## Application Notes for This Workspace
 
@@ -116,18 +122,26 @@ to Tasks 2, 3, and 5.
 
 ## Potential Follow-up / Gap
 
-- `T-ARC-002`: establish provider model cutoff evidence and refresh
-  task-characteristic selection.
-- `T-ARC-003`: revalidate provider/harness/agent capability comparisons.
-- `T-ARC-004`: consolidate local, CI-only, and remote automation evidence.
-- `T-ARC-005`: perform official Docker Compose and security-framework comparison.
+- Compose follow-up: gather approved live/external-network evidence, decide
+  whether a production overlay is required, and record current backup/restore
+  proof through the owners named in the Compose reference.
+- Provider/catalog follow-up: remediate Codex native-schema compatibility,
+  decide whether to wire Gemini CLI-native surfaces, and define a governed
+  third-party-agent intake/evaluation contract before any adoption.
+- Loop follow-up: define semantic eval evidence, reverify remote enforcement,
+  normalize checkpoint/resume evidence, and test service recovery through each
+  row's active owner.
+- Model follow-up: resolve the unsupported Gemini Supervisor literal only
+  through the approved model-change protocol, verify entitlement, and establish
+  representative cross-provider evaluation before claiming task equivalence.
 
 ## Source Rules
 
 - Repo-local claims use tracked files and active stage documents as of
   `2026-07-10`.
-- External sources were retrieved on `2026-07-10`; mutable pages without a
-  displayed update date prove retrieval-time content only.
+- External sources were retrieved and revalidated by the completed specialized
+  research on `2026-07-10` and `2026-07-11`; mutable pages without a displayed
+  update date prove retrieval-time content only.
 - ISO public pages provide metadata and summaries, not full standard text.
 - ISO/IEC/IEEE 12207:2017 is marked withdrawn and is used only as historical
   lifecycle framing.

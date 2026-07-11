@@ -46,7 +46,7 @@ plan.
 | T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Done |
 | T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Done |
 | T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Done |
-| T-ARC-006 | Finalize indexes and supersede the duplicate pack; keep lifecycle closure pending broad review | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, Task 6 review; whole-branch review and closure remain open | Workflow supervisor | Done |
+| T-ARC-006 | Finalize indexes and supersede the duplicate pack; keep lifecycle closure pending broad review | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, Task 6 review; clean whole-branch review and closure remain open | Workflow supervisor | Done |
 
 ## Phase View
 
@@ -946,8 +946,8 @@ exact controller verification after bookkeeping establishes six physical
 matching lines / eight occurrences and supersedes that count while preserving
 the review's non-blocking semantic disposition.
 Spec 122, its plan, and this task remain `status: active`; every final
-Completion Criteria item, the first whole-branch review, lifecycle-closure
-commit, and post-closure review remain open.
+Completion Criteria item, the clean repeat of the first whole-branch preclosure
+review, lifecycle-closure commit, and post-closure review remain open.
 
 ### Requested-Category and Spec Coverage Audit
 
@@ -1064,13 +1064,32 @@ leaf bodies and were not promoted to current canonical truth.
 | T-ARC-003 | `1a80b6989304fa7b6a179861a9cad795dd875ca3..505277817eee0de4270bc03ae7fb789ef9d02ad3` | `1a80b6989304fa7b6a179861a9cad795dd875ca3..7aa07accc00770dd4e18cd37ddd77d9f92236848` | Spec **PASS** / Quality **APPROVED** | `0/0/0`; `.superpowers/sdd/task-3-rereview-report.md` |
 | T-ARC-004 | `505277817eee0de4270bc03ae7fb789ef9d02ad3..34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6` | `505277817eee0de4270bc03ae7fb789ef9d02ad3..ef97a8c148359b7ee1af5948921156a3ab1fa1b1` | Spec **PASS** / Quality **APPROVED** | `0` blocking; reviewer M-01 corrected in bookkeeping; `.superpowers/sdd/task-4-rereview-report.md` |
 | T-ARC-005 | `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..00190fc97b003c9beedc5af79d195532bc181dde` | `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..26fb9d227da49594c04967ccc4830d722463468b` | Spec **PASS** / Quality **APPROVED** | `0/0/0`; `.superpowers/sdd/task-5-review-report.md` |
-| T-ARC-006 | `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd` | `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd` | Spec **PASS** / Quality **APPROVED** | `0/0/1`; reviewer reported `5 lines / 8 occurrences`, corrected by exact controller verification to `6 physical lines / 8 occurrences`; `.superpowers/sdd/task-6-review-report.md` |
+| T-ARC-006 | `00190fc97b003c9beedc5af79d195532bc181dde..38cf5e87857d647a02a0e3e34d56619a260bf328` | `00190fc97b003c9beedc5af79d195532bc181dde..b718ee36ff6e08100d9c67d48ae46b6494fb88bd` | Spec **PASS** / Quality **APPROVED** | `0/0/1`; reviewer reported `5 lines / 8 occurrences`, corrected by exact controller verification to `6 physical lines / 8 occurrences`; review-bookkeeping commits `2a6d482d` and `38cf5e87`; `.superpowers/sdd/task-6-review-report.md` |
 
 Task 6 independent review reproduced **35/35** coverage rows with one primary
 owner each and the **30/30** disposition split (`merged` 8, `duplicate` 4,
 `unsupported` 15, `historical-only` 3). Canonical index/history routing,
 README plus 5/5 tombstone contracts, active lifecycle boundaries, and the
 fourteen-path mutation scope all passed.
+
+### First Whole-Branch Preclosure Review and Remediation
+
+- Exact reviewed range:
+  `940eae305da0c29e10957bdd80c95d5e6530927a..38cf5e87857d647a02a0e3e34d56619a260bf328`.
+- Verdict: Spec **FAIL** / Quality **CHANGES_REQUESTED**, with
+  **Critical 0 · Important 2 · Minor 1**.
+- I-01 is remediated by synchronizing the live Spec 122 folder/index/spec and
+  Plan state with the completed Tasks 1-6 task-scoped reviews while preserving
+  every open lifecycle criterion.
+- I-02 is remediated by refreshing the workspace baseline from the completed
+  specialized references and replacing Tasks 2-5 placeholders with their
+  actual residual Compose, provider/catalog, loop, and model gaps.
+- M-01 is remediated by extending Task 6's full range through the two
+  review-bookkeeping commits while retaining the content-review range, verdict,
+  and authoritative six-lines/eight-occurrences result.
+- The clean repeat of the first whole-branch preclosure review is pending.
+  Lifecycle closure and post-closure review remain forbidden until that repeat
+  has no open Critical or Important finding.
 
 ### Cutoff Caveats, Deviations, and Broad-Review Gate
 
@@ -1084,15 +1103,16 @@ fourteen-path mutation scope all passed.
   tracked. Task 6 follows the same generator-only rule.
 - No new content-scope deviation is introduced. Graphify remains stale and
   advisory; this documentation-only task does not refresh it.
-- Task 6 received PASS/APPROVED. The exact first broad-review package command
-  for Step 10 is:
+- Task 6 received PASS/APPROVED. The first broad-review package for Step 10 was
+  generated from the exact merge-base range with:
 
 ```bash
-git diff --binary 940eae305da0c29e10957bdd80c95d5e6530927a..HEAD -- . > .superpowers/sdd/whole-branch-pre-closure.diff
+git diff --binary 940eae305da0c29e10957bdd80c95d5e6530927a..38cf5e87857d647a02a0e3e34d56619a260bf328 -- . > .superpowers/sdd/branch-review-preclosure-940eae30..38cf5e87.diff
 ```
 
-That command and the whole-branch reviewer dispatch are Step 10 and were not
-run in this task. Lifecycle completion is forbidden until that review is clean.
+That review returned the findings recorded above. The remediation does not
+close Step 10: its clean repeat is still pending, and lifecycle completion is
+forbidden until that repeat is clean.
 
 ### Provisional Validation Evidence
 

@@ -66,11 +66,11 @@ official Claude, OpenAI/Codex, and Gemini model catalogs as of
 
 ## Implementation State
 
-Tasks 1-5 have clean final task reviews. Task 6 has produced the provisional
-coverage/disposition audit and supersession/index changes and is Ready for
-Review. This specification remains active: the Task 6 verdict, first
-whole-branch review, separate lifecycle-closure commit, and post-closure review
-are still required. No completed status or merge-readiness claim is made here.
+Tasks 1-6 have clean task-scoped reviews, and T-ARC-006/VAL-ARC-006 are
+satisfied at that gate. This specification remains active: the first
+whole-branch preclosure review returned findings, so its clean repeat, the
+separate lifecycle-closure commit, and the post-closure review are still
+required. No completed status or merge-readiness claim is made here.
 
 ## Related Documents
 
