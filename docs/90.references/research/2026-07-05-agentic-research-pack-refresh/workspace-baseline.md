@@ -9,7 +9,7 @@ status: active
 ## Overview
 
 This reference compares the current tracked `hy-home.docker` workspace with
-primary external SDLC, automation, and document-role sources. It covers 25
+primary external SDLC, automation, and document-role sources. It covers 27
 requested categories using one comparison vocabulary and keeps repo-local
 implementation status separate from external practice.
 
@@ -47,7 +47,7 @@ configuration.
 
 - **Workspace evidence** means current state corroborated by tracked files and
   active stage documents. Graphify was built from `30df271a` while this task
-  started from `341282da`; its report was navigation-only and is not evidence
+  started from `cf8790ca`; its report was navigation-only and is not evidence
   for any row below.
 - **External evidence** is a comparison lens. A cited practice is not adopted
   workspace policy unless a tracked active policy or stage artifact says so.
@@ -67,7 +67,9 @@ configuration.
 | purpose | `README.md` defines a shared harness-engineering and agent-first Docker Compose workspace with staged documentation. | GitHub Spec Kit similarly starts from an explicit specification before implementation; ISO 12207 supplies lifecycle framing, but the cited 2017 edition is now withdrawn. | Implemented | Purpose could be overstated if references are mistaken for runtime truth. | Keep the root README authoritative and references advisory. | `README.md` | High |
 | overview | `README.md`, `docs/README.md`, `infra/README.md`, and `scripts/README.md` provide tracked entry maps for the workspace. | GitHub Spec Kit publishes a current workflow overview whose artifacts feed the next phase. | Implemented | Secondary entry-point READMEs can drift from the root map. | Keep the root map authoritative and retain README sync plus repository-contract validation. | `README.md` | High |
 | roles | Stage 00 persona, scope, agent catalog, subagent protocol, and stage matrix assign authoring and execution ownership. | ISO 42010 frames architecture stakeholders/concerns; Google SRE separates incident command, operations, and communications roles. | Implemented | Provider adapters can drift from the canonical catalog. | Keep the Stage 00 catalog authoritative and validate adapter parity as downstream evidence. | `docs/00.agent-governance/agents/README.md` | High |
-| CI/CD | `.github/workflows/ci-quality.yml` defines distinct documentation, repository, Compose, hardening, frontend, pre-commit, and workflow-security jobs. | GitHub defines a workflow as YAML automation made of jobs and steps, with triggers and permissions. | Partially Implemented | Local files cannot prove remote required-check or branch-protection enforcement. | Record the workflow file as implementation evidence and route remote-enforcement claims through the Stage 00 GitHub policy. | `docs/00.agent-governance/rules/github-governance.md` | High |
+| CI | Six tracked GitHub Actions workflows define 21 jobs; `ci-quality.yml` owns 15 independent quality jobs, with no inter-job `needs:` chain. | GitHub defines workflows as event-triggered YAML automation composed of jobs and steps and recommends least-privilege workflow permissions. | Partially Implemented | Tracked YAML proves CI definitions, not successful runs or current remote required-check enforcement. | Cite exact job/command evidence and reverify remote enforcement before a merge-readiness claim. | `docs/00.agent-governance/rules/github-governance.md` | High |
+| CD / deployment promotion | No tracked workflow job references a GitHub deployment environment or performs application/infrastructure deployment; Stage 05 release readiness remains manual and approval-gated. | GitHub environments can restrict deployment branches, withhold environment secrets, and require reviewer or custom protection-rule approval before a job proceeds. | Missing | CI success is not CD; no tracked promotion, environment approval, deployment record, or automated rollback path exists. | Route a later deployment/release specification through Stage 03/04 before workflow or runtime implementation. | `docs/03.specs/README.md` | High |
+| release records | `CHANGELOG.md`, the release-management runbook, and the tag-triggered `generate-changelog.yml` coverage check are tracked; the workflow verifies an existing tag string and does not create a GitHub Release. | GitHub Releases package a tagged software iteration with release notes and optional binary assets. | Partially Implemented | A changelog/tag check is not a GitHub Release record, signed artifact, deployment record, or rollback execution. | Keep the current manual readiness evidence accurately labeled and define release-artifact/record ownership in the future deployment/release specification. | `docs/05.operations/runbooks/00-workspace/release-management.md` | High |
 | QA | QA scope and validation/hardening scripts separate local, CI-only, hook, and skipped-check evidence. | NIST SSDF v1.1 supplies high-level verification and vulnerability-reduction practices; Spec Kit supplies checklists and cross-artifact analysis. | Implemented | External quality practices do not prove which repo-local gate applies to a change. | Preserve change-type gate selection and skipped-check rationale in the QA scope; keep formal framework mapping in the separate security row. | `docs/00.agent-governance/scopes/qa.md` | High |
 | formatting | Stage 00 Common scope defines repository-configured formatting; `.pre-commit-config.yaml`, hook validation, templates, and `git diff --check` are implementation evidence. | GitHub Actions can automate repeatable jobs; Spec Kit uses structured Markdown artifacts and templates. Neither source mandates this workspace's formatter set. | Implemented | Tool-specific formatting coverage varies by surface. | Change the formatting contract at the Common scope first and keep tool claims tied to tracked implementation. | `docs/00.agent-governance/scopes/common.md` | High |
 | linting | QA scope classifies local and CI evidence; pre-commit, shell/Markdown checks, frontend lint, and zizmor are tracked implementations. | GitHub workflow syntax supports separate jobs/steps; NIST SSDF supports integrating verification into the SDLC without prescribing these linters. | Implemented | A passing local subset does not prove CI-only lint results. | Keep implementation commands in evidence and classify each gate in the QA contract. | `docs/00.agent-governance/scopes/qa.md` | High |
@@ -83,7 +85,7 @@ configuration.
 | governance | The Stage 00 hub routes bootstrap, persona, scopes, provider overlays, catalog, memory, and approval boundaries. | Spec Kit describes a project constitution; NIST SSDF provides high-level organizational secure-development practices. | Implemented | External “constitution” or SSDF language could be mistaken for adopted governance. | Route a proposed governance change through the Stage 00 hub before changing a specialized rule or adapter. | `docs/00.agent-governance/README.md` | High |
 | system structure | The root README owns the repository map; `docker-compose.yml`, `infra/README.md`, docs, scripts, secrets, projects, tests, and provider surfaces supply tracked implementation evidence. | ISO 42010 supports explicit architecture descriptions and stakeholder concerns; its public page is metadata, not the full standard. | Implemented | The root map may lag implementation inventories. | Update the root map first and corroborate it against tracked Compose, infra, docs, and script evidence. | `README.md` | High |
 | rules | Stage 00 bootstrap, agentic, documentation, task-checklist, GitHub, and scope rules define deterministic execution boundaries; provider files are adapters. | Spec Kit's constitution illustrates stable cross-phase principles; NIST SSDF illustrates practice-level secure-development guidance. | Implemented | Duplicate provider-local rules can conflict with the canonical adapter model. | Apply the provider-neutral instruction hierarchy before changing any provider adapter. | `docs/00.agent-governance/providers/agents-md.md` | High |
-| security | Security scope owns enforcement boundaries; secret handling, workflow controls, template baseline, hardening checks, and disclosure guidance are downstream implementation evidence. | NIST SSDF v1.1 recommends integrating secure practices into any SDLC; NIST SP 800-61 Rev. 3 frames incident response within CSF 2.0. | Partially Implemented | No formal SSDF mapping is adopted; remote-enforcement uncertainty is owned by the CI/CD row. | Route any framework mapping through an approved security-scope change before downstream policy/spec work. | `docs/00.agent-governance/scopes/security.md` | High |
+| security | Security scope owns enforcement boundaries; secret handling, workflow controls, template baseline, hardening checks, and disclosure guidance are downstream implementation evidence. | NIST SSDF v1.1 recommends integrating secure practices into any SDLC; NIST SP 800-61 Rev. 3 frames incident response within CSF 2.0. | Partially Implemented | No formal SSDF mapping is adopted; remote-enforcement uncertainty is owned by the CI row. | Route any framework mapping through an approved security-scope change before downstream policy/spec work. | `docs/00.agent-governance/scopes/security.md` | High |
 | Docker Compose/infrastructure | Root `docker-compose.yml` and tiered `infra/` remain runtime truth; the completed [Compose comparison](./docker-compose-infrastructure.md) and [security comparison](./security-governance.md) provide the recomputed topology, validation, hardening, and control evidence. | Current official Docker guidance covers includes, profiles, networking, secrets, dependencies, production, and trusted-input review. | Partially Implemented | Live service/port/volume/health evidence, external-network existence and ACLs, a production-overlay contract, and current backup/restore proof remain unestablished. | Keep static reference evidence separate from approved runtime preflight, production design, and Stage 05 backup/restore evidence. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md` | High |
 | AI agents | Stage 00 owns 15 roles and 22 skills; the completed [catalog comparison](./ai-agent-catalogs.md) records the pinned external catalog, provider projections, and no-direct-import boundary. | The pinned `agency-agents` repository and official provider agent schemas show broader catalog and native-agent patterns without proving workspace suitability. | Partially Implemented | No dedicated third-party-agent intake checklist or semantic candidate-role benchmark is adopted. | Keep external catalogs reference-only until one pinned candidate passes security, QA, Stage 00 proposal, projection, and independent review. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md` | High |
 | harness engineering | The completed [harness matrix](./harness-engineering.md) and [provider comparison](./provider-implementation-comparison.md) map tracked Stage 00, scripts, hooks, CI, evidence, and provider projections. | Official Claude, Codex, and Gemini sources establish native agents, hooks, sandbox/approval, context, and checkpoint surfaces without establishing cross-provider parity. | Partially Implemented | Generated Codex TOMLs omit the current required description/instructions schema, and Gemini CLI native agents/hooks are not wired through tracked `.gemini` surfaces. | Validate native schema compatibility separately from projection parity; require approved Stage 00 work before Codex schema or Gemini native-wiring changes. | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md` | High |
@@ -92,7 +94,7 @@ configuration.
 
 ## Analysis
 
-All 25 requested categories have a current tracked state, an external comparison
+All 27 requested categories have a current tracked state, an external comparison
 or an explicit external-source limitation, a status, a gap, a recommendation,
 one canonical owner, and a confidence judgment. The dominant pattern is a
 multi-surface workspace: active stages own decisions and evidence, runtime files
@@ -125,6 +127,9 @@ external frameworks do not become adopted policy through Stage 90.
 - Compose follow-up: gather approved live/external-network evidence, decide
   whether a production overlay is required, and record current backup/restore
   proof through the owners named in the Compose reference.
+- Release/deployment follow-up: define artifact identity, promotion stages,
+  environment approvals, deployment history, rollback/recovery, and release
+  records without presenting the current CI and tag-coverage check as CD.
 - Provider/catalog follow-up: remediate Codex native-schema compatibility,
   decide whether to wire Gemini CLI-native surfaces, and define a governed
   third-party-agent intake/evaluation contract before any adoption.
@@ -137,8 +142,8 @@ external frameworks do not become adopted policy through Stage 90.
 
 ## Source Rules
 
-- Repo-local claims use tracked files and active stage documents as of
-  `2026-07-10`.
+- Repo-local claims use tracked files and active stage documents at Task 3
+  baseline `cf8790ca` on `2026-07-11`.
 - External sources were retrieved and revalidated by the completed specialized
   research on `2026-07-10` and `2026-07-11`; mutable pages without a displayed
   update date prove retrieval-time content only.
@@ -159,6 +164,8 @@ external frameworks do not become adopted policy through Stage 90.
 - [Infra README](../../../../infra/README.md) - Compose inventory and runtime boundary
 - [CI workflow](../../../../.github/workflows/ci-quality.yml) - tracked jobs and checks
 - [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - workflow/job/step automation model
+- [GitHub deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) - deployment protection, reviewers, branch restrictions, and environment-secret boundaries
+- [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) - tagged release records, release notes, and assets
 - [GitHub Spec Kit documentation](https://github.github.com/spec-kit/) - Spec → Plan → Tasks → Implement workflow
 - [ISO/IEC/IEEE 12207:2017](https://www.iso.org/standard/63712.html) - withdrawn lifecycle-process metadata
 - [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) - requirements-engineering metadata

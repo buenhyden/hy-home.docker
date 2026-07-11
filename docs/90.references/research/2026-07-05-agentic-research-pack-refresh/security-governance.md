@@ -70,7 +70,7 @@ fresh canonical security-automation readiness generator.
 | Control surface | Current tracked evidence | Boundary |
 | --- | --- | --- |
 | Vulnerability reporting | `.github/SECURITY.md` defines private reporting, response targets, remediation, and disclosure. | A tracked policy does not prove an incident exists or that targets were met. |
-| Workflow topology | 6 tracked workflows; `ci-quality.yml` has 15 required job IDs including dependency audit, Compose/hardening/security baselines, pre-commit, and `zizmor`. | Workflow definitions do not prove runs, branch protection, or current remote required-check state. |
+| Workflow topology | 6 tracked workflows; `ci-quality.yml` has 15 quality job IDs including dependency audit, Compose/hardening/security baselines, pre-commit, and `zizmor`. | Workflow definitions do not prove runs, branch protection, or current remote required-check state. |
 | Action pinning | 16/16 tracked external `uses:` references are full 40-character commit SHAs. | Source review and remote action integrity still matter; count is tracked YAML only. |
 | Workflow permissions | All 6 workflows declare top-level permissions; defaults are `contents: read` or `{}`, with job-scoped write permission for SARIF where needed. | Live organization/repository Actions settings were not queried. |
 | Secret scanning | Pre-commit config includes gitleaks with `.gitleaks.toml`; CI runs pre-commit with documented project-specific skip behavior. | Hook definition does not prove every local commit was scanned. |
@@ -94,6 +94,34 @@ External sources were revalidated on `2026-07-11` and remain reference-only.
 | GitHub SBOM API | A repository dependency graph can be exported as SPDX-compatible SBOM data. | Remote feature availability/coverage was not queried; export capability is not a tracked release SBOM. |
 | OpenSSF Scorecard | Automated heuristics report security-health signals such as token permissions, signed releases, and dangerous workflows. | A score is advisory and detection can be incomplete; no workspace scan or score was produced. |
 | Docker Compose secrets/trust | Explicit secrets are mounted only to granted services; Compose files are trusted, host-affecting executable input. | Secret delivery does not prove rotation/host protection, and config inspection does not make untrusted Compose safe. |
+
+## Security Category Ledger
+
+This ledger provides the required comparison fields at category level. The
+detailed concern table below adds control and approval-boundary detail.
+
+| Category | Current tracked implementation | External criterion | Status | Gap | Recommendation | Canonical owner | Confidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Secure SDLC governance | Stage 00 security, approval, QA, incident, and documentation contracts route protected work; CI and local checks supply selected verification. | NIST SSDF v1.1 groups practices into Prepare, Protect, Produce, and Respond and is designed to integrate with an existing SDLC. | Partially Implemented | No task/control-level SSDF adoption or conformity map exists. | Use SSDF as a comparison vocabulary until an approved security specification selects practices and evidence. | `docs/00.agent-governance/scopes/security.md` | High |
+| Secure build | CI runs project lint/type/build/coverage, a scoped npm vulnerability audit, pre-commit, workflow security, and infrastructure checks. | OWASP SAMM Secure Build calls for repeatable builds, integrated security checks, dependency records, and failure on non-compliance. | Partially Implemented | Coverage is project/control specific; no repository artifact SBOM, broader container/SCA scan, or build provenance exists. | Define artifact/ecosystem scope and exception ownership before adding broader build gates. | `docs/00.agent-governance/scopes/qa.md` | High |
+| Secure deployment / CD | Manual approval boundaries and a release-readiness runbook exist; no tracked workflow deploys to an environment or performs promotion/rollback. | OWASP SAMM Secure Deployment calls for documented/repeatable deployment, security milestones, separation of duties, records, integrity checks, and stop/reverse handling. | Missing | CI and changelog verification can be mistaken for CD despite no environment, deployment record, or executable rollback. | Route deployment targets, approvals, promotion, integrity verification, records, and rollback to a later Stage 03/04 contract. | `docs/03.specs/README.md` | High |
+| Workflow security | All external actions are SHA pinned; workflows declare top-level permissions; `zizmor` produces SARIF in CI. | GitHub recommends least privilege, untrusted-input controls, full-SHA pinning, OIDC for cloud access, and source review. | Implemented | Remote organization settings, actual token grants, and deployment identities were not queried. | Preserve explicit permissions/pinning and require target-specific OIDC trust design before any deployment. | `docs/00.agent-governance/rules/github-governance.md` | High |
+| Dependency and vulnerability response | Dependabot and one high-severity npm audit gate exist; disclosure and incident routing are tracked. | NIST SSDF includes producing secure releases and responding to residual vulnerabilities; OWASP SAMM covers dependency security. | Partially Implemented | No repository-wide multi-ecosystem/container vulnerability verdict or exception lifecycle exists. | Define ecosystems, severity, freshness, exceptions, remediation SLA, and release blocking before expansion. | `docs/00.agent-governance/scopes/qa.md` | High |
+| SBOM | No tracked SBOM generator exists in six workflows, 28 scanned scripts, or pre-commit. | OWASP SAMM Secure Build identifies bills of materials as dependency records; GitHub supports SPDX-compatible dependency-graph export and SBOM attestations. | Missing | Lockfiles and image inventories are not release-artifact SBOMs. | Specify artifact scope, format, generation, retention, publication, verification, and exception policy first. | `docs/03.specs/README.md` | High |
+| Provenance, signing, and verification | The generated image declaration snapshot is current, but no signing/SLSA/GitHub attestation producer or verifier is tracked. | SLSA v1.2 Build L1 requires provenance; higher levels strengthen authenticity/tamper resistance, and provenance is useful only when verified against expectations. | Missing | No artifact identity, builder trust, signed provenance, verification policy, or deployment enforcement exists. | Design producer and consumer verification together; do not claim a SLSA level from declaration metadata. | `docs/03.specs/README.md` | High |
+| OpenSSF Scorecard | No Scorecard CLI/action is tracked; `zizmor` is a different, workflow-focused scanner. | Scorecard provides heuristic checks such as CI tests, code review, pinned dependencies, token permissions, signed releases, and vulnerabilities. | Missing | No check interpretation, false-positive handling, token scope, publication, or trend owner exists. | Adopt only through an approved advisory/blocking policy with explicit limitations. | `docs/03.specs/README.md` | High |
+| Runtime/container controls | Compose secrets, hardening, QuickWin, template baseline, policies, and runbooks cover selected static controls. | Docker treats Compose as trusted host-affecting input and OWASP SAMM separates build/deploy checks from operational evidence. | Partially Implemented | Static checks do not prove host, daemon, network, secret rotation, live health, recovery, migration, backup, or rollback. | Route runtime evidence to scoped Compose/infrastructure follow-ups and keep this task non-mutating. | `docs/00.agent-governance/scopes/security.md` | High |
+
+## Primary Source Revalidation Ledger
+
+| Source owner | Primary source | Published / version | Retrieved | Supported claim | Workspace applicability |
+| --- | --- | --- | --- | --- | --- |
+| NIST | [SP 800-218 SSDF v1.1](https://csrc.nist.gov/pubs/sp/800/218/final) | February 2022 | 2026-07-11 | Secure-development practices integrate into existing SDLCs and address preparation, protection, production, and vulnerability response. | Comparison only; no formal workspace adoption. |
+| NIST | [SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final) | April 2025 | 2026-07-11 | Incident response belongs across cybersecurity risk management and includes preparation, detection, response, and recovery considerations. | Supports incident/recovery handoff, not proof of exercises. |
+| OWASP SAMM | [Secure Build](https://owaspsamm.org/model/implementation/secure-build/) and [Secure Deployment](https://owaspsamm.org/model/implementation/secure-deployment/) | SAMM v2 mutable pages | 2026-07-11 | Repeatable secure builds, dependency controls, documented/automated deployment, security milestones, separation of duties, and secret handling. | Criteria only; no maturity score is claimed. |
+| SLSA | [SLSA specification v1.2](https://slsa.dev/spec/v1.2/) and [verifying artifacts](https://slsa.dev/spec/v1.2/verifying-artifacts) | v1.2 Approved | 2026-07-11 | Build/source tracks, provenance levels, attestations, and consumer verification against expectations. | Confirms current missing implementation; no level claim. |
+| OpenSSF | [Scorecard](https://github.com/ossf/scorecard) | Mutable official repository | 2026-07-11 | Automated heuristic security checks and their detection limits. | Candidate signal only; no scan or score produced. |
+| GitHub | [Secure use](https://docs.github.com/en/actions/reference/security/secure-use) and [deployments/environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) | Mutable product documentation | 2026-07-11 | Least privilege, immutable action refs, OIDC, environment approvals/restrictions/secrets, and deployment protection. | Retrieval-time comparison; remote settings remain unverified. |
 
 ## Unresolved Secret-Read Policy Tension
 
@@ -148,7 +176,7 @@ Status totals: **15 concerns — 3 Implemented, 9 Partially Implemented,
 
 ## Source Rules
 
-- Repo-local claims use tracked files at base `34fc342e`; Graphify at
+- Repo-local claims use tracked files at base `cf8790ca`; Graphify at
   `30df271a` is stale/advisory and not security evidence.
 - External sources were retrieved on `2026-07-11`; mutable pages without a
   displayed update date prove retrieval-time guidance only.
@@ -161,7 +189,11 @@ Status totals: **15 concerns — 3 Implemented, 9 Partially Implemented,
 
 - [NIST SP 800-218 SSDF v1.1](https://csrc.nist.gov/pubs/sp/800/218/final) - high-level secure-development framework, published February 2022
 - [OWASP SAMM model](https://owaspsamm.org/model/) - five business functions and fifteen security practices
+- [OWASP SAMM Secure Build](https://owaspsamm.org/model/implementation/secure-build/) - repeatable builds, security checks, dependency records, and vulnerability handling
+- [OWASP SAMM Secure Deployment](https://owaspsamm.org/model/implementation/secure-deployment/) - deployment documentation/automation, security milestones, separation of duties, and secret handling
 - [SLSA v1.2](https://slsa.dev/spec/v1.2/) - approved source/build tracks, levels, attestations, and provenance
+- [SLSA artifact verification](https://slsa.dev/spec/v1.2/verifying-artifacts) - provenance authenticity and expectation verification
+- [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final) - incident response and recovery integration across cybersecurity risk management
 - [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use) - workflow permissions, secrets, untrusted input, pinning, and Scorecard guidance
 - [GitHub artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) - build/SBOM attestation generation and verification
 - [GitHub SBOM API](https://docs.github.com/en/rest/dependency-graph/sboms) - SPDX-compatible dependency-graph export capability

@@ -105,6 +105,22 @@ scope only.
 | Production | Single-host production and environment overlays | Docker suggests production-specific changes and an additional override file where appropriate. | This is an example pattern, not a workspace mandate or multi-host production design. |
 | Trust model | Untrusted Compose execution and CI | Compose applies trusted files as executable host-affecting input; review resolved configuration and transitive includes. | `docker compose config` aids review but does not make untrusted content safe. |
 
+## Structural and Runtime Evidence Ladder
+
+These categories are intentionally independent. A structural render or static
+hardening pass cannot satisfy a runtime category.
+
+| Category | Current tracked implementation | External criterion | Status | Gap | Recommendation | Canonical owner | Confidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Structural Compose render | `validate-docker-compose.sh` runs `docker compose ... config` for core or selected governed profiles and enumerates rendered services without `up`, `start`, `run`, or `exec`. CI has core and all-profile jobs. | Docker documents `config` as resolved-model inspection and profiles as application-model selection. | Implemented | Render success does not establish external prerequisites, container creation, health, or data safety. | Retain core/all-profile structural gates and label results configuration-only. | `scripts/validation/validate-docker-compose.sh` | High |
+| Static hardening | Eleven tier checks plus template/security and QuickWin baselines inspect tracked/rendered declarations. | Docker's trust boundary requires review of images, privileges, mounts, networks, devices, and referenced files before execution. | Implemented | Repository assertions are not daemon, host, image, or runtime certification. | Keep exception ownership explicit and add controls only through an approved security/runtime contract. | `scripts/hardening/check-all-hardening.sh` | High |
+| Startup smoke | No canonical task command starts the root application or selected profiles in this research pass; no service was started. | Docker Compose `up` creates/starts the application and runtime inspection (`ps`, logs) observes resulting state. | Missing | Structural validation cannot detect pull/startup failure, missing external networks, port collision, or process exit. | Define a bounded, non-destructive smoke matrix with prerequisites, cleanup, evidence, and explicit runtime approval in the Compose runtime follow-up. | `docs/03.specs/README.md` | High |
+| Runtime health/readiness | Healthcheck keys exist for 145/169 service entries, and selected dependency conditions are statically checked. | Docker distinguishes dependency start from readiness and waits for `service_healthy` only when the dependency declares that condition. | Partially Implemented | Key presence does not prove command correctness, convergence time, application readiness, or live dependency behavior. | Add approved profile/service health assertions and time bounds without treating declaration coverage as observed health. | `docs/05.operations/runbooks/README.md` | High |
+| Failure recovery | Restart/health declarations and service runbooks exist, but no failure injection or recovery exercise was run. | NIST SP 800-61 Rev. 3 integrates incident response and recovery into cybersecurity risk management; observed restoration evidence remains target-specific. | Partially Implemented | Restart policy may loop or preserve corruption; runbook text may be stale or incomplete. | Define reversible service-specific recovery drills, stop conditions, evidence, and escalation in the runtime follow-up. | `docs/05.operations/runbooks/README.md` | Medium |
+| Migration / upgrade | Variant files and service docs mention upgrades, but no canonical cross-service migration/compatibility test or migration rehearsal is tracked here. | Production changes must account for environment-specific configuration and dependency/data compatibility. | Missing | Configuration rollback cannot undo an incompatible schema or irreversible data migration. | Require forward/backward compatibility, backup prerequisite, migration rehearsal, and safe abort evidence per stateful service. | `docs/03.specs/README.md` | High |
+| Backup / restore | Backup policy and service recovery documents exist; no backup artifact, freshness result, or restore drill was executed or inspected. | NIST SP 800-61 Rev. 3 includes recovery considerations; configuration/volume declarations alone are not restoration evidence. | Partially Implemented | Current off-site coverage, retention, integrity, and restore success remain unknown. | Record per-service scope, schedule, retention, encryption, restore test, RPO/RTO, owner, and last evidence in Stage 05. | `docs/05.operations/policies/04-data/backup/backup-policy.md` | Medium |
+| Deployment rollback | Git/task rollback guidance and service runbooks exist; there is no tracked CD deployment or universal runtime/data rollback automation. | OWASP SAMM Secure Deployment calls for deployment records and stop/reverse behavior when unacceptable defects are detected. | Partially Implemented | Git revert cannot reverse volumes, schemas, external systems, secrets, or already-applied runtime effects. | Define target-specific promotion, verification, rollback/recovery, and deployment-record evidence before deployment automation. | `docs/05.operations/runbooks/00-workspace/release-management.md` | High |
+
 ## Infrastructure Comparison
 
 The status vocabulary is the shared Task 1 vocabulary. Confidence includes the
@@ -150,7 +166,7 @@ Status totals: **19 concerns — 6 Implemented, 12 Partially Implemented,
 
 ## Source Rules
 
-- Repo-local claims use tracked files at base `34fc342e` and the fresh canonical
+- Repo-local claims use tracked files at base `cf8790ca` and the fresh canonical
   coverage generator; Graphify (`30df271a`) is stale/advisory only.
 - External sources were retrieved on `2026-07-11`; pages without visible dates
   provide retrieval-time guidance only.
@@ -164,10 +180,15 @@ Status totals: **19 concerns — 6 Implemented, 12 Partially Implemented,
 - [Compose include](https://docs.docker.com/reference/compose-file/include/) - modular application model and relative-path behavior
 - [Using profiles](https://docs.docker.com/compose/how-tos/profiles/) - default and profile-gated activation semantics
 - [Compose networking](https://docs.docker.com/compose/how-tos/networking/) - service DNS, internal/external networks, and multi-project communication
+- [Compose network reference](https://docs.docker.com/reference/compose-file/networks/) - named, internal, and external network declaration semantics
 - [Compose secrets](https://docs.docker.com/compose/how-tos/use-secrets/) - explicit service grant and file-mount model
+- [Compose secrets reference](https://docs.docker.com/reference/compose-file/secrets/) - top-level secret sources and service grants
 - [Startup order](https://docs.docker.com/compose/how-tos/startup-order/) - dependency and health-condition behavior
+- [Compose services reference](https://docs.docker.com/reference/compose-file/services/) - `depends_on`, `service_healthy`, and healthcheck semantics
 - [Compose production](https://docs.docker.com/compose/how-tos/production/) - single-host production considerations and optional override pattern
 - [Compose trust model](https://docs.docker.com/compose/trust-model/) - trusted-input, transitive dependency, and resolved-config review boundary
+- [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final) - incident-response and recovery integration across cybersecurity risk management
+- [OWASP SAMM Secure Deployment](https://owaspsamm.org/model/implementation/secure-deployment/) - deployment records, security milestones, integrity checks, and stop/reverse behavior
 - [Root Compose](../../../../docker-compose.yml) - root name, networks, secrets, and active includes
 - [Infra README](../../../../infra/README.md) - variant/service-directory inventory and documentation rubric
 - [Generated Compose coverage](../../data/docker/compose-profile-service-coverage.md) - canonical file, service, and profile snapshot

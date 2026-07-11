@@ -3,14 +3,14 @@ status: active
 ---
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md -->
 
-# Reference: Quality, CI/CD, QA, and Formatting
+# Reference: Quality, CI, CD, QA, and Formatting
 
 ## Overview
 
 This reference compares primary quality and delivery guidance with the tracked
 local, CI, and remote evidence surfaces in `hy-home.docker`. It inventories the
 actual job and gate definitions at baseline
-`505277817eee0de4270bc03ae7fb789ef9d02ad3`; generated Graphify data is
+`cf8790ca98ad395bb58c127ea41b1d0d02455f0e`; generated Graphify data is
 navigation-only because its report was built from older commit `30df271a`.
 
 ## Purpose
@@ -59,6 +59,9 @@ this file owns only the concrete QA evidence-surface inventory.
   dependency checks; it is not interchangeable with formatting or tests.
 - **Blocking** below means a command or tracked job exits non-zero. It does not
   prove that GitHub currently requires that job before merge.
+- **CI** builds and verifies changes on repository events. **CD** promotes a
+  release candidate through named environments and records deployment outcome;
+  build or tag verification alone is not CD.
 - **Remote-only / unknown** means the tracked repository cannot establish
   current remote enforcement. The historical proposal records a read-only
   2026-07-04 observation, but this task did not re-query remote state.
@@ -128,7 +131,10 @@ remote-only responsibilities; it is not a full CI replica.
 | Category | Current state | Primary comparison | Status | Gap | Recommendation | Canonical owner | Evidence | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | QA and evidence classes | Tracked gates distinguish format, lint, syntax, type, test, build, coverage, security, traceability, eval, and freshness evidence. | pre-commit supports hook orchestration; GitHub Actions supports jobs/steps. | Implemented | Applicability still varies by changed surface. | Record named commands/jobs and N/A rationale rather than “all QA.” | `docs/00.agent-governance/scopes/qa.md` | Matrix above; tracked runner/workflow/config | High |
-| CI/CD feedback | Six workflows define 21 jobs; `ci-quality.yml` defines 15 quality jobs. | GitHub syntax defines automation; Fowler describes releasable pipeline feedback; DORA defines five delivery metrics. | Partially Implemented | Tracked CI does not prove deployment readiness, DORA measurement, or remote required checks. | Keep CI evidence and operational-delivery claims separate. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/*.yml` | High |
+| CI feedback | Six workflows define 21 jobs; `ci-quality.yml` defines 15 independent quality jobs and none declares a deployment environment. | GitHub workflow syntax defines event triggers, jobs, steps, permissions, and dependencies. | Partially Implemented | Tracked definitions do not prove successful runs or current required-check enforcement. | Report exact job results separately from remote enforcement. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/*.yml` | High |
+| CD / promotion | No tracked workflow deploys an application or infrastructure target, references a GitHub environment, promotes across environments, or performs rollback. | GitHub environments support reviewer/custom protection rules, branch restrictions, environment secrets, and deployment history. | Missing | Green CI/build/tag checks can be mislabeled as deployment readiness. | Define promotion, approval, deployment record, verification, and rollback in a later Stage 03/04 delivery contract. | `docs/03.specs/README.md` | Workflow scan plus Stage 05 release runbook | High |
+| Release record | `CHANGELOG.md`, a manual release-management runbook, and a tag-triggered changelog coverage check exist; the workflow does not create release notes or assets. | GitHub Releases bind a tagged iteration to release notes and optional downloadable assets. | Partially Implemented | Tag-string coverage is not a complete release record or artifact integrity statement. | Preserve the manual readiness boundary and define release artifact/record ownership with future CD work. | `docs/05.operations/runbooks/00-workspace/release-management.md` | `CHANGELOG.md`; `.github/workflows/generate-changelog.yml` | High |
+| Pre-commit semantics | The config defines 23 hook IDs; hooks are stage/file filtered, and CI runs the suite with `eslint-nextjs` skipped in favor of its dedicated job. | pre-commit documents staged-file default execution, `--all-files`, explicit stages, file selection, and CI use. | Implemented | Hook count is not equivalent to executed coverage for every change or stage. | Record the invoked stage/files and result; continue to prohibit direct agent all-files execution until the controlled wrapper is implemented. | `.pre-commit-config.yaml` | Config plus CI workflow | High |
 | Formatting | EditorConfig and Prettier configuration exist; pre-commit/post-tool supply other formatting checks. | EditorConfig specifies hierarchical style settings; Prettier documents parsing/reprinting and a CI check mode. | Partially Implemented | No tracked shared automation invokes Prettier. | Do not imply Prettier enforcement unless the active owner approves and implements it. | `docs/00.agent-governance/scopes/common.md` | `.editorconfig`, `.prettierrc.json`, `.prettierignore`, post-tool hook | High |
 
 ## Analysis
@@ -170,7 +176,7 @@ data this repository task did not collect.
 - External sources were retrieved on **2026-07-11** and support comparison only.
 - Mutable official pages prove retrieval-time guidance, not historical behavior
   or workspace enforcement.
-- Repo-local claims cite tracked sources at baseline `505277817e`; Graphify is
+- Repo-local claims cite tracked sources at baseline `cf8790ca`; Graphify is
   advisory because its report is older.
 - No external source in this reference is adopted workspace policy.
 
@@ -179,6 +185,8 @@ data this repository task did not collect.
 - [Task 4 source ledger](../../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md) - retrieval date, supported claim, evidence-surface class, and caveat for every fixed source
 - [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - workflow/job/step and trigger syntax
 - [GitHub secure use](https://docs.github.com/en/actions/reference/security/secure-use) - least privilege, untrusted input, secret, and immutable-action guidance
+- [GitHub deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) - deployment approvals, environment secrets, restrictions, and protection rules
+- [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) - tagged release records, notes, and assets
 - [pre-commit](https://pre-commit.com/) - hook configuration, local execution, CI use, and skips
 - [EditorConfig](https://editorconfig.org/) - cross-editor consistency
 - [EditorConfig specification](https://spec.editorconfig.org/) - hierarchical file processing and supported pairs

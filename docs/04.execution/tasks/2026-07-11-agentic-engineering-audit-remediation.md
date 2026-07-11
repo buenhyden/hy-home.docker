@@ -49,7 +49,7 @@ independent task/branch reviews.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-AER-001 | Research metadata, lifecycle, document roles, agent instructions, and vibe coding | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-001 | Primary-source ledger; LLM Wiki; repo contracts; task review | wiki-curator | Done |
 | T-AER-002 | Revalidate harness, loop, provider, model, and agent-catalog research | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-002 | Cutoff ledger; provider no-drift; repo contracts; task review | wiki-curator | Done |
-| T-AER-003 | Revalidate workspace, QA, automation, Compose, security, release, and deployment research | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-003 | Tracked inventory; Compose/hardening; repo contracts; task review | wiki-curator | Todo |
+| T-AER-003 | Revalidate workspace, QA, automation, Compose, security, release, and deployment research | doc | Spec 123 / Canonical Research Responsibilities | PLN-AER-003 | Tracked inventory; Compose/hardening; repo contracts; task review | wiki-curator | Done |
 | T-AER-004 | Audit SDLC, document roles, numbering, transitions, frontmatter, templates, and README profiles | doc | Spec 123 / Canonical Audit Categories | PLN-AER-004 | Reproducible counts; audit matrices; repo contracts; task review | doc-writer | Todo |
 | T-AER-005 | Audit harness, loops/evals, providers/models, workspace rules, instructions, catalogs, and vibe coding | doc | Spec 123 / Canonical Audit Categories | PLN-AER-005 | Criterion coverage; provider evidence; task review | code-reviewer | Todo |
 | T-AER-006 | Audit QA/CI/CD, automation, Compose/infrastructure, security; consolidate audit lifecycle | doc | Spec 123 / Canonical Audit Categories | PLN-AER-006 | One-current-pack scan; audit generators; Compose/hardening; task review | code-reviewer | Todo |
@@ -66,7 +66,7 @@ independent task/branch reviews.
 
 - [x] T-AER-001 Metadata, lifecycle, instructions, and vibe-coding research
 - [x] T-AER-002 Harness, loop, provider, model, and catalog research
-- [ ] T-AER-003 Workspace, QA, automation, Compose, security, and release research
+- [x] T-AER-003 Workspace, QA, automation, Compose, security, and release research
 
 ### Phase 2 — Canonical Audit
 
@@ -163,6 +163,48 @@ parity or user-global runtime configuration.
   - `git diff --check` — PASS
   - `bash scripts/knowledge/generate-llm-wiki-index.sh` — PASS, 1,263 paths
   - `bash scripts/knowledge/generate-llm-wiki-coverage.sh` — PASS, 1,262 safe paths
+  - `bash scripts/validation/check-repo-contracts.sh` — PASS, `failures=0`
+
+### T-AER-003 Research Evidence
+
+The required workflow, pre-commit, script, Compose, infrastructure, Stage 00,
+and Stage 05 inventory was rerun at baseline
+`cf8790ca98ad395bb58c127ea41b1d0d02455f0e`. Graphify remained advisory: its
+report was built from older commit `30df271a`, so all conclusions were
+corroborated against tracked files, canonical generated snapshots, and active
+stage documents. The collaboration platform did not expose a per-agent model
+selector; the dispatch bound this wiki-curator work to the repository Worker
+tier while the platform selected the concrete model.
+
+| Claim family | Primary sources revalidated 2026-07-11 | Applicability and caveat |
+| --- | --- | --- |
+| Quality, CI, pre-commit | GitHub Actions workflow syntax and secure-use reference; pre-commit official documentation | Supports trigger/job/permission and hook-stage semantics. Tracked YAML/config proves definitions, not runs or remote required-check enforcement. |
+| CD, deployment, release | GitHub deployments/environments, deployment history, and Releases; OWASP SAMM Secure Deployment | CI and changelog-tag validation remain distinct from environment promotion, deployment approval/history, release assets, and rollback. No tracked CD workflow was found. |
+| Compose/infrastructure | Docker Compose overview, include, profiles, networks, secrets, services/startup, production, and trust-model documentation | Supports configuration comparison only. Structural render/hardening remains distinct from startup, live health, recovery, migration, backup/restore, and rollback evidence. |
+| Secure SDLC and incident response | NIST SP 800-218 SSDF v1.1 and SP 800-61 Rev. 3; OWASP SAMM Secure Build/Deployment | Criteria remain reference-only; no framework adoption or maturity score is claimed. |
+| Supply chain | SLSA v1.2 specification and artifact verification; OpenSSF Scorecard official repository/check documentation | Confirms missing SBOM, signing/attestation, SLSA verification, and Scorecard automation without claiming a score or level. |
+
+| Tracked result | Task 3 disposition |
+| --- | --- |
+| Local/CI inventory | Reconfirmed 6 workflows / 21 jobs, including 15 `ci-quality.yml` jobs; 23 pre-commit hook IDs; and 12 default/script-backed local runner steps plus one non-executed advisory recommender. |
+| CI versus CD | Classified repository-event quality/build/tag checks as CI or release readiness. Recorded CD/promotion as missing because no workflow job references an environment, deploys a target, or performs automated rollback. |
+| Compose topology | Reconfirmed fresh generated coverage: 49 files, 169 service entries, 25 profile labels, 9 default entries, and 160 profile-gated entries. Added a separate structural/runtime evidence ladder; no service was started. |
+| Security automation | Reconfirmed the generated 11-control snapshot: 7 Implemented, 1 Partially Implemented, 3 Gap. SBOM, signing/provenance attestation, and OpenSSF Scorecard automation remain gaps. |
+| Release/deployment | Kept `generate-changelog.yml` accurately classified as pushed-tag changelog coverage, not generation or deployment. The manual release runbook is readiness evidence, not a release/deployment execution record. |
+
+- **Files changed**: the five canonical Task 3 research leaves plus this task
+  evidence; the canonical LLM Wiki generators reported the existing 1,263-path
+  index and 1,262-safe-path coverage snapshot as current.
+- **Scope boundary**: no runtime, Compose/infra declaration, provider adapter,
+  model policy, CI workflow, script, secret, remote state, branch protection,
+  or active Stage 00/05 rule was changed; no service was started.
+- **Task 3 validation**:
+  - `git diff --check` — PASS
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — PASS, 1,263 paths
+  - `bash scripts/knowledge/generate-llm-wiki-coverage.sh` — PASS, 1,262 safe paths
+  - `bash scripts/validation/check-doc-implementation-alignment.sh` — PASS, `failures=0`
+  - `bash scripts/validation/validate-docker-compose.sh` — PASS, structural only, `services_total=5`
+  - `bash scripts/hardening/check-all-hardening.sh` — PASS, all eleven tiers
   - `bash scripts/validation/check-repo-contracts.sh` — PASS, `failures=0`
 
 ### Task Review Ledger
