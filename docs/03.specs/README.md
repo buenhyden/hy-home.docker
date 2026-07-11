@@ -92,6 +92,10 @@ docs/03.specs/
 ├── 121-dependency-vulnerability-audit-gate/ # Completed Storybook Next.js dependency vulnerability audit gate
 ├── 122-agentic-research-pack-consolidation/ # Completed agentic research-pack consolidation; post-closure review PASS/APPROVED
 ├── 123-agentic-engineering-audit-remediation/ # Active staged research/audit consolidation and approved harness remediation design
+├── 124-compose-runtime-readiness-remediation/ # Draft Compose startup, readiness, recovery, and teardown contract
+├── 125-infrastructure-operations-readiness-remediation/ # Draft upgrade, migration, backup, restore, and recovery contract
+├── 126-security-supply-chain-remediation/ # Draft scanning, SBOM, provenance, signing, and verification contract
+├── 127-deployment-release-engineering-remediation/ # Draft environment, promotion, release, deployment, and rollback contract
 └── README.md                            # This file
 ```
 
@@ -127,6 +131,10 @@ docs/03.specs/
 | Storybook Next.js dependency vulnerability audit gate | `121-dependency-vulnerability-audit-gate/spec.md` |
 | Canonical agentic research-pack consolidation and provider-model cutoff | `122-agentic-research-pack-consolidation/spec.md` |
 | Staged agentic implementation audit, typed metadata, and harness remediation | `123-agentic-engineering-audit-remediation/spec.md` |
+| Compose runtime startup, observed readiness, recovery, and teardown | `124-compose-runtime-readiness-remediation/spec.md` |
+| Infrastructure upgrade, migration, backup, restore, and recovery readiness | `125-infrastructure-operations-readiness-remediation/spec.md` |
+| Security supply-chain scanning, SBOM, provenance, signing, and verification | `126-security-supply-chain-remediation/spec.md` |
+| Deployment environments, promotion, release records, and rollback | `127-deployment-release-engineering-remediation/spec.md` |
 | Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
 | Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
@@ -212,6 +220,10 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Dependency Vulnerability Audit Gate Spec**: [121-dependency-vulnerability-audit-gate/spec.md](./121-dependency-vulnerability-audit-gate/spec.md)
 - **Agentic Research Pack Consolidation Spec**: [122-agentic-research-pack-consolidation/spec.md](./122-agentic-research-pack-consolidation/spec.md)
 - **Agentic Engineering Audit and Remediation Spec**: [123-agentic-engineering-audit-remediation/spec.md](./123-agentic-engineering-audit-remediation/spec.md)
+- **Compose Runtime Readiness Remediation Spec**: [124-compose-runtime-readiness-remediation/spec.md](./124-compose-runtime-readiness-remediation/spec.md)
+- **Infrastructure Operations Readiness Remediation Spec**: [125-infrastructure-operations-readiness-remediation/spec.md](./125-infrastructure-operations-readiness-remediation/spec.md)
+- **Security Supply-Chain Remediation Spec**: [126-security-supply-chain-remediation/spec.md](./126-security-supply-chain-remediation/spec.md)
+- **Deployment and Release Engineering Remediation Spec**: [127-deployment-release-engineering-remediation/spec.md](./127-deployment-release-engineering-remediation/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)

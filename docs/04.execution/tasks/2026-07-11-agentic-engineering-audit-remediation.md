@@ -746,6 +746,61 @@ task/progress evidence, and Graphify refresh. Task 11+ follow-up artifacts and
 all runtime, secret, remote, and branch-protection mutations remain out of
 scope.
 
+### T-AER-011 Runtime Follow-up Specifications and Plans Evidence
+
+Task 11 is **In Review** at implementation baseline `4937ae99`. The task
+registry remains `Todo` and the Phase 5 checkbox remains unchecked until
+independent Spec-compliance and quality/security review approve the change.
+
+The Senior `doc-writer` role authored four draft, later-approvable Stage 03/04
+chains. No child task evidence was created for any follow-up. Spec 123 is the
+typed parent/audit lineage for Specs 124-127 and explicitly is not runtime
+authorization; each draft plan parents only to its own follow-up spec.
+
+| Follow-up owner | Canonical audit IDs owned exactly once | Count | Unresolved predecessor/approval boundary |
+| --- | --- | ---: | --- |
+| Spec 124 Compose runtime readiness | `CIO-06`, `CIO-07`, `CIO-08` | 3 | PRD/ARD/ADRs plus exact human/runtime/secret/remote scope before startup, readiness, recovery, or teardown execution. |
+| Spec 125 infrastructure operations readiness | `CIO-09`, `CIO-10`, `CIO-11`, `CIO-12` | 4 | PRD/ARD/ADRs plus data-owner/runtime/secret/remote approval before upgrade, migration, backup, restore, or state access. |
+| Spec 126 security supply chain | `QAF-10`, `SEC-07`, `SEC-08`, `SEC-09`, `SEC-10`, `SEC-11` | 6 | PRD/ARD/ADRs plus security/artifact/runtime/identity/secret/remote approval before tool, workflow, artifact, or registry action. |
+| Spec 127 deployment/release engineering | `QAF-15`, `QAF-16`, `AUT-10`, `CIO-13`, `CIO-14` | 5 | PRD/ARD/ADRs plus release/environment/runtime/identity/secret/remote approval before workflow, promotion, Release, deployment, or rollback action. |
+
+Total runtime-relevant canonical IDs routed: **18**. Cross-workstream links are
+dependencies only: Spec 124 consumes Spec 125 state-recovery evidence; Spec 127
+consumes Spec 126 verification, Spec 124 readiness, and Spec 125 data recovery.
+No gap requirement is duplicated.
+
+Related canonical gaps are explicitly disposed in the owner specs rather than
+silently dropped: implemented/static/non-runtime `CIO-01..05`, current security
+controls `SEC-01..06`, governance/operations/remote `SEC-12..14`, existing QA
+and automation criteria, Task 9-owned `QAF-12`/`AUT-09`, Task 10 stewardship of
+`QAF-13`/`AUT-03`, and remote-revalidation `QAF-14`/`AUT-11` do not enter this
+runtime requirement set.
+
+- **Task 11 implementation validation**:
+  - exact one-owner routing assertion — PASS, 18 expected owners / 18 unique
+    IDs / exact set, distributed 3/4/6/5 across Specs 124-127
+  - English-only assertion for the 12 new authored documents — PASS
+  - typed changed/new metadata from explicit base `4937ae99` — PASS, 19
+    selected, zero violations, zero legacy exceptions, zero transition overrides
+  - typed semantic inventory regeneration — PASS, 888 records / 2,045
+    historical advisory findings; all 12 new records are valid and the total
+    finding count does not increase
+  - LLM Wiki index/coverage generation and freshness — PASS, 1,282 indexed /
+    1,281 safe paths
+  - document traceability — PASS, 46 catalog pairs, `failures=0`
+  - document implementation alignment — PASS, 637 stage docs / 5,001 links,
+    `failures=0`
+  - repository contracts — PASS, 18/18 changed template documents and 747/747
+    normalized target documents, `failures=0`
+  - staged diff hygiene and docs-only scope review — PASS
+  - direct/full pre-commit and runtime checks — not run; Task 12 and later
+    approved runtime tasks retain ownership
+- **Protected-surface result**: documentation and generated documentation only;
+  no service/Compose/infra/CI/security config/script/provider/model/runtime,
+  secret, credential, remote, deployment, or architecture state changed.
+- **Graphify decision**: docs-only work does not trigger the repository's
+  code-file refresh rule; no Graphify refresh is planned for Task 11.
+
 ### Task Review Ledger
 
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |

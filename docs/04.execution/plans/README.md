@@ -97,6 +97,10 @@ docs/04.execution/plans/
 ├── 2026-07-06-dependency-vulnerability-audit-gate.md # Completed Storybook Next.js dependency vulnerability audit gate plan
 ├── 2026-07-10-agentic-research-pack-consolidation.md # Completed canonical research-pack consolidation plan; post-closure review PASS/APPROVED
 ├── 2026-07-11-agentic-engineering-audit-remediation.md # Active staged research/audit, typed metadata, and harness remediation plan
+├── 2026-07-11-compose-runtime-readiness-remediation.md # Draft Compose runtime evidence plan; later runtime approval required
+├── 2026-07-11-infrastructure-operations-readiness-remediation.md # Draft stateful operations/recovery plan; later runtime approval required
+├── 2026-07-11-security-supply-chain-remediation.md # Draft supply-chain evidence plan; later security/remote approval required
+├── 2026-07-11-deployment-release-engineering-remediation.md # Draft CD/release/rollback plan; later remote/runtime approval required
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot plan
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot plan
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization plan
@@ -204,6 +208,10 @@ task evidence or progress log records the same item as unresolved.
 - **Dependency Vulnerability Audit Gate Plan**: [2026-07-06-dependency-vulnerability-audit-gate.md](./2026-07-06-dependency-vulnerability-audit-gate.md)
 - **Agentic Research Pack Consolidation Plan**: [2026-07-10-agentic-research-pack-consolidation.md](./2026-07-10-agentic-research-pack-consolidation.md)
 - **Agentic Engineering Audit and Remediation Plan**: [2026-07-11-agentic-engineering-audit-remediation.md](./2026-07-11-agentic-engineering-audit-remediation.md)
+- **Compose Runtime Readiness Remediation Plan**: [2026-07-11-compose-runtime-readiness-remediation.md](./2026-07-11-compose-runtime-readiness-remediation.md)
+- **Infrastructure Operations Readiness Remediation Plan**: [2026-07-11-infrastructure-operations-readiness-remediation.md](./2026-07-11-infrastructure-operations-readiness-remediation.md)
+- **Security Supply-Chain Remediation Plan**: [2026-07-11-security-supply-chain-remediation.md](./2026-07-11-security-supply-chain-remediation.md)
+- **Deployment and Release Engineering Remediation Plan**: [2026-07-11-deployment-release-engineering-remediation.md](./2026-07-11-deployment-release-engineering-remediation.md)
 - **Audit Implementation Matrix Snapshot Plan**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **SDLC Document Contract Corpus Normalization Plan**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Plan**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)

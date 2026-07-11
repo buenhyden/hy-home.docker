@@ -39,7 +39,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 876
+- **Tracked records**: 888
 - **Records with findings**: 551
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
@@ -55,13 +55,13 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `generated` | 6 |
 | `governance` | 109 |
 | `guide` | 66 |
-| `plan` | 88 |
+| `plan` | 92 |
 | `policy` | 64 |
 | `prd` | 24 |
-| `readme` | 143 |
+| `readme` | 147 |
 | `reference` | 30 |
 | `runbook` | 61 |
-| `spec` | 48 |
+| `spec` | 52 |
 | `task` | 114 |
 | `template-source` | 22 |
 
@@ -341,6 +341,14 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/03.specs/122-agentic-research-pack-consolidation/spec.md` | `spec` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key | migration candidate |
 | `docs/03.specs/123-agentic-engineering-audit-remediation/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
 | `docs/03.specs/123-agentic-engineering-audit-remediation/spec.md` | `spec` | allowed-syntax | valid | parents=root-permitted; order=declared-list; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | none | migration candidate |
+| `docs/03.specs/124-compose-runtime-readiness-remediation/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
+| `docs/03.specs/124-compose-runtime-readiness-remediation/spec.md` | `spec` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=draft; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | none | migration candidate |
+| `docs/03.specs/125-infrastructure-operations-readiness-remediation/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
+| `docs/03.specs/125-infrastructure-operations-readiness-remediation/spec.md` | `spec` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=draft; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | none | migration candidate |
+| `docs/03.specs/126-security-supply-chain-remediation/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
+| `docs/03.specs/126-security-supply-chain-remediation/spec.md` | `spec` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=draft; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | none | migration candidate |
+| `docs/03.specs/127-deployment-release-engineering-remediation/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
+| `docs/03.specs/127-deployment-release-engineering-remediation/spec.md` | `spec` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=draft; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | none | migration candidate |
 | `docs/03.specs/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
 | `docs/04.execution/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
 | `docs/04.execution/plans/2026-03-26-01-gateway-standardization.md` | `plan` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | missing-required-key | migration candidate |
@@ -431,6 +439,10 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/04.execution/plans/2026-07-06-tech-stack-version-provenance.md` | `plan` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | missing-required-key | migration candidate |
 | `docs/04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md` | `plan` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | missing-required-key | migration candidate |
 | `docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md` | `plan` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
+| `docs/04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md` | `plan` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=draft; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
+| `docs/04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md` | `plan` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=draft; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
+| `docs/04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md` | `plan` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=draft; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
+| `docs/04.execution/plans/2026-07-11-security-supply-chain-remediation.md` | `plan` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=draft; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
 | `docs/04.execution/plans/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
 | `docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md` | `task` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | missing-required-key | migration candidate |
 | `docs/04.execution/tasks/2026-03-26-02-auth-tasks.md` | `task` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | missing-required-key | migration candidate |
