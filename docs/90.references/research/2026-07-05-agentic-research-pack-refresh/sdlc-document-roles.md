@@ -130,8 +130,9 @@ harder to interpret.
 
 - Repo-local roles come from the tracked stage matrix, documentation protocol,
   and template catalog.
-- External sources were retrieved on `2026-07-10`; mutable pages without a
-  displayed update date prove retrieval-time content only.
+- External sources were originally retrieved on `2026-07-10` and revalidated
+  on `2026-07-11`; mutable pages without a displayed update date prove only
+  the content visible at the latest revalidation.
 - ISO pages provide metadata and summaries rather than full standards.
 - ISO/IEC/IEEE 12207:2017 is withdrawn and is not a current normative basis.
 - External sources remain comparisons; repo-template bases are labeled explicitly.

@@ -93,6 +93,7 @@ disposition, owner, verification, and confidence fields.
 ## Sources
 
 - [DCMI Metadata Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/) - identifier, type, relation, modified, valid, version, and replacement vocabulary
+- [DCMI Usage Board Review of Application Profiles](https://www.dublincore.org/specifications/dublin-core/application-profile-review/) - official definition of an application profile as a declaration of reused terms with purpose-specific constraints, encoding, and interpretation
 - [W3C PROV-O](https://www.w3.org/TR/prov-o/) - generation, invalidation, provenance, and revision relations
 - [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288) - explicit relation semantics and registered/extension relation distinction
 - [JSON Schema conditional validation](https://json-schema.org/understanding-json-schema/reference/conditionals) - type/profile-dependent requirements

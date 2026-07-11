@@ -146,8 +146,9 @@ operations.
 
 - Repo-local transitions are based on the tracked stage matrix, documentation
   protocol, templates, current stage artifacts, and validators.
-- External sources were retrieved on `2026-07-10`; mutable pages without an
-  update date prove retrieval-time content only.
+- External sources were originally retrieved on `2026-07-10` and revalidated
+  on `2026-07-11`; mutable pages without an update date prove only the content
+  visible at the latest revalidation.
 - ISO pages expose metadata and short summaries, not the full standards.
 - No external comparison is adopted workspace policy by this reference.
 

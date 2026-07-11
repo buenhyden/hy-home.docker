@@ -104,6 +104,7 @@ not runtime or provider policy.
 - [Anthropic Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) - transparent, testable agent/workflow patterns
 - [Anthropic agent eval guidance](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) - multi-turn tool/state evaluation and lifecycle feedback
 - [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/) - reviewed action ownership and prevention learning
+- [agency-agents pinned repository](https://github.com/msitarzewski/agency-agents/tree/9f3e401ccd09aa0ee0ef8e015226d0647908e01e) - immutable upstream catalog tree supporting the reference-only intake and pin/review boundary
 - [Agent-first rule](../../../00.agent-governance/rules/agentic.md) - current workspace authority, evidence, and lifecycle behavior
 - [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - current protected actions and escalation boundary
 - [Spec 123](../../../03.specs/123-agentic-engineering-audit-remediation/spec.md) - approved instruction/vibe and task-evidence constraints
