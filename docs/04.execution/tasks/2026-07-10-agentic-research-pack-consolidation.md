@@ -45,7 +45,7 @@ plan.
 | T-ARC-002 | Add cutoff-bound provider model landscape and refresh task selection | doc/eval | VAL-ARC-003, VAL-ARC-004 | PLN-ARC-002 | Model/lifecycle totals, cutoff exceptions, provider sources, validators, task review | Documentation implementer | Done |
 | T-ARC-003 | Consolidate harness, loop, provider implementation, and AI agent catalogs | doc | VAL-ARC-002, VAL-ARC-005 | PLN-ARC-003 | Capability sources, stale-claim disposition, validators, task review | Documentation implementer | Done |
 | T-ARC-004 | Refresh QA/CI/formatting and automation/pipeline/workflow research | doc | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-004 | Gate/job inventory, evidence classes, validators, task review | Documentation implementer | Done |
-| T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Todo |
+| T-ARC-005 | Refresh Docker Compose/infrastructure and security-governance research | doc/security | VAL-ARC-002, VAL-ARC-008 | PLN-ARC-005 | Rechecked Compose evidence, security status/gap matrix, validators, task review | Documentation implementer | Ready for Review |
 | T-ARC-006 | Finalize indexes, supersede duplicate pack, close lifecycle and validation | doc/eval | VAL-ARC-001, VAL-ARC-005, VAL-ARC-006, VAL-ARC-007, VAL-ARC-008, VAL-ARC-009, VAL-ARC-010 | PLN-ARC-006 | Coverage/disposition matrix, final checks, whole-branch review, closure commit | Workflow supervisor | Todo |
 
 ## Phase View
@@ -151,6 +151,21 @@ prove an applicable model cutoff must use `historical state unverified`.
 | <https://prettier.io/docs/cli> | Prettier / official stable CLI documentation | Class: local/CI capability. The CLI's check mode reports unformatted files and uses non-zero exit codes suitable for CI. | Stable docs; no visible page date | 2026-07-11 | Not applicable (non-model source) | Upstream command behavior is not an adopted or tracked shared gate in this workspace. | T-ARC-004 |
 | <https://dora.dev/guides/dora-metrics/> | DORA / official mutable guide | Class: remote operational measurement. Current model groups change lead time, deployment frequency, failed deployment recovery time, change fail rate, and deployment rework rate into throughput/instability. | Last updated 2026-01-05 | 2026-07-11 | Not applicable (non-model source) | Best applied to one application/service at a time; this task collected no production deployment or recovery data. | T-ARC-004 |
 | <https://martinfowler.com/bliki/ContinuousDelivery.html> | Martin Fowler / original practice article | Class: pipeline/delivery comparison. Continuous delivery emphasizes releasability, fast automated production-readiness feedback, builds/tests, and a deployment pipeline. | Published 2013-05-30; updated 2014-08-12 | 2026-07-11 | Not applicable (non-model source) | Practice framing only; tracked CI checks do not prove production deployability or continuous deployment. | T-ARC-004 |
+| <https://docs.docker.com/compose/> | Docker / official mutable documentation | Compose application and workflow overview for services, networks, volumes, configs, and secrets. | Not shown | 2026-07-11 | Not applicable (non-model source) | Overview capability does not prove the workspace's rendered or live state. | T-ARC-005 |
+| <https://docs.docker.com/reference/compose-file/> | Docker / official mutable reference | Compose services/resources syntax including profiles, networks, volumes, secrets, and healthchecks. | Not shown | 2026-07-11 | Not applicable (non-model source) | Syntax reference only; examples are not workspace mandates. | T-ARC-005 |
+| <https://docs.docker.com/reference/compose-file/include/> | Docker / official mutable documentation | Each include loads an application model with its own project directory and copies resources after base-file merge. | Not shown | 2026-07-11 | Not applicable (non-model source) | Includes can recurse; conflicts and transitive trust require resolved-config review. | T-ARC-005 |
+| <https://docs.docker.com/compose/how-tos/profiles/> | Docker / official mutable documentation | Unassigned services are enabled by default; assigned services require profile activation. | Not shown | 2026-07-11 | Not applicable (non-model source) | Profile assignment is activation behavior, not isolation or production readiness. | T-ARC-005 |
+| <https://docs.docker.com/compose/how-tos/networking/> | Docker / official mutable documentation | Service-name DNS, custom/internal networks, external pre-existing networks, and cross-project reachability. | Not shown | 2026-07-11 | Not applicable (non-model source) | External declarations do not prove host existence, ACLs, egress, or current connectivity. | T-ARC-005 |
+| <https://docs.docker.com/compose/how-tos/use-secrets/> | Docker / official mutable documentation | Compose grants named services access to declared secrets as mounted files. | Not shown | 2026-07-11 | Not applicable (non-model source) | Delivery model does not prove rotation, host-file protection, or Vault integration. | T-ARC-005 |
+| <https://docs.docker.com/compose/how-tos/startup-order/> | Docker / official mutable documentation | `depends_on` controls order and health conditions can gate readiness. | Not shown | 2026-07-11 | Not applicable (non-model source) | Static key presence does not prove application readiness or every dependency edge. | T-ARC-005 |
+| <https://docs.docker.com/compose/how-tos/production/> | Docker / official mutable documentation | Single-server production considerations and optional production-specific override-file pattern. | Not shown | 2026-07-11 | Not applicable (non-model source) | Example guidance is not a workspace mandate or multi-host production design. | T-ARC-005 |
+| <https://docs.docker.com/compose/trust-model/> | Docker / official mutable documentation | Compose files are trusted host-affecting input; transitive includes and fully resolved configuration require review. | Not shown | 2026-07-11 | Not applicable (non-model source) | `docker compose config` aids inspection but does not make untrusted content safe. | T-ARC-005 |
+| <https://csrc.nist.gov/pubs/sp/800/218/final> | NIST / official standard publication page | SSDF v1.1 supplies high-level secure-development practices integrable into an SDLC. | 2022-02 | 2026-07-11 | Not applicable (non-model source) | Reference framework only; no workspace control mapping, conformity, or adoption is claimed. | T-ARC-005 |
+| <https://owaspsamm.org/model/> | OWASP SAMM / official mutable model | SAMM v2 groups fifteen security practices into five business functions for risk-driven maturity improvement. | Version 2; page date not shown | 2026-07-11 | Not applicable (non-model source) | No workspace assessment, target maturity, score, or roadmap was performed. | T-ARC-005 |
+| <https://slsa.dev/spec/v1.2/> | SLSA / official approved specification | SLSA v1.2 defines source/build tracks, incremental levels, attestations, and provenance formats. | Version 1.2; publication date not shown | 2026-07-11 | Not applicable (non-model source) | No SLSA level is claimed; tracked image declaration provenance is not build provenance. | T-ARC-005 |
+| <https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations> | GitHub / official mutable documentation | Actions can generate and verify build provenance and signed SBOM attestations with explicit permissions. | Not shown | 2026-07-11 | Not applicable (non-model source) | Availability varies by visibility/plan; no tracked workspace attestation workflow exists. | T-ARC-005 |
+| <https://docs.github.com/en/rest/dependency-graph/sboms> | GitHub / official mutable API documentation | A repository dependency graph can be exported as an SPDX-compatible SBOM. | API version 2026-03-10 | 2026-07-11 | Not applicable (non-model source) | Remote availability/coverage was not queried; export capability is not a tracked release SBOM. | T-ARC-005 |
+| <https://github.com/ossf/scorecard> | OpenSSF / official mutable repository documentation | Scorecard reports automated heuristic security-health checks and their limitations. | Not shown | 2026-07-11 | Not applicable (non-model source) | No workspace scan/score was produced; heuristic detection can be incomplete. | T-ARC-005 |
 
 ## T-ARC-001 Evidence
 
@@ -750,6 +765,156 @@ The remediation covering pass recorded:
   `Published 2013-05-30; updated 2014-08-12`.
 - Final status: **Done**.
 
+## T-ARC-005 Evidence
+
+### Status and Scope
+
+Status is **Ready for Review**. Independent spec-compliance and document-quality
+verdicts are **Pending**; no reviewer verdict is fabricated. The implementation
+is documentation only, so code TDD and domain coverage are N/A. The exact
+tracked editable scope is this task record plus the two assigned Stage 90
+references. Compose, infrastructure, workflows, scripts, policy, provider/model
+configuration, credentials, secrets, runtime, and remote state were inspected
+read-only and not changed.
+
+### Tracked Topology and Derivation
+
+- Canonical Compose census: **49 tracked Compose files** — root plus **48 infra
+  variants**. The 48 variants comprise **40 canonical**
+  `docker-compose.yml`, **5 dev**, **2 cluster**, and **1 v2** file in **40
+  service directories**. Forty-eight files contain services; root contains no
+  services.
+- Root include census: **17 active include entries** plus **20 commented
+  optional entries**. Active included leaves contain **60 declared service
+  entries before profile resolution**; this is not a simultaneous runtime
+  count.
+- Canonical generated coverage: **169 declared service entries**, **25 profile
+  labels including `default`** (**24 named**), **9 default** service entries,
+  and **160 profile-gated** entries. The generator freshness check passed.
+- Root identity/network/secret census: one explicit project name
+  (`hy-home-infra`); **4 root networks = 1 ordinary bridge, 0 internal, and 3
+  external**; **70 root secret declarations**. Runtime external-network
+  existence and secret values remain unknown/unread.
+- Static service-key census across all 169 entries: **145 healthchecks, 94
+  dependencies, 60 restart policies, 39 port declarations, 130 volume
+  declarations, and 112 secret declarations**. Root-included leaves contain 55,
+  36, 29, 14, 46, and 42 respectively.
+- The infrastructure matrix contains **19 concerns: 6 Implemented, 12
+  Partially Implemented, 1 Missing, 0 Not Applicable**. It distinguishes
+  include entries, variants, services, profiles, project name, ordinary/
+  internal/external networks, static declarations, rendered validation, and
+  unknown live state.
+
+### Security Controls, Gaps, and Policy Conflict
+
+- The security matrix contains **15 concerns: 3 Implemented, 9 Partially
+  Implemented, 3 Missing, 0 Not Applicable**. Active control, reference
+  framework, implementation gap, and human/remote approval are separate.
+- Tracked workflow evidence: **6 workflows**, **16/16 full-SHA external action
+  references**, top-level permissions in all 6, and 15 required `ci-quality`
+  jobs including dependency audit, infrastructure security gates, pre-commit,
+  and `zizmor`. Remote runs/settings were not queried.
+- Canonical security-automation readiness remains **11 controls: 7
+  Implemented, 1 Partially Implemented, 3 Gap** under its generated schema.
+  The three generated `Gap` records map to shared research status **Missing**:
+  SBOM generation, artifact signing/provenance attestation, and OpenSSF
+  Scorecard automation. The generated scan covers 6 workflows, 28 scripts, and
+  pre-commit.
+- Tracked image/version provenance is explicitly narrower than supply-chain
+  provenance: **21 curated images = 20 declared-pinned plus 1 approved floating
+  exception**. It is not an SBOM, signature, attestation, vulnerability result,
+  or SLSA level.
+- Unresolved out-of-scope policy tension: owner
+  `docs/00.agent-governance/rules/approval-boundaries.md` unconditionally bans
+  secret-value reads and names them a Hard Stop, while owner
+  `docs/00.agent-governance/scopes/security.md` describes approved concrete
+  value reads/writes/rotations under redaction, validation, and recovery
+  evidence. This task follows the stricter ban, names both owners, does not
+  resolve the conflict, and routes a separately approved Stage 00/security
+  policy follow-up.
+
+### Source Inventory
+
+- External source inventory: **16 primary/official sources** revalidated on
+  `2026-07-11` — **9 Docker** sources (overview, file reference, include,
+  profiles, networking, secrets, startup order, production, trust model) and
+  **7 security/supply-chain** sources (NIST SSDF, OWASP SAMM, SLSA, GitHub
+  Actions secure use, GitHub artifact attestations, GitHub SBOM API, OpenSSF
+  Scorecard).
+- Source-ledger additions: **15 Task 5 rows**. The already-ledgered Task 4
+  GitHub Actions secure-use row was revalidated and reused rather than
+  duplicated. All mutable pages are retrieval-time guidance; no external
+  example/framework is adopted as workspace policy.
+- Repo-local source classes: root/all infra Compose, canonical generated Compose
+  coverage and security/provenance snapshots, infra/operations READMEs, Stage 00
+  approval/security/QA/ops governance, `.github/SECURITY.md`, CODEOWNERS,
+  workflows/pre-commit, hardening/validation scripts, and the stale/advisory
+  Graphify report corroborated against tracked sources.
+
+### Changed Files
+
+- `docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md`
+- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md`
+- `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md`
+
+### Validation Evidence
+
+- Clean pre-edit baseline: HEAD
+  `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6`; `git status --short`,
+  `git diff --stat`, and `git diff --check` were clean; generated Compose
+  coverage was fresh. Graphify was stale at `30df271a` and advisory.
+- Structural recount — exit 0: infrastructure matrix 19 rows
+  (`6/12/1/0`), security matrix 15 rows (`3/9/3/0`), 19/19 and 15/15
+  single existing canonical-owner paths, and 15 Task 5 source-ledger additions.
+- `git diff --check` — exit 0.
+- `bash scripts/operations/generate-compose-profile-service-coverage.sh --check`
+  — exit 0; generated Compose coverage fresh.
+- `bash scripts/validation/generate-security-automation-readiness.sh --check`
+  — exit 0; generated security readiness fresh.
+- `bash scripts/operations/generate-tech-stack-version-provenance.sh --check`
+  — exit 0; generated declaration provenance fresh.
+- `bash scripts/validation/validate-docker-compose.sh` — exit 0;
+  `services_total=5` for the core profile.
+- `bash scripts/hardening/check-all-hardening.sh` — exit 0; all 11 tier
+  baselines passed.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` and
+  `generate-llm-wiki-coverage.sh --check` — exit 0; both generated artifacts
+  fresh.
+- `bash scripts/validation/check-doc-traceability.sh` — exit 0;
+  `catalog_pairs_total=46`, `failures=0`.
+- `bash scripts/validation/check-doc-implementation-alignment.sh` — exit 0;
+  `stage_docs_total=621`, `repo_local_markdown_links_checked=4807`,
+  `failures=0`.
+- `bash scripts/operations/sync-provider-surfaces.sh --check` — exit 0; no
+  provider drift.
+- `bash scripts/validation/check-repo-contracts.sh` — exit 0;
+  `changed_template_docs_total=3`, all three normalized, repository
+  `failures=0`.
+- The first repository-contract pass found only three broken new relative
+  links. They were corrected in scope, then the complete gate bundle above was
+  rerun and passed; no unrelated pre-existing validator failure remains.
+
+### Commit and Review Evidence
+
+- Task brief: `.superpowers/sdd/task-5-brief.md`.
+- Implementer report: `.superpowers/sdd/task-5-implementer-report.md` (ignored
+  out-of-band evidence; finalized after the implementation commit).
+- Base commit: `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6`.
+- Implementation review range: `34fc342ebfbc6601bc0e7f4c9ac9ae7aae00c4c6..HEAD`.
+- Logical subject: `docs(research): refresh infrastructure and security references`.
+- Implementer spec-compliance self-review: **PASS** — required topology/control
+  concerns, exact schemas, recomputed counts, status vocabulary, one existing
+  canonical owner per row, primary sources, approval boundaries, unknown-state
+  caveats, and policy-conflict disposition are present.
+- Implementer document-quality self-review: **PASS** — tracked fact, generated
+  evidence, external comparison, current control, implementation gap,
+  recommendation, and human/remote authority remain distinguishable; no secret
+  value or fabricated review/runtime verdict is present.
+- Independent spec-compliance verdict: **Pending**.
+- Independent document-quality verdict: **Pending**.
+- Final task transition to Done is owned by the controller after independent
+  review; this implementation truthfully remains **Ready for Review**.
+
 ## Task Review Evidence Contract
 
 For each task, record:
@@ -813,6 +978,15 @@ explicit out-of-band artifact. Graphify was already stale relative to the base
 and remained advisory; no code file changed, and refreshing generated Graphify
 artifacts would have expanded the approved scope. No generated artifact became
 stale under the covering freshness checks.
+
+For `T-ARC-005`, no content-scope deviation occurred. The bootstrap progress
+log was not edited because the task brief restricted tracked mutation to the
+three named documentation files; the required implementer report is the
+explicit out-of-band artifact. The secret-read policy conflict is recorded but
+not resolved because Stage 00 policy edits require separate approval. Graphify
+was already stale/advisory and was not refreshed for documentation-only work.
+No Compose, infra, workflow, script, policy, configuration, credential, secret,
+runtime, provider/model, or remote state changed.
 
 ## Related Documents
 
