@@ -888,6 +888,15 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected surfaces | Runtime, Compose, secrets, remote GitHub, model policy | Preserved | No diff under runtime Compose/infra/secret/model-identity surfaces; no service startup, runtime mutation, secret read, deployment, remote setting, branch-protection, or exact model-literal change. The approved provider cutoff remains 2026-07-10 10:00 KST. |
 | Lifecycle boundary | Spec/Plan/Task and T-AER-012 | Completed | I-01, I-02, I-03, and I-03-R1 were fixed in `52fa67cf`, `746be1be`, `b08d6576`, and `10ffce8f`. Exact-range review `3e92b39f..10ffce8f` returned Spec PASS / Quality APPROVED / C0 / I0 / M0 and `READY_FOR_RECLOSURE: YES`; Spec/Plan/Task and T-AER-012 are completed. Four runtime follow-up specs/plans remain draft and separately gated. |
 
+## Agentic Audit Harness Consolidation Design (2026-07-12)
+
+| Item | Area | Status | Notes |
+| --- | --- | --- | --- |
+| Approved design | Audit lifecycle, current-state reassessment, semantic freshness, security readiness, QA/CI | Done | The user approved in-place lifecycle separation, preservation of dated evidence, a current canonical re-audit, deterministic semantic closure assertions, scoped-versus-broad security readiness, and six reviewed implementation tasks. |
+| Stage 03 specification | `docs/03.specs/128-agentic-audit-harness-consolidation/spec.md` | Draft | The design is recorded as a draft Spec 128 in an isolated linked worktree. It remains draft until written-spec review. |
+| Protected surfaces | Runtime, Compose, infrastructure state, deployment, secrets, remote GitHub, `.gemini` adoption, model policy | Preserved | This design phase authorizes documentation only. Protected runtime and provider/model surfaces remain outside implementation scope and continue to route to Specs 124-127 or a separately approved chain. |
+| Verification | Focused document and metadata checks | Pass | Placeholder and heading scans passed; changed-document metadata selected 3 files with 0 violations; validation unit tests passed 90/90; traceability and implementation alignment passed; generated metadata and LLM Wiki references were refreshed; repository contracts passed with `failures=0`; `git diff --check` passed. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

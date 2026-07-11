@@ -96,6 +96,7 @@ docs/03.specs/
 ├── 125-infrastructure-operations-readiness-remediation/ # Draft upgrade, migration, backup, restore, and recovery contract
 ├── 126-security-supply-chain-remediation/ # Draft scanning, SBOM, provenance, signing, and verification contract
 ├── 127-deployment-release-engineering-remediation/ # Draft environment, promotion, release, deployment, and rollback contract
+├── 128-agentic-audit-harness-consolidation/ # Draft canonical audit lifecycle, current-state, semantic freshness, and QA/CI contract
 └── README.md                            # This file
 ```
 
@@ -135,6 +136,7 @@ docs/03.specs/
 | Infrastructure upgrade, migration, backup, restore, and recovery readiness | `125-infrastructure-operations-readiness-remediation/spec.md` |
 | Security supply-chain scanning, SBOM, provenance, signing, and verification | `126-security-supply-chain-remediation/spec.md` |
 | Deployment environments, promotion, release records, and rollback | `127-deployment-release-engineering-remediation/spec.md` |
+| Canonical audit lifecycle, current-state reassessment, semantic freshness, and QA/CI integration | `128-agentic-audit-harness-consolidation/spec.md` |
 | Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
 | Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
@@ -224,6 +226,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Infrastructure Operations Readiness Remediation Spec**: [125-infrastructure-operations-readiness-remediation/spec.md](./125-infrastructure-operations-readiness-remediation/spec.md)
 - **Security Supply-Chain Remediation Spec**: [126-security-supply-chain-remediation/spec.md](./126-security-supply-chain-remediation/spec.md)
 - **Deployment and Release Engineering Remediation Spec**: [127-deployment-release-engineering-remediation/spec.md](./127-deployment-release-engineering-remediation/spec.md)
+- **Agentic Audit Harness Consolidation Spec**: [128-agentic-audit-harness-consolidation/spec.md](./128-agentic-audit-harness-consolidation/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)

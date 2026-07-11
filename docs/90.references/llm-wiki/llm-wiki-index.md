@@ -445,6 +445,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/126-security-supply-chain-remediation/spec.md](../../03.specs/126-security-supply-chain-remediation/spec.md) | Markdown reference |
 | [docs/03.specs/127-deployment-release-engineering-remediation/README.md](../../03.specs/127-deployment-release-engineering-remediation/README.md) | folder index |
 | [docs/03.specs/127-deployment-release-engineering-remediation/spec.md](../../03.specs/127-deployment-release-engineering-remediation/spec.md) | Markdown reference |
+| [docs/03.specs/128-agentic-audit-harness-consolidation/spec.md](../../03.specs/128-agentic-audit-harness-consolidation/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
