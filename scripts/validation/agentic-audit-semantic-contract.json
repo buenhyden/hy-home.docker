@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "audit_index": "docs/90.references/audits/README.md",
+  "canonical_pack": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack",
+  "overview": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md",
+  "task_evidence": "docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md",
+  "required_index_headings": [
+    "## Canonical Current Audit",
+    "## Dated Historical Snapshots",
+    "## Supersession Ledgers"
+  ],
+  "assertions": [
+    {
+      "criterion_id": "DML-01",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+        "scripts/validation/check-document-metadata.py",
+        "tests/validation/test_document_metadata.py"
+      ],
+      "completed_task_ids": [
+        "T-AER-008",
+        "T-AER-012"
+      ],
+      "forbidden_stale_phrases": [
+        "No `artifact_id` exists",
+        "no typed semantic metadata parser"
+      ]
+    },
+    {
+      "criterion_id": "DML-02",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+        "scripts/validation/check-document-metadata.py",
+        "tests/validation/test_document_metadata.py"
+      ],
+      "completed_task_ids": [
+        "T-AER-007"
+      ],
+      "forbidden_stale_phrases": [
+        "no typed semantic metadata parser"
+      ]
+    },
+    {
+      "criterion_id": "DML-03",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+        "scripts/validation/check-document-metadata.py",
+        "tests/validation/test_document_metadata.py"
+      ],
+      "completed_task_ids": [
+        "T-AER-008",
+        "T-AER-012"
+      ],
+      "forbidden_stale_phrases": [
+        "no typed semantic metadata parser"
+      ]
+    },
+    {
+      "criterion_id": "DML-04",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+        "scripts/validation/check-document-metadata.py",
+        "tests/validation/test_document_metadata.py"
+      ],
+      "completed_task_ids": [
+        "T-AER-007",
+        "T-AER-012"
+      ],
+      "forbidden_stale_phrases": [
+        "no typed semantic metadata parser"
+      ]
+    },
+    {
+      "criterion_id": "DML-05",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+        "scripts/validation/check-document-metadata.py",
+        "tests/validation/test_document_metadata.py"
+      ],
+      "completed_task_ids": [
+        "T-AER-007",
+        "T-AER-008"
+      ],
+      "forbidden_stale_phrases": [
+        "no typed semantic metadata parser"
+      ]
+    },
+    {
+      "criterion_id": "DML-07",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+        "scripts/validation/check-document-metadata.py",
+        "tests/validation/test_document_metadata.py"
+      ],
+      "completed_task_ids": [
+        "T-AER-008",
+        "T-AER-012"
+      ],
+      "forbidden_stale_phrases": [
+        "no typed semantic metadata parser"
+      ]
+    },
+    {
+      "criterion_id": "DML-08",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+        "scripts/validation/check-document-metadata.py",
+        "tests/validation/test_document_metadata.py"
+      ],
+      "completed_task_ids": [
+        "T-AER-008",
+        "T-AER-012"
+      ],
+      "forbidden_stale_phrases": [
+        "no typed semantic metadata parser"
+      ]
+    },
+    {
+      "criterion_id": "DML-11",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+        "scripts/validation/check-document-metadata.py",
+        "tests/validation/test_document_metadata.py"
+      ],
+      "completed_task_ids": [
+        "T-AER-007",
+        "T-AER-008",
+        "T-AER-012"
+      ],
+      "forbidden_stale_phrases": [
+        "no typed semantic metadata parser"
+      ]
+    },
+    {
+      "criterion_id": "DML-14",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/99.templates/support/document-metadata-profiles.yaml",
+        "scripts/validation/check-document-metadata.py",
+        "tests/validation/test_document_metadata.py"
+      ],
+      "completed_task_ids": [
+        "T-AER-007",
+        "T-AER-008",
+        "T-AER-012"
+      ],
+      "forbidden_stale_phrases": [
+        "no typed semantic metadata parser",
+        "Task 5 remains"
+      ]
+    },
+    {
+      "criterion_id": "QAF-12",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/00.agent-governance/rules/task-checklists.md",
+        "scripts/validation/run-agent-precommit-all-files.sh",
+        "tests/validation/test_run_agent_precommit_all_files.sh"
+      ],
+      "completed_task_ids": [
+        "T-AER-009",
+        "T-AER-012"
+      ],
+      "forbidden_stale_phrases": [
+        "wrapper remains absent",
+        "wrapper does not yet exist",
+        "Task 9 will"
+      ]
+    },
+    {
+      "criterion_id": "AUT-09",
+      "report": "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md",
+      "required_state": "Implemented",
+      "required_evidence_paths": [
+        "docs/00.agent-governance/rules/task-checklists.md",
+        "scripts/validation/run-agent-precommit-all-files.sh",
+        "tests/validation/test_run_agent_precommit_all_files.sh"
+      ],
+      "completed_task_ids": [
+        "T-AER-009",
+        "T-AER-012"
+      ],
+      "forbidden_stale_phrases": [
+        "wrapper remains absent",
+        "wrapper does not yet exist",
+        "Task 9 will"
+      ]
+    }
+  ]
+}

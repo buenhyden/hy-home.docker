@@ -174,6 +174,63 @@ close generated evidence.
   approved subagent workflow used a new independent reviewer and recorded the
   platform constraint.
 
+### T-AHC-003 Semantic Freshness Validator Evidence
+
+- **Implementation base and lifecycle**: Task 3 starts from reviewed Task 2
+  base `14489dcd`. T-AHC-003 remains `Todo`, its Phase 2 checkbox remains
+  unchecked, and its Review Ledger row remains fully `Pending` until an
+  independent reviewer approves the implementation commit.
+- **TDD RED**:
+  `python3 -m unittest tests.validation.test_agentic_audit_semantic_freshness -v`
+  exited `1` before either implementation artifact existed, with the expected
+  `FileNotFoundError` for
+  `scripts/validation/check-agentic-audit-semantic-freshness.py`.
+- **TDD GREEN**: The same focused command passed all 24 baseline and
+  adversarial tests. The first implementation attempt passed 23/24 and exposed
+  an over-constraint that required the new contract itself to be staged during
+  development; removing that non-required self-membership check produced the
+  final 24/24 pass while retaining tracked-membership checks for every declared
+  evidence path and lifecycle input.
+- **Changed files**:
+  `scripts/validation/agentic-audit-semantic-contract.json`,
+  `scripts/validation/check-agentic-audit-semantic-freshness.py`,
+  `tests/validation/test_agentic_audit_semantic_freshness.py`, and this task
+  evidence. The logical commit uses
+  `feat(audit): enforce semantic audit freshness`.
+- **Assertion and schema contract**: Schema version 1 permits only the seven
+  required top-level keys and six required per-assertion keys. It requires
+  exactly eleven unique `Implemented` assertions for `DML-01/02/03/04/05/07/08/11/14`,
+  `QAF-12`, and `AUT-09`; each assertion binds its exact canonical report,
+  tracked evidence, completed T-AER task IDs, and narrow stale phrases.
+- **Fail-closed behavior**: Duplicate JSON keys, missing/unknown keys, wrong
+  schema or types, duplicate/unknown assertion IDs, unsafe absolute or `..`
+  paths, missing/untracked evidence, structural audit defects, report/state
+  mismatch, missing or non-`Done` task evidence, forbidden stale phrases,
+  missing lifecycle headings, a non-active canonical README, and a
+  non-superseded 2026-07-07 README all raise
+  `AuditSemanticContractError`. Tracked membership uses only NUL-delimited
+  `git ls-files -z`; the validator reads no Git history and performs no network
+  access.
+- **Adversarial coverage**: The 24-test fixture copies only required tracked
+  files into a temporary Git repository and covers the current repository pass,
+  all brief-listed schema/ID/path/evidence/report/task/stale/lifecycle/heading
+  failures, malformed structural input, and both missing and untracked evidence.
+- **Validation**: Focused unit/adversarial suite PASS 24/24; semantic CLI PASS
+  with `audit_semantic_freshness: PASS assertions=11 failures=0`;
+  `py_compile` PASS; JSON structural check PASS at 11 assertions / 11 unique /
+  11 Implemented; existing criterion contract PASS at 11 reports / 161 rows /
+  161 unique IDs; exact lifecycle checks found the required `Todo`, unchecked,
+  and five-`Pending` T-AHC-003 lines.
+- **Graph and protected surfaces**: `graphify update .` completed at 22,556
+  nodes / 23,380 edges; Graphify remains advisory. No generator, repository
+  contract, CI workflow, pre-commit invocation, runtime, Compose,
+  infrastructure, secret, credential, remote, provider/model policy, `.gemini`,
+  deployment, or 2026-07-03/04/07 audit content changed.
+- **Self-review and concerns**: The authorized four-file diff, exact assertion
+  set, strict schema, fail-closed error paths, task template compatibility, and
+  lifecycle markers were reviewed after validation. No implementation concern
+  remains; this self-review does not replace independent review.
+
 ## Verification Summary
 
 - **Baseline**: `codex/audit-harness-consolidation` from
