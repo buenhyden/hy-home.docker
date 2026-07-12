@@ -56,7 +56,7 @@ close generated evidence.
 | T-AHC-002 | Reassess all 161 criteria and canonical overview. | doc/eval | Criterion Contract | Task 2 | State distribution, 11/161, review | Agentic Workflow Specialist | Done |
 | T-AHC-003 | Implement semantic closure contract and adversarial tests. | impl/test | Semantic Freshness | Task 3 | RED/GREEN, CLI PASS, review | QA Engineer | Done |
 | T-AHC-004 | Split scoped and broad security readiness signals. | impl/test | Security Readiness | Task 4 | 13 controls, negative test, review | Security Auditor | Done |
-| T-AHC-005 | Wire semantic freshness into generator, contracts, and CI. | impl/ci | QA and CI | Task 5 | Unit/matrix/workflow/contracts, review | CI/CD Engineer | Todo |
+| T-AHC-005 | Wire semantic freshness into generator, contracts, and CI. | impl/ci | QA and CI | Task 5 | Unit/matrix/workflow/contracts, review | CI/CD Engineer | Done |
 | T-AHC-006 | Regenerate, run full QA/wrapper, and close evidence. | test/doc | Verification | Task 6 | Full bundle, wrapper, branch review | QA / Documentation | Todo |
 
 ## Phase View
@@ -70,7 +70,7 @@ close generated evidence.
 
 - [x] T-AHC-003 Semantic freshness validator
 - [x] T-AHC-004 Security readiness precision
-- [ ] T-AHC-005 QA and CI integration
+- [x] T-AHC-005 QA and CI integration
 
 ### Phase 3 — Closure
 
@@ -84,7 +84,7 @@ close generated evidence.
 | T-AHC-002 | `ee64b3a7..699eda00` | PASS | APPROVED | Initial I1/M1 resolved by `699eda00`; re-review C0/I0/M0 | `.superpowers/sdd/task-2-rereview.md` |
 | T-AHC-003 | `14489dcd..cdf30ac1` | PASS | APPROVED | Initial C0/I3/M2 resolved by `cdf30ac1`; re-review C0/I0/M0 | `.superpowers/sdd/task-3-review.md` |
 | T-AHC-004 | `5dc6f5e8..6168f7a9` | PASS | APPROVED | C0/I0/M0; no findings | `.superpowers/sdd/task-4-review.md` |
-| T-AHC-005 | Pending | Pending | Pending | Pending | Pending |
+| T-AHC-005 | `8502794c..97b70260` | PASS | APPROVED | Initial C0/I0/M1 resolved by `97b70260`; re-review C0/I0/M0 | `.superpowers/sdd/task-5-review.md` |
 | T-AHC-006 | Pending | Pending | Pending | Pending | Pending |
 
 ### T-AHC-001 Audit Lifecycle Organization Evidence
@@ -312,9 +312,9 @@ close generated evidence.
 ### T-AHC-005 QA and CI Integration Evidence
 
 - **Implementation base and lifecycle**: Task 5 starts from reviewed Task 4
-  base `8502794c`. T-AHC-005 remains `Todo`, its Phase 2 checkbox remains
-  unchecked, and its Review Ledger row remains `Pending` until independent
-  Spec compliance and quality review approve this logical commit.
+  base `8502794c`. Independent re-review approved the implementation and test
+  hardening through `97b70260`; T-AHC-005 is `Done`, its Phase 2 checkbox is
+  checked, and its Review Ledger records the final verdict.
 - **TDD RED**: After adding only the repository-integration assertion,
   `python3 -m unittest tests.validation.test_agentic_audit_semantic_freshness -v`
   exited `1`: the thirty existing tests passed and the new test failed because
@@ -381,9 +381,11 @@ close generated evidence.
   syntax, actionlint, zizmor, explicit-base metadata, and diff hygiene remained
   green. The review-fix Graphify refresh completed at 22,643 nodes / 23,496
   edges and remained advisory only for the same two cross-root inferred edges;
-  its generated collateral was restored outside the logical fix. T-AHC-005
-  intentionally remains `Todo`/unchecked/`Pending` until the review-fix verdict
-  is recorded by the supervising task.
+  its generated collateral was restored outside the logical fix.
+- **Independent re-review**: The reviewer verified the complete
+  `8502794c..97b70260` range, exact-contract helper, and seven mutation probes,
+  returning Spec PASS, Quality APPROVED, C0/I0/M0 with no new protected-surface
+  changes. The final report is `.superpowers/sdd/task-5-review.md`.
 
 ## Verification Summary
 
