@@ -98,6 +98,7 @@ docs/04.execution/plans/
 ├── 2026-07-10-agentic-research-pack-consolidation.md # Completed canonical research-pack consolidation plan; post-closure review PASS/APPROVED
 ├── 2026-07-11-agentic-engineering-audit-remediation.md # Completed postclosure metadata-integrity fixes and exact-range re-review plan
 ├── 2026-07-12-agentic-audit-harness-consolidation.md # Completed canonical audit lifecycle, freshness, security precision, and QA/CI plan
+├── 2026-07-13-document-contract-canonicalization.md # Active document-contract foundation implementation plan
 ├── 2026-07-11-compose-runtime-readiness-remediation.md # Draft Compose runtime evidence plan; later runtime approval required
 ├── 2026-07-11-infrastructure-operations-readiness-remediation.md # Draft stateful operations/recovery plan; later runtime approval required
 ├── 2026-07-11-security-supply-chain-remediation.md # Draft supply-chain evidence plan; later security/remote approval required
@@ -210,6 +211,7 @@ task evidence or progress log records the same item as unresolved.
 - **Agentic Research Pack Consolidation Plan**: [2026-07-10-agentic-research-pack-consolidation.md](./2026-07-10-agentic-research-pack-consolidation.md)
 - **Agentic Engineering Audit and Remediation Plan (completed; I-01 through I-03-R1 resolved)**: [2026-07-11-agentic-engineering-audit-remediation.md](./2026-07-11-agentic-engineering-audit-remediation.md)
 - **Agentic Audit Harness Consolidation Plan**: [2026-07-12-agentic-audit-harness-consolidation.md](./2026-07-12-agentic-audit-harness-consolidation.md)
+- **Document Contract Canonicalization Plan**: [2026-07-13-document-contract-canonicalization.md](./2026-07-13-document-contract-canonicalization.md)
 - **Compose Runtime Readiness Remediation Plan**: [2026-07-11-compose-runtime-readiness-remediation.md](./2026-07-11-compose-runtime-readiness-remediation.md)
 - **Infrastructure Operations Readiness Remediation Plan**: [2026-07-11-infrastructure-operations-readiness-remediation.md](./2026-07-11-infrastructure-operations-readiness-remediation.md)
 - **Security Supply-Chain Remediation Plan**: [2026-07-11-security-supply-chain-remediation.md](./2026-07-11-security-supply-chain-remediation.md)

@@ -542,6 +542,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md](../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-11-security-supply-chain-remediation.md](../../04.execution/plans/2026-07-11-security-supply-chain-remediation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md](../../04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md](../../04.execution/plans/2026-07-13-document-contract-canonicalization.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -658,6 +659,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md](../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md](../../04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md](../../04.execution/tasks/2026-07-13-document-contract-canonicalization.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs

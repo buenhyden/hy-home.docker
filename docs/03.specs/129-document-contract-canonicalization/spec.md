@@ -365,11 +365,12 @@ Ambiguous targets block their wave.
 
 ### Baseline and Transition Strategy
 
-The current generated inventory baseline contains 891 records, 546 records
-with findings, 1,893 `missing-required-key` findings, seven
-`replacement-free-supersession` findings, and 125 `stale-active` findings.
-Counts may change through approved additions, removals, or archive moves; IDs,
-relations, and dispositions provide continuity.
+The pre-Spec 129 generated inventory baseline contained 891 records. Adding
+this specification moved the current generated baseline to 892 records while
+retaining 546 records with findings, 1,893 `missing-required-key` findings,
+seven `replacement-free-supersession` findings, and 125 `stale-active`
+findings. Counts may change through approved additions, removals, or archive
+moves; IDs, relations, and dispositions provide continuity.
 
 The full inventory remains advisory during dependency waves. Each reviewed
 wave joins the changed/new blocking set. Corpus-wide blocking activates only

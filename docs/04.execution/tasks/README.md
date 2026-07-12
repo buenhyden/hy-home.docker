@@ -157,6 +157,7 @@ docs/04.execution/tasks/
 ├── 2026-07-10-agentic-research-pack-consolidation.md # Completed canonical research-pack consolidation evidence; post-closure review PASS/APPROVED
 ├── 2026-07-11-agentic-engineering-audit-remediation.md # Completed postclosure metadata-integrity fixes and re-review evidence
 ├── 2026-07-12-agentic-audit-harness-consolidation.md # Completed canonical audit lifecycle, semantic freshness, security precision, and QA/CI evidence
+├── 2026-07-13-document-contract-canonicalization.md # Active document-contract foundation task evidence
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence
@@ -250,6 +251,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Agentic Research Pack Consolidation Task**: [2026-07-10-agentic-research-pack-consolidation.md](./2026-07-10-agentic-research-pack-consolidation.md)
 - **Agentic Engineering Audit and Remediation Task (completed; I-01 through I-03-R1 resolved)**: [2026-07-11-agentic-engineering-audit-remediation.md](./2026-07-11-agentic-engineering-audit-remediation.md)
 - **Agentic Audit Harness Consolidation Task**: [2026-07-12-agentic-audit-harness-consolidation.md](./2026-07-12-agentic-audit-harness-consolidation.md)
+- **Document Contract Canonicalization Task**: [2026-07-13-document-contract-canonicalization.md](./2026-07-13-document-contract-canonicalization.md)
 - **Audit Implementation Matrix Snapshot Task**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **SDLC Document Contract Corpus Normalization Task**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
