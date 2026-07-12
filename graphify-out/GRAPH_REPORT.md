@@ -1,7 +1,7 @@
 # Graph Report - audit-harness-consolidation  (2026-07-12)
 
 ## Corpus Check
-- 1100 files · ~1,140,408 words
+- 1100 files · ~1,140,513 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `22b526a9`
+- Built from commit: `47799184`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1575,7 +1575,7 @@ Nodes (36): Alertmanager Grafana Datasource, Grafana Datasource Provisioning, Lo
 
 ### Community 1 - "Community 1"
 Cohesion: 0.12
-Nodes (16): Clean Code and SOLID, Code Reviewer Agent, Common Engineering Scope, Naming Conventions, Pre-Commit Managed Linting, Doc Writer Agent, Documentation Operational Scope, Documentation Permissions (+8 more)
+Nodes (16): Clean Code and SOLID, Code Reviewer Agent, Common Engineering Scope, Naming Conventions, Pre-Commit Managed Linting, Canonical Stage Paths, Doc Writer Agent, Documentation Operational Scope (+8 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.20
@@ -7191,7 +7191,7 @@ Nodes (10): Workflow Hardening Gate, AI Hardening Gate, Tooling Hardening Gate, 
 
 ### Community 1484 - "Community 1484"
 Cohesion: 0.33
-Nodes (6): Canonical Stage Paths, Layer Frontmatter, Meta ADR, Metadata and Taxonomy Engineering Scope, No Orphans Documentation Rule, Time Sensitive File Naming
+Nodes (6): Audit Handoff Artifacts, Delegated Agent Facility, Runtime Model Roles, Single Primary Scope Import, Subagent Protocol, TaskUpdate Lifecycle
 
 ### Community 1485 - "Community 1485"
 Cohesion: 0.13
