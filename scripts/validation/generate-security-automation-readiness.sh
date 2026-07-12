@@ -140,17 +140,28 @@ has_tech_stack_provenance = all(
     )
 )
 
-has_vulnerability_gate = grep_any(
+has_scoped_ecosystem_gate = bool(
+    re.search(
+        r"npm\s+audit\s+--audit-level=high\s+--prefix\s+projects/storybook/nextjs",
+        ci_text,
+    )
+)
+has_broad_dependency_sca = grep_any(
     SECURITY_CODE_SURFACES,
     (
         r"\bosv-scanner\b",
-        r"\btrivy\b",
-        r"\bgrype\b",
         r"\bsnyk\b",
-        r"\bnpm\s+audit\b",
         r"\bpip-audit\b",
         r"\bcargo\s+audit\b",
         r"\bgovulncheck\b",
+    ),
+)
+has_container_scan = grep_any(
+    SECURITY_CODE_SURFACES,
+    (
+        r"\btrivy\b.*(?:image|fs)",
+        r"\bgrype\b",
+        r"docker\s+scout\s+cves",
     ),
 )
 has_sbom_generation = grep_any(
@@ -236,10 +247,12 @@ controls: list[Control] = [
     ),
     Control(
         "SEC-AUTO-008",
-        "OSV/SCA vulnerability gate",
-        "Implemented" if has_vulnerability_gate else "Gap",
-        SECURITY_SCAN_EVIDENCE,
-        "A vulnerability gate command is present in tracked workflow/script surfaces." if has_vulnerability_gate else f"No tracked OSV/SCA vulnerability gate command was found in workflow/script surfaces. {SECURITY_SCAN_SUMMARY}",
+        "Scoped ecosystem vulnerability gate",
+        "Implemented" if has_scoped_ecosystem_gate else "Gap",
+        (".github/workflows/ci-quality.yml",),
+        "The tracked Storybook Next.js npm audit gate has an explicit project and severity scope."
+        if has_scoped_ecosystem_gate
+        else "Add an explicitly scoped dependency vulnerability gate with project, ecosystem, severity, and exception ownership.",
     ),
     Control(
         "SEC-AUTO-009",
@@ -262,6 +275,24 @@ controls: list[Control] = [
         SECURITY_SCAN_EVIDENCE,
         "Scorecard automation is present in tracked workflow/script surfaces." if has_scorecard else f"No tracked OpenSSF Scorecard automation command was found. {SECURITY_SCAN_SUMMARY}",
     ),
+    Control(
+        "SEC-AUTO-012",
+        "Broad dependency SCA coverage",
+        "Implemented" if has_broad_dependency_sca else "Gap",
+        SECURITY_SCAN_EVIDENCE,
+        "A broad dependency SCA command is present in tracked workflow/script surfaces."
+        if has_broad_dependency_sca
+        else f"No tracked broad dependency SCA command was found; the scoped npm audit does not satisfy this control. {SECURITY_SCAN_SUMMARY}",
+    ),
+    Control(
+        "SEC-AUTO-013",
+        "Container/image vulnerability scanning",
+        "Implemented" if has_container_scan else "Gap",
+        SECURITY_SCAN_EVIDENCE,
+        "A container/image vulnerability scanning command is present in tracked workflow/script surfaces."
+        if has_container_scan
+        else f"No tracked container/image vulnerability scanning command was found. {SECURITY_SCAN_SUMMARY}",
+    ),
 ]
 
 status_counts = collections.Counter(control.status for control in controls)
@@ -271,30 +302,33 @@ partial_count = status_counts["Partially Implemented"]
 gap_count = status_counts["Gap"]
 
 residual_security_gaps: list[str] = []
-if not has_vulnerability_gate:
-    residual_security_gaps.append("vulnerability gating")
 if not has_sbom_generation:
     residual_security_gaps.append("SBOM generation")
 if not has_attestation:
     residual_security_gaps.append("artifact signing/provenance attestation")
 if not has_scorecard:
     residual_security_gaps.append("OpenSSF Scorecard automation")
+if not has_broad_dependency_sca:
+    residual_security_gaps.append("broad dependency SCA")
+if not has_container_scan:
+    residual_security_gaps.append("container/image vulnerability scanning")
 
 follow_up_rows: list[tuple[str, str, str]] = []
-if not has_vulnerability_gate:
+if not has_scoped_ecosystem_gate:
     follow_up_rows.append(
         (
             "SEC-AUTO-008",
-            "Add OSV/SCA vulnerability gate or advisory report with severity thresholds and exception handling.",
+            "Add a scoped ecosystem vulnerability gate with explicit project, severity, and exception handling.",
             "Stage 03 security spec + Stage 04 plan",
         )
     )
+spec_126_route = "[Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md)"
 if not has_sbom_generation:
     follow_up_rows.append(
         (
             "SEC-AUTO-009",
             "Add SBOM generation and storage rules for build or release artifacts.",
-            "Stage 03 security spec + Stage 04 plan",
+            spec_126_route,
         )
     )
 if not has_attestation:
@@ -302,7 +336,7 @@ if not has_attestation:
         (
             "SEC-AUTO-010",
             "Add artifact signing, SLSA provenance, or attestation design for artifact-producing workflows.",
-            "Stage 03 security spec + Stage 04 plan",
+            spec_126_route,
         )
     )
 if not has_scorecard:
@@ -310,7 +344,23 @@ if not has_scorecard:
         (
             "SEC-AUTO-011",
             "Add OpenSSF Scorecard advisory reporting if maintainers want an external security-health signal.",
-            "Stage 03 security spec + Stage 04 plan",
+            spec_126_route,
+        )
+    )
+if not has_broad_dependency_sca:
+    follow_up_rows.append(
+        (
+            "SEC-AUTO-012",
+            "Define broad dependency SCA ecosystems, thresholds, exceptions, remediation ownership, and rollout mode.",
+            spec_126_route,
+        )
+    )
+if not has_container_scan:
+    follow_up_rows.append(
+        (
+            "SEC-AUTO-013",
+            "Define container/image scan targets, digest identity, thresholds, exceptions, and remediation ownership.",
+            spec_126_route,
         )
     )
 
@@ -337,8 +387,9 @@ lines: list[str] = [
     "## Overview",
     "",
     "This generated reference summarizes repository-local security automation",
-    "readiness for vulnerability gating, SBOM generation, provenance/attestation,",
-    "workflow security, secret scanning, dependency updates, and hardening.",
+    "readiness for scoped vulnerability gating, broad dependency SCA, container/image",
+    "scanning, SBOM generation, provenance/attestation, workflow security, secret",
+    "scanning, dependency updates, and hardening.",
     "",
     "## Purpose",
     "",
@@ -422,6 +473,8 @@ lines.extend(
         "- Branch protection and review evidence is partial because the repository",
         "  stores CODEOWNERS and last-recorded ruleset evidence, but this generator",
         "  does not query live remote GitHub settings.",
+        "- The scoped Storybook Next.js npm audit gate does not close broad dependency",
+        "  SCA or container/image vulnerability scanning readiness.",
         residual_finding,
         "",
         "## Gap / Follow-up",
@@ -433,7 +486,7 @@ lines.extend(
 
 if follow_up_rows:
     for gap_id, gap, stage in follow_up_rows:
-        lines.append(f"| {gap_id} | {gap} | {stage} |")
+        lines.append(f"| `{gap_id}` | {gap} | {stage} |")
 else:
     lines.append("| N/A | No tracked security automation gap remains in this snapshot. | N/A |")
 
@@ -462,7 +515,8 @@ lines.extend(
         "",
         "- **Owner**: Security Reviewer / QA Engineer.",
         "- **Review Cadence**: Regenerate after security workflow, Dependabot,",
-        "  hardening, vulnerability-gate, SBOM, signing, attestation, or Scorecard",
+        "  hardening, vulnerability-gate, broad SCA, container/image scanning, SBOM,",
+        "  signing, attestation, or Scorecard",
         "  changes.",
         "- **Update Trigger**: Update when tracked workflow/script security automation",
         "  changes or when Stage 90 security maturity audits are refreshed.",

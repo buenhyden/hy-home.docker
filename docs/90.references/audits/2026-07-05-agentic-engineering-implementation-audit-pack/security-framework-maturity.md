@@ -152,9 +152,10 @@ in `.github/rulesets/main-protection.md`.
   assurance; the scoped Storybook Next.js npm gate does not cover non-npm or
   container/image risk.
 - The generated security automation readiness snapshot now makes the local
-  workflow/script readiness state explicit; the scoped npm vulnerability gate
-  closes the tracked `SEC-AUTO-008` absence signal, while SBOM, signing,
-  attestation, Scorecard, and broad ecosystem/container scanning remain gaps.
+  workflow/script readiness state explicit. The scoped npm vulnerability gate
+  satisfies only `SEC-AUTO-008`; broad dependency SCA (`SEC-AUTO-012`) and
+  container/image vulnerability scanning (`SEC-AUTO-013`) remain `Gap`, along
+  with SBOM, signing, attestation, and Scorecard automation.
 - Remote GitHub protection should be described as last-recorded evidence unless
   re-verified in a dedicated GitHub governance pass.
 
@@ -162,9 +163,9 @@ in `.github/rulesets/main-protection.md`.
 
 | Gap ID | Gap | Suggested Future Stage |
 | --- | --- | --- |
-| SEC-MAT-001 | Broaden vulnerability automation beyond the scoped Storybook Next.js npm audit gate to cover OSV/SCA and container-image risk. | Stage 03 security spec + Stage 04 plan |
-| SEC-MAT-002 | Add SBOM generation and storage rules for build or release artifacts. | Stage 03 security spec + Stage 04 plan |
-| SEC-MAT-003 | Add SLSA provenance/attestation design for any artifact-producing workflow. | Stage 03 security spec + Stage 04 plan |
+| SEC-MAT-001 | Broaden vulnerability automation beyond the scoped Storybook Next.js npm audit gate to cover OSV/SCA and container-image risk. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
+| SEC-MAT-002 | Add SBOM generation and storage rules for build or release artifacts. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
+| SEC-MAT-003 | Add SLSA provenance/attestation design for any artifact-producing workflow. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
 | SEC-MAT-004 | Define change-scoped threat-model evidence requirements for protected surfaces. | Stage 00 governance update + Stage 04 task evidence |
 | SEC-MAT-005 | Re-verify remote branch protection and CODEOWNERS enforcement before asserting live protection maturity. | Stage 04 GitHub governance audit |
 
