@@ -9,6 +9,8 @@ import sys
 import tempfile
 import unittest
 
+import yaml
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validation/check-agentic-audit-semantic-freshness.py"
@@ -23,6 +25,109 @@ if spec is None or spec.loader is None:
 module = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = module
 spec.loader.exec_module(module)
+
+
+def _assert_task5_integration_contract(
+    case: unittest.TestCase,
+    workflow: str,
+    repo_contracts: str,
+    generator: str,
+    matrix: str,
+) -> None:
+    command = "python3 scripts/validation/check-agentic-audit-semantic-freshness.py"
+    semantic_step = {
+        "name": "Check canonical audit semantic freshness",
+        "run": command,
+    }
+    workflow_data = yaml.safe_load(workflow)
+    jobs = workflow_data["jobs"]
+    semantic_name_matches: list[tuple[str, dict[str, object]]] = []
+    semantic_command_matches: list[tuple[str, dict[str, object]]] = []
+    for job_name, job in jobs.items():
+        for step in job.get("steps", []):
+            if not isinstance(step, dict):
+                continue
+            if step.get("name") == semantic_step["name"]:
+                semantic_name_matches.append((job_name, step))
+            if step.get("run") == command:
+                semantic_command_matches.append((job_name, step))
+    expected_ci_match = [("repo-contracts", semantic_step)]
+    case.assertEqual(expected_ci_match, semantic_name_matches)
+    case.assertEqual(expected_ci_match, semantic_command_matches)
+
+    repo_steps = jobs["repo-contracts"]["steps"]
+    step_names = [
+        step.get("name") if isinstance(step, dict) else None for step in repo_steps
+    ]
+    metadata_name = "Check changed and new document metadata"
+    repository_contracts_name = "Check repository contracts"
+    case.assertEqual(1, step_names.count(metadata_name))
+    case.assertEqual(1, step_names.count(semantic_step["name"]))
+    case.assertEqual(1, step_names.count(repository_contracts_name))
+    case.assertLess(
+        step_names.index(metadata_name), step_names.index(semantic_step["name"])
+    )
+    case.assertLess(
+        step_names.index(semantic_step["name"]),
+        step_names.index(repository_contracts_name),
+    )
+
+    section_heading = 'section "Agentic audit semantic freshness"'
+    case.assertEqual(1, repo_contracts.count(section_heading))
+    section_start = repo_contracts.index(section_heading)
+    section_end = repo_contracts.index('\nsection "', section_start + 1)
+    section = repo_contracts[section_start:section_end]
+    marker = "audit_semantic_freshness: PASS assertions=11 failures=0"
+    mktemp_line = (
+        'semantic_audit_output="$(mktemp "${TMPDIR:-/tmp}/'
+        'check-repo-contracts-agentic-audit-semantic.XXXXXX")"'
+    )
+    required_fragments = [
+        mktemp_line,
+        'rm -f -- "$semantic_audit_output"',
+        f'if ! {command} >"$semantic_audit_output" 2>&1; then',
+        'fail "agentic audit semantic freshness failed"',
+        f"elif ! grep -Fxq '{marker}' \"$semantic_audit_output\"; then",
+        'fail "agentic audit semantic validator did not print the exact pass marker"',
+        "trap cleanup_semantic_audit_output EXIT",
+        "trap 'handle_semantic_audit_signal 129' HUP",
+        "trap 'handle_semantic_audit_signal 130' INT",
+        "trap 'handle_semantic_audit_signal 143' TERM",
+        "trap - EXIT HUP INT TERM",
+    ]
+    for fragment in required_fragments:
+        case.assertIn(fragment, section)
+    case.assertEqual(1, repo_contracts.count(mktemp_line))
+    case.assertEqual(1, section.count(command))
+    case.assertEqual(2, section.count('cat "$semantic_audit_output" >&2'))
+
+    build_start = generator.index("def build_output() -> tuple[str, list[str]]:")
+    validate_call = generator.index(
+        "semantic_result = validate_semantics(", build_start
+    )
+    render_start = generator.index("lines: list[str] = [", build_start)
+    case.assertLess(validate_call, render_start)
+    generator_metric_fragments = [
+        "EXPECTED_SEMANTIC_ASSERTIONS = 11",
+        'f"| Semantic closure assertions expected | {EXPECTED_SEMANTIC_ASSERTIONS} |",',
+        'f"| Semantic closure assertions passed | '
+        '{semantic_result.assertion_count} |",',
+        '"| Semantic closure assertion failures | 0 |",',
+    ]
+    for fragment in generator_metric_fragments:
+        case.assertIn(fragment, generator)
+
+    expected_matrix_metrics = [
+        "| Semantic closure assertions expected | 11 |",
+        "| Semantic closure assertions passed | 11 |",
+        "| Semantic closure assertion failures | 0 |",
+    ]
+    actual_matrix_metrics = [
+        line
+        for line in matrix.splitlines()
+        if line.startswith("| Semantic closure assertion")
+    ]
+    case.assertEqual(expected_matrix_metrics, actual_matrix_metrics)
 
 
 class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
@@ -110,7 +215,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         result = module.validate_semantics(ROOT, CONTRACT)
         self.assertEqual(11, result.assertion_count)
 
-    def test_repo_contracts_and_ci_name_the_semantic_gate(self) -> None:
+    def integration_surfaces(self) -> tuple[str, str, str, str]:
         repo_contracts = (
             ROOT / "scripts/validation/check-repo-contracts.sh"
         ).read_text(encoding="utf-8")
@@ -120,13 +225,122 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         generator = (
             ROOT / "scripts/validation/generate-audit-implementation-matrix.sh"
         ).read_text(encoding="utf-8")
-        command = (
-            "python3 scripts/validation/"
-            "check-agentic-audit-semantic-freshness.py"
+        matrix = (
+            ROOT / "docs/90.references/data/governance/audit-implementation-matrix.md"
+        ).read_text(encoding="utf-8")
+        return workflow, repo_contracts, generator, matrix
+
+    def test_task5_integration_contract_is_exact(self) -> None:
+        _assert_task5_integration_contract(self, *self.integration_surfaces())
+
+    def test_task5_integration_contract_rejects_regressions(self) -> None:
+        workflow, repo_contracts, generator, matrix = self.integration_surfaces()
+        semantic_step = (
+            "      - name: Check canonical audit semantic freshness\n"
+            "        run: python3 scripts/validation/"
+            "check-agentic-audit-semantic-freshness.py\n"
         )
-        self.assertIn(command, repo_contracts)
-        self.assertIn(command, workflow)
-        self.assertIn("validate_semantics", generator)
+        ordered_steps = (
+            "      - name: Check changed and new document metadata\n"
+            "        run: python3 scripts/validation/check-document-metadata.py "
+            "--mode check-changed\n"
+            f"{semantic_step}"
+            "      - name: Check repository contracts\n"
+            "        run: bash scripts/validation/check-repo-contracts.sh\n"
+        )
+        reordered_steps = ordered_steps.replace(
+            semantic_step,
+            "",
+            1,
+        ).replace(
+            "      - name: Check repository contracts\n"
+            "        run: bash scripts/validation/check-repo-contracts.sh\n",
+            "      - name: Check repository contracts\n"
+            "        run: bash scripts/validation/check-repo-contracts.sh\n"
+            f"{semantic_step}",
+            1,
+        )
+        semantic_call = (
+            "    semantic_result = validate_semantics(\n"
+            '        pathlib.Path("."),\n'
+            "        pathlib.Path("
+            '"scripts/validation/agentic-audit-semantic-contract.json"),\n'
+            "    )\n"
+        )
+        late_generator = generator.replace(semantic_call, "", 1).replace(
+            '    return "\\n".join(lines), failures\n',
+            f'{semantic_call}\n    return "\\n".join(lines), failures\n',
+            1,
+        )
+        mutations = {
+            "duplicate CI step": (
+                workflow.replace(semantic_step, semantic_step * 2, 1),
+                repo_contracts,
+                generator,
+                matrix,
+            ),
+            "misordered CI step": (
+                workflow.replace(ordered_steps, reordered_steps, 1),
+                repo_contracts,
+                generator,
+                matrix,
+            ),
+            "unguarded validator exit": (
+                workflow,
+                repo_contracts.replace(
+                    "if ! python3 scripts/validation/"
+                    "check-agentic-audit-semantic-freshness.py",
+                    "python3 scripts/validation/"
+                    "check-agentic-audit-semantic-freshness.py",
+                    1,
+                ),
+                generator,
+                matrix,
+            ),
+            "non-exact pass marker": (
+                workflow,
+                repo_contracts.replace(
+                    "elif ! grep -Fxq 'audit_semantic_freshness: PASS "
+                    "assertions=11 failures=0'",
+                    "elif ! grep -q 'audit_semantic_freshness: PASS "
+                    "assertions=11 failures=0'",
+                    1,
+                ),
+                generator,
+                matrix,
+            ),
+            "missing signal cleanup": (
+                workflow,
+                repo_contracts.replace(
+                    "trap 'handle_semantic_audit_signal 130' INT\n", "", 1
+                ),
+                generator,
+                matrix,
+            ),
+            "semantic validation after rendering": (
+                workflow,
+                repo_contracts,
+                late_generator,
+                matrix,
+            ),
+            "generated metric drift": (
+                workflow,
+                repo_contracts,
+                generator,
+                matrix.replace(
+                    "| Semantic closure assertions passed | 11 |",
+                    "| Semantic closure assertions passed | 10 |",
+                    1,
+                ),
+            ),
+        }
+        for name, surfaces in mutations.items():
+            with self.subTest(name=name):
+                self.assertNotEqual(
+                    (workflow, repo_contracts, generator, matrix), surfaces
+                )
+                with self.assertRaises(AssertionError):
+                    _assert_task5_integration_contract(self, *surfaces)
 
     def test_wrong_required_state_fails(self) -> None:
         self.rewrite_row("QAF-12", "Implemented", "Missing")

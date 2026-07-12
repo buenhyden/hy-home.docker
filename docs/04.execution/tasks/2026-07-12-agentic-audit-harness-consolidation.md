@@ -366,6 +366,24 @@ close generated evidence.
   workflow authority diff, documentation scope, generated-owner boundary, and
   authorized path set. No implementation concern remains; this self-review does
   not replace independent review.
+- **Independent-review test hardening**: The first independent review returned
+  Spec PASS, Quality APPROVED, C0/I0/M1. The minor finding observed that the
+  initial integration test checked only broad string presence and would not
+  reject duplicate/misordered CI steps, weakened local exit/marker/cleanup
+  handling, late semantic validation, or generated metric drift. Regression RED
+  retained all thirty pre-existing tests while the two stronger tests produced
+  eight expected `NameError` errors because their exact-contract helper was not
+  yet implemented. GREEN passed 32/32 and now parses the workflow, scopes the
+  repository-contract section, orders the generator call before render-list
+  assembly, checks the exact 11/11/0 generator and snapshot lines, and rejects
+  seven named mutations covering every M1 failure mode. Ruff lint/format,
+  the full 127-test validation suite, semantic CLI, matrix freshness, Bash
+  syntax, actionlint, zizmor, explicit-base metadata, and diff hygiene remained
+  green. The review-fix Graphify refresh completed at 22,643 nodes / 23,496
+  edges and remained advisory only for the same two cross-root inferred edges;
+  its generated collateral was restored outside the logical fix. T-AHC-005
+  intentionally remains `Todo`/unchecked/`Pending` until the review-fix verdict
+  is recorded by the supervising task.
 
 ## Verification Summary
 
