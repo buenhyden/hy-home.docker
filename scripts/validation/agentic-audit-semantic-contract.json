@@ -199,6 +199,7 @@
         "T-AER-012"
       ],
       "forbidden_stale_phrases": [
+        "controlled wrapper is absent until Task 9",
         "wrapper remains absent",
         "wrapper does not yet exist",
         "Task 9 will"

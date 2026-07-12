@@ -10,12 +10,30 @@ import subprocess
 from dataclasses import dataclass
 from typing import Any
 
-from audit_criterion_contract import AuditCriterionContractError, validate_pack
+from audit_criterion_contract import (
+    EXPECTED_PACK_FILES,
+    AuditCriterionContractError,
+    validate_pack,
+)
 
 
 DEFAULT_CONTRACT = pathlib.Path(
     "scripts/validation/agentic-audit-semantic-contract.json"
 )
+EXPECTED_AUDIT_INDEX = "docs/90.references/audits/README.md"
+EXPECTED_CANONICAL_PACK = (
+    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack"
+)
+EXPECTED_OVERVIEW = f"{EXPECTED_CANONICAL_PACK}/implementation-overview.md"
+EXPECTED_TASK_EVIDENCE = (
+    "docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md"
+)
+EXPECTED_TOP_LEVEL_PATHS = {
+    "audit_index": EXPECTED_AUDIT_INDEX,
+    "canonical_pack": EXPECTED_CANONICAL_PACK,
+    "overview": EXPECTED_OVERVIEW,
+    "task_evidence": EXPECTED_TASK_EVIDENCE,
+}
 SUPERSEDED_2026_07_07_README = pathlib.Path(
     "docs/90.references/audits/"
     "2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md"
@@ -121,12 +139,16 @@ def _validate_contract_schema(contract: object) -> list[str]:
     if missing_keys:
         return errors
 
-    if contract["schema_version"] != 1 or isinstance(contract["schema_version"], bool):
-        errors.append("schema_version must be 1")
+    if type(contract["schema_version"]) is not int or contract["schema_version"] != 1:
+        errors.append("schema_version must be integer 1")
 
     for key in ("audit_index", "canonical_pack", "overview", "task_evidence"):
         if not _is_safe_repo_path(contract[key]):
             errors.append(f"{key}: unsafe repository-relative path: {contract[key]!r}")
+        if contract[key] != EXPECTED_TOP_LEVEL_PATHS[key]:
+            errors.append(
+                f"{key} must use fixed canonical path: {EXPECTED_TOP_LEVEL_PATHS[key]}"
+            )
 
     headings = contract["required_index_headings"]
     if headings != EXPECTED_HEADINGS:
@@ -254,6 +276,40 @@ def _read_required(path: pathlib.Path, label: str, errors: list[str]) -> str | N
         return None
 
 
+def _validate_repository_input(
+    repo_root: pathlib.Path,
+    relative: str,
+    tracked: set[str],
+    label: str,
+    tracked_description: str,
+) -> list[str]:
+    if not _is_safe_repo_path(relative):
+        return [f"{label}: unsafe repository-relative path: {relative!r}"]
+
+    try:
+        resolved_root = repo_root.resolve(strict=True)
+    except OSError as exc:
+        return [f"{label}: unable to resolve repository root {repo_root}: {exc}"]
+
+    candidate = repo_root
+    for part in pathlib.PurePosixPath(relative).parts:
+        candidate /= part
+        if candidate.is_symlink():
+            return [f"{label}: symlink input is forbidden: {relative}"]
+
+    try:
+        resolved = candidate.resolve(strict=True)
+    except OSError:
+        resolved = None
+
+    errors: list[str] = []
+    if resolved is not None and not resolved.is_relative_to(resolved_root):
+        errors.append(f"{label}: resolved path escapes repository root: {relative}")
+    if relative not in tracked or resolved is None or not candidate.is_file():
+        errors.append(f"{label}: {tracked_description} is missing: {relative}")
+    return errors
+
+
 def _frontmatter_status(text: str) -> str | None:
     lines = text.splitlines()
     if not lines or lines[0] != "---":
@@ -283,8 +339,27 @@ def _validate_tracked_contract_paths(
         ("2026-07-07 README", SUPERSEDED_2026_07_07_README.as_posix()),
     ]
     for label, relative in declared:
-        if relative not in tracked or not (repo_root / relative).is_file():
-            errors.append(f"{label}: required tracked path is missing: {relative}")
+        errors.extend(
+            _validate_repository_input(
+                repo_root,
+                relative,
+                tracked,
+                label,
+                "required tracked path",
+            )
+        )
+
+    for filename in sorted(EXPECTED_PACK_FILES):
+        relative = f"{contract['canonical_pack']}/{filename}"
+        errors.extend(
+            _validate_repository_input(
+                repo_root,
+                relative,
+                tracked,
+                "canonical audit input",
+                "required tracked canonical audit input",
+            )
+        )
     return errors
 
 
@@ -342,6 +417,14 @@ def _validate_assertions(
             continue
 
         expected_report = assertion["report"]
+        report_errors = _validate_repository_input(
+            repo_root,
+            expected_report,
+            tracked,
+            criterion_id,
+            "required tracked report",
+        )
+        errors.extend(report_errors)
         try:
             actual_report = row.report.relative_to(repo_root).as_posix()
         except ValueError:
@@ -356,13 +439,15 @@ def _validate_assertions(
             )
 
         for evidence_path in assertion["required_evidence_paths"]:
-            if (
-                evidence_path not in tracked
-                or not (repo_root / evidence_path).is_file()
-            ):
-                errors.append(
-                    f"{criterion_id}: required tracked evidence is missing: {evidence_path}"
+            errors.extend(
+                _validate_repository_input(
+                    repo_root,
+                    evidence_path,
+                    tracked,
+                    criterion_id,
+                    "required tracked evidence",
                 )
+            )
 
         if task_text is not None:
             for task_id in assertion["completed_task_ids"]:
@@ -371,11 +456,11 @@ def _validate_assertions(
                         f"{criterion_id}: completed task {task_id} is missing or not Done"
                     )
 
-        if expected_report not in report_cache:
+        if not report_errors and expected_report not in report_cache:
             report_cache[expected_report] = _read_required(
                 repo_root / expected_report, f"{criterion_id} report", errors
             )
-        report_text = report_cache[expected_report]
+        report_text = report_cache.get(expected_report)
         if report_text is not None:
             for phrase in assertion["forbidden_stale_phrases"]:
                 if phrase in report_text:
@@ -397,17 +482,58 @@ def validate_semantics(
             [f"semantic contract: unsafe repository-relative path: {contract_path}"]
         )
 
+    tracked = _tracked_paths(repo_root)
+    contract_errors = _validate_repository_input(
+        repo_root,
+        contract_path.as_posix(),
+        tracked,
+        "semantic contract",
+        "required tracked contract",
+    )
+    if contract_errors:
+        raise AuditSemanticContractError(contract_errors)
+
     contract = _load_contract(repo_root / contract_path)
+    input_errors = _validate_tracked_contract_paths(repo_root, contract, tracked)
+    for assertion in contract["assertions"]:
+        input_errors.extend(
+            _validate_repository_input(
+                repo_root,
+                assertion["report"],
+                tracked,
+                assertion["criterion_id"],
+                "required tracked report",
+            )
+        )
+        for evidence_path in assertion["required_evidence_paths"]:
+            input_errors.extend(
+                _validate_repository_input(
+                    repo_root,
+                    evidence_path,
+                    tracked,
+                    assertion["criterion_id"],
+                    "required tracked evidence",
+                )
+            )
+    if input_errors:
+        raise AuditSemanticContractError(input_errors)
+
     try:
         criterion_contract = validate_pack(repo_root / contract["canonical_pack"])
     except AuditCriterionContractError as exc:
         raise AuditSemanticContractError(
             [f"audit criterion contract: {error}" for error in exc.errors]
         ) from exc
+    except UnicodeError as exc:
+        raise AuditSemanticContractError(
+            [f"audit criterion contract: invalid UTF-8 input: {exc}"]
+        ) from exc
+    except OSError as exc:
+        raise AuditSemanticContractError(
+            [f"audit criterion contract: unable to read input: {exc}"]
+        ) from exc
     rows = {row.criterion_id: row for row in criterion_contract.rows}
-    tracked = _tracked_paths(repo_root)
-    errors = _validate_tracked_contract_paths(repo_root, contract, tracked)
-    errors.extend(_validate_lifecycle(repo_root, contract))
+    errors = _validate_lifecycle(repo_root, contract)
     errors.extend(_validate_assertions(repo_root, contract, rows, tracked))
     if errors:
         raise AuditSemanticContractError(errors)

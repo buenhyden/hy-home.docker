@@ -203,27 +203,43 @@ close generated evidence.
   `QAF-12`, and `AUT-09`; each assertion binds its exact canonical report,
   tracked evidence, completed T-AER task IDs, and narrow stale phrases.
 - **Fail-closed behavior**: Duplicate JSON keys, missing/unknown keys, wrong
-  schema or types, duplicate/unknown assertion IDs, unsafe absolute or `..`
-  paths, missing/untracked evidence, structural audit defects, report/state
-  mismatch, missing or non-`Done` task evidence, forbidden stale phrases,
-  missing lifecycle headings, a non-active canonical README, and a
+  schema or types, duplicate/unknown assertion IDs, unsafe absolute, `..`,
+  symlink, or resolved-escape paths, redirected canonical routes,
+  missing/untracked reports or evidence, structural/decode defects,
+  report/state mismatch, missing or non-`Done` task evidence, forbidden stale
+  phrases, missing lifecycle headings, a non-active canonical README, and a
   non-superseded 2026-07-07 README all raise
   `AuditSemanticContractError`. Tracked membership uses only NUL-delimited
   `git ls-files -z`; the validator reads no Git history and performs no network
   access.
-- **Adversarial coverage**: The 24-test fixture copies only required tracked
+- **Adversarial coverage**: The 30-test fixture copies only required tracked
   files into a temporary Git repository and covers the current repository pass,
   all brief-listed schema/ID/path/evidence/report/task/stale/lifecycle/heading
-  failures, malformed structural input, and both missing and untracked evidence.
-- **Validation**: Focused unit/adversarial suite PASS 24/24; semantic CLI PASS
+  failures, malformed structural input, strict integer schema typing, invalid
+  UTF-8, canonical-index redirection, tracked symlink escape, untracked report,
+  and both missing and untracked evidence.
+- **Independent review fix cycle**: The first review returned Spec FAIL and
+  CHANGES REQUESTED, C0/I3/M2. Six focused regressions reproduced all findings:
+  AUT-09's exact `controlled wrapper is absent until Task 9` baseline phrase,
+  tracked symlink escape, canonical-index redirect, untracked AUT-09 report,
+  numeric `1.0` schema version, and raw invalid-UTF-8 decode failure. The RED
+  suite ran 30 tests with the original 24 green and all six new cases failing;
+  the fix pins all canonical routes, requires tracked non-symlink in-root
+  contract/lifecycle/pack/report/evidence inputs, adds the exact AUT-09 phrase,
+  requires integer schema version 1, and wraps audit read/decode failures.
+- **Validation**: Focused unit/adversarial suite PASS 30/30; semantic CLI PASS
   with `audit_semantic_freshness: PASS assertions=11 failures=0`;
-  `py_compile` PASS; JSON structural check PASS at 11 assertions / 11 unique /
-  11 Implemented; existing criterion contract PASS at 11 reports / 161 rows /
-  161 unique IDs; exact lifecycle checks found the required `Todo`, unchecked,
-  and five-`Pending` T-AHC-003 lines.
+  `py_compile` and Ruff lint/format PASS; JSON structural check PASS at 11
+  assertions / 11 unique / 11 Implemented / four pinned routes / one exact
+  AUT-09 baseline phrase; existing criterion contract PASS at 11 reports / 161
+  rows / 161 unique IDs; explicit-base `d8cd288a` metadata validation selected
+  one task document with zero violations; exact lifecycle checks found the
+  required `Todo`, unchecked, and five-`Pending` T-AHC-003 lines.
 - **Graph and protected surfaces**: `graphify update .` completed at 22,556
-  nodes / 23,380 edges; Graphify remains advisory. No generator, repository
-  contract, CI workflow, pre-commit invocation, runtime, Compose,
+  nodes / 23,380 edges; the review-fix refresh completed at 22,587 nodes /
+  23,432 edges. Both refreshes remained advisory and their generated collateral
+  was restored outside the logical commits. No generator, repository contract,
+  CI workflow, pre-commit invocation, runtime, Compose,
   infrastructure, secret, credential, remote, provider/model policy, `.gemini`,
   deployment, or 2026-07-03/04/07 audit content changed.
 - **Self-review and concerns**: The authorized four-file diff, exact assertion

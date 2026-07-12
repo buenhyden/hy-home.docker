@@ -130,6 +130,10 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.append_to_report("QAF-12", "Task 9 will add wrapper")
         self.assert_failure("QAF-12", "forbidden stale phrase")
 
+    def test_aut_09_exact_pre_remediation_phrase_fails(self) -> None:
+        self.append_to_report("AUT-09", "the controlled wrapper is absent until Task 9")
+        self.assert_failure("AUT-09", "forbidden stale phrase")
+
     def test_missing_completed_task_id_fails(self) -> None:
         task_path = self.repo / self.contract["task_evidence"]
         text = task_path.read_text(encoding="utf-8")
@@ -169,6 +173,19 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.write_contract()
         self.assert_failure("unsafe repository-relative path")
 
+    def test_tracked_symlink_evidence_escape_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as outside:
+            outside_path = pathlib.Path(outside) / "evidence.txt"
+            outside_path.write_text("outside repository\n", encoding="utf-8")
+            link = self.repo / "external-evidence"
+            link.symlink_to(outside_path)
+            subprocess.run(
+                ["git", "add", "external-evidence"], cwd=self.repo, check=True
+            )
+            self.assertion("QAF-12")["required_evidence_paths"] = ["external-evidence"]
+            self.write_contract()
+            self.assert_failure("QAF-12", "symlink", "external-evidence")
+
     def test_absolute_path_is_rejected(self) -> None:
         self.contract["assertions"][0]["report"] = "/tmp/outside.md"
         self.write_contract()
@@ -189,7 +206,12 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
     def test_wrong_schema_version_is_rejected(self) -> None:
         self.contract["schema_version"] = 2
         self.write_contract()
-        self.assert_failure("schema_version must be 1")
+        self.assert_failure("schema_version must be integer 1")
+
+    def test_float_schema_version_is_rejected(self) -> None:
+        self.contract["schema_version"] = 1.0
+        self.write_contract()
+        self.assert_failure("schema_version must be integer 1")
 
     def test_unknown_top_level_key_is_rejected(self) -> None:
         self.contract["unexpected"] = True
@@ -228,6 +250,32 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.write_contract()
         self.assert_failure("QAF-12", "report mismatch")
 
+    def test_canonical_audit_index_redirect_is_rejected(self) -> None:
+        canonical = self.repo / self.contract["audit_index"]
+        redirect = self.repo / "redirected-audit-index.md"
+        shutil.copy2(canonical, redirect)
+        subprocess.run(
+            ["git", "add", "redirected-audit-index.md"], cwd=self.repo, check=True
+        )
+        canonical.write_text(
+            canonical.read_text(encoding="utf-8").replace(
+                "## Canonical Current Audit", "## Current References"
+            ),
+            encoding="utf-8",
+        )
+        self.contract["audit_index"] = "redirected-audit-index.md"
+        self.write_contract()
+        self.assert_failure("audit_index", "fixed canonical path")
+
+    def test_untracked_assertion_report_fails(self) -> None:
+        report = str(self.assertion("AUT-09")["report"])
+        subprocess.run(
+            ["git", "rm", "--cached", "-q", "--", report],
+            cwd=self.repo,
+            check=True,
+        )
+        self.assert_failure("AUT-09", "required tracked report")
+
     def test_empty_assertion_array_is_rejected(self) -> None:
         self.contract["assertions"][0]["completed_task_ids"] = []
         self.write_contract()
@@ -253,6 +301,10 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         ]
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
         self.assert_failure("audit criterion contract", "missing criterion IDs: QAF-16")
+
+    def test_invalid_utf8_report_is_fail_closed(self) -> None:
+        self.report_path("AUT-09").write_bytes(b"\xff")
+        self.assert_failure("audit criterion contract", "invalid UTF-8")
 
 
 if __name__ == "__main__":
