@@ -387,6 +387,52 @@ close generated evidence.
   returning Spec PASS, Quality APPROVED, C0/I0/M0 with no new protected-surface
   changes. The final report is `.superpowers/sdd/task-5-review.md`.
 
+### T-AHC-006 Generated Evidence and Controlled QA Implementation Evidence
+
+- **Implementation base and lifecycle boundary**: Task 6 starts from reviewed
+  Task 5 base `22b526a9`. T-AHC-006 remains `Todo`, Phase 3 remains unchecked,
+  the Review Ledger remains `Pending`, and Spec 128, its Plan, and this Task
+  remain `active` until a separate reviewer approves the exact implementation
+  range.
+- **Owner regeneration**: The metadata owner regenerated the canonical
+  frontmatter inventory at 891 records and 2,025 advisory findings. The audit
+  matrix and security-readiness owner generators reproduced their tracked
+  bytes, while the LLM Wiki owner generators added the semantic contract JSON
+  to the index and advanced coverage from 1,284 to 1,285 safe paths, scripts
+  from 33 to 34, and JSON registries from 68 to 69. Matrix, security, Wiki
+  index, and Wiki coverage write/check freshness all pass.
+- **Deterministic validation**: Full validation discovery passed 127/127. The
+  exact merge-base metadata check selected 43 documents with zero violations,
+  sixteen unchanged legacy exceptions, and zero transition overrides. Semantic
+  freshness passed with 11 assertions and zero failures; audit coverage passed
+  at 11 reports, 161 unique rows, and 15 overview categories; traceability
+  passed at 46 pairs / zero failures; implementation alignment passed at 640
+  stage documents, 5,042 repository-local links, and zero failures; repository
+  contracts passed with `failures=0`; and `git diff --check` passed.
+- **Workflow static validation**: PyYAML parsed the changed existing quality
+  workflow, actionlint returned no diagnostics, and zizmor returned no findings
+  with its existing YAML-anchor warning and sixteen suppressed findings. No
+  workflow permission, job, event, dependency, remote execution, or branch
+  protection state changed or is claimed.
+- **Graphify classification**: the final `graphify update .` refresh after Task
+  evidence changes produced 22,650 nodes / 23,503 edges. Health remains
+  `advisory` solely because of
+  two surprising cross-root inferred edges; volume, gitlink, generated/minified
+  source contamination and meaningless god nodes are zero. All completion
+  claims were corroborated against tracked validator/workflow source, Stage 00,
+  Spec 128, and this Stage 04 evidence rather than inferred graph edges.
+- **Controlled-wrapper readiness**: The exact wrapper and reviewed prefixes in
+  the parent Plan remain reserved until these generated and pre-wrapper
+  evidence changes are committed and `git status --short` is empty. The result,
+  Git-visible before/after/new/changed/unexpected paths, formatter disposition,
+  and hook exit are recorded in the table below only after execution.
+- **Protected surfaces and self-review**: The pre-wrapper diff was reviewed as
+  generated reference, graph, Task evidence, and progress-log changes only. No
+  runtime, Compose, infrastructure, deployment, service, secret, credential,
+  remote GitHub, provider/model policy, `.gemini`, global configuration,
+  scanner, or follow-up Spec 124-127 implementation surface changed. This
+  self-review does not replace independent review.
+
 ## Verification Summary
 
 - **Baseline**: `codex/audit-harness-consolidation` from
