@@ -54,7 +54,7 @@ close generated evidence.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-AHC-001 | Clarify canonical, snapshot, and superseded lifecycle routes. | doc | Audit Lifecycle | Task 1 | Snapshot preservation, contracts, review | Documentation Specialist | Done |
 | T-AHC-002 | Reassess all 161 criteria and canonical overview. | doc/eval | Criterion Contract | Task 2 | State distribution, 11/161, review | Agentic Workflow Specialist | Done |
-| T-AHC-003 | Implement semantic closure contract and adversarial tests. | impl/test | Semantic Freshness | Task 3 | RED/GREEN, CLI PASS, review | QA Engineer | Todo |
+| T-AHC-003 | Implement semantic closure contract and adversarial tests. | impl/test | Semantic Freshness | Task 3 | RED/GREEN, CLI PASS, review | QA Engineer | Done |
 | T-AHC-004 | Split scoped and broad security readiness signals. | impl/test | Security Readiness | Task 4 | 13 controls, negative test, review | Security Auditor | Todo |
 | T-AHC-005 | Wire semantic freshness into generator, contracts, and CI. | impl/ci | QA and CI | Task 5 | Unit/matrix/workflow/contracts, review | CI/CD Engineer | Todo |
 | T-AHC-006 | Regenerate, run full QA/wrapper, and close evidence. | test/doc | Verification | Task 6 | Full bundle, wrapper, branch review | QA / Documentation | Todo |
@@ -68,7 +68,7 @@ close generated evidence.
 
 ### Phase 2 — Enforced Precision
 
-- [ ] T-AHC-003 Semantic freshness validator
+- [x] T-AHC-003 Semantic freshness validator
 - [ ] T-AHC-004 Security readiness precision
 - [ ] T-AHC-005 QA and CI integration
 
@@ -82,7 +82,7 @@ close generated evidence.
 | --- | --- | --- | --- | --- | --- |
 | T-AHC-001 | `2579560b..38ead5f3` | PASS | APPROVED | C0/I0/M0; no findings | `.superpowers/sdd/task-1-review.md` |
 | T-AHC-002 | `ee64b3a7..699eda00` | PASS | APPROVED | Initial I1/M1 resolved by `699eda00`; re-review C0/I0/M0 | `.superpowers/sdd/task-2-rereview.md` |
-| T-AHC-003 | Pending | Pending | Pending | Pending | Pending |
+| T-AHC-003 | `14489dcd..cdf30ac1` | PASS | APPROVED | Initial C0/I3/M2 resolved by `cdf30ac1`; re-review C0/I0/M0 | `.superpowers/sdd/task-3-review.md` |
 | T-AHC-004 | Pending | Pending | Pending | Pending | Pending |
 | T-AHC-005 | Pending | Pending | Pending | Pending | Pending |
 | T-AHC-006 | Pending | Pending | Pending | Pending | Pending |
@@ -177,9 +177,9 @@ close generated evidence.
 ### T-AHC-003 Semantic Freshness Validator Evidence
 
 - **Implementation base and lifecycle**: Task 3 starts from reviewed Task 2
-  base `14489dcd`. T-AHC-003 remains `Todo`, its Phase 2 checkbox remains
-  unchecked, and its Review Ledger row remains fully `Pending` until an
-  independent reviewer approves the implementation commit.
+  base `14489dcd`. Independent re-review approved the implementation and fix
+  range through `cdf30ac1`; T-AHC-003 is `Done`, its Phase 2 checkbox is
+  checked, and its Review Ledger records the final verdict.
 - **TDD RED**:
   `python3 -m unittest tests.validation.test_agentic_audit_semantic_freshness -v`
   exited `1` before either implementation artifact existed, with the expected
@@ -227,14 +227,20 @@ close generated evidence.
   the fix pins all canonical routes, requires tracked non-symlink in-root
   contract/lifecycle/pack/report/evidence inputs, adds the exact AUT-09 phrase,
   requires integer schema version 1, and wraps audit read/decode failures.
+- **Independent re-review**: The reviewer verified the complete
+  `14489dcd..cdf30ac1` range and all six regressions, returning Spec PASS,
+  Quality APPROVED, C0/I0/M0. The final review report is
+  `.superpowers/sdd/task-3-review.md`.
 - **Validation**: Focused unit/adversarial suite PASS 30/30; semantic CLI PASS
   with `audit_semantic_freshness: PASS assertions=11 failures=0`;
   `py_compile` and Ruff lint/format PASS; JSON structural check PASS at 11
   assertions / 11 unique / 11 Implemented / four pinned routes / one exact
   AUT-09 baseline phrase; existing criterion contract PASS at 11 reports / 161
   rows / 161 unique IDs; explicit-base `d8cd288a` metadata validation selected
-  one task document with zero violations; exact lifecycle checks found the
-  required `Todo`, unchecked, and five-`Pending` T-AHC-003 lines.
+  one task document with zero violations. Before independent approval, exact
+  lifecycle checks confirmed the required `Todo`, unchecked, and five-`Pending`
+  T-AHC-003 lines; this review-evidence commit advances them to the approved
+  `Done`, checked, and recorded-verdict state.
 - **Graph and protected surfaces**: `graphify update .` completed at 22,556
   nodes / 23,380 edges; the review-fix refresh completed at 22,587 nodes /
   23,432 edges. Both refreshes remained advisory and their generated collateral
