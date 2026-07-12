@@ -421,11 +421,13 @@ close generated evidence.
   source contamination and meaningless god nodes are zero. All completion
   claims were corroborated against tracked validator/workflow source, Stage 00,
   Spec 128, and this Stage 04 evidence rather than inferred graph edges.
-- **Controlled-wrapper readiness**: The exact wrapper and reviewed prefixes in
-  the parent Plan remain reserved until these generated and pre-wrapper
-  evidence changes are committed and `git status --short` is empty. The result,
-  Git-visible before/after/new/changed/unexpected paths, formatter disposition,
-  and hook exit are recorded in the table below only after execution.
+- **Controlled-wrapper result**: After pre-wrapper commits `1f8a9f20` and
+  `d9df61e1`, `git status --short` was empty and all freshness checks remained
+  green. The exact approved wrapper below passed with hook exit 0 and snapshot
+  PASS. Git-visible before, after, new, changed, and unexpected paths were all
+  empty; no formatter modification required review. This evidence does not
+  observe ignored or outside-repository writes and does not claim process or
+  filesystem sandboxing.
 - **Protected surfaces and self-review**: The pre-wrapper diff was reviewed as
   generated reference, graph, Task evidence, and progress-log changes only. No
   runtime, Compose, infrastructure, deployment, service, secret, credential,
@@ -451,9 +453,32 @@ Evidence covers only Git-visible, non-ignored repository paths. It does not
 claim ignored/outside writes, process isolation, filesystem sandboxing, remote
 CI execution, or remote enforcement.
 
+Executed exact command:
+
+```bash
+bash scripts/validation/run-agent-precommit-all-files.sh \
+  --task docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md \
+  --allow-prefix .github/workflows/ci-quality.yml \
+  --allow-prefix docs/00.agent-governance/memory/progress.md \
+  --allow-prefix docs/03.specs/128-agentic-audit-harness-consolidation \
+  --allow-prefix docs/03.specs/README.md \
+  --allow-prefix docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md \
+  --allow-prefix docs/04.execution/plans/README.md \
+  --allow-prefix docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md \
+  --allow-prefix docs/04.execution/tasks/README.md \
+  --allow-prefix docs/90.references/audits \
+  --allow-prefix docs/90.references/data/governance \
+  --allow-prefix docs/90.references/data/security \
+  --allow-prefix docs/90.references/data/knowledge \
+  --allow-prefix docs/90.references/llm-wiki \
+  --allow-prefix scripts/README.md \
+  --allow-prefix scripts/validation \
+  --allow-prefix tests/validation
+```
+
 | Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |
 | --- | --- | ---: | --- | --- | --- |
-| Reserved for the exact Task 6 wrapper command in the parent Plan | Exact listed Task 6 prefixes | Pending | Pending | Pending | N/A after execution; intentionally reserved before T-AHC-006 |
+| Exact command above; internal command `pre-commit run --all-files --show-diff-on-failure` | The seventeen exact `--allow-prefix` values above | 0; hook passed; snapshot passed | before=0; after=0; new=0; changed=0; unexpected=0; all path sets `(none)` | Pass; no unexpected path, formatter modification, or cleanup required | N/A; approved final local gate executed |
 
 ## Deviation and Protected-Surface Notes
 
