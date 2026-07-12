@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: plan:2026-07-12-agentic-audit-harness-consolidation
 artifact_type: plan
 parent_ids:
@@ -123,13 +123,13 @@ as broad OSV/SCA coverage.
 `## Dated Historical Snapshots`, `## Supersession Ledgers`, and one snapshot
 boundary block on each dated report.
 
-- [ ] **Step 1: Capture historical literals before editing**
+- [x] **Step 1: Capture historical literals before editing**
 
 ```bash
 rg -H '930|948|872|1,073|6 workflows|failures=2|active 19|completed 16|superseded 2' docs/90.references/audits/2026-07-0{3,4}-* | LC_ALL=C sort > /tmp/ahc-historical-before.txt
 ```
 
-- [ ] **Step 2: Replace the root routing sections with exact content**
+- [x] **Step 2: Replace the root routing sections with exact content**
 
 ```markdown
 ## Canonical Current Audit
@@ -151,7 +151,7 @@ rg -H '930|948|872|1,073|6 workflows|failures=2|active 19|completed 16|supersede
 Render each label/target pair as a normal Markdown link in the actual audit
 index.
 
-- [ ] **Step 3: Add a boundary to every historical report**
+- [x] **Step 3: Add a boundary to every historical report**
 
 Insert after `## Overview`, substituting the correct date:
 
@@ -168,7 +168,7 @@ Render the route label and target as one Markdown link in each actual report.
 
 Rename the 2026-07-03 README's `Planned References` to `Included Reports`.
 
-- [ ] **Step 4: Verify preservation**
+- [x] **Step 4: Verify preservation**
 
 ```bash
 rg --files-without-match '^## Evidence Snapshot Boundary$' docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/*.md docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/*.md
@@ -181,7 +181,7 @@ git diff --check
 Expected: `rg --files-without-match` and `diff` produce no output; contracts
 have zero failures.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/90.references/audits docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md
@@ -198,14 +198,14 @@ matrix; task evidence.
 `Partial=69`, `Missing=14`, `Not Applicable=2`,
 `Needs Revalidation=9`.
 
-- [ ] **Step 1: Reproduce structural-pass/semantic-stale baseline**
+- [x] **Step 1: Reproduce structural-pass/semantic-stale baseline**
 
 ```bash
 python3 scripts/validation/audit_criterion_contract.py
 rg -n 'wrapper.*(absent|does not yet exist)|Task 9 will|Task 10 may|no typed semantic metadata parser|No `artifact_id` exists|Task 5 remains' docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack
 ```
 
-- [ ] **Step 2: Update deterministic DML closures**
+- [x] **Step 2: Update deterministic DML closures**
 
 Set `DML-01`, `02`, `03`, `04`, `05`, `07`, `08`, `11`, and `14` to
 `Implemented`, depth `3`, disposition `Retain`. Cite metadata profiles,
@@ -213,13 +213,13 @@ checker, tests, T-AER-008/012, active-chain scope, transition overrides, and
 referential-integrity hardening. Keep DML-09/12 Partial and do not claim full
 historical-corpus migration.
 
-- [ ] **Step 3: Update wrapper closures**
+- [x] **Step 3: Update wrapper closures**
 
 Set QAF-12 and AUT-09 to `Implemented`, depth `3`, disposition `Retain`, citing
 the wrapper, its 29-case fake-hook suite, and T-AER-009. Preserve its exact
 Git-visible/non-ignored observation boundary.
 
-- [ ] **Step 4: Correct completed provider/task future tense**
+- [x] **Step 4: Correct completed provider/task future tense**
 
 For HAR-02/04, LOOP-02, PIC-03/04/05/15 and related summaries, replace “Task
 10 may/will” with current provider sync, semantic parity, hook parity, and CI
@@ -227,7 +227,7 @@ evidence. Keep Partial where native acceptance, `.gemini` adoption, or live
 execution remains unproved. Replace stale Task 5 lifecycle wording with final
 PASS/APPROVED evidence.
 
-- [ ] **Step 5: Rewrite overview and regenerate**
+- [x] **Step 5: Rewrite overview and regenerate**
 
 The overview must distinguish implemented changed/new metadata and wrapper;
 advisory historical metadata inventory; partial provider/eval; missing
@@ -242,7 +242,7 @@ rg -n 'Implemented \| 67|Partially Implemented \| 69|Gap / Not Implemented \| 14
 git diff --check
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack docs/90.references/data/governance/audit-implementation-matrix.md docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md
@@ -258,7 +258,7 @@ evidence.
 `validate_semantics(repo_root: pathlib.Path, contract_path: pathlib.Path) -> SemanticValidationResult`
 and `audit_semantic_freshness: PASS assertions=11 failures=0`.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 ```python
 class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
@@ -289,7 +289,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
 
 The fixture copies required tracked files to a temporary Git repository.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```bash
 python3 -m unittest tests.validation.test_agentic_audit_semantic_freshness -v
@@ -297,7 +297,7 @@ python3 -m unittest tests.validation.test_agentic_audit_semantic_freshness -v
 
 Expected: FAIL because module/contract do not exist.
 
-- [ ] **Step 3: Create the exact JSON shape**
+- [x] **Step 3: Create the exact JSON shape**
 
 ```json
 {
@@ -315,7 +315,7 @@ Add exactly 11 Implemented assertions for DML-01/02/03/04/05/07/08/11/14,
 QAF-12, and AUT-09. Each names its report, exact tracked evidence, completed
 task IDs, and narrow pre-remediation stale phrases.
 
-- [ ] **Step 4: Implement fail-closed types and entry points**
+- [x] **Step 4: Implement fail-closed types and entry points**
 
 ```python
 @dataclass(frozen=True)
@@ -361,7 +361,7 @@ task IDs, stale phrases, missing lifecycle headings, non-active canonical
 README, and non-superseded 2026-07-07 README. `git ls-files -z` proves tracked
 membership; Git history is forbidden.
 
-- [ ] **Step 5: Run GREEN and commit**
+- [x] **Step 5: Run GREEN and commit**
 
 ```bash
 python3 -m unittest tests.validation.test_agentic_audit_semantic_freshness -v
@@ -379,7 +379,7 @@ automation audit leaves, task evidence.
 **Interfaces:** Produces exactly 13 controls: SEC-AUTO-008 scoped ecosystem
 gate, SEC-AUTO-012 broad dependency SCA, SEC-AUTO-013 image scanning.
 
-- [ ] **Step 1: Write RED tests**
+- [x] **Step 1: Write RED tests**
 
 ```python
 def test_scoped_gate_does_not_close_broad_scanning(self):
@@ -397,7 +397,7 @@ def test_control_count_and_summary_are_precise(self):
     self.assertIn("| Gap | 5 |", output)
 ```
 
-- [ ] **Step 2: Run RED, then split detection**
+- [x] **Step 2: Run RED, then split detection**
 
 ```bash
 python3 -m unittest tests.validation.test_security_automation_readiness -v
@@ -421,7 +421,7 @@ has_container_scan = grep_any(
 
 Rename control 008 and add controls/follow-ups 012/013. Run no scanner.
 
-- [ ] **Step 3: Align audits, regenerate, test, and commit**
+- [x] **Step 3: Align audits, regenerate, test, and commit**
 
 ```bash
 bash scripts/validation/generate-security-automation-readiness.sh
@@ -443,7 +443,7 @@ semantic tests, generated matrix, task evidence.
 **Interfaces:** Consumes `validate_semantics()`; produces a named CI step,
 repo-contract pass marker, and three semantic summary metrics.
 
-- [ ] **Step 1: Add a failing integration test**
+- [x] **Step 1: Add a failing integration test**
 
 ```python
 def test_repo_contracts_and_ci_name_the_semantic_gate(self):
@@ -456,7 +456,7 @@ def test_repo_contracts_and_ci_name_the_semantic_gate(self):
     self.assertIn("validate_semantics", generator)
 ```
 
-- [ ] **Step 2: Add the local pass-marker section**
+- [x] **Step 2: Add the local pass-marker section**
 
 ```bash
 section "Agentic audit semantic freshness"
@@ -473,7 +473,7 @@ rm -f "$semantic_audit_output"
 
 Use the repository's trap cleanup style if review requires signal-safe cleanup.
 
-- [ ] **Step 3: Add the exact existing-job CI step**
+- [x] **Step 3: Add the exact existing-job CI step**
 
 ```yaml
       - name: Check canonical audit semantic freshness
@@ -483,7 +483,7 @@ Use the repository's trap cleanup style if review requires signal-safe cleanup.
 Place it after changed-document metadata and before broad repo contracts. Add
 no job, permission, dependency, or remote claim.
 
-- [ ] **Step 4: Add generated semantic metrics and docs**
+- [x] **Step 4: Add generated semantic metrics and docs**
 
 Import/call `validate_semantics` before rendering and add:
 
@@ -496,7 +496,7 @@ Import/call `validate_semantics` before rendering and add:
 Add the validator to `scripts/README.md` as a CI/quality gate and explain its
 bounded scope.
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 ```bash
 python3 -m unittest tests.validation.test_agentic_audit_semantic_freshness -v
@@ -519,7 +519,7 @@ Spec/Plan/Task and parent READMEs.
 **Interfaces:** Consumes five reviewed implementation commits; produces final
 generated bytes, wrapper evidence, completed chain, and branch review package.
 
-- [ ] **Step 1: Regenerate and run full validation**
+- [x] **Step 1: Regenerate and run full validation**
 
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode report --output docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
@@ -541,7 +541,7 @@ bash scripts/validation/check-repo-contracts.sh
 git diff --check
 ```
 
-- [ ] **Step 2: Refresh Graphify and classify it**
+- [x] **Step 2: Refresh Graphify and classify it**
 
 ```bash
 graphify update .
@@ -550,7 +550,7 @@ bash scripts/knowledge/report-graphify-health.sh
 
 Record unavailable/advisory status without using Graphify as completion proof.
 
-- [ ] **Step 3: Commit any reviewed generated/formatter changes, then require clean state**
+- [x] **Step 3: Commit any reviewed generated/formatter changes, then require clean state**
 
 ```bash
 git status --short
@@ -558,7 +558,7 @@ git status --short
 
 Expected: no output before the wrapper.
 
-- [ ] **Step 4: Run the controlled final gate**
+- [x] **Step 4: Run the controlled final gate**
 
 ```bash
 bash scripts/validation/run-agent-precommit-all-files.sh \
@@ -584,7 +584,7 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
 Stop without cleanup on unexpected paths. Record command, prefixes, hook exit,
 before/after/new/unexpected paths, and disposition.
 
-- [ ] **Step 5: Close evidence after all reviews and commit**
+- [x] **Step 5: Close evidence after all reviews and commit**
 
 Set Spec/Plan/Task completed, mark six tasks Done, record exact commits,
 commands, review verdicts, protected boundaries, wrapper result, and Graphify
@@ -636,15 +636,15 @@ git commit -m "docs(task): close audit harness consolidation"
 
 ## Completion Criteria
 
-- [ ] Six tasks and separate reviews are complete.
-- [ ] Historical evidence and routes are clear.
-- [ ] Canonical 161 rows reflect current tracked evidence.
-- [ ] Semantic 11-assertion contract passes.
-- [ ] Security readiness has 13 precise controls.
-- [ ] Local and tracked CI gates execute semantic freshness.
-- [ ] Generated references and controlled wrapper pass.
-- [ ] Whole-branch review approves the exact range.
-- [ ] Protected boundaries remain unchanged.
+- [x] Six tasks and separate reviews are complete.
+- [x] Historical evidence and routes are clear.
+- [x] Canonical 161 rows reflect current tracked evidence.
+- [x] Semantic 11-assertion contract passes.
+- [x] Security readiness has 13 precise controls.
+- [x] Local and tracked CI gates execute semantic freshness.
+- [x] Generated references and controlled wrapper pass.
+- [x] Whole-branch review approves the exact range.
+- [x] Protected boundaries remain unchanged.
 
 ## Related Documents
 

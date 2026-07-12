@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:128-agentic-audit-harness-consolidation
 artifact_type: spec
 parent_ids:

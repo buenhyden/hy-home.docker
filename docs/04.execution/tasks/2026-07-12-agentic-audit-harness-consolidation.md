@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-12-agentic-audit-harness-consolidation
 artifact_type: task
 parent_ids:
@@ -392,9 +392,9 @@ close generated evidence.
 - **Implementation base and lifecycle boundary**: Task 6 starts from reviewed
   Task 5 base `22b526a9`. Independent re-review approved the implementation
   and evidence range through `a09d3dfc`; T-AHC-006 is `Done`, Phase 3 is
-  checked, and the Review Ledger records the final task verdict. Spec 128, its
-  Plan, and this Task remain `active` only until the separate whole-branch
-  reviewer approves the complete implementation range.
+  checked, and the Review Ledger records the final task verdict. The separate
+  whole-branch reviewer approved the complete implementation range, so Spec
+  128, its Plan, and this Task are `completed`.
 - **Owner regeneration**: The metadata owner regenerated the canonical
   frontmatter inventory at 891 records and 2,025 advisory findings. The audit
   matrix and security-readiness owner generators reproduced their tracked
@@ -442,6 +442,12 @@ close generated evidence.
   the ignored implementation report without changing the executed command,
   wrapper result, or lifecycle. Re-review returned Spec PASS, Quality APPROVED,
   C0/I0/M0. The final report is `.superpowers/sdd/task-6-review.md`.
+- **Whole-branch review**: A fresh reviewer inspected the exact merge-base
+  range `8b58abc22abb8f93c5580e7185efa0f6a62c4e7b..f8a72211` across all six
+  reviewed tasks and returned Spec PASS, Quality APPROVED, C0/I0/M0, and
+  `READY_FOR_CLOSURE: YES`. The report is
+  `.superpowers/sdd/whole-branch-review.md`; this status-only closure delta is
+  validated below without changing any protected surface.
 
 ## Verification Summary
 

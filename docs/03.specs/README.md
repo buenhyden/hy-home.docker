@@ -96,7 +96,7 @@ docs/03.specs/
 ├── 125-infrastructure-operations-readiness-remediation/ # Draft upgrade, migration, backup, restore, and recovery contract
 ├── 126-security-supply-chain-remediation/ # Draft scanning, SBOM, provenance, signing, and verification contract
 ├── 127-deployment-release-engineering-remediation/ # Draft environment, promotion, release, deployment, and rollback contract
-├── 128-agentic-audit-harness-consolidation/ # Active canonical audit lifecycle, current-state, semantic freshness, and QA/CI contract
+├── 128-agentic-audit-harness-consolidation/ # Completed canonical audit lifecycle, current-state, semantic freshness, and QA/CI contract
 └── README.md                            # This file
 ```
 

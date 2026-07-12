@@ -156,7 +156,7 @@ docs/04.execution/tasks/
 ├── 2026-07-06-dependency-vulnerability-audit-gate.md # Completed Storybook Next.js dependency vulnerability audit gate evidence
 ├── 2026-07-10-agentic-research-pack-consolidation.md # Completed canonical research-pack consolidation evidence; post-closure review PASS/APPROVED
 ├── 2026-07-11-agentic-engineering-audit-remediation.md # Completed postclosure metadata-integrity fixes and re-review evidence
-├── 2026-07-12-agentic-audit-harness-consolidation.md # Active canonical audit lifecycle, semantic freshness, security precision, and QA/CI evidence
+├── 2026-07-12-agentic-audit-harness-consolidation.md # Completed canonical audit lifecycle, semantic freshness, security precision, and QA/CI evidence
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence
