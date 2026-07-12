@@ -119,9 +119,14 @@ process/filesystem sandbox.
 
 ## Deviation Notes
 
-- None. Any plan deviation must name the affected task, approval source,
-  changed path/interface, validation impact, and rollback decision before that
-  task can close.
+- **2026-07-13 preflight resolution**: The user approved resolving the conflict
+  between the original one-commit-per-task wording and Task 6's clean-wrapper
+  plus post-review closure requirements. Tasks 1-5 use at least one logical
+  commit each. Task 6 uses a generated/pre-closure commit, pre-closure review,
+  lifecycle-closure commit, and fresh post-closure whole-branch review. Review
+  fixes remain separate logical commits. This changes commit/review sequencing
+  only; scope, validation, rollback, and protected-surface boundaries remain
+  unchanged.
 
 ## Program Follow-up Boundary
 

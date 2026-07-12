@@ -75,8 +75,10 @@ generators, GitHub Actions, and Git.
 - Execute tasks serially with a fresh implementation subagent and separate
   task reviewer. A task closes only after Spec PASS and Quality APPROVED with
   all Critical and Important findings resolved.
-- Use one logical Conventional Commit per task. Do not run implementation
-  agents in parallel.
+- Use at least one logical Conventional Commit per task. Task 6 separates the
+  generated/pre-closure commit from the lifecycle-closure commit, and review
+  fixes remain separate logical commits. Do not run implementation agents in
+  parallel.
 - Never invoke `pre-commit run --all-files` directly. Reserve
   `scripts/validation/run-agent-precommit-all-files.sh` for the final clean
   linked-worktree gate and record its Git-visible evidence in the task ledger.
@@ -677,7 +679,7 @@ Record command, exit status, Git-visible modified/new/unexpected paths, review
 disposition, and observation boundary in the task ledger. Stop on any
 unexpected path; do not clean or hide it.
 
-- [ ] **Step 4: Obtain final whole-branch review**
+- [ ] **Step 4: Obtain the pre-closure whole-branch review**
 
 Create a review package for `e2954cc3..HEAD`. Give a fresh, most-capable
 reviewer Spec 129, this plan, the task evidence, the exact diff package, all
@@ -696,7 +698,13 @@ git add docs/03.specs/129-document-contract-canonicalization docs/03.specs/READM
 git commit -m "docs(task): close document contract canonicalization"
 ```
 
-- [ ] **Step 6: Verify the final branch and hand off**
+- [ ] **Step 6: Obtain post-closure review, verify, and hand off**
+
+Create a fresh review package for `e2954cc3..HEAD` after the closure commit.
+Require a fresh independent post-closure verdict of Spec PASS, Quality
+APPROVED, Critical 0, and Important 0. If it returns findings, use one fix
+subagent for the complete finding set, rerun covering tests, and repeat the
+post-closure review before handoff.
 
 ```bash
 git status --short
@@ -705,9 +713,10 @@ git diff --stat e2954cc3..HEAD
 git diff --check e2954cc3..HEAD
 ```
 
-Expected: clean worktree, six logical implementation/closure commits plus the
-already approved Spec/plan commits, no runtime or remote mutation, and all
-later migration waves still explicitly pending.
+Expected: clean worktree, at least one logical commit for each of Tasks 1-5,
+separate generated/pre-closure and lifecycle-closure commits for Task 6,
+post-closure approval, no runtime or remote mutation, and all later migration
+waves still explicitly pending.
 
 ## Verification Plan
 
@@ -774,7 +783,8 @@ later migration waves still explicitly pending.
       reviews, and whole-branch review pass.
 - [ ] No runtime, secret, deployment, ruleset, environment, provider-global,
       model-policy, remote branch-protection, or broad corpus mutation occurs.
-- [ ] Six logical task commits and durable task evidence are present.
+- [ ] Tasks 1-5 have logical commits; Task 6 has separate generated/pre-closure
+      and lifecycle-closure commits; durable evidence records every review.
 
 ## Related Documents
 
