@@ -57,7 +57,7 @@ close generated evidence.
 | T-AHC-003 | Implement semantic closure contract and adversarial tests. | impl/test | Semantic Freshness | Task 3 | RED/GREEN, CLI PASS, review | QA Engineer | Done |
 | T-AHC-004 | Split scoped and broad security readiness signals. | impl/test | Security Readiness | Task 4 | 13 controls, negative test, review | Security Auditor | Done |
 | T-AHC-005 | Wire semantic freshness into generator, contracts, and CI. | impl/ci | QA and CI | Task 5 | Unit/matrix/workflow/contracts, review | CI/CD Engineer | Done |
-| T-AHC-006 | Regenerate, run full QA/wrapper, and close evidence. | test/doc | Verification | Task 6 | Full bundle, wrapper, branch review | QA / Documentation | Todo |
+| T-AHC-006 | Regenerate, run full QA/wrapper, and close evidence. | test/doc | Verification | Task 6 | Full bundle, wrapper, branch review | QA / Documentation | Done |
 
 ## Phase View
 
@@ -74,7 +74,7 @@ close generated evidence.
 
 ### Phase 3 — Closure
 
-- [ ] T-AHC-006 Generated evidence, controlled QA, and branch review
+- [x] T-AHC-006 Generated evidence, controlled QA, and branch review
 
 ## Review Ledger
 
@@ -85,7 +85,7 @@ close generated evidence.
 | T-AHC-003 | `14489dcd..cdf30ac1` | PASS | APPROVED | Initial C0/I3/M2 resolved by `cdf30ac1`; re-review C0/I0/M0 | `.superpowers/sdd/task-3-review.md` |
 | T-AHC-004 | `5dc6f5e8..6168f7a9` | PASS | APPROVED | C0/I0/M0; no findings | `.superpowers/sdd/task-4-review.md` |
 | T-AHC-005 | `8502794c..97b70260` | PASS | APPROVED | Initial C0/I0/M1 resolved by `97b70260`; re-review C0/I0/M0 | `.superpowers/sdd/task-5-review.md` |
-| T-AHC-006 | Pending | Pending | Pending | Pending | Pending |
+| T-AHC-006 | `22b526a9..a09d3dfc` | PASS | APPROVED | Initial C0/I1/M0 resolved by `a09d3dfc`; re-review C0/I0/M0 | `.superpowers/sdd/task-6-review.md` |
 
 ### T-AHC-001 Audit Lifecycle Organization Evidence
 
@@ -390,10 +390,11 @@ close generated evidence.
 ### T-AHC-006 Generated Evidence and Controlled QA Implementation Evidence
 
 - **Implementation base and lifecycle boundary**: Task 6 starts from reviewed
-  Task 5 base `22b526a9`. T-AHC-006 remains `Todo`, Phase 3 remains unchecked,
-  the Review Ledger remains `Pending`, and Spec 128, its Plan, and this Task
-  remain `active` until a separate reviewer approves the exact implementation
-  range.
+  Task 5 base `22b526a9`. Independent re-review approved the implementation
+  and evidence range through `a09d3dfc`; T-AHC-006 is `Done`, Phase 3 is
+  checked, and the Review Ledger records the final task verdict. Spec 128, its
+  Plan, and this Task remain `active` only until the separate whole-branch
+  reviewer approves the complete implementation range.
 - **Owner regeneration**: The metadata owner regenerated the canonical
   frontmatter inventory at 891 records and 2,025 advisory findings. The audit
   matrix and security-readiness owner generators reproduced their tracked
@@ -434,6 +435,13 @@ close generated evidence.
   remote GitHub, provider/model policy, `.gemini`, global configuration,
   scanner, or follow-up Spec 124-127 implementation surface changed. This
   self-review does not replace independent review.
+- **Independent review fix cycle**: The first Task 6 review returned Spec FAIL,
+  Quality CHANGES REQUIRED, C0/I1/M0 because three evidence phrases claimed
+  seventeen allowed prefixes while the byte-equivalent Plan and Task command
+  blocks contain sixteen. Commit `a09d3dfc` corrects the canonical wording and
+  the ignored implementation report without changing the executed command,
+  wrapper result, or lifecycle. Re-review returned Spec PASS, Quality APPROVED,
+  C0/I0/M0. The final report is `.superpowers/sdd/task-6-review.md`.
 
 ## Verification Summary
 
