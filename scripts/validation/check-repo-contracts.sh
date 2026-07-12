@@ -3863,6 +3863,31 @@ elif ! grep -q 'coverage_check=pass' /tmp/check-repo-contracts-audit-pack-covera
 fi
 rm -f /tmp/check-repo-contracts-audit-pack-coverage.txt
 
+section "Agentic audit semantic freshness"
+semantic_audit_output="$(mktemp "${TMPDIR:-/tmp}/check-repo-contracts-agentic-audit-semantic.XXXXXX")"
+cleanup_semantic_audit_output() {
+  rm -f -- "$semantic_audit_output"
+}
+handle_semantic_audit_signal() {
+  local exit_code="$1"
+  cleanup_semantic_audit_output
+  trap - EXIT HUP INT TERM
+  exit "$exit_code"
+}
+trap cleanup_semantic_audit_output EXIT
+trap 'handle_semantic_audit_signal 129' HUP
+trap 'handle_semantic_audit_signal 130' INT
+trap 'handle_semantic_audit_signal 143' TERM
+if ! python3 scripts/validation/check-agentic-audit-semantic-freshness.py >"$semantic_audit_output" 2>&1; then
+  fail "agentic audit semantic freshness failed"
+  cat "$semantic_audit_output" >&2
+elif ! grep -Fxq 'audit_semantic_freshness: PASS assertions=11 failures=0' "$semantic_audit_output"; then
+  fail "agentic audit semantic validator did not print the exact pass marker"
+  cat "$semantic_audit_output" >&2
+fi
+cleanup_semantic_audit_output
+trap - EXIT HUP INT TERM
+
 section "Document metadata inventory and changed/new hook contract"
 metadata_profiles="docs/99.templates/support/document-metadata-profiles.yaml"
 metadata_checker="scripts/validation/check-document-metadata.py"

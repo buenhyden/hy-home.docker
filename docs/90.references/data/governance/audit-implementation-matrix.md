@@ -70,6 +70,9 @@ Compose files, and registry references.
 | Automation candidates expected | 13 |
 | Automation candidates found | 13 |
 | Closed candidates with residual gaps | 5 |
+| Semantic closure assertions expected | 11 |
+| Semantic closure assertions passed | 11 |
+| Semantic closure assertion failures | 0 |
 | Generator-detected structural failures | 0 |
 
 ## Implementation Overview Matrix

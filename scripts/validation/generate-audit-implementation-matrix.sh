@@ -43,6 +43,7 @@ python3 - "$mode" "$OUTPUT" <<'PY'
 from __future__ import annotations
 
 import collections
+import importlib.util
 import os
 import pathlib
 import re
@@ -56,6 +57,20 @@ from audit_criterion_contract import (  # noqa: E402
     REPORT_PREFIX_COUNTS,
     validate_pack,
 )
+
+SEMANTIC_VALIDATOR = pathlib.Path(
+    "scripts/validation/check-agentic-audit-semantic-freshness.py"
+).resolve()
+semantic_spec = importlib.util.spec_from_file_location(
+    "agentic_audit_semantic_freshness", SEMANTIC_VALIDATOR
+)
+if semantic_spec is None or semantic_spec.loader is None:
+    raise RuntimeError(f"unable to load semantic validator: {SEMANTIC_VALIDATOR}")
+semantic_module = importlib.util.module_from_spec(semantic_spec)
+sys.modules[semantic_spec.name] = semantic_module
+semantic_spec.loader.exec_module(semantic_module)
+AuditSemanticContractError = semantic_module.AuditSemanticContractError
+validate_semantics = semantic_module.validate_semantics
 
 MODE = sys.argv[1]
 OUTPUT = pathlib.Path(sys.argv[2])
@@ -80,6 +95,7 @@ EXPECTED_OVERVIEW_CATEGORIES = [
 ]
 
 EXPECTED_CANDIDATES = [f"AEA-AUTO-{index:03d}" for index in range(1, 14)]
+EXPECTED_SEMANTIC_ASSERTIONS = 11
 
 
 @dataclass(frozen=True)
@@ -213,6 +229,10 @@ def extract_gap_signals() -> list[str]:
 
 def build_output() -> tuple[str, list[str]]:
     failures: list[str] = []
+    semantic_result = validate_semantics(
+        pathlib.Path("."),
+        pathlib.Path("scripts/validation/agentic-audit-semantic-contract.json"),
+    )
     contract = validate_pack(PACK)
     report_paths = [PACK / name for name in REPORT_PREFIX_COUNTS]
     all_criteria = list(contract.rows)
@@ -320,6 +340,9 @@ def build_output() -> tuple[str, list[str]]:
         f"| Automation candidates expected | {len(EXPECTED_CANDIDATES)} |",
         f"| Automation candidates found | {len(candidates)} |",
         f"| Closed candidates with residual gaps | {disposition_counts.get('Closed with residual gap', 0)} |",
+        f"| Semantic closure assertions expected | {EXPECTED_SEMANTIC_ASSERTIONS} |",
+        f"| Semantic closure assertions passed | {semantic_result.assertion_count} |",
+        "| Semantic closure assertion failures | 0 |",
         f"| Generator-detected structural failures | {len(failures)} |",
         "",
         "## Implementation Overview Matrix",
@@ -493,7 +516,7 @@ def build_output() -> tuple[str, list[str]]:
 def main() -> int:
     try:
         generated, failures = build_output()
-    except AuditCriterionContractError as exc:
+    except (AuditCriterionContractError, AuditSemanticContractError) as exc:
         for failure in exc.errors:
             print(f"FAIL: {failure}", file=sys.stderr)
         return 1

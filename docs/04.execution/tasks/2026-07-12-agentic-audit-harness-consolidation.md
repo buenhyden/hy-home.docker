@@ -309,6 +309,64 @@ close generated evidence.
   of Task 5 or protected-surface changes. The final report is
   `.superpowers/sdd/task-4-review.md`.
 
+### T-AHC-005 QA and CI Integration Evidence
+
+- **Implementation base and lifecycle**: Task 5 starts from reviewed Task 4
+  base `8502794c`. T-AHC-005 remains `Todo`, its Phase 2 checkbox remains
+  unchecked, and its Review Ledger row remains `Pending` until independent
+  Spec compliance and quality review approve this logical commit.
+- **TDD RED**: After adding only the repository-integration assertion,
+  `python3 -m unittest tests.validation.test_agentic_audit_semantic_freshness -v`
+  exited `1`: the thirty existing tests passed and the new test failed because
+  `python3 scripts/validation/check-agentic-audit-semantic-freshness.py` was
+  absent from repository-contract orchestration. The generator and CI workflow
+  were also still unwired at that point.
+- **TDD GREEN and full tests**: The focused semantic suite passed 31/31 after
+  integration. The complete `tests/validation` discovery suite passed 126/126;
+  Ruff lint and format checks passed for the changed Python test.
+- **Local repository gate**: `check-repo-contracts.sh` now has one named
+  `Agentic audit semantic freshness` section. It captures validator output in a
+  unique `mktemp` file, removes it on normal exit and `EXIT`/`HUP`/`INT`/`TERM`,
+  fails on validator exit, and requires the exact line
+  `audit_semantic_freshness: PASS assertions=11 failures=0` with `grep -Fxq`.
+- **Generated matrix contract**: The owner generator loads and calls
+  `validate_semantics()` before rendering. Write/check generation passed and
+  renders exactly `expected=11`, `passed=11`, and `failures=0` as three separate
+  snapshot metrics. The semantic CLI independently printed its exact PASS
+  marker.
+- **Tracked CI placement**: The existing `repo-contracts` job has exactly one
+  `Check canonical audit semantic freshness` step after changed/new document
+  metadata and before broad repository contracts. No job, event, permission,
+  dependency, checkout, environment, or remote-state claim changed. PyYAML and
+  actionlint passed; zizmor reported no findings, with its existing YAML-anchor
+  warning and sixteen suppressed findings.
+- **Repository-contract result and generated boundary**: The first complete
+  run exposed only the LLM Wiki index and coverage snapshots already deferred
+  to T-AHC-006. After temporary owner regeneration, the complete repository
+  contract passed with `failures=0`; both Task 6-owned outputs were restored to
+  their exact pre-run bytes and remain outside this logical commit.
+- **Documentation boundary**: `scripts/README.md` classifies the validator as a
+  bounded CI/quality gate. It proves only the eleven tracked closure assertions,
+  completed task evidence, stale-phrase exclusions, and lifecycle routes; it
+  explicitly does not prove runtime, remote enforcement, provider entitlement,
+  deployment, broad scanning, or model quality.
+- **Graphify**: `graphify update .` completed at 22,623 nodes / 23,471 edges.
+  Health remained advisory solely because of two surprising cross-root inferred
+  edges, so all claims were corroborated against tracked validation/workflow
+  source, Stage 00, Spec 128, and this Stage 04 task. The two generated Graphify
+  files are task-created collateral and remain outside the logical commit.
+- **Protected surfaces and skips**: Direct pre-commit was not invoked; it
+  remains reserved for T-AHC-006. No runtime, Compose, infrastructure,
+  deployment, service, secret, credential, remote GitHub, branch protection,
+  provider/model policy, `.gemini`, global configuration, or Task 6 generated
+  evidence was changed. No remote CI execution or protection enforcement is
+  claimed.
+- **Self-review and concerns**: Reviewed the exact command/marker, signal-safe
+  cleanup, semantic-before-render order, 11/11/0 output, existing-job placement,
+  workflow authority diff, documentation scope, generated-owner boundary, and
+  authorized path set. No implementation concern remains; this self-review does
+  not replace independent review.
+
 ## Verification Summary
 
 - **Baseline**: `codex/audit-harness-consolidation` from

@@ -110,6 +110,24 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         result = module.validate_semantics(ROOT, CONTRACT)
         self.assertEqual(11, result.assertion_count)
 
+    def test_repo_contracts_and_ci_name_the_semantic_gate(self) -> None:
+        repo_contracts = (
+            ROOT / "scripts/validation/check-repo-contracts.sh"
+        ).read_text(encoding="utf-8")
+        workflow = (ROOT / ".github/workflows/ci-quality.yml").read_text(
+            encoding="utf-8"
+        )
+        generator = (
+            ROOT / "scripts/validation/generate-audit-implementation-matrix.sh"
+        ).read_text(encoding="utf-8")
+        command = (
+            "python3 scripts/validation/"
+            "check-agentic-audit-semantic-freshness.py"
+        )
+        self.assertIn(command, repo_contracts)
+        self.assertIn(command, workflow)
+        self.assertIn("validate_semantics", generator)
+
     def test_wrong_required_state_fails(self) -> None:
         self.rewrite_row("QAF-12", "Implemented", "Missing")
         self.assert_failure("QAF-12", "required state Implemented")
