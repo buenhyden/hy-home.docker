@@ -478,7 +478,7 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
 
 | Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |
 | --- | --- | ---: | --- | --- | --- |
-| Exact command above; internal command `pre-commit run --all-files --show-diff-on-failure` | The seventeen exact `--allow-prefix` values above | 0; hook passed; snapshot passed | before=0; after=0; new=0; changed=0; unexpected=0; all path sets `(none)` | Pass; no unexpected path, formatter modification, or cleanup required | N/A; approved final local gate executed |
+| Exact command above; internal command `pre-commit run --all-files --show-diff-on-failure` | The sixteen exact `--allow-prefix` values above | 0; hook passed; snapshot passed | before=0; after=0; new=0; changed=0; unexpected=0; all path sets `(none)` | Pass; no unexpected path, formatter modification, or cleanup required | N/A; approved final local gate executed |
 
 ## Deviation and Protected-Surface Notes
 
