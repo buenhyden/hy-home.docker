@@ -597,8 +597,16 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   changed metadata against `7e2de3ba` passes `4/0/0/0`, traceability passes
   `46/0`, alignment passes `644/5,097/0`, repository contracts report
   `failures=0`, and `git diff --check` passes.
+- **Post-closure controlled wrapper**: controller commit `5e50d600` captured
+  the complete remediation and regenerated evidence. From that clean boundary,
+  the approved all-files wrapper completed with wrapper exit `0`, hook exit
+  `0`, and snapshot PASS. Git-visible, non-ignored observations were before
+  `0`, after `0`, changed `0`, and unexpected `0`; every corresponding path
+  set was empty. No hook-managed edit or unexpected path exists. Lifecycle
+  remains active and T-DCC-006 remains Review Pending for fresh independent
+  review.
 - **Post-closure protected boundary and self-review**: the controlled all-files
-  wrapper was not run and remains reserved for the controller. Runtime,
+  wrapper ran only inside its recorded Git-visible observation boundary. Runtime,
   Compose, infrastructure, deployment, Release events, secrets, provider/model
   policy, workflows, rulesets, environments, branch protection, and remote
   state remain unchanged. Implementer self-review maps both fixes to Spec 129,
@@ -614,7 +622,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
 | T-DCC-005 | `bded61ce`, `556ba98d`, `dc75443b` | PASS | Approved | Round 1 C0/I2/M0 and re-review C0/I1/M0; all template/array bypasses resolved; final C0/I0/M0 | `review-ac63469a..dc75443b.diff`; combined reviewer final verdict | Done |
-| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb`, `431435c1`, `0eec79fa`, `7d5fbb56`, `12c3f602`, `7e2de3ba` | FAIL | Changes Required | Post-closure C0/I2/M0 findings are locally remediated with RED/GREEN and owner-generated evidence; latest independent verdict remains failed until fresh re-review | `review-e2954cc3..7d5fbb56.diff`; post-closure verdict and current remediation evidence | Review Pending |
+| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb`, `431435c1`, `0eec79fa`, `7d5fbb56`, `12c3f602`, `7e2de3ba`, `5e50d600` | FAIL | Changes Required | Post-closure C0/I2/M0 findings are locally remediated with RED/GREEN, owner-generated evidence, and a clean controlled-wrapper pass; latest independent verdict remains failed until fresh re-review | `review-e2954cc3..7d5fbb56.diff`; post-closure verdict and current remediation evidence | Review Pending |
 
 ## Verification Summary
 
