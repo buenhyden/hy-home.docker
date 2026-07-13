@@ -11,6 +11,19 @@ common:
     archived: []
   globally_forbidden: [type, document_type, template_type, owner, updated, links]
   typed_keys: [status, artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle]
+  frontmatter_order:
+    - status
+    - artifact_id
+    - artifact_type
+    - parent_ids
+    - supersedes
+    - reviewed_at
+    - review_cycle
+    - generated_by
+    - archived_from
+    - archived_on
+    - archive_reason
+    - current_replacement
   inventory_excludes:
     - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
   template_placeholders:
@@ -24,6 +37,218 @@ common:
     current_replacement: docs/<replacement-path>.md
   root_exceptions:
     docs/03.specs/123-agentic-engineering-audit-remediation/spec.md: Cross-cutting umbrella spec approved without a manufactured PRD, ARD, or ADR parent.
+
+document_families:
+  sdlc: [prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release]
+  common: [reference, audit, archive, readme, governance, generated, template-source, repo-support, unsupported]
+
+readme_profiles:
+  repository-root:
+    path_globs: [README.md]
+    frontmatter: forbidden
+    frontmatter_consumer: null
+    allowed_frontmatter_keys: []
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Getting Started, Documentation Standards, Verification and Quality Gates]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Repository entrypoint, navigation, and workspace-specific onboarding.
+    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+
+  stage-index:
+    path_globs:
+      - docs/README.md
+      - docs/01.requirements/README.md
+      - docs/02.architecture/README.md
+      - docs/02.architecture/*/README.md
+      - docs/03.specs/README.md
+      - docs/03.specs/*/README.md
+      - docs/04.execution/README.md
+      - docs/04.execution/*/README.md
+      - docs/05.operations/README.md
+      - docs/05.operations/*/README.md
+      - docs/05.operations/*/*/README.md
+      - docs/05.operations/*/*/*/README.md
+      - docs/90.references/README.md
+      - docs/90.references/*/README.md
+      - docs/90.references/*/*/README.md
+    frontmatter: optional
+    frontmatter_consumer: scripts/validation/check-document-metadata.py
+    allowed_frontmatter_keys: [status]
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Status, Current Inventory, Documentation Standards, AI Agent Guidance]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Stage or document-set navigation, local inventory, and profile-specific workflow context.
+    canonical_shared_rule_owner: docs/00.agent-governance/rules/stage-authoring-matrix.md
+
+  governance-catalog:
+    path_globs:
+      - docs/00.agent-governance/README.md
+      - docs/00.agent-governance/*/README.md
+    frontmatter: optional
+    frontmatter_consumer: scripts/validation/check-document-metadata.py
+    allowed_frontmatter_keys: [layer]
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Purpose, Operational Procedures, Maintenance and Safety]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Governance catalog navigation and local ownership boundaries.
+    canonical_shared_rule_owner: docs/00.agent-governance/README.md
+
+  provider-runtime:
+    path_globs: [.agents/README.md, .codex/README.md]
+    frontmatter: optional
+    frontmatter_consumer: scripts/validation/check-repo-contracts.sh
+    allowed_frontmatter_keys: [layer, runtime]
+    required_headings: [Scope, How to Work in This Area, Related Documents]
+    optional_headings: [Authority, Provider Behavior, Harness Alignment Gates]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Provider runtime entrypoint, compatibility notes, and provider-specific navigation.
+    canonical_shared_rule_owner: docs/00.agent-governance/providers/codex.md
+
+  infrastructure-root:
+    path_globs: [infra/README.md]
+    frontmatter: forbidden
+    frontmatter_consumer: null
+    allowed_frontmatter_keys: []
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Infrastructure Tiers (01-11), Compose Inventory Snapshot, Execution Model]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Infrastructure catalog, compose entrypoint, and tier navigation.
+    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+
+  infrastructure-tier:
+    path_globs: [infra/*/README.md]
+    frontmatter: forbidden
+    frontmatter_consumer: null
+    allowed_frontmatter_keys: []
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Tech Stack, Service Matrix, Configuration, Validation]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Tier inventory, integration boundaries, and tier-specific operating context.
+    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+
+  infrastructure-service:
+    path_globs: [infra/*/*/README.md, infra/*/*/*/README.md]
+    frontmatter: optional
+    frontmatter_consumer: scripts/validation/check-repo-contracts.sh
+    allowed_frontmatter_keys: [layer]
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Service Readiness, Tech Stack, Configuration, Validation, Troubleshooting]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Service-local configuration, validation, troubleshooting, and implementation context.
+    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+
+  project-root:
+    path_globs: [projects/README.md]
+    frontmatter: forbidden
+    frontmatter_consumer: null
+    allowed_frontmatter_keys: []
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Available Scripts]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Project catalog and workspace navigation.
+    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+
+  project-leaf:
+    path_globs: [projects/*/README.md, projects/*/*/README.md]
+    frontmatter: forbidden
+    frontmatter_consumer: null
+    allowed_frontmatter_keys: []
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Available Scripts, Validation]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Project-local setup, commands, structure, and validation guidance.
+    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+
+  scripts:
+    path_globs: [scripts/README.md]
+    frontmatter: forbidden
+    frontmatter_consumer: null
+    allowed_frontmatter_keys: []
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Navigation / Inventory, Script Lifecycle, Utilities & Automation]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Script catalog, supported invocation examples, and lifecycle navigation.
+    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+
+  tests:
+    path_globs: [tests/README.md]
+    frontmatter: forbidden
+    frontmatter_consumer: null
+    allowed_frontmatter_keys: []
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Validation]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Test-suite navigation and repository-specific execution guidance.
+    canonical_shared_rule_owner: docs/00.agent-governance/scopes/qa.md
+
+  secrets:
+    path_globs: [secrets/README.md]
+    frontmatter: forbidden
+    frontmatter_consumer: null
+    allowed_frontmatter_keys: []
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Navigation / Inventory, Inventory Classification, Security Policy]
+    forbidden_headings: [Secret Values, Canonical Shared Rules]
+    allowed_local_content_role: Metadata-only secret workflow, ID/path navigation, and redacted safety guidance.
+    canonical_shared_rule_owner: docs/00.agent-governance/rules/documentation-protocol.md
+
+  examples:
+    path_globs: [examples/*/README.md]
+    frontmatter: optional
+    frontmatter_consumer: scripts/validation/check-document-metadata.py
+    allowed_frontmatter_keys: [status]
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Getting Started, Validation]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Bounded example usage, scaffold structure, and safe local validation.
+    canonical_shared_rule_owner: docs/99.templates/support/template-governance.md
+
+  archive:
+    path_globs: [docs/98.archive/README.md, docs/98.archive/*/README.md]
+    frontmatter: optional
+    frontmatter_consumer: scripts/validation/check-document-metadata.py
+    allowed_frontmatter_keys: [layer]
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Archive Ledger, Tombstone Contract]
+    forbidden_headings: [Current Implementation]
+    allowed_local_content_role: Archive navigation, tombstone inventory, and replacement routing.
+    canonical_shared_rule_owner: docs/00.agent-governance/rules/stage-authoring-matrix.md
+
+  template-catalog:
+    path_globs:
+      - docs/99.templates/README.md
+      - docs/99.templates/*/README.md
+      - docs/99.templates/*/*/README.md
+    frontmatter: optional
+    frontmatter_consumer: scripts/validation/check-repo-contracts.sh
+    allowed_frontmatter_keys: [layer]
+    required_headings: [Overview, Audience, Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: [Template Catalog, Selection Rules, Validation]
+    forbidden_headings: [Canonical Shared Rules]
+    allowed_local_content_role: Template and support-contract catalog with local selection navigation.
+    canonical_shared_rule_owner: docs/99.templates/support/template-governance.md
+
+  workspace-root:
+    path_globs: [_workspace/README.md]
+    frontmatter: forbidden
+    frontmatter_consumer: null
+    allowed_frontmatter_keys: []
+    required_headings: [Purpose, Allowed Surface, Prohibited Surface, Tracking Contract, Related Documents]
+    optional_headings: []
+    forbidden_headings: [Secret Values, Raw Logs]
+    allowed_local_content_role: Non-stage workspace support boundary and tracked-surface contract.
+    canonical_shared_rule_owner: _workspace/README.md
+
+  repo-support:
+    path_globs: [_workspace/repo-support/README.md]
+    frontmatter: forbidden
+    frontmatter_consumer: null
+    allowed_frontmatter_keys: []
+    required_headings: [Purpose, Allowed Artifacts, Prohibited Artifacts, Promotion Rule, Related Documents]
+    optional_headings: []
+    forbidden_headings: [Secret Values, Raw Logs]
+    allowed_local_content_role: Ignored non-secret handoff, preview, and migration support boundary.
+    canonical_shared_rule_owner: _workspace/README.md
 
 template_sources:
   docs/99.templates/templates/sdlc/prd.template.md: prd
@@ -169,12 +394,21 @@ profiles:
 
   readme:
     required: []
-    optional: [status, layer, generated_by]
+    optional: [status, layer, generated_by, runtime]
     forbidden: [artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, archived_from, archived_on, archive_reason, current_replacement]
     allowed_statuses: [active, completed, superseded, archived]
     allowed_parent_types: []
     allow_empty_parents: true
     disposition: README exception
+
+  repo-support:
+    required: []
+    optional: []
+    forbidden: [status, layer, generated_by, artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: []
+    allowed_parent_types: []
+    allow_empty_parents: true
+    disposition: repository-support exception
 
   generated:
     required: [generated_by]

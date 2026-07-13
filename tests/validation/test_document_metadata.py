@@ -188,6 +188,94 @@ class ProfileSchemaTests(unittest.TestCase):
     def test_transitions_reject_unknown_statuses(self) -> None:
         self.mutate_and_load(lambda values: values["common"]["transitions"]["active"].append("retired"))
 
+    def test_frontmatter_order_requires_exact_unique_typed_keys(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        self.assertEqual(
+            [
+                "status",
+                "artifact_id",
+                "artifact_type",
+                "parent_ids",
+                "supersedes",
+                "reviewed_at",
+                "review_cycle",
+                "generated_by",
+                "archived_from",
+                "archived_on",
+                "archive_reason",
+                "current_replacement",
+            ],
+            profiles["common"]["frontmatter_order"],
+        )
+        mutations = (
+            lambda values: values["common"]["frontmatter_order"].pop(),
+            lambda values: values["common"]["frontmatter_order"].append("status"),
+            lambda values: values["common"]["frontmatter_order"].__setitem__(0, 7),
+        )
+        for mutate in mutations:
+            with self.subTest(mutate=mutate):
+                self.mutate_and_load(mutate)
+
+    def test_document_families_require_known_unique_profiles(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        self.assertEqual(
+            {
+                "sdlc": [
+                    "prd",
+                    "ard",
+                    "adr",
+                    "spec",
+                    "plan",
+                    "task",
+                    "guide",
+                    "policy",
+                    "runbook",
+                    "incident",
+                    "postmortem",
+                    "release",
+                ],
+                "common": [
+                    "reference",
+                    "audit",
+                    "archive",
+                    "readme",
+                    "governance",
+                    "generated",
+                    "template-source",
+                    "repo-support",
+                    "unsupported",
+                ],
+            },
+            profiles["document_families"],
+        )
+        mutations = (
+            lambda values: values["document_families"]["sdlc"].append("unknown"),
+            lambda values: values["document_families"]["common"].append("readme"),
+            lambda values: values["document_families"].__setitem__("other", ["spec"]),
+        )
+        for mutate in mutations:
+            with self.subTest(mutate=mutate):
+                self.mutate_and_load(mutate)
+
+    def test_readme_profiles_reject_overlap_and_unknown_members(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        self.assertTrue(profiles["readme_profiles"])
+
+        def overlap(values) -> None:
+            names = list(values["readme_profiles"])
+            first, second = names[:2]
+            values["readme_profiles"][second]["path_globs"].append(
+                values["readme_profiles"][first]["path_globs"][0]
+            )
+
+        def unknown_member(values) -> None:
+            first = next(iter(values["readme_profiles"].values()))
+            first["unknown_member"] = "not-declared"
+
+        for mutate in (overlap, unknown_member):
+            with self.subTest(mutate=mutate):
+                self.mutate_and_load(mutate)
+
 
 class ArtifactInferenceTests(unittest.TestCase):
     def test_supported_paths_infer_explicit_profiles(self) -> None:
@@ -279,6 +367,106 @@ class MetadataValidationTests(unittest.TestCase):
     def test_readme_rejects_copied_template_draft_status(self) -> None:
         record = self.record("docs/03.specs/README.md", {"status": "draft"}, "readme")
         self.assertIn("invalid-status", self.codes(record))
+
+    def test_frontmatter_presentation_order_is_enforced(self) -> None:
+        record = self.record(
+            "docs/01.requirements/123-example.md",
+            {
+                "artifact_id": "PRD-123",
+                "status": "active",
+                "artifact_type": "prd",
+                "parent_ids": [],
+            },
+            "prd",
+        )
+        self.assertIn("frontmatter-order", self.codes(record))
+
+    def test_parent_serialization_uses_type_precedence_then_id(self) -> None:
+        spec_parent = self.record(
+            "docs/03.specs/100-parent/spec.md",
+            {
+                "status": "active",
+                "artifact_id": "SPEC-Z",
+                "artifact_type": "spec",
+                "parent_ids": [],
+            },
+            "spec",
+        )
+        plan_a = self.record(
+            "docs/04.execution/plans/2026-07-11-a.md",
+            {
+                "status": "active",
+                "artifact_id": "PLAN-A",
+                "artifact_type": "plan",
+                "parent_ids": [],
+            },
+            "plan",
+        )
+        plan_b = self.record(
+            "docs/04.execution/plans/2026-07-11-b.md",
+            {
+                "status": "active",
+                "artifact_id": "PLAN-B",
+                "artifact_type": "plan",
+                "parent_ids": [],
+            },
+            "plan",
+        )
+        record = self.record(
+            "docs/04.execution/tasks/2026-07-11-child.md",
+            {
+                "status": "active",
+                "artifact_id": "TASK-CHILD",
+                "artifact_type": "task",
+                "parent_ids": ["PLAN-B", "PLAN-A", "SPEC-Z"],
+            },
+            "task",
+        )
+        self.assertIn("parent-order", self.codes(record, [plan_b, spec_parent, plan_a]))
+
+        canonical = self.record(
+            record.path.as_posix(),
+            {**record.metadata, "parent_ids": ["SPEC-Z", "PLAN-A", "PLAN-B"]},
+            "task",
+        )
+        self.assertNotIn("parent-order", self.codes(canonical, [plan_b, spec_parent, plan_a]))
+
+    def test_parent_order_has_no_semantic_priority(self) -> None:
+        parent_a = self.record(
+            "docs/03.specs/100-a/spec.md",
+            {"status": "active", "artifact_id": "SPEC-A", "artifact_type": "spec", "parent_ids": []},
+            "spec",
+        )
+        parent_b = self.record(
+            "docs/03.specs/100-b/spec.md",
+            {"status": "active", "artifact_id": "SPEC-B", "artifact_type": "spec", "parent_ids": []},
+            "spec",
+        )
+        ordered = self.record(
+            "docs/04.execution/plans/2026-07-11-child.md",
+            {
+                "status": "active",
+                "artifact_id": "PLAN-CHILD",
+                "artifact_type": "plan",
+                "parent_ids": ["SPEC-A", "SPEC-B"],
+            },
+            "plan",
+        )
+        reversed_record = self.record(
+            ordered.path.as_posix(),
+            {**ordered.metadata, "parent_ids": ["SPEC-B", "SPEC-A"]},
+            "plan",
+        )
+        ordered_codes = set(self.codes(ordered, [parent_a, parent_b]))
+        reversed_findings = metadata.validate_record(
+            reversed_record,
+            self.profiles,
+            metadata.build_manifest([parent_a, parent_b, reversed_record]),
+        )
+        self.assertEqual(ordered_codes, {finding.code for finding in reversed_findings} - {"parent-order"})
+        order_finding = next(finding for finding in reversed_findings if finding.code == "parent-order")
+        self.assertNotIn("priority", order_finding.message.lower())
+        self.assertIn("serialization", order_finding.message.lower())
 
     def test_unresolved_parent_is_reported(self) -> None:
         record = self.record(
@@ -535,6 +723,43 @@ class MetadataValidationTests(unittest.TestCase):
             "prd",
         )
         self.assertNotIn("template-placeholder-in-target", self.codes(record))
+
+
+class ReadmeProfileTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = metadata.load_profiles(PROFILES)
+
+    def test_every_tracked_readme_has_exactly_one_profile(self) -> None:
+        result = subprocess.run(
+            ["git", "ls-files", "-z", "--", "*README.md"],
+            cwd=ROOT,
+            capture_output=True,
+            check=True,
+        )
+        paths = [pathlib.Path(raw.decode("utf-8")) for raw in result.stdout.split(b"\0") if raw]
+        before = {path: (ROOT / path).read_bytes() for path in paths}
+
+        for path in paths:
+            with self.subTest(path=path):
+                matches = metadata.matching_readme_profiles(path, self.profiles)
+                self.assertEqual(1, len(matches), matches)
+                self.assertEqual(matches[0], metadata.classify_readme_profile(path, self.profiles))
+
+        self.assertEqual(before, {path: (ROOT / path).read_bytes() for path in paths})
+
+    def test_status_bearing_readme_requires_declared_consumer(self) -> None:
+        root_path = pathlib.Path("README.md")
+        self.assertIsNone(metadata.readme_frontmatter_consumer(root_path, self.profiles))
+        record = metadata.Record(root_path, {"status": "active"}, "readme", frontmatter_present=True)
+        findings = metadata.validate_record(record, self.profiles, metadata.build_manifest([record]))
+        self.assertIn("readme-frontmatter-forbidden", {finding.code for finding in findings})
+
+        stage_path = pathlib.Path("docs/03.specs/README.md")
+        self.assertEqual(
+            "scripts/validation/check-document-metadata.py",
+            metadata.readme_frontmatter_consumer(stage_path, self.profiles),
+        )
 
 
 class TemplateMetadataTests(unittest.TestCase):

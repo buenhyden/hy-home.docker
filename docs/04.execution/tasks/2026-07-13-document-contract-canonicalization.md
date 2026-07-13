@@ -61,7 +61,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-DCC-001 | Extend registry/parser with families, key order, README profiles, and parent serialization. | impl/test | Registry Model; VAL-129-001/004/005 | Task 1 | RED/GREEN metadata tests and independent review | Documentation Metadata Engineer | Todo |
+| T-DCC-001 | Extend registry/parser with families, key order, README profiles, and parent serialization. | impl/test | Registry Model; VAL-129-001/004/005 | Task 1 | RED/GREEN metadata tests and independent review | Documentation Metadata Engineer | Review Pending |
 | T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Todo |
 | T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Todo |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Todo |
@@ -87,9 +87,41 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 
 ## Review Ledger
 
+### T-DCC-001 Implementation Evidence
+
+- **RED**:
+  `python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests tests.validation.test_document_metadata.MetadataValidationTests tests.validation.test_document_metadata.ReadmeProfileTests -v`
+  failed as expected before implementation because the three registry members,
+  deterministic-order findings, and README classifier/consumer APIs were absent
+  (`FAILED`; two assertion failures plus expected missing-schema/API errors).
+- **GREEN**: the same focused command passed `31/31`; the full
+  `tests.validation.test_document_metadata` module passed with `91` discovered
+  tests and exit `0`.
+- **Compatibility**:
+  `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref e2954cc3`
+  retained the interface and passed with `selected=10 violations=0`.
+  `--mode check-active` retained its interface and reported the preserved
+  advisory migration debt (`selected=364 violations=1290`) without triggering
+  corpus rewrites. `git diff --check` and Python compilation passed.
+- **README boundary**: all `228` tracked `README.md` paths classify to exactly
+  one declared profile; the fixture verifies byte-for-byte that classification
+  performs no writes. No README or historical corpus document was modified.
+- **Graphify**: `graphify update .` rebuilt `22860` nodes and `23825` edges.
+  Health remained advisory only for two cross-root inferred edges; tracked
+  source, Stage 00, Spec 129, and the Stage 04 plan were used as authoritative
+  corroboration. Generated Graphify collateral was excluded from this task.
+- **Protected surface**: changes are limited to the registry, metadata checker,
+  focused validation tests, and this Task 1 ledger. Task 2+ templates, human
+  contracts, audit/research packs, repository/CI gates, runtime, secrets,
+  provider-global state, and remote GitHub state remain untouched.
+- **Implementer self-review**: Spec mapping PASS and code-quality review PASS
+  with Critical `0`, Important `0`, Minor `0`. This is implementer evidence,
+  not the required independent approval; the combined controller review runs
+  against the logical commit before T-DCC-001 may be marked Done.
+
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| T-DCC-001 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
+| T-DCC-001 | Task 1 logical commit | Pending post-commit review | Pending post-commit review | Implementer self-review C0/I0/M0; independent findings pending | Combined controller review required against the commit | Review Pending |
 | T-DCC-002 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-003 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-004 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
@@ -98,8 +130,10 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 
 ## Verification Summary
 
-- **Focused Test Commands**: Pending T-DCC-001 through T-DCC-005.
-- **Full Test Commands**: Pending T-DCC-006.
+- **Focused Test Commands**: T-DCC-001 focused registry/metadata/README tests
+  pass `31/31`; T-DCC-002 through T-DCC-005 remain pending.
+- **Full Test Commands**: T-DCC-001 validation module passes `91/91`; the final
+  cross-suite bundle remains reserved for T-DCC-006.
 - **Generated Freshness**: Pending T-DCC-006.
 - **Graphify**: Required after code changes when available; advisory result and
   corroboration will be recorded per applicable task.

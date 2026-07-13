@@ -36,12 +36,68 @@ EXPECTED_PROFILE_TYPES = {
     "readme",
     "reference",
     "release",
+    "repo-support",
     "runbook",
     "spec",
     "task",
     "template-source",
     "unsupported",
 }
+EXPECTED_FRONTMATTER_ORDER = (
+    "status",
+    "artifact_id",
+    "artifact_type",
+    "parent_ids",
+    "supersedes",
+    "reviewed_at",
+    "review_cycle",
+    "generated_by",
+    "archived_from",
+    "archived_on",
+    "archive_reason",
+    "current_replacement",
+)
+EXPECTED_DOCUMENT_FAMILIES = {
+    "sdlc": (
+        "prd",
+        "ard",
+        "adr",
+        "spec",
+        "plan",
+        "task",
+        "guide",
+        "policy",
+        "runbook",
+        "incident",
+        "postmortem",
+        "release",
+    ),
+    "common": (
+        "reference",
+        "audit",
+        "archive",
+        "readme",
+        "governance",
+        "generated",
+        "template-source",
+        "repo-support",
+        "unsupported",
+    ),
+}
+README_PROFILE_KEYS = frozenset(
+    {
+        "path_globs",
+        "frontmatter",
+        "frontmatter_consumer",
+        "allowed_frontmatter_keys",
+        "required_headings",
+        "optional_headings",
+        "forbidden_headings",
+        "allowed_local_content_role",
+        "canonical_shared_rule_owner",
+    }
+)
+README_FRONTMATTER_ALLOWED_KEYS = frozenset({"status", "layer", "generated_by", "runtime"})
 TARGET_MARKDOWN_PREFIXES = (
     "docs/00.agent-governance/",
     "docs/01.requirements/",
@@ -388,6 +444,99 @@ def _safe_repo_path(value: object, required_prefix: str | None = None) -> bool:
     return required_prefix is None or value.startswith(required_prefix)
 
 
+def _safe_readme_glob(value: object) -> bool:
+    if not isinstance(value, str) or not value or "\\" in value or "://" in value:
+        return False
+    pure = pathlib.PurePosixPath(value)
+    if pure.is_absolute() or value != pure.as_posix() or pure.name != "README.md":
+        return False
+    if any(part in {"", ".", "..", "**"} for part in pure.parts):
+        return False
+    return all(part == "*" or not any(marker in part for marker in "?[]*") for part in pure.parts)
+
+
+def _readme_globs_overlap(left: str, right: str) -> bool:
+    left_parts = pathlib.PurePosixPath(left).parts
+    right_parts = pathlib.PurePosixPath(right).parts
+    if len(left_parts) != len(right_parts):
+        return False
+    return all(
+        left_part == right_part or left_part == "*" or right_part == "*"
+        for left_part, right_part in zip(left_parts, right_parts, strict=True)
+    )
+
+
+def _readme_glob_matches(path: pathlib.PurePosixPath, pattern: str) -> bool:
+    path_parts = path.parts
+    pattern_parts = pathlib.PurePosixPath(pattern).parts
+    return len(path_parts) == len(pattern_parts) and all(
+        pattern_part == "*" or pattern_part == path_part
+        for path_part, pattern_part in zip(path_parts, pattern_parts, strict=True)
+    )
+
+
+def matching_readme_profiles(path: pathlib.Path, profiles: dict[str, object]) -> list[str]:
+    """Return every declared README profile matching a repository-relative path."""
+
+    normalized = pathlib.PurePosixPath(path.as_posix())
+    if normalized.is_absolute() or normalized.name != "README.md" or any(
+        part in {"", ".", ".."} for part in normalized.parts
+    ):
+        return []
+    readme_profiles = profiles.get("readme_profiles", {})
+    if not isinstance(readme_profiles, dict):
+        return []
+    matches: list[str] = []
+    for name, raw_profile in sorted(readme_profiles.items()):
+        if not isinstance(name, str) or not isinstance(raw_profile, dict):
+            continue
+        patterns = raw_profile.get("path_globs", [])
+        if isinstance(patterns, list) and any(
+            isinstance(pattern, str) and _readme_glob_matches(normalized, pattern)
+            for pattern in patterns
+        ):
+            matches.append(name)
+    return matches
+
+
+def classify_readme_profile(path: pathlib.Path, profiles: dict[str, object]) -> str:
+    """Classify one README path, failing deterministically on zero or many owners."""
+
+    matches = matching_readme_profiles(path, profiles)
+    normalized = path.as_posix()
+    if not matches:
+        raise ProfileError(f"README path is unclassified: {normalized}")
+    if len(matches) > 1:
+        raise ProfileError(f"README path is ambiguous: {normalized}; profiles={','.join(matches)}")
+    return matches[0]
+
+
+def readme_frontmatter_consumer(path: pathlib.Path, profiles: dict[str, object]) -> str | None:
+    """Return the profile-declared consumer; metadata content never infers one."""
+
+    profile_name = classify_readme_profile(path, profiles)
+    readme_profiles = profiles.get("readme_profiles", {})
+    raw_profile = readme_profiles.get(profile_name, {}) if isinstance(readme_profiles, dict) else {}
+    if not isinstance(raw_profile, dict) or raw_profile.get("frontmatter") != "optional":
+        return None
+    consumer = raw_profile.get("frontmatter_consumer")
+    return consumer if isinstance(consumer, str) and consumer else None
+
+
+def _typed_target_types(profiles: dict[str, object]) -> set[str]:
+    families = profiles.get("document_families", {})
+    if not isinstance(families, dict):
+        return set()
+    excluded = {"readme", "governance", "generated", "template-source", "repo-support", "unsupported"}
+    return {
+        item
+        for members in families.values()
+        if isinstance(members, list)
+        for item in members
+        if isinstance(item, str) and item not in excluded
+    }
+
+
 def _has_parent_cycle(record: Record, parent_ids: list[str], manifest: Manifest) -> bool:
     artifact_id = record.metadata.get("artifact_id")
     if not isinstance(artifact_id, str) or not artifact_id.strip():
@@ -522,6 +671,62 @@ def validate_record(
             )
         )
 
+    if record.artifact_type == "readme":
+        try:
+            readme_profile_name = classify_readme_profile(record.path, profiles)
+        except ProfileError as error:
+            findings.append(_finding(record, "readme-profile", str(error)))
+        else:
+            readme_profiles = profiles.get("readme_profiles", {})
+            readme_profile = (
+                readme_profiles.get(readme_profile_name, {}) if isinstance(readme_profiles, dict) else {}
+            )
+            behavior = readme_profile.get("frontmatter") if isinstance(readme_profile, dict) else None
+            allowed_readme_keys = (
+                set(readme_profile.get("allowed_frontmatter_keys", []))
+                if isinstance(readme_profile, dict)
+                else set()
+            )
+            if record.metadata and behavior == "forbidden":
+                findings.append(
+                    _finding(
+                        record,
+                        "readme-frontmatter-forbidden",
+                        f"README profile {readme_profile_name} forbids frontmatter",
+                    )
+                )
+            elif record.metadata and readme_frontmatter_consumer(record.path, profiles) is None:
+                findings.append(
+                    _finding(
+                        record,
+                        "readme-consumer-missing",
+                        f"README profile {readme_profile_name} has no declared frontmatter consumer",
+                    )
+                )
+            for key in sorted(set(record.metadata) - allowed_readme_keys):
+                findings.append(
+                    _finding(
+                        record,
+                        "readme-frontmatter-key",
+                        f"README profile {readme_profile_name} does not allow frontmatter key: {key}",
+                    )
+                )
+
+    if record.artifact_type in _typed_target_types(profiles):
+        frontmatter_order = common.get("frontmatter_order", [])
+        if isinstance(frontmatter_order, list):
+            order_index = {key: index for index, key in enumerate(frontmatter_order)}
+            present_keys = [key for key in record.metadata if key in order_index]
+            expected_keys = sorted(present_keys, key=order_index.__getitem__)
+            if present_keys != expected_keys:
+                findings.append(
+                    _finding(
+                        record,
+                        "frontmatter-order",
+                        "frontmatter keys do not follow deterministic canonical serialization order",
+                    )
+                )
+
     placeholder_values = _template_angle_tokens(profiles)
     if record.artifact_type != "template-source" and any(
         _contains_template_placeholder(value, placeholder_values) for value in record.metadata.values()
@@ -603,7 +808,8 @@ def validate_record(
         )
         if not parent_ids and not root_permitted:
             findings.append(_finding(record, "missing-parent", "this artifact profile does not permit a root"))
-        allowed_parent_types = set(raw_profile.get("allowed_parent_types", []))
+        parent_type_order = raw_profile.get("allowed_parent_types", [])
+        allowed_parent_types = set(parent_type_order)
         for parent_id in parent_ids:
             if isinstance(artifact_id, str) and parent_id == artifact_id.strip():
                 findings.append(_finding(record, "self-parent", f"artifact references itself as parent: {parent_id}"))
@@ -619,6 +825,34 @@ def validate_record(
                         f"parent type {parent_record.artifact_type} is not allowed: {parent_id}",
                     )
                 )
+        if (
+            len(parent_ids) == len(set(parent_ids))
+            and not any(parent_id in typed_manifest.duplicates for parent_id in parent_ids)
+            and isinstance(parent_type_order, list)
+        ):
+            type_precedence = {
+                parent_type: index for index, parent_type in enumerate(parent_type_order)
+            }
+            resolved_parents = [typed_manifest.records_by_id.get(parent_id) for parent_id in parent_ids]
+            if all(
+                parent_record is not None and parent_record.artifact_type in type_precedence
+                for parent_record in resolved_parents
+            ):
+                expected_parent_ids = sorted(
+                    parent_ids,
+                    key=lambda parent_id: (
+                        type_precedence[typed_manifest.records_by_id[parent_id].artifact_type],
+                        parent_id,
+                    ),
+                )
+                if parent_ids != expected_parent_ids:
+                    findings.append(
+                        _finding(
+                            record,
+                            "parent-order",
+                            "parent_ids do not follow deterministic type-precedence and ID serialization",
+                        )
+                    )
         if _has_parent_cycle(record, parent_ids, typed_manifest):
             findings.append(_finding(record, "parent-cycle", "parent_ids creates a cycle"))
 
@@ -740,6 +974,15 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
         if len(value) != len(set(value)):
             raise ProfileError(f"common.{key} must not contain duplicates")
         common_lists[key] = value
+    frontmatter_order = common.get("frontmatter_order")
+    if not isinstance(frontmatter_order, list) or not all(
+        isinstance(item, str) and item for item in frontmatter_order
+    ):
+        raise ProfileError("common.frontmatter_order must be a list of non-empty strings")
+    if len(frontmatter_order) != len(set(frontmatter_order)):
+        raise ProfileError("common.frontmatter_order must not contain duplicates")
+    if tuple(frontmatter_order) != EXPECTED_FRONTMATTER_ORDER:
+        raise ProfileError("common.frontmatter_order must define the exact canonical typed-key order")
     template_placeholders = common.get("template_placeholders")
     if not isinstance(template_placeholders, dict) or set(template_placeholders) != EXPECTED_TEMPLATE_PLACEHOLDER_KEYS:
         raise ProfileError("common.template_placeholders must define the exact Stage 99 placeholder keys")
@@ -815,6 +1058,96 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
         disposition = raw_profile.get("disposition")
         if not isinstance(disposition, str) or not disposition.strip():
             raise ProfileError(f"profile {name} disposition must be a non-empty string")
+    document_families = loaded.get("document_families")
+    if not isinstance(document_families, dict) or set(document_families) != set(EXPECTED_DOCUMENT_FAMILIES):
+        raise ProfileError("document_families must define exactly sdlc and common")
+    family_members: list[str] = []
+    for family_name, expected_members in EXPECTED_DOCUMENT_FAMILIES.items():
+        members = document_families.get(family_name)
+        if not isinstance(members, list) or not all(isinstance(item, str) and item for item in members):
+            raise ProfileError(f"document_families.{family_name} must be a list of non-empty strings")
+        if len(members) != len(set(members)):
+            raise ProfileError(f"document_families.{family_name} must not contain duplicates")
+        unknown_members = set(members) - actual_types
+        if unknown_members:
+            raise ProfileError(
+                f"document_families.{family_name} has unknown profiles: {', '.join(sorted(unknown_members))}"
+            )
+        if tuple(members) != expected_members:
+            raise ProfileError(f"document_families.{family_name} must define the exact canonical members")
+        family_members.extend(members)
+    if len(family_members) != len(set(family_members)):
+        raise ProfileError("document_families members must be unique across families")
+
+    readme_profiles = loaded.get("readme_profiles")
+    if not isinstance(readme_profiles, dict) or not readme_profiles:
+        raise ProfileError("readme_profiles must be a non-empty mapping")
+    declared_globs: list[tuple[str, str]] = []
+    for profile_name, readme_profile in sorted(readme_profiles.items()):
+        if not isinstance(profile_name, str) or not profile_name.strip():
+            raise ProfileError("readme_profiles names must be non-empty strings")
+        if not isinstance(readme_profile, dict) or set(readme_profile) != README_PROFILE_KEYS:
+            raise ProfileError(f"README profile {profile_name} must define the exact contract members")
+        path_globs = readme_profile.get("path_globs")
+        if not isinstance(path_globs, list) or not path_globs or not all(
+            isinstance(pattern, str) and _safe_readme_glob(pattern) for pattern in path_globs
+        ):
+            raise ProfileError(
+                f"README profile {profile_name} path_globs must be safe repository-relative README patterns"
+            )
+        if len(path_globs) != len(set(path_globs)):
+            raise ProfileError(f"README profile {profile_name} path_globs must not contain duplicates")
+        for pattern in path_globs:
+            for other_name, other_pattern in declared_globs:
+                if _readme_globs_overlap(pattern, other_pattern):
+                    raise ProfileError(
+                        f"README profile globs overlap: {other_name}:{other_pattern} and {profile_name}:{pattern}"
+                    )
+            declared_globs.append((profile_name, pattern))
+
+        behavior = readme_profile.get("frontmatter")
+        if behavior not in {"forbidden", "optional"}:
+            raise ProfileError(f"README profile {profile_name} frontmatter behavior is unknown")
+        allowed_keys = readme_profile.get("allowed_frontmatter_keys")
+        if not isinstance(allowed_keys, list) or not all(
+            isinstance(item, str) and item for item in allowed_keys
+        ):
+            raise ProfileError(f"README profile {profile_name} allowed_keys must be a string list")
+        if len(allowed_keys) != len(set(allowed_keys)):
+            raise ProfileError(f"README profile {profile_name} allowed_keys must not contain duplicates")
+        unknown_keys = set(allowed_keys) - README_FRONTMATTER_ALLOWED_KEYS
+        if unknown_keys:
+            raise ProfileError(
+                f"README profile {profile_name} has unknown frontmatter keys: {', '.join(sorted(unknown_keys))}"
+            )
+        consumer = readme_profile.get("frontmatter_consumer")
+        if behavior == "forbidden":
+            if consumer is not None or allowed_keys:
+                raise ProfileError(
+                    f"README profile {profile_name} forbidden frontmatter cannot declare keys or a consumer"
+                )
+        elif not isinstance(consumer, str) or not _safe_repo_path(consumer, "scripts/"):
+            raise ProfileError(f"README profile {profile_name} optional frontmatter requires a scripts/ consumer")
+
+        heading_sets: list[set[str]] = []
+        for heading_key in ("required_headings", "optional_headings", "forbidden_headings"):
+            headings = readme_profile.get(heading_key)
+            if not isinstance(headings, list) or not all(
+                isinstance(heading, str) and heading.strip() for heading in headings
+            ):
+                raise ProfileError(f"README profile {profile_name} {heading_key} must be a string list")
+            if len(headings) != len(set(headings)):
+                raise ProfileError(f"README profile {profile_name} {heading_key} must not contain duplicates")
+            heading_sets.append(set(headings))
+        if any(heading_sets[left] & heading_sets[right] for left, right in ((0, 1), (0, 2), (1, 2))):
+            raise ProfileError(f"README profile {profile_name} heading contracts must not overlap")
+
+        local_role = readme_profile.get("allowed_local_content_role")
+        if not isinstance(local_role, str) or not local_role.strip():
+            raise ProfileError(f"README profile {profile_name} allowed_local_content_role must be non-empty")
+        owner = readme_profile.get("canonical_shared_rule_owner")
+        if not isinstance(owner, str) or not _safe_repo_path(owner):
+            raise ProfileError(f"README profile {profile_name} canonical_shared_rule_owner must be a safe path")
     template_sources = loaded.get("template_sources")
     if not isinstance(template_sources, dict) or not template_sources:
         raise ProfileError("template_sources must be a non-empty path-to-profile mapping")
