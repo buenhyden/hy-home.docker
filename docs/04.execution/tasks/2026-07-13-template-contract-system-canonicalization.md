@@ -265,8 +265,10 @@ review, and a separate quality review before its logical commit.
   code changes, but the interrupted implementer did not retain its numeric
   snapshot; tracked graph outputs were restored and no count is claimed.
 - No runtime, Compose, infrastructure, deployment, secret, provider, workflow,
-  credential, branch-protection, or remote state changed. T-TCS-004 awaits
-  independent specification and quality review.
+  credential, branch-protection, or remote state changed. The first independent
+  review returned Spec FAIL / Quality CHANGES REQUESTED with C0/I1/M0 because
+  the recorded changed-mode selected count was stale. I-01 is remediated and
+  T-TCS-004 awaits independent re-review.
 
 ## Review Evidence
 
@@ -275,7 +277,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-001 | PASS on `9eca432b...ede2b9a2` | APPROVED on `9eca432b...ede2b9a2` | None; I-01 resolved by `ede2b9a2` | Completed |
 | T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
-| T-TCS-004 | Not run — implementation awaits review | Not run — implementation awaits review | None recorded | In Review |
+| T-TCS-004 | FAIL on `4c821e86...b54e76df` | CHANGES REQUESTED on `4c821e86...b54e76df` | C0/I1/M0; I-01 stale changed-mode count remediated | Await independent re-review |
 | T-TCS-005 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
 | T-TCS-007 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 006 |
@@ -408,12 +410,21 @@ review, and a separate quality review before its logical commit.
 | Focused GREEN | `python3 -m unittest tests.validation.test_document_metadata.TemplateMetadataTests tests.validation.test_document_metadata.TemplateBodyContractTests -q` | Pass: 27/27. |
 | Metadata regression | `python3 -m unittest tests.validation.test_document_metadata -q` | Pass: 131/131. |
 | Metadata contracts | `python3 scripts/validation/check-document-metadata.py --mode check-contracts` | Pass: zero violations. |
-| Changed mode | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 4c821e86` | Pass: 16 selected, zero violations, one base-existing legacy exception, zero transition overrides. The exception is the completed 2026-06-05 Task whose historical body is preserved and whose deleted link is minimally repaired. |
+| Changed mode | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 4c821e86` | Pass: 18 selected, zero violations, one base-existing legacy exception, zero transition overrides. The exception is the completed 2026-06-05 Task whose historical body is preserved and whose deleted link is minimally repaired. |
 | Repository contracts | `bash scripts/validation/check-repo-contracts.sh` | Pass: `failures=0`. |
 | Generated freshness | Canonical LLM Wiki index/coverage and metadata inventory check modes | Pass: 1,296 index paths, 1,295 safe coverage paths, and 901 metadata records / 2,025 advisory findings. |
 | Traceability and alignment | Stage 04/05 traceability and documentation implementation alignment | Pass: 46 catalog pairs; 647 stage docs / 5,135 links; zero failures. |
 | Graph refresh | `graphify update .` | Ran after code changes; tracked outputs restored. Numeric snapshot not retained after the implementation agent interruption, so no count is claimed; conclusions were corroborated against tracked sources, Stage 00, Spec 130, and the active Plan/Task. |
 | Diff, compile, and syntax | `git diff --check`, Python compilation, and Bash syntax | Pass. |
+
+### T-TCS-004 Review Remediation
+
+| Evidence | Result |
+| --- | --- |
+| First independent review | Spec FAIL; Quality CHANGES REQUESTED; Critical 0 / Important 1 / Minor 0 on `4c821e86...b54e76df` |
+| I-01 | Replaced the stale 16-document changed-mode claim with the reproducible final result: 18 selected, zero violations, one base-existing legacy exception, and zero transition overrides. |
+| Commit ledger | The implementation unit is identified as `b54e76df`; the review-remediation commit is intentionally not claimed before commit. |
+| Review state | I-01 remediation awaits independent re-review; no reapproval or Task closure is claimed. |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -446,7 +457,7 @@ have not completed.
 | `e026b561` | Task 3 I-01 through I-04 PRD semantics, parent-child handoffs, native-safe machine forms, and exact regressions | Remediation RED 4 methods / 5 failures; focused 4/4 and 17/17; metadata 121/121; metadata/repository contracts; native/static checks; generated freshness; traceability/alignment; Graphify; first re-review found I-04-R1 |
 | `37d52025` | Task 3 I-04-R1 independent literal heading/profile oracles and coordinated-drift regressions | RED 2/2; GREEN coordinated 2/2, focused 6/6 and 19/19, metadata 123/123; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close design contract forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-003 | Metadata changed-mode and diff hygiene; evidence-only scope |
-| Implementation unit — subject `docs(execution): consolidate plan and task forms`; hash pending until commit | Task 4 prospective Plan, evidentiary Task, duplicate harness-form deletion, direct governance/validator fallout, tests, and generated evidence | RED 11 expected failures; focused 27/27; metadata 131/131; metadata/repository contracts zero; changed mode 16/0 with one base-existing legacy exception; generated freshness; traceability/alignment; Graphify ran; diff/compile/syntax pass |
+| `b54e76df` | Task 4 prospective Plan, evidentiary Task, duplicate harness-form deletion, direct governance/validator fallout, tests, and generated evidence | RED 11 expected failures; focused 27/27; metadata 131/131; metadata/repository contracts zero; changed mode 18/0 with one base-existing legacy exception and zero transition overrides; generated freshness; traceability/alignment; Graphify ran; diff/compile/syntax pass |
 
 Later review-fix and implementation commits will be appended as Tasks 4-7 close.
 
