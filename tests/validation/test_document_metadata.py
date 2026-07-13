@@ -1080,6 +1080,51 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("readme-unclassified", result.stdout)
 
+    def test_repository_contracts_enforce_readme_profile_frontmatter_behavior(self) -> None:
+        cases = (
+            (
+                "forbidden non-empty frontmatter",
+                "README.md",
+                "---\nstatus: active\n---\n\n",
+                1,
+                "readme-frontmatter-forbidden: README.md",
+            ),
+            (
+                "forbidden empty frontmatter",
+                "README.md",
+                "---\n---\n\n",
+                1,
+                "readme-frontmatter-forbidden: README.md",
+            ),
+            (
+                "optional allowed key",
+                "docs/05.operations/releases/README.md",
+                "---\nstatus: active\n---\n\n",
+                0,
+                "metadata repository contracts: violations=0",
+            ),
+            (
+                "optional disallowed key",
+                "docs/05.operations/releases/README.md",
+                "---\nlayer: ops\n---\n\n",
+                1,
+                "readme-frontmatter-key: docs/05.operations/releases/README.md",
+            ),
+        )
+        for label, path_text, contents, expected_exit, expected_output in cases:
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                path = root / path_text
+                body = path.read_text(encoding="utf-8")
+                if body.startswith("---\n"):
+                    closing = body.find("\n---\n", 4)
+                    self.assertNotEqual(-1, closing)
+                    body = body[closing + len("\n---\n") :].lstrip("\n")
+                path.write_text(contents + body, encoding="utf-8")
+                result = self.run_contracts(root, profiles)
+                self.assertEqual(expected_exit, result.returncode, result.stdout + result.stderr)
+                self.assertIn(expected_output, result.stdout)
+
     def test_typed_markdown_template_mapping_is_complete_and_consistent(self) -> None:
         source = "docs/99.templates/templates/spec-contracts/api-spec.template.md"
         with tempfile.TemporaryDirectory() as directory:
@@ -1332,7 +1377,7 @@ class CheckerCliTests(unittest.TestCase):
     def test_inventory_exposes_all_semantic_state_columns(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            write_doc(root / "docs/03.specs/README.md", None)
+            write_doc(root / "docs/03.specs/README.md", {"status": "active"})
             write_doc(
                 root / "docs/90.references/data/generated.md",
                 {"status": "active", "generated_by": "scripts/example.py"},
@@ -1343,8 +1388,11 @@ class CheckerCliTests(unittest.TestCase):
                 "| Path | Profile | Frontmatter | Identity | Relations | Lifecycle | Transition Evidence | Freshness | Exception Context | Findings | Disposition |",
                 result.stdout,
             )
-            self.assertIn("missing-fence", result.stdout)
-            self.assertIn("README profile; consumer=not-declared; role=folder-index", result.stdout)
+            self.assertIn("allowed-syntax", result.stdout)
+            self.assertIn(
+                "README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index",
+                result.stdout,
+            )
             self.assertIn("generated profile; owner=scripts/example.py", result.stdout)
             self.assertIn("reviewed_at=forbidden:not-applicable", result.stdout)
 

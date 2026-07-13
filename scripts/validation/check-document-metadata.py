@@ -687,7 +687,7 @@ def validate_record(
                 if isinstance(readme_profile, dict)
                 else set()
             )
-            if record.metadata and behavior == "forbidden":
+            if record.frontmatter_present and behavior == "forbidden":
                 findings.append(
                     _finding(
                         record,
@@ -1286,9 +1286,16 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
             )
         )
 
+    classified_readmes: list[Record] = []
     for path in tracked_markdown:
         if path.name != "README.md":
             continue
+        try:
+            text = (root / path).read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            findings.append(Finding(path.as_posix(), "readme-unreadable", str(error)))
+            continue
+        record = _record_from_text(path, text)
         matches = matching_readme_profiles(path, profiles)
         if not matches:
             findings.append(Finding(path.as_posix(), "readme-unclassified", "tracked README has no profile"))
@@ -1300,6 +1307,12 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
                     f"tracked README has multiple profiles: {', '.join(matches)}",
                 )
             )
+        else:
+            classified_readmes.append(record)
+
+    readme_manifest = build_manifest(classified_readmes)
+    for record in classified_readmes:
+        findings.extend(validate_record(record, profiles, readme_manifest))
 
     template_sources = profiles.get("template_sources", {})
     if not isinstance(template_sources, dict):
@@ -1932,11 +1945,24 @@ def _freshness_state(record: Record, profile: dict[str, object], codes: set[str]
     return "; ".join(states)
 
 
-def _exception_context(record: Record, codes: set[str]) -> str:
+def _exception_context(record: Record, codes: set[str], profiles: dict[str, object]) -> str:
     if record.parse_error:
         return "unavailable-parser-error"
     if record.artifact_type == "readme":
-        return "README profile; consumer=not-declared; role=folder-index"
+        matches = matching_readme_profiles(record.path, profiles)
+        if not matches:
+            return "README profile=unclassified; consumer=unavailable; role=folder-index"
+        if len(matches) > 1:
+            return (
+                f"README profile=ambiguous({','.join(matches)}); "
+                "consumer=unavailable; role=folder-index"
+            )
+        profile_name = matches[0]
+        readme_profiles = profiles.get("readme_profiles", {})
+        raw_profile = readme_profiles.get(profile_name, {}) if isinstance(readme_profiles, dict) else {}
+        declared_consumer = raw_profile.get("frontmatter_consumer") if isinstance(raw_profile, dict) else None
+        consumer = declared_consumer if isinstance(declared_consumer, str) and declared_consumer else "not-declared"
+        return f"README profile={profile_name}; consumer={consumer}; role=folder-index"
     if record.artifact_type == "generated":
         owner = record.metadata.get("generated_by")
         rendered = owner if isinstance(owner, str) and "invalid-generator" not in codes else "invalid-or-missing"
@@ -2042,7 +2068,7 @@ def render_report(
             _lifecycle_state(record, raw_profile, code_set),
             _transition_state(record, raw_profile, code_set),
             _freshness_state(record, raw_profile, code_set),
-            _exception_context(record, code_set),
+            _exception_context(record, code_set, profiles),
             codes,
             disposition,
         ]
