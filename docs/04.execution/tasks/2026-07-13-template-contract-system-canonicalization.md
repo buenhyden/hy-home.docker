@@ -80,13 +80,13 @@ review, and a separate quality review before its logical commit.
 | T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Completed | fresh implementer | spec then quality |
 | T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
 | T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | Completed | fresh implementer | spec then quality |
-| T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | In Review | fresh implementer | spec then quality |
+| T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | Completed | fresh implementer | spec then quality |
 
 ## Work Log
 
-Tasks T-TCS-001 through T-TCS-006 are completed with their implementation,
+Tasks T-TCS-001 through T-TCS-007 are completed with their implementation,
 validation, remediation, and independent-review evidence preserved below.
-T-TCS-007 is the active preservation-oriented consumer-migration unit.
+Whole-branch review is the active gate.
 
 ## T-TCS-001 Implementation Evidence
 
@@ -430,9 +430,9 @@ T-TCS-007 is the active preservation-oriented consumer-migration unit.
   corroborated against tracked sources, Stage 00, Spec 130, and this Plan/Task.
 - Waves A-E remain route-only under the exact gates in Migration Wave Routing:
   every wave requires its named evidence and a new approved Spec and Plan
-  before corpus editing. T-TCS-007 implementation is complete and awaits
-  independent specification and quality review; no review approval, task
-  closure, controlled-wrapper result, or commit identity is claimed here.
+  before corpus editing. The independent review of
+  `0ec97ce5...635f3a78` returned Spec PASS / Quality APPROVED, C0/I0/M0.
+  T-TCS-007 is completed; whole-branch review and the controlled wrapper remain.
 
 ## Review Evidence
 
@@ -444,8 +444,8 @@ T-TCS-007 is the active preservation-oriented consumer-migration unit.
 | T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
 | T-TCS-005 | PASS on `34ae2dab...c07160a2` | APPROVED on `34ae2dab...c07160a2` | None; I-01, I-01-R1, and I-02 resolved | Completed |
 | T-TCS-006 | PASS on `39809f26...702b4360` | APPROVED on `39809f26...702b4360` | None; I-01 through I-04 resolved | Completed |
-| T-TCS-007 | Not run — implementation complete | Not run — implementation complete | None recorded | In Review |
-| Whole branch | Not run — implementation has not completed | Not run — implementation has not completed | None recorded | Await T-TCS-007 |
+| T-TCS-007 | PASS on `0ec97ce5...635f3a78` | APPROVED on `0ec97ce5...635f3a78` | None | Completed |
+| Whole branch | Not run — all tasks complete | Not run — all tasks complete | None recorded | Ready |
 
 ## Verification Evidence
 
@@ -658,7 +658,10 @@ T-TCS-007 is the active preservation-oriented consumer-migration unit.
 | I-04 supporting gates | Generated freshness, traceability, alignment, Graphify, Python/Bash syntax, residue, and diff hygiene | Pass: 901 records / 2,025 findings; traceability 46/0; alignment 647 docs / 5,135 links / 0; Graphify 23,444 nodes / 24,856 edges / 1,545 communities with tracked outputs restored; syntax, residue, and diff checks pass. |
 | Final independent Task 6 re-review | Full range `39809f26...702b4360` | Spec PASS / Quality APPROVED, C0/I0/M0; I-01 through I-04 resolved and Task 6 ready for closure. |
 | Independent adversarial and regression evidence | Parsed OpenAPI boundary matrix plus official suites and repository gates | Matrix pass with leakage 0; focused 54/54; metadata 173/173; contracts zero; explicit-base selected 4 / violations 0 / exceptions 0 / overrides 0; repository `failures=0`; syntax and diff checks pass. |
-| Review state | Task table and review ledger | Completed; Task 7 may start. |
+| Task 7 preservation and scope oracle | Range `0ec97ce5...635f3a78` plus exact 17-consumer residue and body comparison | Pass: 17 Target removals; zero Rules/lowercase-token residue; frontmatter byte-equivalent; historical dates, commands, counts, decisions, verdicts, hashes, evidence, and Specs 124-127 approval boundaries preserved. |
+| Task 7 repository gates | Metadata 173/173; contracts; changed/active modes; repository, traceability, alignment, and generator checks | Pass: contracts zero; changed 73/0 with one base-existing legacy exception and zero overrides; active advisory 365/1,290 reproduced; repository `failures=0`; traceability 46/0; alignment 647/5,135/0; generated freshness pass at 901/2,025. |
+| Final independent Task 7 review | Full range `0ec97ce5...635f3a78` | Spec PASS / Quality APPROVED, C0/I0/M0; Waves A-E remain route-only and no runtime or external surface changed. |
+| Review state | Task table and review ledger | Tasks 1-7 completed; whole-branch review is ready. |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -699,11 +702,12 @@ have not completed.
 | `b7b2ec95` — `fix(operations): make runbook automation boundaries explicit` | Task 5 I-01-R1 Runbook prerequisites, automation candidate/invocation, human-or-operator judgment boundary, durable human semantics, and exact removal oracles | Narrow RED 3 methods / 5 failures; GREEN 3/3; focused 59/59; metadata 140/140; metadata/repository contracts zero; changed mode 11/0; generated freshness; traceability/alignment; Graphify 23,348 / 24,560 / 1,544 with outputs restored; final full-range re-review resolved I-01/I-01-R1 and found evidence-only I-02 |
 | `c07160a2` | Task 5 I-02 canonical remediation-ledger correction | Evidence-only Task/Progress delta; changed from `b7b2ec95` 2/0; full Task 5 base 11/0; focused 59/59; metadata contracts and generated freshness pass; independent PASS/APPROVED narrow re-review |
 | Closure unit — subject `docs(task): close operations forms task`; self hash intentionally omitted | Record completed independent verdict and close T-TCS-005 | Metadata changed-mode and diff hygiene; evidence-only scope |
-| Planned unit — subject `test(validation): enforce template role contracts`; self hash intentionally omitted | Task 6 executable Markdown/machine contracts, changed-target gate, shell delegation, tests, and evidence | RED 39 methods / 9 expected failing methods; final focused GREEN 44/44; metadata 155/155; reviews not yet run |
-| Planned remediation unit — subject `fix(validation): preserve exact body deficits`; self hash intentionally omitted | Task 6 I-01/I-02/I-03 exact private multiset comparison, CommonMark-bounded scanning, native credential checks, tests, and evidence | First review FAIL/CHANGES REQUESTED C0/I3/M0; remediation RED 41/21; focused 41/41; metadata 167/167; contracts and supporting gates pass; re-review pending |
+| `9bf5b708` — `test(validation): enforce template role contracts` | Task 6 executable Markdown/machine contracts, changed-target gate, shell delegation, tests, and evidence | RED 39 methods / 9 expected failing methods; final focused GREEN 44/44; metadata 155/155; first review C0/I3/M0 |
+| `b4af35ee` — `fix(validation): harden body and machine template gates` | Task 6 I-01/I-02/I-03 exact private multiset comparison, CommonMark-bounded scanning, native credential checks, tests, and evidence | Remediation RED 41/21; focused 41/41; metadata 167/167; re-review resolved I-01/I-02/I-03 and found I-04 |
 | `702b4360` — `fix(validation): fail closed on OpenAPI inspection` | Task 6 typed non-leaking OpenAPI parse boundary, bounded credential-owned value inspection, format-aware parsed checks, direct/CLI regressions, and evidence | I-04 RED 6 methods / 18 failures; GREEN 6/6, focused 54/54, metadata 173/173; final review PASS/APPROVED C0/I0/M0 |
-
-Later review-fix and implementation commits will be appended as Tasks 6-7 close.
+| `0ec97ce5` — `docs(task): close executable validation task` | Record Task 6 final independent verdict and completion | Evidence-only changed-mode and diff hygiene pass |
+| `635f3a78` — `docs(migration): align direct template consumers` | Task 7 preservation-oriented 17-consumer and branch-owned active-chain migration | Metadata 173/173; changed 73/0; repository/traceability/alignment/generated checks; independent PASS/APPROVED C0/I0/M0 |
+| Closure unit — subject `docs(task): close direct consumer migration task`; self hash intentionally omitted | Record Task 7 final verdict and open whole-branch review | Evidence-only changed-mode and diff hygiene |
 
 ## Migration Wave Routing
 
