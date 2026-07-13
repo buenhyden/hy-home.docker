@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:130-template-contract-system-canonicalization
 artifact_type: spec
 parent_ids:
@@ -455,11 +455,12 @@ This branch does not infer new content merely to make an old document resemble
 a template. Topic-specific body changes require evidence and an approved edit
 boundary.
 
-Tasks 6 and 7 are completed with their independent per-task reviews. The first
+Tasks 6 and 7 completed with independent per-task reviews. The first
 whole-branch review returned Spec FAIL / Quality CHANGES REQUESTED, C0/I3/M0;
-its bounded OpenAPI, Stage 99 catalog, and current-state findings are remediated
-locally. A fresh independent whole-branch re-review and the controlled final QA
-wrapper remain open, so this specification remains active.
+`c9eb0be5` resolved its bounded OpenAPI, Stage 99 catalog, and current-state
+findings. The fresh review of `a42f70b4...c9eb0be5` returned Spec PASS /
+Quality APPROVED, C0/I0/M0, and the controlled wrapper passed from clean commit
+`c9eb0be5` with no changed or unexpected paths. This specification is complete.
 
 ## Follow-up Migration Batches
 

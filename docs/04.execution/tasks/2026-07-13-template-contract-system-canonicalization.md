@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-13-template-contract-system-canonicalization
 artifact_type: task
 parent_ids:
@@ -25,7 +25,7 @@ review, and a separate quality review before its logical commit.
 
 - **Approved Spec**:
   [Spec 130](../../03.specs/130-template-contract-system-canonicalization/spec.md)
-- **Active Plan**:
+- **Implementation Plan**:
   [Implementation Plan](../plans/2026-07-13-template-contract-system-canonicalization.md)
 - **Parent foundation**:
   [Spec 129](../../03.specs/129-document-contract-canonicalization/spec.md)
@@ -87,9 +87,11 @@ review, and a separate quality review before its logical commit.
 Tasks T-TCS-001 through T-TCS-007 are completed with their implementation,
 validation, remediation, and independent-review evidence preserved below.
 The first whole-branch review of `a42f70b4...88230795` returned Spec FAIL /
-Quality CHANGES REQUESTED, C0/I3/M0. Its OpenAPI `examples`, Stage 99 catalog,
-and current-state findings are remediated locally; a fresh independent
-whole-branch re-review is the active gate.
+Quality CHANGES REQUESTED, C0/I3/M0. Commit `c9eb0be5` resolved its OpenAPI
+`examples`, Stage 99 catalog, and current-state findings. The fresh review of
+`a42f70b4...c9eb0be5` returned Spec PASS / Quality APPROVED, C0/I0/M0. The
+controlled wrapper then passed from clean commit `c9eb0be5`; lifecycle closure
+is recorded in this completed Task.
 
 ## T-TCS-001 Implementation Evidence
 
@@ -448,7 +450,7 @@ whole-branch re-review is the active gate.
 | T-TCS-005 | PASS on `34ae2dab...c07160a2` | APPROVED on `34ae2dab...c07160a2` | None; I-01, I-01-R1, and I-02 resolved | Completed |
 | T-TCS-006 | PASS on `39809f26...702b4360` | APPROVED on `39809f26...702b4360` | None; I-01 through I-04 resolved | Completed |
 | T-TCS-007 | PASS on `0ec97ce5...635f3a78` | APPROVED on `0ec97ce5...635f3a78` | None | Completed |
-| Whole branch | FAIL on `a42f70b4...88230795` | CHANGES REQUESTED on `a42f70b4...88230795` | C0/I3/M0: bounded OpenAPI `examples`, literal Stage 99 catalog, and current-state drift | Remediated locally; fresh re-review required |
+| Whole branch | PASS on `a42f70b4...c9eb0be5` | APPROVED on `a42f70b4...c9eb0be5` | First review C0/I3/M0; I-01 through I-03 resolved by `c9eb0be5`; final C0/I0/M0 | Completed |
 
 ### First Whole-Branch Review Remediation
 
@@ -477,10 +479,12 @@ whole-branch re-review is the active gate.
   remained advisory for two cross-root inferred edges, so conclusions were
   corroborated against tracked validator/tests, Stage 00, Stage 99, Spec 130,
   and this Plan/Task; both tracked Graphify outputs were restored.
-- These changes are local remediation evidence only. No fresh whole-branch
-  approval or controlled-wrapper result is claimed, and no runtime, Compose,
-  infrastructure, deployment, security control, secret, credential, provider,
-  workflow, branch-protection, or remote state changed.
+- The changes were committed as `c9eb0be5`. The fresh whole-branch re-review
+  returned Spec PASS / Quality APPROVED, C0/I0/M0 and reproduced metadata
+  178/178, all repository gates, the 17-consumer preservation proof, and exact
+  Wave A-E routing. No runtime, Compose, infrastructure, deployment, security
+  control, secret, credential, provider, workflow, branch-protection, or remote
+  state changed.
 
 ## Verification Evidence
 
@@ -696,24 +700,28 @@ whole-branch re-review is the active gate.
 | Task 7 preservation and scope oracle | Range `0ec97ce5...635f3a78` plus exact 17-consumer residue and body comparison | Pass: 17 Target removals; zero Rules/lowercase-token residue; frontmatter byte-equivalent; historical dates, commands, counts, decisions, verdicts, hashes, evidence, and Specs 124-127 approval boundaries preserved. |
 | Task 7 repository gates | Metadata 173/173; contracts; changed/active modes; repository, traceability, alignment, and generator checks | Pass: contracts zero; changed 73/0 with one base-existing legacy exception and zero overrides; active advisory 365/1,290 reproduced; repository `failures=0`; traceability 46/0; alignment 647/5,135/0; generated freshness pass at 901/2,025. |
 | Final independent Task 7 review | Full range `0ec97ce5...635f3a78` | Spec PASS / Quality APPROVED, C0/I0/M0; Waves A-E remain route-only and no runtime or external surface changed. |
-| Review state | Task table and review ledger | Tasks 1-7 completed; whole-branch review is ready. |
+| Whole-branch final re-review | Full range `a42f70b4...c9eb0be5` | Spec PASS / Quality APPROVED, C0/I0/M0; I-01 through I-03 resolved; `READY_FOR_CONTROLLED_WRAPPER=YES`. |
+| Controlled all-files wrapper | Clean committed worktree at `c9eb0be5` | Hook passed with exit 0; snapshot passed; before/after/changed/unexpected counts all zero. |
+| Review state | Task table and review ledger | Tasks 1-7, whole-branch review, and controlled wrapper completed; lifecycle closed. |
 
 ## Controlled Agent Pre-commit Evidence
 
 Tasks T-TCS-001 through T-TCS-007 and their per-task reviews are complete. The
-first whole-branch review returned C0/I3/M0 and its findings are remediated
-locally, but the final wrapper has not run because the required fresh
-whole-branch re-review has not approved the remediated branch.
+fresh whole-branch re-review approved the remediated branch, and the controlled
+wrapper ran from clean committed worktree `c9eb0be5` before this evidence-only
+lifecycle closure.
 
 | Field | Current value |
 | --- | --- |
-| Planned entrypoint | `scripts/validation/run-agent-precommit-all-files.sh` |
+| Entrypoint | `scripts/validation/run-agent-precommit-all-files.sh` |
 | Direct pre-commit invocation | Prohibited |
-| Planned prefixes | `docs/`, `scripts/validation/`, `tests/validation/` |
-| Preconditions | Clean committed worktree; all task reviews and full validation pass; fresh whole-branch re-review approves the remediated branch |
-| Hook result | Not run |
-| Snapshot result | Not run |
-| Unexpected paths | Not observed because the wrapper has not run |
+| Allowed prefixes | `docs/`, `scripts/validation/`, `tests/validation/` |
+| Observed commit | `c9eb0be5` with clean linked worktree |
+| Hook result | Passed; exit 0 |
+| Snapshot result | Passed; `before_count=0`, `after_count=0` |
+| Changed paths | None; `changed_count=0` |
+| Unexpected paths | None; `unexpected_count=0` |
+| Disposition | Pass; no formatter mutation or cleanup required |
 
 ## Commit Ledger
 
@@ -745,6 +753,9 @@ whole-branch re-review has not approved the remediated branch.
 | `0ec97ce5` — `docs(task): close executable validation task` | Record Task 6 final independent verdict and completion | Evidence-only changed-mode and diff hygiene pass |
 | `635f3a78` — `docs(migration): align direct template consumers` | Task 7 preservation-oriented 17-consumer and branch-owned active-chain migration | Metadata 173/173; changed 73/0; repository/traceability/alignment/generated checks; independent PASS/APPROVED C0/I0/M0 |
 | Closure unit — subject `docs(task): close direct consumer migration task`; self hash intentionally omitted | Record Task 7 final verdict and open whole-branch review | Evidence-only changed-mode and diff hygiene |
+| `c9eb0be5` — `fix(templates): resolve whole branch review findings` | Resolve OpenAPI `examples`, Stage 99 catalog, and current-state review findings | RED 5 methods / 8 failures; GREEN 5/5; expanded 76/76; metadata 178/178; final whole-branch PASS/APPROVED C0/I0/M0 |
+| Controlled wrapper at `c9eb0be5` | Run `pre-commit run --all-files` only through the approved wrapper | Hook exit 0; snapshot pass; before/after/changed/unexpected all zero |
+| Closure unit — subject `docs(task): close template contract canonicalization`; self hash intentionally omitted | Complete Spec 130, Plan, Task, generated evidence, and Progress after wrapper | Post-closure metadata/repository/traceability/alignment/generator/diff gates |
 
 ## Migration Wave Routing
 

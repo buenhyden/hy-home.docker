@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: plan:2026-07-13-template-contract-system-canonicalization
 artifact_type: plan
 parent_ids:
