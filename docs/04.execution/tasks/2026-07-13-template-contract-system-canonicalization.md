@@ -79,7 +79,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-001 | Registry and support contract canonicalization | Spec and Plan | Completed | fresh implementer | spec then quality |
 | T-TCS-002 | Common, README, and Governance forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
 | T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
-| T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | In Review | fresh implementer | spec then quality |
+| T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Completed | fresh implementer | spec then quality |
 | T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
 | T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | Queued | fresh implementer | spec then quality |
 | T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | Queued | fresh implementer | spec then quality |
@@ -267,8 +267,9 @@ review, and a separate quality review before its logical commit.
 - No runtime, Compose, infrastructure, deployment, secret, provider, workflow,
   credential, branch-protection, or remote state changed. The first independent
   review returned Spec FAIL / Quality CHANGES REQUESTED with C0/I1/M0 because
-  the recorded changed-mode selected count was stale. I-01 is remediated and
-  T-TCS-004 awaits independent re-review.
+  the recorded changed-mode selected count was stale. I-01 was remediated by
+  `b394a671`; the full-range re-review returned Spec PASS and Quality APPROVED
+  with C0/I0/M0, so T-TCS-004 is completed.
 
 ## Review Evidence
 
@@ -277,7 +278,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-001 | PASS on `9eca432b...ede2b9a2` | APPROVED on `9eca432b...ede2b9a2` | None; I-01 resolved by `ede2b9a2` | Completed |
 | T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
-| T-TCS-004 | FAIL on `4c821e86...b54e76df` | CHANGES REQUESTED on `4c821e86...b54e76df` | C0/I1/M0; I-01 stale changed-mode count remediated | Await independent re-review |
+| T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
 | T-TCS-005 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
 | T-TCS-007 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 006 |
@@ -424,7 +425,8 @@ review, and a separate quality review before its logical commit.
 | First independent review | Spec FAIL; Quality CHANGES REQUESTED; Critical 0 / Important 1 / Minor 0 on `4c821e86...b54e76df` |
 | I-01 | Replaced the stale 16-document changed-mode claim with the reproducible final result: 18 selected, zero violations, one base-existing legacy exception, and zero transition overrides. |
 | Commit ledger | The implementation unit is identified as `b54e76df`; the review-remediation commit is intentionally not claimed before commit. |
-| Review state | I-01 remediation awaits independent re-review; no reapproval or Task closure is claimed. |
+| Remediation commit | `b394a671`; evidence-only Task and Progress correction with no template, validator, test, generated, or runtime change. |
+| Final independent re-review | Spec PASS; Quality APPROVED; Critical 0 / Important 0 / Minor 0 on `4c821e86...b394a671`; I-01 resolved and ready for Task closure. |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -458,6 +460,8 @@ have not completed.
 | `37d52025` | Task 3 I-04-R1 independent literal heading/profile oracles and coordinated-drift regressions | RED 2/2; GREEN coordinated 2/2, focused 6/6 and 19/19, metadata 123/123; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close design contract forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-003 | Metadata changed-mode and diff hygiene; evidence-only scope |
 | `b54e76df` | Task 4 prospective Plan, evidentiary Task, duplicate harness-form deletion, direct governance/validator fallout, tests, and generated evidence | RED 11 expected failures; focused 27/27; metadata 131/131; metadata/repository contracts zero; changed mode 18/0 with one base-existing legacy exception and zero transition overrides; generated freshness; traceability/alignment; Graphify ran; diff/compile/syntax pass |
+| `b394a671` | Task 4 I-01 selected-count evidence correction | Exact changed-mode 18/0 with one base-existing legacy exception and zero overrides; focused 27/27; metadata contracts zero; generated freshness and diff pass; independent PASS/APPROVED re-review |
+| Closure unit — subject `docs(task): close stage 04 forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-004 | Metadata changed-mode and diff hygiene; evidence-only scope |
 
 Later review-fix and implementation commits will be appended as Tasks 4-7 close.
 
