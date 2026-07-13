@@ -156,6 +156,21 @@ review, and a separate quality review before its logical commit.
   communities. The tracked graph outputs were restored after evidence capture,
   and conclusions were corroborated against tracked source, Stage 00, Spec 130,
   and the active Plan/Task because the graph remains advisory.
+- The first independent review of `ff4cb021...1bba54fe` returned Spec FAIL and
+  Quality CHANGES REQUESTED with Critical 0, Important 2, and Minor 1. I-01
+  found that the sole Memory form could not instantiate the seven labels
+  required by the active Memory-note consumer; I-02 found that Stage 00 still
+  contradicted the registered Governance source metadata; M-01 found that the
+  Common confidentiality assertion could pass outside its intended owner and
+  section.
+- Review remediation restores the seven tokenized Memory fields without
+  changing the registered H2 envelope; routes Governance Memory, Progress,
+  README, and other typed source metadata through the registry in Stage 00;
+  and gives Reference, Audit, generated output, and Repo-support one concise
+  confidentiality boundary under Common `Source and Evidence Discipline`.
+  The transitional shell assertion now scopes those literals to that section.
+  I-01, I-02, and M-01 are implementation-remediated and await independent
+  re-review; no approval or closure verdict is claimed.
 - No runtime, Compose, infrastructure, deployment, secret, provider, workflow,
   credential, branch-protection, or remote state changed. T-TCS-002 remains
   `In Review`; no independent verdict is claimed by this implementation unit.
@@ -165,7 +180,7 @@ review, and a separate quality review before its logical commit.
 | Task | Spec review | Quality review | Findings | Disposition |
 | --- | --- | --- | --- | --- |
 | T-TCS-001 | PASS on `9eca432b...ede2b9a2` | APPROVED on `9eca432b...ede2b9a2` | None; I-01 resolved by `ede2b9a2` | Completed |
-| T-TCS-002 | Not run — implementation awaits independent review | Not run — implementation awaits independent review | None recorded | In Review |
+| T-TCS-002 | FAIL on `ff4cb021...1bba54fe` | CHANGES REQUESTED on `ff4cb021...1bba54fe` | I-01 and I-02 Important; M-01 Minor; all three implementation-remediated, independent re-review pending | In Review |
 | T-TCS-003 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-004 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 003 |
 | T-TCS-005 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
@@ -248,6 +263,16 @@ review, and a separate quality review before its logical commit.
 | Traceability and alignment | Stage 04/05 traceability and implementation alignment checks | Pass: 46 catalog pairs; 647 stage docs / 5,136 links; zero failures. |
 | Graph refresh | `graphify update .` | Pass: 23,102 nodes / 24,208 edges / 1,543 communities; tracked graph outputs restored after evidence capture. |
 | Diff and compile | `git diff --check`, Bash syntax, and Python compilation | Pass. |
+
+### T-TCS-002 Review Remediation
+
+| Phase | Command or evidence | Result |
+| --- | --- | --- |
+| First independent review | `.superpowers/sdd/task-2-review.md` over `ff4cb021...1bba54fe` | Spec FAIL; Quality CHANGES REQUESTED; Critical 0 / Important 2 / Minor 1; findings I-01, I-02, and M-01. |
+| RED | Three new `TemplateMetadataTests` regressions for Memory instantiation, Stage 00 source metadata, and Common evidence confidentiality | Expected failure: 3 tests ran with 17 subtest failures: seven missing Memory labels, one Stage 00 policy mismatch, and nine missing Common section literals. |
+| Focused GREEN | Same three regressions | Pass: 3/3. |
+| Task 2 GREEN | `TemplateMetadataTests` plus `ReadmeProfileTests` | Pass: 16/16. |
+| Finding disposition | Implementation inspection | I-01, I-02, and M-01 are remediated in the review-fix unit; T-TCS-002 remains In Review pending independent re-review. |
 
 ## Controlled Agent Pre-commit Evidence
 

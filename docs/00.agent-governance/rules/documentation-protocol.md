@@ -66,14 +66,24 @@ Protocol for maintaining documentation consistency and governance traceability.
   unless a document type or approved plan explicitly requires them. Do not
   convert existing templates or active stage documents to HADS as incidental
   cleanup.
-- **Template frontmatter exemption**: Markdown template source files under `docs/99.templates/templates/**/*.template.md` use `status: draft` in YAML frontmatter instead of `layer:`. Typed leaf templates additionally declare their copied target profile with the exact Stage 99 placeholder forms; the metadata checker validates those placeholders without resolving them through the active artifact manifest. Copied target documents must replace every placeholder, and README template source remains a status-only exception. `docs/99.templates/README.md` is an active folder README and may use repository README frontmatter such as `layer: agentic`. `docs/99.templates/templates/governance/memory.template.md` and `docs/99.templates/templates/governance/progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
+- **Template source metadata**: The Stage 99 registry owns each template
+  source's exact metadata shape. Governance Memory and Progress template
+  sources use exactly `layer: agentic` and `status: draft`; the README template
+  source remains the registered status-only source; other typed template
+  sources follow their registry-defined source metadata. The metadata checker
+  validates registered placeholders without resolving them through the active
+  artifact manifest, and copied targets must replace every placeholder.
+  `docs/99.templates/README.md` is an active folder README and may use
+  repository README frontmatter such as `layer: agentic`.
 - **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
   and `docs/90` MUST include YAML frontmatter with
   `status: draft | active | completed | superseded`.
   Archive tombstones under `docs/98.archive` MUST use `status: archived`.
   Governance memory files (`docs/00.agent-governance/`) use `layer:`
-  frontmatter instead. Markdown template source files (`docs/99.templates/templates/**/*.template.md`)
-  always use `status: draft` and are exempt from the `layer:` requirement.
+  frontmatter. Markdown template source metadata follows the Stage 99 registry:
+  Governance Memory and Progress sources use exactly `layer: agentic` and
+  `status: draft`, the README source is status-only, and other typed sources
+  use their registered metadata shape.
   A document without this frontmatter is **INCOMPLETE**. Retired aliases such
   as `approved`, `done`, and `archived` must be normalized when found.
 - **Typed metadata profiles (changed/new enforcement):**

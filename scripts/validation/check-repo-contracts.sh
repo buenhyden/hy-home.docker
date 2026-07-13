@@ -3440,6 +3440,7 @@ if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
+import re
 import sys
 
 failures: list[str] = []
@@ -3484,7 +3485,14 @@ common_contract = pathlib.Path("docs/99.templates/support/common-document-contra
 common_contract_required = [
     "stable, source-backed facts",
     "current policy",
+]
+source_discipline_required = [
+    "Reference, Audit, generated output, and Repo-support",
     "secret values",
+    "credentials or tokens",
+    "private keys",
+    "shell history",
+    "raw secret-bearing logs",
 ]
 if not common_contract.is_file():
     failures.append(f"missing common document contract: {common_contract}")
@@ -3493,6 +3501,19 @@ else:
     for literal in common_contract_required:
         if literal not in text:
             failures.append(f"{common_contract}: missing Reference support literal: {literal}")
+    section_heading = "## Source and Evidence Discipline"
+    if section_heading not in text:
+        failures.append(f"{common_contract}: missing Common evidence-discipline section")
+    else:
+        section = text.split(section_heading, 1)[1]
+        next_heading = re.search(r"^## ", section, flags=re.MULTILINE)
+        if next_heading:
+            section = section[: next_heading.start()]
+        for literal in source_discipline_required:
+            if literal not in section:
+                failures.append(
+                    f"{common_contract}: missing Source and Evidence Discipline literal: {literal}"
+                )
 
 readme_required = [
     "## Overview",

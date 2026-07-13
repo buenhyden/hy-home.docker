@@ -918,6 +918,89 @@ class TemplateMetadataTests(unittest.TestCase):
                 source = ROOT / self.profiles["template_roles"][role_name]["source"]
                 self.assertEqual(expected, metadata.parse_frontmatter(source))
 
+    def test_task_2_memory_form_instantiates_the_memory_note_target_contract(self) -> None:
+        source = ROOT / self.profiles["template_roles"]["memory"]["source"]
+        rendered = source.read_text(encoding="utf-8")
+        substitutions = {
+            "title": "Fixture Memory Note",
+            "date": "2026-07-13",
+            "layer": "agentic",
+            "status": "active",
+            "applies_to": "template contract system",
+            "tags": "templates, governance",
+            "retrieval_keywords": "memory template contract",
+            "last_verified": "2026-07-13",
+            "problem": "Fixture problem.",
+            "context": "Fixture context.",
+            "resolution": "Fixture resolution.",
+            "prevention": "Fixture prevention.",
+            "evidence": "Fixture evidence.",
+            "related_documents": "- Fixture link",
+        }
+        for token, value in substitutions.items():
+            rendered = rendered.replace(f"{{{{{token}}}}}", value)
+
+        self.assertNotIn("{{", rendered)
+        memory_note_required = (
+            "- Date:",
+            "- Layer:",
+            "- Status:",
+            "- Applies To:",
+            "- Tags:",
+            "- Retrieval Keywords:",
+            "- Last Verified:",
+            "## Problem",
+            "## Context",
+            "## Resolution",
+            "## Prevention",
+            "## Evidence",
+        )
+        for literal in memory_note_required:
+            with self.subTest(literal=literal):
+                self.assertIn(literal, rendered)
+
+    def test_task_2_stage00_protocol_matches_registered_template_source_metadata(self) -> None:
+        protocol = (
+            ROOT / "docs/00.agent-governance/rules/documentation-protocol.md"
+        ).read_text(encoding="utf-8")
+        normalized = " ".join(protocol.split())
+        self.assertIn(
+            "Governance Memory and Progress template sources use exactly "
+            "`layer: agentic` and `status: draft`",
+            normalized,
+        )
+        self.assertIn(
+            "the README template source remains the registered status-only source",
+            normalized,
+        )
+        self.assertIn(
+            "other typed template sources follow their registry-defined source metadata",
+            normalized,
+        )
+        self.assertNotIn("instead of `layer:`", normalized)
+        self.assertNotIn("exempt from the `layer:` requirement", normalized)
+
+    def test_task_2_common_confidentiality_boundary_covers_evidence_roles(self) -> None:
+        contract = (
+            ROOT / "docs/99.templates/support/common-document-contract.md"
+        ).read_text(encoding="utf-8")
+        discipline = contract.split("## Source and Evidence Discipline", 1)[1].split(
+            "\n## ", 1
+        )[0]
+        for literal in (
+            "Reference",
+            "Audit",
+            "generated output",
+            "Repo-support",
+            "secret values",
+            "credentials or tokens",
+            "private keys",
+            "shell history",
+            "raw secret-bearing logs",
+        ):
+            with self.subTest(literal=literal):
+                self.assertIn(literal, discipline)
+
     def test_audit_has_a_distinct_registered_form(self) -> None:
         role = self.profiles["template_roles"]["audit"]
         self.assertEqual("audit", role["artifact_profile"])

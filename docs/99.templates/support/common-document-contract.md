@@ -46,6 +46,12 @@ README-specific profile selection is owned separately by
 
 ## Source and Evidence Discipline
 
+- Apply the
+  [repository confidentiality boundary](../../00.agent-governance/rules/approval-boundaries.md)
+  to Reference, Audit, generated output, and Repo-support artifacts: do not
+  include secret values, credentials or tokens, private keys, shell history,
+  or raw secret-bearing logs; retain only redacted evidence appropriate to the
+  artifact's role.
 - Use primary sources for normative external claims and record the access date.
 - Distinguish a fixed standard from a mutable product page and a repository
   inference from an observed runtime or remote fact.
