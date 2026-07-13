@@ -354,6 +354,35 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   discovery, fail-closed error paths, advisory whole-corpus behavior, CI route,
   workflow security, and protected-surface boundaries pass with Critical `0`,
   Important `0`, Minor `0`. Independent review remains pending.
+- **Independent review round 1**: FAIL / NEEDS FIXES with Critical `0`,
+  Important `2`, Minor `0`. I-01 found that typed template discovery was
+  limited to `*.template.md` and silently accepted unknown declared target
+  types. I-02 found that human/machine ownership excluded zero/single-member
+  arrays and compared only two literal YAML renderings.
+- **Review remediation RED**: the expanded adversarial class failed three
+  cases: an arbitrary tracked `rogue.md` typed leaf, a
+  `rogue.template.md` leaf with `artifact_type: typo`, and quoted-flow plus
+  singleton registry arrays in fenced YAML all returned
+  `metadata repository contracts: violations=0` before the fix.
+- **I-01 remediation**: tracked template discovery now examines every
+  non-README Markdown file below `docs/99.templates/templates/` and treats an
+  `artifact_type` declaration as typed regardless of filename or whether the
+  declared value is recognized. Typed leaves require a registry mapping and a
+  supported, type-consistent target; catalogs and README files without typed
+  target metadata remain exceptions.
+- **I-02 remediation**: ownership validation now parses fenced YAML through the
+  duplicate-key-safe loader and compares normalized list values by registry
+  key. Complete multi-member, singleton, and empty arrays are rejected
+  independently of block/flow style or quoting.
+- **Review remediation GREEN**: `RepositoryContractIntegrationTests` passes
+  `8/8`; the full metadata module passes `101/101`; direct
+  `--mode check-contracts` reports `violations=0`; and `git diff --check`
+  passes. The shared metadata parser behavior outside repository-contract mode
+  is unchanged, so the broader discovery suite was not repeated.
+- **Remediation self-review**: both reviewer bypasses reproduce before the fix
+  and fail closed after it; current catalogs, untyped Markdown support forms,
+  and human contracts remain green. Critical `0`, Important `0`, Minor `0`;
+  independent re-review remains pending.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -361,7 +390,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-002 | `3591fcd5`, `0445f336` | PASS | Approved | C0/I0/M0; no remediation required | `review-0ae9fe81..0445f336.diff`; combined reviewer verdict | Done |
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
-| T-DCC-005 | Pending | Pending | Pending | Implementer C0/I0/M0; independent review pending | Ignored SDD report promoted here after approval | Review Pending |
+| T-DCC-005 | `bded61ce`; remediation pending | Pending re-review | Pending re-review | Round 1 C0/I2/M0; I-01/I-02 remediated; re-review pending | Ignored SDD report promoted here after approval | Review Pending |
 | T-DCC-006 | Pending | Pending | Pending | Pending | Whole-branch review evidence promoted here | Pending |
 
 ## Verification Summary
@@ -370,8 +399,9 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   pass `31/31`; T-DCC-002 template tests pass `5/5`; T-DCC-003 ownership,
   placeholder, traceability, alignment, explicit-base metadata, and diff gates
   pass; T-DCC-004 passes `11/161`, coverage `68/68/14/2/9`, semantic freshness
-  `11/0`, and its `32/32` unit suite; T-DCC-005 passes its `6/6` adversarial
-  class and the metadata module at `99/99`.
+  `11/0`, and its `32/32` unit suite; T-DCC-005 initially passed `6/6` and
+  `99/99`, then its review-remediation adversarial class passes `8/8` and the
+  metadata module passes `101/101`.
 - **Full Test Commands**: validation discovery passes `143/143`; the final
   generated-freshness and cross-suite closure bundle remains reserved for
   T-DCC-006.

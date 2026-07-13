@@ -1250,8 +1250,20 @@ def _registry_string_arrays(value: object, path: tuple[str, ...] = ()) -> list[t
         for key, member in value.items():
             if isinstance(key, str):
                 arrays.extend(_registry_string_arrays(member, (*path, key)))
-    elif isinstance(value, list) and len(value) > 1 and all(isinstance(member, str) for member in value):
+    elif isinstance(value, list) and all(isinstance(member, str) for member in value):
         arrays.append((path, value))
+    return arrays
+
+
+def _fenced_yaml_string_arrays(text: str) -> list[tuple[tuple[str, ...], list[str]]]:
+    arrays: list[tuple[tuple[str, ...], list[str]]] = []
+    for match in re.finditer(r"(?ms)^```(?:yaml|yml)\s*\n(.*?)^```\s*$", text):
+        try:
+            loaded = _safe_load_unique(match.group(1))
+        except yaml.YAMLError:
+            continue
+        if isinstance(loaded, dict):
+            arrays.extend(_registry_string_arrays(loaded))
     return arrays
 
 
@@ -1303,7 +1315,7 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         path
         for path in tracked_markdown
         if path.as_posix().startswith("docs/99.templates/templates/")
-        and path.name.endswith(".template.md")
+        and path.name != "README.md"
     ]
     for path in tracked_templates:
         try:
@@ -1313,7 +1325,17 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
             continue
         declared_type = values.get("artifact_type")
         mapped_type = template_sources.get(path.as_posix())
-        if declared_type in template_target_types and mapped_type is None:
+        if declared_type is None:
+            continue
+        if not isinstance(declared_type, str) or declared_type not in template_target_types:
+            findings.append(
+                Finding(
+                    path.as_posix(),
+                    "template-source-unknown-type",
+                    f"typed Markdown template declares unsupported artifact_type {declared_type!r}",
+                )
+            )
+        if mapped_type is None:
             findings.append(
                 Finding(path.as_posix(), "template-source-unmapped", "typed Markdown template is not registered")
             )
@@ -1372,22 +1394,23 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         for path in tracked_markdown
         if path.as_posix().startswith("docs/99.templates/support/") and path.suffix == ".md"
     ]
-    registry_arrays = _registry_string_arrays(profiles)
+    registry_arrays_by_key: dict[str, list[tuple[tuple[str, ...], list[str]]]] = collections.defaultdict(list)
+    for registry_path, members in _registry_string_arrays(profiles):
+        if registry_path:
+            registry_arrays_by_key[registry_path[-1]].append((registry_path, members))
     for path in human_support:
         try:
             text = (root / path).read_text(encoding="utf-8")
         except (OSError, UnicodeError) as error:
             findings.append(Finding(path.as_posix(), "support-contract-unreadable", str(error)))
             continue
-        duplicated: list[str] = []
-        for registry_path, members in registry_arrays:
-            if not registry_path:
+        duplicated: set[str] = set()
+        for candidate_path, candidate_members in _fenced_yaml_string_arrays(text):
+            if not candidate_path:
                 continue
-            key = registry_path[-1]
-            block_form = yaml.safe_dump({key: members}, sort_keys=False).strip()
-            inline_form = f"{key}: [{', '.join(members)}]"
-            if block_form in text or inline_form in text:
-                duplicated.append(".".join(registry_path))
+            for registry_path, registry_members in registry_arrays_by_key.get(candidate_path[-1], []):
+                if candidate_members == registry_members:
+                    duplicated.add(".".join(registry_path))
         if duplicated:
             findings.append(
                 Finding(

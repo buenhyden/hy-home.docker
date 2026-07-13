@@ -1100,6 +1100,29 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn(f"template-source-type-mismatch: {source}", result.stdout)
 
+    def test_every_typed_markdown_template_leaf_requires_a_known_mapping(self) -> None:
+        cases = (
+            (
+                "docs/99.templates/templates/common/rogue.md",
+                "spec",
+                "template-source-unmapped",
+            ),
+            (
+                "docs/99.templates/templates/common/rogue.template.md",
+                "typo",
+                "template-source-unknown-type",
+            ),
+        )
+        for source, artifact_type, expected in cases:
+            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                write_doc(root / source, {"artifact_type": artifact_type})
+                staged = git(root, "add", source)
+                self.assertEqual(0, staged.returncode, staged.stderr)
+                result = self.run_contracts(root, profiles)
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertIn(f"{expected}: {source}", result.stdout)
+
     def test_release_selection_stage_00_and_stage_05_routes_fail_closed(self) -> None:
         route = "docs/05.operations/releases/YYYY-MM-DD-release-name.md"
         release_source = "docs/99.templates/templates/operations/release.template.md"
@@ -1143,6 +1166,31 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             result = self.run_contracts(root, profiles)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("registry-array-duplicated: docs/99.templates/support/common-document-contract.md", result.stdout)
+
+    def test_registry_array_copies_are_yaml_serialization_independent(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            values = yaml.safe_load(profiles.read_text(encoding="utf-8"))
+            order = values["common"]["frontmatter_order"]
+            quoted_order = ", ".join(
+                f"'{member}'" if index % 2 else f'"{member}"'
+                for index, member in enumerate(order)
+            )
+            singleton = values["common"]["inventory_excludes"][0]
+            support = root / "docs/99.templates/support/common-document-contract.md"
+            support.write_text(
+                f"{support.read_text(encoding='utf-8')}\n"
+                f"```yaml\nfrontmatter_order: [{quoted_order}]\n```\n"
+                f"```yaml\ninventory_excludes: ['{singleton}']\n```\n"
+                "```yaml\nallowed_parent_types: []\n```\n",
+                encoding="utf-8",
+            )
+            result = self.run_contracts(root, profiles)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("registry-array-duplicated: docs/99.templates/support/common-document-contract.md", result.stdout)
+            self.assertIn("common.frontmatter_order", result.stdout)
+            self.assertIn("common.inventory_excludes", result.stdout)
+            self.assertIn("profiles.prd.allowed_parent_types", result.stdout)
 
     def test_workspace_cannot_become_a_docs_inventory_prefix(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
