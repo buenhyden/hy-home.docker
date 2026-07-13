@@ -65,7 +65,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Done |
 | T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Done |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Done |
-| T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Review Pending |
+| T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Done |
 | T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Full bundle, wrapper, final review | QA / Documentation Lead | Todo |
 
 ## Phase View
@@ -82,7 +82,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 
 ### Phase 3 — Enforcement and Closure
 
-- [ ] T-DCC-005 Repository and CI contract enforcement
+- [x] T-DCC-005 Repository and CI contract enforcement
 - [ ] T-DCC-006 Generated evidence, full QA, reviews, and closure
 
 ## Review Ledger
@@ -402,7 +402,13 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 - **Second remediation self-review**: registry membership, absent keys, null
   values, unknown values, arbitrary Markdown leaf names, and unmapped untyped
   catalogs now have distinct fail-closed dispositions. Critical `0`, Important
-  `0`, Minor `0`; independent re-review remains pending.
+  `0`, Minor `0`.
+- **Independent final re-review**: the reviewer checked the complete
+  `ac63469a..dc75443b` range and returned Spec PASS and Task Quality Approved
+  with Critical `0`, Important `0`, and Minor `0`. All Round 1 I-01/I-02 and
+  re-review I-01 bypasses are resolved; mapped omissions/nulls, unknown types,
+  arbitrary typed leaves, and normalized array copies fail closed while CI
+  routing, advisory corpus posture, and workflow boundaries remain unchanged.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -410,7 +416,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-002 | `3591fcd5`, `0445f336` | PASS | Approved | C0/I0/M0; no remediation required | `review-0ae9fe81..0445f336.diff`; combined reviewer verdict | Done |
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
-| T-DCC-005 | `bded61ce`, `556ba98d`; second remediation pending | Pending re-review | Pending re-review | Round 1 C0/I2/M0 resolved; re-review C0/I1/M0 remediated; next review pending | Ignored SDD report promoted here after approval | Review Pending |
+| T-DCC-005 | `bded61ce`, `556ba98d`, `dc75443b` | PASS | Approved | Round 1 C0/I2/M0 and re-review C0/I1/M0; all template/array bypasses resolved; final C0/I0/M0 | `review-ac63469a..dc75443b.diff`; combined reviewer final verdict | Done |
 | T-DCC-006 | Pending | Pending | Pending | Pending | Whole-branch review evidence promoted here | Pending |
 
 ## Verification Summary
