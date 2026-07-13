@@ -30,7 +30,7 @@ layer: agentic
 | SDLC | [sdlc/](./sdlc/README.md) | `prd`, `ard`, `adr`, `spec`, `plan`, `task` |
 | Spec contracts | [spec-contracts/](./spec-contracts/README.md) | `api-spec`, `agent-design`, `data-model`, `service`, `tests`, `openapi`, `schema`, `proto` |
 | Operations | [operations/](./operations/README.md) | `guide`, `policy`, `runbook`, `incident`, `postmortem`, `release` |
-| Governance | [governance/](./governance/README.md) | `memory`, `progress`, `harness-task-contract` |
+| Governance | [governance/](./governance/README.md) | `memory`, `progress` |
 | Common | [common/](./common/README.md) | `readme`, `reference`, `audit`, `archive` |
 
 ## How to Work in This Area

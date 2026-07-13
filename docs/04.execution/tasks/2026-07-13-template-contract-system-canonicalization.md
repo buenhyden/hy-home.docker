@@ -86,7 +86,10 @@ review, and a separate quality review before its logical commit.
 
 Tasks T-TCS-001 through T-TCS-007 are completed with their implementation,
 validation, remediation, and independent-review evidence preserved below.
-Whole-branch review is the active gate.
+The first whole-branch review of `a42f70b4...88230795` returned Spec FAIL /
+Quality CHANGES REQUESTED, C0/I3/M0. Its OpenAPI `examples`, Stage 99 catalog,
+and current-state findings are remediated locally; a fresh independent
+whole-branch re-review is the active gate.
 
 ## T-TCS-001 Implementation Evidence
 
@@ -445,7 +448,39 @@ Whole-branch review is the active gate.
 | T-TCS-005 | PASS on `34ae2dab...c07160a2` | APPROVED on `34ae2dab...c07160a2` | None; I-01, I-01-R1, and I-02 resolved | Completed |
 | T-TCS-006 | PASS on `39809f26...702b4360` | APPROVED on `39809f26...702b4360` | None; I-01 through I-04 resolved | Completed |
 | T-TCS-007 | PASS on `0ec97ce5...635f3a78` | APPROVED on `0ec97ce5...635f3a78` | None | Completed |
-| Whole branch | Not run — all tasks complete | Not run — all tasks complete | None recorded | Ready |
+| Whole branch | FAIL on `a42f70b4...88230795` | CHANGES REQUESTED on `a42f70b4...88230795` | C0/I3/M0: bounded OpenAPI `examples`, literal Stage 99 catalog, and current-state drift | Remediated locally; fresh re-review required |
+
+### First Whole-Branch Review Remediation
+
+- I-01 adds parsed, credential-context-aware OpenAPI 3.1 inspection for the
+  plural `examples` annotation. Scalar, list, and map leaves are accepted only
+  when every value is an exact unresolved machine token; findings remain
+  value-free and parse diagnostics remain static. GraphQL and Protobuf retain
+  their bounded native inspectors.
+- I-02 removes the deleted bare `harness-task-contract` role from the copyable
+  template catalog, adds Audit to the Stage 99 root catalog, and adds a
+  registry-independent literal catalog oracle for both omissions.
+- I-03 records Tasks 6 and 7 as completed, closes Plan Task 6 Step 8, preserves
+  the first whole-branch C0/I3/M0 verdict, and makes fresh re-review approval an
+  explicit controlled-wrapper precondition. Lifecycle remains active.
+- TDD RED ran five named methods with eight expected failures and zero errors;
+  the two exact nested-token positive cases already passed. Focused GREEN is
+  5/5, and the expanded template metadata/body/repository-contract slice is
+  76/76.
+- Full validation passes: metadata 178/178; metadata contracts zero; changed
+  mode from `main` selected 73 with zero violations, one base-existing legacy
+  exception, and zero transition overrides; repository contracts
+  `failures=0`; traceability 46/0; alignment 647 documents / 5,135 links / 0;
+  Wiki index and coverage fresh; metadata inventory 901 records / 2,025
+  advisory findings with no generated body diff.
+- Graphify refreshed to 23,524 nodes / 24,975 edges / 1,542 communities. Health
+  remained advisory for two cross-root inferred edges, so conclusions were
+  corroborated against tracked validator/tests, Stage 00, Stage 99, Spec 130,
+  and this Plan/Task; both tracked Graphify outputs were restored.
+- These changes are local remediation evidence only. No fresh whole-branch
+  approval or controlled-wrapper result is claimed, and no runtime, Compose,
+  infrastructure, deployment, security control, secret, credential, provider,
+  workflow, branch-protection, or remote state changed.
 
 ## Verification Evidence
 
@@ -665,15 +700,17 @@ Whole-branch review is the active gate.
 
 ## Controlled Agent Pre-commit Evidence
 
-The final wrapper has not run because implementation and whole-branch review
-have not completed.
+Tasks T-TCS-001 through T-TCS-007 and their per-task reviews are complete. The
+first whole-branch review returned C0/I3/M0 and its findings are remediated
+locally, but the final wrapper has not run because the required fresh
+whole-branch re-review has not approved the remediated branch.
 
 | Field | Current value |
 | --- | --- |
 | Planned entrypoint | `scripts/validation/run-agent-precommit-all-files.sh` |
 | Direct pre-commit invocation | Prohibited |
 | Planned prefixes | `docs/`, `scripts/validation/`, `tests/validation/` |
-| Preconditions | Clean committed worktree; all task reviews and full validation pass |
+| Preconditions | Clean committed worktree; all task reviews and full validation pass; fresh whole-branch re-review approves the remediated branch |
 | Hook result | Not run |
 | Snapshot result | Not run |
 | Unexpected paths | Not observed because the wrapper has not run |

@@ -1110,6 +1110,30 @@ class TemplateMetadataTests(unittest.TestCase):
                 text = (ROOT / relative_path).read_text(encoding="utf-8")
                 self.assertNotIn(deleted_path, text)
 
+    def test_stage_99_catalogs_publish_the_literal_canonical_role_inventory(self) -> None:
+        catalogs = {
+            "docs/99.templates/README.md": (
+                "PRD, ARD, ADR, Spec, Plan, Task",
+                "Guide, policy, runbook, incident, postmortem, Release",
+                "README, reference, Audit, archive",
+            ),
+            "docs/99.templates/templates/README.md": (
+                "`prd`, `ard`, `adr`, `spec`, `plan`, `task`",
+                "`guide`, `policy`, `runbook`, `incident`, `postmortem`, `release`",
+                "`readme`, `reference`, `audit`, `archive`",
+                "`memory`, `progress`",
+            ),
+        }
+        for relative_path, literal_inventories in catalogs.items():
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                for literal_inventory in literal_inventories:
+                    self.assertIn(literal_inventory, text)
+                self.assertNotRegex(
+                    text,
+                    r"(?<![A-Za-z0-9_-])harness-task-contract(?![A-Za-z0-9_-])",
+                )
+
     def test_leaf_templates_declare_valid_target_profiles_with_safe_placeholders(self) -> None:
         expected = {
             "docs/99.templates/templates/sdlc/prd.template.md": "prd",
@@ -2429,6 +2453,63 @@ class TemplateBodyContractTests(unittest.TestCase):
             )
             self.assertNotIn("fixture-direct-list-leak", repr(findings))
 
+    def test_openapi_credential_plural_examples_reject_nested_concrete_leaves_without_leaks(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        cases = {
+            "scalar": "fixture-scalar-private",
+            "list": "[__PASSWORD_PRIMARY__, fixture-list-private]",
+            "map": "{primary: __PASSWORD_PRIMARY__, secondary: fixture-map-private}",
+        }
+        for label, examples in cases.items():
+            with self.subTest(shape=label):
+                text = (
+                    "openapi: 3.1.0\n"
+                    "x-template-token: __API_TITLE__\n"
+                    "components:\n"
+                    "  schemas:\n"
+                    "    Login:\n"
+                    "      properties:\n"
+                    "        password:\n"
+                    "          type: string\n"
+                    f"          examples: {examples}\n"
+                )
+                findings = metadata._machine_template_findings(record, text)
+                self.assertIn(
+                    "machine-template-example-value",
+                    {finding.code for finding in findings},
+                )
+                self.assertNotIn("fixture-", repr(findings))
+
+    def test_openapi_credential_plural_examples_accept_exact_nested_tokens(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        text = (
+            "openapi: 3.1.0\n"
+            "x-template-token: __API_TITLE__\n"
+            "components:\n"
+            "  schemas:\n"
+            "    Login:\n"
+            "      properties:\n"
+            "        password:\n"
+            "          type: string\n"
+            "          examples:\n"
+            "            primary: __PASSWORD_PRIMARY__\n"
+            "            alternatives:\n"
+            "              - __PASSWORD_SECONDARY__\n"
+            "              - __PASSWORD_TERTIARY__\n"
+        )
+        codes = {
+            finding.code
+            for finding in metadata._machine_template_findings(record, text)
+        }
+        self.assertNotIn("machine-template-parse-error", codes)
+        self.assertNotIn("machine-template-example-value", codes)
+
     def test_openapi_credential_context_accepts_exact_tokens_and_schema_only_fields(self) -> None:
         record = self.fixture_record(
             "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
@@ -3423,6 +3504,64 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 result.stdout,
             )
             self.assertNotIn("fixture-direct-list-leak", rendered)
+
+    def test_repository_contracts_reject_openapi_credential_plural_examples_without_leaks(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        cases = {
+            "scalar": "fixture-scalar-cli-private",
+            "list": "[__PASSWORD_PRIMARY__, fixture-list-cli-private]",
+            "map": "{primary: __PASSWORD_PRIMARY__, secondary: fixture-map-cli-private}",
+        }
+        for label, examples in cases.items():
+            with self.subTest(shape=label), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                (root / relative_path).write_text(
+                    "openapi: 3.1.0\n"
+                    "x-template-token: __API_TITLE__\n"
+                    "components:\n"
+                    "  schemas:\n"
+                    "    Login:\n"
+                    "      properties:\n"
+                    "        password:\n"
+                    "          type: string\n"
+                    f"          examples: {examples}\n",
+                    encoding="utf-8",
+                )
+                result = self.run_contracts(root, profiles)
+                rendered = result.stdout + result.stderr
+                self.assertEqual(1, result.returncode, rendered)
+                self.assertIn(
+                    f"machine-template-example-value: {relative_path}",
+                    result.stdout,
+                )
+                self.assertNotIn("fixture-", rendered)
+
+    def test_repository_contracts_accept_exact_nested_openapi_credential_examples_tokens(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            (root / relative_path).write_text(
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          examples:\n"
+                "            primary: __PASSWORD_PRIMARY__\n"
+                "            alternatives:\n"
+                "              - __PASSWORD_SECONDARY__\n"
+                "              - __PASSWORD_TERTIARY__\n",
+                encoding="utf-8",
+            )
+            result = self.run_contracts(root, profiles)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_repository_contracts_accept_safe_openapi_credential_shapes(self) -> None:
         relative_path = (

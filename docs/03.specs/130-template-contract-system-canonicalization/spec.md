@@ -455,9 +455,11 @@ This branch does not infer new content merely to make an old document resemble
 a template. Topic-specific body changes require evidence and an approved edit
 boundary.
 
-Task 6 implementation is **In Review**. The executable body and machine-template
-contracts, changed-target gate, and Python-owned shell delegation are locally
-verified; independent specification and quality reviews have not yet run.
+Tasks 6 and 7 are completed with their independent per-task reviews. The first
+whole-branch review returned Spec FAIL / Quality CHANGES REQUESTED, C0/I3/M0;
+its bounded OpenAPI, Stage 99 catalog, and current-state findings are remediated
+locally. A fresh independent whole-branch re-review and the controlled final QA
+wrapper remain open, so this specification remains active.
 
 ## Follow-up Migration Batches
 

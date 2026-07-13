@@ -930,9 +930,9 @@ git commit -m "docs(operations): canonicalize operations forms"
   list[Finding]`, machine-token validation, and a repository gate that delegates
   exact template semantics to the Python checker.
 
-**Implementation status:** In Review. Steps 1 through 7 are implemented and
-locally verified; Step 8 remains open for independent specification and quality
-review, finding remediation, and the logical commit.
+**Implementation status:** Completed. Steps 1 through 8 were implemented,
+committed, remediated, and independently re-reviewed; the final Task 6 review
+of `39809f26...702b4360` returned Spec PASS / Quality APPROVED, C0/I0/M0.
 
 - [x] **Step 1: Add failing body, ambiguity, and integration tests**
 
@@ -1077,12 +1077,16 @@ git diff --check
 
 Expected: all tests and checks pass with zero contract violations.
 
-- [ ] **Step 8: Record reviews and commit**
+- [x] **Step 8: Record reviews and commit**
 
 ```bash
 git add scripts/validation/check-document-metadata.py tests/validation/test_document_metadata.py scripts/validation/check-repo-contracts.sh docs/03.specs/130-template-contract-system-canonicalization/spec.md docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md docs/04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md
 git commit -m "test(validation): enforce template role contracts"
 ```
+
+The implementation, bounded remediation commits, and final independent Task 6
+review are recorded in the active Task ledger. This completed step does not
+replace the still-open fresh whole-branch re-review or controlled wrapper.
 
 ## Task 7: Direct Consumers, Generated Evidence, and Migration Waves
 

@@ -248,7 +248,9 @@ OPENAPI_JWT_VALUE = re.compile(
     r"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b"
 )
 OPENAPI_AUTH_SCHEMES = frozenset({"basic", "bearer", "oauth", "oauth2", "openidconnect"})
-OPENAPI_CREDENTIAL_VALUE_KEYS = frozenset({"default", "example", "const", "enum"})
+OPENAPI_CREDENTIAL_VALUE_KEYS = frozenset(
+    {"default", "example", "examples", "const", "enum"}
+)
 CREDENTIAL_KEY_NAME = re.compile(
     r"(?:^|_)(?:"
     r"api_?key|password|passwd|secret|client_secret|access_token|refresh_token|"
@@ -1065,8 +1067,10 @@ def _openapi_mapping(text: str) -> dict[object, object]:
 
 
 def _approved_machine_values(value: object) -> bool:
+    if isinstance(value, dict):
+        return all(_approved_machine_values(member) for member in value.values())
     if isinstance(value, list):
-        return all(_approved_machine_token(member) for member in value)
+        return all(_approved_machine_values(member) for member in value)
     return _approved_machine_token(value)
 
 
@@ -1104,6 +1108,7 @@ def _inspect_openapi(text: str) -> OpenApiInspection:
         value: object,
         *,
         security_scheme_context: bool = False,
+        credential_context: bool = False,
     ) -> None:
         nonlocal concrete_credential, concrete_format
         if isinstance(value, dict):
@@ -1116,19 +1121,16 @@ def _inspect_openapi(text: str) -> OpenApiInspection:
                     "security_schemes",
                 }
                 credential_key = _normalized_credential_key(key) is not None
-                if credential_key:
-                    if isinstance(member, dict):
-                        for value_key, candidate in member.items():
-                            if (
-                                isinstance(value_key, str)
-                                and value_key.lower() in OPENAPI_CREDENTIAL_VALUE_KEYS
-                                and isinstance(candidate, (str, int, float, bool, list, type(None)))
-                                and not _approved_machine_values(candidate)
-                            ):
-                                concrete_credential = True
-                    elif isinstance(member, (str, int, float, bool, list, type(None))):
-                        if not _approved_machine_values(member):
-                            concrete_credential = True
+                nested_credential_context = credential_context or credential_key
+                credential_value_annotation = (
+                    credential_context
+                    and normalized_key in OPENAPI_CREDENTIAL_VALUE_KEYS
+                )
+                if credential_value_annotation and not _approved_machine_values(member):
+                    concrete_credential = True
+                elif credential_key and not isinstance(member, dict):
+                    if not _approved_machine_values(member):
+                        concrete_credential = True
 
                 if isinstance(member, list):
                     for item in member:
@@ -1138,7 +1140,11 @@ def _inspect_openapi(text: str) -> OpenApiInspection:
                             security_scheme_context=nested_security_context,
                         ):
                             concrete_format = True
-                        inspect(item, security_scheme_context=nested_security_context)
+                        inspect(
+                            item,
+                            security_scheme_context=nested_security_context,
+                            credential_context=nested_credential_context,
+                        )
                 else:
                     if _openapi_string_has_concrete_format_value(
                         key,
@@ -1146,10 +1152,18 @@ def _inspect_openapi(text: str) -> OpenApiInspection:
                         security_scheme_context=nested_security_context,
                     ):
                         concrete_format = True
-                    inspect(member, security_scheme_context=nested_security_context)
+                    inspect(
+                        member,
+                        security_scheme_context=nested_security_context,
+                        credential_context=nested_credential_context,
+                    )
         elif isinstance(value, list):
             for member in value:
-                inspect(member, security_scheme_context=security_scheme_context)
+                inspect(
+                    member,
+                    security_scheme_context=security_scheme_context,
+                    credential_context=credential_context,
+                )
 
     inspect(document)
     return OpenApiInspection(concrete_credential, concrete_format)
