@@ -63,6 +63,15 @@ reports. Tracked automation is classified as executable local, CI-defined,
 remote-only, advisory, or missing; the presence of a script or workflow is not
 treated as execution evidence.
 
+### Remote Evidence Boundary as of 2026-07-12
+
+| Evidence class | Evidence | Limitation |
+| --- | --- | --- |
+| Tracked definitions | The local CI/protection contract names 15 contexts. | A tracked name proves neither execution nor remote enforcement. |
+| Observed remote configuration | Classic `main` protection is enabled with 12 required contexts; repository rulesets are `0`; environments are `0`. | `docs-implementation-alignment`, `agent-output-eval-fixture-gate`, and `dependency-vulnerability-audit` are absent remotely. |
+| Recent execution | No recent named check-run or deployment-run evidence was collected. | Remote configuration must not be reported as a successful run. |
+| Enforcement mutation | No branch protection, ruleset, environment, workflow, or repository setting was changed. | Later synchronization requires separate approval, exact run evidence, rollback, and read-back. |
+
 ## Criterion Matrix
 
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
@@ -77,7 +86,7 @@ treated as execution evidence.
 | AUT-08 | Produce security readiness signals without running scanners or claiming security outcomes. | The readiness generator maps tracked controls and gaps; its output explicitly excludes scan/SBOM/signing/attestation execution. | Implemented | 3 | Retain | Security readiness generator owner | Existing advisory snapshot and freshness gate. | `bash scripts/validation/generate-security-automation-readiness.sh --check`. | High. |
 | AUT-09 | Run agent all-files pre-commit only through an isolated, Stage-04-evidenced, changed-path-aware wrapper. | Direct execution remains prohibited; `run-agent-precommit-all-files.sh` enforces the clean linked-worktree, task-path, allow-prefix, snapshot, exit, and evidence boundaries approved in T-AER-009, whose 29-case fake-hook suite passed independent review. | Implemented | 3 | Retain | Controlled pre-commit wrapper and Stage 04 task owner | Retain fake-hook contract coverage and require human-reviewed task evidence for each real invocation. | Run the 29-case fake-hook suite and inspect T-AER-009 PASS/APPROVED evidence. | High for Git-visible, non-ignored repository paths; ignored/outside writes and sandboxing are not observed. |
 | AUT-10 | Automate CD promotion/deployment only with environments, approvals, evidence, and rollback. | No tracked workflow deploys/promotes a target or performs rollback. | Missing | 0 | Add | Draft Spec 127 deployment/release chain | The separately approval-gated CD design remains independent from CI quality gates. | Require approved environment/promotion/deployment/rollback execution evidence. | High. |
-| AUT-11 | Distinguish tracked automation definitions from remote enforcement and current run state. | Workflow/config definitions exist; Task 6 did not query current runs, required checks, branch protection, or CODEOWNERS enforcement. | Needs Revalidation | 1 | Improve | GitHub governance owner | Separately approved read-only remote verification, not a local inference. | Timestamped remote query with repository identity and named check contexts. | High for uncertainty boundary. |
+| AUT-11 | Distinguish tracked automation definitions from remote enforcement and current run state. | Workflow/config definitions exist. The 2026-07-12 read-only observation found classic `main` protection with 12 required contexts versus 15 local names, zero rulesets, and zero environments; it did not collect recent run results or mutate enforcement. | Needs Revalidation | 1 | Improve | GitHub governance owner | Retain the dated remote configuration record; collect recent named run evidence and approve a rollback-bound remote task before synchronization. | Timestamped configuration query plus separately collected run evidence, repository identity, exact context comparison, and post-mutation read-back when authorized. | High for the definition/configuration/run/mutation boundary. |
 
 ## Implementation Status Matrix
 
@@ -94,6 +103,7 @@ treated as execution evidence.
 | Gap routing | Implemented | Stage 04 task evidence, audit gap tables, [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), [gap routing reference](../../data/governance/gap-to-stage-routing.md), `scripts/validation/recommend-gap-routing.sh` | Gap-to-stage suggestions are now available locally for text and path inputs; future work can decide whether to publish routing summaries into audit reports. |
 | Audit implementation matrix | Implemented | [audit implementation matrix](../../data/governance/audit-implementation-matrix.md), `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/check-repo-contracts.sh` | Audit report coverage, overview categories, automation candidate closure, generated evidence surfaces, and residual gap signals are generated and freshness-checked locally. |
 | Security maturity | Mapped / Readiness Snapshot Implemented / Partially Implemented | `.github/workflows/ci-quality.yml`, [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md), [security framework maturity coverage](./security-framework-maturity.md), [security automation readiness](../../data/security/security-automation-readiness.md) | SSDF/SLSA/OpenSSF Scorecard coverage and repo-local readiness are mapped; the scoped Storybook Next.js `npm audit` gate satisfies `SEC-AUTO-008`, while broad dependency SCA and container/image scanning remain separate gaps. |
+| Remote required-check configuration | Partial / Dated Observation | [main protection record](../../../../.github/rulesets/main-protection.md), [Spec 129](../../../03.specs/129-document-contract-canonicalization/spec.md) | Classic protection and 12 contexts were observed read-only on 2026-07-12, but three local contexts are absent remotely; recent runs and mutation remain separate evidence classes. |
 
 ## Findings
 
@@ -114,6 +124,9 @@ treated as execution evidence.
   ecosystem/container vulnerability scanning.
 - Gemini-specific automation should remain reminder/checklist based until
   native hook/subagent support is confirmed by official sources.
+- Remote protection is neither wholly unknown nor synchronized: dated
+  configuration evidence exists, but three local contexts remain absent and no
+  recent-run or enforcement-mutation evidence was produced.
 
 ## Gap / Follow-up
 
@@ -146,6 +159,8 @@ required semantic scoring, or security classification.
   or mutate state.
 - Each candidate must cite the current manual or partial implementation surface
   that it would improve.
+- Keep tracked definitions, observed remote configuration, recent run results,
+  and remote mutation/read-back as separate evidence classes.
 
 ## Sources
 

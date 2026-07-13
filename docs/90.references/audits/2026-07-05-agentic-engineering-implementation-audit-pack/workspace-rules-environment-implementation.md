@@ -33,6 +33,7 @@ provider adapters, and actual executing environments remain authoritative.
 
 - Workspace purpose, instruction/stage routing, role/skill catalogs, approval,
   evidence/memory, local validation entry points, and source corroboration.
+- The independently enforced, non-stage `_workspace` repo-support boundary.
 
 ### Out of Scope
 
@@ -48,13 +49,18 @@ provider adapters, and actual executing environments remain authoritative.
   runtime for this implementation. The dispatch recorded the repository role
   (`code-reviewer`) and requested Senior tier while the platform chose
   the concrete model; no policy inference or mutation follows.
+- `_workspace` is an ignored, non-secret repo-support surface outside docs
+  metadata inference. Only `_workspace/README.md` and
+  `_workspace/repo-support/README.md` may be tracked; non-secret scratch remains
+  ignored, and repository contracts enforce this boundary independently.
 
 ## Assessment Method
 
 The audit read root shims, Stage 00 rules/scopes/catalog/progress, provider
-adapters, Stage 99 routing, scripts, and current task evidence. Required sync
-and eval checks were reproduced. Stale/advisory Graphify data was corroborated
-against tracked source and was never treated as implementation truth.
+adapters, Stage 99 routing, the two tracked `_workspace` README contracts,
+scripts, and current task evidence. Required sync and eval checks were
+reproduced. Stale/advisory Graphify data was corroborated against tracked source
+and was never treated as implementation truth.
 
 ## Audit Criteria
 
@@ -68,7 +74,7 @@ against tracked source and was never treated as implementation truth.
 | WRE-06 | Maintain advisory memory and durable task/review evidence without making memory policy. | Memory README/progress, task evidence, SDD reports, final PASS/APPROVED review ledgers, and generated audit coverage exist; a unified quality/closure time series does not. | Partial | 2 | Improve | Stage 00 memory plus Stage 04 task owner | Retain deterministic ledgers and generated coverage; add metrics only under a separately defined contract. | Inspect progress/task/review records and audit coverage output. | High. |
 | WRE-07 | Provide deterministic local validation and CI routing by change type. | Scripts README, task checklists, repo contracts, provider sync, metadata changed/new checks, generated indexes, and fixture runner exist; not every semantic behavior is testable. | Partial | 3 | Improve | QA scope and scripts catalog | Retain current gates; add semantic scoring only with approved false-positive and calibration review. | Run the current validation bundle and inspect T-AER-012 final evidence. | High. |
 | WRE-08 | Treat executing sandbox, network, provider entitlement, and global config as observed environment facts. | Rules state boundaries, but tracked files cannot prove the active provider profile, account access, egress, MCP servers, or global settings. | Needs Revalidation | 1 | Retain | Executing environment/provider owner | Explicit non-automation unless scoped observation is authorized. | Authorized runtime evidence only. | Medium by design. |
-| WRE-09 | Corroborate generated/navigation evidence against tracked canonical source. | Bootstrap/Spec 123 require tracked evidence; the advisory Graphify report is stale relative to this branch, so current T-AER and audit claims are corroborated directly against tracked source and generated owner checks. | Implemented | 2 | Retain | Audit/task owner | Keep Graphify advisory; no status automation from graph edges. | Compare Graphify commit metadata with `git rev-parse HEAD`, generators, and cited tracked files. | High. |
+| WRE-09 | Corroborate generated/navigation evidence against tracked canonical source. | Bootstrap/Spec 123 require tracked evidence; the advisory Graphify report is stale relative to this branch, so current claims are corroborated directly against tracked source and generated owner checks. `_workspace` is separately bounded to two tracked READMEs plus ignored non-secret scratch, excluded from docs metadata inference, and enforced by repository contracts. | Implemented | 2 | Retain | Audit/task owner and `_workspace` repository-contract owner | Keep Graphify advisory and `_workspace` independent from docs metadata; no status automation from graph edges or scratch files. | Compare Graphify commit metadata with `git rev-parse HEAD`, generators, cited tracked files, the `_workspace` allowlist, and repository-contract checks. | High. |
 | WRE-10 | Preserve implementation/review separation and honest lifecycle state. | The T-AER chain used fresh implementers and independent reviewers and closed only after final PASS/APPROVED, C0/I0/M0, and `READY_FOR_RECLOSURE: YES`; the current T-AHC-002 lifecycle remains pending independent review. | Implemented | 2 | Retain | Workflow supervisor and Stage 04 task owner | Update the current task ledger only after independent approval. | Inspect T-AER-012 final evidence and the pending T-AHC-002 row, checkbox, and review ledger. | High. |
 
 ## Findings
@@ -78,6 +84,9 @@ against tracked source and was never treated as implementation truth.
   adding more policy text would not make them implemented.
 - Evidence is durable but not depth 4 because closure, drift, and semantic quality
   are not measured as a single feedback system.
+- `_workspace` is covered without adding a new criterion or importing it into
+  the docs metadata corpus: two README contracts are tracked, non-secret scratch
+  is ignored, and prohibited sensitive artifacts remain outside the surface.
 
 ## Gap / Follow-up
 
@@ -109,6 +118,8 @@ separate.
 - [Agentic rule](../../../00.agent-governance/rules/agentic.md)
 - [Task checklists](../../../00.agent-governance/rules/task-checklists.md)
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
+- [`_workspace` contract](../../../../_workspace/README.md)
+- [`_workspace` repo-support contract](../../../../_workspace/repo-support/README.md)
 
 ## Maintenance
 

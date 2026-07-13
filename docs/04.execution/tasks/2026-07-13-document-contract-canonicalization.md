@@ -64,7 +64,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-001 | Extend registry/parser with families, key order, README profiles, and parent serialization. | impl/test | Registry Model; VAL-129-001/004/005 | Task 1 | RED/GREEN metadata tests and independent review | Documentation Metadata Engineer | Done |
 | T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Done |
 | T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Done |
-| T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Todo |
+| T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Review Pending |
 | T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Todo |
 | T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Full bundle, wrapper, final review | QA / Documentation Lead | Todo |
 
@@ -78,7 +78,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 ### Phase 2 — Human and Evidence Alignment
 
 - [x] T-DCC-003 Human contracts and canonical external research
-- [ ] T-DCC-004 Stage 00 authoring and canonical audit reconciliation
+- [ ] T-DCC-004 Stage 00 authoring and canonical audit reconciliation (Review Pending)
 
 ### Phase 3 — Enforcement and Closure
 
@@ -234,12 +234,72 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   source attribution, serialization semantics, and Release boundaries remain
   intact.
 
+### T-DCC-004 Implementation Evidence
+
+- **Baseline reproduction**: before mutation,
+  `audit_criterion_contract.py` passed with 11 reports, 161 rows, and 161 unique
+  IDs. Audit-pack coverage passed with the exact baseline distribution:
+  Implemented `67`, Partial `69`, Missing `14`, Not Applicable `2`, Needs
+  Revalidation `9`.
+- **Stage 00 consumer route**: `documentation-protocol.md` now requires
+  exact-one registry profile selection, family/README contract routing,
+  template instantiation, README consumer selection, deterministic frontmatter
+  and parent serialization without semantic priority, historical-payload
+  preservation, and fail-closed ambiguity handling. Task 2 already completed
+  Release ownership/routing in `stage-authoring-matrix.md`, so Task 4 left that
+  file unchanged.
+- **Canonical audit truth**: DML-12 is the only criterion state change because
+  direct tracked evidence now proves distinct Incident/Postmortem/Runbook/Release
+  profiles, checker routes, and Release template/routing. The exact distribution
+  is now Implemented `68`, Partial `68`, Missing `14`, Not Applicable `2`,
+  Needs Revalidation `9`. README classification is implemented but the 37
+  status-bearing baseline remains a later migration; Release has contract
+  readiness but no event record; parent ordering remains serialization only.
+- **`_workspace` boundary**: WRE-09 now records independent repository-contract
+  enforcement, docs-metadata exclusion, two tracked README contracts, and
+  ignored non-secret scratch. No WRE-11 or twelfth report was added.
+- **Remote evidence classes**: the 2026-07-12 read-only observation is recorded
+  separately from tracked definitions, recent runs, and mutation. Classic
+  `main` protection has 12 required contexts versus 15 local names;
+  `docs-implementation-alignment`, `agent-output-eval-fixture-gate`, and
+  `dependency-vulnerability-audit` are absent remotely; rulesets and
+  environments are `0`. No recent-run, complete CODEOWNERS-enforcement, or
+  remote-mutation claim is made.
+- **Validation**: the criterion contract passed `11/161/161`; audit-pack
+  coverage passed with the exact `68/68/14/2/9` distribution; semantic
+  freshness passed `assertions=11 failures=0`; its unit suite passed `32/32`;
+  traceability passed `catalog_pairs_total=46 failures=0`; implementation
+  alignment passed `stage_docs_total=644`,
+  `repo_local_markdown_links_checked=5097`, `failures=0`; explicit-base
+  metadata passed `selected=11 violations=0 legacy_exceptions=0
+  transition_overrides=0`; Markdown lint passed on all 9 included changed
+  Markdown files with `0` errors (the Stage 04 task path is excluded by
+  repository configuration); `git diff --check` passed. The broader repository
+  contract reached only the expected stale generated LLM Wiki index/coverage,
+  frontmatter inventory, and audit-matrix outputs reserved for T-DCC-006; Task
+  4 did not expand scope by regenerating them.
+- **Preservation**: dated 2026-07-03/04 audit snapshots, the superseded
+  2026-07-07 pack, and the canonical audit's dated baseline
+  commands/counts/results were not modified. Current reconciliation text is
+  layered around preserved payloads.
+- **Protected surface**: no runtime, Compose, infrastructure, secret,
+  credential, provider-global, model-policy, workflow, deployment, Release
+  event, generated output, branch-protection, ruleset, environment, or other
+  remote GitHub state was changed.
+- **Graphify**: not refreshed because Task 4 changes documentation only; its
+  advisory report was corroborated against tracked contracts, stage documents,
+  and validator results.
+- **Implementer self-review**: Spec mapping, evidence precision, historical
+  preservation, row cardinality, state distribution, and protected-surface
+  boundaries PASS with Critical `0`, Important `0`, Minor `0`. Independent
+  review remains pending; this evidence does not claim approval.
+
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | `39eb562e` | PASS | Approved | C0/I0/M0; no remediation required | `review-237aa5d7..39eb562e.diff`; combined reviewer verdict | Done |
 | T-DCC-002 | `3591fcd5`, `0445f336` | PASS | Approved | C0/I0/M0; no remediation required | `review-0ae9fe81..0445f336.diff`; combined reviewer verdict | Done |
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
-| T-DCC-004 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
+| T-DCC-004 | Pending | Implementer PASS | Self-review C0/I0/M0 | DML-12 is the only state transition; no remediation pending | Independent review pending; ignored SDD report is the handoff | Review Pending |
 | T-DCC-005 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-006 | Pending | Pending | Pending | Pending | Whole-branch review evidence promoted here | Pending |
 
@@ -248,7 +308,8 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 - **Focused Test Commands**: T-DCC-001 focused registry/metadata/README tests
   pass `31/31`; T-DCC-002 template tests pass `5/5`; T-DCC-003 ownership,
   placeholder, traceability, alignment, explicit-base metadata, and diff gates
-  pass; T-DCC-004 and T-DCC-005 remain pending.
+  pass; T-DCC-004 passes `11/161`, coverage `68/68/14/2/9`, semantic freshness
+  `11/0`, and its `32/32` unit suite; T-DCC-005 remains pending.
 - **Full Test Commands**: the metadata validation module passes `93/93` after
   T-DCC-002; the final cross-suite bundle remains reserved for T-DCC-006.
 - **Generated Freshness**: Pending T-DCC-006.

@@ -14,10 +14,11 @@ Protocol for maintaining documentation consistency and governance traceability.
 
 ## 2. Requirements and Constraints
 
-- Use the mapped template under `docs/99.templates/templates/` for every new or
-  modified target-stage document under `docs/01.requirements/`, `docs/02.architecture/`,
-  `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/`,
-  `docs/90.references/`, and `docs/98.archive/`.
+- Select the target profile and mapped copyable template through the canonical
+  Stage 99 registry and support contracts for every new or modified
+  target-stage document under `docs/01.requirements/`,
+  `docs/02.architecture/`, `docs/03.specs/`, `docs/04.execution/`,
+  `docs/05.operations/`, `docs/90.references/`, and `docs/98.archive/`.
 - Use only relative links; never use absolute `file://` links.
 - Keep `docs/00.agent-governance/` English-only.
 - Keep root `README.md` and human-facing folder READMEs Korean by default,
@@ -33,7 +34,7 @@ Protocol for maintaining documentation consistency and governance traceability.
   `docs/04.execution/tasks/**` English-only. These documents are technical
   contracts, implementation plans, and execution evidence for agents,
   reviewers, and CI checks.
-- Keep `docs/05.operations/{guides,policies,runbooks,incidents}/**`
+- Keep `docs/05.operations/{guides,policies,runbooks,incidents,releases}/**`
   human-facing and Korean by default. Preserve code identifiers, service names,
   command names, environment variables, Docker profiles, secret IDs, evidence
   labels, and quoted upstream terms in their original form.
@@ -91,6 +92,44 @@ Protocol for maintaining documentation consistency and governance traceability.
   have existed at that base; disappearing deficits are allowed. New documents
   can never use this exception.
 
+### 2.1 Registry-Driven Contract Selection
+
+The
+[document metadata registry](../../99.templates/support/document-metadata-profiles.yaml)
+is the sole machine-readable owner for exact profiles, fields, value rules,
+path matching, relations, serialization, lifecycle behavior, README consumers,
+and exceptions. Stage 00 routes authors to that owner; it does not copy the
+registry schema.
+
+1. Resolve the intended target path and role, then require exactly one registry
+   profile match. Zero matches, overlapping matches, an unsupported path, or an
+   unclear role is blocking ambiguity; record the gap in Stage 04 and escalate
+   instead of choosing the nearest profile.
+2. Use the
+   [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
+   for lifecycle artifacts, the
+   [common document contract](../../99.templates/support/common-document-contract.md)
+   for repository/common artifacts, or the
+   [README profile contract](../../99.templates/support/readme-profile-contract.md)
+   for a `README.md`. These human contracts explain author intent while the
+   registry and checker retain exact executable semantics.
+3. Select the copyable template mapped by the resolved profile, instantiate it
+   for the target path, replace every registered placeholder, and validate the
+   result. Do not infer a template from a similar-looking document or copy
+   machine-readable YAML, GraphQL, or Protobuf templates as Markdown.
+4. For a README, select exactly one README profile before editing. Keep
+   frontmatter absent by default and add or retain consumer-owned metadata only
+   when the matched profile declares a real consumer; do not bulk-add or
+   bulk-remove lifecycle fields by analogy.
+5. Serialize frontmatter keys and `parent_ids` in the deterministic order owned
+   by the registry and checker. Parent list position stabilizes presentation;
+   it never assigns semantic priority. Record only evidence-backed direct
+   parents and escalate ambiguity rather than inventing a relation.
+6. When normalizing historical documents, preserve dated commands, counts,
+   decisions, verdicts, timestamps, and execution results. Normalize only the
+   approved metadata, section envelope, links, and current routing around that
+   payload.
+
 ## 3. Document Type ↔ Template Mapping
 
 | Stage/Folder                                          | Document Type          | Template                                     |
@@ -114,6 +153,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/05.operations/runbooks/`                        | Operations Runbook     | `docs/99.templates/templates/operations/runbook.template.md`      |
 | `docs/05.operations/incidents/YYYY/INC-###-<title>/INC-###-<title>.md` | Incident | `docs/99.templates/templates/operations/incident.template.md` |
 | `docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md` | Postmortem | `docs/99.templates/templates/operations/postmortem.template.md` |
+| `docs/05.operations/releases/YYYY-MM-DD-release-name.md` | Release | `docs/99.templates/templates/operations/release.template.md` |
 | `docs/00.agent-governance/memory/<note>.md`           | Governance Memory Note | `docs/99.templates/templates/governance/memory.template.md`       |
 | `docs/00.agent-governance/memory/progress.md`         | Agent Progress Log     | `docs/99.templates/templates/governance/progress.template.md`     |
 | `docs/90.references/`                                 | Reference              | `docs/99.templates/templates/common/reference.template.md`    |
@@ -141,6 +181,7 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 | `docs/05.operations/policies/**` | Korean human-facing body; control names and evidence identifiers unchanged | Policies define allowed/disallowed operational states for human review. |
 | `docs/05.operations/runbooks/**` | Korean human-facing procedure; commands and expected evidence unchanged | Runbooks support incidents, recovery, rollback, and escalation. |
 | `docs/05.operations/incidents/**` | Korean incident narrative; technical evidence unchanged | Incident records and postmortems preserve operator-readable timelines and actions. |
+| `docs/05.operations/releases/**` | Korean release narrative; artifact identifiers, timestamps, commands, and evidence labels unchanged | Release records preserve evidence for an actual event and remain distinct from deployment runtime. |
 | `docs/90.references/**` | Audience-specific: LLM/generated indexes may be English; human references Korean by default | References support active docs without replacing policy or runtime truth. |
 | `docs/98.archive/**` | Concise tombstone language; preserve original paths, IDs, dates, and titles | Archive docs preserve migration traceability, not active current truth. |
 | `docs/99.templates/**` | Match target stage; template READMEs Korean by default | Templates must not contradict the language contract of copied target documents. |
@@ -148,14 +189,19 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 
 ## 4. Authoring Protocol
 
-1. Identify target stage.
+1. Identify the target stage, path, and document role.
 2. Load `rules/stage-authoring-matrix.md` and follow its stage row.
-3. Load the mapped template before drafting or updating the target document.
-4. Preserve the template contract: required headings, target path guidance,
+3. Resolve exactly one registry profile, load the matching human contract, and
+   select the mapped template before drafting or updating the target document.
+4. Instantiate and preserve the template contract: required headings, target path guidance,
    target-relative links, and one `## Related Documents` section.
-5. Remove all template placeholders before saving.
-6. Cross-link related Requirements, Architecture, Spec, Plan, Task, Operations, Reference, and Incident files.
-7. Run checklist gates from `rules/task-checklists.md`.
+5. Replace all template placeholders and serialize metadata deterministically
+   without treating order as semantic priority.
+6. Preserve historical evidence payloads and fail closed on profile, template,
+   README-consumer, or direct-parent ambiguity.
+7. Cross-link related Requirements, Architecture, Spec, Plan, Task, Operations, Reference, and Incident files.
+8. Run checklist gates from `rules/task-checklists.md` and the metadata checker
+   for the selected change scope.
 
 For `docs/90.references/`, verify that the document is stable reference context, contains source-backed facts, and does not define active policy, runtime truth, runbook procedure, plan, task evidence, or incident timeline.
 
@@ -314,6 +360,10 @@ bucket's purpose-profile contract. Profile compliance is machine-verified by
   `incident.template.md` (active incident record).
 - `incidents/YYYY/INC-###-<title>/postmortem.md` documents use
   `postmortem.template.md` (post-incident review).
+- `releases/YYYY-MM-DD-release-name.md` documents use the registry `release`
+  profile and `release.template.md`; create one only from evidence for an
+  actual release event. A changelog or readiness runbook is not a Release
+  record, and deployment runtime remains separately owned.
 
 A document violating R4 is **INCOMPLETE** regardless of content quality.
 Completion is **PROHIBITED** until all profile checks pass.
@@ -348,3 +398,7 @@ Update this table when a number is consumed or definitively retired.
 - `docs/00.agent-governance/rules/task-checklists.md`
 - `docs/00.agent-governance/scopes/docs.md`
 - `docs/99.templates/README.md`
+- `docs/99.templates/support/document-metadata-profiles.yaml`
+- `docs/99.templates/support/sdlc-document-contract.md`
+- `docs/99.templates/support/common-document-contract.md`
+- `docs/99.templates/support/readme-profile-contract.md`

@@ -17,6 +17,9 @@ implementation surfaces.
 The pack is a reference snapshot. It does not approve policy, runtime,
 provider, CI/CD, Docker Compose, secret, or remote GitHub changes. Missing or
 partial implementation is recorded as gap evidence for later active-stage work.
+Current-state wording is reconciled in this canonical pack in place; dated
+commands, counts, verdicts, and results in earlier snapshots remain historical
+evidence rather than being rewritten as current facts.
 
 ## Category Role
 
@@ -112,6 +115,15 @@ the exact eleven-report / 161-row audit criterion contract. The audit overview
 and eleven criterion leaves form a typed, internally resolved chain; this README
 remains a folder-index exception.
 
+### Contract and Evidence Boundary
+
+This audit consumes the Stage 99 metadata registry, the SDLC/common/README
+human contracts, the metadata checker, and Stage 00 authoring routes. It does
+not redefine their schemas or policies. Current implementation statements also
+separate tracked definitions, dated remote configuration observations, recent
+run evidence, and remote mutation; evidence in one class is not promoted into
+another.
+
 ## How to Work in This Area
 
 1. Keep audit reports source-attributed and evidence-only.
@@ -125,6 +137,8 @@ remains a folder-index exception.
    eleven reports, 161 unique rows, and the complete Spec 123 schema.
 7. Regenerate and freshness-check the frontmatter semantic inventory after
    changing tracked target documents, metadata profiles, or the metadata parser.
+8. Preserve historical payloads and route contract changes to Stage 00/99;
+   update audit wording only after tracked or dated read-only evidence changes.
 
 ## Evidence Freshness Boundary
 
