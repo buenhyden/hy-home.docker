@@ -237,6 +237,18 @@ MACHINE_EXAMPLE_VALUE = re.compile(
     r"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b"
     r")"
 )
+OPENAPI_CONCRETE_HOST = re.compile(
+    r"(?i)https?://(?!__[A-Z][A-Z0-9_]*__)(?:[a-z0-9-]+\.)+[a-z]{2,}"
+)
+OPENAPI_BEARER_VALUE = re.compile(
+    r"(?i)\b(?:bearer|basic|oauth2?|openidconnect)[ \t]+"
+    r"(?!__[A-Z][A-Z0-9_]*__)[A-Za-z0-9._~+/-]+"
+)
+OPENAPI_JWT_VALUE = re.compile(
+    r"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b"
+)
+OPENAPI_AUTH_SCHEMES = frozenset({"basic", "bearer", "oauth", "oauth2", "openidconnect"})
+OPENAPI_CREDENTIAL_VALUE_KEYS = frozenset({"default", "example", "const", "enum"})
 CREDENTIAL_KEY_NAME = re.compile(
     r"(?:^|_)(?:"
     r"api_?key|password|passwd|secret|client_secret|access_token|refresh_token|"
@@ -256,6 +268,10 @@ class FrontmatterError(ValueError):
 
 class ProfileError(ValueError):
     """Raised when the machine-readable profile contract is invalid."""
+
+
+class MachineTemplateParseError(ValueError):
+    """Raised when a machine template cannot be parsed into its safe shape."""
 
 
 class UniqueKeyLoader(yaml.SafeLoader):
@@ -337,6 +353,14 @@ class TransitionOverride:
     evidence_task: str
     approval: str
     reason: str
+
+
+@dataclasses.dataclass(frozen=True)
+class OpenApiInspection:
+    """Safe, value-free result of inspecting a parsed OpenAPI template."""
+
+    concrete_credential_value: bool
+    concrete_format_value: bool
 
 
 class Manifest(dict[str, pathlib.Path]):
@@ -1030,32 +1054,105 @@ def _approved_machine_token(value: object) -> bool:
     return MACHINE_TEMPLATE_TOKEN.fullmatch(candidate) is not None
 
 
-def _openapi_concrete_credential(text: str) -> bool:
+def _openapi_mapping(text: str) -> dict[object, object]:
     try:
         document = _safe_load_unique(text)
-    except (FrontmatterError, yaml.YAMLError, yaml.constructor.ConstructorError):
-        return False
+    except Exception:
+        raise MachineTemplateParseError from None
+    if not isinstance(document, dict):
+        raise MachineTemplateParseError
+    return document
 
-    def inspect(value: object) -> bool:
+
+def _approved_machine_values(value: object) -> bool:
+    if isinstance(value, list):
+        return all(_approved_machine_token(member) for member in value)
+    return _approved_machine_token(value)
+
+
+def _openapi_string_has_concrete_format_value(
+    key: object,
+    value: object,
+    *,
+    security_scheme_context: bool,
+) -> bool:
+    if not isinstance(value, str) or _approved_machine_token(value):
+        return False
+    if (
+        OPENAPI_CONCRETE_HOST.search(value)
+        or OPENAPI_BEARER_VALUE.search(value)
+        or OPENAPI_JWT_VALUE.search(value)
+    ):
+        return True
+    normalized_key = re.sub(r"[^A-Za-z0-9]+", "_", str(key)).strip("_").lower()
+    normalized_value = value.strip().lower()
+    if normalized_key in {"scheme", "auth", "authentication", "authorization"}:
+        return normalized_value in OPENAPI_AUTH_SCHEMES
+    return (
+        security_scheme_context
+        and normalized_key == "type"
+        and normalized_value in OPENAPI_AUTH_SCHEMES
+    )
+
+
+def _inspect_openapi(text: str) -> OpenApiInspection:
+    document = _openapi_mapping(text)
+    concrete_credential = False
+    concrete_format = False
+
+    def inspect(
+        value: object,
+        *,
+        security_scheme_context: bool = False,
+    ) -> None:
+        nonlocal concrete_credential, concrete_format
         if isinstance(value, dict):
             for key, member in value.items():
-                bounded_key = _normalized_credential_key(key)
-                if bounded_key is not None:
-                    if isinstance(member, list):
-                        if any(
-                            not isinstance(item, (dict, list)) and not _approved_machine_token(item)
-                            for item in member
-                        ):
-                            return True
-                    elif not isinstance(member, dict) and not _approved_machine_token(member):
-                        return True
-                if inspect(member):
-                    return True
-        elif isinstance(value, list):
-            return any(inspect(member) for member in value)
-        return False
+                normalized_key = re.sub(r"[^A-Za-z0-9]+", "_", str(key)).strip("_").lower()
+                nested_security_context = security_scheme_context or normalized_key in {
+                    "securityscheme",
+                    "securityschemes",
+                    "security_scheme",
+                    "security_schemes",
+                }
+                credential_key = _normalized_credential_key(key) is not None
+                if credential_key:
+                    if isinstance(member, dict):
+                        for value_key, candidate in member.items():
+                            if (
+                                isinstance(value_key, str)
+                                and value_key.lower() in OPENAPI_CREDENTIAL_VALUE_KEYS
+                                and isinstance(candidate, (str, int, float, bool, list, type(None)))
+                                and not _approved_machine_values(candidate)
+                            ):
+                                concrete_credential = True
+                    elif isinstance(member, (str, int, float, bool, list, type(None))):
+                        if not _approved_machine_values(member):
+                            concrete_credential = True
 
-    return inspect(document)
+                if isinstance(member, list):
+                    for item in member:
+                        if _openapi_string_has_concrete_format_value(
+                            key,
+                            item,
+                            security_scheme_context=nested_security_context,
+                        ):
+                            concrete_format = True
+                        inspect(item, security_scheme_context=nested_security_context)
+                else:
+                    if _openapi_string_has_concrete_format_value(
+                        key,
+                        member,
+                        security_scheme_context=nested_security_context,
+                    ):
+                        concrete_format = True
+                    inspect(member, security_scheme_context=nested_security_context)
+        elif isinstance(value, list):
+            for member in value:
+                inspect(member, security_scheme_context=security_scheme_context)
+
+    inspect(document)
+    return OpenApiInspection(concrete_credential, concrete_format)
 
 
 GRAPHQL_VALUE = r'(?:"(?:\\.|[^"\\])*"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?|true|false|null|[A-Za-z_][A-Za-z0-9_]*)'
@@ -1128,8 +1225,6 @@ def _protobuf_concrete_credential(text: str) -> bool:
 
 def _machine_concrete_credential(path: pathlib.Path, text: str) -> bool:
     suffix = path.as_posix()
-    if suffix.endswith((".template.yaml", ".template.yml")):
-        return _openapi_concrete_credential(text)
     if suffix.endswith(".template.graphql"):
         return _graphql_concrete_credential(text)
     if suffix.endswith(".template.proto"):
@@ -1147,7 +1242,28 @@ def _machine_template_findings(record: Record, text: str) -> list[Finding]:
                 "machine template must contain an explicit uppercase unresolved token",
             )
         )
-    if MACHINE_EXAMPLE_VALUE.search(text) or _machine_concrete_credential(record.path, text):
+    suffix = record.path.as_posix()
+    if suffix.endswith((".template.yaml", ".template.yml")):
+        try:
+            inspection = _inspect_openapi(text)
+        except MachineTemplateParseError:
+            findings.append(
+                _finding(
+                    record,
+                    "machine-template-parse-error",
+                    "machine template could not be parsed as a safe OpenAPI mapping",
+                )
+            )
+            return sorted(set(findings))
+        concrete_value = (
+            inspection.concrete_credential_value or inspection.concrete_format_value
+        )
+    else:
+        concrete_value = MACHINE_EXAMPLE_VALUE.search(text) is not None or _machine_concrete_credential(
+            record.path,
+            text,
+        )
+    if concrete_value:
         findings.append(
             _finding(
                 record,

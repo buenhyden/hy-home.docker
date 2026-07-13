@@ -369,8 +369,21 @@ review, and a separate quality review before its logical commit.
   treating declarations or numeric Protobuf tags as credentials. The
   remediation RED was 41 methods / 21 expected failures; focused GREEN is
   41/41 and the complete metadata suite is 167/167.
-- Implementation status remains In Review. The three fixes await independent
-  re-review; no approval, closure, or remediation commit hash is claimed.
+- The independent full-range re-review of `39809f26...b4af35ee` resolved I-01,
+  I-02, and I-03 and returned Spec FAIL / Quality CHANGES REQUESTED, C0/I1/M0,
+  for I-04. OpenAPI parsing could fail open, credential-owned schema values
+  lost their credential context, and raw `example` matching rejected a valid
+  tokenized OpenAPI value.
+- I-04 remediation adds a typed non-leaking OpenAPI parse boundary, value-free
+  structured inspection, bounded credential context for direct values and
+  `default`/`example`/`const`/`enum`, and parsed format-aware host/auth/JWT
+  checks. OpenAPI no longer uses the raw `example` word detector; the bounded
+  GraphQL/Protobuf raw checks remain.
+- I-04 RED was six named direct-plus-real-CLI methods / 18 expected subtest
+  failures. GREEN is 6/6; expanded focused validation is 54/54 and the complete
+  metadata suite is 173/173. Implementation remains In Review and awaits an
+  independent full-range re-review; no approval, closure, or remediation
+  commit hash is claimed.
 
 ## Review Evidence
 
@@ -381,7 +394,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
 | T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
 | T-TCS-005 | PASS on `34ae2dab...c07160a2` | APPROVED on `34ae2dab...c07160a2` | None; I-01, I-01-R1, and I-02 resolved | Completed |
-| T-TCS-006 | FAIL on `39809f26...9bf5b708`; remediation awaits re-review | CHANGES REQUESTED on `39809f26...9bf5b708`; remediation awaits re-review | C0/I3/M0: I-01 semantic multiplicity/identity, I-02 CommonMark delimiters, I-03 bounded native credential assignments; fixes implemented locally | In Review |
+| T-TCS-006 | FAIL on `39809f26...b4af35ee`; I-04 remediation awaits re-review | CHANGES REQUESTED on `39809f26...b4af35ee`; I-04 remediation awaits re-review | C0/I1/M0: I-01/I-02/I-03 resolved; I-04 fail-closed parsed OpenAPI credential boundary implementation-remediated | In Review |
 | T-TCS-007 | Not run — dependency is in review | Not run — dependency is in review | None recorded | Await T-TCS-006 |
 | Whole branch | Not run — implementation has not completed | Not run — implementation has not completed | None recorded | Await T-TCS-007 |
 
@@ -588,7 +601,13 @@ review, and a separate quality review before its logical commit.
 | Remediation metadata regression | Complete `tests.validation.test_document_metadata` suite | Pass: 167/167 in 64.803 seconds; zero failures and zero errors. |
 | Remediation repository gates | Metadata contracts, explicit-base changed mode, and `TEMPLATE_GATE_BASE=39809f26` repository contracts | Pass: zero metadata violations; selected 4 / violations 0 / exceptions 0 / overrides 0; repository `failures=0`. |
 | Remediation supporting gates | Generated freshness, traceability, alignment, Graphify, Python/Bash syntax, and diff hygiene | Pass: 901 records / 2,025 findings; traceability 46/0; alignment 647 docs / 5,135 links / 0; Graphify 23,430 nodes / 24,817 edges / 1,541 communities with tracked outputs restored; syntax and diff checks pass. |
-| Review state | Task table and review ledger | In Review; remediation awaits independent specification and quality re-review. |
+| Full-range re-review after I-01/I-02/I-03 | Complete range `39809f26...b4af35ee` | Spec FAIL / Quality CHANGES REQUESTED, C0/I1/M0; I-01/I-02/I-03 resolved and I-04 required fail-closed parsed OpenAPI inspection. |
+| I-04 RED | Six named direct and real `check-contracts` CLI methods | Expected failure: 6 methods / 18 subtest failures / 0 errors across malformed, duplicate, constructor, non-mapping, credential value, and tokenized-example boundaries. |
+| I-04 focused GREEN | Exact six methods plus `TemplateBodyContractTests` and `RepositoryContractIntegrationTests` | Pass: 6/6 in 3.624 seconds and expanded 54/54 in 23.726 seconds. |
+| I-04 metadata regression | Complete `tests.validation.test_document_metadata` suite | Pass: 173/173 in 68.172 seconds. |
+| I-04 repository gates | Metadata contracts, explicit-base changed mode, and `TEMPLATE_GATE_BASE=39809f26` repository contracts | Pass: zero metadata violations; selected 4 / violations 0 / exceptions 0 / overrides 0; repository `failures=0`. |
+| I-04 supporting gates | Generated freshness, traceability, alignment, Graphify, Python/Bash syntax, residue, and diff hygiene | Pass: 901 records / 2,025 findings; traceability 46/0; alignment 647 docs / 5,135 links / 0; Graphify 23,444 nodes / 24,856 edges / 1,545 communities with tracked outputs restored; syntax, residue, and diff checks pass. |
+| Review state | Task table and review ledger | In Review; I-04 remediation awaits independent specification and quality re-review. |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -631,6 +650,7 @@ have not completed.
 | Closure unit — subject `docs(task): close operations forms task`; self hash intentionally omitted | Record completed independent verdict and close T-TCS-005 | Metadata changed-mode and diff hygiene; evidence-only scope |
 | Planned unit — subject `test(validation): enforce template role contracts`; self hash intentionally omitted | Task 6 executable Markdown/machine contracts, changed-target gate, shell delegation, tests, and evidence | RED 39 methods / 9 expected failing methods; final focused GREEN 44/44; metadata 155/155; reviews not yet run |
 | Planned remediation unit — subject `fix(validation): preserve exact body deficits`; self hash intentionally omitted | Task 6 I-01/I-02/I-03 exact private multiset comparison, CommonMark-bounded scanning, native credential checks, tests, and evidence | First review FAIL/CHANGES REQUESTED C0/I3/M0; remediation RED 41/21; focused 41/41; metadata 167/167; contracts and supporting gates pass; re-review pending |
+| Planned I-04 remediation unit — subject `fix(validation): fail closed on OpenAPI inspection`; self hash intentionally omitted | Task 6 typed non-leaking OpenAPI parse boundary, bounded credential-owned value inspection, format-aware parsed checks, direct/CLI regressions, and evidence | Full-range re-review FAIL/CHANGES REQUESTED C0/I1/M0 with I-01/I-02/I-03 resolved; I-04 RED 6 methods / 18 failures; GREEN 6/6, focused 54/54, metadata 173/173; contracts and supporting gates pass; re-review pending |
 
 Later review-fix and implementation commits will be appended as Tasks 6-7 close.
 

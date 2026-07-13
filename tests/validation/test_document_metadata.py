@@ -2344,6 +2344,158 @@ class TemplateBodyContractTests(unittest.TestCase):
                 codes = self.body_finding_codes(record, text, changed_boundary=False)
                 self.assertNotIn("machine-template-example-value", codes)
 
+    def test_openapi_parse_failures_are_static_and_fail_closed(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        cases = (
+            (
+                "malformed",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\npaths: [fixture-parse-leak\n",
+                "fixture-parse-leak",
+            ),
+            (
+                "duplicate-key",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\ninfo: fixture-first\ninfo: fixture-duplicate-leak\n",
+                "fixture-duplicate-leak",
+            ),
+            (
+                "constructor",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\nx-value: !!python/object:fixture-constructor-leak {}\n",
+                "fixture-constructor-leak",
+            ),
+            (
+                "non-mapping-root",
+                "- __API_TITLE__\n- fixture-root-leak\n",
+                "fixture-root-leak",
+            ),
+        )
+        for label, text, private_value in cases:
+            with self.subTest(case=label):
+                findings = metadata._machine_template_findings(record, text)
+                parse_findings = [
+                    finding
+                    for finding in findings
+                    if finding.code == "machine-template-parse-error"
+                ]
+                self.assertEqual(1, len(parse_findings))
+                self.assertEqual(
+                    "machine template could not be parsed as a safe OpenAPI mapping",
+                    parse_findings[0].message,
+                )
+                self.assertNotIn(private_value, repr(findings))
+
+    def test_openapi_credential_schema_value_keywords_reject_concrete_values(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        values = {
+            "default": "fixture-default-leak",
+            "example": "fixture-example-leak",
+            "const": "fixture-const-leak",
+            "enum": "[fixture-enum-leak, __PASSWORD_SECONDARY__]",
+        }
+        for keyword, value in values.items():
+            with self.subTest(keyword=keyword):
+                text = (
+                    "openapi: 3.1.0\n"
+                    "x-template-token: __API_TITLE__\n"
+                    "components:\n"
+                    "  schemas:\n"
+                    "    Login:\n"
+                    "      properties:\n"
+                    "        password:\n"
+                    "          type: string\n"
+                    f"          {keyword}: {value}\n"
+                )
+                findings = metadata._machine_template_findings(record, text)
+                self.assertIn(
+                    "machine-template-example-value",
+                    {finding.code for finding in findings},
+                )
+                self.assertNotIn("fixture-", repr(findings))
+        with self.subTest(keyword="direct-list"):
+            findings = metadata._machine_template_findings(
+                record,
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "access_token: [__ACCESS_TOKEN__, fixture-direct-list-leak]\n",
+            )
+            self.assertIn(
+                "machine-template-example-value",
+                {finding.code for finding in findings},
+            )
+            self.assertNotIn("fixture-direct-list-leak", repr(findings))
+
+    def test_openapi_credential_context_accepts_exact_tokens_and_schema_only_fields(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        cases = (
+            (
+                "direct-and-list-tokens",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "x-api-key: __API_KEY__\n"
+                "access_token: [__ACCESS_TOKEN__, __REFRESH_TOKEN__]\n",
+            ),
+            (
+                "credential-schema-tokens",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          default: __PASSWORD_DEFAULT__\n"
+                "          example: __PASSWORD_EXAMPLE__\n"
+                "          const: __PASSWORD_CONST__\n"
+                "          enum: [__PASSWORD_PRIMARY__, __PASSWORD_SECONDARY__]\n",
+            ),
+            (
+                "schema-only-and-unrelated-default",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      required: [password]\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          format: password\n"
+                "          description: caller-supplied credential\n"
+                "        displayName:\n"
+                "          type: string\n"
+                "          default: fixture display name\n",
+            ),
+            (
+                "standard-example-token",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          example: __PASSWORD_EXAMPLE__\n",
+            ),
+        )
+        for label, text in cases:
+            with self.subTest(case=label):
+                codes = {
+                    finding.code
+                    for finding in metadata._machine_template_findings(record, text)
+                }
+                self.assertNotIn("machine-template-parse-error", codes)
+                self.assertNotIn("machine-template-example-value", codes)
+
         for relative_path in (
             "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
             "docs/99.templates/templates/spec-contracts/schema.template.graphql",
@@ -3180,6 +3332,154 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 f"machine-template-example-value: {relative_path}",
                 result.stdout,
             )
+
+    def test_repository_contracts_fail_closed_on_openapi_parse_boundaries_without_leaks(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        cases = (
+            (
+                "malformed",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\npaths: [fixture-parse-leak\n",
+                "fixture-parse-leak",
+            ),
+            (
+                "duplicate-key",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\ninfo: fixture-first\ninfo: fixture-duplicate-leak\n",
+                "fixture-duplicate-leak",
+            ),
+            (
+                "constructor",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\nx-value: !!python/object:fixture-constructor-leak {}\n",
+                "fixture-constructor-leak",
+            ),
+            (
+                "non-mapping-root",
+                "- __API_TITLE__\n- fixture-root-leak\n",
+                "fixture-root-leak",
+            ),
+        )
+        for label, text, private_value in cases:
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                (root / relative_path).write_text(text, encoding="utf-8")
+                result = self.run_contracts(root, profiles)
+                rendered = result.stdout + result.stderr
+                self.assertEqual(1, result.returncode, rendered)
+                self.assertIn(
+                    f"machine-template-parse-error: {relative_path}: "
+                    "machine template could not be parsed as a safe OpenAPI mapping",
+                    result.stdout,
+                )
+                self.assertNotIn(private_value, rendered)
+                self.assertNotRegex(rendered, r"(?i)(line|column) [0-9]+")
+
+    def test_repository_contracts_bound_openapi_credential_value_keywords(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        values = {
+            "default": "fixture-default-leak",
+            "example": "fixture-example-leak",
+            "const": "fixture-const-leak",
+            "enum": "[fixture-enum-leak, __PASSWORD_SECONDARY__]",
+        }
+        for keyword, value in values.items():
+            with self.subTest(keyword=keyword), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                (root / relative_path).write_text(
+                    "openapi: 3.1.0\n"
+                    "x-template-token: __API_TITLE__\n"
+                    "components:\n"
+                    "  schemas:\n"
+                    "    Login:\n"
+                    "      properties:\n"
+                    "        password:\n"
+                    "          type: string\n"
+                    f"          {keyword}: {value}\n",
+                    encoding="utf-8",
+                )
+                result = self.run_contracts(root, profiles)
+                rendered = result.stdout + result.stderr
+                self.assertEqual(1, result.returncode, rendered)
+                self.assertIn(
+                    f"machine-template-example-value: {relative_path}",
+                    result.stdout,
+                )
+                self.assertNotIn("fixture-", rendered)
+        with self.subTest(keyword="direct-list"), tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            (root / relative_path).write_text(
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "access_token: [__ACCESS_TOKEN__, fixture-direct-list-leak]\n",
+                encoding="utf-8",
+            )
+            result = self.run_contracts(root, profiles)
+            rendered = result.stdout + result.stderr
+            self.assertEqual(1, result.returncode, rendered)
+            self.assertIn(
+                f"machine-template-example-value: {relative_path}",
+                result.stdout,
+            )
+            self.assertNotIn("fixture-direct-list-leak", rendered)
+
+    def test_repository_contracts_accept_safe_openapi_credential_shapes(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        cases = (
+            (
+                "exact-tokens",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "x-api-key: __API_KEY__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          default: __PASSWORD_DEFAULT__\n"
+                "          example: __PASSWORD_EXAMPLE__\n"
+                "          const: __PASSWORD_CONST__\n"
+                "          enum: [__PASSWORD_PRIMARY__, __PASSWORD_SECONDARY__]\n",
+            ),
+            (
+                "schema-only-unrelated-default",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      required: [password]\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          format: password\n"
+                "          description: caller-supplied credential\n"
+                "        displayName:\n"
+                "          type: string\n"
+                "          default: fixture display name\n",
+            ),
+            (
+                "standard-example-token",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      properties:\n"
+                "        password:\n"
+                "          example: __PASSWORD_EXAMPLE__\n",
+            ),
+        )
+        for label, text in cases:
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                (root / relative_path).write_text(text, encoding="utf-8")
+                result = self.run_contracts(root, profiles)
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_changed_checker_enforces_body_contract_on_new_typed_target(self) -> None:
         relative_path = "docs/01.requirements/901-fixture.md"
