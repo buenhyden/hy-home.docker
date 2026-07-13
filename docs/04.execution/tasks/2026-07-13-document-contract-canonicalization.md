@@ -446,6 +446,13 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   `0`, unexpected `0`; before, after, changed, and unexpected path sets were
   all empty. The empty before/after snapshots also establish zero after-only
   new paths. No hook-managed edit requires a separate commit.
+- **Controlled wrapper rerun**: after controller commit `ecac0fb2` captured the
+  WRE-10 current-lifecycle correction, regenerated matrix, and pre-closure
+  evidence, the same exact approved command ran once more from a clean
+  worktree. Wrapper exit `0`, hook exit `0`, and snapshot PASS; before `0`,
+  after `0`, changed `0`, and unexpected `0`, with all reported path sets
+  empty. Empty before/after snapshots also establish zero after-only new paths.
+  No hook-managed edit or unexpected path exists.
 - **Observation boundary**: the wrapper evidence covers only Git-visible,
   non-ignored repository status. It does not observe ignored paths or writes
   outside the repository and is not a process or filesystem sandbox.
@@ -470,7 +477,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
 | T-DCC-005 | `bded61ce`, `556ba98d`, `dc75443b` | PASS | Approved | Round 1 C0/I2/M0 and re-review C0/I1/M0; all template/array bypasses resolved; final C0/I0/M0 | `review-ac63469a..dc75443b.diff`; combined reviewer final verdict | Done |
-| T-DCC-006 | `fd0dfe57` | Implementer PASS | Self-review C0/I0/M0 | Generated outputs, full bundle, controlled wrapper, and current WRE-10 lifecycle truth pass | Whole-branch pre-closure review remains pending | Review Pending |
+| T-DCC-006 | `fd0dfe57`, `ecac0fb2` | Implementer PASS | Self-review C0/I0/M0 | Generated outputs, full bundle, both clean-boundary wrapper attempts, and current WRE-10 lifecycle truth pass | Whole-branch pre-closure review remains pending | Review Pending |
 
 ## Verification Summary
 
@@ -502,7 +509,8 @@ process/filesystem sandbox.
 
 | Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |
 | --- | --- | ---: | --- | --- | --- |
-| `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | `0` (`hook_exit=0`; snapshot PASS) | Before `(none)`; after `(none)`; new `(none)`; changed `(none)`; unexpected `(none)` | Accepted: no hook edit and no unexpected Git-visible, non-ignored path | N/A; exact approved gate ran from clean commit `fd0dfe57` |
+| Attempt 1 — `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | `0` (`hook_exit=0`; snapshot PASS) | Before `(none)`; after `(none)`; new `(none)`; changed `(none)`; unexpected `(none)` | Accepted: no hook edit and no unexpected Git-visible, non-ignored path | N/A; exact approved gate ran from clean commit `fd0dfe57` |
+| Attempt 2 — `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | `0` (`hook_exit=0`; snapshot PASS) | Before `(none)`; after `(none)`; new `(none)`; changed `(none)`; unexpected `(none)` | Accepted: no hook edit and no unexpected Git-visible, non-ignored path | N/A; exact approved rerun after lifecycle correction ran from clean commit `ecac0fb2` |
 
 ## Deviation Notes
 
