@@ -662,6 +662,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md](../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md](../../04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md](../../04.execution/tasks/2026-07-13-document-contract-canonicalization.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md](../../04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs

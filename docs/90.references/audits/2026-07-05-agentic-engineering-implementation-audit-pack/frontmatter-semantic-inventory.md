@@ -39,7 +39,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 901
+- **Tracked records**: 902
 - **Records with findings**: 546
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
@@ -62,7 +62,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `reference` | 30 |
 | `runbook` | 61 |
 | `spec` | 55 |
-| `task` | 116 |
+| `task` | 117 |
 | `template-source` | 23 |
 
 ## Finding Summary
@@ -566,6 +566,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md` | `task` | allowed-syntax | valid | parents=resolved:2; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
 | `docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md` | `task` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
 | `docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md` | `task` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
+| `docs/04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md` | `task` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
 | `docs/04.execution/tasks/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/05.operations/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/05.operations/guides/00-workspace/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
