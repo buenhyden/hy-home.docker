@@ -1295,7 +1295,10 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         except (OSError, UnicodeError) as error:
             findings.append(Finding(path.as_posix(), "readme-unreadable", str(error)))
             continue
-        record = _record_from_text(path, text)
+        record = dataclasses.replace(
+            _record_from_text(path, text),
+            artifact_type=infer_artifact_type(path),
+        )
         matches = matching_readme_profiles(path, profiles)
         if not matches:
             findings.append(Finding(path.as_posix(), "readme-unclassified", "tracked README has no profile"))

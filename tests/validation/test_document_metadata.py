@@ -1125,6 +1125,36 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 self.assertEqual(expected_exit, result.returncode, result.stdout + result.stderr)
                 self.assertIn(expected_output, result.stdout)
 
+    def test_repository_contracts_keep_readme_profile_identity_when_generated_by_is_present(self) -> None:
+        cases = (
+            (
+                "forbidden root README",
+                "README.md",
+                "readme-frontmatter-forbidden: README.md",
+            ),
+            (
+                "optional releases README",
+                "docs/05.operations/releases/README.md",
+                "readme-frontmatter-key: docs/05.operations/releases/README.md",
+            ),
+        )
+        for label, path_text, expected_output in cases:
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                path = root / path_text
+                body = path.read_text(encoding="utf-8")
+                if body.startswith("---\n"):
+                    closing = body.find("\n---\n", 4)
+                    self.assertNotEqual(-1, closing)
+                    body = body[closing + len("\n---\n") :].lstrip("\n")
+                path.write_text(
+                    "---\ngenerated_by: scripts/example.py\n---\n\n" + body,
+                    encoding="utf-8",
+                )
+                result = self.run_contracts(root, profiles)
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertIn(expected_output, result.stdout)
+
     def test_typed_markdown_template_mapping_is_complete_and_consistent(self) -> None:
         source = "docs/99.templates/templates/spec-contracts/api-spec.template.md"
         with tempfile.TemporaryDirectory() as directory:

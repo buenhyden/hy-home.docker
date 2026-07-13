@@ -556,6 +556,27 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   findings are fixed, the required validation bundle passes, and a fresh
   independent post-closure review approves handoff. No approval or completion
   is claimed by this reopening.
+- **Post-closure I-01 RED**: the focused
+  `test_repository_contracts_keep_readme_profile_identity_when_generated_by_is_present`
+  test failed both required subcases before the fix. A root `README.md` and
+  `docs/05.operations/releases/README.md`, each containing only
+  `generated_by: scripts/example.py`, both returned
+  `metadata repository contracts: violations=0` instead of their path-derived
+  forbidden/optional README findings.
+- **Post-closure I-01 GREEN**: repository-contract README discovery now
+  replaces only the contract-local record profile with the path-inferred
+  `readme` identity before validation. The shared `_record_from_text()`
+  generated-document inference remains unchanged for inventory and metadata
+  validation outside this README contract boundary. The new test, the existing
+  README-frontmatter test, and the generated/inventory semantic-state test pass
+  `3/3`; the full metadata module passes `104/104` with the required `-q`
+  command. Unclassified and ambiguous README paths still bypass record
+  validation only to emit their existing fail-closed repository findings.
+- **Post-closure I-01 Graphify**: `graphify update .` completed after the
+  checker change at `23,009` nodes, `24,062` edges, and `1,541` communities.
+  Both tracked Graphify snapshots were restored as unrelated generated
+  collateral. The advisory result was corroborated against the tracked checker,
+  adversarial tests, Stage 00 governance, Spec 129, and this active Plan/Task.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
