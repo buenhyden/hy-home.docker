@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: plan:2026-07-13-document-contract-canonicalization
 artifact_type: plan
 parent_ids:
@@ -192,7 +192,7 @@ or `parent_ids` are not deterministically serialized. README path
 classification must return exactly one declared profile or a deterministic
 unclassified/ambiguous error; it must not rewrite README files.
 
-- [ ] **Step 1: Add failing schema and behavior fixtures**
+- [x] **Step 1: Add failing schema and behavior fixtures**
 
 Add focused tests covering:
 
@@ -212,7 +212,7 @@ tracked `README.md` files with `git ls-files -z`, assert one profile match per
 path, and assert that the fixture neither modifies files nor infers a consumer
 from `status` alone.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```bash
 python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests tests.validation.test_document_metadata.MetadataValidationTests tests.validation.test_document_metadata.ReadmeProfileTests -v
@@ -221,7 +221,7 @@ python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests t
 Expected: failure because the three registry keys and their parser/validation
 semantics do not yet exist.
 
-- [ ] **Step 3: Extend the registry exactly once**
+- [x] **Step 3: Extend the registry exactly once**
 
 Under `common`, add the exact twelve-key `frontmatter_order`. Add top-level
 `document_families` with the Spec 129 `sdlc` and `common` members. Add
@@ -235,7 +235,7 @@ consumer behavior, required/optional/forbidden headings, allowed local-content
 role, and canonical shared-rule owner. Use a more-specific-path-wins rule only
 when it is encoded and tested; otherwise reject overlapping globs.
 
-- [ ] **Step 4: Implement fail-closed parser and validation behavior**
+- [x] **Step 4: Implement fail-closed parser and validation behavior**
 
 Validate types, non-empty strings, unique members, known profile references,
 exact frontmatter-order membership, safe repository-relative patterns, and
@@ -247,7 +247,7 @@ findings and cannot be used to manufacture order.
 Do not reinterpret YAML mapping order as semantic priority and do not change
 the report/check command exit contracts.
 
-- [ ] **Step 5: Run GREEN and compatibility checks**
+- [x] **Step 5: Run GREEN and compatibility checks**
 
 ```bash
 python3 -m unittest tests.validation.test_document_metadata -v
@@ -259,7 +259,7 @@ git diff --check
 Expected: focused module passes; changed/active modes retain their existing
 interfaces; no target README or historical corpus file is rewritten.
 
-- [ ] **Step 6: Review and commit**
+- [x] **Step 6: Review and commit**
 
 Run Graphify because Python code changed, restore unrelated graph collateral,
 complete the Task 1 implementer self-review, obtain Spec PASS and Quality
@@ -296,7 +296,7 @@ target after registered placeholders are replaced. Release routes to
 `docs/05.operations/releases/YYYY-MM-DD-release-name.md`, uses profile `release`,
 and requires real event evidence; this task creates no release leaf.
 
-- [ ] **Step 1: Add failing complete-template fixtures**
+- [x] **Step 1: Add failing complete-template fixtures**
 
 Extend `TemplateMetadataTests` so the expected mapping includes the five
 Markdown spec-child templates as `spec`, the harness task template as `task`,
@@ -307,7 +307,7 @@ replaces registered placeholders, supplies a valid parent manifest, and passes
 Add route assertions for template selection, Stage 00 authoring matrix, Stage
 05 releases index, and operations/template catalogs.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```bash
 python3 -m unittest tests.validation.test_document_metadata.TemplateMetadataTests -v
@@ -316,7 +316,7 @@ python3 -m unittest tests.validation.test_document_metadata.TemplateMetadataTest
 Expected: failure for the six unmapped existing Markdown templates and the
 missing Release template/routing.
 
-- [ ] **Step 3: Type existing Markdown templates**
+- [x] **Step 3: Type existing Markdown templates**
 
 For `agent-design.template.md`, `api-spec.template.md`,
 `data-model.template.md`, `service.template.md`, and `tests.template.md`, add
@@ -325,7 +325,7 @@ contract sections. Type `harness-task-contract.template.md` as `task`, retain
 its harness-specific approval/evidence sections, and remove template-source
 instructions that conflict with target validation.
 
-- [ ] **Step 4: Add Release as one coordinated contract surface**
+- [x] **Step 4: Add Release as one coordinated contract surface**
 
 Create the Release template with unique sections for identity/scope, included
 changes, artifacts, validation, approvals, rollout/rollback, outcome, known
@@ -337,7 +337,7 @@ The releases index must state that changelog/release-readiness evidence is not
 an executed release record and that deployment runtime remains owned by Spec
 127 or a later approved runtime chain.
 
-- [ ] **Step 5: Run GREEN and template contract checks**
+- [x] **Step 5: Run GREEN and template contract checks**
 
 ```bash
 python3 -m unittest tests.validation.test_document_metadata.TemplateMetadataTests -v
@@ -351,7 +351,7 @@ Expected: every typed Markdown leaf has exactly one target mapping; no
 machine-readable YAML/GraphQL/Proto template receives Markdown frontmatter; no
 Release record is created.
 
-- [ ] **Step 6: Review and commit**
+- [x] **Step 6: Review and commit**
 
 Obtain separate Spec and quality approval, then commit the coordinated surface:
 
@@ -384,7 +384,7 @@ git commit -m "feat(docs): complete typed template and release routing"
 contracts explain family-specific authoring and README profile selection
 without copying the registry or hiding policy in catalog READMEs.
 
-- [ ] **Step 1: Capture source and preservation baseline**
+- [x] **Step 1: Capture source and preservation baseline**
 
 Record the current reviewed dates, source links, and any dated counts or
 verdicts in the four research files. Re-open and verify the official YAML
@@ -392,7 +392,7 @@ verdicts in the four research files. Re-open and verify the official YAML
 CommonMark/GFM, GitHub required-check/ruleset, and deployment-environment
 sources. Use primary sources only for normative claims.
 
-- [ ] **Step 2: Write the three ownership-separated contracts**
+- [x] **Step 2: Write the three ownership-separated contracts**
 
 The SDLC contract defines roles and lifecycle for PRD, ARD, ADR, Spec and
 children, Plan, Task, Guide, Policy, Runbook, Incident, Postmortem, and
@@ -405,14 +405,14 @@ content, and shared-rule links.
 Each document links to the registry as the sole machine owner and avoids
 duplicating complete key arrays or validator logic.
 
-- [ ] **Step 3: Reconcile existing support documents**
+- [x] **Step 3: Reconcile existing support documents**
 
 Remove contradictory or duplicate-purpose prose, correct parent serialization
 language, add Release coverage, and route family/README guidance to the new
 canonical owners. Keep template governance about authoring/review and template
 contract about shape/instantiation. Keep support README as catalog routing.
 
-- [ ] **Step 4: Update the canonical research pack in place**
+- [x] **Step 4: Update the canonical research pack in place**
 
 Add source-backed analysis of typed, consumer-specific metadata; deterministic
 serialization versus semantic meaning; content-type separation; README as
@@ -421,7 +421,7 @@ migration/enforcement. Preserve unrelated provider/model and runtime research,
 dated findings, commands, and historical evidence. Do not create a 2026-07-13
 duplicate pack.
 
-- [ ] **Step 5: Validate ownership and preservation**
+- [x] **Step 5: Validate ownership and preservation**
 
 ```bash
 rg -n 'https://yaml.org/spec/1.2.2/|docs.github.com/.+yaml-frontmatter|diataxis.fr|spec.commonmark.org|github.github.com/gfm' docs/99.templates/support docs/90.references/research/2026-07-05-agentic-research-pack-refresh
@@ -435,7 +435,7 @@ Expected: official sources are present; placeholder scan is empty; historical
 payload is preserved; no support/catalog README becomes a duplicate policy
 owner.
 
-- [ ] **Step 6: Review and commit**
+- [x] **Step 6: Review and commit**
 
 Obtain independent documentation/spec review, then commit:
 
@@ -467,7 +467,7 @@ contracts; it does not copy Stage 99 schemas. The audit reports current
 implementation and gaps; it does not own rules. The 11-report/161-row contract
 and all unrelated criterion states remain stable.
 
-- [ ] **Step 1: Reproduce the exact pre-change audit baseline**
+- [x] **Step 1: Reproduce the exact pre-change audit baseline**
 
 ```bash
 python3 scripts/validation/audit_criterion_contract.py
@@ -478,7 +478,7 @@ rg -n 'parent_ids|Release|README profile|_workspace|template' docs/90.references
 Expected: 11 reports, 161 rows, and the stale/partial wording identified in
 Spec 129 without changing historical snapshot packs.
 
-- [ ] **Step 2: Make Stage 00 a precise consumer**
+- [x] **Step 2: Make Stage 00 a precise consumer**
 
 Update the documentation protocol to require registry-driven profile
 selection, template instantiation, README profile selection, deterministic
@@ -486,7 +486,7 @@ parent serialization, historical-payload preservation, and fail-closed
 ambiguity handling. Link to the three human contracts and the registry rather
 than copying full key/profile definitions.
 
-- [ ] **Step 3: Correct canonical audit truth**
+- [x] **Step 3: Correct canonical audit truth**
 
 Describe Release as profile/checker route plus newly implemented template and
 routing but no event record. Describe README profiles as an implemented
@@ -512,7 +512,7 @@ Change criterion state/depth/disposition only when the completed Tasks 1-3
 provide direct tracked evidence. Do not infer runtime, remote, provider-global,
 model entitlement, deployment, or corpus migration state.
 
-- [ ] **Step 4: Validate audit invariants**
+- [x] **Step 4: Validate audit invariants**
 
 ```bash
 python3 scripts/validation/audit_criterion_contract.py
@@ -525,7 +525,7 @@ git diff --check
 Expected: 11/161 remains exact; semantic closure assertions remain green; no
 dated 2026-07-03/04 snapshot or superseded 2026-07-07 pack changes.
 
-- [ ] **Step 5: Review and commit**
+- [x] **Step 5: Review and commit**
 
 Obtain an independent evidence-precision review, then commit:
 
@@ -552,7 +552,7 @@ commands must fail closed when registry, template mapping, README profile
 coverage, Release routing, or human/machine ownership drifts. It must not enable
 whole-corpus blocking.
 
-- [ ] **Step 1: Add failing integration assertions**
+- [x] **Step 1: Add failing integration assertions**
 
 Add tests that mutate a temporary repository or contract fixture and prove the
 gate rejects:
@@ -566,7 +566,7 @@ gate rejects:
   is required; and
 - any attempt to include `_workspace` in docs metadata inventory inference.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```bash
 python3 -m unittest tests.validation.test_document_metadata -v
@@ -576,7 +576,7 @@ bash scripts/validation/check-repo-contracts.sh
 Expected: new adversarial fixtures fail before repository enforcement is
 added, while the unmodified repository baseline remains otherwise green.
 
-- [ ] **Step 3: Integrate the contract in one existing gate**
+- [x] **Step 3: Integrate the contract in one existing gate**
 
 Extend the existing repository-contract sections to load the registry through
 the metadata checker or its shared parser, require complete typed Markdown
@@ -589,7 +589,7 @@ the read-only `repo-contracts` job. Change the workflow only if a test proves a
 missing route; do not add permissions, events, dependencies, environments, or
 remote claims.
 
-- [ ] **Step 4: Run GREEN and workflow security checks**
+- [x] **Step 4: Run GREEN and workflow security checks**
 
 ```bash
 python3 -m unittest tests.validation.test_document_metadata -v
@@ -604,7 +604,7 @@ git diff --check
 Expected: all tests and contracts pass; actionlint has no errors; zizmor has no
 new unsuppressed findings; workflow permissions and events are unchanged.
 
-- [ ] **Step 5: Review and commit**
+- [x] **Step 5: Review and commit**
 
 Run Graphify because validation code changed, restore unrelated graph output,
 obtain separate Spec and quality approval, then commit:
@@ -634,7 +634,7 @@ controlled wrapper observes only Git-visible, non-ignored repository paths.
 Closure preserves the final corpus baseline as advisory and records all later
 program waves as pending.
 
-- [ ] **Step 1: Regenerate owner-managed evidence**
+- [x] **Step 1: Regenerate owner-managed evidence**
 
 ```bash
 python3 scripts/validation/check-document-metadata.py --mode report --output docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
@@ -645,7 +645,7 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh
 
 Review the generated diffs and reject unexpected handwritten-content changes.
 
-- [ ] **Step 2: Run the complete local validation bundle**
+- [x] **Step 2: Run the complete local validation bundle**
 
 ```bash
 python3 -m unittest tests.validation.test_document_metadata -v
@@ -666,7 +666,7 @@ git diff --check
 Expected: all commands pass, audit remains 11/161, and repository contracts
 report `failures=0`.
 
-- [ ] **Step 3: Run the controlled all-files gate from a clean worktree**
+- [x] **Step 3: Run the controlled all-files gate from a clean worktree**
 
 First commit all accepted implementation/generated changes except the final
 evidence/lifecycle update. Confirm `git status --short` is empty, then run:
@@ -679,14 +679,14 @@ Record command, exit status, Git-visible modified/new/unexpected paths, review
 disposition, and observation boundary in the task ledger. Stop on any
 unexpected path; do not clean or hide it.
 
-- [ ] **Step 4: Obtain the pre-closure whole-branch review**
+- [x] **Step 4: Obtain the pre-closure whole-branch review**
 
 Create a review package for `e2954cc3..HEAD`. Give a fresh, most-capable
 reviewer Spec 129, this plan, the task evidence, the exact diff package, all
 per-task review verdicts, and any remaining Minor findings. Require Spec PASS,
 Quality APPROVED, Critical 0, and Important 0 before closure.
 
-- [ ] **Step 5: Close lifecycle and commit**
+- [x] **Step 5: Close lifecycle and commit**
 
 After approval, set Spec/Plan/Task status to `completed`, check every completion
 criterion, add final validation/review evidence, update Stage 03/04 indexes and
@@ -767,23 +767,23 @@ waves still explicitly pending.
 
 ## Completion Criteria
 
-- [ ] Registry contains and validates the exact three extension keys.
-- [ ] Canonical frontmatter and parent serialization semantics are tested.
-- [ ] Every tracked README maps to exactly one declared profile without bulk
+- [x] Registry contains and validates the exact three extension keys.
+- [x] Canonical frontmatter and parent serialization semantics are tested.
+- [x] Every tracked README maps to exactly one declared profile without bulk
       metadata edits.
-- [ ] Every copyable typed Markdown template maps and instantiates correctly.
-- [ ] Release template and routing exist without a fictional Release record.
-- [ ] SDLC, common, and README human contracts have distinct ownership.
-- [ ] Canonical research is revalidated in place against official sources.
-- [ ] Stage 00 routing and canonical audit agree with current implementation.
-- [ ] `_workspace` is covered by the audit and remains independently enforced.
-- [ ] Existing repository/CI gates fail closed on contract drift without
+- [x] Every copyable typed Markdown template maps and instantiates correctly.
+- [x] Release template and routing exist without a fictional Release record.
+- [x] SDLC, common, and README human contracts have distinct ownership.
+- [x] Canonical research is revalidated in place against official sources.
+- [x] Stage 00 routing and canonical audit agree with current implementation.
+- [x] `_workspace` is covered by the audit and remains independently enforced.
+- [x] Existing repository/CI gates fail closed on contract drift without
       corpus-wide blocking.
-- [ ] Full validation, generated freshness, controlled wrapper, per-task
+- [x] Full validation, generated freshness, controlled wrapper, per-task
       reviews, and whole-branch review pass.
-- [ ] No runtime, secret, deployment, ruleset, environment, provider-global,
+- [x] No runtime, secret, deployment, ruleset, environment, provider-global,
       model-policy, remote branch-protection, or broad corpus mutation occurs.
-- [ ] Tasks 1-5 have logical commits; Task 6 has separate generated/pre-closure
+- [x] Tasks 1-5 have logical commits; Task 6 has separate generated/pre-closure
       and lifecycle-closure commits; durable evidence records every review.
 
 ## Related Documents
