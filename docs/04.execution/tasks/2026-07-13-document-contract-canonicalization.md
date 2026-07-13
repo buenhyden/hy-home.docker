@@ -65,7 +65,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Done |
 | T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Done |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Done |
-| T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Todo |
+| T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Review Pending |
 | T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Full bundle, wrapper, final review | QA / Documentation Lead | Todo |
 
 ## Phase View
@@ -316,13 +316,52 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   The reviewer reconfirmed T-AHC-002/T-DCC-004 lifecycle truth, DML-12-only
   promotion, 11/161 and 68/68/14/2/9, and remote evidence-class separation.
 
+### T-DCC-005 Implementation Evidence
+
+- **RED**: the new `RepositoryContractIntegrationTests` initially returned nine
+  assertion failures and one missing-API error because
+  `check-document-metadata.py` had no `check-contracts` mode or repository
+  contract API. The existing repository baseline remained green outside the
+  new assertions.
+- **GREEN**: the focused adversarial class passes `6/6`; the full metadata
+  module passes `99/99`; and full validation discovery passes `143/143`.
+  Registry-key drift, README overlap/unclassified paths, typed-template mapping
+  gaps and type drift, all three Release routes, copied full registry arrays,
+  and `_workspace` inventory coupling fail closed in isolated fixtures.
+- **Integrated gate**: `check-repo-contracts.sh` invokes the metadata checker's
+  loaded registry through `--mode check-contracts` and reports
+  `metadata repository contracts: violations=0`. The overall repository gate
+  reaches only three known generated-freshness failures owned by T-DCC-006:
+  LLM Wiki index/coverage, the semantic metadata inventory, and the audit
+  implementation matrix. No generated output was refreshed here.
+- **CI routing**: `.github/workflows/ci-quality.yml` was not changed. Its
+  existing read-only `repo-contracts` job already runs changed/new metadata and
+  `check-repo-contracts.sh`; no event, permission, dependency, environment, or
+  remote claim was added.
+- **Workflow security**: YAML safe-load and actionlint pass. Zizmor reports no
+  findings, with its existing YAML-anchor warning and 16 suppressed findings.
+  The workflow diff is empty.
+- **Graphify**: `graphify update .` completed with 1,101 extracted files,
+  22,966 nodes, 23,986 edges, and 1,538 communities. Its two generated files
+  were restored as unrelated collateral; the advisory graph was corroborated
+  against Spec 129, the Stage 04 plan/task, Stage 00 governance, focused tests,
+  and the repository gate.
+- **Protected surfaces**: no whole-corpus metadata gate, generated freshness
+  artifact, workflow, runtime, Compose, infrastructure, secret, credential,
+  provider-global, model-policy, deployment, Release event, branch protection,
+  ruleset, environment, or other remote state was changed.
+- **Implementer self-review**: exact registry ownership, tracked-file
+  discovery, fail-closed error paths, advisory whole-corpus behavior, CI route,
+  workflow security, and protected-surface boundaries pass with Critical `0`,
+  Important `0`, Minor `0`. Independent review remains pending.
+
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | `39eb562e` | PASS | Approved | C0/I0/M0; no remediation required | `review-237aa5d7..39eb562e.diff`; combined reviewer verdict | Done |
 | T-DCC-002 | `3591fcd5`, `0445f336` | PASS | Approved | C0/I0/M0; no remediation required | `review-0ae9fe81..0445f336.diff`; combined reviewer verdict | Done |
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
-| T-DCC-005 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
+| T-DCC-005 | Pending | Pending | Pending | Implementer C0/I0/M0; independent review pending | Ignored SDD report promoted here after approval | Review Pending |
 | T-DCC-006 | Pending | Pending | Pending | Pending | Whole-branch review evidence promoted here | Pending |
 
 ## Verification Summary
@@ -331,9 +370,11 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   pass `31/31`; T-DCC-002 template tests pass `5/5`; T-DCC-003 ownership,
   placeholder, traceability, alignment, explicit-base metadata, and diff gates
   pass; T-DCC-004 passes `11/161`, coverage `68/68/14/2/9`, semantic freshness
-  `11/0`, and its `32/32` unit suite; T-DCC-005 remains pending.
-- **Full Test Commands**: the metadata validation module passes `93/93` after
-  T-DCC-002; the final cross-suite bundle remains reserved for T-DCC-006.
+  `11/0`, and its `32/32` unit suite; T-DCC-005 passes its `6/6` adversarial
+  class and the metadata module at `99/99`.
+- **Full Test Commands**: validation discovery passes `143/143`; the final
+  generated-freshness and cross-suite closure bundle remains reserved for
+  T-DCC-006.
 - **Generated Freshness**: Pending T-DCC-006.
 - **Graphify**: Required after code changes when available; advisory result and
   corroboration will be recorded per applicable task.

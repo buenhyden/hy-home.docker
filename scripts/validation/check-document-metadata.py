@@ -1230,6 +1230,176 @@ def _tracked_markdown(root: pathlib.Path, *, require_git: bool = False) -> list[
     )
 
 
+def _tracked_repository_markdown(root: pathlib.Path) -> list[pathlib.Path]:
+    result = _run_git(
+        root,
+        ["ls-files", "-z", "--", "*.md"],
+        operation="repository contract Markdown discovery",
+    )
+    if result.returncode != 0:
+        raise ProfileError("cannot establish local Git snapshot: repository contract Markdown discovery failed")
+    return sorted(
+        set(_decode_git_paths(result.stdout, "repository contract Markdown discovery")),
+        key=lambda path: path.as_posix(),
+    )
+
+
+def _registry_string_arrays(value: object, path: tuple[str, ...] = ()) -> list[tuple[tuple[str, ...], list[str]]]:
+    arrays: list[tuple[tuple[str, ...], list[str]]] = []
+    if isinstance(value, dict):
+        for key, member in value.items():
+            if isinstance(key, str):
+                arrays.extend(_registry_string_arrays(member, (*path, key)))
+    elif isinstance(value, list) and len(value) > 1 and all(isinstance(member, str) for member in value):
+        arrays.append((path, value))
+    return arrays
+
+
+def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object]) -> list[Finding]:
+    """Validate tracked repository surfaces backed by the canonical registry."""
+
+    _require_git_worktree(root)
+    findings: list[Finding] = []
+    tracked_markdown = _tracked_repository_markdown(root)
+    tracked_set = {path.as_posix() for path in tracked_markdown}
+
+    if any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES) or _normalized_target_path(
+        "_workspace/README.md"
+    ) is not None:
+        findings.append(
+            Finding(
+                "scripts/validation/check-document-metadata.py",
+                "workspace-inventory-coupling",
+                "_workspace must remain outside docs metadata inventory inference",
+            )
+        )
+
+    for path in tracked_markdown:
+        if path.name != "README.md":
+            continue
+        matches = matching_readme_profiles(path, profiles)
+        if not matches:
+            findings.append(Finding(path.as_posix(), "readme-unclassified", "tracked README has no profile"))
+        elif len(matches) > 1:
+            findings.append(
+                Finding(
+                    path.as_posix(),
+                    "readme-ambiguous",
+                    f"tracked README has multiple profiles: {', '.join(matches)}",
+                )
+            )
+
+    template_sources = profiles.get("template_sources", {})
+    if not isinstance(template_sources, dict):
+        raise ProfileError("template_sources must be a mapping")
+    template_target_types = EXPECTED_PROFILE_TYPES - {
+        "generated",
+        "governance",
+        "readme",
+        "template-source",
+        "unsupported",
+    }
+    tracked_templates = [
+        path
+        for path in tracked_markdown
+        if path.as_posix().startswith("docs/99.templates/templates/")
+        and path.name.endswith(".template.md")
+    ]
+    for path in tracked_templates:
+        try:
+            values = parse_frontmatter(root / path)
+        except FrontmatterError as error:
+            findings.append(Finding(path.as_posix(), "template-source-invalid", str(error)))
+            continue
+        declared_type = values.get("artifact_type")
+        mapped_type = template_sources.get(path.as_posix())
+        if declared_type in template_target_types and mapped_type is None:
+            findings.append(
+                Finding(path.as_posix(), "template-source-unmapped", "typed Markdown template is not registered")
+            )
+        if mapped_type is not None and declared_type != mapped_type:
+            findings.append(
+                Finding(
+                    path.as_posix(),
+                    "template-source-type-mismatch",
+                    f"registry target {mapped_type!r} differs from declared artifact_type {declared_type!r}",
+                )
+            )
+    for source_path in sorted(template_sources):
+        if source_path not in tracked_set:
+            findings.append(
+                Finding(source_path, "template-source-missing", "registered Markdown template is not tracked")
+            )
+
+    release_sources = sorted(
+        source_path for source_path, target_type in template_sources.items() if target_type == "release"
+    )
+    if len(release_sources) != 1:
+        findings.append(
+            Finding(
+                "docs/99.templates/support/document-metadata-profiles.yaml",
+                "release-template-cardinality",
+                f"registry must map exactly one Release template; found {len(release_sources)}",
+            )
+        )
+    else:
+        release_source = release_sources[0]
+        release_name = pathlib.PurePosixPath(release_source).name
+        release_route = "docs/05.operations/releases/YYYY-MM-DD-release-name.md"
+        route_contracts = {
+            "docs/99.templates/support/template-selection.md": (release_route, release_name),
+            "docs/00.agent-governance/rules/stage-authoring-matrix.md": (release_route, release_source),
+            "docs/05.operations/releases/README.md": ("YYYY-MM-DD-release-name.md", release_name),
+        }
+        for path_text, required_literals in route_contracts.items():
+            path = root / path_text
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeError):
+                text = ""
+            missing = [literal for literal in required_literals if literal not in text]
+            if missing:
+                findings.append(
+                    Finding(
+                        path_text,
+                        "release-route-incomplete",
+                        f"missing canonical Release route literals: {', '.join(missing)}",
+                    )
+                )
+
+    human_support = [
+        path
+        for path in tracked_markdown
+        if path.as_posix().startswith("docs/99.templates/support/") and path.suffix == ".md"
+    ]
+    registry_arrays = _registry_string_arrays(profiles)
+    for path in human_support:
+        try:
+            text = (root / path).read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            findings.append(Finding(path.as_posix(), "support-contract-unreadable", str(error)))
+            continue
+        duplicated: list[str] = []
+        for registry_path, members in registry_arrays:
+            if not registry_path:
+                continue
+            key = registry_path[-1]
+            block_form = yaml.safe_dump({key: members}, sort_keys=False).strip()
+            inline_form = f"{key}: [{', '.join(members)}]"
+            if block_form in text or inline_form in text:
+                duplicated.append(".".join(registry_path))
+        if duplicated:
+            findings.append(
+                Finding(
+                    path.as_posix(),
+                    "registry-array-duplicated",
+                    f"human support document copies canonical registry arrays: {', '.join(sorted(duplicated))}",
+                )
+            )
+
+    return sorted(set(findings))
+
+
 def _normalized_target_path(path_text: str) -> pathlib.Path | None:
     if not path_text.endswith(".md") or "\\" in path_text:
         return None
@@ -1946,7 +2116,11 @@ def _write_or_check_output(output: pathlib.Path, rendered: str, check: bool) -> 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mode", choices=("report", "check-changed", "check-active"), default="report")
+    parser.add_argument(
+        "--mode",
+        choices=("report", "check-changed", "check-active", "check-contracts"),
+        default="report",
+    )
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
     parser.add_argument("--profiles", type=pathlib.Path, default=DEFAULT_PROFILES)
     parser.add_argument("--output", type=pathlib.Path)
@@ -1967,6 +2141,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     except ProfileError as error:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
+    if args.mode == "check-contracts":
+        try:
+            contract_findings = validate_repository_contracts(root, profiles)
+        except ProfileError as error:
+            print(f"configuration-error: {error}", file=sys.stderr)
+            return 2
+        for finding in contract_findings:
+            print(f"{finding.code}: {finding.path}: {finding.message}")
+        print(f"metadata repository contracts: violations={len(contract_findings)}")
+        return 1 if contract_findings else 0
     base = BaseSelection("not-applicable", None, None)
     transition_overrides: dict[tuple[str, str, str], TransitionOverride] = {}
     changed_selection: set[str] = set()

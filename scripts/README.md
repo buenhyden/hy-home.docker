@@ -101,7 +101,7 @@ script.
 | :------------------------------------- | :------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Docker Validation                      | [validate-docker-compose.sh](./validation/validate-docker-compose.sh)                       | Validate root compose config                                                                                                                                                                                    |
 | Harness Validation                     | [validate-harness.sh](./validation/validate-harness.sh)                                     | Run the harness-surface validation wrapper without duplicating local QA gate logic                                                                                                                               |
-| Repo Contract Check                    | [check-repo-contracts.sh](./validation/check-repo-contracts.sh)                             | Enforce docs, GitHub, script, image, runtime governance, Hookify metadata, execution evidence status, and closed English-only doc surface contracts                                                              |
+| Repo Contract Check                    | [check-repo-contracts.sh](./validation/check-repo-contracts.sh)                             | Enforce the canonical document registry, typed template and README ownership, Release routes, `_workspace` independence, docs, GitHub, script, image, runtime governance, Hookify metadata, execution evidence status, and closed English-only doc surface contracts               |
 | Agentic Audit Semantic Freshness       | [check-agentic-audit-semantic-freshness.py](./validation/check-agentic-audit-semantic-freshness.py) | Enforce the bounded canonical-audit closure assertions and lifecycle routes from tracked repository evidence                                                                                                     |
 | Document Metadata Inventory / Changed Gate | [check-document-metadata.py](./validation/check-document-metadata.py)                    | Parse typed metadata profiles, generate/check the advisory inventory, and enforce safely selected changed/new Markdown without rewriting documents                                                              |
 | Storybook Contract Check               | [check-storybook-contract.sh](./validation/check-storybook-contract.sh)                     | Enforce Storybook CI scripts, workflow wiring, and 90% coverage threshold metadata                                                                                                                              |
@@ -210,7 +210,12 @@ contract and PyYAML safe loading with duplicate-key rejection. `--mode report`
 always renders the sorted target-document inventory and treats semantic gaps as
 advisory; parser/configuration failures remain errors. Use `--output <path>` to
 generate the canonical snapshot and add `--check` for freshness. The
-`check-changed` is the pre-push blocking mode for a safely selected diff;
+`--mode check-contracts` repository gate reuses that loaded registry to require
+exact README ownership, complete and type-consistent copyable Markdown template
+mapping, consistent Release selection and Stage 00/05 routes, sole machine
+ownership of full registry arrays, and `_workspace` exclusion from docs
+inventory inference. `check-changed` is the pre-push blocking mode for a safely
+selected diff;
 `check-active` remains non-gating. Base resolution prefers explicit, CI, and
 safe local refs, then reports a working-tree-only fallback without selecting
 the full corpus. A narrow base-existing legacy exception cannot apply to new

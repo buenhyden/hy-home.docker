@@ -33,6 +33,11 @@ mapfile -t actual_docs < <(find docs -mindepth 1 -maxdepth 1 -type d -printf '%f
 expected_docs="$(printf '%s\n' "${allowed_docs[@]}" | sort)"
 actual_docs_text="$(printf '%s\n' "${actual_docs[@]}")"
 
+section "Canonical document contracts"
+if ! python3 scripts/validation/check-document-metadata.py --mode check-contracts; then
+  failures=$((failures + 1))
+fi
+
 if [[ "$actual_docs_text" != "$expected_docs" ]]; then
   fail "docs top-level folders do not match the allowed taxonomy"
   echo "Expected:" >&2

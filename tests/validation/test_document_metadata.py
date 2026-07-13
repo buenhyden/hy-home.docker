@@ -38,6 +38,7 @@ def run_checker(
     mode: str = "report",
     *extra: str,
     env: dict[str, str] | None = None,
+    profiles: pathlib.Path = PROFILES,
 ) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [
@@ -46,7 +47,7 @@ def run_checker(
             "--root",
             str(root),
             "--profiles",
-            str(PROFILES),
+            str(profiles),
             "--mode",
             mode,
             *extra,
@@ -128,6 +129,40 @@ def commit_all(root: pathlib.Path, message: str = "fixture") -> None:
     committed = git(root, "commit", "-qm", message)
     if committed.returncode != 0:
         raise RuntimeError(committed.stderr)
+
+
+def copy_tracked_contract_fixture(root: pathlib.Path) -> pathlib.Path:
+    """Copy the canonical contract inputs into a small isolated Git repository."""
+
+    result = subprocess.run(
+        [
+            "git",
+            "ls-files",
+            "-z",
+            "--",
+            "README.md",
+            "_workspace/README.md",
+            "_workspace/repo-support/README.md",
+            "docs/05.operations/releases/README.md",
+            "docs/99.templates/templates/**/*.template.md",
+            "docs/99.templates/support/*.md",
+            "docs/99.templates/support/document-metadata-profiles.yaml",
+            "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        check=True,
+    )
+    paths = [pathlib.Path(raw.decode("utf-8")) for raw in result.stdout.split(b"\0") if raw]
+    for relative_path in paths:
+        target = root / relative_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / relative_path, target)
+    init_git(root)
+    staged = git(root, "add", ".")
+    if staged.returncode != 0:
+        raise RuntimeError(staged.stderr)
+    return root / "docs/99.templates/support/document-metadata-profiles.yaml"
 
 
 class FrontmatterParsingTests(unittest.TestCase):
@@ -990,6 +1025,137 @@ class TemplateMetadataTests(unittest.TestCase):
             )
         }
         self.assertIn("type-inappropriate-key", codes)
+
+
+class RepositoryContractIntegrationTests(unittest.TestCase):
+    def fixture(self, directory: str) -> tuple[pathlib.Path, pathlib.Path]:
+        root = pathlib.Path(directory)
+        return root, copy_tracked_contract_fixture(root)
+
+    def write_profiles(self, path: pathlib.Path, values: dict[str, object]) -> None:
+        path.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
+
+    def run_contracts(
+        self,
+        root: pathlib.Path,
+        profiles: pathlib.Path,
+    ) -> subprocess.CompletedProcess[str]:
+        return run_checker(root, "check-contracts", profiles=profiles)
+
+    def test_exact_registry_extension_keys_fail_closed(self) -> None:
+        mutations = (
+            ("frontmatter_order", lambda values: values["common"].__setitem__("key_order", values["common"].pop("frontmatter_order"))),
+            ("document_families", lambda values: values.__setitem__("families", values.pop("document_families"))),
+            ("readme_profiles", lambda values: values.__setitem__("readmes", values.pop("readme_profiles"))),
+        )
+        for expected, mutate in mutations:
+            with self.subTest(key=expected), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                values = yaml.safe_load(profiles.read_text(encoding="utf-8"))
+                mutate(values)
+                self.write_profiles(profiles, values)
+                result = self.run_contracts(root, profiles)
+                self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+                self.assertIn(expected, result.stderr)
+
+    def test_readme_ownership_overlap_and_unclassified_path_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            values = yaml.safe_load(profiles.read_text(encoding="utf-8"))
+            names = list(values["readme_profiles"])
+            values["readme_profiles"][names[1]]["path_globs"].append(
+                values["readme_profiles"][names[0]]["path_globs"][0]
+            )
+            self.write_profiles(profiles, values)
+            result = self.run_contracts(root, profiles)
+            self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+            self.assertIn("README profile globs overlap", result.stderr)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            write_doc(root / "unclassified/README.md", None)
+            staged = git(root, "add", "unclassified/README.md")
+            self.assertEqual(0, staged.returncode, staged.stderr)
+            result = self.run_contracts(root, profiles)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("readme-unclassified", result.stdout)
+
+    def test_typed_markdown_template_mapping_is_complete_and_consistent(self) -> None:
+        source = "docs/99.templates/templates/spec-contracts/api-spec.template.md"
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            values = yaml.safe_load(profiles.read_text(encoding="utf-8"))
+            values["template_sources"].pop(source)
+            self.write_profiles(profiles, values)
+            result = self.run_contracts(root, profiles)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn(f"template-source-unmapped: {source}", result.stdout)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            values = yaml.safe_load(profiles.read_text(encoding="utf-8"))
+            values["template_sources"][source] = "plan"
+            self.write_profiles(profiles, values)
+            result = self.run_contracts(root, profiles)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn(f"template-source-type-mismatch: {source}", result.stdout)
+
+    def test_release_selection_stage_00_and_stage_05_routes_fail_closed(self) -> None:
+        route = "docs/05.operations/releases/YYYY-MM-DD-release-name.md"
+        release_source = "docs/99.templates/templates/operations/release.template.md"
+        route_files = (
+            "docs/99.templates/support/template-selection.md",
+            "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+            "docs/05.operations/releases/README.md",
+        )
+        for route_file in route_files:
+            with self.subTest(path=route_file), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                path = root / route_file
+                text = path.read_text(encoding="utf-8")
+                path.write_text(
+                    text.replace(route, "docs/05.operations/releases/MISSING.md")
+                    .replace("YYYY-MM-DD-release-name.md", "MISSING.md")
+                    .replace(
+                        release_source,
+                        "docs/99.templates/templates/operations/MISSING.template.md",
+                    )
+                    .replace("release.template.md", "MISSING.template.md"),
+                    encoding="utf-8",
+                )
+                result = self.run_contracts(root, profiles)
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertIn(f"release-route-incomplete: {route_file}", result.stdout)
+
+    def test_human_support_document_cannot_copy_full_registry_array(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            values = yaml.safe_load(profiles.read_text(encoding="utf-8"))
+            support = root / "docs/99.templates/support/common-document-contract.md"
+            copied = yaml.safe_dump(
+                {"frontmatter_order": values["common"]["frontmatter_order"]},
+                sort_keys=False,
+            )
+            support.write_text(
+                f"{support.read_text(encoding='utf-8')}\n```yaml\n{copied}```\n",
+                encoding="utf-8",
+            )
+            result = self.run_contracts(root, profiles)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("registry-array-duplicated: docs/99.templates/support/common-document-contract.md", result.stdout)
+
+    def test_workspace_cannot_become_a_docs_inventory_prefix(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        original = metadata.TARGET_MARKDOWN_PREFIXES
+        try:
+            metadata.TARGET_MARKDOWN_PREFIXES = (*original, "_workspace/")
+            findings = metadata.validate_repository_contracts(ROOT, profiles)
+        finally:
+            metadata.TARGET_MARKDOWN_PREFIXES = original
+        self.assertIn(
+            "workspace-inventory-coupling",
+            {finding.code for finding in findings},
+        )
 
 
 class CheckerCliTests(unittest.TestCase):
