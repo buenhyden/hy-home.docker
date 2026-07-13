@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: spec:130-template-contract-system-canonicalization
 artifact_type: spec
 parent_ids:
