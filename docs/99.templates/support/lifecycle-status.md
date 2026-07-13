@@ -52,27 +52,26 @@ target stage.
 
 ## Transition Validation
 
-The typed profile contract records the default forward transitions separately
-from the status vocabulary:
+The exact transition graph, terminal-state behavior, exception evidence schema,
+and enforcement rules belong only to
+[`document-metadata-profiles.yaml`](./document-metadata-profiles.yaml) and the
+executable
+[`check-document-metadata.py`](../../../scripts/validation/check-document-metadata.py).
+Do not infer or restate those semantics from this human vocabulary.
 
-```text
-draft -> active -> completed
-                -> superseded
-completed      -> superseded
-```
-
-`superseded` is terminal for active-stage artifacts and `archived` is terminal
-for Stage 98 tombstones. A same-status edit is not a transition. Any reverse or
-otherwise unlisted transition requires an explicit override manifest containing
-the document path, previous and new states, existing Stage 04 task path,
-approval, and reason. The validator accepts that manifest only through the
-scoped `--transition-override-file` input; the default pre-push hook supplies no
-override. Changed/new enforcement therefore blocks undocumented reverse
-transitions while the full historical inventory remains advisory.
+Before changing a status, the author and reviewer should confirm that the
+document's real lifecycle evidence supports the proposed state, that historical
+execution or decision evidence is preserved, and that any replacement is clear
+to readers. If the checker rejects a transition, retain the current status and
+route the evidence gap or requested exception through the active Stage 04 task.
+Human prose, age, formatting cleanup, or a copied template never authorizes an
+exception. Escalate ambiguity before mutation when the registry profile,
+current evidence, and intended lifecycle outcome do not agree.
 
 ## Related Documents
 
 - [support README](./README.md)
 - [frontmatter contract](./frontmatter-contract.md)
 - [document metadata profiles](./document-metadata-profiles.yaml)
+- [metadata checker](../../../scripts/validation/check-document-metadata.py)
 - [template governance](./template-governance.md)

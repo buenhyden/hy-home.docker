@@ -208,15 +208,32 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   Task 4 audit pack, dated audit snapshots, generated outputs, runtime, Compose,
   infrastructure, secrets, provider/model policy, workflows, deployment, and
   remote GitHub settings remain unchanged.
-- **Implementer self-review**: Spec mapping PASS and documentation/source
+- **Initial implementer self-review**: Spec mapping PASS and documentation/source
   quality PASS with Critical `0`, Important `0`, Minor `0`. Independent review
   remains pending and no approval verdict is claimed.
+- **Independent review round 1**: Spec Issues / Needs fixes with Critical `0`,
+  Important `1`, Minor `0`. I-01 found that `lifecycle-status.md` still copied
+  the complete transition graph, terminal semantics, override-manifest fields,
+  checker CLI flag, and enforcement behavior despite the registry's sole-owner
+  boundary.
+- **I-01 remediation**: replaced the duplicate executable policy with concise
+  human evidence review, rejection handling, and ambiguity escalation guidance;
+  exact transition, exception, and enforcement semantics now route directly to
+  `document-metadata-profiles.yaml` and `check-document-metadata.py`.
+- **Remediation validation**: ownership/duplicate scan passed with zero matches;
+  placeholder scan passed with zero matches; explicit-base metadata passed with
+  `selected=17 violations=0 legacy_exceptions=0 transition_overrides=0`;
+  traceability passed with `catalog_pairs_total=46 failures=0`; implementation
+  alignment passed with `stage_docs_total=644`,
+  `repo_local_markdown_links_checked=5093`, and `failures=0`; `git diff --check`
+  passed. Remediation self-review is C0/I0/M0; independent re-review remains
+  pending.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | `39eb562e` | PASS | Approved | C0/I0/M0; no remediation required | `review-237aa5d7..39eb562e.diff`; combined reviewer verdict | Done |
 | T-DCC-002 | `3591fcd5`, `0445f336` | PASS | Approved | C0/I0/M0; no remediation required | `review-0ae9fe81..0445f336.diff`; combined reviewer verdict | Done |
-| T-DCC-003 | Pending Task 3 handoff commit | Self-review PASS; independent review pending | Review Pending | C0/I0/M0 implementer findings; no independent verdict claimed | `.superpowers/sdd/task-3-report.md`; promote reviewer verdict after review | Review Pending |
+| T-DCC-003 | Pending Task 3 handoff commit | Round 1 Issues; re-review pending | Review Pending | Round 1 C0/I1/M0; I-01 remediated; remediation self-review C0/I0/M0 | `.superpowers/sdd/task-3-report.md`; promote re-review verdict after approval | Review Pending |
 | T-DCC-004 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-005 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-006 | Pending | Pending | Pending | Pending | Whole-branch review evidence promoted here | Pending |
