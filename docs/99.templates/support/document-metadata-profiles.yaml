@@ -501,7 +501,7 @@ profiles:
     forbidden: [type, document_type, template_type, owner, updated, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
     allowed_statuses: [draft, active, completed, superseded]
     allowed_parent_types: [runbook]
-    allow_empty_parents: false
+    allow_empty_parents: true
     disposition: migration candidate
 
   postmortem:

@@ -42,6 +42,11 @@ the registry.
 
 ## Lifecycle and Relation Semantics
 
+- An Incident may start as a root record when no verified Runbook parent exists;
+  link a Runbook parent only when that direct relationship is evidenced. A
+  Postmortem remains a strict child of its paired Incident, and a Release
+  remains a strict child of real Spec, Plan, or Task evidence. Do not invent a
+  parent merely to populate frontmatter.
 - Use the target profile's lifecycle state honestly. A template source's draft
   state is not automatic evidence that a copied target is draft.
 - Forward, terminal, and exceptional transitions are interpreted only by the

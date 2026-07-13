@@ -834,6 +834,18 @@ class MetadataValidationTests(unittest.TestCase):
         )
         self.assertNotIn("template-placeholder-in-target", self.codes(record))
 
+    def test_incident_profile_allows_root_but_event_children_stay_strict(self) -> None:
+        incident = self.profiles["profiles"]["incident"]
+        postmortem = self.profiles["profiles"]["postmortem"]
+        release = self.profiles["profiles"]["release"]
+
+        self.assertTrue(incident["allow_empty_parents"])
+        self.assertEqual(["runbook"], incident["allowed_parent_types"])
+        self.assertEqual(["incident"], postmortem["allowed_parent_types"])
+        self.assertFalse(postmortem["allow_empty_parents"])
+        self.assertEqual(["spec", "plan", "task"], release["allowed_parent_types"])
+        self.assertFalse(release["allow_empty_parents"])
+
 
 class ReadmeProfileTests(unittest.TestCase):
     @classmethod
@@ -1277,6 +1289,14 @@ class TemplateMetadataTests(unittest.TestCase):
         )
         self.assertEqual([], release_leaves)
 
+    def test_release_template_does_not_create_an_event_leaf(self) -> None:
+        leaves = [
+            path
+            for path in (ROOT / "docs/05.operations/releases").glob("*.md")
+            if path.name != "README.md"
+        ]
+        self.assertEqual([], leaves)
+
     def test_readme_template_remains_a_readme_exception_source(self) -> None:
         path_text = "docs/99.templates/templates/common/readme.template.md"
         values = metadata.parse_frontmatter(ROOT / path_text)
@@ -1306,6 +1326,91 @@ class TemplateMetadataTests(unittest.TestCase):
 
 
 class TemplateBodyContractTests(unittest.TestCase):
+    TASK_2_ROLE_HEADINGS = {
+        "readme": (
+            "## Overview",
+            "## Audience",
+            "## Scope",
+            "## Structure",
+            "## How to Work in This Area",
+            "## Related Documents",
+        ),
+        "reference": (
+            "## Overview",
+            "## Purpose",
+            "## Scope",
+            "## Facts and Definitions",
+            "## Sources",
+            "## Maintenance",
+            "## Related Documents",
+        ),
+        "audit": (
+            "## Overview",
+            "## Scope and Criteria",
+            "## Evidence",
+            "## Findings",
+            "## Gap Analysis",
+            "## Disposition",
+            "## Related Documents",
+        ),
+        "archive": (
+            "## Overview",
+            "## Archive Metadata",
+            "## Current Replacement",
+            "## Archive Ledger",
+            "## Related Documents",
+        ),
+        "memory": (
+            "## Problem",
+            "## Context",
+            "## Resolution",
+            "## Prevention",
+            "## Evidence",
+            "## Related Documents",
+        ),
+        "progress": (
+            "## Current Work Log",
+            "## Phase Tracker",
+            "## Layer Audit",
+            "## Open Issues",
+            "## Related Documents",
+        ),
+    }
+    TASK_2_ROLE_PROFILES = {
+        "readme": "readme",
+        "reference": "reference",
+        "audit": "audit",
+        "archive": "archive",
+        "memory": "governance",
+        "progress": "governance",
+    }
+    TASK_2_ROLE_TOKENS = {
+        "readme": {
+            "title", "overview", "audience", "scope", "structure",
+            "work_instructions", "related_documents",
+        },
+        "reference": {
+            "title", "overview", "purpose", "scope", "facts_and_definitions",
+            "sources", "maintenance", "related_documents",
+        },
+        "audit": {
+            "title", "overview", "scope_and_criteria", "evidence", "findings",
+            "gap_analysis", "disposition", "related_documents",
+        },
+        "archive": {
+            "title", "overview", "archive_metadata", "current_replacement",
+            "archive_ledger", "related_documents",
+        },
+        "memory": {
+            "title", "date", "layer", "status", "applies_to", "tags",
+            "retrieval_keywords", "last_verified", "problem", "context",
+            "resolution", "prevention", "evidence", "related_documents",
+        },
+        "progress": {
+            "title", "current_work_log", "phase_tracker", "layer_audit",
+            "open_issues", "related_documents",
+        },
+    }
     TASK_3_ROLE_HEADINGS = {
         "prd": (
             "## Overview",
@@ -1663,6 +1768,139 @@ class TemplateBodyContractTests(unittest.TestCase):
             "related_documents",
         },
     }
+    TASK_5_ROLE_HEADINGS = {
+        "guide": (
+            "## Overview",
+            "## Audience and Prerequisites",
+            "## Routine Usage",
+            "## Common Checks",
+            "## Runbook Handoff",
+            "## Troubleshooting",
+            "## Related Documents",
+        ),
+        "policy": (
+            "## Overview",
+            "## Scope",
+            "## Controls",
+            "## Exceptions",
+            "## Verification",
+            "## Review Cadence",
+            "## Compliance Mapping",
+            "## Related Documents",
+        ),
+        "runbook": (
+            "## Overview",
+            "## Trigger and Preconditions",
+            "## Procedure",
+            "## Verification Record",
+            "## Evidence",
+            "## Rollback or Recovery",
+            "## Escalation",
+            "## Automation Handoff",
+            "## Related Documents",
+        ),
+        "incident": (
+            "## Overview",
+            "## Incident Metadata",
+            "## Impact",
+            "## Timeline and Response",
+            "## Evidence",
+            "## Resolution and Handoff",
+            "## Runbook Links",
+            "## Related Documents",
+        ),
+        "postmortem": (
+            "## Overview",
+            "## Incident and Impact",
+            "## Timeline",
+            "## Root Cause and Contributing Factors",
+            "## Lessons",
+            "## Action Items",
+            "## Prevention and Verification",
+            "## Feedback Loop",
+            "## Detection Analysis",
+            "## Related Documents",
+        ),
+        "release": (
+            "## Overview",
+            "## Identity and Scope",
+            "## Included Changes",
+            "## Artifacts",
+            "## Validation Evidence",
+            "## Approvals",
+            "## Rollout and Rollback",
+            "## Outcome and Known Issues",
+            "## Compatibility Notes",
+            "## Related Documents",
+        ),
+    }
+    TASK_5_ROLE_PROFILES = {
+        "guide": "guide",
+        "policy": "policy",
+        "runbook": "runbook",
+        "incident": "incident",
+        "postmortem": "postmortem",
+        "release": "release",
+    }
+    TASK_5_ROLE_TOKENS = {
+        "guide": {
+            "title", "overview", "audience_and_prerequisites", "routine_usage",
+            "common_checks", "runbook_handoff", "troubleshooting",
+            "related_documents",
+        },
+        "policy": {
+            "title", "overview", "scope", "controls", "exceptions",
+            "verification", "review_cadence", "compliance_mapping",
+            "related_documents",
+        },
+        "runbook": {
+            "title", "overview", "trigger_and_preconditions", "procedure",
+            "verification_record", "evidence", "rollback_or_recovery",
+            "escalation", "automation_handoff", "related_documents",
+        },
+        "incident": {
+            "title", "overview", "incident_metadata", "impact",
+            "timeline_and_response", "evidence", "resolution_and_handoff",
+            "runbook_links", "related_documents",
+        },
+        "postmortem": {
+            "title", "overview", "incident_and_impact", "timeline",
+            "root_cause_and_contributing_factors", "lessons", "action_items",
+            "prevention_and_verification", "feedback_loop", "detection_analysis",
+            "related_documents",
+        },
+        "release": {
+            "title", "overview", "identity_and_scope", "included_changes",
+            "artifacts", "validation_evidence", "approvals",
+            "rollout_and_rollback", "outcome_and_known_issues",
+            "compatibility_notes", "related_documents",
+        },
+    }
+    ALL_ROLE_SOURCES = {
+        "readme": "docs/99.templates/templates/common/readme.template.md",
+        "reference": "docs/99.templates/templates/common/reference.template.md",
+        "audit": "docs/99.templates/templates/common/audit.template.md",
+        "archive": "docs/99.templates/templates/common/archive.template.md",
+        "memory": "docs/99.templates/templates/governance/memory.template.md",
+        "progress": "docs/99.templates/templates/governance/progress.template.md",
+        "prd": "docs/99.templates/templates/sdlc/prd.template.md",
+        "ard": "docs/99.templates/templates/sdlc/ard.template.md",
+        "adr": "docs/99.templates/templates/sdlc/adr.template.md",
+        "spec": "docs/99.templates/templates/sdlc/spec.template.md",
+        "plan": "docs/99.templates/templates/sdlc/plan.template.md",
+        "task": "docs/99.templates/templates/sdlc/task.template.md",
+        "guide": "docs/99.templates/templates/operations/guide.template.md",
+        "policy": "docs/99.templates/templates/operations/policy.template.md",
+        "runbook": "docs/99.templates/templates/operations/runbook.template.md",
+        "incident": "docs/99.templates/templates/operations/incident.template.md",
+        "postmortem": "docs/99.templates/templates/operations/postmortem.template.md",
+        "release": "docs/99.templates/templates/operations/release.template.md",
+        "agent-design": "docs/99.templates/templates/spec-contracts/agent-design.template.md",
+        "api-spec": "docs/99.templates/templates/spec-contracts/api-spec.template.md",
+        "data-model": "docs/99.templates/templates/spec-contracts/data-model.template.md",
+        "service": "docs/99.templates/templates/spec-contracts/service.template.md",
+        "tests": "docs/99.templates/templates/spec-contracts/tests.template.md",
+    }
     MACHINE_TOKENS = {
         "docs/99.templates/templates/spec-contracts/openapi.template.yaml": {
             "API_TITLE",
@@ -1819,6 +2057,38 @@ class TemplateBodyContractTests(unittest.TestCase):
             expected_h1=self.TASK_4_ROLE_H1[role_name],
         )
 
+    def assert_task_5_markdown_contract(self, role_name: str, text: str) -> None:
+        role = self.profiles["template_roles"][role_name]
+        h1_headings = [line for line in text.splitlines() if line.startswith("# ")]
+        h2_headings = [line for line in text.splitlines() if line.startswith("## ")]
+        expected_frontmatter = {
+            "status": "draft",
+            "artifact_id": "<artifact-id>",
+            "artifact_type": self.TASK_5_ROLE_PROFILES[role_name],
+            "parent_ids": [] if role_name == "incident" else ["<parent-artifact-id>"],
+        }
+        if role_name in {"policy", "runbook"}:
+            expected_frontmatter.update(
+                {"reviewed_at": "<reviewed-at>", "review_cycle": "<review-cycle>"}
+            )
+        elif role_name == "postmortem":
+            expected_frontmatter["reviewed_at"] = "<reviewed-at>"
+
+        self.assertEqual(["# {{title}}"], h1_headings)
+        self.assertEqual(list(self.TASK_5_ROLE_HEADINGS[role_name]), h2_headings)
+        self.assertEqual(
+            collections.Counter(self.TASK_5_ROLE_HEADINGS[role_name]),
+            collections.Counter(
+                [*role["required_headings"], *role["conditional_headings"]]
+            ),
+        )
+        self.assertEqual(self.TASK_5_ROLE_PROFILES[role_name], role["artifact_profile"])
+        self.assertEqual(expected_frontmatter, metadata._parse_frontmatter_text(text))
+        self.assertEqual(self.TASK_5_ROLE_TOKENS[role_name], self.body_tokens(text))
+        self.assertNotIn("> Rules:", text)
+        self.assertNotIn("<!-- Target:", text)
+        self.assertNotIn("<!-- Release Target:", text)
+
     def assert_machine_source_contract(self, relative_path: str, text: str) -> None:
         expected_tokens = self.MACHINE_TOKENS[relative_path]
         actual_tokens = set(re.findall(r"__([A-Z][A-Z0-9_]*)__", text))
@@ -1925,6 +2195,98 @@ class TemplateBodyContractTests(unittest.TestCase):
                 role = self.profiles["template_roles"][role_name]
                 text = (ROOT / role["source"]).read_text(encoding="utf-8")
                 self.assert_task_4_markdown_contract(role_name, text)
+
+    def test_task_5_operations_sources_match_exact_contracts(self) -> None:
+        for role_name in self.TASK_5_ROLE_TOKENS:
+            with self.subTest(role=role_name):
+                source = ROOT / self.ALL_ROLE_SOURCES[role_name]
+                self.assert_task_5_markdown_contract(
+                    role_name, source.read_text(encoding="utf-8")
+                )
+
+    def test_operations_forms_have_non_overlapping_headings(self) -> None:
+        base = ROOT / "docs/99.templates/templates/operations"
+        guide = (base / "guide.template.md").read_text(encoding="utf-8")
+        policy = (base / "policy.template.md").read_text(encoding="utf-8")
+        runbook = (base / "runbook.template.md").read_text(encoding="utf-8")
+        for forbidden in ("## Rollback or Recovery", "## Escalation"):
+            with self.subTest(heading=forbidden):
+                self.assertNotIn(forbidden, guide)
+        self.assertNotIn("## Procedure", policy)
+        self.assertEqual(1, runbook.count("## Rollback or Recovery"))
+
+    def test_all_23_markdown_roles_have_independent_literal_contract_coverage(self) -> None:
+        expected_headings = {
+            **self.TASK_2_ROLE_HEADINGS,
+            **self.TASK_3_ROLE_HEADINGS,
+            **self.TASK_4_ROLE_HEADINGS,
+            **self.TASK_5_ROLE_HEADINGS,
+        }
+        expected_profiles = {
+            **self.TASK_2_ROLE_PROFILES,
+            **self.TASK_3_ROLE_PROFILES,
+            **self.TASK_4_ROLE_PROFILES,
+            **self.TASK_5_ROLE_PROFILES,
+        }
+        expected_tokens = {
+            **self.TASK_2_ROLE_TOKENS,
+            **self.TASK_3_ROLE_TOKENS,
+            **self.TASK_4_ROLE_TOKENS,
+            **self.TASK_5_ROLE_TOKENS,
+        }
+        expected_roles = set(self.ALL_ROLE_SOURCES)
+        self.assertEqual(23, len(expected_roles))
+        self.assertEqual(expected_roles, set(self.profiles["template_roles"]))
+        self.assertEqual(expected_roles, set(expected_headings))
+        self.assertEqual(expected_roles, set(expected_profiles))
+        self.assertEqual(expected_roles, set(expected_tokens))
+
+        for role_name, source_path in self.ALL_ROLE_SOURCES.items():
+            with self.subTest(role=role_name):
+                role = self.profiles["template_roles"][role_name]
+                text = (ROOT / source_path).read_text(encoding="utf-8")
+                h1 = [line for line in text.splitlines() if line.startswith("# ")]
+                h2 = [line for line in text.splitlines() if line.startswith("## ")]
+                self.assertEqual(source_path, role["source"])
+                self.assertEqual(expected_profiles[role_name], role["artifact_profile"])
+                self.assertEqual(list(expected_headings[role_name]), h2)
+                self.assertEqual(expected_tokens[role_name], self.body_tokens(text))
+                self.assertEqual(1, len(h1))
+                self.assertNotIn("> Rules:", text)
+                self.assertNotRegex(text, r"<!-- (?:Release )?Target:")
+
+    def test_task_5_negative_mutations_are_rejected(self) -> None:
+        role_name = "runbook"
+        text = (ROOT / self.ALL_ROLE_SOURCES[role_name]).read_text(encoding="utf-8")
+        mutations = {
+            "extra-h1": text.replace("# {{title}}", "# {{title}}\n\n# Duplicate", 1),
+            "extra-heading": text.replace(
+                "## Related Documents",
+                "## Routine Usage\n\n{{overview}}\n\n## Related Documents",
+                1,
+            ),
+            "duplicate-recovery": text.replace(
+                "## Escalation",
+                "## Rollback or Recovery\n\n{{rollback_or_recovery}}\n\n## Escalation",
+                1,
+            ),
+            "missing-heading": text.replace("## Evidence\n\n", "", 1),
+            "rules-block": text.replace("## Overview", "> Rules:\n\n## Overview", 1),
+            "target-comment": text.replace(
+                "# {{title}}",
+                "<!-- Target: docs/05.operations/runbooks/fixture.md -->\n\n# {{title}}",
+                1,
+            ),
+            "frontmatter-drift": text.replace(
+                "artifact_type: runbook", "artifact_type: guide", 1
+            ),
+            "token-drift": text.replace(
+                "{{verification_record}}", "{{verification_results}}", 1
+            ),
+        }
+        for name, mutated in mutations.items():
+            with self.subTest(mutation=name), self.assertRaises(AssertionError):
+                self.assert_task_5_markdown_contract(role_name, mutated)
 
     def test_plan_form_is_prospective_only(self) -> None:
         role = self.profiles["template_roles"]["plan"]
@@ -2135,6 +2497,47 @@ class TemplateBodyContractTests(unittest.TestCase):
                 self.assert_task_4_markdown_contract(
                     "task",
                     source.replace("artifact_type: task", "artifact_type: plan", 1),
+                )
+        finally:
+            self.profiles = original_profiles
+
+    def test_task_5_coordinated_registry_and_source_heading_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["guide"]
+        source = (ROOT / self.ALL_ROLE_SOURCES["guide"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "guide",
+            required_headings=[
+                "## Operator Workflow"
+                if heading == "## Routine Usage"
+                else heading
+                for heading in role["required_headings"]
+            ],
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_5_markdown_contract(
+                    "guide",
+                    source.replace("## Routine Usage", "## Operator Workflow", 1),
+                )
+        finally:
+            self.profiles = original_profiles
+
+    def test_task_5_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["release"]
+        source = (ROOT / self.ALL_ROLE_SOURCES["release"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "release",
+            artifact_profile="task",
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_5_markdown_contract(
+                    "release",
+                    source.replace("artifact_type: release", "artifact_type: task", 1),
                 )
         finally:
             self.profiles = original_profiles

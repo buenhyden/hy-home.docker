@@ -703,13 +703,9 @@ literal_requirements = {
         "YYYY/INC-###-incident-title/",
         "postmortem.md",
     ],
-    pathlib.Path("docs/99.templates/templates/operations/incident.template.md"): [
+    pathlib.Path("docs/99.templates/support/template-selection.md"): [
         "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md",
-        "./postmortem.md",
-    ],
-    pathlib.Path("docs/99.templates/templates/operations/postmortem.template.md"): [
         "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md",
-        "./INC-###-incident-title.md",
     ],
     pathlib.Path("docs/00.agent-governance/rules/documentation-protocol.md"): [
         "docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md",

@@ -80,7 +80,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-002 | Common, README, and Governance forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
 | T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
 | T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Completed | fresh implementer | spec then quality |
-| T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
+| T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | In Review | fresh implementer | spec then quality |
 | T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | Queued | fresh implementer | spec then quality |
 | T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | Queued | fresh implementer | spec then quality |
 
@@ -271,6 +271,43 @@ review, and a separate quality review before its logical commit.
   `b394a671`; the full-range re-review returned Spec PASS and Quality APPROVED
   with C0/I0/M0, so T-TCS-004 is completed.
 
+## T-TCS-005 Implementation Evidence
+
+- Reduced Guide, Policy, Runbook, Incident, Postmortem, and Release to exact
+  form-only sources with profile-compatible frontmatter, one H1, registered
+  required and conditional H2 sections, explicit `{{token_name}}` body tokens,
+  and no copied Rules, Target comments, fixed-depth links, event samples, or
+  executable-looking commands.
+- Separated routine usage, controls, executable procedures, live response,
+  retrospective learning, and real release evidence. Guide has no recovery or
+  escalation owner, Policy has no Procedure, and Runbook has exactly one
+  Rollback or Recovery section plus evidence and escalation handoff.
+- Made Incident a permitted root while retaining Runbook as an allowed direct
+  parent. Postmortem remains a strict Incident child, Release remains a strict
+  Spec/Plan/Task child, and no Incident, Postmortem, or Release event leaf was
+  created.
+- Normalized the Operations catalog to the registered template-catalog README
+  envelope and aligned the Stage 00 matrix plus the human SDLC relationship
+  contract without copying machine arrays into prose.
+- Redirected the transitional repository-contract routing assertion from the
+  copyable Incident/Postmortem bodies to the canonical Template Selection
+  owner. T-TCS-006 still owns removal of duplicate shell template semantics.
+- Added independent exact six-role frontmatter, H1, heading, profile, token,
+  negative-mutation, and coordinated-drift regressions. The combined literal
+  oracle now covers all 23 registered Markdown roles independently of the
+  mutable registry.
+- Canonical metadata and Wiki generators were run. Their tracked outputs were
+  already fresh at 901 metadata records / 2,025 advisory findings, 1,296 Wiki
+  index paths, and 1,295 safe coverage paths, so no generated body changed.
+- Graphify refreshed to 23,317 nodes, 24,528 edges, and 1,542 communities.
+  Tracked graph outputs were restored, and the advisory result was
+  corroborated against tracked source, Stage 00, Spec 130, and the active
+  Plan/Task.
+- No runtime, Compose, infrastructure, deployment, Release event, secret,
+  provider, workflow, credential, branch-protection, or remote state changed.
+  Implementation is ready for independent specification and quality review;
+  no review verdict is claimed here.
+
 ## Review Evidence
 
 | Task | Spec review | Quality review | Findings | Disposition |
@@ -279,7 +316,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
 | T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
-| T-TCS-005 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
+| T-TCS-005 | Not run — implementation awaits review | Not run — implementation awaits review | None recorded | In Review |
 | T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
 | T-TCS-007 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 006 |
 | Whole branch | Not run — implementation has not completed | Not run — implementation has not completed | None recorded | Await T-TCS-007 |
@@ -428,6 +465,22 @@ review, and a separate quality review before its logical commit.
 | Remediation commit | `b394a671`; evidence-only Task and Progress correction with no template, validator, test, generated, or runtime change. |
 | Final independent re-review | Spec PASS; Quality APPROVED; Critical 0 / Important 0 / Minor 0 on `4c821e86...b394a671`; I-01 resolved and ready for Task closure. |
 
+### T-TCS-005 RED and GREEN
+
+| Phase | Command or evidence | Result |
+| --- | --- | --- |
+| RED | `python3 -m unittest tests.validation.test_document_metadata.TemplateBodyContractTests tests.validation.test_document_metadata.MetadataValidationTests tests.validation.test_document_metadata.TemplateMetadataTests -v` | Expected failure: 58 methods ran with 13 failures covering six exact Operations source contracts, the same six roles in the independent all-23 oracle, and Incident root rejection. |
+| Focused GREEN | Same three test classes after implementation | Pass: 58/58. |
+| Metadata regression | `python3 -m unittest tests.validation.test_document_metadata -q` | Pass: 139/139. |
+| Metadata contracts | `python3 scripts/validation/check-document-metadata.py --mode check-contracts` | Pass: zero violations. |
+| Changed mode | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 34ae2dab` | Pass: 11 selected, zero violations, zero legacy exceptions, and zero transition overrides. |
+| Repository contracts | `bash scripts/validation/check-repo-contracts.sh` | Initial expected integration failure exposed four fixed-routing literals in copyable Incident/Postmortem sources; after routing the assertion to Template Selection, pass with `failures=0`. |
+| Generated freshness | Canonical LLM Wiki index/coverage generators and metadata inventory owner | Pass: 1,296 index paths, 1,295 safe coverage paths, and 901 metadata records / 2,025 advisory findings; no generated body diff. |
+| Traceability and alignment | Stage 04/05 traceability and documentation implementation alignment | Pass: 46 catalog pairs; 647 stage docs / 5,135 links; zero failures. |
+| Operations searches | Release-leaf search plus bounded Rules/Target/fixed-link/command scans | Pass: no Release event leaf and no prohibited form residue. |
+| Graph refresh | `graphify update .` | Pass: 23,317 nodes / 24,528 edges / 1,542 communities; tracked outputs restored and advisory conclusions corroborated. |
+| Diff, compile, and syntax | `git diff --check`, Python compilation, and Bash syntax | Pass. |
+
 ## Controlled Agent Pre-commit Evidence
 
 The final wrapper has not run because implementation and whole-branch review
@@ -462,8 +515,9 @@ have not completed.
 | `b54e76df` | Task 4 prospective Plan, evidentiary Task, duplicate harness-form deletion, direct governance/validator fallout, tests, and generated evidence | RED 11 expected failures; focused 27/27; metadata 131/131; metadata/repository contracts zero; changed mode 18/0 with one base-existing legacy exception and zero transition overrides; generated freshness; traceability/alignment; Graphify ran; diff/compile/syntax pass |
 | `b394a671` | Task 4 I-01 selected-count evidence correction | Exact changed-mode 18/0 with one base-existing legacy exception and zero overrides; focused 27/27; metadata contracts zero; generated freshness and diff pass; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close stage 04 forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-004 | Metadata changed-mode and diff hygiene; evidence-only scope |
+| Implementation unit — subject `docs(operations): canonicalize operations forms`; commit not yet created | Task 5 Operations forms, Incident root relation, catalog/support/direct validator fallout, exact all-role regressions, and evidence | RED 13 expected failures; focused 58/58; metadata 139/139; metadata/repository contracts zero; changed mode 11/0 with zero exceptions/overrides; generated freshness; traceability/alignment; Graphify; diff/compile/syntax pass; independent reviews pending |
 
-Later review-fix and implementation commits will be appended as Tasks 4-7 close.
+Later review-fix and implementation commits will be appended as Tasks 5-7 close.
 
 ## Migration Wave Routing
 
