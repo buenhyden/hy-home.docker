@@ -62,7 +62,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | Extend registry/parser with families, key order, README profiles, and parent serialization. | impl/test | Registry Model; VAL-129-001/004/005 | Task 1 | RED/GREEN metadata tests and independent review | Documentation Metadata Engineer | Done |
-| T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Review Pending |
+| T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Done |
 | T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Todo |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Todo |
 | T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Todo |
@@ -73,7 +73,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 ### Phase 1 — Executable Foundation
 
 - [x] T-DCC-001 Registry, parser, README profiles, and parent serialization
-- [ ] T-DCC-002 Typed templates and Release routing
+- [x] T-DCC-002 Typed templates and Release routing
 
 ### Phase 2 — Human and Evidence Alignment
 
@@ -163,13 +163,18 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   workflows, provider-global state, deployment execution, and remote GitHub
   state were not changed.
 - **Implementer self-review**: Spec mapping PASS and code/document quality PASS
-  with Critical `0`, Important `0`, Minor `0`. Independent Spec and quality
-  approval remain pending; T-DCC-002 is not Done.
+  with Critical `0`, Important `0`, Minor `0`.
+- **Independent task review**: the reviewer checked the exact two-commit range
+  `0ae9fe81..0445f336`, returned Spec PASS and Task Quality Approved with
+  Critical `0`, Important `0`, and Minor `0`, and confirmed all twenty typed
+  Markdown instantiations, coordinated Release routing with no event leaf,
+  Spec 127 deployment separation, machine-readable template exclusion, unique
+  spec-child bodies, and preserved harness approval/evidence sections.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | `39eb562e` | PASS | Approved | C0/I0/M0; no remediation required | `review-237aa5d7..39eb562e.diff`; combined reviewer verdict | Done |
-| T-DCC-002 | `3591fcd5` + implementation commit | Self-review PASS; independent review pending | Self-review PASS; independent review pending | C0/I0/M0 in implementer review; independent gate pending | `.superpowers/sdd/task-2-report.md`; reviewer verdict pending | Review Pending |
+| T-DCC-002 | `3591fcd5`, `0445f336` | PASS | Approved | C0/I0/M0; no remediation required | `review-0ae9fe81..0445f336.diff`; combined reviewer verdict | Done |
 | T-DCC-003 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-004 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-005 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
