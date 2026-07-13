@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import collections
 import importlib.util
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -1251,49 +1253,427 @@ class TemplateMetadataTests(unittest.TestCase):
 
 
 class TemplateBodyContractTests(unittest.TestCase):
+    TASK_3_ROLE_TOKENS = {
+        "prd": {
+            "title",
+            "value_and_outcomes",
+            "problem_statement",
+            "stakeholders_and_use_cases",
+            "requirements_with_stable_ids",
+            "constraints_and_provenance",
+            "acceptance_criteria",
+            "success_measures",
+            "verification_intent",
+            "scope_and_non_goals",
+            "risks_and_dependencies",
+            "assumptions",
+            "ai_agent_requirements",
+            "related_documents",
+        },
+        "ard": {
+            "title",
+            "overview_and_context",
+            "stakeholders_and_concerns",
+            "boundaries_and_constraints",
+            "quality_attributes",
+            "architecture_views",
+            "data_and_infrastructure",
+            "decision_and_requirement_traceability",
+            "ai_agent_architecture",
+            "related_documents",
+        },
+        "adr": {
+            "title",
+            "context_and_decision_drivers",
+            "considered_options",
+            "decision",
+            "consequences",
+            "confirmation",
+            "follow_up_decisions",
+            "related_documents",
+        },
+        "spec": {
+            "title",
+            "overview",
+            "boundaries_and_inputs",
+            "api_contract_summary",
+            "api_contract_ownership",
+            "api_contract_link",
+            "core_design",
+            "service_contract_summary",
+            "service_contract_ownership",
+            "service_contract_link",
+            "data_contract_summary",
+            "data_contract_ownership",
+            "data_contract_link",
+            "failure_modes_and_guardrails",
+            "verification",
+            "test_contract_summary",
+            "test_contract_ownership",
+            "test_contract_link",
+            "agent_design_summary",
+            "agent_design_ownership",
+            "agent_design_link",
+            "related_documents",
+        },
+        "agent-design": {
+            "title",
+            "overview",
+            "role_and_responsibilities",
+            "inputs_and_outputs",
+            "orchestration",
+            "tools_and_permissions",
+            "prompt_policy",
+            "context_and_memory",
+            "guardrails",
+            "failure_handling",
+            "evaluation",
+            "observability",
+            "human_approval",
+            "related_documents",
+        },
+        "api-spec": {
+            "title",
+            "overview",
+            "parent_spec_link",
+            "scope_and_non_goals",
+            "api_style",
+            "authentication_and_authorization",
+            "operations",
+            "request_and_response_schemas",
+            "errors",
+            "compatibility",
+            "non_functional_requirements",
+            "machine_readable_contracts",
+            "verification",
+            "pagination",
+            "related_documents",
+        },
+        "data-model": {
+            "title",
+            "overview",
+            "parent_spec_link",
+            "scope_and_non_goals",
+            "entities",
+            "relationships",
+            "schema",
+            "integrity",
+            "storage",
+            "privacy",
+            "migration",
+            "retention",
+            "related_documents",
+        },
+        "service": {
+            "title",
+            "overview",
+            "parent_spec_link",
+            "scope_and_non_goals",
+            "image_and_build",
+            "security",
+            "networking_and_storage",
+            "secrets",
+            "health_and_operations",
+            "validation",
+            "scaling",
+            "related_documents",
+        },
+        "tests": {
+            "title",
+            "overview",
+            "parent_spec_link",
+            "scope",
+            "verification_goals",
+            "tdd_scope",
+            "test_matrix",
+            "contract_and_integration_tests",
+            "non_functional_tests",
+            "agent_evaluations",
+            "fixtures",
+            "execution",
+            "evidence",
+            "related_documents",
+        },
+    }
+    MACHINE_TOKENS = {
+        "docs/99.templates/templates/spec-contracts/openapi.template.yaml": {
+            "API_TITLE",
+            "API_VERSION",
+            "API_DESCRIPTION",
+            "SERVER_URL",
+            "AUTH_SELECTION",
+            "TAG_NAME",
+            "RESOURCE_PATH",
+            "HTTP_METHOD",
+            "SUCCESS_STATUS",
+            "ERROR_STATUS",
+            "OPERATION_ID",
+            "OPERATION_SUMMARY",
+            "SUCCESS_DESCRIPTION",
+            "ERROR_DESCRIPTION",
+            "RESPONSE_SCHEMA",
+            "IDENTIFIER_FIELD",
+            "STATUS_FIELD",
+        },
+        "docs/99.templates/templates/spec-contracts/schema.template.graphql": {
+            "QUERY_FIELD",
+            "ARGUMENT_NAME",
+            "OBJECT_TYPE",
+            "IDENTIFIER_FIELD",
+            "STATUS_FIELD",
+        },
+        "docs/99.templates/templates/spec-contracts/service.template.proto": {
+            "PACKAGE_NAME",
+            "SERVICE_NAME",
+            "RPC_NAME",
+            "REQUEST_MESSAGE",
+            "RESPONSE_MESSAGE",
+            "REQUEST_FIELD",
+            "IDENTIFIER_FIELD",
+            "STATUS_FIELD",
+        },
+    }
+    SPEC_CHILD_HANDOFF_TOKENS = {
+        f"{role}_{field}"
+        for role in ("api_contract", "service_contract", "data_contract", "agent_design", "test_contract")
+        for field in ("summary", "ownership", "link")
+    }
+    SPEC_CHILD_DETAIL_TOKENS = {
+        "role_and_responsibilities",
+        "inputs_and_outputs",
+        "orchestration",
+        "tools_and_permissions",
+        "prompt_policy",
+        "context_and_memory",
+        "evaluation",
+        "observability",
+        "api_style",
+        "authentication_and_authorization",
+        "operations",
+        "request_and_response_schemas",
+        "errors",
+        "compatibility",
+        "machine_readable_contracts",
+        "entities",
+        "relationships",
+        "schema",
+        "integrity",
+        "storage",
+        "privacy",
+        "migration",
+        "image_and_build",
+        "security",
+        "networking_and_storage",
+        "secrets",
+        "health_and_operations",
+        "verification_goals",
+        "tdd_scope",
+        "test_matrix",
+        "contract_and_integration_tests",
+        "non_functional_tests",
+        "fixtures",
+        "execution",
+        "evidence",
+    }
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.profiles = metadata.load_profiles(PROFILES)
 
-    def test_task_3_markdown_sources_match_heading_envelopes(self) -> None:
-        for role_name in (
-            "prd",
-            "ard",
-            "adr",
-            "spec",
-            "agent-design",
-            "api-spec",
-            "data-model",
-            "service",
-            "tests",
-        ):
+    @staticmethod
+    def body_tokens(text: str) -> set[str]:
+        return set(re.findall(r"\{\{([a-z][a-z0-9_]*)\}\}", text))
+
+    def assert_task_3_markdown_contract(self, role_name: str, text: str) -> None:
+        role = self.profiles["template_roles"][role_name]
+        headings = [line for line in text.splitlines() if line.startswith("## ")]
+        expected_headings = [*role["required_headings"], *role["conditional_headings"]]
+        expected_frontmatter = {
+            "status": "draft",
+            "artifact_id": "<artifact-id>",
+            "artifact_type": role["artifact_profile"],
+            "parent_ids": [] if role_name == "prd" else ["<parent-artifact-id>"],
+        }
+
+        self.assertEqual(1, sum(line.startswith("# ") for line in text.splitlines()))
+        self.assertEqual(
+            collections.Counter(expected_headings),
+            collections.Counter(headings),
+        )
+        self.assertEqual(expected_frontmatter, metadata._parse_frontmatter_text(text))
+        self.assertEqual(self.TASK_3_ROLE_TOKENS[role_name], self.body_tokens(text))
+        self.assertNotIn("> Rules:", text)
+        self.assertNotIn("<!-- Target:", text)
+
+    def assert_machine_source_contract(self, relative_path: str, text: str) -> None:
+        expected_tokens = self.MACHINE_TOKENS[relative_path]
+        actual_tokens = set(re.findall(r"__([A-Z][A-Z0-9_]*)__", text))
+        self.assertEqual(expected_tokens, actual_tokens)
+        comment_prefix = "//" if relative_path.endswith(".proto") else "#"
+        self.assertIn(f"{comment_prefix} Target:", text)
+        self.assertIn(f"{comment_prefix} Cross-links:", text)
+        self.assertNotRegex(text, r"https?://")
+        self.assertNotRegex(
+            text,
+            r"(?i)\b(?:[a-z0-9-]+\.)+(?:com|dev|invalid|io|local|net|org)\b",
+        )
+        self.assertNotRegex(
+            text,
+            r"(?i)\b(?:bearer|basic|oauth2?|openidconnect|api[_-]?key)\b",
+        )
+        self.assertNotRegex(text, r"(?i)\bexample(?:\.com)?\b")
+
+        if relative_path.endswith("openapi.template.yaml"):
+            document = yaml.safe_load(text)
+            self.assertIsInstance(document, dict)
+            self.assertEqual("__SERVER_URL__", document["servers"][0]["url"])
+            self.assertEqual(
+                "__AUTH_SELECTION__", document["x-template-auth-selection"]
+            )
+            self.assertNotIn("security", document)
+            self.assertNotIn("securitySchemes", document.get("components", {}))
+            allowed_path_item_keys = {
+                "$ref",
+                "summary",
+                "description",
+                "get",
+                "put",
+                "post",
+                "delete",
+                "options",
+                "head",
+                "patch",
+                "trace",
+                "servers",
+                "parameters",
+            }
+            for path_item in document["paths"].values():
+                invalid_keys = {
+                    key
+                    for key in path_item
+                    if key not in allowed_path_item_keys and not key.startswith("x-")
+                }
+                self.assertEqual(set(), invalid_keys)
+                operation = path_item["get"]
+                self.assertEqual("__HTTP_METHOD__", operation["x-template-http-method"])
+                self.assertEqual(
+                    "__SUCCESS_STATUS__", operation["x-template-success-status"]
+                )
+                self.assertEqual(
+                    "__ERROR_STATUS__", operation["x-template-error-status"]
+                )
+                response_keys = set(operation["responses"])
+                self.assertEqual({"200", "default"}, response_keys)
+                for key in response_keys:
+                    self.assertRegex(key, r"^(?:default|[1-5](?:[0-9]{2}|XX))$")
+        elif relative_path.endswith("schema.template.graphql"):
+            body = "\n".join(
+                line for line in text.splitlines() if not line.lstrip().startswith("#")
+            )
+            names = re.findall(r"(?<![A-Za-z0-9_])([_A-Za-z][_0-9A-Za-z]*)", body)
+            self.assertEqual([], [name for name in names if name.startswith("__")])
+            sentinel_map = {
+                "_templateQueryField": "__QUERY_FIELD__",
+                "_templateArgument": "__ARGUMENT_NAME__",
+                "_TemplateObject": "__OBJECT_TYPE__",
+                "_templateIdentifier": "__IDENTIFIER_FIELD__",
+                "_templateStatus": "__STATUS_FIELD__",
+            }
+            for sentinel, token in sentinel_map.items():
+                self.assertIn(f"# {sentinel} -> {token}", text)
+                self.assertIn(sentinel, body)
+            self.assertEqual(body.count("{"), body.count("}"))
+        else:
+            body = "\n".join(
+                line for line in text.splitlines() if not line.lstrip().startswith("//")
+            )
+            self.assertIn('syntax = "proto3";', body)
+            self.assertRegex(body, r"package\s+__PACKAGE_NAME__\s*;")
+            self.assertRegex(body, r"service\s+__SERVICE_NAME__\s*\{")
+            self.assertRegex(
+                body,
+                r"rpc\s+__RPC_NAME__\s*\(__REQUEST_MESSAGE__\)\s*"
+                r"returns\s*\(__RESPONSE_MESSAGE__\)\s*;",
+            )
+            self.assertEqual(2, len(re.findall(r"message\s+__[A-Z0-9_]+__\s*\{", body)))
+            self.assertEqual(body.count("{"), body.count("}"))
+
+    def test_task_3_markdown_sources_match_exact_contracts(self) -> None:
+        for role_name in self.TASK_3_ROLE_TOKENS:
             with self.subTest(role=role_name):
                 role = self.profiles["template_roles"][role_name]
                 text = (ROOT / role["source"]).read_text(encoding="utf-8")
-                headings = {
-                    line for line in text.splitlines() if line.startswith("## ")
-                }
-                self.assertEqual(
-                    1,
-                    sum(line.startswith("# ") for line in text.splitlines()),
-                )
-                self.assertTrue(set(role["required_headings"]) <= headings)
-                self.assertFalse(set(role["forbidden_headings"]) & headings)
-                self.assertRegex(text, r"\{\{[a-z][a-z0-9_]*\}\}")
-                self.assertNotIn("> Rules:", text)
-                self.assertNotIn("<!-- Target:", text)
+                self.assert_task_3_markdown_contract(role_name, text)
 
-    def test_machine_sources_use_explicit_unresolved_tokens(self) -> None:
-        for relative_path in (
-            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
-            "docs/99.templates/templates/spec-contracts/schema.template.graphql",
-            "docs/99.templates/templates/spec-contracts/service.template.proto",
-        ):
+    def test_parent_spec_has_all_child_handoffs_without_child_details(self) -> None:
+        role = self.profiles["template_roles"]["spec"]
+        text = (ROOT / role["source"]).read_text(encoding="utf-8")
+        tokens = self.body_tokens(text)
+        self.assertTrue(self.SPEC_CHILD_HANDOFF_TOKENS <= tokens)
+        self.assertFalse(self.SPEC_CHILD_DETAIL_TOKENS & tokens)
+
+    def test_machine_sources_match_exact_native_safe_contracts(self) -> None:
+        for relative_path in self.MACHINE_TOKENS:
             with self.subTest(path=relative_path):
                 text = (ROOT / relative_path).read_text(encoding="utf-8")
-                self.assertRegex(text, r"__[A-Z][A-Z0-9_]*__")
-                self.assertNotIn("example.com", text)
-                self.assertNotIn("Example", text)
+                self.assert_machine_source_contract(relative_path, text)
+
+    def test_task_3_negative_mutations_are_rejected(self) -> None:
+        spec_role = self.profiles["template_roles"]["spec"]
+        spec_text = (ROOT / spec_role["source"]).read_text(encoding="utf-8")
+        markdown_mutations = {
+            "extra-heading": spec_text.replace(
+                "## Related Documents", "## Unregistered\n\n{{overview}}\n\n## Related Documents"
+            ),
+            "missing-heading": spec_text.replace(
+                "## Agent Role and IO Contract\n\n", "", 1
+            ),
+        }
+        for name, mutated in markdown_mutations.items():
+            with self.subTest(mutation=name), self.assertRaises(AssertionError):
+                self.assert_task_3_markdown_contract("spec", mutated)
+
+        openapi_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        openapi = (ROOT / openapi_path).read_text(encoding="utf-8")
+        machine_mutations = {
+            "concrete-host": (
+                openapi_path,
+                openapi.replace(
+                    "paths:\n",
+                    "x-concrete-host: https://api.production.invalid\npaths:\n",
+                    1,
+                ),
+            ),
+            "concrete-auth": (
+                openapi_path,
+                openapi.replace(
+                    "paths:\n",
+                    "x-concrete-auth-selection: basic\npaths:\n",
+                    1,
+                ),
+            ),
+            "invalid-openapi-operation-key": (
+                openapi_path,
+                openapi.replace("    get:\n", "    __HTTP_METHOD__:\n", 1),
+            ),
+            "invalid-openapi-response-key": (
+                openapi_path,
+                openapi.replace('        "200":\n', '        "__SUCCESS_STATUS__":\n', 1),
+            ),
+        }
+        graphql_path = (
+            "docs/99.templates/templates/spec-contracts/schema.template.graphql"
+        )
+        graphql = (ROOT / graphql_path).read_text(encoding="utf-8")
+        machine_mutations["reserved-graphql-name"] = (
+            graphql_path,
+            graphql + "\ntype __ReservedObject {\n  _templateValue: String\n}\n",
+        )
+        for name, (relative_path, mutated) in machine_mutations.items():
+            with self.subTest(mutation=name), self.assertRaises(AssertionError):
+                self.assert_machine_source_contract(relative_path, mutated)
 
 
 class RepositoryContractIntegrationTests(unittest.TestCase):

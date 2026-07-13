@@ -8,22 +8,26 @@ info:
   description: __API_DESCRIPTION__
 servers:
   - url: __SERVER_URL__
+x-template-auth-selection: __AUTH_SELECTION__
 tags:
   - name: __TAG_NAME__
 paths:
   /__RESOURCE_PATH__:
-    __HTTP_METHOD__:
+    get:
+      x-template-http-method: __HTTP_METHOD__
+      x-template-success-status: __SUCCESS_STATUS__
+      x-template-error-status: __ERROR_STATUS__
       tags: [__TAG_NAME__]
       operationId: __OPERATION_ID__
       summary: __OPERATION_SUMMARY__
       responses:
-        "__SUCCESS_STATUS__":
+        "200":
           description: __SUCCESS_DESCRIPTION__
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/__RESPONSE_SCHEMA__"
-        "__ERROR_STATUS__":
+        default:
           description: __ERROR_DESCRIPTION__
 components:
   schemas:
@@ -35,10 +39,3 @@ components:
           type: string
         __STATUS_FIELD__:
           type: string
-  securitySchemes:
-    __SECURITY_SCHEME__:
-      type: http
-      scheme: bearer
-      bearerFormat: __BEARER_FORMAT__
-security:
-  - __SECURITY_SCHEME__: []

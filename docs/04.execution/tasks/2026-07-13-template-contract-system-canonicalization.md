@@ -202,13 +202,28 @@ review, and a separate quality review before its logical commit.
   `data-model`, `service`, and `tests`. T-TCS-002 already covers its six roles;
   T-TCS-004 and T-TCS-005 extend coverage, and T-TCS-005 must reach all 23.
   None of the nine owned-role assertions were weakened.
+- The first independent review of `48f37eb4...e1a9dccc` returned Spec FAIL and
+  Quality CHANGES REQUESTED with Critical 0, Important 4, and Minor 0. I-01
+  identified missing explicit PRD information shapes; I-02 identified missing
+  Service and Tests child handoffs in the parent Spec; I-03 identified
+  native-invalid OpenAPI and GraphQL token positions plus a concrete auth
+  selection; and I-04 identified regressions that did not enforce exact body
+  and machine contracts.
+- Review remediation restores exact PRD semantic tokens; gives API, Data,
+  Agent, Service, and Tests children explicit summary/ownership/link handoffs;
+  keeps OpenAPI fixed operation/status keys with unresolved values in
+  extensions; keeps GraphQL token values in a comment map with non-reserved
+  sentinel names; and strengthens the focused regressions with independent
+  exact token sets, exact heading multisets, exact frontmatter, native-safe
+  structural checks, and bounded negative mutations. I-01 through I-04 are
+  implementation-remediated and await independent full-range re-review.
 - Graphify refreshed to 23,207 nodes, 24,348 edges, and 1,542 communities.
   Its tracked outputs were restored after evidence capture, and conclusions
   were corroborated against tracked sources, Stage 00, Spec 130, and the active
   Plan/Task because the graph remains advisory.
 - No target corpus, runtime, Compose, infrastructure, deployment, secret,
   provider, workflow, credential, branch-protection, or remote state changed.
-  T-TCS-003 is `In Review`; no independent Spec or Quality verdict is claimed.
+  T-TCS-003 remains `In Review`; no independent reapproval is claimed.
 
 ## Review Evidence
 
@@ -216,7 +231,7 @@ review, and a separate quality review before its logical commit.
 | --- | --- | --- | --- | --- |
 | T-TCS-001 | PASS on `9eca432b...ede2b9a2` | APPROVED on `9eca432b...ede2b9a2` | None; I-01 resolved by `ede2b9a2` | Completed |
 | T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
-| T-TCS-003 | Not run — implementation awaits independent review | Not run — implementation awaits independent review | No independent findings recorded | In Review |
+| T-TCS-003 | FAIL on `48f37eb4...e1a9dccc` | CHANGES REQUESTED on `48f37eb4...e1a9dccc`; Critical 0 / Important 4 / Minor 0 | I-01 through I-04 implementation-remediated; independent full-range re-review pending | In Review |
 | T-TCS-004 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 003 |
 | T-TCS-005 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
@@ -325,6 +340,19 @@ review, and a separate quality review before its logical commit.
 | Graph refresh | `graphify update .` | Pass: 23,207 nodes / 24,348 edges / 1,542 communities; tracked outputs restored after evidence capture. |
 | Diff, compile, and self-review | `git diff --check`, Python compilation, exact heading/token scan, and scoped diff review | Pass; no self-review finding remained. |
 
+### T-TCS-003 Review Remediation
+
+| Phase | Command or evidence | Result |
+| --- | --- | --- |
+| First independent review | `.superpowers/sdd/task-3-review.md` over `48f37eb4...e1a9dccc` | Spec FAIL; Quality CHANGES REQUESTED; Critical 0 / Important 4 / Minor 0; findings I-01 through I-04. |
+| RED | Strengthened `TemplateBodyContractTests` for exact role tokens, five Spec-child handoffs, native-safe machine structures, and negative mutations | Expected failure: 4 test methods ran with 5 failures covering PRD semantics, Spec child handoffs, and OpenAPI/GraphQL contract safety. |
+| Focused GREEN | `python3 -m unittest tests.validation.test_document_metadata.TemplateBodyContractTests -v` | Pass: 4/4. |
+| Task 3 GREEN | `TemplateBodyContractTests` plus `TemplateMetadataTests` | Pass: 17/17. |
+| Metadata regression | `python3 -m unittest tests.validation.test_document_metadata` | Pass: 121/121. |
+| Native/static contract | Exact machine-source test plus PyYAML safe-load and bounded GraphQL/Protobuf checks | Pass; no native parser availability or parser approval is claimed. |
+| Graph refresh | `graphify update .` | Pass: 23,238 nodes / 24,389 edges / 1,544 communities; tracked outputs restored after evidence capture and advisory results corroborated against tracked source and governance/stage documents. |
+| Finding disposition | Implementation inspection and regression evidence | I-01 through I-04 implementation-remediated; independent full-range re-review pending. |
+
 ## Controlled Agent Pre-commit Evidence
 
 The final wrapper has not run because implementation and whole-branch review
@@ -353,6 +381,7 @@ have not completed.
 | `e9a0c8cf` | Task 2 I-01/I-02/M-01 Memory, Stage 00 metadata, and Common confidentiality remediation | Remediation 3/3; focused 16/16; metadata 117/117; metadata and repository contracts; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close common governance forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-002 | Metadata changed-mode and diff hygiene; evidence-only scope |
 | Implementation unit — subject `docs(templates): canonicalize design and contract forms`; self hash intentionally omitted | Task 3 Stage 01-03, focused Spec-child, machine contract, catalog, test, and evidence forms | RED 12 intended subtest failures; focused 15/15; metadata 119/119; metadata/repository contracts; syntax/static checks; generated freshness; traceability/alignment; Graphify; diff/compile |
+| Review-fix unit — subject `fix(templates): preserve design form contracts`; self hash intentionally omitted | Task 3 I-01 through I-04 PRD semantics, parent-child handoffs, native-safe machine forms, and exact regressions | Remediation RED 4 methods / 5 failures; focused 4/4 and 17/17; metadata 121/121; metadata/repository contracts; native/static checks; generated freshness; traceability/alignment; Graphify; diff/compile; re-review pending |
 
 Later review-fix and implementation commits will be appended as Tasks 3-7 close.
 

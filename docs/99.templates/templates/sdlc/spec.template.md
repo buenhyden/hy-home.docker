@@ -17,23 +17,29 @@ parent_ids: [<parent-artifact-id>]
 
 ## Contracts
 
-{{contract_summary}}
+{{api_contract_summary}}
 
-{{contract_ownership}}
+{{api_contract_ownership}}
 
-{{contract_links}}
+{{api_contract_link}}
 
 ## Core Design
 
 {{core_design}}
 
+{{service_contract_summary}}
+
+{{service_contract_ownership}}
+
+{{service_contract_link}}
+
 ## Interfaces and Data
 
-{{interfaces_and_data_summary}}
+{{data_contract_summary}}
 
-{{interfaces_and_data_ownership}}
+{{data_contract_ownership}}
 
-{{interfaces_and_data_links}}
+{{data_contract_link}}
 
 ## Failure Modes and Guardrails
 
@@ -42,6 +48,12 @@ parent_ids: [<parent-artifact-id>]
 ## Verification
 
 {{verification}}
+
+{{test_contract_summary}}
+
+{{test_contract_ownership}}
+
+{{test_contract_link}}
 
 ## Agent Role and IO Contract
 

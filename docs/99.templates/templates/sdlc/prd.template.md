@@ -9,19 +9,27 @@ parent_ids: []
 
 ## Overview
 
-{{overview}}
+{{value_and_outcomes}}
 
 ## Problem and Stakeholders
 
-{{problem_and_stakeholders}}
+{{problem_statement}}
+
+{{stakeholders_and_use_cases}}
 
 ## Requirements
 
-{{requirements}}
+{{requirements_with_stable_ids}}
+
+{{constraints_and_provenance}}
 
 ## Acceptance and Verification
 
-{{acceptance_and_verification}}
+{{acceptance_criteria}}
+
+{{success_measures}}
+
+{{verification_intent}}
 
 ## Scope and Non-goals
 
@@ -30,6 +38,8 @@ parent_ids: []
 ## Risks and Dependencies
 
 {{risks_and_dependencies}}
+
+{{assumptions}}
 
 ## AI Agent Requirements
 
