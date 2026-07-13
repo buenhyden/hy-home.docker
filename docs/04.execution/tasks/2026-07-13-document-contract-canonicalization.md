@@ -66,7 +66,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Done |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Done |
 | T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Done |
-| T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Full bundle, wrapper, final review | QA / Documentation Lead | Todo |
+| T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Full bundle, wrapper, final review | QA / Documentation Lead | Review Pending |
 
 ## Phase View
 
@@ -83,7 +83,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 ### Phase 3 — Enforcement and Closure
 
 - [x] T-DCC-005 Repository and CI contract enforcement
-- [ ] T-DCC-006 Generated evidence, full QA, reviews, and closure
+- [ ] T-DCC-006 Generated evidence, full QA, reviews, and closure (Review Pending)
 
 ## Review Ledger
 
@@ -410,6 +410,59 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   arbitrary typed leaves, and normalized array copies fail closed while CI
   routing, advisory corpus posture, and workflow boundaries remain unchanged.
 
+### T-DCC-006 Pre-Closure Implementation Evidence
+
+- **Owner regeneration**: the semantic metadata inventory was regenerated at
+  `899` tracked records and `2,025` advisory findings; the audit implementation
+  matrix was regenerated from its canonical criterion sources; the LLM Wiki
+  index was regenerated at `1,294` paths; and the Wiki coverage snapshot was
+  regenerated at `1,293` safe paths. The reviewed diff contained exactly those
+  four owner-managed generated files and no handwritten-content path.
+- **Generated boundary commit**: controller commit `fd0dfe57` contains the
+  accepted four-file generated diff. `git status --short`, unstaged path, and
+  staged path checks were empty at that commit before the controlled wrapper.
+- **Full metadata and validation tests**: the metadata module passes `102/102`
+  and full validation discovery passes `146/146`. Explicit-base changed/new
+  validation against `e2954cc3` selects `51` paths with `0` violations,
+  `0` legacy exceptions, and `0` transition overrides.
+- **Audit and document QA**: the criterion contract passes `11` reports,
+  `161` rows, and `161` unique IDs; semantic freshness passes `11/0`; audit
+  coverage passes with exact `68/68/14/2/9` normalized status counts; the
+  generated matrix is fresh; traceability passes `46/0`; implementation
+  alignment passes `644` stage documents, `5,097` repository-local links, and
+  `0` failures.
+- **Generated and repository QA**: the Wiki index and coverage checks are
+  fresh, repository contracts pass with `failures=0`, and `git diff --check`
+  passes.
+- **Current lifecycle remediation**: pre-review self-audit found that canonical
+  WRE-10 still named T-DCC-004 as the current Review Pending task after its
+  approval. WRE-10 now records T-DCC-004 as Done/PASS/Approved and T-DCC-006 as
+  current Review Pending. Its Implemented state, depth `2`, Retain disposition,
+  and the audit's exact `68/68/14/2/9` distribution remain unchanged. Only the
+  audit matrix owner output was regenerated for this source correction.
+- **Controlled wrapper**: from clean commit `fd0dfe57`, the exact approved
+  command completed with wrapper exit `0`, hook exit `0`, and snapshot PASS.
+  Git-visible, non-ignored observations were before `0`, after `0`, changed
+  `0`, unexpected `0`; before, after, changed, and unexpected path sets were
+  all empty. The empty before/after snapshots also establish zero after-only
+  new paths. No hook-managed edit requires a separate commit.
+- **Observation boundary**: the wrapper evidence covers only Git-visible,
+  non-ignored repository status. It does not observe ignored paths or writes
+  outside the repository and is not a process or filesystem sandbox.
+- **Graphify**: no Task 6 code file changed, so the code-change refresh gate was
+  not applicable. The tracked report remains stale/advisory at `f8a72211` and
+  was corroborated against Spec 129, its active Plan/Task, Stage 00 governance,
+  the generated owners, the complete validation bundle, and the exact Git path
+  snapshots.
+- **Protected surfaces**: no runtime, Compose, infrastructure, deployment,
+  Release event, secret, credential, provider-global, model-policy, workflow,
+  ruleset, environment, branch-protection, or other remote state was changed.
+- **Implementer self-review**: generated ownership, exact counts, test and
+  contract evidence, clean-wrapper sequencing, observation limits, lifecycle
+  separation, and protected surfaces pass with Critical `0`, Important `0`,
+  Minor `0`. Independent whole-branch pre-closure review remains pending; no
+  closure or approval is claimed.
+
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | `39eb562e` | PASS | Approved | C0/I0/M0; no remediation required | `review-237aa5d7..39eb562e.diff`; combined reviewer verdict | Done |
@@ -417,7 +470,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
 | T-DCC-005 | `bded61ce`, `556ba98d`, `dc75443b` | PASS | Approved | Round 1 C0/I2/M0 and re-review C0/I1/M0; all template/array bypasses resolved; final C0/I0/M0 | `review-ac63469a..dc75443b.diff`; combined reviewer final verdict | Done |
-| T-DCC-006 | Pending | Pending | Pending | Pending | Whole-branch review evidence promoted here | Pending |
+| T-DCC-006 | `fd0dfe57` | Implementer PASS | Self-review C0/I0/M0 | Generated outputs, full bundle, controlled wrapper, and current WRE-10 lifecycle truth pass | Whole-branch pre-closure review remains pending | Review Pending |
 
 ## Verification Summary
 
@@ -428,12 +481,15 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   `11/0`, and its `32/32` unit suite; T-DCC-005 initially passed `6/6` and
   `99/99`, then its review-remediation adversarial class passes `8/8` and the
   metadata module passes `101/101`; its second remediation class passes `9/9`.
-- **Full Test Commands**: validation discovery passes `143/143`; the final
-  generated-freshness and cross-suite closure bundle remains reserved for
-  T-DCC-006.
-- **Generated Freshness**: Pending T-DCC-006.
-- **Graphify**: Required after code changes when available; advisory result and
-  corroboration will be recorded per applicable task.
+- **Full Test Commands**: the final metadata module passes `102/102`; validation
+  discovery passes `146/146`; explicit-base changed/new metadata selects
+  `51` paths with `0` violations.
+- **Generated Freshness**: inventory `899/2,025`, matrix, Wiki index `1,294`,
+  and Wiki coverage `1,293` were regenerated by their owners and pass freshness
+  checks.
+- **Graphify**: no Task 6 code file changed, so refresh was not applicable; the
+  stale/advisory tracked report was corroborated against tracked sources and
+  the complete QA evidence.
 - **Logs / Evidence Location**: Durable concise results live in this task;
   ignored briefs/review packages live under repo-support scratch. Raw logs,
   secret-bearing output, and shell history are not evidence artifacts.
@@ -446,7 +502,7 @@ process/filesystem sandbox.
 
 | Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |
 | --- | --- | ---: | --- | --- | --- |
-| `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | Pending | Pending | Pending | N/A; reserved for T-DCC-006 from an initially clean worktree |
+| `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | `0` (`hook_exit=0`; snapshot PASS) | Before `(none)`; after `(none)`; new `(none)`; changed `(none)`; unexpected `(none)` | Accepted: no hook edit and no unexpected Git-visible, non-ignored path | N/A; exact approved gate ran from clean commit `fd0dfe57` |
 
 ## Deviation Notes
 
