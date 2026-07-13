@@ -175,6 +175,14 @@ Markdown support files in the feature directory and machine-readable contracts
 under `contracts/`. Parent Markdown Spec or API Spec documents own the
 cross-links for YAML, GraphQL, and Proto files.
 
+Plan and Task are separate Stage 04 roles. Plan is prospective and records
+sequence, intended verification, risk, rollback, and completion criteria. Task
+is evidentiary and records attempted work, allowed and forbidden paths,
+applicable protected-surface approval, impact, exact commands and results,
+reviews, commits, and deferral routing. Ordinary and harness work use the same
+Task template; conditional approval and controlled-wrapper evidence does not
+create a Task subtype.
+
 See `docs/99.templates/README.md` for the full catalog and usage rules.
 
 ## 3.1 Language Boundary by Stage
@@ -203,8 +211,9 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 2. Load `rules/stage-authoring-matrix.md` and follow its stage row.
 3. Resolve exactly one registry profile, load the matching human contract, and
    select the mapped template before drafting or updating the target document.
-4. Instantiate and preserve the template contract: required headings, target path guidance,
-   target-relative links, and one `## Related Documents` section.
+4. Instantiate and preserve the template contract: required headings,
+   applicable conditional headings, resolved target-relative links, and one
+   `## Related Documents` section.
 5. Replace all template placeholders and serialize metadata deterministically
    without treating order as semantic priority.
 6. Preserve historical evidence payloads and fail closed on profile, template,

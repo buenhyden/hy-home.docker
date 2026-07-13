@@ -72,7 +72,6 @@ required_templates=(
   "templates/common/archive.template.md"
   "templates/common/readme.template.md"
   "templates/common/reference.template.md"
-  "templates/governance/harness-task-contract.template.md"
   "templates/governance/memory.template.md"
   "templates/governance/progress.template.md"
   "templates/operations/guide.template.md"
@@ -263,13 +262,13 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Approved surface evidence template"
-if ! grep -q "^## Approved Surface Evidence" docs/99.templates/templates/sdlc/task.template.md; then
-  echo "FAIL: docs/99.templates/templates/sdlc/task.template.md must include Approved Surface Evidence for high-risk work" >&2
+section "Approval evidence template"
+if ! grep -q "^## Approval Evidence" docs/99.templates/templates/sdlc/task.template.md; then
+  echo "FAIL: docs/99.templates/templates/sdlc/task.template.md must include conditional Approval Evidence" >&2
   failures=$((failures + 1))
 fi
-if ! grep -q "policy, runtime, CI, templates, secrets, remote GitHub, model policy, or provider" docs/99.templates/templates/sdlc/task.template.md; then
-  echo "FAIL: task.template.md Approved Surface Evidence must name high-risk surface classes" >&2
+if ! grep -q "policy, runtime, CI, templates, secrets, remote GitHub" docs/00.agent-governance/rules/task-checklists.md; then
+  echo "FAIL: Stage 00 task checklist must retain high-risk surface classes" >&2
   failures=$((failures + 1))
 fi
 
@@ -4187,10 +4186,14 @@ required_surface_fragments = {
         "Git-visible, non-ignored repository",
     ],
     pathlib.Path("docs/99.templates/templates/sdlc/task.template.md"): [
-        "## Controlled Agent Pre-commit Evidence (If Applicable)",
-        "| Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |",
-        "The wrapper never writes this evidence automatically",
-        "Git-visible, non-ignored repository",
+        "## Controlled Agent Pre-commit Evidence",
+        "{{controlled_wrapper_command}}",
+        "{{controlled_wrapper_allowed_prefixes}}",
+        "{{controlled_wrapper_exit_status}}",
+        "{{controlled_wrapper_snapshot_result}}",
+        "{{controlled_wrapper_observation_boundary}}",
+        "{{controlled_wrapper_path_sets}}",
+        "{{controlled_wrapper_disposition}}",
     ],
 }
 
@@ -4920,7 +4923,7 @@ harness_map="docs/00.agent-governance/harness-implementation-map.md"
 approval_boundaries="docs/00.agent-governance/rules/approval-boundaries.md"
 [[ -f "$harness_map" ]] || fail "missing harness implementation map: $harness_map"
 [[ -f "$approval_boundaries" ]] || fail "missing approval boundaries rule: $approval_boundaries"
-[[ -f "docs/99.templates/templates/governance/harness-task-contract.template.md" ]] || fail "missing harness task contract template"
+[[ -f "docs/99.templates/templates/sdlc/task.template.md" ]] || fail "missing canonical task template"
 [[ -f "scripts/validation/validate-harness.sh" ]] || fail "missing harness validation wrapper: scripts/validation/validate-harness.sh"
 if ! grep -q -- "--harness" scripts/validation/run-local-qa-gates.sh; then
   fail "run-local-qa-gates.sh missing --harness mode"

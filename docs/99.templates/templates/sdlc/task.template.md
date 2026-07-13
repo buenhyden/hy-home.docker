@@ -4,119 +4,107 @@ artifact_id: <artifact-id>
 artifact_type: task
 parent_ids: [<parent-artifact-id>]
 ---
-<!-- Target: docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md -->
 
-# Task: [Task Name]
-
-> Use this template for `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md`.
->
-> Rules:
->
-> - Task documents are traceability-first.
-> - Core behavior should default to TDD.
-> - Agent work must include eval tasks where applicable.
-> - This is the canonical execution-tracking location; feature-local task notes under `03.specs/` are secondary.
-> - Write this document in English. Preserve code identifiers, command names,
->   service names, environment variables, and quoted upstream terms exactly.
-> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
-> - Replace example links with real target-relative links, or delete unused examples before saving.
->
-> Target-relative examples from `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md`:
->
-> - Parent Spec: `../../03.specs/NNN-feature-id/spec.md`
-> - Parent Plan: `../plans/YYYY-MM-DD-feature.md`
-> - Operations direct target: `../../05.operations/guides/topic.md`
-> - Operations domain target: `../../05.operations/guides/domain/topic.md`
-> - Reference target: `../../90.references/{audits,data,research,learning}/category/item.md`
-
----
+# Task: {{title}}
 
 ## Overview
 
-This document tracks implementation and verification work for [feature or work
-stream name]. It records tasks derived from the parent Spec and Plan in an
-auditable form.
+{{overview}}
 
 ## Inputs
 
-- **Parent Spec**: [Feature spec](../../03.specs/NNN-<feature-id>/spec.md)
-- **Parent Plan**: [Execution plan](../plans/YYYY-MM-DD-<feature>.md)
+{{inputs}}
 
-## Working Rules
+## Goals and Non-goals
 
-- Write failing tests first for core behavior.
-- Every task must define evidence.
-- Documentation-only work still needs validation evidence.
-- If a feature-local `tasks.md` exists under `03.specs/`, this document remains the execution-tracking source of truth.
+{{goals_and_non_goals}}
 
-## Approved Surface Evidence
+## Scope and Change Boundaries
 
-Use this section when the task touches high-risk approved surfaces such as
-policy, runtime, CI, templates, secrets, remote GitHub, model policy, or provider
-adapters. Delete the section when no such surface is in scope.
+{{allowed_paths}}
 
-| Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
-| --- | --- | --- | --- | --- | --- | --- |
-| [surface] | [approval] | [target] | [evidence] | [evidence] | [rollback] | [redaction] |
+{{forbidden_paths}}
 
-## Task Table
+{{compose_impact}}
 
-| Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| T-001 | [Action] | impl | SPC-001 / §2 | Phase 1 | `pytest ...` | [Name] | Todo |
+{{security_impact}}
 
-## Suggested Types
+{{operations_impact}}
 
-- `impl`
-- `test`
-- `eval`
-- `doc`
-- `ops`
+{{runtime_impact}}
 
-## Agent-specific Types (If Applicable)
+## Approval Evidence
 
-- `prompt`
-- `tool`
-- `memory`
-- `guardrail`
-- `eval`
-- `observability`
+{{approval_source}}
 
-## Phase View (Optional)
+{{protected_surfaces}}
 
-### Phase 1
+{{approval_boundary}}
 
-- [ ] T-001 [Description]
+{{rollback_or_recovery}}
 
-### Phase 2
+{{redaction_boundary}}
 
-- [ ] T-002 [Description]
+## Work Breakdown
 
-## Verification Summary
+{{work_breakdown}}
 
-- **Test Commands**:
-- **Eval Commands**:
-- **Logs / Evidence Location**:
+## Work Log
 
-## Controlled Agent Pre-commit Evidence (If Applicable)
+{{work_log}}
 
-Use only for an approved final QA all-files gate. Direct `pre-commit run` is
-prohibited for agents; invoke
-`scripts/validation/run-agent-precommit-all-files.sh` from an initially clean
-linked worktree. The wrapper never writes this evidence automatically. Delete
-this section when the gate is not applicable.
+## Verification Evidence
 
-Evidence covers only Git-visible, non-ignored repository paths. Do not claim
-that the wrapper observes ignored/outside-repository writes or provides a
-process/filesystem sandbox.
+{{exact_commands}}
 
-| Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |
-| --- | --- | ---: | --- | --- | --- |
-| [exact wrapper command] | [repo-relative prefixes] | [exit code] | [Git-visible before/after/new/unexpected paths] | [accepted, separate commit, scope escalation, or blocked] | [reason, or N/A when executed] |
+{{expected_evidence}}
+
+{{actual_evidence}}
+
+{{verification_results}}
+
+## Controlled Agent Pre-commit Evidence
+
+{{controlled_wrapper_command}}
+
+{{controlled_wrapper_allowed_prefixes}}
+
+{{controlled_wrapper_exit_status}}
+
+{{controlled_wrapper_snapshot_result}}
+
+{{controlled_wrapper_observation_boundary}}
+
+{{controlled_wrapper_path_sets}}
+
+{{controlled_wrapper_disposition}}
+
+## Review Evidence
+
+{{implementation_review_verdict}}
+
+{{specification_review_verdict}}
+
+{{quality_review_verdict}}
+
+{{review_findings_and_disposition}}
+
+## Commit Ledger
+
+{{commit_identity}}
+
+{{commit_logical_unit}}
+
+{{commit_validation}}
+
+## Deferred and Blocked Items
+
+{{deferred_items}}
+
+{{blocked_items}}
+
+{{deferral_destination}}
 
 ## Related Documents
 
-- **Parent Spec**: [Feature spec](../../03.specs/NNN-<feature-id>/spec.md)
-- **Parent Plan**: [Execution plan](../plans/YYYY-MM-DD-<feature>.md)
-- **Operations / References**: [Operations guide](../../05.operations/guides/<topic>.md)
-- **Reference**: [Reference item](../../90.references/{audits,data,research,learning}/<category>/<item>.md)
+{{related_documents}}

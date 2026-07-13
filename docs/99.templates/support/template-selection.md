@@ -73,6 +73,12 @@ target action from this mapping:
   [common document contract](./common-document-contract.md), then use this file
   only to locate the copyable source.
 - Use spec child templates only inside the matching feature spec directory.
+- Use Plan only for prospective sequence, dependencies, verification strategy,
+  risk, rollback, and completion criteria. Record commands as intended checks,
+  not as executed results.
+- Use the single Task template for ordinary implementation and harness-surface
+  work. Include conditional approval and controlled-wrapper sections only when
+  applicable; no Task subtype or competing governance form is selected.
 - Use operations templates by purpose: guide for usage context, policy for
   controls and exceptions, runbook for ordered procedures and evidence, and
   release for evidence from a real release event.

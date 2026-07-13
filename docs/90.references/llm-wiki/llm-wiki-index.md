@@ -1040,7 +1040,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/common/readme.template.md](../../99.templates/templates/common/readme.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/reference.template.md](../../99.templates/templates/common/reference.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/README.md](../../99.templates/templates/governance/README.md) | folder index |
-| [docs/99.templates/templates/governance/harness-task-contract.template.md](../../99.templates/templates/governance/harness-task-contract.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/memory.template.md](../../99.templates/templates/governance/memory.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/progress.template.md](../../99.templates/templates/governance/progress.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/README.md](../../99.templates/templates/operations/README.md) | folder index |

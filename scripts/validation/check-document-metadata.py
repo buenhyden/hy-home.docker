@@ -136,9 +136,7 @@ EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
         "tests",
     }
 )
-TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES = frozenset(
-    {"docs/99.templates/templates/governance/harness-task-contract.template.md"}
-)
+TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES: frozenset[str] = frozenset()
 TARGET_MARKDOWN_PREFIXES = (
     "docs/00.agent-governance/",
     "docs/01.requirements/",

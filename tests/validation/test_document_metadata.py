@@ -1013,6 +1013,59 @@ class TemplateMetadataTests(unittest.TestCase):
         text = (ROOT / "docs/00.agent-governance/memory/README.md").read_text(encoding="utf-8")
         self.assertIn("docs/99.templates/templates/governance/memory.template.md", text)
 
+    def test_task_has_one_source_and_no_harness_competitor(self) -> None:
+        roles = self.profiles["template_roles"]
+        task_sources = [
+            role["source"]
+            for role in roles.values()
+            if role["artifact_profile"] == "task"
+        ]
+        self.assertEqual(
+            ["docs/99.templates/templates/sdlc/task.template.md"],
+            task_sources,
+        )
+        self.assertFalse(
+            (
+                ROOT
+                / "docs/99.templates/templates/governance/harness-task-contract.template.md"
+            ).exists()
+        )
+
+    def test_task_form_contains_protected_surface_and_qa_evidence(self) -> None:
+        text = (
+            ROOT / "docs/99.templates/templates/sdlc/task.template.md"
+        ).read_text(encoding="utf-8")
+        for heading in (
+            "## Scope and Change Boundaries",
+            "## Approval Evidence",
+            "## Work Log",
+            "## Verification Evidence",
+            "## Review Evidence",
+            "## Commit Ledger",
+        ):
+            with self.subTest(heading=heading):
+                self.assertIn(heading, text)
+
+    def test_deleted_harness_task_source_has_no_active_route(self) -> None:
+        deleted_path = (
+            "docs/99.templates/templates/governance/"
+            "harness-task-contract.template.md"
+        )
+        active_route_files = (
+            "docs/00.agent-governance/harness-implementation-map.md",
+            "docs/00.agent-governance/rules/approval-boundaries.md",
+            "docs/00.agent-governance/rules/documentation-protocol.md",
+            "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+            "docs/00.agent-governance/rules/task-checklists.md",
+            "docs/99.templates/README.md",
+            "docs/99.templates/support/template-selection.md",
+            "docs/99.templates/templates/governance/README.md",
+        )
+        for relative_path in active_route_files:
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertNotIn(deleted_path, text)
+
     def test_leaf_templates_declare_valid_target_profiles_with_safe_placeholders(self) -> None:
         expected = {
             "docs/99.templates/templates/sdlc/prd.template.md": "prd",
@@ -1197,8 +1250,8 @@ class TemplateMetadataTests(unittest.TestCase):
         spec_templates = (
             ROOT / "docs/99.templates/templates/spec-contracts/README.md"
         ).read_text(encoding="utf-8")
-        governance_templates = (
-            ROOT / "docs/99.templates/templates/governance/README.md"
+        sdlc_templates = (
+            ROOT / "docs/99.templates/templates/sdlc/README.md"
         ).read_text(encoding="utf-8")
         templates = (ROOT / "docs/99.templates/templates/README.md").read_text(encoding="utf-8")
         template_root = (ROOT / "docs/99.templates/README.md").read_text(encoding="utf-8")
@@ -1213,7 +1266,7 @@ class TemplateMetadataTests(unittest.TestCase):
         self.assertIn("[릴리스](./releases/README.md)", operations)
         self.assertIn("[release.template.md](./release.template.md)", operations_templates)
         self.assertIn("[api-spec.template.md](./api-spec.template.md)", spec_templates)
-        self.assertIn("artifact_type: task", governance_templates)
+        self.assertIn("[task.template.md](./task.template.md)", sdlc_templates)
         self.assertIn("| Operations | [operations/](./operations/README.md)", templates)
         self.assertIn("`release`", templates)
         self.assertIn("[Release template](./templates/operations/release.template.md)", template_root)
@@ -1518,6 +1571,98 @@ class TemplateBodyContractTests(unittest.TestCase):
             "related_documents",
         },
     }
+    TASK_4_ROLE_HEADINGS = {
+        "plan": (
+            "## Overview",
+            "## Context and Inputs",
+            "## Goals and Non-goals",
+            "## Work Breakdown",
+            "## Verification Plan",
+            "## Risks and Rollback",
+            "## Approval Gates",
+            "## Completion Criteria",
+            "## Related Documents",
+        ),
+        "task": (
+            "## Overview",
+            "## Inputs",
+            "## Goals and Non-goals",
+            "## Scope and Change Boundaries",
+            "## Approval Evidence",
+            "## Work Breakdown",
+            "## Work Log",
+            "## Verification Evidence",
+            "## Controlled Agent Pre-commit Evidence",
+            "## Review Evidence",
+            "## Commit Ledger",
+            "## Deferred and Blocked Items",
+            "## Related Documents",
+        ),
+    }
+    TASK_4_ROLE_PROFILES = {
+        "plan": "plan",
+        "task": "task",
+    }
+    TASK_4_ROLE_H1 = {
+        "plan": "# {{title}} Implementation Plan",
+        "task": "# Task: {{title}}",
+    }
+    TASK_4_ROLE_TOKENS = {
+        "plan": {
+            "title",
+            "overview",
+            "context_and_inputs",
+            "goals_and_non_goals",
+            "work_breakdown",
+            "verification_commands",
+            "expected_verification",
+            "risks_and_rollback",
+            "approval_gates",
+            "completion_criteria",
+            "related_documents",
+        },
+        "task": {
+            "title",
+            "overview",
+            "inputs",
+            "goals_and_non_goals",
+            "allowed_paths",
+            "forbidden_paths",
+            "compose_impact",
+            "security_impact",
+            "operations_impact",
+            "runtime_impact",
+            "approval_source",
+            "protected_surfaces",
+            "approval_boundary",
+            "rollback_or_recovery",
+            "redaction_boundary",
+            "work_breakdown",
+            "work_log",
+            "exact_commands",
+            "expected_evidence",
+            "actual_evidence",
+            "verification_results",
+            "controlled_wrapper_command",
+            "controlled_wrapper_allowed_prefixes",
+            "controlled_wrapper_exit_status",
+            "controlled_wrapper_snapshot_result",
+            "controlled_wrapper_observation_boundary",
+            "controlled_wrapper_path_sets",
+            "controlled_wrapper_disposition",
+            "implementation_review_verdict",
+            "specification_review_verdict",
+            "quality_review_verdict",
+            "review_findings_and_disposition",
+            "commit_identity",
+            "commit_logical_unit",
+            "commit_validation",
+            "deferred_items",
+            "blocked_items",
+            "deferral_destination",
+            "related_documents",
+        },
+    }
     MACHINE_TOKENS = {
         "docs/99.templates/templates/spec-contracts/openapi.template.yaml": {
             "API_TITLE",
@@ -1616,33 +1761,63 @@ class TemplateBodyContractTests(unittest.TestCase):
         roles[role_name] = {**roles[role_name], **role_updates}
         return {**self.profiles, "template_roles": roles}
 
-    def assert_task_3_markdown_contract(self, role_name: str, text: str) -> None:
+    def assert_markdown_role_contract(
+        self,
+        role_name: str,
+        text: str,
+        *,
+        expected_headings: tuple[str, ...],
+        expected_profile: str,
+        expected_tokens: set[str],
+        expected_h1: str,
+        empty_parents: bool = False,
+    ) -> None:
         role = self.profiles["template_roles"][role_name]
-        headings = [line for line in text.splitlines() if line.startswith("## ")]
-        expected_headings = self.TASK_3_ROLE_HEADINGS[role_name]
+        h1_headings = [line for line in text.splitlines() if line.startswith("# ")]
+        h2_headings = [line for line in text.splitlines() if line.startswith("## ")]
         registry_headings = [
             *role["required_headings"],
             *role["conditional_headings"],
         ]
-        expected_profile = self.TASK_3_ROLE_PROFILES[role_name]
         expected_frontmatter = {
             "status": "draft",
             "artifact_id": "<artifact-id>",
             "artifact_type": expected_profile,
-            "parent_ids": [] if role_name == "prd" else ["<parent-artifact-id>"],
+            "parent_ids": [] if empty_parents else ["<parent-artifact-id>"],
         }
 
-        self.assertEqual(1, sum(line.startswith("# ") for line in text.splitlines()))
-        self.assertEqual(list(expected_headings), headings)
+        self.assertEqual([expected_h1], h1_headings)
+        self.assertEqual(list(expected_headings), h2_headings)
         self.assertEqual(
             collections.Counter(expected_headings),
             collections.Counter(registry_headings),
         )
         self.assertEqual(expected_profile, role["artifact_profile"])
         self.assertEqual(expected_frontmatter, metadata._parse_frontmatter_text(text))
-        self.assertEqual(self.TASK_3_ROLE_TOKENS[role_name], self.body_tokens(text))
+        self.assertEqual(expected_tokens, self.body_tokens(text))
         self.assertNotIn("> Rules:", text)
         self.assertNotIn("<!-- Target:", text)
+
+    def assert_task_3_markdown_contract(self, role_name: str, text: str) -> None:
+        self.assert_markdown_role_contract(
+            role_name,
+            text,
+            expected_headings=self.TASK_3_ROLE_HEADINGS[role_name],
+            expected_profile=self.TASK_3_ROLE_PROFILES[role_name],
+            expected_tokens=self.TASK_3_ROLE_TOKENS[role_name],
+            expected_h1="# {{title}}",
+            empty_parents=role_name == "prd",
+        )
+
+    def assert_task_4_markdown_contract(self, role_name: str, text: str) -> None:
+        self.assert_markdown_role_contract(
+            role_name,
+            text,
+            expected_headings=self.TASK_4_ROLE_HEADINGS[role_name],
+            expected_profile=self.TASK_4_ROLE_PROFILES[role_name],
+            expected_tokens=self.TASK_4_ROLE_TOKENS[role_name],
+            expected_h1=self.TASK_4_ROLE_H1[role_name],
+        )
 
     def assert_machine_source_contract(self, relative_path: str, text: str) -> None:
         expected_tokens = self.MACHINE_TOKENS[relative_path]
@@ -1743,6 +1918,74 @@ class TemplateBodyContractTests(unittest.TestCase):
                 role = self.profiles["template_roles"][role_name]
                 text = (ROOT / role["source"]).read_text(encoding="utf-8")
                 self.assert_task_3_markdown_contract(role_name, text)
+
+    def test_task_4_plan_and_task_sources_match_exact_contracts(self) -> None:
+        for role_name in self.TASK_4_ROLE_TOKENS:
+            with self.subTest(role=role_name):
+                role = self.profiles["template_roles"][role_name]
+                text = (ROOT / role["source"]).read_text(encoding="utf-8")
+                self.assert_task_4_markdown_contract(role_name, text)
+
+    def test_plan_form_is_prospective_only(self) -> None:
+        role = self.profiles["template_roles"]["plan"]
+        text = (ROOT / role["source"]).read_text(encoding="utf-8")
+        tokens = self.body_tokens(text)
+        for forbidden_token in (
+            "actual_evidence",
+            "verification_results",
+            "work_log",
+            "implementation_review_verdict",
+            "specification_review_verdict",
+            "quality_review_verdict",
+            "commit_identity",
+        ):
+            with self.subTest(token=forbidden_token):
+                self.assertNotIn(forbidden_token, tokens)
+        for forbidden_heading in (
+            "## Verification Evidence",
+            "## Work Log",
+            "## Review Evidence",
+            "## Commit Ledger",
+        ):
+            with self.subTest(heading=forbidden_heading):
+                self.assertNotIn(forbidden_heading, text)
+
+    def test_task_4_negative_mutations_are_rejected(self) -> None:
+        task_role = self.profiles["template_roles"]["task"]
+        task_text = (ROOT / task_role["source"]).read_text(encoding="utf-8")
+        mutations = {
+            "extra-h1": task_text.replace(
+                "# Task: {{title}}",
+                "# Task: {{title}}\n\n# Duplicate",
+                1,
+            ),
+            "extra-heading": task_text.replace(
+                "## Related Documents",
+                "## Unregistered\n\n{{overview}}\n\n## Related Documents",
+                1,
+            ),
+            "missing-heading": task_text.replace(
+                "## Approval Evidence\n\n", "", 1
+            ),
+            "rules-block": task_text.replace(
+                "## Overview", "> Rules:\n\n## Overview", 1
+            ),
+            "target-comment": task_text.replace(
+                "# Task: {{title}}",
+                "<!-- Target: docs/04.execution/tasks/fixture.md -->\n\n"
+                "# Task: {{title}}",
+                1,
+            ),
+            "frontmatter-drift": task_text.replace(
+                "artifact_type: task", "artifact_type: plan", 1
+            ),
+            "token-drift": task_text.replace(
+                "{{actual_evidence}}", "{{result_summary}}", 1
+            ),
+        }
+        for name, mutated in mutations.items():
+            with self.subTest(mutation=name), self.assertRaises(AssertionError):
+                self.assert_task_4_markdown_contract("task", mutated)
 
     def test_parent_spec_has_all_child_handoffs_without_child_details(self) -> None:
         role = self.profiles["template_roles"]["spec"]
@@ -1851,6 +2094,47 @@ class TemplateBodyContractTests(unittest.TestCase):
                 self.assert_task_3_markdown_contract(
                     "prd",
                     source.replace("artifact_type: prd", "artifact_type: reference", 1),
+                )
+        finally:
+            self.profiles = original_profiles
+
+    def test_task_4_coordinated_registry_and_source_heading_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["plan"]
+        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "plan",
+            required_headings=[
+                "## Delivery Plan"
+                if heading == "## Work Breakdown"
+                else heading
+                for heading in role["required_headings"]
+            ],
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_4_markdown_contract(
+                    "plan",
+                    source.replace("## Work Breakdown", "## Delivery Plan", 1),
+                )
+        finally:
+            self.profiles = original_profiles
+
+    def test_task_4_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["task"]
+        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "task",
+            artifact_profile="plan",
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_4_markdown_contract(
+                    "task",
+                    source.replace("artifact_type: task", "artifact_type: plan", 1),
                 )
         finally:
             self.profiles = original_profiles

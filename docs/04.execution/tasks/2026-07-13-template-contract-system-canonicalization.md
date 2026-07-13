@@ -78,8 +78,8 @@ review, and a separate quality review before its logical commit.
 | --- | --- | --- | --- | --- | --- |
 | T-TCS-001 | Registry and support contract canonicalization | Spec and Plan | Completed | fresh implementer | spec then quality |
 | T-TCS-002 | Common, README, and Governance forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
-| T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | In Review | fresh implementer | spec then quality |
-| T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Queued | fresh implementer | spec then quality |
+| T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
+| T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | In Review | fresh implementer | spec then quality |
 | T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
 | T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | Queued | fresh implementer | spec then quality |
 | T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | Queued | fresh implementer | spec then quality |
@@ -234,7 +234,39 @@ review, and a separate quality review before its logical commit.
   Plan/Task because the graph remains advisory.
 - No target corpus, runtime, Compose, infrastructure, deployment, secret,
   provider, workflow, credential, branch-protection, or remote state changed.
-  T-TCS-003 remains `In Review`; no independent reapproval is claimed.
+  T-TCS-003 is completed after independent reapproval.
+
+## T-TCS-004 Implementation Evidence
+
+- Reduced Plan to a prospective form that owns context, sequence, intended
+  verification, risks, rollback, approval gates, and completion criteria. It
+  does not contain actual results, work logs, reviews, or commit evidence.
+- Consolidated ordinary and harness execution into one evidentiary Task form.
+  Its tokens cover allowed and forbidden paths, Compose/security/operations/
+  runtime impact, conditional protected-surface approval, exact commands,
+  expected and actual evidence, reviews, commits, controlled-wrapper evidence,
+  and deferral routing.
+- Deleted the competing Governance harness Task form and removed every active
+  route to it. Remaining literal references are deletion assertions,
+  instructions, or preserved completed historical evidence, not selectable
+  routes.
+- Updated Stage 00 authoring, checklist, stage-matrix, approval, and harness-map
+  routes plus Stage 99 catalogs and selection guidance. Controlled wrapper and
+  high-risk approval policy remain owned by Stage 00 and recorded in Task
+  evidence rather than copied into catalogs.
+- Narrowly removed the deleted source from the Python transitional exception
+  and shell inventory. T-TCS-006 still owns target-body validation; this unit
+  does not pre-empt that implementation.
+- Added independent literal Plan/Task heading, profile, H1, token, frontmatter,
+  prospective-only, negative-mutation, and coordinated registry-plus-source
+  drift regressions.
+- Refreshed the canonical LLM Wiki index, stage/category coverage, and metadata
+  semantic inventory through their owner generators. Graphify also ran after
+  code changes, but the interrupted implementer did not retain its numeric
+  snapshot; tracked graph outputs were restored and no count is claimed.
+- No runtime, Compose, infrastructure, deployment, secret, provider, workflow,
+  credential, branch-protection, or remote state changed. T-TCS-004 awaits
+  independent specification and quality review.
 
 ## Review Evidence
 
@@ -243,7 +275,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-001 | PASS on `9eca432b...ede2b9a2` | APPROVED on `9eca432b...ede2b9a2` | None; I-01 resolved by `ede2b9a2` | Completed |
 | T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
-| T-TCS-004 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 003 |
+| T-TCS-004 | Not run — implementation awaits review | Not run — implementation awaits review | None recorded | In Review |
 | T-TCS-005 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
 | T-TCS-007 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 006 |
@@ -368,6 +400,21 @@ review, and a separate quality review before its logical commit.
 | I-04-R1 GREEN | Independent literal nine-role heading/profile oracles plus coordinated-drift regressions | Pass: coordinated cases 2/2; `TemplateBodyContractTests` 6/6; combined body/metadata 19/19; full metadata 123/123. |
 | Final independent re-review | `.superpowers/sdd/task-3-review.md` over `48f37eb4...37d52025` | Spec PASS; Quality APPROVED; Critical 0 / Important 0 / Minor 0; ready to close. |
 
+### T-TCS-004 RED and GREEN
+
+| Phase | Command or evidence | Result |
+| --- | --- | --- |
+| RED | Combined `TemplateMetadataTests` and `TemplateBodyContractTests` before implementation | Expected failure: 27 methods ran with 11 failures covering two active-route/source-uniqueness defects, six missing Task evidence headings, one remaining harness source, and two exact Plan/Task source contracts. |
+| Focused GREEN | `python3 -m unittest tests.validation.test_document_metadata.TemplateMetadataTests tests.validation.test_document_metadata.TemplateBodyContractTests -q` | Pass: 27/27. |
+| Metadata regression | `python3 -m unittest tests.validation.test_document_metadata -q` | Pass: 131/131. |
+| Metadata contracts | `python3 scripts/validation/check-document-metadata.py --mode check-contracts` | Pass: zero violations. |
+| Changed mode | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 4c821e86` | Pass: 16 selected, zero violations, one base-existing legacy exception, zero transition overrides. The exception is the completed 2026-06-05 Task whose historical body is preserved and whose deleted link is minimally repaired. |
+| Repository contracts | `bash scripts/validation/check-repo-contracts.sh` | Pass: `failures=0`. |
+| Generated freshness | Canonical LLM Wiki index/coverage and metadata inventory check modes | Pass: 1,296 index paths, 1,295 safe coverage paths, and 901 metadata records / 2,025 advisory findings. |
+| Traceability and alignment | Stage 04/05 traceability and documentation implementation alignment | Pass: 46 catalog pairs; 647 stage docs / 5,135 links; zero failures. |
+| Graph refresh | `graphify update .` | Ran after code changes; tracked outputs restored. Numeric snapshot not retained after the implementation agent interruption, so no count is claimed; conclusions were corroborated against tracked sources, Stage 00, Spec 130, and the active Plan/Task. |
+| Diff, compile, and syntax | `git diff --check`, Python compilation, and Bash syntax | Pass. |
+
 ## Controlled Agent Pre-commit Evidence
 
 The final wrapper has not run because implementation and whole-branch review
@@ -399,8 +446,9 @@ have not completed.
 | `e026b561` | Task 3 I-01 through I-04 PRD semantics, parent-child handoffs, native-safe machine forms, and exact regressions | Remediation RED 4 methods / 5 failures; focused 4/4 and 17/17; metadata 121/121; metadata/repository contracts; native/static checks; generated freshness; traceability/alignment; Graphify; first re-review found I-04-R1 |
 | `37d52025` | Task 3 I-04-R1 independent literal heading/profile oracles and coordinated-drift regressions | RED 2/2; GREEN coordinated 2/2, focused 6/6 and 19/19, metadata 123/123; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close design contract forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-003 | Metadata changed-mode and diff hygiene; evidence-only scope |
+| Implementation unit — subject `docs(execution): consolidate plan and task forms`; hash pending until commit | Task 4 prospective Plan, evidentiary Task, duplicate harness-form deletion, direct governance/validator fallout, tests, and generated evidence | RED 11 expected failures; focused 27/27; metadata 131/131; metadata/repository contracts zero; changed mode 16/0 with one base-existing legacy exception; generated freshness; traceability/alignment; Graphify ran; diff/compile/syntax pass |
 
-Later review-fix and implementation commits will be appended as Tasks 3-7 close.
+Later review-fix and implementation commits will be appended as Tasks 4-7 close.
 
 ## Migration Wave Routing
 

@@ -38,7 +38,8 @@ SDLC 문서를 위한 복사 가능한 원본을 안내한다.
 1. [template selection](../../support/template-selection.md)에서 목적과 대상 경로에 맞는 원본을 찾는다.
 2. 선택한 원본의 모든 토큰을 실제 근거가 있는 내용으로 바꾼다.
 3. 별도 검토가 필요한 Stage 03 계약은 [Spec contract catalog](../spec-contracts/README.md)에서 찾는다.
-4. 변경 후 [template contract](../../support/template-contract.md)와 저장소 검증을 확인한다.
+4. 일반 작업과 harness 작업은 모두 하나의 Task 원본에 기록하고, 적용되는 승인·검증 증거만 채운다.
+5. 변경 후 [template contract](../../support/template-contract.md)와 저장소 검증을 확인한다.
 
 ## Related Documents
 
