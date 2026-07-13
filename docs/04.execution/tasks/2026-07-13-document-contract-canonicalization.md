@@ -61,7 +61,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-DCC-001 | Extend registry/parser with families, key order, README profiles, and parent serialization. | impl/test | Registry Model; VAL-129-001/004/005 | Task 1 | RED/GREEN metadata tests and independent review | Documentation Metadata Engineer | Review Pending |
+| T-DCC-001 | Extend registry/parser with families, key order, README profiles, and parent serialization. | impl/test | Registry Model; VAL-129-001/004/005 | Task 1 | RED/GREEN metadata tests and independent review | Documentation Metadata Engineer | Done |
 | T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Todo |
 | T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Todo |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Todo |
@@ -72,7 +72,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 
 ### Phase 1 — Executable Foundation
 
-- [ ] T-DCC-001 Registry, parser, README profiles, and parent serialization
+- [x] T-DCC-001 Registry, parser, README profiles, and parent serialization
 - [ ] T-DCC-002 Typed templates and Release routing
 
 ### Phase 2 — Human and Evidence Alignment
@@ -116,12 +116,17 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   provider-global state, and remote GitHub state remain untouched.
 - **Implementer self-review**: Spec mapping PASS and code-quality review PASS
   with Critical `0`, Important `0`, Minor `0`. This is implementer evidence,
-  not the required independent approval; the combined controller review runs
-  against the logical commit before T-DCC-001 may be marked Done.
+  not the required independent approval.
+- **Independent task review**: the combined reviewer read brief, report, and
+  exact diff package for `237aa5d7..39eb562e`, returned Spec PASS and Task
+  Quality Approved with Critical `0`, Important `0`, and Minor `0`, and
+  confirmed exact registry keys/order, fail-closed README classification,
+  declared-consumer semantics, parent serialization, test coverage, scope, and
+  CLI compatibility.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| T-DCC-001 | Task 1 logical commit | Pending post-commit review | Pending post-commit review | Implementer self-review C0/I0/M0; independent findings pending | Combined controller review required against the commit | Review Pending |
+| T-DCC-001 | `39eb562e` | PASS | Approved | C0/I0/M0; no remediation required | `review-237aa5d7..39eb562e.diff`; combined reviewer verdict | Done |
 | T-DCC-002 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-003 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-004 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
