@@ -24,6 +24,7 @@ status: active
 - 검증된 2026-07-07 자료는 책임이 분명한 이 pack의 canonical 문서에 한 번만 반영했으며, [2026-07-07 duplicate pack](../2026-07-07-agentic-research-pack-update/README.md)은 superseded 상태입니다.
 - 이전에 완료된 [Stage 03 research refresh spec](../../../03.specs/104-agentic-research-pack-refresh/spec.md), [Stage 04 plan](../../../04.execution/plans/2026-07-05-agentic-research-pack-refresh.md), [Stage 04 task evidence](../../../04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md), [2026-07-05 implementation audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md), [2026-07-07 audit update](../../audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)는 삭제하거나 본문을 복제하지 않고 historical evidence로 유지합니다.
 - Stage 90은 source-backed comparison과 routing을 제공할 뿐입니다. 현재 policy는 Stage 00/05 policy 문서, execution evidence는 Stage 04, runtime truth는 tracked provider/Compose/script/config surface가 계속 담당합니다.
+- 2026-07-13 document-contract 연구는 이 canonical pack의 관련 leaf만 in-place로 재검증했습니다. 별도 날짜 pack이나 dated audit snapshot을 만들거나 다시 쓰지 않았습니다.
 
 ## Audience
 
@@ -84,16 +85,16 @@ status: active
 - [harness-engineering.md](./harness-engineering.md) - test/eval/runtime harness와 저장소 적용 요소 분석
 - [loop-engineering.md](./loop-engineering.md) - agent loop, eval loop, CI loop, human approval loop 분석
 - [spec-driven-sdlc.md](./spec-driven-sdlc.md) - spec-driven development, SDLC, traceability 분석
-- [sdlc-document-roles.md](./sdlc-document-roles.md) - PRD, ARD, ADR, spec, plan, task, guide, policy, runbook, incident, postmortem, release 문서 유형별 역할과 목적 분석
-- [document-metadata-lifecycle.md](./document-metadata-lifecycle.md) - artifact identity, type profile, parent/supersession, freshness, numbering, lifecycle, README/generated-document, semantic validation 기준
+- [sdlc-document-roles.md](./sdlc-document-roles.md) - PRD, ARD, ADR, spec/children, plan, task, guide, policy, runbook, incident, postmortem, Release의 분리된 역할과 Release/deployment evidence 경계 분석
+- [document-metadata-lifecycle.md](./document-metadata-lifecycle.md) - consumer-specific typed metadata, deterministic serialization, artifact identity, parent/supersession, freshness, lifecycle, README/generated-document, staged enforcement 기준
 - [agent-instructions-vibe-coding.md](./agent-instructions-vibe-coding.md) - instruction authority/context/tools/permissions, generated-code ownership/review, debt/escalation, safe vibe-coding 경계
-- [quality-ci-formatting.md](./quality-ci-formatting.md) - CI/CD, QA, formatting, secure quality gate 분석
+- [quality-ci-formatting.md](./quality-ci-formatting.md) - CI/CD, QA, formatting, secure quality gate, tracked check와 remote required-check/ruleset 경계 분석
 - [provider-implementation-comparison.md](./provider-implementation-comparison.md) - Claude, Codex, Gemini provider 현황과 공통 체계 분석
 - [provider-model-landscape.md](./provider-model-landscape.md) - 2026-07-10 10:00 KST cutoff 기준 Claude, OpenAI/Codex, Gemini 공식 model catalog, lifecycle, ID, source caveat 분석
 - [agent-model-selection.md](./agent-model-selection.md) - 작업 특성에 맞는 모델 tier와 reasoning-effort 선택, per-provider 메커니즘, 변경 프로토콜 분석
 - [docker-compose-infrastructure.md](./docker-compose-infrastructure.md) - Docker Compose, infrastructure harness, profiles, networks, secrets, validation, hardening 분석
 - [security-governance.md](./security-governance.md) - secure SDLC reference frameworks, workflow security, secret boundaries, approval evidence 분석
-- [automation-pipeline-workflow.md](./automation-pipeline-workflow.md) - automation, pipeline, workflow loop, provider hook, local/remote action boundary 분석
+- [automation-pipeline-workflow.md](./automation-pipeline-workflow.md) - automation, pipeline, workflow loop, provider hook, Release/deployment, local/CI/remote enforcement boundary 분석
 - [ai-agent-catalogs.md](./ai-agent-catalogs.md) - agency-agents 같은 외부 agent catalog 패턴과 repo-local curated catalog, import 경계 분석
 
 ## Reading Order
@@ -117,6 +118,7 @@ status: active
 5. 다른 stage 수정이 필요하면 이 pack에서 직접 고치지 않고 gap으로 기록합니다.
 6. 새 문서를 추가하면 이 README와 상위 [research README](../README.md)를 갱신합니다.
 7. 변경 후 `bash scripts/validation/check-repo-contracts.sh`를 실행합니다.
+8. normative 외부 claim은 primary source의 direct URL과 access date를 남기고, mutable guidance와 fixed standard를 구분합니다.
 
 ## Related Documents
 

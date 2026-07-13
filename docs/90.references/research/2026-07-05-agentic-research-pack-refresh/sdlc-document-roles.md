@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:sdlc-document-roles
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-07-13
 review_cycle: on-source-change
 ---
 
@@ -16,7 +16,7 @@ review_cycle: on-source-change
 This reference maps each tracked workspace document type to the question it
 answers, its authoring trigger and owner, its inputs and consumers, its lifecycle
 status, its canonical template/path, and its external or repo-template basis.
-Supporting API, agent, data, and test contracts are separate rows because they
+Supporting API, agent, data, service, and test contracts are separate rows because they
 answer different questions and serve different consumers.
 
 ## Purpose
@@ -61,8 +61,9 @@ semantic-validation criteria.
   frontmatter value of an individual file.
 - **External basis** can state a repo-template basis when no external source is
   necessary or adopted for that document role.
-- **Release notes/changelog** communicate changes; the release runbook owns
-  procedure. They are not interchangeable.
+- **Release notes/changelog** communicate changes; a **Release** records an
+  executed release event; the release runbook owns procedure; deployment
+  systems own promotion/runtime evidence. They are not interchangeable.
 - **Incident** preserves contemporaneous state; **postmortem** preserves reviewed
   learning and preventive actions.
 
@@ -77,6 +78,7 @@ semantic-validation criteria.
 | API Spec | What callable operations, schemas, auth rules, errors, and compatibility contract apply? | A Spec exposes or changes an API/interface | Backend/API owner | Parent Spec, architecture, security and data constraints | Implementers, clients, contract tests | Optional supporting Stage 03 contract | `spec-contracts/api-spec.template.md` → feature `api-spec.md`; machine contracts under `contracts/` | Repo-template basis; no separate external API standard is adopted by this task. |
 | Agent Design | What agent purpose, inputs, outputs, tools, permissions, failure modes, and eval contract apply? | A Spec creates or materially changes agent behavior | Agent/feature owner | Parent Spec, Stage 00 governance, provider constraints | Runtime adapter work, tests/evals, reviewers | Optional supporting Stage 03 contract | `spec-contracts/agent-design.template.md` → feature `agent-design.md` | Repo-template basis; GitHub Spec Kit only supplies comparison for structured agent context, not this provider-neutral contract. |
 | Data Model | What entities, relationships, integrity, storage, privacy, and migration rules apply? | A Spec creates or changes durable data shape | Data/feature owner | Parent Spec, architecture, privacy/security constraints | Implementers, migrations, API contracts, tests | Optional supporting Stage 03 contract | `spec-contracts/data-model.template.md` → feature `data-model.md` | Repo-template basis; no external data-model standard is adopted by this task. |
+| Service Scaffold | What service boundary, dependencies, configuration, health, observability, and implementation skeleton apply? | A Spec creates or materially changes a service-shaped implementation | Service/feature owner | Parent Spec, architecture, API/data/security constraints | Implementers, Compose/runtime design, tests, operators | Optional supporting Stage 03 contract | `spec-contracts/service.template.md` → feature `service.md` | Repo-template basis; the scaffold does not prove deployed service runtime. |
 | Test Contract | What must be verified, with which fixtures, expected results, non-functional checks, and evals? | A Spec needs executable acceptance/verification detail | QA/feature owner | Parent Spec, API/agent/data contracts, risks | Plan, Task, CI, reviewers | Optional supporting Stage 03 contract | `spec-contracts/tests.template.md` → feature `tests.md` | Repo-template basis; Spec Kit quality checklists and NIST SSDF verification practices are comparison lenses only. |
 | Plan | In what sequence will the approved Spec be implemented, controlled, verified, and completed? | Spec and supporting contracts are stable enough to schedule work | Project/Engineering Lead | PRD/ARD/ADR/Spec, dependencies, risks | Tasks, implementers, reviewers | Active Stage 04 execution plan | `sdlc/plan.template.md` → `docs/04.execution/plans/` | GitHub Spec Kit has a distinct Plan phase feeding Tasks; ISO 12207:2017 supplies withdrawn historical lifecycle metadata only. |
 | Task | What was attempted, changed, validated, reviewed, committed, deferred, or blocked? | Approved plan work begins | Implementation/QA Engineer | Plan, Spec, task brief, baseline evidence | Reviewers, operations, release, audit trail | Active Stage 04 execution evidence | `sdlc/task.template.md` → `docs/04.execution/tasks/` | GitHub Spec Kit separates Tasks and Implement; the repo task additionally owns auditable execution evidence. |
@@ -85,21 +87,21 @@ semantic-validation criteria.
 | Runbook | What ordered, repeatable steps, evidence, recovery, rollback, and escalation execute an operation? | Repeatable operation, recovery, or incident response needs a procedure | Operations/SRE | Policy, Guide, Spec, task/incident evidence | Operators, incident responders, audits | Active Stage 05 operational procedure | `operations/runbook.template.md` → `docs/05.operations/runbooks/` | PagerDuty defines a runbook as a detailed how-to for a repeated operations task; the page is mutable vendor guidance with no visible update date. |
 | Incident | What happened, when, with what impact/current state, command roles, actions, and handoffs? | A qualifying operational/security event begins | Operations/SRE or Security incident owner | Alerts, observations, commands, communications | Responders, stakeholders, Postmortem | Active/resolved Stage 05 incident record | `operations/incident.template.md` → `docs/05.operations/incidents/YYYY/INC-###-incident-title/INC-###-incident-title.md` | Google SRE incident command/live-state practice; NIST SP 800-61 Rev. 3 (April 2025) CSF 2.0 incident-response profile. |
 | Postmortem | Why did the incident occur, what was learned, and which owned actions prevent recurrence? | Incident is stabilized and meets postmortem criteria | Operations/SRE with contributing owners/reviewers | Incident timeline, impact, mitigation, evidence | Requirements/architecture/spec/plan/runbook improvements | Stage 05 reviewed learning artifact | `operations/postmortem.template.md` → incident-folder `postmortem.md` | Google SRE defines a reviewed, blameless record of impact, mitigation, root causes, and preventive actions. |
-| Release notes/changelog | What notable user/operator-facing changes are in a version? | A release/tag has notable changes to communicate | Release owner / Operations/SRE | Completed tasks, version, compatibility/upgrade notes | Users, operators, future release review | Root release communication plus Stage 05 release procedure | Root `CHANGELOG.md`; procedure at `docs/05.operations/runbooks/00-workspace/release-management.md` | Keep a Changelog 1.1.0 (2019-02-15 convention page) and Semantic Versioning 2.0.0; neither defines repo release approval. |
+| Release | What real release event occurred, which artifacts, validation, approvals, rollout or rollback evidence support it, and what was the outcome? | A release event has immutable artifact and outcome evidence; a changelog or readiness check alone is insufficient | Release owner / Operations/SRE | Completed Specs/Plans/Tasks, artifact identifiers, approvals, compatibility/readiness inputs, rollout evidence | Users, operators, audits, later releases and incidents | Stage 05 release event record, distinct from deployment runtime | `operations/release.template.md` → `docs/05.operations/releases/YYYY-MM-DD-release-name.md`; `CHANGELOG.md` and release runbook remain inputs/adjacent owners | GitHub Releases and deployment history illustrate distinct release/deployment evidence; repo-local approval and runtime remain canonical. |
 | Reference | What stable, source-backed context helps active work without owning decisions or procedures? | Durable facts, inventory, glossary, or research context is needed | Documentation maintainer / subject owner | Primary sources and tracked current evidence | Active stages, authors, reviewers | Supporting Stage 90 context | `common/reference.template.md` → `docs/90.references/` | Repo-template basis; external sources support each reference's facts but do not make the reference policy. |
 | Audit | What was inspected, against which criteria, with what evidence, findings, severity, and disposition? | A bounded current-state/compliance review is authorized | Auditor / subject reviewer | Scope, criteria, tracked evidence, approved external benchmarks | Canonical gap owners, Specs/Plans/Tasks | Supporting Stage 90 audit-reference profile | `common/reference.template.md` → `docs/90.references/audits/` | Repo-template basis: Audit uses the Stage 90 Reference template/profile, not a separate audit template; any external benchmark remains comparison unless adopted elsewhere. |
 | Archive tombstone | What active document was removed, why, and what current replacement should be followed? | A whole document conflicts with current implementation and must leave the active chain | Documentation Specialist / Agentic Workflow Specialist | Original path/status, archive reason, replacement | Maintainers and migration audit trail; active docs must not link back | Stage 98 tombstone; `status: archived` only | `common/archive.template.md` → `docs/98.archive/original-stage/original-path.md` | Repo-template basis; a tombstone preserves migration traceability, not historical current truth. |
 
 ## Analysis
 
-The 19 rows form five ownership bands:
+The 20 rows form five ownership bands:
 
 1. PRD, ARD, and ADR own intent and architecture rationale.
-2. Spec plus API, agent, data, and test contracts own implementable technical
+2. Spec plus API, agent, data, service, and test contracts own implementable technical
    and verification contracts.
 3. Plan and Task separate intended sequencing from actual execution evidence.
 4. Guide, Policy, Runbook, Incident, Postmortem, and Release separate use,
-   controls, procedure, live state, learning, and communication.
+   controls, procedure, live state, learning, and executed-event evidence.
 5. Reference, Audit, and Archive tombstone preserve supporting context,
    bounded findings, and migration traceability without becoming active truth.
 
@@ -109,14 +111,21 @@ An Incident records current chronology/state; a Postmortem is reviewed learning.
 Crossing any of these boundaries weakens ownership and makes validation evidence
 harder to interpret.
 
+GitHub's content guidance begins with audience, purpose, and content type, while
+Diataxis separates tutorial, how-to, reference, and explanation needs. Those
+models support the repository's decision to keep role-specific documents and
+link across them. They do not replace the richer PRD-to-Release lifecycle or
+collapse Guide, Runbook, Reference, and research explanation into one type.
+
 ## Application Notes for This Workspace
 
 - Choose the document by its primary question, then load its mapped template.
 - Route a new gap to the earliest owner and link downstream consumers.
 - Keep optional supporting contracts separate when their interface, agent, data,
-  or test question is material.
-- Put notable release communication in `CHANGELOG.md` and procedure in the
-  release runbook.
+  service, or test question is material.
+- Put notable release communication in `CHANGELOG.md`, procedure in the release
+  runbook, real event evidence in Release, and deployment runtime in its
+  separately approved technical/operational chain.
 - Keep Stage 90 references/audits advisory and Stage 98 tombstones out of the
   active link chain.
 - Use the DML criterion IDs for metadata audits; do not infer metadata
@@ -124,8 +133,11 @@ harder to interpret.
 
 ## Potential Follow-up / Gap
 
-- Release notes have a tracked home and convention but no dedicated workspace
-  template; any template addition requires separately approved Stage 99 work.
+- Release now has a profile, template, selection route, and Stage 05 index, but
+  no event leaf exists. Create one only after real event evidence exists.
+- Deployment promotion, environment approval, artifact integrity, and tested
+  rollback still require their own approved implementation chain; a Release
+  template does not prove any of them.
 - Formal ISO/NIST conformance or control mapping requires an approved policy,
   specification, and task rather than a Stage 90 role description.
 - Optional supporting-contract adoption should remain feature-driven; a template
@@ -136,8 +148,10 @@ harder to interpret.
 - Repo-local roles come from the tracked stage matrix, documentation protocol,
   and template catalog.
 - External sources were originally retrieved on `2026-07-10` and revalidated
-  on `2026-07-11`; mutable pages without a displayed update date prove only
-  the content visible at the latest revalidation.
+  on `2026-07-11`. The canonical YAML, GitHub content/frontmatter, Diataxis,
+  CommonMark/GFM, and GitHub release/deployment sources were re-opened on
+  `2026-07-13`; mutable pages without a displayed update date prove only the
+  content visible at the latest revalidation.
 - ISO pages provide metadata and summaries rather than full standards.
 - ISO/IEC/IEEE 12207:2017 is withdrawn and is not a current normative basis.
 - External sources remain comparisons; repo-template bases are labeled explicitly.
@@ -147,9 +161,11 @@ harder to interpret.
 - [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - stage purpose, timing, owner, inputs, outputs, and templates
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - type-to-template and gap-routing contracts
 - [SDLC templates](../../../99.templates/templates/sdlc/README.md) - PRD through Task template intent
-- [Supporting contract templates](../../../99.templates/templates/spec-contracts/README.md) - API, agent, data, and test roles
+- [Supporting contract templates](../../../99.templates/templates/spec-contracts/README.md) - API, agent, data, service, and test roles
 - [Operations templates](../../../99.templates/templates/operations/README.md) - Guide through Postmortem roles
 - [Common templates](../../../99.templates/templates/common/README.md) - Reference and Archive templates; Audit uses the Reference profile
+- [SDLC document contract](../../../99.templates/support/sdlc-document-contract.md) - human family ownership and Release boundary
+- [Common document contract](../../../99.templates/support/common-document-contract.md) - Reference, Audit, Archive, and repository-surface ownership
 - [Audit references](../../audits/README.md) - audit-category role and Reference-template requirement
 - [GitHub Spec Kit documentation](https://github.github.com/spec-kit/) - Spec → Plan → Tasks → Implement artifacts
 - [ISO/IEC/IEEE 12207:2017](https://www.iso.org/standard/63712.html) - withdrawn lifecycle-process metadata
@@ -163,6 +179,10 @@ harder to interpret.
 - [PagerDuty runbook overview](https://www.pagerduty.com/resources/learn/what-is-a-runbook/) - repeatable operations procedure
 - [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) - changelog convention
 - [Semantic Versioning 2.0.0](https://semver.org/) - version signal convention
+- [GitHub Docs content best practices](https://docs.github.com/en/contributing/writing-for-github-docs/best-practices-for-github-docs) - audience, purpose, content-type, and scannability guidance
+- [Diataxis](https://diataxis.fr/) - purpose separation across tutorial, how-to, reference, and explanation
+- [GitHub deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) - deployment approvals, restrictions, and environment evidence
+- [GitHub deployment history](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history) - deployment commits, environments, logs, URLs, and status history
 
 ## Maintenance
 

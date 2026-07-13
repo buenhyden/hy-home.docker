@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:quality-ci-formatting
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-07-13
 review_cycle: on-source-change
 ---
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md -->
@@ -70,6 +70,12 @@ this file owns only the concrete QA evidence-surface inventory.
 - **Remote-only / unknown** means the tracked repository cannot establish
   current remote enforcement. The historical proposal records a read-only
   2026-07-04 observation, but this task did not re-query remote state.
+- **Required checks** are remote branch/ruleset configuration that names check
+  contexts; a matching local command, workflow file, or successful historical
+  run does not prove the requirement is currently enforced.
+- **Rulesets** and classic branch protection can both impose remote rules. Their
+  observed configuration and evaluation belong to remote evidence, not to the
+  tracked CI definition inventory.
 
 ## Tracked Inventory
 
@@ -154,6 +160,13 @@ metrics—change lead time, deployment frequency, failed deployment recovery
 time, change fail rate, and deployment rework rate—require production delivery
 data this repository task did not collect.
 
+The document-contract rollout follows the same evidence separation. Typed
+local validation can report the full historical inventory while blocking only
+the safely selected changed/new surface. A tracked CI job may execute that
+contract, but only an observed protected-branch rule or ruleset can establish
+that GitHub requires its named context before merge. This staged model prevents
+schema introduction from becoming an accidental corpus-wide or remote gate.
+
 ## Application Notes for This Workspace
 
 - Cite the exact script, hook ID, or workflow job for every QA claim.
@@ -179,6 +192,9 @@ data this repository task did not collect.
 ## Source Rules
 
 - External sources were retrieved on **2026-07-11** and support comparison only.
+  GitHub ruleset, protected-branch/required-check, and deployment-environment
+  guidance was re-opened on **2026-07-13**; the earlier dated inventory remains
+  unchanged.
 - Mutable official pages prove retrieval-time guidance, not historical behavior
   or workspace enforcement.
 - Repo-local claims cite tracked sources at baseline `cf8790ca`; Graphify is
@@ -191,6 +207,8 @@ data this repository task did not collect.
 - [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - workflow/job/step and trigger syntax
 - [GitHub secure use](https://docs.github.com/en/actions/reference/security/secure-use) - least privilege, untrusted input, secret, and immutable-action guidance
 - [GitHub deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) - deployment approvals, environment secrets, restrictions, and protection rules
+- [GitHub rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) - layered remote branch/tag rule enforcement
+- [GitHub protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) - required status check and merge-protection behavior
 - [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) - tagged release records, notes, and assets
 - [pre-commit](https://pre-commit.com/) - hook configuration, local execution, CI use, and skips
 - [EditorConfig](https://editorconfig.org/) - cross-editor consistency

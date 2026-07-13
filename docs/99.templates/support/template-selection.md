@@ -66,6 +66,10 @@ target action from this mapping:
 ## Selection Rules
 
 - Choose exactly one primary template for each target document.
+- Choose the artifact role using the
+  [SDLC document contract](./sdlc-document-contract.md) or
+  [common document contract](./common-document-contract.md), then use this file
+  only to locate the copyable source.
 - Use spec child templates only inside the matching feature spec directory.
 - Use operations templates by purpose: guide for usage context, policy for
   controls and exceptions, runbook for ordered procedures and evidence, and
@@ -77,9 +81,15 @@ target action from this mapping:
 - Use archive templates only for tombstones, not for preserving stale body text.
 - Keep guide, policy, and runbook roles separate during bucket restructure
   work; path cleanup does not merge their templates or purposes.
+- Classify README files with the
+  [README profile contract](./readme-profile-contract.md); copying the README
+  template does not select a profile or authorize frontmatter.
 
 ## Related Documents
 
 - [support README](./README.md)
 - [template contract](./template-contract.md)
 - [templates README](../templates/README.md)
+- [SDLC document contract](./sdlc-document-contract.md)
+- [common document contract](./common-document-contract.md)
+- [README profile contract](./readme-profile-contract.md)

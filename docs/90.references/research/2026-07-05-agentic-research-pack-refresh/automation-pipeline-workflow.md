@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:automation-pipeline-workflow
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-07-13
 review_cycle: on-source-change
 ---
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md -->
@@ -56,6 +56,9 @@ GitHub settings, or external resources.
   by its canonical generator, never hand-edited.
 - **External boundary** distinguishes local repository state, GitHub-hosted CI,
   and actions that change remote resources or require explicit approval.
+- **Remote enforcement** is an observed protected-branch or ruleset property.
+  Workflow/job presence and local validator success are inputs, not proof that
+  a check is required before merge.
 
 ## Tracked Workflow and Job Inventory
 
@@ -108,7 +111,7 @@ unknown.
 | Changelog authority | `generate-changelog.yml` only verifies that a pushed tag already appears in `CHANGELOG.md`, while active Stage 00 governance labels it “generate release changelog.” | GitHub syntax distinguishes the tracked steps actually executed from a workflow filename or governance summary. | Partially Implemented | The active governance claim contradicts the tracked workflow and can reintroduce the stale generation claim. | Correct `docs/00.agent-governance/rules/github-governance.md` in separately approved Stage 00 work; do not change policy or workflow in this Stage 90 task. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/generate-changelog.yml:15-42`; `docs/00.agent-governance/rules/github-governance.md:147-155` | High |
 | CI feedback | Quality, drift, release-tag, and contributor loops produce inspectable repository-event feedback; the 15 quality jobs have no `needs:` dependency chain. | GitHub Actions defines event-triggered jobs and optional job dependencies. | Implemented | Job definitions and local checks do not prove remote success or required-check enforcement. | Report exact job/run evidence and keep remote enforcement separately verified. | `docs/00.agent-governance/rules/github-governance.md` | Workflow inventory | High |
 | CD / deployment promotion | No workflow job uses a GitHub environment or deploys an application/infrastructure target. | GitHub environments gate jobs with reviewers, branch restrictions, protection rules, delayed secret access, and deployment history. | Missing | CI, build, and tag verification are not deployment promotion. | Author a later Stage 03/04 delivery contract before adding environment/promotion automation. | `docs/03.specs/README.md` | Workflow scan; release runbook | High |
-| Release records | `CHANGELOG.md`, the manual release-management runbook, and pushed-tag coverage validation exist; no workflow creates a GitHub Release or attaches artifacts. | GitHub Releases associate a tag with release notes and optional downloadable assets. | Partially Implemented | Current evidence lacks an automated release record, artifact identity/integrity, and release-to-deployment linkage. | Keep tag coverage accurately named and define release artifact/record ownership with delivery work. | `docs/05.operations/runbooks/00-workspace/release-management.md` | Changelog workflow and runbook | High |
+| Release records | A typed Stage 05 Release template, route, and index now exist beside `CHANGELOG.md`, the release runbook, and pushed-tag coverage validation; no event leaf, GitHub Release, or artifact upload was created. | GitHub Releases associate a tag with release notes and optional downloadable assets; GitHub deployment history is separate execution evidence. | Partially Implemented | Contract readiness is not a real release event, artifact integrity statement, or release-to-deployment linkage. | Create a Release leaf only from actual event evidence and keep deployment runtime in its separately approved chain. | `docs/05.operations/releases/README.md` | Release contract surfaces, changelog workflow, and runbook | High |
 | Deployment approval | Repository governance requires explicit approval for remote/runtime changes, but no tracked deployment environment implements that approval. | GitHub deployment protection rules can require reviewers/custom checks and prevent secret access until approval. | Partially Implemented | Policy intent is not an executable deployment gate. | Preserve the manual hard stop and implement environment controls only after a concrete target and rollback contract are approved. | `docs/00.agent-governance/rules/approval-boundaries.md` | Stage 00 policy; workflow absence | High |
 | Deployment rollback | Stage 05 release readiness requires affected recovery links and backup/N/A evidence; no generic automated rollback is tracked. | OWASP SAMM Secure Deployment expects repeatable deployment, security milestones, deployment records, and stop/reverse behavior for unacceptable defects. | Partially Implemented | Documentation coverage does not prove tested application/data rollback. | Route service-specific rollback, migration compatibility, and recovery verification to the later runtime/delivery specifications. | `docs/05.operations/runbooks/00-workspace/release-management.md` | Release runbook and service runbooks | Medium |
 
@@ -121,6 +124,12 @@ GitHub state. The explicit boundary prevents a green local run from being
 presented as SARIF upload, required-check satisfaction, merge readiness, or
 continuous-delivery performance.
 
+Release evidence follows the same layered model: a changelog communicates
+changes, a readiness runbook defines procedure, a Release leaf records a real
+event, a GitHub Release is a remote tagged record, and a deployment environment
+plus history records promotion controls and outcomes. None can be inferred from
+another merely because one automation loop completed successfully.
+
 ## Application Notes for This Workspace
 
 - Name the trigger, canonical authority, mutation behavior, and evidence for
@@ -132,6 +141,8 @@ continuous-delivery performance.
   `docs/00.agent-governance/rules/github-governance.md`.
 - Treat current branch protection/required checks as unknown until a direct
   read-only remote check is recorded.
+- Treat Release templates and routing as contract readiness, not as automation,
+  a GitHub Release, or deployment evidence.
 - Never repair stale generated data by hand; run the canonical generator or
   report the scope expansion needed.
 
@@ -151,7 +162,10 @@ continuous-delivery performance.
 ## Source Rules
 
 - Fixed external sources were retrieved on **2026-07-11**; the Task 4 source
-  ledger records supported claim, local/CI/remote class, and caveat.
+  ledger records supported claim, local/CI/remote class, and caveat. GitHub
+  ruleset, protected-branch/required-check, environment, and deployment-history
+  guidance was re-opened on **2026-07-13** without changing the dated workflow
+  inventory or remote-state verdict.
 - GitHub and tool pages are mutable retrieval-time guidance.
 - Repo-local facts come from tracked workflow/job/script/config definitions;
   Graphify is advisory and was not used for counts.
@@ -164,6 +178,8 @@ continuous-delivery performance.
 - [GitHub secure use](https://docs.github.com/en/actions/reference/security/secure-use) - least privilege, untrusted input, secrets, and action pinning
 - [GitHub deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) - environment approvals, restrictions, secrets, and protection rules
 - [GitHub deployment history](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history) - commits, environments, workflow logs, URLs, and deployment status history
+- [GitHub rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) - layered remote rule evaluation
+- [GitHub protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) - required status check and merge-protection behavior
 - [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) - tagged release records, release notes, and assets
 - [OWASP SAMM Secure Deployment](https://owaspsamm.org/model/implementation/secure-deployment/) - documented/automated deployment, security milestones, separation of duties, and secret handling
 - [pre-commit](https://pre-commit.com/) - local/CI hook orchestration and skip behavior

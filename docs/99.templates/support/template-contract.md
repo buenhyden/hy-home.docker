@@ -14,7 +14,9 @@ This document defines the non-copyable contract for template source files under
 - Template forms and template rules are separate surfaces.
 - Copyable forms live under `docs/99.templates/templates/`.
 - Non-copyable rules live under `docs/99.templates/support/`.
-- README files are indexes and routing surfaces; durable rules belong in support documents.
+- README files are indexes and routing surfaces governed by the
+  [README profile contract](./readme-profile-contract.md); durable shared rules
+  belong in their named canonical support or governance owner.
 - `_workspace` README files are repo-support contract documents, not copyable
   template sources and not target-stage documents.
 
@@ -24,7 +26,7 @@ This document defines the non-copyable contract for template source files under
 - Markdown template files use the `*.template.md` suffix.
 - Machine-readable contract templates use `*.template.yaml`,
   `*.template.graphql`, or `*.template.proto`.
-- Markdown template sources start with `status: draft` frontmatter. The 13
+- Markdown template sources start with `status: draft` frontmatter. Registered
   typed leaf templates also declare the copied target's `artifact_type` and
   exact Stage 99 placeholders for its required typed keys; README template
   source remains status-only.
@@ -60,6 +62,10 @@ This document defines the non-copyable contract for template source files under
 ## Target Document Rules
 
 - Target documents inherit from exactly one primary template role.
+- Select SDLC and operations roles through the
+  [SDLC document contract](./sdlc-document-contract.md); select Reference,
+  Archive, governance, generated, template, repo-support, and unsupported
+  surfaces through the [common document contract](./common-document-contract.md).
 - Purpose-specific child templates may supplement a parent spec when the target
   path and role require them.
 - Target document frontmatter follows [frontmatter contract](./frontmatter-contract.md): replace every template placeholder and select the honest target lifecycle status rather than retaining source-only `status: draft` mechanically.
@@ -80,3 +86,6 @@ This document defines the non-copyable contract for template source files under
 - [template governance](./template-governance.md)
 - [frontmatter contract](./frontmatter-contract.md)
 - [template selection](./template-selection.md)
+- [SDLC document contract](./sdlc-document-contract.md)
+- [common document contract](./common-document-contract.md)
+- [README profile contract](./readme-profile-contract.md)

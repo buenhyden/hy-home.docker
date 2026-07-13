@@ -81,6 +81,10 @@ and repository contract checks. A task touching these surfaces must record:
 
 ## Review Rules
 
+- Confirm the registry remains the sole machine owner and that human contracts
+  do not copy complete key, transition, path-glob, heading, or validator logic.
+- Review SDLC/common role ownership and README profile routing in their separate
+  support contracts before approving template-system changes.
 - Run reference search after removing or moving template paths.
 - Run LLM Wiki regeneration after adding or moving tracked docs.
 - Run repository contract validation after validator or governance changes.
@@ -95,5 +99,8 @@ and repository contract checks. A task touching these surfaces must record:
 - [support README](./README.md)
 - [template contract](./template-contract.md)
 - [template selection](./template-selection.md)
+- [SDLC document contract](./sdlc-document-contract.md)
+- [common document contract](./common-document-contract.md)
+- [README profile contract](./readme-profile-contract.md)
 - [task evidence](../../04.execution/tasks/2026-07-02-template-system-reorganization.md)
 - [contract standardization task evidence](../../04.execution/tasks/2026-07-03-template-system-contract-standardization.md)

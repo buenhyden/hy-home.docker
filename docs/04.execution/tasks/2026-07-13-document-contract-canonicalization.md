@@ -63,7 +63,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | Extend registry/parser with families, key order, README profiles, and parent serialization. | impl/test | Registry Model; VAL-129-001/004/005 | Task 1 | RED/GREEN metadata tests and independent review | Documentation Metadata Engineer | Done |
 | T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Done |
-| T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Todo |
+| T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Review Pending |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Todo |
 | T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Todo |
 | T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Full bundle, wrapper, final review | QA / Documentation Lead | Todo |
@@ -77,7 +77,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 
 ### Phase 2 — Human and Evidence Alignment
 
-- [ ] T-DCC-003 Human contracts and canonical external research
+- [ ] T-DCC-003 Human contracts and canonical external research — implementation complete; independent review pending
 - [ ] T-DCC-004 Stage 00 authoring and canonical audit reconciliation
 
 ### Phase 3 — Enforcement and Closure
@@ -171,11 +171,52 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   Spec 127 deployment separation, machine-readable template exclusion, unique
   spec-child bodies, and preserved harness approval/evidence sections.
 
+### T-DCC-003 Implementation Evidence
+
+- **Source verification**: on `2026-07-13`, re-opened the official YAML 1.2.2,
+  GitHub YAML frontmatter/content practices, CommonMark 0.31.2, GFM, GitHub
+  ruleset/protected-branch/required-check, deployment-environment, and
+  deployment-history sources. `diataxis.fr` returned HTTP 429 from the task
+  environment, so the four-type model was corroborated from the official
+  `evildmp/diataxis-documentation-framework` source repository whose homepage
+  points to the cited site. Normative external claims use direct primary URLs.
+- **Ownership separation**: added separate SDLC, common/repository, and README
+  human contracts. They route exact keys, profiles, transitions, path globs,
+  heading arrays, parent ordering, and validator behavior to the registry and
+  checker rather than copying executable semantics into prose or catalog
+  READMEs.
+- **Canonical research**: updated only the 2026-07-05 pack README and five
+  named leaves in place. The earlier `2026-07-04`, `2026-07-10`, and
+  `2026-07-11` source/count/verdict records remain visible, including 27
+  workspace categories, 6 workflows/21 jobs, 15 quality jobs, 23 hook IDs,
+  12 executed local gates plus one advisory recommendation, the historical 12
+  remote contexts, and provider-model 145/142 routing. No duplicate pack or
+  dated audit snapshot was created or rewritten.
+- **Validation**: official-source ownership scan passed; the new-contract
+  placeholder scan returned zero matches; traceability passed with
+  `catalog_pairs_total=46 failures=0`; implementation alignment passed with
+  `stage_docs_total=644`, `repo_local_markdown_links_checked=5093`, and
+  `failures=0`; explicit-base metadata passed with
+  `selected=16 violations=0`; `git diff --check` passed.
+- **Generated boundary**: the broader repository-contract run reached only
+  expected stale generated outputs for the LLM Wiki index/coverage and
+  frontmatter semantic inventory after adding/changing tracked docs. Task 6
+  owns generated refresh, so this task did not edit those outputs. Graphify was
+  not refreshed because this task changes documentation only and generated
+  collateral remains outside its scope.
+- **Protected surface**: the registry, validator, tests, copyable templates,
+  Task 4 audit pack, dated audit snapshots, generated outputs, runtime, Compose,
+  infrastructure, secrets, provider/model policy, workflows, deployment, and
+  remote GitHub settings remain unchanged.
+- **Implementer self-review**: Spec mapping PASS and documentation/source
+  quality PASS with Critical `0`, Important `0`, Minor `0`. Independent review
+  remains pending and no approval verdict is claimed.
+
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | `39eb562e` | PASS | Approved | C0/I0/M0; no remediation required | `review-237aa5d7..39eb562e.diff`; combined reviewer verdict | Done |
 | T-DCC-002 | `3591fcd5`, `0445f336` | PASS | Approved | C0/I0/M0; no remediation required | `review-0ae9fe81..0445f336.diff`; combined reviewer verdict | Done |
-| T-DCC-003 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
+| T-DCC-003 | Pending Task 3 handoff commit | Self-review PASS; independent review pending | Review Pending | C0/I0/M0 implementer findings; no independent verdict claimed | `.superpowers/sdd/task-3-report.md`; promote reviewer verdict after review | Review Pending |
 | T-DCC-004 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-005 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-006 | Pending | Pending | Pending | Pending | Whole-branch review evidence promoted here | Pending |
@@ -183,8 +224,9 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 ## Verification Summary
 
 - **Focused Test Commands**: T-DCC-001 focused registry/metadata/README tests
-  pass `31/31`; T-DCC-002 template tests pass `5/5`; T-DCC-003 through
-  T-DCC-005 remain pending.
+  pass `31/31`; T-DCC-002 template tests pass `5/5`; T-DCC-003 ownership,
+  placeholder, traceability, alignment, explicit-base metadata, and diff gates
+  pass; T-DCC-004 and T-DCC-005 remain pending.
 - **Full Test Commands**: the metadata validation module passes `93/93` after
   T-DCC-002; the final cross-suite bundle remains reserved for T-DCC-006.
 - **Generated Freshness**: Pending T-DCC-006.
