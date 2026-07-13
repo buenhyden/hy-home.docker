@@ -67,6 +67,13 @@ validator algorithms, template governance, security policy, or provider-neutral
 execution rules. A `Canonical Shared Rules` section or equivalent duplicate
 policy block is a contract violation even when the duplicated text is accurate.
 
+Infrastructure profiles distinguish a `Folder index README` from a
+`Service leaf README`. Service-local content may include `Secret refs` and
+`Troubleshooting` when the matched registry profile permits those headings.
+Script inventory and the `scripts/validation/` boundary, including the rule
+against root-level `scripts/*.sh` duplicates, remain owned by
+[`scripts/README.md`](../../../scripts/README.md).
+
 ## Authoring and Review Checklist
 
 - The path matches exactly one declared profile.

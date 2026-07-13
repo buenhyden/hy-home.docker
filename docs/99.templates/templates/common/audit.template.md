@@ -5,9 +5,6 @@ artifact_type: audit
 parent_ids: []
 ---
 
-<!-- Target: docs/90.references/audits/<audit-name>.md -->
-<!-- Target-relative links must be resolved from the instantiated audit path. -->
-
 # {{title}}
 
 ## Overview
@@ -36,4 +33,4 @@ parent_ids: []
 
 ## Related Documents
 
-- {{related_document}}
+{{related_documents}}

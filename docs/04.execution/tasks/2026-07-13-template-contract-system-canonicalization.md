@@ -77,7 +77,7 @@ review, and a separate quality review before its logical commit.
 | ID | Deliverable | Dependency | Status | Implementation role | Required review |
 | --- | --- | --- | --- | --- | --- |
 | T-TCS-001 | Registry and support contract canonicalization | Spec and Plan | Completed | fresh implementer | spec then quality |
-| T-TCS-002 | Common, README, and Governance forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
+| T-TCS-002 | Common, README, and Governance forms | T-TCS-001 | In Review | fresh implementer | spec then quality |
 | T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
 | T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Queued | fresh implementer | spec then quality |
 | T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
@@ -120,12 +120,52 @@ review, and a separate quality review before its logical commit.
   `9eca432b...ede2b9a2` returned Spec PASS and Quality APPROVED, confirmed I-01
   resolved by `ede2b9a2`, and reported no remaining findings.
 
+## T-TCS-002 Implementation Evidence
+
+- Reduced README, Reference, Audit, Archive, Memory, and Progress to their
+  registered Task 2 forms: exact frontmatter, one H1, exact required H2
+  envelopes, explicit `{{token_name}}` body tokens, and no Rules blocks,
+  Target comments, fixed-depth examples, snippet libraries, or copied
+  governance prose.
+- Kept the Task 2 source assertions full-strength for the six owned roles.
+  Controller-approved sequencing defers the same all-role assertion to Tasks
+  3 through 5, with Task 5 responsible for reaching all 23 Markdown roles.
+- The Audit source already existed from the Task 1 source-existence correction,
+  so its presence assertion passed in RED. RED still proved the README multi-H1,
+  Rules/Target, heading-envelope, governance-frontmatter, and Memory-mirror
+  defects before implementation.
+- Deleted `docs/00.agent-governance/memory/template.md` without a redirect or
+  mirror. Active Memory and Progress routes now point to the single Stage 99
+  source, and Progress usage prose is owned by the Stage 00 Memory README and
+  task checklists.
+- Normalized the template, Common, and Governance catalog READMEs to the exact
+  template-catalog heading profile while keeping them routing-only and Korean
+  by default.
+- Applied the controller-approved transitional shell correction only to
+  registered Markdown role-source forms. Machine-template Target/Cross-links
+  checks, direct target-document Target checks, target heading tables, and
+  changed/normalized target semantics remain intact for Task 6. Legacy
+  source-form rubric, Memory, and Reference assertions now validate the named
+  support owners or Task 2 form envelopes instead of requiring copied rules in
+  templates.
+- Deleting the tracked mirror caused ordinary generated freshness fallout.
+  The LLM Wiki index, coverage snapshot, and metadata inventory were refreshed
+  only through their canonical owners; Task 7 still owns the final branch-wide
+  refresh.
+- Graphify refreshed successfully to 23,102 nodes, 24,208 edges, and 1,543
+  communities. The tracked graph outputs were restored after evidence capture,
+  and conclusions were corroborated against tracked source, Stage 00, Spec 130,
+  and the active Plan/Task because the graph remains advisory.
+- No runtime, Compose, infrastructure, deployment, secret, provider, workflow,
+  credential, branch-protection, or remote state changed. T-TCS-002 remains
+  `In Review`; no independent verdict is claimed by this implementation unit.
+
 ## Review Evidence
 
 | Task | Spec review | Quality review | Findings | Disposition |
 | --- | --- | --- | --- | --- |
 | T-TCS-001 | PASS on `9eca432b...ede2b9a2` | APPROVED on `9eca432b...ede2b9a2` | None; I-01 resolved by `ede2b9a2` | Completed |
-| T-TCS-002 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
+| T-TCS-002 | Not run — implementation awaits independent review | Not run — implementation awaits independent review | None recorded | In Review |
 | T-TCS-003 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-004 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 003 |
 | T-TCS-005 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
@@ -193,6 +233,22 @@ review, and a separate quality review before its logical commit.
 | Reviewer verification | Focused schema/inference 11 executions; metadata contracts 0 violations; range diff hygiene pass; bounded exhaustive/adversarial witness checks pass |
 | Remaining gates | Controlled all-files wrapper and final whole-branch review remain Task 7 responsibilities |
 
+### T-TCS-002 RED and GREEN
+
+| Phase | Command or evidence | Result |
+| --- | --- | --- |
+| RED | `python3 -m unittest tests.validation.test_document_metadata.TemplateMetadataTests -v` | Expected failure: 10 tests ran with 12 failures covering the existing mirror, README two-H1 defect, Rules/Target residue across the six owned roles, README/Reference/Progress envelope drift, and missing governance `layer`; Audit presence passed because Task 1 had already created the source. |
+| Focused GREEN | `python3 -m unittest tests.validation.test_document_metadata.TemplateMetadataTests tests.validation.test_document_metadata.ReadmeProfileTests -v` | Pass: 13/13. |
+| Metadata regression | `python3 -m unittest tests.validation.test_document_metadata -v` | Pass: 114/114. |
+| Metadata contracts | `python3 scripts/validation/check-document-metadata.py --mode check-contracts` | Pass: zero violations. |
+| Changed mode | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref ff4cb02170ec28a64f6f6574af998bac1bb17822` | Pass: 17 selected, zero violations, zero legacy exceptions, zero transition overrides. |
+| Repository contracts | `bash scripts/validation/check-repo-contracts.sh` | Pass: `failures=0`; registered Markdown source transition is GREEN while machine and direct-target checks remain. |
+| Generated freshness | Canonical LLM Wiki index/coverage generators and metadata inventory report/check modes | Pass: 1,297 index paths, 1,296 safe coverage paths, and 902 metadata records / 2,031 advisory findings. |
+| Reference search | Deleted-mirror search across docs and provider surfaces | Pass: no active route or generated link targets the mirror; remaining literal hits are deletion assertions/instructions and preserved historical evidence. |
+| Traceability and alignment | Stage 04/05 traceability and implementation alignment checks | Pass: 46 catalog pairs; 647 stage docs / 5,136 links; zero failures. |
+| Graph refresh | `graphify update .` | Pass: 23,102 nodes / 24,208 edges / 1,543 communities; tracked graph outputs restored after evidence capture. |
+| Diff and compile | `git diff --check`, Bash syntax, and Python compilation | Pass. |
+
 ## Controlled Agent Pre-commit Evidence
 
 The final wrapper has not run because implementation and whole-branch review
@@ -217,6 +273,7 @@ have not completed.
 | `a3ca523e` | Task 1 canonical template roles, support contracts, matcher, tests, and generated evidence | Focused 10/10; metadata 109/109; metadata and repository contracts; generated freshness; diff |
 | `ede2b9a2` | Task 1 I-01 semantic glob-overlap remediation | I-01 1/1; focused 10/10; metadata 109/109; metadata contracts; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close template registry task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-001 | Metadata changed-mode from `ede2b9a2`: 2 selected, 0 violations, 0 exceptions/overrides; diff hygiene pass; evidence-only scope |
+| Implementation unit — subject `docs(templates): canonicalize common and governance forms`; self hash intentionally omitted | Task 2 forms, catalog routing, mirror removal, transitional source gate, tests, and generated fallout | Focused 13/13; metadata 114/114; changed mode 17/0; repository contracts; generated freshness; traceability/alignment; Graphify; diff/compile |
 
 Later implementation and review-fix commits will be appended as Tasks 2-7 close.
 

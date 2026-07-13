@@ -119,6 +119,8 @@ import pathlib
 import re
 import sys
 
+import yaml
+
 failures: list[str] = []
 templates_root = pathlib.Path("docs/99.templates/templates")
 stage99_root = pathlib.Path("docs/99.templates")
@@ -138,6 +140,18 @@ durable_marker_re = re.compile(
     r")\b",
     flags=re.I,
 )
+profiles = yaml.safe_load(
+    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
+)
+registered_markdown_sources = {
+    pathlib.Path(role["source"])
+    for role in profiles["template_roles"].values()
+    if role["source"].endswith(".md")
+}
+governance_markdown_sources = {
+    pathlib.Path(profiles["template_roles"][role_name]["source"])
+    for role_name in ("memory", "progress")
+}
 
 
 def top_frontmatter(text: str) -> list[tuple[int, str]]:
@@ -179,14 +193,21 @@ def nearby_routes_to_support(lines: list[str], index: int, window: int = 2) -> b
 for path in sorted(templates_root.rglob("*.template.md")):
     text = path.read_text(errors="ignore")
     frontmatter = top_frontmatter(text)
-    if not frontmatter or frontmatter[0][1] != "status: draft":
+    frontmatter_values = [value for _, value in frontmatter]
+    if path in governance_markdown_sources:
+        if frontmatter_values != ["layer: agentic", "status: draft"]:
+            failures.append(
+                f"{path}: governance template frontmatter must be exactly layer: agentic and status: draft"
+            )
+    elif not frontmatter or frontmatter[0][1] != "status: draft":
         failures.append(
             f"{path}: Markdown template frontmatter must start with status: draft"
         )
-    if "Target:" not in text:
-        failures.append(f"{path}: Markdown template missing Target path guidance")
-    if "target-relative" not in text.lower():
-        failures.append(f"{path}: Markdown template missing target-relative guidance")
+    if path not in registered_markdown_sources:
+        if "Target:" not in text:
+            failures.append(f"{path}: Markdown template missing Target path guidance")
+        if "target-relative" not in text.lower():
+            failures.append(f"{path}: Markdown template missing target-relative guidance")
     if "## Related Documents" not in text:
         failures.append(f"{path}: Markdown template missing ## Related Documents")
 
@@ -1956,16 +1977,40 @@ import pathlib
 import re
 import sys
 
+import yaml
+
 failures: list[str] = []
+profiles = yaml.safe_load(
+    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
+)
+registered_markdown_sources = {
+    pathlib.Path(role["source"])
+    for role in profiles["template_roles"].values()
+    if role["source"].endswith(".md")
+}
+governance_markdown_sources = {
+    pathlib.Path(profiles["template_roles"][role_name]["source"])
+    for role_name in ("memory", "progress")
+}
 for path in sorted(pathlib.Path("docs/99.templates/templates").rglob("*.template.md")):
     text = path.read_text(errors="ignore")
     lines = text.splitlines()
-    if len(lines) < 3 or lines[:2] != ["---", "status: draft"] or "---" not in lines[2:]:
+    if path in governance_markdown_sources:
+        valid_frontmatter = len(lines) >= 4 and lines[:4] == [
+            "---",
+            "layer: agentic",
+            "status: draft",
+            "---",
+        ]
+    else:
+        valid_frontmatter = len(lines) >= 3 and lines[:2] == ["---", "status: draft"] and "---" in lines[2:]
+    if not valid_frontmatter:
         failures.append(f"{path}: Markdown template frontmatter must start with status: draft")
-    if "Target:" not in text:
-        failures.append(f"{path}: template missing Target path guidance")
-    if "Target-relative" not in text:
-        failures.append(f"{path}: template missing target-relative link guidance")
+    if path not in registered_markdown_sources:
+        if "Target:" not in text:
+            failures.append(f"{path}: template missing Target path guidance")
+        if "Target-relative" not in text:
+            failures.append(f"{path}: template missing target-relative link guidance")
     if "## Related Documents" not in text:
         failures.append(f"{path}: template missing ## Related Documents")
     in_related_documents = False
@@ -3166,21 +3211,26 @@ import pathlib
 import sys
 
 failures: list[str] = []
-required_template_literals = [
-    "SNIPPET: INFRA SERVICE READINESS",
-    "Folder index README",
-    "Service leaf README",
-    "Secret refs",
-    "Troubleshooting",
-    "scripts/validation/",
-    "root-level `scripts/*.sh` wrappers",
-]
-for path in [pathlib.Path("docs/99.templates/templates/common/readme.template.md"), pathlib.Path("infra/README.md")]:
+rubric_sources = {
+    pathlib.Path("docs/99.templates/support/readme-profile-contract.md"): [
+        "Folder index README",
+        "Service leaf README",
+        "Secret refs",
+        "Troubleshooting",
+        "scripts/validation/",
+        "root-level `scripts/*.sh` duplicates",
+    ],
+    pathlib.Path("infra/README.md"): ["Secret refs", "Troubleshooting"],
+    pathlib.Path("scripts/README.md"): [
+        "scripts/validation/",
+        "root-level `scripts/*.sh` duplicates",
+    ],
+}
+for path, required in rubric_sources.items():
     if not path.is_file():
         failures.append(f"missing rubric source: {path}")
         continue
     text = path.read_text(errors="ignore")
-    required = ["Secret refs", "Troubleshooting"] if path.parts[0] == "infra" else required_template_literals
     for literal in required:
         if literal not in text:
             failures.append(f"{path}: missing rubric/lifecycle literal: {literal}")
@@ -3270,7 +3320,6 @@ failures: list[str] = []
 
 required_files = [
     pathlib.Path("docs/00.agent-governance/memory/README.md"),
-    pathlib.Path("docs/00.agent-governance/memory/template.md"),
     pathlib.Path("docs/00.agent-governance/memory/progress.md"),
     pathlib.Path("docs/99.templates/templates/governance/memory.template.md"),
     pathlib.Path("docs/99.templates/templates/governance/progress.template.md"),
@@ -3323,27 +3372,25 @@ checks = {
         "mandatory agent progress log",
         "docs/99.templates/templates/governance/progress.template.md",
     ],
-    pathlib.Path("docs/00.agent-governance/memory/template.md"): [
-        "docs/99.templates/templates/governance/memory.template.md",
-        "Retrieval Keywords",
-        "Last Verified",
-        "Evidence",
-    ],
     pathlib.Path("docs/99.templates/templates/governance/memory.template.md"): [
-        "Memory notes are advisory retrieval context",
-        "Retrieval Keywords",
-        "Last Verified",
+        "# {{title}}",
+        "## Problem",
+        "## Context",
+        "## Resolution",
+        "## Prevention",
         "## Evidence",
+        "## Related Documents",
     ],
     pathlib.Path("docs/00.agent-governance/memory/progress.md"): [
         "docs/99.templates/templates/governance/progress.template.md",
-        "## Usage Contract",
         "## Current Work Log",
     ],
     pathlib.Path("docs/99.templates/templates/governance/progress.template.md"): [
-        "AI agents must update",
+        "# {{title}}",
         "## Current Work Log",
         "## Phase Tracker",
+        "## Layer Audit",
+        "## Open Issues",
         "## Related Documents",
     ],
 }
@@ -3416,18 +3463,14 @@ if root.exists():
             )
 
 template_required = [
-    "Reference docs provide stable context",
+    "# {{title}}",
     "## Overview",
     "## Purpose",
-    "## Repository Role",
     "## Scope",
-    "## Definitions / Facts",
-    "## Source Rules",
+    "## Facts and Definitions",
     "## Sources",
     "## Maintenance",
     "## Related Documents",
-    "do not define active policy",
-    "secret values",
 ]
 if not template.is_file():
     failures.append(f"missing reference template: {template}")
@@ -3436,6 +3479,20 @@ else:
     for literal in template_required:
         if literal not in text:
             failures.append(f"{template}: missing reference-template literal: {literal}")
+
+common_contract = pathlib.Path("docs/99.templates/support/common-document-contract.md")
+common_contract_required = [
+    "stable, source-backed facts",
+    "current policy",
+    "secret values",
+]
+if not common_contract.is_file():
+    failures.append(f"missing common document contract: {common_contract}")
+else:
+    text = common_contract.read_text(errors="ignore")
+    for literal in common_contract_required:
+        if literal not in text:
+            failures.append(f"{common_contract}: missing Reference support literal: {literal}")
 
 readme_required = [
     "## Overview",

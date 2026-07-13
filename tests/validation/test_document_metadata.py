@@ -894,6 +894,40 @@ class TemplateMetadataTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.profiles = metadata.load_profiles(PROFILES)
 
+    def test_task_2_copyable_markdown_forms_have_one_h1_and_no_legacy_guidance(self) -> None:
+        for role_name in ("readme", "reference", "audit", "archive", "memory", "progress"):
+            with self.subTest(role=role_name):
+                source = ROOT / self.profiles["template_roles"][role_name]["source"]
+                text = source.read_text(encoding="utf-8")
+                self.assertEqual(1, sum(line.startswith("# ") for line in text.splitlines()))
+                self.assertNotIn("> Rules:", text)
+                self.assertNotIn("<!-- Target:", text)
+
+    def test_task_2_forms_match_their_registered_required_heading_envelopes(self) -> None:
+        for role_name in ("readme", "reference", "audit", "archive", "memory", "progress"):
+            with self.subTest(role=role_name):
+                role = self.profiles["template_roles"][role_name]
+                text = (ROOT / role["source"]).read_text(encoding="utf-8")
+                headings = [line for line in text.splitlines() if line.startswith("## ")]
+                self.assertEqual(role["required_headings"], headings)
+
+    def test_task_2_governance_forms_have_exact_source_frontmatter(self) -> None:
+        expected = {"layer": "agentic", "status": "draft"}
+        for role_name in ("memory", "progress"):
+            with self.subTest(role=role_name):
+                source = ROOT / self.profiles["template_roles"][role_name]["source"]
+                self.assertEqual(expected, metadata.parse_frontmatter(source))
+
+    def test_audit_has_a_distinct_registered_form(self) -> None:
+        role = self.profiles["template_roles"]["audit"]
+        self.assertEqual("audit", role["artifact_profile"])
+        self.assertTrue((ROOT / role["source"]).is_file())
+
+    def test_memory_mirror_is_absent_and_stage99_is_referenced(self) -> None:
+        self.assertFalse((ROOT / "docs/00.agent-governance/memory/template.md").exists())
+        text = (ROOT / "docs/00.agent-governance/memory/README.md").read_text(encoding="utf-8")
+        self.assertIn("docs/99.templates/templates/governance/memory.template.md", text)
+
     def test_leaf_templates_declare_valid_target_profiles_with_safe_placeholders(self) -> None:
         expected = {
             "docs/99.templates/templates/sdlc/prd.template.md": "prd",
