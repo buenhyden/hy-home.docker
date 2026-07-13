@@ -8,6 +8,7 @@ import collections
 import dataclasses
 import datetime as dt
 import fnmatch
+import hashlib
 import os
 import pathlib
 import re
@@ -230,11 +231,18 @@ MACHINE_EXAMPLE_VALUE = re.compile(
     r"(?i)(?:"
     r"\bexample(?:\.com)?\b|"
     r"https?://(?!__[A-Z][A-Z0-9_]*__)(?:[a-z0-9-]+\.)+[a-z]{2,}|"
-    r"(?::|=)[ \t]*(?:bearer|basic|oauth2?|openidconnect|api[_-]?key)\b|"
-    r"\b(?:bearer|basic|oauth2?|openidconnect|api[_-]?key)[ \t]+"
+    r"(?::|=)[ \t]*(?:bearer|basic|oauth2?|openidconnect)\b|"
+    r"\b(?:bearer|basic|oauth2?|openidconnect)[ \t]+"
     r"(?!__[A-Z][A-Z0-9_]*__)[A-Za-z0-9._~+/-]+|"
     r"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b"
     r")"
+)
+CREDENTIAL_KEY_NAME = re.compile(
+    r"(?:^|_)(?:"
+    r"api_?key|password|passwd|secret|client_secret|access_token|refresh_token|"
+    r"auth|authentication|authorization|credential|credentials|bearer|jwt|token"
+    r")(?:_|$)",
+    re.IGNORECASE,
 )
 
 
@@ -923,9 +931,13 @@ def _markdown_unfenced_lines(text: str) -> list[str]:
     fence_length = 0
     for line in text.splitlines():
         if fence_character is None:
-            opening = re.match(r"^ {0,3}(`{3,}|~{3,})(?:[^`~]*)$", line)
+            opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
             if opening:
                 marker = opening.group(1)
+                info_string = opening.group(2)
+                if marker[0] == "`" and "`" in info_string:
+                    lines.append(line)
+                    continue
                 fence_character = marker[0]
                 fence_length = len(marker)
                 continue
@@ -938,6 +950,42 @@ def _markdown_unfenced_lines(text: str) -> list[str]:
             fence_character = None
             fence_length = 0
     return lines
+
+
+def _strip_inline_code_spans(text: str) -> str:
+    """Remove CommonMark code spans closed by an equal backtick run."""
+
+    rendered: list[str] = []
+    index = 0
+    while index < len(text):
+        if text[index] != "`":
+            rendered.append(text[index])
+            index += 1
+            continue
+        opening_end = index
+        while opening_end < len(text) and text[opening_end] == "`":
+            opening_end += 1
+        delimiter_length = opening_end - index
+        cursor = opening_end
+        closing_end: int | None = None
+        while cursor < len(text):
+            candidate = text.find("`", cursor)
+            if candidate < 0:
+                break
+            run_end = candidate
+            while run_end < len(text) and text[run_end] == "`":
+                run_end += 1
+            if run_end - candidate == delimiter_length:
+                closing_end = run_end
+                break
+            cursor = run_end
+        if closing_end is None:
+            rendered.append(text[index:opening_end])
+            index = opening_end
+            continue
+        rendered.append(" ")
+        index = closing_end
+    return "".join(rendered)
 
 
 def extract_markdown_headings(text: str) -> tuple[list[str], list[str]]:
@@ -954,11 +1002,139 @@ def extract_markdown_headings(text: str) -> tuple[list[str], list[str]]:
     return h1, h2
 
 
+def _body_target_scan_text(text: str) -> str:
+    return _strip_inline_code_spans("\n".join(_markdown_unfenced_lines(text)))
+
+
 def _machine_template_path(path: pathlib.Path) -> bool:
     normalized = path.as_posix()
     return normalized.startswith("docs/99.templates/templates/") and normalized.endswith(
         MACHINE_TEMPLATE_SUFFIXES
     )
+
+
+def _normalized_credential_key(value: object) -> str | None:
+    if not isinstance(value, str):
+        return None
+    normalized = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", value)
+    normalized = re.sub(r"[^A-Za-z0-9]+", "_", normalized).strip("_").lower()
+    return normalized if CREDENTIAL_KEY_NAME.search(normalized) else None
+
+
+def _approved_machine_token(value: object) -> bool:
+    if not isinstance(value, str):
+        return False
+    candidate = value.strip()
+    if len(candidate) >= 2 and candidate[0] == candidate[-1] and candidate[0] in {'"', "'"}:
+        candidate = candidate[1:-1]
+    return MACHINE_TEMPLATE_TOKEN.fullmatch(candidate) is not None
+
+
+def _openapi_concrete_credential(text: str) -> bool:
+    try:
+        document = _safe_load_unique(text)
+    except (FrontmatterError, yaml.YAMLError, yaml.constructor.ConstructorError):
+        return False
+
+    def inspect(value: object) -> bool:
+        if isinstance(value, dict):
+            for key, member in value.items():
+                bounded_key = _normalized_credential_key(key)
+                if bounded_key is not None:
+                    if isinstance(member, list):
+                        if any(
+                            not isinstance(item, (dict, list)) and not _approved_machine_token(item)
+                            for item in member
+                        ):
+                            return True
+                    elif not isinstance(member, dict) and not _approved_machine_token(member):
+                        return True
+                if inspect(member):
+                    return True
+        elif isinstance(value, list):
+            return any(inspect(member) for member in value)
+        return False
+
+    return inspect(document)
+
+
+GRAPHQL_VALUE = r'(?:"(?:\\.|[^"\\])*"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?|true|false|null|[A-Za-z_][A-Za-z0-9_]*)'
+
+
+def _graphql_concrete_credential(text: str) -> bool:
+    without_block_strings = re.sub(r'""".*?"""', "", text, flags=re.DOTALL)
+    for raw_line in without_block_strings.splitlines():
+        line = raw_line.split("#", 1)[0]
+        if not line.strip():
+            continue
+        for name in re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*\b", line):
+            if _normalized_credential_key(name) is None:
+                continue
+            escaped = re.escape(name)
+            default_match = re.search(
+                rf"\b{escaped}\b\s*:\s*[A-Za-z_][A-Za-z0-9_]*(?:\s*[!\[\]])*\s*=\s*({GRAPHQL_VALUE})",
+                line,
+                flags=re.IGNORECASE,
+            )
+            if default_match and not _approved_machine_token(default_match.group(1)):
+                return True
+            literal_match = re.search(
+                rf"\b{escaped}\b\s*:\s*(\"(?:\\.|[^\"\\])*\"|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?|true|false|null)",
+                line,
+                flags=re.IGNORECASE,
+            )
+            if literal_match and not _approved_machine_token(literal_match.group(1)):
+                return True
+    return False
+
+
+PROTO_VALUE = r'(?:"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|[A-Za-z_][A-Za-z0-9_]*|-?[0-9]+)'
+
+
+def _protobuf_concrete_credential(text: str) -> bool:
+    without_blocks = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+    for raw_line in without_blocks.splitlines():
+        line = raw_line.split("//", 1)[0]
+        if not line.strip():
+            continue
+        for name in re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*\b", line):
+            if _normalized_credential_key(name) is None:
+                continue
+            if re.search(
+                rf"\b{re.escape(name)}\b[^;\n]*\[\s*default\s*=\s*({PROTO_VALUE})",
+                line,
+                flags=re.IGNORECASE,
+            ):
+                default_value = re.search(
+                    r"\[\s*default\s*=\s*(" + PROTO_VALUE + r")",
+                    line,
+                    flags=re.IGNORECASE,
+                )
+                if default_value and not _approved_machine_token(default_value.group(1)):
+                    return True
+            assignment = re.search(
+                rf"(?:\b{re.escape(name)}\b|\({re.escape(name)}\))\s*=\s*({PROTO_VALUE})",
+                line,
+                flags=re.IGNORECASE,
+            )
+            if assignment:
+                value = assignment.group(1)
+                if re.fullmatch(r"[0-9]+", value):
+                    continue
+                if not _approved_machine_token(value):
+                    return True
+    return False
+
+
+def _machine_concrete_credential(path: pathlib.Path, text: str) -> bool:
+    suffix = path.as_posix()
+    if suffix.endswith((".template.yaml", ".template.yml")):
+        return _openapi_concrete_credential(text)
+    if suffix.endswith(".template.graphql"):
+        return _graphql_concrete_credential(text)
+    if suffix.endswith(".template.proto"):
+        return _protobuf_concrete_credential(text)
+    return False
 
 
 def _machine_template_findings(record: Record, text: str) -> list[Finding]:
@@ -971,7 +1147,7 @@ def _machine_template_findings(record: Record, text: str) -> list[Finding]:
                 "machine template must contain an explicit uppercase unresolved token",
             )
         )
-    if MACHINE_EXAMPLE_VALUE.search(text):
+    if MACHINE_EXAMPLE_VALUE.search(text) or _machine_concrete_credential(record.path, text):
         findings.append(
             _finding(
                 record,
@@ -1159,7 +1335,7 @@ def validate_body_contract(
                     _finding(
                         record,
                         "template-instruction-in-source",
-                        f"template source contains prohibited instruction literal: {literal}",
+                        "template source contains a prohibited instruction literal",
                     )
                 )
         if MARKDOWN_BODY_TOKEN.search(unfenced_text) is None:
@@ -1171,14 +1347,14 @@ def validate_body_contract(
                 )
             )
     elif changed_boundary:
-        target_scan_text = re.sub(r"`+[^`\n]*`+", "", unfenced_text)
+        target_scan_text = _body_target_scan_text(text)
         for literal in TARGET_TEMPLATE_LITERALS:
             if literal in target_scan_text:
                 findings.append(
                     _finding(
                         record,
                         "template-instruction-in-target",
-                        f"changed target retains template-only instruction literal: {literal}",
+                        "changed target retains a template-only instruction literal",
                     )
                 )
         if MARKDOWN_BODY_TOKEN.search(target_scan_text):
@@ -1190,6 +1366,107 @@ def validate_body_contract(
                 )
             )
     return sorted(set(findings))
+
+
+BodyDeficitKey = tuple[str, str, str, str]
+
+
+def _private_deficit_identity(code: str, value: str) -> str:
+    """Return a deterministic internal identity that is never rendered."""
+
+    return hashlib.sha256(f"{code}\0{value}".encode("utf-8")).hexdigest()
+
+
+def _body_deficit_multiset(
+    record: Record,
+    text: str,
+    profiles: dict[str, object],
+    *,
+    changed_boundary: bool,
+) -> collections.Counter[BodyDeficitKey]:
+    """Return exact non-rendered body deficit identities with multiplicity."""
+
+    findings = validate_body_contract(record, text, profiles, changed_boundary)
+    occurrence_codes = {
+        "template-instruction-in-source",
+        "template-instruction-in-target",
+        "template-body-token-in-target",
+    }
+    deficits: collections.Counter[BodyDeficitKey] = collections.Counter()
+    for finding in findings:
+        if finding.code in occurrence_codes:
+            continue
+        identity = _private_deficit_identity(finding.code, finding.message)
+        deficits[(finding.code, identity, "body contract deficit", finding.severity)] += 1
+
+    source_roles = _source_roles_for_path(record.path, profiles)
+    if source_roles:
+        scan_text = "\n".join(_markdown_unfenced_lines(text))
+        instruction_code = "template-instruction-in-source"
+    elif changed_boundary:
+        scan_text = _body_target_scan_text(text)
+        instruction_code = "template-instruction-in-target"
+    else:
+        return deficits
+
+    for literal in TARGET_TEMPLATE_LITERALS:
+        identity = _private_deficit_identity(instruction_code, literal)
+        count = len(tuple(re.finditer(re.escape(literal), scan_text)))
+        if count:
+            deficits[(instruction_code, identity, "template instruction", "error")] += count
+    if not source_roles and changed_boundary:
+        for match in MARKDOWN_BODY_TOKEN.finditer(scan_text):
+            identity = _private_deficit_identity(
+                "template-body-token-in-target",
+                match.group(0),
+            )
+            deficits[
+                (
+                    "template-body-token-in-target",
+                    identity,
+                    "Markdown body token",
+                    "error",
+                )
+            ] += 1
+    return deficits
+
+
+def _introduced_body_findings(
+    record: Record,
+    current_text: str,
+    base_record: Record | None,
+    base_text: str | None,
+    profiles: dict[str, object],
+) -> list[Finding]:
+    current = _body_deficit_multiset(
+        record,
+        current_text,
+        profiles,
+        changed_boundary=True,
+    )
+    base = (
+        _body_deficit_multiset(
+            base_record,
+            base_text,
+            profiles,
+            changed_boundary=True,
+        )
+        if base_record is not None and base_text is not None
+        else collections.Counter()
+    )
+    introduced = current - base
+    safe_counts: collections.Counter[tuple[str, str, str]] = collections.Counter()
+    for (code, _identity, safe_label, severity), count in introduced.items():
+        safe_counts[(code, safe_label, severity)] += count
+    return [
+        _finding(
+            record,
+            code,
+            f"changed body introduces {safe_label} deficit(s); count={count}",
+            severity,
+        )
+        for (code, safe_label, severity), count in sorted(safe_counts.items())
+    ]
 
 
 def validate_record(
@@ -2983,30 +3260,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                     _finding(record, "body-unreadable", f"cannot read UTF-8 Markdown body: {error}")
                 ]
                 continue
-            current = validate_body_contract(
-                record,
-                current_text,
-                profiles,
-                changed_boundary=True,
-            )
             base_record = base_records_by_path.get(path_text)
             base_text = _text_at_ref(root, record.path, base.merge_base)
-            base_findings = (
-                validate_body_contract(
-                    base_record,
-                    base_text,
-                    profiles,
-                    changed_boundary=True,
-                )
-                if base_record is not None and base_text is not None
-                else []
+            changed_body_findings[path_text] = _introduced_body_findings(
+                record,
+                current_text,
+                base_record,
+                base_text,
+                profiles,
             )
-            base_identities = {(finding.code, finding.message) for finding in base_findings}
-            changed_body_findings[path_text] = [
-                finding
-                for finding in current
-                if (finding.code, finding.message) not in base_identities
-            ]
     relation_impact_findings: dict[str, list[Finding]] = {}
     if args.mode == "check-changed":
         try:

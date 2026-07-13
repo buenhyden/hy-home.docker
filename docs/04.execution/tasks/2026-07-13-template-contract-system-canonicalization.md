@@ -357,8 +357,20 @@ review, and a separate quality review before its logical commit.
   edges, and 1,542 communities; tracked graph outputs were restored after
   capture, and the advisory result was corroborated against tracked sources,
   Stage 00, Spec 130, and this Plan/Task.
-- Implementation status is In Review. Independent specification and quality
-  reviews have not run, and no commit hash is claimed.
+- The first independent review of `39809f26...9bf5b708` returned Spec FAIL /
+  Quality CHANGES REQUESTED, C0/I3/M0. I-01 identified set-based suppression
+  of added or identity-changed body residue, I-02 identified delimiter-invalid
+  fenced and inline-code scanning, and I-03 identified missing bounded native
+  credential assignment checks.
+- Remediation now compares exact private semantic identities with multiset
+  counts while rendering only safe class labels and counts, implements
+  delimiter-specific CommonMark fence and equal-run inline-code scanning, and
+  adds bounded OpenAPI, GraphQL, and Protobuf credential-value checks without
+  treating declarations or numeric Protobuf tags as credentials. The
+  remediation RED was 41 methods / 21 expected failures; focused GREEN is
+  41/41 and the complete metadata suite is 167/167.
+- Implementation status remains In Review. The three fixes await independent
+  re-review; no approval, closure, or remediation commit hash is claimed.
 
 ## Review Evidence
 
@@ -369,7 +381,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
 | T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
 | T-TCS-005 | PASS on `34ae2dab...c07160a2` | APPROVED on `34ae2dab...c07160a2` | None; I-01, I-01-R1, and I-02 resolved | Completed |
-| T-TCS-006 | Not run — implementation awaits independent review | Not run — implementation awaits independent review | None recorded | In Review |
+| T-TCS-006 | FAIL on `39809f26...9bf5b708`; remediation awaits re-review | CHANGES REQUESTED on `39809f26...9bf5b708`; remediation awaits re-review | C0/I3/M0: I-01 semantic multiplicity/identity, I-02 CommonMark delimiters, I-03 bounded native credential assignments; fixes implemented locally | In Review |
 | T-TCS-007 | Not run — dependency is in review | Not run — dependency is in review | None recorded | Await T-TCS-006 |
 | Whole branch | Not run — implementation has not completed | Not run — implementation has not completed | None recorded | Await T-TCS-007 |
 
@@ -570,7 +582,13 @@ review, and a separate quality review before its logical commit.
 | Traceability and alignment | Stage 04/05 traceability and documentation implementation alignment | Pass: 46 catalog pairs / 0 failures; 647 docs / 5,135 links / 0 failures. |
 | Workflow decision | Existing `.github/workflows/ci-quality.yml` integration inspected | No RED routing gap: the validated event base, dedicated Python changed/new step, and shell step already fail closed in CI; workflow unchanged. |
 | Graph refresh | `graphify update .` | Pass: 23,387 nodes / 24,679 edges / 1,542 communities; tracked outputs restored and advisory result corroborated against tracked canonical owners. |
-| Review state | Task table and review ledger | In Review; specification and quality reviews not run. |
+| First independent review | Complete range `39809f26...9bf5b708` | Spec FAIL / Quality CHANGES REQUESTED, C0/I3/M0; I-01 through I-03 require remediation. |
+| Remediation RED | `TemplateBodyContractTests` plus real-Git `ChangedBodyDeficitGitTests` | Expected failure: 41 methods, 21 failures, and zero errors reproducing exact body-deficit, CommonMark delimiter, and bounded native credential gaps. |
+| Remediation focused GREEN | Same 41-method suite | Pass: 41/41 in 6.362 seconds. |
+| Remediation metadata regression | Complete `tests.validation.test_document_metadata` suite | Pass: 167/167 in 64.803 seconds; zero failures and zero errors. |
+| Remediation repository gates | Metadata contracts, explicit-base changed mode, and `TEMPLATE_GATE_BASE=39809f26` repository contracts | Pass: zero metadata violations; selected 4 / violations 0 / exceptions 0 / overrides 0; repository `failures=0`. |
+| Remediation supporting gates | Generated freshness, traceability, alignment, Graphify, Python/Bash syntax, and diff hygiene | Pass: 901 records / 2,025 findings; traceability 46/0; alignment 647 docs / 5,135 links / 0; Graphify 23,430 nodes / 24,817 edges / 1,541 communities with tracked outputs restored; syntax and diff checks pass. |
+| Review state | Task table and review ledger | In Review; remediation awaits independent specification and quality re-review. |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -612,6 +630,7 @@ have not completed.
 | `c07160a2` | Task 5 I-02 canonical remediation-ledger correction | Evidence-only Task/Progress delta; changed from `b7b2ec95` 2/0; full Task 5 base 11/0; focused 59/59; metadata contracts and generated freshness pass; independent PASS/APPROVED narrow re-review |
 | Closure unit — subject `docs(task): close operations forms task`; self hash intentionally omitted | Record completed independent verdict and close T-TCS-005 | Metadata changed-mode and diff hygiene; evidence-only scope |
 | Planned unit — subject `test(validation): enforce template role contracts`; self hash intentionally omitted | Task 6 executable Markdown/machine contracts, changed-target gate, shell delegation, tests, and evidence | RED 39 methods / 9 expected failing methods; final focused GREEN 44/44; metadata 155/155; reviews not yet run |
+| Planned remediation unit — subject `fix(validation): preserve exact body deficits`; self hash intentionally omitted | Task 6 I-01/I-02/I-03 exact private multiset comparison, CommonMark-bounded scanning, native credential checks, tests, and evidence | First review FAIL/CHANGES REQUESTED C0/I3/M0; remediation RED 41/21; focused 41/41; metadata 167/167; contracts and supporting gates pass; re-review pending |
 
 Later review-fix and implementation commits will be appended as Tasks 6-7 close.
 

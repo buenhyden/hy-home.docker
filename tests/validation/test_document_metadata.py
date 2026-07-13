@@ -2109,6 +2109,48 @@ class TemplateBodyContractTests(unittest.TestCase):
         self.assertEqual(["# Title"], h1)
         self.assertEqual(["## Overview"], h2)
 
+    def test_commonmark_fence_scanner_honors_delimiter_specific_info_strings(self) -> None:
+        cases = (
+            (
+                "backtick info may contain tilde",
+                "# Title\n\n```markdown title=\"~example~\"\n# Hidden\n{{hidden_token}}\n```\n\n## Overview\n",
+            ),
+            (
+                "tilde info may contain backticks and tildes",
+                "# Title\n\n~~~markdown title=\"`example` ~draft~\"\n# Hidden\n{{hidden_token}}\n~~~\n\n## Overview\n",
+            ),
+            (
+                "unclosed backtick fence hides the remaining example",
+                "# Title\n\n```markdown title=\"~example~\"\n# Hidden\n{{hidden_token}}\n",
+            ),
+            (
+                "unclosed tilde fence hides the remaining example",
+                "# Title\n\n~~~markdown title=\"`example`\"\n# Hidden\n{{hidden_token}}\n",
+            ),
+        )
+        for label, text in cases:
+            with self.subTest(case=label):
+                h1, h2 = metadata.extract_markdown_headings(text)
+                self.assertEqual(["# Title"], h1)
+                expected_h2 = ["## Overview"] if "Overview" in text else []
+                self.assertEqual(expected_h2, h2)
+
+    def test_inline_code_scanner_requires_equal_backtick_run_lengths(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        documented = (
+            self.literal_spec_body()
+            + "\nDocument `> Rules:` and `{{single_token}}`.\n"
+            + "Document `` `> Rules:` and `{{multi_token}}` ``.\n"
+        )
+        documented_codes = self.body_finding_codes(record, documented)
+        self.assertNotIn("template-instruction-in-target", documented_codes)
+        self.assertNotIn("template-body-token-in-target", documented_codes)
+
+        genuine = documented + "\n> Rules:\n\n{{outside_code}}\n"
+        genuine_codes = self.body_finding_codes(record, genuine)
+        self.assertIn("template-instruction-in-target", genuine_codes)
+        self.assertIn("template-body-token-in-target", genuine_codes)
+
     def test_required_heading_reports_code(self) -> None:
         record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
         missing = self.body_finding_codes(
@@ -2215,6 +2257,103 @@ class TemplateBodyContractTests(unittest.TestCase):
         )
         self.assertIn("machine-template-example-value", concrete)
         self.assertIn("machine-template-example-value", concrete_auth)
+
+    def test_machine_sources_reject_bounded_concrete_credential_assignments(self) -> None:
+        cases = (
+            (
+                "openapi api key",
+                "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\nx-api-key: fixture-key\n",
+            ),
+            (
+                "openapi password",
+                "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\npassword: fixture-password\n",
+            ),
+            (
+                "openapi secret",
+                "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\nclient_secret: fixture-secret\n",
+            ),
+            (
+                "graphql credential default",
+                "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+                "input Login { password: String = \"fixture-password\" }\ntype Query { login: String }\n# __GRAPHQL_TOKEN__\n",
+            ),
+            (
+                "graphql credential literal",
+                "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+                "type Query { login: String }\nquery { login(apiKey: \"fixture-key\") }\n# __GRAPHQL_TOKEN__\n",
+            ),
+            (
+                "protobuf credential default",
+                "docs/99.templates/templates/spec-contracts/service.template.proto",
+                "syntax = \"proto2\";\nmessage Login { optional string secret = 1 [default = \"fixture-secret\"]; }\n// __PROTO_TOKEN__\n",
+            ),
+            (
+                "protobuf credential option",
+                "docs/99.templates/templates/spec-contracts/service.template.proto",
+                "syntax = \"proto3\";\noption (auth_token) = \"fixture-token\";\n// __PROTO_TOKEN__\n",
+            ),
+            (
+                "bearer literal",
+                "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+                "type Query { login: String }\nquery { login(token: \"Bearer fixture-token\") }\n# __GRAPHQL_TOKEN__\n",
+            ),
+            (
+                "jwt literal",
+                "docs/99.templates/templates/spec-contracts/service.template.proto",
+                "syntax = \"proto3\";\noption (jwt) = \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmaXh0dXJlIn0.signature\";\n// __PROTO_TOKEN__\n",
+            ),
+        )
+        for label, relative_path, text in cases:
+            with self.subTest(case=label):
+                record = self.fixture_record(relative_path, "unsupported")
+                codes = self.body_finding_codes(record, text, changed_boundary=False)
+                self.assertIn("machine-template-example-value", codes)
+
+    def test_machine_credential_gate_accepts_schema_declarations_and_current_sentinels(self) -> None:
+        openapi_schema = (
+            "openapi: 3.1.0\n"
+            "x-template-auth-selection: __AUTH_SELECTION__\n"
+            "components:\n"
+            "  securitySchemes:\n"
+            "    ApiKeyAuth:\n"
+            "      type: apiKey\n"
+            "      name: X-API-Key\n"
+            "      in: header\n"
+        )
+        graphql_declaration = (
+            "input Login { password: String, apiKey: String }\n"
+            "type Query { login(input: Login): String }\n"
+            "# __GRAPHQL_TOKEN__\n"
+        )
+        proto_declaration = (
+            "syntax = \"proto3\";\n"
+            "message Login { string password = 1; string api_key = 2; }\n"
+            "// __PROTO_TOKEN__\n"
+        )
+        cases = (
+            ("docs/99.templates/templates/spec-contracts/openapi.template.yaml", openapi_schema),
+            ("docs/99.templates/templates/spec-contracts/schema.template.graphql", graphql_declaration),
+            ("docs/99.templates/templates/spec-contracts/service.template.proto", proto_declaration),
+        )
+        for relative_path, text in cases:
+            with self.subTest(path=relative_path):
+                record = self.fixture_record(relative_path, "unsupported")
+                codes = self.body_finding_codes(record, text, changed_boundary=False)
+                self.assertNotIn("machine-template-example-value", codes)
+
+        for relative_path in (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+            "docs/99.templates/templates/spec-contracts/service.template.proto",
+        ):
+            with self.subTest(current_source=relative_path):
+                record = self.fixture_record(relative_path, "unsupported")
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                codes = self.body_finding_codes(record, text, changed_boundary=False)
+                self.assertNotIn("machine-template-example-value", codes)
 
     @staticmethod
     def body_tokens(text: str) -> set[str]:
@@ -3765,6 +3904,183 @@ class ChangedPathGitTests(unittest.TestCase):
             relative = "docs/03.specs/123-explicit/spec.md"
             write_doc(root / relative, {"status": "active"})
             self.assert_changed_failure(root, "--changed-path", relative)
+
+
+class ChangedBodyDeficitGitTests(unittest.TestCase):
+    PATH = "docs/01.requirements/901-body-deficit.md"
+    METADATA = {
+        "status": "draft",
+        "artifact_id": "prd:901-body-deficit",
+        "artifact_type": "prd",
+        "parent_ids": [],
+    }
+
+    def new_repo_with_body(
+        self,
+        body: str,
+    ) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path, str]:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        init_git(root)
+        write_doc(root / self.PATH, self.METADATA, body)
+        commit_all(root, "body-deficit baseline")
+        base = git(root, "rev-parse", "HEAD").stdout.strip()
+        return directory, root, base
+
+    def run_explicit_base(
+        self,
+        root: pathlib.Path,
+        base: str,
+    ) -> subprocess.CompletedProcess[str]:
+        return run_checker(root, "check-changed", "--base-ref", base)
+
+    def test_identical_base_body_deficit_multiset_is_preserved(self) -> None:
+        body = PRD_TARGET_BODY + "\n{{existing_token}}\n"
+        directory, root, base = self.new_repo_with_body(body)
+        with directory:
+            write_doc(root / self.PATH, self.METADATA, body + "\nEditorial text.\n")
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("violations=0", result.stdout)
+
+    def test_additional_same_class_body_deficit_is_blocked_without_value_leakage(self) -> None:
+        base_body = PRD_TARGET_BODY + "\n{{existing_token}}\n"
+        directory, root, base = self.new_repo_with_body(base_body)
+        with directory:
+            write_doc(
+                root / self.PATH,
+                self.METADATA,
+                base_body + "\n{{additional_token}}\n",
+            )
+            result = self.run_explicit_base(root, base)
+            combined = result.stdout + result.stderr
+            self.assertEqual(1, result.returncode, combined)
+            self.assertIn("template-body-token-in-target", result.stdout)
+            self.assertNotIn("existing_token", combined)
+            self.assertNotIn("additional_token", combined)
+
+    def test_different_same_count_body_deficit_is_blocked_without_value_leakage(self) -> None:
+        directory, root, base = self.new_repo_with_body(
+            PRD_TARGET_BODY + "\n{{original_token}}\n"
+        )
+        with directory:
+            write_doc(
+                root / self.PATH,
+                self.METADATA,
+                PRD_TARGET_BODY + "\n{{replacement_token}}\n",
+            )
+            result = self.run_explicit_base(root, base)
+            combined = result.stdout + result.stderr
+            self.assertEqual(1, result.returncode, combined)
+            self.assertIn("template-body-token-in-target", result.stdout)
+            self.assertNotIn("original_token", combined)
+            self.assertNotIn("replacement_token", combined)
+
+    def test_new_instruction_literal_is_blocked_without_literal_echo(self) -> None:
+        directory, root, base = self.new_repo_with_body(PRD_TARGET_BODY)
+        with directory:
+            write_doc(root / self.PATH, self.METADATA, PRD_TARGET_BODY + "\n> Rules:\n")
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-instruction-in-target", result.stdout)
+            self.assertNotIn("> Rules:", result.stdout)
+
+    def test_new_file_body_deficit_is_blocked(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        with directory:
+            init_git(root)
+            write_doc(root / "docs/03.specs/README.md", None)
+            commit_all(root, "empty body-gate baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(
+                root / self.PATH,
+                self.METADATA,
+                PRD_TARGET_BODY + "\n{{new_file_token}}\n",
+            )
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-body-token-in-target", result.stdout)
+
+    def test_preserved_body_deficit_does_not_suppress_relation_impact(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        with directory:
+            init_git(root)
+            parent = root / self.PATH
+            write_doc(
+                parent,
+                self.METADATA,
+                PRD_TARGET_BODY + "\n{{existing_token}}\n",
+            )
+            child = root / "docs/03.specs/901-body-child/spec.md"
+            write_doc(
+                child,
+                {
+                    "status": "draft",
+                    "artifact_id": "spec:901-body-child",
+                    "artifact_type": "spec",
+                    "parent_ids": ["prd:901-body-deficit"],
+                },
+                SPEC_TARGET_BODY,
+            )
+            commit_all(root, "body and relation baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(
+                parent,
+                {**self.METADATA, "artifact_id": "prd:901-renamed"},
+                PRD_TARGET_BODY + "\n{{existing_token}}\n",
+            )
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn(f"{child.relative_to(root).as_posix()}: unresolved-parent", result.stdout)
+            self.assertNotIn("template-body-token-in-target", result.stdout)
+
+    def test_changed_checker_ignores_residue_inside_commonmark_code(self) -> None:
+        cases = (
+            (
+                "backtick fence",
+                "```markdown title=\"~example~\"\n> Rules:\n{{fenced_token}}\n```\n",
+            ),
+            (
+                "tilde fence",
+                "~~~markdown title=\"`example` ~draft~\"\n> Rules:\n{{fenced_token}}\n~~~\n",
+            ),
+            (
+                "unclosed backtick fence",
+                "```markdown title=\"~example~\"\n> Rules:\n{{fenced_token}}\n",
+            ),
+            (
+                "unclosed tilde fence",
+                "~~~markdown title=\"`example`\"\n> Rules:\n{{fenced_token}}\n",
+            ),
+            (
+                "single and multi backtick spans",
+                "Document `> Rules:` and `{{single_token}}`.\n"
+                "Document `` `> Rules:` and `{{multi_token}}` ``.\n",
+            ),
+        )
+        for label, example in cases:
+            with self.subTest(case=label):
+                directory, root, base = self.new_repo_with_body(PRD_TARGET_BODY)
+                with directory:
+                    write_doc(root / self.PATH, self.METADATA, PRD_TARGET_BODY + "\n" + example)
+                    result = self.run_explicit_base(root, base)
+                    self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_changed_checker_rejects_genuine_residue_outside_code(self) -> None:
+        directory, root, base = self.new_repo_with_body(PRD_TARGET_BODY)
+        with directory:
+            body = (
+                PRD_TARGET_BODY
+                + "\n```markdown title=\"~example~\"\n{{fenced_token}}\n```\n"
+                + "Document `` `{{inline_token}}` ``.\n"
+                + "{{outside_token}}\n"
+            )
+            write_doc(root / self.PATH, self.METADATA, body)
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-body-token-in-target", result.stdout)
 
 
 class ChangedModeRolloutTests(unittest.TestCase):
