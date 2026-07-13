@@ -28,7 +28,8 @@ harness-engineering task.
 - `progress.template.md` targets
   `docs/00.agent-governance/memory/progress.md`.
 - `harness-task-contract.template.md` targets
-  `docs/04.execution/tasks/YYYY-MM-DD-<harness-stream>.md`.
+  `docs/04.execution/tasks/YYYY-MM-DD-<harness-stream>.md` and declares
+  `artifact_type: task` while preserving harness approval and evidence fields.
 - Calculate target-relative links from the copied document path.
 
 ## Related Documents

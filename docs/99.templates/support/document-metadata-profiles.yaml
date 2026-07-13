@@ -262,8 +262,15 @@ template_sources:
   docs/99.templates/templates/operations/runbook.template.md: runbook
   docs/99.templates/templates/operations/incident.template.md: incident
   docs/99.templates/templates/operations/postmortem.template.md: postmortem
+  docs/99.templates/templates/operations/release.template.md: release
   docs/99.templates/templates/common/reference.template.md: reference
   docs/99.templates/templates/common/archive.template.md: archive
+  docs/99.templates/templates/spec-contracts/agent-design.template.md: spec
+  docs/99.templates/templates/spec-contracts/api-spec.template.md: spec
+  docs/99.templates/templates/spec-contracts/data-model.template.md: spec
+  docs/99.templates/templates/spec-contracts/service.template.md: spec
+  docs/99.templates/templates/spec-contracts/tests.template.md: spec
+  docs/99.templates/templates/governance/harness-task-contract.template.md: task
 
 profiles:
   prd:

@@ -62,7 +62,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | Extend registry/parser with families, key order, README profiles, and parent serialization. | impl/test | Registry Model; VAL-129-001/004/005 | Task 1 | RED/GREEN metadata tests and independent review | Documentation Metadata Engineer | Done |
-| T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Todo |
+| T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Review Pending |
 | T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Todo |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Todo |
 | T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Todo |
@@ -124,10 +124,52 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   declared-consumer semantics, parent serialization, test coverage, scope, and
   CLI compatibility.
 
+### T-DCC-002 Implementation Evidence
+
+- **RED**:
+  `python3 -m unittest tests.validation.test_document_metadata.TemplateMetadataTests -v`
+  executed the new complete-mapping, instantiation, and Release-route fixtures
+  and failed for the intended gaps: the five Markdown Spec-child templates and
+  harness task template were absent from `template_sources`, while the Release
+  template, Stage 05 index, and coordinated routing were missing. The RED
+  fixture checkpoint is `3591fcd5`.
+- **GREEN**: the same focused command passed `5/5`. It validates all `20`
+  registered copyable typed Markdown sources, instantiates each target through
+  `validate_record()` with a valid parent manifest, checks the Release route
+  across Stage 00/05/99 catalogs, and confirms no Release event leaf exists.
+  The full `tests.validation.test_document_metadata` module passed `93/93`.
+- **Compatibility**:
+  `bash scripts/validation/check-doc-traceability.sh` passed with
+  `catalog_pairs_total=46` and `failures=0`;
+  `bash scripts/validation/check-repo-contracts.sh` passed all sections;
+  `git diff --check` passed.
+- **Template boundary**: exactly the five Markdown Spec-child templates now
+  declare `artifact_type: spec`; the harness task contract declares
+  `artifact_type: task`; Release declares `artifact_type: release`. The YAML,
+  GraphQL, and Protobuf templates remain unchanged and have no Markdown
+  frontmatter. Existing template-specific body contracts were preserved.
+- **Release boundary**: routing is
+  `docs/05.operations/releases/YYYY-MM-DD-release-name.md`; the new Stage 05
+  index requires real event evidence and distinguishes changelog/readiness
+  inputs from execution. No Release event record was created. Deployment
+  runtime remains owned by Spec 127 or a later approved runtime chain.
+- **Graphify**: `graphify update .` completed with `22889` nodes and `23854`
+  edges. Its generated tracked collateral was restored because Task 2 does not
+  own generated evidence; tracked sources, Stage 00, Spec 129, and this Stage
+  04 ledger remain authoritative.
+- **Protected surface**: changes are limited to approved Stage 00 authoring
+  routing, Stage 04 evidence, Stage 05 Release indexing, Stage 99 templates and
+  catalogs, and metadata tests. Runtime, Compose, infrastructure, secrets,
+  workflows, provider-global state, deployment execution, and remote GitHub
+  state were not changed.
+- **Implementer self-review**: Spec mapping PASS and code/document quality PASS
+  with Critical `0`, Important `0`, Minor `0`. Independent Spec and quality
+  approval remain pending; T-DCC-002 is not Done.
+
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | `39eb562e` | PASS | Approved | C0/I0/M0; no remediation required | `review-237aa5d7..39eb562e.diff`; combined reviewer verdict | Done |
-| T-DCC-002 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
+| T-DCC-002 | `3591fcd5` + implementation commit | Self-review PASS; independent review pending | Self-review PASS; independent review pending | C0/I0/M0 in implementer review; independent gate pending | `.superpowers/sdd/task-2-report.md`; reviewer verdict pending | Review Pending |
 | T-DCC-003 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-004 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-005 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
@@ -136,9 +178,10 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 ## Verification Summary
 
 - **Focused Test Commands**: T-DCC-001 focused registry/metadata/README tests
-  pass `31/31`; T-DCC-002 through T-DCC-005 remain pending.
-- **Full Test Commands**: T-DCC-001 validation module passes `91/91`; the final
-  cross-suite bundle remains reserved for T-DCC-006.
+  pass `31/31`; T-DCC-002 template tests pass `5/5`; T-DCC-003 through
+  T-DCC-005 remain pending.
+- **Full Test Commands**: the metadata validation module passes `93/93` after
+  T-DCC-002; the final cross-suite bundle remains reserved for T-DCC-006.
 - **Generated Freshness**: Pending T-DCC-006.
 - **Graphify**: Required after code changes when available; advisory result and
   corroboration will be recorded per applicable task.

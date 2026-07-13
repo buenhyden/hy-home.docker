@@ -1,5 +1,8 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: task
+parent_ids: [<parent-artifact-id>]
 ---
 
 <!-- Target: docs/04.execution/tasks/YYYY-MM-DD-<harness-stream>.md -->
@@ -20,8 +23,6 @@ status: draft
 >   evidence; never secret values.
 > - Target-relative links in `## Related Documents` are calculated from the
 >   copied target path, not from `docs/99.templates/`.
-> - Replace example links with real target-relative links, or delete unused
->   examples before saving.
 
 ---
 

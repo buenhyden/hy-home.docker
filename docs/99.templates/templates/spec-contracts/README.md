@@ -12,6 +12,10 @@ layer: agentic
 contracts that live under a feature spec directory. These templates supplement
 the parent SDLC spec; they do not replace the parent `spec.md`.
 
+The five Markdown child templates declare `artifact_type: spec` and instantiate
+the parent Spec profile. The YAML, GraphQL, and Protobuf templates remain
+comment-driven machine-readable sources without Markdown frontmatter.
+
 ## Templates
 
 | Need | Template |

@@ -47,7 +47,7 @@ support 문서를 기준으로 확인합니다.
 | --- | --- | --- |
 | SDLC templates | [templates/sdlc/](./templates/sdlc/) | PRD, ARD, ADR, Spec, Plan, Task |
 | Spec contract templates | [templates/spec-contracts/](./templates/spec-contracts/) | API spec, agent design, data model, service, tests, OpenAPI, GraphQL, Proto |
-| Operations templates | [templates/operations/](./templates/operations/) | Guide, policy, runbook, incident, postmortem |
+| Operations templates | [templates/operations/](./templates/operations/) | Guide, policy, runbook, incident, postmortem, Release |
 | Governance templates | [templates/governance/](./templates/governance/) | Memory note, progress log, harness task contract |
 | Common templates | [templates/common/](./templates/common/) | README, reference, archive |
 | Support governance | [support/](./support/) | Template contract, governance, frontmatter, lifecycle, selection, external-source rationale |
@@ -67,6 +67,7 @@ support 문서를 기준으로 확인합니다.
 
 - Template 선택: [template selection guide](./support/template-selection.md)
 - 복사 가능한 template catalog: [templates README](./templates/README.md)
+- 실제 release event 기록: [Release template](./templates/operations/release.template.md)
 - Frontmatter와 lifecycle status: [frontmatter contract](./support/frontmatter-contract.md), [lifecycle status](./support/lifecycle-status.md)
 - Template 변경과 검토: [template governance](./support/template-governance.md)
 - Durable support rule surface: [support README](./support/README.md)

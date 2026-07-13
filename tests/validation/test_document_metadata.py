@@ -954,7 +954,8 @@ class TemplateMetadataTests(unittest.TestCase):
         self.assertIn("[release.template.md](./release.template.md)", operations_templates)
         self.assertIn("artifact_type: spec", spec_templates)
         self.assertIn("artifact_type: task", governance_templates)
-        self.assertIn("[operations](./operations/README.md)", templates)
+        self.assertIn("| Operations | [operations/](./operations/README.md)", templates)
+        self.assertIn("`release`", templates)
         self.assertIn("[Release template](./templates/operations/release.template.md)", template_root)
         release_leaves = sorted(
             path

@@ -1,5 +1,8 @@
 ---
 status: draft
+artifact_id: <artifact-id>
+artifact_type: spec
+parent_ids: [<parent-artifact-id>]
 ---
 
 <!-- Target: docs/03.specs/NNN-<feature-id>/service.md -->

@@ -24,6 +24,7 @@ template source.
 | Runbook | `docs/05.operations/runbooks/**.md` | [runbook.template.md](../templates/operations/runbook.template.md) |
 | Incident packet incident file | `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md` | [incident.template.md](../templates/operations/incident.template.md) |
 | Incident packet postmortem.md | `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md` | [postmortem.template.md](../templates/operations/postmortem.template.md) |
+| Release | `docs/05.operations/releases/YYYY-MM-DD-release-name.md` | [release.template.md](../templates/operations/release.template.md) |
 | Reference | `docs/90.references/{audits,data,research,learning}/**/*.md` | [reference.template.md](../templates/common/reference.template.md) |
 | Archive | `docs/98.archive/<original-stage>/<original-path>.md` | [archive.template.md](../templates/common/archive.template.md) |
 | README | `README.md`, `docs/README.md`, folder `README.md` files | [readme.template.md](../templates/common/readme.template.md) |
@@ -67,7 +68,10 @@ target action from this mapping:
 - Choose exactly one primary template for each target document.
 - Use spec child templates only inside the matching feature spec directory.
 - Use operations templates by purpose: guide for usage context, policy for
-  controls and exceptions, runbook for ordered procedures and evidence.
+  controls and exceptions, runbook for ordered procedures and evidence, and
+  release for evidence from a real release event.
+- Do not create a Release record from changelog or release-readiness evidence
+  alone; deployment runtime remains in its separately approved Spec chain.
 - Use reference templates for stable facts only; do not put active policy or
   runbook procedure into Stage 90 references.
 - Use archive templates only for tombstones, not for preserving stale body text.

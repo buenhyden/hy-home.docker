@@ -4,7 +4,7 @@ layer: agentic
 
 # Operations Templates
 
-> guide, policy, runbook, incident, and postmortem templates
+> guide, policy, runbook, incident, postmortem, and release templates
 
 ## Overview
 
@@ -21,6 +21,7 @@ to operate, govern, respond to, or learn from a workspace service or process.
 | Provide ordered execution steps, evidence, recovery, and escalation | [runbook.template.md](./runbook.template.md) |
 | Record an active or resolved incident timeline and response state | [incident.template.md](./incident.template.md) |
 | Analyze incident impact, root cause, action items, and prevention | [postmortem.template.md](./postmortem.template.md) |
+| Record verified artifacts, approvals, rollout, rollback, and outcome for a real release event | [release.template.md](./release.template.md) |
 
 ## Target Rules
 
@@ -31,6 +32,9 @@ to operate, govern, respond to, or learn from a workspace service or process.
   `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md`.
 - `postmortem.template.md` targets
   `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md`.
+- `release.template.md` targets
+  `docs/05.operations/releases/YYYY-MM-DD-release-name.md` and requires real
+  release-event evidence; it does not authorize deployment runtime changes.
 - Calculate target-relative links from the copied document path.
 
 ## Related Documents

@@ -32,6 +32,7 @@ status: active
 - 운영 정책, 통제 기준, 예외 처리 기준
 - 장애 복구, 정기 점검, 반복 실행 절차
 - 사고 기록과 사후 분석
+- 실제 릴리스의 artifact, 검증, 승인, rollout/rollback, 결과 증거
 - AI Agent가 참조할 canonical operations context
 
 ### Out of Scope
@@ -50,6 +51,7 @@ docs/05.operations/
 ├── policies/     # 운영 통제, 보안/가용성 정책, 예외 기준
 ├── runbooks/     # 복구, 검증, 반복 실행 절차
 ├── incidents/    # 사고 단위 packet 폴더와 사후 분석
+├── releases/     # 실제 릴리스 event 증거 기록
 └── README.md     # This file
 ```
 
@@ -61,6 +63,7 @@ docs/05.operations/
 | check allowed controls, exceptions, or review cadence       | [policies/](./policies/README.md)                                                               |
 | execute recovery, validation, rollback, or escalation steps | [runbooks/](./runbooks/README.md)                                                               |
 | record an incident or postmortem                            | [incidents/](./incidents/README.md)                                                              |
+| record evidence for an executed release                     | [릴리스](./releases/README.md)                                                                    |
 | confirm execution traceability                              | [execution plans](../04.execution/plans/README.md) and [tasks](../04.execution/tasks/README.md) |
 
 ## How to Work in This Area
@@ -69,7 +72,8 @@ docs/05.operations/
 2. 운영 통제, 예외, 보안/가용성 기준은 `policies/01-gateway/traefik.md` 같은 policy 문서에 둡니다.
 3. 명령 순서, 기대 결과, 실패 시 중단 기준이 있는 절차는 `runbooks/01-gateway/traefik.md` 같은 runbook 문서에 둡니다.
 4. 실제 사고 기록과 postmortem은 `incidents/YYYY/INC-###-incident-title/` packet 안에 둡니다.
-5. 문서를 추가, 이동, 삭제하면 해당 parent `README.md`와 관련 bucket 링크를 함께 갱신합니다.
+5. 실제 릴리스 증거는 `releases/YYYY-MM-DD-release-name.md`에 기록합니다. changelog나 readiness 자료만으로 release record를 만들지 않습니다.
+6. 문서를 추가, 이동, 삭제하면 해당 parent `README.md`와 관련 bucket 링크를 함께 갱신합니다.
 
 특정 서비스에 속하지 않는 cross-service 또는 workspace-level 문서(예: `guides/00-workspace/developer-setup.md`, `policies/00-workspace/infra-service-optimization-catalog.md`, `runbooks/00-workspace/release-management.md`)는 bucket root에 직접 두지 않고 의미별 하위 폴더에 둡니다. `guides/`, `policies/`, `runbooks/` root에는 해당 bucket `README.md`만 남깁니다.
 
@@ -83,6 +87,7 @@ docs/05.operations/
 | `policies/`  | 운영 통제, 허용/금지 상태, 예외, 검토 주기              | `## Policy Scope`, `## Controls`, `## Verification`, `## Review Cadence`                    |
 | `runbooks/`  | 순서 있는 절차, evidence, rollback/recovery, escalation | `## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, `## Escalation` |
 | `incidents/` | 사고 사실 기록과 같은 packet 안의 사후 분석              | incident/postmortem templates                                                               |
+| `releases/`  | 실제 릴리스 artifact, 승인, 검증, rollout/rollback, 결과 | release template; 실제 event evidence 필수                                                   |
 
 하나의 leaf 문서에는 하나의 primary purpose만 둡니다. 사용 설명과 반복 절차가 모두 필요한 경우 guide에서 runbook으로 handoff 링크를 둡니다.
 
@@ -93,6 +98,7 @@ docs/05.operations/
 - policy는 통제 기준, 예외 승인, 검토 주기를 설명합니다.
 - runbook은 명령, 기대 결과, 실패 시 중단 기준, rollback 또는 escalation 기준을 포함합니다.
 - 사고 기록은 secret, token, credential, private key 원문을 포함하지 않습니다.
+- release record는 deployment runtime의 소유권이나 실행 권한을 대체하지 않습니다.
 
 ## Stage Handoff
 
@@ -103,6 +109,7 @@ docs/05.operations/
 - [Docs Index](../README.md)
 - [Plans](../04.execution/plans/README.md)
 - [Tasks](../04.execution/tasks/README.md)
+- [Releases](./releases/README.md)
 - [Templates](../99.templates/README.md)
 - [Documentation protocol](../00.agent-governance/rules/documentation-protocol.md)
 - [Stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)
