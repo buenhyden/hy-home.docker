@@ -3,44 +3,42 @@
 # Do not add a Markdown Related Documents section to this YAML contract.
 openapi: 3.1.0
 info:
-  title: Example Feature API
-  version: 0.1.0
-  description: |
-    Contract-first API definition for the feature.
+  title: __API_TITLE__
+  version: __API_VERSION__
+  description: __API_DESCRIPTION__
 servers:
-  - url: https://api.example.com
+  - url: __SERVER_URL__
 tags:
-  - name: example
+  - name: __TAG_NAME__
 paths:
-  /example:
-    get:
-      tags: [example]
-      operationId: getExample
-      summary: Get example resource
+  /__RESOURCE_PATH__:
+    __HTTP_METHOD__:
+      tags: [__TAG_NAME__]
+      operationId: __OPERATION_ID__
+      summary: __OPERATION_SUMMARY__
       responses:
-        "200":
-          description: Success
+        "__SUCCESS_STATUS__":
+          description: __SUCCESS_DESCRIPTION__
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ExampleResponse"
-        "400":
-          description: Bad request
+                $ref: "#/components/schemas/__RESPONSE_SCHEMA__"
+        "__ERROR_STATUS__":
+          description: __ERROR_DESCRIPTION__
 components:
   schemas:
-    ExampleResponse:
+    __RESPONSE_SCHEMA__:
       type: object
-      required: [id, status]
+      required: [__IDENTIFIER_FIELD__, __STATUS_FIELD__]
       properties:
-        id:
+        __IDENTIFIER_FIELD__:
           type: string
-        status:
+        __STATUS_FIELD__:
           type: string
-          enum: [ok]
   securitySchemes:
-    bearerAuth:
+    __SECURITY_SCHEME__:
       type: http
       scheme: bearer
-      bearerFormat: JWT
+      bearerFormat: __BEARER_FORMAT__
 security:
-  - bearerAuth: []
+  - __SECURITY_SCHEME__: []

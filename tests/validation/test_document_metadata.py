@@ -1210,7 +1210,7 @@ class TemplateMetadataTests(unittest.TestCase):
         self.assertIn("Spec 127", releases)
         self.assertIn("[릴리스](./releases/README.md)", operations)
         self.assertIn("[release.template.md](./release.template.md)", operations_templates)
-        self.assertIn("artifact_type: spec", spec_templates)
+        self.assertIn("[api-spec.template.md](./api-spec.template.md)", spec_templates)
         self.assertIn("artifact_type: task", governance_templates)
         self.assertIn("| Operations | [operations/](./operations/README.md)", templates)
         self.assertIn("`release`", templates)
@@ -1248,6 +1248,52 @@ class TemplateMetadataTests(unittest.TestCase):
             )
         }
         self.assertIn("invalid-template-metadata", codes)
+
+
+class TemplateBodyContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = metadata.load_profiles(PROFILES)
+
+    def test_task_3_markdown_sources_match_heading_envelopes(self) -> None:
+        for role_name in (
+            "prd",
+            "ard",
+            "adr",
+            "spec",
+            "agent-design",
+            "api-spec",
+            "data-model",
+            "service",
+            "tests",
+        ):
+            with self.subTest(role=role_name):
+                role = self.profiles["template_roles"][role_name]
+                text = (ROOT / role["source"]).read_text(encoding="utf-8")
+                headings = {
+                    line for line in text.splitlines() if line.startswith("## ")
+                }
+                self.assertEqual(
+                    1,
+                    sum(line.startswith("# ") for line in text.splitlines()),
+                )
+                self.assertTrue(set(role["required_headings"]) <= headings)
+                self.assertFalse(set(role["forbidden_headings"]) & headings)
+                self.assertRegex(text, r"\{\{[a-z][a-z0-9_]*\}\}")
+                self.assertNotIn("> Rules:", text)
+                self.assertNotIn("<!-- Target:", text)
+
+    def test_machine_sources_use_explicit_unresolved_tokens(self) -> None:
+        for relative_path in (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+            "docs/99.templates/templates/spec-contracts/service.template.proto",
+        ):
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertRegex(text, r"__[A-Z][A-Z0-9_]*__")
+                self.assertNotIn("example.com", text)
+                self.assertNotIn("Example", text)
 
 
 class RepositoryContractIntegrationTests(unittest.TestCase):

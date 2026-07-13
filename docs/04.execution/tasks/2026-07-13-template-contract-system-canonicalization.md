@@ -77,8 +77,8 @@ review, and a separate quality review before its logical commit.
 | ID | Deliverable | Dependency | Status | Implementation role | Required review |
 | --- | --- | --- | --- | --- | --- |
 | T-TCS-001 | Registry and support contract canonicalization | Spec and Plan | Completed | fresh implementer | spec then quality |
-| T-TCS-002 | Common, README, and Governance forms | T-TCS-001 | In Review | fresh implementer | spec then quality |
-| T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
+| T-TCS-002 | Common, README, and Governance forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
+| T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | In Review | fresh implementer | spec then quality |
 | T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Queued | fresh implementer | spec then quality |
 | T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
 | T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | Queued | fresh implementer | spec then quality |
@@ -176,13 +176,47 @@ review, and a separate quality review before its logical commit.
   credential, branch-protection, or remote state changed. T-TCS-002 is
   completed; the controlled wrapper and whole-branch review remain later gates.
 
+## T-TCS-003 Implementation Evidence
+
+- Reduced PRD, ARD, ADR, the parent Spec, and the five focused Spec-child
+  sources to exact registry-compatible frontmatter, one H1, registered required
+  and conditional H2 sections, explicit `{{token_name}}` body tokens, and no
+  copied Rules, Target comments, fixed-depth links, lifecycle guidance,
+  selection guidance, executable-looking commands, or example prose.
+- Preserved the registered conditional concerns. PRD, ARD, and the parent Spec
+  retain optional AI headings, and each focused child retains its registered
+  optional concern without making that concern a universal target requirement.
+- The parent Spec keeps child-contract summary, ownership, and linkage tokens;
+  separately reviewable API, Agent, Data, Service, and Test details remain in
+  their focused child forms.
+- Replaced valid-looking OpenAPI, GraphQL, and Protobuf values with visible
+  uppercase `__TOKEN_NAME__` values. Machine Target and Cross-links comments
+  remain because the transitional shell contract owns machine-source routing
+  until T-TCS-006.
+- Normalized the SDLC and Spec-contract catalogs to the exact template-catalog
+  README profile. Both are routing-only and Korean by default, with selection
+  and contract details delegated to Stage 99 support.
+- Controller-approved sequencing correction: the exact one-H1, required,
+  forbidden, no-Rules, and no-Target assertions cover only the nine T-TCS-003
+  roles: `prd`, `ard`, `adr`, `spec`, `agent-design`, `api-spec`,
+  `data-model`, `service`, and `tests`. T-TCS-002 already covers its six roles;
+  T-TCS-004 and T-TCS-005 extend coverage, and T-TCS-005 must reach all 23.
+  None of the nine owned-role assertions were weakened.
+- Graphify refreshed to 23,207 nodes, 24,348 edges, and 1,542 communities.
+  Its tracked outputs were restored after evidence capture, and conclusions
+  were corroborated against tracked sources, Stage 00, Spec 130, and the active
+  Plan/Task because the graph remains advisory.
+- No target corpus, runtime, Compose, infrastructure, deployment, secret,
+  provider, workflow, credential, branch-protection, or remote state changed.
+  T-TCS-003 is `In Review`; no independent Spec or Quality verdict is claimed.
+
 ## Review Evidence
 
 | Task | Spec review | Quality review | Findings | Disposition |
 | --- | --- | --- | --- | --- |
 | T-TCS-001 | PASS on `9eca432b...ede2b9a2` | APPROVED on `9eca432b...ede2b9a2` | None; I-01 resolved by `ede2b9a2` | Completed |
 | T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
-| T-TCS-003 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
+| T-TCS-003 | Not run — implementation awaits independent review | Not run — implementation awaits independent review | No independent findings recorded | In Review |
 | T-TCS-004 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 003 |
 | T-TCS-005 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
@@ -275,6 +309,22 @@ review, and a separate quality review before its logical commit.
 | Task 2 GREEN | `TemplateMetadataTests` plus `ReadmeProfileTests` | Pass: 16/16. |
 | Finding disposition | Independent full-range re-review over `ff4cb021...e9a0c8cf` | Spec PASS; Quality APPROVED; Critical 0 / Important 0 / Minor 0; I-01, I-02, and M-01 resolved. |
 
+### T-TCS-003 RED and GREEN
+
+| Phase | Command or evidence | Result |
+| --- | --- | --- |
+| RED | `python3 -m unittest tests.validation.test_document_metadata.TemplateBodyContractTests -v` | Expected failure: 2 test methods ran with 12 subtest failures covering all nine owned Markdown roles and all three machine sources. |
+| Focused GREEN | `python3 -m unittest tests.validation.test_document_metadata.TemplateBodyContractTests tests.validation.test_document_metadata.TemplateMetadataTests -v` | Pass: 15/15. |
+| Metadata regression | `python3 -m unittest tests.validation.test_document_metadata -v` | Pass: 119/119. |
+| Native and static syntax | PyYAML safe-load plus bounded GraphQL and Protobuf grammar/static checks | Pass. No local `protoc`, `buf`, GraphQL parser, or formatter was available; parser validation was not claimed. |
+| Metadata contracts | `python3 scripts/validation/check-document-metadata.py --mode check-contracts` | Pass: zero violations. |
+| Changed mode | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 48f37eb4` | Pass: 13 selected, zero violations, zero legacy exceptions, zero transition overrides. |
+| Repository contracts | `bash scripts/validation/check-repo-contracts.sh` | Pass: `failures=0`; machine Target/Cross-links compatibility remains intact. |
+| Generated freshness | Canonical LLM Wiki index/coverage and metadata inventory check modes | Pass: all outputs fresh; metadata inventory remains 902 records / 2,031 advisory findings. |
+| Traceability and alignment | Stage 04/05 traceability and implementation alignment checks | Pass: 46 catalog pairs; 647 stage docs / 5,136 links; zero failures. |
+| Graph refresh | `graphify update .` | Pass: 23,207 nodes / 24,348 edges / 1,542 communities; tracked outputs restored after evidence capture. |
+| Diff, compile, and self-review | `git diff --check`, Python compilation, exact heading/token scan, and scoped diff review | Pass; no self-review finding remained. |
+
 ## Controlled Agent Pre-commit Evidence
 
 The final wrapper has not run because implementation and whole-branch review
@@ -302,8 +352,9 @@ have not completed.
 | `1bba54fe` | Task 2 forms, catalog routing, mirror removal, transitional source gate, tests, and generated fallout | Focused 13/13; metadata 114/114; changed mode 17/0; repository contracts; generated freshness; traceability/alignment; Graphify; diff/compile |
 | `e9a0c8cf` | Task 2 I-01/I-02/M-01 Memory, Stage 00 metadata, and Common confidentiality remediation | Remediation 3/3; focused 16/16; metadata 117/117; metadata and repository contracts; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close common governance forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-002 | Metadata changed-mode and diff hygiene; evidence-only scope |
+| Implementation unit — subject `docs(templates): canonicalize design and contract forms`; self hash intentionally omitted | Task 3 Stage 01-03, focused Spec-child, machine contract, catalog, test, and evidence forms | RED 12 intended subtest failures; focused 15/15; metadata 119/119; metadata/repository contracts; syntax/static checks; generated freshness; traceability/alignment; Graphify; diff/compile |
 
-Later implementation and review-fix commits will be appended as Tasks 2-7 close.
+Later review-fix and implementation commits will be appended as Tasks 3-7 close.
 
 ## Migration Wave Routing
 

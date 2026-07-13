@@ -4,110 +4,59 @@ artifact_id: <artifact-id>
 artifact_type: spec
 parent_ids: [<parent-artifact-id>]
 ---
-<!-- Target: docs/03.specs/NNN-<feature-id>/api-spec.md -->
 
-# [API Name] Specification
-
-> Use this template for `docs/03.specs/NNN-<feature-id>/api-spec.md`.
->
-> Rules:
->
-> - This document is a child of the feature Spec, not a separate top-level doc type.
-> - Do not create a parallel `docs/api/` tree for this document.
-> - Use this for REST, GraphQL, or gRPC contracts.
-> - Link the parent Spec near the top.
-> - Write this document in English. Preserve code identifiers, command names,
->   service names, environment variables, and quoted upstream terms exactly.
-> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
-
----
+# {{title}}
 
 ## Overview
 
-This document defines the API contract exposed by [feature name]. It describes
-endpoints, authentication, request and response schemas, errors, versioning, and
-non-functional requirements.
+{{overview}}
 
-## Parent Spec
+## Parent and Scope
 
-- **Spec**: [./spec.md](./spec.md)
+{{parent_spec_link}}
 
-## Scope & Non-goals
-
-- **Covers**:
-- **Does Not Cover**:
-- **Parent Design Context**: full design rationale remains in `spec.md`
+{{scope_and_non_goals}}
 
 ## API Style
 
-- **Type**: `REST | GraphQL | gRPC`
-- **Audience**:
-- **Versioning Strategy**:
+{{api_style}}
 
-## Authentication & Authorization
+## Authentication and Authorization
 
-- **Auth Mechanism**:
-- **Scopes / Roles**:
-- **Rate Limit / Abuse Control**:
+{{authentication_and_authorization}}
 
-## Endpoint / Operation Catalog
+## Operations
 
-| Operation ID | Method / Type | Path / Name | Purpose | Caller |
-| --- | --- | --- | --- | --- |
-| API-001 | GET | `/example` | [Purpose] | [Client] |
+{{operations}}
 
-## Request / Response Schemas
+## Request and Response Schemas
 
-### Request
+{{request_and_response_schemas}}
 
-```json
-{
-  "example": "value"
-}
-```
+## Errors
 
-### Response
+{{errors}}
 
-```json
-{
-  "id": "123",
-  "status": "ok"
-}
-```
+## Compatibility
 
-## Error Model
+{{compatibility}}
 
-| Code | Meaning | Retryable | Notes |
-| --- | --- | --- | --- |
-| 400 | Bad Request | No | Validation error |
+## Non-functional Requirements
 
-## Data Contract Compatibility
+{{non_functional_requirements}}
 
-- **Backward Compatibility Rule**:
-- **Breaking Change Rule**:
-- **Deprecation Policy**:
+## Machine-readable Contracts
 
-## Non-Functional Requirements
-
-- **Latency Budget**:
-- **Availability Expectation**:
-- **Observability**:
-- **Audit / Traceability**:
-
-## Machine-readable Contract Files
-
-- `./contracts/openapi.yaml`
-- `./contracts/service.proto`
-- `./contracts/schema.graphql`
+{{machine_readable_contracts}}
 
 ## Verification
 
-- Contract lint
-- Mock / integration test
-- Consumer compatibility check
+{{verification}}
+
+## Pagination
+
+{{pagination}}
 
 ## Related Documents
 
-- **Parent Spec**: [./spec.md](./spec.md)
-- **Data Model**: [./data-model.md](./data-model.md)
-- **Tests**: [./tests.md](./tests.md)
+{{related_documents}}

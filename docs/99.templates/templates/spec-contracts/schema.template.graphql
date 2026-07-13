@@ -6,10 +6,10 @@ schema {
 }
 
 type Query {
-  example(id: ID!): Example!
+  __QUERY_FIELD__(__ARGUMENT_NAME__: ID!): __OBJECT_TYPE__!
 }
 
-type Example {
-  id: ID!
-  status: String!
+type __OBJECT_TYPE__ {
+  __IDENTIFIER_FIELD__: ID!
+  __STATUS_FIELD__: String!
 }

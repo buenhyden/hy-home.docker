@@ -4,47 +4,48 @@ layer: agentic
 
 # Spec Contract Templates
 
-> child contracts and machine-readable schema templates for feature specs
-
 ## Overview
 
-`docs/99.templates/templates/spec-contracts` contains copyable templates for
-contracts that live under a feature spec directory. These templates supplement
-the parent SDLC spec; they do not replace the parent `spec.md`.
+`docs/99.templates/templates/spec-contracts`는 parent Spec 아래에서 별도로
+검토할 Markdown 및 기계 판독 가능 계약 원본을 안내한다.
 
-The five Markdown child templates declare `artifact_type: spec` and instantiate
-the parent Spec profile. The YAML, GraphQL, and Protobuf templates remain
-comment-driven machine-readable sources without Markdown frontmatter.
+## Audience
 
-## Templates
+- Documentation Writers
+- AI Agents
+- Software and QA Engineers
 
-| Need | Template |
+## Scope
+
+- API, Agent, Data Model, Service, Tests Markdown 계약
+- OpenAPI, GraphQL, Protobuf 기계 판독 가능 계약
+- parent Spec가 유지하는 계약 소유권과 연결 경계
+
+## Structure
+
+| Role | Template |
 | --- | --- |
-| Define endpoint, authentication, error, and compatibility rules | [api-spec.template.md](./api-spec.template.md) |
-| Specify an agent role, IO contract, tools, memory, guardrails, and evals | [agent-design.template.md](./agent-design.template.md) |
-| Describe entities, relationships, validation, storage, and migrations | [data-model.template.md](./data-model.template.md) |
-| Capture service image, hardening, network, secret, healthcheck, and ops requirements | [service.template.md](./service.template.md) |
-| Define verification goals, test matrix, evals, fixtures, and evidence | [tests.template.md](./tests.template.md) |
-| Seed an OpenAPI contract owned by the parent API spec | [openapi.template.yaml](./openapi.template.yaml) |
-| Seed a GraphQL schema contract owned by the parent API spec | [schema.template.graphql](./schema.template.graphql) |
-| Seed a protobuf service contract owned by the parent API spec | [service.template.proto](./service.template.proto) |
+| API Spec | [api-spec.template.md](./api-spec.template.md) |
+| Agent Design | [agent-design.template.md](./agent-design.template.md) |
+| Data Model | [data-model.template.md](./data-model.template.md) |
+| Service | [service.template.md](./service.template.md) |
+| Tests | [tests.template.md](./tests.template.md) |
+| OpenAPI | [openapi.template.yaml](./openapi.template.yaml) |
+| GraphQL | [schema.template.graphql](./schema.template.graphql) |
+| Protobuf | [service.template.proto](./service.template.proto) |
 
-## Target Rules
+## How to Work in This Area
 
-- Markdown contract templates target
-  `docs/03.specs/NNN-<feature-id>/{api-spec,agent-design,data-model,service,tests}.md`.
-- `openapi.template.yaml` targets
-  `docs/03.specs/NNN-<feature-id>/contracts/openapi.yaml`.
-- `schema.template.graphql` targets
-  `docs/03.specs/NNN-<feature-id>/contracts/schema.graphql`.
-- `service.template.proto` targets
-  `docs/03.specs/NNN-<feature-id>/contracts/service.proto`.
-- Markdown contract templates use target-relative links; machine-readable
-  templates use `Cross-links:` comments.
+1. [template selection](../../support/template-selection.md)에서 parent Spec에 필요한 계약 역할을 확인한다.
+2. Markdown 원본의 모든 `{{token_name}}`을 계약 근거로 바꾼다.
+3. 기계 판독 원본의 모든 `__TOKEN_NAME__`을 실제 계약 값으로 바꾼다.
+4. parent Spec에는 자식 계약의 요약, 소유권, 링크만 유지한다.
+5. 변경 후 [template contract](../../support/template-contract.md)와 저장소 검증을 확인한다.
 
 ## Related Documents
 
 - [templates catalog](../README.md)
+- [SDLC template catalog](../sdlc/README.md)
 - [template selection](../../support/template-selection.md)
 - [template contract](../../support/template-contract.md)
 - [frontmatter contract](../../support/frontmatter-contract.md)

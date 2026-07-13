@@ -3,17 +3,17 @@
 // Do not add a Markdown Related Documents section to this Protobuf contract.
 syntax = "proto3";
 
-package example.v1;
+package __PACKAGE_NAME__;
 
-service ExampleService {
-  rpc GetExample (GetExampleRequest) returns (GetExampleResponse);
+service __SERVICE_NAME__ {
+  rpc __RPC_NAME__ (__REQUEST_MESSAGE__) returns (__RESPONSE_MESSAGE__);
 }
 
-message GetExampleRequest {
-  string id = 1;
+message __REQUEST_MESSAGE__ {
+  string __REQUEST_FIELD__ = 1;
 }
 
-message GetExampleResponse {
-  string id = 1;
-  string status = 2;
+message __RESPONSE_MESSAGE__ {
+  string __IDENTIFIER_FIELD__ = 1;
+  string __STATUS_FIELD__ = 2;
 }

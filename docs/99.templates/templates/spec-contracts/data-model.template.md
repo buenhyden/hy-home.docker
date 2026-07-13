@@ -4,91 +4,51 @@ artifact_id: <artifact-id>
 artifact_type: spec
 parent_ids: [<parent-artifact-id>]
 ---
-<!-- Target: docs/03.specs/NNN-<feature-id>/data-model.md -->
 
-# [Feature Name] Data Model
-
-> Use this template for `docs/03.specs/NNN-<feature-id>/data-model.md`.
->
-> Rules:
->
-> - This document captures logical/physical data structures for the feature.
-> - Keep API surface details in `api-spec.md`.
-> - Keep migration execution steps in Plan or Runbook, not here.
-> - Write this document in English. Preserve code identifiers, command names,
->   service names, environment variables, and quoted upstream terms exactly.
-> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
-
----
+# {{title}}
 
 ## Overview
 
-This document defines the data model and storage strategy for [feature name]. It
-describes entities, relationships, identifiers, integrity rules, retention
-policy, and change strategy.
+{{overview}}
 
-## Parent Documents
+## Parent and Scope
 
-- **Spec**: [./spec.md](./spec.md)
-- **API Spec**: [./api-spec.md](./api-spec.md)
+{{parent_spec_link}}
 
-## Scope & Non-goals
+{{scope_and_non_goals}}
 
-- **Covers**:
-- **Does Not Cover**:
+## Entities
 
-## Entities / Aggregates
-
-| Entity | Purpose | Identifier | Ownership | Notes |
-| --- | --- | --- | --- | --- |
-| [Entity] | [Purpose] | [ID] | [Owner] | [Notes] |
+{{entities}}
 
 ## Relationships
 
-- [Entity A] -> [Entity B]:
-- Cardinality:
-- Invariants:
+{{relationships}}
 
-## Schema / Structures
+## Schema
 
-```sql
--- Example
-CREATE TABLE example (
-  id UUID PRIMARY KEY,
-  name TEXT NOT NULL
-);
-```
+{{schema}}
 
-## Validation & Integrity Rules
+## Integrity
 
-- **Required fields**:
-- **Uniqueness**:
-- **Referential integrity**:
-- **State transition rules**:
+{{integrity}}
 
-## Storage Strategy
+## Storage
 
-- **Primary store**:
-- **Indexes / partitioning**:
-- **Caching strategy**:
-- **Backup / retention**:
+{{storage}}
 
-## Privacy / Security
+## Privacy
 
-- **Sensitive fields**:
-- **Encryption / masking**:
-- **Access boundary**:
-- **Retention / deletion policy**:
+{{privacy}}
 
-## Migration & Compatibility
+## Migration
 
-- **Backward compatibility rule**:
-- **Migration approach**:
-- **Rollback notes**:
+{{migration}}
+
+## Retention
+
+{{retention}}
 
 ## Related Documents
 
-- **Spec**: [./spec.md](./spec.md)
-- **Plan**: [../../04.execution/plans/YYYY-MM-DD-<feature>.md](../../04.execution/plans/YYYY-MM-DD-<feature>.md)
-- **Runbook, direct operations target**: [../../05.operations/runbooks/<topic>.md](../../05.operations/runbooks/<topic>.md)
-- **Runbook, domain operations target**: [../../05.operations/runbooks/<domain>/<topic>.md](../../05.operations/runbooks/<domain>/<topic>.md)
+{{related_documents}}
