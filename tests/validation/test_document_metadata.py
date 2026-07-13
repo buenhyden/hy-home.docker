@@ -326,12 +326,22 @@ class ProfileSchemaTests(unittest.TestCase):
         )
 
     def test_template_roles_reject_ambiguous_target_matchers(self) -> None:
-        def mutate(values):
-            values["template_roles"]["audit"]["target_globs"] = list(
-                values["template_roles"]["reference"]["target_globs"]
-            )
-
-        self.mutate_and_load(mutate)
+        with tempfile.TemporaryDirectory() as directory:
+            target = pathlib.Path(directory) / "profiles.yaml"
+            values = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
+            values["template_roles"]["spec"]["target_globs"] = [
+                "docs/03.specs/*/s*ec.md"
+            ]
+            values["template_roles"]["api-spec"]["target_globs"] = [
+                "docs/03.specs/*/sp*c.md"
+            ]
+            target.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
+            with self.assertRaisesRegex(
+                metadata.ProfileError,
+                r"api-spec:.*sp\*c\.md and spec:.*s\*ec\.md; "
+                r"witness=docs/03\.specs/x/spec\.md",
+            ):
+                metadata.load_profiles(target)
 
 
 class ArtifactInferenceTests(unittest.TestCase):

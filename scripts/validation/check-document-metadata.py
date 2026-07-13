@@ -558,6 +558,87 @@ def _target_glob_specificity(pattern: str) -> tuple[int, int, int]:
     return literal_characters, -wildcard_count, len(parts)
 
 
+def _segment_glob_intersection_witness(left: str, right: str) -> str | None:
+    """Return one non-empty segment matched by both supported `*` globs."""
+
+    queue = collections.deque([(0, 0, "")])
+    visited: set[tuple[int, int, bool]] = set()
+    while queue:
+        left_index, right_index, witness = queue.popleft()
+        state = (left_index, right_index, bool(witness))
+        if state in visited:
+            continue
+        visited.add(state)
+        if left_index == len(left) and right_index == len(right):
+            if witness:
+                return witness
+            continue
+
+        left_star = left_index < len(left) and left[left_index] == "*"
+        right_star = right_index < len(right) and right[right_index] == "*"
+        if left_star:
+            queue.append((left_index + 1, right_index, witness))
+        if right_star:
+            queue.append((left_index, right_index + 1, witness))
+
+        if left_index >= len(left) or right_index >= len(right):
+            continue
+        if left_star and right_star:
+            queue.append((left_index, right_index, witness + "x"))
+        elif left_star:
+            queue.append((left_index, right_index + 1, witness + right[right_index]))
+        elif right_star:
+            queue.append((left_index + 1, right_index, witness + left[left_index]))
+        elif left[left_index] == right[right_index]:
+            queue.append((left_index + 1, right_index + 1, witness + left[left_index]))
+    return None
+
+
+def _target_glob_intersection_witness(left: str, right: str) -> str | None:
+    """Return one path matched by both safe target globs, if one exists."""
+
+    left_parts = pathlib.PurePosixPath(left).parts
+    right_parts = pathlib.PurePosixPath(right).parts
+    queue = collections.deque([(0, 0, ())])
+    visited: set[tuple[int, int]] = set()
+    while queue:
+        left_index, right_index, witness = queue.popleft()
+        state = (left_index, right_index)
+        if state in visited:
+            continue
+        visited.add(state)
+        if left_index == len(left_parts) and right_index == len(right_parts):
+            return pathlib.PurePosixPath(*witness).as_posix()
+
+        left_globstar = left_index < len(left_parts) and left_parts[left_index] == "**"
+        right_globstar = right_index < len(right_parts) and right_parts[right_index] == "**"
+        if left_globstar:
+            queue.append((left_index + 1, right_index, witness))
+        if right_globstar:
+            queue.append((left_index, right_index + 1, witness))
+
+        if left_index >= len(left_parts) or right_index >= len(right_parts):
+            continue
+        segment: str | None = None
+        next_left = left_index + 1
+        next_right = right_index + 1
+        if left_globstar and right_globstar:
+            continue
+        if left_globstar:
+            segment = _segment_glob_intersection_witness("*", right_parts[right_index])
+            next_left = left_index
+        elif right_globstar:
+            segment = _segment_glob_intersection_witness(left_parts[left_index], "*")
+            next_right = right_index
+        else:
+            segment = _segment_glob_intersection_witness(
+                left_parts[left_index], right_parts[right_index]
+            )
+        if segment is not None:
+            queue.append((next_left, next_right, witness + (segment,)))
+    return None
+
+
 def matching_template_roles(
     path: pathlib.Path,
     artifact_type: str,
@@ -1330,6 +1411,7 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
         raise ProfileError("template_roles must define the exact 23 canonical role names")
     declared_sources: dict[str, str] = {}
     declared_target_globs: dict[str, str] = {}
+    declared_matchers: list[tuple[str, str, str]] = []
     for role_name, role in sorted(template_roles.items()):
         if not isinstance(role, dict) or set(role) != TEMPLATE_ROLE_KEYS:
             raise ProfileError(f"template role {role_name} must define the exact contract members")
@@ -1355,13 +1437,29 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
             raise ProfileError(f"template role {role_name} target_globs must be safe Markdown target patterns")
         if len(target_globs) != len(set(target_globs)):
             raise ProfileError(f"template role {role_name} target_globs must not contain duplicates")
-        for pattern in target_globs:
+        for pattern in sorted(target_globs):
             if pattern in declared_target_globs:
                 raise ProfileError(
                     "template role target globs overlap: "
                     f"{declared_target_globs[pattern]}:{pattern} and {role_name}:{pattern}"
                 )
             declared_target_globs[pattern] = role_name
+            for other_role, other_profile, other_pattern in declared_matchers:
+                if (
+                    other_role == role_name
+                    or other_profile != artifact_profile
+                    or _target_glob_specificity(other_pattern)
+                    != _target_glob_specificity(pattern)
+                ):
+                    continue
+                witness = _target_glob_intersection_witness(other_pattern, pattern)
+                if witness is not None:
+                    raise ProfileError(
+                        "template role target globs overlap at equal specificity: "
+                        f"{other_role}:{other_pattern} and {role_name}:{pattern}; "
+                        f"witness={witness}"
+                    )
+            declared_matchers.append((role_name, artifact_profile, pattern))
         heading_sets: list[set[str]] = []
         for heading_key in ("required_headings", "conditional_headings", "forbidden_headings"):
             headings = role.get(heading_key)

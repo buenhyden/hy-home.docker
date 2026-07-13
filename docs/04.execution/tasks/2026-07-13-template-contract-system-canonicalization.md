@@ -107,12 +107,22 @@ review, and a separate quality review before its logical commit.
   The LLM Wiki index, coverage snapshot, and metadata inventory were refreshed
   only through their canonical generators; Task 7 still owns the final
   branch-wide refresh and disposition.
+- The first independent review of `9eca432b...a3ca523e` returned Spec FAIL and
+  Quality CHANGES REQUESTED with Important finding I-01: loader validation
+  rejected literal duplicate globs but admitted distinct equal-specificity
+  patterns with a shared witness.
+- I-01 remediation adds a finite product-state intersection check for the
+  already-supported segment `*` and whole-segment `**` grammar. It compares
+  only distinct roles with the same artifact profile and equal specificity,
+  emits both patterns plus a deterministic witness, and does not scan target
+  documents. More-specific precedence such as Progress over the generic Memory
+  glob remains valid. Independent re-review is pending.
 
 ## Review Evidence
 
 | Task | Spec review | Quality review | Findings | Disposition |
 | --- | --- | --- | --- | --- |
-| T-TCS-001 | Not run — implementation complete and awaiting independent review | Not run — implementation complete and awaiting independent review | No independent findings recorded | In Review; implementer self-review complete |
+| T-TCS-001 | FAIL on `9eca432b...a3ca523e`; re-review pending | CHANGES REQUESTED on `9eca432b...a3ca523e`; re-review pending | I-01 distinct equal-specificity glob overlap admitted; remediation implemented and retested | In Review; await independent re-review |
 | T-TCS-002 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-003 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-004 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 003 |
@@ -159,6 +169,17 @@ review, and a separate quality review before its logical commit.
 | Generated freshness | Canonical LLM Wiki index/coverage generators and metadata inventory report mode | Pass: 1,298 index paths, 1,297 safe coverage paths, and 903 metadata records / 2,033 advisory findings. |
 | Graph refresh | `graphify update .` | Pass: refreshed to 23,053 nodes / 24,116 edges / 1,540 communities; outputs restored after evidence capture to keep this logical commit scoped, and conclusions were corroborated against tracked source, Stage 00, Spec 130, and this Plan/Task. |
 | Diff hygiene | `git diff --check` and Python compilation | Pass. |
+
+### T-TCS-001 I-01 Remediation
+
+| Phase | Command or evidence | Result |
+| --- | --- | --- |
+| Reviewer reproduction | Mutate Spec to `docs/03.specs/*/s*ec.md` and API Spec to `docs/03.specs/*/sp*c.md` | Confirmed loader accepted two distinct equal-specificity matchers for the same witness before remediation. |
+| RED | `python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests.test_template_roles_reject_ambiguous_target_matchers -v` | Expected failure: `ProfileError not raised`. |
+| GREEN | Same single regression | Pass: 1/1, with deterministic diagnostic witness `docs/03.specs/x/spec.md`. |
+| Focused Task 1 | Profile schema plus template-role inference suites | Pass: 10/10. |
+| Metadata regression | Full `tests.validation.test_document_metadata` suite | Pass: 109/109. |
+| Scope | Implementation inspection | Finite safe-glob state-space only; no repository-body scan and no Task 6 body-validation expansion. |
 
 ## Controlled Agent Pre-commit Evidence
 
