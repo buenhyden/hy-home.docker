@@ -577,6 +577,35 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   Both tracked Graphify snapshots were restored as unrelated generated
   collateral. The advisory result was corroborated against the tracked checker,
   adversarial tests, Stage 00 governance, Spec 129, and this active Plan/Task.
+- **Post-closure I-02 RED/GREEN**: the deterministic current-count assertion
+  derives the README corpus from NUL-delimited `git ls-files` output. It failed
+  both canonical audit sources before correction because the expected two and
+  one occurrences of `all 229 tracked READMEs` were absent. After updating
+  only the three current claims, the focused test passes. The explicitly dated
+  Task 4 baseline remains exactly `140` scoped READMEs, `37` with status, and
+  `103` without status.
+- **Post-closure owner regeneration**: the metadata inventory owner regenerated
+  exactly the three reopened Spec/Plan/Task lifecycle rows while preserving
+  `899` records and `2,025` advisory findings. The audit matrix owner
+  regenerated WRE-10 plus the SDLC-14 and DML-09 count rows. Matrix and
+  inventory check modes are fresh; the unchanged Wiki index and coverage
+  outputs are fresh at `1,294` paths and `1,293` safe paths.
+- **Post-closure complete validation**: focused I-01 GREEN passes `3/3`; the
+  I-02 count assertion passes; the full metadata module passes `105/105` using
+  the required `-q` command. The audit contract passes `11/161/161`, semantic
+  freshness passes `11/0`, coverage retains normalized `68/68/14/2/9`,
+  changed metadata against `7e2de3ba` passes `4/0/0/0`, traceability passes
+  `46/0`, alignment passes `644/5,097/0`, repository contracts report
+  `failures=0`, and `git diff --check` passes.
+- **Post-closure protected boundary and self-review**: the controlled all-files
+  wrapper was not run and remains reserved for the controller. Runtime,
+  Compose, infrastructure, deployment, Release events, secrets, provider/model
+  policy, workflows, rulesets, environments, branch protection, and remote
+  state remain unchanged. Implementer self-review maps both fixes to Spec 129,
+  preserves generated-document behavior outside repository README validation,
+  preserves unclassified/ambiguous fail-closed handling and historical count
+  evidence, and finds Critical `0`, Important `0`, Minor `0`. Fresh independent
+  post-closure review remains pending, so no approval or completion is claimed.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -585,7 +614,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
 | T-DCC-005 | `bded61ce`, `556ba98d`, `dc75443b` | PASS | Approved | Round 1 C0/I2/M0 and re-review C0/I1/M0; all template/array bypasses resolved; final C0/I0/M0 | `review-ac63469a..dc75443b.diff`; combined reviewer final verdict | Done |
-| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb`, `431435c1`, `0eec79fa`, `7d5fbb56` | FAIL | Changes Required | Post-closure C0/I2/M0: I-01 README `generated_by` bypass and I-02 stale 228 current count; remediation and fresh re-review pending | `review-e2954cc3..7d5fbb56.diff`; post-closure verdict | Review Pending |
+| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb`, `431435c1`, `0eec79fa`, `7d5fbb56`, `12c3f602`, `7e2de3ba` | FAIL | Changes Required | Post-closure C0/I2/M0 findings are locally remediated with RED/GREEN and owner-generated evidence; latest independent verdict remains failed until fresh re-review | `review-e2954cc3..7d5fbb56.diff`; post-closure verdict and current remediation evidence | Review Pending |
 
 ## Verification Summary
 

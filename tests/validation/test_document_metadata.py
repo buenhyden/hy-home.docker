@@ -796,6 +796,25 @@ class ReadmeProfileTests(unittest.TestCase):
             metadata.readme_frontmatter_consumer(stage_path, self.profiles),
         )
 
+    def test_current_audit_readme_count_matches_tracked_corpus(self) -> None:
+        result = subprocess.run(
+            ["git", "ls-files", "-z", "--", "*README.md"],
+            cwd=ROOT,
+            capture_output=True,
+            check=True,
+        )
+        tracked_count = len([raw for raw in result.stdout.split(b"\0") if raw])
+        current_claim = f"all {tracked_count} tracked READMEs"
+        claims = {
+            "frontmatter-template-readme-implementation.md": 2,
+            "sdlc-document-contracts-implementation.md": 1,
+        }
+        audit_pack = ROOT / "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack"
+        for name, expected_occurrences in claims.items():
+            with self.subTest(path=name):
+                text = (audit_pack / name).read_text(encoding="utf-8")
+                self.assertEqual(expected_occurrences, text.count(current_claim))
+
 
 class TemplateMetadataTests(unittest.TestCase):
     @classmethod
