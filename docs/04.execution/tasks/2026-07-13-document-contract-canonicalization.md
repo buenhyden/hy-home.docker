@@ -599,12 +599,16 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   `failures=0`, and `git diff --check` passes.
 - **Post-closure controlled wrapper**: controller commit `5e50d600` captured
   the complete remediation and regenerated evidence. From that clean boundary,
-  the approved all-files wrapper completed with wrapper exit `0`, hook exit
-  `0`, and snapshot PASS. Git-visible, non-ignored observations were before
-  `0`, after `0`, changed `0`, and unexpected `0`; every corresponding path
-  set was empty. No hook-managed edit or unexpected path exists. Lifecycle
-  remains active and T-DCC-006 remains Review Pending for fresh independent
-  review.
+  the approved all-files wrapper completed with
+  `agent_precommit_command=pre-commit run --all-files --show-diff-on-failure`,
+  hook result passed / exit `0`, and snapshot PASS. Git-visible, non-ignored
+  observations were before `0`, after `0`, changed `0`, and unexpected `0`;
+  every before/after/changed/unexpected path set was `(none)`. Canonical
+  Attempt 4 in the evidence table below records the exact command, allowed
+  prefixes, new/modified and unexpected path sets, review disposition,
+  observation boundary, and skipped rationale. No hook-managed edit or
+  unexpected path exists. Lifecycle remains active and T-DCC-006 remains
+  Review Pending for fresh independent review.
 - **Post-closure protected boundary and self-review**: the controlled all-files
   wrapper ran only inside its recorded Git-visible observation boundary. Runtime,
   Compose, infrastructure, deployment, Release events, secrets, provider/model
@@ -652,6 +656,18 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 - **Post-fix Controlled Wrapper**: from clean commit `431435c1`, wrapper exit
   `0`, hook exit `0`, and snapshot PASS; before, after, changed, and unexpected
   counts are all `0`, and every reported path set is `(none)`.
+- **Post-remediation Controlled Wrapper Attempt 4**: from clean commit
+  `5e50d600`, the exact approved command used
+  `pre-commit run --all-files --show-diff-on-failure`; hook result passed / exit
+  `0`, snapshot PASS, before/after/changed/unexpected counts `0/0/0/0`, and all
+  path sets `(none)` within the Git-visible, non-ignored repository-status
+  observation boundary. The controller-captured run was not rerun for this
+  evidence correction.
+- **I-03 evidence validation**: inventory freshness passes at
+  `899` records / `2,025` findings; changed metadata against `0d86e4cd` passes
+  `2/0/0/0`; the audit implementation matrix is fresh; repository contracts
+  report `failures=0`; and `git diff --check` passes. These checks validate the
+  canonical evidence edit only and do not constitute independent approval.
 - **Graphify**: the remediation refresh completed; advisory graph collateral
   was restored after corroboration against tracked sources and focused QA.
 - **Logs / Evidence Location**: Durable concise results live in this task;
@@ -669,6 +685,7 @@ process/filesystem sandbox.
 | Attempt 1 — `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | `0` (`hook_exit=0`; snapshot PASS) | Before `(none)`; after `(none)`; new `(none)`; changed `(none)`; unexpected `(none)` | Accepted: no hook edit and no unexpected Git-visible, non-ignored path | N/A; exact approved gate ran from clean commit `fd0dfe57` |
 | Attempt 2 — `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | `0` (`hook_exit=0`; snapshot PASS) | Before `(none)`; after `(none)`; new `(none)`; changed `(none)`; unexpected `(none)` | Accepted: no hook edit and no unexpected Git-visible, non-ignored path | N/A; exact approved rerun after lifecycle correction ran from clean commit `ecac0fb2` |
 | Attempt 3 — `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | `0` (`hook_exit=0`; snapshot PASS) | Before `(none)`; after `(none)`; new `(none)`; changed `(none)`; unexpected `(none)` | Accepted: no hook edit, after-only new path, or unexpected Git-visible, non-ignored path | N/A; exact approved post-remediation gate ran from clean commit `431435c1` |
+| Attempt 4 — `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs`, `scripts/validation`, `tests/validation`, `.github`, `.pre-commit-config.yaml` | `0` (`agent_precommit_command=pre-commit run --all-files --show-diff-on-failure`; `hook_result=passed`; `hook_exit=0`; `snapshot_result=passed`) | Before `(none)` (`before_count=0`); after `(none)` (`after_count=0`); new/modified `(none)`; changed `(none)` (`changed_count=0`); unexpected `(none)` (`unexpected_count=0`) | Accepted: no hook-managed edit, new/modified path, or unexpected path; lifecycle remains active / Review Pending | Observation boundary: `git-visible-non-ignored-repository-status`; N/A skipped rationale because the exact controller-captured gate ran from clean commit `5e50d600` and was not rerun for I-03 |
 
 ## Deviation Notes
 
