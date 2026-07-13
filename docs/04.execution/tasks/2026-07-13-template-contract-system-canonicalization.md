@@ -76,7 +76,7 @@ review, and a separate quality review before its logical commit.
 
 | ID | Deliverable | Dependency | Status | Implementation role | Required review |
 | --- | --- | --- | --- | --- | --- |
-| T-TCS-001 | Registry and support contract canonicalization | Spec and Plan | In Review | fresh implementer | spec then quality |
+| T-TCS-001 | Registry and support contract canonicalization | Spec and Plan | Completed | fresh implementer | spec then quality |
 | T-TCS-002 | Common, README, and Governance forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
 | T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
 | T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Queued | fresh implementer | spec then quality |
@@ -116,13 +116,15 @@ review, and a separate quality review before its logical commit.
   only distinct roles with the same artifact profile and equal specificity,
   emits both patterns plus a deterministic witness, and does not scan target
   documents. More-specific precedence such as Progress over the generic Memory
-  glob remains valid. Independent re-review is pending.
+  glob remains valid. The independent full-range re-review of
+  `9eca432b...ede2b9a2` returned Spec PASS and Quality APPROVED, confirmed I-01
+  resolved by `ede2b9a2`, and reported no remaining findings.
 
 ## Review Evidence
 
 | Task | Spec review | Quality review | Findings | Disposition |
 | --- | --- | --- | --- | --- |
-| T-TCS-001 | FAIL on `9eca432b...a3ca523e`; re-review pending | CHANGES REQUESTED on `9eca432b...a3ca523e`; re-review pending | I-01 distinct equal-specificity glob overlap admitted; remediation implemented and retested | In Review; await independent re-review |
+| T-TCS-001 | PASS on `9eca432b...ede2b9a2` | APPROVED on `9eca432b...ede2b9a2` | None; I-01 resolved by `ede2b9a2` | Completed |
 | T-TCS-002 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-003 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-004 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 003 |
@@ -181,6 +183,16 @@ review, and a separate quality review before its logical commit.
 | Metadata regression | Full `tests.validation.test_document_metadata` suite | Pass: 109/109. |
 | Scope | Implementation inspection | Finite safe-glob state-space only; no repository-body scan and no Task 6 body-validation expansion. |
 
+### T-TCS-001 Independent Re-review
+
+| Evidence | Result |
+| --- | --- |
+| Full reviewed range | `9eca432b...ede2b9a2`, including implementation `a3ca523e` and I-01 fix `ede2b9a2` |
+| Verdict | Spec PASS; Quality APPROVED; Critical 0, Important 0, Minor 0 |
+| I-01 | Resolved; distinct same-profile equal-specificity overlaps reject at load time, same-role redundancy remains valid, and unequal-specificity precedence remains valid |
+| Reviewer verification | Focused schema/inference 11 executions; metadata contracts 0 violations; range diff hygiene pass; bounded exhaustive/adversarial witness checks pass |
+| Remaining gates | Controlled all-files wrapper and final whole-branch review remain Task 7 responsibilities |
+
 ## Controlled Agent Pre-commit Evidence
 
 The final wrapper has not run because implementation and whole-branch review
@@ -202,8 +214,11 @@ have not completed.
 | --- | --- | --- |
 | `ff26fd6b` | Approved Spec 130 and generated design evidence | Metadata, repository contracts, traceability, generated freshness, diff |
 | `10fe2f9d` | Active Stage 04 Plan and generated planning evidence | Metadata changed-mode, repository contracts, traceability, alignment, generated freshness, diff |
+| `a3ca523e` | Task 1 canonical template roles, support contracts, matcher, tests, and generated evidence | Focused 10/10; metadata 109/109; metadata and repository contracts; generated freshness; diff |
+| `ede2b9a2` | Task 1 I-01 semantic glob-overlap remediation | I-01 1/1; focused 10/10; metadata 109/109; metadata contracts; independent PASS/APPROVED re-review |
+| Closure unit — subject `docs(task): close template registry task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-001 | Metadata changed-mode from `ede2b9a2`: 2 selected, 0 violations, 0 exceptions/overrides; diff hygiene pass; evidence-only scope |
 
-Implementation and review-fix commits will be appended after each task closes.
+Later implementation and review-fix commits will be appended as Tasks 2-7 close.
 
 ## Migration Wave Routing
 
