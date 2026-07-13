@@ -453,6 +453,17 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   after `0`, changed `0`, and unexpected `0`, with all reported path sets
   empty. Empty before/after snapshots also establish zero after-only new paths.
   No hook-managed edit or unexpected path exists.
+- **Task-scoped independent review**: the Task 6 reviewer checked the complete
+  `f8dee457..efe77ecf` implementation range and returned Spec PASS and Task
+  Quality Approved with Critical `0`, Important `0`, and Minor `1`. M-01 was
+  bookkeeping-only: the ignored Task 6 report still used obsolete
+  controller-commit-ready wording and instructed commits already captured by
+  `ecac0fb2` and `efe77ecf`.
+- **M-01 resolution**: this evidence update removes the obsolete report status
+  and committed-path instructions, records all three Task 6 implementation
+  commits, and promotes the task-scoped verdict here. Spec 129, its Plan/Task,
+  and T-DCC-006 remain active / Review Pending until the separate whole-branch
+  pre-closure review approves closure.
 - **Observation boundary**: the wrapper evidence covers only Git-visible,
   non-ignored repository status. It does not observe ignored paths or writes
   outside the repository and is not a process or filesystem sandbox.
@@ -477,7 +488,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
 | T-DCC-005 | `bded61ce`, `556ba98d`, `dc75443b` | PASS | Approved | Round 1 C0/I2/M0 and re-review C0/I1/M0; all template/array bypasses resolved; final C0/I0/M0 | `review-ac63469a..dc75443b.diff`; combined reviewer final verdict | Done |
-| T-DCC-006 | `fd0dfe57`, `ecac0fb2` | Implementer PASS | Self-review C0/I0/M0 | Generated outputs, full bundle, both clean-boundary wrapper attempts, and current WRE-10 lifecycle truth pass | Whole-branch pre-closure review remains pending | Review Pending |
+| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf` | PASS | Approved | C0/I0/M1; M-01 stale report/controller bookkeeping resolved in this evidence update | `review-f8dee457..efe77ecf.diff`; task-scoped reviewer verdict; whole-branch review pending | Review Pending |
 
 ## Verification Summary
 
