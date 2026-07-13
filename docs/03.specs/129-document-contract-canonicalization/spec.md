@@ -1,5 +1,5 @@
 ---
-status: completed
+status: active
 artifact_id: spec:129-document-contract-canonicalization
 artifact_type: spec
 parent_ids:

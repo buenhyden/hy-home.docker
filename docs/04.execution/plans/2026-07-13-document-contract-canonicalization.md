@@ -1,5 +1,5 @@
 ---
-status: completed
+status: active
 artifact_id: plan:2026-07-13-document-contract-canonicalization
 artifact_type: plan
 parent_ids:
@@ -779,12 +779,14 @@ waves still explicitly pending.
 - [x] `_workspace` is covered by the audit and remains independently enforced.
 - [x] Existing repository/CI gates fail closed on contract drift without
       corpus-wide blocking.
-- [x] Full validation, generated freshness, controlled wrapper, per-task
-      reviews, and whole-branch review pass.
+- [ ] Full validation, generated freshness, controlled wrapper, per-task
+      reviews, and whole-branch review pass after the post-closure findings are
+      remediated and independently re-reviewed.
 - [x] No runtime, secret, deployment, ruleset, environment, provider-global,
       model-policy, remote branch-protection, or broad corpus mutation occurs.
-- [x] Tasks 1-5 have logical commits; Task 6 has separate generated/pre-closure
-      and lifecycle-closure commits; durable evidence records every review.
+- [ ] Tasks 1-5 have logical commits; Task 6 has separate generated/pre-closure
+      and lifecycle-closure commits; durable evidence records the failed
+      post-closure review, remediation, and fresh re-review.
 
 ## Related Documents
 

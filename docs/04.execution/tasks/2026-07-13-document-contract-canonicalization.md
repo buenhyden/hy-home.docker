@@ -1,5 +1,5 @@
 ---
-status: completed
+status: active
 artifact_id: task:2026-07-13-document-contract-canonicalization
 artifact_type: task
 parent_ids:
@@ -56,6 +56,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | Validation and tracked CI | User approval of non-runtime harness improvement | Metadata parser/tests, repository contracts, existing read-only CI route | Existing changed/new metadata and `repo-contracts` job | RED/GREEN evidence and `failures=0` | Revert Task 1/5 commit | No remote run or protection claim |
 | `_workspace` evidence | User-approved repo-support distinction and existing contract | Two tracked READMEs and independent repository enforcement | Existing allowlist and ignored repo-support scratch | Audit coverage only; no docs metadata inclusion | Revert audit wording | Do not inspect diagnostics, logs, auth, tokens, secret values, or shell history |
 | Controlled pre-commit | User-approved wrapper design | Final clean linked-worktree QA gate | Clean Git status and wrapper contract | Command/path evidence in this ledger | Stop on unexpected paths; do not clean/hide output | Git-visible, non-ignored repository paths only |
+| Post-closure lifecycle reopening | User directive after the `e2954cc3..7d5fbb56` post-closure review returned Spec FAIL / Quality CHANGES REQUIRED | Spec 129, its Plan/Task, parent indexes, WRE-10 current truth, and progress memory | Closed lifecycle at `7d5fbb56`; post-closure C0/I2/M0; `READY_FOR_HANDOFF: NO` | Active lifecycle, T-DCC-006 Review Pending, bounded fixes and fresh re-review required | Revert the logical reopening commit only if the review evidence is withdrawn; otherwise retain active state until approval | Documentation and validation evidence only; no runtime, secret, workflow, provider/model, or remote mutation |
 
 ## Task Table
 
@@ -66,7 +67,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Done |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Done |
 | T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Done |
-| T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Full bundle, wrapper, final review | QA / Documentation Lead | Done |
+| T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Post-closure C0/I2/M0 remediation and fresh review | QA / Documentation Lead | Review Pending |
 
 ## Phase View
 
@@ -83,7 +84,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 ### Phase 3 — Enforcement and Closure
 
 - [x] T-DCC-005 Repository and CI contract enforcement
-- [x] T-DCC-006 Generated evidence, full QA, reviews, and closure
+- [ ] T-DCC-006 Generated evidence, full QA, reviews, and closure
 
 ## Review Ledger
 
@@ -542,6 +543,19 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   Important `0`, Minor `1`, and `READY_FOR_CLOSURE: YES`. The Minor finding was
   an ignored handoff's superseded commit instruction and is corrected outside
   the tracked branch.
+- **Post-closure review**: the independent review of
+  `e2954cc3..7d5fbb56` returned Spec FAIL, Quality CHANGES REQUIRED, Critical
+  `0`, Important `2`, Minor `0`, and `READY_FOR_HANDOFF: NO`. I-01 found that
+  repository-contract README validation lets `generated_by` metadata replace
+  the path-derived README profile with the generated-document profile. I-02
+  found that current README evidence and the owner-generated audit matrix still
+  report `228` after the tracked releases index raised the corpus to `229`.
+- **Lifecycle reopening**: the user explicitly approved the reverse
+  `completed -> active` transitions for Spec 129, its Plan, and this Task as
+  scoped Stage 04 override evidence. T-DCC-006 is Review Pending until both
+  findings are fixed, the required validation bundle passes, and a fresh
+  independent post-closure review approves handoff. No approval or completion
+  is claimed by this reopening.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -550,10 +564,14 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
 | T-DCC-005 | `bded61ce`, `556ba98d`, `dc75443b` | PASS | Approved | Round 1 C0/I2/M0 and re-review C0/I1/M0; all template/array bypasses resolved; final C0/I0/M0 | `review-ac63469a..dc75443b.diff`; combined reviewer final verdict | Done |
-| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb`, `431435c1`, `0eec79fa` | PASS | Approved | Task review C0/I0/M1 resolved; branch C0/I2/M0 remediated; fresh re-review C0/I0/M1 and READY_FOR_CLOSURE YES | `review-e2954cc3..0eec79fa.diff`; fresh whole-branch verdict | Done |
+| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb`, `431435c1`, `0eec79fa`, `7d5fbb56` | FAIL | Changes Required | Post-closure C0/I2/M0: I-01 README `generated_by` bypass and I-02 stale 228 current count; remediation and fresh re-review pending | `review-e2954cc3..7d5fbb56.diff`; post-closure verdict | Review Pending |
 
 ## Verification Summary
 
+- **Current review gate**: post-closure review of `e2954cc3..7d5fbb56`
+  returned Spec FAIL / Quality CHANGES REQUIRED / C0/I2/M0 and
+  `READY_FOR_HANDOFF: NO`; the previously closed lifecycle is reopened and no
+  current approval or completion is claimed.
 - **Focused Test Commands**: T-DCC-001 focused registry/metadata/README tests
   pass `31/31`; T-DCC-002 template tests pass `5/5`; T-DCC-003 ownership,
   placeholder, traceability, alignment, explicit-base metadata, and diff gates
