@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-13-document-contract-canonicalization
 artifact_type: task
 parent_ids:
@@ -67,7 +67,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Done |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Done |
 | T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Done |
-| T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Post-closure C0/I2/M0 remediation and fresh review | QA / Documentation Lead | Review Pending |
+| T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Post-closure remediation, reclosure review, final handoff review | QA / Documentation Lead | Done |
 
 ## Phase View
 
@@ -84,7 +84,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 ### Phase 3 — Enforcement and Closure
 
 - [x] T-DCC-005 Repository and CI contract enforcement
-- [ ] T-DCC-006 Generated evidence, full QA, reviews, and closure
+- [x] T-DCC-006 Generated evidence, full QA, reviews, and closure
 
 ## Review Ledger
 
@@ -626,14 +626,16 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
 | T-DCC-005 | `bded61ce`, `556ba98d`, `dc75443b` | PASS | Approved | Round 1 C0/I2/M0 and re-review C0/I1/M0; all template/array bypasses resolved; final C0/I0/M0 | `review-ac63469a..dc75443b.diff`; combined reviewer final verdict | Done |
-| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb`, `431435c1`, `0eec79fa`, `7d5fbb56`, `12c3f602`, `7e2de3ba`, `5e50d600` | FAIL | Changes Required | Post-closure C0/I2/M0 findings are locally remediated with RED/GREEN, owner-generated evidence, and a clean controlled-wrapper pass; latest independent verdict remains failed until fresh re-review | `review-e2954cc3..7d5fbb56.diff`; post-closure verdict and current remediation evidence | Review Pending |
+| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb`, `431435c1`, `0eec79fa`, `7d5fbb56`, `12c3f602`, `7e2de3ba`, `5e50d600`, `0d86e4cd`, `1d6fe05d` | PASS | Approved | Post-closure C0/I2/M0 and reclosure C0/I1/M0 findings resolved; final re-review C0/I0/M0 and READY_FOR_RECLOSURE YES | `review-e2954cc3..0d86e4cd.diff`; I-03 re-review `0d86e4cd..1d6fe05d` | Done |
 
 ## Verification Summary
 
-- **Current review gate**: post-closure review of `e2954cc3..7d5fbb56`
-  returned Spec FAIL / Quality CHANGES REQUIRED / C0/I2/M0 and
-  `READY_FOR_HANDOFF: NO`; the previously closed lifecycle is reopened and no
-  current approval or completion is claimed.
+- **Current review gate**: the post-closure review of
+  `e2954cc3..7d5fbb56` returned C0/I2/M0. After I-01/I-02 remediation, the
+  fresh reclosure review found I-03 evidence incompleteness; commit `1d6fe05d`
+  resolved it. The same reviewer then returned Spec PASS, Quality APPROVED,
+  C0/I0/M0, and `READY_FOR_RECLOSURE: YES`. Lifecycle is completed again;
+  the separate final post-closure handoff review remains pending.
 - **Focused Test Commands**: T-DCC-001 focused registry/metadata/README tests
   pass `31/31`; T-DCC-002 template tests pass `5/5`; T-DCC-003 ownership,
   placeholder, traceability, alignment, explicit-base metadata, and diff gates

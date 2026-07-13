@@ -97,7 +97,7 @@ docs/03.specs/
 ├── 126-security-supply-chain-remediation/ # Draft scanning, SBOM, provenance, signing, and verification contract
 ├── 127-deployment-release-engineering-remediation/ # Draft environment, promotion, release, deployment, and rollback contract
 ├── 128-agentic-audit-harness-consolidation/ # Completed canonical audit lifecycle, current-state, semantic freshness, and QA/CI contract
-├── 129-document-contract-canonicalization/ # Active contract-first foundation; post-closure fixes under review
+├── 129-document-contract-canonicalization/ # Completed contract-first foundation; post-closure findings resolved
 └── README.md                            # This file
 ```
 
