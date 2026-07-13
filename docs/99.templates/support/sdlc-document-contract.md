@@ -74,6 +74,19 @@ execution remain in a separately approved technical and operational chain.
 6. Record validation, deviations, protected-surface evidence, and review in the
    active Stage 04 task.
 
+## Iterative Feedback
+
+The forward route is PRD to architecture and decisions, then Spec and focused
+contracts, Plan, Task evidence, Release evidence, and Operations. It is a set
+of review gates, not a one-way waterfall. Evidence can route work back to the
+earliest owner that must change: an Incident or Postmortem can create a
+requirement; an operational finding can supersede an ADR; validation can revise
+a Spec or test contract; repeated procedure failure can revise Policy or
+Runbook; and a Release outcome can create a follow-up Plan and Task.
+
+Keep stable identities and links in both directions. Do not copy a requirement,
+decision, or result into a second artifact as competing truth.
+
 ## Related Documents
 
 - [document metadata profiles](./document-metadata-profiles.yaml)

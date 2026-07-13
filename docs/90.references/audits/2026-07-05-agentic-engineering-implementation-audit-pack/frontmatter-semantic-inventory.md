@@ -39,8 +39,8 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 902
-- **Records with findings**: 546
+- **Tracked records**: 903
+- **Records with findings**: 549
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
 
@@ -63,15 +63,20 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `runbook` | 61 |
 | `spec` | 55 |
 | `task` | 117 |
-| `template-source` | 23 |
+| `template-source` | 24 |
 
 ## Finding Summary
 
 | Finding | Count |
 | --- | ---: |
+| `artifact-type-mismatch` | 1 |
+| `duplicate-artifact-id` | 1 |
+| `invalid-template-metadata` | 2 |
 | `missing-required-key` | 1893 |
 | `replacement-free-supersession` | 7 |
 | `stale-active` | 125 |
+| `type-inappropriate-key` | 3 |
+| `unresolved-parent` | 1 |
 
 ## Inventory
 
@@ -953,12 +958,13 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/99.templates/templates/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=template-catalog; consumer=scripts/validation/check-repo-contracts.sh; role=folder-index | none | README exception |
 | `docs/99.templates/templates/common/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=template-catalog; consumer=scripts/validation/check-repo-contracts.sh; role=folder-index | none | README exception |
 | `docs/99.templates/templates/common/archive.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
+| `docs/99.templates/templates/common/audit.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/common/readme.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/common/reference.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/governance/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=template-catalog; consumer=scripts/validation/check-repo-contracts.sh; role=folder-index | none | README exception |
-| `docs/99.templates/templates/governance/harness-task-contract.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
-| `docs/99.templates/templates/governance/memory.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
-| `docs/99.templates/templates/governance/progress.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
+| `docs/99.templates/templates/governance/harness-task-contract.template.md` | `template-source` | profile-semantic-error | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | artifact-type-mismatch, duplicate-artifact-id, type-inappropriate-key, unresolved-parent | template-source exception |
+| `docs/99.templates/templates/governance/memory.template.md` | `template-source` | profile-semantic-error | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | invalid-template-metadata | template-source exception |
+| `docs/99.templates/templates/governance/progress.template.md` | `template-source` | profile-semantic-error | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | invalid-template-metadata | template-source exception |
 | `docs/99.templates/templates/operations/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=template-catalog; consumer=scripts/validation/check-repo-contracts.sh; role=folder-index | none | README exception |
 | `docs/99.templates/templates/operations/guide.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/operations/incident.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |

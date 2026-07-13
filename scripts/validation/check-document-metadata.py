@@ -7,6 +7,7 @@ import argparse
 import collections
 import dataclasses
 import datetime as dt
+import fnmatch
 import os
 import pathlib
 import re
@@ -98,6 +99,46 @@ README_PROFILE_KEYS = frozenset(
     }
 )
 README_FRONTMATTER_ALLOWED_KEYS = frozenset({"status", "layer", "generated_by", "runtime"})
+TEMPLATE_ROLE_KEYS = frozenset(
+    {
+        "source",
+        "artifact_profile",
+        "target_globs",
+        "required_headings",
+        "conditional_headings",
+        "forbidden_headings",
+    }
+)
+EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
+    {
+        "adr",
+        "agent-design",
+        "api-spec",
+        "archive",
+        "ard",
+        "audit",
+        "data-model",
+        "guide",
+        "incident",
+        "memory",
+        "plan",
+        "policy",
+        "postmortem",
+        "prd",
+        "progress",
+        "readme",
+        "reference",
+        "release",
+        "runbook",
+        "service",
+        "spec",
+        "task",
+        "tests",
+    }
+)
+TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES = frozenset(
+    {"docs/99.templates/templates/governance/harness-task-contract.template.md"}
+)
 TARGET_MARKDOWN_PREFIXES = (
     "docs/00.agent-governance/",
     "docs/01.requirements/",
@@ -475,6 +516,113 @@ def _readme_glob_matches(path: pathlib.PurePosixPath, pattern: str) -> bool:
     )
 
 
+def _safe_target_glob(value: object) -> bool:
+    if not isinstance(value, str) or not value or "\\" in value or "://" in value:
+        return False
+    pure = pathlib.PurePosixPath(value)
+    if pure.is_absolute() or value != pure.as_posix() or not value.endswith(".md"):
+        return False
+    if any(part in {"", ".", ".."} for part in pure.parts):
+        return False
+    if any(marker in value for marker in "?[]{}"):
+        return False
+    return all("***" not in part and ("**" not in part or part == "**") for part in pure.parts)
+
+
+def _target_glob_matches(path: pathlib.PurePosixPath, pattern: str) -> bool:
+    path_parts = path.parts
+    pattern_parts = pathlib.PurePosixPath(pattern).parts
+
+    def matches(path_index: int, pattern_index: int) -> bool:
+        if pattern_index == len(pattern_parts):
+            return path_index == len(path_parts)
+        pattern_part = pattern_parts[pattern_index]
+        if pattern_part == "**":
+            return any(
+                matches(candidate, pattern_index + 1)
+                for candidate in range(path_index, len(path_parts) + 1)
+            )
+        return (
+            path_index < len(path_parts)
+            and fnmatch.fnmatchcase(path_parts[path_index], pattern_part)
+            and matches(path_index + 1, pattern_index + 1)
+        )
+
+    return matches(0, 0)
+
+
+def _target_glob_specificity(pattern: str) -> tuple[int, int, int]:
+    parts = pathlib.PurePosixPath(pattern).parts
+    literal_characters = sum(len(part.replace("*", "")) for part in parts)
+    wildcard_count = sum(part.count("*") for part in parts)
+    return literal_characters, -wildcard_count, len(parts)
+
+
+def matching_template_roles(
+    path: pathlib.Path,
+    artifact_type: str,
+    profiles: dict[str, object],
+) -> list[str]:
+    """Return sorted template roles matching one target path and profile."""
+
+    normalized = pathlib.PurePosixPath(path.as_posix())
+    if normalized.is_absolute() or any(part in {"", ".", ".."} for part in normalized.parts):
+        return []
+    common = profiles.get("common", {})
+    excluded = common.get("inventory_excludes", []) if isinstance(common, dict) else []
+    if normalized.as_posix() in excluded:
+        return []
+    if artifact_type == "readme":
+        try:
+            classify_readme_profile(path, profiles)
+        except ProfileError:
+            return []
+
+    template_roles = profiles.get("template_roles", {})
+    if not isinstance(template_roles, dict):
+        return []
+    scores: dict[str, tuple[int, int, int]] = {}
+    for name, role in template_roles.items():
+        if not isinstance(name, str) or not isinstance(role, dict):
+            continue
+        if role.get("artifact_profile") != artifact_type:
+            continue
+        patterns = role.get("target_globs", [])
+        if not isinstance(patterns, list):
+            continue
+        matched_scores = [
+            _target_glob_specificity(pattern)
+            for pattern in patterns
+            if isinstance(pattern, str) and _target_glob_matches(normalized, pattern)
+        ]
+        if matched_scores:
+            scores[name] = max(matched_scores)
+    if not scores:
+        return []
+    best = max(scores.values())
+    return sorted(name for name, score in scores.items() if score == best)
+
+
+def classify_template_role(
+    path: pathlib.Path,
+    artifact_type: str,
+    profiles: dict[str, object],
+) -> str:
+    """Return one role or raise ProfileError for zero or ambiguous matches."""
+
+    matches = matching_template_roles(path, artifact_type, profiles)
+    normalized = path.as_posix()
+    if not matches:
+        raise ProfileError(
+            f"template role is unclassified: {normalized}; artifact_profile={artifact_type}"
+        )
+    if len(matches) > 1:
+        raise ProfileError(
+            f"template role is ambiguous: {normalized}; roles={','.join(matches)}"
+        )
+    return matches[0]
+
+
 def matching_readme_profiles(path: pathlib.Path, profiles: dict[str, object]) -> list[str]:
     """Return every declared README profile matching a repository-relative path."""
 
@@ -588,12 +736,41 @@ def _validate_template_source(
     record: Record,
     profiles: dict[str, object],
 ) -> list[Finding] | None:
-    template_sources = profiles.get("template_sources", {})
-    if not isinstance(template_sources, dict):
+    template_roles = profiles.get("template_roles", {})
+    if not isinstance(template_roles, dict):
         return None
-    target_type = template_sources.get(record.path.as_posix())
+    matching_roles = [
+        (name, role)
+        for name, role in template_roles.items()
+        if isinstance(name, str)
+        and isinstance(role, dict)
+        and role.get("source") == record.path.as_posix()
+    ]
+    if not matching_roles:
+        return None
+    role_name, role = matching_roles[0]
+    target_type = role.get("artifact_profile")
     if not isinstance(target_type, str):
-        return None
+        return [_finding(record, "unknown-template-target", "template role has no artifact profile")]
+    if role_name == "readme":
+        return (
+            []
+            if record.metadata == {"status": "draft"}
+            else [_finding(record, "invalid-template-metadata", "README source metadata must be exactly status: draft")]
+        )
+    if role_name in {"memory", "progress"}:
+        expected = {"layer": "agentic", "status": "draft"}
+        return (
+            []
+            if record.metadata == expected
+            else [
+                _finding(
+                    record,
+                    "invalid-template-metadata",
+                    f"{role_name} source metadata must be exactly layer: agentic plus status: draft",
+                )
+            ]
+        )
     _, profile_map = _profile_mapping(profiles)
     target_profile = profile_map.get(target_type)
     if not isinstance(target_profile, dict):
@@ -1148,18 +1325,60 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
         owner = readme_profile.get("canonical_shared_rule_owner")
         if not isinstance(owner, str) or not _safe_repo_path(owner):
             raise ProfileError(f"README profile {profile_name} canonical_shared_rule_owner must be a safe path")
-    template_sources = loaded.get("template_sources")
-    if not isinstance(template_sources, dict) or not template_sources:
-        raise ProfileError("template_sources must be a non-empty path-to-profile mapping")
-    for source_path, target_type in template_sources.items():
+    template_roles = loaded.get("template_roles")
+    if not isinstance(template_roles, dict) or set(template_roles) != EXPECTED_TEMPLATE_ROLE_NAMES:
+        raise ProfileError("template_roles must define the exact 23 canonical role names")
+    declared_sources: dict[str, str] = {}
+    declared_target_globs: dict[str, str] = {}
+    for role_name, role in sorted(template_roles.items()):
+        if not isinstance(role, dict) or set(role) != TEMPLATE_ROLE_KEYS:
+            raise ProfileError(f"template role {role_name} must define the exact contract members")
+        source_path = role.get("source")
         if (
             not isinstance(source_path, str)
             or not _safe_repo_path(source_path, "docs/99.templates/templates/")
             or not source_path.endswith(".template.md")
         ):
-            raise ProfileError("template_sources keys must be safe canonical Markdown template paths")
-        if target_type not in EXPECTED_PROFILE_TYPES - {"template-source", "readme", "generated", "governance", "unsupported"}:
-            raise ProfileError(f"template_sources has unsupported target profile: {target_type}")
+            raise ProfileError(f"template role {role_name} source must be a safe canonical Markdown template path")
+        if source_path in declared_sources:
+            raise ProfileError(
+                f"template roles must have unique sources: {declared_sources[source_path]} and {role_name}"
+            )
+        declared_sources[source_path] = role_name
+        artifact_profile = role.get("artifact_profile")
+        if artifact_profile not in actual_types:
+            raise ProfileError(f"template role {role_name} has unknown artifact profile: {artifact_profile}")
+        target_globs = role.get("target_globs")
+        if not isinstance(target_globs, list) or not target_globs or not all(
+            _safe_target_glob(pattern) for pattern in target_globs
+        ):
+            raise ProfileError(f"template role {role_name} target_globs must be safe Markdown target patterns")
+        if len(target_globs) != len(set(target_globs)):
+            raise ProfileError(f"template role {role_name} target_globs must not contain duplicates")
+        for pattern in target_globs:
+            if pattern in declared_target_globs:
+                raise ProfileError(
+                    "template role target globs overlap: "
+                    f"{declared_target_globs[pattern]}:{pattern} and {role_name}:{pattern}"
+                )
+            declared_target_globs[pattern] = role_name
+        heading_sets: list[set[str]] = []
+        for heading_key in ("required_headings", "conditional_headings", "forbidden_headings"):
+            headings = role.get(heading_key)
+            if not isinstance(headings, list) or not headings or not all(
+                isinstance(heading, str)
+                and heading.startswith("## ")
+                and heading.strip() == heading
+                for heading in headings
+            ):
+                raise ProfileError(
+                    f"template role {role_name} {heading_key} must be a non-empty H2 heading list"
+                )
+            if len(headings) != len(set(headings)):
+                raise ProfileError(f"template role {role_name} {heading_key} must not contain duplicates")
+            heading_sets.append(set(headings))
+        if any(heading_sets[left] & heading_sets[right] for left, right in ((0, 1), (0, 2), (1, 2))):
+            raise ProfileError(f"template role {role_name} heading contracts must not overlap")
     return loaded
 
 
@@ -1273,7 +1492,6 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     _require_git_worktree(root)
     findings: list[Finding] = []
     tracked_markdown = _tracked_repository_markdown(root)
-    tracked_set = {path.as_posix() for path in tracked_markdown}
 
     if any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES) or _normalized_target_path(
         "_workspace/README.md"
@@ -1317,9 +1535,16 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     for record in classified_readmes:
         findings.extend(validate_record(record, profiles, readme_manifest))
 
-    template_sources = profiles.get("template_sources", {})
-    if not isinstance(template_sources, dict):
-        raise ProfileError("template_sources must be a mapping")
+    template_roles = profiles.get("template_roles", {})
+    if not isinstance(template_roles, dict):
+        raise ProfileError("template_roles must be a mapping")
+    roles_by_source = {
+        role["source"]: (name, role)
+        for name, role in template_roles.items()
+        if isinstance(name, str)
+        and isinstance(role, dict)
+        and isinstance(role.get("source"), str)
+    }
     template_target_types = EXPECTED_PROFILE_TYPES - {
         "generated",
         "governance",
@@ -1341,8 +1566,13 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
             continue
         declares_type = "artifact_type" in values
         declared_type = values.get("artifact_type")
-        mapped_type = template_sources.get(path.as_posix())
+        mapped = roles_by_source.get(path.as_posix())
+        mapped_type = mapped[1].get("artifact_profile") if mapped else None
+        if path.as_posix() in TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES:
+            continue
         if not declares_type and mapped_type is None:
+            continue
+        if not declares_type and mapped_type in {"governance", "readme"}:
             continue
         if declared_type is None:
             findings.append(
@@ -1373,14 +1603,16 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
                     f"registry target {mapped_type!r} differs from declared artifact_type {declared_type!r}",
                 )
             )
-    for source_path in sorted(template_sources):
-        if source_path not in tracked_set:
+    for source_path in sorted(roles_by_source):
+        if not (root / source_path).is_file():
             findings.append(
-                Finding(source_path, "template-source-missing", "registered Markdown template is not tracked")
+                Finding(source_path, "template-source-missing", "registered Markdown template does not exist")
             )
 
     release_sources = sorted(
-        source_path for source_path, target_type in template_sources.items() if target_type == "release"
+        source_path
+        for source_path, (_, role) in roles_by_source.items()
+        if role.get("artifact_profile") == "release"
     )
     if len(release_sources) != 1:
         findings.append(

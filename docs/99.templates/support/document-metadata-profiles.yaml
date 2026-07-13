@@ -250,27 +250,168 @@ readme_profiles:
     allowed_local_content_role: Ignored non-secret handoff, preview, and migration support boundary.
     canonical_shared_rule_owner: _workspace/README.md
 
-template_sources:
-  docs/99.templates/templates/sdlc/prd.template.md: prd
-  docs/99.templates/templates/sdlc/ard.template.md: ard
-  docs/99.templates/templates/sdlc/adr.template.md: adr
-  docs/99.templates/templates/sdlc/spec.template.md: spec
-  docs/99.templates/templates/sdlc/plan.template.md: plan
-  docs/99.templates/templates/sdlc/task.template.md: task
-  docs/99.templates/templates/operations/guide.template.md: guide
-  docs/99.templates/templates/operations/policy.template.md: policy
-  docs/99.templates/templates/operations/runbook.template.md: runbook
-  docs/99.templates/templates/operations/incident.template.md: incident
-  docs/99.templates/templates/operations/postmortem.template.md: postmortem
-  docs/99.templates/templates/operations/release.template.md: release
-  docs/99.templates/templates/common/reference.template.md: reference
-  docs/99.templates/templates/common/archive.template.md: archive
-  docs/99.templates/templates/spec-contracts/agent-design.template.md: spec
-  docs/99.templates/templates/spec-contracts/api-spec.template.md: spec
-  docs/99.templates/templates/spec-contracts/data-model.template.md: spec
-  docs/99.templates/templates/spec-contracts/service.template.md: spec
-  docs/99.templates/templates/spec-contracts/tests.template.md: spec
-  docs/99.templates/templates/governance/harness-task-contract.template.md: task
+template_roles:
+  prd:
+    source: docs/99.templates/templates/sdlc/prd.template.md
+    artifact_profile: prd
+    target_globs: [docs/01.requirements/*.md]
+    required_headings: ["## Overview", "## Problem and Stakeholders", "## Requirements", "## Acceptance and Verification", "## Scope and Non-goals", "## Risks and Dependencies", "## Related Documents"]
+    conditional_headings: ["## AI Agent Requirements"]
+    forbidden_headings: ["## Implementation Details"]
+  ard:
+    source: docs/99.templates/templates/sdlc/ard.template.md
+    artifact_profile: ard
+    target_globs: [docs/02.architecture/requirements/*.md]
+    required_headings: ["## Overview and Context", "## Stakeholders and Concerns", "## Boundaries and Constraints", "## Quality Attributes", "## Architecture Views", "## Data and Infrastructure", "## Decision and Requirement Traceability", "## Related Documents"]
+    conditional_headings: ["## AI Agent Architecture"]
+    forbidden_headings: ["## Summary"]
+  adr:
+    source: docs/99.templates/templates/sdlc/adr.template.md
+    artifact_profile: adr
+    target_globs: [docs/02.architecture/decisions/*.md]
+    required_headings: ["## Context and Decision Drivers", "## Considered Options", "## Decision", "## Consequences", "## Confirmation", "## Related Documents"]
+    conditional_headings: ["## Follow-up Decisions"]
+    forbidden_headings: ["## Implementation Plan"]
+  spec:
+    source: docs/99.templates/templates/sdlc/spec.template.md
+    artifact_profile: spec
+    target_globs: [docs/03.specs/*/spec.md]
+    required_headings: ["## Overview", "## Boundaries and Inputs", "## Contracts", "## Core Design", "## Interfaces and Data", "## Failure Modes and Guardrails", "## Verification", "## Related Documents"]
+    conditional_headings: ["## Agent Role and IO Contract"]
+    forbidden_headings: ["## Success Criteria"]
+  plan:
+    source: docs/99.templates/templates/sdlc/plan.template.md
+    artifact_profile: plan
+    target_globs: [docs/04.execution/plans/*.md]
+    required_headings: ["## Overview", "## Context and Inputs", "## Goals and Non-goals", "## Work Breakdown", "## Verification Plan", "## Risks and Rollback", "## Completion Criteria", "## Related Documents"]
+    conditional_headings: ["## Approval Gates"]
+    forbidden_headings: ["## Verification Evidence"]
+  task:
+    source: docs/99.templates/templates/sdlc/task.template.md
+    artifact_profile: task
+    target_globs: [docs/04.execution/tasks/*.md]
+    required_headings: ["## Overview", "## Inputs", "## Goals and Non-goals", "## Scope and Change Boundaries", "## Work Breakdown", "## Work Log", "## Verification Evidence", "## Review Evidence", "## Commit Ledger", "## Deferred and Blocked Items", "## Related Documents"]
+    conditional_headings: ["## Approval Evidence", "## Controlled Agent Pre-commit Evidence"]
+    forbidden_headings: ["## Suggested Types", "## Agent-specific Types"]
+  guide:
+    source: docs/99.templates/templates/operations/guide.template.md
+    artifact_profile: guide
+    target_globs: [docs/05.operations/guides/**/*.md]
+    required_headings: ["## Overview", "## Audience and Prerequisites", "## Routine Usage", "## Common Checks", "## Runbook Handoff", "## Related Documents"]
+    conditional_headings: ["## Troubleshooting"]
+    forbidden_headings: ["## Rollback or Recovery", "## Escalation"]
+  policy:
+    source: docs/99.templates/templates/operations/policy.template.md
+    artifact_profile: policy
+    target_globs: [docs/05.operations/policies/**/*.md]
+    required_headings: ["## Overview", "## Scope", "## Controls", "## Exceptions", "## Verification", "## Review Cadence", "## Related Documents"]
+    conditional_headings: ["## Compliance Mapping"]
+    forbidden_headings: ["## Procedure"]
+  runbook:
+    source: docs/99.templates/templates/operations/runbook.template.md
+    artifact_profile: runbook
+    target_globs: [docs/05.operations/runbooks/**/*.md]
+    required_headings: ["## Overview", "## Trigger and Preconditions", "## Procedure", "## Verification Record", "## Evidence", "## Rollback or Recovery", "## Escalation", "## Related Documents"]
+    conditional_headings: ["## Automation Handoff"]
+    forbidden_headings: ["## Routine Usage"]
+  incident:
+    source: docs/99.templates/templates/operations/incident.template.md
+    artifact_profile: incident
+    target_globs: [docs/05.operations/incidents/*/INC-*/*.md]
+    required_headings: ["## Overview", "## Incident Metadata", "## Impact", "## Timeline and Response", "## Evidence", "## Resolution and Handoff", "## Related Documents"]
+    conditional_headings: ["## Runbook Links"]
+    forbidden_headings: ["## Root Cause and Contributing Factors"]
+  postmortem:
+    source: docs/99.templates/templates/operations/postmortem.template.md
+    artifact_profile: postmortem
+    target_globs: [docs/05.operations/incidents/*/INC-*/postmortem.md]
+    required_headings: ["## Overview", "## Incident and Impact", "## Timeline", "## Root Cause and Contributing Factors", "## Lessons", "## Action Items", "## Prevention and Verification", "## Feedback Loop", "## Related Documents"]
+    conditional_headings: ["## Detection Analysis"]
+    forbidden_headings: ["## Current Response State"]
+  release:
+    source: docs/99.templates/templates/operations/release.template.md
+    artifact_profile: release
+    target_globs: [docs/05.operations/releases/*.md]
+    required_headings: ["## Overview", "## Identity and Scope", "## Included Changes", "## Artifacts", "## Validation Evidence", "## Approvals", "## Rollout and Rollback", "## Outcome and Known Issues", "## Related Documents"]
+    conditional_headings: ["## Compatibility Notes"]
+    forbidden_headings: ["## Readiness Checklist"]
+  reference:
+    source: docs/99.templates/templates/common/reference.template.md
+    artifact_profile: reference
+    target_globs: [docs/90.references/data/**/*.md, docs/90.references/learning/**/*.md, docs/90.references/llm-wiki/**/*.md, docs/90.references/research/**/*.md]
+    required_headings: ["## Overview", "## Purpose", "## Scope", "## Facts and Definitions", "## Sources", "## Maintenance", "## Related Documents"]
+    conditional_headings: ["## Examples"]
+    forbidden_headings: ["## Findings"]
+  audit:
+    source: docs/99.templates/templates/common/audit.template.md
+    artifact_profile: audit
+    target_globs: [docs/90.references/audits/**/*.md]
+    required_headings: ["## Overview", "## Scope and Criteria", "## Evidence", "## Findings", "## Gap Analysis", "## Disposition", "## Related Documents"]
+    conditional_headings: ["## Comparison"]
+    forbidden_headings: ["## Facts and Definitions"]
+  archive:
+    source: docs/99.templates/templates/common/archive.template.md
+    artifact_profile: archive
+    target_globs: [docs/98.archive/**/*.md]
+    required_headings: ["## Overview", "## Archive Metadata", "## Current Replacement", "## Archive Ledger", "## Related Documents"]
+    conditional_headings: ["## Preserved Evidence"]
+    forbidden_headings: ["## Current Implementation"]
+  readme:
+    source: docs/99.templates/templates/common/readme.template.md
+    artifact_profile: readme
+    target_globs: [README.md, "**/README.md"]
+    required_headings: ["## Overview", "## Audience", "## Scope", "## Structure", "## How to Work in This Area", "## Related Documents"]
+    conditional_headings: ["## Validation"]
+    forbidden_headings: ["## Canonical Shared Rules"]
+  memory:
+    source: docs/99.templates/templates/governance/memory.template.md
+    artifact_profile: governance
+    target_globs: [docs/00.agent-governance/memory/*.md]
+    required_headings: ["## Problem", "## Context", "## Resolution", "## Prevention", "## Evidence", "## Related Documents"]
+    conditional_headings: ["## Follow-up"]
+    forbidden_headings: ["## Usage Contract"]
+  progress:
+    source: docs/99.templates/templates/governance/progress.template.md
+    artifact_profile: governance
+    target_globs: [docs/00.agent-governance/memory/progress.md]
+    required_headings: ["## Current Work Log", "## Phase Tracker", "## Layer Audit", "## Open Issues", "## Related Documents"]
+    conditional_headings: ["## Durable Memory"]
+    forbidden_headings: ["## Usage Contract"]
+  agent-design:
+    source: docs/99.templates/templates/spec-contracts/agent-design.template.md
+    artifact_profile: spec
+    target_globs: [docs/03.specs/*/agent-design.md]
+    required_headings: ["## Overview", "## Role and Responsibilities", "## Inputs and Outputs", "## Orchestration", "## Tools and Permissions", "## Prompt Policy", "## Context and Memory", "## Guardrails", "## Failure Handling", "## Evaluation", "## Observability", "## Related Documents"]
+    conditional_headings: ["## Human Approval"]
+    forbidden_headings: ["## Rules"]
+  api-spec:
+    source: docs/99.templates/templates/spec-contracts/api-spec.template.md
+    artifact_profile: spec
+    target_globs: [docs/03.specs/*/api-spec.md]
+    required_headings: ["## Overview", "## Parent and Scope", "## API Style", "## Authentication and Authorization", "## Operations", "## Request and Response Schemas", "## Errors", "## Compatibility", "## Non-functional Requirements", "## Machine-readable Contracts", "## Verification", "## Related Documents"]
+    conditional_headings: ["## Pagination"]
+    forbidden_headings: ["## Template Usage"]
+  data-model:
+    source: docs/99.templates/templates/spec-contracts/data-model.template.md
+    artifact_profile: spec
+    target_globs: [docs/03.specs/*/data-model.md]
+    required_headings: ["## Overview", "## Parent and Scope", "## Entities", "## Relationships", "## Schema", "## Integrity", "## Storage", "## Privacy", "## Migration", "## Related Documents"]
+    conditional_headings: ["## Retention"]
+    forbidden_headings: ["## Template Usage"]
+  service:
+    source: docs/99.templates/templates/spec-contracts/service.template.md
+    artifact_profile: spec
+    target_globs: [docs/03.specs/*/service.md]
+    required_headings: ["## Overview", "## Parent and Scope", "## Image and Build", "## Security", "## Networking and Storage", "## Secrets", "## Health and Operations", "## Validation", "## Related Documents"]
+    conditional_headings: ["## Scaling"]
+    forbidden_headings: ["## Template Usage"]
+  tests:
+    source: docs/99.templates/templates/spec-contracts/tests.template.md
+    artifact_profile: spec
+    target_globs: [docs/03.specs/*/tests.md]
+    required_headings: ["## Overview", "## Parent and Scope", "## Verification Goals", "## TDD Scope", "## Test Matrix", "## Contract and Integration Tests", "## Non-functional Tests", "## Fixtures", "## Execution", "## Evidence", "## Related Documents"]
+    conditional_headings: ["## Agent Evaluations"]
+    forbidden_headings: ["## Template Usage"]
 
 profiles:
   prd:

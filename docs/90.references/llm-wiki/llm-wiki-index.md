@@ -1037,6 +1037,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/README.md](../../99.templates/templates/README.md) | folder index |
 | [docs/99.templates/templates/common/README.md](../../99.templates/templates/common/README.md) | folder index |
 | [docs/99.templates/templates/common/archive.template.md](../../99.templates/templates/common/archive.template.md) | Markdown reference |
+| [docs/99.templates/templates/common/audit.template.md](../../99.templates/templates/common/audit.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/readme.template.md](../../99.templates/templates/common/readme.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/reference.template.md](../../99.templates/templates/common/reference.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/README.md](../../99.templates/templates/governance/README.md) | folder index |

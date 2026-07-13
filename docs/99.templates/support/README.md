@@ -49,13 +49,13 @@ follow.
 | --- | --- |
 | [template-contract.md](./template-contract.md) | Defines copyable template shape and source requirements. |
 | [template-governance.md](./template-governance.md) | Defines template change workflow, protected surfaces, archive/remove dispositions, and commit boundaries. |
-| [frontmatter-contract.md](./frontmatter-contract.md) | Defines frontmatter key sets and legacy-key cleanup rules. |
-| [document-metadata-profiles.yaml](./document-metadata-profiles.yaml) | Defines machine-readable required, optional, forbidden, lifecycle, parent, and exception profiles. |
-| [sdlc-document-contract.md](./sdlc-document-contract.md) | Explains SDLC and operations artifact roles, lifecycle evidence, and Release boundaries. |
+| [frontmatter-contract.md](./frontmatter-contract.md) | Interprets frontmatter, source metadata, and deterministic serialization without copying registry tables. |
+| [document-metadata-profiles.yaml](./document-metadata-profiles.yaml) | Sole machine owner for profiles, README profiles, 23 template roles, matchers, headings, lifecycle, parents, and exceptions. |
+| [sdlc-document-contract.md](./sdlc-document-contract.md) | Owns human roles and iterative feedback from PRD through Release. |
 | [common-document-contract.md](./common-document-contract.md) | Explains Reference, Audit, Archive, governance, generated, template, repo-support, and native-surface roles. |
 | [readme-profile-contract.md](./readme-profile-contract.md) | Explains README profile selection, heading envelopes, consumers, and local-content ownership. |
 | [lifecycle-status.md](./lifecycle-status.md) | Defines lifecycle status values, transition rules, and archive status boundaries. |
-| [template-selection.md](./template-selection.md) | Maps document purpose, target path, and restructure disposition to a canonical template or action. |
+| [template-selection.md](./template-selection.md) | Owns exact purpose, target-path, and canonical-source routing. |
 | [external-source-rationale.md](./external-source-rationale.md) | Records external source rationale behind local template rules. |
 
 ## Structure

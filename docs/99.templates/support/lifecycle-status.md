@@ -9,6 +9,10 @@ layer: agentic
 This document defines status values used by template sources, active stage
 documents, archive tombstones, and generated files.
 
+It owns the human meaning of the unchanged vocabulary only. Exact allowed
+values by profile, transition edges, terminal behavior, and exception evidence
+remain solely in the registry and checker.
+
 ## Status Vocabulary
 
 | Status | Applies To | Meaning |

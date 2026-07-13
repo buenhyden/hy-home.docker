@@ -311,6 +311,28 @@ class ProfileSchemaTests(unittest.TestCase):
             with self.subTest(mutate=mutate):
                 self.mutate_and_load(mutate)
 
+    def test_template_roles_require_exact_fields_and_unique_sources(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        roles = profiles["template_roles"]
+        self.assertEqual(23, len(roles))
+        sources = [role["source"] for role in roles.values()]
+        self.assertEqual(len(sources), len(set(sources)))
+
+    def test_template_roles_reject_unknown_profiles_and_heading_overlap(self) -> None:
+        self.mutate_and_load(
+            lambda values: values["template_roles"]["prd"].__setitem__(
+                "artifact_profile", "missing-profile"
+            )
+        )
+
+    def test_template_roles_reject_ambiguous_target_matchers(self) -> None:
+        def mutate(values):
+            values["template_roles"]["audit"]["target_globs"] = list(
+                values["template_roles"]["reference"]["target_globs"]
+            )
+
+        self.mutate_and_load(mutate)
+
 
 class ArtifactInferenceTests(unittest.TestCase):
     def test_supported_paths_infer_explicit_profiles(self) -> None:
@@ -338,6 +360,47 @@ class ArtifactInferenceTests(unittest.TestCase):
         for path, expected in cases.items():
             with self.subTest(path=path):
                 self.assertEqual(expected, metadata.infer_artifact_type(pathlib.Path(path)))
+
+
+class TemplateRoleInferenceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = metadata.load_profiles(PROFILES)
+
+    def test_registered_targets_have_one_exact_role(self) -> None:
+        cases = {
+            "docs/01.requirements/901-fixture.md": ("prd", "prd"),
+            "docs/02.architecture/requirements/0901-fixture.md": ("ard", "ard"),
+            "docs/02.architecture/decisions/0901-fixture.md": ("adr", "adr"),
+            "docs/03.specs/901-fixture/spec.md": ("spec", "spec"),
+            "docs/03.specs/901-fixture/api-spec.md": ("spec", "api-spec"),
+            "docs/03.specs/901-fixture/agent-design.md": ("spec", "agent-design"),
+            "docs/03.specs/901-fixture/data-model.md": ("spec", "data-model"),
+            "docs/03.specs/901-fixture/service.md": ("spec", "service"),
+            "docs/03.specs/901-fixture/tests.md": ("spec", "tests"),
+            "docs/04.execution/plans/2026-07-13-fixture.md": ("plan", "plan"),
+            "docs/04.execution/tasks/2026-07-13-fixture.md": ("task", "task"),
+            "docs/05.operations/guides/00-workspace/fixture.md": ("guide", "guide"),
+            "docs/05.operations/policies/00-workspace/fixture.md": ("policy", "policy"),
+            "docs/05.operations/runbooks/00-workspace/fixture.md": ("runbook", "runbook"),
+            "docs/05.operations/incidents/2026/INC-901-fixture/INC-901-fixture.md": ("incident", "incident"),
+            "docs/05.operations/incidents/2026/INC-901-fixture/postmortem.md": ("postmortem", "postmortem"),
+            "docs/05.operations/releases/2026-07-13-fixture.md": ("release", "release"),
+            "docs/90.references/research/fixture.md": ("reference", "reference"),
+            "docs/90.references/audits/fixture.md": ("audit", "audit"),
+            "docs/98.archive/03.specs/fixture.md": ("archive", "archive"),
+            "README.md": ("readme", "readme"),
+            "docs/00.agent-governance/memory/fixture.md": ("governance", "memory"),
+            "docs/00.agent-governance/memory/progress.md": ("governance", "progress"),
+        }
+        for path_text, (profile, expected_role) in cases.items():
+            with self.subTest(path=path_text):
+                self.assertEqual(
+                    expected_role,
+                    metadata.classify_template_role(
+                        pathlib.Path(path_text), profile, self.profiles
+                    ),
+                )
 
 
 class MetadataValidationTests(unittest.TestCase):
@@ -836,16 +899,25 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/operations/postmortem.template.md": "postmortem",
             "docs/99.templates/templates/operations/release.template.md": "release",
             "docs/99.templates/templates/common/reference.template.md": "reference",
+            "docs/99.templates/templates/common/audit.template.md": "audit",
             "docs/99.templates/templates/common/archive.template.md": "archive",
+            "docs/99.templates/templates/common/readme.template.md": "readme",
             "docs/99.templates/templates/spec-contracts/agent-design.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/api-spec.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/data-model.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/service.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/tests.template.md": "spec",
-            "docs/99.templates/templates/governance/harness-task-contract.template.md": "task",
+            "docs/99.templates/templates/governance/memory.template.md": "governance",
+            "docs/99.templates/templates/governance/progress.template.md": "governance",
         }
-        self.assertEqual(expected, self.profiles["template_sources"])
+        role_sources = {
+            role["source"]: role["artifact_profile"]
+            for role in self.profiles["template_roles"].values()
+        }
+        self.assertEqual(expected, role_sources)
         for path_text, target_profile in expected.items():
+            if target_profile in {"governance", "readme"}:
+                continue
             with self.subTest(path=path_text):
                 values = metadata.parse_frontmatter(ROOT / path_text)
                 self.assertEqual("draft", values.get("status"))
@@ -877,13 +949,13 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/operations/postmortem.template.md": "docs/05.operations/incidents/2026/INC-901-fixture/postmortem.md",
             "docs/99.templates/templates/operations/release.template.md": "docs/05.operations/releases/2026-07-13-fixture.md",
             "docs/99.templates/templates/common/reference.template.md": "docs/90.references/research/fixture.md",
+            "docs/99.templates/templates/common/audit.template.md": "docs/90.references/audits/fixture.md",
             "docs/99.templates/templates/common/archive.template.md": "docs/98.archive/03.specs/901-fixture/spec.md",
             "docs/99.templates/templates/spec-contracts/agent-design.template.md": "docs/03.specs/901-fixture/agent-design.md",
             "docs/99.templates/templates/spec-contracts/api-spec.template.md": "docs/03.specs/901-fixture/api-spec.md",
             "docs/99.templates/templates/spec-contracts/data-model.template.md": "docs/03.specs/901-fixture/data-model.md",
             "docs/99.templates/templates/spec-contracts/service.template.md": "docs/03.specs/901-fixture/service.md",
             "docs/99.templates/templates/spec-contracts/tests.template.md": "docs/03.specs/901-fixture/tests.md",
-            "docs/99.templates/templates/governance/harness-task-contract.template.md": "docs/04.execution/tasks/2026-07-13-harness-fixture.md",
         }
         parents = {
             "prd": metadata.Record(
@@ -951,7 +1023,12 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/<replacement-path>.md": "docs/03.specs/900-parent/spec.md",
         }
 
-        for source_path, target_type in self.profiles["template_sources"].items():
+        typed_roles = {
+            role["source"]: role["artifact_profile"]
+            for role in self.profiles["template_roles"].values()
+            if role["source"] in targets
+        }
+        for source_path, target_type in typed_roles.items():
             with self.subTest(source=source_path, target=targets[source_path]):
                 parent_type = parent_by_target.get(target_type)
                 parent_id = parents[parent_type].metadata["artifact_id"] if parent_type else None
@@ -1023,7 +1100,7 @@ class TemplateMetadataTests(unittest.TestCase):
         values = metadata.parse_frontmatter(ROOT / path_text)
         self.assertEqual({"status": "draft"}, values)
 
-    def test_unmapped_template_source_rejects_typed_leaf_metadata(self) -> None:
+    def test_governance_template_source_rejects_typed_leaf_metadata(self) -> None:
         record = metadata.Record(
             pathlib.Path("docs/99.templates/templates/governance/memory.template.md"),
             {
@@ -1043,7 +1120,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 metadata.build_manifest([record]),
             )
         }
-        self.assertIn("type-inappropriate-key", codes)
+        self.assertIn("invalid-template-metadata", codes)
 
 
 class RepositoryContractIntegrationTests(unittest.TestCase):
@@ -1179,16 +1256,18 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root, profiles = self.fixture(directory)
             values = yaml.safe_load(profiles.read_text(encoding="utf-8"))
-            values["template_sources"].pop(source)
+            values["template_roles"]["api-spec"]["source"] = (
+                "docs/99.templates/templates/spec-contracts/missing.template.md"
+            )
             self.write_profiles(profiles, values)
             result = self.run_contracts(root, profiles)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-            self.assertIn(f"template-source-unmapped: {source}", result.stdout)
+            self.assertIn("template-source-missing", result.stdout)
 
         with tempfile.TemporaryDirectory() as directory:
             root, profiles = self.fixture(directory)
             values = yaml.safe_load(profiles.read_text(encoding="utf-8"))
-            values["template_sources"][source] = "plan"
+            values["template_roles"]["api-spec"]["artifact_profile"] = "plan"
             self.write_profiles(profiles, values)
             result = self.run_contracts(root, profiles)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)

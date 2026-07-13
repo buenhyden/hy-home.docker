@@ -76,7 +76,7 @@ review, and a separate quality review before its logical commit.
 
 | ID | Deliverable | Dependency | Status | Implementation role | Required review |
 | --- | --- | --- | --- | --- | --- |
-| T-TCS-001 | Registry and support contract canonicalization | Spec and Plan | Ready | fresh implementer | spec then quality |
+| T-TCS-001 | Registry and support contract canonicalization | Spec and Plan | In Review | fresh implementer | spec then quality |
 | T-TCS-002 | Common, README, and Governance forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
 | T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | Queued | fresh implementer | spec then quality |
 | T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Queued | fresh implementer | spec then quality |
@@ -84,11 +84,35 @@ review, and a separate quality review before its logical commit.
 | T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | Queued | fresh implementer | spec then quality |
 | T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | Queued | fresh implementer | spec then quality |
 
+## T-TCS-001 Implementation Evidence
+
+- Replaced the flat typed-template mapping with 23 exact roles that own unique
+  sources, target profiles, target globs, and non-overlapping heading envelopes.
+- Added deterministic role matching and fail-closed classification, including
+  exact Spec-child paths, README profile delegation, Memory/Progress
+  specificity, and generated inventory exclusion.
+- Added exact-key, known-profile, safe-path/glob, unique-source, heading, and
+  repository source-existence validation. Typed sources retain target-profile
+  placeholder checks; README, governance, and Archive keep their distinct
+  source/target metadata boundaries.
+- Reconciled the ten named human support owners and verified the external
+  rationale against official or primary sources on 2026-07-13 without claiming
+  that local roles or metadata are international standards.
+- Controller-approved dependency correction: Task 1 created the minimal Audit
+  source needed by repository-contract existence checks. Its Target and
+  target-relative comments are a temporary legacy-shell compatibility exception;
+  Task 2 owns final form-only normalization and Task 6 owns removal of the old
+  shell requirement.
+- Adding the tracked Audit path caused ordinary generated freshness fallout.
+  The LLM Wiki index, coverage snapshot, and metadata inventory were refreshed
+  only through their canonical generators; Task 7 still owns the final
+  branch-wide refresh and disposition.
+
 ## Review Evidence
 
 | Task | Spec review | Quality review | Findings | Disposition |
 | --- | --- | --- | --- | --- |
-| T-TCS-001 | Not run — implementation has not started | Not run — implementation has not started | None recorded | Await implementation |
+| T-TCS-001 | Not run — implementation complete and awaiting independent review | Not run — implementation complete and awaiting independent review | No independent findings recorded | In Review; implementer self-review complete |
 | T-TCS-002 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-003 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-004 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 003 |
@@ -122,6 +146,19 @@ review, and a separate quality review before its logical commit.
 - Graphify refresh and advisory report corroboration after code changes.
 - Final whole-branch specification and quality review.
 - Controlled all-files pre-commit wrapper from a clean commit.
+
+### T-TCS-001 RED and GREEN
+
+| Phase | Command | Result |
+| --- | --- | --- |
+| RED | `python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests tests.validation.test_document_metadata.TemplateRoleInferenceTests -v` | Expected failure: 10 tests ran with 26 errors because `template_roles` and `classify_template_role()` did not exist. |
+| GREEN | Same focused command | Pass: 10/10. |
+| Regression | `python3 -m unittest tests.validation.test_document_metadata -v` | Pass: 109/109. |
+| Metadata contracts | `python3 scripts/validation/check-document-metadata.py --mode check-contracts` | Pass: zero violations. |
+| Repository contracts | `bash scripts/validation/check-repo-contracts.sh` | Pass: `failures=0`. |
+| Generated freshness | Canonical LLM Wiki index/coverage generators and metadata inventory report mode | Pass: 1,298 index paths, 1,297 safe coverage paths, and 903 metadata records / 2,033 advisory findings. |
+| Graph refresh | `graphify update .` | Pass: refreshed to 23,053 nodes / 24,116 edges / 1,540 communities; outputs restored after evidence capture to keep this logical commit scoped, and conclusions were corroborated against tracked source, Stage 00, Spec 130, and this Plan/Task. |
+| Diff hygiene | `git diff --check` and Python compilation | Pass. |
 
 ## Controlled Agent Pre-commit Evidence
 

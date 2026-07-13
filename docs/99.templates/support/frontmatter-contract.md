@@ -39,6 +39,20 @@ frontmatter interpretation only. Generic `type` remains forbidden;
 `artifact_type` is the stable profiled key introduced only through the approved
 metadata rollout.
 
+## Template Role Boundary
+
+The registry maps each copyable Markdown role to one source, one target
+profile, target matchers, and body-heading envelopes. Frontmatter validation
+uses the matched role's `artifact_profile`; human prose does not override that
+classification. Parent Spec children keep `artifact_type: spec` and receive
+their focused role from the exact target filename.
+
+README sources validate only source-draft metadata. Governance Memory and
+Progress sources use exactly `layer: agentic` plus `status: draft`. Archive
+sources retain source-draft status, while instantiated tombstones validate
+against the archived target profile. These source rules do not manufacture a
+target lifecycle state.
+
 ## Parent Serialization Boundary
 
 `parent_ids` contains direct parent identities with set-like semantic meaning.

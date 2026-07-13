@@ -24,11 +24,11 @@ allowed keys, and canonical shared-rule owners belong only to
 4. If the path is new or its role is changing, update the machine registry and
    validator through approved contract work before authoring the README.
 
-Profiles distinguish repository and stage entrypoints, governance and provider
-catalogs, infrastructure and project levels, script/test/secret/example
-catalogs, archive and template catalogs, and the two `_workspace` support
-contracts. Those categories describe routing intent; the registry remains the
-complete and executable profile list.
+The registry declares 17 README profiles covering repository and stage
+entrypoints, governance and provider catalogs, infrastructure and project
+levels, script/test/secret/example catalogs, archive and template catalogs,
+and the two `_workspace` support contracts. This document explains their
+shared behavior without copying the registry's path arrays or heading lists.
 
 ## Heading Envelope
 

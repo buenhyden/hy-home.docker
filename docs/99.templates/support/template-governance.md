@@ -20,6 +20,19 @@ contracts, and validation rules.
 | Target documents | Update only direct fallout unless a separate plan approves broad corpus normalization. |
 | Repo-support staging | Keep `_workspace` tracked surface limited to approved contract README files; runtime artifacts remain ignored under `_workspace/repo-support/`. |
 
+## Approval and Review
+
+- Record the approved scope, exact paths, validation commands, rollback or
+  recovery, and redaction boundary before changing protected template,
+  registry, validator, or governance surfaces.
+- Use a fresh implementation review, then independent specification and
+  quality review when the active Plan requires them. Do not self-assign an
+  independent PASS or APPROVED verdict.
+- Resolve Critical and Important findings before the logical task closes.
+  Record Minor findings and their disposition in Stage 04 evidence.
+- Preserve remote, runtime, secret, deployment, and provider boundaries unless
+  the task explicitly approves them.
+
 ## Archive and Removal Governance
 
 Archive-centered restructure work must classify a target before changing it.
@@ -50,10 +63,23 @@ task evidence or Stage 90 references when needed.
 
 ## Commit Boundaries
 
-- Keep support-contract edits, template-source edits, validator edits, direct fallout edits, and generated-index refreshes in separate commits where practical.
+- Create at least one logical Conventional Commit for each approved task.
+- Keep support-contract edits, template-source edits, validator edits, direct fallout edits, and generated-index refreshes in separate logical commits where the Plan requires independent rollback or review.
 - Use `git mv` for path moves.
 - Review path-only moves separately from content rewrites.
 - Record existing unrelated validation failures as gaps.
+
+## Preservation and Migration
+
+- Migrate direct consumers only when the matched contract or link requires it;
+  broad corpus waves require their own approved Spec and Plan.
+- Preserve historical dates, commands, counts, verdicts, approvals, and
+  outcomes. Never invent missing review or runtime evidence to satisfy a form.
+- Use generators for generated outputs and record before/after freshness
+  evidence. Do not hand-edit generated bodies.
+- Treat destructive replacement as a linked change: remove stale routes,
+  preserve the required evidence owner, create a tombstone when applicable,
+  and keep rollback possible through the logical commit boundary.
 
 ## Numbered Path Governance
 
