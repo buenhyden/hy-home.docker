@@ -504,10 +504,14 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   `68/68/14/2/9`; semantic freshness remains `11/0`; matrix and both Wiki
   outputs are fresh; traceability is `46/0`; alignment is `644/5,097/0`; full
   repository contracts report `failures=0`; and `git diff --check` passes.
-- **Post-fix wrapper boundary**: the controlled wrapper has not run after the
-  remediation. It remains gated on the controller committing this regenerated
-  inventory and evidence from a clean boundary. Spec 129 and its Plan/Task stay
-  active, and T-DCC-006 stays Review Pending.
+- **Post-fix controlled wrapper**: controller commit `431435c1` captured the
+  regenerated inventory and validation evidence. From that clean boundary, the
+  exact approved wrapper command completed with wrapper exit `0`, hook exit
+  `0`, and snapshot PASS. Git-visible, non-ignored observations were before
+  `0`, after `0`, changed `0`, and unexpected `0`; every before, after,
+  changed, and unexpected path set was empty. No hook-managed edit, after-only
+  new path, or unexpected path exists. Spec 129 and its Plan/Task stay active,
+  and T-DCC-006 stays Review Pending pending fresh whole-branch review.
 - **Observation boundary**: the wrapper evidence covers only Git-visible,
   non-ignored repository status. It does not observe ignored paths or writes
   outside the repository and is not a process or filesystem sandbox.
@@ -534,7 +538,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
 | T-DCC-005 | `bded61ce`, `556ba98d`, `dc75443b` | PASS | Approved | Round 1 C0/I2/M0 and re-review C0/I1/M0; all template/array bypasses resolved; final C0/I0/M0 | `review-ac63469a..dc75443b.diff`; combined reviewer final verdict | Done |
-| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb` | PASS | Approved | Task review C0/I0/M1 resolved; whole-branch C0/I2/M0 README enforcement/context findings remediated and fully validated; fresh review pending | `review-f8dee457..efe77ecf.diff`; pre-closure review `e2954cc3..c1cf87f7`; remediation evidence above | Review Pending |
+| T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb`, `431435c1` | PASS | Approved | Task review C0/I0/M1 resolved; whole-branch C0/I2/M0 README findings remediated, fully validated, and wrapper-clean; fresh review pending | `review-f8dee457..efe77ecf.diff`; pre-closure review `e2954cc3..c1cf87f7`; remediation evidence above | Review Pending |
 
 ## Verification Summary
 
@@ -557,6 +561,9 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   and Wiki coverage `1,293` pass freshness checks. The post-fix owner
   regeneration changes only `148` inventory context rows and preserves all
   counts.
+- **Post-fix Controlled Wrapper**: from clean commit `431435c1`, wrapper exit
+  `0`, hook exit `0`, and snapshot PASS; before, after, changed, and unexpected
+  counts are all `0`, and every reported path set is `(none)`.
 - **Graphify**: the remediation refresh completed; advisory graph collateral
   was restored after corroboration against tracked sources and focused QA.
 - **Logs / Evidence Location**: Durable concise results live in this task;
@@ -573,6 +580,7 @@ process/filesystem sandbox.
 | --- | --- | ---: | --- | --- | --- |
 | Attempt 1 — `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | `0` (`hook_exit=0`; snapshot PASS) | Before `(none)`; after `(none)`; new `(none)`; changed `(none)`; unexpected `(none)` | Accepted: no hook edit and no unexpected Git-visible, non-ignored path | N/A; exact approved gate ran from clean commit `fd0dfe57` |
 | Attempt 2 — `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | `0` (`hook_exit=0`; snapshot PASS) | Before `(none)`; after `(none)`; new `(none)`; changed `(none)`; unexpected `(none)` | Accepted: no hook edit and no unexpected Git-visible, non-ignored path | N/A; exact approved rerun after lifecycle correction ran from clean commit `ecac0fb2` |
+| Attempt 3 — `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md --allow-prefix docs/ --allow-prefix scripts/validation/ --allow-prefix tests/validation/ --allow-prefix .github/ --allow-prefix .pre-commit-config.yaml` | `docs/`, `scripts/validation/`, `tests/validation/`, `.github/`, `.pre-commit-config.yaml` | `0` (`hook_exit=0`; snapshot PASS) | Before `(none)`; after `(none)`; new `(none)`; changed `(none)`; unexpected `(none)` | Accepted: no hook edit, after-only new path, or unexpected Git-visible, non-ignored path | N/A; exact approved post-remediation gate ran from clean commit `431435c1` |
 
 ## Deviation Notes
 
