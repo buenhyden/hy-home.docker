@@ -169,18 +169,19 @@ review, and a separate quality review before its logical commit.
   and gives Reference, Audit, generated output, and Repo-support one concise
   confidentiality boundary under Common `Source and Evidence Discipline`.
   The transitional shell assertion now scopes those literals to that section.
-  I-01, I-02, and M-01 are implementation-remediated and await independent
-  re-review; no approval or closure verdict is claimed.
+  The independent full-range re-review of `ff4cb021...e9a0c8cf` returned Spec
+  PASS and Quality APPROVED with Critical 0, Important 0, and Minor 0. I-01,
+  I-02, and M-01 are resolved by `e9a0c8cf`.
 - No runtime, Compose, infrastructure, deployment, secret, provider, workflow,
-  credential, branch-protection, or remote state changed. T-TCS-002 remains
-  `In Review`; no independent verdict is claimed by this implementation unit.
+  credential, branch-protection, or remote state changed. T-TCS-002 is
+  completed; the controlled wrapper and whole-branch review remain later gates.
 
 ## Review Evidence
 
 | Task | Spec review | Quality review | Findings | Disposition |
 | --- | --- | --- | --- | --- |
 | T-TCS-001 | PASS on `9eca432b...ede2b9a2` | APPROVED on `9eca432b...ede2b9a2` | None; I-01 resolved by `ede2b9a2` | Completed |
-| T-TCS-002 | FAIL on `ff4cb021...1bba54fe` | CHANGES REQUESTED on `ff4cb021...1bba54fe` | I-01 and I-02 Important; M-01 Minor; all three implementation-remediated, independent re-review pending | In Review |
+| T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
 | T-TCS-003 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-004 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 003 |
 | T-TCS-005 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
@@ -272,7 +273,7 @@ review, and a separate quality review before its logical commit.
 | RED | Three new `TemplateMetadataTests` regressions for Memory instantiation, Stage 00 source metadata, and Common evidence confidentiality | Expected failure: 3 tests ran with 17 subtest failures: seven missing Memory labels, one Stage 00 policy mismatch, and nine missing Common section literals. |
 | Focused GREEN | Same three regressions | Pass: 3/3. |
 | Task 2 GREEN | `TemplateMetadataTests` plus `ReadmeProfileTests` | Pass: 16/16. |
-| Finding disposition | Implementation inspection | I-01, I-02, and M-01 are remediated in the review-fix unit; T-TCS-002 remains In Review pending independent re-review. |
+| Finding disposition | Independent full-range re-review over `ff4cb021...e9a0c8cf` | Spec PASS; Quality APPROVED; Critical 0 / Important 0 / Minor 0; I-01, I-02, and M-01 resolved. |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -298,7 +299,9 @@ have not completed.
 | `a3ca523e` | Task 1 canonical template roles, support contracts, matcher, tests, and generated evidence | Focused 10/10; metadata 109/109; metadata and repository contracts; generated freshness; diff |
 | `ede2b9a2` | Task 1 I-01 semantic glob-overlap remediation | I-01 1/1; focused 10/10; metadata 109/109; metadata contracts; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close template registry task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-001 | Metadata changed-mode from `ede2b9a2`: 2 selected, 0 violations, 0 exceptions/overrides; diff hygiene pass; evidence-only scope |
-| Implementation unit — subject `docs(templates): canonicalize common and governance forms`; self hash intentionally omitted | Task 2 forms, catalog routing, mirror removal, transitional source gate, tests, and generated fallout | Focused 13/13; metadata 114/114; changed mode 17/0; repository contracts; generated freshness; traceability/alignment; Graphify; diff/compile |
+| `1bba54fe` | Task 2 forms, catalog routing, mirror removal, transitional source gate, tests, and generated fallout | Focused 13/13; metadata 114/114; changed mode 17/0; repository contracts; generated freshness; traceability/alignment; Graphify; diff/compile |
+| `e9a0c8cf` | Task 2 I-01/I-02/M-01 Memory, Stage 00 metadata, and Common confidentiality remediation | Remediation 3/3; focused 16/16; metadata 117/117; metadata and repository contracts; independent PASS/APPROVED re-review |
+| Closure unit — subject `docs(task): close common governance forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-002 | Metadata changed-mode and diff hygiene; evidence-only scope |
 
 Later implementation and review-fix commits will be appended as Tasks 2-7 close.
 
