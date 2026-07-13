@@ -80,7 +80,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-002 | Common, README, and Governance forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
 | T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
 | T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Completed | fresh implementer | spec then quality |
-| T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | In Review | fresh implementer | spec then quality |
+| T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
 | T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | Queued | fresh implementer | spec then quality |
 | T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | Queued | fresh implementer | spec then quality |
 
@@ -315,8 +315,9 @@ review, and a separate quality review before its logical commit.
   invocation/judgment boundaries are explicit in the forms, human SDLC
   contract, and independent all-role plus per-field negative oracles. The final
   full-range re-review of `34ae2dab...b7b2ec95` returned Spec PASS / Quality
-  CHANGES REQUESTED, C0/I1/M0, for evidence finding I-02. A narrow evidence-only
-  re-review is pending; no final approval or closure is claimed.
+  CHANGES REQUESTED, C0/I1/M0, for evidence finding I-02. Commit `c07160a2`
+  corrected the Task and Progress ledger; the narrow re-review returned Spec
+  PASS / Quality APPROVED with C0/I0/M0. T-TCS-005 is completed.
 
 ## Review Evidence
 
@@ -326,7 +327,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
 | T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
-| T-TCS-005 | PASS on `34ae2dab...b7b2ec95` | CHANGES REQUESTED on `34ae2dab...b7b2ec95` | C0/I1/M0; I-01 resolved by `b09d73bd`, I-01-R1 resolved by `b7b2ec95`, and evidence-only I-02 awaits confirmation | Await narrow evidence-only re-review |
+| T-TCS-005 | PASS on `34ae2dab...c07160a2` | APPROVED on `34ae2dab...c07160a2` | None; I-01, I-01-R1, and I-02 resolved | Completed |
 | T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
 | T-TCS-007 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 006 |
 | Whole branch | Not run — implementation has not completed | Not run — implementation has not completed | None recorded | Await T-TCS-007 |
@@ -481,7 +482,8 @@ review, and a separate quality review before its logical commit.
 | I-01-R1 remediation | Added `{{prerequisites}}` under the existing Trigger and Preconditions heading; replaced the broad automation handoff token with explicit candidate/invocation and human-or-operator judgment-boundary fields under the existing conditional heading; retained the existing rollback-or-recovery boundary. Added matching durable human semantics without adding headings, commands, examples, state keys, or runtime claims. |
 | I-01-R1 GREEN | Narrow 3/3; focused three-class suite 59/59; full metadata regression 140/140; metadata contracts zero; changed mode from `34ae2dab` 11/0 with zero exceptions/overrides; repository contracts zero; traceability 46/0; alignment 647 docs / 5,135 links / 0; generated evidence fresh; Graphify 23,348 nodes / 24,560 edges / 1,544 communities with tracked outputs restored. |
 | Final full-range re-review | Spec PASS; Quality CHANGES REQUESTED; Critical 0 / Important 1 / Minor 0 on `34ae2dab...b7b2ec95`. I-01 and I-01-R1 are resolved by committed `b09d73bd` and `b7b2ec95`; I-02 identifies stale canonical Task review and commit-ledger evidence only. |
-| Current review state | The I-02 evidence correction awaits a narrow independent re-review; no final approval or Task closure is claimed. |
+| I-02 evidence correction | `c07160a2` records the actual `b7b2ec95` identity and subject in the canonical Task and Progress ledger; no template, support, validator, test, generated, or runtime file changed. |
+| Final narrow re-review | Spec PASS; Quality APPROVED; Critical 0 / Important 0 / Minor 0 on `34ae2dab...c07160a2`; I-01, I-01-R1, and I-02 resolved and ready for Task closure. |
 
 ### T-TCS-004 Review Remediation
 
@@ -549,8 +551,10 @@ have not completed.
 | `f86db7ac` | Task 5 Operations forms, Incident root relation, catalog/support/direct validator fallout, exact all-role regressions, and evidence | RED 13 expected failures; focused 58/58; metadata 139/139; metadata/repository contracts zero; changed mode 11/0 with zero exceptions/overrides; generated freshness; traceability/alignment; Graphify; diff/compile/syntax pass; first review C0/I1/M0 |
 | `b09d73bd` | Task 5 I-01 explicit Operations evidence fields, durable human semantics, and strengthened independent oracles | RED 59 methods / 40 expected subtest failures; focused 59/59; metadata 140/140; metadata/repository contracts zero; changed mode 11/0; generated freshness; traceability/alignment; Graphify; first remediation re-review found I-01-R1 |
 | `b7b2ec95` — `fix(operations): make runbook automation boundaries explicit` | Task 5 I-01-R1 Runbook prerequisites, automation candidate/invocation, human-or-operator judgment boundary, durable human semantics, and exact removal oracles | Narrow RED 3 methods / 5 failures; GREEN 3/3; focused 59/59; metadata 140/140; metadata/repository contracts zero; changed mode 11/0; generated freshness; traceability/alignment; Graphify 23,348 / 24,560 / 1,544 with outputs restored; final full-range re-review resolved I-01/I-01-R1 and found evidence-only I-02 |
+| `c07160a2` | Task 5 I-02 canonical remediation-ledger correction | Evidence-only Task/Progress delta; changed from `b7b2ec95` 2/0; full Task 5 base 11/0; focused 59/59; metadata contracts and generated freshness pass; independent PASS/APPROVED narrow re-review |
+| Closure unit — subject `docs(task): close operations forms task`; self hash intentionally omitted | Record completed independent verdict and close T-TCS-005 | Metadata changed-mode and diff hygiene; evidence-only scope |
 
-Later review-fix and implementation commits will be appended as Tasks 5-7 close.
+Later review-fix and implementation commits will be appended as Tasks 6-7 close.
 
 ## Migration Wave Routing
 
