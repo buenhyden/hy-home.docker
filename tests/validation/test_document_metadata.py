@@ -1123,6 +1123,22 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 self.assertEqual(1, result.returncode, result.stdout + result.stderr)
                 self.assertIn(f"{expected}: {source}", result.stdout)
 
+    def test_mapped_template_requires_non_null_declared_target_type(self) -> None:
+        source = "docs/99.templates/templates/spec-contracts/api-spec.template.md"
+        for mutation in ("omitted", "null"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                path = root / source
+                values = metadata.parse_frontmatter(path)
+                if mutation == "omitted":
+                    values.pop("artifact_type")
+                else:
+                    values["artifact_type"] = None
+                write_doc(path, values)
+                result = self.run_contracts(root, profiles)
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertIn(f"template-source-missing-type: {source}", result.stdout)
+
     def test_release_selection_stage_00_and_stage_05_routes_fail_closed(self) -> None:
         route = "docs/05.operations/releases/YYYY-MM-DD-release-name.md"
         release_source = "docs/99.templates/templates/operations/release.template.md"

@@ -1323,9 +1323,19 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         except FrontmatterError as error:
             findings.append(Finding(path.as_posix(), "template-source-invalid", str(error)))
             continue
+        declares_type = "artifact_type" in values
         declared_type = values.get("artifact_type")
         mapped_type = template_sources.get(path.as_posix())
+        if not declares_type and mapped_type is None:
+            continue
         if declared_type is None:
+            findings.append(
+                Finding(
+                    path.as_posix(),
+                    "template-source-missing-type",
+                    "registered or typed Markdown template requires a non-null artifact_type",
+                )
+            )
             continue
         if not isinstance(declared_type, str) or declared_type not in template_target_types:
             findings.append(

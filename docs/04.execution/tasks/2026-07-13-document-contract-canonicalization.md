@@ -383,6 +383,26 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   and fail closed after it; current catalogs, untyped Markdown support forms,
   and human contracts remain green. Critical `0`, Important `0`, Minor `0`;
   independent re-review remains pending.
+- **Independent re-review**: FAIL / NEEDS FIXES with Critical `0`, Important
+  `1`, Minor `0`. The remaining I-01 showed that a registry-mapped source could
+  omit `artifact_type` or set it to YAML `null` because the untyped-catalog
+  exception was evaluated without considering the existing mapping.
+- **Second remediation RED**: two new mapped `api-spec.template.md` fixtures,
+  one with `artifact_type` omitted and one with explicit `null`, both returned
+  `metadata repository contracts: violations=0` before the fix.
+- **Second I-01 remediation**: the untyped exception now applies only when the
+  `artifact_type` key is absent and the path is also unmapped. Registered
+  sources and explicit null declarations fail with
+  `template-source-missing-type`; genuinely untyped, unmapped catalogs and
+  README files remain exceptions.
+- **Second remediation GREEN**: the focused repository-contract class passes
+  `9/9`; direct `--mode check-contracts` reports `violations=0`; Python compile
+  and `git diff --check` pass. No broader discovery run was repeated per the
+  bounded re-review-fix scope.
+- **Second remediation self-review**: registry membership, absent keys, null
+  values, unknown values, arbitrary Markdown leaf names, and unmapped untyped
+  catalogs now have distinct fail-closed dispositions. Critical `0`, Important
+  `0`, Minor `0`; independent re-review remains pending.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -390,7 +410,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-002 | `3591fcd5`, `0445f336` | PASS | Approved | C0/I0/M0; no remediation required | `review-0ae9fe81..0445f336.diff`; combined reviewer verdict | Done |
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | `c43f1492`, `06f142b7` | PASS | Approved | Round 1 C0/I1/M0; I-01 stale WRE-10 lifecycle wording corrected; re-review C0/I0/M0 | `review-f272b3da..06f142b7.diff`; combined reviewer re-verdict | Done |
-| T-DCC-005 | `bded61ce`; remediation pending | Pending re-review | Pending re-review | Round 1 C0/I2/M0; I-01/I-02 remediated; re-review pending | Ignored SDD report promoted here after approval | Review Pending |
+| T-DCC-005 | `bded61ce`, `556ba98d`; second remediation pending | Pending re-review | Pending re-review | Round 1 C0/I2/M0 resolved; re-review C0/I1/M0 remediated; next review pending | Ignored SDD report promoted here after approval | Review Pending |
 | T-DCC-006 | Pending | Pending | Pending | Pending | Whole-branch review evidence promoted here | Pending |
 
 ## Verification Summary
@@ -401,7 +421,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   pass; T-DCC-004 passes `11/161`, coverage `68/68/14/2/9`, semantic freshness
   `11/0`, and its `32/32` unit suite; T-DCC-005 initially passed `6/6` and
   `99/99`, then its review-remediation adversarial class passes `8/8` and the
-  metadata module passes `101/101`.
+  metadata module passes `101/101`; its second remediation class passes `9/9`.
 - **Full Test Commands**: validation discovery passes `143/143`; the final
   generated-freshness and cross-suite closure bundle remains reserved for
   T-DCC-006.
