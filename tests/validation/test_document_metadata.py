@@ -1854,26 +1854,59 @@ class TemplateBodyContractTests(unittest.TestCase):
             "related_documents",
         },
         "runbook": {
-            "title", "overview", "trigger_and_preconditions", "procedure",
-            "verification_record", "evidence", "rollback_or_recovery",
-            "escalation", "automation_handoff", "related_documents",
+            "title", "overview", "trigger", "safety_conditions", "step_order",
+            "procedure_step", "expected_result", "verification_environment",
+            "verification_command_or_procedure", "verification_result",
+            "verification_evidence_location", "supporting_evidence",
+            "rollback_or_recovery", "escalation", "automation_handoff",
+            "related_documents",
         },
         "incident": {
-            "title", "overview", "incident_metadata", "impact",
-            "timeline_and_response", "evidence", "resolution_and_handoff",
-            "runbook_links", "related_documents",
+            "title", "overview", "severity", "incident_lead",
+            "current_response_state", "impact", "response_timestamp",
+            "response_action", "response_action_owner", "response_state_change",
+            "evidence", "mitigation", "resolution", "handoff", "runbook_links",
+            "related_documents",
         },
         "postmortem": {
             "title", "overview", "incident_and_impact", "timeline",
-            "root_cause_and_contributing_factors", "lessons", "action_items",
+            "root_cause_and_contributing_factors", "lessons",
+            "reviewed_action_description", "action_owner", "action_priority",
+            "action_tracking_identity", "verification_owner",
             "prevention_and_verification", "feedback_loop", "detection_analysis",
             "related_documents",
         },
         "release": {
-            "title", "overview", "identity_and_scope", "included_changes",
-            "artifacts", "validation_evidence", "approvals",
-            "rollout_and_rollback", "outcome_and_known_issues",
-            "compatibility_notes", "related_documents",
+            "title", "overview", "immutable_release_identity", "version_or_tag",
+            "commit_identity", "release_scope", "included_changes",
+            "artifact_identifier", "artifact_digest_or_immutable_evidence",
+            "validation_check", "validation_result",
+            "validation_evidence_location", "approval_authority",
+            "approval_decision", "approval_evidence", "rollout_execution",
+            "rollback_disposition", "rollout_evidence", "release_outcome",
+            "known_issues", "compatibility_assessment", "related_documents",
+        },
+    }
+    TASK_5_MANDATORY_EVIDENCE_TOKENS = {
+        "runbook": {
+            "safety_conditions", "step_order", "procedure_step", "expected_result",
+            "verification_environment", "verification_command_or_procedure",
+            "verification_result", "verification_evidence_location",
+        },
+        "incident": {
+            "severity", "incident_lead", "current_response_state",
+            "response_action", "mitigation", "resolution", "handoff",
+        },
+        "postmortem": {
+            "reviewed_action_description", "action_owner", "action_priority",
+            "action_tracking_identity", "verification_owner",
+        },
+        "release": {
+            "immutable_release_identity", "version_or_tag", "commit_identity",
+            "artifact_identifier", "artifact_digest_or_immutable_evidence",
+            "validation_result", "approval_decision", "compatibility_assessment",
+            "rollout_execution", "rollback_disposition", "release_outcome",
+            "known_issues",
         },
     }
     ALL_ROLE_SOURCES = {
@@ -2251,6 +2284,11 @@ class TemplateBodyContractTests(unittest.TestCase):
                 self.assertEqual(expected_profiles[role_name], role["artifact_profile"])
                 self.assertEqual(list(expected_headings[role_name]), h2)
                 self.assertEqual(expected_tokens[role_name], self.body_tokens(text))
+                if role_name in self.TASK_5_MANDATORY_EVIDENCE_TOKENS:
+                    self.assertLessEqual(
+                        self.TASK_5_MANDATORY_EVIDENCE_TOKENS[role_name],
+                        self.body_tokens(text),
+                    )
                 self.assertEqual(1, len(h1))
                 self.assertNotIn("> Rules:", text)
                 self.assertNotRegex(text, r"<!-- (?:Release )?Target:")
@@ -2281,12 +2319,22 @@ class TemplateBodyContractTests(unittest.TestCase):
                 "artifact_type: runbook", "artifact_type: guide", 1
             ),
             "token-drift": text.replace(
-                "{{verification_record}}", "{{verification_results}}", 1
+                "{{verification_environment}}", "{{verification_context}}", 1
             ),
         }
         for name, mutated in mutations.items():
             with self.subTest(mutation=name), self.assertRaises(AssertionError):
                 self.assert_task_5_markdown_contract(role_name, mutated)
+
+    def test_task_5_mandatory_evidence_token_removal_is_rejected(self) -> None:
+        for role_name, mandatory_tokens in self.TASK_5_MANDATORY_EVIDENCE_TOKENS.items():
+            text = (ROOT / self.ALL_ROLE_SOURCES[role_name]).read_text(encoding="utf-8")
+            for token in mandatory_tokens:
+                with self.subTest(role=role_name, token=token):
+                    self.assertIn(f"{{{{{token}}}}}", text)
+                    mutated = text.replace(f"{{{{{token}}}}}", "", 1)
+                    with self.assertRaises(AssertionError):
+                        self.assert_task_5_markdown_contract(role_name, mutated)
 
     def test_plan_form_is_prospective_only(self) -> None:
         role = self.profiles["template_roles"]["plan"]

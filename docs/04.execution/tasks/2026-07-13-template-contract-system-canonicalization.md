@@ -305,8 +305,16 @@ review, and a separate quality review before its logical commit.
   Plan/Task.
 - No runtime, Compose, infrastructure, deployment, Release event, secret,
   provider, workflow, credential, branch-protection, or remote state changed.
-  Implementation is ready for independent specification and quality review;
-  no review verdict is claimed here.
+- The first independent review of `34ae2dab...f86db7ac` returned Spec FAIL and
+  Quality CHANGES REQUESTED with C0/I1/M0. I-01 found that four evidence-bearing
+  Operations forms used placeholders too broad to preserve Spec 130's mandatory
+  information shapes.
+- I-01 remediation keeps the approved H2 envelopes and frontmatter while making
+  Runbook safety/procedure/verification fields, Incident response leadership
+  and state, Postmortem owned tracked actions, and Release immutable evidence
+  explicit. The human SDLC contract and independent all-role/negative oracles
+  now preserve those semantics. Remediation is complete and awaits a fresh
+  independent full-range re-review; no reapproval or closure is claimed.
 
 ## Review Evidence
 
@@ -316,7 +324,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
 | T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
-| T-TCS-005 | Not run — implementation awaits review | Not run — implementation awaits review | None recorded | In Review |
+| T-TCS-005 | FAIL on `34ae2dab...f86db7ac` | CHANGES REQUESTED on `34ae2dab...f86db7ac` | C0/I1/M0; I-01 mandatory Operations evidence shapes remediated in the working tree | Await fresh full-range re-review |
 | T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
 | T-TCS-007 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 006 |
 | Whole branch | Not run — implementation has not completed | Not run — implementation has not completed | None recorded | Await T-TCS-007 |
@@ -455,6 +463,19 @@ review, and a separate quality review before its logical commit.
 | Graph refresh | `graphify update .` | Ran after code changes; tracked outputs restored. Numeric snapshot not retained after the implementation agent interruption, so no count is claimed; conclusions were corroborated against tracked sources, Stage 00, Spec 130, and the active Plan/Task. |
 | Diff, compile, and syntax | `git diff --check`, Python compilation, and Bash syntax | Pass. |
 
+### T-TCS-005 Review Remediation
+
+| Evidence | Result |
+| --- | --- |
+| First independent review | Spec FAIL; Quality CHANGES REQUESTED; Critical 0 / Important 1 / Minor 0 on `34ae2dab...f86db7ac` |
+| I-01 RED | Strengthened exact role tokens, the independent all-23 oracle, and mandatory-field removal mutations: 59 test methods ran with 40 expected subtest failures across the four evidence-bearing roles. |
+| I-01 remediation | Replaced broad placeholders under the existing H2 envelopes with explicit Runbook safety, ordered-step, expected-result, and verification-record fields; Incident severity, lead, current-state, action, mitigation, resolution, and handoff fields; Postmortem reviewed action ownership, priority, tracking, and verification ownership; and Release immutable identity, artifact, validation, approval, compatibility, rollout/rollback, outcome, and known-issue fields. Added concise durable semantics to the human SDLC contract. |
+| Focused and full GREEN | Focused three-class suite 59/59; full metadata regression 140/140; metadata contracts zero violations. |
+| Repository gates | Changed mode from `34ae2dab`: 11 selected, zero violations/exceptions/overrides; repository contracts `failures=0`; traceability 46/0; alignment 647 docs / 5,135 links / 0; generated outputs fresh at 1,296 / 1,295 paths and 901 records / 2,025 findings. |
+| Scope and static evidence | Release event leaves 0; prohibited Operations-form residue 0; Python compilation and diff hygiene pass; no runtime or other excluded-surface mutation. |
+| Graph refresh | `graphify update .` completed at 23,337 nodes / 24,549 edges / 1,542 communities; tracked graph outputs were restored and the advisory result was corroborated against canonical tracked owners. |
+| Current review state | Remediation awaits a fresh independent full-range re-review; no reapproval or Task closure is claimed. |
+
 ### T-TCS-004 Review Remediation
 
 | Evidence | Result |
@@ -515,7 +536,8 @@ have not completed.
 | `b54e76df` | Task 4 prospective Plan, evidentiary Task, duplicate harness-form deletion, direct governance/validator fallout, tests, and generated evidence | RED 11 expected failures; focused 27/27; metadata 131/131; metadata/repository contracts zero; changed mode 18/0 with one base-existing legacy exception and zero transition overrides; generated freshness; traceability/alignment; Graphify ran; diff/compile/syntax pass |
 | `b394a671` | Task 4 I-01 selected-count evidence correction | Exact changed-mode 18/0 with one base-existing legacy exception and zero overrides; focused 27/27; metadata contracts zero; generated freshness and diff pass; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close stage 04 forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-004 | Metadata changed-mode and diff hygiene; evidence-only scope |
-| Implementation unit — subject `docs(operations): canonicalize operations forms`; commit not yet created | Task 5 Operations forms, Incident root relation, catalog/support/direct validator fallout, exact all-role regressions, and evidence | RED 13 expected failures; focused 58/58; metadata 139/139; metadata/repository contracts zero; changed mode 11/0 with zero exceptions/overrides; generated freshness; traceability/alignment; Graphify; diff/compile/syntax pass; independent reviews pending |
+| `f86db7ac` | Task 5 Operations forms, Incident root relation, catalog/support/direct validator fallout, exact all-role regressions, and evidence | RED 13 expected failures; focused 58/58; metadata 139/139; metadata/repository contracts zero; changed mode 11/0 with zero exceptions/overrides; generated freshness; traceability/alignment; Graphify; diff/compile/syntax pass; first review C0/I1/M0 |
+| Remediation unit — subject `fix(operations): preserve mandatory evidence shapes`; commit not yet created | Task 5 I-01 explicit Operations evidence fields, durable human semantics, and strengthened independent oracles | RED 59 methods / 40 expected subtest failures; focused 59/59; metadata 140/140; metadata/repository contracts zero; changed mode 11/0; generated freshness; traceability/alignment; Graphify; diff/compile/search pass; fresh re-review pending |
 
 Later review-fix and implementation commits will be appended as Tasks 5-7 close.
 

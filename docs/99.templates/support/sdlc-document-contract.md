@@ -40,6 +40,24 @@ the registry.
 | Postmortem | Why did the incident occur, what was learned, and which owned actions prevent recurrence? | The incident is stable enough for reviewed learning. | Requirements, architecture, Specs, plans, policies, and runbooks receive approved follow-up. |
 | Release | What real release event occurred, which immutable artifacts and approvals support it, and what was the outcome? | A release has actual artifact, validation, approval, rollout or rollback, and outcome evidence. | Operators, users, audits, and later releases consume the event record. |
 
+## Operations Evidence Semantics
+
+A Runbook is executable only when its body makes safety conditions, ordered
+steps, expected results, and a verification record explicit. That record names
+the environment, the command or procedure used, its result, and where the
+evidence is retained.
+
+An Incident body owns the event severity, incident leadership, current
+response state, response actions, mitigation, resolution, and handoff. These
+facts remain body evidence and do not create a second lifecycle-state key in
+frontmatter.
+
+A reviewed Postmortem keeps each follow-up as an owned, prioritized action with
+a stable tracking identity and verification ownership. A Release binds its
+immutable release identity, version or tag, commit, immutable artifact
+evidence, validation, approvals, compatibility, rollout or rollback, outcome,
+and known issues into one event record.
+
 ## Lifecycle and Relation Semantics
 
 - An Incident may start as a root record when no verified Runbook parent exists;

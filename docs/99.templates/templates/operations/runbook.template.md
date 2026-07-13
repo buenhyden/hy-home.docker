@@ -15,19 +15,25 @@ review_cycle: <review-cycle>
 
 ## Trigger and Preconditions
 
-{{trigger_and_preconditions}}
+| Trigger | Safety conditions |
+| --- | --- |
+| {{trigger}} | {{safety_conditions}} |
 
 ## Procedure
 
-{{procedure}}
+| Step order | Procedure step | Expected result |
+| --- | --- | --- |
+| {{step_order}} | {{procedure_step}} | {{expected_result}} |
 
 ## Verification Record
 
-{{verification_record}}
+| Verification environment | Command or procedure | Result | Evidence location |
+| --- | --- | --- | --- |
+| {{verification_environment}} | {{verification_command_or_procedure}} | {{verification_result}} | {{verification_evidence_location}} |
 
 ## Evidence
 
-{{evidence}}
+{{supporting_evidence}}
 
 ## Rollback or Recovery
 

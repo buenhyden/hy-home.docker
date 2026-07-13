@@ -30,7 +30,9 @@ reviewed_at: <reviewed-at>
 
 ## Action Items
 
-{{action_items}}
+| Reviewed action description | Owner | Priority | Tracking identity | Verification owner |
+| --- | --- | --- | --- | --- |
+| {{reviewed_action_description}} | {{action_owner}} | {{action_priority}} | {{action_tracking_identity}} | {{verification_owner}} |
 
 ## Prevention and Verification
 

@@ -13,7 +13,9 @@ parent_ids: []
 
 ## Incident Metadata
 
-{{incident_metadata}}
+| Severity | Incident lead | Current response state |
+| --- | --- | --- |
+| {{severity}} | {{incident_lead}} | {{current_response_state}} |
 
 ## Impact
 
@@ -21,7 +23,9 @@ parent_ids: []
 
 ## Timeline and Response
 
-{{timeline_and_response}}
+| Timestamp | Action | Action owner | Response state change |
+| --- | --- | --- | --- |
+| {{response_timestamp}} | {{response_action}} | {{response_action_owner}} | {{response_state_change}} |
 
 ## Evidence
 
@@ -29,7 +33,9 @@ parent_ids: []
 
 ## Resolution and Handoff
 
-{{resolution_and_handoff}}
+| Mitigation | Resolution | Handoff |
+| --- | --- | --- |
+| {{mitigation}} | {{resolution}} | {{handoff}} |
 
 ## Runbook Links
 
