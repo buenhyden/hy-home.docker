@@ -63,7 +63,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | Extend registry/parser with families, key order, README profiles, and parent serialization. | impl/test | Registry Model; VAL-129-001/004/005 | Task 1 | RED/GREEN metadata tests and independent review | Documentation Metadata Engineer | Done |
 | T-DCC-002 | Complete typed Markdown templates and Release routing. | impl/test/doc | Template/Release Contracts; VAL-129-002/003 | Task 2 | Instantiation fixtures, route checks, review | Documentation Template Engineer | Done |
-| T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Review Pending |
+| T-DCC-003 | Align human contracts and canonical external research. | doc/research | Canonical Ownership; External Source Basis | Task 3 | Source verification, ownership scan, review | Documentation Specialist | Done |
 | T-DCC-004 | Align Stage 00 authoring and canonical audit truth, including `_workspace`. | doc/eval | Guardrails; VAL-129-002/005/006 | Task 4 | 11/161, semantic freshness, review | Agentic Workflow Specialist | Todo |
 | T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Todo |
 | T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Full bundle, wrapper, final review | QA / Documentation Lead | Todo |
@@ -77,7 +77,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 
 ### Phase 2 — Human and Evidence Alignment
 
-- [ ] T-DCC-003 Human contracts and canonical external research — implementation complete; independent review pending
+- [x] T-DCC-003 Human contracts and canonical external research
 - [ ] T-DCC-004 Stage 00 authoring and canonical audit reconciliation
 
 ### Phase 3 — Enforcement and Closure
@@ -226,14 +226,19 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   traceability passed with `catalog_pairs_total=46 failures=0`; implementation
   alignment passed with `stage_docs_total=644`,
   `repo_local_markdown_links_checked=5093`, and `failures=0`; `git diff --check`
-  passed. Remediation self-review is C0/I0/M0; independent re-review remains
-  pending.
+  passed. Remediation self-review is C0/I0/M0.
+- **Independent re-review**: the reviewer read the full
+  `e0d25fdc..d5d54e6a` range, confirmed I-01 fully resolved, and returned Spec
+  PASS and Task Quality Approved with Critical `0`, Important `0`, and Minor
+  `0`. Registry ownership, human lifecycle guidance, research preservation,
+  source attribution, serialization semantics, and Release boundaries remain
+  intact.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | `39eb562e` | PASS | Approved | C0/I0/M0; no remediation required | `review-237aa5d7..39eb562e.diff`; combined reviewer verdict | Done |
 | T-DCC-002 | `3591fcd5`, `0445f336` | PASS | Approved | C0/I0/M0; no remediation required | `review-0ae9fe81..0445f336.diff`; combined reviewer verdict | Done |
-| T-DCC-003 | Pending Task 3 handoff commit | Round 1 Issues; re-review pending | Review Pending | Round 1 C0/I1/M0; I-01 remediated; remediation self-review C0/I0/M0 | `.superpowers/sdd/task-3-report.md`; promote re-review verdict after approval | Review Pending |
+| T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
 | T-DCC-004 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-005 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-006 | Pending | Pending | Pending | Pending | Whole-branch review evidence promoted here | Pending |
