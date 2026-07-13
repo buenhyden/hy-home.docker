@@ -6,8 +6,6 @@ parent_ids:
   - spec:128-agentic-audit-harness-consolidation
 ---
 
-<!-- Target: docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md -->
-
 # Agentic Audit Harness Consolidation Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
@@ -34,7 +32,7 @@ implementation units. It keeps historical evidence stable, restores the
 canonical audit's current-state accuracy, and adds deterministic protection
 against known semantic regressions.
 
-## Context
+## Context and Inputs
 
 The canonical pack passes its 11-report/161-row structure checks, but some
 criteria still describe the pre-Task-8 implementation. Typed metadata,
@@ -43,7 +41,7 @@ exist in tracked source while parts of the audit still call them future or
 missing work. The security readiness generator also treats one scoped npm gate
 as broad OSV/SCA coverage.
 
-## Goals & In-Scope
+## Goals and Non-goals
 
 - Clarify canonical, historical-snapshot, and superseded audit roles without
   moving paths.
@@ -610,7 +608,7 @@ git commit -m "docs(task): close audit harness consolidation"
 | VAL-PLN-009 | Final QA | controlled wrapper | Hook 0; no unresolved unexpected path. |
 | VAL-PLN-010 | Review | SDD task/final packages | Spec PASS, Quality APPROVED, no Critical/Important. |
 
-## Risks & Mitigations
+## Risks and Rollback
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |

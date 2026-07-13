@@ -94,7 +94,7 @@ The current 17-document typed baseline predates Spec 130. This Plan, its Task,
 and Spec 130 are additional direct consumers and must be validated by the same
 changed/new boundary.
 
-## Context
+## Context and Inputs
 
 The current registry has strong typed frontmatter and README classification,
 but its `template_sources` mapping describes only typed Markdown leaves. It
@@ -114,7 +114,7 @@ The metadata inventory contains 900 records after Spec 130. The 2,025 advisory
 findings remain historical migration evidence. This plan must not convert that
 advisory baseline into an unbounded body rewrite.
 
-## Goals & In-Scope
+## Goals and Non-goals
 
 - Replace `template_sources` with one validated `template_roles` registry for
   all 23 copyable Markdown forms.
@@ -1263,7 +1263,7 @@ git commit -m "docs(task): close template contract canonicalization"
 Do not rerun the all-files wrapper after the evidence-only closure commit;
 record the exact clean pre-closure commit observed by the wrapper.
 
-## Risks & Mitigations
+## Risks and Rollback
 
 | Risk | Mitigation |
 | --- | --- |

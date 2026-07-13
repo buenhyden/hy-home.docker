@@ -6,8 +6,6 @@ parent_ids:
   - spec:128-agentic-audit-harness-consolidation
 ---
 
-<!-- Target: docs/03.specs/129-document-contract-canonicalization/spec.md -->
-
 # Document Contract Canonicalization Technical Specification (Spec)
 
 ## Overview
@@ -70,7 +68,7 @@ corpus-wide blocking, and remote GitHub enforcement.
 - Enabling corpus-wide blocking before every dependency-ordered migration wave
   and its independent review have completed.
 
-## Related Inputs
+## Boundaries and Inputs
 
 - **PRD**: No new product requirement is introduced. This is a governance and
   documentation-harness follow-up to the approved audit program.
@@ -377,7 +375,7 @@ wave joins the changed/new blocking set. Corpus-wide blocking activates only
 after the final inventory has zero unresolved migrated-corpus findings and zero
 legacy exceptions.
 
-## Interfaces & Data Structures
+## Interfaces and Data
 
 ### Validator Interfaces
 
@@ -504,7 +502,7 @@ documentation contract into root shims, README files, agent prompts, or skills.
 | Secret-path documentation | Inspect paths and non-secret metadata only; never open secret values. |
 | Required remote check has no recent run | Do not patch protection; generate or await approved CI evidence in the final wave. |
 
-## Failure Modes & Fallback / Human Escalation
+## Failure Modes and Guardrails
 
 | Failure mode | Fallback and escalation |
 | --- | --- |

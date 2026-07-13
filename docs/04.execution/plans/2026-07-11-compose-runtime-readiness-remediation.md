@@ -6,8 +6,6 @@ parent_ids:
   - spec:124-compose-runtime-readiness-remediation
 ---
 
-<!-- Target: docs/04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md -->
-
 # Compose Runtime Readiness Remediation Implementation Plan
 
 ## Overview
@@ -17,7 +15,7 @@ readiness, recovery, and teardown contract in Spec 124. It is later-approvable
 only: it creates no runtime authorization, task evidence, service action, secret
 access, or remote change.
 
-## Context
+## Context and Inputs
 
 Static inventory, rendering, healthcheck declarations, and hardening are strong,
 but current startup, observed readiness, and recovery evidence is absent or
@@ -38,7 +36,7 @@ surface approvals are attached to a future task.
 Spec 123 approval is audit/documentation lineage and is not evidence for any of
 these gates.
 
-## Goals & In-Scope
+## Goals and Non-goals
 
 - **Goals**: Produce bounded startup, readiness, recovery, teardown, and
   escalation evidence that satisfies Spec 124.
@@ -91,7 +89,7 @@ these gates.
 | `VAL-PLN-CRR-004` | Recovery | Bounded failure/stop path | Future approved task only | Recovery or safe stop/escalation satisfies Spec 124. |
 | `VAL-PLN-CRR-005` | Review | Independent spec/quality/security review | Review future task report and exact diff/evidence | No unresolved critical/important finding. |
 
-## Risks & Mitigations
+## Risks and Rollback
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |

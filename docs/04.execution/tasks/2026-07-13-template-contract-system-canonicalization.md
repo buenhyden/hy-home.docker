@@ -40,7 +40,7 @@ review, and a separate quality review before its logical commit.
   fallout, logical commits, staged direct-consumer migration, and
   Subagent-Driven execution were explicitly approved in this task.
 
-## Working Rules
+## Goals and Non-goals
 
 - Follow Spec 130 and the active Plan exactly.
 - Run Tasks T-TCS-001 through T-TCS-007 serially.
@@ -58,7 +58,7 @@ review, and a separate quality review before its logical commit.
 - Run `graphify update .` after code changes when available and treat the
   report as advisory.
 
-## Approved Surface Evidence
+## Scope and Change Boundaries
 
 | Surface | Approval and boundary | Allowed action | Forbidden action | Evidence |
 | --- | --- | --- | --- | --- |
@@ -70,7 +70,7 @@ review, and a separate quality review before its logical commit.
 | `.github/workflows/ci-quality.yml` | Conditional only | Modify only if a RED integration test proves named routing is missing | Change remote settings or broaden CI without a failing contract | RED test and separate review |
 | Runtime and external state | Not in scope | Read tracked documentation required for evidence | Mutate Compose, containers, secrets, deployment, remote GitHub, or global provider state | Whole-branch scope review |
 
-## Task Table
+## Work Breakdown
 
 | ID | Deliverable | Dependency | Status | Implementation role | Required review |
 | --- | --- | --- | --- | --- | --- |
@@ -80,7 +80,13 @@ review, and a separate quality review before its logical commit.
 | T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Completed | fresh implementer | spec then quality |
 | T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
 | T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | Completed | fresh implementer | spec then quality |
-| T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | Queued | fresh implementer | spec then quality |
+| T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | In Review | fresh implementer | spec then quality |
+
+## Work Log
+
+Tasks T-TCS-001 through T-TCS-006 are completed with their implementation,
+validation, remediation, and independent-review evidence preserved below.
+T-TCS-007 is the active preservation-oriented consumer-migration unit.
 
 ## T-TCS-001 Implementation Evidence
 
@@ -381,9 +387,52 @@ review, and a separate quality review before its logical commit.
   GraphQL/Protobuf raw checks remain.
 - I-04 RED was six named direct-plus-real-CLI methods / 18 expected subtest
   failures. GREEN is 6/6; expanded focused validation is 54/54 and the complete
-  metadata suite is 173/173. Implementation remains In Review and awaits an
-  independent full-range re-review; no approval, closure, or remediation
-  commit hash is claimed.
+  metadata suite is 173/173. The final independent full-range re-review of
+  `39809f26...702b4360` returned Spec PASS / Quality APPROVED, C0/I0/M0, so
+  T-TCS-006 is completed.
+
+## T-TCS-007 Implementation Evidence
+
+- The pre-edit changed gate resolved `main` to merge base
+  `a42f70b42d748e1b89bc6b955579eb7aa0be7e20` and reported 56 selected paths,
+  three body-heading violations on Spec 130 and its active Plan/Task, one
+  base-existing legacy exception, and zero transition overrides. The advisory
+  active scan reported 365 selected paths and 1,290 findings; that historical
+  and untyped corpus remains migration-wave debt rather than Task 7 scope.
+- The exact 17-document baseline residue scan found one template-only Target
+  comment in every approved consumer and no Rules block or unresolved
+  lowercase template token. Broader Plan, Task, and README residue belongs to
+  separately approved corpus waves and was not edited.
+- Preservation-oriented migration removed those 17 Target comments and
+  normalized only semantically corresponding required headings in Specs
+  123-129, the seven typed historical Plans, and the three typed historical
+  Tasks. Spec 130 and its active Plan/Task received the same minimal
+  branch-owned heading-envelope fallout required by the executable Task 6
+  gate. Frontmatter, parents, dates, commands, counts, decisions, verdicts,
+  execution results, and runtime-remediation scope remain unchanged; in
+  particular, Specs 124-127 still require separate approval before runtime,
+  Compose, infrastructure, security, deployment, or release mutation.
+- Diff preservation review confirms that the typed baseline changes are
+  limited to Target removal, heading labels, and evidence-backed Task pointers
+  needed for required Task sections. The active Task adds only this current
+  Work Log and execution evidence; no historical result was restyled or
+  inferred.
+- Canonical owner generators completed at 1,296 Wiki index paths, 1,295 safe
+  coverage paths, and 901 metadata records / 2,025 advisory findings. Their
+  outputs were already byte-fresh, so no generated body changed.
+- Complete pre-review validation passes: metadata 173/173; changed mode from
+  `main` 73 selected / zero violations / one legacy exception / zero
+  transition overrides before this evidence update; repository contracts
+  `failures=0`; traceability 46/0; implementation alignment 647 documents /
+  5,135 links / 0; all three generated checks; and diff hygiene.
+- Graphify refreshed at 23,505 nodes, 24,951 edges, and 1,543 communities.
+  Tracked graph outputs were restored, and the advisory result was
+  corroborated against tracked sources, Stage 00, Spec 130, and this Plan/Task.
+- Waves A-E remain route-only under the exact gates in Migration Wave Routing:
+  every wave requires its named evidence and a new approved Spec and Plan
+  before corpus editing. T-TCS-007 implementation is complete and awaits
+  independent specification and quality review; no review approval, task
+  closure, controlled-wrapper result, or commit identity is claimed here.
 
 ## Review Evidence
 
@@ -395,10 +444,10 @@ review, and a separate quality review before its logical commit.
 | T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
 | T-TCS-005 | PASS on `34ae2dab...c07160a2` | APPROVED on `34ae2dab...c07160a2` | None; I-01, I-01-R1, and I-02 resolved | Completed |
 | T-TCS-006 | PASS on `39809f26...702b4360` | APPROVED on `39809f26...702b4360` | None; I-01 through I-04 resolved | Completed |
-| T-TCS-007 | Not run — dependency approved | Not run — dependency approved | None recorded | Ready |
+| T-TCS-007 | Not run — implementation complete | Not run — implementation complete | None recorded | In Review |
 | Whole branch | Not run — implementation has not completed | Not run — implementation has not completed | None recorded | Await T-TCS-007 |
 
-## Verification Summary
+## Verification Evidence
 
 ### Planning baseline
 

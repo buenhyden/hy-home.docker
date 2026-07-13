@@ -98,7 +98,7 @@ documents, validators, tests, and Git evidence.
   has no qualifying leaf documents.
 - Do not use frontmatter order to imply semantic priority.
 
-## Related Inputs
+## Boundaries and Inputs
 
 - [Spec 129: Document Contract Canonicalization](../129-document-contract-canonicalization/spec.md)
 - [Agent Governance PRD](../../01.requirements/024-agent-governance-standardization.md)
@@ -216,7 +216,7 @@ The following interpretation rules apply:
 - Governance and repository-native documents use their real consumer contract
   rather than receiving SDLC metadata for visual consistency.
 
-## Template Role and Body Contract
+## Interfaces and Data
 
 The registry will add exact machine-readable template-role and body-envelope
 data. Each role defines:
@@ -494,7 +494,7 @@ Conditional section absence, preserved historical structure, and unapproved
 follow-up batches remain advisory. A missing review date or parent identity is
 reported; it is never guessed.
 
-## QA and Evidence Contract
+## Failure Modes and Guardrails
 
 At minimum, implementation evidence includes:
 
