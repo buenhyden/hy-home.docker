@@ -79,7 +79,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
 | T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Completed | fresh implementer | spec then quality |
 | T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
-| T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | In Review | fresh implementer | spec then quality |
+| T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | Completed | fresh implementer | spec then quality |
 | T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | Queued | fresh implementer | spec then quality |
 
 ## T-TCS-001 Implementation Evidence
@@ -394,8 +394,8 @@ review, and a separate quality review before its logical commit.
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
 | T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
 | T-TCS-005 | PASS on `34ae2dab...c07160a2` | APPROVED on `34ae2dab...c07160a2` | None; I-01, I-01-R1, and I-02 resolved | Completed |
-| T-TCS-006 | FAIL on `39809f26...b4af35ee`; I-04 remediation awaits re-review | CHANGES REQUESTED on `39809f26...b4af35ee`; I-04 remediation awaits re-review | C0/I1/M0: I-01/I-02/I-03 resolved; I-04 fail-closed parsed OpenAPI credential boundary implementation-remediated | In Review |
-| T-TCS-007 | Not run — dependency is in review | Not run — dependency is in review | None recorded | Await T-TCS-006 |
+| T-TCS-006 | PASS on `39809f26...702b4360` | APPROVED on `39809f26...702b4360` | None; I-01 through I-04 resolved | Completed |
+| T-TCS-007 | Not run — dependency approved | Not run — dependency approved | None recorded | Ready |
 | Whole branch | Not run — implementation has not completed | Not run — implementation has not completed | None recorded | Await T-TCS-007 |
 
 ## Verification Summary
@@ -607,7 +607,9 @@ review, and a separate quality review before its logical commit.
 | I-04 metadata regression | Complete `tests.validation.test_document_metadata` suite | Pass: 173/173 in 68.172 seconds. |
 | I-04 repository gates | Metadata contracts, explicit-base changed mode, and `TEMPLATE_GATE_BASE=39809f26` repository contracts | Pass: zero metadata violations; selected 4 / violations 0 / exceptions 0 / overrides 0; repository `failures=0`. |
 | I-04 supporting gates | Generated freshness, traceability, alignment, Graphify, Python/Bash syntax, residue, and diff hygiene | Pass: 901 records / 2,025 findings; traceability 46/0; alignment 647 docs / 5,135 links / 0; Graphify 23,444 nodes / 24,856 edges / 1,545 communities with tracked outputs restored; syntax, residue, and diff checks pass. |
-| Review state | Task table and review ledger | In Review; I-04 remediation awaits independent specification and quality re-review. |
+| Final independent Task 6 re-review | Full range `39809f26...702b4360` | Spec PASS / Quality APPROVED, C0/I0/M0; I-01 through I-04 resolved and Task 6 ready for closure. |
+| Independent adversarial and regression evidence | Parsed OpenAPI boundary matrix plus official suites and repository gates | Matrix pass with leakage 0; focused 54/54; metadata 173/173; contracts zero; explicit-base selected 4 / violations 0 / exceptions 0 / overrides 0; repository `failures=0`; syntax and diff checks pass. |
+| Review state | Task table and review ledger | Completed; Task 7 may start. |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -650,7 +652,7 @@ have not completed.
 | Closure unit — subject `docs(task): close operations forms task`; self hash intentionally omitted | Record completed independent verdict and close T-TCS-005 | Metadata changed-mode and diff hygiene; evidence-only scope |
 | Planned unit — subject `test(validation): enforce template role contracts`; self hash intentionally omitted | Task 6 executable Markdown/machine contracts, changed-target gate, shell delegation, tests, and evidence | RED 39 methods / 9 expected failing methods; final focused GREEN 44/44; metadata 155/155; reviews not yet run |
 | Planned remediation unit — subject `fix(validation): preserve exact body deficits`; self hash intentionally omitted | Task 6 I-01/I-02/I-03 exact private multiset comparison, CommonMark-bounded scanning, native credential checks, tests, and evidence | First review FAIL/CHANGES REQUESTED C0/I3/M0; remediation RED 41/21; focused 41/41; metadata 167/167; contracts and supporting gates pass; re-review pending |
-| Planned I-04 remediation unit — subject `fix(validation): fail closed on OpenAPI inspection`; self hash intentionally omitted | Task 6 typed non-leaking OpenAPI parse boundary, bounded credential-owned value inspection, format-aware parsed checks, direct/CLI regressions, and evidence | Full-range re-review FAIL/CHANGES REQUESTED C0/I1/M0 with I-01/I-02/I-03 resolved; I-04 RED 6 methods / 18 failures; GREEN 6/6, focused 54/54, metadata 173/173; contracts and supporting gates pass; re-review pending |
+| `702b4360` — `fix(validation): fail closed on OpenAPI inspection` | Task 6 typed non-leaking OpenAPI parse boundary, bounded credential-owned value inspection, format-aware parsed checks, direct/CLI regressions, and evidence | I-04 RED 6 methods / 18 failures; GREEN 6/6, focused 54/54, metadata 173/173; final review PASS/APPROVED C0/I0/M0 |
 
 Later review-fix and implementation commits will be appended as Tasks 6-7 close.
 
