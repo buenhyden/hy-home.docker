@@ -39,7 +39,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 894
+- **Tracked records**: 899
 - **Records with findings**: 546
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
@@ -53,17 +53,17 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `ard` | 24 |
 | `audit` | 33 |
 | `generated` | 6 |
-| `governance` | 109 |
+| `governance` | 112 |
 | `guide` | 66 |
 | `plan` | 94 |
 | `policy` | 64 |
 | `prd` | 24 |
-| `readme` | 147 |
+| `readme` | 148 |
 | `reference` | 30 |
 | `runbook` | 61 |
 | `spec` | 54 |
 | `task` | 116 |
-| `template-source` | 22 |
+| `template-source` | 23 |
 
 ## Finding Summary
 
@@ -742,6 +742,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/05.operations/policies/12-infra-net/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
 | `docs/05.operations/policies/12-infra-net/standardize-infra-net.md` | `policy` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed; signals=stale-active | unavailable-no-history | reviewed_at=required:missing; review_cycle=required:missing | not-applicable | missing-required-key, stale-active | migration candidate |
 | `docs/05.operations/policies/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
+| `docs/05.operations/releases/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
 | `docs/05.operations/runbooks/00-workspace/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
 | `docs/05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md` | `runbook` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed; signals=stale-active | unavailable-no-history | reviewed_at=required:missing; review_cycle=required:missing | not-applicable | missing-required-key, stale-active | migration candidate |
 | `docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md` | `runbook` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed; signals=stale-active | unavailable-no-history | reviewed_at=required:missing; review_cycle=required:missing | not-applicable | missing-required-key, stale-active | migration candidate |
@@ -937,9 +938,12 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/98.archive/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
 | `docs/99.templates/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
 | `docs/99.templates/support/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
+| `docs/99.templates/support/common-document-contract.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/99.templates/support/external-source-rationale.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/99.templates/support/frontmatter-contract.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/99.templates/support/lifecycle-status.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
+| `docs/99.templates/support/readme-profile-contract.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
+| `docs/99.templates/support/sdlc-document-contract.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/99.templates/support/template-contract.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/99.templates/support/template-governance.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/99.templates/support/template-selection.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
@@ -957,6 +961,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/99.templates/templates/operations/incident.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/operations/policy.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:present; review_cycle=forbidden:present | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/operations/postmortem.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:present; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
+| `docs/99.templates/templates/operations/release.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/operations/runbook.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:present; review_cycle=forbidden:present | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/sdlc/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile; consumer=not-declared; role=folder-index | none | README exception |
 | `docs/99.templates/templates/sdlc/adr.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |

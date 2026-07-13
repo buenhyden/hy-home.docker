@@ -843,6 +843,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/12-infra-net/README.md](../../05.operations/policies/12-infra-net/README.md) | folder index |
 | [docs/05.operations/policies/12-infra-net/standardize-infra-net.md](../../05.operations/policies/12-infra-net/standardize-infra-net.md) | Markdown reference |
 | [docs/05.operations/policies/README.md](../../05.operations/policies/README.md) | folder index |
+| [docs/05.operations/releases/README.md](../../05.operations/releases/README.md) | folder index |
 | [docs/05.operations/runbooks/00-workspace/README.md](../../05.operations/runbooks/00-workspace/README.md) | folder index |
 | [docs/05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md](../../05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md) | Markdown reference |
 | [docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md](../../05.operations/runbooks/00-workspace/llm-wiki-maintenance.md) | Markdown reference |
@@ -1020,10 +1021,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/README.md](../research/README.md) | folder index |
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |
 | [docs/99.templates/support/README.md](../../99.templates/support/README.md) | folder index |
+| [docs/99.templates/support/common-document-contract.md](../../99.templates/support/common-document-contract.md) | Markdown reference |
 | [docs/99.templates/support/document-metadata-profiles.yaml](../../99.templates/support/document-metadata-profiles.yaml) | YAML config |
 | [docs/99.templates/support/external-source-rationale.md](../../99.templates/support/external-source-rationale.md) | Markdown reference |
 | [docs/99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md) | Markdown reference |
 | [docs/99.templates/support/lifecycle-status.md](../../99.templates/support/lifecycle-status.md) | Markdown reference |
+| [docs/99.templates/support/readme-profile-contract.md](../../99.templates/support/readme-profile-contract.md) | Markdown reference |
+| [docs/99.templates/support/sdlc-document-contract.md](../../99.templates/support/sdlc-document-contract.md) | Markdown reference |
 | [docs/99.templates/support/template-contract.md](../../99.templates/support/template-contract.md) | Markdown reference |
 | [docs/99.templates/support/template-governance.md](../../99.templates/support/template-governance.md) | Markdown reference |
 | [docs/99.templates/support/template-selection.md](../../99.templates/support/template-selection.md) | Markdown reference |
@@ -1041,6 +1045,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/operations/incident.template.md](../../99.templates/templates/operations/incident.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/policy.template.md](../../99.templates/templates/operations/policy.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/postmortem.template.md](../../99.templates/templates/operations/postmortem.template.md) | Markdown reference |
+| [docs/99.templates/templates/operations/release.template.md](../../99.templates/templates/operations/release.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/runbook.template.md](../../99.templates/templates/operations/runbook.template.md) | Markdown reference |
 | [docs/99.templates/templates/sdlc/README.md](../../99.templates/templates/sdlc/README.md) | folder index |
 | [docs/99.templates/templates/sdlc/adr.template.md](../../99.templates/templates/sdlc/adr.template.md) | Markdown reference |
