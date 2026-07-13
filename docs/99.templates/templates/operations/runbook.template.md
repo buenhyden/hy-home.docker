@@ -15,9 +15,9 @@ review_cycle: <review-cycle>
 
 ## Trigger and Preconditions
 
-| Trigger | Safety conditions |
-| --- | --- |
-| {{trigger}} | {{safety_conditions}} |
+| Trigger | Prerequisites | Safety conditions |
+| --- | --- | --- |
+| {{trigger}} | {{prerequisites}} | {{safety_conditions}} |
 
 ## Procedure
 
@@ -45,7 +45,9 @@ review_cycle: <review-cycle>
 
 ## Automation Handoff
 
-{{automation_handoff}}
+| Automation candidate or invocation | Human or operator judgment boundary |
+| --- | --- |
+| {{automation_candidate_or_invocation}} | {{human_or_operator_judgment_boundary}} |
 
 ## Related Documents
 

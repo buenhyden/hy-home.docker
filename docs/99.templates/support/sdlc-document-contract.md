@@ -42,10 +42,13 @@ the registry.
 
 ## Operations Evidence Semantics
 
-A Runbook is executable only when its body makes safety conditions, ordered
-steps, expected results, and a verification record explicit. That record names
-the environment, the command or procedure used, its result, and where the
-evidence is retained.
+A Runbook is executable only when its body makes prerequisites, safety
+conditions, ordered steps, expected results, and a verification record
+explicit. That record names the environment, the command or procedure used,
+its result, and where the evidence is retained. An automation handoff names
+the candidate or invocation while preserving the boundary where human or
+operator judgment is required; rollback or recovery remains the procedure's
+separate recovery boundary.
 
 An Incident body owns the event severity, incident leadership, current
 response state, response actions, mitigation, resolution, and handoff. These

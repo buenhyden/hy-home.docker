@@ -309,12 +309,13 @@ review, and a separate quality review before its logical commit.
   Quality CHANGES REQUESTED with C0/I1/M0. I-01 found that four evidence-bearing
   Operations forms used placeholders too broad to preserve Spec 130's mandatory
   information shapes.
-- I-01 remediation keeps the approved H2 envelopes and frontmatter while making
-  Runbook safety/procedure/verification fields, Incident response leadership
-  and state, Postmortem owned tracked actions, and Release immutable evidence
-  explicit. The human SDLC contract and independent all-role/negative oracles
-  now preserve those semantics. Remediation is complete and awaits a fresh
-  independent full-range re-review; no reapproval or closure is claimed.
+- The original I-01 remediation kept the approved H2 envelopes and frontmatter
+  while making most mandatory Operations evidence fields explicit. Full-range
+  re-review found I-01 only partially resolved because Runbook prerequisites
+  and automation invocation/judgment boundaries remained implicit. I-01-R1 now
+  makes those three boundaries explicit in the form, human SDLC contract, and
+  independent all-role plus per-field negative oracles. A fresh full-range
+  re-review is pending; no reapproval or closure is claimed.
 
 ## Review Evidence
 
@@ -324,7 +325,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
 | T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
-| T-TCS-005 | FAIL on `34ae2dab...f86db7ac` | CHANGES REQUESTED on `34ae2dab...f86db7ac` | C0/I1/M0; I-01 mandatory Operations evidence shapes remediated in the working tree | Await fresh full-range re-review |
+| T-TCS-005 | FAIL on `34ae2dab...b09d73bd` | CHANGES REQUESTED on `34ae2dab...b09d73bd` | C0/I1/M0; original I-01 partial on re-review, I-01-R1 implementation-remediated in the working tree | Await fresh full-range re-review |
 | T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
 | T-TCS-007 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 006 |
 | Whole branch | Not run — implementation has not completed | Not run — implementation has not completed | None recorded | Await T-TCS-007 |
@@ -474,7 +475,11 @@ review, and a separate quality review before its logical commit.
 | Repository gates | Changed mode from `34ae2dab`: 11 selected, zero violations/exceptions/overrides; repository contracts `failures=0`; traceability 46/0; alignment 647 docs / 5,135 links / 0; generated outputs fresh at 1,296 / 1,295 paths and 901 records / 2,025 findings. |
 | Scope and static evidence | Release event leaves 0; prohibited Operations-form residue 0; Python compilation and diff hygiene pass; no runtime or other excluded-surface mutation. |
 | Graph refresh | `graphify update .` completed at 23,337 nodes / 24,549 edges / 1,542 communities; tracked graph outputs were restored and the advisory result was corroborated against canonical tracked owners. |
-| Current review state | Remediation awaits a fresh independent full-range re-review; no reapproval or Task closure is claimed. |
+| First remediation re-review | Spec FAIL; Quality CHANGES REQUESTED; Critical 0 / Important 1 / Minor 0 on `34ae2dab...b09d73bd`; original I-01 is partial and I-01-R1 identifies implicit Runbook prerequisites plus automation invocation/judgment boundaries. |
+| I-01-R1 RED | Added the three missing boundaries to the independent Runbook and all-23 exact token oracles plus mandatory per-field removals: 3 narrow test methods ran with 5 expected failures. |
+| I-01-R1 remediation | Added `{{prerequisites}}` under the existing Trigger and Preconditions heading; replaced the broad automation handoff token with explicit candidate/invocation and human-or-operator judgment-boundary fields under the existing conditional heading; retained the existing rollback-or-recovery boundary. Added matching durable human semantics without adding headings, commands, examples, state keys, or runtime claims. |
+| I-01-R1 GREEN | Narrow 3/3; focused three-class suite 59/59; full metadata regression 140/140; metadata contracts zero; changed mode from `34ae2dab` 11/0 with zero exceptions/overrides; repository contracts zero; traceability 46/0; alignment 647 docs / 5,135 links / 0; generated evidence fresh; Graphify 23,348 nodes / 24,560 edges / 1,544 communities with tracked outputs restored. |
+| Current review state | I-01-R1 implementation remediation awaits a fresh independent full-range re-review; no reapproval or Task closure is claimed. |
 
 ### T-TCS-004 Review Remediation
 
@@ -501,6 +506,9 @@ review, and a separate quality review before its logical commit.
 | Operations searches | Release-leaf search plus bounded Rules/Target/fixed-link/command scans | Pass: no Release event leaf and no prohibited form residue. |
 | Graph refresh | `graphify update .` | Pass: 23,317 nodes / 24,528 edges / 1,542 communities; tracked outputs restored and advisory conclusions corroborated. |
 | Diff, compile, and syntax | `git diff --check`, Python compilation, and Bash syntax | Pass. |
+| I-01-R1 narrow RED | Three exact-token methods after adding Runbook prerequisites, automation candidate/invocation, and human-or-operator judgment-boundary expectations | Expected failure: 3 methods ran with 5 failures across the Runbook source, all-23 oracle, and three individual mandatory-field removals. |
+| I-01-R1 narrow GREEN | Same three methods after updating the Runbook form and durable human contract | Pass: 3/3. |
+| I-01-R1 focused/full GREEN | Focused three-class suite and complete metadata regression | Pass: 59/59 and 140/140. |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -537,7 +545,8 @@ have not completed.
 | `b394a671` | Task 4 I-01 selected-count evidence correction | Exact changed-mode 18/0 with one base-existing legacy exception and zero overrides; focused 27/27; metadata contracts zero; generated freshness and diff pass; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close stage 04 forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-004 | Metadata changed-mode and diff hygiene; evidence-only scope |
 | `f86db7ac` | Task 5 Operations forms, Incident root relation, catalog/support/direct validator fallout, exact all-role regressions, and evidence | RED 13 expected failures; focused 58/58; metadata 139/139; metadata/repository contracts zero; changed mode 11/0 with zero exceptions/overrides; generated freshness; traceability/alignment; Graphify; diff/compile/syntax pass; first review C0/I1/M0 |
-| Remediation unit — subject `fix(operations): preserve mandatory evidence shapes`; commit not yet created | Task 5 I-01 explicit Operations evidence fields, durable human semantics, and strengthened independent oracles | RED 59 methods / 40 expected subtest failures; focused 59/59; metadata 140/140; metadata/repository contracts zero; changed mode 11/0; generated freshness; traceability/alignment; Graphify; diff/compile/search pass; fresh re-review pending |
+| `b09d73bd` | Task 5 I-01 explicit Operations evidence fields, durable human semantics, and strengthened independent oracles | RED 59 methods / 40 expected subtest failures; focused 59/59; metadata 140/140; metadata/repository contracts zero; changed mode 11/0; generated freshness; traceability/alignment; Graphify; first remediation re-review found I-01-R1 |
+| Remediation unit — subject `fix(runbook): preserve prerequisite and automation boundaries`; commit not yet created | Task 5 I-01-R1 Runbook prerequisites, automation candidate/invocation, human-or-operator judgment boundary, durable human semantics, and exact removal oracles | Narrow RED 3 methods / 5 failures; GREEN 3/3; focused 59/59; metadata 140/140; metadata/repository contracts zero; changed mode 11/0; generated freshness; traceability/alignment; Graphify 23,348 / 24,560 / 1,544 with outputs restored; fresh re-review pending |
 
 Later review-fix and implementation commits will be appended as Tasks 5-7 close.
 

@@ -1854,12 +1854,13 @@ class TemplateBodyContractTests(unittest.TestCase):
             "related_documents",
         },
         "runbook": {
-            "title", "overview", "trigger", "safety_conditions", "step_order",
-            "procedure_step", "expected_result", "verification_environment",
-            "verification_command_or_procedure", "verification_result",
-            "verification_evidence_location", "supporting_evidence",
-            "rollback_or_recovery", "escalation", "automation_handoff",
-            "related_documents",
+            "title", "overview", "trigger", "prerequisites", "safety_conditions",
+            "step_order", "procedure_step", "expected_result",
+            "verification_environment", "verification_command_or_procedure",
+            "verification_result", "verification_evidence_location",
+            "supporting_evidence", "rollback_or_recovery", "escalation",
+            "automation_candidate_or_invocation",
+            "human_or_operator_judgment_boundary", "related_documents",
         },
         "incident": {
             "title", "overview", "severity", "incident_lead",
@@ -1889,9 +1890,12 @@ class TemplateBodyContractTests(unittest.TestCase):
     }
     TASK_5_MANDATORY_EVIDENCE_TOKENS = {
         "runbook": {
-            "safety_conditions", "step_order", "procedure_step", "expected_result",
-            "verification_environment", "verification_command_or_procedure",
-            "verification_result", "verification_evidence_location",
+            "prerequisites", "safety_conditions", "step_order", "procedure_step",
+            "expected_result", "verification_environment",
+            "verification_command_or_procedure", "verification_result",
+            "verification_evidence_location",
+            "automation_candidate_or_invocation",
+            "human_or_operator_judgment_boundary",
         },
         "incident": {
             "severity", "incident_lead", "current_response_state",
