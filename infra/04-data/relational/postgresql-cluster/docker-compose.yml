@@ -177,7 +177,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
-    image: haproxy:3.4.1
+    image: haproxy:3.4.2
     container_name: pg-router
     read_only: true
     tmpfs:
