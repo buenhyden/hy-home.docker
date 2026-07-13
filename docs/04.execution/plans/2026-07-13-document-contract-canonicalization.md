@@ -698,7 +698,7 @@ git add docs/03.specs/129-document-contract-canonicalization docs/03.specs/READM
 git commit -m "docs(task): close document contract canonicalization"
 ```
 
-- [ ] **Step 6: Obtain post-closure review, verify, and hand off**
+- [x] **Step 6: Obtain post-closure review, verify, and hand off**
 
 Create a fresh review package for `e2954cc3..HEAD` after the closure commit.
 Require a fresh independent post-closure verdict of Spec PASS, Quality
