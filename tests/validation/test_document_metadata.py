@@ -780,9 +780,17 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/operations/runbook.template.md": "runbook",
             "docs/99.templates/templates/operations/incident.template.md": "incident",
             "docs/99.templates/templates/operations/postmortem.template.md": "postmortem",
+            "docs/99.templates/templates/operations/release.template.md": "release",
             "docs/99.templates/templates/common/reference.template.md": "reference",
             "docs/99.templates/templates/common/archive.template.md": "archive",
+            "docs/99.templates/templates/spec-contracts/agent-design.template.md": "spec",
+            "docs/99.templates/templates/spec-contracts/api-spec.template.md": "spec",
+            "docs/99.templates/templates/spec-contracts/data-model.template.md": "spec",
+            "docs/99.templates/templates/spec-contracts/service.template.md": "spec",
+            "docs/99.templates/templates/spec-contracts/tests.template.md": "spec",
+            "docs/99.templates/templates/governance/harness-task-contract.template.md": "task",
         }
+        self.assertEqual(expected, self.profiles["template_sources"])
         for path_text, target_profile in expected.items():
             with self.subTest(path=path_text):
                 values = metadata.parse_frontmatter(ROOT / path_text)
@@ -799,6 +807,161 @@ class TemplateMetadataTests(unittest.TestCase):
                     [],
                     metadata.validate_record(record, self.profiles, metadata.build_manifest([record])),
                 )
+
+    def test_typed_leaf_templates_instantiate_valid_targets(self) -> None:
+        targets = {
+            "docs/99.templates/templates/sdlc/prd.template.md": "docs/01.requirements/901-fixture.md",
+            "docs/99.templates/templates/sdlc/ard.template.md": "docs/02.architecture/requirements/0901-fixture.md",
+            "docs/99.templates/templates/sdlc/adr.template.md": "docs/02.architecture/decisions/0901-fixture.md",
+            "docs/99.templates/templates/sdlc/spec.template.md": "docs/03.specs/901-fixture/spec.md",
+            "docs/99.templates/templates/sdlc/plan.template.md": "docs/04.execution/plans/2026-07-13-fixture.md",
+            "docs/99.templates/templates/sdlc/task.template.md": "docs/04.execution/tasks/2026-07-13-fixture.md",
+            "docs/99.templates/templates/operations/guide.template.md": "docs/05.operations/guides/00-workspace/fixture.md",
+            "docs/99.templates/templates/operations/policy.template.md": "docs/05.operations/policies/00-workspace/fixture.md",
+            "docs/99.templates/templates/operations/runbook.template.md": "docs/05.operations/runbooks/00-workspace/fixture.md",
+            "docs/99.templates/templates/operations/incident.template.md": "docs/05.operations/incidents/2026/INC-901-fixture/INC-901-fixture.md",
+            "docs/99.templates/templates/operations/postmortem.template.md": "docs/05.operations/incidents/2026/INC-901-fixture/postmortem.md",
+            "docs/99.templates/templates/operations/release.template.md": "docs/05.operations/releases/2026-07-13-fixture.md",
+            "docs/99.templates/templates/common/reference.template.md": "docs/90.references/research/fixture.md",
+            "docs/99.templates/templates/common/archive.template.md": "docs/98.archive/03.specs/901-fixture/spec.md",
+            "docs/99.templates/templates/spec-contracts/agent-design.template.md": "docs/03.specs/901-fixture/agent-design.md",
+            "docs/99.templates/templates/spec-contracts/api-spec.template.md": "docs/03.specs/901-fixture/api-spec.md",
+            "docs/99.templates/templates/spec-contracts/data-model.template.md": "docs/03.specs/901-fixture/data-model.md",
+            "docs/99.templates/templates/spec-contracts/service.template.md": "docs/03.specs/901-fixture/service.md",
+            "docs/99.templates/templates/spec-contracts/tests.template.md": "docs/03.specs/901-fixture/tests.md",
+            "docs/99.templates/templates/governance/harness-task-contract.template.md": "docs/04.execution/tasks/2026-07-13-harness-fixture.md",
+        }
+        parents = {
+            "prd": metadata.Record(
+                pathlib.Path("docs/01.requirements/900-parent.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "fixture:prd-parent",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+                "prd",
+            ),
+            "spec": metadata.Record(
+                pathlib.Path("docs/03.specs/900-parent/spec.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "fixture:spec-parent",
+                    "artifact_type": "spec",
+                    "parent_ids": ["fixture:prd-parent"],
+                },
+                "spec",
+            ),
+            "runbook": metadata.Record(
+                pathlib.Path("docs/05.operations/runbooks/00-workspace/parent.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "fixture:runbook-parent",
+                    "artifact_type": "runbook",
+                    "parent_ids": ["fixture:spec-parent"],
+                    "reviewed_at": "2026-07-13",
+                    "review_cycle": "annual",
+                },
+                "runbook",
+            ),
+            "incident": metadata.Record(
+                pathlib.Path("docs/05.operations/incidents/2026/INC-900-parent/INC-900-parent.md"),
+                {
+                    "status": "active",
+                    "artifact_id": "fixture:incident-parent",
+                    "artifact_type": "incident",
+                    "parent_ids": ["fixture:runbook-parent"],
+                },
+                "incident",
+            ),
+        }
+        parent_by_target = {
+            "ard": "prd",
+            "adr": "prd",
+            "spec": "prd",
+            "plan": "spec",
+            "task": "spec",
+            "guide": "spec",
+            "policy": "prd",
+            "runbook": "spec",
+            "incident": "runbook",
+            "postmortem": "incident",
+            "release": "spec",
+        }
+        placeholder_replacements = {
+            "<reviewed-at>": "2026-07-13",
+            "<review-cycle>": "annual",
+            "docs/<original-path>.md": "docs/03.specs/899-retired/spec.md",
+            "YYYY-MM-DD": "2026-07-13",
+            "<archive-reason>": "Fixture retirement",
+            "docs/<replacement-path>.md": "docs/03.specs/900-parent/spec.md",
+        }
+
+        for source_path, target_type in self.profiles["template_sources"].items():
+            with self.subTest(source=source_path, target=targets[source_path]):
+                parent_type = parent_by_target.get(target_type)
+                parent_id = parents[parent_type].metadata["artifact_id"] if parent_type else None
+                rendered = (ROOT / source_path).read_text(encoding="utf-8")
+                rendered = rendered.replace("<artifact-id>", f"fixture:{pathlib.Path(source_path).stem}")
+                if parent_id:
+                    rendered = rendered.replace("<parent-artifact-id>", str(parent_id))
+                for placeholder, replacement in placeholder_replacements.items():
+                    rendered = rendered.replace(placeholder, replacement)
+                values = metadata._parse_frontmatter_text(rendered)
+                if target_type == "archive":
+                    values["status"] = "archived"
+                record = metadata.Record(
+                    pathlib.Path(targets[source_path]),
+                    values,
+                    target_type,
+                    frontmatter_present=True,
+                )
+                manifest_records = [*parents.values(), record]
+                self.assertEqual(
+                    [],
+                    metadata.validate_record(
+                        record,
+                        self.profiles,
+                        metadata.build_manifest(manifest_records),
+                    ),
+                )
+
+    def test_release_routing_is_complete_without_an_event_record(self) -> None:
+        selection = (ROOT / "docs/99.templates/support/template-selection.md").read_text(encoding="utf-8")
+        matrix = (ROOT / "docs/00.agent-governance/rules/stage-authoring-matrix.md").read_text(encoding="utf-8")
+        releases = (ROOT / "docs/05.operations/releases/README.md").read_text(encoding="utf-8")
+        operations = (ROOT / "docs/05.operations/README.md").read_text(encoding="utf-8")
+        operations_templates = (
+            ROOT / "docs/99.templates/templates/operations/README.md"
+        ).read_text(encoding="utf-8")
+        spec_templates = (
+            ROOT / "docs/99.templates/templates/spec-contracts/README.md"
+        ).read_text(encoding="utf-8")
+        governance_templates = (
+            ROOT / "docs/99.templates/templates/governance/README.md"
+        ).read_text(encoding="utf-8")
+        templates = (ROOT / "docs/99.templates/templates/README.md").read_text(encoding="utf-8")
+        template_root = (ROOT / "docs/99.templates/README.md").read_text(encoding="utf-8")
+
+        route = "docs/05.operations/releases/YYYY-MM-DD-release-name.md"
+        source = "docs/99.templates/templates/operations/release.template.md"
+        self.assertIn(f"| Release | `{route}`", selection)
+        self.assertIn(route, matrix)
+        self.assertIn(source, matrix)
+        self.assertIn("changelog/release-readiness evidence", releases)
+        self.assertIn("Spec 127", releases)
+        self.assertIn("[릴리스](./releases/README.md)", operations)
+        self.assertIn("[release.template.md](./release.template.md)", operations_templates)
+        self.assertIn("artifact_type: spec", spec_templates)
+        self.assertIn("artifact_type: task", governance_templates)
+        self.assertIn("[operations](./operations/README.md)", templates)
+        self.assertIn("[Release template](./templates/operations/release.template.md)", template_root)
+        release_leaves = sorted(
+            path
+            for path in (ROOT / "docs/05.operations/releases").glob("*.md")
+            if path.name != "README.md"
+        )
+        self.assertEqual([], release_leaves)
 
     def test_readme_template_remains_a_readme_exception_source(self) -> None:
         path_text = "docs/99.templates/templates/common/readme.template.md"
