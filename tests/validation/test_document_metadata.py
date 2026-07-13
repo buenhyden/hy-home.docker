@@ -1253,6 +1253,129 @@ class TemplateMetadataTests(unittest.TestCase):
 
 
 class TemplateBodyContractTests(unittest.TestCase):
+    TASK_3_ROLE_HEADINGS = {
+        "prd": (
+            "## Overview",
+            "## Problem and Stakeholders",
+            "## Requirements",
+            "## Acceptance and Verification",
+            "## Scope and Non-goals",
+            "## Risks and Dependencies",
+            "## AI Agent Requirements",
+            "## Related Documents",
+        ),
+        "ard": (
+            "## Overview and Context",
+            "## Stakeholders and Concerns",
+            "## Boundaries and Constraints",
+            "## Quality Attributes",
+            "## Architecture Views",
+            "## Data and Infrastructure",
+            "## Decision and Requirement Traceability",
+            "## AI Agent Architecture",
+            "## Related Documents",
+        ),
+        "adr": (
+            "## Context and Decision Drivers",
+            "## Considered Options",
+            "## Decision",
+            "## Consequences",
+            "## Confirmation",
+            "## Follow-up Decisions",
+            "## Related Documents",
+        ),
+        "spec": (
+            "## Overview",
+            "## Boundaries and Inputs",
+            "## Contracts",
+            "## Core Design",
+            "## Interfaces and Data",
+            "## Failure Modes and Guardrails",
+            "## Verification",
+            "## Agent Role and IO Contract",
+            "## Related Documents",
+        ),
+        "agent-design": (
+            "## Overview",
+            "## Role and Responsibilities",
+            "## Inputs and Outputs",
+            "## Orchestration",
+            "## Tools and Permissions",
+            "## Prompt Policy",
+            "## Context and Memory",
+            "## Guardrails",
+            "## Failure Handling",
+            "## Evaluation",
+            "## Observability",
+            "## Human Approval",
+            "## Related Documents",
+        ),
+        "api-spec": (
+            "## Overview",
+            "## Parent and Scope",
+            "## API Style",
+            "## Authentication and Authorization",
+            "## Operations",
+            "## Request and Response Schemas",
+            "## Errors",
+            "## Compatibility",
+            "## Non-functional Requirements",
+            "## Machine-readable Contracts",
+            "## Verification",
+            "## Pagination",
+            "## Related Documents",
+        ),
+        "data-model": (
+            "## Overview",
+            "## Parent and Scope",
+            "## Entities",
+            "## Relationships",
+            "## Schema",
+            "## Integrity",
+            "## Storage",
+            "## Privacy",
+            "## Migration",
+            "## Retention",
+            "## Related Documents",
+        ),
+        "service": (
+            "## Overview",
+            "## Parent and Scope",
+            "## Image and Build",
+            "## Security",
+            "## Networking and Storage",
+            "## Secrets",
+            "## Health and Operations",
+            "## Validation",
+            "## Scaling",
+            "## Related Documents",
+        ),
+        "tests": (
+            "## Overview",
+            "## Parent and Scope",
+            "## Verification Goals",
+            "## TDD Scope",
+            "## Test Matrix",
+            "## Contract and Integration Tests",
+            "## Non-functional Tests",
+            "## Agent Evaluations",
+            "## Fixtures",
+            "## Execution",
+            "## Evidence",
+            "## Related Documents",
+        ),
+    }
+    TASK_3_ROLE_PROFILES = {
+        "prd": "prd",
+        "ard": "ard",
+        "adr": "adr",
+        "spec": "spec",
+        "agent-design": "spec",
+        "api-spec": "spec",
+        "data-model": "spec",
+        "service": "spec",
+        "tests": "spec",
+    }
     TASK_3_ROLE_TOKENS = {
         "prd": {
             "title",
@@ -1484,22 +1607,38 @@ class TemplateBodyContractTests(unittest.TestCase):
     def body_tokens(text: str) -> set[str]:
         return set(re.findall(r"\{\{([a-z][a-z0-9_]*)\}\}", text))
 
+    def copied_profiles_with_role(
+        self,
+        role_name: str,
+        **role_updates: object,
+    ) -> dict[str, object]:
+        roles = dict(self.profiles["template_roles"])
+        roles[role_name] = {**roles[role_name], **role_updates}
+        return {**self.profiles, "template_roles": roles}
+
     def assert_task_3_markdown_contract(self, role_name: str, text: str) -> None:
         role = self.profiles["template_roles"][role_name]
         headings = [line for line in text.splitlines() if line.startswith("## ")]
-        expected_headings = [*role["required_headings"], *role["conditional_headings"]]
+        expected_headings = self.TASK_3_ROLE_HEADINGS[role_name]
+        registry_headings = [
+            *role["required_headings"],
+            *role["conditional_headings"],
+        ]
+        expected_profile = self.TASK_3_ROLE_PROFILES[role_name]
         expected_frontmatter = {
             "status": "draft",
             "artifact_id": "<artifact-id>",
-            "artifact_type": role["artifact_profile"],
+            "artifact_type": expected_profile,
             "parent_ids": [] if role_name == "prd" else ["<parent-artifact-id>"],
         }
 
         self.assertEqual(1, sum(line.startswith("# ") for line in text.splitlines()))
+        self.assertEqual(list(expected_headings), headings)
         self.assertEqual(
             collections.Counter(expected_headings),
-            collections.Counter(headings),
+            collections.Counter(registry_headings),
         )
+        self.assertEqual(expected_profile, role["artifact_profile"])
         self.assertEqual(expected_frontmatter, metadata._parse_frontmatter_text(text))
         self.assertEqual(self.TASK_3_ROLE_TOKENS[role_name], self.body_tokens(text))
         self.assertNotIn("> Rules:", text)
@@ -1674,6 +1813,47 @@ class TemplateBodyContractTests(unittest.TestCase):
         for name, (relative_path, mutated) in machine_mutations.items():
             with self.subTest(mutation=name), self.assertRaises(AssertionError):
                 self.assert_machine_source_contract(relative_path, mutated)
+
+    def test_coordinated_registry_and_source_heading_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["prd"]
+        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "prd",
+            required_headings=[
+                "## Executive Summary"
+                if heading == "## Overview"
+                else heading
+                for heading in role["required_headings"]
+            ],
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_3_markdown_contract(
+                    "prd",
+                    source.replace("## Overview", "## Executive Summary", 1),
+                )
+        finally:
+            self.profiles = original_profiles
+
+    def test_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["prd"]
+        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "prd",
+            artifact_profile="reference",
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_3_markdown_contract(
+                    "prd",
+                    source.replace("artifact_type: prd", "artifact_type: reference", 1),
+                )
+        finally:
+            self.profiles = original_profiles
 
 
 class RepositoryContractIntegrationTests(unittest.TestCase):

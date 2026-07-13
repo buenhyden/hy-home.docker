@@ -217,6 +217,14 @@ review, and a separate quality review before its logical commit.
   exact token sets, exact heading multisets, exact frontmatter, native-safe
   structural checks, and bounded negative mutations. I-01 through I-04 are
   implementation-remediated and await independent full-range re-review.
+- The independent re-review of `48f37eb4...e026b561` confirmed I-01, I-02,
+  and I-03 resolved but returned Spec FAIL / Quality CHANGES REQUESTED with
+  Critical 0, Important 1, and Minor 0 for I-04-R1: heading and artifact-profile
+  expectations were still derived from the mutable registry. The focused fix
+  adds independent literal nine-role heading and profile oracles, compares the
+  registry and source separately to those oracles, and rejects coordinated
+  registry-plus-source heading or profile drift. I-04-R1 is implementation-
+  remediated and awaits independent full-range re-review.
 - Graphify refreshed to 23,207 nodes, 24,348 edges, and 1,542 communities.
   Its tracked outputs were restored after evidence capture, and conclusions
   were corroborated against tracked sources, Stage 00, Spec 130, and the active
@@ -231,7 +239,7 @@ review, and a separate quality review before its logical commit.
 | --- | --- | --- | --- | --- |
 | T-TCS-001 | PASS on `9eca432b...ede2b9a2` | APPROVED on `9eca432b...ede2b9a2` | None; I-01 resolved by `ede2b9a2` | Completed |
 | T-TCS-002 | PASS on `ff4cb021...e9a0c8cf` | APPROVED on `ff4cb021...e9a0c8cf` | None; I-01, I-02, and M-01 resolved by `e9a0c8cf` | Completed |
-| T-TCS-003 | FAIL on `48f37eb4...e1a9dccc` | CHANGES REQUESTED on `48f37eb4...e1a9dccc`; Critical 0 / Important 4 / Minor 0 | I-01 through I-04 implementation-remediated; independent full-range re-review pending | In Review |
+| T-TCS-003 | FAIL on `48f37eb4...e026b561` | CHANGES REQUESTED on `48f37eb4...e026b561`; Critical 0 / Important 1 / Minor 0 | I-01 through I-03 resolved; I-04-R1 implementation-remediated; independent full-range re-review pending | In Review |
 | T-TCS-004 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 003 |
 | T-TCS-005 | Not run — dependency is queued | Not run — dependency is queued | None recorded | Await T-TCS-001 |
 | T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
@@ -352,6 +360,9 @@ review, and a separate quality review before its logical commit.
 | Native/static contract | Exact machine-source test plus PyYAML safe-load and bounded GraphQL/Protobuf checks | Pass; no native parser availability or parser approval is claimed. |
 | Graph refresh | `graphify update .` | Pass: 23,238 nodes / 24,389 edges / 1,544 communities; tracked outputs restored after evidence capture and advisory results corroborated against tracked source and governance/stage documents. |
 | Finding disposition | Implementation inspection and regression evidence | I-01 through I-04 implementation-remediated; independent full-range re-review pending. |
+| First remediation re-review | `.superpowers/sdd/task-3-review.md` over `48f37eb4...e026b561` | Spec FAIL; Quality CHANGES REQUESTED; Critical 0 / Important 1 / Minor 0; I-01 through I-03 resolved; I-04-R1 remained. |
+| I-04-R1 RED | Coordinated registry-plus-source heading and profile drift regressions | Expected failure: 2/2 cases reported `AssertionError not raised`. |
+| I-04-R1 GREEN | Independent literal nine-role heading/profile oracles plus coordinated-drift regressions | Pass: coordinated cases 2/2; `TemplateBodyContractTests` 6/6; combined body/metadata 19/19; full metadata 123/123. |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -380,8 +391,9 @@ have not completed.
 | `1bba54fe` | Task 2 forms, catalog routing, mirror removal, transitional source gate, tests, and generated fallout | Focused 13/13; metadata 114/114; changed mode 17/0; repository contracts; generated freshness; traceability/alignment; Graphify; diff/compile |
 | `e9a0c8cf` | Task 2 I-01/I-02/M-01 Memory, Stage 00 metadata, and Common confidentiality remediation | Remediation 3/3; focused 16/16; metadata 117/117; metadata and repository contracts; independent PASS/APPROVED re-review |
 | Closure unit — subject `docs(task): close common governance forms task`; self hash intentionally omitted | Record the completed independent verdict and close T-TCS-002 | Metadata changed-mode and diff hygiene; evidence-only scope |
-| Implementation unit — subject `docs(templates): canonicalize design and contract forms`; self hash intentionally omitted | Task 3 Stage 01-03, focused Spec-child, machine contract, catalog, test, and evidence forms | RED 12 intended subtest failures; focused 15/15; metadata 119/119; metadata/repository contracts; syntax/static checks; generated freshness; traceability/alignment; Graphify; diff/compile |
-| Review-fix unit — subject `fix(templates): preserve design form contracts`; self hash intentionally omitted | Task 3 I-01 through I-04 PRD semantics, parent-child handoffs, native-safe machine forms, and exact regressions | Remediation RED 4 methods / 5 failures; focused 4/4 and 17/17; metadata 121/121; metadata/repository contracts; native/static checks; generated freshness; traceability/alignment; Graphify; diff/compile; re-review pending |
+| `e1a9dccc` | Task 3 Stage 01-03, focused Spec-child, machine contract, catalog, test, and evidence forms | RED 12 intended subtest failures; focused 15/15; metadata 119/119; metadata/repository contracts; syntax/static checks; generated freshness; traceability/alignment; Graphify; diff/compile |
+| `e026b561` | Task 3 I-01 through I-04 PRD semantics, parent-child handoffs, native-safe machine forms, and exact regressions | Remediation RED 4 methods / 5 failures; focused 4/4 and 17/17; metadata 121/121; metadata/repository contracts; native/static checks; generated freshness; traceability/alignment; Graphify; first re-review found I-04-R1 |
+| Oracle-fix unit — subject `test(templates): add independent design form oracle`; self hash intentionally omitted | Task 3 I-04-R1 independent literal heading/profile oracles and coordinated-drift regressions | RED 2/2; GREEN coordinated 2/2, focused 6/6 and 19/19, metadata 123/123; re-review pending |
 
 Later review-fix and implementation commits will be appended as Tasks 3-7 close.
 
