@@ -293,13 +293,30 @@ work. Corpus migration and remote enforcement remain later sub-projects.
   preservation, row cardinality, state distribution, and protected-surface
   boundaries PASS with Critical `0`, Important `0`, Minor `0`. Independent
   review remains pending; this evidence does not claim approval.
+- **Independent review round 1**: FAIL / CHANGES REQUIRED with Critical `0`,
+  Important `1`, Minor `0`. I-01 found that WRE-10 still described T-AHC-002
+  as pending independent review even though its canonical 2026-07-12 ledger is
+  Done/PASS/Approved; the actual current pending lifecycle is T-DCC-004.
+- **I-01 remediation**: WRE-10 now records completed T-AHC-002 evidence and
+  verifies the current T-DCC-004 Review Pending row, checkbox, and review
+  ledger. Its Implemented state, depth `2`, and Retain disposition are
+  unchanged, as is the exact `68/68/14/2/9` distribution.
+- **I-01 remediation validation**: criterion contract passed `11/161/161`;
+  coverage passed with Implemented `68`, Partial `68`, Missing `14`, Not
+  Applicable `2`, Needs Revalidation `9`; semantic freshness passed
+  `assertions=11 failures=0`; explicit-base metadata passed
+  `selected=2 violations=0 legacy_exceptions=0 transition_overrides=0`; and
+  `git diff --check` passed.
+- **Remediation self-review**: the stale T-AHC-002 pending wording is absent;
+  canonical completed and current Review Pending routes are exact. Critical
+  `0`, Important `0`, Minor `0`. Independent re-review remains pending.
 
 | Task | Implementation Commit(s) | Spec Compliance | Quality | Findings / Resolution | Reviewer Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-DCC-001 | `39eb562e` | PASS | Approved | C0/I0/M0; no remediation required | `review-237aa5d7..39eb562e.diff`; combined reviewer verdict | Done |
 | T-DCC-002 | `3591fcd5`, `0445f336` | PASS | Approved | C0/I0/M0; no remediation required | `review-0ae9fe81..0445f336.diff`; combined reviewer verdict | Done |
 | T-DCC-003 | `e1ff0fc8`, `d5d54e6a` | PASS | Approved | Round 1 C0/I1/M0; I-01 duplicate lifecycle machine semantics removed; re-review C0/I0/M0 | `review-e0d25fdc..d5d54e6a.diff`; combined reviewer re-verdict | Done |
-| T-DCC-004 | Pending | Implementer PASS | Self-review C0/I0/M0 | DML-12 is the only state transition; no remediation pending | Independent review pending; ignored SDD report is the handoff | Review Pending |
+| T-DCC-004 | `c43f1492`; I-01 fix pending | Implementer PASS | Round 1 C0/I1/M0; remediation self-review C0/I0/M0 | DML-12 remains the only state transition; I-01 stale WRE-10 lifecycle wording corrected | Independent re-review pending; ignored SDD report is the handoff | Review Pending |
 | T-DCC-005 | Pending | Pending | Pending | Pending | Ignored SDD report promoted here after approval | Pending |
 | T-DCC-006 | Pending | Pending | Pending | Pending | Whole-branch review evidence promoted here | Pending |
 
