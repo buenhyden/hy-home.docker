@@ -6,8 +6,6 @@ parent_ids:
   - plan:2026-07-13-template-contract-system-canonicalization
 ---
 
-<!-- Target: docs/04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md -->
-
 # Template Contract System Canonicalization Execution Task
 
 ## Overview
@@ -81,7 +79,7 @@ review, and a separate quality review before its logical commit.
 | T-TCS-003 | Stage 01-03 and Spec-child forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
 | T-TCS-004 | Stage 04 Plan and Task system | T-TCS-001 through 003 | Completed | fresh implementer | spec then quality |
 | T-TCS-005 | Stage 05 Operations forms | T-TCS-001 | Completed | fresh implementer | spec then quality |
-| T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | Queued | fresh implementer | spec then quality |
+| T-TCS-006 | Executable template and target validation | T-TCS-001 through 005 | In Review | fresh implementer | spec then quality |
 | T-TCS-007 | Direct consumers, generated evidence, and wave routing | T-TCS-001 through 006 | Queued | fresh implementer | spec then quality |
 
 ## T-TCS-001 Implementation Evidence
@@ -319,6 +317,49 @@ review, and a separate quality review before its logical commit.
   corrected the Task and Progress ledger; the narrow re-review returned Spec
   PASS / Quality APPROVED with C0/I0/M0. T-TCS-005 is completed.
 
+## T-TCS-006 Implementation Evidence
+
+- Added fenced-block-aware Markdown H1/H2 extraction and registry-owned body
+  validation with deterministic missing-role, ambiguous-role, H1-count,
+  required-heading, forbidden-heading, README-heading, instruction-residue,
+  body-token, machine-token, and machine-example finding codes.
+- Applied the exact role/body contract to every registered Markdown source,
+  tracked machine source, changed or new typed target, and only the
+  template-catalog README profile. Conditional headings remain optional.
+- Changed targets reject unresolved body tokens and template-only instruction
+  literals outside fenced and inline-code examples. Base-existing body deficits
+  are compared at the same path and preserved until Task 7; new documents and
+  newly introduced deficits fail closed.
+- Removed the incomplete shell template inventory and duplicate
+  `heading_requirements` and Operations forbidden-heading tables. The shell now
+  orchestrates the Python `check-contracts` owner and, when
+  `TEMPLATE_GATE_BASE` is present, the Python changed/new owner.
+- CI remains fail closed without workflow modification: its repository-contract
+  job derives `TEMPLATE_GATE_BASE` from the pull-request base or push-before
+  SHA, validates that commit and merge base, runs the exact Python changed/new
+  gate as a dedicated step, and then runs the shell orchestration.
+- Removed transitional Target comments from Spec 130, its active Plan, and this
+  Task atomically. No Task 7 direct consumer, runtime, Compose, infrastructure,
+  deployment, secret, provider, workflow, credential, branch-protection, or
+  remote state changed.
+- TDD RED ran 39 focused methods with two failures and seven errors. Initial
+  GREEN ran the same 39/39; after splitting every brief-required case into an
+  independently named oracle, focused GREEN is 44/44. The final complete
+  metadata suite passes 155/155 after converting unrelated relation-test
+  fixtures to concrete registered bodies.
+- Metadata repository contracts report zero violations; explicit changed mode
+  from `39809f26` reports four selected, zero violations, zero legacy
+  exceptions, and zero transition overrides. Generated Wiki and metadata
+  evidence is fresh at 901 records and 2,025 advisory findings; traceability is
+  46/0 and implementation alignment is 647 documents / 5,135 links / 0.
+- The full repository contract gate ran with `TEMPLATE_GATE_BASE=39809f26` and
+  completed with `failures=0`. Graphify refreshed to 23,387 nodes, 24,679
+  edges, and 1,542 communities; tracked graph outputs were restored after
+  capture, and the advisory result was corroborated against tracked sources,
+  Stage 00, Spec 130, and this Plan/Task.
+- Implementation status is In Review. Independent specification and quality
+  reviews have not run, and no commit hash is claimed.
+
 ## Review Evidence
 
 | Task | Spec review | Quality review | Findings | Disposition |
@@ -328,8 +369,8 @@ review, and a separate quality review before its logical commit.
 | T-TCS-003 | PASS on `48f37eb4...37d52025` | APPROVED on `48f37eb4...37d52025` | None; I-01 through I-04 and I-04-R1 resolved | Completed |
 | T-TCS-004 | PASS on `4c821e86...b394a671` | APPROVED on `4c821e86...b394a671` | None; I-01 resolved by `b394a671` | Completed |
 | T-TCS-005 | PASS on `34ae2dab...c07160a2` | APPROVED on `34ae2dab...c07160a2` | None; I-01, I-01-R1, and I-02 resolved | Completed |
-| T-TCS-006 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 005 |
-| T-TCS-007 | Not run — dependencies are queued | Not run — dependencies are queued | None recorded | Await T-TCS-001 through 006 |
+| T-TCS-006 | Not run — implementation awaits independent review | Not run — implementation awaits independent review | None recorded | In Review |
+| T-TCS-007 | Not run — dependency is in review | Not run — dependency is in review | None recorded | Await T-TCS-006 |
 | Whole branch | Not run — implementation has not completed | Not run — implementation has not completed | None recorded | Await T-TCS-007 |
 
 ## Verification Summary
@@ -514,6 +555,23 @@ review, and a separate quality review before its logical commit.
 | I-01-R1 narrow GREEN | Same three methods after updating the Runbook form and durable human contract | Pass: 3/3. |
 | I-01-R1 focused/full GREEN | Focused three-class suite and complete metadata regression | Pass: 59/59 and 140/140. |
 
+### T-TCS-006 RED and GREEN
+
+| Phase | Command or evidence | Result |
+| --- | --- | --- |
+| RED | `python3 -m unittest tests.validation.test_document_metadata.TemplateBodyContractTests tests.validation.test_document_metadata.RepositoryContractIntegrationTests -v` | Expected failure: 39 methods ran with two failures and seven errors because the executable heading/body API and shell-owned-schema removal did not exist. |
+| Focused GREEN | Same focused command after implementation, followed by independently named exact-case normalization | Initial pass 39/39; final pass 44/44 in 20.112 seconds. |
+| Relation-fixture adjustment | Three changed-path identity regressions whose subject is relation handling | Pass: 3/3 after preserving concrete registered PRD/Spec bodies during rewrites; no product-gate weakening. |
+| Metadata regression | `python3 -m unittest tests.validation.test_document_metadata -q` | Pass: 155/155 in 67.251 seconds. |
+| Metadata contracts | `python3 scripts/validation/check-document-metadata.py --mode check-contracts` | Pass: zero violations. |
+| Changed mode | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 39809f26` | Pass: four selected, zero violations, zero legacy exceptions, and zero transition overrides. |
+| Repository contracts | `TEMPLATE_GATE_BASE=39809f26 bash scripts/validation/check-repo-contracts.sh` | Pass: the delegated changed gate reported four selected and zero violations/exceptions/overrides; final `failures=0`. |
+| Generated freshness | Canonical LLM Wiki index/coverage and metadata inventory check modes | Pass: Wiki outputs fresh; metadata inventory remains 901 records / 2,025 advisory findings. |
+| Traceability and alignment | Stage 04/05 traceability and documentation implementation alignment | Pass: 46 catalog pairs / 0 failures; 647 docs / 5,135 links / 0 failures. |
+| Workflow decision | Existing `.github/workflows/ci-quality.yml` integration inspected | No RED routing gap: the validated event base, dedicated Python changed/new step, and shell step already fail closed in CI; workflow unchanged. |
+| Graph refresh | `graphify update .` | Pass: 23,387 nodes / 24,679 edges / 1,542 communities; tracked outputs restored and advisory result corroborated against tracked canonical owners. |
+| Review state | Task table and review ledger | In Review; specification and quality reviews not run. |
+
 ## Controlled Agent Pre-commit Evidence
 
 The final wrapper has not run because implementation and whole-branch review
@@ -553,6 +611,7 @@ have not completed.
 | `b7b2ec95` — `fix(operations): make runbook automation boundaries explicit` | Task 5 I-01-R1 Runbook prerequisites, automation candidate/invocation, human-or-operator judgment boundary, durable human semantics, and exact removal oracles | Narrow RED 3 methods / 5 failures; GREEN 3/3; focused 59/59; metadata 140/140; metadata/repository contracts zero; changed mode 11/0; generated freshness; traceability/alignment; Graphify 23,348 / 24,560 / 1,544 with outputs restored; final full-range re-review resolved I-01/I-01-R1 and found evidence-only I-02 |
 | `c07160a2` | Task 5 I-02 canonical remediation-ledger correction | Evidence-only Task/Progress delta; changed from `b7b2ec95` 2/0; full Task 5 base 11/0; focused 59/59; metadata contracts and generated freshness pass; independent PASS/APPROVED narrow re-review |
 | Closure unit — subject `docs(task): close operations forms task`; self hash intentionally omitted | Record completed independent verdict and close T-TCS-005 | Metadata changed-mode and diff hygiene; evidence-only scope |
+| Planned unit — subject `test(validation): enforce template role contracts`; self hash intentionally omitted | Task 6 executable Markdown/machine contracts, changed-target gate, shell delegation, tests, and evidence | RED 39 methods / 9 expected failing methods; final focused GREEN 44/44; metadata 155/155; reviews not yet run |
 
 Later review-fix and implementation commits will be appended as Tasks 6-7 close.
 

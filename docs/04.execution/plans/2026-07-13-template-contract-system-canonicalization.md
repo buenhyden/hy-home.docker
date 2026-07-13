@@ -6,8 +6,6 @@ parent_ids:
   - spec:130-template-contract-system-canonicalization
 ---
 
-<!-- Target: docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md -->
-
 # Template Contract System Canonicalization Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
@@ -932,7 +930,11 @@ git commit -m "docs(operations): canonicalize operations forms"
   list[Finding]`, machine-token validation, and a repository gate that delegates
   exact template semantics to the Python checker.
 
-- [ ] **Step 1: Add failing body, ambiguity, and integration tests**
+**Implementation status:** In Review. Steps 1 through 7 are implemented and
+locally verified; Step 8 remains open for independent specification and quality
+review, finding remediation, and the logical commit.
+
+- [x] **Step 1: Add failing body, ambiguity, and integration tests**
 
 Add exact tests:
 
@@ -994,7 +996,7 @@ expects no finding; `test_two_h1_headings_report_code` expects
 expects `machine-template-example-value`; and
 `test_release_is_in_required_inventory` expects the Release source path.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run:
 
@@ -1005,7 +1007,7 @@ python3 -m unittest tests.validation.test_document_metadata.TemplateBodyContract
 Expected: failures because heading extraction, body validation, token
 validation, and Python-owned integration do not exist.
 
-- [ ] **Step 3: Implement Markdown and machine-template validation**
+- [x] **Step 3: Implement Markdown and machine-template validation**
 
 Add:
 
@@ -1033,14 +1035,14 @@ changed/new boundary. Conditional headings remain optional. Machine sources
 require explicit uppercase tokens and reject valid-looking Example,
 example.com, and bearer-token literals.
 
-- [ ] **Step 4: Make role matching and README headings fail closed**
+- [x] **Step 4: Make role matching and README headings fail closed**
 
 Use `classify_template_role()` for changed/new typed targets and template
 sources. Emit deterministic finding codes for missing and ambiguous roles.
 Validate the six changed template catalog README files against their existing
 profile headings without broad rewriting other README profiles.
 
-- [ ] **Step 5: Remove duplicate shell-owned template semantics**
+- [x] **Step 5: Remove duplicate shell-owned template semantics**
 
 In `check-repo-contracts.sh` remove the hard-coded Python
 `heading_requirements`, operation forbidden-heading table, and incomplete
@@ -1053,14 +1055,14 @@ python3 scripts/validation/check-document-metadata.py --mode check-contracts
 and the existing changed/new checker path. This makes the registry and Python
 checker the only exact template schema.
 
-- [ ] **Step 6: Atomically remove Target comments from changed direct docs**
+- [x] **Step 6: Atomically remove Target comments from changed direct docs**
 
 Remove the transitional Target comments from Spec 130, this Plan, and the
 active Task in the same logical change that removes the old requirement.
 Update Spec 130 wording from transitional to implemented without changing its
 approved intent.
 
-- [ ] **Step 7: Run the full validation slice**
+- [x] **Step 7: Run the full validation slice**
 
 Run:
 

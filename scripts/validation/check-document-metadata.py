@@ -217,6 +217,25 @@ EXPECTED_TEMPLATE_PLACEHOLDER_KEYS = frozenset(
         "current_replacement",
     }
 )
+MARKDOWN_BODY_TOKEN = re.compile(r"{{[a-z][a-z0-9_]*}}")
+MACHINE_TEMPLATE_TOKEN = re.compile(r"__[A-Z][A-Z0-9_]*__")
+TARGET_TEMPLATE_LITERALS = ("<!-- Target:", "> Rules:", "## Template Usage")
+MACHINE_TEMPLATE_SUFFIXES = (
+    ".template.yaml",
+    ".template.yml",
+    ".template.graphql",
+    ".template.proto",
+)
+MACHINE_EXAMPLE_VALUE = re.compile(
+    r"(?i)(?:"
+    r"\bexample(?:\.com)?\b|"
+    r"https?://(?!__[A-Z][A-Z0-9_]*__)(?:[a-z0-9-]+\.)+[a-z]{2,}|"
+    r"(?::|=)[ \t]*(?:bearer|basic|oauth2?|openidconnect|api[_-]?key)\b|"
+    r"\b(?:bearer|basic|oauth2?|openidconnect|api[_-]?key)[ \t]+"
+    r"(?!__[A-Z][A-Z0-9_]*__)[A-Za-z0-9._~+/-]+|"
+    r"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b"
+    r")"
+)
 
 
 class FrontmatterError(ValueError):
@@ -896,6 +915,283 @@ def _validate_template_source(
     return sorted(set(findings))
 
 
+def _markdown_unfenced_lines(text: str) -> list[str]:
+    """Return Markdown lines outside backtick and tilde fenced blocks."""
+
+    lines: list[str] = []
+    fence_character: str | None = None
+    fence_length = 0
+    for line in text.splitlines():
+        if fence_character is None:
+            opening = re.match(r"^ {0,3}(`{3,}|~{3,})(?:[^`~]*)$", line)
+            if opening:
+                marker = opening.group(1)
+                fence_character = marker[0]
+                fence_length = len(marker)
+                continue
+            lines.append(line)
+            continue
+        if re.match(
+            rf"^ {{0,3}}{re.escape(fence_character)}{{{fence_length},}}[ \t]*$",
+            line,
+        ):
+            fence_character = None
+            fence_length = 0
+    return lines
+
+
+def extract_markdown_headings(text: str) -> tuple[list[str], list[str]]:
+    """Return canonical H1 and H2 headings outside fenced code blocks."""
+
+    h1: list[str] = []
+    h2: list[str] = []
+    for line in _markdown_unfenced_lines(text):
+        match = re.match(r"^ {0,3}(#{1,2})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
+        if not match:
+            continue
+        heading = f"{match.group(1)} {match.group(2).rstrip()}"
+        (h1 if len(match.group(1)) == 1 else h2).append(heading)
+    return h1, h2
+
+
+def _machine_template_path(path: pathlib.Path) -> bool:
+    normalized = path.as_posix()
+    return normalized.startswith("docs/99.templates/templates/") and normalized.endswith(
+        MACHINE_TEMPLATE_SUFFIXES
+    )
+
+
+def _machine_template_findings(record: Record, text: str) -> list[Finding]:
+    findings: list[Finding] = []
+    if MACHINE_TEMPLATE_TOKEN.search(text) is None:
+        findings.append(
+            _finding(
+                record,
+                "machine-template-token-missing",
+                "machine template must contain an explicit uppercase unresolved token",
+            )
+        )
+    if MACHINE_EXAMPLE_VALUE.search(text):
+        findings.append(
+            _finding(
+                record,
+                "machine-template-example-value",
+                "machine template contains a concrete example host, auth value, or credential-like value",
+            )
+        )
+    return sorted(set(findings))
+
+
+def _source_roles_for_path(
+    path: pathlib.Path,
+    profiles: dict[str, object],
+) -> list[tuple[str, dict[str, object]]]:
+    roles = profiles.get("template_roles", {})
+    if not isinstance(roles, dict):
+        return []
+    return sorted(
+        (
+            (name, role)
+            for name, role in roles.items()
+            if isinstance(name, str)
+            and isinstance(role, dict)
+            and role.get("source") == path.as_posix()
+        ),
+        key=lambda item: item[0],
+    )
+
+
+def validate_body_contract(
+    record: Record,
+    text: str,
+    profiles: dict[str, object],
+    changed_boundary: bool,
+) -> list[Finding]:
+    """Validate role headings, source tokens, and changed-target residue."""
+
+    if _machine_template_path(record.path):
+        return _machine_template_findings(record, text)
+
+    source_roles = _source_roles_for_path(record.path, profiles)
+    is_markdown_source = (
+        record.path.as_posix().startswith("docs/99.templates/templates/")
+        and record.path.name.endswith(".template.md")
+    )
+    role_name: str | None = None
+    role: dict[str, object] | None = None
+    findings: list[Finding] = []
+    if source_roles:
+        if len(source_roles) > 1:
+            findings.append(
+                _finding(
+                    record,
+                    "template-role-ambiguous",
+                    "template source resolves to multiple roles: "
+                    + ", ".join(name for name, _ in source_roles),
+                )
+            )
+            return findings
+        role_name, role = source_roles[0]
+    elif is_markdown_source:
+        findings.append(
+            _finding(
+                record,
+                "template-role-missing",
+                "Markdown template source has no registered role",
+            )
+        )
+        return findings
+    elif record.artifact_type == "readme":
+        if not changed_boundary:
+            return []
+        try:
+            readme_profile_name = classify_readme_profile(record.path, profiles)
+        except ProfileError:
+            return []
+        if readme_profile_name != "template-catalog":
+            return []
+        readme_profiles = profiles.get("readme_profiles", {})
+        readme_profile = (
+            readme_profiles.get(readme_profile_name, {})
+            if isinstance(readme_profiles, dict)
+            else {}
+        )
+        _, h2 = extract_markdown_headings(text)
+        required = readme_profile.get("required_headings", []) if isinstance(readme_profile, dict) else []
+        for heading in required:
+            canonical = f"## {heading}"
+            if canonical not in h2:
+                findings.append(
+                    _finding(
+                        record,
+                        "readme-heading-missing",
+                        f"template-catalog README is missing required heading: {canonical}",
+                    )
+                )
+        forbidden = readme_profile.get("forbidden_headings", []) if isinstance(readme_profile, dict) else []
+        for heading in forbidden:
+            canonical = f"## {heading}"
+            if canonical in h2:
+                findings.append(
+                    _finding(
+                        record,
+                        "readme-heading-forbidden",
+                        f"template-catalog README contains forbidden heading: {canonical}",
+                    )
+                )
+        return sorted(set(findings))
+    elif changed_boundary and record.artifact_type in _typed_target_types(profiles):
+        matches = matching_template_roles(record.path, record.artifact_type, profiles)
+        if not matches:
+            findings.append(
+                _finding(
+                    record,
+                    "template-role-missing",
+                    f"changed target has no role for profile {record.artifact_type}",
+                )
+            )
+            return findings
+        if len(matches) > 1:
+            findings.append(
+                _finding(
+                    record,
+                    "template-role-ambiguous",
+                    f"changed target resolves to multiple roles: {', '.join(matches)}",
+                )
+            )
+            return findings
+        role_name = matches[0]
+        roles = profiles.get("template_roles", {})
+        candidate = roles.get(role_name, {}) if isinstance(roles, dict) else {}
+        role = candidate if isinstance(candidate, dict) else None
+    else:
+        return []
+
+    if role is None or role_name is None:
+        return findings
+    h1, h2 = extract_markdown_headings(text)
+    if len(h1) != 1:
+        findings.append(
+            _finding(
+                record,
+                "body-h1-count",
+                f"role {role_name} requires exactly one H1; found {len(h1)}",
+            )
+        )
+    required_headings = role.get("required_headings", [])
+    forbidden_headings = role.get("forbidden_headings", [])
+    for heading in required_headings if isinstance(required_headings, list) else []:
+        if heading not in h2:
+            findings.append(
+                _finding(
+                    record,
+                    "body-heading-missing",
+                    f"role {role_name} is missing required heading: {heading}",
+                )
+            )
+    for heading in forbidden_headings if isinstance(forbidden_headings, list) else []:
+        if heading in h2:
+            findings.append(
+                _finding(
+                    record,
+                    "body-heading-forbidden",
+                    f"role {role_name} contains forbidden heading: {heading}",
+                )
+            )
+
+    unfenced_text = "\n".join(_markdown_unfenced_lines(text))
+    if source_roles:
+        conditional = role.get("conditional_headings", [])
+        allowed_headings = set(required_headings if isinstance(required_headings, list) else []) | set(
+            conditional if isinstance(conditional, list) else []
+        )
+        for heading in sorted(set(h2) - allowed_headings):
+            findings.append(
+                _finding(
+                    record,
+                    "body-heading-forbidden",
+                    f"role {role_name} source contains unregistered heading: {heading}",
+                )
+                )
+        for literal in TARGET_TEMPLATE_LITERALS:
+            if literal in unfenced_text:
+                findings.append(
+                    _finding(
+                        record,
+                        "template-instruction-in-source",
+                        f"template source contains prohibited instruction literal: {literal}",
+                    )
+                )
+        if MARKDOWN_BODY_TOKEN.search(unfenced_text) is None:
+            findings.append(
+                _finding(
+                    record,
+                    "template-body-token-missing",
+                    f"role {role_name} source requires an explicit Markdown body token",
+                )
+            )
+    elif changed_boundary:
+        target_scan_text = re.sub(r"`+[^`\n]*`+", "", unfenced_text)
+        for literal in TARGET_TEMPLATE_LITERALS:
+            if literal in target_scan_text:
+                findings.append(
+                    _finding(
+                        record,
+                        "template-instruction-in-target",
+                        f"changed target retains template-only instruction literal: {literal}",
+                    )
+                )
+        if MARKDOWN_BODY_TOKEN.search(target_scan_text):
+            findings.append(
+                _finding(
+                    record,
+                    "template-body-token-in-target",
+                    "changed target retains an unresolved Markdown body token",
+                )
+            )
+    return sorted(set(findings))
+
+
 def validate_record(
     record: Record,
     profiles: dict[str, object],
@@ -1559,6 +1855,24 @@ def _tracked_repository_markdown(root: pathlib.Path) -> list[pathlib.Path]:
     )
 
 
+def _tracked_machine_templates(root: pathlib.Path) -> list[pathlib.Path]:
+    result = _run_git(
+        root,
+        ["ls-files", "-z", "--", "docs/99.templates/templates/"],
+        operation="machine template discovery",
+    )
+    if result.returncode != 0:
+        raise ProfileError("cannot establish local Git snapshot: machine template discovery failed")
+    return sorted(
+        {
+            path
+            for path in _decode_git_paths(result.stdout, "machine template discovery")
+            if _machine_template_path(path)
+        },
+        key=lambda path: path.as_posix(),
+    )
+
+
 def _registry_string_arrays(value: object, path: tuple[str, ...] = ()) -> list[tuple[tuple[str, ...], list[str]]]:
     arrays: list[tuple[tuple[str, ...], list[str]]] = []
     if isinstance(value, dict):
@@ -1630,6 +1944,19 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     readme_manifest = build_manifest(classified_readmes)
     for record in classified_readmes:
         findings.extend(validate_record(record, profiles, readme_manifest))
+        try:
+            text = (root / record.path).read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            findings.append(Finding(record.path.as_posix(), "readme-unreadable", str(error)))
+        else:
+            findings.extend(
+                validate_body_contract(
+                    record,
+                    text,
+                    profiles,
+                    changed_boundary=True,
+                )
+            )
 
     template_roles = profiles.get("template_roles", {})
     if not isinstance(template_roles, dict):
@@ -1656,10 +1983,19 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     ]
     for path in tracked_templates:
         try:
-            values = parse_frontmatter(root / path)
+            text = (root / path).read_text(encoding="utf-8")
+            values = _parse_frontmatter_text(text)
         except FrontmatterError as error:
             findings.append(Finding(path.as_posix(), "template-source-invalid", str(error)))
             continue
+        findings.extend(
+            validate_body_contract(
+                _record_from_text(path, text),
+                text,
+                profiles,
+                changed_boundary=False,
+            )
+        )
         declares_type = "artifact_type" in values
         declared_type = values.get("artifact_type")
         mapped = roles_by_source.get(path.as_posix())
@@ -1704,6 +2040,21 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
             findings.append(
                 Finding(source_path, "template-source-missing", "registered Markdown template does not exist")
             )
+
+    for path in _tracked_machine_templates(root):
+        try:
+            text = (root / path).read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            findings.append(Finding(path.as_posix(), "machine-template-unreadable", str(error)))
+            continue
+        findings.extend(
+            validate_body_contract(
+                Record(path, {}, "unsupported"),
+                text,
+                profiles,
+                changed_boundary=False,
+            )
+        )
 
     release_sources = sorted(
         source_path
@@ -1866,6 +2217,18 @@ def _metadata_at_ref(root: pathlib.Path, path: pathlib.Path, base_ref: str | Non
         return _parse_frontmatter_text(result.stdout)
     except FrontmatterError:
         return None
+
+
+def _text_at_ref(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> str | None:
+    if not base_ref:
+        return None
+    result = _run_git(
+        root,
+        ["show", f"{base_ref}:{path.as_posix()}"],
+        operation="prior body-contract discovery",
+        text=True,
+    )
+    return result.stdout if result.returncode == 0 else None
 
 
 def _previous_status(root: pathlib.Path, path: pathlib.Path, base_ref: str | None) -> str | None:
@@ -2607,6 +2970,43 @@ def main(argv: Sequence[str] | None = None) -> int:
         for record in records
     }
     records_by_path = {record.path.as_posix(): record for record in records}
+    changed_body_findings: dict[str, list[Finding]] = {}
+    if args.mode == "check-changed":
+        for path_text in sorted(changed_selection):
+            record = records_by_path.get(path_text)
+            if record is None:
+                continue
+            try:
+                current_text = (root / record.path).read_text(encoding="utf-8")
+            except (OSError, UnicodeError) as error:
+                changed_body_findings[path_text] = [
+                    _finding(record, "body-unreadable", f"cannot read UTF-8 Markdown body: {error}")
+                ]
+                continue
+            current = validate_body_contract(
+                record,
+                current_text,
+                profiles,
+                changed_boundary=True,
+            )
+            base_record = base_records_by_path.get(path_text)
+            base_text = _text_at_ref(root, record.path, base.merge_base)
+            base_findings = (
+                validate_body_contract(
+                    base_record,
+                    base_text,
+                    profiles,
+                    changed_boundary=True,
+                )
+                if base_record is not None and base_text is not None
+                else []
+            )
+            base_identities = {(finding.code, finding.message) for finding in base_findings}
+            changed_body_findings[path_text] = [
+                finding
+                for finding in current
+                if (finding.code, finding.message) not in base_identities
+            ]
     relation_impact_findings: dict[str, list[Finding]] = {}
     if args.mode == "check-changed":
         try:
@@ -2681,6 +3081,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             for path, findings in relation_impact_findings.items()
             if path not in legacy_exceptions
             for finding in findings
+        }
+        | {
+            finding
+            for path, findings in changed_body_findings.items()
+            if path not in legacy_exceptions
+            for finding in findings
+            if finding.severity == "error"
         }
     )
     for finding in selected_findings:

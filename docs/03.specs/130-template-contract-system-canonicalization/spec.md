@@ -6,8 +6,6 @@ parent_ids:
   - spec:129-document-contract-canonicalization
 ---
 
-<!-- Target: docs/03.specs/130-template-contract-system-canonicalization/spec.md -->
-
 # Template Contract System Canonicalization Technical Specification
 
 ## Overview
@@ -249,10 +247,12 @@ algorithms, migration instructions, or executable-looking sample commands.
 Instantiated documents fail validation if they retain unresolved placeholders,
 template instructions, or template-only comments.
 
-The current repository gate still requires Target comments on normalized stage
-documents, including this draft Spec. The validator task must remove that
-requirement and migrate the fully typed direct consumers in the same logical
-change so no intermediate commit leaves the branch contract red.
+The executable repository gate no longer requires Target comments. It rejects
+template-only Target comments on newly introduced target content while
+preserving base-existing body deficits until the bounded direct-consumer
+migration in Task 7. This validator unit removes the transitional comments
+from Spec 130 and its active Plan and Task atomically with retiring the old
+shell-owned requirement.
 
 Machine-readable OpenAPI, GraphQL, and Protobuf templates use explicit
 unresolved tokens instead of valid-looking Example names, example.com hosts,
@@ -454,6 +454,10 @@ This branch implements:
 This branch does not infer new content merely to make an old document resemble
 a template. Topic-specific body changes require evidence and an approved edit
 boundary.
+
+Task 6 implementation is **In Review**. The executable body and machine-template
+contracts, changed-target gate, and Python-owned shell delegation are locally
+verified; independent specification and quality reviews have not yet run.
 
 ## Follow-up Migration Batches
 

@@ -35,6 +35,35 @@ def write_doc(path: pathlib.Path, frontmatter: dict[str, object] | None, body: s
     path.write_text(f"---\n{rendered}\n---\n\n{body}", encoding="utf-8")
 
 
+def body_with_headings(*headings: str) -> str:
+    """Build a concrete target body for tests whose subject is not body validation."""
+
+    sections = "\n\n".join(f"{heading}\n\nFixture content." for heading in headings)
+    return f"# Fixture\n\n{sections}\n"
+
+
+PRD_TARGET_BODY = body_with_headings(
+    "## Overview",
+    "## Problem and Stakeholders",
+    "## Requirements",
+    "## Acceptance and Verification",
+    "## Scope and Non-goals",
+    "## Risks and Dependencies",
+    "## Related Documents",
+)
+
+SPEC_TARGET_BODY = body_with_headings(
+    "## Overview",
+    "## Boundaries and Inputs",
+    "## Contracts",
+    "## Core Design",
+    "## Interfaces and Data",
+    "## Failure Modes and Guardrails",
+    "## Verification",
+    "## Related Documents",
+)
+
+
 def run_checker(
     root: pathlib.Path,
     mode: str = "report",
@@ -147,6 +176,9 @@ def copy_tracked_contract_fixture(root: pathlib.Path) -> pathlib.Path:
             "_workspace/repo-support/README.md",
             "docs/05.operations/releases/README.md",
             "docs/99.templates/templates/**/*.template.md",
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+            "docs/99.templates/templates/spec-contracts/service.template.proto",
             "docs/99.templates/support/*.md",
             "docs/99.templates/support/document-metadata-profiles.yaml",
             "docs/00.agent-governance/rules/stage-authoring-matrix.md",
@@ -2024,6 +2056,167 @@ class TemplateBodyContractTests(unittest.TestCase):
         cls.profiles = metadata.load_profiles(PROFILES)
 
     @staticmethod
+    def fixture_record(path_text: str, artifact_type: str) -> object:
+        return metadata.Record(
+            pathlib.Path(path_text),
+            {},
+            artifact_type,
+            frontmatter_present=False,
+        )
+
+    @staticmethod
+    def literal_spec_body(*, include_requirements: bool = True) -> str:
+        headings = [
+            "## Overview",
+            "## Boundaries and Inputs",
+            "## Contracts",
+            "## Core Design",
+            "## Interfaces and Data",
+            "## Failure Modes and Guardrails",
+            "## Verification",
+            "## Related Documents",
+        ]
+        if not include_requirements:
+            headings.remove("## Contracts")
+        return "# Fixture\n\n" + "\n\ncontent\n\n".join(headings) + "\n"
+
+    def body_finding_codes(
+        self,
+        record: object,
+        text: str,
+        *,
+        profiles: dict[str, object] | None = None,
+        changed_boundary: bool = True,
+    ) -> set[str]:
+        return {
+            finding.code
+            for finding in metadata.validate_body_contract(
+                record,
+                text,
+                profiles or self.profiles,
+                changed_boundary=changed_boundary,
+            )
+        }
+
+    def test_markdown_heading_extraction_ignores_fenced_examples(self) -> None:
+        text = (
+            "# Title\n\n"
+            "~~~text\n## Tilde example\n~~~\n\n"
+            "```markdown\n# Backtick example\n## Backtick H2\n```\n\n"
+            "## Overview\n"
+        )
+        h1, h2 = metadata.extract_markdown_headings(text)
+        self.assertEqual(["# Title"], h1)
+        self.assertEqual(["## Overview"], h2)
+
+    def test_required_heading_reports_code(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        missing = self.body_finding_codes(
+            record,
+            self.literal_spec_body(include_requirements=False),
+        )
+        self.assertIn("body-heading-missing", missing)
+
+    def test_forbidden_heading_reports_code(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        forbidden = self.body_finding_codes(
+            record,
+            self.literal_spec_body() + "\n## Success Criteria\n\ncontent\n",
+        )
+        self.assertIn("body-heading-forbidden", forbidden)
+
+    def test_conditional_heading_may_be_absent(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        conditional_absent = self.body_finding_codes(
+            record,
+            self.literal_spec_body(),
+        )
+        self.assertNotIn("body-heading-missing", conditional_absent)
+
+    def test_two_h1_headings_report_code(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        codes = self.body_finding_codes(
+            record,
+            self.literal_spec_body() + "\n# Duplicate\n",
+        )
+        self.assertIn("body-h1-count", codes)
+
+    def test_changed_target_rejects_template_instruction_and_body_token(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        text = self.literal_spec_body() + "\n> Rules:\n\n{{explain_scope}}\n"
+        codes = self.body_finding_codes(record, text)
+        self.assertIn("template-instruction-in-target", codes)
+        self.assertIn("template-body-token-in-target", codes)
+        documented = self.body_finding_codes(
+            record,
+            self.literal_spec_body()
+            + "\nThe source syntax is `> Rules:` and `{{documented_token}}`.\n",
+        )
+        self.assertNotIn("template-instruction-in-target", documented)
+        self.assertNotIn("template-body-token-in-target", documented)
+
+    def test_zero_role_match_reports_code(self) -> None:
+        missing = self.body_finding_codes(
+            self.fixture_record("docs/03.specs/901-fixture/unknown.md", "spec"),
+            self.literal_spec_body(),
+        )
+        self.assertIn("template-role-missing", missing)
+
+    def test_ambiguous_role_match_reports_code(self) -> None:
+        roles = dict(self.profiles["template_roles"])
+        roles["api-spec"] = {
+            **roles["api-spec"],
+            "target_globs": ["docs/03.specs/*/spec.md"],
+        }
+        ambiguous_profiles = {**self.profiles, "template_roles": roles}
+        ambiguous = self.body_finding_codes(
+            self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec"),
+            self.literal_spec_body(),
+            profiles=ambiguous_profiles,
+        )
+        self.assertIn("template-role-ambiguous", ambiguous)
+
+    def test_template_catalog_readme_requires_profile_headings(self) -> None:
+        catalog = self.fixture_record(
+            "docs/99.templates/templates/README.md",
+            "readme",
+        )
+        unrelated = self.fixture_record("README.md", "readme")
+        text = "# Catalog\n\n## Overview\n"
+        self.assertIn("readme-heading-missing", self.body_finding_codes(catalog, text))
+        self.assertNotIn("readme-heading-missing", self.body_finding_codes(unrelated, text))
+
+    def test_machine_source_requires_token(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        missing = self.body_finding_codes(
+            record,
+            "openapi: 3.1.0\ninfo:\n  title: fixture\n",
+            changed_boundary=False,
+        )
+        self.assertIn("machine-template-token-missing", missing)
+
+    def test_machine_source_rejects_example_host(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        concrete = self.body_finding_codes(
+            record,
+            "openapi: 3.1.0\nx-template-token: __API_TITLE__\nservers:\n  - url: https://api.example.com\n",
+            changed_boundary=False,
+        )
+        concrete_auth = self.body_finding_codes(
+            record,
+            "openapi: 3.1.0\nx-template-token: __API_TITLE__\nx-auth: basic\n",
+            changed_boundary=False,
+        )
+        self.assertIn("machine-template-example-value", concrete)
+        self.assertIn("machine-template-example-value", concrete_auth)
+
+    @staticmethod
     def body_tokens(text: str) -> set[str]:
         return set(re.findall(r"\{\{([a-z][a-z0-9_]*)\}\}", text))
 
@@ -2811,6 +3004,89 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 self.assertEqual(1, result.returncode, result.stdout + result.stderr)
                 self.assertIn(f"release-route-incomplete: {route_file}", result.stdout)
 
+    def test_release_is_in_required_inventory(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        release_sources = [
+            role["source"]
+            for role in profiles["template_roles"].values()
+            if role["artifact_profile"] == "release"
+        ]
+        self.assertEqual(
+            ["docs/99.templates/templates/operations/release.template.md"],
+            release_sources,
+        )
+        findings = metadata.validate_repository_contracts(ROOT, profiles)
+        self.assertNotIn(
+            "release-template-cardinality",
+            {finding.code for finding in findings},
+        )
+
+    def test_repository_contracts_enforce_machine_source_safety(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            path = root / relative_path
+            path.write_text(
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "servers:\n"
+                "  - url: https://api.example.com\n",
+                encoding="utf-8",
+            )
+            result = self.run_contracts(root, profiles)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn(
+                f"machine-template-example-value: {relative_path}",
+                result.stdout,
+            )
+
+    def test_changed_checker_enforces_body_contract_on_new_typed_target(self) -> None:
+        relative_path = "docs/01.requirements/901-fixture.md"
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            commit_all(root, "base")
+            write_doc(
+                root / relative_path,
+                {
+                    "status": "draft",
+                    "artifact_id": "prd:901-fixture",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+                "# Fixture\n\n"
+                "## Overview\n\ncontent\n\n"
+                "## Problem and Stakeholders\n\ncontent\n\n"
+                "## Requirements\n\n> Rules:\n\n{{requirement}}\n\n"
+                "## Acceptance and Verification\n\ncontent\n\n"
+                "## Scope and Non-goals\n\ncontent\n\n"
+                "## Risks and Dependencies\n\ncontent\n\n"
+                "## Related Documents\n\ncontent\n",
+            )
+            result = run_checker(
+                root,
+                "check-changed",
+                "--changed-path",
+                relative_path,
+                profiles=profiles,
+            )
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-instruction-in-target", result.stdout)
+            self.assertIn("template-body-token-in-target", result.stdout)
+
+    def test_shell_delegates_template_schema_without_duplicate_tables(self) -> None:
+        text = (ROOT / "scripts/validation/check-repo-contracts.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "python3 scripts/validation/check-document-metadata.py --mode check-contracts",
+            text,
+        )
+        self.assertNotIn("required_templates=(", text)
+        self.assertNotIn("heading_requirements:", text)
+        self.assertNotIn("operation_forbidden =", text)
+
     def test_human_support_document_cannot_copy_full_registry_array(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root, profiles = self.fixture(directory)
@@ -3066,6 +3342,7 @@ class ChangedPathGitTests(unittest.TestCase):
                 "artifact_type": "prd",
                 "parent_ids": [],
             },
+            PRD_TARGET_BODY,
         )
         write_doc(
             root / "docs/03.specs/123-child/spec.md",
@@ -3172,6 +3449,7 @@ class ChangedPathGitTests(unittest.TestCase):
                 "artifact_type": "prd",
                 "parent_ids": [],
             }
+            body = PRD_TARGET_BODY
         else:
             values = {
                 "status": "superseded",
@@ -3179,7 +3457,8 @@ class ChangedPathGitTests(unittest.TestCase):
                 "artifact_type": "spec",
                 "parent_ids": ["prd:123-identity-root"],
             }
-        write_doc(target, values)
+            body = SPEC_TARGET_BODY
+        write_doc(target, values, body)
         if staged:
             self.assertEqual(0, git(root, "add", target.relative_to(root).as_posix()).returncode)
 
@@ -3590,6 +3869,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
+                PRD_TARGET_BODY,
             )
             write_doc(
                 root / "docs/03.specs/124-child/spec.md",
@@ -3599,6 +3879,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "artifact_type": "spec",
                     "parent_ids": ["prd:124-parent"],
                 },
+                SPEC_TARGET_BODY,
             )
             commit_all(root, "valid typed chain")
             result = run_checker(root, "check-changed", "--base-ref", base)
