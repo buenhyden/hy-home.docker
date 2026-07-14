@@ -137,6 +137,21 @@ class LifecycleTestCase(unittest.TestCase):
         }
         return contract
 
+    def isolated_impacted_cli_args(self) -> tuple[str, str]:
+        """Return an explicit non-promoted contract for isolated CLI fixtures."""
+        contract = copy.deepcopy(self.contract)
+        foundation = contract["waves"]["foundation"]
+        foundation["enforcement"] = "advisory"
+        foundation["manifest_path"] = None
+        directory = pathlib.Path(tempfile.mkdtemp(prefix="lifecycle-impacted-contract-"))
+        self.addCleanup(shutil.rmtree, directory, True)
+        contract_path = directory / "contract.yaml"
+        contract_path.write_text(
+            yaml.safe_dump(contract, sort_keys=False),
+            encoding="utf-8",
+        )
+        return "--contract", str(contract_path)
+
 
 class PublicContractTests(LifecycleTestCase):
     def test_modes_are_the_exact_fixed_tuple(self) -> None:
@@ -809,9 +824,18 @@ class PromotedManifestCliTests(LifecycleTestCase):
         )
 
     def test_advisory_null_is_skipped_but_blocking_null_fails(self) -> None:
+        canonical_foundation = self.contract["waves"]["foundation"]
+        self.assertEqual(canonical_foundation["enforcement"], "blocking")
+        self.assertEqual(
+            canonical_foundation["manifest_path"],
+            "docs/90.references/data/governance/"
+            "document-corpus-lifecycle/foundation.yaml",
+        )
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             advisory = self.canonical_contract()
+            self.assertEqual(advisory["waves"]["foundation"]["enforcement"], "advisory")
+            self.assertIsNone(advisory["waves"]["foundation"]["manifest_path"])
             profiles, contract_path = self.write_config(root, advisory)
             self.assertEqual(self.invoke(ROOT, profiles, contract_path).returncode, 0)
 
@@ -2461,6 +2485,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         ]
         if mode == "check-impacted":
             arguments.extend(("--base-ref", "HEAD"))
+            arguments.extend(self.isolated_impacted_cli_args())
         if mode in {
             "report-duplicates",
             "generate-archive-ledger",
@@ -3214,6 +3239,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 "check-impacted",
                 "--base-ref",
                 baseline,
+                *self.isolated_impacted_cli_args(),
                 cwd=ROOT,
             )
             self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
@@ -3231,6 +3257,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 "check-impacted",
                 "--base-ref",
                 baseline,
+                *self.isolated_impacted_cli_args(),
                 cwd=ROOT,
             )
             self.assertEqual(rejected.returncode, 1, rejected.stdout + rejected.stderr)
@@ -3264,6 +3291,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                     "check-impacted",
                     "--base-ref",
                     "HEAD",
+                    *self.isolated_impacted_cli_args(),
                     cwd=ROOT,
                 )
                 rendered = result.stdout + result.stderr
@@ -3298,6 +3326,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 "check-impacted",
                 "--base-ref",
                 base_148,
+                *self.isolated_impacted_cli_args(),
                 cwd=ROOT,
             )
             self.assertEqual(before_limit.returncode, 0, before_limit.stdout + before_limit.stderr)
@@ -3316,6 +3345,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 "check-impacted",
                 "--base-ref",
                 base_149,
+                *self.isolated_impacted_cli_args(),
                 cwd=ROOT,
             )
             self.assertEqual(at_limit.returncode, 1, at_limit.stdout + at_limit.stderr)
@@ -3366,6 +3396,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 ]
                 if mode == "check-impacted":
                     arguments.extend(("--base-ref", baseline))
+                    arguments.extend(self.isolated_impacted_cli_args())
                 if mode in {
                     "generate-archive-ledger",
                     "check-archive-ledger",
@@ -3482,6 +3513,7 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
         ]
         if mode == "check-impacted":
             arguments.extend(("--base-ref", base_ref))
+            arguments.extend(self.isolated_impacted_cli_args())
         if mode in {
             "report-duplicates",
             "generate-archive-ledger",
