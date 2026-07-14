@@ -10,10 +10,13 @@ import dataclasses
 import datetime
 import hashlib
 import importlib.util
+import os
 import pathlib
 import re
+import stat
 import subprocess
 import sys
+import unicodedata
 from typing import Any
 
 import yaml
@@ -56,10 +59,26 @@ def _load_metadata_module() -> Any:
     return module
 
 
-metadata = _load_metadata_module()
-Finding = metadata.Finding
-Record = metadata.Record
-ProfileError = metadata.ProfileError
+class _BootstrapProfileError(ValueError):
+    """Used only until the canonical metadata module is loaded safely."""
+
+
+metadata: Any = None
+Finding: Any = None
+Record: Any = None
+ProfileError: type[Exception] = _BootstrapProfileError
+
+
+def _ensure_metadata_loaded() -> Any:
+    """Load repository-backed metadata only after CLI-shape validation."""
+
+    global metadata, Finding, Record, ProfileError
+    if metadata is None:
+        metadata = _load_metadata_module()
+        Finding = metadata.Finding
+        Record = metadata.Record
+        ProfileError = metadata.ProfileError
+    return metadata
 
 
 @dataclasses.dataclass(frozen=True)
@@ -153,34 +172,73 @@ TARGET_DISTINCT = frozenset({"move", "merge", "archive"})
 REVIEW_VALUES = frozenset({"pending", "pass", "changes-required"})
 OBJECT_ID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+[^)]*)?\)")
-TITLE_PUNCTUATION = re.compile(r"[^a-z0-9]+")
 SENSITIVE_PAYLOAD_PATTERNS = (
     re.compile(rb"(?i)(?:password|passwd|credential|secret|token|access[_-]?token|refresh[_-]?token|api[_-]?key)\s*[:=]"),
     re.compile(rb"(?i)(?:auth|authorization)\s*[:=]\s*(?:bearer|basic|[A-Za-z0-9+/]{16,})"),
+    re.compile(rb"(?is)\bmachine\s+\S+.{0,512}\blogin\s+\S+.{0,512}\bpassword\s+\S+"),
+    re.compile(rb'(?i)"auths?"\s*:\s*\{|"auth"\s*:\s*"[A-Za-z0-9+/=_-]{8,}"'),
     re.compile(rb"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b"),
     re.compile(rb"\bAKIA[0-9A-Z]{16}\b"),
-    re.compile(rb"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+    re.compile(rb"\bsk-[A-Za-z0-9_-]{12,}\b"),
+    re.compile(rb"\bgh[pousr]_[A-Za-z0-9_]{12,}\b"),
+    re.compile(rb"\bxox[baprs]-[A-Za-z0-9-]{12,}\b"),
+    re.compile(rb"-----BEGIN [A-Z0-9 ]*(?:PRIVATE KEY|PGP PRIVATE KEY BLOCK)-----"),
     re.compile(rb"(?i)(?:^|/|\\)\.(?:bash|zsh|sh)_history(?:\s|$)|\bHISTFILE\s*="),
     re.compile(rb"(?m)^\d{4}-\d{2}-\d{2}(?:T|\s).*(?:ERROR|WARN|DEBUG|TRACE)\b"),
     re.compile(rb"(?mi)^(?:TRACE|DEBUG|INFO|WARN|ERROR|FATAL)\b"),
+    re.compile(rb'(?is)"(?:timestamp|time|ts)"\s*:\s*"[^"]+".{0,512}"level"\s*:\s*"(?:trace|debug|info|warn|error|fatal)"'),
+    re.compile(rb'(?is)\{.{0,512}"level"\s*:\s*"(?:trace|debug|info|warn|error|fatal)"'),
+    re.compile(rb"(?m)^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\S+\s+\S+(?:\[\d+\])?:"),
 )
-SAFETY_CODE_PARTS = (
-    "-path-invalid",
-    "-commit-invalid",
-    "-blob-invalid",
-    "-blob-mismatch",
-    "-sha256-mismatch",
-    "-confidential",
-    "archive-snapshot-missing",
-    "invalid-archived-",
-    "invalid-content-sha256",
-    "invalid-snapshot-path",
-    "malformed-yaml",
-    "duplicate-key",
-    "unreadable",
-    "parse-",
-    "contract-",
-    "internal-",
+SAFETY_FINDING_CODES = frozenset(
+    {
+        "manifest-static-invalid",
+        "manifest-source-path-invalid",
+        "manifest-source-not-at-baseline",
+        "manifest-source-mode-invalid",
+        "manifest-source-parse-invalid",
+        "manifest-target-path-invalid",
+        "manifest-target-file-invalid",
+        "manifest-consumer-path-invalid",
+        "manifest-evidence-path-invalid",
+        "manifest-partition-plan-invalid",
+        "manifest-baseline-commit-invalid",
+        "manifest-serialization-stale",
+        "promoted-manifest-path-invalid",
+        "promoted-manifest-file-invalid",
+        "archive-commit-invalid",
+        "archive-blob-invalid",
+        "archive-blob-mismatch",
+        "archive-source-path-invalid",
+        "archive-snapshot-path-mismatch",
+        "archive-snapshot-file-invalid",
+        "archive-snapshot-missing",
+        "archive-content-sha256-mismatch",
+        "archive-snapshot-confidential",
+        "archive-snapshot-forbidden",
+        "invalid-archived-commit",
+        "invalid-archived-blob",
+        "invalid-snapshot-path",
+        "invalid-content-sha256",
+        "archive-snapshot-disposition-forbidden",
+        "frontmatter-malformed-yaml",
+        "frontmatter-duplicate-key",
+        "exception-schema-invalid",
+        "exception-order-invalid",
+        "exception-code-unknown",
+        "exception-scope-invalid",
+        "exception-owner-required",
+        "exception-reason-required",
+        "exception-exit-condition-required",
+        "exception-approval-invalid",
+        "exception-expired",
+        "exception-expiry-invalid",
+        "exception-evidence-invalid",
+        "exception-static-invalid",
+        "exception-safety-code-forbidden",
+        "contract-invalid",
+        "internal-error",
+    }
 )
 KNOWN_FINDING_CODES = frozenset(
     {
@@ -266,6 +324,83 @@ def _safe_path(value: object) -> bool:
     )
 
 
+def _read_regular_repo_bytes(
+    root: pathlib.Path,
+    relative_path: str,
+    *,
+    require_tracked: bool,
+) -> bytes | None:
+    """Read a regular in-root file through a no-follow directory-fd chain."""
+
+    if not _safe_path(relative_path):
+        return None
+    resolved_root = root.resolve()
+    if require_tracked:
+        tracked = _run_git(
+            root,
+            ["ls-files", "--stage", "-z", "--", relative_path],
+            text=False,
+        )
+        if tracked.returncode != 0 or not tracked.stdout:
+            return None
+        modes = {
+            record.split(b" ", 1)[0]
+            for record in tracked.stdout.split(b"\0")
+            if record
+        }
+        if not modes or not modes <= {b"100644", b"100755"}:
+            return None
+    parts = pathlib.PurePosixPath(relative_path).parts
+    directory_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_DIRECTORY", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
+    file_flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    parent_descriptor: int | None = None
+    descriptor: int | None = None
+    try:
+        parent_descriptor = os.open(resolved_root, directory_flags)
+        for part in parts[:-1]:
+            child_descriptor = os.open(
+                part,
+                directory_flags,
+                dir_fd=parent_descriptor,
+            )
+            os.close(parent_descriptor)
+            parent_descriptor = child_descriptor
+        descriptor = os.open(parts[-1], file_flags, dir_fd=parent_descriptor)
+        try:
+            opened = os.fstat(descriptor)
+            if not stat.S_ISREG(opened.st_mode):
+                return None
+            chunks: list[bytes] = []
+            while True:
+                chunk = os.read(descriptor, 1024 * 1024)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+            return b"".join(chunks)
+        finally:
+            os.close(descriptor)
+            descriptor = None
+    except OSError:
+        return None
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        if parent_descriptor is not None:
+            os.close(parent_descriptor)
+
+
+def _baseline_regular_blob(root: pathlib.Path, commit: str, path: str) -> bool:
+    result = _run_git(root, ["ls-tree", "-z", commit, "--", path], text=False)
+    if result.returncode != 0 or not result.stdout:
+        return False
+    header = result.stdout.split(b"\t", 1)[0].split()
+    return len(header) == 3 and header[0] in {b"100644", b"100755"} and header[1] == b"blob"
+
+
 def _safe_path_text(value: pathlib.PurePosixPath | None) -> str | None:
     return None if value is None else value.as_posix()
 
@@ -307,12 +442,10 @@ def load_migration_contract(path: pathlib.Path) -> dict[str, object]:
     return metadata.load_migration_contract(path)
 
 
-def load_migration_manifest(path: pathlib.Path) -> MigrationManifestDocument:
-    """Load an exact, duplicate-key-safe migration manifest."""
-
+def _load_migration_manifest_text(source: str) -> MigrationManifestDocument:
     try:
-        loaded = metadata._safe_load_unique(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError) as error:
+        loaded = metadata._safe_load_unique(source)
+    except yaml.YAMLError as error:
         raise ProfileError("cannot load migration manifest safely") from error
     top = _as_exact_mapping(loaded, MANIFEST_TOP_LEVEL_FIELDS, "migration manifest")
     if type(top["schema_version"]) is not int or top["schema_version"] != 1:
@@ -404,6 +537,55 @@ def load_migration_manifest(path: pathlib.Path) -> MigrationManifestDocument:
         or "",
         entries=tuple(sorted(entries, key=lambda row: row.source_path.as_posix())),
     )
+
+
+def load_migration_manifest(path: pathlib.Path) -> MigrationManifestDocument:
+    """Load an exact, duplicate-key-safe migration manifest."""
+
+    try:
+        source = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        raise ProfileError("cannot load migration manifest safely") from error
+    return _load_migration_manifest_text(source)
+
+
+def _load_repo_migration_manifest(
+    root: pathlib.Path,
+    relative_path: str,
+) -> MigrationManifestDocument:
+    payload = _read_regular_repo_bytes(root, relative_path, require_tracked=True)
+    if payload is None:
+        raise ProfileError("repository manifest must be a tracked regular in-root file")
+    try:
+        source = payload.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise ProfileError("repository manifest must be UTF-8") from error
+    return _load_migration_manifest_text(source)
+
+
+def _repo_manifest_path(root: pathlib.Path, path: pathlib.Path) -> str:
+    """Return a safe repository-relative manifest path without resolving links."""
+
+    resolved_root = root.resolve()
+    if any(part == ".." for part in path.parts):
+        raise ProfileError("manifest path must not traverse parent directories")
+    candidate = path if path.is_absolute() else resolved_root / path
+    try:
+        relative = candidate.relative_to(resolved_root).as_posix()
+    except ValueError as error:
+        raise ProfileError("manifest path must remain inside the repository") from error
+    if not _safe_path(relative):
+        raise ProfileError("manifest path must be repository-safe")
+    return relative
+
+
+def _repo_manifest_matches(
+    root: pathlib.Path,
+    relative_path: str,
+    expected: str,
+) -> bool:
+    payload = _read_regular_repo_bytes(root, relative_path, require_tracked=True)
+    return payload == expected.replace("\r\n", "\n").encode("utf-8")
 
 
 def _manifest_mapping(document: MigrationManifestDocument) -> dict[str, object]:
@@ -552,6 +734,18 @@ def validate_migration_manifest(
     findings: list[Finding] = []
     path = "manifest"
     try:
+        metadata.validate_static_migration_manifest(
+            _manifest_mapping(document), contract, profiles
+        )
+    except ProfileError:
+        findings.append(
+            _finding(
+                path,
+                "manifest-static-invalid",
+                "manifest violates the canonical static contract",
+            )
+        )
+    try:
         wave = _wave_mapping(contract, document.wave)
     except ProfileError:
         return [_finding(path, "manifest-wave-invalid", "manifest wave is not declared")]
@@ -637,6 +831,14 @@ def validate_migration_manifest(
                         "source is not tracked at baseline_commit",
                     )
                 )
+            elif not _baseline_regular_blob(root, baseline, source):
+                findings.append(
+                    _finding(
+                        source,
+                        "manifest-source-mode-invalid",
+                        "baseline source is not a regular tracked blob",
+                    )
+                )
             else:
                 shown = _run_git(root, ["show", f"{baseline}:{source}"])
                 if shown.returncode == 0:
@@ -664,6 +866,32 @@ def validate_migration_manifest(
                                     "artifact type differs from the canonical path profile",
                                 )
                             )
+                        baseline_artifact_id = baseline_metadata.get("artifact_id")
+                        expected_artifact_id = (
+                            baseline_artifact_id
+                            if isinstance(baseline_artifact_id, str)
+                            else None
+                        )
+                        if row.artifact_id != expected_artifact_id:
+                            findings.append(
+                                _finding(
+                                    source,
+                                    "manifest-baseline-artifact-id-mismatch",
+                                    "artifact identity differs from baseline truth",
+                                )
+                            )
+                        baseline_status = baseline_metadata.get("status")
+                        expected_status = (
+                            baseline_status if isinstance(baseline_status, str) else None
+                        )
+                        if row.status_before != expected_status:
+                            findings.append(
+                                _finding(
+                                    source,
+                                    "manifest-baseline-status-mismatch",
+                                    "status_before differs from baseline truth",
+                                )
+                            )
         target = _safe_path_text(row.target_path)
         if target is not None and not _safe_path(target):
             findings.append(
@@ -672,6 +900,26 @@ def validate_migration_manifest(
         if row.artifact_type not in registered_types:
             findings.append(
                 _finding(source, "manifest-artifact-type-invalid", "artifact type is not registered")
+            )
+        common_transitions = common.get("transitions") if isinstance(common, dict) else None
+        transition_valid = row.status_before == row.status_after
+        if (
+            not transition_valid
+            and isinstance(row.status_before, str)
+            and isinstance(row.status_after, str)
+            and isinstance(common_transitions, dict)
+        ):
+            allowed_next = common_transitions.get(row.status_before)
+            transition_valid = (
+                isinstance(allowed_next, list) and row.status_after in allowed_next
+            )
+        if not transition_valid:
+            findings.append(
+                _finding(
+                    source,
+                    "manifest-transition-invalid",
+                    "status transition is not canonical",
+                )
             )
         required = _profile_required_fields(profiles, row.artifact_type)
         if "artifact_id" in required and not metadata._valid_metadata_artifact_id(row.artifact_id):
@@ -727,6 +975,94 @@ def validate_migration_manifest(
                     "disposition requires source and target equality",
                 )
             )
+        removes_source = row.disposition in {"move", "merge", "archive", "delete"}
+        if removes_source and os.path.lexists(root / source):
+            findings.append(
+                _finding(
+                    source,
+                    "manifest-source-result-present",
+                    "source path remains present after a removing disposition",
+                )
+            )
+        if row.disposition != "delete" and target is not None and _safe_path(target):
+            target_bytes = _read_regular_repo_bytes(
+                root, target, require_tracked=False
+            )
+            if target_bytes is None:
+                findings.append(
+                    _finding(
+                        target,
+                        "manifest-target-missing",
+                        "result target is not a regular in-root file",
+                    )
+                )
+            else:
+                try:
+                    target_text = target_bytes.decode("utf-8")
+                    target_metadata = metadata._parse_frontmatter_text(target_text)
+                except (UnicodeDecodeError, metadata.FrontmatterError):
+                    findings.append(
+                        _finding(
+                            target,
+                            "manifest-target-file-invalid",
+                            "result target metadata cannot be parsed safely",
+                        )
+                    )
+                else:
+                    target_type = (
+                        "generated"
+                        if "generated_by" in target_metadata
+                        else metadata.infer_artifact_type(pathlib.Path(target))
+                    )
+                    if target_type != row.artifact_type:
+                        findings.append(
+                            _finding(
+                                target,
+                                "manifest-target-artifact-type-mismatch",
+                                "result target type differs from manifest truth",
+                            )
+                        )
+                    target_artifact_id = target_metadata.get("artifact_id")
+                    expected_target_id = (
+                        target_artifact_id
+                        if isinstance(target_artifact_id, str)
+                        else None
+                    )
+                    if expected_target_id != row.artifact_id:
+                        findings.append(
+                            _finding(
+                                target,
+                                "manifest-target-artifact-id-mismatch",
+                                "result target identity differs from manifest truth",
+                            )
+                        )
+                    target_status = target_metadata.get("status")
+                    expected_target_status = (
+                        target_status if isinstance(target_status, str) else None
+                    )
+                    if expected_target_status != row.status_after:
+                        findings.append(
+                            _finding(
+                                target,
+                                "manifest-target-status-mismatch",
+                                "result target status differs from manifest truth",
+                            )
+                        )
+                    target_parents = target_metadata.get("parent_ids")
+                    expected_target_parents = (
+                        tuple(sorted(target_parents))
+                        if isinstance(target_parents, list)
+                        and all(isinstance(item, str) for item in target_parents)
+                        else ()
+                    )
+                    if expected_target_parents != row.parent_ids:
+                        findings.append(
+                            _finding(
+                                target,
+                                "manifest-target-parent-ids-mismatch",
+                                "result target parents differ from manifest truth",
+                            )
+                        )
         if row.disposition in {"merge", "archive"} and not row.canonical_replacement:
             findings.append(
                 _finding(source, "manifest-replacement-required", "destructive row requires a replacement")
@@ -817,21 +1153,70 @@ def validate_migration_manifest(
     return sorted(set(findings))
 
 
-def _changed_record_paths(root: pathlib.Path, base_ref: str) -> set[str]:
+def _changed_path_sets(root: pathlib.Path, base_ref: str) -> tuple[set[str], set[str]]:
+    """Return current changed paths and all relation-trigger paths NUL-safely."""
+
     baseline = _verified_commit(root, base_ref)
     if baseline is None:
         raise ProfileError("base_ref must resolve to a commit")
-    paths: set[str] = set()
-    commands = (
-        ["diff", "--name-only", "--diff-filter=ACMRTUXB", baseline, "--", "*.md"],
-        ["ls-files", "--others", "--exclude-standard", "--", "*.md"],
+    changed = _run_git(
+        root,
+        [
+            "diff",
+            "--name-status",
+            "-z",
+            "--find-renames",
+            baseline,
+            "--",
+            "*.md",
+        ],
+        text=False,
     )
-    for command in commands:
-        result = _run_git(root, command)
-        if result.returncode != 0:
-            raise ProfileError("cannot determine impacted Markdown paths")
-        paths.update(line.strip() for line in result.stdout.splitlines() if line.strip())
-    return {path for path in paths if _safe_path(path)}
+    untracked = _run_git(
+        root,
+        ["ls-files", "-z", "--others", "--exclude-standard", "--", "*.md"],
+        text=False,
+    )
+    if changed.returncode != 0 or untracked.returncode != 0:
+        raise ProfileError("cannot determine impacted Markdown paths")
+    try:
+        tokens = [token.decode("utf-8") for token in changed.stdout.split(b"\0") if token]
+        untracked_paths = [
+            token.decode("utf-8") for token in untracked.stdout.split(b"\0") if token
+        ]
+    except UnicodeDecodeError as error:
+        raise ProfileError("impacted Markdown paths are not UTF-8") from error
+    current_paths: set[str] = set()
+    trigger_paths: set[str] = set()
+    index = 0
+    while index < len(tokens):
+        status_code = tokens[index]
+        index += 1
+        if status_code.startswith(("R", "C")):
+            if index + 1 >= len(tokens):
+                raise ProfileError("Git rename record is incomplete")
+            old_path, new_path = tokens[index], tokens[index + 1]
+            index += 2
+            trigger_paths.update((old_path, new_path))
+            current_paths.add(new_path)
+        else:
+            if index >= len(tokens):
+                raise ProfileError("Git path record is incomplete")
+            path = tokens[index]
+            index += 1
+            trigger_paths.add(path)
+            if not status_code.startswith("D"):
+                current_paths.add(path)
+    current_paths.update(untracked_paths)
+    trigger_paths.update(untracked_paths)
+    return (
+        {path for path in current_paths if _safe_path(path)},
+        {path for path in trigger_paths if _safe_path(path)},
+    )
+
+
+def _changed_record_paths(root: pathlib.Path, base_ref: str) -> set[str]:
+    return _changed_path_sets(root, base_ref)[1]
 
 
 def _added_record_paths(root: pathlib.Path, base_ref: str) -> frozenset[pathlib.PurePosixPath]:
@@ -840,14 +1225,21 @@ def _added_record_paths(root: pathlib.Path, base_ref: str) -> frozenset[pathlib.
         raise ProfileError("base_ref must resolve to a commit")
     paths: set[str] = set()
     commands = (
-        ["diff", "--name-only", "--diff-filter=A", baseline, "--", "*.md"],
-        ["ls-files", "--others", "--exclude-standard", "--", "*.md"],
+        ["diff", "--name-only", "-z", "--diff-filter=A", baseline, "--", "*.md"],
+        ["ls-files", "-z", "--others", "--exclude-standard", "--", "*.md"],
     )
     for command in commands:
-        result = _run_git(root, command)
+        result = _run_git(root, command, text=False)
         if result.returncode != 0:
             raise ProfileError("cannot determine added Markdown paths")
-        paths.update(line.strip() for line in result.stdout.splitlines() if line.strip())
+        try:
+            paths.update(
+                token.decode("utf-8")
+                for token in result.stdout.split(b"\0")
+                if token
+            )
+        except UnicodeDecodeError as error:
+            raise ProfileError("added Markdown paths are not UTF-8") from error
     return frozenset(pathlib.PurePosixPath(path) for path in paths if _safe_path(path))
 
 
@@ -930,10 +1322,11 @@ def collect_impacted_records(
     baseline_commit = _verified_commit(root, base_ref)
     if baseline_commit is None:
         raise ProfileError("base_ref must resolve to a commit")
-    changed_paths = _changed_record_paths(root, base_ref)
-    selected = changed_paths & set(by_path)
+    current_changed_paths, trigger_paths = _changed_path_sets(root, base_ref)
+    selected = current_changed_paths & set(by_path)
     historical_ids: set[str] = set()
-    for changed_path in sorted(changed_paths):
+    historical_relation_ids: set[str] = set()
+    for changed_path in sorted(trigger_paths):
         shown = _run_git(root, ["show", f"{baseline_commit}:{changed_path}"], text=False)
         if shown.returncode != 0:
             continue
@@ -945,6 +1338,14 @@ def collect_impacted_records(
         prior_id = prior.metadata.get("artifact_id")
         if isinstance(prior_id, str):
             historical_ids.add(prior_id)
+        prior_parents = prior.metadata.get("parent_ids")
+        if isinstance(prior_parents, list):
+            historical_relation_ids.update(
+                item for item in prior_parents if isinstance(item, str)
+            )
+        prior_supersedes = prior.metadata.get("supersedes")
+        if isinstance(prior_supersedes, str):
+            historical_relation_ids.add(prior_supersedes)
     selected_ids = historical_ids | {
         record.metadata.get("artifact_id")
         for path in selected
@@ -952,6 +1353,11 @@ def collect_impacted_records(
         and isinstance(record.metadata.get("artifact_id"), str)
     }
     additions: set[str] = set()
+    additions.update(
+        by_id[artifact_id]
+        for artifact_id in historical_relation_ids
+        if artifact_id in by_id
+    )
     for path, record in by_path.items():
         parent_ids = record.metadata.get("parent_ids")
         supersedes = record.metadata.get("supersedes")
@@ -962,7 +1368,7 @@ def collect_impacted_records(
             additions.add(path)
         if path in selected:
             additions.update(by_id[item] for item in relations if item in by_id)
-        if _resolved_markdown_links(root, record) & changed_paths:
+        if _resolved_markdown_links(root, record) & trigger_paths:
             additions.add(path)
     for document in documents:
         for row in document.entries:
@@ -980,7 +1386,7 @@ def collect_impacted_records(
             if replacement_path:
                 participants.add(replacement_path)
             consumers = {item.as_posix() for item in row.active_consumers}
-            if participants & changed_paths:
+            if participants & trigger_paths:
                 additions.update(consumers | participants)
             if consumers & selected:
                 additions.update(participants)
@@ -1076,11 +1482,18 @@ def validate_archive_provenance(root: pathlib.Path, record: Record) -> list[Find
                 )
             )
             return sorted(set(findings))
-        try:
-            snapshot_bytes = (root / snapshot_path).read_bytes()
-        except OSError:
+        snapshot_bytes = _read_regular_repo_bytes(
+            root,
+            snapshot_path,
+            require_tracked=True,
+        )
+        if snapshot_bytes is None:
             findings.append(
-                _finding(path, "archive-snapshot-missing", "snapshot bytes are unavailable")
+                _finding(
+                    path,
+                    "archive-snapshot-file-invalid",
+                    "snapshot must be a tracked regular in-root file",
+                )
             )
             return sorted(set(findings))
         snapshot_sha256 = hashlib.sha256(snapshot_bytes).hexdigest()
@@ -1178,7 +1591,11 @@ def _normalized_title(text: str) -> str | None:
     )
     if not title:
         return None
-    normalized = TITLE_PUNCTUATION.sub("", title.casefold())
+    normalized = "".join(
+        character
+        for character in unicodedata.normalize("NFKC", title).casefold()
+        if character.isalnum()
+    )
     return normalized or None
 
 
@@ -1274,123 +1691,141 @@ def render_snapshot_manifest(records: collections.abc.Sequence[Record]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _exception_failure_code(
+    document: object,
+    known_codes: frozenset[str],
+    today: datetime.date,
+) -> str:
+    """Map a canonical validation failure to a stable, value-free code."""
+
+    if not isinstance(document, dict) or set(document) != {"schema_version", "exceptions"}:
+        return "exception-schema-invalid"
+    entries = document.get("exceptions")
+    if type(document.get("schema_version")) is not int or document.get("schema_version") != 1:
+        return "exception-schema-invalid"
+    if not isinstance(entries, list):
+        return "exception-schema-invalid"
+    expected_fields = set(metadata.EXPECTED_EXCEPTION_SCHEMA["entry_fields"])
+    ordering: list[tuple[str, tuple[str, ...]]] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            return "exception-schema-invalid"
+        missing = expected_fields - set(entry)
+        for field, code in (
+            ("owner", "exception-owner-required"),
+            ("reason", "exception-reason-required"),
+            ("exit_condition", "exception-exit-condition-required"),
+        ):
+            if field in missing:
+                return code
+        if missing or set(entry) - expected_fields:
+            return "exception-schema-invalid"
+        finding_code = entry.get("finding_code")
+        if isinstance(finding_code, str) and finding_code in SAFETY_FINDING_CODES:
+            return "exception-safety-code-forbidden"
+        if not isinstance(finding_code, str) or finding_code not in known_codes:
+            return "exception-code-unknown"
+        scopes = entry.get("scope_paths")
+        if not (
+            isinstance(scopes, list)
+            and bool(scopes)
+            and all(
+                isinstance(scope, str)
+                and _safe_path(scope)
+                and scope.casefold() not in {"*", "**", ".", "all", "global"}
+                for scope in scopes
+            )
+            and scopes == sorted(scopes)
+            and len(scopes) == len(set(scopes))
+        ):
+            return "exception-scope-invalid"
+        for field, code in (
+            ("owner", "exception-owner-required"),
+            ("reason", "exception-reason-required"),
+            ("exit_condition", "exception-exit-condition-required"),
+        ):
+            value = entry.get(field)
+            if not isinstance(value, str) or not value.strip():
+                return code
+        approved = entry.get("approved_at")
+        expires = entry.get("expires_on")
+        try:
+            approved_date = (
+                datetime.date.fromisoformat(approved)
+                if isinstance(approved, str)
+                else None
+            )
+            expiry_date = (
+                datetime.date.fromisoformat(expires)
+                if isinstance(expires, str)
+                else None
+            )
+        except ValueError:
+            approved_date = expiry_date = None
+        if approved_date is None or approved_date > today:
+            return "exception-approval-invalid"
+        if expiry_date is None or expiry_date <= today:
+            return "exception-expired"
+        if expiry_date <= approved_date:
+            return "exception-expiry-invalid"
+        evidence = entry.get("evidence")
+        if not (
+            isinstance(evidence, list)
+            and bool(evidence)
+            and all(isinstance(value, str) and _safe_path(value) for value in evidence)
+            and evidence == sorted(evidence)
+            and len(evidence) == len(set(evidence))
+        ):
+            return "exception-evidence-invalid"
+        ordering.append((finding_code, tuple(scopes)))
+    if ordering != sorted(ordering) or len(ordering) != len(set(ordering)):
+        return "exception-order-invalid"
+    return "exception-static-invalid"
+
+
+def _load_exception_document(path: pathlib.Path) -> object:
+    try:
+        return metadata._safe_load_unique(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as error:
+        raise ProfileError("exception document cannot be loaded safely") from error
+
+
 def validate_exceptions(
     path: pathlib.Path,
     *,
     known_codes: frozenset[str],
     today: datetime.date,
 ) -> list[Finding]:
-    """Validate future full-corpus exceptions as bounded, expiring evidence."""
+    """Delegate bounded exception semantics to the canonical static validator."""
 
-    findings: list[Finding] = []
     label = path.name or "exceptions"
     try:
-        loaded = metadata._safe_load_unique(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError):
-        return [_finding(label, "exception-schema-invalid", "exception file cannot be parsed safely")]
-    if not isinstance(loaded, dict) or set(loaded) != {"schema_version", "exceptions"}:
-        return [_finding(label, "exception-schema-invalid", "exception file has invalid top-level fields")]
-    if type(loaded.get("schema_version")) is not int or loaded.get("schema_version") != 1:
-        findings.append(_finding(label, "exception-schema-invalid", "schema version must be 1"))
-    entries = loaded.get("exceptions")
-    if not isinstance(entries, list):
-        return findings + [_finding(label, "exception-schema-invalid", "exceptions must be a list")]
-    expected_field_order = tuple(metadata.EXPECTED_EXCEPTION_SCHEMA["entry_fields"])
-    expected_fields = set(expected_field_order)
-    previous_key: tuple[str, tuple[str, ...]] | None = None
-    for index, entry in enumerate(entries):
-        entry_path = f"{label}#{index}"
-        if not isinstance(entry, dict):
-            findings.append(
-                _finding(entry_path, "exception-schema-invalid", "exception entry fields are invalid")
+        loaded = _load_exception_document(path)
+    except ProfileError:
+        return [
+            _finding(
+                label,
+                "exception-schema-invalid",
+                "exception document cannot be parsed safely",
             )
-            continue
-        missing_fields = expected_fields - set(entry)
-        for key, finding_code in (
-            ("owner", "exception-owner-required"),
-            ("reason", "exception-reason-required"),
-            ("exit_condition", "exception-exit-condition-required"),
-        ):
-            if key in missing_fields:
-                findings.append(
-                    _finding(entry_path, finding_code, f"{key} must be present and non-empty")
-                )
-        if missing_fields or set(entry) - expected_fields:
-            findings.append(
-                _finding(entry_path, "exception-schema-invalid", "exception entry fields are invalid")
-            )
-            continue
-        if tuple(entry) != expected_field_order:
-            findings.append(
-                _finding(entry_path, "exception-order-invalid", "exception fields are not canonical")
-            )
-        code = entry.get("finding_code")
-        if not isinstance(code, str) or code not in known_codes:
-            findings.append(
-                _finding(entry_path, "exception-code-unknown", "finding code is not validator-known")
-            )
-        scopes = entry.get("scope_paths")
-        valid_scopes = (
-            isinstance(scopes, list)
-            and bool(scopes)
-            and all(
-                isinstance(value, str)
-                and _safe_path(value)
-                and value not in {".", "all", "global"}
-                for value in scopes
-            )
-            and scopes == sorted(set(scopes))
+        ]
+    try:
+        metadata.validate_static_exception_document(
+            loaded,
+            {"exception_schema": metadata.EXPECTED_EXCEPTION_SCHEMA},
+            known_codes - SAFETY_FINDING_CODES,
+            today,
         )
-        if not valid_scopes:
-            findings.append(
-                _finding(entry_path, "exception-scope-invalid", "scope paths must be bounded and deterministic")
+    except ProfileError:
+        code = _exception_failure_code(loaded, known_codes, today)
+        return [
+            _finding(
+                label,
+                code,
+                "exception document violates the canonical bounded contract",
             )
-        for key, finding_code in (
-            ("owner", "exception-owner-required"),
-            ("reason", "exception-reason-required"),
-            ("exit_condition", "exception-exit-condition-required"),
-        ):
-            if not isinstance(entry.get(key), str) or not str(entry.get(key)).strip():
-                findings.append(
-                    _finding(entry_path, finding_code, f"{key} must be non-empty")
-                )
-        approved = entry.get("approved_at")
-        expires = entry.get("expires_on")
-        try:
-            approved_date = datetime.date.fromisoformat(approved) if isinstance(approved, str) else None
-            expires_date = datetime.date.fromisoformat(expires) if isinstance(expires, str) else None
-        except ValueError:
-            approved_date = expires_date = None
-        if approved_date is None or approved_date > today:
-            findings.append(
-                _finding(entry_path, "exception-approval-invalid", "approval date is invalid")
-            )
-        if expires_date is None or expires_date <= today:
-            findings.append(
-                _finding(entry_path, "exception-expired", "exception is expired or permanent")
-            )
-        elif approved_date is not None and expires_date <= approved_date:
-            findings.append(
-                _finding(entry_path, "exception-expiry-invalid", "expiry must be after approval")
-            )
-        evidence = entry.get("evidence")
-        if not (
-            isinstance(evidence, list)
-            and bool(evidence)
-            and evidence == sorted(set(evidence))
-            and all(isinstance(value, str) and _safe_path(value) for value in evidence)
-        ):
-            findings.append(
-                _finding(entry_path, "exception-evidence-invalid", "evidence paths are invalid")
-            )
-        if isinstance(code, str) and valid_scopes:
-            order_key = (code, tuple(scopes))
-            if previous_key is not None and order_key <= previous_key:
-                findings.append(
-                    _finding(entry_path, "exception-order-invalid", "exceptions are not uniquely ordered")
-                )
-            previous_key = order_key
-    return sorted(set(findings))
+        ]
+    return []
 
 
 def _review_findings(
@@ -1580,12 +2015,22 @@ def _load_declared_manifests(
             )
             continue
         absolute = root / manifest_path
-        if not absolute.is_file():
+        if not os.path.lexists(absolute):
             findings.append(
                 _finding(manifest_path, "promoted-manifest-missing", "declared manifest does not exist")
             )
             continue
-        document = load_migration_manifest(absolute)
+        try:
+            document = _load_repo_migration_manifest(root, manifest_path)
+        except ProfileError:
+            findings.append(
+                _finding(
+                    manifest_path,
+                    "promoted-manifest-file-invalid",
+                    "declared manifest must be a tracked regular canonical file",
+                )
+            )
+            continue
         if document.wave != wave_name:
             findings.append(
                 _finding(manifest_path, "promoted-wave-mismatch", "manifest wave differs from registry")
@@ -1599,7 +2044,11 @@ def _load_declared_manifests(
                 )
             )
         findings.extend(validate_migration_manifest(root, profiles, contract, document))
-        if not _check_output(absolute, render_migration_manifest(document)):
+        if not _repo_manifest_matches(
+            root,
+            manifest_path,
+            render_migration_manifest(document),
+        ):
             findings.append(
                 _finding(manifest_path, "manifest-serialization-stale", "manifest bytes are not canonical")
             )
@@ -1635,7 +2084,7 @@ def _full_findings(
 
 
 def _is_safety_finding(finding: Finding) -> bool:
-    return any(part in finding.code for part in SAFETY_CODE_PARTS)
+    return finding.code in SAFETY_FINDING_CODES
 
 
 def _print_findings(findings: collections.abc.Sequence[Finding]) -> None:
@@ -1689,8 +2138,9 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(argv)
     _validate_cli_shape(parser, args)
-    root = args.root.resolve()
     try:
+        _ensure_metadata_loaded()
+        root = args.root.resolve()
         contract_path = _rooted(root, args.contract).resolve()
         profiles_path = _rooted(root, args.profiles).resolve()
         contract = load_migration_contract(contract_path)
@@ -1706,14 +2156,18 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             print(f"manifest generated: entries={len(document.entries)}")
             return 0
         if args.mode == "check-manifest":
-            manifest_path = _rooted(root, args.manifest).resolve()
-            document = load_migration_manifest(manifest_path)
+            manifest_relative = _repo_manifest_path(root, args.manifest)
+            document = _load_repo_migration_manifest(root, manifest_relative)
             findings = validate_migration_manifest(root, profiles, contract, document)
             if document.wave != args.wave:
                 findings.append(
                     _finding(args.manifest.as_posix(), "manifest-wave-mismatch", "--wave differs from manifest")
                 )
-            if not _check_output(manifest_path, render_migration_manifest(document)):
+            if not _repo_manifest_matches(
+                root,
+                manifest_relative,
+                render_migration_manifest(document),
+            ):
                 findings.append(
                     _finding(args.manifest.as_posix(), "manifest-serialization-stale", "manifest bytes are not canonical")
                 )
@@ -1727,13 +2181,17 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             print(f"promoted lifecycle manifests: violations={len(findings)}")
             return 3 if any(_is_safety_finding(item) for item in findings) else (1 if findings else 0)
         if args.mode in {"generate-summary", "check-summary"}:
-            manifest_path = _rooted(root, args.manifest).resolve()
-            document = load_migration_manifest(manifest_path)
+            manifest_relative = _repo_manifest_path(root, args.manifest)
+            document = _load_repo_migration_manifest(root, manifest_relative)
             manifest_findings = validate_migration_manifest(root, profiles, contract, document)
-            if not _check_output(manifest_path, render_migration_manifest(document)):
+            if not _repo_manifest_matches(
+                root,
+                manifest_relative,
+                render_migration_manifest(document),
+            ):
                 manifest_findings.append(
                     _finding(
-                        manifest_path.as_posix(),
+                        manifest_relative,
                         "manifest-serialization-stale",
                         "manifest bytes are not canonical",
                     )
@@ -1880,15 +2338,18 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
                 )
             )
         if args.mode == "check-full" and args.exceptions is not None:
-            known_codes = frozenset({item.code for item in findings}) | KNOWN_FINDING_CODES
+            known_codes = (
+                frozenset({item.code for item in findings}) | KNOWN_FINDING_CODES
+            ) - SAFETY_FINDING_CODES
+            exception_path = _rooted(root, args.exceptions).resolve()
             exception_findings = validate_exceptions(
-                _rooted(root, args.exceptions).resolve(), known_codes=known_codes, today=datetime.date.today()
+                exception_path,
+                known_codes=known_codes,
+                today=datetime.date.today(),
             )
             findings.extend(exception_findings)
             if not exception_findings:
-                loaded = metadata._safe_load_unique(
-                    _rooted(root, args.exceptions).read_text(encoding="utf-8")
-                )
+                loaded = _load_exception_document(exception_path)
                 suppressed = {
                     (entry["finding_code"], scope)
                     for entry in loaded["exceptions"]
@@ -1897,7 +2358,8 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
                 findings = [
                     item
                     for item in findings
-                    if item.code.startswith("exception-")
+                    if _is_safety_finding(item)
+                    or item.code.startswith("exception-")
                     or (item.code, item.path) not in suppressed
                 ]
         _print_findings(findings)
@@ -1905,14 +2367,23 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             safety = [item for item in findings if _is_safety_finding(item)]
             print(f"lifecycle full report: findings={len(findings)} safety_failures={len(safety)}")
             return 3 if safety else 0
+        if args.mode == "check-full":
+            return 3 if any(_is_safety_finding(item) for item in findings) else (1 if findings else 0)
         blocking = [item for item in findings if item.severity == "error"]
         return 3 if any(_is_safety_finding(item) for item in blocking) else (1 if blocking else 0)
-    except ProfileError as error:
-        print(f"configuration-error: {error}", file=sys.stderr)
+    except ProfileError:
+        print("configuration-error: repository lifecycle input is invalid", file=sys.stderr)
         return 3
     except (OSError, UnicodeError, yaml.YAMLError):
         print("internal-error: lifecycle operation failed safely", file=sys.stderr)
         return 3
+    except Exception:
+        print("internal-error: lifecycle operation failed safely", file=sys.stderr)
+        return 3
+
+
+if __name__ != "__main__":
+    _ensure_metadata_loaded()
 
 
 if __name__ == "__main__":
