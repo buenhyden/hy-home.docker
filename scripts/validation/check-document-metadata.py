@@ -33,6 +33,7 @@ EXPECTED_ARCHIVE_DISPOSITIONS = (
     "evidence-preserve",
 )
 EXPECTED_PRESERVATION_CLASSES = ("git-history", "immutable-snapshot")
+EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS = ("evidence-preserve",)
 EXPECTED_MANIFEST_DISPOSITIONS = (
     "migrate",
     "preserve",
@@ -2286,7 +2287,11 @@ def validate_record(
             findings.append(_finding(record, "invalid-archive-reason", "archive_reason must be a non-empty string"))
 
         archive_disposition = record.metadata.get("archive_disposition")
-        if archive_disposition is not None and archive_disposition not in EXPECTED_ARCHIVE_DISPOSITIONS:
+        archive_disposition_valid = (
+            isinstance(archive_disposition, str)
+            and archive_disposition in EXPECTED_ARCHIVE_DISPOSITIONS
+        )
+        if archive_disposition is not None and not archive_disposition_valid:
             findings.append(
                 _finding(
                     record,
@@ -2306,7 +2311,11 @@ def validate_record(
         )
         replacement_present = "current_replacement" in record.metadata
         replacement = record.metadata.get("current_replacement")
-        if archive_disposition in replacement_required_for and replacement in (None, ""):
+        if (
+            archive_disposition_valid
+            and archive_disposition in replacement_required_for
+            and replacement in (None, "")
+        ):
             findings.append(
                 _finding(
                     record,
@@ -2314,7 +2323,11 @@ def validate_record(
                     "current_replacement is required for this archive disposition",
                 )
             )
-        if archive_disposition in replacement_forbidden_for and replacement_present:
+        if (
+            archive_disposition_valid
+            and archive_disposition in replacement_forbidden_for
+            and replacement_present
+        ):
             findings.append(
                 _finding(
                     record,
@@ -2337,7 +2350,11 @@ def validate_record(
                 )
 
         preservation_class = record.metadata.get("preservation_class")
-        if preservation_class is not None and preservation_class not in EXPECTED_PRESERVATION_CLASSES:
+        preservation_class_valid = (
+            isinstance(preservation_class, str)
+            and preservation_class in EXPECTED_PRESERVATION_CLASSES
+        )
+        if preservation_class is not None and not preservation_class_valid:
             findings.append(
                 _finding(
                     record,
@@ -2356,8 +2373,10 @@ def validate_record(
             "snapshot",
             "forbidden_for",
         )
-        if preservation_class in snapshot_forbidden_for and any(
-            key in record.metadata for key in snapshot_fields
+        if (
+            preservation_class_valid
+            and preservation_class in snapshot_forbidden_for
+            and any(key in record.metadata for key in snapshot_fields)
         ):
             findings.append(
                 _finding(
@@ -2366,7 +2385,18 @@ def validate_record(
                     "snapshot fields are forbidden for this preservation class",
                 )
             )
-        if preservation_class in snapshot_required_for:
+        if preservation_class_valid and preservation_class in snapshot_required_for:
+            if (
+                archive_disposition_valid
+                and archive_disposition not in EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS
+            ):
+                findings.append(
+                    _finding(
+                        record,
+                        "archive-snapshot-disposition-forbidden",
+                        "immutable snapshots require an admitted archive disposition",
+                    )
+                )
             required_codes = {
                 "snapshot_path": "archive-snapshot-path-required",
                 "content_sha256": "archive-content-sha256-required",
@@ -2565,7 +2595,7 @@ def load_migration_contract(
     }:
         raise ProfileError("replacement_requirements must partition every canonical disposition")
     if loaded.get("snapshot_admission") != {
-        "allowed_archive_dispositions": ["evidence-preserve"],
+        "allowed_archive_dispositions": list(EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS),
         "required_preservation_class": "immutable-snapshot",
         "required_fields": ["snapshot_path", "content_sha256", "snapshot_reason"],
         "required_checks": ["confidentiality-scan", "content-sha256"],

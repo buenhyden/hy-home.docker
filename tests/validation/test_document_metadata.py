@@ -1531,6 +1531,54 @@ class MetadataValidationTests(unittest.TestCase):
                 record = self.archive_record(overrides, remove=remove)
                 self.assertIn(expected_code, self.codes(record))
 
+    def test_immutable_snapshot_requires_admitted_archive_disposition(self) -> None:
+        snapshot = {
+            "preservation_class": "immutable-snapshot",
+            "snapshot_path": "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot",
+            "content_sha256": "c" * 64,
+            "snapshot_reason": "Audit evidence.",
+        }
+        for disposition in ("superseded", "duplicate", "conflict", "withdrawn"):
+            with self.subTest(disposition=disposition):
+                record = self.archive_record(
+                    {**snapshot, "archive_disposition": disposition},
+                    remove=("current_replacement",) if disposition == "withdrawn" else (),
+                )
+                self.assertIn(
+                    "archive-snapshot-disposition-forbidden",
+                    self.codes(record),
+                )
+
+        admitted = self.archive_record(
+            {**snapshot, "archive_disposition": "evidence-preserve"}
+        )
+        self.assertNotIn(
+            "archive-snapshot-disposition-forbidden",
+            self.codes(admitted),
+        )
+
+    def test_archive_selector_shapes_fail_closed(self) -> None:
+        cases = (
+            ("archive_disposition", ["superseded"], "invalid-archive-disposition"),
+            (
+                "archive_disposition",
+                {"value": "superseded"},
+                "invalid-archive-disposition",
+            ),
+            ("preservation_class", ["git-history"], "invalid-preservation-class"),
+            (
+                "preservation_class",
+                {"value": "git-history"},
+                "invalid-preservation-class",
+            ),
+        )
+        for field, malformed, expected_code in cases:
+            with self.subTest(field=field, shape=type(malformed).__name__):
+                self.assertIn(
+                    expected_code,
+                    self.codes(self.archive_record({field: malformed})),
+                )
+
     def test_archive_rejects_sentinel_paths_hashes_and_object_ids(self) -> None:
         snapshot = {
             "archive_disposition": "evidence-preserve",
@@ -4619,6 +4667,34 @@ class CheckerCliTests(unittest.TestCase):
             self.assertEqual(0, passing.returncode, passing.stdout + passing.stderr)
             self.assertNotEqual(0, failing.returncode)
             self.assertIn("missing-required-key", failing.stdout)
+
+    def test_changed_mode_archive_selector_shape_has_no_traceback(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            path = "docs/98.archive/04.execution/new-target.md"
+            write_doc(
+                root / path,
+                {
+                    "status": "archived",
+                    "artifact_id": "archive:04-execution-new-target",
+                    "artifact_type": "archive",
+                    "parent_ids": [],
+                    "archived_from": "docs/04.execution/new-target.md",
+                    "archived_on": "2026-07-14",
+                    "archive_reason": "Bounded selector-shape fixture.",
+                    "archive_disposition": ["superseded"],
+                    "archived_commit": "a" * 40,
+                    "archived_blob": "b" * 40,
+                    "preservation_class": "git-history",
+                    "current_replacement": "docs/04.execution/current.md",
+                },
+            )
+            result = run_checker(root, "check-changed", "--changed-path", path)
+            combined = result.stdout + result.stderr
+            self.assertEqual(1, result.returncode, combined)
+            self.assertIn("invalid-archive-disposition", result.stdout)
+            self.assertNotIn("Traceback", combined)
 
     def test_report_order_is_deterministic_and_sorted_by_path(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
