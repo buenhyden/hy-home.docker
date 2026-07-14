@@ -2017,5 +2017,488 @@ class ReviewRemediationTests(LifecycleTestCase):
                     self.assertEqual(result, expected)
 
 
+class FinalReviewRemediationTests(LifecycleTestCase):
+    def record(
+        self,
+        path: str,
+        artifact_type: str = "task",
+        **metadata_values: object,
+    ) -> metadata.Record:
+        values: dict[str, object] = {
+            "status": "active",
+            "artifact_id": f"{artifact_type}:{pathlib.PurePosixPath(path).stem}",
+            "artifact_type": artifact_type,
+            "parent_ids": [],
+        }
+        values.update(metadata_values)
+        return metadata.Record(pathlib.Path(path), values, artifact_type)
+
+    def _invoke_corpus_mode(
+        self,
+        root: pathlib.Path,
+        mode: str,
+        output: pathlib.Path,
+    ) -> subprocess.CompletedProcess[str]:
+        arguments = [
+            sys.executable,
+            str(SCRIPT),
+            "--root",
+            str(root),
+            "--mode",
+            mode,
+        ]
+        if mode == "check-impacted":
+            arguments.extend(("--base-ref", "HEAD"))
+        if mode in {
+            "report-duplicates",
+            "generate-archive-ledger",
+            "check-archive-ledger",
+            "generate-snapshot-manifest",
+            "check-snapshot-manifest",
+        }:
+            arguments.extend(("--output", str(output)))
+        return run(*arguments, cwd=ROOT)
+
+    def test_corpus_modes_reject_final_and_intermediate_markdown_symlinks_without_leakage(
+        self,
+    ) -> None:
+        marker = "outside-corpus-payload-marker"
+        modes = (
+            "report-full",
+            "check-full",
+            "report-duplicates",
+            "check-impacted",
+            "check-archive",
+            "generate-archive-ledger",
+            "check-archive-ledger",
+            "generate-snapshot-manifest",
+            "check-snapshot-manifest",
+        )
+        for attack in ("final", "intermediate"):
+            with self.subTest(attack=attack), tempfile.TemporaryDirectory() as directory:
+                fixture = pathlib.Path(directory)
+                root = fixture / "repository"
+                outside = fixture / "outside"
+                root.mkdir()
+                outside.mkdir()
+                init_repo(root)
+                outside_body = (
+                    "---\nstatus: active\nartifact_id: reference:outside\n"
+                    f"artifact_type: reference\nparent_ids: [{marker}]\n---\n\n# Outside\n"
+                )
+                relative = pathlib.PurePosixPath(
+                    "docs/90.references/link.md"
+                    if attack == "final"
+                    else "docs/90.references/nested/link.md"
+                )
+                target = root / relative
+                target.parent.mkdir(parents=True)
+                if attack == "final":
+                    outside_file = outside / "link.md"
+                    outside_file.write_text(outside_body, encoding="utf-8")
+                    target.symlink_to(outside_file)
+                    commit_all(root, "track final symlink")
+                else:
+                    target.write_text("# Safe baseline\n", encoding="utf-8")
+                    commit_all(root, "track regular file")
+                    shutil.rmtree(target.parent)
+                    (outside / "link.md").write_text(outside_body, encoding="utf-8")
+                    target.parent.symlink_to(outside, target_is_directory=True)
+
+                for mode in modes:
+                    with self.subTest(attack=attack, mode=mode):
+                        output = fixture / f"{attack}-{mode}.out"
+                        check_mode = mode.startswith("check-") and mode.endswith(
+                            ("ledger", "manifest")
+                        )
+                        if check_mode:
+                            output.write_bytes(b"sentinel")
+                        result = self._invoke_corpus_mode(root, mode, output)
+                        rendered = result.stdout + result.stderr
+                        self.assertEqual(result.returncode, 3, rendered)
+                        self.assertNotIn(marker, rendered)
+                        self.assertNotIn("Traceback", rendered)
+                        if check_mode:
+                            self.assertEqual(output.read_bytes(), b"sentinel")
+                        else:
+                            self.assertFalse(output.exists())
+
+    def _archive_fixture(
+        self,
+    ) -> tuple[
+        tempfile.TemporaryDirectory[str],
+        pathlib.Path,
+        str,
+        lifecycle.MigrationManifestRow,
+        pathlib.Path,
+    ]:
+        temporary = tempfile.TemporaryDirectory()
+        root = pathlib.Path(temporary.name)
+        init_repo(root)
+        source_relative = pathlib.PurePosixPath("docs/90.references/source.md")
+        source = root / source_relative
+        source.parent.mkdir(parents=True)
+        source.write_text(
+            "---\nstatus: active\nartifact_id: reference:source\n"
+            "artifact_type: reference\nparent_ids: []\n---\n\n# Source\n",
+            encoding="utf-8",
+        )
+        baseline = commit_all(root, "archive source baseline")
+        blob = git(root, "rev-parse", f"{baseline}:{source_relative.as_posix()}")
+        source.unlink()
+        replacement = root / "docs/90.references/replacement.md"
+        replacement.write_text("# Replacement\n", encoding="utf-8")
+        target_relative = pathlib.PurePosixPath(
+            "docs/98.archive/90.references/source.md"
+        )
+        target = root / target_relative
+        target.parent.mkdir(parents=True)
+        archive_metadata: dict[str, object] = {
+            "status": "archived",
+            "artifact_id": "reference:source",
+            "artifact_type": "archive",
+            "parent_ids": [],
+            "archived_from": source_relative.as_posix(),
+            "archived_on": "2026-07-14",
+            "archive_reason": "Superseded by the canonical replacement.",
+            "archive_disposition": "superseded",
+            "archived_commit": baseline,
+            "archived_blob": blob,
+            "preservation_class": "git-history",
+            "current_replacement": "docs/90.references/replacement.md",
+        }
+        target.write_text(
+            "---\n"
+            + yaml.safe_dump(archive_metadata, sort_keys=False)
+            + "---\n\n# Archived Source\n",
+            encoding="utf-8",
+        )
+        row = self.valid_row(
+            source_path=source_relative,
+            target_path=target_relative,
+            artifact_id="reference:source",
+            artifact_type="reference",
+            status_before="active",
+            status_after="archived",
+            parent_ids=(),
+            disposition="archive",
+            canonical_replacement="docs/90.references/replacement.md",
+            active_consumers=(),
+            preservation_class="git-history",
+            evidence=lifecycle.ManifestEvidence(
+                ("git show baseline source",),
+                ("docs/90.references/source.md",),
+                (pathlib.PurePosixPath("docs/90.references/source.md"),),
+                ("verified no active consumers",),
+                ("revert archive commit",),
+            ),
+            review_verdict=lifecycle.ReviewVerdict("pass", "pass"),
+        )
+        return temporary, root, baseline, row, target
+
+    def _archive_codes(
+        self,
+        root: pathlib.Path,
+        baseline: str,
+        row: lifecycle.MigrationManifestRow,
+    ) -> set[str]:
+        return {
+            item.code
+            for item in lifecycle.validate_migration_manifest(
+                root,
+                self.profiles,
+                self.fixture_contract([row.source_path.as_posix()]),
+                self.document(baseline, entries=(row,)),
+            )
+        }
+
+    def test_archive_disposition_binds_source_to_canonical_validated_tombstone(
+        self,
+    ) -> None:
+        temporary, root, baseline, row, target = self._archive_fixture()
+        self.addCleanup(temporary.cleanup)
+        self.assertEqual(self._archive_codes(root, baseline, row), set())
+
+        original = yaml.safe_load(target.read_text(encoding="utf-8").split("---", 2)[1])
+        cases: dict[str, tuple[dict[str, object], lifecycle.MigrationManifestRow, str]] = {
+            "source": (
+                {"archived_from": "docs/90.references/other.md"},
+                row,
+                "manifest-archive-source-mismatch",
+            ),
+            "type": (
+                {"artifact_type": "reference"},
+                row,
+                "manifest-archive-target-profile-invalid",
+            ),
+            "status": (
+                {"status": "active"},
+                dataclasses.replace(row, status_after="active"),
+                "manifest-archive-status-invalid",
+            ),
+            "parents": (
+                {"parent_ids": ["reference:parent"]},
+                row,
+                "manifest-target-parent-ids-mismatch",
+            ),
+            "replacement": (
+                {"current_replacement": "docs/90.references/other.md"},
+                row,
+                "manifest-archive-replacement-mismatch",
+            ),
+            "preservation": (
+                {"preservation_class": "immutable-snapshot"},
+                row,
+                "manifest-archive-preservation-mismatch",
+            ),
+            "reviews": (
+                {},
+                dataclasses.replace(
+                    row,
+                    review_verdict=lifecycle.ReviewVerdict("pending", "pending"),
+                ),
+                "manifest-destructive-review-required",
+            ),
+        }
+        for name, (changes, candidate, expected) in cases.items():
+            with self.subTest(case=name):
+                target_metadata = {**original, **changes}
+                target.write_text(
+                    "---\n"
+                    + yaml.safe_dump(target_metadata, sort_keys=False)
+                    + "---\n\n# Archived Source\n",
+                    encoding="utf-8",
+                )
+                codes = self._archive_codes(root, baseline, candidate)
+                self.assertIn(expected, codes)
+                if name != "reviews":
+                    self.assertIn("manifest-transition-invalid", codes)
+        target.write_text(
+            "---\n" + yaml.safe_dump(original, sort_keys=False) + "---\n",
+            encoding="utf-8",
+        )
+        non_archive = dataclasses.replace(
+            row,
+            source_path=pathlib.PurePosixPath("docs/98.archive/90.references/source.md"),
+            target_path=pathlib.PurePosixPath("docs/98.archive/90.references/source.md"),
+            artifact_type="archive",
+            status_before="archived",
+            status_after="active",
+            disposition="preserve",
+            canonical_replacement=None,
+            preservation_class=None,
+            evidence=lifecycle.ManifestEvidence((), (), (), (), ()),
+            review_verdict=lifecycle.ReviewVerdict("pending", "pending"),
+        )
+        reverse_contract = self.fixture_contract([non_archive.source_path.as_posix()])
+        reverse_document = self.document(
+            baseline,
+            entries=(non_archive,),
+        )
+        reverse_contract["waves"]["fixture"]["source_paths"] = [
+            non_archive.source_path.as_posix()
+        ]
+        reverse_codes = {
+            item.code
+            for item in lifecycle.validate_migration_manifest(
+                root, self.profiles, reverse_contract, reverse_document
+            )
+        }
+        self.assertIn("manifest-transition-invalid", reverse_codes)
+
+    def _partition_fixture(
+        self,
+        *,
+        plan_state: str,
+        reviews: lifecycle.ReviewVerdict = lifecycle.ReviewVerdict("pass", "pass"),
+    ) -> tuple[
+        tempfile.TemporaryDirectory[str],
+        pathlib.Path,
+        str,
+        lifecycle.MigrationManifestRow,
+        tuple[metadata.Record, ...],
+    ]:
+        temporary = tempfile.TemporaryDirectory()
+        root = pathlib.Path(temporary.name)
+        init_repo(root)
+        source_relative = pathlib.PurePosixPath(
+            "docs/04.execution/tasks/149.md"
+        )
+        source = root / source_relative
+        source.parent.mkdir(parents=True)
+        source.write_text(
+            "---\nstatus: active\nartifact_id: task:149\nartifact_type: task\n"
+            "parent_ids: [plan:partition]\n---\n\n# Task: New Leaf\n",
+            encoding="utf-8",
+        )
+        baseline = commit_all(root, "partition baseline")
+        plan_relative = pathlib.PurePosixPath(
+            "docs/04.execution/plans/2026-partition.md"
+        )
+        plan = root / plan_relative
+        plan.parent.mkdir(parents=True, exist_ok=True)
+        valid_plan = (
+            "---\nstatus: active\nartifact_id: plan:partition\n"
+            "artifact_type: plan\nparent_ids: [spec:partition]\n---\n\n"
+            "# Document Partition Plan\n"
+        )
+        if plan_state == "missing":
+            pass
+        elif plan_state == "untracked":
+            plan.write_text(valid_plan, encoding="utf-8")
+        elif plan_state == "wrong-profile":
+            plan.write_text(
+                valid_plan.replace("artifact_type: plan", "artifact_type: spec"),
+                encoding="utf-8",
+            )
+            commit_all(root, "track wrong-profile plan")
+        elif plan_state == "draft":
+            plan.write_text(
+                valid_plan.replace("status: active", "status: draft"),
+                encoding="utf-8",
+            )
+            commit_all(root, "track draft plan")
+        elif plan_state in {"tracked", "symlink"}:
+            plan.write_text(valid_plan, encoding="utf-8")
+            commit_all(root, "track partition plan")
+            if plan_state == "symlink":
+                outside = pathlib.Path(temporary.name).parent / (
+                    pathlib.Path(temporary.name).name + "-outside-plan"
+                )
+                outside.write_text("outside-plan-marker\n", encoding="utf-8")
+                self.addCleanup(lambda: outside.unlink(missing_ok=True))
+                plan.unlink()
+                plan.symlink_to(outside)
+        else:
+            raise AssertionError(plan_state)
+        row = self.valid_row(
+            source_path=source_relative,
+            target_path=source_relative,
+            artifact_id="task:149",
+            artifact_type="task",
+            status_before="active",
+            status_after="active",
+            parent_ids=("plan:partition",),
+            partition_plan=plan_relative,
+            review_verdict=reviews,
+        )
+        records = tuple(
+            self.record(
+                f"docs/04.execution/tasks/{index:03}.md",
+                "task",
+                artifact_id=f"task:{index:03}",
+            )
+            for index in range(150)
+        )
+        return temporary, root, baseline, row, records
+
+    def test_partition_approval_requires_tracked_canonical_reviewed_plan(self) -> None:
+        cases = {
+            "missing": "manifest-partition-plan-invalid",
+            "untracked": "manifest-partition-plan-invalid",
+            "symlink": "manifest-partition-plan-invalid",
+            "wrong-profile": "manifest-partition-plan-profile-invalid",
+            "draft": "manifest-partition-plan-status-invalid",
+            "unreviewed": "manifest-partition-plan-review-required",
+        }
+        for name, expected in cases.items():
+            state = "tracked" if name == "unreviewed" else name
+            reviews = (
+                lifecycle.ReviewVerdict("pending", "pending")
+                if name == "unreviewed"
+                else lifecycle.ReviewVerdict("pass", "pass")
+            )
+            temporary, root, baseline, row, records = self._partition_fixture(
+                plan_state=state,
+                reviews=reviews,
+            )
+            try:
+                contract = self.fixture_contract([row.source_path.as_posix()])
+                document = self.document(baseline, entries=(row,))
+                codes = {
+                    item.code
+                    for item in lifecycle.validate_migration_manifest(
+                        root, self.profiles, contract, document
+                    )
+                }
+                self.assertIn(expected, codes, name)
+                applied = lifecycle._apply_partition_approvals(
+                    records,
+                    (document,),
+                    root=root,
+                    profiles=self.profiles,
+                )
+                findings = lifecycle.validate_directory_budgets(
+                    applied,
+                    added_paths=frozenset(
+                        {pathlib.PurePosixPath("docs/04.execution/tasks/149.md")}
+                    ),
+                    warning_at=100,
+                    block_new_leaf_at=150,
+                    enforce_all=False,
+                )
+                self.assertIn("directory-budget-blocked", {item.code for item in findings})
+            finally:
+                temporary.cleanup()
+
+        temporary, root, baseline, row, records = self._partition_fixture(
+            plan_state="tracked"
+        )
+        self.addCleanup(temporary.cleanup)
+        contract = self.fixture_contract([row.source_path.as_posix()])
+        document = self.document(baseline, entries=(row,))
+        self.assertFalse(
+            any(
+                item.code.startswith("manifest-partition-plan-")
+                for item in lifecycle.validate_migration_manifest(
+                    root, self.profiles, contract, document
+                )
+            )
+        )
+        applied = lifecycle._apply_partition_approvals(
+            records,
+            (document,),
+            root=root,
+            profiles=self.profiles,
+        )
+        approved = lifecycle.validate_directory_budgets(
+            applied,
+            added_paths=frozenset(
+                {pathlib.PurePosixPath("docs/04.execution/tasks/149.md")}
+            ),
+            warning_at=100,
+            block_new_leaf_at=150,
+            enforce_all=False,
+        )
+        self.assertNotIn("directory-budget-blocked", {item.code for item in approved})
+
+    def test_directory_budget_counts_only_immediate_eligible_markdown_leaves(self) -> None:
+        records = tuple(
+            self.record(f"docs/04.execution/tasks/{index:03}.md")
+            for index in range(99)
+        ) + (
+            self.record("docs/04.execution/tasks/README.md", "readme"),
+            self.record("docs/04.execution/tasks/generated.md", "generated"),
+            self.record("docs/04.execution/tasks/repo-support.md", "repo-support"),
+            self.record("docs/04.execution/tasks/unsupported.md", "unsupported"),
+            self.record("docs/04.execution/tasks/not-markdown.txt", "task"),
+            self.record("docs/04.execution/tasks/2026/nested.md", "task"),
+        )
+        findings = lifecycle.validate_directory_budgets(
+            records,
+            added_paths=frozenset(),
+            warning_at=100,
+            block_new_leaf_at=150,
+            enforce_all=False,
+        )
+        self.assertFalse(
+            any(
+                item.path == "docs/04.execution/tasks"
+                and item.code == "directory-budget-warning"
+                for item in findings
+            )
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

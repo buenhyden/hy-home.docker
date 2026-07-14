@@ -63,10 +63,22 @@ class _BootstrapProfileError(ValueError):
     """Used only until the canonical metadata module is loaded safely."""
 
 
+class _CorpusSafetyError(Exception):
+    """Value-free corpus path failure that must cross the CLI safety boundary."""
+
+    def __init__(self, path: str, code: str) -> None:
+        super().__init__(code)
+        self.path = path if path and _lexically_safe_path(path) else "corpus"
+        self.code = code
+
+
 metadata: Any = None
 Finding: Any = None
 Record: Any = None
 ProfileError: type[Exception] = _BootstrapProfileError
+
+_CORPUS_SNAPSHOT_ROOT: pathlib.Path | None = None
+_CORPUS_SNAPSHOT_BYTES: dict[str, bytes] = {}
 
 
 def _ensure_metadata_loaded() -> Any:
@@ -202,6 +214,9 @@ SAFETY_FINDING_CODES = frozenset(
         "manifest-consumer-path-invalid",
         "manifest-evidence-path-invalid",
         "manifest-partition-plan-invalid",
+        "corpus-markdown-path-invalid",
+        "corpus-markdown-mode-invalid",
+        "corpus-markdown-file-invalid",
         "manifest-baseline-commit-invalid",
         "manifest-serialization-stale",
         "promoted-manifest-path-invalid",
@@ -324,6 +339,56 @@ def _safe_path(value: object) -> bool:
     )
 
 
+def _lexically_safe_path(value: object) -> bool:
+    if not isinstance(value, str) or not value or "\\" in value:
+        return False
+    path = pathlib.PurePosixPath(value)
+    return (
+        not path.is_absolute()
+        and bool(path.parts)
+        and all(part not in {"", ".", ".."} for part in path.parts)
+    )
+
+
+def _open_regular_repo_descriptor(root: pathlib.Path, relative_path: str) -> int | None:
+    """Open one in-root regular file without following any path component."""
+
+    if not _lexically_safe_path(relative_path):
+        return None
+    parts = pathlib.PurePosixPath(relative_path).parts
+    directory_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_DIRECTORY", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
+    file_flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    parent_descriptor: int | None = None
+    descriptor: int | None = None
+    try:
+        parent_descriptor = os.open(root.resolve(), directory_flags)
+        for part in parts[:-1]:
+            child_descriptor = os.open(
+                part,
+                directory_flags,
+                dir_fd=parent_descriptor,
+            )
+            os.close(parent_descriptor)
+            parent_descriptor = child_descriptor
+        descriptor = os.open(parts[-1], file_flags, dir_fd=parent_descriptor)
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode):
+            os.close(descriptor)
+            descriptor = None
+        return descriptor
+    except OSError:
+        if descriptor is not None:
+            os.close(descriptor)
+        return None
+    finally:
+        if parent_descriptor is not None:
+            os.close(parent_descriptor)
+
+
 def _read_regular_repo_bytes(
     root: pathlib.Path,
     relative_path: str,
@@ -334,7 +399,6 @@ def _read_regular_repo_bytes(
 
     if not _safe_path(relative_path):
         return None
-    resolved_root = root.resolve()
     if require_tracked:
         tracked = _run_git(
             root,
@@ -350,47 +414,21 @@ def _read_regular_repo_bytes(
         }
         if not modes or not modes <= {b"100644", b"100755"}:
             return None
-    parts = pathlib.PurePosixPath(relative_path).parts
-    directory_flags = (
-        os.O_RDONLY
-        | getattr(os, "O_DIRECTORY", 0)
-        | getattr(os, "O_NOFOLLOW", 0)
-    )
-    file_flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
-    parent_descriptor: int | None = None
-    descriptor: int | None = None
+    descriptor = _open_regular_repo_descriptor(root, relative_path)
+    if descriptor is None:
+        return None
     try:
-        parent_descriptor = os.open(resolved_root, directory_flags)
-        for part in parts[:-1]:
-            child_descriptor = os.open(
-                part,
-                directory_flags,
-                dir_fd=parent_descriptor,
-            )
-            os.close(parent_descriptor)
-            parent_descriptor = child_descriptor
-        descriptor = os.open(parts[-1], file_flags, dir_fd=parent_descriptor)
-        try:
-            opened = os.fstat(descriptor)
-            if not stat.S_ISREG(opened.st_mode):
-                return None
-            chunks: list[bytes] = []
-            while True:
-                chunk = os.read(descriptor, 1024 * 1024)
-                if not chunk:
-                    break
-                chunks.append(chunk)
-            return b"".join(chunks)
-        finally:
-            os.close(descriptor)
-            descriptor = None
+        chunks: list[bytes] = []
+        while True:
+            chunk = os.read(descriptor, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        return b"".join(chunks)
     except OSError:
         return None
     finally:
-        if descriptor is not None:
-            os.close(descriptor)
-        if parent_descriptor is not None:
-            os.close(parent_descriptor)
+        os.close(descriptor)
 
 
 def _baseline_regular_blob(root: pathlib.Path, commit: str, path: str) -> bool:
@@ -940,14 +978,7 @@ def validate_migration_manifest(
             transition_valid = (
                 isinstance(allowed_next, list) and row.status_after in allowed_next
             )
-        if not transition_valid:
-            findings.append(
-                _finding(
-                    source,
-                    "manifest-transition-invalid",
-                    "status transition is not canonical",
-                )
-            )
+        archive_result_valid = False
         required = _profile_required_fields(profiles, row.artifact_type)
         if "artifact_id" in required and not metadata._valid_metadata_artifact_id(row.artifact_id):
             findings.append(
@@ -1036,12 +1067,14 @@ def validate_migration_manifest(
                         )
                     )
                 else:
-                    target_type = (
-                        "generated"
-                        if "generated_by" in target_metadata
-                        else metadata.infer_artifact_type(pathlib.Path(target))
+                    target_record = metadata._record_from_text(
+                        pathlib.Path(target), target_text
                     )
-                    if target_type != row.artifact_type:
+                    target_type = target_record.artifact_type
+                    expected_target_type = (
+                        "archive" if row.disposition == "archive" else row.artifact_type
+                    )
+                    if target_type != expected_target_type:
                         findings.append(
                             _finding(
                                 target,
@@ -1090,6 +1123,126 @@ def validate_migration_manifest(
                                 "result target parents differ from manifest truth",
                             )
                         )
+                    if row.disposition == "archive":
+                        archive_findings: list[Finding] = []
+                        required_archive = _profile_required_fields(
+                            profiles, "archive"
+                        )
+                        if (
+                            target_type != "archive"
+                            or target_metadata.get("artifact_type") != "archive"
+                            or any(
+                                key not in target_metadata
+                                or target_metadata.get(key) in (None, "")
+                                for key in required_archive
+                            )
+                        ):
+                            archive_findings.append(
+                                _finding(
+                                    target,
+                                    "manifest-archive-target-profile-invalid",
+                                    "archive result does not satisfy the canonical archive profile",
+                                )
+                            )
+                        if (
+                            row.status_after != "archived"
+                            or target_metadata.get("status") != "archived"
+                        ):
+                            archive_findings.append(
+                                _finding(
+                                    target,
+                                    "manifest-archive-status-invalid",
+                                    "archive result requires archived status",
+                                )
+                            )
+                        if target_metadata.get("archived_from") != source:
+                            archive_findings.append(
+                                _finding(
+                                    target,
+                                    "manifest-archive-source-mismatch",
+                                    "archive result does not bind the baseline source path",
+                                )
+                            )
+                        if (
+                            target_metadata.get("current_replacement")
+                            != row.canonical_replacement
+                        ):
+                            archive_findings.append(
+                                _finding(
+                                    target,
+                                    "manifest-archive-replacement-mismatch",
+                                    "archive replacement differs from manifest truth",
+                                )
+                            )
+                        if (
+                            target_metadata.get("preservation_class")
+                            != row.preservation_class
+                        ):
+                            archive_findings.append(
+                                _finding(
+                                    target,
+                                    "manifest-archive-preservation-mismatch",
+                                    "archive preservation differs from manifest truth",
+                                )
+                            )
+                        intrinsic_exclusions = {
+                            "unresolved-parent",
+                            "unresolved-supersedes",
+                            "invalid-supersession-state",
+                            "replacement-free-supersession",
+                            "parent-order",
+                            "parent-cycle",
+                        }
+                        intrinsic = [
+                            item
+                            for item in metadata.validate_record(
+                                target_record,
+                                profiles,
+                                metadata.build_manifest((target_record,)),
+                            )
+                            if item.severity == "error"
+                            and item.code not in intrinsic_exclusions
+                        ]
+                        if intrinsic:
+                            archive_findings.append(
+                                _finding(
+                                    target,
+                                    "manifest-archive-target-profile-invalid",
+                                    "archive result does not satisfy the canonical archive profile",
+                                )
+                            )
+                        archive_findings.extend(
+                            validate_archive_provenance(root, target_record)
+                        )
+                        findings.extend(archive_findings)
+                        evidence_complete = all(
+                            values
+                            for values in (
+                                row.evidence.commands,
+                                row.evidence.sources,
+                                row.evidence.repository_paths,
+                                row.evidence.consumer_scan,
+                                row.evidence.rollback,
+                            )
+                        )
+                        archive_result_valid = (
+                            not archive_findings
+                            and expected_target_id == row.artifact_id
+                            and expected_target_parents == row.parent_ids
+                            and row.review_verdict == ReviewVerdict("pass", "pass")
+                            and row.preservation_class is not None
+                            and evidence_complete
+                        )
+        if row.disposition == "archive":
+            transition_valid = archive_result_valid
+        if not transition_valid:
+            findings.append(
+                _finding(
+                    source,
+                    "manifest-transition-invalid",
+                    "status transition is not canonical",
+                )
+            )
         if row.disposition in {"merge", "archive"} and not row.canonical_replacement:
             findings.append(
                 _finding(source, "manifest-replacement-required", "destructive row requires a replacement")
@@ -1113,13 +1266,7 @@ def validate_migration_manifest(
                     _finding(source, "manifest-evidence-path-invalid", "evidence path is not repository-safe")
                 )
         if row.partition_plan is not None:
-            partition = row.partition_plan.as_posix()
-            if not _safe_path(partition) or not partition.startswith(
-                "docs/04.execution/plans/"
-            ):
-                findings.append(
-                    _finding(source, "manifest-partition-plan-invalid", "partition plan path is invalid")
-                )
+            findings.extend(_partition_plan_findings(root, profiles, row))
         deterministic_lists: tuple[tuple[object, ...], ...] = (
             row.parent_ids,
             row.active_consumers,
@@ -1270,14 +1417,110 @@ def _added_record_paths(root: pathlib.Path, base_ref: str) -> frozenset[pathlib.
     return frozenset(pathlib.PurePosixPath(path) for path in paths if _safe_path(path))
 
 
+def _partition_plan_findings(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    row: MigrationManifestRow,
+) -> list[Finding]:
+    """Prove a partition approval against a tracked canonical Plan."""
+
+    if row.partition_plan is None:
+        return []
+    source = row.source_path.as_posix()
+    partition = row.partition_plan.as_posix()
+    if not _safe_path(partition) or not partition.startswith(
+        "docs/04.execution/plans/"
+    ):
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-invalid",
+                "partition plan must be a safe tracked regular Stage 04 Plan",
+            )
+        ]
+    payload = _read_regular_repo_bytes(root, partition, require_tracked=True)
+    if payload is None:
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-invalid",
+                "partition plan must be a safe tracked regular Stage 04 Plan",
+            )
+        ]
+    try:
+        text = payload.decode("utf-8")
+    except UnicodeDecodeError:
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-invalid",
+                "partition plan must be a safe tracked regular Stage 04 Plan",
+            )
+        ]
+    plan_record = metadata._record_from_text(pathlib.Path(partition), text)
+    profile_map = profiles.get("profiles")
+    plan_profile = profile_map.get("plan") if isinstance(profile_map, dict) else None
+    if not isinstance(plan_profile, dict):
+        raise ProfileError("canonical Plan profile is unavailable")
+    required = set(plan_profile.get("required", []))
+    optional = set(plan_profile.get("optional", []))
+    forbidden = set(plan_profile.get("forbidden", []))
+    values = plan_record.metadata
+    parent_ids = values.get("parent_ids")
+    profile_valid = (
+        plan_record.parse_error is None
+        and plan_record.frontmatter_present
+        and plan_record.artifact_type == "plan"
+        and values.get("artifact_type") == "plan"
+        and all(key in values and values.get(key) not in (None, "") for key in required)
+        and not (set(values) & forbidden)
+        and not (set(values) - required - optional - forbidden)
+        and metadata._valid_metadata_artifact_id(values.get("artifact_id"))
+        and isinstance(parent_ids, list)
+        and bool(parent_ids)
+        and all(isinstance(item, str) and item.strip() for item in parent_ids)
+        and len(parent_ids) == len(set(parent_ids))
+    )
+    if not profile_valid:
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-profile-invalid",
+                "partition plan does not satisfy the canonical Plan profile",
+            )
+        ]
+    if values.get("status") not in {"active", "completed"}:
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-status-invalid",
+                "partition plan must have active or completed approval status",
+            )
+        ]
+    if row.review_verdict != ReviewVerdict("pass", "pass"):
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-review-required",
+                "partition approval requires independent passing manifest reviews",
+            )
+        ]
+    return []
+
+
 def _apply_partition_approvals(
     records: collections.abc.Sequence[Record],
     documents: collections.abc.Sequence[MigrationManifestDocument],
+    *,
+    root: pathlib.Path,
+    profiles: dict[str, object],
 ) -> tuple[Record, ...]:
     approvals: dict[str, tuple[str, dict[str, str]]] = {}
     for document in documents:
         for row in document.entries:
-            if row.partition_plan is None or row.review_verdict != ReviewVerdict("pass", "pass"):
+            if row.partition_plan is None or _partition_plan_findings(
+                root, profiles, row
+            ):
                 continue
             target = row.target_path or row.source_path
             approvals[target.as_posix()] = (
@@ -1299,10 +1542,25 @@ def _apply_partition_approvals(
     )
 
 
+def _record_body_bytes(root: pathlib.Path, record: Record) -> bytes | None:
+    """Return snapshot bytes, or perform one bounded no-follow library read."""
+
+    relative = record.path.as_posix()
+    if (
+        _CORPUS_SNAPSHOT_ROOT == root.resolve()
+        and relative in _CORPUS_SNAPSHOT_BYTES
+    ):
+        return _CORPUS_SNAPSHOT_BYTES[relative]
+    return _read_regular_repo_bytes(root, relative, require_tracked=False)
+
+
 def _resolved_markdown_links(root: pathlib.Path, record: Record) -> set[str]:
+    payload = _record_body_bytes(root, record)
+    if payload is None:
+        return set()
     try:
-        text = (root / record.path).read_text(encoding="utf-8")
-    except (OSError, UnicodeError):
+        text = payload.decode("utf-8")
+    except UnicodeDecodeError:
         return set()
     links: set[str] = set()
     for match in MARKDOWN_LINK.finditer(text):
@@ -1634,10 +1892,12 @@ def find_duplicate_candidates(
 
     inspections: dict[str, tuple[bytes, str | None]] = {}
     for record in records:
+        content = _record_body_bytes(root, record)
+        if content is None:
+            continue
         try:
-            content = (root / record.path).read_bytes()
             text = content.decode("utf-8")
-        except (OSError, UnicodeError):
+        except UnicodeError:
             continue
         inspections[record.path.as_posix()] = (content, _normalized_title(text))
     candidates: list[DuplicateCandidate] = []
@@ -1963,8 +2223,88 @@ def _rooted(root: pathlib.Path, path: pathlib.Path) -> pathlib.Path:
     return path if path.is_absolute() else root / path
 
 
+def _tracked_corpus_paths(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+) -> tuple[str, ...]:
+    """Discover and preflight every tracked lifecycle Markdown path safely."""
+
+    result = _run_git(
+        root,
+        ["ls-files", "--stage", "-z", "--", "*.md"],
+        text=False,
+    )
+    if result.returncode != 0:
+        raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid")
+    common = profiles.get("common")
+    excluded_values = common.get("inventory_excludes") if isinstance(common, dict) else None
+    excluded = set(excluded_values) if isinstance(excluded_values, list) else set()
+    candidates: list[str] = []
+    seen: set[str] = set()
+    target_prefixes = tuple(metadata.TARGET_MARKDOWN_PREFIXES)
+    for raw_entry in result.stdout.split(b"\0"):
+        if not raw_entry:
+            continue
+        try:
+            raw_header, raw_path = raw_entry.split(b"\t", 1)
+            mode, _object_id, stage = raw_header.split()
+            path = raw_path.decode("utf-8")
+        except (ValueError, UnicodeDecodeError):
+            raise _CorpusSafetyError(
+                "corpus", "corpus-markdown-path-invalid"
+            ) from None
+        if not path.endswith(".md") or not path.startswith(target_prefixes):
+            continue
+        if not _safe_path(path):
+            raise _CorpusSafetyError(path, "corpus-markdown-path-invalid")
+        if stage != b"0" or mode not in {b"100644", b"100755"} or path in seen:
+            raise _CorpusSafetyError(path, "corpus-markdown-mode-invalid")
+        seen.add(path)
+        candidates.append(path)
+
+    # Validate every worktree path before reading any Markdown body. This
+    # catches final and intermediate symlinks even when the index mode is a
+    # regular blob. The subsequent open repeats the same no-follow boundary,
+    # so a swap between preflight and read still cannot expose outside bytes.
+    for path in sorted(candidates):
+        descriptor = _open_regular_repo_descriptor(root, path)
+        if descriptor is None:
+            raise _CorpusSafetyError(path, "corpus-markdown-file-invalid")
+        os.close(descriptor)
+    return tuple(path for path in sorted(candidates) if path not in excluded)
+
+
+def _safe_corpus_snapshot(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+) -> tuple[tuple[Record, ...], dict[str, bytes]]:
+    """Read one no-follow corpus snapshot, then parse only held safe bytes."""
+
+    paths = _tracked_corpus_paths(root, profiles)
+    payloads: dict[str, bytes] = {}
+    for path in paths:
+        payload = _read_regular_repo_bytes(root, path, require_tracked=True)
+        if payload is None:
+            raise _CorpusSafetyError(path, "corpus-markdown-file-invalid")
+        payloads[path] = payload
+    records: list[Record] = []
+    for path in paths:
+        try:
+            text = payloads[path].decode("utf-8")
+        except UnicodeDecodeError:
+            raise _CorpusSafetyError(path, "corpus-markdown-file-invalid") from None
+        records.append(metadata._record_from_text(pathlib.Path(path), text))
+    return tuple(records), payloads
+
+
 def _collect_records(root: pathlib.Path, profiles: dict[str, object]) -> tuple[Record, ...]:
-    return tuple(metadata.collect_records(root, profiles, require_git=True))
+    global _CORPUS_SNAPSHOT_ROOT, _CORPUS_SNAPSHOT_BYTES
+    _CORPUS_SNAPSHOT_ROOT = None
+    _CORPUS_SNAPSHOT_BYTES = {}
+    records, payloads = _safe_corpus_snapshot(root, profiles)
+    _CORPUS_SNAPSHOT_ROOT = root.resolve()
+    _CORPUS_SNAPSHOT_BYTES = payloads
+    return records
 
 
 def _introduced_metadata_findings(
@@ -2258,7 +2598,12 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
                 raise ProfileError("directory budget contract is invalid")
             findings.extend(
                 validate_directory_budgets(
-                    _apply_partition_approvals(records, documents),
+                    _apply_partition_approvals(
+                        records,
+                        documents,
+                        root=root,
+                        profiles=profiles,
+                    ),
                     added_paths=_added_record_paths(root, args.base_ref),
                     warning_at=int(budgets["warning_at"]),
                     block_new_leaf_at=int(budgets["block_new_leaf_at"]),
@@ -2398,6 +2743,12 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             return 3 if any(_is_safety_finding(item) for item in findings) else (1 if findings else 0)
         blocking = [item for item in findings if item.severity == "error"]
         return 3 if any(_is_safety_finding(item) for item in blocking) else (1 if blocking else 0)
+    except _CorpusSafetyError as error:
+        print(
+            f"{error.code}: {error.path}: corpus Markdown path is unsafe",
+            file=sys.stderr,
+        )
+        return 3
     except ProfileError:
         print("configuration-error: repository lifecycle input is invalid", file=sys.stderr)
         return 3
