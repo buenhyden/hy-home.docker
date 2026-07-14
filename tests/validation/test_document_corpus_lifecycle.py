@@ -3165,6 +3165,7 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
         *,
         track_target: bool = True,
         baseline_target_artifact_type: str = "reference",
+        baseline_target_status: str = "active",
         duplicate_baseline_owner: bool = False,
     ) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path, str, lifecycle.MigrationManifestRow]:
         temporary = tempfile.TemporaryDirectory()
@@ -3182,7 +3183,9 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
         )
         target = root / target_relative
         canonical_target = self._reference_text(
-            "reference:canonical", "Canonical Owner"
+            "reference:canonical",
+            "Canonical Owner",
+            status=baseline_target_status,
         )
         if track_target:
             target.parent.mkdir(parents=True)
@@ -3566,6 +3569,267 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
                     self._manifest_codes(root, baseline, (owner_row, candidate)),
                     set(),
                 )
+
+    def test_merge_owner_requires_a_regular_baseline_git_blob(self) -> None:
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = pathlib.Path(temporary.name)
+        init_repo(root)
+        source_relative = pathlib.PurePosixPath("docs/90.references/source.md")
+        target_relative = pathlib.PurePosixPath(
+            "docs/90.references/data/canonical.md"
+        )
+        source = root / source_relative
+        target = root / target_relative
+        source.parent.mkdir(parents=True)
+        target.parent.mkdir(parents=True)
+        source.write_text(
+            self._reference_text("reference:duplicate", "Duplicate Source"),
+            encoding="utf-8",
+        )
+        canonical_text = self._reference_text(
+            "reference:canonical", "Canonical Owner"
+        )
+        target.symlink_to(canonical_text)
+        baseline = commit_all(root, "symlink merge-owner baseline")
+
+        baseline_owners = metadata.collect_records_at_ref(
+            root, self.profiles, baseline
+        )
+        self.assertIn(
+            "reference:canonical",
+            {
+                record.metadata.get("artifact_id")
+                for record in baseline_owners
+            },
+            "the fixture must prove that parseable symlink bytes reach metadata discovery",
+        )
+        self.assertTrue(
+            git(root, "ls-tree", baseline, "--", target_relative.as_posix()).startswith(
+                "120000 blob "
+            )
+        )
+
+        source.unlink()
+        target.unlink()
+        target.write_text(canonical_text, encoding="utf-8")
+        commit_all(root, "replace symlink owner with regular result")
+        row = self.valid_row(
+            source_path=source_relative,
+            target_path=target_relative,
+            artifact_id="reference:duplicate",
+            artifact_type="reference",
+            status_before="active",
+            status_after="active",
+            parent_ids=(),
+            disposition="merge",
+            canonical_replacement=target_relative.as_posix(),
+            active_consumers=(),
+            preservation_class="git-history",
+            evidence=self._destructive_evidence(),
+            review_verdict=lifecycle.ReviewVerdict("pass", "pass"),
+        )
+
+        for replacement in (target_relative.as_posix(), "reference:canonical"):
+            with self.subTest(replacement=replacement):
+                codes = self._manifest_codes(
+                    root,
+                    baseline,
+                    (
+                        dataclasses.replace(
+                            row,
+                            canonical_replacement=replacement,
+                        ),
+                    ),
+                )
+                self.assertIn("manifest-replacement-invalid", codes)
+
+    def test_baseline_regular_blob_rejects_nonregular_git_entries(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_repo(root)
+            regular = root / "docs/regular.md"
+            executable = root / "docs/executable.md"
+            symlink = root / "docs/symlink.md"
+            regular.parent.mkdir(parents=True)
+            regular.write_text("regular\n", encoding="utf-8")
+            executable.write_text("executable\n", encoding="utf-8")
+            executable.chmod(0o755)
+            symlink.symlink_to("regular.md")
+            baseline = commit_all(root, "regular and nonregular modes")
+            git(
+                root,
+                "update-index",
+                "--add",
+                "--cacheinfo",
+                f"160000,{baseline},docs/gitlink.md",
+            )
+            git(root, "commit", "-q", "-m", "add synthetic gitlink")
+            checked = git(root, "rev-parse", "HEAD")
+
+            self.assertTrue(
+                lifecycle._baseline_regular_blob(root, checked, "docs/regular.md")
+            )
+            self.assertTrue(
+                lifecycle._baseline_regular_blob(root, checked, "docs/executable.md")
+            )
+            self.assertFalse(
+                lifecycle._baseline_regular_blob(root, checked, "docs/symlink.md")
+            )
+            self.assertFalse(
+                lifecycle._baseline_regular_blob(root, checked, "docs/gitlink.md")
+            )
+            self.assertFalse(lifecycle._baseline_regular_blob(root, checked, "docs"))
+            self.assertFalse(
+                lifecycle._baseline_regular_blob(root, checked, "docs/missing.md")
+            )
+
+    def _same_path_owner_transition_fixture(
+        self,
+        *,
+        baseline_owner_status: str = "active",
+        current_owner_status: str = "completed",
+    ) -> tuple[
+        tempfile.TemporaryDirectory[str],
+        pathlib.Path,
+        str,
+        lifecycle.MigrationManifestRow,
+        lifecycle.MigrationManifestRow,
+    ]:
+        temporary, root, baseline, merge_row = self._merge_fixture(
+            baseline_target_status=baseline_owner_status,
+        )
+        target = root / merge_row.target_path
+        target.write_text(
+            self._reference_text(
+                "reference:canonical",
+                "Canonical Owner",
+                status=current_owner_status,
+            ),
+            encoding="utf-8",
+        )
+        commit_all(root, "transition canonical owner")
+
+        evidence = lifecycle.ManifestEvidence(
+            ("git show baseline owner",),
+            (merge_row.target_path.as_posix(),),
+            (merge_row.target_path,),
+            ("verified active consumers",),
+            ("revert lifecycle transition",),
+        )
+        owner_row = self.valid_row(
+            source_path=merge_row.target_path,
+            target_path=merge_row.target_path,
+            artifact_id="reference:canonical",
+            artifact_type="reference",
+            status_before=baseline_owner_status,
+            status_after=current_owner_status,
+            parent_ids=(),
+            disposition="migrate",
+            canonical_replacement=None,
+            active_consumers=(),
+            preservation_class=None,
+            evidence=evidence,
+            review_verdict=lifecycle.ReviewVerdict("pass", "pass"),
+        )
+        merge_row = dataclasses.replace(
+            merge_row,
+            status_after=current_owner_status,
+        )
+        return temporary, root, baseline, owner_row, merge_row
+
+    def test_merge_accepts_exact_same_path_owner_lifecycle_attestation(self) -> None:
+        temporary, root, baseline, owner_row, merge_row = (
+            self._same_path_owner_transition_fixture()
+        )
+        self.addCleanup(temporary.cleanup)
+
+        for replacement in (
+            merge_row.target_path.as_posix(),
+            "reference:canonical",
+        ):
+            with self.subTest(replacement=replacement):
+                candidate = dataclasses.replace(
+                    merge_row,
+                    canonical_replacement=replacement,
+                )
+                self.assertEqual(
+                    self._manifest_codes(root, baseline, (owner_row, candidate)),
+                    set(),
+                )
+
+    def test_merge_rejects_missing_ambiguous_or_invalid_same_path_owner_peer(
+        self,
+    ) -> None:
+        temporary, root, baseline, owner_row, merge_row = (
+            self._same_path_owner_transition_fixture()
+        )
+        self.addCleanup(temporary.cleanup)
+        empty_evidence = lifecycle.ManifestEvidence((), (), (), (), ())
+        cases: tuple[
+            tuple[str, tuple[lifecycle.MigrationManifestRow, ...]], ...
+        ] = (
+            ("missing", (merge_row,)),
+            (
+                "duplicate",
+                (owner_row, dataclasses.replace(owner_row), merge_row),
+            ),
+            (
+                "wrong-status-before",
+                (dataclasses.replace(owner_row, status_before="draft"), merge_row),
+            ),
+            (
+                "wrong-status-after",
+                (dataclasses.replace(owner_row, status_after="superseded"), merge_row),
+            ),
+            (
+                "wrong-id",
+                (
+                    dataclasses.replace(owner_row, artifact_id="reference:other"),
+                    merge_row,
+                ),
+            ),
+            (
+                "wrong-type",
+                (dataclasses.replace(owner_row, artifact_type="guide"), merge_row),
+            ),
+            (
+                "wrong-disposition",
+                (dataclasses.replace(owner_row, disposition="preserve"), merge_row),
+            ),
+            (
+                "review-not-passing",
+                (
+                    dataclasses.replace(
+                        owner_row,
+                        review_verdict=lifecycle.ReviewVerdict("pending", "pending"),
+                    ),
+                    merge_row,
+                ),
+            ),
+            (
+                "evidence-incomplete",
+                (dataclasses.replace(owner_row, evidence=empty_evidence), merge_row),
+            ),
+        )
+        for name, rows in cases:
+            with self.subTest(name=name):
+                self.assertIn(
+                    "manifest-replacement-invalid",
+                    self._manifest_codes(root, baseline, rows),
+                )
+
+    def test_merge_rejects_reverse_same_path_owner_transition(self) -> None:
+        temporary, root, baseline, owner_row, merge_row = (
+            self._same_path_owner_transition_fixture(
+                baseline_owner_status="completed",
+                current_owner_status="active",
+            )
+        )
+        self.addCleanup(temporary.cleanup)
+        codes = self._manifest_codes(root, baseline, (owner_row, merge_row))
+        self.assertIn("manifest-transition-invalid", codes)
+        self.assertIn("manifest-replacement-invalid", codes)
 
     WRITE_MODES = (
         "generate-manifest",

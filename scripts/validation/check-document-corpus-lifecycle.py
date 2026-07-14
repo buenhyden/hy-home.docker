@@ -442,11 +442,31 @@ def _read_regular_repo_bytes(
 
 
 def _baseline_regular_blob(root: pathlib.Path, commit: str, path: str) -> bool:
+    """Return whether an exact baseline path is a regular Git blob entry."""
+
+    if not _safe_path(path):
+        return False
     result = _run_git(root, ["ls-tree", "-z", commit, "--", path], text=False)
     if result.returncode != 0 or not result.stdout:
         return False
-    header = result.stdout.split(b"\t", 1)[0].split()
-    return len(header) == 3 and header[0] in {b"100644", b"100755"} and header[1] == b"blob"
+    entries = [entry for entry in result.stdout.split(b"\0") if entry]
+    if len(entries) != 1 or b"\t" not in entries[0]:
+        return False
+    raw_header, raw_path = entries[0].split(b"\t", 1)
+    header = raw_header.split()
+    try:
+        entry_path = raw_path.decode("utf-8")
+        object_id = header[2].decode("ascii") if len(header) == 3 else ""
+    except UnicodeDecodeError:
+        return False
+    return (
+        len(header) == 3
+        and header[0] in {b"100644", b"100755"}
+        and header[1] == b"blob"
+        and entry_path == path
+        and bool(OBJECT_ID.fullmatch(object_id))
+        and _git_object_type(root, object_id) == "blob"
+    )
 
 
 def _safe_path_text(value: pathlib.PurePosixPath | None) -> str | None:
@@ -950,6 +970,9 @@ def _canonical_replacement_findings(
 
 def _baseline_merge_owner_findings(
     *,
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    baseline: str,
     row: MigrationManifestRow,
     target: str,
     replacement: Record,
@@ -975,6 +998,15 @@ def _baseline_merge_owner_findings(
             )
         ]
     owner = owners[0]
+    owner_path = owner.path.as_posix()
+    if not _baseline_regular_blob(root, baseline, owner_path):
+        return [
+            _finding(
+                target,
+                "manifest-replacement-invalid",
+                "merge replacement baseline owner is not a regular tracked blob",
+            )
+        ]
     declared_owner_type = owner.metadata.get("artifact_type")
     baseline_status = owner.metadata.get("status")
     current_status = replacement.metadata.get("status")
@@ -991,28 +1023,55 @@ def _baseline_merge_owner_findings(
                 "merge replacement baseline owner differs in type or lifecycle truth",
             )
         ]
-    owner_path = owner.path.as_posix()
     if owner_path == target:
         if baseline_status == current_status:
             return []
-        return [
-            _finding(
-                target,
-                "manifest-replacement-invalid",
-                "merge replacement baseline owner changed lifecycle state without an attested move",
+
+    common = profiles.get("common")
+    transitions = common.get("transitions") if isinstance(common, dict) else None
+    allowed_next = (
+        transitions.get(baseline_status)
+        if isinstance(transitions, dict)
+        else None
+    )
+    transition_valid = baseline_status == current_status or (
+        isinstance(allowed_next, list) and current_status in allowed_next
+    )
+
+    def complete_attestation(candidate: MigrationManifestRow) -> bool:
+        evidence_complete = all(
+            values
+            for values in (
+                candidate.evidence.commands,
+                candidate.evidence.sources,
+                candidate.evidence.repository_paths,
+                candidate.evidence.consumer_scan,
+                candidate.evidence.rollback,
             )
-        ]
+        )
+        if owner_path == target:
+            disposition_valid = candidate.disposition == "migrate"
+        else:
+            disposition_valid = candidate.disposition in {"move", "merge"}
+        return (
+            candidate.source_path.as_posix() == owner_path
+            and candidate.target_path is not None
+            and candidate.target_path.as_posix() == target
+            and candidate.artifact_id == replacement_id
+            and candidate.artifact_type == owner.artifact_type
+            and candidate.status_before == baseline_status
+            and candidate.status_after == current_status
+            and candidate.canonical_replacement is None
+            and disposition_valid
+            and transition_valid
+            and evidence_complete
+            and candidate.review_verdict == ReviewVerdict("pass", "pass")
+        )
+
     attestations = [
         candidate
         for candidate in entries
-        if candidate.source_path.as_posix() == owner_path
-        and candidate.target_path is not None
-        and candidate.target_path.as_posix() == target
-        and candidate.artifact_id == replacement_id
-        and candidate.artifact_type == owner.artifact_type
-        and candidate.status_before == baseline_status
-        and candidate.status_after == current_status
-        and candidate.disposition in {"move", "merge"}
+        if complete_attestation(candidate)
     ]
     if len(attestations) == 1:
         return []
@@ -1345,6 +1404,9 @@ def validate_migration_manifest(
             if merge_replacement is not None and baseline is not None and target is not None:
                 findings.extend(
                     _baseline_merge_owner_findings(
+                        root=root,
+                        profiles=profiles,
+                        baseline=baseline,
                         row=row,
                         target=target,
                         replacement=merge_replacement,
