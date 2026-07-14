@@ -141,7 +141,7 @@ Redaction boundary:
 | T-DCLM-001 | Machine migration contract and static archive metadata | Complete — final Spec PASS and Quality PASS with Critical 0, Important 0, Minor 0 |
 | T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Complete — final range `9126a0aa..9fe234f6`; terminal Spec PASS and Quality retry PASS, each with Critical 0, Important 0, and Minor 1. The sole deferred Minor is behavior-preserving decomposition of the monolithic dispatcher. |
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Complete — reviewed range `133b3daa..160ff097`; terminal Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 0 |
-| T-DCLM-004 | Repository contracts, local QA, tracked workflow | Complete — implementation `35b07486`, generated follow-up `ea2ffd88`, evidence handoff `918b9a3b`, and review remediation `9c4998d6`; Spec PASS and Quality PASS each returned Critical 0, Important 0, Minor 1, and the shared generated-gate inventory Minor is resolved |
+| T-DCLM-004 | Repository contracts, local QA, tracked workflow | Remediated — terminal Quality review over `1b42a100..11ff5edb` returned Critical 0, Important 1, Minor 0; I-Q01 execution-reachability and recommendation-parity coverage is resolved in `25ace7f5`; terminal re-review pending |
 | T-DCLM-005 | Foundation manifest and generated evidence | Not run |
 | T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Not run |
 
@@ -178,6 +178,8 @@ Redaction boundary:
 | 2026-07-15 | T-DCLM-004 generated fallout | Fresh implementation agent | Staged only the new workflow for Git-backed discovery and ran the four canonical Task 4 owners in order. Commit `ea2ffd88` records the security readiness, LLM Wiki index, and LLM Wiki coverage changes for the seventh tracked workflow and its path/category counts; the audit implementation matrix produced no diff. All four check modes passed. |
 | 2026-07-15 | T-DCLM-004 independent reviews | Fresh specification and separate quality reviewers | The complete handoff range `1b42a100..918b9a3b` received Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 1. Both reviewers identified the same non-blocking gap: local `--list` omitted three generated freshness gates that both executable modes run, and repository assertions did not prove advertised/executed parity. All workflow, lifecycle, pre-push, generated, required-check, and protected-scope boundaries passed. |
 | 2026-07-15 | T-DCLM-004 review remediation | Fresh implementation agent | Commit `9c4998d6` closed the shared Minor through strict RED/GREEN. The repository contract first failed only on incomplete generated freshness enumeration and list/execution mismatch, then the local inventory was aligned to the exact four executed commands and the contract was made to compare approved, listed, and executed sequences. Bash syntax, focused recommendation, all four freshness checks, diff hygiene, and repository contracts passed. No workflow, remote boundary, runtime, generated output, corpus, manifest, archive, secret, provider, or Task 5 surface changed. |
+| 2026-07-15 | T-DCLM-004 terminal quality review | Fresh terminal quality reviewer | The complete range `1b42a100..11ff5edb` returned FAIL with Critical 0, Important 1, and Minor 0. I-Q01 found that the repository contract parsed the generated helper body but did not prove either executable local-QA mode reached it, and per-surface recommendation checks required only the three lifecycle commands rather than all four generated freshness commands. Current behavior and all workflow/protected boundaries remained correct; Task 5 stayed blocked. |
+| 2026-07-15 | T-DCLM-004 terminal-quality remediation | Fresh implementation agent | Commit `25ace7f5` resolved I-Q01 through strict mutation RED/GREEN. Removing the harness helper call and Wiki coverage recommendation produced eight per-surface recommendation failures plus one harness reachability failure and aggregate exit 1. GREEN requires all seven lifecycle/generated commands for each of the eight owned surfaces and exactly one generated-helper invocation from each script-backed/harness function. Bash syntax, list, focused recommendation, four freshness checks, repository contracts, diff hygiene, and Graphify corroboration passed. No workflow, generated output, runtime, remote, corpus, tombstone, manifest, archive, secret, provider, or Task 5 surface changed. Terminal quality re-review is pending. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -369,6 +371,24 @@ T-DCLM-004 actual evidence:
   edges, and 1,577 communities. Its two unrelated Alertmanager and
   cAdvisor/Pyroscope advisory edges were corroborated against tracked QA,
   Stage 00, Spec 131, and Plan/Task owners; both graph outputs were restored.
+- Terminal quality review: the complete range `1b42a100..11ff5edb` returned
+  FAIL with Critical 0, Important 1, and Minor 0. I-Q01 proved that generated
+  helper commands could remain textually aligned while both local executable
+  modes or generated recommendations became disconnected.
+- I-Q01 mutation RED: Bash syntax passed, then a temporary removal of the
+  harness helper call plus the Wiki coverage recommendation produced one exact
+  reachability failure and eight exact per-surface recommendation failures;
+  the aggregate repository contract exited 1.
+- I-Q01 GREEN: each of the eight Task 4 lifecycle surfaces must recommend all
+  three lifecycle commands and all four generated freshness commands. Both
+  `run_script_backed_gates` and `run_harness_gates` must invoke
+  `run_generated_freshness_gates` exactly once. Bash syntax, `--list`, the
+  eight-surface recommendation probe, all four freshness checks, diff hygiene,
+  and repository contracts (`failures=0`) passed.
+- I-Q01 Graphify: refresh completed with 24,253 nodes, 26,686 edges, and 1,579
+  communities. Its two unrelated Alertmanager and cAdvisor/Pyroscope advisory
+  edges were corroborated against tracked QA, Stage 00, Spec 131, Plan/Task,
+  and executable owners; both graph outputs were restored.
 
 Verification results: T-DCLM-001, T-DCLM-002, and T-DCLM-003 are complete.
 The T-DCLM-003 authored range `133b3daa..160ff097` is GREEN and received
@@ -381,8 +401,10 @@ of the monolithic dispatcher.
 
 T-DCLM-004 complete handoff range `1b42a100..918b9a3b` is GREEN with implementer
 self-review PASS, independent Spec PASS C0/I0/M1, and independent Quality PASS
-C0/I0/M1. The reviewers' shared generated-gate inventory Minor is resolved in
-`9c4998d6`; T-DCLM-004 is complete and T-DCLM-005 has not started.
+C0/I0/M1. The later terminal Quality review over `1b42a100..11ff5edb` returned
+C0/I1/M0 for I-Q01. That finding is resolved in `25ace7f5`; terminal quality
+re-review is pending, T-DCLM-004 remains in review, and T-DCLM-005 has not
+started.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -560,8 +582,10 @@ local status-check names are unchanged. Generated fallout is owner-produced and
 bounded to three expected outputs. Independent Task 4 specification and quality
 reviews over `1b42a100..918b9a3b` both passed with Critical 0, Important 0, and
 Minor 1. Their shared local generated-gate inventory/parity Minor was resolved
-in `9c4998d6` with an intentional repository-contract RED followed by exact
-list/execution GREEN. Task 4 is complete; Task 5 remains unstarted.
+in `9c4998d6`, but terminal Quality review over `1b42a100..11ff5edb` returned
+Critical 0, Important 1, Minor 0 for missing helper reachability and complete
+per-surface recommendation assertions. I-Q01 is remediated in `25ace7f5` and
+awaits terminal re-review. Task 5 remains unstarted.
 
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 
@@ -598,6 +622,7 @@ Foundation logical commits:
 - `ea2ffd88` — T-DCLM-004 generated follow-up `docs(generated): index lifecycle workflow`; the audit matrix had no diff and was omitted.
 - `918b9a3b` — T-DCLM-004 evidence-only handoff `docs(execution): record corpus lifecycle Task 4 evidence`.
 - `9c4998d6` — T-DCLM-004 review remediation `fix(validation): align generated QA gate inventory`.
+- `25ace7f5` — T-DCLM-004 terminal-quality remediation `fix(validation): enforce lifecycle QA reachability`.
 
 The reviewed T-DCLM-002 implementation and remediation range ends at
 `9fe234f6`. The later ledger-only closure commit records the terminal verdicts
