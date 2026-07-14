@@ -140,7 +140,7 @@ Redaction boundary:
 | --- | --- | --- |
 | T-DCLM-001 | Machine migration contract and static archive metadata | Complete — final Spec PASS and Quality PASS with Critical 0, Important 0, Minor 0 |
 | T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Complete — final range `9126a0aa..9fe234f6`; terminal Spec PASS and Quality retry PASS, each with Critical 0, Important 0, and Minor 1. The sole deferred Minor is behavior-preserving decomposition of the monolithic dispatcher. |
-| T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Not run |
+| T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Implementation complete — self-review PASS; independent specification and quality reviews pending |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Not run |
 | T-DCLM-005 | Foundation manifest and generated evidence | Not run |
 | T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Not run |
@@ -167,6 +167,8 @@ Redaction boundary:
 | 2026-07-14 | T-DCLM-002 final release-quality remediation | Fresh remediation agent | Resolved I-FRQ01 in `8001a95c` through strict RED/GREEN. A resolved merge target whose stable identity B differs from baseline source A must map to exactly one baseline owner; that owner must preserve canonical ID, inferred and declared type, and lifecycle truth at the current result, or be represented by exactly one same-wave move/merge attestation to that result. Real Git regressions reject a B created only after baseline, both path and ID replacement forms, a baseline duplicate B removed before result, and a wrong-profile baseline B corrected only after baseline. Existing pre-baseline distinct-ID path/ID replacements, an explicitly attested same-wave B move, and same-ID new-target consolidation remain valid. Focused 6/6 and combined lifecycle/metadata 262/262 passed; live, four generated-owner, and repository gates passed. Graphify refreshed to 23,999 nodes / 26,386 edges / 1,561 communities, remained advisory for two unrelated inferred edges and generic graph noise, and was corroborated against tracked Stage 00/03/04/99 and executable owners before restoration. No public API, Task 3 surface, corpus leaf, tombstone, archive payload, workflow, runtime, provider, secret, or remote surface changed. |
 | 2026-07-14 | T-DCLM-002 sign-off remediation | Fresh remediation agent | Resolved specification I-FRQ01-R1 and quality I-SQ01/I-SQ02 in `1c9ef624` through strict RED/GREEN. Exact baseline owner paths now require mode `100644` or `100755`, object type `blob`, an exact UTF-8 path match, a full object ID, and blob re-verification before ownership can authorize a distinct-ID merge. A changed same-path owner requires exactly one `migrate` peer with exact source/target/ID/type/status binding, a canonical transition, pass/pass reviews, complete evidence, and no replacement; moved-owner attestations retain their existing `move`/`merge` behavior under the same review/evidence boundary. Real Git fixtures cover parseable `120000` metadata, synthetic `160000`, tree/missing paths, regular modes, path/ID replacements, valid `active` to `completed`, missing/duplicate/wrong/incomplete peers, and reverse transition. No public API, Task 3 surface, corpus leaf, tombstone, archive payload, workflow, runtime, provider, secret, or remote surface changed. |
 | 2026-07-14 | T-DCLM-002 terminal independent reviews | Fresh specification reviewer and separate quality retry reviewer | The complete range `9126a0aa..9fe234f6` received Spec PASS with Critical 0, Important 0, and Minor 1 and Quality retry PASS with Critical 0, Important 0, and Minor 1. Every prior Critical/Important gate is closed. Both reviewers retained only the same non-blocking recommendation to decompose the monolithic lifecycle dispatcher in a later behavior-preserving package with characterization/equivalence tests. T-DCLM-002 is complete and T-DCLM-003 is unblocked. |
+| 2026-07-14 | T-DCLM-003 | Fresh implementation agent | Added the sole human owners for corpus migration and archive/retention, routed Stage 00, Stage 98, and Stage 99 consumers to those owners, aligned the archive template and its machine heading envelope, removed only the exact archive-template transitional source exemption, and added RED/GREEN contract coverage. The machine registry edit is a direct archive-template envelope alignment required to remove that exemption. Self-review PASS; independent specification and quality reviews remain pending. No corpus leaf, existing tombstone, archive evidence payload, Foundation manifest, exception file, workflow, runtime, provider, secret, remote resource, or Task 4 surface changed. |
+| 2026-07-14 | T-DCLM-003 generated fallout | Fresh implementation agent | Staged only the two new human-owner paths for Git-backed discovery and ran the three canonical Task 3 owners. The LLM Wiki index, coverage snapshot, and frontmatter semantic inventory changed only to index the two new governance records; freshness and deterministic rerun checks passed. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -274,11 +276,25 @@ T-DCLM-002 actual evidence:
 - Scope preservation: no broad corpus leaf, existing tombstone, archive evidence payload, Stage 04 partition, exception file, workflow, runtime, Compose, infrastructure, deployment, secret, credential, provider instruction, or remote state changed.
 - Closure bookkeeping verification: explicit-base metadata validation against `9fe234f6` selected the two changed tracked evidence documents with zero violations, zero legacy exceptions, and zero transition overrides; `git diff --check` passed. No implementation, contract, or test file changed during closure.
 
-Verification results: T-DCLM-001 and T-DCLM-002 are complete. The T-DCLM-002
+T-DCLM-003 actual evidence:
+
+- RED metadata: the focused profile/validation command ran 55 tests with 7 expected assertion failures and zero errors for the two absent human owners, incomplete archive form/envelope, and four required archive source keys still admitted by the exact-path exemption.
+- RED lifecycle: the focused lifecycle discovery ran 74 tests with 12 expected assertion failures and zero errors for missing owner markers, source attribution, Stage 00/98 routes, and copied policy in template governance.
+- Focused GREEN: metadata profile/validation passed 55 of 55 and human contract routing passed 4 of 4. The first full metadata run exposed six test-fixture compatibility failures only; archive-specific conditional headings and Git-history snapshot-field removal were corrected without weakening the production contract, and both focused fixtures passed 2 of 2.
+- Full GREEN: metadata passed 201 of 201 in 72.942 seconds; lifecycle passed 74 of 74 in 119.646 seconds with zero safety failures. Printed finding lines are bounded negative-fixture output, not suite failures.
+- Live checks: explicit-base metadata changed mode selected 27 records with zero violations, zero legacy exceptions, and zero transition overrides; lifecycle `check-contract` returned zero violations; Python compilation and `git diff --check` passed.
+- Integration: traceability passed 46 catalog pairs with zero failures; implementation alignment checked 650 stage documents and 5,181 repository-local links with zero failures.
+- Generated owners: the LLM Wiki index regenerated with 1,302 paths, coverage with 1,301 safe paths, and inventory with 906 records and 2,160 advisory findings. Index and coverage check modes passed; inventory rerun preserved SHA-256 `b197c11e54c3ee95b8bae9a2bfa300b540945793fd08dbf5bf3c8954c31dbef6`.
+- Graphify: refresh completed with 24,102 nodes, 26,535 edges, and 1,567 communities. Health was advisory for two unrelated cross-root edges only: the Alertmanager critical route and same-file SMTP placeholders, and adjacent independent cAdvisor/Pyroscope Compose siblings. Tracked Alertmanager and Compose source disproved any Task 3 dependency inference; human-owner and archive claims were corroborated against Stage 00, Spec 131, this Plan/Task, Stage 98/99 contracts, the metadata registry, validator, and tests. Volume, gitlink, generated/minified, graph-source contamination, and meaningless-god-node counts were all zero. Both Graphify outputs were restored and excluded from the commits.
+- Scope preservation: Stage 98 changed only `README.md`; all 20 existing tombstones remain byte-for-byte outside the diff. No corpus migration, archive payload, generated ledger, snapshot manifest, Foundation manifest, exception, workflow, runtime, Compose, infrastructure, deployment, provider, secret, credential, or remote state changed.
+
+Verification results: T-DCLM-001 and T-DCLM-002 are complete. T-DCLM-003
+implementation is GREEN with self-review PASS and awaits independent
+specification and quality reviews. The T-DCLM-002
 implementation range `9126a0aa..9fe234f6` is GREEN and received terminal Spec
 PASS and separate Quality retry PASS, each with Critical 0, Important 0, and
-Minor 1. The only deferred Minor is behavior-preserving decomposition of the
-monolithic dispatcher; T-DCLM-003 is unblocked.
+Minor 1. The only earlier deferred Minor is behavior-preserving decomposition
+of the monolithic dispatcher.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -391,6 +407,18 @@ closed. Both reviewers retained only the same deferred Minor: split the
 monolithic dispatcher in a later behavior-preserving package with
 characterization/equivalence tests. This does not block Task 3.
 
+T-DCLM-003 implementer self-review verdict: PASS. The two Markdown contracts
+are the sole human owners and route rather than duplicate machine schema. The
+archive template follows the registered key order, publishes required and
+conditional body sections without sample evidence, and no longer receives a
+source-only required-key waiver. Stage 00 and Stage 98 state the manifest-first,
+safe-provenance, review, canonical-generator, and controlled-wrapper routes.
+Approved external sources are attributed only to syntax, rendering,
+documentation organization, provenance vocabulary, Git inspection, CI, and
+hook mechanics; repository authority remains local. Existing tombstones and
+Task 4 surfaces are untouched. Independent specification and quality reviews
+are pending and must be recorded separately before T-DCLM-003 closes.
+
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 
 ## Commit Ledger
@@ -418,6 +446,8 @@ Foundation logical commits:
 - `6c33c66c` — T-DCLM-002 release-gate remediation `fix(validation): close lifecycle release blockers`.
 - `8001a95c` — T-DCLM-002 final release-quality remediation `fix(validation): bind merge owners to baseline provenance`.
 - `1c9ef624` — T-DCLM-002 sign-off remediation `fix(validation): close lifecycle sign-off gaps`.
+- T-DCLM-003 authored implementation — `docs(governance): align corpus migration and archive rules`; the commit containing this self-identifying ledger row is recorded by the controller after creation.
+- T-DCLM-003 generated follow-up — `docs(generated): index lifecycle human contracts`; emitted only because all three canonical Task 3 owners produced the bounded drift recorded above.
 
 The reviewed T-DCLM-002 implementation and remediation range ends at
 `9fe234f6`. The later ledger-only closure commit records the terminal verdicts
@@ -430,7 +460,6 @@ GREEN commands, and generated fallout before closure.
 
 Deferred:
 
-- T-DCLM-003 must update `docs/99.templates/templates/common/archive.template.md` with the four v2 archive source keys and remove the exact-path transitional source exemption. Regression coverage proves the exemption does not relax new/changed archive targets.
 - Spec 132 — active SDLC graph migration;
 - Spec 133 — operations document migration;
 - Spec 134 — completed/superseded evidence and Stage 04 year partition;

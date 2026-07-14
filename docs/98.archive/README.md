@@ -26,6 +26,7 @@ stale 본문을 다시 노출하지 않습니다.
 - 현재 구현과 상충해 active chain에서 제거한 whole-document tombstone
 - 원래 경로와 대체 문서 추적
 - archive migration ledger
+- 검증된 provenance tombstone과 승인된 immutable evidence snapshot 경로
 
 ### Out of Scope
 
@@ -46,6 +47,15 @@ stale 본문을 다시 노출하지 않습니다.
 ```
 
 ## Migration Ledger
+
+아래 표는 현재 `hand-maintained`이며 `transitional until Wave D`입니다.
+Generated ledger라고 주장하지 않으며, Wave D에서 기존 tombstone의 provenance를
+정비하고 canonical lifecycle generator를 승인하기 전까지 이 상태를 유지합니다.
+분류와 증거 조건은
+[corpus migration contract](../99.templates/support/corpus-migration-contract.md),
+archive provenance와 retention 조건은
+[archive and retention contract](../99.templates/support/archive-retention-contract.md)를
+따릅니다.
 
 | Original Path | Archive Path | Reason | Current Replacement |
 | --- | --- | --- | --- |
@@ -72,11 +82,10 @@ stale 본문을 다시 노출하지 않습니다.
 
 ## How to Work in This Area
 
-1. Archive 전 `rg`로 active 참조를 확인하고 제거합니다.
-2. 원래 문서는 같은 상대 구조로 `docs/98.archive/<original-stage>/...`에 tombstone으로 이동합니다.
-3. Tombstone은 `docs/99.templates/templates/common/archive.template.md`를 따르고 원문 본문을 보존하지 않습니다.
-4. Active 문서에서는 archive tombstone으로 역링크하지 않습니다.
-5. 이 README의 Migration Ledger를 갱신합니다.
+1. 승인된 manifest에서 대상과 소비자, 대체 문서, 보존 근거를 검토합니다.
+2. Git provenance와 confidentiality 검증을 통과한 결과만 canonical Archive template로 작성합니다.
+3. Active 문서는 tombstone을 current guidance로 역링크하지 않습니다.
+4. Wave D 전에는 이 hand-maintained ledger를 Task 근거와 함께 갱신하며 generated output이라고 표시하지 않습니다.
 
 ## Related Documents
 
@@ -84,3 +93,5 @@ stale 본문을 다시 노출하지 않습니다.
 - [stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)
 - [documentation protocol](../00.agent-governance/rules/documentation-protocol.md)
 - [archive template](../99.templates/templates/common/archive.template.md)
+- [corpus migration contract](../99.templates/support/corpus-migration-contract.md)
+- [archive and retention contract](../99.templates/support/archive-retention-contract.md)

@@ -360,8 +360,8 @@ template_roles:
     source: docs/99.templates/templates/common/archive.template.md
     artifact_profile: archive
     target_globs: [docs/98.archive/**/*.md]
-    required_headings: ["## Overview", "## Archive Metadata", "## Current Replacement", "## Archive Ledger", "## Related Documents"]
-    conditional_headings: ["## Preserved Evidence"]
+    required_headings: ["## Overview", "## Archive Metadata", "## Archive Ledger", "## Related Documents"]
+    conditional_headings: ["## Current Replacement", "## Preserved Evidence"]
     forbidden_headings: ["## Current Implementation"]
   readme:
     source: docs/99.templates/templates/common/readme.template.md

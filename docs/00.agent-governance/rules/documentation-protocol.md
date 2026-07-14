@@ -140,6 +140,27 @@ registry schema.
    approved metadata, section envelope, links, and current routing around that
    payload.
 
+### 2.2 Corpus Migration and Archive Routing
+
+Stage 00 owns agent authorization, sequencing, approval boundaries, protected
+surfaces, and evidence duties. It routes exact document semantics to Stage 99:
+
+- [corpus migration contract](../../99.templates/support/corpus-migration-contract.md)
+  is the human owner for manifest classification, disposition evidence,
+  independent reviews, wave promotion, dry runs, and rollback;
+- [archive and retention contract](../../99.templates/support/archive-retention-contract.md)
+  is the human owner for tombstone provenance, conditional preservation,
+  review signals, directory budgets, partition shape, and derived ledgers;
+- [document corpus migration registry](../../99.templates/support/document-corpus-migration-contract.yaml)
+  is the exact machine owner interpreted by the lifecycle validator.
+
+For approved corpus work, agents use manifest-first classification before
+target mutation, perform safe provenance and confidentiality checks, obtain an
+independent specification and quality review, refresh generated evidence only
+through each canonical generator, and record controlled-wrapper evidence only
+when the approved final Task gate invokes the repository wrapper. Stage 00 does
+not restate the enums, thresholds, field conditions, or validation algorithm.
+
 ## 3. Document Type ↔ Template Mapping
 
 | Stage/Folder                                          | Document Type          | Template                                     |
@@ -221,12 +242,17 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 7. Cross-link related Requirements, Architecture, Spec, Plan, Task, Operations, Reference, and Incident files.
 8. Run checklist gates from `rules/task-checklists.md` and the metadata checker
    for the selected change scope.
+9. For a migration or archive change, classify the approved path in its
+   manifest before mutation, validate provenance through the lifecycle checker,
+   preserve independent review evidence, and use canonical generators for
+   derived outputs.
 
 For `docs/90.references/`, verify that the document is stable reference context, contains source-backed facts, and does not define active policy, runtime truth, runbook procedure, plan, task evidence, or incident timeline.
 
-For `docs/98.archive/`, verify that the document is a tombstone only. It must
-record the original path, archive reason, and current replacement while removing
-stale original body content.
+For `docs/98.archive/`, verify that the document is a tombstone only. It records
+the original path, archive reason, verified Git provenance, preservation class,
+and a replacement only when the archive disposition requires one. Remove stale
+original body content and route exact conditions to the Stage 99 archive owner.
 
 ### 4.1 Template Deviation Audit
 
@@ -274,10 +300,14 @@ When legacy active-stage content is discovered in a non-stage `docs/*` path:
 When a whole document under `docs/01` to `docs/05` conflicts with current
 implementation and should leave the active chain:
 
-1. Remove active references to that document.
-2. Create a tombstone under `docs/98.archive/<original-stage>/<original-path>.md`.
-3. Record the migration in `docs/98.archive/README.md`.
-4. Do not link active documents back to the archive tombstone.
+1. Stop mutation until the approved manifest classifies the source and its
+   active consumers.
+2. Validate the result path, replacement condition, Git provenance,
+   preservation class, confidentiality boundary, and rollback evidence through
+   the Stage 99 contracts and lifecycle checker.
+3. Create the canonical tombstone and refresh only applicable routed or
+   generated evidence.
+4. Do not link active documents back to the archive tombstone as current truth.
 
 ### 5.1 Gap-to-Stage Routing
 
@@ -295,8 +325,8 @@ or evidence across stages.
 | Completed work evidence, validation output, deviation, or implementation disposition | `docs/04.execution/tasks/` | Record the task result, checks, protected-surface boundary, and remaining gaps. |
 | Operator usage, operational control, recovery procedure, incident, or postmortem | `docs/05.operations/` | Route usage to `guides/`, policy to `policies/`, recovery to `runbooks/`, and incident evidence to `incidents/`. |
 | Source-backed research, audit snapshot, data reference, learning note, or LLM navigation | `docs/90.references/` | Keep it evidence-only. Do not make it active policy, plan, task evidence, or runtime truth. |
-| Obsolete or implementation-conflicting document that must leave the active chain | `docs/98.archive/` | Create a tombstone, update the archive ledger, and remove active references. |
-| Template, frontmatter, lifecycle, or authoring contract | `docs/99.templates/` | Put reusable rules in `support/` and copyable document shapes in `templates/`. |
+| Obsolete or implementation-conflicting document that must leave the active chain | `docs/98.archive/` | Classify through the Stage 99 migration owner, create a validated provenance tombstone, update only the applicable transitional or generated ledger, and remove active current-truth references. |
+| Template, frontmatter, lifecycle, migration, archive, retention, or authoring contract | `docs/99.templates/` | Put reusable human rules in their named `support/` owner, machine semantics in the registries, and copyable document shapes in `templates/`. |
 | Runtime, secret value, credential, remote GitHub mutation, deployment, or uncertain implementation drift | Stage 04 task/audit gap first | Record as out-of-scope or approval-gated unless the current task explicitly approves that surface and names validation/rollback evidence. |
 
 If one gap spans multiple stages, update the earliest canonical owner that
@@ -421,3 +451,5 @@ Update this table when a number is consumed or definitively retired.
 - `docs/99.templates/support/sdlc-document-contract.md`
 - `docs/99.templates/support/common-document-contract.md`
 - `docs/99.templates/support/readme-profile-contract.md`
+- `docs/99.templates/support/corpus-migration-contract.md`
+- `docs/99.templates/support/archive-retention-contract.md`

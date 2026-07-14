@@ -20,7 +20,7 @@ README-specific profile selection is owned separately by
 | --- | --- | --- |
 | Reference | Preserve stable, source-backed facts, vocabulary, inventory, research, or explanatory context. | Supports active work but does not become policy, procedure, execution evidence, or runtime truth. Mutable claims need review evidence and a source date. |
 | Audit | Record a bounded assessment against explicit criteria, evidence, findings, severity, and disposition. | Reports observed state; it routes gaps to canonical owners and does not silently change those owners. Dated counts and verdicts remain historical evidence. |
-| Archive | Preserve a concise tombstone for an active document removed from the current chain. | Records origin, reason, date, and current replacement; it does not retain stale current-truth prose or receive active back-links. |
+| Archive | Preserve a concise provenance tombstone for an active document removed from the current chain. | The archive and retention contract owns provenance, conditional replacement, preservation, retention review, and derived-ledger semantics; a tombstone does not retain stale current-truth prose or receive active back-links. |
 | README-adjacent common content | Provide local catalog, navigation, inventory, and routing context around common surfaces. | Exact README classification and heading envelopes belong to the README contract; shared rules remain in their named owner. |
 | Governance | Define agent execution, authoring, approval, provider, or repository policy in its approved governance surface. | Uses governance metadata conventions and must not be projected into ordinary lifecycle artifacts or catalog README files. |
 | Generated output | Present deterministic output owned by a named generator and freshness contract. | Regenerate through the canonical owner; do not hand-edit or add human lifecycle claims the generator does not emit. |
@@ -36,9 +36,12 @@ README-specific profile selection is owned separately by
   appropriate.
 - A Reference or Audit may compare external guidance with repository evidence,
   but adoption requires an approved canonical owner outside Stage 90.
-- Archive and deletion decisions require replacement and link review. Historical
-  evidence is preserved in its evidence owner rather than restyled as current
-  guidance.
+- Archive and deletion decisions are manifest-first and route to the
+  [corpus migration contract](./corpus-migration-contract.md). Tombstone,
+  preservation, and retention semantics route to the
+  [archive and retention contract](./archive-retention-contract.md).
+  Historical evidence stays in its evidence owner rather than being restyled
+  as current guidance.
 - Generated and native platform surfaces are consumer-specific exceptions, not
   a reason to weaken fail-closed classification.
 - Repo-support artifacts must not contain credentials, secret values, raw logs,
@@ -76,3 +79,5 @@ surface into a repository document without approval.
 - [template governance](./template-governance.md)
 - [frontmatter contract](./frontmatter-contract.md)
 - [template contract](./template-contract.md)
+- [corpus migration contract](./corpus-migration-contract.md)
+- [archive and retention contract](./archive-retention-contract.md)

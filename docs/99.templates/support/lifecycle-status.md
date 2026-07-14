@@ -72,6 +72,13 @@ Human prose, age, formatting cleanup, or a copied template never authorizes an
 exception. Escalate ambiguity before mutation when the registry profile,
 current evidence, and intended lifecycle outcome do not agree.
 
+Review-age thresholds are non-mutating signals owned by the
+[archive and retention contract](./archive-retention-contract.md) and its
+machine registry. A signal requests evidence review only. It cannot infer a
+review date, change `status`, approve a reverse transition, or authorize
+archive. Corpus-wide status changes are classified and reviewed through the
+[corpus migration contract](./corpus-migration-contract.md).
+
 ## Related Documents
 
 - [support README](./README.md)
@@ -79,3 +86,5 @@ current evidence, and intended lifecycle outcome do not agree.
 - [document metadata profiles](./document-metadata-profiles.yaml)
 - [metadata checker](../../../scripts/validation/check-document-metadata.py)
 - [template governance](./template-governance.md)
+- [corpus migration contract](./corpus-migration-contract.md)
+- [archive and retention contract](./archive-retention-contract.md)

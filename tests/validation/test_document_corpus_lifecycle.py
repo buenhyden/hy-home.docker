@@ -24,6 +24,8 @@ SCRIPT = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
 METADATA_SCRIPT = ROOT / "scripts/validation/check-document-metadata.py"
 PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
+CORPUS_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/corpus-migration-contract.md"
+ARCHIVE_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/archive-retention-contract.md"
 
 
 def load_script(path: pathlib.Path, name: str):
@@ -231,6 +233,106 @@ class PublicContractTests(LifecycleTestCase):
         path = pathlib.Path(directory) / "value.yaml"
         path.write_text(text, encoding="utf-8")
         return path
+
+
+class HumanContractRoutingTests(LifecycleTestCase):
+    def test_lifecycle_human_owners_are_unique(self) -> None:
+        support = ROOT / "docs/99.templates/support"
+        texts = {
+            path: path.read_text(encoding="utf-8")
+            for path in support.glob("*.md")
+        }
+        expected = {
+            "sole human owner for corpus migration": CORPUS_HUMAN_CONTRACT,
+            "sole human owner for archive and retention": ARCHIVE_HUMAN_CONTRACT,
+        }
+        for marker, owner in expected.items():
+            with self.subTest(marker=marker):
+                self.assertEqual(
+                    [owner],
+                    [path for path, text in texts.items() if marker in text],
+                )
+
+    def test_template_governance_routes_algorithms_to_human_owners(self) -> None:
+        path = ROOT / "docs/99.templates/support/template-governance.md"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("corpus-migration-contract.md", text)
+        self.assertIn("archive-retention-contract.md", text)
+        for copied_algorithm_literal in (
+            "`active-canonical`",
+            "`historical-archive`",
+            "`duplicate-remove`",
+            "`conflict-remove-or-archive`",
+            "`evidence-preserve`",
+            "record replacement or `N/A`",
+        ):
+            with self.subTest(literal=copied_algorithm_literal):
+                self.assertNotIn(copied_algorithm_literal, text)
+        for approval_boundary in (
+            "approved scope",
+            "exact paths",
+            "validation commands",
+            "rollback or recovery",
+            "redaction boundary",
+            "independent specification",
+            "quality review",
+        ):
+            with self.subTest(boundary=approval_boundary):
+                self.assertIn(approval_boundary, text)
+
+    def test_stage00_and_stage98_route_without_redefining_semantics(self) -> None:
+        archive_readme = (ROOT / "docs/98.archive/README.md").read_text(
+            encoding="utf-8"
+        )
+        for literal in (
+            "hand-maintained",
+            "transitional until Wave D",
+            "archive-retention-contract.md",
+            "corpus-migration-contract.md",
+        ):
+            self.assertIn(literal, archive_readme)
+
+        stage00_paths = (
+            ROOT / "docs/00.agent-governance/rules/documentation-protocol.md",
+            ROOT / "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+            ROOT / "docs/00.agent-governance/rules/task-checklists.md",
+        )
+        combined = "\n".join(path.read_text(encoding="utf-8") for path in stage00_paths)
+        for literal in (
+            "corpus-migration-contract.md",
+            "archive-retention-contract.md",
+            "manifest-first",
+            "safe provenance",
+            "independent specification and quality review",
+            "canonical generator",
+            "controlled-wrapper evidence",
+        ):
+            with self.subTest(literal=literal):
+                self.assertIn(literal, combined)
+
+    def test_approved_external_sources_are_local_consequences_only(self) -> None:
+        rationale = (
+            ROOT / "docs/99.templates/support/external-source-rationale.md"
+        ).read_text(encoding="utf-8")
+        for source in (
+            "https://yaml.org/spec/1.2.2/",
+            "https://docs.github.com/en/contributing/writing-for-github-docs/using-yaml-frontmatter",
+            "https://spec.commonmark.org/0.31.2/",
+            "https://github.github.com/gfm/",
+            "https://diataxis.fr/",
+            "https://swehb.nasa.gov/spaces/7150/pages/16450285/SWE-052%2B-%2BBidirectional%2BTraceability%2BBetween%2BHigher%2BLevel%2BRequirements%2Band%2BSoftware%2BRequirements",
+            "https://adr.github.io/madr/",
+            "https://github.com/github/spec-kit",
+            "https://sre.google/workbook/postmortem-culture/",
+            "https://www.w3.org/TR/prov-o/",
+            "https://git-scm.com/docs/git-log",
+            "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax",
+            "https://pre-commit.com/",
+        ):
+            with self.subTest(source=source):
+                self.assertIn(source, rationale)
+        self.assertIn("repository-local decisions", rationale)
+        self.assertIn("do not define repository approval authority", rationale)
 
 
 class ManifestValidationTests(LifecycleTestCase):

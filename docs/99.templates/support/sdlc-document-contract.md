@@ -100,6 +100,14 @@ execution remain in a separately approved technical and operational chain.
 6. Record validation, deviations, protected-surface evidence, and review in the
    active Stage 04 task.
 
+For a corpus wave, the Plan approves scope, boundaries, review gates, generator
+ownership, and rollback before classification begins. The Task records the
+reviewed manifest, consumer and provenance checks, independent specification
+and quality verdicts, exact generator freshness, commit boundaries, and any
+controlled-wrapper evidence. Exact migration and archive semantics remain in
+the [corpus migration contract](./corpus-migration-contract.md) and
+[archive and retention contract](./archive-retention-contract.md).
+
 ## Iterative Feedback
 
 The forward route is PRD to architecture and decisions, then Spec and focused
@@ -121,3 +129,5 @@ decision, or result into a second artifact as competing truth.
 - [template contract](./template-contract.md)
 - [template selection](./template-selection.md)
 - [lifecycle status](./lifecycle-status.md)
+- [corpus migration contract](./corpus-migration-contract.md)
+- [archive and retention contract](./archive-retention-contract.md)

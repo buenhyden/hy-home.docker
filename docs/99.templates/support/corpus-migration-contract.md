@@ -1,0 +1,117 @@
+---
+layer: agentic
+---
+
+# Corpus Migration Contract
+
+## Overview
+
+This document is the sole human owner for corpus migration. It explains how a
+reviewer classifies a bounded document set, proves a disposition, and promotes
+one reviewed wave without turning a dry run into repository truth.
+
+The executable owner is
+[`document-corpus-migration-contract.yaml`](./document-corpus-migration-contract.yaml).
+The metadata registry and checker remain authoritative for artifact profiles,
+identity, relations, lifecycle transitions, serialization, and path matching.
+This contract neither redefines those semantics nor authorizes a corpus wave.
+
+## Ownership Boundary
+
+The manifest owns classification and evidence for one approved baseline scope.
+It does not select document profiles, invent identities, decide lifecycle state,
+or mutate targets. A Plan approves the wave and protected boundaries; its Task
+records actual commands, review verdicts, commits, deviations, and rollback.
+
+The repository-local manifest dispositions are `migrate`, `preserve`, `move`, `merge`, `archive`, `delete`, `regenerate`, `exempt`.
+Their target conditions are exact machine-contract values:
+
+| Disposition | Target condition |
+| --- | --- |
+| `migrate` | `migrate` -> `source-equals-target` |
+| `preserve` | `preserve` -> `source-equals-target` |
+| `move` | `move` -> `target-distinct` |
+| `merge` | `merge` -> `target-distinct` |
+| `archive` | `archive` -> `target-distinct` |
+| `delete` | `delete` -> `target-null` |
+| `regenerate` | `regenerate` -> `source-equals-target` |
+| `exempt` | `exempt` -> `source-equals-target` |
+
+## Manifest Shape and Evidence
+
+The top-level fields are `schema_version`, `wave`, `baseline_commit`, `generated_by`, `enforcement`, `entries`.
+
+Each entry uses `source_path`, `target_path`, `artifact_id`, `artifact_type`, `status_before`, `status_after`, `parent_ids`, `disposition`, `canonical_replacement`, `active_consumers`, `partition_plan`, `preservation_class`, `evidence`, `review_verdict`.
+
+The evidence object uses `commands`, `sources`, `repository_paths`, `consumer_scan`, `rollback`.
+The review object uses `specification`, `quality`, and each verdict is one of `pending`, `pass`, `changes-required`.
+
+The machine contract owns exact types, nullability, and domains for `schema_version`,
+`wave`, `baseline_commit`, `generated_by`, `enforcement`, `entries`,
+`source_path`, `target_path`, `artifact_id`, `artifact_type`, `status_before`,
+`status_after`, `parent_ids`, `disposition`, `canonical_replacement`,
+`active_consumers`, `partition_plan`, `preservation_class`, `evidence`,
+`review_verdict`, `evidence.commands`, `evidence.sources`,
+`evidence.repository_paths`, `evidence.consumer_scan`, `evidence.rollback`,
+`review_verdict.specification`, and `review_verdict.quality`. Authors must use
+YAML null where the machine contract permits absence; sentinel text is not a
+substitute for missing data.
+
+Lists and entries are serialized deterministically for reviewable diffs. Their
+order does not create approval rank, dependency priority, or semantic truth.
+
+## Classification and Destructive Proof
+
+Manifest-first classification occurs before target mutation. Every selected
+baseline path appears exactly once. Declared outputs are not fictional source
+rows, and an unapproved future wave remains empty and advisory.
+
+A candidate hash, title, topic, or type match is only review input. Merge,
+archive, or deletion requires one canonical owner, proof that role, purpose,
+topic, and scope agree, an enumeration of every active consumer, replacement
+semantics where applicable, preservation evidence, complete rollback evidence,
+and independent specification and quality verdicts of `pass`. An honestly
+verified orphan keeps an empty consumer list and records the scan that proved
+it; authors never fabricate a consumer.
+
+`canonical_replacement` is required for merge, optional for archive and delete,
+and forbidden for migrate, preserve, move, regenerate, and exempt. Any supplied
+replacement must resolve to the one validated current target. Archive-specific
+replacement truth is interpreted with the archive disposition by the
+[archive and retention contract](./archive-retention-contract.md).
+
+## Wave Promotion and Dry Runs
+
+Generator output under `_workspace/repo-support/` is transient, ignored,
+non-secret dry-run material. It is not canonical evidence and cannot promote a
+wave. Promotion requires an approved manifest in its declared Stage 90 path,
+machine validation, complete Task evidence, independent passing reviews, and
+an explicit contract change from advisory to blocking. A skeleton remains
+pending and never invents parents, consumers, replacements, evidence, or
+approval.
+
+Full-corpus debt remains advisory until its separately approved wave promotes
+that exact scope. Exceptions, when the later gate permits them, must remain
+finding-specific, path-bounded, owned, reasoned, approved, expiring, and tied
+to a non-empty exit condition and safe evidence paths.
+
+## Rollback and Preservation
+
+Rollback reverts the affected logical wave commits in reverse order and then
+regenerates only their derived outputs. Never rewrite history, weaken the
+contract, or delete evidence merely to make a manifest pass. A failed later
+wave does not authorize reverting a previously approved wave.
+
+Manifest evidence may record bounded paths, stable codes, commands, counts,
+and Git object identities. It must not contain body payloads, snapshot bytes,
+credentials, tokens, keys, auth files, shell history, raw logs, or diagnostic
+payloads.
+
+## Related Documents
+
+- [archive and retention contract](./archive-retention-contract.md)
+- [document metadata profiles](./document-metadata-profiles.yaml)
+- [frontmatter contract](./frontmatter-contract.md)
+- [lifecycle status](./lifecycle-status.md)
+- [template governance](./template-governance.md)
+- [Foundation task evidence](../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md)

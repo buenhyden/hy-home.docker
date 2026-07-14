@@ -91,7 +91,11 @@ Spec 123 is the sole approved cross-cutting root exception in this rollout; its
 empty `parent_ids` is explicit and does not authorize arbitrary root Specs.
 
 Archive tombstones use the archive lifecycle profile and the provenance fields
-required by the registry.
+required by the registry. Conditional replacement and snapshot fields are
+present only when the archive profile admits them; their human interpretation
+is owned by the
+[archive and retention contract](./archive-retention-contract.md). A missing
+replacement remains an absent field, never a sentinel value.
 
 ## Disposition and Archive Metadata Rules
 
@@ -153,3 +157,5 @@ profiles. The registry owns the exact field set and value constraints.
 - [SDLC document contract](./sdlc-document-contract.md)
 - [common document contract](./common-document-contract.md)
 - [README profile contract](./readme-profile-contract.md)
+- [corpus migration contract](./corpus-migration-contract.md)
+- [archive and retention contract](./archive-retention-contract.md)

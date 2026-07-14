@@ -484,17 +484,6 @@ EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
     }
 )
 TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES: frozenset[str] = frozenset()
-TRANSITIONAL_ARCHIVE_TEMPLATE_SOURCE = (
-    "docs/99.templates/templates/common/archive.template.md"
-)
-TRANSITIONAL_ARCHIVE_TEMPLATE_REQUIRED_DEBT = frozenset(
-    {
-        "archive_disposition",
-        "archived_commit",
-        "archived_blob",
-        "preservation_class",
-    }
-)
 TARGET_MARKDOWN_PREFIXES = (
     "docs/00.agent-governance/",
     "docs/01.requirements/",
@@ -1305,13 +1294,7 @@ def _validate_template_source(
     optional = set(target_profile.get("optional", []))
     forbidden = set(target_profile.get("forbidden", []))
     allowed_template_keys = required | optional | {"status"}
-    transitional_required_debt = (
-        TRANSITIONAL_ARCHIVE_TEMPLATE_REQUIRED_DEBT
-        if record.path.as_posix() == TRANSITIONAL_ARCHIVE_TEMPLATE_SOURCE
-        and target_type == "archive"
-        else frozenset()
-    )
-    for key in sorted(required - transitional_required_debt - set(record.metadata)):
+    for key in sorted(required - set(record.metadata)):
         findings.append(_finding(record, "missing-template-key", f"target-profile key is missing: {key}"))
     for key in sorted(set(record.metadata) & forbidden):
         findings.append(_finding(record, "forbidden-template-key", f"key is forbidden for {target_type}: {key}"))

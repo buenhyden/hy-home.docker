@@ -26,6 +26,13 @@ MIGRATION_CONTRACT = (
     / "support"
     / "document-corpus-migration-contract.yaml"
 )
+CORPUS_MIGRATION_HUMAN_CONTRACT = (
+    ROOT / "docs/99.templates/support/corpus-migration-contract.md"
+)
+ARCHIVE_RETENTION_HUMAN_CONTRACT = (
+    ROOT / "docs/99.templates/support/archive-retention-contract.md"
+)
+ARCHIVE_TEMPLATE = ROOT / "docs/99.templates/templates/common/archive.template.md"
 
 spec = importlib.util.spec_from_file_location("check_document_metadata", CHECKER)
 if spec is None or spec.loader is None:
@@ -442,6 +449,119 @@ class ProfileSchemaTests(unittest.TestCase):
             ] = []
 
         self.mutate_and_load(add_unknown_condition)
+
+    def test_corpus_migration_human_owner_matches_machine_contract(self) -> None:
+        self.assertTrue(
+            CORPUS_MIGRATION_HUMAN_CONTRACT.is_file(),
+            "canonical corpus migration human owner is missing",
+        )
+        text = CORPUS_MIGRATION_HUMAN_CONTRACT.read_text(encoding="utf-8")
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+
+        expected_sequences = (
+            contract["manifest"]["dispositions"],
+            contract["manifest_schema"]["top_level_fields"],
+            contract["manifest_schema"]["entry_fields"],
+            contract["manifest_schema"]["evidence_fields"],
+            contract["manifest_schema"]["review_verdict_fields"],
+            contract["manifest_schema"]["review_verdict_values"],
+        )
+        for values in expected_sequences:
+            literal = ", ".join(f"`{value}`" for value in values)
+            with self.subTest(literal=literal):
+                self.assertIn(literal, text)
+        for field_name in contract["manifest_schema"]["field_contracts"]:
+            with self.subTest(field=field_name):
+                self.assertIn(f"`{field_name}`", text)
+        for disposition, condition in contract["disposition_conditions"].items():
+            with self.subTest(disposition=disposition):
+                self.assertIn(f"`{disposition}` -> `{condition}`", text)
+        self.assertIn(
+            "document-corpus-migration-contract.yaml",
+            text,
+        )
+
+    def test_archive_retention_human_owner_matches_machine_contract(self) -> None:
+        self.assertTrue(
+            ARCHIVE_RETENTION_HUMAN_CONTRACT.is_file(),
+            "canonical archive and retention human owner is missing",
+        )
+        text = ARCHIVE_RETENTION_HUMAN_CONTRACT.read_text(encoding="utf-8")
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = metadata.load_profiles(PROFILES)
+        archive_profile = profiles["profiles"]["archive"]
+
+        for values in (
+            contract["archive"]["dispositions"],
+            contract["archive"]["preservation_classes"],
+            archive_profile["required"],
+            archive_profile["optional"],
+        ):
+            literal = ", ".join(f"`{value}`" for value in values)
+            with self.subTest(literal=literal):
+                self.assertIn(literal, text)
+        for key, value in contract["directory_budgets"].items():
+            self.assertIn(f"`{key}: {value}`", text)
+        for key, value in contract["review_signals"].items():
+            self.assertIn(f"`{key}: {value}`", text)
+        for source, target in contract["planned_partitions"].items():
+            self.assertIn(f"`{source}` -> `{target}`", text)
+        self.assertIn("document-metadata-profiles.yaml", text)
+        self.assertIn("document-corpus-migration-contract.yaml", text)
+
+    def test_archive_template_uses_canonical_profile_order_and_sections(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        archive_role = profiles["template_roles"]["archive"]
+        values = metadata.parse_frontmatter(ARCHIVE_TEMPLATE)
+        self.assertEqual(
+            [
+                "status",
+                "artifact_id",
+                "artifact_type",
+                "parent_ids",
+                "archived_from",
+                "archived_on",
+                "archive_reason",
+                "archive_disposition",
+                "archived_commit",
+                "archived_blob",
+                "preservation_class",
+                "current_replacement",
+                "snapshot_path",
+                "content_sha256",
+                "snapshot_reason",
+            ],
+            list(values),
+        )
+        self.assertEqual(
+            [
+                "## Overview",
+                "## Archive Metadata",
+                "## Current Replacement",
+                "## Archive Ledger",
+                "## Preserved Evidence",
+                "## Related Documents",
+            ],
+            [
+                line
+                for line in ARCHIVE_TEMPLATE.read_text(encoding="utf-8").splitlines()
+                if line.startswith("## ")
+            ],
+        )
+        self.assertEqual(
+            [
+                "## Overview",
+                "## Archive Metadata",
+                "## Archive Ledger",
+                "## Related Documents",
+            ],
+            archive_role["required_headings"],
+        )
+        self.assertEqual(
+            ["## Current Replacement", "## Preserved Evidence"],
+            archive_role["conditional_headings"],
+        )
+        self.assertNotIn("N/A", ARCHIVE_TEMPLATE.read_text(encoding="utf-8"))
 
     def test_migration_contract_has_exact_nonoverlapping_ownership(self) -> None:
         self.assertTrue(MIGRATION_CONTRACT.is_file(), "migration contract is missing")
@@ -1703,6 +1823,35 @@ class MetadataValidationTests(unittest.TestCase):
             },
         )
 
+    def test_archive_template_source_has_no_transitional_required_debt(self) -> None:
+        canonical = metadata.parse_frontmatter(ARCHIVE_TEMPLATE)
+        for key in (
+            "archive_disposition",
+            "archived_commit",
+            "archived_blob",
+            "preservation_class",
+        ):
+            with self.subTest(key=key):
+                values = dict(canonical)
+                values.pop(key, None)
+                record = metadata.Record(
+                    pathlib.Path(
+                        "docs/99.templates/templates/common/archive.template.md"
+                    ),
+                    values,
+                    "template-source",
+                    frontmatter_present=True,
+                )
+                findings = metadata.validate_record(
+                    record,
+                    self.profiles,
+                    metadata.build_manifest([record]),
+                )
+                self.assertIn(
+                    ("missing-template-key", f"target-profile key is missing: {key}"),
+                    {(finding.code, finding.message) for finding in findings},
+                )
+
     def test_instantiated_document_rejects_template_placeholders(self) -> None:
         record = self.record(
             "docs/03.specs/124-example/spec.md",
@@ -1852,7 +2001,14 @@ class TemplateMetadataTests(unittest.TestCase):
                 role = self.profiles["template_roles"][role_name]
                 text = (ROOT / role["source"]).read_text(encoding="utf-8")
                 headings = [line for line in text.splitlines() if line.startswith("## ")]
-                self.assertEqual(role["required_headings"], headings)
+                if role_name == "archive":
+                    self.assertLessEqual(set(role["required_headings"]), set(headings))
+                    self.assertEqual(
+                        set(headings),
+                        set(role["required_headings"]) | set(role["conditional_headings"]),
+                    )
+                else:
+                    self.assertEqual(role["required_headings"], headings)
 
     def test_task_2_governance_forms_have_exact_source_frontmatter(self) -> None:
         expected = {"layer": "agentic", "status": "draft"}
@@ -2189,6 +2345,12 @@ class TemplateMetadataTests(unittest.TestCase):
                 if target_type == "archive":
                     values["status"] = "archived"
                     replacement = values.pop("current_replacement")
+                    for snapshot_key in (
+                        "snapshot_path",
+                        "content_sha256",
+                        "snapshot_reason",
+                    ):
+                        values.pop(snapshot_key)
                     values.update(
                         {
                             "archive_disposition": "superseded",
@@ -2321,6 +2483,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## Archive Metadata",
             "## Current Replacement",
             "## Archive Ledger",
+            "## Preserved Evidence",
             "## Related Documents",
         ),
         "memory": (
@@ -2362,7 +2525,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         },
         "archive": {
             "title", "overview", "archive_metadata", "current_replacement",
-            "archive_ledger", "related_documents",
+            "archive_ledger", "preserved_evidence", "related_documents",
         },
         "memory": {
             "title", "date", "layer", "status", "applies_to", "tags",
