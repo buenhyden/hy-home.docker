@@ -594,6 +594,7 @@ class ProfileSchemaTests(unittest.TestCase):
             },
             schema["destructive_execution"],
         )
+
         self.assertEqual(
             {
                 "artifact_id": {
@@ -639,6 +640,37 @@ class ProfileSchemaTests(unittest.TestCase):
         ):
             with self.subTest(mutate=mutate):
                 self.mutate_migration_contract_and_load(mutate)
+
+    def test_archive_replacement_is_deferred_to_validated_target_disposition(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        self.assertEqual(
+            {
+                "required_for": ["merge"],
+                "optional_for": ["archive", "delete"],
+                "forbidden_for": [
+                    "migrate",
+                    "preserve",
+                    "move",
+                    "regenerate",
+                    "exempt",
+                ],
+            },
+            contract["replacement_requirements"],
+        )
+        manifest = self.valid_static_manifest()
+        entry = manifest["entries"][0]
+        entry.update(
+            {
+                "target_path": "docs/98.archive/source.md",
+                "disposition": "archive",
+                "canonical_replacement": None,
+            }
+        )
+        metadata.validate_static_migration_manifest(
+            manifest,
+            contract,
+            metadata.load_profiles(PROFILES, MIGRATION_CONTRACT),
+        )
 
     def test_static_manifest_allows_actual_profile_identity_exception(self) -> None:
         contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
@@ -785,9 +817,9 @@ class ProfileSchemaTests(unittest.TestCase):
             "review-shape": lambda value: value["entries"][0]["review_verdict"].__setitem__(
                 "quality", []
             ),
-            "archive-replacement": lambda value: (
-                value["entries"][0].__setitem__("disposition", "archive"),
-                value["entries"][0].__setitem__("target_path", "docs/98.archive/source.md"),
+            "merge-replacement": lambda value: (
+                value["entries"][0].__setitem__("disposition", "merge"),
+                value["entries"][0].__setitem__("target_path", "docs/merged/source.md"),
             ),
         }
         for name, mutate in mutations.items():

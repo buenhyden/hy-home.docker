@@ -2589,8 +2589,8 @@ def load_migration_contract(
     }:
         raise ProfileError("disposition_conditions must define every canonical disposition")
     if loaded.get("replacement_requirements") != {
-        "required_for": ["merge", "archive"],
-        "optional_for": ["delete"],
+        "required_for": ["merge"],
+        "optional_for": ["archive", "delete"],
         "forbidden_for": ["migrate", "preserve", "move", "regenerate", "exempt"],
     }:
         raise ProfileError("replacement_requirements must partition every canonical disposition")
