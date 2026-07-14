@@ -138,7 +138,7 @@ Redaction boundary:
 
 | Work unit | Responsibility | State |
 | --- | --- | --- |
-| T-DCLM-001 | Machine migration contract and static archive metadata | Implementation and specification review complete; quality remediation awaiting re-review |
+| T-DCLM-001 | Machine migration contract and static archive metadata | Complete — final Spec PASS and Quality PASS with Critical 0, Important 0, Minor 0 |
 | T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Not run |
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Not run |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Not run |
@@ -150,11 +150,12 @@ Redaction boundary:
 | Date | Work unit | Agent role | Result |
 | --- | --- | --- | --- |
 | 2026-07-14 | Planning | Controller | Spec 131 approved and activated; Plan and Task evidence shell authored. |
-| 2026-07-14 | T-DCLM-001 | Fresh implementation agent | Added the exact migration registry, metadata registry v2, fail-closed static archive validation, and RED/GREEN coverage. The authored scope is the Task 1 file set plus `docs/00.agent-governance/memory/progress.md`, included as a documented deviation because the root `AGENTS.md` bootstrap makes progress updates mandatory. Self-review passed; specification and quality review remain assigned to fresh reviewers. |
+| 2026-07-14 | T-DCLM-001 | Fresh implementation agent | Added the exact migration registry, metadata registry v2, fail-closed static archive validation, and RED/GREEN coverage. The authored scope is the Task 1 file set plus `docs/00.agent-governance/memory/progress.md`, included as a documented deviation because the root `AGENTS.md` bootstrap makes progress updates mandatory. Self-review passed; subsequent rows record the independent reviews and remediation. |
 | 2026-07-14 | T-DCLM-001 generated fallout | Fresh implementation agent | The first repository-contract run found only the canonical frontmatter semantic inventory stale after registry v2. The controller approved regenerating that owner in the Task 1 generated follow-up together with any LLM Wiki/index coverage fallout; this is a scoped deviation from the brief's two-file generated follow-up list, not broad corpus mutation. |
-| 2026-07-14 | T-DCLM-001 specification-review remediation | Fresh implementation agent | Resolved specification findings I-01 and I-02 by machine-declaring exact manifest types, nullability, domains, deterministic ordering, destructive execution prerequisites, and bounded exception semantics. Added static synthetic validation without Git lookup, snapshot-byte access, or a repository exception file. Fresh specification re-review remains required. |
+| 2026-07-14 | T-DCLM-001 specification-review remediation | Fresh implementation agent | Resolved specification findings I-01 and I-02 by machine-declaring exact manifest types, nullability, domains, deterministic ordering, destructive execution prerequisites, and bounded exception semantics. Added static synthetic validation without Git lookup, snapshot-byte access, or a repository exception file. Subsequent independent review confirmed both findings closed. |
 | 2026-07-14 | T-DCLM-001 specification re-review remediation | Fresh implementation agent | Resolved I-03 by deriving artifact-ID/status nullability from the selected metadata profile and reusing the canonical non-empty artifact-ID value rule. The `readme` profile proves the declared exception path, while `reference` proves `exempt` cannot bypass required identity/status. No Git lookup or snapshot-byte access was added. |
 | 2026-07-14 | T-DCLM-001 quality-review remediation | Fresh implementation agent | Resolved I-Q01 and I-Q02 by sharing the contract-owned immutable-snapshot disposition allowlist with static archive validation and scalar-guarding both archive selectors before conditional membership. Added value-free admission findings, list/mapping regressions for both selectors, and a changed/new CLI no-traceback regression. |
+| 2026-07-14 | T-DCLM-001 final independent reviews | Fresh specification and quality reviewers | The complete range `afc51b29..e9db5afb` received Spec PASS with Critical 0 and Important 0 and Quality PASS with Critical 0, Important 0, and Minor 0. I-01/I-02/I-03 and I-Q01/I-Q02 are closed; T-DCLM-001 is complete and T-DCLM-002 is clear to proceed. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -213,8 +214,9 @@ T-DCLM-001 actual evidence:
 - Quality-remediation full GREEN: `python3 -m unittest tests.validation.test_document_metadata -q` passed 196 of 196 tests in 71.660 seconds.
 - Quality-remediation compatibility and integration: explicit-base changed mode selected 10 paths with zero violations, zero legacy exceptions, and zero transition overrides; `python3 -m py_compile`, `git diff --check`, and repository contracts passed with `failures=0`.
 - Quality-remediation Graphify: `graphify update .` completed with 23,539 nodes, 25,086 edges, and 1,548 communities. The report remained advisory for the same two unrelated ambiguous cross-root references and generic isolated-node/community noise; claims were corroborated against the tracked migration contract, metadata registry, checker, tests, Stage 00 governance, Spec 131, Plan, and Task. Generated Graphify outputs were restored and excluded from the fix commit.
+- Closure evidence: final specification and quality reports cover `afc51b29..e9db5afb`; a fresh explicit-base changed-mode check selected 10 paths with zero violations, zero legacy exceptions, and zero transition overrides, and `git diff --check` passed.
 
-Verification results: T-DCLM-001 implementation and I-01/I-02/I-03/I-Q01/I-Q02 remediation GREEN. Final specification re-review passed with Critical 0 and Important 0; fresh quality re-review is pending.
+Verification results: T-DCLM-001 implementation and I-01/I-02/I-03/I-Q01/I-Q02 remediation GREEN. Final independent reviews of `afc51b29..e9db5afb` returned Spec PASS with Critical 0 and Important 0 and Quality PASS with Critical 0, Important 0, and Minor 0. T-DCLM-001 is complete.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -264,11 +266,11 @@ Disposition: not run.
 
 Implementation review verdict: T-DCLM-001 self-review PASS after remediation. The implementation is bounded to machine contracts, static manifest/exception and archive-frontmatter validation, tests, Task evidence, and the mandatory progress log. It adds no Git-object probe, snapshot-byte access, corpus migration, existing tombstone edit, exception file, runtime mutation, secret handling, or remote action. Stable diagnostics contain only keys, codes, safe paths, counts, dates, and shape requirements.
 
-Specification review verdict: the first T-DCLM-001 review returned FAIL with Critical 0 and Important 2; I-01 and I-02 were resolved in `ab33b64f`. The re-review returned FAIL with Critical 0 and Important 1; I-03 was resolved in `602994f2`. The final specification re-review of `afc51b29..602994f2` returned PASS with Critical 0 and Important 0.
+Specification review verdict: the first T-DCLM-001 review returned FAIL with Critical 0 and Important 2; I-01 and I-02 were resolved in `ab33b64f`. The re-review returned FAIL with Critical 0 and Important 1; I-03 was resolved in `602994f2`. The final specification review of `afc51b29..e9db5afb` returned PASS with Critical 0 and Important 0.
 
-Quality review verdict: the T-DCLM-001 review of `afc51b29..602994f2` returned FAIL with Critical 0, Important 2, and Minor 0. I-Q01 identified missing immutable-snapshot disposition admission; I-Q02 identified uncaught non-scalar archive-selector `TypeError` escapes. Both are implemented and await fresh quality re-review.
+Quality review verdict: the first T-DCLM-001 quality review of `afc51b29..602994f2` returned FAIL with Critical 0, Important 2, and Minor 0. I-Q01 identified missing immutable-snapshot disposition admission; I-Q02 identified uncaught non-scalar archive-selector `TypeError` escapes. Both were resolved in `e9db5afb`; the final quality review of `afc51b29..e9db5afb` returned PASS with Critical 0, Important 0, and Minor 0.
 
-Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in the pending `fix(docs): harden archive snapshot validation` logical commit. Fresh quality re-review is required before T-DCLM-002.
+Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 
 ## Commit Ledger
 
@@ -284,7 +286,7 @@ Foundation logical commits:
 - `a224f93d` — T-DCLM-001 generated follow-up `docs(generated): index lifecycle machine contract`.
 - `ab33b64f` — T-DCLM-001 specification-review remediation `fix(docs): enforce corpus lifecycle machine contracts`.
 - `602994f2` — T-DCLM-001 specification re-review remediation `fix(docs): honor metadata profile identity rules`.
-- T-DCLM-001 quality-review remediation — `fix(docs): harden archive snapshot validation`; identity is assigned by the remediation commit operation and will be appended to the ignored implementation report.
+- `e9db5afb` — T-DCLM-001 quality-review remediation `fix(docs): harden archive snapshot validation`.
 
 Commit validation: each entry must name its work unit, review verdicts, focused
 GREEN commands, and generated fallout before closure.
