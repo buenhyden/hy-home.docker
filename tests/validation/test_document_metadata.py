@@ -370,6 +370,52 @@ class ProfileSchemaTests(unittest.TestCase):
             with self.subTest(mutate=mutate):
                 self.mutate_and_load(mutate)
 
+    def test_template_placeholder_registry_matches_all_source_frontmatter(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        placeholders = profiles["common"]["template_placeholders"]
+        self.assertEqual(
+            {
+                "artifact_id": "<artifact-id>",
+                "parent_id": "<parent-artifact-id>",
+                "reviewed_at": "<reviewed-at>",
+                "review_cycle": "<review-cycle>",
+                "archived_from": "docs/<original-path>.md",
+                "archived_on": "YYYY-MM-DD",
+                "archive_reason": "<archive-reason>",
+                "archive_disposition": "<archive-disposition>",
+                "archived_commit": "<archived-commit>",
+                "archived_blob": "<archived-blob>",
+                "preservation_class": "<preservation-class>",
+                "current_replacement": "docs/<replacement-path>.md",
+                "snapshot_path": "docs/98.archive/evidence/<content-sha256>.md.snapshot",
+                "content_sha256": "<content-sha256>",
+                "snapshot_reason": "<snapshot-reason>",
+            },
+            placeholders,
+        )
+
+        def collect_placeholder_scalars(value: object) -> set[str]:
+            if isinstance(value, str):
+                return {value} if "<" in value or value == "YYYY-MM-DD" else set()
+            if isinstance(value, list):
+                return set().union(
+                    *(collect_placeholder_scalars(item) for item in value)
+                )
+            if isinstance(value, dict):
+                return set().union(
+                    *(collect_placeholder_scalars(item) for item in value.values())
+                )
+            return set()
+
+        source_values: set[str] = set()
+        for role in profiles["template_roles"].values():
+            source_values.update(
+                collect_placeholder_scalars(
+                    metadata.parse_frontmatter(ROOT / role["source"])
+                )
+            )
+        self.assertEqual(set(placeholders.values()), source_values)
+
     def test_archive_profile_has_canonical_v2_order(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         self.assertEqual(2, profiles["schema_version"])
@@ -1851,6 +1897,84 @@ class MetadataValidationTests(unittest.TestCase):
                     ("missing-template-key", f"target-profile key is missing: {key}"),
                     {(finding.code, finding.message) for finding in findings},
                 )
+
+    def test_archive_template_source_uses_every_canonical_field_placeholder(self) -> None:
+        canonical = metadata.parse_frontmatter(ARCHIVE_TEMPLATE)
+        for key in (
+            "archived_from",
+            "archived_on",
+            "archive_reason",
+            "archive_disposition",
+            "archived_commit",
+            "archived_blob",
+            "preservation_class",
+            "current_replacement",
+            "snapshot_path",
+            "content_sha256",
+            "snapshot_reason",
+        ):
+            with self.subTest(key=key):
+                values = dict(canonical)
+                values[key] = "<noncanonical-placeholder>"
+                record = metadata.Record(
+                    pathlib.Path(
+                        "docs/99.templates/templates/common/archive.template.md"
+                    ),
+                    values,
+                    "template-source",
+                    frontmatter_present=True,
+                )
+                findings = metadata.validate_record(
+                    record,
+                    self.profiles,
+                    metadata.build_manifest([record]),
+                )
+                self.assertIn(
+                    (
+                        "invalid-template-placeholder",
+                        f"{key} must use the Stage 99 placeholder",
+                    ),
+                    {(finding.code, finding.message) for finding in findings},
+                )
+
+    def test_instantiated_archive_rejects_every_new_placeholder_value_free(self) -> None:
+        snapshot = {
+            "archive_disposition": "evidence-preserve",
+            "preservation_class": "immutable-snapshot",
+            "snapshot_path": "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot",
+            "content_sha256": "c" * 64,
+            "snapshot_reason": "Approved immutable evidence fixture.",
+        }
+        cases = {
+            "archive_disposition": "<archive-disposition>",
+            "archived_commit": "<archived-commit>",
+            "archived_blob": "<archived-blob>",
+            "preservation_class": "<preservation-class>",
+            "snapshot_path": "docs/98.archive/evidence/<content-sha256>.md.snapshot",
+            "content_sha256": "<content-sha256>",
+            "snapshot_reason": "<snapshot-reason>",
+        }
+        for key, literal in cases.items():
+            with self.subTest(key=key):
+                values = dict(snapshot)
+                values[key] = literal
+                record = self.archive_record(values)
+                findings = metadata.validate_record(
+                    record,
+                    self.profiles,
+                    metadata.build_manifest([record]),
+                )
+                placeholder_findings = [
+                    finding
+                    for finding in findings
+                    if finding.code == "template-placeholder-in-target"
+                ]
+                self.assertEqual(1, len(placeholder_findings))
+                rendered = "\n".join(
+                    f"{finding.path}:{finding.code}:{finding.message}"
+                    for finding in placeholder_findings
+                )
+                self.assertNotIn(literal, rendered)
 
     def test_instantiated_document_rejects_template_placeholders(self) -> None:
         record = self.record(

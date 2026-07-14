@@ -41,7 +41,14 @@ common:
     archived_from: docs/<original-path>.md
     archived_on: YYYY-MM-DD
     archive_reason: <archive-reason>
+    archive_disposition: <archive-disposition>
+    archived_commit: <archived-commit>
+    archived_blob: <archived-blob>
+    preservation_class: <preservation-class>
     current_replacement: docs/<replacement-path>.md
+    snapshot_path: docs/98.archive/evidence/<content-sha256>.md.snapshot
+    content_sha256: <content-sha256>
+    snapshot_reason: <snapshot-reason>
   root_exceptions:
     docs/03.specs/123-agentic-engineering-audit-remediation/spec.md: Cross-cutting umbrella spec approved without a manufactured PRD, ARD, or ADR parent.
 

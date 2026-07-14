@@ -23,7 +23,7 @@ remain solely in the registry and checker.
 | `superseded` | Replaced active docs retained for transition or reference | The document has a current replacement and must point to it while it remains in the active chain. |
 | `archived` | `docs/98.archive/**` tombstones | The original active document was removed from the active chain. |
 
-## Archive-Centered Lifecycle Rules
+## Status Interpretation Boundary
 
 - `completed` does not automatically mean archived. Completed specs, plans,
   tasks, and audit records may remain active evidence.
@@ -31,11 +31,12 @@ remain solely in the registry and checker.
   exists in the active chain and points to a replacement.
 - `archived` is reserved for `docs/98.archive/**` tombstones after the original
   target leaves the active chain.
-- A document restructure disposition such as `historical-archive`,
-  `duplicate-remove`, `conflict-remove-or-archive`, or `evidence-preserve` is a
-  task/audit decision, not a replacement for lifecycle `status`.
-- Preserve `evidence-preserve` documents with their historical wording unless a
-  future task proves active-consumption conflict.
+
+This status vocabulary does not classify migration rows or decide archive
+disposition, preservation, replacement, or evidence conditions. Route those
+decisions to the [corpus migration contract](./corpus-migration-contract.md)
+and [archive and retention contract](./archive-retention-contract.md), with
+machine enforcement in their registries and checkers.
 
 ## Generated Metadata
 

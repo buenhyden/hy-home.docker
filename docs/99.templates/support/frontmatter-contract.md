@@ -97,22 +97,20 @@ is owned by the
 [archive and retention contract](./archive-retention-contract.md). A missing
 replacement remains an absent field, never a sentinel value.
 
-## Disposition and Archive Metadata Rules
+## Migration and Archive Routing
 
-Restructure dispositions are audit/task decisions, not frontmatter values. Do
-not add frontmatter keys such as `disposition`, `document_type`, or
-`template_type` to encode archive decisions.
+This document does not classify corpus rows or decide archive admission,
+replacement, preservation, or evidence conditions. Those human decisions route
+to the [corpus migration contract](./corpus-migration-contract.md) and
+[archive and retention contract](./archive-retention-contract.md); their
+machine vocabularies and field conditions remain in the migration and metadata
+registries.
 
-| Decision Surface | Frontmatter Rule |
-| --- | --- |
-| `active-canonical` | Keep the target's lifecycle `status` and primary document profile. |
-| `historical-archive` | Use `status: archived` only on the archive tombstone under `docs/98.archive/**`. |
-| `duplicate-remove` | Do not add new metadata to the duplicate solely to delete it; record replacement evidence in task/gap records. |
-| `conflict-remove-or-archive` | Use archive provenance keys on the tombstone or record a gap when no replacement exists. |
-| `evidence-preserve` | Preserve historical frontmatter unless a future task proves it is active-current guidance drift. |
-
-Archive provenance is limited to archive tombstones and approved archive
-profiles. The registry owns the exact field set and value constraints.
+The frontmatter boundary is narrower: never invent generic keys such as
+`disposition`, `document_type`, or `template_type`, and validate only the keys
+admitted by the selected profile. Archive provenance remains limited to
+validated archive tombstones. The metadata registry and checker own its exact
+field set, order, value shapes, and conditional presence.
 
 ## Duplicate-Purpose Key Rules
 

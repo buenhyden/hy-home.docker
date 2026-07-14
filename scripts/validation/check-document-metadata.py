@@ -561,7 +561,14 @@ EXPECTED_TEMPLATE_PLACEHOLDER_KEYS = frozenset(
         "archived_from",
         "archived_on",
         "archive_reason",
+        "archive_disposition",
+        "archived_commit",
+        "archived_blob",
+        "preservation_class",
         "current_replacement",
+        "snapshot_path",
+        "content_sha256",
+        "snapshot_reason",
     }
 )
 MARKDOWN_BODY_TOKEN = re.compile(r"{{[a-z][a-z0-9_]*}}")
@@ -1306,8 +1313,6 @@ def _validate_template_source(
         findings.append(
             _finding(record, "artifact-type-mismatch", f"template must declare target artifact_type {target_type}")
         )
-    if record.metadata.get("artifact_id") != placeholders.get("artifact_id"):
-        findings.append(_finding(record, "invalid-template-placeholder", "artifact_id must use the Stage 99 placeholder"))
     parents = _string_list(record.metadata.get("parent_ids"))
     parent_placeholder = placeholders.get("parent_id")
     if parents is None:
@@ -1316,16 +1321,10 @@ def _validate_template_source(
         findings.append(_finding(record, "missing-parent", f"{target_type} template requires a direct parent placeholder"))
     elif any(parent != parent_placeholder for parent in parents):
         findings.append(_finding(record, "invalid-template-placeholder", "parent_ids contains a noncanonical placeholder"))
-    placeholder_keys = {
-        "reviewed_at": "reviewed_at",
-        "review_cycle": "review_cycle",
-        "archived_from": "archived_from",
-        "archived_on": "archived_on",
-        "archive_reason": "archive_reason",
-        "current_replacement": "current_replacement",
-    }
-    for key, placeholder_key in placeholder_keys.items():
-        if key in required and record.metadata.get(key) != placeholders.get(placeholder_key):
+    for key, placeholder in placeholders.items():
+        if key == "parent_id" or key not in record.metadata:
+            continue
+        if record.metadata.get(key) != placeholder:
             findings.append(_finding(record, "invalid-template-placeholder", f"{key} must use the Stage 99 placeholder"))
     return sorted(set(findings))
 

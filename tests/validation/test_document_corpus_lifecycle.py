@@ -280,6 +280,24 @@ class HumanContractRoutingTests(LifecycleTestCase):
             with self.subTest(boundary=approval_boundary):
                 self.assertIn(approval_boundary, text)
 
+    def test_non_owner_support_contracts_do_not_publish_legacy_dispositions(self) -> None:
+        support = ROOT / "docs/99.templates/support"
+        owners = {CORPUS_HUMAN_CONTRACT, ARCHIVE_HUMAN_CONTRACT}
+        legacy_literals = (
+            "`active-canonical`",
+            "`historical-archive`",
+            "`duplicate-remove`",
+            "`conflict-remove-or-archive`",
+            "`evidence-preserve`",
+        )
+        for path in support.glob("*.md"):
+            if path in owners:
+                continue
+            text = path.read_text(encoding="utf-8")
+            for literal in legacy_literals:
+                with self.subTest(path=path.name, literal=literal):
+                    self.assertNotIn(literal, text)
+
     def test_stage00_and_stage98_route_without_redefining_semantics(self) -> None:
         archive_readme = (ROOT / "docs/98.archive/README.md").read_text(
             encoding="utf-8"
@@ -289,8 +307,16 @@ class HumanContractRoutingTests(LifecycleTestCase):
             "transitional until Wave D",
             "archive-retention-contract.md",
             "corpus-migration-contract.md",
+            "full typed provenance and preservation contract",
+            "`current_replacement` is disposition-conditional",
         ):
             self.assertIn(literal, archive_readme)
+        for contradictory_synopsis in (
+            "현재 구현과 상충",
+            "원래 문서 경로, archive 사유, 현재 대체 문서만",
+            "원래 경로와 대체 문서 추적",
+        ):
+            self.assertNotIn(contradictory_synopsis, archive_readme)
 
         stage00_paths = (
             ROOT / "docs/00.agent-governance/rules/documentation-protocol.md",

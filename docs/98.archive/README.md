@@ -5,13 +5,16 @@ layer: archive
 
 # 98.archive
 
-> 현재 구현과 상충해 active chain에서 제거한 old, deprecated, legacy 문서의 tombstone stage입니다.
+> 승인된 manifest 결과를 가리키는 validated typed provenance tombstone stage이며, current guidance나 stale 원문 저장소가 아닙니다.
 
 ## Overview
 
 `docs/98.archive/`는 원문 보존 공간이 아니라 migration 추적 공간입니다.
-Archive tombstone은 원래 문서 경로, archive 사유, 현재 대체 문서만 기록하고
-stale 본문을 다시 노출하지 않습니다.
+Archive tombstone은 full typed provenance and preservation contract를 충족하는
+간결한 관계 기록입니다. Identity, relation, disposition, immutable Git
+provenance, preservation metadata를 검증하며, `current_replacement` is disposition-conditional입니다. 관계와 보존 필드는 검증된 계약이 허용할 때만
+존재하고, 정확한 조건은 Stage 99 sole human owners와 machine registries로
+라우팅합니다. Tombstone은 stale 본문을 다시 노출하지 않습니다.
 
 ## Audience
 
@@ -23,8 +26,9 @@ stale 본문을 다시 노출하지 않습니다.
 
 ### In Scope
 
-- 현재 구현과 상충해 active chain에서 제거한 whole-document tombstone
-- 원래 경로와 대체 문서 추적
+- 승인된 manifest와 archive profile을 통과한 whole-document provenance tombstone
+- 검증된 identity, relation, disposition, Git provenance, preservation 추적
+- disposition과 preservation class에 따라 조건부로 허용된 관계/보존 필드
 - archive migration ledger
 - 검증된 provenance tombstone과 승인된 immutable evidence snapshot 경로
 
