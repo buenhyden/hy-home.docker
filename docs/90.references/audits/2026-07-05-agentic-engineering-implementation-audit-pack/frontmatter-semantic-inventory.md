@@ -39,7 +39,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 904
+- **Tracked records**: 906
 - **Records with findings**: 561
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
@@ -53,7 +53,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `ard` | 24 |
 | `audit` | 33 |
 | `generated` | 6 |
-| `governance` | 111 |
+| `governance` | 113 |
 | `guide` | 66 |
 | `plan` | 96 |
 | `policy` | 64 |
@@ -943,7 +943,9 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/98.archive/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=archive; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/99.templates/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=template-catalog; consumer=scripts/validation/check-repo-contracts.sh; role=folder-index | none | README exception |
 | `docs/99.templates/support/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=template-catalog; consumer=scripts/validation/check-repo-contracts.sh; role=folder-index | none | README exception |
+| `docs/99.templates/support/archive-retention-contract.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/99.templates/support/common-document-contract.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
+| `docs/99.templates/support/corpus-migration-contract.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/99.templates/support/external-source-rationale.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/99.templates/support/frontmatter-contract.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/99.templates/support/lifecycle-status.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
