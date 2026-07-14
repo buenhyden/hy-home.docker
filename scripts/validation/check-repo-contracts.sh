@@ -1258,6 +1258,14 @@ generated_freshness_commands = (
     "bash scripts/knowledge/generate-llm-wiki-index.sh --check",
     "bash scripts/knowledge/generate-llm-wiki-coverage.sh --check",
 )
+required_lifecycle_recommendation_commands = (
+    *lifecycle_gate_commands,
+    *generated_freshness_commands,
+)
+generated_freshness_mode_functions = (
+    "run_script_backed_gates",
+    "run_harness_gates",
+)
 lifecycle_surfaces = (
     "docs/99.templates/support/document-corpus-migration-contract.yaml",
     "scripts/validation/check-document-corpus-lifecycle.py",
@@ -1284,7 +1292,7 @@ else:
         if result.returncode != 0:
             failures.append(f"{recommend_script}: failed to route lifecycle surface {surface}")
             continue
-        for command in lifecycle_gate_commands:
+        for command in required_lifecycle_recommendation_commands:
             if f"- {command}\n" not in result.stdout:
                 failures.append(
                     f"{recommend_script}: lifecycle surface {surface} misses gate: {command}"
@@ -1346,6 +1354,24 @@ else:
         ):
             failures.append(
                 f"{local_runner}: generated freshness --list/execution parity mismatch"
+            )
+
+    for function_name in generated_freshness_mode_functions:
+        mode_function_match = re.search(
+            rf"(?ms)^{re.escape(function_name)}\(\) \{{\n(.*?)^\}}\n",
+            local_runner_text,
+        )
+        if mode_function_match is None:
+            failures.append(f"{local_runner}: missing {function_name} function")
+            continue
+        helper_calls = re.findall(
+            r"(?m)^\s*run_generated_freshness_gates\s*$",
+            mode_function_match.group(1),
+        )
+        if len(helper_calls) != 1:
+            failures.append(
+                f"{local_runner}: {function_name} must invoke "
+                "run_generated_freshness_gates exactly once"
             )
 
 scripts_readme = pathlib.Path("scripts/README.md")
