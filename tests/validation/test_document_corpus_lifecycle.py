@@ -681,6 +681,98 @@ class ManifestValidationTests(LifecycleTestCase):
             self.validate(root, baseline, (row,), enforcement="blocking"),
         )
 
+    def test_reviewed_evidence_rejects_broad_consumers_and_floating_rollback(
+        self,
+    ) -> None:
+        temporary, root, baseline = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        consumer = root / "docs/00.agent-governance/consumer.md"
+        consumer.parent.mkdir(parents=True, exist_ok=True)
+        consumer.write_text(
+            "# Consumer\n\nUses docs/03.specs/source.md.\n",
+            encoding="utf-8",
+        )
+        source = root / "docs/03.specs/source.md"
+        source.write_text(
+            source.read_text(encoding="utf-8") + "\nChanged.\n",
+            encoding="utf-8",
+        )
+        changed_commit = commit_all(root, "change source and add consumer")
+        row = self.valid_row(
+            disposition="migrate",
+            active_consumers=(),
+            evidence=lifecycle.ManifestEvidence(
+                (
+                    f"git diff --name-status {baseline}..{changed_commit} -- docs/03.specs/source.md",
+                    f"git log --format=%H {baseline}..{changed_commit} -- docs/03.specs/source.md",
+                ),
+                ("docs/03.specs/source.md",),
+                (pathlib.PurePosixPath("docs/03.specs/source.md"),),
+                ("git grep -l --fixed-strings -- 'docs/03.specs/source.md'",),
+                (f"git revert --no-commit {baseline}..HEAD",),
+            ),
+        )
+
+        codes = {
+            finding.code
+            for finding in lifecycle.validate_migration_manifest(
+                root,
+                self.profiles,
+                self.fixture_contract(
+                    ["docs/03.specs/source.md"],
+                    wave="foundation",
+                ),
+                self.document(
+                    baseline,
+                    entries=(row,),
+                    wave="foundation",
+                ),
+            )
+        }
+
+        self.assertIn("manifest-consumer-scan-invalid", codes)
+        self.assertIn("manifest-consumer-evidence-mismatch", codes)
+        self.assertIn("manifest-rollback-invalid", codes)
+
+        exact_row = dataclasses.replace(
+            row,
+            active_consumers=(
+                pathlib.PurePosixPath("docs/00.agent-governance/consumer.md"),
+            ),
+            evidence=dataclasses.replace(
+                row.evidence,
+                consumer_scan=(
+                    lifecycle._active_consumer_scan_command(
+                        "docs/03.specs/source.md"
+                    ),
+                ),
+                rollback=(f"git revert --no-commit {changed_commit}",),
+            ),
+        )
+        exact_codes = {
+            finding.code
+            for finding in lifecycle.validate_migration_manifest(
+                root,
+                self.profiles,
+                self.fixture_contract(
+                    ["docs/03.specs/source.md"],
+                    wave="foundation",
+                ),
+                self.document(
+                    baseline,
+                    entries=(exact_row,),
+                    wave="foundation",
+                ),
+            )
+        }
+        self.assertTrue(
+            {
+                "manifest-consumer-scan-invalid",
+                "manifest-consumer-evidence-mismatch",
+                "manifest-rollback-invalid",
+            }.isdisjoint(exact_codes)
+        )
+
 
 class PromotedManifestCliTests(LifecycleTestCase):
     def canonical_contract(

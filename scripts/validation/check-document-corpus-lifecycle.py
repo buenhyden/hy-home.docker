@@ -14,6 +14,7 @@ import os
 import pathlib
 import re
 import secrets
+import shlex
 import stat
 import subprocess
 import sys
@@ -45,6 +46,34 @@ MODES = (
     "check-archive-ledger",
     "generate-snapshot-manifest",
     "check-snapshot-manifest",
+)
+
+REVIEWED_EVIDENCE_WAVES = frozenset({"foundation"})
+ACTIVE_CONSUMER_PATHS = (
+    ":(top,glob)*",
+    ":(top,glob).agents/**",
+    ":(top,glob).claude/**",
+    ":(top,glob).codex/**",
+    ":(top,glob).github/**",
+    ":(top,glob).rtk/**",
+    ":(top,glob)docs/00.agent-governance/**",
+    ":(top,glob)docs/01.requirements/**",
+    ":(top,glob)docs/02.architecture/**",
+    ":(top,glob)docs/03.specs/**",
+    ":(top,glob)docs/04.execution/**",
+    ":(top,glob)docs/05.operations/**",
+    ":(top,glob)docs/99.templates/**",
+    ":(top,glob)examples/**",
+    ":(top,glob)infra/**",
+    ":(top,glob)projects/**",
+    ":(top,glob)scripts/**",
+    ":(top,glob)secrets/**",
+    ":(top,glob)tests/**",
+)
+ACTIVE_CONSUMER_EXCLUSIONS = (
+    ":(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md",
+    ":(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
+    ":(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
 )
 
 
@@ -275,6 +304,9 @@ KNOWN_FINDING_CODES = frozenset(
         "manifest-move-target-required",
         "manifest-move-target-invalid",
         "manifest-preserve-target-invalid",
+        "manifest-consumer-scan-invalid",
+        "manifest-consumer-evidence-mismatch",
+        "manifest-rollback-invalid",
         "manifest-destructive-review-required",
         "manifest-destructive-evidence-required",
         "manifest-preservation-required",
@@ -321,6 +353,132 @@ def _run_git(
         )
     except OSError as error:
         raise ProfileError("Git executable is unavailable") from error
+
+
+def _active_consumer_scan_args(source: str) -> tuple[str, ...]:
+    return (
+        "grep",
+        "-lz",
+        "--fixed-strings",
+        "--",
+        source,
+        "--",
+        *ACTIVE_CONSUMER_PATHS,
+        *ACTIVE_CONSUMER_EXCLUSIONS,
+        f":(top,exclude,literal){source}",
+    )
+
+
+def _active_consumer_scan_command(source: str) -> str:
+    return shlex.join(("git", *_active_consumer_scan_args(source)))
+
+
+def _tracked_active_consumers(
+    root: pathlib.Path,
+    source: str,
+) -> tuple[pathlib.PurePosixPath, ...]:
+    result = _run_git(root, _active_consumer_scan_args(source), text=False)
+    if result.returncode not in {0, 1}:
+        raise ProfileError("bounded active-consumer Git scan failed")
+    try:
+        values = tuple(
+            pathlib.PurePosixPath(item.decode("utf-8"))
+            for item in result.stdout.split(b"\0")
+            if item
+        )
+    except UnicodeDecodeError as error:
+        raise ProfileError("bounded active-consumer Git scan returned invalid UTF-8") from error
+    if any(not _safe_path(item.as_posix()) for item in values):
+        raise ProfileError("bounded active-consumer Git scan returned an unsafe path")
+    return tuple(sorted(set(values)))
+
+
+def _reviewed_evidence_findings(
+    root: pathlib.Path,
+    document: MigrationManifestDocument,
+    row: MigrationManifestRow,
+) -> list[Finding]:
+    if document.wave not in REVIEWED_EVIDENCE_WAVES:
+        return []
+    evidence = row.evidence
+    if not any(
+        (
+            evidence.commands,
+            evidence.sources,
+            evidence.repository_paths,
+            evidence.consumer_scan,
+            evidence.rollback,
+        )
+    ):
+        return []
+    source = row.source_path.as_posix()
+    if not _safe_path(source):
+        return []
+    findings: list[Finding] = []
+    expected_scan = _active_consumer_scan_command(source)
+    if expected_scan not in evidence.consumer_scan:
+        findings.append(
+            _finding(
+                source,
+                "manifest-consumer-scan-invalid",
+                "reviewed evidence requires the canonical bounded active-consumer scan",
+            )
+        )
+    try:
+        expected_consumers = _tracked_active_consumers(root, source)
+    except ProfileError:
+        expected_consumers = ()
+        findings.append(
+            _finding(
+                source,
+                "manifest-consumer-scan-invalid",
+                "canonical bounded active-consumer scan could not be verified",
+            )
+        )
+    if row.active_consumers != expected_consumers:
+        findings.append(
+            _finding(
+                source,
+                "manifest-consumer-evidence-mismatch",
+                "active_consumers differs from the canonical bounded Git scan",
+            )
+        )
+
+    log_pattern = re.compile(
+        rf"git log --format=%H ([0-9a-f]{{40}})\.\.([0-9a-f]{{40}}) -- {re.escape(source)}\Z"
+    )
+    matches = [
+        match
+        for command in evidence.commands
+        if (match := log_pattern.fullmatch(command)) is not None
+    ]
+    expected_rollback: tuple[str, ...] | None = None
+    if len(matches) == 1:
+        lower, upper = matches[0].groups()
+        if lower == document.baseline_commit and _verified_commit(root, upper) == upper:
+            history = _run_git(
+                root,
+                ["log", "--format=%H", f"{lower}..{upper}", "--", source],
+            )
+            lines = history.stdout.splitlines()
+            commits = tuple(lines)
+            if history.returncode == 0 and all(
+                OBJECT_ID.fullmatch(line) for line in lines
+            ):
+                expected_rollback = (
+                    ("git revert --no-commit " + " ".join(commits),)
+                    if commits
+                    else ()
+                )
+    if expected_rollback is None or evidence.rollback != expected_rollback:
+        findings.append(
+            _finding(
+                source,
+                "manifest-rollback-invalid",
+                "rollback must exactly pin source-changing commits newest-to-oldest",
+            )
+        )
+    return findings
 
 
 def _verified_commit(root: pathlib.Path, ref: str) -> str | None:
@@ -1736,6 +1894,7 @@ def validate_migration_manifest(
                 findings.append(
                     _finding(source, "manifest-evidence-path-invalid", "evidence path is not repository-safe")
                 )
+        findings.extend(_reviewed_evidence_findings(root, document, row))
         if row.partition_plan is not None:
             findings.extend(
                 _partition_plan_findings(

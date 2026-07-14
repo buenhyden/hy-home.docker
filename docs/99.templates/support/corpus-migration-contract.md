@@ -60,6 +60,29 @@ substitute for missing data.
 Lists and entries are serialized deterministically for reviewable diffs. Their
 order does not create approval rank, dependency priority, or semantic truth.
 
+### Foundation reviewed evidence
+
+Foundation reviewed rows use the lifecycle validator's canonical NUL-safe Git
+scan. Its positive scope covers current tracked root files, provider adapters,
+Stage 00 through Stage 05 authoring and execution roots, Stage 99 contracts and
+templates, and the active examples, infrastructure, projects, scripts, secrets,
+and tests roots. It omits Stage 90 reference or generated evidence, Stage 98 and
+root archive payloads, Graphify collateral, and `_workspace` staging by root
+policy. The row source and the Foundation Spec, Plan, and Task are exact
+exclusions because they are self or review evidence, not downstream consumers.
+Every remaining fixed-string match is a current tracked direct consumer and the
+sorted scan result must equal `active_consumers`; a raw repository-wide grep or
+an unverified empty list is invalid.
+
+Foundation evidence commands pin both ends of the reviewed range with full Git
+commit IDs. For each source, rollback is either one `git revert --no-commit`
+command containing exactly the source-changing commits in newest-to-oldest
+order, or an empty list when the immutable range proves no source change. A
+symbolic ref, floating range, unrelated commit, or invented rollback action is
+invalid. After an authored rollback, canonical generated owners are rerun in
+their declared order; later promotion rollback is recorded separately against
+the immutable promotion commits.
+
 ## Classification and Destructive Proof
 
 Manifest-first classification occurs before target mutation. Every selected
