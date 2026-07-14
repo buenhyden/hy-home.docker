@@ -139,7 +139,7 @@ Redaction boundary:
 | Work unit | Responsibility | State |
 | --- | --- | --- |
 | T-DCLM-001 | Machine migration contract and static archive metadata | Complete — final Spec PASS and Quality PASS with Critical 0, Important 0, Minor 0 |
-| T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Sign-off remediation implemented — canonical owner B must be an exact regular baseline Git blob, and a same-path lifecycle change requires one canonical pass/pass peer row with complete evidence; symlink/gitlink/tree ownership and missing, ambiguous, wrong, incomplete, or reverse peers fail while regular, same-ID, unchanged, moved-owner, and valid same-path transitions remain valid; all local gates PASS; fresh independent re-reviews pending |
+| T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Complete — final range `9126a0aa..9fe234f6`; terminal Spec PASS and Quality retry PASS, each with Critical 0, Important 0, and Minor 1. The sole deferred Minor is behavior-preserving decomposition of the monolithic dispatcher. |
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Not run |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Not run |
 | T-DCLM-005 | Foundation manifest and generated evidence | Not run |
@@ -166,6 +166,7 @@ Redaction boundary:
 | 2026-07-14 | T-DCLM-002 release-gate remediation | Fresh remediation agent | Resolved specification I-13 and quality I-RQ01 in commit `6c33c66c`. A merge row remains bound to removed baseline source A while its uniquely resolved held tracked target retains canonical identity B; target path, profile, body, lifecycle state, current bytes, and pre-existing baseline identity are attested without weakening non-merge identity checks. All five writers and three paired checkers now share descriptor-relative no-follow traversal, reject final/intermediate symlinks and non-regular entries with exit 3, admit normal absolute temporary paths, compare held regular bytes, and publish LF bytes through same-directory atomic replacement. Deterministic swap and interrupted-write regressions prove victim preservation, no redirected creation, no partial publication, and temporary-file cleanup. No Task 3, corpus leaf, tombstone, archive payload, workflow, runtime, provider, secret, or remote surface changed. |
 | 2026-07-14 | T-DCLM-002 final release-quality remediation | Fresh remediation agent | Resolved I-FRQ01 in `8001a95c` through strict RED/GREEN. A resolved merge target whose stable identity B differs from baseline source A must map to exactly one baseline owner; that owner must preserve canonical ID, inferred and declared type, and lifecycle truth at the current result, or be represented by exactly one same-wave move/merge attestation to that result. Real Git regressions reject a B created only after baseline, both path and ID replacement forms, a baseline duplicate B removed before result, and a wrong-profile baseline B corrected only after baseline. Existing pre-baseline distinct-ID path/ID replacements, an explicitly attested same-wave B move, and same-ID new-target consolidation remain valid. Focused 6/6 and combined lifecycle/metadata 262/262 passed; live, four generated-owner, and repository gates passed. Graphify refreshed to 23,999 nodes / 26,386 edges / 1,561 communities, remained advisory for two unrelated inferred edges and generic graph noise, and was corroborated against tracked Stage 00/03/04/99 and executable owners before restoration. No public API, Task 3 surface, corpus leaf, tombstone, archive payload, workflow, runtime, provider, secret, or remote surface changed. |
 | 2026-07-14 | T-DCLM-002 sign-off remediation | Fresh remediation agent | Resolved specification I-FRQ01-R1 and quality I-SQ01/I-SQ02 in `1c9ef624` through strict RED/GREEN. Exact baseline owner paths now require mode `100644` or `100755`, object type `blob`, an exact UTF-8 path match, a full object ID, and blob re-verification before ownership can authorize a distinct-ID merge. A changed same-path owner requires exactly one `migrate` peer with exact source/target/ID/type/status binding, a canonical transition, pass/pass reviews, complete evidence, and no replacement; moved-owner attestations retain their existing `move`/`merge` behavior under the same review/evidence boundary. Real Git fixtures cover parseable `120000` metadata, synthetic `160000`, tree/missing paths, regular modes, path/ID replacements, valid `active` to `completed`, missing/duplicate/wrong/incomplete peers, and reverse transition. No public API, Task 3 surface, corpus leaf, tombstone, archive payload, workflow, runtime, provider, secret, or remote surface changed. |
+| 2026-07-14 | T-DCLM-002 terminal independent reviews | Fresh specification reviewer and separate quality retry reviewer | The complete range `9126a0aa..9fe234f6` received Spec PASS with Critical 0, Important 0, and Minor 1 and Quality retry PASS with Critical 0, Important 0, and Minor 1. Every prior Critical/Important gate is closed. Both reviewers retained only the same non-blocking recommendation to decompose the monolithic lifecycle dispatcher in a later behavior-preserving package with characterization/equivalence tests. T-DCLM-002 is complete and T-DCLM-003 is unblocked. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -271,8 +272,13 @@ T-DCLM-002 actual evidence:
 - Sign-off Graphify: `graphify update .` completed at `1c9ef624` with 24,033 nodes, 26,464 edges, and 1,563 communities. The report remained advisory for one unrelated cAdvisor/Pyroscope inferred Compose relationship and generic thin communities. Tracked observability Compose proves those services are independent siblings, and lifecycle claims were corroborated against the tracked validator/tests, Stage 00 governance, Spec 131, this Plan/Task, and Stage 99 before both graph outputs were restored.
 - Safety boundary: Git commands use argument arrays and verify commit/blob types before comparison. Library functions return stable findings and never print payload bytes. Snapshot fixtures proved rejection of prohibited confidentiality classes while finding paths/messages remained value-free.
 - Scope preservation: no broad corpus leaf, existing tombstone, archive evidence payload, Stage 04 partition, exception file, workflow, runtime, Compose, infrastructure, deployment, secret, credential, provider instruction, or remote state changed.
+- Closure bookkeeping verification: explicit-base metadata validation against `9fe234f6` selected the two changed tracked evidence documents with zero violations, zero legacy exceptions, and zero transition overrides; `git diff --check` passed. No implementation, contract, or test file changed during closure.
 
-Verification results: T-DCLM-001 is complete. T-DCLM-002 implementation and sign-off remediation are GREEN; fresh complete-range specification and separate quality reviews remain the gate before T-DCLM-003.
+Verification results: T-DCLM-001 and T-DCLM-002 are complete. The T-DCLM-002
+implementation range `9126a0aa..9fe234f6` is GREEN and received terminal Spec
+PASS and separate Quality retry PASS, each with Critical 0, Important 0, and
+Minor 1. The only deferred Minor is behavior-preserving decomposition of the
+monolithic dispatcher; T-DCLM-003 is unblocked.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -328,19 +334,62 @@ Quality review verdict: the first T-DCLM-001 quality review of `afc51b29..602994
 
 T-DCLM-002 implementer self-review verdict: PASS. The public names, signatures, nullability, mode tuple, argument surface, and exit classes match the approved Plan. Invalid CLI shapes return 2 before opening repository files; parser/contract/Git/path/redaction/internal safety failures return 3; ordinary blocking findings return 1; advisory reports return 0. Manifest, summary, archive-ledger, and snapshot-manifest checks compare canonical bytes without mutation. The implementation imports the canonical metadata parser, `Record`, `Finding`, safe-path logic, and artifact-ID manifest builder without renaming or repurposing metadata `Manifest`.
 
-T-DCLM-002 first independent review verdicts: specification FAIL with Critical 0 and Important 7; quality FAIL with Critical 0, Important 5, and Minor 2. Review-remediation regressions and implementation close I-01 through I-07, I-Q01 through I-Q05, M-Q01, and M-Q02. Fresh specification and separate quality re-reviews of the complete `9126a0aa..NEW_HEAD` range remain pending. T-DCLM-003 must not begin until both pass.
+T-DCLM-002 first independent review verdicts: specification FAIL with Critical
+0 and Important 7; quality FAIL with Critical 0, Important 5, and Minor 2.
+Review-remediation regressions and implementation closed I-01 through I-07,
+I-Q01 through I-Q05, M-Q01, and M-Q02. Later complete-range reviews verified
+the remediated boundaries.
 
-T-DCLM-002 first fresh specification re-review verdict: FAIL with Critical 0, Important 1, and Minor 0 over `9126a0aa..82cbb9c0`. I-01 through I-07 were confirmed closed. I-08 identified the explicit candidate modes' staged-file precondition; the focused RED/GREEN remediation above separates untracked candidate validation from tracked promoted-manifest consumption. A new complete-range specification review and a separate quality review remain pending.
+T-DCLM-002 first fresh specification re-review verdict: FAIL with Critical 0,
+Important 1, and Minor 0 over `9126a0aa..82cbb9c0`. I-01 through I-07 were
+confirmed closed. I-08 identified the explicit candidate modes' staged-file
+precondition; the focused RED/GREEN remediation above separated untracked
+candidate validation from tracked promoted-manifest consumption.
 
-T-DCLM-002 final pre-remediation review verdicts over `9126a0aa..ee4b6846`: specification FAIL with Critical 0, Important 1, and Minor 1; quality FAIL with Critical 0, Important 3, and Minor 2. Specification I-09 and quality I-FQ03 identified the same unproved partition-Plan authorization. Quality I-FQ01 identified corpus Markdown symlink following and value leakage; I-FQ02 identified the unrepresentable source-profile-to-archive-profile transition. Commit `eb52185c` implements focused regressions and remediation for all Important findings. The stale ignored report finding is corrected in the implementation handoff, and orchestration decomposition remains a non-blocking maintainability observation for a later scoped refactor. Fresh complete-range specification and quality re-reviews remain required before T-DCLM-003.
+T-DCLM-002 final pre-remediation review verdicts over
+`9126a0aa..ee4b6846`: specification FAIL with Critical 0, Important 1, and
+Minor 1; quality FAIL with Critical 0, Important 3, and Minor 2. Specification
+I-09 and quality I-FQ03 identified the same unproved partition-Plan
+authorization. Quality I-FQ01 identified corpus Markdown symlink following and
+value leakage; I-FQ02 identified the unrepresentable
+source-profile-to-archive-profile transition. Commit `eb52185c` added focused
+regressions and remediated every Important finding. The stale ignored report
+finding was corrected in the implementation handoff.
 
-T-DCLM-002 closure review verdicts over `9126a0aa..554253e6`: specification FAIL with Critical 0, Important 3, and Minor 0; quality FAIL with Critical 0, Important 5, and Minor 2. Contract commit `cb84d6c4` defers archive replacement truth to the validated target disposition. Lifecycle commit `2c1b0c46` closes I-09-R1/I-10/I-11, I-CQ01 through I-CQ05, and M-CQ02 with the focused and full evidence above. M-CQ01 remains a non-blocking later orchestration-refactor opportunity. Fresh complete-range specification and separate quality re-reviews remain required before T-DCLM-003.
+T-DCLM-002 closure review verdicts over `9126a0aa..554253e6`:
+specification FAIL with Critical 0, Important 3, and Minor 0; quality FAIL with
+Critical 0, Important 5, and Minor 2. Contract commit `cb84d6c4` deferred
+archive replacement truth to the validated target disposition. Lifecycle
+commit `2c1b0c46` closed I-09-R1/I-10/I-11, I-CQ01 through I-CQ05, and M-CQ02
+with the focused and full evidence above. M-CQ01 was retained as a
+non-blocking later orchestration-refactor opportunity.
 
-T-DCLM-002 final acceptance reviews over `9126a0aa..8a7c9c7c`: specification FAIL with Critical 0, Important 1, and Minor 1; quality FAIL with Critical 0, Important 4, and Minor 1. Commit `9bea953b` closes specification I-12 and quality I-AQ01 through I-AQ04 with real CLI deletion/rename handling, mandatory final safety-path sanitization, disposition-aware canonical replacement binding for merge/delete, and full held result-manifest relation validation for archive. The monolithic dispatcher observation remains non-blocking and behavior-preserving refactoring is deferred. Fresh complete-range specification and separate quality re-reviews remain required before T-DCLM-003.
+T-DCLM-002 final acceptance reviews over `9126a0aa..8a7c9c7c`:
+specification FAIL with Critical 0, Important 1, and Minor 1; quality FAIL with
+Critical 0, Important 4, and Minor 1. Commit `9bea953b` closed specification
+I-12 and quality I-AQ01 through I-AQ04 with real CLI deletion/rename handling,
+mandatory final safety-path sanitization, disposition-aware canonical
+replacement binding for merge/delete, and full held result-manifest relation
+validation for archive.
 
-T-DCLM-002 release-gate reviews over `9126a0aa..4e8afaf8`: specification FAIL with Critical 0, Important 1, and Minor 1 for I-13; quality FAIL with Critical 0, Important 1, and Minor 1 for I-RQ01. Commit `6c33c66c` closes both Important findings with distinct source/owner merge attestation and one no-follow atomic output boundary. The monolithic-dispatcher observation remains a non-blocking later refactor. Fresh complete-range specification and separate quality re-reviews remain required before T-DCLM-003.
+T-DCLM-002 release-gate reviews over `9126a0aa..4e8afaf8`:
+specification FAIL with Critical 0, Important 1, and Minor 1 for I-13; quality
+FAIL with Critical 0, Important 1, and Minor 1 for I-RQ01. Commit `6c33c66c`
+closed both Important findings with distinct source/owner merge attestation and
+one no-follow atomic output boundary.
 
-T-DCLM-002 sign-off reviews over `9126a0aa..7ff6a841`: specification FAIL with Critical 0, Important 1, and Minor 1 for I-FRQ01-R1; quality FAIL with Critical 0, Important 2, and Minor 1 for I-SQ01/I-SQ02. Commit `1c9ef624` closes the non-regular baseline-owner and exact same-path lifecycle-attestation gaps without changing public interfaces or the preserved merge/output matrix. The monolithic-dispatcher observation remains a non-blocking later refactor. Fresh complete-range specification and separate quality re-reviews remain required before T-DCLM-003.
+T-DCLM-002 sign-off reviews over `9126a0aa..7ff6a841`: specification FAIL with
+Critical 0, Important 1, and Minor 1 for I-FRQ01-R1; quality FAIL with Critical
+0, Important 2, and Minor 1 for I-SQ01/I-SQ02. Commit `1c9ef624` closed the
+non-regular baseline-owner and exact same-path lifecycle-attestation gaps
+without changing public interfaces or the preserved merge/output matrix.
+
+T-DCLM-002 terminal reviews over `9126a0aa..9fe234f6`: specification PASS with
+Critical 0, Important 0, and Minor 1; separate quality retry PASS with Critical
+0, Important 0, and Minor 1. All earlier Critical and Important findings are
+closed. Both reviewers retained only the same deferred Minor: split the
+monolithic dispatcher in a later behavior-preserving package with
+characterization/equivalence tests. This does not block Task 3.
 
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 
@@ -370,7 +419,9 @@ Foundation logical commits:
 - `8001a95c` — T-DCLM-002 final release-quality remediation `fix(validation): bind merge owners to baseline provenance`.
 - `1c9ef624` — T-DCLM-002 sign-off remediation `fix(validation): close lifecycle sign-off gaps`.
 
-The T-DCLM-002 evidence-closure identity is supplied in the controller handoff and appended only after that commit exists; a commit cannot embed its own object ID.
+The reviewed T-DCLM-002 implementation and remediation range ends at
+`9fe234f6`. The later ledger-only closure commit records the terminal verdicts
+and does not alter the reviewed implementation, contracts, or tests.
 
 Commit validation: each entry must name its work unit, review verdicts, focused
 GREEN commands, and generated fallout before closure.
