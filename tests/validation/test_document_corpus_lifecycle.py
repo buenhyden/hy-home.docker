@@ -3011,5 +3011,477 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         self.assertNotIn("docs/source|name.md\nnext-row", ledger)
 
 
+class AcceptanceFindingRemediationTests(LifecycleTestCase):
+    _archive_fixture = FinalReviewRemediationTests._archive_fixture
+    _archive_codes = FinalReviewRemediationTests._archive_codes
+
+    @staticmethod
+    def _reference_text(
+        artifact_id: str,
+        title: str,
+        *,
+        parent_ids: tuple[str, ...] = (),
+        status: str = "active",
+    ) -> str:
+        metadata_values = {
+            "status": status,
+            "artifact_id": artifact_id,
+            "artifact_type": "reference",
+            "parent_ids": list(parent_ids),
+        }
+        return (
+            "---\n"
+            + yaml.safe_dump(metadata_values, sort_keys=False)
+            + f"---\n\n# {title}\n\n"
+            "## Overview\nCurrent reference.\n\n"
+            "## Purpose\nCanonical purpose.\n\n"
+            "## Scope\nCurrent scope.\n\n"
+            "## Facts and Definitions\nCanonical facts.\n\n"
+            "## Sources\nRepository evidence.\n\n"
+            "## Maintenance\nActive.\n\n"
+            "## Related Documents\nNone.\n"
+        )
+
+    @staticmethod
+    def _destructive_evidence() -> lifecycle.ManifestEvidence:
+        return lifecycle.ManifestEvidence(
+            ("git show baseline source",),
+            ("docs/90.references/source.md",),
+            (pathlib.PurePosixPath("docs/90.references/source.md"),),
+            ("verified active consumers",),
+            ("revert destructive commit",),
+        )
+
+    def _invoke_corpus_mode(
+        self,
+        root: pathlib.Path,
+        mode: str,
+        output: pathlib.Path,
+        *,
+        base_ref: str = "HEAD",
+    ) -> subprocess.CompletedProcess[str]:
+        arguments = [
+            sys.executable,
+            str(SCRIPT),
+            "--root",
+            str(root),
+            "--mode",
+            mode,
+        ]
+        if mode == "check-impacted":
+            arguments.extend(("--base-ref", base_ref))
+        if mode in {
+            "report-duplicates",
+            "generate-archive-ledger",
+            "check-archive-ledger",
+            "generate-snapshot-manifest",
+            "check-snapshot-manifest",
+        }:
+            arguments.extend(("--output", str(output)))
+        return run(*arguments, cwd=ROOT)
+
+    def test_real_impacted_cli_accepts_unstaged_delete_and_rename_snapshots(self) -> None:
+        for operation in ("delete", "rename"):
+            with self.subTest(operation=operation), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                init_repo(root)
+                source = root / "docs/90.references/source.md"
+                consumer = root / "docs/90.references/consumer.md"
+                source.parent.mkdir(parents=True)
+                source.write_text(
+                    self._reference_text("reference:source", "Source"),
+                    encoding="utf-8",
+                )
+                consumer.write_text(
+                    self._reference_text("reference:consumer", "Consumer")
+                    + "\n[Source](./source.md)\n",
+                    encoding="utf-8",
+                )
+                baseline = commit_all(root, "impacted baseline")
+                if operation == "delete":
+                    source.unlink()
+                    expected_selected = 1
+                else:
+                    source.rename(root / "docs/90.references/renamed.md")
+                    expected_selected = 2
+
+                result = self._invoke_corpus_mode(
+                    root,
+                    "check-impacted",
+                    root / "unused",
+                    base_ref=baseline,
+                )
+                rendered = result.stdout + result.stderr
+                self.assertEqual(result.returncode, 0, rendered)
+                self.assertIn(
+                    f"selected={expected_selected} violations=0",
+                    result.stdout,
+                )
+                self.assertNotIn("corpus-markdown-file-invalid", rendered)
+
+    def test_safety_exception_paths_are_redacted_across_corpus_reading_modes(self) -> None:
+        marker = "token=do-not-echo-1234567890"
+        modes = (
+            "report-full",
+            "check-full",
+            "report-duplicates",
+            "check-impacted",
+            "check-archive",
+            "check-directory-budget",
+            "generate-archive-ledger",
+            "check-archive-ledger",
+            "generate-snapshot-manifest",
+            "check-snapshot-manifest",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = pathlib.Path(directory)
+            root = fixture / "repository"
+            outside = fixture / "outside.md"
+            root.mkdir()
+            init_repo(root)
+            outside.write_text("outside payload", encoding="utf-8")
+            unsafe = root / f"docs/90.references/{marker}.md"
+            unsafe.parent.mkdir(parents=True)
+            unsafe.symlink_to(outside)
+            commit_all(root, "track unsafe token-shaped path")
+
+            for mode in modes:
+                with self.subTest(mode=mode):
+                    output = fixture / f"{mode}.out"
+                    if mode in {"check-archive-ledger", "check-snapshot-manifest"}:
+                        output.write_bytes(b"existing-output")
+                    result = self._invoke_corpus_mode(root, mode, output)
+                    rendered = result.stdout + result.stderr
+                    self.assertEqual(result.returncode, 3, rendered)
+                    self.assertNotIn(marker, rendered)
+                    self.assertNotIn("Traceback", rendered)
+                    if mode in {"check-archive-ledger", "check-snapshot-manifest"}:
+                        self.assertEqual(output.read_bytes(), b"existing-output")
+                    else:
+                        self.assertFalse(output.exists())
+
+    def _merge_fixture(
+        self,
+        *,
+        track_target: bool = True,
+    ) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path, str, lifecycle.MigrationManifestRow]:
+        temporary = tempfile.TemporaryDirectory()
+        root = pathlib.Path(temporary.name)
+        init_repo(root)
+        source_relative = pathlib.PurePosixPath("docs/90.references/source.md")
+        source = root / source_relative
+        source.parent.mkdir(parents=True)
+        source.write_text(
+            self._reference_text("reference:merged", "Source"),
+            encoding="utf-8",
+        )
+        baseline = commit_all(root, "merge baseline")
+        source.unlink()
+        git(root, "add", "-u")
+        git(root, "commit", "-q", "-m", "remove merged source")
+        target_relative = pathlib.PurePosixPath(
+            "docs/90.references/data/merged.md"
+        )
+        target = root / target_relative
+        target.parent.mkdir(parents=True)
+        target.write_text(
+            self._reference_text("reference:merged", "Merged Result"),
+            encoding="utf-8",
+        )
+        if track_target:
+            commit_all(root, "track merged result")
+        row = self.valid_row(
+            source_path=source_relative,
+            target_path=target_relative,
+            artifact_id="reference:merged",
+            artifact_type="reference",
+            status_before="active",
+            status_after="active",
+            parent_ids=(),
+            disposition="merge",
+            canonical_replacement=target_relative.as_posix(),
+            active_consumers=(),
+            preservation_class="git-history",
+            evidence=self._destructive_evidence(),
+            review_verdict=lifecycle.ReviewVerdict("pass", "pass"),
+        )
+        return temporary, root, baseline, row
+
+    def _manifest_codes(
+        self,
+        root: pathlib.Path,
+        baseline: str,
+        rows: tuple[lifecycle.MigrationManifestRow, ...],
+    ) -> set[str]:
+        return {
+            finding.code
+            for finding in lifecycle.validate_migration_manifest(
+                root,
+                self.profiles,
+                self.fixture_contract(
+                    [row.source_path.as_posix() for row in rows]
+                ),
+                self.document(baseline, entries=rows),
+            )
+        }
+
+    def test_merge_and_delete_replacements_resolve_and_bind_to_canonical_results(self) -> None:
+        temporary, root, baseline, row = self._merge_fixture()
+        self.addCleanup(temporary.cleanup)
+        self.assertEqual(self._manifest_codes(root, baseline, (row,)), set())
+        self.assertEqual(
+            self._manifest_codes(
+                root,
+                baseline,
+                (dataclasses.replace(row, canonical_replacement="reference:merged"),),
+            ),
+            set(),
+        )
+
+        other = root / "docs/90.references/data/other.md"
+        other.write_text(
+            self._reference_text("reference:other", "Other"),
+            encoding="utf-8",
+        )
+        commit_all(root, "track mismatched replacement")
+        invalid_replacements = (
+            "docs/90.references/data/missing.md",
+            "reference:missing",
+            "docs/90.references/data/other.md",
+            "reference:other",
+        )
+        for replacement in invalid_replacements:
+            with self.subTest(replacement=replacement):
+                self.assertIn(
+                    "manifest-replacement-invalid",
+                    self._manifest_codes(
+                        root,
+                        baseline,
+                        (dataclasses.replace(row, canonical_replacement=replacement),),
+                    ),
+                )
+
+        target = root / row.target_path
+        canonical = target.read_text(encoding="utf-8")
+        for name, mutation in {
+            "invalid-profile": canonical.replace(
+                "artifact_type: reference", "artifact_type: archive"
+            ),
+            "invalid-body": canonical.replace("## Sources", "### Sources"),
+        }.items():
+            with self.subTest(target_mutation=name):
+                target.write_text(mutation, encoding="utf-8")
+                self.assertIn(
+                    "manifest-replacement-invalid",
+                    self._manifest_codes(root, baseline, (row,)),
+                )
+        target.write_text(canonical, encoding="utf-8")
+
+        outside = pathlib.Path(temporary.name).parent / (
+            pathlib.Path(temporary.name).name + "-merge-outside.md"
+        )
+        outside.write_text(canonical, encoding="utf-8")
+        self.addCleanup(lambda: outside.unlink(missing_ok=True))
+        target.unlink()
+        target.symlink_to(outside)
+        with self.assertRaises(lifecycle._CorpusSafetyError):
+            self._manifest_codes(root, baseline, (row,))
+        target.unlink()
+        target.write_text(canonical, encoding="utf-8")
+
+        duplicate = root / "docs/90.references/data/duplicate.md"
+        duplicate.write_text(canonical, encoding="utf-8")
+        commit_all(root, "duplicate merged identity")
+        self.assertIn(
+            "manifest-replacement-invalid",
+            self._manifest_codes(
+                root,
+                baseline,
+                (dataclasses.replace(row, canonical_replacement="reference:merged"),),
+            ),
+        )
+
+        untracked_temporary, untracked_root, untracked_baseline, untracked_row = (
+            self._merge_fixture(track_target=False)
+        )
+        self.addCleanup(untracked_temporary.cleanup)
+        self.assertIn(
+            "manifest-replacement-invalid",
+            self._manifest_codes(
+                untracked_root, untracked_baseline, (untracked_row,)
+            ),
+        )
+
+        delete_source = root / "docs/90.references/delete-source.md"
+        delete_source.write_text(
+            self._reference_text("reference:delete-source", "Delete Source"),
+            encoding="utf-8",
+        )
+        delete_baseline = commit_all(root, "delete baseline")
+        delete_source.unlink()
+        commit_all(root, "remove delete source")
+        delete_row = dataclasses.replace(
+            row,
+            source_path=pathlib.PurePosixPath("docs/90.references/delete-source.md"),
+            target_path=None,
+            artifact_id="reference:delete-source",
+            disposition="delete",
+            canonical_replacement="docs/90.references/data/other.md",
+        )
+        self.assertEqual(
+            self._manifest_codes(root, delete_baseline, (delete_row,)),
+            set(),
+        )
+        self.assertIn(
+            "manifest-replacement-invalid",
+            self._manifest_codes(
+                root,
+                delete_baseline,
+                (
+                    dataclasses.replace(
+                        delete_row,
+                        canonical_replacement="docs/90.references/data/missing.md",
+                    ),
+                ),
+            ),
+        )
+
+    def test_archive_result_relations_use_the_held_full_result_manifest(self) -> None:
+        temporary, root, baseline, row, target = self._archive_fixture()
+        self.addCleanup(temporary.cleanup)
+        original = yaml.safe_load(target.read_text(encoding="utf-8").split("---", 2)[1])
+
+        other = root / "docs/90.references/data/other.md"
+        other.write_text(
+            self._reference_text(
+                "reference:other",
+                "Other",
+                parent_ids=("reference:source",),
+            ),
+            encoding="utf-8",
+        )
+        spec_parent = root / "docs/03.specs/parent.md"
+        spec_parent.parent.mkdir(parents=True)
+        spec_parent.write_text(
+            "---\nstatus: active\nartifact_id: spec:parent\n"
+            "artifact_type: spec\nparent_ids: []\n---\n\n# Parent Spec\n",
+            encoding="utf-8",
+        )
+        archive_parent = root / "docs/98.archive/other.md"
+        archive_parent.parent.mkdir(parents=True, exist_ok=True)
+        archive_parent.write_text(
+            "---\nstatus: archived\nartifact_id: reference:archive-parent\n"
+            "artifact_type: archive\nparent_ids: []\n---\n\n# Other Archive\n",
+            encoding="utf-8",
+        )
+        commit_all(root, "track archive relation graph")
+
+        cases: tuple[tuple[str, dict[str, object], tuple[str, ...], str], ...] = (
+            ("unresolved-parent", {"parent_ids": ["reference:missing"]}, ("reference:missing",), "unresolved-parent"),
+            ("self-parent", {"parent_ids": ["reference:source"]}, ("reference:source",), "self-parent"),
+            ("wrong-parent-type", {"parent_ids": ["reference:archive-parent"]}, ("reference:archive-parent",), "invalid-parent-type"),
+            ("parent-order", {"parent_ids": ["reference:replacement", "spec:parent"]}, ("reference:replacement", "spec:parent"), "parent-order"),
+            ("parent-cycle", {"parent_ids": ["reference:other"]}, ("reference:other",), "parent-cycle"),
+            ("unresolved-supersedes", {"supersedes": ["reference:missing"]}, (), "unresolved-supersedes"),
+            ("self-supersession", {"supersedes": ["reference:source"]}, (), "self-supersession"),
+            ("invalid-supersession-state", {"supersedes": ["reference:replacement"]}, (), "invalid-supersession-state"),
+        )
+        for name, mutation, parents, expected in cases:
+            with self.subTest(case=name):
+                values = {**original, **mutation}
+                target.write_text(
+                    "---\n"
+                    + yaml.safe_dump(values, sort_keys=False)
+                    + "---\n\n# Archived Source\n",
+                    encoding="utf-8",
+                )
+                candidate = dataclasses.replace(row, parent_ids=parents)
+                self.assertIn(expected, self._archive_codes(root, baseline, candidate))
+
+    def test_multi_row_archive_relations_resolve_against_untracked_result_targets(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_repo(root)
+            archive_source_path = pathlib.PurePosixPath("docs/90.references/archive-source.md")
+            parent_source_path = pathlib.PurePosixPath("docs/90.references/parent-source.md")
+            for path, artifact_id, title in (
+                (archive_source_path, "reference:archive-source", "Archive Source"),
+                (parent_source_path, "reference:parent", "Parent Source"),
+            ):
+                target = root / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(self._reference_text(artifact_id, title), encoding="utf-8")
+            baseline = commit_all(root, "multi-row baseline")
+            archived_blob = git(root, "rev-parse", f"{baseline}:{archive_source_path.as_posix()}")
+            (root / archive_source_path).unlink()
+            (root / parent_source_path).unlink()
+            commit_all(root, "remove multi-row sources")
+
+            archive_target_path = pathlib.PurePosixPath(
+                "docs/98.archive/90.references/archive-source.md"
+            )
+            archive_target = root / archive_target_path
+            archive_target.parent.mkdir(parents=True)
+            archive_target.write_text(
+                "---\n"
+                + yaml.safe_dump(
+                    {
+                        "status": "archived",
+                        "artifact_id": "reference:archive-source",
+                        "artifact_type": "archive",
+                        "parent_ids": ["reference:parent"],
+                        "archived_from": archive_source_path.as_posix(),
+                        "archived_on": "2026-07-14",
+                        "archive_reason": "Withdrawn with preserved provenance.",
+                        "archive_disposition": "withdrawn",
+                        "archived_commit": baseline,
+                        "archived_blob": archived_blob,
+                        "preservation_class": "git-history",
+                    },
+                    sort_keys=False,
+                )
+                + "---\n\n# Archived Source\n",
+                encoding="utf-8",
+            )
+            parent_target_path = pathlib.PurePosixPath(
+                "docs/90.references/data/parent.md"
+            )
+            parent_target = root / parent_target_path
+            parent_target.parent.mkdir(parents=True)
+            parent_target.write_text(
+                self._reference_text("reference:parent", "Moved Parent"),
+                encoding="utf-8",
+            )
+            archive_row = self.valid_row(
+                source_path=archive_source_path,
+                target_path=archive_target_path,
+                artifact_id="reference:archive-source",
+                artifact_type="reference",
+                status_before="active",
+                status_after="archived",
+                parent_ids=("reference:parent",),
+                disposition="archive",
+                canonical_replacement=None,
+                active_consumers=(),
+                preservation_class="git-history",
+                evidence=self._destructive_evidence(),
+                review_verdict=lifecycle.ReviewVerdict("pass", "pass"),
+            )
+            parent_row = self.valid_row(
+                source_path=parent_source_path,
+                target_path=parent_target_path,
+                artifact_id="reference:parent",
+                artifact_type="reference",
+                status_before="active",
+                status_after="active",
+                parent_ids=(),
+                disposition="move",
+            )
+            self.assertEqual(
+                self._manifest_codes(root, baseline, (archive_row, parent_row)),
+                set(),
+            )
+
+
 if __name__ == "__main__":
     unittest.main()
