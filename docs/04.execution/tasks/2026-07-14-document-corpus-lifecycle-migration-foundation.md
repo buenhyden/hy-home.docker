@@ -140,7 +140,7 @@ Redaction boundary:
 | --- | --- | --- |
 | T-DCLM-001 | Machine migration contract and static archive metadata | Complete — final Spec PASS and Quality PASS with Critical 0, Important 0, Minor 0 |
 | T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Complete — final range `9126a0aa..9fe234f6`; terminal Spec PASS and Quality retry PASS, each with Critical 0, Important 0, and Minor 1. The sole deferred Minor is behavior-preserving decomposition of the monolithic dispatcher. |
-| T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | First-review remediation complete — self-review PASS; fresh specification and quality re-reviews pending |
+| T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Final-router remediation complete — self-review PASS; fresh terminal specification and quality re-reviews pending |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Not run |
 | T-DCLM-005 | Foundation manifest and generated evidence | Not run |
 | T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Not run |
@@ -171,6 +171,8 @@ Redaction boundary:
 | 2026-07-14 | T-DCLM-003 generated fallout | Fresh implementation agent | Staged only the two new human-owner paths for Git-backed discovery and ran the three canonical Task 3 owners. The LLM Wiki index, coverage snapshot, and frontmatter semantic inventory changed only to index the two new governance records; freshness and deterministic rerun checks passed. |
 | 2026-07-14 | T-DCLM-003 first independent reviews | Fresh specification and quality reviewers | Specification FAIL with Critical 0, Important 2, Minor 0 found parallel legacy classification algorithms in non-owner contracts and a contradictory Stage 98 synopsis. Quality FAIL with Critical 0, Important 1, Minor 0 found six new archive literals and seven source fields outside canonical placeholder ownership, allowing `<snapshot-reason>` to survive target validation. Task 4 remained blocked. |
 | 2026-07-14 | T-DCLM-003 first-review remediation | Fresh implementation agent | Removed legacy disposition tables/enums and conditional rules from non-owner frontmatter/status contracts while preserving their narrow key/status responsibilities; routed decisions to the sole owners and registries. Rewrote only the Stage 98 README synopsis/scope around full typed provenance, preservation, and disposition-conditional relations. Registered every archive source field placeholder, enforced canonical values for required and optional source fields, and made every new literal fail target validation through one value-free finding. Self-review PASS; all three canonical owners regenerated with no diff. Fresh specification and quality re-reviews are pending. |
+| 2026-07-15 | T-DCLM-003 final independent re-reviews | Fresh specification and quality reviewers | Final specification re-review FAIL with Critical 0, Important 1, Minor 0 found the Stage 99 support catalog still assigning disposition ownership to template governance (I-03). Final quality re-review FAIL with Critical 0, Important 1, Minor 0 found both stale support-catalog roles and the unsynchronized `docs/README.md` Stage 98 parent router (I-Q02). Prior I-01/I-02/I-Q01 were confirmed closed; Task 4 remained blocked. |
+| 2026-07-15 | T-DCLM-003 final-router remediation | Fresh implementation agent | Narrowed the support catalog so Template Governance owns only template-change workflow/protected surfaces/approval and commit boundaries, while Lifecycle Status owns only human status vocabulary/interpretation; executable semantics route to the sole human owners and metadata registry/checker. Synchronized all existing Stage 98 parent-router locations in `docs/README.md` with manifest-first validated results, full typed provenance/preservation, disposition-conditional replacement, safe provenance/confidentiality, rollback, and independent reviews. Added focused owner-role and parent-router regressions. Self-review PASS; terminal independent re-reviews are pending. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -296,10 +298,16 @@ T-DCLM-003 actual evidence:
 - Remediation live and integration checks: explicit-base metadata selected 27 with zero violations, zero legacy exceptions, and zero transition overrides; lifecycle contract returned zero; traceability passed 46/46; alignment checked 650 documents and 5,181 links with zero failures; repository contracts returned `failures=0`; Python compilation and diff hygiene passed.
 - Remediation generated owners: LLM Wiki remained fresh at 1,302 paths, coverage at 1,301 safe paths, and inventory at 906 records / 2,160 advisory findings with unchanged SHA-256 `b197c11e54c3ee95b8bae9a2bfa300b540945793fd08dbf5bf3c8954c31dbef6`. All three owners produced no diff, so no generated remediation commit is required.
 - Remediation Graphify: refresh completed with 24,130 nodes, 26,562 edges, and 1,571 communities. Health remained advisory only for the same two unrelated Alertmanager and cAdvisor/Pyroscope cross-root edges. Remediation claims were corroborated against tracked Stage 00, Spec 131, this Plan/Task, Stage 98/99 owners, registry, validator, and tests; volume, gitlink, generated/minified, source-contamination, and meaningless-god-node counts were zero. Both Graphify outputs were restored.
+- Final re-review verdicts: specification FAIL with Critical 0, Important 1, Minor 0 for I-03; quality FAIL with Critical 0, Important 1, Minor 0 for I-Q02. Both re-reviews confirmed I-01/I-02/I-Q01 closed.
+- Final-router RED/GREEN: two focused lifecycle methods produced 18 expected assertion failures and zero errors, then passed 2 of 2 after catalog-role and parent-router synchronization.
+- Final-router full GREEN: metadata passed 204 of 204 in 70.690 seconds; lifecycle passed 77 of 77 in 115.255 seconds with zero safety failures.
+- Final-router live and integration checks: explicit-base metadata selected 27 with zero violations, zero legacy exceptions, and zero transition overrides; lifecycle contract returned zero; traceability passed 46/46; alignment checked 650 documents and 5,181 links with zero failures; repository contracts returned `failures=0`; compilation and diff hygiene passed.
+- Final-router generated owners: LLM Wiki remained fresh at 1,302 paths, coverage at 1,301 safe paths, and inventory at 906 records / 2,160 advisory findings with unchanged SHA-256 `b197c11e54c3ee95b8bae9a2bfa300b540945793fd08dbf5bf3c8954c31dbef6`. All owners produced no diff, so no generated follow-up is required.
+- Final-router Graphify: refresh completed with 24,159 nodes, 26,589 edges, and 1,572 communities. Health retained only the same two unrelated Alertmanager and cAdvisor/Pyroscope advisory edges. Router claims were corroborated against tracked Stage 00, Spec 131, this Plan/Task, parent/child Stage 98 routes, Stage 99 catalog/owners, and focused tests; volume, gitlink, generated/minified, source-contamination, and meaningless-god-node counts were zero. Both Graphify outputs were restored.
 
 Verification results: T-DCLM-001 and T-DCLM-002 are complete. T-DCLM-003
-first-review remediation is GREEN with self-review PASS and awaits fresh
-independent specification and quality re-reviews. The T-DCLM-002
+final-router remediation is GREEN with self-review PASS and awaits fresh
+terminal independent specification and quality re-reviews. The T-DCLM-002
 implementation range `9126a0aa..9fe234f6` is GREEN and received terminal Spec
 PASS and separate Quality retry PASS, each with Critical 0, Important 0, and
 Minor 1. The only earlier deferred Minor is behavior-preserving decomposition
@@ -446,6 +454,24 @@ frontmatter placeholder, source validation covers present optional fields, and
 target validation rejects every new literal through a value-free finding.
 Task 4 surfaces remain untouched; fresh independent re-reviews are pending.
 
+T-DCLM-003 final independent re-review verdicts: specification FAIL with
+Critical 0, Important 1, and Minor 0 for I-03; quality FAIL with Critical 0,
+Important 1, and Minor 0 for I-Q02. I-03 identified stale disposition ownership
+in the Stage 99 support catalog. I-Q02 identified both catalog role drift and
+the unsynchronized Stage 98 parent router in `docs/README.md`. Both reviewers
+confirmed prior I-01/I-02/I-Q01 closed.
+
+T-DCLM-003 final-router remediation self-review verdict: PASS. The support
+catalog now assigns only workflow/protected-surface/approval/commit boundaries
+to Template Governance and only human status vocabulary/interpretation to
+Lifecycle Status; disposition/archive semantics route to the sole human owners
+and transition execution to the metadata registry/checker. Every existing
+Stage 98 parent-router location now describes a manifest-first validated typed
+provenance/preservation result, disposition-conditional replacement, and the
+safe provenance, confidentiality, rollback, and independent-review route.
+No new README section, tombstone, generated output, or Task 4 surface changed.
+Fresh terminal independent re-reviews remain pending.
+
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 
 ## Commit Ledger
@@ -475,7 +501,8 @@ Foundation logical commits:
 - `1c9ef624` — T-DCLM-002 sign-off remediation `fix(validation): close lifecycle sign-off gaps`.
 - `74d5232d` — T-DCLM-003 authored implementation `docs(governance): align corpus migration and archive rules`.
 - `46558c30` — T-DCLM-003 generated follow-up `docs(generated): index lifecycle human contracts`.
-- T-DCLM-003 first-review remediation — `fix(docs): close lifecycle human contract review gaps`; the commit containing this self-identifying ledger row is recorded by the controller after creation. Canonical owners produced no remediation drift, so the generated follow-up is omitted.
+- `e42296fa` — T-DCLM-003 first-review remediation `fix(docs): close lifecycle human contract review gaps`. Canonical owners produced no remediation drift, so the generated follow-up was omitted.
+- T-DCLM-003 final-router remediation — `fix(docs): synchronize lifecycle archive routers`; the commit containing this self-identifying ledger row is recorded by the controller after creation. Canonical owners produced no drift, so no generated follow-up is required.
 
 The reviewed T-DCLM-002 implementation and remediation range ends at
 `9fe234f6`. The later ledger-only closure commit records the terminal verdicts

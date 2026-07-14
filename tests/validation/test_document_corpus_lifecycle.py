@@ -298,6 +298,55 @@ class HumanContractRoutingTests(LifecycleTestCase):
                 with self.subTest(path=path.name, literal=literal):
                     self.assertNotIn(literal, text)
 
+    def test_support_catalog_roles_match_canonical_owner_boundaries(self) -> None:
+        catalog = (ROOT / "docs/99.templates/support/README.md").read_text(
+            encoding="utf-8"
+        )
+        for role_description in (
+            "Owns only template-change workflow, protected surfaces, migration/archive approval boundaries, and commit boundaries; disposition semantics route to the sole human owners.",
+            "Owns only the human lifecycle status vocabulary and interpretation boundary; disposition/archive semantics route to the sole human owners, and transition semantics route to the metadata registry and checker.",
+        ):
+            with self.subTest(role=role_description):
+                self.assertIn(role_description, catalog)
+        for owner_route in (
+            "[corpus-migration-contract.md](./corpus-migration-contract.md)",
+            "[archive-retention-contract.md](./archive-retention-contract.md)",
+            "[document-metadata-profiles.yaml](./document-metadata-profiles.yaml)",
+        ):
+            with self.subTest(owner=owner_route):
+                self.assertIn(owner_route, catalog)
+        for stale_role in (
+            "archive/remove dispositions",
+            "lifecycle status values, transition rules",
+        ):
+            self.assertNotIn(stale_role, catalog)
+
+    def test_docs_parent_router_matches_stage98_contract(self) -> None:
+        parent = (ROOT / "docs/README.md").read_text(encoding="utf-8")
+        for required_route in (
+            "manifest-first validated tombstone result",
+            "full typed provenance and preservation",
+            "`current_replacement` is disposition-conditional",
+            "safe provenance",
+            "confidentiality",
+            "preservation",
+            "rollback",
+            "independent specification and quality review",
+            "[corpus migration contract](99.templates/support/corpus-migration-contract.md)",
+            "[archive and retention contract](99.templates/support/archive-retention-contract.md)",
+        ):
+            with self.subTest(route=required_route):
+                self.assertIn(required_route, parent)
+        for stale_stage98_route in (
+            "active chain에서 제거된 old 문서 tombstone",
+            "trace removed old documents",
+            "original path/date/title/replacement 원문 보존",
+            "오래된 문서를 archive/reference로 옮기거나 삭제하려면",
+            "현재 구현과 상충하는 whole-document old 문서",
+        ):
+            with self.subTest(stale=stale_stage98_route):
+                self.assertNotIn(stale_stage98_route, parent)
+
     def test_stage00_and_stage98_route_without_redefining_semantics(self) -> None:
         archive_readme = (ROOT / "docs/98.archive/README.md").read_text(
             encoding="utf-8"
