@@ -466,6 +466,99 @@ class ManifestValidationTests(LifecycleTestCase):
         self.assertEqual(row.evidence, lifecycle.ManifestEvidence((), (), (), (), ()))
         self.assertIsNone(row.preservation_class)
 
+    def test_template_source_placeholder_identity_is_null_but_real_identity_is_enforced(
+        self,
+    ) -> None:
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = pathlib.Path(temporary.name)
+        init_repo(root)
+        source_path = "docs/99.templates/templates/common/archive.template.md"
+        source = root / source_path
+        source.parent.mkdir(parents=True)
+
+        def write_template(artifact_id: str) -> None:
+            source.write_text(
+                "---\n"
+                "status: draft\n"
+                f"artifact_id: {artifact_id}\n"
+                "artifact_type: archive\n"
+                "parent_ids: []\n"
+                "---\n\n"
+                "# Archive\n",
+                encoding="utf-8",
+            )
+
+        contract = self.fixture_contract([source_path])
+        write_template("<artifact-id>")
+        placeholder_baseline = commit_all(root, "template placeholder baseline")
+        placeholder_document = lifecycle.generate_manifest_skeleton(
+            root,
+            contract,
+            wave="fixture",
+            baseline_ref=placeholder_baseline,
+        )
+        placeholder_row = placeholder_document.entries[0]
+        self.assertEqual(placeholder_row.artifact_type, "template-source")
+        self.assertIsNone(placeholder_row.artifact_id)
+        placeholder_codes = {
+            finding.code
+            for finding in lifecycle.validate_migration_manifest(
+                root,
+                self.profiles,
+                contract,
+                placeholder_document,
+            )
+        }
+        self.assertTrue(
+            {
+                "manifest-static-invalid",
+                "manifest-baseline-artifact-id-mismatch",
+                "manifest-target-artifact-id-mismatch",
+            }.isdisjoint(placeholder_codes)
+        )
+
+        write_template("template-source:rogue")
+        real_id_baseline = commit_all(root, "template real identity baseline")
+        real_id_document = lifecycle.generate_manifest_skeleton(
+            root,
+            contract,
+            wave="fixture",
+            baseline_ref=real_id_baseline,
+        )
+        real_id_row = real_id_document.entries[0]
+        self.assertEqual(real_id_row.artifact_id, "template-source:rogue")
+        real_id_codes = {
+            finding.code
+            for finding in lifecycle.validate_migration_manifest(
+                root,
+                self.profiles,
+                contract,
+                real_id_document,
+            )
+        }
+        self.assertIn("manifest-static-invalid", real_id_codes)
+
+        hidden_real_id = dataclasses.replace(real_id_row, artifact_id=None)
+        hidden_real_id_codes = {
+            finding.code
+            for finding in lifecycle.validate_migration_manifest(
+                root,
+                self.profiles,
+                contract,
+                self.document(
+                    real_id_baseline,
+                    entries=(hidden_real_id,),
+                ),
+            )
+        }
+        self.assertTrue(
+            {
+                "manifest-baseline-artifact-id-mismatch",
+                "manifest-target-artifact-id-mismatch",
+            }.issubset(hidden_real_id_codes)
+        )
+
     def test_manifest_coverage_path_type_and_target_conditions(self) -> None:
         temporary, root, baseline = self.make_repo()
         self.addCleanup(temporary.cleanup)

@@ -743,6 +743,14 @@ def _wave_mapping(contract: dict[str, object], wave: str) -> dict[str, object]:
     return value
 
 
+def _manifest_artifact_id(artifact_type: str, value: object) -> str | None:
+    """Project template placeholders to null without hiding concrete identities."""
+
+    if artifact_type == "template-source" and value == "<artifact-id>":
+        return None
+    return value if isinstance(value, str) else None
+
+
 def generate_manifest_skeleton(
     root: pathlib.Path,
     contract: dict[str, object],
@@ -779,13 +787,14 @@ def generate_manifest_skeleton(
             if "generated_by" in frontmatter
             else metadata.infer_artifact_type(relative)
         )
-        artifact_id = frontmatter.get("artifact_id")
         status = frontmatter.get("status")
         rows.append(
             MigrationManifestRow(
                 source_path=pathlib.PurePosixPath(source_path),
                 target_path=pathlib.PurePosixPath(source_path),
-                artifact_id=artifact_id if isinstance(artifact_id, str) else None,
+                artifact_id=_manifest_artifact_id(
+                    artifact_type, frontmatter.get("artifact_id")
+                ),
                 artifact_type=artifact_type,
                 status_before=status if isinstance(status, str) else None,
                 status_after=status if isinstance(status, str) else None,
@@ -1287,11 +1296,8 @@ def validate_migration_manifest(
                                     "artifact type differs from the canonical path profile",
                                 )
                             )
-                        baseline_artifact_id = baseline_metadata.get("artifact_id")
-                        expected_artifact_id = (
-                            baseline_artifact_id
-                            if isinstance(baseline_artifact_id, str)
-                            else None
+                        expected_artifact_id = _manifest_artifact_id(
+                            expected_type, baseline_metadata.get("artifact_id")
                         )
                         if row.artifact_id != expected_artifact_id:
                             findings.append(
@@ -1463,11 +1469,8 @@ def validate_migration_manifest(
                                 "result target type differs from manifest truth",
                             )
                         )
-                    target_artifact_id = target_metadata.get("artifact_id")
-                    expected_target_id = (
-                        target_artifact_id
-                        if isinstance(target_artifact_id, str)
-                        else None
+                    expected_target_id = _manifest_artifact_id(
+                        target_type, target_metadata.get("artifact_id")
                     )
                     merge_target_value = (
                         merge_replacement.metadata.get("artifact_id")
