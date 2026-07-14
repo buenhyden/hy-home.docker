@@ -152,6 +152,7 @@ Redaction boundary:
 | 2026-07-14 | Planning | Controller | Spec 131 approved and activated; Plan and Task evidence shell authored. |
 | 2026-07-14 | T-DCLM-001 | Fresh implementation agent | Added the exact migration registry, metadata registry v2, fail-closed static archive validation, and RED/GREEN coverage. The authored scope is the Task 1 file set plus `docs/00.agent-governance/memory/progress.md`, included as a documented deviation because the root `AGENTS.md` bootstrap makes progress updates mandatory. Self-review passed; specification and quality review remain assigned to fresh reviewers. |
 | 2026-07-14 | T-DCLM-001 generated fallout | Fresh implementation agent | The first repository-contract run found only the canonical frontmatter semantic inventory stale after registry v2. The controller approved regenerating that owner in the Task 1 generated follow-up together with any LLM Wiki/index coverage fallout; this is a scoped deviation from the brief's two-file generated follow-up list, not broad corpus mutation. |
+| 2026-07-14 | T-DCLM-001 specification-review remediation | Fresh implementation agent | Resolved specification findings I-01 and I-02 by machine-declaring exact manifest types, nullability, domains, deterministic ordering, destructive execution prerequisites, and bounded exception semantics. Added static synthetic validation without Git lookup, snapshot-byte access, or a repository exception file. Fresh specification re-review remains required. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -193,8 +194,15 @@ T-DCLM-001 actual evidence:
 - Generated owner fallout: the LLM Wiki index regenerated with 1,300 paths, category coverage regenerated with 1,299 safe paths, and the canonical frontmatter semantic inventory regenerated with 904 records and 2,160 advisory findings. The increase is the explicit Wave D debt created by applying registry v2 to the unmodified existing tombstones; it does not promote those records to changed/new blocking.
 - Generated check modes passed for all three outputs. The final `bash scripts/validation/check-repo-contracts.sh` rerun completed with `failures=0`, including metadata repository contracts at zero violations and a fresh advisory inventory.
 - Graphify: `graphify update .` completed with 23,485 nodes, 24,978 edges, and 1,545 communities. Health remained advisory only for two unrelated cross-root inferred edges; zero volume, gitlink, generated/minified, source-contamination, or meaningless-god-node findings were reported. The claims above were corroborated against the tracked validator, registries, tests, Stage 00 governance, Spec 131, and this Plan/Task. Generated Graphify outputs were restored and excluded from the commit.
+- Specification-review RED: three focused tests failed for the intended missing surfaces: absent manifest field-contract declarations, absent static manifest validation, and absent bounded exception validation.
+- Self-review RED: the focused static-manifest method exposed five malformed enum values escaping as `TypeError`; the minimal type-guard fix converted every case to fail-closed `ProfileError` behavior.
+- Remediation focused GREEN: the three manifest/exception contract methods passed 3 of 3 tests, including exact loader mutations and synthetic wildcard, global, ownerless, reasonless, permanent, expired, unknown-code, empty-exit, unsafe-evidence, and future-approval cases.
+- Remediation full GREEN: `python3 -m unittest tests.validation.test_document_metadata -q` passed 190 of 190 tests in 70.351 seconds.
+- Remediation compatibility: explicit-base changed mode selected 10 paths with zero violations, zero legacy exceptions, and zero transition overrides; `python3 -m py_compile` and `git diff --check` passed.
+- Remediation repository integration: `bash scripts/validation/check-repo-contracts.sh` completed with `failures=0`, including metadata repository contracts at zero violations.
+- Remediation Graphify: `graphify update .` completed with 23,519 nodes, 25,050 edges, and 1,545 communities. The report remained advisory for two unrelated ambiguous cross-root references and generic high-degree/isolated-node noise; the remediation claims were corroborated against the tracked migration contract, validator, tests, Stage 00 governance, Spec 131, Plan, and Task. Generated Graphify outputs were restored and excluded from the fix commit.
 
-Verification results: T-DCLM-001 implementation GREEN; independent specification and quality reviews are pending.
+Verification results: T-DCLM-001 implementation and I-01/I-02 remediation GREEN; fresh independent specification re-review and quality review are pending.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -242,13 +250,13 @@ Disposition: not run.
 
 ## Review Evidence
 
-Implementation review verdict: T-DCLM-001 self-review PASS. The implementation is bounded to machine contracts, static archive frontmatter, tests, Task evidence, and the mandatory progress log. It adds no Git-object probe, snapshot-byte access, corpus migration, existing tombstone edit, runtime mutation, secret handling, or remote action. Stable diagnostics contain only keys, codes, safe paths, counts, and shape requirements.
+Implementation review verdict: T-DCLM-001 self-review PASS after remediation. The implementation is bounded to machine contracts, static manifest/exception and archive-frontmatter validation, tests, Task evidence, and the mandatory progress log. It adds no Git-object probe, snapshot-byte access, corpus migration, existing tombstone edit, exception file, runtime mutation, secret handling, or remote action. Stable diagnostics contain only keys, codes, safe paths, counts, dates, and shape requirements.
 
-Specification review verdict: not run for T-DCLM-001 through T-DCLM-006.
+Specification review verdict: the first T-DCLM-001 review returned FAIL with Critical 0 and Important 2. I-01 identified absent manifest type/nullability/ordering/destructive-row declarations; I-02 identified absent bounded exception semantics and synthetic rejection coverage. Both are implemented in this remediation and await fresh re-review.
 
 Quality review verdict: not run for T-DCLM-001 through T-DCLM-006.
 
-Review findings and disposition: none recorded before implementation.
+Review findings and disposition: I-01 and I-02 resolved in the pending `fix(docs): enforce corpus lifecycle machine contracts` logical commit; fresh specification re-review is required before T-DCLM-002.
 
 ## Commit Ledger
 
@@ -261,7 +269,8 @@ Planning baseline:
 Foundation logical commits:
 
 - `d40540a0` — T-DCLM-001 `feat(docs): define corpus lifecycle machine contracts`.
-- T-DCLM-001 generated follow-up — `docs(generated): index lifecycle machine contract`; identity is assigned by the follow-up commit operation and will be appended with independent review evidence.
+- `a224f93d` — T-DCLM-001 generated follow-up `docs(generated): index lifecycle machine contract`.
+- T-DCLM-001 specification-review remediation — `fix(docs): enforce corpus lifecycle machine contracts`; identity is assigned by the remediation commit operation and will be appended to the ignored implementation report.
 
 Commit validation: each entry must name its work unit, review verdicts, focused
 GREEN commands, and generated fallout before closure.

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import collections
+import copy
+import datetime as dt
 import importlib.util
 import os
 import pathlib
@@ -255,6 +257,68 @@ class ProfileSchemaTests(unittest.TestCase):
             with self.assertRaises(metadata.ProfileError):
                 metadata.load_profiles(target)
 
+    def mutate_migration_contract_and_load(self, mutate) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            target = pathlib.Path(directory) / "migration.yaml"
+            values = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
+            mutate(values)
+            target.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
+            with self.assertRaises(metadata.ProfileError):
+                metadata.load_migration_contract(target)
+
+    def valid_static_manifest(self) -> dict[str, object]:
+        return {
+            "schema_version": 1,
+            "wave": "foundation",
+            "baseline_commit": "a" * 40,
+            "generated_by": "scripts/validation/check-document-corpus-lifecycle.py",
+            "enforcement": "blocking",
+            "entries": [
+                {
+                    "source_path": "docs/source.md",
+                    "target_path": None,
+                    "artifact_id": "reference:source",
+                    "artifact_type": "reference",
+                    "status_before": "active",
+                    "status_after": "archived",
+                    "parent_ids": ["spec:source"],
+                    "disposition": "delete",
+                    "canonical_replacement": None,
+                    "active_consumers": [],
+                    "partition_plan": None,
+                    "preservation_class": "git-history",
+                    "evidence": {
+                        "commands": ["git show BASE:docs/source.md"],
+                        "sources": ["docs/source.md"],
+                        "repository_paths": ["docs/source.md"],
+                        "consumer_scan": ["rg --fixed-strings docs/source.md"],
+                        "rollback": ["revert logical task commit"],
+                    },
+                    "review_verdict": {
+                        "specification": "pass",
+                        "quality": "pass",
+                    },
+                }
+            ],
+        }
+
+    def valid_static_exception_document(self) -> dict[str, object]:
+        return {
+            "schema_version": 1,
+            "exceptions": [
+                {
+                    "finding_code": "known-finding",
+                    "scope_paths": ["docs/source.md"],
+                    "owner": "docs-platform",
+                    "reason": "Bounded remediation is scheduled.",
+                    "approved_at": "2026-07-01",
+                    "expires_on": "2026-08-01",
+                    "exit_condition": "Remove after the source is migrated.",
+                    "evidence": ["docs/04.execution/tasks/2026-07-14-fixture.md"],
+                }
+            ],
+        }
+
     def test_schema_version_rejects_boolean(self) -> None:
         self.mutate_and_load(lambda values: values.__setitem__("schema_version", True))
 
@@ -463,6 +527,278 @@ class ProfileSchemaTests(unittest.TestCase):
                     target.write_text(source, encoding="utf-8")
                     with self.assertRaises(metadata.ProfileError):
                         metadata.load_migration_contract(target)
+
+    def test_migration_contract_declares_manifest_static_semantics(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        schema = contract["manifest_schema"]
+        self.assertEqual(
+            {
+                "schema_version",
+                "wave",
+                "baseline_commit",
+                "generated_by",
+                "enforcement",
+                "entries",
+                "source_path",
+                "target_path",
+                "artifact_id",
+                "artifact_type",
+                "status_before",
+                "status_after",
+                "parent_ids",
+                "disposition",
+                "canonical_replacement",
+                "active_consumers",
+                "partition_plan",
+                "preservation_class",
+                "evidence",
+                "review_verdict",
+                "evidence.commands",
+                "evidence.sources",
+                "evidence.repository_paths",
+                "evidence.consumer_scan",
+                "evidence.rollback",
+                "review_verdict.specification",
+                "review_verdict.quality",
+            },
+            set(schema["field_contracts"]),
+        )
+        self.assertEqual(
+            {
+                "entries": "source_path",
+                "parent_ids": "lexicographic",
+                "active_consumers": "lexicographic",
+                "evidence.commands": "lexicographic",
+                "evidence.sources": "lexicographic",
+                "evidence.repository_paths": "lexicographic",
+                "evidence.consumer_scan": "lexicographic",
+                "evidence.rollback": "lexicographic",
+            },
+            schema["deterministic_order"],
+        )
+        self.assertEqual(
+            {
+                "dispositions": ["merge", "archive", "delete"],
+                "active_consumers_required": True,
+                "empty_consumers_require": "evidence.consumer_scan",
+                "non_empty_evidence": [
+                    "commands",
+                    "sources",
+                    "repository_paths",
+                    "consumer_scan",
+                    "rollback",
+                ],
+                "preservation_class_required": True,
+                "replacement_semantics": "replacement_requirements",
+                "required_review": {"specification": "pass", "quality": "pass"},
+            },
+            schema["destructive_execution"],
+        )
+        for mutate in (
+            lambda values: values["manifest_schema"]["field_contracts"][
+                "baseline_commit"
+            ].__setitem__("domain", "string"),
+            lambda values: values["manifest_schema"]["field_contracts"][
+                "target_path"
+            ].__setitem__("nullable", False),
+            lambda values: values["manifest_schema"]["deterministic_order"].pop(
+                "active_consumers"
+            ),
+            lambda values: values["manifest_schema"]["destructive_execution"][
+                "non_empty_evidence"
+            ].remove("consumer_scan"),
+            lambda values: values["manifest_schema"]["destructive_execution"][
+                "required_review"
+            ].__setitem__("quality", "pending"),
+        ):
+            with self.subTest(mutate=mutate):
+                self.mutate_migration_contract_and_load(mutate)
+
+    def test_static_manifest_validation_fails_closed(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = metadata.load_profiles(PROFILES)
+        valid = self.valid_static_manifest()
+        metadata.validate_static_migration_manifest(valid, contract, profiles)
+        declared_exception = copy.deepcopy(valid)
+        declared_exception["entries"][0].update(
+            {
+                "target_path": "docs/source.md",
+                "artifact_id": None,
+                "status_before": None,
+                "status_after": None,
+                "disposition": "exempt",
+                "preservation_class": None,
+            }
+        )
+        metadata.validate_static_migration_manifest(declared_exception, contract, profiles)
+
+        mutations = {
+            "schema-type": lambda value: value.__setitem__("schema_version", True),
+            "empty-wave": lambda value: value.__setitem__("wave", ""),
+            "object-domain": lambda value: value.__setitem__("baseline_commit", "A" * 40),
+            "enforcement-domain": lambda value: value.__setitem__("enforcement", "enforced"),
+            "unsafe-source-path": lambda value: value["entries"][0].__setitem__(
+                "source_path", "../source.md"
+            ),
+            "unsafe-target-path": lambda value: value["entries"][0].__setitem__(
+                "target_path", "/tmp/source.md"
+            ),
+            "artifact-null-without-exempt": lambda value: value["entries"][0].__setitem__(
+                "artifact_id", None
+            ),
+            "artifact-type-domain": lambda value: value["entries"][0].__setitem__(
+                "artifact_type", "unknown"
+            ),
+            "artifact-type-shape": lambda value: value["entries"][0].__setitem__(
+                "artifact_type", []
+            ),
+            "disposition-shape": lambda value: value["entries"][0].__setitem__(
+                "disposition", []
+            ),
+            "status-domain": lambda value: value["entries"][0].__setitem__(
+                "status_after", "retired"
+            ),
+            "status-shape": lambda value: value["entries"][0].__setitem__(
+                "status_after", []
+            ),
+            "status-null-without-exempt": lambda value: value["entries"][0].__setitem__(
+                "status_before", None
+            ),
+            "partition-plan-path": lambda value: value["entries"][0].__setitem__(
+                "partition_plan", "docs/04.execution/tasks/not-a-plan.md"
+            ),
+            "unordered-parent-list": lambda value: value["entries"][0].__setitem__(
+                "parent_ids", ["spec:z", "spec:a"]
+            ),
+            "unordered-consumer-list": lambda value: value["entries"][0].__setitem__(
+                "active_consumers", ["docs/z.md", "docs/a.md"]
+            ),
+            "unordered-evidence-list": lambda value: value["entries"][0]["evidence"].__setitem__(
+                "commands", ["z command", "a command"]
+            ),
+            "unordered-entries": lambda value: value["entries"].insert(
+                0,
+                {
+                    **copy.deepcopy(value["entries"][0]),
+                    "source_path": "docs/z-source.md",
+                },
+            ),
+            "delete-target": lambda value: value["entries"][0].__setitem__(
+                "target_path", "docs/source.md"
+            ),
+            "consumer-enumeration": lambda value: value["entries"][0].__setitem__(
+                "active_consumers", None
+            ),
+            "consumer-scan-proof": lambda value: value["entries"][0]["evidence"].__setitem__(
+                "consumer_scan", []
+            ),
+            "destructive-evidence": lambda value: value["entries"][0]["evidence"].__setitem__(
+                "commands", []
+            ),
+            "destructive-preservation": lambda value: value["entries"][0].__setitem__(
+                "preservation_class", None
+            ),
+            "preservation-shape": lambda value: value["entries"][0].__setitem__(
+                "preservation_class", []
+            ),
+            "destructive-review": lambda value: value["entries"][0]["review_verdict"].__setitem__(
+                "quality", "pending"
+            ),
+            "review-shape": lambda value: value["entries"][0]["review_verdict"].__setitem__(
+                "quality", []
+            ),
+            "archive-replacement": lambda value: (
+                value["entries"][0].__setitem__("disposition", "archive"),
+                value["entries"][0].__setitem__("target_path", "docs/98.archive/source.md"),
+            ),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(name=name):
+                candidate = copy.deepcopy(valid)
+                mutate(candidate)
+                with self.assertRaises(metadata.ProfileError):
+                    metadata.validate_static_migration_manifest(candidate, contract, profiles)
+
+    def test_bounded_exception_contract_rejects_unbounded_entries(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        schema = contract["exception_schema"]
+        self.assertEqual(
+            {
+                "finding_code_source": "validator-known-finding-codes",
+                "require_non_empty_scope_paths": True,
+                "forbid_wildcards": True,
+                "forbid_global_scopes": ["*", "**", ".", "all", "global"],
+                "require_non_empty_text": ["owner", "reason", "exit_condition"],
+                "approval": "approved_at-not-future",
+                "expiry": "expires_on-after-validation-date",
+                "require_non_empty_safe_evidence_paths": True,
+            },
+            schema["bounded_semantics"],
+        )
+        for mutate in (
+            lambda values: values["exception_schema"]["field_contracts"][
+                "finding_code"
+            ].__setitem__("domain", "string"),
+            lambda values: values["exception_schema"]["bounded_semantics"].__setitem__(
+                "forbid_wildcards", False
+            ),
+            lambda values: values["exception_schema"]["bounded_semantics"][
+                "require_non_empty_text"
+            ].remove("owner"),
+            lambda values: values["exception_schema"]["bounded_semantics"].__setitem__(
+                "expiry", "permanent"
+            ),
+        ):
+            with self.subTest(contract_mutation=mutate):
+                self.mutate_migration_contract_and_load(mutate)
+        valid = self.valid_static_exception_document()
+        validation_date = dt.date(2026, 7, 14)
+        metadata.validate_static_exception_document(
+            valid,
+            contract,
+            {"known-finding"},
+            validation_date,
+        )
+
+        mutations = {
+            "wildcard": lambda value: value["exceptions"][0].__setitem__(
+                "scope_paths", ["docs/*"]
+            ),
+            "global": lambda value: value["exceptions"][0].__setitem__(
+                "scope_paths", ["global"]
+            ),
+            "ownerless": lambda value: value["exceptions"][0].__setitem__("owner", ""),
+            "reasonless": lambda value: value["exceptions"][0].__setitem__("reason", ""),
+            "permanent": lambda value: value["exceptions"][0].__setitem__(
+                "expires_on", "permanent"
+            ),
+            "expired": lambda value: value["exceptions"][0].__setitem__(
+                "expires_on", "2026-07-13"
+            ),
+            "unknown-code": lambda value: value["exceptions"][0].__setitem__(
+                "finding_code", "unknown-finding"
+            ),
+            "empty-exit": lambda value: value["exceptions"][0].__setitem__(
+                "exit_condition", ""
+            ),
+            "unsafe-evidence": lambda value: value["exceptions"][0].__setitem__(
+                "evidence", ["/tmp/evidence.md"]
+            ),
+            "unapproved": lambda value: value["exceptions"][0].__setitem__(
+                "approved_at", "2026-07-15"
+            ),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(name=name):
+                candidate = copy.deepcopy(valid)
+                mutate(candidate)
+                with self.assertRaises(metadata.ProfileError):
+                    metadata.validate_static_exception_document(
+                        candidate,
+                        contract,
+                        {"known-finding"},
+                        validation_date,
+                    )
 
     def test_document_families_require_known_unique_profiles(self) -> None:
         profiles = metadata.load_profiles(PROFILES)

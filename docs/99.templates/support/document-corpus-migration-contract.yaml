@@ -67,6 +67,61 @@ manifest_schema:
     - pending
     - pass
     - changes-required
+  field_contracts:
+    schema_version: {type: integer, nullable: false, domain: constant-1}
+    wave: {type: string, nullable: false, domain: non-empty-string}
+    baseline_commit: {type: string, nullable: false, domain: lowercase-full-object-id}
+    generated_by: {type: string, nullable: false, domain: non-empty-string}
+    enforcement: {type: string, nullable: false, domain: advisory-or-blocking}
+    entries: {type: list, nullable: false, domain: migration-entry}
+    source_path: {type: string, nullable: false, domain: safe-baseline-tracked-path}
+    target_path: {type: string, nullable: true, domain: safe-repository-path, null_condition: disposition-delete}
+    artifact_id: {type: string, nullable: true, domain: stable-artifact-id, null_condition: disposition-exempt}
+    artifact_type: {type: string, nullable: false, domain: registered-artifact-type}
+    status_before: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: disposition-exempt}
+    status_after: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: disposition-exempt}
+    parent_ids: {type: list, nullable: false, domain: deterministic-string-list}
+    disposition: {type: string, nullable: false, domain: registered-manifest-disposition}
+    canonical_replacement: {type: string, nullable: true, domain: non-empty-string, null_condition: replacement-requirements}
+    active_consumers: {type: list, nullable: false, domain: deterministic-safe-path-list}
+    partition_plan: {type: string, nullable: true, domain: safe-approved-plan-path}
+    preservation_class: {type: string, nullable: true, domain: registered-preservation-class, null_condition: non-destructive-row}
+    evidence: {type: mapping, nullable: false, domain: exact-evidence-mapping}
+    review_verdict: {type: mapping, nullable: false, domain: exact-review-verdict-mapping}
+    evidence.commands: {type: list, nullable: false, domain: deterministic-string-list}
+    evidence.sources: {type: list, nullable: false, domain: deterministic-string-list}
+    evidence.repository_paths: {type: list, nullable: false, domain: deterministic-string-list}
+    evidence.consumer_scan: {type: list, nullable: false, domain: deterministic-string-list}
+    evidence.rollback: {type: list, nullable: false, domain: deterministic-string-list}
+    review_verdict.specification: {type: string, nullable: false, domain: review-verdict-values}
+    review_verdict.quality: {type: string, nullable: false, domain: review-verdict-values}
+  deterministic_order:
+    entries: source_path
+    parent_ids: lexicographic
+    active_consumers: lexicographic
+    evidence.commands: lexicographic
+    evidence.sources: lexicographic
+    evidence.repository_paths: lexicographic
+    evidence.consumer_scan: lexicographic
+    evidence.rollback: lexicographic
+  destructive_execution:
+    dispositions:
+      - merge
+      - archive
+      - delete
+    active_consumers_required: true
+    empty_consumers_require: evidence.consumer_scan
+    non_empty_evidence:
+      - commands
+      - sources
+      - repository_paths
+      - consumer_scan
+      - rollback
+    preservation_class_required: true
+    replacement_semantics: replacement_requirements
+    required_review:
+      specification: pass
+      quality: pass
 
 exception_schema:
   top_level_fields:
@@ -81,6 +136,38 @@ exception_schema:
     - expires_on
     - exit_condition
     - evidence
+  field_contracts:
+    schema_version: {type: integer, nullable: false, domain: constant-1}
+    exceptions: {type: list, nullable: false, domain: bounded-exception}
+    finding_code: {type: string, nullable: false, domain: validator-known-finding-code}
+    scope_paths: {type: list, nullable: false, domain: deterministic-bounded-safe-path-list}
+    owner: {type: string, nullable: false, domain: non-empty-string}
+    reason: {type: string, nullable: false, domain: non-empty-string}
+    approved_at: {type: string, nullable: false, domain: strict-iso-date-not-future}
+    expires_on: {type: string, nullable: false, domain: strict-iso-date-after-validation-date}
+    exit_condition: {type: string, nullable: false, domain: non-empty-string}
+    evidence: {type: list, nullable: false, domain: deterministic-non-empty-safe-path-list}
+  deterministic_order:
+    exceptions: finding_code-and-scope-paths
+    scope_paths: lexicographic
+    evidence: lexicographic
+  bounded_semantics:
+    finding_code_source: validator-known-finding-codes
+    require_non_empty_scope_paths: true
+    forbid_wildcards: true
+    forbid_global_scopes:
+      - '*'
+      - '**'
+      - '.'
+      - all
+      - global
+    require_non_empty_text:
+      - owner
+      - reason
+      - exit_condition
+    approval: approved_at-not-future
+    expiry: expires_on-after-validation-date
+    require_non_empty_safe_evidence_paths: true
 
 disposition_conditions:
   migrate: source-equals-target

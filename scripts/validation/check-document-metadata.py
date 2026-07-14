@@ -43,6 +43,289 @@ EXPECTED_MANIFEST_DISPOSITIONS = (
     "regenerate",
     "exempt",
 )
+EXPECTED_MANIFEST_SCHEMA = {
+    "top_level_fields": [
+        "schema_version",
+        "wave",
+        "baseline_commit",
+        "generated_by",
+        "enforcement",
+        "entries",
+    ],
+    "entry_fields": [
+        "source_path",
+        "target_path",
+        "artifact_id",
+        "artifact_type",
+        "status_before",
+        "status_after",
+        "parent_ids",
+        "disposition",
+        "canonical_replacement",
+        "active_consumers",
+        "partition_plan",
+        "preservation_class",
+        "evidence",
+        "review_verdict",
+    ],
+    "evidence_fields": [
+        "commands",
+        "sources",
+        "repository_paths",
+        "consumer_scan",
+        "rollback",
+    ],
+    "review_verdict_fields": ["specification", "quality"],
+    "review_verdict_values": ["pending", "pass", "changes-required"],
+    "field_contracts": {
+        "schema_version": {
+            "type": "integer",
+            "nullable": False,
+            "domain": "constant-1",
+        },
+        "wave": {
+            "type": "string",
+            "nullable": False,
+            "domain": "non-empty-string",
+        },
+        "baseline_commit": {
+            "type": "string",
+            "nullable": False,
+            "domain": "lowercase-full-object-id",
+        },
+        "generated_by": {
+            "type": "string",
+            "nullable": False,
+            "domain": "non-empty-string",
+        },
+        "enforcement": {
+            "type": "string",
+            "nullable": False,
+            "domain": "advisory-or-blocking",
+        },
+        "entries": {
+            "type": "list",
+            "nullable": False,
+            "domain": "migration-entry",
+        },
+        "source_path": {
+            "type": "string",
+            "nullable": False,
+            "domain": "safe-baseline-tracked-path",
+        },
+        "target_path": {
+            "type": "string",
+            "nullable": True,
+            "domain": "safe-repository-path",
+            "null_condition": "disposition-delete",
+        },
+        "artifact_id": {
+            "type": "string",
+            "nullable": True,
+            "domain": "stable-artifact-id",
+            "null_condition": "disposition-exempt",
+        },
+        "artifact_type": {
+            "type": "string",
+            "nullable": False,
+            "domain": "registered-artifact-type",
+        },
+        "status_before": {
+            "type": "string",
+            "nullable": True,
+            "domain": "registered-lifecycle-status",
+            "null_condition": "disposition-exempt",
+        },
+        "status_after": {
+            "type": "string",
+            "nullable": True,
+            "domain": "registered-lifecycle-status",
+            "null_condition": "disposition-exempt",
+        },
+        "parent_ids": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "disposition": {
+            "type": "string",
+            "nullable": False,
+            "domain": "registered-manifest-disposition",
+        },
+        "canonical_replacement": {
+            "type": "string",
+            "nullable": True,
+            "domain": "non-empty-string",
+            "null_condition": "replacement-requirements",
+        },
+        "active_consumers": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-safe-path-list",
+        },
+        "partition_plan": {
+            "type": "string",
+            "nullable": True,
+            "domain": "safe-approved-plan-path",
+        },
+        "preservation_class": {
+            "type": "string",
+            "nullable": True,
+            "domain": "registered-preservation-class",
+            "null_condition": "non-destructive-row",
+        },
+        "evidence": {
+            "type": "mapping",
+            "nullable": False,
+            "domain": "exact-evidence-mapping",
+        },
+        "review_verdict": {
+            "type": "mapping",
+            "nullable": False,
+            "domain": "exact-review-verdict-mapping",
+        },
+        "evidence.commands": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "evidence.sources": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "evidence.repository_paths": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "evidence.consumer_scan": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "evidence.rollback": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "review_verdict.specification": {
+            "type": "string",
+            "nullable": False,
+            "domain": "review-verdict-values",
+        },
+        "review_verdict.quality": {
+            "type": "string",
+            "nullable": False,
+            "domain": "review-verdict-values",
+        },
+    },
+    "deterministic_order": {
+        "entries": "source_path",
+        "parent_ids": "lexicographic",
+        "active_consumers": "lexicographic",
+        "evidence.commands": "lexicographic",
+        "evidence.sources": "lexicographic",
+        "evidence.repository_paths": "lexicographic",
+        "evidence.consumer_scan": "lexicographic",
+        "evidence.rollback": "lexicographic",
+    },
+    "destructive_execution": {
+        "dispositions": ["merge", "archive", "delete"],
+        "active_consumers_required": True,
+        "empty_consumers_require": "evidence.consumer_scan",
+        "non_empty_evidence": [
+            "commands",
+            "sources",
+            "repository_paths",
+            "consumer_scan",
+            "rollback",
+        ],
+        "preservation_class_required": True,
+        "replacement_semantics": "replacement_requirements",
+        "required_review": {"specification": "pass", "quality": "pass"},
+    },
+}
+EXPECTED_EXCEPTION_SCHEMA = {
+    "top_level_fields": ["schema_version", "exceptions"],
+    "entry_fields": [
+        "finding_code",
+        "scope_paths",
+        "owner",
+        "reason",
+        "approved_at",
+        "expires_on",
+        "exit_condition",
+        "evidence",
+    ],
+    "field_contracts": {
+        "schema_version": {
+            "type": "integer",
+            "nullable": False,
+            "domain": "constant-1",
+        },
+        "exceptions": {
+            "type": "list",
+            "nullable": False,
+            "domain": "bounded-exception",
+        },
+        "finding_code": {
+            "type": "string",
+            "nullable": False,
+            "domain": "validator-known-finding-code",
+        },
+        "scope_paths": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-bounded-safe-path-list",
+        },
+        "owner": {
+            "type": "string",
+            "nullable": False,
+            "domain": "non-empty-string",
+        },
+        "reason": {
+            "type": "string",
+            "nullable": False,
+            "domain": "non-empty-string",
+        },
+        "approved_at": {
+            "type": "string",
+            "nullable": False,
+            "domain": "strict-iso-date-not-future",
+        },
+        "expires_on": {
+            "type": "string",
+            "nullable": False,
+            "domain": "strict-iso-date-after-validation-date",
+        },
+        "exit_condition": {
+            "type": "string",
+            "nullable": False,
+            "domain": "non-empty-string",
+        },
+        "evidence": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-non-empty-safe-path-list",
+        },
+    },
+    "deterministic_order": {
+        "exceptions": "finding_code-and-scope-paths",
+        "scope_paths": "lexicographic",
+        "evidence": "lexicographic",
+    },
+    "bounded_semantics": {
+        "finding_code_source": "validator-known-finding-codes",
+        "require_non_empty_scope_paths": True,
+        "forbid_wildcards": True,
+        "forbid_global_scopes": ["*", "**", ".", "all", "global"],
+        "require_non_empty_text": ["owner", "reason", "exit_condition"],
+        "approval": "approved_at-not-future",
+        "expiry": "expires_on-after-validation-date",
+        "require_non_empty_safe_evidence_paths": True,
+    },
+}
 EXPECTED_PROFILE_TYPES = {
     "adr",
     "archive",
@@ -2251,58 +2534,11 @@ def load_migration_contract(
         raise ProfileError("review_signals must define the exact canonical positive day thresholds")
 
     manifest_schema = loaded.get("manifest_schema")
-    expected_manifest_schema = {
-        "top_level_fields": [
-            "schema_version",
-            "wave",
-            "baseline_commit",
-            "generated_by",
-            "enforcement",
-            "entries",
-        ],
-        "entry_fields": [
-            "source_path",
-            "target_path",
-            "artifact_id",
-            "artifact_type",
-            "status_before",
-            "status_after",
-            "parent_ids",
-            "disposition",
-            "canonical_replacement",
-            "active_consumers",
-            "partition_plan",
-            "preservation_class",
-            "evidence",
-            "review_verdict",
-        ],
-        "evidence_fields": [
-            "commands",
-            "sources",
-            "repository_paths",
-            "consumer_scan",
-            "rollback",
-        ],
-        "review_verdict_fields": ["specification", "quality"],
-        "review_verdict_values": ["pending", "pass", "changes-required"],
-    }
-    if manifest_schema != expected_manifest_schema:
+    if manifest_schema != EXPECTED_MANIFEST_SCHEMA:
         raise ProfileError("manifest_schema must define the exact canonical manifest shape")
 
     exception_schema = loaded.get("exception_schema")
-    if exception_schema != {
-        "top_level_fields": ["schema_version", "exceptions"],
-        "entry_fields": [
-            "finding_code",
-            "scope_paths",
-            "owner",
-            "reason",
-            "approved_at",
-            "expires_on",
-            "exit_condition",
-            "evidence",
-        ],
-    }:
+    if exception_schema != EXPECTED_EXCEPTION_SCHEMA:
         raise ProfileError("exception_schema must define the exact bounded exception shape")
 
     if loaded.get("disposition_conditions") != {
@@ -2468,6 +2704,308 @@ def load_migration_contract(
     }:
         raise ProfileError("planned_partitions must define the exact Stage 04 year routes")
     return loaded
+
+
+def _require_exact_mapping(
+    value: object,
+    fields: Sequence[str],
+    label: str,
+) -> Mapping[str, object]:
+    if not isinstance(value, Mapping) or set(value) != set(fields):
+        raise ProfileError(f"{label} must define the exact canonical fields")
+    return value
+
+
+def _deterministic_string_list(
+    value: object,
+    label: str,
+    *,
+    require_non_empty: bool = False,
+    safe_paths: bool = False,
+) -> list[str]:
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item and item == item.strip() for item in value
+    ):
+        raise ProfileError(f"{label} must be a deterministic string list")
+    if require_non_empty and not value:
+        raise ProfileError(f"{label} must not be empty")
+    if value != sorted(value) or len(value) != len(set(value)):
+        raise ProfileError(f"{label} must be uniquely lexicographically ordered")
+    if safe_paths and not all(_safe_contract_path(item) for item in value):
+        raise ProfileError(f"{label} must contain only safe bounded repository paths")
+    return value
+
+
+def _non_empty_string(value: object, label: str) -> str:
+    if not isinstance(value, str) or not value.strip() or value != value.strip():
+        raise ProfileError(f"{label} must be a non-empty canonical string")
+    return value
+
+
+def _valid_stable_artifact_id(value: object) -> bool:
+    return (
+        isinstance(value, str)
+        and value == value.strip()
+        and re.fullmatch(
+            r"[a-z0-9][a-z0-9._-]*(?::[a-z0-9][a-z0-9._-]*)+",
+            value,
+        )
+        is not None
+    )
+
+
+def validate_static_migration_manifest(
+    document: object,
+    contract: Mapping[str, object],
+    profiles: Mapping[str, object],
+) -> None:
+    """Validate manifest semantics that require no repository or object access."""
+
+    if contract.get("manifest_schema") != EXPECTED_MANIFEST_SCHEMA:
+        raise ProfileError("manifest contract must use the exact static schema")
+    manifest = _require_exact_mapping(
+        document,
+        EXPECTED_MANIFEST_SCHEMA["top_level_fields"],
+        "migration manifest",
+    )
+    if type(manifest.get("schema_version")) is not int or manifest.get("schema_version") != 1:
+        raise ProfileError("manifest schema_version must be the integer 1")
+    _non_empty_string(manifest.get("wave"), "manifest wave")
+    if not _valid_lowercase_object_id(manifest.get("baseline_commit")):
+        raise ProfileError("manifest baseline_commit must be a lowercase full object ID")
+    _non_empty_string(manifest.get("generated_by"), "manifest generated_by")
+    enforcement = manifest.get("enforcement")
+    if not isinstance(enforcement, str) or enforcement not in {"advisory", "blocking"}:
+        raise ProfileError("manifest enforcement must be advisory or blocking")
+
+    raw_profile_map = profiles.get("profiles")
+    raw_common = profiles.get("common")
+    if not isinstance(raw_profile_map, Mapping) or not isinstance(raw_common, Mapping):
+        raise ProfileError("manifest validation requires the typed profile registry")
+    artifact_types = set(raw_profile_map)
+    allowed_status_values = raw_common.get("allowed_statuses")
+    if not isinstance(allowed_status_values, list) or not all(
+        isinstance(status, str) and status for status in allowed_status_values
+    ):
+        raise ProfileError("manifest validation requires registered lifecycle statuses")
+    allowed_statuses = set(allowed_status_values)
+
+    raw_manifest_contract = contract.get("manifest")
+    raw_archive_contract = contract.get("archive")
+    if not isinstance(raw_manifest_contract, Mapping) or not isinstance(
+        raw_archive_contract, Mapping
+    ):
+        raise ProfileError("manifest validation requires disposition registries")
+    dispositions = set(raw_manifest_contract.get("dispositions", []))
+    preservation_classes = set(raw_archive_contract.get("preservation_classes", []))
+    replacement_requirements = contract.get("replacement_requirements")
+    if not isinstance(replacement_requirements, Mapping):
+        raise ProfileError("manifest validation requires replacement semantics")
+    replacement_required = set(replacement_requirements.get("required_for", []))
+    replacement_optional = set(replacement_requirements.get("optional_for", []))
+    replacement_forbidden = set(replacement_requirements.get("forbidden_for", []))
+
+    entries = manifest.get("entries")
+    if not isinstance(entries, list):
+        raise ProfileError("manifest entries must be a list")
+    source_paths: list[str] = []
+    entry_fields = EXPECTED_MANIFEST_SCHEMA["entry_fields"]
+    evidence_fields = EXPECTED_MANIFEST_SCHEMA["evidence_fields"]
+    review_fields = EXPECTED_MANIFEST_SCHEMA["review_verdict_fields"]
+    verdict_values = set(EXPECTED_MANIFEST_SCHEMA["review_verdict_values"])
+    destructive = set(
+        EXPECTED_MANIFEST_SCHEMA["destructive_execution"]["dispositions"]
+    )
+
+    for index, raw_entry in enumerate(entries):
+        label = f"manifest entry {index}"
+        entry = _require_exact_mapping(raw_entry, entry_fields, label)
+        source_path = entry.get("source_path")
+        if not isinstance(source_path, str) or not _safe_contract_path(source_path):
+            raise ProfileError(f"{label} source_path must be a safe repository path")
+        source_paths.append(source_path)
+
+        disposition = entry.get("disposition")
+        if not isinstance(disposition, str) or disposition not in dispositions:
+            raise ProfileError(f"{label} disposition must be registered")
+
+        target_path = entry.get("target_path")
+        if target_path is not None and not _safe_contract_path(target_path):
+            raise ProfileError(f"{label} target_path must be null or a safe repository path")
+        if disposition == "delete" and target_path is not None:
+            raise ProfileError(f"{label} delete target_path must be null")
+        if disposition in {"move", "merge", "archive"} and (
+            target_path is None or target_path == source_path
+        ):
+            raise ProfileError(f"{label} target_path must be distinct for its disposition")
+        if disposition in {"migrate", "preserve", "regenerate", "exempt"} and (
+            target_path != source_path
+        ):
+            raise ProfileError(f"{label} target_path must equal source_path")
+
+        artifact_id = entry.get("artifact_id")
+        if artifact_id is None:
+            if disposition != "exempt":
+                raise ProfileError(f"{label} artifact_id may be null only for exempt rows")
+        elif not _valid_stable_artifact_id(artifact_id):
+            raise ProfileError(f"{label} artifact_id must be a stable artifact ID")
+        artifact_type = entry.get("artifact_type")
+        if not isinstance(artifact_type, str) or artifact_type not in artifact_types:
+            raise ProfileError(f"{label} artifact_type must be registered")
+
+        for status_field in ("status_before", "status_after"):
+            status = entry.get(status_field)
+            if status is None:
+                if disposition != "exempt":
+                    raise ProfileError(
+                        f"{label} {status_field} may be null only for exempt rows"
+                    )
+            elif not isinstance(status, str) or status not in allowed_statuses:
+                raise ProfileError(f"{label} {status_field} must be registered")
+
+        _deterministic_string_list(entry.get("parent_ids"), f"{label} parent_ids")
+        _deterministic_string_list(
+            entry.get("active_consumers"),
+            f"{label} active_consumers",
+            safe_paths=True,
+        )
+
+        replacement = entry.get("canonical_replacement")
+        if replacement is not None:
+            _non_empty_string(replacement, f"{label} canonical_replacement")
+        if disposition in replacement_required and replacement is None:
+            raise ProfileError(f"{label} canonical_replacement is required")
+        if disposition in replacement_forbidden and replacement is not None:
+            raise ProfileError(f"{label} canonical_replacement must be null")
+        if disposition not in replacement_required | replacement_optional | replacement_forbidden:
+            raise ProfileError(f"{label} disposition lacks replacement semantics")
+
+        partition_plan = entry.get("partition_plan")
+        if partition_plan is not None and (
+            not _safe_contract_path(partition_plan)
+            or not isinstance(partition_plan, str)
+            or not partition_plan.startswith("docs/04.execution/plans/")
+            or not partition_plan.endswith(".md")
+        ):
+            raise ProfileError(f"{label} partition_plan must be a safe approved Plan path")
+
+        preservation_class = entry.get("preservation_class")
+        if preservation_class is not None and (
+            not isinstance(preservation_class, str)
+            or preservation_class not in preservation_classes
+        ):
+            raise ProfileError(f"{label} preservation_class must be registered")
+
+        evidence = _require_exact_mapping(
+            entry.get("evidence"), evidence_fields, f"{label} evidence"
+        )
+        evidence_lists = {
+            field: _deterministic_string_list(
+                evidence.get(field), f"{label} evidence.{field}"
+            )
+            for field in evidence_fields
+        }
+        review = _require_exact_mapping(
+            entry.get("review_verdict"), review_fields, f"{label} review_verdict"
+        )
+        for field in review_fields:
+            verdict = review.get(field)
+            if not isinstance(verdict, str) or verdict not in verdict_values:
+                raise ProfileError(f"{label} review_verdict values must be registered")
+
+        if disposition in destructive:
+            if preservation_class is None:
+                raise ProfileError(f"{label} destructive row requires preservation_class")
+            if not evidence_lists["consumer_scan"]:
+                raise ProfileError(f"{label} consumer enumeration requires scan evidence")
+            if any(not evidence_lists[field] for field in evidence_fields):
+                raise ProfileError(f"{label} destructive evidence lists must not be empty")
+            if review != {"specification": "pass", "quality": "pass"}:
+                raise ProfileError(f"{label} destructive row requires pass/pass review")
+
+    if source_paths != sorted(source_paths) or len(source_paths) != len(set(source_paths)):
+        raise ProfileError("manifest entries must be uniquely ordered by source_path")
+
+
+def validate_static_exception_document(
+    document: object,
+    contract: Mapping[str, object],
+    known_finding_codes: Sequence[str] | set[str] | frozenset[str],
+    validation_date: dt.date,
+) -> None:
+    """Validate bounded exceptions without reading repository or payload bytes."""
+
+    if contract.get("exception_schema") != EXPECTED_EXCEPTION_SCHEMA:
+        raise ProfileError("exception contract must use the exact bounded schema")
+    if isinstance(validation_date, dt.datetime) or not isinstance(validation_date, dt.date):
+        raise ProfileError("exception validation_date must be a date")
+    known_codes = set(known_finding_codes)
+    if not known_codes or not all(isinstance(code, str) and code for code in known_codes):
+        raise ProfileError("known finding codes must be a non-empty string set")
+
+    exception_document = _require_exact_mapping(
+        document,
+        EXPECTED_EXCEPTION_SCHEMA["top_level_fields"],
+        "exception document",
+    )
+    if (
+        type(exception_document.get("schema_version")) is not int
+        or exception_document.get("schema_version") != 1
+    ):
+        raise ProfileError("exception schema_version must be the integer 1")
+    exceptions = exception_document.get("exceptions")
+    if not isinstance(exceptions, list):
+        raise ProfileError("exceptions must be a list")
+
+    bounded = EXPECTED_EXCEPTION_SCHEMA["bounded_semantics"]
+    global_scopes = set(bounded["forbid_global_scopes"])
+    ordering_keys: list[tuple[str, tuple[str, ...]]] = []
+    for index, raw_exception in enumerate(exceptions):
+        label = f"exception {index}"
+        exception = _require_exact_mapping(
+            raw_exception,
+            EXPECTED_EXCEPTION_SCHEMA["entry_fields"],
+            label,
+        )
+        finding_code = _non_empty_string(exception.get("finding_code"), f"{label} finding_code")
+        if finding_code in global_scopes or finding_code not in known_codes:
+            raise ProfileError(f"{label} finding_code must be a known specific code")
+
+        scope_paths = _deterministic_string_list(
+            exception.get("scope_paths"),
+            f"{label} scope_paths",
+            require_non_empty=True,
+            safe_paths=True,
+        )
+        if any(path.lower() in global_scopes for path in scope_paths):
+            raise ProfileError(f"{label} scope_paths must not be global")
+        ordering_keys.append((finding_code, tuple(scope_paths)))
+
+        for field in bounded["require_non_empty_text"]:
+            _non_empty_string(exception.get(field), f"{label} {field}")
+
+        approved_at = exception.get("approved_at")
+        expires_on = exception.get("expires_on")
+        if not isinstance(approved_at, str) or not _valid_iso_date(approved_at):
+            raise ProfileError(f"{label} approved_at must be a strict ISO date")
+        if not isinstance(expires_on, str) or not _valid_iso_date(expires_on):
+            raise ProfileError(f"{label} expires_on must be a finite strict ISO date")
+        approved_date = dt.date.fromisoformat(approved_at)
+        expiry_date = dt.date.fromisoformat(expires_on)
+        if approved_date > validation_date:
+            raise ProfileError(f"{label} must already be approved")
+        if expiry_date <= validation_date or expiry_date <= approved_date:
+            raise ProfileError(f"{label} must be unexpired and time-bounded")
+
+        _deterministic_string_list(
+            exception.get("evidence"),
+            f"{label} evidence",
+            require_non_empty=True,
+            safe_paths=True,
+        )
+
+    if ordering_keys != sorted(ordering_keys) or len(ordering_keys) != len(set(ordering_keys)):
+        raise ProfileError("exceptions must be uniquely ordered by finding_code and scope_paths")
 
 
 def load_profiles(
