@@ -432,6 +432,10 @@ class ProfileSchemaTests(unittest.TestCase):
                 "scripts/validation/check-document-corpus-lifecycle.py",
             ),
             lambda values: values["common"]["generated_outputs"].__setitem__(
+                "docs/90.references/data/governance/document-corpus-lifecycle/README.md",
+                "scripts/validation/check-document-corpus-lifecycle.py",
+            ),
+            lambda values: values["common"]["generated_outputs"].__setitem__(
                 "docs/90.references/data/governance/document-corpus-lifecycle/other.md",
                 "../outside-generator.py",
             ),
