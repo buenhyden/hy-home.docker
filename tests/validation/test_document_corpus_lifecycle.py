@@ -3164,6 +3164,8 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
         self,
         *,
         track_target: bool = True,
+        baseline_target_artifact_type: str = "reference",
+        duplicate_baseline_owner: bool = False,
     ) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path, str, lifecycle.MigrationManifestRow]:
         temporary = tempfile.TemporaryDirectory()
         root = pathlib.Path(temporary.name)
@@ -3179,22 +3181,32 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
             "docs/90.references/data/canonical.md"
         )
         target = root / target_relative
+        canonical_target = self._reference_text(
+            "reference:canonical", "Canonical Owner"
+        )
         if track_target:
             target.parent.mkdir(parents=True)
             target.write_text(
-                self._reference_text("reference:canonical", "Canonical Owner"),
+                canonical_target.replace(
+                    "artifact_type: reference",
+                    f"artifact_type: {baseline_target_artifact_type}",
+                ),
                 encoding="utf-8",
             )
+        duplicate_owner = root / "docs/90.references/data/duplicate-owner.md"
+        if duplicate_baseline_owner:
+            duplicate_owner.write_text(canonical_target, encoding="utf-8")
         baseline = commit_all(root, "merge baseline")
         source.unlink()
-        git(root, "add", "-u")
+        if track_target and baseline_target_artifact_type != "reference":
+            target.write_text(canonical_target, encoding="utf-8")
+        if duplicate_baseline_owner:
+            duplicate_owner.unlink()
+        git(root, "add", "-A")
         git(root, "commit", "-q", "-m", "remove merged source")
         if not track_target:
             target.parent.mkdir(parents=True)
-            target.write_text(
-                self._reference_text("reference:canonical", "Canonical Owner"),
-                encoding="utf-8",
-            )
+            target.write_text(canonical_target, encoding="utf-8")
         row = self.valid_row(
             source_path=source_relative,
             target_path=target_relative,
@@ -3437,6 +3449,123 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
             ),
             set(),
         )
+
+    def test_merge_rejects_distinct_identity_created_after_the_baseline(self) -> None:
+        temporary, root, baseline, row = self._merge_fixture(track_target=False)
+        self.addCleanup(temporary.cleanup)
+        commit_all(root, "track post-baseline canonical identity")
+
+        for replacement in (
+            row.target_path.as_posix(),
+            "reference:canonical",
+        ):
+            with self.subTest(replacement=replacement):
+                self.assertIn(
+                    "manifest-replacement-invalid",
+                    self._manifest_codes(
+                        root,
+                        baseline,
+                        (
+                            dataclasses.replace(
+                                row,
+                                canonical_replacement=replacement,
+                            ),
+                        ),
+                    ),
+                )
+
+    def test_merge_rejects_ambiguous_or_wrong_profile_baseline_owner(self) -> None:
+        fixtures = (
+            ("ambiguous-owner", {"duplicate_baseline_owner": True}),
+            ("wrong-profile", {"baseline_target_artifact_type": "archive"}),
+        )
+        for name, options in fixtures:
+            with self.subTest(name=name):
+                temporary, root, baseline, row = self._merge_fixture(**options)
+                self.addCleanup(temporary.cleanup)
+                self.assertIn(
+                    "manifest-replacement-invalid",
+                    self._manifest_codes(root, baseline, (row,)),
+                )
+
+    def test_merge_accepts_preexisting_distinct_owner_moved_by_the_same_wave(
+        self,
+    ) -> None:
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = pathlib.Path(temporary.name)
+        init_repo(root)
+        source_relative = pathlib.PurePosixPath("docs/90.references/source.md")
+        owner_relative = pathlib.PurePosixPath(
+            "docs/90.references/data/old-owner.md"
+        )
+        target_relative = pathlib.PurePosixPath(
+            "docs/90.references/data/canonical.md"
+        )
+        source = root / source_relative
+        owner = root / owner_relative
+        source.parent.mkdir(parents=True)
+        owner.parent.mkdir(parents=True)
+        source.write_text(
+            self._reference_text("reference:duplicate", "Duplicate Source"),
+            encoding="utf-8",
+        )
+        owner.write_text(
+            self._reference_text("reference:canonical", "Canonical Owner"),
+            encoding="utf-8",
+        )
+        baseline = commit_all(root, "moving merge-owner baseline")
+        source.unlink()
+        owner.unlink()
+        target = root / target_relative
+        target.write_text(
+            self._reference_text("reference:canonical", "Moved Canonical Owner"),
+            encoding="utf-8",
+        )
+        commit_all(root, "move canonical owner and merge duplicate")
+
+        def evidence(path: pathlib.PurePosixPath) -> lifecycle.ManifestEvidence:
+            return lifecycle.ManifestEvidence(
+                (f"git show baseline:{path.as_posix()}",),
+                (path.as_posix(),),
+                (path,),
+                ("verified active consumers",),
+                ("revert destructive commit",),
+            )
+
+        owner_row = self.valid_row(
+            source_path=owner_relative,
+            target_path=target_relative,
+            artifact_id="reference:canonical",
+            artifact_type="reference",
+            status_before="active",
+            status_after="active",
+            parent_ids=(),
+            disposition="move",
+            canonical_replacement=None,
+            active_consumers=(),
+            preservation_class="git-history",
+            evidence=evidence(owner_relative),
+            review_verdict=lifecycle.ReviewVerdict("pass", "pass"),
+        )
+        merge_row = dataclasses.replace(
+            owner_row,
+            source_path=source_relative,
+            artifact_id="reference:duplicate",
+            disposition="merge",
+            canonical_replacement=target_relative.as_posix(),
+            evidence=evidence(source_relative),
+        )
+        for replacement in (target_relative.as_posix(), "reference:canonical"):
+            with self.subTest(replacement=replacement):
+                candidate = dataclasses.replace(
+                    merge_row,
+                    canonical_replacement=replacement,
+                )
+                self.assertEqual(
+                    self._manifest_codes(root, baseline, (owner_row, candidate)),
+                    set(),
+                )
 
     WRITE_MODES = (
         "generate-manifest",

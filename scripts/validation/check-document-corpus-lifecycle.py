@@ -948,6 +948,83 @@ def _canonical_replacement_findings(
     return findings
 
 
+def _baseline_merge_owner_findings(
+    *,
+    row: MigrationManifestRow,
+    target: str,
+    replacement: Record,
+    baseline_records: collections.abc.Sequence[Record],
+    entries: collections.abc.Sequence[MigrationManifestRow],
+) -> list[Finding]:
+    """Bind a distinct merge replacement identity to one baseline owner."""
+
+    replacement_id = replacement.metadata.get("artifact_id")
+    if not isinstance(replacement_id, str) or replacement_id == row.artifact_id:
+        return []
+    owners = [
+        record
+        for record in baseline_records
+        if record.metadata.get("artifact_id") == replacement_id
+    ]
+    if len(owners) != 1:
+        return [
+            _finding(
+                target,
+                "manifest-replacement-invalid",
+                "merge replacement identity must have one baseline owner",
+            )
+        ]
+    owner = owners[0]
+    declared_owner_type = owner.metadata.get("artifact_type")
+    baseline_status = owner.metadata.get("status")
+    current_status = replacement.metadata.get("status")
+    if (
+        declared_owner_type != owner.artifact_type
+        or owner.artifact_type != replacement.artifact_type
+        or not isinstance(baseline_status, str)
+        or not isinstance(current_status, str)
+    ):
+        return [
+            _finding(
+                target,
+                "manifest-replacement-invalid",
+                "merge replacement baseline owner differs in type or lifecycle truth",
+            )
+        ]
+    owner_path = owner.path.as_posix()
+    if owner_path == target:
+        if baseline_status == current_status:
+            return []
+        return [
+            _finding(
+                target,
+                "manifest-replacement-invalid",
+                "merge replacement baseline owner changed lifecycle state without an attested move",
+            )
+        ]
+    attestations = [
+        candidate
+        for candidate in entries
+        if candidate.source_path.as_posix() == owner_path
+        and candidate.target_path is not None
+        and candidate.target_path.as_posix() == target
+        and candidate.artifact_id == replacement_id
+        and candidate.artifact_type == owner.artifact_type
+        and candidate.status_before == baseline_status
+        and candidate.status_after == current_status
+        and candidate.disposition in {"move", "merge"}
+    ]
+    if len(attestations) == 1:
+        return []
+    return [
+        _finding(
+            target,
+            "manifest-replacement-invalid",
+            "merge replacement baseline owner is not uniquely attested to the selected result",
+        )
+    ]
+
+
 def _held_result_snapshot(
     root: pathlib.Path,
     document: MigrationManifestDocument,
@@ -1076,8 +1153,14 @@ def validate_migration_manifest(
         canonical_records, canonical_payloads = _canonical_current_snapshot(
             root, profiles
         )
+        baseline_records = (
+            metadata.collect_records_at_ref(root, profiles, baseline)
+            if baseline is not None
+            else ()
+        )
     else:
         canonical_records, canonical_payloads = (), {}
+        baseline_records = ()
     result_records, result_payloads = _held_result_snapshot(
         root,
         document,
@@ -1260,36 +1343,15 @@ def validate_migration_manifest(
             )
             findings.extend(replacement_findings)
             if merge_replacement is not None and baseline is not None and target is not None:
-                baseline_target_id: str | None = None
-                if _baseline_regular_blob(root, baseline, target):
-                    baseline_target = _run_git(root, ["show", f"{baseline}:{target}"])
-                    if baseline_target.returncode == 0:
-                        try:
-                            baseline_target_metadata = metadata._parse_frontmatter_text(
-                                baseline_target.stdout
-                            )
-                        except metadata.FrontmatterError:
-                            baseline_target_metadata = {}
-                        baseline_target_value = baseline_target_metadata.get("artifact_id")
-                        baseline_target_id = (
-                            baseline_target_value
-                            if isinstance(baseline_target_value, str)
-                            else None
-                        )
-                    current_target_value = merge_replacement.metadata.get("artifact_id")
-                    current_target_id = (
-                        current_target_value
-                        if isinstance(current_target_value, str)
-                        else None
+                findings.extend(
+                    _baseline_merge_owner_findings(
+                        row=row,
+                        target=target,
+                        replacement=merge_replacement,
+                        baseline_records=baseline_records,
+                        entries=document.entries,
                     )
-                    if baseline_target_id is None or current_target_id != baseline_target_id:
-                        findings.append(
-                            _finding(
-                                target,
-                                "manifest-replacement-invalid",
-                                "merge target identity differs from its baseline owner",
-                            )
-                        )
+                )
         removes_source = row.disposition in {"move", "merge", "archive", "delete"}
         if removes_source and os.path.lexists(root / source):
             findings.append(
