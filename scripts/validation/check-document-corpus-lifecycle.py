@@ -13,6 +13,7 @@ import importlib.util
 import os
 import pathlib
 import re
+import secrets
 import stat
 import subprocess
 import sys
@@ -816,17 +817,16 @@ def _canonical_current_snapshot(
     return _safe_corpus_snapshot(root, profiles, include_untracked=False)
 
 
-def _canonical_replacement_findings(
+def _resolve_canonical_replacement(
     profiles: dict[str, object],
     *,
     source: str,
     target: str | None,
     replacement: str,
     disposition: str,
-    artifact_id: str | None,
     records: collections.abc.Sequence[Record],
     payloads: collections.abc.Mapping[str, bytes],
-) -> list[Finding]:
+) -> tuple[Record | None, list[Finding]]:
     """Resolve one unique current canonical replacement from held corpus bytes."""
 
     candidates: list[Record] = []
@@ -841,7 +841,7 @@ def _canonical_replacement_findings(
             if record.metadata.get("artifact_id") == replacement
         ]
     if len(candidates) != 1:
-        return [
+        return None, [
             _finding(
                 source,
                 "manifest-replacement-invalid",
@@ -853,9 +853,8 @@ def _canonical_replacement_findings(
     if disposition == "merge" and (
         target is None
         or candidate_path != target
-        or candidate.metadata.get("artifact_id") != artifact_id
     ):
-        return [
+        return None, [
             _finding(
                 source,
                 "manifest-replacement-invalid",
@@ -865,7 +864,7 @@ def _canonical_replacement_findings(
     if disposition != "merge" and candidate_path in {
         value for value in (source, target) if value is not None
     }:
-        return [
+        return None, [
             _finding(
                 source,
                 "manifest-replacement-invalid",
@@ -877,7 +876,7 @@ def _canonical_replacement_findings(
         in {"archive", "generated", "readme", "repo-support", "template-source", "unsupported"}
         or candidate.metadata.get("status") not in {"active", "completed"}
     ):
-        return [
+        return None, [
             _finding(
                 source,
                 "manifest-replacement-invalid",
@@ -886,7 +885,7 @@ def _canonical_replacement_findings(
         ]
     payload = payloads.get(candidate_path)
     if payload is None:
-        return [
+        return None, [
             _finding(
                 source,
                 "manifest-replacement-invalid",
@@ -896,7 +895,7 @@ def _canonical_replacement_findings(
     try:
         text = payload.decode("utf-8")
     except UnicodeDecodeError:
-        return [
+        return None, [
             _finding(
                 source,
                 "manifest-replacement-invalid",
@@ -913,14 +912,40 @@ def _canonical_replacement_findings(
         if finding.severity == "error"
     ]
     if errors:
-        return [
+        return None, [
             _finding(
                 source,
                 "manifest-replacement-invalid",
                 "canonical replacement fails its metadata or body contract",
             )
         ]
-    return []
+    return candidate, []
+
+
+def _canonical_replacement_findings(
+    profiles: dict[str, object],
+    *,
+    source: str,
+    target: str | None,
+    replacement: str,
+    disposition: str,
+    artifact_id: str | None,
+    records: collections.abc.Sequence[Record],
+    payloads: collections.abc.Mapping[str, bytes],
+) -> list[Finding]:
+    """Return canonical replacement findings while preserving the fixed helper call shape."""
+
+    del artifact_id
+    _, findings = _resolve_canonical_replacement(
+        profiles,
+        source=source,
+        target=target,
+        replacement=replacement,
+        disposition=disposition,
+        records=records,
+        payloads=payloads,
+    )
+    return findings
 
 
 def _held_result_snapshot(
@@ -1222,6 +1247,49 @@ def validate_migration_manifest(
                     "disposition requires source and target equality",
                 )
             )
+        merge_replacement: Record | None = None
+        if row.disposition == "merge" and row.canonical_replacement is not None:
+            merge_replacement, replacement_findings = _resolve_canonical_replacement(
+                profiles,
+                source=source,
+                target=target,
+                replacement=row.canonical_replacement,
+                disposition=row.disposition,
+                records=canonical_records,
+                payloads=canonical_payloads,
+            )
+            findings.extend(replacement_findings)
+            if merge_replacement is not None and baseline is not None and target is not None:
+                baseline_target_id: str | None = None
+                if _baseline_regular_blob(root, baseline, target):
+                    baseline_target = _run_git(root, ["show", f"{baseline}:{target}"])
+                    if baseline_target.returncode == 0:
+                        try:
+                            baseline_target_metadata = metadata._parse_frontmatter_text(
+                                baseline_target.stdout
+                            )
+                        except metadata.FrontmatterError:
+                            baseline_target_metadata = {}
+                        baseline_target_value = baseline_target_metadata.get("artifact_id")
+                        baseline_target_id = (
+                            baseline_target_value
+                            if isinstance(baseline_target_value, str)
+                            else None
+                        )
+                    current_target_value = merge_replacement.metadata.get("artifact_id")
+                    current_target_id = (
+                        current_target_value
+                        if isinstance(current_target_value, str)
+                        else None
+                    )
+                    if baseline_target_id is None or current_target_id != baseline_target_id:
+                        findings.append(
+                            _finding(
+                                target,
+                                "manifest-replacement-invalid",
+                                "merge target identity differs from its baseline owner",
+                            )
+                        )
         removes_source = row.disposition in {"move", "merge", "archive", "delete"}
         if removes_source and os.path.lexists(root / source):
             findings.append(
@@ -1277,7 +1345,20 @@ def validate_migration_manifest(
                         if isinstance(target_artifact_id, str)
                         else None
                     )
-                    if expected_target_id != row.artifact_id:
+                    merge_target_value = (
+                        merge_replacement.metadata.get("artifact_id")
+                        if merge_replacement is not None
+                        else None
+                    )
+                    manifest_target_id = (
+                        merge_target_value
+                        if row.disposition == "merge"
+                        and isinstance(merge_target_value, str)
+                        else row.artifact_id
+                    )
+                    if (
+                        row.disposition != "merge" or merge_replacement is not None
+                    ) and expected_target_id != manifest_target_id:
                         findings.append(
                             _finding(
                                 target,
@@ -1492,7 +1573,7 @@ def validate_migration_manifest(
                 _finding(source, "manifest-replacement-required", "destructive row requires a replacement")
             )
         if (
-            row.disposition in {"merge", "delete"}
+            row.disposition == "delete"
             and row.canonical_replacement is not None
         ):
             findings.extend(
@@ -2510,18 +2591,182 @@ def _render_summary(document: MigrationManifestDocument) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _output_path_components(path: pathlib.Path) -> tuple[tuple[str, ...], str]:
+    """Return absolute parent components and a final name without resolving links."""
+
+    if not path.is_absolute() or len(path.parts) < 2:
+        raise _CorpusSafetyError("output", "output-path-unsafe")
+    components = tuple(path.parts[1:])
+    if any(part in {"", ".", ".."} for part in components):
+        raise _CorpusSafetyError("output", "output-path-unsafe")
+    return components[:-1], components[-1]
+
+
+def _open_output_parent_descriptor(
+    path: pathlib.Path,
+    *,
+    create: bool,
+) -> tuple[int | None, str]:
+    """Hold an absolute output parent through a component-wise no-follow chain."""
+
+    parent_parts, final_name = _output_path_components(path)
+    directory_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_DIRECTORY", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    )
+    descriptor: int | None = None
+    try:
+        descriptor = os.open(path.anchor, directory_flags)
+        for part in parent_parts:
+            try:
+                child = os.open(part, directory_flags, dir_fd=descriptor)
+            except FileNotFoundError:
+                if not create:
+                    return None, final_name
+                try:
+                    os.mkdir(part, mode=0o755, dir_fd=descriptor)
+                except FileExistsError:
+                    pass
+                try:
+                    child = os.open(part, directory_flags, dir_fd=descriptor)
+                except OSError as error:
+                    raise _CorpusSafetyError(
+                        "output", "output-path-unsafe"
+                    ) from error
+            except OSError as error:
+                raise _CorpusSafetyError("output", "output-path-unsafe") from error
+            os.close(descriptor)
+            descriptor = child
+        held = descriptor
+        descriptor = None
+        return held, final_name
+    except _CorpusSafetyError:
+        raise
+    except OSError as error:
+        raise _CorpusSafetyError("output", "output-path-unsafe") from error
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+
+
+def _require_regular_output_entry(parent_descriptor: int, name: str) -> bool:
+    """Return existence while rejecting a symlink or any non-regular entry."""
+
+    try:
+        details = os.stat(
+            name,
+            dir_fd=parent_descriptor,
+            follow_symlinks=False,
+        )
+    except FileNotFoundError:
+        return False
+    except OSError as error:
+        raise _CorpusSafetyError("output", "output-path-unsafe") from error
+    if not stat.S_ISREG(details.st_mode):
+        raise _CorpusSafetyError("output", "output-path-unsafe")
+    return True
+
+
 def _write_output(path: pathlib.Path, content: str) -> None:
+    """Publish deterministic bytes atomically through a held no-follow parent."""
+
     _assert_safe_generated_output(content)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8", newline="\n")
+    payload = content.encode("utf-8")
+    parent_descriptor, final_name = _open_output_parent_descriptor(path, create=True)
+    if parent_descriptor is None:
+        raise _CorpusSafetyError("output", "output-path-unsafe")
+    temporary_name: str | None = None
+    temporary_descriptor: int | None = None
+    try:
+        _require_regular_output_entry(parent_descriptor, final_name)
+        for _ in range(16):
+            candidate = (
+                f".lifecycle-output-{os.getpid()}-{secrets.token_hex(8)}.tmp"
+            )
+            try:
+                temporary_descriptor = os.open(
+                    candidate,
+                    os.O_WRONLY
+                    | os.O_CREAT
+                    | os.O_EXCL
+                    | getattr(os, "O_NOFOLLOW", 0),
+                    0o666,
+                    dir_fd=parent_descriptor,
+                )
+            except FileExistsError:
+                continue
+            temporary_name = candidate
+            break
+        if temporary_descriptor is None or temporary_name is None:
+            raise _CorpusSafetyError("output", "output-path-unsafe")
+        view = memoryview(payload)
+        while view:
+            written = os.write(temporary_descriptor, view)
+            if written <= 0:
+                raise OSError("short output write")
+            view = view[written:]
+        os.fsync(temporary_descriptor)
+        os.close(temporary_descriptor)
+        temporary_descriptor = None
+
+        # Reject a final link/non-regular swap observed before publication.
+        # A later swap is still safe because replace(2) replaces the directory
+        # entry itself and never follows it to a victim.
+        _require_regular_output_entry(parent_descriptor, final_name)
+        os.replace(
+            temporary_name,
+            final_name,
+            src_dir_fd=parent_descriptor,
+            dst_dir_fd=parent_descriptor,
+        )
+        temporary_name = None
+        os.fsync(parent_descriptor)
+    finally:
+        if temporary_descriptor is not None:
+            os.close(temporary_descriptor)
+        if temporary_name is not None:
+            try:
+                os.unlink(temporary_name, dir_fd=parent_descriptor)
+            except FileNotFoundError:
+                pass
+        os.close(parent_descriptor)
 
 
 def _check_output(path: pathlib.Path, content: str) -> bool:
+    """Compare canonical bytes from one held regular no-follow descriptor."""
+
     _assert_safe_generated_output(content)
-    try:
-        return path.read_bytes() == content.encode("utf-8")
-    except OSError:
+    parent_descriptor, final_name = _open_output_parent_descriptor(path, create=False)
+    if parent_descriptor is None:
         return False
+    descriptor: int | None = None
+    try:
+        if not _require_regular_output_entry(parent_descriptor, final_name):
+            return False
+        try:
+            descriptor = os.open(
+                final_name,
+                os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0),
+                dir_fd=parent_descriptor,
+            )
+        except FileNotFoundError:
+            return False
+        except OSError as error:
+            raise _CorpusSafetyError("output", "output-path-unsafe") from error
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            raise _CorpusSafetyError("output", "output-path-unsafe")
+        chunks: list[bytes] = []
+        while True:
+            chunk = os.read(descriptor, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        return b"".join(chunks) == content.encode("utf-8")
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        os.close(parent_descriptor)
 
 
 def _rooted(root: pathlib.Path, path: pathlib.Path) -> pathlib.Path:
@@ -3242,7 +3487,7 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
     except _CorpusSafetyError as error:
         print(
             f"{error.code}: {_safe_diagnostic_path(error.path)}: "
-            "corpus Markdown path is unsafe",
+            "selected lifecycle path is unsafe",
             file=sys.stderr,
         )
         return 3

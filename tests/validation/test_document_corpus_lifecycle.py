@@ -3172,28 +3172,33 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
         source = root / source_relative
         source.parent.mkdir(parents=True)
         source.write_text(
-            self._reference_text("reference:merged", "Source"),
+            self._reference_text("reference:duplicate", "Duplicate Source"),
             encoding="utf-8",
         )
+        target_relative = pathlib.PurePosixPath(
+            "docs/90.references/data/canonical.md"
+        )
+        target = root / target_relative
+        if track_target:
+            target.parent.mkdir(parents=True)
+            target.write_text(
+                self._reference_text("reference:canonical", "Canonical Owner"),
+                encoding="utf-8",
+            )
         baseline = commit_all(root, "merge baseline")
         source.unlink()
         git(root, "add", "-u")
         git(root, "commit", "-q", "-m", "remove merged source")
-        target_relative = pathlib.PurePosixPath(
-            "docs/90.references/data/merged.md"
-        )
-        target = root / target_relative
-        target.parent.mkdir(parents=True)
-        target.write_text(
-            self._reference_text("reference:merged", "Merged Result"),
-            encoding="utf-8",
-        )
-        if track_target:
-            commit_all(root, "track merged result")
+        if not track_target:
+            target.parent.mkdir(parents=True)
+            target.write_text(
+                self._reference_text("reference:canonical", "Canonical Owner"),
+                encoding="utf-8",
+            )
         row = self.valid_row(
             source_path=source_relative,
             target_path=target_relative,
-            artifact_id="reference:merged",
+            artifact_id="reference:duplicate",
             artifact_type="reference",
             status_before="active",
             status_after="active",
@@ -3233,7 +3238,12 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
             self._manifest_codes(
                 root,
                 baseline,
-                (dataclasses.replace(row, canonical_replacement="reference:merged"),),
+                (
+                    dataclasses.replace(
+                        row,
+                        canonical_replacement="reference:canonical",
+                    ),
+                ),
             ),
             set(),
         )
@@ -3297,7 +3307,12 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
             self._manifest_codes(
                 root,
                 baseline,
-                (dataclasses.replace(row, canonical_replacement="reference:merged"),),
+                (
+                    dataclasses.replace(
+                        row,
+                        canonical_replacement="reference:canonical",
+                    ),
+                ),
             ),
         )
 
@@ -3345,6 +3360,336 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
                 ),
             ),
         )
+
+    def test_distinct_identity_merge_rejects_owner_target_and_identity_mutations(
+        self,
+    ) -> None:
+        temporary, root, baseline, row = self._merge_fixture()
+        self.addCleanup(temporary.cleanup)
+
+        other = root / "docs/90.references/data/other.md"
+        other.write_text(
+            self._reference_text("reference:other", "Other Owner"),
+            encoding="utf-8",
+        )
+        commit_all(root, "track other owner")
+
+        wrong_owner = dataclasses.replace(
+            row,
+            canonical_replacement="reference:other",
+        )
+        wrong_target = dataclasses.replace(
+            row,
+            target_path=pathlib.PurePosixPath("docs/90.references/data/other.md"),
+            canonical_replacement="reference:canonical",
+        )
+        baseline_identity_mutation = dataclasses.replace(
+            row,
+            artifact_id="reference:canonical",
+        )
+        for name, mutated, expected in (
+            ("wrong-owner", wrong_owner, "manifest-replacement-invalid"),
+            ("wrong-target", wrong_target, "manifest-replacement-invalid"),
+            (
+                "baseline-row-identity",
+                baseline_identity_mutation,
+                "manifest-baseline-artifact-id-mismatch",
+            ),
+        ):
+            with self.subTest(name=name):
+                self.assertIn(
+                    expected,
+                    self._manifest_codes(root, baseline, (mutated,)),
+                )
+
+        target = root / row.target_path
+        canonical = target.read_text(encoding="utf-8")
+        target.write_text(
+            canonical.replace("reference:canonical", "reference:mutated"),
+            encoding="utf-8",
+        )
+        self.assertIn(
+            "manifest-replacement-invalid",
+            self._manifest_codes(root, baseline, (row,)),
+        )
+
+    def test_merge_can_preserve_source_identity_when_the_target_is_new(self) -> None:
+        temporary, root, baseline, row = self._merge_fixture(track_target=False)
+        self.addCleanup(temporary.cleanup)
+        target = root / row.target_path
+        target.write_text(
+            self._reference_text("reference:duplicate", "Consolidated Result"),
+            encoding="utf-8",
+        )
+        commit_all(root, "track consolidated result")
+
+        self.assertEqual(self._manifest_codes(root, baseline, (row,)), set())
+        self.assertEqual(
+            self._manifest_codes(
+                root,
+                baseline,
+                (
+                    dataclasses.replace(
+                        row,
+                        canonical_replacement="reference:duplicate",
+                    ),
+                ),
+            ),
+            set(),
+        )
+
+    WRITE_MODES = (
+        "generate-manifest",
+        "generate-summary",
+        "report-duplicates",
+        "generate-archive-ledger",
+        "generate-snapshot-manifest",
+    )
+    CHECK_MODES = (
+        "check-summary",
+        "check-archive-ledger",
+        "check-snapshot-manifest",
+    )
+
+    def _mode_fixture(
+        self,
+        mode: str,
+        output: pathlib.Path,
+    ) -> tuple[list[str], str, lifecycle.MigrationManifestDocument]:
+        document = self.document("a" * 40)
+        arguments = ["--mode", mode]
+        if mode == "generate-manifest":
+            arguments.extend(
+                (
+                    "--wave",
+                    "fixture",
+                    "--base-ref",
+                    "HEAD",
+                    "--output",
+                    str(output),
+                )
+            )
+            rendered = lifecycle.render_migration_manifest(document)
+        elif mode in {"generate-summary", "check-summary"}:
+            arguments.extend(
+                ("--manifest", "docs/manifest.yaml", "--output", str(output))
+            )
+            rendered = lifecycle._render_summary(document)
+        elif mode == "report-duplicates":
+            arguments.extend(("--output", str(output)))
+            rendered = yaml.safe_dump(
+                {"schema_version": 1, "candidates": []},
+                sort_keys=False,
+                width=1000,
+            )
+        elif mode in {"generate-archive-ledger", "check-archive-ledger"}:
+            arguments.extend(("--output", str(output)))
+            rendered = lifecycle.render_archive_ledger(())
+        elif mode in {"generate-snapshot-manifest", "check-snapshot-manifest"}:
+            arguments.extend(("--output", str(output)))
+            rendered = lifecycle.render_snapshot_manifest(())
+        else:
+            raise AssertionError(f"unsupported output mode: {mode}")
+        return arguments, rendered, document
+
+    def _invoke_output_mode(
+        self,
+        root: pathlib.Path,
+        mode: str,
+        output: pathlib.Path,
+    ) -> tuple[int, str, str]:
+        arguments, _, document = self._mode_fixture(mode, output)
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with (
+            mock.patch.object(
+                lifecycle,
+                "load_migration_contract",
+                return_value=copy.deepcopy(self.contract),
+            ),
+            mock.patch.object(
+                lifecycle.metadata,
+                "load_profiles",
+                return_value=self.profiles,
+            ),
+            mock.patch.object(
+                lifecycle,
+                "generate_manifest_skeleton",
+                return_value=document,
+            ),
+            mock.patch.object(
+                lifecycle,
+                "_load_candidate_migration_manifest",
+                return_value=document,
+            ),
+            mock.patch.object(
+                lifecycle,
+                "validate_migration_manifest",
+                return_value=[],
+            ),
+            mock.patch.object(
+                lifecycle,
+                "_candidate_manifest_matches",
+                return_value=True,
+            ),
+            mock.patch.object(lifecycle, "_full_findings", return_value=((), [])),
+            mock.patch.object(
+                lifecycle,
+                "find_duplicate_candidates",
+                return_value=(),
+            ),
+            contextlib.redirect_stdout(stdout),
+            contextlib.redirect_stderr(stderr),
+        ):
+            result = lifecycle.main(["--root", str(root), *arguments])
+        return result, stdout.getvalue(), stderr.getvalue()
+
+    def test_all_output_modes_reject_final_and_intermediate_symlinks(self) -> None:
+        modes = self.WRITE_MODES + self.CHECK_MODES
+        for attack in ("final", "intermediate"):
+            for mode in modes:
+                with (
+                    self.subTest(attack=attack, mode=mode),
+                    tempfile.TemporaryDirectory() as directory,
+                ):
+                    fixture = pathlib.Path(directory)
+                    root = fixture / "repository"
+                    root.mkdir()
+                    outside = fixture / "outside"
+                    outside.mkdir()
+                    output_parent = fixture / "selected"
+                    output_parent.mkdir()
+                    _, rendered, _ = self._mode_fixture(
+                        mode,
+                        output_parent / "placeholder",
+                    )
+                    expected = rendered.encode("utf-8")
+                    if attack == "final":
+                        victim = outside / "victim"
+                        original = expected if mode in self.CHECK_MODES else b"victim-sentinel"
+                        victim.write_bytes(original)
+                        output = output_parent / "result"
+                        output.symlink_to(victim)
+                    else:
+                        alias = output_parent / "alias"
+                        alias.symlink_to(outside, target_is_directory=True)
+                        output = alias / "result"
+                        victim = outside / "result"
+                        original = expected if mode in self.CHECK_MODES else None
+                        if original is not None:
+                            victim.write_bytes(original)
+
+                    result, stdout, stderr = self._invoke_output_mode(
+                        root,
+                        mode,
+                        output,
+                    )
+                    rendered_diagnostic = stdout + stderr
+                    self.assertEqual(result, 3, rendered_diagnostic)
+                    self.assertNotIn("Traceback", rendered_diagnostic)
+                    self.assertNotIn("victim-sentinel", rendered_diagnostic)
+                    if original is None:
+                        self.assertFalse(victim.exists())
+                    else:
+                        self.assertEqual(victim.read_bytes(), original)
+                    self.assertFalse(
+                        any("lifecycle-output" in path.name for path in fixture.rglob("*"))
+                    )
+
+    def test_all_output_modes_reject_nonregular_final_entries(self) -> None:
+        for mode in self.WRITE_MODES + self.CHECK_MODES:
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                fixture = pathlib.Path(directory)
+                root = fixture / "repository"
+                root.mkdir()
+                output = fixture / "selected-output"
+                output.mkdir()
+                result, stdout, stderr = self._invoke_output_mode(root, mode, output)
+                self.assertEqual(result, 3, stdout + stderr)
+                self.assertTrue(output.is_dir())
+                self.assertNotIn("Traceback", stdout + stderr)
+
+    def test_all_output_modes_accept_regular_absolute_paths(self) -> None:
+        for mode in self.WRITE_MODES + self.CHECK_MODES:
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                fixture = pathlib.Path(directory)
+                root = fixture / "repository"
+                root.mkdir()
+                output = fixture / "nested" / "result"
+                _, rendered, _ = self._mode_fixture(mode, output)
+                if mode in self.CHECK_MODES:
+                    output.parent.mkdir()
+                    output.write_bytes(rendered.encode("utf-8"))
+                result, stdout, stderr = self._invoke_output_mode(root, mode, output)
+                self.assertEqual(result, 0, stdout + stderr)
+                self.assertEqual(output.read_bytes(), rendered.encode("utf-8"))
+
+    def test_atomic_publication_cannot_redirect_a_concurrent_final_symlink(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = pathlib.Path(directory)
+            output = fixture / "result"
+            victim = fixture / "victim"
+            victim.write_bytes(b"victim-sentinel")
+            original_replace = os.replace
+
+            def swap_then_replace(
+                source: str,
+                target: str,
+                *,
+                src_dir_fd: int | None = None,
+                dst_dir_fd: int | None = None,
+            ) -> None:
+                os.symlink(victim, target, dir_fd=dst_dir_fd)
+                original_replace(
+                    source,
+                    target,
+                    src_dir_fd=src_dir_fd,
+                    dst_dir_fd=dst_dir_fd,
+                )
+
+            with mock.patch.object(
+                lifecycle.os,
+                "replace",
+                side_effect=swap_then_replace,
+            ) as replaced:
+                lifecycle._write_output(output, "complete\n")
+
+            replaced.assert_called_once()
+            self.assertEqual(victim.read_bytes(), b"victim-sentinel")
+            self.assertEqual(output.read_bytes(), b"complete\n")
+            self.assertFalse(
+                any("lifecycle-output" in path.name for path in fixture.iterdir())
+            )
+
+    def test_interrupted_publication_preserves_existing_output_and_cleans_temp(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            fixture = pathlib.Path(directory)
+            output = fixture / "result"
+            output.write_bytes(b"existing-output")
+            original_write = os.write
+            calls = 0
+
+            def partial_then_fail(descriptor: int, payload: bytes) -> int:
+                nonlocal calls
+                calls += 1
+                if calls == 1:
+                    original_write(descriptor, payload[: max(1, len(payload) // 2)])
+                    raise OSError("simulated interrupted publication")
+                return original_write(descriptor, payload)
+
+            with mock.patch.object(
+                lifecycle.os,
+                "write",
+                side_effect=partial_then_fail,
+            ):
+                with self.assertRaises((OSError, lifecycle._CorpusSafetyError)):
+                    lifecycle._write_output(output, "complete-output\n")
+
+            self.assertGreater(calls, 0)
+            self.assertEqual(output.read_bytes(), b"existing-output")
+            self.assertFalse(
+                any("lifecycle-output" in path.name for path in fixture.iterdir())
+            )
 
     def test_archive_result_relations_use_the_held_full_result_manifest(self) -> None:
         temporary, root, baseline, row, target = self._archive_fixture()
