@@ -22,6 +22,27 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+DEFAULT_MIGRATION_CONTRACT = (
+    ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
+)
+EXPECTED_ARCHIVE_DISPOSITIONS = (
+    "superseded",
+    "duplicate",
+    "conflict",
+    "withdrawn",
+    "evidence-preserve",
+)
+EXPECTED_PRESERVATION_CLASSES = ("git-history", "immutable-snapshot")
+EXPECTED_MANIFEST_DISPOSITIONS = (
+    "migrate",
+    "preserve",
+    "move",
+    "merge",
+    "archive",
+    "delete",
+    "regenerate",
+    "exempt",
+)
 EXPECTED_PROFILE_TYPES = {
     "adr",
     "archive",
@@ -57,8 +78,49 @@ EXPECTED_FRONTMATTER_ORDER = (
     "archived_from",
     "archived_on",
     "archive_reason",
+    "archive_disposition",
+    "archived_commit",
+    "archived_blob",
+    "preservation_class",
     "current_replacement",
+    "snapshot_path",
+    "content_sha256",
+    "snapshot_reason",
 )
+EXPECTED_ARCHIVE_REQUIRED = (
+    "status",
+    "artifact_id",
+    "artifact_type",
+    "parent_ids",
+    "archived_from",
+    "archived_on",
+    "archive_reason",
+    "archive_disposition",
+    "archived_commit",
+    "archived_blob",
+    "preservation_class",
+)
+EXPECTED_ARCHIVE_OPTIONAL = (
+    "layer",
+    "supersedes",
+    "current_replacement",
+    "snapshot_path",
+    "content_sha256",
+    "snapshot_reason",
+)
+EXPECTED_ARCHIVE_CONDITIONS = {
+    "replacement": {
+        "field": "current_replacement",
+        "required_for": ["superseded", "duplicate", "conflict"],
+        "forbidden_for": ["withdrawn"],
+        "optional_for": ["evidence-preserve"],
+    },
+    "snapshot": {
+        "fields": ["snapshot_path", "content_sha256", "snapshot_reason"],
+        "required_for": ["immutable-snapshot"],
+        "forbidden_for": ["git-history"],
+    },
+}
 EXPECTED_DOCUMENT_FAMILIES = {
     "sdlc": (
         "prd",
@@ -138,6 +200,17 @@ EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
     }
 )
 TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES: frozenset[str] = frozenset()
+TRANSITIONAL_ARCHIVE_TEMPLATE_SOURCE = (
+    "docs/99.templates/templates/common/archive.template.md"
+)
+TRANSITIONAL_ARCHIVE_TEMPLATE_REQUIRED_DEBT = frozenset(
+    {
+        "archive_disposition",
+        "archived_commit",
+        "archived_blob",
+        "preservation_class",
+    }
+)
 TARGET_MARKDOWN_PREFIXES = (
     "docs/00.agent-governance/",
     "docs/01.requirements/",
@@ -497,6 +570,8 @@ DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 DATETIME_RE = re.compile(
     r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})"
 )
+LOWERCASE_OBJECT_ID_RE = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})")
+LOWERCASE_SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 
 def _valid_iso_date(value: object) -> bool:
@@ -534,6 +609,33 @@ def _safe_repo_path(value: object, required_prefix: str | None = None) -> bool:
     if pure.is_absolute() or value != pure.as_posix() or any(part in {"", ".", ".."} for part in pure.parts):
         return False
     return required_prefix is None or value.startswith(required_prefix)
+
+
+def _valid_lowercase_object_id(value: object) -> bool:
+    return isinstance(value, str) and LOWERCASE_OBJECT_ID_RE.fullmatch(value) is not None
+
+
+def _valid_lowercase_sha256(value: object) -> bool:
+    return isinstance(value, str) and LOWERCASE_SHA256_RE.fullmatch(value) is not None
+
+
+def _safe_snapshot_path(value: object) -> bool:
+    return (
+        _safe_repo_path(value, "docs/98.archive/evidence/")
+        and isinstance(value, str)
+        and value.endswith(".md.snapshot")
+    )
+
+
+def _condition_members(
+    profile: Mapping[str, object],
+    group: str,
+    field: str,
+) -> set[str]:
+    conditions = profile.get("conditions", {})
+    condition_group = conditions.get(group, {}) if isinstance(conditions, dict) else {}
+    values = condition_group.get(field, []) if isinstance(condition_group, dict) else []
+    return set(values) if isinstance(values, list) else set()
 
 
 def _safe_readme_glob(value: object) -> bool:
@@ -913,7 +1015,13 @@ def _validate_template_source(
     optional = set(target_profile.get("optional", []))
     forbidden = set(target_profile.get("forbidden", []))
     allowed_template_keys = required | optional | {"status"}
-    for key in sorted(required - set(record.metadata)):
+    transitional_required_debt = (
+        TRANSITIONAL_ARCHIVE_TEMPLATE_REQUIRED_DEBT
+        if record.path.as_posix() == TRANSITIONAL_ARCHIVE_TEMPLATE_SOURCE
+        and target_type == "archive"
+        else frozenset()
+    )
+    for key in sorted(required - transitional_required_debt - set(record.metadata)):
         findings.append(_finding(record, "missing-template-key", f"target-profile key is missing: {key}"))
     for key in sorted(set(record.metadata) & forbidden):
         findings.append(_finding(record, "forbidden-template-key", f"key is forbidden for {target_type}: {key}"))
@@ -1888,6 +1996,135 @@ def validate_record(
         if archive_reason is not None and (not isinstance(archive_reason, str) or not archive_reason.strip()):
             findings.append(_finding(record, "invalid-archive-reason", "archive_reason must be a non-empty string"))
 
+        archive_disposition = record.metadata.get("archive_disposition")
+        if archive_disposition is not None and archive_disposition not in EXPECTED_ARCHIVE_DISPOSITIONS:
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-archive-disposition",
+                    "archive_disposition must be a registered archive disposition",
+                )
+            )
+        replacement_required_for = _condition_members(
+            raw_profile,
+            "replacement",
+            "required_for",
+        )
+        replacement_forbidden_for = _condition_members(
+            raw_profile,
+            "replacement",
+            "forbidden_for",
+        )
+        replacement_present = "current_replacement" in record.metadata
+        replacement = record.metadata.get("current_replacement")
+        if archive_disposition in replacement_required_for and replacement in (None, ""):
+            findings.append(
+                _finding(
+                    record,
+                    "archive-replacement-required",
+                    "current_replacement is required for this archive disposition",
+                )
+            )
+        if archive_disposition in replacement_forbidden_for and replacement_present:
+            findings.append(
+                _finding(
+                    record,
+                    "archive-replacement-forbidden",
+                    "current_replacement is forbidden for this archive disposition",
+                )
+            )
+
+        for key, code in (
+            ("archived_commit", "invalid-archived-commit"),
+            ("archived_blob", "invalid-archived-blob"),
+        ):
+            if key in record.metadata and not _valid_lowercase_object_id(record.metadata.get(key)):
+                findings.append(
+                    _finding(
+                        record,
+                        code,
+                        f"{key} must be a lowercase full 40- or 64-hex object ID",
+                    )
+                )
+
+        preservation_class = record.metadata.get("preservation_class")
+        if preservation_class is not None and preservation_class not in EXPECTED_PRESERVATION_CLASSES:
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-preservation-class",
+                    "preservation_class must be a registered archive preservation class",
+                )
+            )
+        snapshot_fields = ("snapshot_path", "content_sha256", "snapshot_reason")
+        snapshot_required_for = _condition_members(
+            raw_profile,
+            "snapshot",
+            "required_for",
+        )
+        snapshot_forbidden_for = _condition_members(
+            raw_profile,
+            "snapshot",
+            "forbidden_for",
+        )
+        if preservation_class in snapshot_forbidden_for and any(
+            key in record.metadata for key in snapshot_fields
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "archive-snapshot-forbidden",
+                    "snapshot fields are forbidden for this preservation class",
+                )
+            )
+        if preservation_class in snapshot_required_for:
+            required_codes = {
+                "snapshot_path": "archive-snapshot-path-required",
+                "content_sha256": "archive-content-sha256-required",
+                "snapshot_reason": "archive-snapshot-reason-required",
+            }
+            for key in snapshot_fields:
+                if record.metadata.get(key) in (None, ""):
+                    findings.append(
+                        _finding(
+                            record,
+                            required_codes[key],
+                            f"{key} is required for immutable snapshot preservation",
+                        )
+                    )
+
+        if "snapshot_path" in record.metadata and not _safe_snapshot_path(
+            record.metadata.get("snapshot_path")
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-snapshot-path",
+                    "snapshot_path must be a safe canonical archive evidence path",
+                )
+            )
+        if "content_sha256" in record.metadata and not _valid_lowercase_sha256(
+            record.metadata.get("content_sha256")
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-content-sha256",
+                    "content_sha256 must be a lowercase full 64-hex digest",
+                )
+            )
+        snapshot_reason = record.metadata.get("snapshot_reason")
+        if "snapshot_reason" in record.metadata and (
+            not isinstance(snapshot_reason, str) or not snapshot_reason.strip()
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-snapshot-reason",
+                    "snapshot_reason must be a non-empty string",
+                )
+            )
+
     if not raw_profile.get("allow_additional", False):
         known = required | optional | forbidden
         for key in sorted(set(record.metadata) - known):
@@ -1897,7 +2134,346 @@ def validate_record(
     return sorted(set(findings))
 
 
-def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
+def _exact_string_list(
+    value: object,
+    expected: Sequence[str],
+    field: str,
+) -> list[str]:
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item for item in value
+    ):
+        raise ProfileError(f"{field} must be a list of non-empty strings")
+    if tuple(value) != tuple(expected):
+        raise ProfileError(f"{field} must define the exact canonical values")
+    return value
+
+
+def _safe_contract_path(value: object) -> bool:
+    return (
+        _safe_repo_path(value)
+        and isinstance(value, str)
+        and not any(marker in value for marker in "*?[]{}")
+    )
+
+
+def load_migration_contract(
+    path: pathlib.Path = DEFAULT_MIGRATION_CONTRACT,
+) -> dict[str, object]:
+    """Load and exact-key-check the document corpus migration contract."""
+
+    try:
+        loaded = _safe_load_unique(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as error:
+        raise ProfileError(f"cannot load migration contract YAML: {error}") from error
+    if not isinstance(loaded, dict):
+        raise ProfileError("migration contract must be a mapping")
+    expected_top_level = {
+        "schema_version",
+        "manifest",
+        "archive",
+        "directory_budgets",
+        "review_signals",
+        "manifest_schema",
+        "exception_schema",
+        "disposition_conditions",
+        "replacement_requirements",
+        "snapshot_admission",
+        "safe_diagnostics",
+        "waves",
+        "planned_partitions",
+    }
+    if set(loaded) != expected_top_level:
+        raise ProfileError("migration contract must define the exact top-level fields")
+    schema_version = loaded.get("schema_version")
+    if type(schema_version) is not int or schema_version != 1:
+        raise ProfileError("migration contract schema_version must be the integer 1")
+
+    manifest = loaded.get("manifest")
+    if not isinstance(manifest, dict) or set(manifest) != {"dispositions"}:
+        raise ProfileError("manifest must define only dispositions")
+    _exact_string_list(
+        manifest.get("dispositions"),
+        EXPECTED_MANIFEST_DISPOSITIONS,
+        "manifest.dispositions",
+    )
+
+    archive = loaded.get("archive")
+    if not isinstance(archive, dict) or set(archive) != {
+        "dispositions",
+        "preservation_classes",
+    }:
+        raise ProfileError(
+            "archive must define only dispositions and preservation_classes"
+        )
+    _exact_string_list(
+        archive.get("dispositions"),
+        EXPECTED_ARCHIVE_DISPOSITIONS,
+        "archive.dispositions",
+    )
+    _exact_string_list(
+        archive.get("preservation_classes"),
+        EXPECTED_PRESERVATION_CLASSES,
+        "archive.preservation_classes",
+    )
+
+    budgets = loaded.get("directory_budgets")
+    if not isinstance(budgets, dict) or set(budgets) != {
+        "warning_at",
+        "block_new_leaf_at",
+    }:
+        raise ProfileError("directory_budgets must define the exact thresholds")
+    warning_at = budgets.get("warning_at")
+    block_at = budgets.get("block_new_leaf_at")
+    if (
+        type(warning_at) is not int
+        or type(block_at) is not int
+        or warning_at <= 0
+        or block_at <= 0
+        or warning_at >= block_at
+    ):
+        raise ProfileError(
+            "directory budgets must be positive and warning_at must be below block_new_leaf_at"
+        )
+    if (warning_at, block_at) != (100, 150):
+        raise ProfileError("directory budgets must define the canonical 100/150 thresholds")
+
+    review_signals = loaded.get("review_signals")
+    if (
+        not isinstance(review_signals, dict)
+        or review_signals
+        != {
+            "draft_days": 30,
+            "active_days": 90,
+            "completed_execution_days": 180,
+        }
+        or any(type(value) is not int or value <= 0 for value in review_signals.values())
+    ):
+        raise ProfileError("review_signals must define the exact canonical positive day thresholds")
+
+    manifest_schema = loaded.get("manifest_schema")
+    expected_manifest_schema = {
+        "top_level_fields": [
+            "schema_version",
+            "wave",
+            "baseline_commit",
+            "generated_by",
+            "enforcement",
+            "entries",
+        ],
+        "entry_fields": [
+            "source_path",
+            "target_path",
+            "artifact_id",
+            "artifact_type",
+            "status_before",
+            "status_after",
+            "parent_ids",
+            "disposition",
+            "canonical_replacement",
+            "active_consumers",
+            "partition_plan",
+            "preservation_class",
+            "evidence",
+            "review_verdict",
+        ],
+        "evidence_fields": [
+            "commands",
+            "sources",
+            "repository_paths",
+            "consumer_scan",
+            "rollback",
+        ],
+        "review_verdict_fields": ["specification", "quality"],
+        "review_verdict_values": ["pending", "pass", "changes-required"],
+    }
+    if manifest_schema != expected_manifest_schema:
+        raise ProfileError("manifest_schema must define the exact canonical manifest shape")
+
+    exception_schema = loaded.get("exception_schema")
+    if exception_schema != {
+        "top_level_fields": ["schema_version", "exceptions"],
+        "entry_fields": [
+            "finding_code",
+            "scope_paths",
+            "owner",
+            "reason",
+            "approved_at",
+            "expires_on",
+            "exit_condition",
+            "evidence",
+        ],
+    }:
+        raise ProfileError("exception_schema must define the exact bounded exception shape")
+
+    if loaded.get("disposition_conditions") != {
+        "migrate": "source-equals-target",
+        "preserve": "source-equals-target",
+        "move": "target-distinct",
+        "merge": "target-distinct",
+        "archive": "target-distinct",
+        "delete": "target-null",
+        "regenerate": "source-equals-target",
+        "exempt": "source-equals-target",
+    }:
+        raise ProfileError("disposition_conditions must define every canonical disposition")
+    if loaded.get("replacement_requirements") != {
+        "required_for": ["merge", "archive"],
+        "optional_for": ["delete"],
+        "forbidden_for": ["migrate", "preserve", "move", "regenerate", "exempt"],
+    }:
+        raise ProfileError("replacement_requirements must partition every canonical disposition")
+    if loaded.get("snapshot_admission") != {
+        "allowed_archive_dispositions": ["evidence-preserve"],
+        "required_preservation_class": "immutable-snapshot",
+        "required_fields": ["snapshot_path", "content_sha256", "snapshot_reason"],
+        "required_checks": ["confidentiality-scan", "content-sha256"],
+        "path_prefix": "docs/98.archive/evidence/",
+        "path_suffix": ".md.snapshot",
+        "forbidden_payload_classes": [
+            "secret",
+            "credential",
+            "token",
+            "private-key",
+            "auth-file",
+            "shell-history",
+            "raw-log",
+        ],
+    }:
+        raise ProfileError("snapshot_admission must define the exact safe snapshot conditions")
+    if loaded.get("safe_diagnostics") != {
+        "allowed": [
+            "finding-code",
+            "bounded-path",
+            "safe-metadata",
+            "count",
+            "git-object-id",
+        ],
+        "forbidden": [
+            "body-payload",
+            "snapshot-bytes",
+            "secret-value",
+            "credential",
+            "token",
+            "private-key",
+            "auth-file",
+            "shell-history",
+            "raw-log",
+            "diagnostic-payload",
+        ],
+    }:
+        raise ProfileError("safe_diagnostics must define the exact redaction boundary")
+
+    waves = loaded.get("waves")
+    expected_wave_names = (
+        "foundation",
+        "wave-a-active-sdlc",
+        "wave-b-operations",
+        "wave-c-historical-evidence",
+        "wave-d-archive-provenance",
+        "wave-e-references-final-gates",
+    )
+    if not isinstance(waves, dict) or tuple(waves) != expected_wave_names:
+        raise ProfileError("waves must define the exact ordered Foundation lifecycle")
+    foundation_sources = (
+        "docs/00.agent-governance/memory/progress.md",
+        "docs/00.agent-governance/rules/documentation-protocol.md",
+        "docs/00.agent-governance/rules/github-governance.md",
+        "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+        "docs/00.agent-governance/rules/task-checklists.md",
+        "docs/03.specs/README.md",
+        "docs/04.execution/README.md",
+        "docs/04.execution/plans/README.md",
+        "docs/04.execution/tasks/README.md",
+        "docs/90.references/README.md",
+        "docs/90.references/data/README.md",
+        "docs/90.references/data/governance/README.md",
+        "docs/98.archive/README.md",
+        "docs/99.templates/support/README.md",
+        "docs/99.templates/support/common-document-contract.md",
+        "docs/99.templates/support/external-source-rationale.md",
+        "docs/99.templates/support/frontmatter-contract.md",
+        "docs/99.templates/support/lifecycle-status.md",
+        "docs/99.templates/support/sdlc-document-contract.md",
+        "docs/99.templates/support/template-contract.md",
+        "docs/99.templates/support/template-governance.md",
+        "docs/99.templates/support/template-selection.md",
+        "docs/99.templates/templates/common/README.md",
+        "docs/99.templates/templates/common/archive.template.md",
+    )
+    foundation_outputs = (
+        ".github/workflows/document-corpus-lifecycle.yml",
+        "docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md",
+        "docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
+        "docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
+        "docs/90.references/data/governance/document-corpus-lifecycle/README.md",
+        "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md",
+        "docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml",
+        "docs/99.templates/support/archive-retention-contract.md",
+        "docs/99.templates/support/corpus-migration-contract.md",
+        "docs/99.templates/support/document-corpus-migration-contract.yaml",
+        "scripts/validation/check-document-corpus-lifecycle.py",
+        "tests/validation/test_document_corpus_lifecycle.py",
+    )
+    wave_keys = {
+        "enforcement",
+        "manifest_path",
+        "scope_state",
+        "source_paths",
+        "declared_outputs",
+    }
+    foundation = waves["foundation"]
+    if not isinstance(foundation, dict) or set(foundation) != wave_keys:
+        raise ProfileError("Foundation wave must define the exact wave fields")
+    if foundation.get("enforcement") not in {"advisory", "blocking"}:
+        raise ProfileError("Foundation enforcement must be advisory or blocking")
+    manifest_path = foundation.get("manifest_path")
+    if manifest_path is not None and (
+        not _safe_contract_path(manifest_path)
+        or not isinstance(manifest_path, str)
+        or not manifest_path.startswith("docs/90.references/data/governance/")
+        or not manifest_path.endswith(".yaml")
+    ):
+        raise ProfileError("Foundation manifest_path must be null or a safe governance YAML path")
+    if foundation.get("scope_state") != "approved":
+        raise ProfileError("Foundation scope_state must be approved")
+    _exact_string_list(
+        foundation.get("source_paths"),
+        foundation_sources,
+        "waves.foundation.source_paths",
+    )
+    _exact_string_list(
+        foundation.get("declared_outputs"),
+        foundation_outputs,
+        "waves.foundation.declared_outputs",
+    )
+    for path_value in [*foundation_sources, *foundation_outputs]:
+        if not _safe_contract_path(path_value):
+            raise ProfileError("Foundation paths must be normalized traversal-free repository paths")
+    for wave_name in expected_wave_names[1:]:
+        wave = waves[wave_name]
+        if not isinstance(wave, dict) or set(wave) != wave_keys:
+            raise ProfileError(f"{wave_name} must define the exact wave fields")
+        if wave != {
+            "enforcement": "advisory",
+            "manifest_path": None,
+            "scope_state": "unapproved",
+            "source_paths": [],
+            "declared_outputs": [],
+        }:
+            raise ProfileError(f"{wave_name} must remain an unapproved advisory wave")
+
+    if loaded.get("planned_partitions") != {
+        "docs/04.execution/plans": "docs/04.execution/plans/YYYY",
+        "docs/04.execution/tasks": "docs/04.execution/tasks/YYYY",
+    }:
+        raise ProfileError("planned_partitions must define the exact Stage 04 year routes")
+    return loaded
+
+
+def load_profiles(
+    path: pathlib.Path = DEFAULT_PROFILES,
+    migration_contract_path: pathlib.Path = DEFAULT_MIGRATION_CONTRACT,
+) -> dict[str, object]:
     """Load and structurally validate the typed metadata profile contract."""
 
     try:
@@ -1908,8 +2484,8 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
     if not isinstance(loaded, dict):
         raise ProfileError("profile document must be a mapping")
     schema_version = loaded.get("schema_version")
-    if type(schema_version) is not int or schema_version != 1:
-        raise ProfileError("schema_version must be the integer 1")
+    if type(schema_version) is not int or schema_version != 2:
+        raise ProfileError("schema_version must be the integer 2")
     common, profile_map = _profile_mapping(loaded)
     if not all(isinstance(name, str) for name in profile_map):
         raise ProfileError("profile names must be strings")
@@ -1979,6 +2555,25 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
     for name, raw_profile in sorted(profile_map.items()):
         if not isinstance(raw_profile, dict):
             raise ProfileError(f"profile {name} must be a mapping")
+        if name == "archive":
+            archive_profile_keys = {
+                "required",
+                "optional",
+                "forbidden",
+                "allowed_statuses",
+                "allowed_parent_types",
+                "allow_empty_parents",
+                "disposition",
+                "conditions",
+            }
+            if set(raw_profile) != archive_profile_keys:
+                raise ProfileError("profile archive must define the exact v2 contract members")
+            if tuple(raw_profile.get("required", ())) != EXPECTED_ARCHIVE_REQUIRED:
+                raise ProfileError("profile archive required must define the exact v2 fields")
+            if tuple(raw_profile.get("optional", ())) != EXPECTED_ARCHIVE_OPTIONAL:
+                raise ProfileError("profile archive optional must define the exact v2 fields")
+            if raw_profile.get("conditions") != EXPECTED_ARCHIVE_CONDITIONS:
+                raise ProfileError("profile archive conditions must define the exact v2 rules")
         required = raw_profile.get("required")
         optional = raw_profile.get("optional")
         forbidden = raw_profile.get("forbidden")
@@ -2178,6 +2773,7 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
             heading_sets.append(set(headings))
         if any(heading_sets[left] & heading_sets[right] for left, right in ((0, 1), (0, 2), (1, 2))):
             raise ProfileError(f"template role {role_name} heading contracts must not overlap")
+    load_migration_contract(migration_contract_path)
     return loaded
 
 

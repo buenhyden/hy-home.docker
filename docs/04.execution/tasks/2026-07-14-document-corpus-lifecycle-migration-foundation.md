@@ -138,7 +138,7 @@ Redaction boundary:
 
 | Work unit | Responsibility | State |
 | --- | --- | --- |
-| T-DCLM-001 | Machine migration contract and static archive metadata | Not run |
+| T-DCLM-001 | Machine migration contract and static archive metadata | Implementation complete; independent reviews pending |
 | T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Not run |
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Not run |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Not run |
@@ -150,6 +150,8 @@ Redaction boundary:
 | Date | Work unit | Agent role | Result |
 | --- | --- | --- | --- |
 | 2026-07-14 | Planning | Controller | Spec 131 approved and activated; Plan and Task evidence shell authored. |
+| 2026-07-14 | T-DCLM-001 | Fresh implementation agent | Added the exact migration registry, metadata registry v2, fail-closed static archive validation, and RED/GREEN coverage. The authored scope is the Task 1 file set plus `docs/00.agent-governance/memory/progress.md`, included as a documented deviation because the root `AGENTS.md` bootstrap makes progress updates mandatory. Self-review passed; specification and quality review remain assigned to fresh reviewers. |
+| 2026-07-14 | T-DCLM-001 generated fallout | Fresh implementation agent | The first repository-contract run found only the canonical frontmatter semantic inventory stale after registry v2. The controller approved regenerating that owner in the Task 1 generated follow-up together with any LLM Wiki/index coverage fallout; this is a scoped deviation from the brief's two-file generated follow-up list, not broad corpus mutation. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -179,9 +181,18 @@ Expected evidence:
 - no payload leakage or unexpected changed path;
 - clean Git status after final closure.
 
-Actual evidence: not run.
+T-DCLM-001 actual evidence:
 
-Verification results: not run.
+- RED: `python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests tests.validation.test_document_metadata.MetadataValidationTests -v` ran 41 tests and failed with 25 expected assertion failures. The failures were limited to registry schema v2, the absent migration contract, archive enum/condition validation, object/hash/path shapes, and snapshot/replacement conditions.
+- Focused GREEN: the same command passed 41 of 41 tests.
+- Full GREEN: `python3 -m unittest tests.validation.test_document_metadata -v` passed 187 of 187 tests in 67.458 seconds.
+- Compatibility: `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref e00e1483` selected 10 paths with zero violations, zero legacy exceptions, and zero transition overrides.
+- Advisory baseline: `python3 scripts/validation/check-document-metadata.py --mode check-active` selected 365 active records and retained the pre-existing 1,290 advisory findings. Its nonzero exit is expected and was not promoted to a Foundation blocking gate.
+- Static checks: `git diff --check` and `python3 -m py_compile scripts/validation/check-document-metadata.py` passed.
+- Repository integration before the generated follow-up: metadata repository contracts reported zero violations and document traceability passed 46 catalog pairs with zero failures. The aggregate repository-contract gate reported only the expected stale canonical frontmatter inventory; its owner regeneration and final rerun are recorded in the generated follow-up evidence.
+- Graphify: `graphify update .` completed with 23,485 nodes, 24,978 edges, and 1,545 communities. Health remained advisory only for two unrelated cross-root inferred edges; zero volume, gitlink, generated/minified, source-contamination, or meaningless-god-node findings were reported. The claims above were corroborated against the tracked validator, registries, tests, Stage 00 governance, Spec 131, and this Plan/Task. Generated Graphify outputs were restored and excluded from the commit.
+
+Verification results: T-DCLM-001 implementation GREEN; independent specification and quality reviews are pending.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -229,7 +240,7 @@ Disposition: not run.
 
 ## Review Evidence
 
-Implementation review verdict: not run for T-DCLM-001 through T-DCLM-006.
+Implementation review verdict: T-DCLM-001 self-review PASS. The implementation is bounded to machine contracts, static archive frontmatter, tests, Task evidence, and the mandatory progress log. It adds no Git-object probe, snapshot-byte access, corpus migration, existing tombstone edit, runtime mutation, secret handling, or remote action. Stable diagnostics contain only keys, codes, safe paths, counts, and shape requirements.
 
 Specification review verdict: not run for T-DCLM-001 through T-DCLM-006.
 
@@ -245,7 +256,9 @@ Planning baseline:
 - 313c36ed — docs(generated): refresh corpus design indexes
 - c6b3d9bc — docs(spec): clarify canonical stage routing
 
-Foundation logical commits: none recorded before implementation.
+Foundation logical commits:
+
+- T-DCLM-001 — `feat(docs): define corpus lifecycle machine contracts`; implementation commit identity is assigned by the commit operation and will be appended with the independent review evidence.
 
 Commit validation: each entry must name its work unit, review verdicts, focused
 GREEN commands, and generated fallout before closure.
@@ -254,6 +267,7 @@ GREEN commands, and generated fallout before closure.
 
 Deferred:
 
+- T-DCLM-003 must update `docs/99.templates/templates/common/archive.template.md` with the four v2 archive source keys and remove the exact-path transitional source exemption. Regression coverage proves the exemption does not relax new/changed archive targets.
 - Spec 132 — active SDLC graph migration;
 - Spec 133 — operations document migration;
 - Spec 134 — completed/superseded evidence and Stage 04 year partition;

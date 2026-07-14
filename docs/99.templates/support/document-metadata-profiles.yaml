@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 
 common:
   allowed_statuses: [draft, active, completed, superseded, archived]
@@ -23,7 +23,14 @@ common:
     - archived_from
     - archived_on
     - archive_reason
+    - archive_disposition
+    - archived_commit
+    - archived_blob
+    - preservation_class
     - current_replacement
+    - snapshot_path
+    - content_sha256
+    - snapshot_reason
   inventory_excludes:
     - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
   template_placeholders:
@@ -587,13 +594,23 @@ profiles:
     disposition: governance exception
 
   archive:
-    required: [status, archived_from, archived_on, archive_reason, current_replacement]
-    optional: [layer, artifact_id, artifact_type, parent_ids, supersedes]
+    required: [status, artifact_id, artifact_type, parent_ids, archived_from, archived_on, archive_reason, archive_disposition, archived_commit, archived_blob, preservation_class]
+    optional: [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
     forbidden: [reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, generated_by]
     allowed_statuses: [archived]
     allowed_parent_types: [prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release, reference, audit]
     allow_empty_parents: true
     disposition: archive exception
+    conditions:
+      replacement:
+        field: current_replacement
+        required_for: [superseded, duplicate, conflict]
+        forbidden_for: [withdrawn]
+        optional_for: [evidence-preserve]
+      snapshot:
+        fields: [snapshot_path, content_sha256, snapshot_reason]
+        required_for: [immutable-snapshot]
+        forbidden_for: [git-history]
 
   unsupported:
     required: []

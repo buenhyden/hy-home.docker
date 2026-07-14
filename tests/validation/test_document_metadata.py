@@ -17,6 +17,13 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "scripts" / "validation" / "check-document-metadata.py"
 PROFILES = ROOT / "docs" / "99.templates" / "support" / "document-metadata-profiles.yaml"
+MIGRATION_CONTRACT = (
+    ROOT
+    / "docs"
+    / "99.templates"
+    / "support"
+    / "document-corpus-migration-contract.yaml"
+)
 
 spec = importlib.util.spec_from_file_location("check_document_metadata", CHECKER)
 if spec is None or spec.loader is None:
@@ -272,7 +279,14 @@ class ProfileSchemaTests(unittest.TestCase):
                 "archived_from",
                 "archived_on",
                 "archive_reason",
+                "archive_disposition",
+                "archived_commit",
+                "archived_blob",
+                "preservation_class",
                 "current_replacement",
+                "snapshot_path",
+                "content_sha256",
+                "snapshot_reason",
             ],
             profiles["common"]["frontmatter_order"],
         )
@@ -284,6 +298,171 @@ class ProfileSchemaTests(unittest.TestCase):
         for mutate in mutations:
             with self.subTest(mutate=mutate):
                 self.mutate_and_load(mutate)
+
+    def test_archive_profile_has_canonical_v2_order(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        self.assertEqual(2, profiles["schema_version"])
+        self.assertEqual(
+            [
+                "status",
+                "artifact_id",
+                "artifact_type",
+                "parent_ids",
+                "supersedes",
+                "reviewed_at",
+                "review_cycle",
+                "generated_by",
+                "archived_from",
+                "archived_on",
+                "archive_reason",
+                "archive_disposition",
+                "archived_commit",
+                "archived_blob",
+                "preservation_class",
+                "current_replacement",
+                "snapshot_path",
+                "content_sha256",
+                "snapshot_reason",
+            ],
+            profiles["common"]["frontmatter_order"],
+        )
+        archive = profiles["profiles"]["archive"]
+        self.assertEqual(
+            [
+                "status",
+                "artifact_id",
+                "artifact_type",
+                "parent_ids",
+                "archived_from",
+                "archived_on",
+                "archive_reason",
+                "archive_disposition",
+                "archived_commit",
+                "archived_blob",
+                "preservation_class",
+            ],
+            archive["required"],
+        )
+        self.assertEqual(
+            [
+                "layer",
+                "supersedes",
+                "current_replacement",
+                "snapshot_path",
+                "content_sha256",
+                "snapshot_reason",
+            ],
+            archive["optional"],
+        )
+        self.assertEqual(
+            {
+                "replacement": {
+                    "field": "current_replacement",
+                    "required_for": ["superseded", "duplicate", "conflict"],
+                    "forbidden_for": ["withdrawn"],
+                    "optional_for": ["evidence-preserve"],
+                },
+                "snapshot": {
+                    "fields": ["snapshot_path", "content_sha256", "snapshot_reason"],
+                    "required_for": ["immutable-snapshot"],
+                    "forbidden_for": ["git-history"],
+                },
+            },
+            archive["conditions"],
+        )
+
+    def test_archive_profile_rejects_unknown_condition_fields(self) -> None:
+        def add_unknown_condition(values) -> None:
+            values["profiles"]["archive"].setdefault("conditions", {})[
+                "undeclared-condition"
+            ] = []
+
+        self.mutate_and_load(add_unknown_condition)
+
+    def test_migration_contract_has_exact_nonoverlapping_ownership(self) -> None:
+        self.assertTrue(MIGRATION_CONTRACT.is_file(), "migration contract is missing")
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
+        self.assertEqual(
+            [
+                "migrate",
+                "preserve",
+                "move",
+                "merge",
+                "archive",
+                "delete",
+                "regenerate",
+                "exempt",
+            ],
+            contract["manifest"]["dispositions"],
+        )
+        self.assertEqual(
+            ["superseded", "duplicate", "conflict", "withdrawn", "evidence-preserve"],
+            contract["archive"]["dispositions"],
+        )
+        self.assertEqual(
+            ["git-history", "immutable-snapshot"],
+            contract["archive"]["preservation_classes"],
+        )
+        self.assertEqual(
+            {"warning_at": 100, "block_new_leaf_at": 150},
+            contract["directory_budgets"],
+        )
+        self.assertEqual(
+            {"draft_days": 30, "active_days": 90, "completed_execution_days": 180},
+            contract["review_signals"],
+        )
+        self.assertEqual(
+            {
+                "schema_version",
+                "manifest",
+                "archive",
+                "directory_budgets",
+                "review_signals",
+                "manifest_schema",
+                "exception_schema",
+                "disposition_conditions",
+                "replacement_requirements",
+                "snapshot_admission",
+                "safe_diagnostics",
+                "waves",
+                "planned_partitions",
+            },
+            set(contract),
+        )
+        self.assertEqual(
+            {"schema_version"},
+            set(contract) & set(profiles),
+        )
+
+        mutations = []
+        duplicate = MIGRATION_CONTRACT.read_text(encoding="utf-8") + "\nschema_version: 1\n"
+        mutations.append(duplicate)
+        for mutate in (
+            lambda values: values["manifest"]["dispositions"].append("unknown"),
+            lambda values: values["directory_budgets"].__setitem__("warning_at", 0),
+            lambda values: values["directory_budgets"].__setitem__("warning_at", 150),
+            lambda values: values["waves"]["wave-d-archive-provenance"].__setitem__(
+                "enforcement", "blocking"
+            ),
+            lambda values: values.__setitem__("profiles", {}),
+            lambda values: values["waves"]["foundation"]["source_paths"].append(
+                "/absolute.md"
+            ),
+            lambda values: values["waves"]["foundation"]["declared_outputs"].append(
+                "docs/../unsafe.md"
+            ),
+        ):
+            values = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
+            mutate(values)
+            mutations.append(yaml.safe_dump(values, sort_keys=False))
+        for source in mutations:
+            with self.subTest(source=source[-80:]):
+                with tempfile.TemporaryDirectory() as directory:
+                    target = pathlib.Path(directory) / "migration.yaml"
+                    target.write_text(source, encoding="utf-8")
+                    with self.assertRaises(metadata.ProfileError):
+                        metadata.load_migration_contract(target)
 
     def test_document_families_require_known_unique_profiles(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
@@ -470,6 +649,35 @@ class MetadataValidationTests(unittest.TestCase):
         all_records = [*records, record]
         manifest = metadata.build_manifest(all_records)
         return [finding.code for finding in metadata.validate_record(record, self.profiles, manifest)]
+
+    def archive_record(
+        self,
+        overrides: dict[str, object] | None = None,
+        *,
+        remove: tuple[str, ...] = (),
+    ):
+        values: dict[str, object] = {
+            "status": "archived",
+            "artifact_id": "archive:04-execution-example",
+            "artifact_type": "archive",
+            "parent_ids": [],
+            "archived_from": "docs/04.execution/example.md",
+            "archived_on": "2026-07-14",
+            "archive_reason": "Superseded by the canonical execution record.",
+            "archive_disposition": "superseded",
+            "archived_commit": "a" * 40,
+            "archived_blob": "b" * 40,
+            "preservation_class": "git-history",
+            "current_replacement": "docs/04.execution/canonical.md",
+        }
+        values.update(overrides or {})
+        for key in remove:
+            values.pop(key, None)
+        return self.record(
+            "docs/98.archive/04.execution/example.md",
+            values,
+            "archive",
+        )
 
     def test_valid_spec_metadata_passes(self) -> None:
         parent = self.record(
@@ -805,6 +1013,201 @@ class MetadataValidationTests(unittest.TestCase):
         self.assertIn("invalid-archived-on", codes)
         self.assertIn("invalid-archive-reason", codes)
         self.assertIn("invalid-current-replacement", codes)
+
+    def test_archive_replacement_is_conditional(self) -> None:
+        cases = (
+            ("superseded", False, "archive-replacement-required"),
+            ("duplicate", False, "archive-replacement-required"),
+            ("conflict", False, "archive-replacement-required"),
+            ("withdrawn", True, "archive-replacement-forbidden"),
+        )
+        for disposition, include_replacement, expected_code in cases:
+            with self.subTest(disposition=disposition):
+                remove = () if include_replacement else ("current_replacement",)
+                record = self.archive_record(
+                    {"archive_disposition": disposition},
+                    remove=remove,
+                )
+                self.assertIn(expected_code, self.codes(record))
+
+        for include_replacement in (False, True):
+            with self.subTest(disposition="evidence-preserve", replacement=include_replacement):
+                record = self.archive_record(
+                    {"archive_disposition": "evidence-preserve"},
+                    remove=() if include_replacement else ("current_replacement",),
+                )
+                codes = self.codes(record)
+                self.assertNotIn("archive-replacement-required", codes)
+                self.assertNotIn("archive-replacement-forbidden", codes)
+
+    def test_git_history_forbids_snapshot_fields(self) -> None:
+        record = self.archive_record(
+            {
+                "snapshot_path": (
+                    "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot"
+                ),
+                "content_sha256": "c" * 64,
+                "snapshot_reason": "Audit evidence.",
+            }
+        )
+        codes = self.codes(record)
+        self.assertIn("archive-snapshot-forbidden", codes)
+
+    def test_immutable_snapshot_requires_all_snapshot_fields(self) -> None:
+        snapshot_path = "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot"
+        complete_snapshot = {
+            "archive_disposition": "evidence-preserve",
+            "preservation_class": "immutable-snapshot",
+            "snapshot_path": snapshot_path,
+            "content_sha256": "c" * 64,
+            "snapshot_reason": "Audit evidence.",
+        }
+        cases = (
+            (
+                complete_snapshot,
+                ("snapshot_path",),
+                "archive-snapshot-path-required",
+            ),
+            (
+                complete_snapshot,
+                ("content_sha256",),
+                "archive-content-sha256-required",
+            ),
+            (
+                complete_snapshot,
+                ("snapshot_reason",),
+                "archive-snapshot-reason-required",
+            ),
+            (
+                {"archive_disposition": "withdrawn"},
+                (),
+                "archive-replacement-forbidden",
+            ),
+            (
+                {"archive_disposition": "superseded"},
+                ("current_replacement",),
+                "archive-replacement-required",
+            ),
+            (
+                {"archived_commit": "N/A"},
+                (),
+                "invalid-archived-commit",
+            ),
+            (
+                {"archived_blob": "b" * 39},
+                (),
+                "invalid-archived-blob",
+            ),
+            (
+                {**complete_snapshot, "content_sha256": "C" * 64},
+                (),
+                "invalid-content-sha256",
+            ),
+            (
+                {
+                    **complete_snapshot,
+                    "snapshot_path": "docs/98.archive/evidence/../unsafe.md.snapshot",
+                },
+                (),
+                "invalid-snapshot-path",
+            ),
+        )
+        for overrides, remove, expected_code in cases:
+            with self.subTest(code=expected_code):
+                record = self.archive_record(overrides, remove=remove)
+                self.assertIn(expected_code, self.codes(record))
+
+    def test_archive_rejects_sentinel_paths_hashes_and_object_ids(self) -> None:
+        snapshot = {
+            "archive_disposition": "evidence-preserve",
+            "preservation_class": "immutable-snapshot",
+            "snapshot_path": "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot",
+            "content_sha256": "c" * 64,
+            "snapshot_reason": "Audit evidence.",
+        }
+        cases = (
+            ({"archived_from": "N/A"}, "invalid-archived-from"),
+            ({"current_replacement": "N/A"}, "invalid-current-replacement"),
+            ({"archived_commit": ""}, "invalid-archived-commit"),
+            ({"archived_commit": "A" * 40}, "invalid-archived-commit"),
+            ({"archived_blob": "B" * 64}, "invalid-archived-blob"),
+            ({**snapshot, "content_sha256": "N/A"}, "invalid-content-sha256"),
+            ({**snapshot, "snapshot_path": "/absolute.md.snapshot"}, "invalid-snapshot-path"),
+            ({"archive_disposition": "retired"}, "invalid-archive-disposition"),
+            ({"preservation_class": "snapshot"}, "invalid-preservation-class"),
+        )
+        for overrides, expected_code in cases:
+            with self.subTest(code=expected_code):
+                self.assertIn(expected_code, self.codes(self.archive_record(overrides)))
+
+    def test_existing_tombstones_remain_wave_d_advisory_debt(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            write_doc(
+                root / "docs/98.archive/04.execution/legacy.md",
+                {
+                    "status": "archived",
+                    "archived_from": "docs/04.execution/legacy.md",
+                    "archived_on": "2026-07-01",
+                    "archive_reason": "Legacy archive debt assigned to Wave D.",
+                    "current_replacement": "docs/04.execution/current.md",
+                },
+            )
+            stage_index_body = body_with_headings(
+                "## Overview",
+                "## Audience",
+                "## Scope",
+                "## Structure",
+                "## How to Work in This Area",
+                "## Related Documents",
+            )
+            index = root / "docs/03.specs/README.md"
+            write_doc(index, {"status": "active"}, stage_index_body)
+            commit_all(root, "baseline")
+            index.write_text(
+                index.read_text(encoding="utf-8").replace(
+                    "Fixture content.", "Changed fixture content.", 1
+                ),
+                encoding="utf-8",
+            )
+            result = run_checker(root, "check-changed", "--base-ref", "HEAD")
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertNotIn("docs/98.archive/04.execution/legacy.md", result.stdout)
+
+    def test_archive_template_transition_does_not_relax_target_requirements(self) -> None:
+        record = self.record(
+            "docs/98.archive/04.execution/new-target.md",
+            {
+                "status": "archived",
+                "artifact_id": "archive:04-execution-new-target",
+                "artifact_type": "archive",
+                "parent_ids": [],
+                "archived_from": "docs/04.execution/new-target.md",
+                "archived_on": "2026-07-14",
+                "archive_reason": "Fixture for the Task 3 template handoff.",
+                "current_replacement": "docs/04.execution/current.md",
+            },
+            "archive",
+        )
+        findings = metadata.validate_record(
+            record,
+            self.profiles,
+            metadata.build_manifest([record]),
+        )
+        self.assertEqual(
+            {
+                "required key is missing: archive_disposition",
+                "required key is missing: archived_commit",
+                "required key is missing: archived_blob",
+                "required key is missing: preservation_class",
+            },
+            {
+                finding.message
+                for finding in findings
+                if finding.code == "missing-required-key"
+            },
+        )
 
     def test_instantiated_document_rejects_template_placeholders(self) -> None:
         record = self.record(
@@ -1291,6 +1694,16 @@ class TemplateMetadataTests(unittest.TestCase):
                 values = metadata._parse_frontmatter_text(rendered)
                 if target_type == "archive":
                     values["status"] = "archived"
+                    replacement = values.pop("current_replacement")
+                    values.update(
+                        {
+                            "archive_disposition": "superseded",
+                            "archived_commit": "a" * 40,
+                            "archived_blob": "b" * 40,
+                            "preservation_class": "git-history",
+                            "current_replacement": replacement,
+                        }
+                    )
                 record = metadata.Record(
                     pathlib.Path(targets[source_path]),
                     values,

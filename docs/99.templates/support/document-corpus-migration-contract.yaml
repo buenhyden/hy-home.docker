@@ -1,0 +1,225 @@
+schema_version: 1
+
+manifest:
+  dispositions:
+    - migrate
+    - preserve
+    - move
+    - merge
+    - archive
+    - delete
+    - regenerate
+    - exempt
+
+archive:
+  dispositions:
+    - superseded
+    - duplicate
+    - conflict
+    - withdrawn
+    - evidence-preserve
+  preservation_classes:
+    - git-history
+    - immutable-snapshot
+
+directory_budgets:
+  warning_at: 100
+  block_new_leaf_at: 150
+
+review_signals:
+  draft_days: 30
+  active_days: 90
+  completed_execution_days: 180
+
+manifest_schema:
+  top_level_fields:
+    - schema_version
+    - wave
+    - baseline_commit
+    - generated_by
+    - enforcement
+    - entries
+  entry_fields:
+    - source_path
+    - target_path
+    - artifact_id
+    - artifact_type
+    - status_before
+    - status_after
+    - parent_ids
+    - disposition
+    - canonical_replacement
+    - active_consumers
+    - partition_plan
+    - preservation_class
+    - evidence
+    - review_verdict
+  evidence_fields:
+    - commands
+    - sources
+    - repository_paths
+    - consumer_scan
+    - rollback
+  review_verdict_fields:
+    - specification
+    - quality
+  review_verdict_values:
+    - pending
+    - pass
+    - changes-required
+
+exception_schema:
+  top_level_fields:
+    - schema_version
+    - exceptions
+  entry_fields:
+    - finding_code
+    - scope_paths
+    - owner
+    - reason
+    - approved_at
+    - expires_on
+    - exit_condition
+    - evidence
+
+disposition_conditions:
+  migrate: source-equals-target
+  preserve: source-equals-target
+  move: target-distinct
+  merge: target-distinct
+  archive: target-distinct
+  delete: target-null
+  regenerate: source-equals-target
+  exempt: source-equals-target
+
+replacement_requirements:
+  required_for:
+    - merge
+    - archive
+  optional_for:
+    - delete
+  forbidden_for:
+    - migrate
+    - preserve
+    - move
+    - regenerate
+    - exempt
+
+snapshot_admission:
+  allowed_archive_dispositions:
+    - evidence-preserve
+  required_preservation_class: immutable-snapshot
+  required_fields:
+    - snapshot_path
+    - content_sha256
+    - snapshot_reason
+  required_checks:
+    - confidentiality-scan
+    - content-sha256
+  path_prefix: docs/98.archive/evidence/
+  path_suffix: .md.snapshot
+  forbidden_payload_classes:
+    - secret
+    - credential
+    - token
+    - private-key
+    - auth-file
+    - shell-history
+    - raw-log
+
+safe_diagnostics:
+  allowed:
+    - finding-code
+    - bounded-path
+    - safe-metadata
+    - count
+    - git-object-id
+  forbidden:
+    - body-payload
+    - snapshot-bytes
+    - secret-value
+    - credential
+    - token
+    - private-key
+    - auth-file
+    - shell-history
+    - raw-log
+    - diagnostic-payload
+
+waves:
+  foundation:
+    enforcement: advisory
+    manifest_path: null
+    scope_state: approved
+    source_paths:
+      - docs/00.agent-governance/memory/progress.md
+      - docs/00.agent-governance/rules/documentation-protocol.md
+      - docs/00.agent-governance/rules/github-governance.md
+      - docs/00.agent-governance/rules/stage-authoring-matrix.md
+      - docs/00.agent-governance/rules/task-checklists.md
+      - docs/03.specs/README.md
+      - docs/04.execution/README.md
+      - docs/04.execution/plans/README.md
+      - docs/04.execution/tasks/README.md
+      - docs/90.references/README.md
+      - docs/90.references/data/README.md
+      - docs/90.references/data/governance/README.md
+      - docs/98.archive/README.md
+      - docs/99.templates/support/README.md
+      - docs/99.templates/support/common-document-contract.md
+      - docs/99.templates/support/external-source-rationale.md
+      - docs/99.templates/support/frontmatter-contract.md
+      - docs/99.templates/support/lifecycle-status.md
+      - docs/99.templates/support/sdlc-document-contract.md
+      - docs/99.templates/support/template-contract.md
+      - docs/99.templates/support/template-governance.md
+      - docs/99.templates/support/template-selection.md
+      - docs/99.templates/templates/common/README.md
+      - docs/99.templates/templates/common/archive.template.md
+    declared_outputs:
+      - .github/workflows/document-corpus-lifecycle.yml
+      - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+      - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+      - docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+      - docs/90.references/data/governance/document-corpus-lifecycle/README.md
+      - docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md
+      - docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml
+      - docs/99.templates/support/archive-retention-contract.md
+      - docs/99.templates/support/corpus-migration-contract.md
+      - docs/99.templates/support/document-corpus-migration-contract.yaml
+      - scripts/validation/check-document-corpus-lifecycle.py
+      - tests/validation/test_document_corpus_lifecycle.py
+  wave-a-active-sdlc:
+    enforcement: advisory
+    manifest_path: null
+    scope_state: unapproved
+    source_paths: []
+    declared_outputs: []
+  wave-b-operations:
+    enforcement: advisory
+    manifest_path: null
+    scope_state: unapproved
+    source_paths: []
+    declared_outputs: []
+  wave-c-historical-evidence:
+    enforcement: advisory
+    manifest_path: null
+    scope_state: unapproved
+    source_paths: []
+    declared_outputs: []
+  wave-d-archive-provenance:
+    enforcement: advisory
+    manifest_path: null
+    scope_state: unapproved
+    source_paths: []
+    declared_outputs: []
+  wave-e-references-final-gates:
+    enforcement: advisory
+    manifest_path: null
+    scope_state: unapproved
+    source_paths: []
+    declared_outputs: []
+
+planned_partitions:
+  docs/04.execution/plans: docs/04.execution/plans/YYYY
+  docs/04.execution/tasks: docs/04.execution/tasks/YYYY
