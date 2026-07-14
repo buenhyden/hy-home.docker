@@ -142,7 +142,7 @@ Redaction boundary:
 | T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Complete — final range `9126a0aa..9fe234f6`; terminal Spec PASS and Quality retry PASS, each with Critical 0, Important 0, and Minor 1. The sole deferred Minor is behavior-preserving decomposition of the monolithic dispatcher. |
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Complete — reviewed range `133b3daa..160ff097`; terminal Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 0 |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Complete — final reviewed range `1b42a100..46e3ff5e`; terminal Spec PASS and Quality PASS each returned Critical 0, Important 0, Minor 0; I-Q01 mutation closure is confirmed |
-| T-DCLM-005 | Foundation manifest and generated evidence | Paused — the blocker received Spec PASS C0/I0/M0 and initial Quality PASS C0/I0/M1; test-only Minor remediation `fafc504f` awaits fresh quality re-review before manifest authoring resumes |
+| T-DCLM-005 | Foundation manifest and generated evidence | Ready to resume — the full blocker remediation range `5e7d33e5..fafc504f` received Spec PASS C0/I0/M0 and terminal Quality PASS C0/I0/M0; the prior Minor is closed and no canonical manifest has been published yet |
 | T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Not run |
 
 ## Work Log
@@ -184,6 +184,7 @@ Redaction boundary:
 | 2026-07-15 | T-DCLM-005 pre-publication blocker remediation | Fresh bounded remediation agent | Commit `d78676dd` closes the lifecycle validator defect discovered before Foundation manifest publication. Strict RED proved `generate-manifest` copied the canonical template-source `<artifact-id>` placeholder into the row. The shared skeleton/baseline/result identity projection now maps only that exact template-source placeholder to YAML null, while a concrete template-source identity remains visible to static validation and produces baseline/result mismatches if hidden. The real immutable baseline generated 24 rows, the archive template row was null, and candidate `check-manifest` passed. No Foundation manifest, summary, generated owner output, migration-contract promotion, tombstone, archive payload, runtime, workflow, provider, secret, remote state, or all-files QA changed. Task 5 remains paused for fresh independent specification and quality review of this bounded fix. |
 | 2026-07-15 | T-DCLM-005 blocker independent reviews | Fresh specification and separate quality reviewers | The bounded implementation range `5e7d33e5..d78676dd` received Spec PASS C0/I0/M0 and initial Quality PASS C0/I0/M1. Both reviews confirmed the production fix is narrow, consistent across skeleton/baseline/result attestation, and preserves concrete identity enforcement. Quality Minor M-Q01 requested automated narrowness coverage for a different template placeholder and for the canonical token on a non-template type. |
 | 2026-07-15 | T-DCLM-005 blocker quality-Minor remediation | Fresh bounded remediation agent | Test-only commit `fafc504f` adds both M-Q01 boundaries to the existing focused regression. A noncanonical template placeholder remains visible in the skeleton and fails static validation; exact `<artifact-id>` on an inferred `spec` remains unchanged. Production code is untouched. Focused 1/1, ManifestValidationTests 5/5, Python compile, lifecycle contract, and diff hygiene passed. No Foundation manifest/promotion, generated owner output, runtime, workflow, provider, secret, remote state, or all-files QA changed. Fresh quality re-review remains required before Task 5 resumes. |
+| 2026-07-15 | T-DCLM-005 blocker terminal closure | Fresh specification reviewer and separate quality re-reviewer | The full remediation implementation range `5e7d33e5..fafc504f` is closed with Spec PASS C0/I0/M0 and terminal Quality PASS C0/I0/M0. The prior Quality Minor is closed by the two automated narrowness cases in `fafc504f`. The pre-publication blocker no longer gates Task 5; Foundation manifest authoring may resume from the approved Plan. No implementation, canonical manifest/promotion, generated owner output, runtime, workflow, provider, secret, remote state, Task 6, or all-files QA changed in this closure step. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -410,9 +411,9 @@ of the monolithic dispatcher.
 T-DCLM-004 final range `1b42a100..46e3ff5e` is GREEN and received terminal Spec
 PASS C0/I0/M0 and terminal Quality PASS C0/I0/M0. I-Q01 is closed through the
 recorded mutation RED and reachability/recommendation GREEN. T-DCLM-004 is
-complete. T-DCLM-005 reached only its pre-publication skeleton gate and remains
-paused. The blocker received Spec PASS C0/I0/M0 and initial Quality PASS
-C0/I0/M1; test-only Minor remediation `fafc504f` awaits fresh quality re-review.
+complete. T-DCLM-005 reached only its pre-publication skeleton gate. The full
+blocker remediation range `5e7d33e5..fafc504f` received Spec PASS C0/I0/M0 and
+terminal Quality PASS C0/I0/M0; the prior Minor is closed and Task 5 may resume.
 No canonical Foundation manifest or generated evidence has been published.
 
 ## Controlled Agent Pre-commit Evidence
