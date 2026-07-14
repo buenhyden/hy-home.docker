@@ -76,10 +76,10 @@ manifest_schema:
     entries: {type: list, nullable: false, domain: migration-entry}
     source_path: {type: string, nullable: false, domain: safe-baseline-tracked-path}
     target_path: {type: string, nullable: true, domain: safe-repository-path, null_condition: disposition-delete}
-    artifact_id: {type: string, nullable: true, domain: stable-artifact-id, null_condition: disposition-exempt}
+    artifact_id: {type: string, nullable: true, domain: canonical-metadata-artifact-id, null_condition: selected-profile-does-not-require-artifact-id}
     artifact_type: {type: string, nullable: false, domain: registered-artifact-type}
-    status_before: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: disposition-exempt}
-    status_after: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: disposition-exempt}
+    status_before: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: selected-profile-does-not-require-status}
+    status_after: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: selected-profile-does-not-require-status}
     parent_ids: {type: list, nullable: false, domain: deterministic-string-list}
     disposition: {type: string, nullable: false, domain: registered-manifest-disposition}
     canonical_replacement: {type: string, nullable: true, domain: non-empty-string, null_condition: replacement-requirements}

@@ -122,8 +122,8 @@ EXPECTED_MANIFEST_SCHEMA = {
         "artifact_id": {
             "type": "string",
             "nullable": True,
-            "domain": "stable-artifact-id",
-            "null_condition": "disposition-exempt",
+            "domain": "canonical-metadata-artifact-id",
+            "null_condition": "selected-profile-does-not-require-artifact-id",
         },
         "artifact_type": {
             "type": "string",
@@ -134,13 +134,13 @@ EXPECTED_MANIFEST_SCHEMA = {
             "type": "string",
             "nullable": True,
             "domain": "registered-lifecycle-status",
-            "null_condition": "disposition-exempt",
+            "null_condition": "selected-profile-does-not-require-status",
         },
         "status_after": {
             "type": "string",
             "nullable": True,
             "domain": "registered-lifecycle-status",
-            "null_condition": "disposition-exempt",
+            "null_condition": "selected-profile-does-not-require-status",
         },
         "parent_ids": {
             "type": "list",
@@ -900,6 +900,12 @@ def _valid_lowercase_object_id(value: object) -> bool:
 
 def _valid_lowercase_sha256(value: object) -> bool:
     return isinstance(value, str) and LOWERCASE_SHA256_RE.fullmatch(value) is not None
+
+
+def _valid_metadata_artifact_id(value: object) -> bool:
+    """Apply the canonical metadata validator's artifact-ID value rule."""
+
+    return isinstance(value, str) and bool(value.strip())
 
 
 def _safe_snapshot_path(value: object) -> bool:
@@ -2128,7 +2134,7 @@ def validate_record(
             )
 
     artifact_id = record.metadata.get("artifact_id")
-    if artifact_id is not None and (not isinstance(artifact_id, str) or not artifact_id.strip()):
+    if artifact_id is not None and not _valid_metadata_artifact_id(artifact_id):
         findings.append(_finding(record, "invalid-artifact-id", "artifact_id must be a non-empty string"))
     if isinstance(artifact_id, str) and artifact_id.strip() in typed_manifest.duplicates:
         paths = ", ".join(path.as_posix() for path in typed_manifest.duplicates[artifact_id.strip()])
@@ -2742,16 +2748,25 @@ def _non_empty_string(value: object, label: str) -> str:
     return value
 
 
-def _valid_stable_artifact_id(value: object) -> bool:
-    return (
-        isinstance(value, str)
-        and value == value.strip()
-        and re.fullmatch(
-            r"[a-z0-9][a-z0-9._-]*(?::[a-z0-9][a-z0-9._-]*)+",
-            value,
+def _profile_field_ownership(
+    profile: Mapping[str, object],
+    field: str,
+    label: str,
+) -> str:
+    owners: list[str] = []
+    for group in ("required", "optional", "forbidden"):
+        members = profile.get(group)
+        if not isinstance(members, list) or not all(
+            isinstance(member, str) for member in members
+        ):
+            raise ProfileError(f"{label} selected profile has invalid {group} ownership")
+        if field in members:
+            owners.append(group)
+    if len(owners) != 1:
+        raise ProfileError(
+            f"{label} selected profile must own {field} in exactly one field group"
         )
-        is not None
-    )
+    return owners[0]
 
 
 def validate_static_migration_manifest(
@@ -2843,23 +2858,45 @@ def validate_static_migration_manifest(
         ):
             raise ProfileError(f"{label} target_path must equal source_path")
 
-        artifact_id = entry.get("artifact_id")
-        if artifact_id is None:
-            if disposition != "exempt":
-                raise ProfileError(f"{label} artifact_id may be null only for exempt rows")
-        elif not _valid_stable_artifact_id(artifact_id):
-            raise ProfileError(f"{label} artifact_id must be a stable artifact ID")
         artifact_type = entry.get("artifact_type")
         if not isinstance(artifact_type, str) or artifact_type not in artifact_types:
             raise ProfileError(f"{label} artifact_type must be registered")
+        selected_profile = raw_profile_map.get(artifact_type)
+        if not isinstance(selected_profile, Mapping):
+            raise ProfileError(f"{label} artifact_type must select a metadata profile")
 
+        artifact_id_ownership = _profile_field_ownership(
+            selected_profile,
+            "artifact_id",
+            label,
+        )
+        artifact_id = entry.get("artifact_id")
+        if artifact_id is None:
+            if artifact_id_ownership == "required":
+                raise ProfileError(
+                    f"{label} artifact_id is required by the selected metadata profile"
+                )
+        elif artifact_id_ownership == "forbidden":
+            raise ProfileError(
+                f"{label} artifact_id is forbidden by the selected metadata profile"
+            )
+        elif not _valid_metadata_artifact_id(artifact_id):
+            raise ProfileError(
+                f"{label} artifact_id must satisfy canonical metadata validation"
+            )
+
+        status_ownership = _profile_field_ownership(selected_profile, "status", label)
         for status_field in ("status_before", "status_after"):
             status = entry.get(status_field)
             if status is None:
-                if disposition != "exempt":
+                if status_ownership == "required":
                     raise ProfileError(
-                        f"{label} {status_field} may be null only for exempt rows"
+                        f"{label} {status_field} is required by the selected metadata profile"
                     )
+            elif status_ownership == "forbidden":
+                raise ProfileError(
+                    f"{label} {status_field} is forbidden by the selected metadata profile"
+                )
             elif not isinstance(status, str) or status not in allowed_statuses:
                 raise ProfileError(f"{label} {status_field} must be registered")
 

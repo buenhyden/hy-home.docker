@@ -594,6 +594,32 @@ class ProfileSchemaTests(unittest.TestCase):
             },
             schema["destructive_execution"],
         )
+        self.assertEqual(
+            {
+                "artifact_id": {
+                    "type": "string",
+                    "nullable": True,
+                    "domain": "canonical-metadata-artifact-id",
+                    "null_condition": "selected-profile-does-not-require-artifact-id",
+                },
+                "status_before": {
+                    "type": "string",
+                    "nullable": True,
+                    "domain": "registered-lifecycle-status",
+                    "null_condition": "selected-profile-does-not-require-status",
+                },
+                "status_after": {
+                    "type": "string",
+                    "nullable": True,
+                    "domain": "registered-lifecycle-status",
+                    "null_condition": "selected-profile-does-not-require-status",
+                },
+            },
+            {
+                field: schema["field_contracts"][field]
+                for field in ("artifact_id", "status_before", "status_after")
+            },
+        )
         for mutate in (
             lambda values: values["manifest_schema"]["field_contracts"][
                 "baseline_commit"
@@ -614,23 +640,75 @@ class ProfileSchemaTests(unittest.TestCase):
             with self.subTest(mutate=mutate):
                 self.mutate_migration_contract_and_load(mutate)
 
-    def test_static_manifest_validation_fails_closed(self) -> None:
+    def test_static_manifest_allows_actual_profile_identity_exception(self) -> None:
         contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
         profiles = metadata.load_profiles(PROFILES)
         valid = self.valid_static_manifest()
-        metadata.validate_static_migration_manifest(valid, contract, profiles)
         declared_exception = copy.deepcopy(valid)
         declared_exception["entries"][0].update(
             {
-                "target_path": "docs/source.md",
+                "source_path": "README.md",
+                "target_path": "README.md",
                 "artifact_id": None,
+                "artifact_type": "readme",
                 "status_before": None,
                 "status_after": None,
+                "parent_ids": [],
                 "disposition": "exempt",
                 "preservation_class": None,
             }
         )
         metadata.validate_static_migration_manifest(declared_exception, contract, profiles)
+
+    def test_static_manifest_exempt_cannot_override_required_identity(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = metadata.load_profiles(PROFILES)
+        for field in ("artifact_id", "status_before", "status_after"):
+            with self.subTest(field=field):
+                typed_exempt = self.valid_static_manifest()
+                typed_exempt["entries"][0].update(
+                    {
+                        "target_path": "docs/source.md",
+                        "disposition": "exempt",
+                        "preservation_class": None,
+                        field: None,
+                    }
+                )
+                with self.assertRaises(metadata.ProfileError):
+                    metadata.validate_static_migration_manifest(
+                        typed_exempt,
+                        contract,
+                        profiles,
+                    )
+
+    def test_static_manifest_uses_canonical_artifact_id_validation(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = metadata.load_profiles(PROFILES)
+        canonical_id = "reference:Source"
+        record = metadata.Record(
+            pathlib.Path("docs/source.md"),
+            {
+                "status": "active",
+                "artifact_id": canonical_id,
+                "artifact_type": "reference",
+                "parent_ids": [],
+            },
+            "reference",
+            frontmatter_present=True,
+        )
+        self.assertNotIn(
+            "invalid-artifact-id",
+            {finding.code for finding in metadata.validate_record(record, profiles, {})},
+        )
+        manifest = self.valid_static_manifest()
+        manifest["entries"][0]["artifact_id"] = canonical_id
+        metadata.validate_static_migration_manifest(manifest, contract, profiles)
+
+    def test_static_manifest_validation_fails_closed(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = metadata.load_profiles(PROFILES)
+        valid = self.valid_static_manifest()
+        metadata.validate_static_migration_manifest(valid, contract, profiles)
 
         mutations = {
             "schema-type": lambda value: value.__setitem__("schema_version", True),
@@ -643,7 +721,7 @@ class ProfileSchemaTests(unittest.TestCase):
             "unsafe-target-path": lambda value: value["entries"][0].__setitem__(
                 "target_path", "/tmp/source.md"
             ),
-            "artifact-null-without-exempt": lambda value: value["entries"][0].__setitem__(
+            "artifact-null-for-required-profile": lambda value: value["entries"][0].__setitem__(
                 "artifact_id", None
             ),
             "artifact-type-domain": lambda value: value["entries"][0].__setitem__(
@@ -661,7 +739,7 @@ class ProfileSchemaTests(unittest.TestCase):
             "status-shape": lambda value: value["entries"][0].__setitem__(
                 "status_after", []
             ),
-            "status-null-without-exempt": lambda value: value["entries"][0].__setitem__(
+            "status-null-for-required-profile": lambda value: value["entries"][0].__setitem__(
                 "status_before", None
             ),
             "partition-plan-path": lambda value: value["entries"][0].__setitem__(
