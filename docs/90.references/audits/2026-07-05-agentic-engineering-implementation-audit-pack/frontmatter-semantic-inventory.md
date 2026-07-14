@@ -39,7 +39,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 906
+- **Tracked records**: 908
 - **Records with findings**: 561
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
@@ -52,13 +52,13 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `archive` | 20 |
 | `ard` | 24 |
 | `audit` | 33 |
-| `generated` | 6 |
+| `generated` | 7 |
 | `governance` | 113 |
 | `guide` | 66 |
 | `plan` | 96 |
 | `policy` | 64 |
 | `prd` | 24 |
-| `readme` | 148 |
+| `readme` | 149 |
 | `reference` | 30 |
 | `runbook` | 61 |
 | `spec` | 56 |
@@ -881,6 +881,8 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/90.references/data/governance/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/90.references/data/governance/agent-output-eval-fixtures.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key | migration candidate |
 | `docs/90.references/data/governance/audit-implementation-matrix.md` | `generated` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | generated profile; owner=scripts/validation/generate-audit-implementation-matrix.sh | none | generated exception |
+| `docs/90.references/data/governance/document-corpus-lifecycle/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
+| `docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md` | `generated` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | generated profile; owner=scripts/validation/check-document-corpus-lifecycle.py | none | generated exception |
 | `docs/90.references/data/governance/gap-to-stage-routing.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key | migration candidate |
 | `docs/90.references/data/governance/provider-hook-parity-matrix.md` | `generated` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | generated profile; owner=scripts/validation/report-provider-hook-parity.sh | none | generated exception |
 | `docs/90.references/data/hads/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |

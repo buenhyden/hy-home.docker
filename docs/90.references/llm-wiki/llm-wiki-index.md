@@ -988,6 +988,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/governance/README.md](../data/governance/README.md) | folder index |
 | [docs/90.references/data/governance/agent-output-eval-fixtures.md](../data/governance/agent-output-eval-fixtures.md) | Markdown reference |
 | [docs/90.references/data/governance/audit-implementation-matrix.md](../data/governance/audit-implementation-matrix.md) | Markdown reference |
+| [docs/90.references/data/governance/document-corpus-lifecycle/README.md](../data/governance/document-corpus-lifecycle/README.md) | folder index |
+| [docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md](../data/governance/document-corpus-lifecycle/foundation-summary.md) | Markdown reference |
+| [docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml](../data/governance/document-corpus-lifecycle/foundation.yaml) | YAML config |
 | [docs/90.references/data/governance/gap-to-stage-routing.md](../data/governance/gap-to-stage-routing.md) | Markdown reference |
 | [docs/90.references/data/governance/provider-hook-parity-matrix.md](../data/governance/provider-hook-parity-matrix.md) | Markdown reference |
 | [docs/90.references/data/hads/README.md](../data/hads/README.md) | folder index |
