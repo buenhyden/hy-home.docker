@@ -142,7 +142,7 @@ Redaction boundary:
 | T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Complete — final range `9126a0aa..9fe234f6`; terminal Spec PASS and Quality retry PASS, each with Critical 0, Important 0, and Minor 1. The sole deferred Minor is behavior-preserving decomposition of the monolithic dispatcher. |
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Complete — reviewed range `133b3daa..160ff097`; terminal Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 0 |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Complete — final reviewed range `1b42a100..46e3ff5e`; terminal Spec PASS and Quality PASS each returned Critical 0, Important 0, Minor 0; I-Q01 mutation closure is confirmed |
-| T-DCLM-005 | Foundation manifest and generated evidence | Promotion applied / awaiting explicit post-promotion reapproval — terminal advisory re-reviews at `fa27247854777882822cac1e4b58784e42d05076` returned Spec PASS C0/I0/M0 and Quality PASS C0/I0/M0. The approved Foundation boundary is now blocking with 24/24 `pass`/`pass` rows and the exact Stage 90 manifest route; later waves remain advisory with null manifest paths. Task 6 remains blocked. |
+| T-DCLM-005 | Foundation manifest and generated evidence | Complete — post-promotion Spec and Quality reviews both returned APPROVED C0/I0/M0 at full commit `b3f8c5cb09366cdf045e9f595c9622a521807f71`. Foundation remains blocking with 24/24 `pass`/`pass` rows and the exact Stage 90 manifest route; later waves remain advisory with null manifest paths. Manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. |
 | T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Not run |
 
 ## Work Log
@@ -193,6 +193,7 @@ Redaction boundary:
 | 2026-07-15 | T-DCLM-005 advisory review remediation | Fresh remediation agent | Commit `4e8d23f3` closes the reviewed evidence defects through a Foundation-only canonical NUL-safe active-root Git scan with exact result equality and immutable per-source rollback attestation. The manifest records 506 sorted direct-consumer memberships, no false empty list, full-hash evidence bounded to `63829c10d073817322f401d909d11e1b7dcb74ca`, and exact newest-to-oldest source-changing commits; only the unchanged preserve row has an empty rollback list. Focused negative/positive coverage, lifecycle 79/79, manifest, metadata, impacted, repository, traceability, alignment, and generated-owner checks pass. Canonical regeneration produced no diff, so no empty generated commit exists. Graphify was corroborated and restored. Fresh independent re-reviews remain pending. |
 | 2026-07-15 | T-DCLM-005 advisory terminal re-reviews | Fresh specification reviewer and separate quality reviewer | The complete package `cce4fcde..fa27247854777882822cac1e4b58784e42d05076` received Spec PASS C0/I0/M0 and Quality PASS C0/I0/M0. Both reviewers independently confirmed 24/24 canonical consumer lists with 506 memberships and zero mismatches, immutable per-source rollback with zero mismatches, and no floating `HEAD`. The quality review package SHA-256 is `e8c7e43997f5ffe48a8c77a0e3ade25454c9f8b99d05d24f03f68bf6e2491fef`. This approval authorizes only the Plan-defined Foundation promotion. |
 | 2026-07-15 | T-DCLM-005 Foundation promotion | Fresh implementation agent | Applied only the approved promotion boundary: all 24 manifest review verdicts are `pass`/`pass`, manifest enforcement is `blocking`, and the registry Foundation entry is `blocking` with exact path `docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml`. Every later wave remains `advisory` with a null manifest path. The canonical summary was regenerated. The tracked Task and mandatory Stage 00 progress log record the promotion; including `docs/00.agent-governance/memory/progress.md` is the sole documented Plan-surface deviation because the root `AGENTS.md` bootstrap requires progress updates. Final manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. No Task 6, all-files QA, remote, runtime, archive, snapshot, tombstone, corpus-leaf, workflow, provider, or secret action occurred. Explicit post-promotion Spec and Quality reapproval remains required. |
+| 2026-07-15 | T-DCLM-005 post-promotion terminal closure | Fresh specification reviewer and separate quality reviewer | Both reviewers evaluated full promotion commit `b3f8c5cb09366cdf045e9f595c9622a521807f71` and returned APPROVED C0/I0/M0. The committed manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. T-DCLM-005 is complete. This closure changes evidence only; Task 6 has not started, and no test, implementation, generated output, promotion byte, runtime, remote, archive, snapshot, tombstone, workflow, provider, or secret changed. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -475,9 +476,12 @@ complete. T-DCLM-005 terminal advisory re-reviews over the complete package
 C0/I0/M0 and Quality PASS C0/I0/M0. The Plan-defined promotion changes only the
 Foundation gate to blocking with 24/24 `pass`/`pass` review verdicts and the
 exact Stage 90 manifest route; every later wave remains advisory with a null
-manifest path. The canonical summary matches the promoted manifest. Task 5 is
-not complete: explicit post-promotion Spec and Quality reapproval is required,
-and Task 6 remains blocked.
+manifest path. The canonical summary matches the promoted manifest.
+Post-promotion Spec and Quality reviews of full commit
+`b3f8c5cb09366cdf045e9f595c9622a521807f71` both returned APPROVED C0/I0/M0.
+Manifest SHA-256 remains
+`a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`.
+Task 5 is complete; Task 6 has not started.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -674,8 +678,9 @@ the preserve row has an honest empty rollback. Terminal advisory re-reviews at
 Quality PASS C0/I0/M0, closing I-S01/I-S02/I-S03, I-Q01/I-Q02, and M-Q01. The
 subsequent promotion is deliberately narrow: Foundation alone is blocking with
 24/24 `pass`/`pass` verdicts and the exact canonical manifest route; all later
-waves remain advisory/null. Fresh explicit post-promotion reapproval by both
-review roles is still required before Task 5 closure or Task 6.
+waves remain advisory/null. Post-promotion Spec and Quality reviews of full
+commit `b3f8c5cb09366cdf045e9f595c9622a521807f71` both returned APPROVED
+C0/I0/M0. Task 5 is complete; Task 6 has not started.
 
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 
@@ -722,10 +727,11 @@ Foundation logical commits:
 - `63829c10` — T-DCLM-005 generated follow-up `docs(generated): refresh corpus lifecycle evidence`; security readiness and audit matrix had no diff and were omitted.
 - `4e8d23f3` — T-DCLM-005 advisory review remediation `fix(validation): bind lifecycle advisory evidence`; canonical summary and downstream owner regeneration produced no diff, so no generated remediation commit was created.
 - `fa272478` — T-DCLM-005 tracked advisory re-review evidence `docs(execution): record lifecycle advisory remediation evidence`; terminal advisory Spec and Quality re-reviews both returned PASS C0/I0/M0 over the complete package.
+- `b3f8c5cb` — T-DCLM-005 Foundation promotion `docs(governance): promote corpus lifecycle foundation gate`; post-promotion Spec and Quality reviewers both returned APPROVED C0/I0/M0 for the full commit.
 
-The promotion commit identity is returned to the post-promotion reviewers after
-the commit is created; it is intentionally not embedded in its own tracked
-payload.
+The later ledger-only closure commit records these terminal verdicts and does
+not alter the reviewed promotion, manifest, generated summary, contracts, or
+tests.
 
 The reviewed T-DCLM-002 implementation and remediation range ends at
 `9fe234f6`. The later ledger-only closure commit records the terminal verdicts
