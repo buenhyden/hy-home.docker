@@ -235,8 +235,8 @@ safe_diagnostics:
 
 waves:
   foundation:
-    enforcement: advisory
-    manifest_path: null
+    enforcement: blocking
+    manifest_path: docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml
     scope_state: approved
     source_paths:
       - docs/00.agent-governance/memory/progress.md

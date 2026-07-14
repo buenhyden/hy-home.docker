@@ -2,7 +2,7 @@ schema_version: 1
 wave: foundation
 baseline_commit: e00e1483e7ab797b354d7c3b22b6d5440e998c14
 generated_by: check-document-corpus-lifecycle.py
-enforcement: advisory
+enforcement: blocking
 entries:
 - source_path: docs/00.agent-governance/memory/progress.md
   target_path: docs/00.agent-governance/memory/progress.md
@@ -156,8 +156,8 @@ entries:
     - git revert --no-commit f3f870fc3390778bb5350170d8de07a2ee11a5ae cce4fcdea0a4dba0637e0bb5bf887ae64e67984c 257a3be7482ae462d39ecc2e64e930e1fb1a8c9d 054dfb0b55d4f1642080d0629c5b8cccc73b8dff 7fbfab3d0553eed4d7665cdcceb744af3963e08e ef0c3a24f84ba8aaf531dffeb76cbf0718328e80 b961e4eb27b1b6291701f3603eee55288940604b 5e7d33e57ed82afdfefc12912c21ea8c13b0a057 46e3ff5e218b52465411042c5e8971248a89b6fa 11ff5edbb697b94191de12c9a6e40ce0cdf7421d 918b9a3b0c6cb28d2f1fabdfff0f129d09d35fe1 35b07486ded5c277294bb66b7a446441eef548df 1b42a10098a809a4342b693e49d554f6575e81bc 160ff09733e23952678914211a617856a32eca52 e42296fadd7512cc2b9dc89f4b160578f1ea8288 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13 133b3daa02f7b56bb5824f1fb2b4cef6a866563a 9fe234f67a546d992dee1703db4d86979fb53d27 7ff6a841ac2a42c8530a21d6946b03cf3edbcb2d 8001a95cf43e93d75794ef1311e29ab105d5564b fedbf39523a272500ee56658b67c5f5a12584629 4e8afaf8f61361d19bfe1a7ee7941fe458fe5d02 8a7c9c7c300d807d820c0b5dafd2a4260620a0ab 554253e60360a19d579e30817679766fcc75a1af
       ee4b68461f6a8f0dbe6170f61d629baf5a678032 82cbb9c0f6dfa6af6872fc6cd05dc828d1125bf7 43d7d149f2b61da17d8dff83bca63f0ee514a4e1 9126a0aa2ce12d8dfeee6ca1d9e047cfd17d26bd e9db5afbf584ef7c1af8a21c34ea2db56985c28d 602994f2f6d5b5c54d419038d3179285f3dd1747 ab33b64fa196e6dbd47c6e0f90af254a46e01e25 a224f93d8eab63607e50e8cdea12684e7baeef18 d40540a0694ea435ddb746c623f84383d6fd8170 15fdac5d58050a793c8b54a7409590c24b4723c8
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/00.agent-governance/rules/documentation-protocol.md
   target_path: docs/00.agent-governance/rules/documentation-protocol.md
   artifact_id: null
@@ -228,8 +228,8 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/00.agent-governance/rules/github-governance.md
   target_path: docs/00.agent-governance/rules/github-governance.md
   artifact_id: null
@@ -311,8 +311,8 @@ entries:
     rollback:
     - git revert --no-commit 35b07486ded5c277294bb66b7a446441eef548df
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/00.agent-governance/rules/stage-authoring-matrix.md
   target_path: docs/00.agent-governance/rules/stage-authoring-matrix.md
   artifact_id: null
@@ -378,8 +378,8 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/00.agent-governance/rules/task-checklists.md
   target_path: docs/00.agent-governance/rules/task-checklists.md
   artifact_id: null
@@ -430,8 +430,8 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/03.specs/README.md
   target_path: docs/03.specs/README.md
   artifact_id: null
@@ -504,8 +504,8 @@ entries:
     rollback:
     - git revert --no-commit 15fdac5d58050a793c8b54a7409590c24b4723c8
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/04.execution/README.md
   target_path: docs/04.execution/README.md
   artifact_id: null
@@ -555,8 +555,8 @@ entries:
     - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/04.execution/plans/README.md
   target_path: docs/04.execution/plans/README.md
   artifact_id: null
@@ -614,8 +614,8 @@ entries:
     rollback:
     - git revert --no-commit 7a4a940d226a582af05e26bc46b437340cae77a0
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/04.execution/tasks/README.md
   target_path: docs/04.execution/tasks/README.md
   artifact_id: null
@@ -674,8 +674,8 @@ entries:
     rollback:
     - git revert --no-commit 7a4a940d226a582af05e26bc46b437340cae77a0
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/README.md
   target_path: docs/90.references/README.md
   artifact_id: null
@@ -724,8 +724,8 @@ entries:
     rollback:
     - git revert --no-commit f3f870fc3390778bb5350170d8de07a2ee11a5ae
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/data/README.md
   target_path: docs/90.references/data/README.md
   artifact_id: null
@@ -760,8 +760,8 @@ entries:
     rollback:
     - git revert --no-commit f3f870fc3390778bb5350170d8de07a2ee11a5ae
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/data/governance/README.md
   target_path: docs/90.references/data/governance/README.md
   artifact_id: null
@@ -794,8 +794,8 @@ entries:
     rollback:
     - git revert --no-commit f3f870fc3390778bb5350170d8de07a2ee11a5ae
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/98.archive/README.md
   target_path: docs/98.archive/README.md
   artifact_id: null
@@ -834,8 +834,8 @@ entries:
     rollback:
     - git revert --no-commit e42296fadd7512cc2b9dc89f4b160578f1ea8288 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/README.md
   target_path: docs/99.templates/support/README.md
   artifact_id: null
@@ -874,8 +874,8 @@ entries:
     rollback:
     - git revert --no-commit 160ff09733e23952678914211a617856a32eca52 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/common-document-contract.md
   target_path: docs/99.templates/support/common-document-contract.md
   artifact_id: null
@@ -913,8 +913,8 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/external-source-rationale.md
   target_path: docs/99.templates/support/external-source-rationale.md
   artifact_id: null
@@ -953,8 +953,8 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/frontmatter-contract.md
   target_path: docs/99.templates/support/frontmatter-contract.md
   artifact_id: null
@@ -996,8 +996,8 @@ entries:
     rollback:
     - git revert --no-commit e42296fadd7512cc2b9dc89f4b160578f1ea8288 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/lifecycle-status.md
   target_path: docs/99.templates/support/lifecycle-status.md
   artifact_id: null
@@ -1033,8 +1033,8 @@ entries:
     rollback:
     - git revert --no-commit e42296fadd7512cc2b9dc89f4b160578f1ea8288 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/sdlc-document-contract.md
   target_path: docs/99.templates/support/sdlc-document-contract.md
   artifact_id: null
@@ -1070,8 +1070,8 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/template-contract.md
   target_path: docs/99.templates/support/template-contract.md
   artifact_id: null
@@ -1111,8 +1111,8 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/template-governance.md
   target_path: docs/99.templates/support/template-governance.md
   artifact_id: null
@@ -1152,8 +1152,8 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/template-selection.md
   target_path: docs/99.templates/support/template-selection.md
   artifact_id: null
@@ -1197,8 +1197,8 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/templates/common/README.md
   target_path: docs/99.templates/templates/common/README.md
   artifact_id: null
@@ -1233,8 +1233,8 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/templates/common/archive.template.md
   target_path: docs/99.templates/templates/common/archive.template.md
   artifact_id: null
@@ -1276,5 +1276,5 @@ entries:
     rollback:
     - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
