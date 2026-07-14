@@ -763,13 +763,34 @@ def parse_frontmatter(path: pathlib.Path) -> dict[str, object]:
     return _parse_frontmatter_text(text)
 
 
-def infer_artifact_type(path: pathlib.Path) -> str:
+def registered_generated_owner(
+    path: pathlib.Path,
+    profiles: Mapping[str, object] | None,
+) -> str | None:
+    """Return the exact registry owner for a generator-owned Markdown output."""
+
+    if not isinstance(profiles, Mapping):
+        return None
+    common = profiles.get("common")
+    generated_outputs = common.get("generated_outputs") if isinstance(common, Mapping) else None
+    if not isinstance(generated_outputs, Mapping):
+        return None
+    owner = generated_outputs.get(path.as_posix())
+    return owner if isinstance(owner, str) else None
+
+
+def infer_artifact_type(
+    path: pathlib.Path,
+    profiles: Mapping[str, object] | None = None,
+) -> str:
     """Infer a supported artifact profile from a repository-relative path."""
 
     normalized = path.as_posix().lstrip("./")
     name = pathlib.PurePosixPath(normalized).name
     if name == "README.md":
         return "readme"
+    if registered_generated_owner(pathlib.Path(normalized), profiles) is not None:
+        return "generated"
     if normalized.startswith("docs/99.templates/templates/") and name.endswith(".template.md"):
         return "template-source"
     if normalized.startswith("docs/00.agent-governance/"):
@@ -2082,8 +2103,11 @@ def validate_record(
     optional = set(raw_profile.get("optional", []))
     forbidden = set(raw_profile.get("forbidden", []))
     global_forbidden = set(common.get("globally_forbidden", []))
+    registered_owner = registered_generated_owner(record.path, profiles)
     for key in sorted(required):
         if key not in record.metadata or record.metadata[key] in (None, ""):
+            if key == "generated_by" and record.artifact_type == "generated" and registered_owner:
+                continue
             findings.append(_finding(record, "missing-required-key", f"required key is missing: {key}"))
     for key in sorted(record.metadata):
         if key not in forbidden:
@@ -2250,6 +2274,14 @@ def validate_record(
     if generated_by is not None and not _safe_repo_path(generated_by, "scripts/"):
         findings.append(
             _finding(record, "invalid-generator", "generated_by must be a safe canonical scripts/ repository path")
+        )
+    elif registered_owner is not None and generated_by is not None and generated_by != registered_owner:
+        findings.append(
+            _finding(
+                record,
+                "generated-owner-mismatch",
+                "generated_by differs from the exact registered generator owner",
+            )
         )
 
     if record.artifact_type == "archive":
@@ -3118,6 +3150,25 @@ def load_profiles(
             raise ProfileError("common.root_exceptions keys must be canonical target Markdown paths")
         if not isinstance(reason, str) or not reason.strip():
             raise ProfileError("common.root_exceptions reasons must be non-empty strings")
+    generated_outputs = common.get("generated_outputs")
+    if not isinstance(generated_outputs, dict) or not generated_outputs:
+        raise ProfileError("common.generated_outputs must be a non-empty exact-path-to-generator mapping")
+    for output_path, owner in generated_outputs.items():
+        normalized_output = (
+            _normalized_target_path(output_path) if isinstance(output_path, str) else None
+        )
+        if (
+            normalized_output is None
+            or normalized_output.name == "README.md"
+            or any(character in output_path for character in "*?[]")
+        ):
+            raise ProfileError(
+                "common.generated_outputs keys must be exact canonical non-README target Markdown paths"
+            )
+        if not _safe_repo_path(owner, "scripts/"):
+            raise ProfileError(
+                "common.generated_outputs values must be safe canonical scripts/ generator paths"
+            )
     allowed_statuses = set(common_lists["allowed_statuses"])
     terminal_statuses = set(common_lists["terminal_statuses"])
     if not terminal_statuses <= allowed_statuses:
@@ -3830,6 +3881,7 @@ def _record_from_text(
     relative_path: pathlib.Path,
     text: str,
     previous_status: str | None = None,
+    profiles: Mapping[str, object] | None = None,
 ) -> Record:
     lines = text.splitlines()
     frontmatter_present = bool(lines and lines[0].strip() == "---")
@@ -3841,7 +3893,11 @@ def _record_from_text(
         values = {}
         parse_error = str(error)
         parse_error_code = error.code
-    artifact_type = "generated" if "generated_by" in values else infer_artifact_type(relative_path)
+    artifact_type = (
+        "generated"
+        if "generated_by" in values
+        else infer_artifact_type(relative_path, profiles)
+    )
     return Record(
         relative_path,
         values,
@@ -3889,12 +3945,13 @@ def collect_records_at_ref(
         )
         if shown.returncode != 0:
             raise ProfileError(f"cannot read base Markdown record: {relative_path.as_posix()}")
-        records.append(_record_from_text(relative_path, shown.stdout))
+        records.append(_record_from_text(relative_path, shown.stdout, profiles=profiles))
     return records
 
 
 def collect_selected_records_at_ref(
     root: pathlib.Path,
+    profiles: dict[str, object],
     selected_paths: Sequence[str],
     ref: str,
 ) -> dict[str, Record]:
@@ -3912,7 +3969,11 @@ def collect_selected_records_at_ref(
             text=True,
         )
         if shown.returncode == 0:
-            records[relative_path.as_posix()] = _record_from_text(relative_path, shown.stdout)
+            records[relative_path.as_posix()] = _record_from_text(
+                relative_path,
+                shown.stdout,
+                profiles=profiles,
+            )
     return records
 
 
@@ -3947,7 +4008,7 @@ def collect_records(
                 Record(
                     relative_path,
                     {},
-                    infer_artifact_type(relative_path),
+                    infer_artifact_type(relative_path, profiles),
                     parse_error=f"cannot read UTF-8 Markdown: {error}",
                     parse_error_code="malformed-yaml",
                 )
@@ -3959,7 +4020,14 @@ def collect_records(
             if previous_record and isinstance(previous_record.metadata.get("status"), str)
             else _previous_status(root, relative_path, base_ref)
         )
-        records.append(_record_from_text(relative_path, text, previous_status=previous_status))
+        records.append(
+            _record_from_text(
+                relative_path,
+                text,
+                previous_status=previous_status,
+                profiles=profiles,
+            )
+        )
     return records
 
 
@@ -4248,7 +4316,10 @@ def _exception_context(record: Record, codes: set[str], profiles: dict[str, obje
         consumer = declared_consumer if isinstance(declared_consumer, str) and declared_consumer else "not-declared"
         return f"README profile={profile_name}; consumer={consumer}; role=folder-index"
     if record.artifact_type == "generated":
-        owner = record.metadata.get("generated_by")
+        owner = record.metadata.get("generated_by") or registered_generated_owner(
+            record.path,
+            profiles,
+        )
         rendered = owner if isinstance(owner, str) and "invalid-generator" not in codes else "invalid-or-missing"
         return f"generated profile; owner={rendered}"
     if record.artifact_type in {"template-source", "governance", "archive", "unsupported"}:
@@ -4587,6 +4658,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         try:
             head_records_by_path = collect_selected_records_at_ref(
                 root,
+                profiles,
                 changed_selection,
                 "HEAD",
             )

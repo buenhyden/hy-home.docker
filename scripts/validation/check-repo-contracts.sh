@@ -341,6 +341,8 @@ import pathlib
 import re
 import sys
 
+import yaml
+
 failures: list[str] = []
 stage_roots = tuple(
     pathlib.Path(path)
@@ -356,6 +358,12 @@ stage_roots = tuple(
 )
 active_statuses = {"draft", "active", "completed", "superseded"}
 archive_statuses = {"archived"}
+profiles = yaml.safe_load(
+    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
+)
+generated_outputs = {
+    pathlib.Path(path) for path in profiles["common"]["generated_outputs"]
+}
 
 
 def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
@@ -367,7 +375,7 @@ def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
 
 
 for path in sorted(pathlib.Path("docs").rglob("*.md")):
-    if path.name == "README.md":
+    if path.name == "README.md" or path in generated_outputs:
         continue
     if not any(is_relative_to(path, root) for root in stage_roots):
         continue
@@ -2383,10 +2391,18 @@ import pathlib
 import re
 import sys
 
+import yaml
+
 failures: list[str] = []
 repo_root = pathlib.Path(".").resolve()
 template_root = pathlib.Path("docs/99.templates")
 generated_llm_index = pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md")
+profiles = yaml.safe_load(
+    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
+)
+generated_outputs = {
+    pathlib.Path(path) for path in profiles["common"]["generated_outputs"]
+}
 
 markdown_link = re.compile(r"(?<!!)(?<!\\)\[([^\]\n]+)\]\(([^)\n]+)\)")
 pseudo_doc_link = re.compile(r"`\[((?:\.{1,2}/|docs/)[^`\]]+?\.md(?:#[^`\]]*)?)\]`")
@@ -2593,6 +2609,7 @@ active_markdown_files = [
     and "volumes" not in path.parts
     and "node_modules" not in path.parts
     and not is_relative_to(path, template_root)
+    and path not in generated_outputs
 ]
 
 for path in active_markdown_files:
@@ -3023,9 +3040,17 @@ import pathlib
 import re
 import sys
 
+import yaml
+
 failures: list[str] = []
 root = pathlib.Path("docs/90.references")
 template = pathlib.Path("docs/99.templates/templates/common/reference.template.md")
+profiles = yaml.safe_load(
+    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
+)
+generated_outputs = {
+    pathlib.Path(path) for path in profiles["common"]["generated_outputs"]
+}
 
 if not root.is_dir():
     failures.append("missing reference stage folder: docs/90.references")
@@ -3142,7 +3167,7 @@ placeholder_markers = [
     "<topic>",
 ]
 for path in sorted(root.rglob("*.md")) if root.exists() else []:
-    if path.name == "README.md":
+    if path.name == "README.md" or path in generated_outputs:
         continue
     text = path.read_text(errors="ignore")
     lines = text.splitlines()

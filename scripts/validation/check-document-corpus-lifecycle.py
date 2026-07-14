@@ -757,6 +757,7 @@ def generate_manifest_skeleton(
     *,
     wave: str,
     baseline_ref: str,
+    profiles: dict[str, object] | None = None,
 ) -> MigrationManifestDocument:
     """Generate a pending skeleton from exact baseline bytes."""
 
@@ -785,7 +786,7 @@ def generate_manifest_skeleton(
         artifact_type = (
             "generated"
             if "generated_by" in frontmatter
-            else metadata.infer_artifact_type(relative)
+            else metadata.infer_artifact_type(relative, profiles)
         )
         status = frontmatter.get("status")
         rows.append(
@@ -1095,6 +1096,7 @@ def _baseline_merge_owner_findings(
 
 def _held_result_snapshot(
     root: pathlib.Path,
+    profiles: dict[str, object],
     document: MigrationManifestDocument,
     records: collections.abc.Sequence[Record],
     payloads: collections.abc.Mapping[str, bytes],
@@ -1118,7 +1120,7 @@ def _held_result_snapshot(
             continue
         result_payloads[target] = payload
         records_by_path[target] = metadata._record_from_text(
-            pathlib.Path(target), text
+            pathlib.Path(target), text, profiles=profiles
         )
     return (
         tuple(records_by_path[path] for path in sorted(records_by_path)),
@@ -1231,6 +1233,7 @@ def validate_migration_manifest(
         baseline_records = ()
     result_records, result_payloads = _held_result_snapshot(
         root,
+        profiles,
         document,
         canonical_records,
         canonical_payloads,
@@ -1286,7 +1289,7 @@ def validate_migration_manifest(
                         expected_type = (
                             "generated"
                             if "generated_by" in baseline_metadata
-                            else metadata.infer_artifact_type(pathlib.Path(source))
+                            else metadata.infer_artifact_type(pathlib.Path(source), profiles)
                         )
                         if row.artifact_type != expected_type:
                             findings.append(
@@ -1455,7 +1458,7 @@ def validate_migration_manifest(
                     target_record = result_records_by_path.get(target)
                     if target_record is None:
                         target_record = metadata._record_from_text(
-                            pathlib.Path(target), target_text
+                            pathlib.Path(target), target_text, profiles=profiles
                         )
                     target_type = target_record.artifact_type
                     expected_target_type = (
@@ -2099,7 +2102,7 @@ def collect_impacted_records(
 ) -> tuple[Record, ...]:
     """Select changed records and direct semantic dependents only."""
 
-    del profiles, contract
+    del contract
     by_path = {record.path.as_posix(): record for record in records}
     by_id = {
         artifact_id: record.path.as_posix()
@@ -2119,7 +2122,11 @@ def collect_impacted_records(
             continue
         try:
             prior_text = shown.stdout.decode("utf-8")
-            prior = metadata._record_from_text(pathlib.Path(changed_path), prior_text)
+            prior = metadata._record_from_text(
+                pathlib.Path(changed_path),
+                prior_text,
+                profiles=profiles,
+            )
         except UnicodeError:
             continue
         prior_id = prior.metadata.get("artifact_id")
@@ -3112,7 +3119,13 @@ def _safe_corpus_snapshot(
             text = payloads[path].decode("utf-8")
         except UnicodeDecodeError:
             raise _CorpusSafetyError(path, "corpus-markdown-file-invalid") from None
-        records.append(metadata._record_from_text(pathlib.Path(path), text))
+        records.append(
+            metadata._record_from_text(
+                pathlib.Path(path),
+                text,
+                profiles=profiles,
+            )
+        )
     return tuple(records), payloads
 
 
@@ -3380,7 +3393,11 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             return 0
         if args.mode == "generate-manifest":
             document = generate_manifest_skeleton(
-                root, contract, wave=args.wave, baseline_ref=args.base_ref
+                root,
+                contract,
+                wave=args.wave,
+                baseline_ref=args.base_ref,
+                profiles=profiles,
             )
             _write_output(_rooted(root, args.output), render_migration_manifest(document))
             print(f"manifest generated: entries={len(document.entries)}")

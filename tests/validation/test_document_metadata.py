@@ -416,6 +416,30 @@ class ProfileSchemaTests(unittest.TestCase):
             )
         self.assertEqual(set(placeholders.values()), source_values)
 
+    def test_generated_outputs_registry_owns_only_exact_safe_paths(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        self.assertEqual(
+            {
+                "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md":
+                    "scripts/validation/check-document-corpus-lifecycle.py",
+            },
+            profiles["common"]["generated_outputs"],
+        )
+
+        mutations = (
+            lambda values: values["common"]["generated_outputs"].__setitem__(
+                "docs/90.references/data/governance/document-corpus-lifecycle/*.md",
+                "scripts/validation/check-document-corpus-lifecycle.py",
+            ),
+            lambda values: values["common"]["generated_outputs"].__setitem__(
+                "docs/90.references/data/governance/document-corpus-lifecycle/other.md",
+                "../outside-generator.py",
+            ),
+        )
+        for mutate in mutations:
+            with self.subTest(mutate=mutate):
+                self.mutate_and_load(mutate)
+
     def test_archive_profile_has_canonical_v2_order(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         self.assertEqual(2, profiles["schema_version"])
@@ -1196,6 +1220,16 @@ class ArtifactInferenceTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(expected, metadata.infer_artifact_type(pathlib.Path(path)))
 
+    def test_registered_generated_output_overrides_only_its_exact_reference_path(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        generated = pathlib.Path(
+            "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+        )
+        adjacent = generated.with_name("other-summary.md")
+
+        self.assertEqual("generated", metadata.infer_artifact_type(generated, profiles))
+        self.assertEqual("reference", metadata.infer_artifact_type(adjacent, profiles))
+
 
 class TemplateRoleInferenceTests(unittest.TestCase):
     @classmethod
@@ -1582,6 +1616,20 @@ class MetadataValidationTests(unittest.TestCase):
             "generated",
         )
         self.assertIn("type-inappropriate-key", self.codes(record))
+
+    def test_registered_generator_owner_satisfies_generated_profile_without_frontmatter(self) -> None:
+        path = "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+        record = self.record(path, {}, metadata.infer_artifact_type(pathlib.Path(path), self.profiles))
+        self.assertEqual([], self.codes(record))
+
+    def test_registered_generated_owner_rejects_conflicting_frontmatter_owner(self) -> None:
+        path = "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+        record = self.record(
+            path,
+            {"generated_by": "scripts/example.py"},
+            metadata.infer_artifact_type(pathlib.Path(path), self.profiles),
+        )
+        self.assertIn("generated-owner-mismatch", self.codes(record))
 
     def test_freshness_requires_strict_iso_date_or_datetime(self) -> None:
         record = self.record(
@@ -2084,6 +2132,15 @@ class ReadmeProfileTests(unittest.TestCase):
             "scripts/validation/check-document-metadata.py",
             metadata.readme_frontmatter_consumer(stage_path, self.profiles),
         )
+
+    def test_lifecycle_namespace_readme_has_exact_nested_stage_index_route(self) -> None:
+        approved = pathlib.Path(
+            "docs/90.references/data/governance/document-corpus-lifecycle/README.md"
+        )
+        adjacent = approved.parent / "nested" / "README.md"
+
+        self.assertEqual(["stage-index"], metadata.matching_readme_profiles(approved, self.profiles))
+        self.assertEqual([], metadata.matching_readme_profiles(adjacent, self.profiles))
 
     def test_current_audit_readme_count_matches_tracked_corpus(self) -> None:
         result = subprocess.run(
@@ -4858,6 +4915,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         self.assertNotIn("required_templates=(", text)
         self.assertNotIn("heading_requirements:", text)
         self.assertNotIn("operation_forbidden =", text)
+        self.assertGreaterEqual(text.count('profiles["common"]["generated_outputs"]'), 3)
 
     def test_human_support_document_cannot_copy_full_registry_array(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

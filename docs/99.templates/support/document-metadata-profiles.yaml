@@ -33,6 +33,8 @@ common:
     - snapshot_reason
   inventory_excludes:
     - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
+  generated_outputs:
+    docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md: scripts/validation/check-document-corpus-lifecycle.py
   template_placeholders:
     artifact_id: <artifact-id>
     parent_id: <parent-artifact-id>
@@ -85,6 +87,7 @@ readme_profiles:
       - docs/90.references/README.md
       - docs/90.references/*/README.md
       - docs/90.references/*/*/README.md
+      - docs/90.references/data/governance/document-corpus-lifecycle/README.md
     frontmatter: optional
     frontmatter_consumer: scripts/validation/check-document-metadata.py
     allowed_frontmatter_keys: [status]
