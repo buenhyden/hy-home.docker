@@ -1,0 +1,774 @@
+schema_version: 1
+wave: foundation
+baseline_commit: e00e1483e7ab797b354d7c3b22b6d5440e998c14
+generated_by: check-document-corpus-lifecycle.py
+enforcement: advisory
+entries:
+- source_path: docs/00.agent-governance/memory/progress.md
+  target_path: docs/00.agent-governance/memory/progress.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/00.agent-governance/memory/progress.md
+    - git log --format=%H e00e1483..HEAD -- docs/00.agent-governance/memory/progress.md
+    sources:
+    - docs/00.agent-governance/memory/progress.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/00.agent-governance/memory/progress.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/00.agent-governance/memory/progress.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/00.agent-governance/rules/documentation-protocol.md
+  target_path: docs/00.agent-governance/rules/documentation-protocol.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/00.agent-governance/rules/documentation-protocol.md
+    - git log --format=%H e00e1483..HEAD -- docs/00.agent-governance/rules/documentation-protocol.md
+    sources:
+    - docs/00.agent-governance/rules/documentation-protocol.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/00.agent-governance/rules/documentation-protocol.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/00.agent-governance/rules/documentation-protocol.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/00.agent-governance/rules/github-governance.md
+  target_path: docs/00.agent-governance/rules/github-governance.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/00.agent-governance/rules/github-governance.md
+    - git log --format=%H e00e1483..HEAD -- docs/00.agent-governance/rules/github-governance.md
+    sources:
+    - docs/00.agent-governance/rules/github-governance.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/00.agent-governance/rules/github-governance.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/00.agent-governance/rules/github-governance.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/00.agent-governance/rules/stage-authoring-matrix.md
+  target_path: docs/00.agent-governance/rules/stage-authoring-matrix.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/00.agent-governance/rules/stage-authoring-matrix.md
+    - git log --format=%H e00e1483..HEAD -- docs/00.agent-governance/rules/stage-authoring-matrix.md
+    sources:
+    - docs/00.agent-governance/rules/stage-authoring-matrix.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/00.agent-governance/rules/stage-authoring-matrix.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/00.agent-governance/rules/stage-authoring-matrix.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/00.agent-governance/rules/task-checklists.md
+  target_path: docs/00.agent-governance/rules/task-checklists.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/00.agent-governance/rules/task-checklists.md
+    - git log --format=%H e00e1483..HEAD -- docs/00.agent-governance/rules/task-checklists.md
+    sources:
+    - docs/00.agent-governance/rules/task-checklists.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/00.agent-governance/rules/task-checklists.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/00.agent-governance/rules/task-checklists.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/03.specs/README.md
+  target_path: docs/03.specs/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/03.specs/README.md
+    - git log --format=%H e00e1483..HEAD -- docs/03.specs/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/03.specs/README.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/03.specs/README.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/03.specs/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/04.execution/README.md
+  target_path: docs/04.execution/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: preserve
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/04.execution/README.md
+    - git log --format=%H e00e1483..HEAD -- docs/04.execution/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/README.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/README.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/04.execution/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/04.execution/plans/README.md
+  target_path: docs/04.execution/plans/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/04.execution/plans/README.md
+    - git log --format=%H e00e1483..HEAD -- docs/04.execution/plans/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/04.execution/plans/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/04.execution/plans/README.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/04.execution/plans/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/04.execution/tasks/README.md
+  target_path: docs/04.execution/tasks/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/04.execution/tasks/README.md
+    - git log --format=%H e00e1483..HEAD -- docs/04.execution/tasks/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/04.execution/tasks/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/04.execution/tasks/README.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/04.execution/tasks/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/90.references/README.md
+  target_path: docs/90.references/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/90.references/README.md
+    - git log --format=%H e00e1483..HEAD -- docs/90.references/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/README.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/90.references/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/90.references/data/README.md
+  target_path: docs/90.references/data/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/90.references/data/README.md
+    - git log --format=%H e00e1483..HEAD -- docs/90.references/data/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/data/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/data/README.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/90.references/data/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/90.references/data/governance/README.md
+  target_path: docs/90.references/data/governance/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/90.references/data/governance/README.md
+    - git log --format=%H e00e1483..HEAD -- docs/90.references/data/governance/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/data/governance/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/data/governance/README.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/90.references/data/governance/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/98.archive/README.md
+  target_path: docs/98.archive/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/98.archive/README.md
+    - git log --format=%H e00e1483..HEAD -- docs/98.archive/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/98.archive/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/98.archive/README.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/98.archive/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/support/README.md
+  target_path: docs/99.templates/support/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/support/README.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/support/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/README.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/support/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/support/common-document-contract.md
+  target_path: docs/99.templates/support/common-document-contract.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/support/common-document-contract.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/support/common-document-contract.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/common-document-contract.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/common-document-contract.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/support/common-document-contract.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/support/external-source-rationale.md
+  target_path: docs/99.templates/support/external-source-rationale.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/support/external-source-rationale.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/support/external-source-rationale.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/external-source-rationale.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/external-source-rationale.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/support/external-source-rationale.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/support/frontmatter-contract.md
+  target_path: docs/99.templates/support/frontmatter-contract.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/support/frontmatter-contract.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/support/frontmatter-contract.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/frontmatter-contract.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/frontmatter-contract.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/support/frontmatter-contract.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/support/lifecycle-status.md
+  target_path: docs/99.templates/support/lifecycle-status.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/support/lifecycle-status.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/support/lifecycle-status.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/lifecycle-status.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/lifecycle-status.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/support/lifecycle-status.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/support/sdlc-document-contract.md
+  target_path: docs/99.templates/support/sdlc-document-contract.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/support/sdlc-document-contract.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/support/sdlc-document-contract.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/sdlc-document-contract.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/sdlc-document-contract.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/support/sdlc-document-contract.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/support/template-contract.md
+  target_path: docs/99.templates/support/template-contract.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/support/template-contract.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/support/template-contract.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-contract.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-contract.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/support/template-contract.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/support/template-governance.md
+  target_path: docs/99.templates/support/template-governance.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/support/template-governance.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/support/template-governance.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-governance.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-governance.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/support/template-governance.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/support/template-selection.md
+  target_path: docs/99.templates/support/template-selection.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/support/template-selection.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/support/template-selection.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-selection.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-selection.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/support/template-selection.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/templates/common/README.md
+  target_path: docs/99.templates/templates/common/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/templates/common/README.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/templates/common/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/templates/common/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/templates/common/README.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/templates/common/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending
+- source_path: docs/99.templates/templates/common/archive.template.md
+  target_path: docs/99.templates/templates/common/archive.template.md
+  artifact_id: null
+  artifact_type: template-source
+  status_before: draft
+  status_after: draft
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers: []
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483 -- docs/99.templates/templates/common/archive.template.md
+    - git log --format=%H e00e1483..HEAD -- docs/99.templates/templates/common/archive.template.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/templates/common/archive.template.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/templates/common/archive.template.md
+    consumer_scan:
+    - git grep -l --fixed-strings -- 'docs/99.templates/templates/common/archive.template.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483
+    rollback:
+    - git revert --no-commit e00e1483..HEAD
+  review_verdict:
+    specification: pending
+    quality: pending

@@ -142,7 +142,7 @@ Redaction boundary:
 | T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Complete — final range `9126a0aa..9fe234f6`; terminal Spec PASS and Quality retry PASS, each with Critical 0, Important 0, and Minor 1. The sole deferred Minor is behavior-preserving decomposition of the monolithic dispatcher. |
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Complete — reviewed range `133b3daa..160ff097`; terminal Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 0 |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Complete — final reviewed range `1b42a100..46e3ff5e`; terminal Spec PASS and Quality PASS each returned Critical 0, Important 0, Minor 0; I-Q01 mutation closure is confirmed |
-| T-DCLM-005 | Foundation manifest and generated evidence | In progress — metadata remediation range `7fbfab3d..487fb1b1` received terminal Spec PASS C0/I0/M0 and Quality PASS C0/I0/M0; M-Q01 is closed, and authored Foundation baseline work may resume. No canonical manifest has been published yet. |
+| T-DCLM-005 | Foundation manifest and generated evidence | In progress — the reviewed advisory Foundation manifest contains 24 baseline rows: 23 `migrate` and one `preserve`, with pending independent review verdicts and advisory enforcement. Authored routing and evidence are ready for the separate generated-owner follow-up; promotion remains prohibited until independent Task 5 reviews pass. |
 | T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Not run |
 
 ## Work Log
@@ -188,6 +188,7 @@ Redaction boundary:
 | 2026-07-15 | T-DCLM-005 metadata-classification blocker remediation | Fresh bounded metadata remediation agent | Commit `df169722` registers only the approved nested lifecycle README under the Stage 90 stage-index profile and only the exact `foundation-summary.md` path under its canonical lifecycle generator. Metadata, lifecycle, and repository-contract consumers now reuse that registry route, so the generator-owned summary is not forced through typed Reference frontmatter or body contracts. Strict RED reproduced one unclassified README plus five summary violations; focused GREEN passed 5/5, metadata passed 209/209, lifecycle passed 78/78, explicit-base metadata selected 34 with zero violations, and impacted lifecycle selected 302 with zero violations. Repository contracts reduced to one candidate-authored README wording finding (`## Category Role`), which is not a metadata routing or template-instruction defect and remains for the Task 5 implementer. The six candidate paths were preserved byte-for-byte and remain unstaged. No manifest promotion, generated-owner refresh, tombstone, runtime, remote, or all-files action occurred. |
 | 2026-07-15 | T-DCLM-005 metadata Quality-Minor remediation | Fresh bounded remediation agent | Test-only commit `487fb1b1` closes M-Q01 coverage by adding the exact generated-registry README-key mutation to the existing safe-path profile-schema test. The canonical loader already rejects generated output ownership for any `README.md`; production registry, validators, lifecycle, and repository-contract code are unchanged. Focused ProfileSchema GREEN passed 1/1, Python compile and diff hygiene passed, and all Task 5 candidate hashes/untracked state remained unchanged. Fresh quality re-review is required before Foundation authoring resumes. |
 | 2026-07-15 | T-DCLM-005 metadata blocker terminal closure | Fresh specification reviewer and separate quality re-reviewer | The implementation/test range `7fbfab3d..487fb1b1` received terminal Spec PASS C0/I0/M0 and Quality PASS C0/I0/M0. M-Q01 is closed, so Task 5 may resume authored Foundation baseline work. This closure changes evidence only: candidate bytes and untracked state remain unchanged, and no implementation, promotion, runtime, remote, or all-files action occurred. |
+| 2026-07-15 | T-DCLM-005 advisory Foundation baseline | Fresh implementation agent | Classified all 24 immutable-baseline selections without destructive dispositions: 23 `migrate` rows and one `preserve` row. Added the reviewed advisory manifest, namespace and parent routing, and the required local `Category Role`; kept both independent review objects pending and enforcement advisory. Candidate manifest/summary, metadata changed, impacted lifecycle, repository contracts, and four generated-owner freshness checks passed before publication. The generated summary is excluded from the authored commit and follows through its canonical owner in a separate commit. No promotion, corpus leaf, tombstone, archive payload, runtime, workflow, provider, secret, remote state, Task 6, or all-files QA changed. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -402,6 +403,30 @@ T-DCLM-004 actual evidence:
   Focused mutation evidence confirmed removal of either executable helper call
   and each generated recommendation is detected. I-Q01 is closed.
 
+T-DCLM-005 advisory baseline evidence:
+
+- Skeleton review classified all 24 paths selected from immutable baseline
+  `e00e1483` in stable order: 23 `migrate` and one `preserve`. Targets remain
+  source-identical, inapplicable fields remain YAML null, destructive
+  dispositions are absent, and both independent review verdicts remain
+  pending under advisory enforcement.
+- Lifecycle `check-contract`, candidate `check-manifest`, and deterministic
+  candidate `check-summary` passed. Explicit-base `check-impacted` selected
+  302 records with zero violations and retained only the configured advisory
+  warning for the existing Stage 04 Task-directory budget.
+- Metadata changed mode selected 34 records with zero violations, zero legacy
+  exceptions, and zero transition overrides. Repository contracts completed
+  with `failures=0`, including the nested Stage 90 README profile and required
+  `Category Role` heading.
+- Security readiness, audit implementation matrix, LLM Wiki index, and Wiki
+  coverage owner check modes were fresh before the authored publication. The
+  generated Foundation summary remains excluded from the authored logical
+  commit and is refreshed with downstream owners in the next logical commit.
+- Scope inspection found no manifest promotion, corpus leaf, existing
+  tombstone, archive ledger or snapshot, runtime, Compose, infrastructure,
+  deployment, workflow, provider, secret, credential, or remote-state change.
+  Direct all-files pre-commit and Task 6 were not run.
+
 Verification results: T-DCLM-001, T-DCLM-002, and T-DCLM-003 are complete.
 The T-DCLM-003 authored range `133b3daa..160ff097` is GREEN and received
 terminal Spec PASS and separate Quality PASS, each with Critical 0, Important
@@ -414,8 +439,10 @@ of the monolithic dispatcher.
 T-DCLM-004 final range `1b42a100..46e3ff5e` is GREEN and received terminal Spec
 PASS C0/I0/M0 and terminal Quality PASS C0/I0/M0. I-Q01 is closed through the
 recorded mutation RED and reachability/recommendation GREEN. T-DCLM-004 is
-complete. T-DCLM-005 reached only its pre-publication skeleton gate. The full
-blocker remediation range `5e7d33e5..fafc504f` received Spec PASS C0/I0/M0 and
+complete. T-DCLM-005 has now reached its authored advisory Foundation baseline
+with 24 reviewed rows, pending review verdicts, and advisory enforcement. The
+full blocker remediation range `5e7d33e5..fafc504f` received Spec PASS C0/I0/M0
+and
 terminal Quality PASS C0/I0/M0; the prior Minor is closed and Task 5 may resume.
 Commit `df169722` then closed the bounded metadata-classification blocker for
 the approved nested README and exact generator-owned summary path. The
@@ -609,7 +636,19 @@ in `9c4998d6`, but terminal Quality review over `1b42a100..11ff5edb` returned
 Critical 0, Important 1, Minor 0 for missing helper reachability and complete
 per-surface recommendation assertions. I-Q01 was remediated in `25ace7f5`.
 Terminal Spec and Quality re-reviews over `1b42a100..46e3ff5e` both returned
-PASS C0/I0/M0, closing Task 4. Task 5 remains unstarted.
+PASS C0/I0/M0, closing Task 4. At that review boundary, Task 5 remained
+unstarted.
+
+T-DCLM-005 advisory implementer self-review verdict: PASS. Every immutable
+Foundation baseline selection appears exactly once in stable order; the sole
+`preserve` decision is `docs/04.execution/README.md`, and the other 23 rows are
+non-destructive `migrate` decisions with source-identical targets. Evidence
+commands, source paths, repository paths, consumer scans, and rollback commands
+are deterministic and sorted. Review verdicts remain pending and enforcement
+remains advisory. Routing README changes contain only local inventory and
+navigation. The generated summary is excluded from the authored commit, and
+independent specification and quality reviews remain required before any
+blocking promotion or Task 6 work.
 
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 
