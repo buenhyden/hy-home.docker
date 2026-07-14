@@ -5,8 +5,6 @@ artifact_type: task
 parent_ids:
   - plan:2026-07-13-document-contract-canonicalization
 ---
-<!-- Target: docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md -->
-
 # Task: Document Contract Canonicalization
 
 ## Overview
@@ -29,7 +27,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 - **Registry**:
   [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 
-## Working Rules
+## Goals and Non-goals
 
 - Execute one task at a time with a fresh implementer and separate reviewer.
 - Use RED/GREEN for code, validator, parser, template, and repository-gate
@@ -46,7 +44,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 - Never run direct all-files pre-commit. Reserve the controlled wrapper for
   T-DCC-006 from an initially clean linked worktree.
 
-## Approved Surface Evidence
+## Scope and Change Boundaries
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -58,7 +56,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | Controlled pre-commit | User-approved wrapper design | Final clean linked-worktree QA gate | Clean Git status and wrapper contract | Command/path evidence in this ledger | Stop on unexpected paths; do not clean/hide output | Git-visible, non-ignored repository paths only |
 | Post-closure lifecycle reopening | User directive after the `e2954cc3..7d5fbb56` post-closure review returned Spec FAIL / Quality CHANGES REQUIRED | Spec 129, its Plan/Task, parent indexes, WRE-10 current truth, and progress memory | Closed lifecycle at `7d5fbb56`; post-closure C0/I2/M0; `READY_FOR_HANDOFF: NO` | Active lifecycle, T-DCC-006 Review Pending, bounded fixes and fresh re-review required | Revert the logical reopening commit only if the review evidence is withdrawn; otherwise retain active state until approval | Documentation and validation evidence only; no runtime, secret, workflow, provider/model, or remote mutation |
 
-## Task Table
+## Work Breakdown
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -69,7 +67,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-005 | Integrate fail-closed repository and CI enforcement. | impl/test/ci | Validator Interfaces; VAL-129-007 | Task 5 | Adversarial tests, repo contracts, workflow security, review | QA / CI Engineer | Done |
 | T-DCC-006 | Regenerate evidence, run full QA/wrapper, review the branch, and close. | test/doc/eval | Verification; VAL-129-007/008 | Task 6 | Post-closure remediation, reclosure review, final handoff review | QA / Documentation Lead | Done |
 
-## Phase View
+## Work Log
 
 ### Phase 1 — Executable Foundation
 
@@ -86,7 +84,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 - [x] T-DCC-005 Repository and CI contract enforcement
 - [x] T-DCC-006 Generated evidence, full QA, reviews, and closure
 
-## Review Ledger
+## Review Evidence
 
 ### T-DCC-001 Implementation Evidence
 
@@ -635,7 +633,13 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 | T-DCC-005 | `bded61ce`, `556ba98d`, `dc75443b` | PASS | Approved | Round 1 C0/I2/M0 and re-review C0/I1/M0; all template/array bypasses resolved; final C0/I0/M0 | `review-ac63469a..dc75443b.diff`; combined reviewer final verdict | Done |
 | T-DCC-006 | `fd0dfe57`, `ecac0fb2`, `efe77ecf`, `1c2ac7eb`, `431435c1`, `0eec79fa`, `7d5fbb56`, `12c3f602`, `7e2de3ba`, `5e50d600`, `0d86e4cd`, `1d6fe05d`, `9244cdba` | PASS | Approved | Post-closure C0/I2/M0 and reclosure C0/I1/M0 findings resolved; reclosure and final handoff reviews both C0/I0/M0; READY_FOR_HANDOFF YES | `review-e2954cc3..0d86e4cd.diff`; I-03 re-review; final `review-e2954cc3..9244cdba.diff` | Done |
 
-## Verification Summary
+## Commit Ledger
+
+The implementation commit identities remain in the per-task review tables
+above. This preservation migration does not alter those hashes, logical units,
+or independent verdicts.
+
+## Verification Evidence
 
 - **Current review gate**: the post-closure review of
   `e2954cc3..7d5fbb56` returned C0/I2/M0. After I-01/I-02 remediation, the
@@ -708,7 +712,7 @@ process/filesystem sandbox.
   only; scope, validation, rollback, and protected-surface boundaries remain
   unchanged.
 
-## Program Follow-up Boundary
+## Deferred and Blocked Items
 
 Completion of this task authorizes no automatic continuation. Later sub-project
 Specs must independently own README/instruction migration, SDLC definition

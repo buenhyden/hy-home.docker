@@ -40,8 +40,34 @@ the registry.
 | Postmortem | Why did the incident occur, what was learned, and which owned actions prevent recurrence? | The incident is stable enough for reviewed learning. | Requirements, architecture, Specs, plans, policies, and runbooks receive approved follow-up. |
 | Release | What real release event occurred, which immutable artifacts and approvals support it, and what was the outcome? | A release has actual artifact, validation, approval, rollout or rollback, and outcome evidence. | Operators, users, audits, and later releases consume the event record. |
 
+## Operations Evidence Semantics
+
+A Runbook is executable only when its body makes prerequisites, safety
+conditions, ordered steps, expected results, and a verification record
+explicit. That record names the environment, the command or procedure used,
+its result, and where the evidence is retained. An automation handoff names
+the candidate or invocation while preserving the boundary where human or
+operator judgment is required; rollback or recovery remains the procedure's
+separate recovery boundary.
+
+An Incident body owns the event severity, incident leadership, current
+response state, response actions, mitigation, resolution, and handoff. These
+facts remain body evidence and do not create a second lifecycle-state key in
+frontmatter.
+
+A reviewed Postmortem keeps each follow-up as an owned, prioritized action with
+a stable tracking identity and verification ownership. A Release binds its
+immutable release identity, version or tag, commit, immutable artifact
+evidence, validation, approvals, compatibility, rollout or rollback, outcome,
+and known issues into one event record.
+
 ## Lifecycle and Relation Semantics
 
+- An Incident may start as a root record when no verified Runbook parent exists;
+  link a Runbook parent only when that direct relationship is evidenced. A
+  Postmortem remains a strict child of its paired Incident, and a Release
+  remains a strict child of real Spec, Plan, or Task evidence. Do not invent a
+  parent merely to populate frontmatter.
 - Use the target profile's lifecycle state honestly. A template source's draft
   state is not automatic evidence that a copied target is draft.
 - Forward, terminal, and exceptional transitions are interpreted only by the
@@ -73,6 +99,19 @@ execution remain in a separately approved technical and operational chain.
 5. Link upstream and downstream owners without copying their contracts.
 6. Record validation, deviations, protected-surface evidence, and review in the
    active Stage 04 task.
+
+## Iterative Feedback
+
+The forward route is PRD to architecture and decisions, then Spec and focused
+contracts, Plan, Task evidence, Release evidence, and Operations. It is a set
+of review gates, not a one-way waterfall. Evidence can route work back to the
+earliest owner that must change: an Incident or Postmortem can create a
+requirement; an operational finding can supersede an ADR; validation can revise
+a Spec or test contract; repeated procedure failure can revise Policy or
+Runbook; and a Release outcome can create a follow-up Plan and Task.
+
+Keep stable identities and links in both directions. Do not copy a requirement,
+decision, or result into a second artifact as competing truth.
 
 ## Related Documents
 

@@ -4,84 +4,41 @@ artifact_id: <artifact-id>
 artifact_type: ard
 parent_ids: [<parent-artifact-id>]
 ---
-<!-- Target: docs/02.architecture/requirements/####-<system-or-domain>.md -->
 
-# [System or Domain Name] Architecture Reference Document (ARD)
+# {{title}}
 
-> Use this template for `docs/02.architecture/requirements/####-<system-or-domain>.md`.
->
-> Rules:
->
-> - Keep ARD architectural.
-> - File-level implementation detail belongs in the Spec.
-> - Use one `Overview` summary near the top.
-> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
-> - Replace example links with real target-relative links, or delete unused examples before saving.
->
-> Target-relative examples from `docs/02.architecture/requirements/####-<system-or-domain>.md`:
->
-> - PRD: `../../01.requirements/NNN-feature-or-system.md`
-> - ADR: `../decisions/####-short-title.md`
-> - Spec: `../../03.specs/NNN-feature-id/spec.md`
-> - Plan: `../../04.execution/plans/YYYY-MM-DD-feature.md`
-> - Task: `../../04.execution/tasks/YYYY-MM-DD-feature-or-stream.md`
-> - Operations: `../../05.operations/README.md`
+## Overview and Context
 
----
+{{overview_and_context}}
 
-## Overview
+## Stakeholders and Concerns
 
-이 문서는 [시스템 또는 도메인명]의 참조 아키텍처와 품질 속성을 정의한다. 시스템 경계, 책임, 데이터 흐름, 운영 관점을 정리하는 기준 문서다.
+{{stakeholders_and_concerns}}
 
-## Summary
+## Boundaries and Constraints
 
-[What this system owns and why.]
-
-## Boundaries & Non-goals
-
-- **Owns**:
-- **Consumes**:
-- **Does Not Own**:
-- **Non-goals**:
+{{boundaries_and_constraints}}
 
 ## Quality Attributes
 
-- **Performance**:
-- **Security**:
-- **Reliability**:
-- **Scalability**:
-- **Observability**:
-- **Operability**:
+{{quality_attributes}}
 
-## System Overview & Context
+## Architecture Views
 
-[High-level architecture and context.]
+{{architecture_views}}
 
-## Data Architecture
+## Data and Infrastructure
 
-- **Key Entities / Flows**:
-- **Storage Strategy**:
-- **Data Boundaries**:
+{{data_and_infrastructure}}
 
-## Infrastructure & Deployment
+## Decision and Requirement Traceability
 
-- **Runtime / Platform**:
-- **Deployment Model**:
-- **Operational Evidence**:
+{{decision_and_requirement_traceability}}
 
-## AI Agent Architecture Requirements (If Applicable)
+## AI Agent Architecture
 
-- **Model/Provider Strategy**:
-- **Tooling Boundary**:
-- **Memory & Context Strategy**:
-- **Guardrail Boundary**:
-- **Latency / Cost Budget**:
+{{ai_agent_architecture}}
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/NNN-<feature-or-system>.md](../../01.requirements/NNN-<feature-or-system>.md)
-- **Spec**: [../../03.specs/NNN-<feature-id>/spec.md](../../03.specs/NNN-<feature-id>/spec.md)
-- **Plan**: [../../04.execution/plans/YYYY-MM-DD-<feature>.md](../../04.execution/plans/YYYY-MM-DD-<feature>.md)
-- **Task**: [../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md](../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md)
-- **ADR**: [../decisions/####-<short-title>.md](../decisions/####-<short-title>.md)
-- **Operations**: [../../05.operations/README.md](../../05.operations/README.md)
+{{related_documents}}

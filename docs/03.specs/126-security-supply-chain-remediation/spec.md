@@ -6,8 +6,6 @@ parent_ids:
   - spec:123-agentic-engineering-audit-remediation
 ---
 
-<!-- Target: docs/03.specs/126-security-supply-chain-remediation/spec.md -->
-
 # Security Supply-Chain Remediation Technical Specification (Spec)
 
 ## Overview
@@ -33,7 +31,7 @@ runtime or supply-chain implementation.
 - Do not choose scanner, SBOM format, signer, identity provider, registry,
   retention, publication, or blocking mode in this draft.
 
-## Related Inputs
+## Boundaries and Inputs
 
 - **PRD**: Unresolved prerequisite for protected artifact/product scope,
   compliance/risk objectives, vulnerability tolerance, release impact, and
@@ -135,7 +133,7 @@ tracked. The version-provenance snapshot covers declarations only.
   local fixture/advisory mode -> reviewed CI advisory -> exception/false-positive
   review -> separately approved blocking/promotion integration.
 
-## Interfaces & Data Structures
+## Interfaces and Data
 
 ### Core Interfaces
 
@@ -213,7 +211,7 @@ or secret-bearing logs in tracked evidence or memory.
 - Signature verifies cryptographically but identity/policy is wrong: reject.
 - Scorecard produces a score: treat checks as advisory findings, not maturity.
 
-## Failure Modes & Fallback / Human Escalation
+## Failure Modes and Guardrails
 
 - **Failure Mode**: Target/digest/identity/policy mismatch, tool failure,
   unhandled finding, expired exception, or evidence publication failure.

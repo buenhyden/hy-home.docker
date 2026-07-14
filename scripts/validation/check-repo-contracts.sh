@@ -67,38 +67,9 @@ for d in "${allowed_docs[@]}"; do
   fi
 done
 
-section "Template inventory"
-required_templates=(
-  "templates/common/archive.template.md"
-  "templates/common/readme.template.md"
-  "templates/common/reference.template.md"
-  "templates/governance/harness-task-contract.template.md"
-  "templates/governance/memory.template.md"
-  "templates/governance/progress.template.md"
-  "templates/operations/guide.template.md"
-  "templates/operations/incident.template.md"
-  "templates/operations/policy.template.md"
-  "templates/operations/postmortem.template.md"
-  "templates/operations/runbook.template.md"
-  "templates/sdlc/adr.template.md"
-  "templates/sdlc/ard.template.md"
-  "templates/sdlc/plan.template.md"
-  "templates/sdlc/prd.template.md"
-  "templates/sdlc/spec.template.md"
-  "templates/sdlc/task.template.md"
-  "templates/spec-contracts/agent-design.template.md"
-  "templates/spec-contracts/api-spec.template.md"
-  "templates/spec-contracts/data-model.template.md"
-  "templates/spec-contracts/openapi.template.yaml"
-  "templates/spec-contracts/schema.template.graphql"
-  "templates/spec-contracts/service.template.md"
-  "templates/spec-contracts/service.template.proto"
-  "templates/spec-contracts/tests.template.md"
-)
-
-for template in "${required_templates[@]}"; do
-  [[ -f "docs/99.templates/$template" ]] || fail "missing template: docs/99.templates/$template"
-done
+section "Template inventory routing"
+# Exact source inventory and template body semantics are owned by the Python
+# checker and its canonical registry. This shell keeps only placement routing.
 
 mapfile -t misplaced_templates < <(
   find docs -type f \
@@ -119,6 +90,8 @@ import pathlib
 import re
 import sys
 
+import yaml
+
 failures: list[str] = []
 templates_root = pathlib.Path("docs/99.templates/templates")
 stage99_root = pathlib.Path("docs/99.templates")
@@ -138,6 +111,18 @@ durable_marker_re = re.compile(
     r")\b",
     flags=re.I,
 )
+profiles = yaml.safe_load(
+    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
+)
+registered_markdown_sources = {
+    pathlib.Path(role["source"])
+    for role in profiles["template_roles"].values()
+    if role["source"].endswith(".md")
+}
+governance_markdown_sources = {
+    pathlib.Path(profiles["template_roles"][role_name]["source"])
+    for role_name in ("memory", "progress")
+}
 
 
 def top_frontmatter(text: str) -> list[tuple[int, str]]:
@@ -179,14 +164,21 @@ def nearby_routes_to_support(lines: list[str], index: int, window: int = 2) -> b
 for path in sorted(templates_root.rglob("*.template.md")):
     text = path.read_text(errors="ignore")
     frontmatter = top_frontmatter(text)
-    if not frontmatter or frontmatter[0][1] != "status: draft":
+    frontmatter_values = [value for _, value in frontmatter]
+    if path in governance_markdown_sources:
+        if frontmatter_values != ["layer: agentic", "status: draft"]:
+            failures.append(
+                f"{path}: governance template frontmatter must be exactly layer: agentic and status: draft"
+            )
+    elif not frontmatter or frontmatter[0][1] != "status: draft":
         failures.append(
             f"{path}: Markdown template frontmatter must start with status: draft"
         )
-    if "Target:" not in text:
-        failures.append(f"{path}: Markdown template missing Target path guidance")
-    if "target-relative" not in text.lower():
-        failures.append(f"{path}: Markdown template missing target-relative guidance")
+    if path not in registered_markdown_sources:
+        if "Target:" not in text:
+            failures.append(f"{path}: Markdown template missing Target path guidance")
+        if "target-relative" not in text.lower():
+            failures.append(f"{path}: Markdown template missing target-relative guidance")
     if "## Related Documents" not in text:
         failures.append(f"{path}: Markdown template missing ## Related Documents")
 
@@ -242,13 +234,13 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Approved surface evidence template"
-if ! grep -q "^## Approved Surface Evidence" docs/99.templates/templates/sdlc/task.template.md; then
-  echo "FAIL: docs/99.templates/templates/sdlc/task.template.md must include Approved Surface Evidence for high-risk work" >&2
+section "Approval evidence template"
+if ! grep -q "^## Approval Evidence" docs/99.templates/templates/sdlc/task.template.md; then
+  echo "FAIL: docs/99.templates/templates/sdlc/task.template.md must include conditional Approval Evidence" >&2
   failures=$((failures + 1))
 fi
-if ! grep -q "policy, runtime, CI, templates, secrets, remote GitHub, model policy, or provider" docs/99.templates/templates/sdlc/task.template.md; then
-  echo "FAIL: task.template.md Approved Surface Evidence must name high-risk surface classes" >&2
+if ! grep -q "policy, runtime, CI, templates, secrets, remote GitHub" docs/00.agent-governance/rules/task-checklists.md; then
+  echo "FAIL: Stage 00 task checklist must retain high-risk surface classes" >&2
   failures=$((failures + 1))
 fi
 
@@ -683,13 +675,9 @@ literal_requirements = {
         "YYYY/INC-###-incident-title/",
         "postmortem.md",
     ],
-    pathlib.Path("docs/99.templates/templates/operations/incident.template.md"): [
+    pathlib.Path("docs/99.templates/support/template-selection.md"): [
         "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md",
-        "./postmortem.md",
-    ],
-    pathlib.Path("docs/99.templates/templates/operations/postmortem.template.md"): [
         "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md",
-        "./INC-###-incident-title.md",
     ],
     pathlib.Path("docs/00.agent-governance/rules/documentation-protocol.md"): [
         "docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md",
@@ -1956,16 +1944,40 @@ import pathlib
 import re
 import sys
 
+import yaml
+
 failures: list[str] = []
+profiles = yaml.safe_load(
+    pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
+)
+registered_markdown_sources = {
+    pathlib.Path(role["source"])
+    for role in profiles["template_roles"].values()
+    if role["source"].endswith(".md")
+}
+governance_markdown_sources = {
+    pathlib.Path(profiles["template_roles"][role_name]["source"])
+    for role_name in ("memory", "progress")
+}
 for path in sorted(pathlib.Path("docs/99.templates/templates").rglob("*.template.md")):
     text = path.read_text(errors="ignore")
     lines = text.splitlines()
-    if len(lines) < 3 or lines[:2] != ["---", "status: draft"] or "---" not in lines[2:]:
+    if path in governance_markdown_sources:
+        valid_frontmatter = len(lines) >= 4 and lines[:4] == [
+            "---",
+            "layer: agentic",
+            "status: draft",
+            "---",
+        ]
+    else:
+        valid_frontmatter = len(lines) >= 3 and lines[:2] == ["---", "status: draft"] and "---" in lines[2:]
+    if not valid_frontmatter:
         failures.append(f"{path}: Markdown template frontmatter must start with status: draft")
-    if "Target:" not in text:
-        failures.append(f"{path}: template missing Target path guidance")
-    if "Target-relative" not in text:
-        failures.append(f"{path}: template missing target-relative link guidance")
+    if path not in registered_markdown_sources:
+        if "Target:" not in text:
+            failures.append(f"{path}: template missing Target path guidance")
+        if "Target-relative" not in text:
+            failures.append(f"{path}: template missing target-relative link guidance")
     if "## Related Documents" not in text:
         failures.append(f"{path}: template missing ## Related Documents")
     in_related_documents = False
@@ -2386,776 +2398,13 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Changed stage document template gate"
-if ! python3 - <<'PY'; then
-from __future__ import annotations
-
-import os
-import pathlib
-import re
-import subprocess
-import sys
-
-failures: list[str] = []
-repo_root = pathlib.Path(".").resolve()
-stage_roots = tuple(
-    pathlib.Path(path)
-    for path in [
-        "docs/01.requirements",
-        "docs/02.architecture",
-        "docs/03.specs",
-        "docs/04.execution",
-        "docs/05.operations",
-        "docs/90.references",
-        "docs/98.archive",
-    ]
-)
-tracked_suffixes = {".md", ".yaml", ".yml", ".graphql", ".proto"}
-
-
-def run_git(args: list[str]) -> list[str]:
-    try:
-        completed = subprocess.run(
-            ["git", *args],
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            text=True,
-        )
-    except subprocess.CalledProcessError:
-        return []
-    return [line.strip() for line in completed.stdout.splitlines() if line.strip()]
-
-
-def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
-    try:
-        path.relative_to(root)
-    except ValueError:
-        return False
-    return True
-
-
-def changed_paths() -> set[pathlib.Path]:
-    paths: set[str] = set()
-    paths.update(run_git(["diff", "--name-only", "--diff-filter=AM"]))
-    paths.update(run_git(["diff", "--cached", "--name-only", "--diff-filter=AM"]))
-    paths.update(run_git(["ls-files", "--others", "--exclude-standard"]))
-
-    base_refs: list[str] = []
-    explicit_base = os.environ.get("TEMPLATE_GATE_BASE")
-    github_base = os.environ.get("GITHUB_BASE_REF")
-    if explicit_base:
-        base_refs.append(explicit_base)
-    if github_base:
-        base_refs.extend([f"origin/{github_base}", github_base])
-
-    for ref in base_refs:
-        merge_base = run_git(["merge-base", "HEAD", ref])
-        if not merge_base:
-            continue
-        paths.update(run_git(["diff", "--name-only", "--diff-filter=AM", f"{merge_base[0]}...HEAD"]))
-        break
-
-    return {pathlib.Path(path) for path in paths}
-
-
-def target_stage_doc(path: pathlib.Path) -> bool:
-    if not path.exists() or not path.is_file():
-        return False
-    if path.suffix.lower() not in tracked_suffixes:
-        return False
-    return any(is_relative_to(path, root) for root in stage_roots)
-
-
-def classify(path: pathlib.Path) -> str | None:
-    if path.suffix.lower() == ".md" and path.name == "README.md":
-        return "README"
-
-    if is_relative_to(path, pathlib.Path("docs/01.requirements")) and path.suffix == ".md":
-        return "PRD"
-
-    if is_relative_to(path, pathlib.Path("docs/02.architecture/requirements")) and path.suffix == ".md":
-        return "ARD"
-    if is_relative_to(path, pathlib.Path("docs/02.architecture/decisions")) and path.suffix == ".md":
-        return "ADR"
-
-    specs_root = pathlib.Path("docs/03.specs")
-    if is_relative_to(path, specs_root):
-        rel = path.relative_to(specs_root)
-        if path.suffix == ".md" and len(rel.parts) == 2:
-            return {
-                "spec.md": "Spec",
-                "open-webui.md": "Spec",
-                "api-spec.md": "API Spec",
-                "agent-design.md": "Agent Design",
-                "data-model.md": "Data Model",
-                "tests.md": "Tests",
-            }.get(rel.parts[1])
-        if len(rel.parts) == 3 and rel.parts[1] == "contracts":
-            filename = rel.parts[2]
-            if filename in {"openapi.yaml", "openapi.yml"}:
-                return "OpenAPI Contract"
-            if filename == "schema.graphql":
-                return "GraphQL Contract"
-            if filename == "service.proto":
-                return "Protobuf Contract"
-        return None
-
-    if is_relative_to(path, pathlib.Path("docs/04.execution/plans")) and path.suffix == ".md":
-        return "Plan"
-    if is_relative_to(path, pathlib.Path("docs/04.execution/tasks")) and path.suffix == ".md":
-        return "Task"
-
-    operations_root = pathlib.Path("docs/05.operations")
-    if is_relative_to(path, operations_root) and path.suffix == ".md":
-        rel = path.relative_to(operations_root)
-        if not rel.parts:
-            return None
-        if rel.parts[0] == "guides":
-            return "Operation Guide"
-        if rel.parts[0] == "policies":
-            return "Operation Policy"
-        if rel.parts[0] == "runbooks":
-            return "Operation Runbook"
-        if rel.parts[0] == "incidents":
-            return "Postmortem" if "postmortem" in path.stem else "Incident"
-        return None
-
-    if is_relative_to(path, pathlib.Path("docs/90.references")) and path.suffix == ".md":
-        return "Reference"
-    if is_relative_to(path, pathlib.Path("docs/98.archive")) and path.suffix == ".md":
-        return "Archive Tombstone"
-
-    return None
-
-
-heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
-    "README": [
-        ("Overview", ("## Overview",)),
-        ("Audience", ("## Audience",)),
-        ("Scope", ("## Scope",)),
-        ("Structure", ("## Structure",)),
-        ("How to Work", ("## How to Work in This Area",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "PRD": [
-        ("Overview", ("## Overview",)),
-        ("Vision", ("## Vision",)),
-        ("Problem Statement", ("## Problem Statement",)),
-        ("Functional Requirements", ("## Functional Requirements",)),
-        ("Success Criteria", ("## Success Criteria",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "ARD": [
-        ("Overview", ("## Overview",)),
-        ("Summary", ("## Summary",)),
-        ("Boundaries", ("## Boundaries & Non-goals",)),
-        ("Quality Attributes", ("## Quality Attributes",)),
-        ("System Overview", ("## System Overview & Context",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "ADR": [
-        ("Overview", ("## Overview",)),
-        ("Context", ("## Context",)),
-        ("Decision", ("## Decision",)),
-        ("Explicit Non-goals", ("## Explicit Non-goals",)),
-        ("Consequences", ("## Consequences", "## Consequence")),
-        ("Alternatives", ("## Alternatives", "## Alternatives Considered")),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Spec": [
-        ("Overview", ("## Overview",)),
-        ("Boundaries", ("## Strategic Boundaries & Non-goals",)),
-        ("Related Inputs", ("## Related Inputs",)),
-        ("Contracts", ("## Contracts",)),
-        ("Core Design", ("## Core Design",)),
-        ("Verification", ("## Verification",)),
-        ("Success Criteria", ("## Success Criteria & Verification Plan",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "API Spec": [
-        ("Overview", ("## Overview",)),
-        ("Parent Spec", ("## Parent Spec",)),
-        ("Scope", ("## Scope & Non-goals",)),
-        ("API Style", ("## API Style",)),
-        ("Operations", ("## Endpoint / Operation Catalog",)),
-        ("Verification", ("## Verification",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Agent Design": [
-        ("Overview", ("## Overview",)),
-        ("Parent Documents", ("## Parent Documents",)),
-        ("Agent Role", ("## Agent Role",)),
-        ("Inputs / Outputs", ("## Inputs / Outputs",)),
-        ("Tools", ("## Tools & Permissions",)),
-        ("Evaluation", ("## Evaluation Plan",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Data Model": [
-        ("Overview", ("## Overview",)),
-        ("Parent Documents", ("## Parent Documents",)),
-        ("Entities", ("## Entities / Aggregates",)),
-        ("Relationships", ("## Relationships",)),
-        ("Validation", ("## Validation & Integrity Rules",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Tests": [
-        ("Overview", ("## Overview",)),
-        ("Parent Documents", ("## Parent Documents",)),
-        ("Verification Goals", ("## Verification Goals",)),
-        ("Test Matrix", ("## Test Matrix",)),
-        ("How to Run", ("## How to Run",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Plan": [
-        ("Overview", ("## Overview",)),
-        ("Context", ("## Context",)),
-        ("Goals", ("## Goals & In-Scope",)),
-        ("Work Breakdown", ("## Work Breakdown", "## Work Breakdown (WBS)")),
-        ("Verification Plan", ("## Verification Plan",)),
-        ("Completion Criteria", ("## Completion Criteria",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Task": [
-        ("Overview", ("## Overview",)),
-        ("Inputs", ("## Inputs",)),
-        ("Working Rules", ("## Working Rules",)),
-        ("Task Table", ("## Task Table",)),
-        ("Verification Summary", ("## Verification Summary",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Operation Guide": [
-        ("Overview", ("## Overview",)),
-        ("Usage", ("## Usage", "### Usage")),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Operation Policy": [
-        ("Overview", ("## Overview",)),
-        ("Policy Scope", ("## Policy Scope", "### Policy Scope")),
-        ("Controls", ("## Controls", "### Controls")),
-        ("Verification", ("## Verification", "### Verification")),
-        ("Review Cadence", ("## Review Cadence", "### Review Cadence")),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Operation Runbook": [
-        ("Overview", ("## Overview",)),
-        ("When to Use", ("## When to Use", "### When to Use")),
-        ("Procedure", ("## Procedure", "### Procedure", "#### Procedure")),
-        ("Evidence", ("## Evidence", "### Evidence", "#### Evidence")),
-        ("Rollback or Recovery", ("## Rollback or Recovery", "### Rollback or Recovery", "#### Rollback or Recovery")),
-        ("Escalation", ("## Escalation", "### Escalation", "#### Escalation")),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Incident": [
-        ("Overview", ("## Overview",)),
-        ("Incident Metadata", ("## Incident Metadata",)),
-        ("Incident Summary", ("## Incident Summary",)),
-        ("Impact", ("## Impact",)),
-        ("Timeline", ("## Timeline",)),
-        ("Evidence", ("## Evidence",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Postmortem": [
-        ("Overview", ("## Overview",)),
-        ("Incident Summary", ("## Incident Summary",)),
-        ("Impact", ("## Impact",)),
-        ("Timeline", ("## Timeline",)),
-        ("Root Cause", ("## Root Cause Analysis",)),
-        ("Action Items", ("## Action Items",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Reference": [
-        ("Overview", ("## Overview",)),
-        ("Purpose", ("## Purpose",)),
-        ("Repository Role", ("## Repository Role",)),
-        ("Scope", ("## Scope",)),
-        ("Definitions / Facts", ("## Definitions / Facts",)),
-        ("Sources", ("## Sources",)),
-        ("Maintenance", ("## Maintenance",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Archive Tombstone": [
-        ("Overview", ("## Overview",)),
-        ("Archive Metadata", ("## Archive Metadata",)),
-        ("Current Replacement", ("## Current Replacement",)),
-        ("Archive Ledger", ("## Archive Ledger",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-}
-
-contract_requirements = {
-    "OpenAPI Contract": ("# Target:", "# Cross-links:", "openapi:", "info:", "paths:"),
-    "GraphQL Contract": ("# Target:", "# Cross-links:", "schema {", "type Query"),
-    "Protobuf Contract": ("// Target:", "// Cross-links:", 'syntax = "proto3";', "service "),
-}
-
-operation_forbidden = {
-    "Operation Guide": ["## Policy Scope", "## Controls", "## Review Cadence", "### When to Use", "#### Procedure"],
-    "Operation Policy": ["## Usage", "## Runbook Handoff", "### When to Use", "#### Procedure"],
-    "Operation Runbook": ["## Usage", "## Policy Scope", "## Controls", "## Exceptions", "## Review Cadence"],
-}
-
-placeholder_patterns = [
-    re.compile(r"YYYY-MM-DD-<[^>\n]+>"),
-    re.compile(r"####-<[^>\n]+>"),
-    re.compile(r"<(?:feature-id|feature|topic|item|category|system-or-domain|system-or-domain-name|short-title|bucket|domain|subdomain|incident-title)>"),
-    re.compile(r"\[(?:Feature|System|State|What|Why|Requirement|Metric|Risk|Role|Need|Source|Owner|Update|Item|How this|Scope)[^\]\n]*\](?!\()"),
-]
-placeholder_literals = [
-    "{Topic Name}",
-    "{Guide | Policy | Runbook}",
-    "{One-line",
-    "{Explain",
-    "{Describe",
-    "{List",
-    "{Owner}",
-    "{Review Cadence}",
-    "{Update Trigger}",
-    "{What this source supports}",
-    "{Current",
-    "{Last",
-    "{Recovery",
-    "{Escalation",
-    "{Expected",
-]
-
-
-def validate_text(path: pathlib.Path, doc_type: str, text: str) -> None:
-    if doc_type in heading_requirements:
-        if "Target:" not in text:
-            failures.append(f"{path}: changed {doc_type} document missing template Target guidance")
-        for group_name, alternatives in heading_requirements[doc_type]:
-            if not any(heading in text for heading in alternatives):
-                expected = " or ".join(alternatives)
-                failures.append(f"{path}: changed {doc_type} document missing template heading {group_name}: {expected}")
-        for literal in operation_forbidden.get(doc_type, []):
-            if literal in text:
-                failures.append(f"{path}: changed {doc_type} document contains wrong operation profile heading: {literal}")
-
-    elif doc_type in contract_requirements:
-        for literal in contract_requirements[doc_type]:
-            if literal not in text:
-                failures.append(f"{path}: changed {doc_type} missing contract template literal: {literal}")
-
-    for pattern in placeholder_patterns:
-        match = pattern.search(text)
-        if match:
-            failures.append(f"{path}: unresolved template placeholder remains: {match.group(0)}")
-    for literal in placeholder_literals:
-        if literal in text:
-            failures.append(f"{path}: unresolved template placeholder remains: {literal}")
-
-
-def normalized_target_doc(doc_type: str, text: str) -> bool:
-    if doc_type in contract_requirements:
-        return True
-    headings = heading_requirements.get(doc_type, ())
-    if not headings:
-        return False
-    if not all(any(heading in text for heading in alternatives) for _, alternatives in headings):
-        return False
-    if any(pattern.search(text) for pattern in placeholder_patterns):
-        return False
-    return not any(literal in text for literal in placeholder_literals)
-
-
-changed_stage_docs = sorted(path for path in changed_paths() if target_stage_doc(path))
-normalized_changed_docs = 0
-legacy_changed_docs = 0
-print(f"changed_template_docs_total={len(changed_stage_docs)}")
-
-for path in changed_stage_docs:
-    doc_type = classify(path)
-    if doc_type is None:
-        failures.append(f"{path}: unknown target-stage document type; add a docs/99.templates mapping before editing")
-        continue
-    text = path.read_text(errors="ignore")
-    if not normalized_target_doc(doc_type, text):
-        legacy_changed_docs += 1
-        continue
-    normalized_changed_docs += 1
-    validate_text(path, doc_type, text)
-
-print(f"normalized_changed_template_docs_total={normalized_changed_docs}")
-print(f"legacy_changed_template_docs_skipped={legacy_changed_docs}")
-
-if legacy_changed_docs:
-    failures.append(
-        f"changed target-stage documents must be normalized; legacy_changed_template_docs_skipped={legacy_changed_docs}"
-    )
-
-if failures:
-    for failure in failures:
-        print(f"FAIL: {failure}", file=sys.stderr)
-    sys.exit(1)
-PY
-  failures=$((failures + 1))
-fi
-
-section "Normalized target-stage document template contracts"
-if ! python3 - <<'PY'; then
-from __future__ import annotations
-
-import pathlib
-import re
-import sys
-
-failures: list[str] = []
-stage_roots = tuple(
-    pathlib.Path(path)
-    for path in [
-        "docs/01.requirements",
-        "docs/02.architecture",
-        "docs/03.specs",
-        "docs/04.execution",
-        "docs/05.operations",
-        "docs/90.references",
-        "docs/98.archive",
-    ]
-)
-tracked_suffixes = {".md", ".yaml", ".yml", ".graphql", ".proto"}
-
-
-def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
-    try:
-        path.relative_to(root)
-    except ValueError:
-        return False
-    return True
-
-
-def target_stage_doc(path: pathlib.Path) -> bool:
-    if not path.exists() or not path.is_file():
-        return False
-    if path.suffix.lower() not in tracked_suffixes:
-        return False
-    return any(is_relative_to(path, root) for root in stage_roots)
-
-
-def classify(path: pathlib.Path) -> str | None:
-    if path.suffix.lower() == ".md" and path.name == "README.md":
-        return "Folder Index README"
-
-    if is_relative_to(path, pathlib.Path("docs/01.requirements")) and path.suffix == ".md":
-        return "PRD"
-
-    if is_relative_to(path, pathlib.Path("docs/02.architecture/requirements")) and path.suffix == ".md":
-        return "ARD"
-    if is_relative_to(path, pathlib.Path("docs/02.architecture/decisions")) and path.suffix == ".md":
-        return "ADR"
-
-    specs_root = pathlib.Path("docs/03.specs")
-    if is_relative_to(path, specs_root):
-        rel = path.relative_to(specs_root)
-        if path.suffix == ".md" and len(rel.parts) == 2:
-            return {
-                "spec.md": "Spec",
-                "open-webui.md": "Spec",
-                "api-spec.md": "API Spec",
-                "agent-design.md": "Agent Design",
-                "data-model.md": "Data Model",
-                "tests.md": "Tests",
-            }.get(rel.parts[1])
-        if len(rel.parts) == 3 and rel.parts[1] == "contracts":
-            filename = rel.parts[2]
-            if filename in {"openapi.yaml", "openapi.yml"}:
-                return "OpenAPI Contract"
-            if filename == "schema.graphql":
-                return "GraphQL Contract"
-            if filename == "service.proto":
-                return "Protobuf Contract"
-        return None
-
-    if is_relative_to(path, pathlib.Path("docs/04.execution/plans")) and path.suffix == ".md":
-        return "Plan"
-    if is_relative_to(path, pathlib.Path("docs/04.execution/tasks")) and path.suffix == ".md":
-        return "Task"
-
-    operations_root = pathlib.Path("docs/05.operations")
-    if is_relative_to(path, operations_root) and path.suffix == ".md":
-        rel = path.relative_to(operations_root)
-        if not rel.parts:
-            return None
-        if rel.parts[0] == "guides":
-            return "Operation Guide"
-        if rel.parts[0] == "policies":
-            return "Operation Policy"
-        if rel.parts[0] == "runbooks":
-            return "Operation Runbook"
-        if rel.parts[0] == "incidents":
-            return "Postmortem" if "postmortem" in path.stem else "Incident"
-        return None
-
-    if is_relative_to(path, pathlib.Path("docs/90.references")) and path.suffix == ".md":
-        return "Reference"
-    if is_relative_to(path, pathlib.Path("docs/98.archive")) and path.suffix == ".md":
-        return "Archive Tombstone"
-
-    return None
-
-
-heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
-    "Folder Index README": [
-        ("Overview", ("## Overview", "## Purpose", "## Context and Objective", "## 목적")),
-        ("Audience", ("## Audience",)),
-        ("Scope", ("## Scope",)),
-        ("Structure", ("## Structure", "## Directory Structure", "## 템플릿-폴더 매핑")),
-        ("How to Work", ("## How to Work in This Area",)),
-        ("Related Documents", ("## Related Documents", "## Related References", "## 관련 문서")),
-    ],
-    "PRD": [
-        ("Overview", ("## Overview",)),
-        ("Vision", ("## Vision",)),
-        ("Problem Statement", ("## Problem Statement",)),
-        ("Functional Requirements", ("## Functional Requirements",)),
-        ("Success Criteria", ("## Success Criteria",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "ARD": [
-        ("Overview", ("## Overview",)),
-        ("Summary", ("## Summary",)),
-        ("Boundaries", ("## Boundaries & Non-goals",)),
-        ("Quality Attributes", ("## Quality Attributes",)),
-        ("System Overview", ("## System Overview & Context",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "ADR": [
-        ("Overview", ("## Overview",)),
-        ("Context", ("## Context",)),
-        ("Decision", ("## Decision",)),
-        ("Explicit Non-goals", ("## Explicit Non-goals",)),
-        ("Consequences", ("## Consequences", "## Consequence")),
-        ("Alternatives", ("## Alternatives", "## Alternatives Considered")),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Spec": [
-        ("Overview", ("## Overview",)),
-        ("Boundaries", ("## Strategic Boundaries & Non-goals",)),
-        ("Related Inputs", ("## Related Inputs",)),
-        ("Contracts", ("## Contracts",)),
-        ("Core Design", ("## Core Design",)),
-        ("Verification", ("## Verification",)),
-        ("Success Criteria", ("## Success Criteria & Verification Plan",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "API Spec": [
-        ("Overview", ("## Overview",)),
-        ("Parent Spec", ("## Parent Spec",)),
-        ("Scope", ("## Scope & Non-goals",)),
-        ("API Style", ("## API Style",)),
-        ("Operations", ("## Endpoint / Operation Catalog",)),
-        ("Verification", ("## Verification",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Agent Design": [
-        ("Overview", ("## Overview",)),
-        ("Parent Documents", ("## Parent Documents",)),
-        ("Agent Role", ("## Agent Role",)),
-        ("Inputs / Outputs", ("## Inputs / Outputs",)),
-        ("Tools", ("## Tools & Permissions",)),
-        ("Evaluation", ("## Evaluation Plan",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Data Model": [
-        ("Overview", ("## Overview",)),
-        ("Parent Documents", ("## Parent Documents",)),
-        ("Entities", ("## Entities / Aggregates",)),
-        ("Relationships", ("## Relationships",)),
-        ("Validation", ("## Validation & Integrity Rules",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Tests": [
-        ("Overview", ("## Overview",)),
-        ("Parent Documents", ("## Parent Documents",)),
-        ("Verification Goals", ("## Verification Goals",)),
-        ("Test Matrix", ("## Test Matrix",)),
-        ("How to Run", ("## How to Run",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Plan": [
-        ("Overview", ("## Overview",)),
-        ("Context", ("## Context",)),
-        ("Goals", ("## Goals & In-Scope",)),
-        ("Work Breakdown", ("## Work Breakdown", "## Work Breakdown (WBS)")),
-        ("Verification Plan", ("## Verification Plan",)),
-        ("Completion Criteria", ("## Completion Criteria",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Task": [
-        ("Overview", ("## Overview",)),
-        ("Inputs", ("## Inputs",)),
-        ("Working Rules", ("## Working Rules",)),
-        ("Task Table", ("## Task Table",)),
-        ("Verification Summary", ("## Verification Summary",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Operation Guide": [
-        ("Overview", ("## Overview",)),
-        ("Usage", ("## Usage", "### Usage")),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Operation Policy": [
-        ("Overview", ("## Overview",)),
-        ("Policy Scope", ("## Policy Scope", "### Policy Scope")),
-        ("Controls", ("## Controls", "### Controls")),
-        ("Verification", ("## Verification", "### Verification")),
-        ("Review Cadence", ("## Review Cadence", "### Review Cadence")),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Operation Runbook": [
-        ("Overview", ("## Overview",)),
-        ("When to Use", ("## When to Use", "### When to Use")),
-        ("Procedure", ("## Procedure", "### Procedure", "#### Procedure")),
-        ("Evidence", ("## Evidence", "### Evidence", "#### Evidence")),
-        ("Rollback or Recovery", ("## Rollback or Recovery", "### Rollback or Recovery", "#### Rollback or Recovery")),
-        ("Escalation", ("## Escalation", "### Escalation", "#### Escalation")),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Incident": [
-        ("Overview", ("## Overview",)),
-        ("Incident Metadata", ("## Incident Metadata",)),
-        ("Incident Summary", ("## Incident Summary",)),
-        ("Impact", ("## Impact",)),
-        ("Timeline", ("## Timeline",)),
-        ("Evidence", ("## Evidence",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Postmortem": [
-        ("Overview", ("## Overview",)),
-        ("Incident Summary", ("## Incident Summary",)),
-        ("Impact", ("## Impact",)),
-        ("Timeline", ("## Timeline",)),
-        ("Root Cause", ("## Root Cause Analysis",)),
-        ("Action Items", ("## Action Items",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Reference": [
-        ("Overview", ("## Overview",)),
-        ("Purpose", ("## Purpose",)),
-        ("Repository Role", ("## Repository Role",)),
-        ("Scope", ("## Scope",)),
-        ("Definitions / Facts", ("## Definitions / Facts",)),
-        ("Sources", ("## Sources",)),
-        ("Maintenance", ("## Maintenance",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-    "Archive Tombstone": [
-        ("Overview", ("## Overview",)),
-        ("Archive Metadata", ("## Archive Metadata",)),
-        ("Current Replacement", ("## Current Replacement",)),
-        ("Archive Ledger", ("## Archive Ledger",)),
-        ("Related Documents", ("## Related Documents",)),
-    ],
-}
-
-contract_requirements = {
-    "OpenAPI Contract": ("# Target:", "# Cross-links:", "openapi:", "info:", "paths:"),
-    "GraphQL Contract": ("# Target:", "# Cross-links:", "schema {", "type Query"),
-    "Protobuf Contract": ("// Target:", "// Cross-links:", 'syntax = "proto3";', "service "),
-}
-
-operation_forbidden = {
-    "Operation Guide": ["## Policy Scope", "## Controls", "## Review Cadence", "## When to Use", "## Procedure"],
-    "Operation Policy": ["## Usage", "## Runbook Handoff", "## When to Use", "## Procedure"],
-    "Operation Runbook": ["## Usage", "## Policy Scope", "## Controls", "## Exceptions", "## Review Cadence"],
-}
-
-placeholder_patterns = [
-    re.compile(r"YYYY-MM-DD-<[^>\n]+>"),
-    re.compile(r"####-<[^>\n]+>"),
-    re.compile(r"<(?:feature-id|feature|topic|item|category|system-or-domain|system-or-domain-name|short-title|bucket|domain|subdomain|incident-title)>"),
-]
-placeholder_literals = [
-    "{Topic Name}",
-    "{Guide | Policy | Runbook}",
-    "{One-line",
-    "{Explain",
-    "{Describe",
-    "{List",
-    "{Owner}",
-    "{Review Cadence}",
-    "{Update Trigger}",
-    "{What this source supports}",
-    "{Current",
-    "{Last",
-    "{Recovery",
-    "{Escalation",
-    "{Expected",
-    "{Verified",
-]
-
-
-def validate_text(path: pathlib.Path, doc_type: str, text: str) -> None:
-    if doc_type in heading_requirements:
-        for group_name, alternatives in heading_requirements[doc_type]:
-            if not any(heading in text for heading in alternatives):
-                expected = " or ".join(alternatives)
-                failures.append(f"{path}: {doc_type} missing template heading {group_name}: {expected}")
-        for literal in operation_forbidden.get(doc_type, []):
-            if literal in text:
-                failures.append(f"{path}: {doc_type} contains wrong operation profile heading: {literal}")
-    elif doc_type in contract_requirements:
-        for literal in contract_requirements[doc_type]:
-            if literal not in text:
-                failures.append(f"{path}: {doc_type} missing contract template literal: {literal}")
-
-    for pattern in placeholder_patterns:
-        match = pattern.search(text)
-        if match:
-            failures.append(f"{path}: unresolved template placeholder remains: {match.group(0)}")
-    for literal in placeholder_literals:
-        if literal in text:
-            failures.append(f"{path}: unresolved template placeholder remains: {literal}")
-
-
-def normalized_target_doc(doc_type: str, text: str) -> bool:
-    if doc_type in contract_requirements:
-        return True
-    headings = heading_requirements.get(doc_type, ())
-    if not headings:
-        return False
-    if not all(any(heading in text for heading in alternatives) for _, alternatives in headings):
-        return False
-    if any(pattern.search(text) for pattern in placeholder_patterns):
-        return False
-    return not any(literal in text for literal in placeholder_literals)
-
-
-target_docs = sorted(path for path in pathlib.Path("docs").rglob("*") if target_stage_doc(path))
-unknown_docs: list[pathlib.Path] = []
-normalized_docs = 0
-legacy_docs = 0
-print(f"target_stage_docs_total={len(target_docs)}")
-
-for path in target_docs:
-    doc_type = classify(path)
-    if doc_type is None:
-        unknown_docs.append(path)
-        continue
-    text = path.read_text(errors="ignore")
-    if not normalized_target_doc(doc_type, text):
-        legacy_docs += 1
-        continue
-    normalized_docs += 1
-    validate_text(path, doc_type, text)
-
-print(f"normalized_target_stage_docs_total={normalized_docs}")
-print(f"legacy_target_stage_docs_skipped={legacy_docs}")
-
-if legacy_docs:
-    failures.append(
-        f"all target-stage documents must be normalized; legacy_target_stage_docs_skipped={legacy_docs}"
-    )
-
-for path in unknown_docs:
-    failures.append(f"{path}: unknown target-stage document type; add a docs/99.templates mapping")
-
-if failures:
-    for failure in failures:
-        print(f"FAIL: {failure}", file=sys.stderr)
-    sys.exit(1)
-PY
-  failures=$((failures + 1))
+section "Changed and new document template contracts"
+if [[ -n "${TEMPLATE_GATE_BASE:-}" ]]; then
+  if ! python3 scripts/validation/check-document-metadata.py --mode check-changed; then
+    failures=$((failures + 1))
+  fi
+else
+  echo "SKIP: TEMPLATE_GATE_BASE is unset; run the Python changed checker with an explicit safe base"
 fi
 
 section "Infra README rubric advisory"
@@ -3166,21 +2415,26 @@ import pathlib
 import sys
 
 failures: list[str] = []
-required_template_literals = [
-    "SNIPPET: INFRA SERVICE READINESS",
-    "Folder index README",
-    "Service leaf README",
-    "Secret refs",
-    "Troubleshooting",
-    "scripts/validation/",
-    "root-level `scripts/*.sh` wrappers",
-]
-for path in [pathlib.Path("docs/99.templates/templates/common/readme.template.md"), pathlib.Path("infra/README.md")]:
+rubric_sources = {
+    pathlib.Path("docs/99.templates/support/readme-profile-contract.md"): [
+        "Folder index README",
+        "Service leaf README",
+        "Secret refs",
+        "Troubleshooting",
+        "scripts/validation/",
+        "root-level `scripts/*.sh` duplicates",
+    ],
+    pathlib.Path("infra/README.md"): ["Secret refs", "Troubleshooting"],
+    pathlib.Path("scripts/README.md"): [
+        "scripts/validation/",
+        "root-level `scripts/*.sh` duplicates",
+    ],
+}
+for path, required in rubric_sources.items():
     if not path.is_file():
         failures.append(f"missing rubric source: {path}")
         continue
     text = path.read_text(errors="ignore")
-    required = ["Secret refs", "Troubleshooting"] if path.parts[0] == "infra" else required_template_literals
     for literal in required:
         if literal not in text:
             failures.append(f"{path}: missing rubric/lifecycle literal: {literal}")
@@ -3270,7 +2524,6 @@ failures: list[str] = []
 
 required_files = [
     pathlib.Path("docs/00.agent-governance/memory/README.md"),
-    pathlib.Path("docs/00.agent-governance/memory/template.md"),
     pathlib.Path("docs/00.agent-governance/memory/progress.md"),
     pathlib.Path("docs/99.templates/templates/governance/memory.template.md"),
     pathlib.Path("docs/99.templates/templates/governance/progress.template.md"),
@@ -3323,27 +2576,25 @@ checks = {
         "mandatory agent progress log",
         "docs/99.templates/templates/governance/progress.template.md",
     ],
-    pathlib.Path("docs/00.agent-governance/memory/template.md"): [
-        "docs/99.templates/templates/governance/memory.template.md",
-        "Retrieval Keywords",
-        "Last Verified",
-        "Evidence",
-    ],
     pathlib.Path("docs/99.templates/templates/governance/memory.template.md"): [
-        "Memory notes are advisory retrieval context",
-        "Retrieval Keywords",
-        "Last Verified",
+        "# {{title}}",
+        "## Problem",
+        "## Context",
+        "## Resolution",
+        "## Prevention",
         "## Evidence",
+        "## Related Documents",
     ],
     pathlib.Path("docs/00.agent-governance/memory/progress.md"): [
         "docs/99.templates/templates/governance/progress.template.md",
-        "## Usage Contract",
         "## Current Work Log",
     ],
     pathlib.Path("docs/99.templates/templates/governance/progress.template.md"): [
-        "AI agents must update",
+        "# {{title}}",
         "## Current Work Log",
         "## Phase Tracker",
+        "## Layer Audit",
+        "## Open Issues",
         "## Related Documents",
     ],
 }
@@ -3393,6 +2644,7 @@ if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
+import re
 import sys
 
 failures: list[str] = []
@@ -3416,18 +2668,14 @@ if root.exists():
             )
 
 template_required = [
-    "Reference docs provide stable context",
+    "# {{title}}",
     "## Overview",
     "## Purpose",
-    "## Repository Role",
     "## Scope",
-    "## Definitions / Facts",
-    "## Source Rules",
+    "## Facts and Definitions",
     "## Sources",
     "## Maintenance",
     "## Related Documents",
-    "do not define active policy",
-    "secret values",
 ]
 if not template.is_file():
     failures.append(f"missing reference template: {template}")
@@ -3436,6 +2684,40 @@ else:
     for literal in template_required:
         if literal not in text:
             failures.append(f"{template}: missing reference-template literal: {literal}")
+
+common_contract = pathlib.Path("docs/99.templates/support/common-document-contract.md")
+common_contract_required = [
+    "stable, source-backed facts",
+    "current policy",
+]
+source_discipline_required = [
+    "Reference, Audit, generated output, and Repo-support",
+    "secret values",
+    "credentials or tokens",
+    "private keys",
+    "shell history",
+    "raw secret-bearing logs",
+]
+if not common_contract.is_file():
+    failures.append(f"missing common document contract: {common_contract}")
+else:
+    text = common_contract.read_text(errors="ignore")
+    for literal in common_contract_required:
+        if literal not in text:
+            failures.append(f"{common_contract}: missing Reference support literal: {literal}")
+    section_heading = "## Source and Evidence Discipline"
+    if section_heading not in text:
+        failures.append(f"{common_contract}: missing Common evidence-discipline section")
+    else:
+        section = text.split(section_heading, 1)[1]
+        next_heading = re.search(r"^## ", section, flags=re.MULTILINE)
+        if next_heading:
+            section = section[: next_heading.start()]
+        for literal in source_discipline_required:
+            if literal not in section:
+                failures.append(
+                    f"{common_contract}: missing Source and Evidence Discipline literal: {literal}"
+                )
 
 readme_required = [
     "## Overview",
@@ -4109,10 +3391,14 @@ required_surface_fragments = {
         "Git-visible, non-ignored repository",
     ],
     pathlib.Path("docs/99.templates/templates/sdlc/task.template.md"): [
-        "## Controlled Agent Pre-commit Evidence (If Applicable)",
-        "| Command | Allowed Prefixes | Exit Status | Modified Paths | Review Disposition | Skipped Rationale |",
-        "The wrapper never writes this evidence automatically",
-        "Git-visible, non-ignored repository",
+        "## Controlled Agent Pre-commit Evidence",
+        "{{controlled_wrapper_command}}",
+        "{{controlled_wrapper_allowed_prefixes}}",
+        "{{controlled_wrapper_exit_status}}",
+        "{{controlled_wrapper_snapshot_result}}",
+        "{{controlled_wrapper_observation_boundary}}",
+        "{{controlled_wrapper_path_sets}}",
+        "{{controlled_wrapper_disposition}}",
     ],
 }
 
@@ -4842,7 +4128,7 @@ harness_map="docs/00.agent-governance/harness-implementation-map.md"
 approval_boundaries="docs/00.agent-governance/rules/approval-boundaries.md"
 [[ -f "$harness_map" ]] || fail "missing harness implementation map: $harness_map"
 [[ -f "$approval_boundaries" ]] || fail "missing approval boundaries rule: $approval_boundaries"
-[[ -f "docs/99.templates/templates/governance/harness-task-contract.template.md" ]] || fail "missing harness task contract template"
+[[ -f "docs/99.templates/templates/sdlc/task.template.md" ]] || fail "missing canonical task template"
 [[ -f "scripts/validation/validate-harness.sh" ]] || fail "missing harness validation wrapper: scripts/validation/validate-harness.sh"
 if ! grep -q -- "--harness" scripts/validation/run-local-qa-gates.sh; then
   fail "run-local-qa-gates.sh missing --harness mode"

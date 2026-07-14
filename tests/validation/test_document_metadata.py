@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import collections
 import importlib.util
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -31,6 +33,35 @@ def write_doc(path: pathlib.Path, frontmatter: dict[str, object] | None, body: s
         return
     rendered = yaml.safe_dump(frontmatter, sort_keys=False).rstrip()
     path.write_text(f"---\n{rendered}\n---\n\n{body}", encoding="utf-8")
+
+
+def body_with_headings(*headings: str) -> str:
+    """Build a concrete target body for tests whose subject is not body validation."""
+
+    sections = "\n\n".join(f"{heading}\n\nFixture content." for heading in headings)
+    return f"# Fixture\n\n{sections}\n"
+
+
+PRD_TARGET_BODY = body_with_headings(
+    "## Overview",
+    "## Problem and Stakeholders",
+    "## Requirements",
+    "## Acceptance and Verification",
+    "## Scope and Non-goals",
+    "## Risks and Dependencies",
+    "## Related Documents",
+)
+
+SPEC_TARGET_BODY = body_with_headings(
+    "## Overview",
+    "## Boundaries and Inputs",
+    "## Contracts",
+    "## Core Design",
+    "## Interfaces and Data",
+    "## Failure Modes and Guardrails",
+    "## Verification",
+    "## Related Documents",
+)
 
 
 def run_checker(
@@ -145,6 +176,9 @@ def copy_tracked_contract_fixture(root: pathlib.Path) -> pathlib.Path:
             "_workspace/repo-support/README.md",
             "docs/05.operations/releases/README.md",
             "docs/99.templates/templates/**/*.template.md",
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+            "docs/99.templates/templates/spec-contracts/service.template.proto",
             "docs/99.templates/support/*.md",
             "docs/99.templates/support/document-metadata-profiles.yaml",
             "docs/00.agent-governance/rules/stage-authoring-matrix.md",
@@ -311,6 +345,38 @@ class ProfileSchemaTests(unittest.TestCase):
             with self.subTest(mutate=mutate):
                 self.mutate_and_load(mutate)
 
+    def test_template_roles_require_exact_fields_and_unique_sources(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        roles = profiles["template_roles"]
+        self.assertEqual(23, len(roles))
+        sources = [role["source"] for role in roles.values()]
+        self.assertEqual(len(sources), len(set(sources)))
+
+    def test_template_roles_reject_unknown_profiles_and_heading_overlap(self) -> None:
+        self.mutate_and_load(
+            lambda values: values["template_roles"]["prd"].__setitem__(
+                "artifact_profile", "missing-profile"
+            )
+        )
+
+    def test_template_roles_reject_ambiguous_target_matchers(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            target = pathlib.Path(directory) / "profiles.yaml"
+            values = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
+            values["template_roles"]["spec"]["target_globs"] = [
+                "docs/03.specs/*/s*ec.md"
+            ]
+            values["template_roles"]["api-spec"]["target_globs"] = [
+                "docs/03.specs/*/sp*c.md"
+            ]
+            target.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
+            with self.assertRaisesRegex(
+                metadata.ProfileError,
+                r"api-spec:.*sp\*c\.md and spec:.*s\*ec\.md; "
+                r"witness=docs/03\.specs/x/spec\.md",
+            ):
+                metadata.load_profiles(target)
+
 
 class ArtifactInferenceTests(unittest.TestCase):
     def test_supported_paths_infer_explicit_profiles(self) -> None:
@@ -338,6 +404,47 @@ class ArtifactInferenceTests(unittest.TestCase):
         for path, expected in cases.items():
             with self.subTest(path=path):
                 self.assertEqual(expected, metadata.infer_artifact_type(pathlib.Path(path)))
+
+
+class TemplateRoleInferenceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = metadata.load_profiles(PROFILES)
+
+    def test_registered_targets_have_one_exact_role(self) -> None:
+        cases = {
+            "docs/01.requirements/901-fixture.md": ("prd", "prd"),
+            "docs/02.architecture/requirements/0901-fixture.md": ("ard", "ard"),
+            "docs/02.architecture/decisions/0901-fixture.md": ("adr", "adr"),
+            "docs/03.specs/901-fixture/spec.md": ("spec", "spec"),
+            "docs/03.specs/901-fixture/api-spec.md": ("spec", "api-spec"),
+            "docs/03.specs/901-fixture/agent-design.md": ("spec", "agent-design"),
+            "docs/03.specs/901-fixture/data-model.md": ("spec", "data-model"),
+            "docs/03.specs/901-fixture/service.md": ("spec", "service"),
+            "docs/03.specs/901-fixture/tests.md": ("spec", "tests"),
+            "docs/04.execution/plans/2026-07-13-fixture.md": ("plan", "plan"),
+            "docs/04.execution/tasks/2026-07-13-fixture.md": ("task", "task"),
+            "docs/05.operations/guides/00-workspace/fixture.md": ("guide", "guide"),
+            "docs/05.operations/policies/00-workspace/fixture.md": ("policy", "policy"),
+            "docs/05.operations/runbooks/00-workspace/fixture.md": ("runbook", "runbook"),
+            "docs/05.operations/incidents/2026/INC-901-fixture/INC-901-fixture.md": ("incident", "incident"),
+            "docs/05.operations/incidents/2026/INC-901-fixture/postmortem.md": ("postmortem", "postmortem"),
+            "docs/05.operations/releases/2026-07-13-fixture.md": ("release", "release"),
+            "docs/90.references/research/fixture.md": ("reference", "reference"),
+            "docs/90.references/audits/fixture.md": ("audit", "audit"),
+            "docs/98.archive/03.specs/fixture.md": ("archive", "archive"),
+            "README.md": ("readme", "readme"),
+            "docs/00.agent-governance/memory/fixture.md": ("governance", "memory"),
+            "docs/00.agent-governance/memory/progress.md": ("governance", "progress"),
+        }
+        for path_text, (profile, expected_role) in cases.items():
+            with self.subTest(path=path_text):
+                self.assertEqual(
+                    expected_role,
+                    metadata.classify_template_role(
+                        pathlib.Path(path_text), profile, self.profiles
+                    ),
+                )
 
 
 class MetadataValidationTests(unittest.TestCase):
@@ -759,6 +866,18 @@ class MetadataValidationTests(unittest.TestCase):
         )
         self.assertNotIn("template-placeholder-in-target", self.codes(record))
 
+    def test_incident_profile_allows_root_but_event_children_stay_strict(self) -> None:
+        incident = self.profiles["profiles"]["incident"]
+        postmortem = self.profiles["profiles"]["postmortem"]
+        release = self.profiles["profiles"]["release"]
+
+        self.assertTrue(incident["allow_empty_parents"])
+        self.assertEqual(["runbook"], incident["allowed_parent_types"])
+        self.assertEqual(["incident"], postmortem["allowed_parent_types"])
+        self.assertFalse(postmortem["allow_empty_parents"])
+        self.assertEqual(["spec", "plan", "task"], release["allowed_parent_types"])
+        self.assertFalse(release["allow_empty_parents"])
+
 
 class ReadmeProfileTests(unittest.TestCase):
     @classmethod
@@ -821,6 +940,200 @@ class TemplateMetadataTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.profiles = metadata.load_profiles(PROFILES)
 
+    def test_task_2_copyable_markdown_forms_have_one_h1_and_no_legacy_guidance(self) -> None:
+        for role_name in ("readme", "reference", "audit", "archive", "memory", "progress"):
+            with self.subTest(role=role_name):
+                source = ROOT / self.profiles["template_roles"][role_name]["source"]
+                text = source.read_text(encoding="utf-8")
+                self.assertEqual(1, sum(line.startswith("# ") for line in text.splitlines()))
+                self.assertNotIn("> Rules:", text)
+                self.assertNotIn("<!-- Target:", text)
+
+    def test_task_2_forms_match_their_registered_required_heading_envelopes(self) -> None:
+        for role_name in ("readme", "reference", "audit", "archive", "memory", "progress"):
+            with self.subTest(role=role_name):
+                role = self.profiles["template_roles"][role_name]
+                text = (ROOT / role["source"]).read_text(encoding="utf-8")
+                headings = [line for line in text.splitlines() if line.startswith("## ")]
+                self.assertEqual(role["required_headings"], headings)
+
+    def test_task_2_governance_forms_have_exact_source_frontmatter(self) -> None:
+        expected = {"layer": "agentic", "status": "draft"}
+        for role_name in ("memory", "progress"):
+            with self.subTest(role=role_name):
+                source = ROOT / self.profiles["template_roles"][role_name]["source"]
+                self.assertEqual(expected, metadata.parse_frontmatter(source))
+
+    def test_task_2_memory_form_instantiates_the_memory_note_target_contract(self) -> None:
+        source = ROOT / self.profiles["template_roles"]["memory"]["source"]
+        rendered = source.read_text(encoding="utf-8")
+        substitutions = {
+            "title": "Fixture Memory Note",
+            "date": "2026-07-13",
+            "layer": "agentic",
+            "status": "active",
+            "applies_to": "template contract system",
+            "tags": "templates, governance",
+            "retrieval_keywords": "memory template contract",
+            "last_verified": "2026-07-13",
+            "problem": "Fixture problem.",
+            "context": "Fixture context.",
+            "resolution": "Fixture resolution.",
+            "prevention": "Fixture prevention.",
+            "evidence": "Fixture evidence.",
+            "related_documents": "- Fixture link",
+        }
+        for token, value in substitutions.items():
+            rendered = rendered.replace(f"{{{{{token}}}}}", value)
+
+        self.assertNotIn("{{", rendered)
+        memory_note_required = (
+            "- Date:",
+            "- Layer:",
+            "- Status:",
+            "- Applies To:",
+            "- Tags:",
+            "- Retrieval Keywords:",
+            "- Last Verified:",
+            "## Problem",
+            "## Context",
+            "## Resolution",
+            "## Prevention",
+            "## Evidence",
+        )
+        for literal in memory_note_required:
+            with self.subTest(literal=literal):
+                self.assertIn(literal, rendered)
+
+    def test_task_2_stage00_protocol_matches_registered_template_source_metadata(self) -> None:
+        protocol = (
+            ROOT / "docs/00.agent-governance/rules/documentation-protocol.md"
+        ).read_text(encoding="utf-8")
+        normalized = " ".join(protocol.split())
+        self.assertIn(
+            "Governance Memory and Progress template sources use exactly "
+            "`layer: agentic` and `status: draft`",
+            normalized,
+        )
+        self.assertIn(
+            "the README template source remains the registered status-only source",
+            normalized,
+        )
+        self.assertIn(
+            "other typed template sources follow their registry-defined source metadata",
+            normalized,
+        )
+        self.assertNotIn("instead of `layer:`", normalized)
+        self.assertNotIn("exempt from the `layer:` requirement", normalized)
+
+    def test_task_2_common_confidentiality_boundary_covers_evidence_roles(self) -> None:
+        contract = (
+            ROOT / "docs/99.templates/support/common-document-contract.md"
+        ).read_text(encoding="utf-8")
+        discipline = contract.split("## Source and Evidence Discipline", 1)[1].split(
+            "\n## ", 1
+        )[0]
+        for literal in (
+            "Reference",
+            "Audit",
+            "generated output",
+            "Repo-support",
+            "secret values",
+            "credentials or tokens",
+            "private keys",
+            "shell history",
+            "raw secret-bearing logs",
+        ):
+            with self.subTest(literal=literal):
+                self.assertIn(literal, discipline)
+
+    def test_audit_has_a_distinct_registered_form(self) -> None:
+        role = self.profiles["template_roles"]["audit"]
+        self.assertEqual("audit", role["artifact_profile"])
+        self.assertTrue((ROOT / role["source"]).is_file())
+
+    def test_memory_mirror_is_absent_and_stage99_is_referenced(self) -> None:
+        self.assertFalse((ROOT / "docs/00.agent-governance/memory/template.md").exists())
+        text = (ROOT / "docs/00.agent-governance/memory/README.md").read_text(encoding="utf-8")
+        self.assertIn("docs/99.templates/templates/governance/memory.template.md", text)
+
+    def test_task_has_one_source_and_no_harness_competitor(self) -> None:
+        roles = self.profiles["template_roles"]
+        task_sources = [
+            role["source"]
+            for role in roles.values()
+            if role["artifact_profile"] == "task"
+        ]
+        self.assertEqual(
+            ["docs/99.templates/templates/sdlc/task.template.md"],
+            task_sources,
+        )
+        self.assertFalse(
+            (
+                ROOT
+                / "docs/99.templates/templates/governance/harness-task-contract.template.md"
+            ).exists()
+        )
+
+    def test_task_form_contains_protected_surface_and_qa_evidence(self) -> None:
+        text = (
+            ROOT / "docs/99.templates/templates/sdlc/task.template.md"
+        ).read_text(encoding="utf-8")
+        for heading in (
+            "## Scope and Change Boundaries",
+            "## Approval Evidence",
+            "## Work Log",
+            "## Verification Evidence",
+            "## Review Evidence",
+            "## Commit Ledger",
+        ):
+            with self.subTest(heading=heading):
+                self.assertIn(heading, text)
+
+    def test_deleted_harness_task_source_has_no_active_route(self) -> None:
+        deleted_path = (
+            "docs/99.templates/templates/governance/"
+            "harness-task-contract.template.md"
+        )
+        active_route_files = (
+            "docs/00.agent-governance/harness-implementation-map.md",
+            "docs/00.agent-governance/rules/approval-boundaries.md",
+            "docs/00.agent-governance/rules/documentation-protocol.md",
+            "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+            "docs/00.agent-governance/rules/task-checklists.md",
+            "docs/99.templates/README.md",
+            "docs/99.templates/support/template-selection.md",
+            "docs/99.templates/templates/governance/README.md",
+        )
+        for relative_path in active_route_files:
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertNotIn(deleted_path, text)
+
+    def test_stage_99_catalogs_publish_the_literal_canonical_role_inventory(self) -> None:
+        catalogs = {
+            "docs/99.templates/README.md": (
+                "PRD, ARD, ADR, Spec, Plan, Task",
+                "Guide, policy, runbook, incident, postmortem, Release",
+                "README, reference, Audit, archive",
+            ),
+            "docs/99.templates/templates/README.md": (
+                "`prd`, `ard`, `adr`, `spec`, `plan`, `task`",
+                "`guide`, `policy`, `runbook`, `incident`, `postmortem`, `release`",
+                "`readme`, `reference`, `audit`, `archive`",
+                "`memory`, `progress`",
+            ),
+        }
+        for relative_path, literal_inventories in catalogs.items():
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                for literal_inventory in literal_inventories:
+                    self.assertIn(literal_inventory, text)
+                self.assertNotRegex(
+                    text,
+                    r"(?<![A-Za-z0-9_-])harness-task-contract(?![A-Za-z0-9_-])",
+                )
+
     def test_leaf_templates_declare_valid_target_profiles_with_safe_placeholders(self) -> None:
         expected = {
             "docs/99.templates/templates/sdlc/prd.template.md": "prd",
@@ -836,16 +1149,25 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/operations/postmortem.template.md": "postmortem",
             "docs/99.templates/templates/operations/release.template.md": "release",
             "docs/99.templates/templates/common/reference.template.md": "reference",
+            "docs/99.templates/templates/common/audit.template.md": "audit",
             "docs/99.templates/templates/common/archive.template.md": "archive",
+            "docs/99.templates/templates/common/readme.template.md": "readme",
             "docs/99.templates/templates/spec-contracts/agent-design.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/api-spec.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/data-model.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/service.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/tests.template.md": "spec",
-            "docs/99.templates/templates/governance/harness-task-contract.template.md": "task",
+            "docs/99.templates/templates/governance/memory.template.md": "governance",
+            "docs/99.templates/templates/governance/progress.template.md": "governance",
         }
-        self.assertEqual(expected, self.profiles["template_sources"])
+        role_sources = {
+            role["source"]: role["artifact_profile"]
+            for role in self.profiles["template_roles"].values()
+        }
+        self.assertEqual(expected, role_sources)
         for path_text, target_profile in expected.items():
+            if target_profile in {"governance", "readme"}:
+                continue
             with self.subTest(path=path_text):
                 values = metadata.parse_frontmatter(ROOT / path_text)
                 self.assertEqual("draft", values.get("status"))
@@ -877,13 +1199,13 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/operations/postmortem.template.md": "docs/05.operations/incidents/2026/INC-901-fixture/postmortem.md",
             "docs/99.templates/templates/operations/release.template.md": "docs/05.operations/releases/2026-07-13-fixture.md",
             "docs/99.templates/templates/common/reference.template.md": "docs/90.references/research/fixture.md",
+            "docs/99.templates/templates/common/audit.template.md": "docs/90.references/audits/fixture.md",
             "docs/99.templates/templates/common/archive.template.md": "docs/98.archive/03.specs/901-fixture/spec.md",
             "docs/99.templates/templates/spec-contracts/agent-design.template.md": "docs/03.specs/901-fixture/agent-design.md",
             "docs/99.templates/templates/spec-contracts/api-spec.template.md": "docs/03.specs/901-fixture/api-spec.md",
             "docs/99.templates/templates/spec-contracts/data-model.template.md": "docs/03.specs/901-fixture/data-model.md",
             "docs/99.templates/templates/spec-contracts/service.template.md": "docs/03.specs/901-fixture/service.md",
             "docs/99.templates/templates/spec-contracts/tests.template.md": "docs/03.specs/901-fixture/tests.md",
-            "docs/99.templates/templates/governance/harness-task-contract.template.md": "docs/04.execution/tasks/2026-07-13-harness-fixture.md",
         }
         parents = {
             "prd": metadata.Record(
@@ -951,7 +1273,12 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/<replacement-path>.md": "docs/03.specs/900-parent/spec.md",
         }
 
-        for source_path, target_type in self.profiles["template_sources"].items():
+        typed_roles = {
+            role["source"]: role["artifact_profile"]
+            for role in self.profiles["template_roles"].values()
+            if role["source"] in targets
+        }
+        for source_path, target_type in typed_roles.items():
             with self.subTest(source=source_path, target=targets[source_path]):
                 parent_type = parent_by_target.get(target_type)
                 parent_id = parents[parent_type].metadata["artifact_id"] if parent_type else None
@@ -991,8 +1318,8 @@ class TemplateMetadataTests(unittest.TestCase):
         spec_templates = (
             ROOT / "docs/99.templates/templates/spec-contracts/README.md"
         ).read_text(encoding="utf-8")
-        governance_templates = (
-            ROOT / "docs/99.templates/templates/governance/README.md"
+        sdlc_templates = (
+            ROOT / "docs/99.templates/templates/sdlc/README.md"
         ).read_text(encoding="utf-8")
         templates = (ROOT / "docs/99.templates/templates/README.md").read_text(encoding="utf-8")
         template_root = (ROOT / "docs/99.templates/README.md").read_text(encoding="utf-8")
@@ -1006,8 +1333,8 @@ class TemplateMetadataTests(unittest.TestCase):
         self.assertIn("Spec 127", releases)
         self.assertIn("[릴리스](./releases/README.md)", operations)
         self.assertIn("[release.template.md](./release.template.md)", operations_templates)
-        self.assertIn("artifact_type: spec", spec_templates)
-        self.assertIn("artifact_type: task", governance_templates)
+        self.assertIn("[api-spec.template.md](./api-spec.template.md)", spec_templates)
+        self.assertIn("[task.template.md](./task.template.md)", sdlc_templates)
         self.assertIn("| Operations | [operations/](./operations/README.md)", templates)
         self.assertIn("`release`", templates)
         self.assertIn("[Release template](./templates/operations/release.template.md)", template_root)
@@ -1018,12 +1345,20 @@ class TemplateMetadataTests(unittest.TestCase):
         )
         self.assertEqual([], release_leaves)
 
+    def test_release_template_does_not_create_an_event_leaf(self) -> None:
+        leaves = [
+            path
+            for path in (ROOT / "docs/05.operations/releases").glob("*.md")
+            if path.name != "README.md"
+        ]
+        self.assertEqual([], leaves)
+
     def test_readme_template_remains_a_readme_exception_source(self) -> None:
         path_text = "docs/99.templates/templates/common/readme.template.md"
         values = metadata.parse_frontmatter(ROOT / path_text)
         self.assertEqual({"status": "draft"}, values)
 
-    def test_unmapped_template_source_rejects_typed_leaf_metadata(self) -> None:
+    def test_governance_template_source_rejects_typed_leaf_metadata(self) -> None:
         record = metadata.Record(
             pathlib.Path("docs/99.templates/templates/governance/memory.template.md"),
             {
@@ -1043,7 +1378,1786 @@ class TemplateMetadataTests(unittest.TestCase):
                 metadata.build_manifest([record]),
             )
         }
-        self.assertIn("type-inappropriate-key", codes)
+        self.assertIn("invalid-template-metadata", codes)
+
+
+class TemplateBodyContractTests(unittest.TestCase):
+    TASK_2_ROLE_HEADINGS = {
+        "readme": (
+            "## Overview",
+            "## Audience",
+            "## Scope",
+            "## Structure",
+            "## How to Work in This Area",
+            "## Related Documents",
+        ),
+        "reference": (
+            "## Overview",
+            "## Purpose",
+            "## Scope",
+            "## Facts and Definitions",
+            "## Sources",
+            "## Maintenance",
+            "## Related Documents",
+        ),
+        "audit": (
+            "## Overview",
+            "## Scope and Criteria",
+            "## Evidence",
+            "## Findings",
+            "## Gap Analysis",
+            "## Disposition",
+            "## Related Documents",
+        ),
+        "archive": (
+            "## Overview",
+            "## Archive Metadata",
+            "## Current Replacement",
+            "## Archive Ledger",
+            "## Related Documents",
+        ),
+        "memory": (
+            "## Problem",
+            "## Context",
+            "## Resolution",
+            "## Prevention",
+            "## Evidence",
+            "## Related Documents",
+        ),
+        "progress": (
+            "## Current Work Log",
+            "## Phase Tracker",
+            "## Layer Audit",
+            "## Open Issues",
+            "## Related Documents",
+        ),
+    }
+    TASK_2_ROLE_PROFILES = {
+        "readme": "readme",
+        "reference": "reference",
+        "audit": "audit",
+        "archive": "archive",
+        "memory": "governance",
+        "progress": "governance",
+    }
+    TASK_2_ROLE_TOKENS = {
+        "readme": {
+            "title", "overview", "audience", "scope", "structure",
+            "work_instructions", "related_documents",
+        },
+        "reference": {
+            "title", "overview", "purpose", "scope", "facts_and_definitions",
+            "sources", "maintenance", "related_documents",
+        },
+        "audit": {
+            "title", "overview", "scope_and_criteria", "evidence", "findings",
+            "gap_analysis", "disposition", "related_documents",
+        },
+        "archive": {
+            "title", "overview", "archive_metadata", "current_replacement",
+            "archive_ledger", "related_documents",
+        },
+        "memory": {
+            "title", "date", "layer", "status", "applies_to", "tags",
+            "retrieval_keywords", "last_verified", "problem", "context",
+            "resolution", "prevention", "evidence", "related_documents",
+        },
+        "progress": {
+            "title", "current_work_log", "phase_tracker", "layer_audit",
+            "open_issues", "related_documents",
+        },
+    }
+    TASK_3_ROLE_HEADINGS = {
+        "prd": (
+            "## Overview",
+            "## Problem and Stakeholders",
+            "## Requirements",
+            "## Acceptance and Verification",
+            "## Scope and Non-goals",
+            "## Risks and Dependencies",
+            "## AI Agent Requirements",
+            "## Related Documents",
+        ),
+        "ard": (
+            "## Overview and Context",
+            "## Stakeholders and Concerns",
+            "## Boundaries and Constraints",
+            "## Quality Attributes",
+            "## Architecture Views",
+            "## Data and Infrastructure",
+            "## Decision and Requirement Traceability",
+            "## AI Agent Architecture",
+            "## Related Documents",
+        ),
+        "adr": (
+            "## Context and Decision Drivers",
+            "## Considered Options",
+            "## Decision",
+            "## Consequences",
+            "## Confirmation",
+            "## Follow-up Decisions",
+            "## Related Documents",
+        ),
+        "spec": (
+            "## Overview",
+            "## Boundaries and Inputs",
+            "## Contracts",
+            "## Core Design",
+            "## Interfaces and Data",
+            "## Failure Modes and Guardrails",
+            "## Verification",
+            "## Agent Role and IO Contract",
+            "## Related Documents",
+        ),
+        "agent-design": (
+            "## Overview",
+            "## Role and Responsibilities",
+            "## Inputs and Outputs",
+            "## Orchestration",
+            "## Tools and Permissions",
+            "## Prompt Policy",
+            "## Context and Memory",
+            "## Guardrails",
+            "## Failure Handling",
+            "## Evaluation",
+            "## Observability",
+            "## Human Approval",
+            "## Related Documents",
+        ),
+        "api-spec": (
+            "## Overview",
+            "## Parent and Scope",
+            "## API Style",
+            "## Authentication and Authorization",
+            "## Operations",
+            "## Request and Response Schemas",
+            "## Errors",
+            "## Compatibility",
+            "## Non-functional Requirements",
+            "## Machine-readable Contracts",
+            "## Verification",
+            "## Pagination",
+            "## Related Documents",
+        ),
+        "data-model": (
+            "## Overview",
+            "## Parent and Scope",
+            "## Entities",
+            "## Relationships",
+            "## Schema",
+            "## Integrity",
+            "## Storage",
+            "## Privacy",
+            "## Migration",
+            "## Retention",
+            "## Related Documents",
+        ),
+        "service": (
+            "## Overview",
+            "## Parent and Scope",
+            "## Image and Build",
+            "## Security",
+            "## Networking and Storage",
+            "## Secrets",
+            "## Health and Operations",
+            "## Validation",
+            "## Scaling",
+            "## Related Documents",
+        ),
+        "tests": (
+            "## Overview",
+            "## Parent and Scope",
+            "## Verification Goals",
+            "## TDD Scope",
+            "## Test Matrix",
+            "## Contract and Integration Tests",
+            "## Non-functional Tests",
+            "## Agent Evaluations",
+            "## Fixtures",
+            "## Execution",
+            "## Evidence",
+            "## Related Documents",
+        ),
+    }
+    TASK_3_ROLE_PROFILES = {
+        "prd": "prd",
+        "ard": "ard",
+        "adr": "adr",
+        "spec": "spec",
+        "agent-design": "spec",
+        "api-spec": "spec",
+        "data-model": "spec",
+        "service": "spec",
+        "tests": "spec",
+    }
+    TASK_3_ROLE_TOKENS = {
+        "prd": {
+            "title",
+            "value_and_outcomes",
+            "problem_statement",
+            "stakeholders_and_use_cases",
+            "requirements_with_stable_ids",
+            "constraints_and_provenance",
+            "acceptance_criteria",
+            "success_measures",
+            "verification_intent",
+            "scope_and_non_goals",
+            "risks_and_dependencies",
+            "assumptions",
+            "ai_agent_requirements",
+            "related_documents",
+        },
+        "ard": {
+            "title",
+            "overview_and_context",
+            "stakeholders_and_concerns",
+            "boundaries_and_constraints",
+            "quality_attributes",
+            "architecture_views",
+            "data_and_infrastructure",
+            "decision_and_requirement_traceability",
+            "ai_agent_architecture",
+            "related_documents",
+        },
+        "adr": {
+            "title",
+            "context_and_decision_drivers",
+            "considered_options",
+            "decision",
+            "consequences",
+            "confirmation",
+            "follow_up_decisions",
+            "related_documents",
+        },
+        "spec": {
+            "title",
+            "overview",
+            "boundaries_and_inputs",
+            "api_contract_summary",
+            "api_contract_ownership",
+            "api_contract_link",
+            "core_design",
+            "service_contract_summary",
+            "service_contract_ownership",
+            "service_contract_link",
+            "data_contract_summary",
+            "data_contract_ownership",
+            "data_contract_link",
+            "failure_modes_and_guardrails",
+            "verification",
+            "test_contract_summary",
+            "test_contract_ownership",
+            "test_contract_link",
+            "agent_design_summary",
+            "agent_design_ownership",
+            "agent_design_link",
+            "related_documents",
+        },
+        "agent-design": {
+            "title",
+            "overview",
+            "role_and_responsibilities",
+            "inputs_and_outputs",
+            "orchestration",
+            "tools_and_permissions",
+            "prompt_policy",
+            "context_and_memory",
+            "guardrails",
+            "failure_handling",
+            "evaluation",
+            "observability",
+            "human_approval",
+            "related_documents",
+        },
+        "api-spec": {
+            "title",
+            "overview",
+            "parent_spec_link",
+            "scope_and_non_goals",
+            "api_style",
+            "authentication_and_authorization",
+            "operations",
+            "request_and_response_schemas",
+            "errors",
+            "compatibility",
+            "non_functional_requirements",
+            "machine_readable_contracts",
+            "verification",
+            "pagination",
+            "related_documents",
+        },
+        "data-model": {
+            "title",
+            "overview",
+            "parent_spec_link",
+            "scope_and_non_goals",
+            "entities",
+            "relationships",
+            "schema",
+            "integrity",
+            "storage",
+            "privacy",
+            "migration",
+            "retention",
+            "related_documents",
+        },
+        "service": {
+            "title",
+            "overview",
+            "parent_spec_link",
+            "scope_and_non_goals",
+            "image_and_build",
+            "security",
+            "networking_and_storage",
+            "secrets",
+            "health_and_operations",
+            "validation",
+            "scaling",
+            "related_documents",
+        },
+        "tests": {
+            "title",
+            "overview",
+            "parent_spec_link",
+            "scope",
+            "verification_goals",
+            "tdd_scope",
+            "test_matrix",
+            "contract_and_integration_tests",
+            "non_functional_tests",
+            "agent_evaluations",
+            "fixtures",
+            "execution",
+            "evidence",
+            "related_documents",
+        },
+    }
+    TASK_4_ROLE_HEADINGS = {
+        "plan": (
+            "## Overview",
+            "## Context and Inputs",
+            "## Goals and Non-goals",
+            "## Work Breakdown",
+            "## Verification Plan",
+            "## Risks and Rollback",
+            "## Approval Gates",
+            "## Completion Criteria",
+            "## Related Documents",
+        ),
+        "task": (
+            "## Overview",
+            "## Inputs",
+            "## Goals and Non-goals",
+            "## Scope and Change Boundaries",
+            "## Approval Evidence",
+            "## Work Breakdown",
+            "## Work Log",
+            "## Verification Evidence",
+            "## Controlled Agent Pre-commit Evidence",
+            "## Review Evidence",
+            "## Commit Ledger",
+            "## Deferred and Blocked Items",
+            "## Related Documents",
+        ),
+    }
+    TASK_4_ROLE_PROFILES = {
+        "plan": "plan",
+        "task": "task",
+    }
+    TASK_4_ROLE_H1 = {
+        "plan": "# {{title}} Implementation Plan",
+        "task": "# Task: {{title}}",
+    }
+    TASK_4_ROLE_TOKENS = {
+        "plan": {
+            "title",
+            "overview",
+            "context_and_inputs",
+            "goals_and_non_goals",
+            "work_breakdown",
+            "verification_commands",
+            "expected_verification",
+            "risks_and_rollback",
+            "approval_gates",
+            "completion_criteria",
+            "related_documents",
+        },
+        "task": {
+            "title",
+            "overview",
+            "inputs",
+            "goals_and_non_goals",
+            "allowed_paths",
+            "forbidden_paths",
+            "compose_impact",
+            "security_impact",
+            "operations_impact",
+            "runtime_impact",
+            "approval_source",
+            "protected_surfaces",
+            "approval_boundary",
+            "rollback_or_recovery",
+            "redaction_boundary",
+            "work_breakdown",
+            "work_log",
+            "exact_commands",
+            "expected_evidence",
+            "actual_evidence",
+            "verification_results",
+            "controlled_wrapper_command",
+            "controlled_wrapper_allowed_prefixes",
+            "controlled_wrapper_exit_status",
+            "controlled_wrapper_snapshot_result",
+            "controlled_wrapper_observation_boundary",
+            "controlled_wrapper_path_sets",
+            "controlled_wrapper_disposition",
+            "implementation_review_verdict",
+            "specification_review_verdict",
+            "quality_review_verdict",
+            "review_findings_and_disposition",
+            "commit_identity",
+            "commit_logical_unit",
+            "commit_validation",
+            "deferred_items",
+            "blocked_items",
+            "deferral_destination",
+            "related_documents",
+        },
+    }
+    TASK_5_ROLE_HEADINGS = {
+        "guide": (
+            "## Overview",
+            "## Audience and Prerequisites",
+            "## Routine Usage",
+            "## Common Checks",
+            "## Runbook Handoff",
+            "## Troubleshooting",
+            "## Related Documents",
+        ),
+        "policy": (
+            "## Overview",
+            "## Scope",
+            "## Controls",
+            "## Exceptions",
+            "## Verification",
+            "## Review Cadence",
+            "## Compliance Mapping",
+            "## Related Documents",
+        ),
+        "runbook": (
+            "## Overview",
+            "## Trigger and Preconditions",
+            "## Procedure",
+            "## Verification Record",
+            "## Evidence",
+            "## Rollback or Recovery",
+            "## Escalation",
+            "## Automation Handoff",
+            "## Related Documents",
+        ),
+        "incident": (
+            "## Overview",
+            "## Incident Metadata",
+            "## Impact",
+            "## Timeline and Response",
+            "## Evidence",
+            "## Resolution and Handoff",
+            "## Runbook Links",
+            "## Related Documents",
+        ),
+        "postmortem": (
+            "## Overview",
+            "## Incident and Impact",
+            "## Timeline",
+            "## Root Cause and Contributing Factors",
+            "## Lessons",
+            "## Action Items",
+            "## Prevention and Verification",
+            "## Feedback Loop",
+            "## Detection Analysis",
+            "## Related Documents",
+        ),
+        "release": (
+            "## Overview",
+            "## Identity and Scope",
+            "## Included Changes",
+            "## Artifacts",
+            "## Validation Evidence",
+            "## Approvals",
+            "## Rollout and Rollback",
+            "## Outcome and Known Issues",
+            "## Compatibility Notes",
+            "## Related Documents",
+        ),
+    }
+    TASK_5_ROLE_PROFILES = {
+        "guide": "guide",
+        "policy": "policy",
+        "runbook": "runbook",
+        "incident": "incident",
+        "postmortem": "postmortem",
+        "release": "release",
+    }
+    TASK_5_ROLE_TOKENS = {
+        "guide": {
+            "title", "overview", "audience_and_prerequisites", "routine_usage",
+            "common_checks", "runbook_handoff", "troubleshooting",
+            "related_documents",
+        },
+        "policy": {
+            "title", "overview", "scope", "controls", "exceptions",
+            "verification", "review_cadence", "compliance_mapping",
+            "related_documents",
+        },
+        "runbook": {
+            "title", "overview", "trigger", "prerequisites", "safety_conditions",
+            "step_order", "procedure_step", "expected_result",
+            "verification_environment", "verification_command_or_procedure",
+            "verification_result", "verification_evidence_location",
+            "supporting_evidence", "rollback_or_recovery", "escalation",
+            "automation_candidate_or_invocation",
+            "human_or_operator_judgment_boundary", "related_documents",
+        },
+        "incident": {
+            "title", "overview", "severity", "incident_lead",
+            "current_response_state", "impact", "response_timestamp",
+            "response_action", "response_action_owner", "response_state_change",
+            "evidence", "mitigation", "resolution", "handoff", "runbook_links",
+            "related_documents",
+        },
+        "postmortem": {
+            "title", "overview", "incident_and_impact", "timeline",
+            "root_cause_and_contributing_factors", "lessons",
+            "reviewed_action_description", "action_owner", "action_priority",
+            "action_tracking_identity", "verification_owner",
+            "prevention_and_verification", "feedback_loop", "detection_analysis",
+            "related_documents",
+        },
+        "release": {
+            "title", "overview", "immutable_release_identity", "version_or_tag",
+            "commit_identity", "release_scope", "included_changes",
+            "artifact_identifier", "artifact_digest_or_immutable_evidence",
+            "validation_check", "validation_result",
+            "validation_evidence_location", "approval_authority",
+            "approval_decision", "approval_evidence", "rollout_execution",
+            "rollback_disposition", "rollout_evidence", "release_outcome",
+            "known_issues", "compatibility_assessment", "related_documents",
+        },
+    }
+    TASK_5_MANDATORY_EVIDENCE_TOKENS = {
+        "runbook": {
+            "prerequisites", "safety_conditions", "step_order", "procedure_step",
+            "expected_result", "verification_environment",
+            "verification_command_or_procedure", "verification_result",
+            "verification_evidence_location",
+            "automation_candidate_or_invocation",
+            "human_or_operator_judgment_boundary",
+        },
+        "incident": {
+            "severity", "incident_lead", "current_response_state",
+            "response_action", "mitigation", "resolution", "handoff",
+        },
+        "postmortem": {
+            "reviewed_action_description", "action_owner", "action_priority",
+            "action_tracking_identity", "verification_owner",
+        },
+        "release": {
+            "immutable_release_identity", "version_or_tag", "commit_identity",
+            "artifact_identifier", "artifact_digest_or_immutable_evidence",
+            "validation_result", "approval_decision", "compatibility_assessment",
+            "rollout_execution", "rollback_disposition", "release_outcome",
+            "known_issues",
+        },
+    }
+    ALL_ROLE_SOURCES = {
+        "readme": "docs/99.templates/templates/common/readme.template.md",
+        "reference": "docs/99.templates/templates/common/reference.template.md",
+        "audit": "docs/99.templates/templates/common/audit.template.md",
+        "archive": "docs/99.templates/templates/common/archive.template.md",
+        "memory": "docs/99.templates/templates/governance/memory.template.md",
+        "progress": "docs/99.templates/templates/governance/progress.template.md",
+        "prd": "docs/99.templates/templates/sdlc/prd.template.md",
+        "ard": "docs/99.templates/templates/sdlc/ard.template.md",
+        "adr": "docs/99.templates/templates/sdlc/adr.template.md",
+        "spec": "docs/99.templates/templates/sdlc/spec.template.md",
+        "plan": "docs/99.templates/templates/sdlc/plan.template.md",
+        "task": "docs/99.templates/templates/sdlc/task.template.md",
+        "guide": "docs/99.templates/templates/operations/guide.template.md",
+        "policy": "docs/99.templates/templates/operations/policy.template.md",
+        "runbook": "docs/99.templates/templates/operations/runbook.template.md",
+        "incident": "docs/99.templates/templates/operations/incident.template.md",
+        "postmortem": "docs/99.templates/templates/operations/postmortem.template.md",
+        "release": "docs/99.templates/templates/operations/release.template.md",
+        "agent-design": "docs/99.templates/templates/spec-contracts/agent-design.template.md",
+        "api-spec": "docs/99.templates/templates/spec-contracts/api-spec.template.md",
+        "data-model": "docs/99.templates/templates/spec-contracts/data-model.template.md",
+        "service": "docs/99.templates/templates/spec-contracts/service.template.md",
+        "tests": "docs/99.templates/templates/spec-contracts/tests.template.md",
+    }
+    MACHINE_TOKENS = {
+        "docs/99.templates/templates/spec-contracts/openapi.template.yaml": {
+            "API_TITLE",
+            "API_VERSION",
+            "API_DESCRIPTION",
+            "SERVER_URL",
+            "AUTH_SELECTION",
+            "TAG_NAME",
+            "RESOURCE_PATH",
+            "HTTP_METHOD",
+            "SUCCESS_STATUS",
+            "ERROR_STATUS",
+            "OPERATION_ID",
+            "OPERATION_SUMMARY",
+            "SUCCESS_DESCRIPTION",
+            "ERROR_DESCRIPTION",
+            "RESPONSE_SCHEMA",
+            "IDENTIFIER_FIELD",
+            "STATUS_FIELD",
+        },
+        "docs/99.templates/templates/spec-contracts/schema.template.graphql": {
+            "QUERY_FIELD",
+            "ARGUMENT_NAME",
+            "OBJECT_TYPE",
+            "IDENTIFIER_FIELD",
+            "STATUS_FIELD",
+        },
+        "docs/99.templates/templates/spec-contracts/service.template.proto": {
+            "PACKAGE_NAME",
+            "SERVICE_NAME",
+            "RPC_NAME",
+            "REQUEST_MESSAGE",
+            "RESPONSE_MESSAGE",
+            "REQUEST_FIELD",
+            "IDENTIFIER_FIELD",
+            "STATUS_FIELD",
+        },
+    }
+    SPEC_CHILD_HANDOFF_TOKENS = {
+        f"{role}_{field}"
+        for role in ("api_contract", "service_contract", "data_contract", "agent_design", "test_contract")
+        for field in ("summary", "ownership", "link")
+    }
+    SPEC_CHILD_DETAIL_TOKENS = {
+        "role_and_responsibilities",
+        "inputs_and_outputs",
+        "orchestration",
+        "tools_and_permissions",
+        "prompt_policy",
+        "context_and_memory",
+        "evaluation",
+        "observability",
+        "api_style",
+        "authentication_and_authorization",
+        "operations",
+        "request_and_response_schemas",
+        "errors",
+        "compatibility",
+        "machine_readable_contracts",
+        "entities",
+        "relationships",
+        "schema",
+        "integrity",
+        "storage",
+        "privacy",
+        "migration",
+        "image_and_build",
+        "security",
+        "networking_and_storage",
+        "secrets",
+        "health_and_operations",
+        "verification_goals",
+        "tdd_scope",
+        "test_matrix",
+        "contract_and_integration_tests",
+        "non_functional_tests",
+        "fixtures",
+        "execution",
+        "evidence",
+    }
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = metadata.load_profiles(PROFILES)
+
+    @staticmethod
+    def fixture_record(path_text: str, artifact_type: str) -> object:
+        return metadata.Record(
+            pathlib.Path(path_text),
+            {},
+            artifact_type,
+            frontmatter_present=False,
+        )
+
+    @staticmethod
+    def literal_spec_body(*, include_requirements: bool = True) -> str:
+        headings = [
+            "## Overview",
+            "## Boundaries and Inputs",
+            "## Contracts",
+            "## Core Design",
+            "## Interfaces and Data",
+            "## Failure Modes and Guardrails",
+            "## Verification",
+            "## Related Documents",
+        ]
+        if not include_requirements:
+            headings.remove("## Contracts")
+        return "# Fixture\n\n" + "\n\ncontent\n\n".join(headings) + "\n"
+
+    def body_finding_codes(
+        self,
+        record: object,
+        text: str,
+        *,
+        profiles: dict[str, object] | None = None,
+        changed_boundary: bool = True,
+    ) -> set[str]:
+        return {
+            finding.code
+            for finding in metadata.validate_body_contract(
+                record,
+                text,
+                profiles or self.profiles,
+                changed_boundary=changed_boundary,
+            )
+        }
+
+    def test_markdown_heading_extraction_ignores_fenced_examples(self) -> None:
+        text = (
+            "# Title\n\n"
+            "~~~text\n## Tilde example\n~~~\n\n"
+            "```markdown\n# Backtick example\n## Backtick H2\n```\n\n"
+            "## Overview\n"
+        )
+        h1, h2 = metadata.extract_markdown_headings(text)
+        self.assertEqual(["# Title"], h1)
+        self.assertEqual(["## Overview"], h2)
+
+    def test_commonmark_fence_scanner_honors_delimiter_specific_info_strings(self) -> None:
+        cases = (
+            (
+                "backtick info may contain tilde",
+                "# Title\n\n```markdown title=\"~example~\"\n# Hidden\n{{hidden_token}}\n```\n\n## Overview\n",
+            ),
+            (
+                "tilde info may contain backticks and tildes",
+                "# Title\n\n~~~markdown title=\"`example` ~draft~\"\n# Hidden\n{{hidden_token}}\n~~~\n\n## Overview\n",
+            ),
+            (
+                "unclosed backtick fence hides the remaining example",
+                "# Title\n\n```markdown title=\"~example~\"\n# Hidden\n{{hidden_token}}\n",
+            ),
+            (
+                "unclosed tilde fence hides the remaining example",
+                "# Title\n\n~~~markdown title=\"`example`\"\n# Hidden\n{{hidden_token}}\n",
+            ),
+        )
+        for label, text in cases:
+            with self.subTest(case=label):
+                h1, h2 = metadata.extract_markdown_headings(text)
+                self.assertEqual(["# Title"], h1)
+                expected_h2 = ["## Overview"] if "Overview" in text else []
+                self.assertEqual(expected_h2, h2)
+
+    def test_inline_code_scanner_requires_equal_backtick_run_lengths(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        documented = (
+            self.literal_spec_body()
+            + "\nDocument `> Rules:` and `{{single_token}}`.\n"
+            + "Document `` `> Rules:` and `{{multi_token}}` ``.\n"
+        )
+        documented_codes = self.body_finding_codes(record, documented)
+        self.assertNotIn("template-instruction-in-target", documented_codes)
+        self.assertNotIn("template-body-token-in-target", documented_codes)
+
+        genuine = documented + "\n> Rules:\n\n{{outside_code}}\n"
+        genuine_codes = self.body_finding_codes(record, genuine)
+        self.assertIn("template-instruction-in-target", genuine_codes)
+        self.assertIn("template-body-token-in-target", genuine_codes)
+
+    def test_required_heading_reports_code(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        missing = self.body_finding_codes(
+            record,
+            self.literal_spec_body(include_requirements=False),
+        )
+        self.assertIn("body-heading-missing", missing)
+
+    def test_forbidden_heading_reports_code(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        forbidden = self.body_finding_codes(
+            record,
+            self.literal_spec_body() + "\n## Success Criteria\n\ncontent\n",
+        )
+        self.assertIn("body-heading-forbidden", forbidden)
+
+    def test_conditional_heading_may_be_absent(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        conditional_absent = self.body_finding_codes(
+            record,
+            self.literal_spec_body(),
+        )
+        self.assertNotIn("body-heading-missing", conditional_absent)
+
+    def test_two_h1_headings_report_code(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        codes = self.body_finding_codes(
+            record,
+            self.literal_spec_body() + "\n# Duplicate\n",
+        )
+        self.assertIn("body-h1-count", codes)
+
+    def test_changed_target_rejects_template_instruction_and_body_token(self) -> None:
+        record = self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec")
+        text = self.literal_spec_body() + "\n> Rules:\n\n{{explain_scope}}\n"
+        codes = self.body_finding_codes(record, text)
+        self.assertIn("template-instruction-in-target", codes)
+        self.assertIn("template-body-token-in-target", codes)
+        documented = self.body_finding_codes(
+            record,
+            self.literal_spec_body()
+            + "\nThe source syntax is `> Rules:` and `{{documented_token}}`.\n",
+        )
+        self.assertNotIn("template-instruction-in-target", documented)
+        self.assertNotIn("template-body-token-in-target", documented)
+
+    def test_zero_role_match_reports_code(self) -> None:
+        missing = self.body_finding_codes(
+            self.fixture_record("docs/03.specs/901-fixture/unknown.md", "spec"),
+            self.literal_spec_body(),
+        )
+        self.assertIn("template-role-missing", missing)
+
+    def test_ambiguous_role_match_reports_code(self) -> None:
+        roles = dict(self.profiles["template_roles"])
+        roles["api-spec"] = {
+            **roles["api-spec"],
+            "target_globs": ["docs/03.specs/*/spec.md"],
+        }
+        ambiguous_profiles = {**self.profiles, "template_roles": roles}
+        ambiguous = self.body_finding_codes(
+            self.fixture_record("docs/03.specs/901-fixture/spec.md", "spec"),
+            self.literal_spec_body(),
+            profiles=ambiguous_profiles,
+        )
+        self.assertIn("template-role-ambiguous", ambiguous)
+
+    def test_template_catalog_readme_requires_profile_headings(self) -> None:
+        catalog = self.fixture_record(
+            "docs/99.templates/templates/README.md",
+            "readme",
+        )
+        unrelated = self.fixture_record("README.md", "readme")
+        text = "# Catalog\n\n## Overview\n"
+        self.assertIn("readme-heading-missing", self.body_finding_codes(catalog, text))
+        self.assertNotIn("readme-heading-missing", self.body_finding_codes(unrelated, text))
+
+    def test_machine_source_requires_token(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        missing = self.body_finding_codes(
+            record,
+            "openapi: 3.1.0\ninfo:\n  title: fixture\n",
+            changed_boundary=False,
+        )
+        self.assertIn("machine-template-token-missing", missing)
+
+    def test_machine_source_rejects_example_host(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        concrete = self.body_finding_codes(
+            record,
+            "openapi: 3.1.0\nx-template-token: __API_TITLE__\nservers:\n  - url: https://api.example.com\n",
+            changed_boundary=False,
+        )
+        concrete_auth = self.body_finding_codes(
+            record,
+            "openapi: 3.1.0\nx-template-token: __API_TITLE__\nx-auth: basic\n",
+            changed_boundary=False,
+        )
+        self.assertIn("machine-template-example-value", concrete)
+        self.assertIn("machine-template-example-value", concrete_auth)
+
+    def test_machine_sources_reject_bounded_concrete_credential_assignments(self) -> None:
+        cases = (
+            (
+                "openapi api key",
+                "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\nx-api-key: fixture-key\n",
+            ),
+            (
+                "openapi password",
+                "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\npassword: fixture-password\n",
+            ),
+            (
+                "openapi secret",
+                "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\nclient_secret: fixture-secret\n",
+            ),
+            (
+                "graphql credential default",
+                "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+                "input Login { password: String = \"fixture-password\" }\ntype Query { login: String }\n# __GRAPHQL_TOKEN__\n",
+            ),
+            (
+                "graphql credential literal",
+                "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+                "type Query { login: String }\nquery { login(apiKey: \"fixture-key\") }\n# __GRAPHQL_TOKEN__\n",
+            ),
+            (
+                "protobuf credential default",
+                "docs/99.templates/templates/spec-contracts/service.template.proto",
+                "syntax = \"proto2\";\nmessage Login { optional string secret = 1 [default = \"fixture-secret\"]; }\n// __PROTO_TOKEN__\n",
+            ),
+            (
+                "protobuf credential option",
+                "docs/99.templates/templates/spec-contracts/service.template.proto",
+                "syntax = \"proto3\";\noption (auth_token) = \"fixture-token\";\n// __PROTO_TOKEN__\n",
+            ),
+            (
+                "bearer literal",
+                "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+                "type Query { login: String }\nquery { login(token: \"Bearer fixture-token\") }\n# __GRAPHQL_TOKEN__\n",
+            ),
+            (
+                "jwt literal",
+                "docs/99.templates/templates/spec-contracts/service.template.proto",
+                "syntax = \"proto3\";\noption (jwt) = \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmaXh0dXJlIn0.signature\";\n// __PROTO_TOKEN__\n",
+            ),
+        )
+        for label, relative_path, text in cases:
+            with self.subTest(case=label):
+                record = self.fixture_record(relative_path, "unsupported")
+                codes = self.body_finding_codes(record, text, changed_boundary=False)
+                self.assertIn("machine-template-example-value", codes)
+
+    def test_machine_credential_gate_accepts_schema_declarations_and_current_sentinels(self) -> None:
+        openapi_schema = (
+            "openapi: 3.1.0\n"
+            "x-template-auth-selection: __AUTH_SELECTION__\n"
+            "components:\n"
+            "  securitySchemes:\n"
+            "    ApiKeyAuth:\n"
+            "      type: apiKey\n"
+            "      name: X-API-Key\n"
+            "      in: header\n"
+        )
+        graphql_declaration = (
+            "input Login { password: String, apiKey: String }\n"
+            "type Query { login(input: Login): String }\n"
+            "# __GRAPHQL_TOKEN__\n"
+        )
+        proto_declaration = (
+            "syntax = \"proto3\";\n"
+            "message Login { string password = 1; string api_key = 2; }\n"
+            "// __PROTO_TOKEN__\n"
+        )
+        cases = (
+            ("docs/99.templates/templates/spec-contracts/openapi.template.yaml", openapi_schema),
+            ("docs/99.templates/templates/spec-contracts/schema.template.graphql", graphql_declaration),
+            ("docs/99.templates/templates/spec-contracts/service.template.proto", proto_declaration),
+        )
+        for relative_path, text in cases:
+            with self.subTest(path=relative_path):
+                record = self.fixture_record(relative_path, "unsupported")
+                codes = self.body_finding_codes(record, text, changed_boundary=False)
+                self.assertNotIn("machine-template-example-value", codes)
+
+    def test_openapi_parse_failures_are_static_and_fail_closed(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        cases = (
+            (
+                "malformed",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\npaths: [fixture-parse-leak\n",
+                "fixture-parse-leak",
+            ),
+            (
+                "duplicate-key",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\ninfo: fixture-first\ninfo: fixture-duplicate-leak\n",
+                "fixture-duplicate-leak",
+            ),
+            (
+                "constructor",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\nx-value: !!python/object:fixture-constructor-leak {}\n",
+                "fixture-constructor-leak",
+            ),
+            (
+                "non-mapping-root",
+                "- __API_TITLE__\n- fixture-root-leak\n",
+                "fixture-root-leak",
+            ),
+        )
+        for label, text, private_value in cases:
+            with self.subTest(case=label):
+                findings = metadata._machine_template_findings(record, text)
+                parse_findings = [
+                    finding
+                    for finding in findings
+                    if finding.code == "machine-template-parse-error"
+                ]
+                self.assertEqual(1, len(parse_findings))
+                self.assertEqual(
+                    "machine template could not be parsed as a safe OpenAPI mapping",
+                    parse_findings[0].message,
+                )
+                self.assertNotIn(private_value, repr(findings))
+
+    def test_openapi_credential_schema_value_keywords_reject_concrete_values(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        values = {
+            "default": "fixture-default-leak",
+            "example": "fixture-example-leak",
+            "const": "fixture-const-leak",
+            "enum": "[fixture-enum-leak, __PASSWORD_SECONDARY__]",
+        }
+        for keyword, value in values.items():
+            with self.subTest(keyword=keyword):
+                text = (
+                    "openapi: 3.1.0\n"
+                    "x-template-token: __API_TITLE__\n"
+                    "components:\n"
+                    "  schemas:\n"
+                    "    Login:\n"
+                    "      properties:\n"
+                    "        password:\n"
+                    "          type: string\n"
+                    f"          {keyword}: {value}\n"
+                )
+                findings = metadata._machine_template_findings(record, text)
+                self.assertIn(
+                    "machine-template-example-value",
+                    {finding.code for finding in findings},
+                )
+                self.assertNotIn("fixture-", repr(findings))
+        with self.subTest(keyword="direct-list"):
+            findings = metadata._machine_template_findings(
+                record,
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "access_token: [__ACCESS_TOKEN__, fixture-direct-list-leak]\n",
+            )
+            self.assertIn(
+                "machine-template-example-value",
+                {finding.code for finding in findings},
+            )
+            self.assertNotIn("fixture-direct-list-leak", repr(findings))
+
+    def test_openapi_credential_plural_examples_reject_nested_concrete_leaves_without_leaks(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        cases = {
+            "scalar": "fixture-scalar-private",
+            "list": "[__PASSWORD_PRIMARY__, fixture-list-private]",
+            "map": "{primary: __PASSWORD_PRIMARY__, secondary: fixture-map-private}",
+        }
+        for label, examples in cases.items():
+            with self.subTest(shape=label):
+                text = (
+                    "openapi: 3.1.0\n"
+                    "x-template-token: __API_TITLE__\n"
+                    "components:\n"
+                    "  schemas:\n"
+                    "    Login:\n"
+                    "      properties:\n"
+                    "        password:\n"
+                    "          type: string\n"
+                    f"          examples: {examples}\n"
+                )
+                findings = metadata._machine_template_findings(record, text)
+                self.assertIn(
+                    "machine-template-example-value",
+                    {finding.code for finding in findings},
+                )
+                self.assertNotIn("fixture-", repr(findings))
+
+    def test_openapi_credential_plural_examples_accept_exact_nested_tokens(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        text = (
+            "openapi: 3.1.0\n"
+            "x-template-token: __API_TITLE__\n"
+            "components:\n"
+            "  schemas:\n"
+            "    Login:\n"
+            "      properties:\n"
+            "        password:\n"
+            "          type: string\n"
+            "          examples:\n"
+            "            primary: __PASSWORD_PRIMARY__\n"
+            "            alternatives:\n"
+            "              - __PASSWORD_SECONDARY__\n"
+            "              - __PASSWORD_TERTIARY__\n"
+        )
+        codes = {
+            finding.code
+            for finding in metadata._machine_template_findings(record, text)
+        }
+        self.assertNotIn("machine-template-parse-error", codes)
+        self.assertNotIn("machine-template-example-value", codes)
+
+    def test_openapi_credential_context_accepts_exact_tokens_and_schema_only_fields(self) -> None:
+        record = self.fixture_record(
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "unsupported",
+        )
+        cases = (
+            (
+                "direct-and-list-tokens",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "x-api-key: __API_KEY__\n"
+                "access_token: [__ACCESS_TOKEN__, __REFRESH_TOKEN__]\n",
+            ),
+            (
+                "credential-schema-tokens",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          default: __PASSWORD_DEFAULT__\n"
+                "          example: __PASSWORD_EXAMPLE__\n"
+                "          const: __PASSWORD_CONST__\n"
+                "          enum: [__PASSWORD_PRIMARY__, __PASSWORD_SECONDARY__]\n",
+            ),
+            (
+                "schema-only-and-unrelated-default",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      required: [password]\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          format: password\n"
+                "          description: caller-supplied credential\n"
+                "        displayName:\n"
+                "          type: string\n"
+                "          default: fixture display name\n",
+            ),
+            (
+                "standard-example-token",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          example: __PASSWORD_EXAMPLE__\n",
+            ),
+        )
+        for label, text in cases:
+            with self.subTest(case=label):
+                codes = {
+                    finding.code
+                    for finding in metadata._machine_template_findings(record, text)
+                }
+                self.assertNotIn("machine-template-parse-error", codes)
+                self.assertNotIn("machine-template-example-value", codes)
+
+        for relative_path in (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml",
+            "docs/99.templates/templates/spec-contracts/schema.template.graphql",
+            "docs/99.templates/templates/spec-contracts/service.template.proto",
+        ):
+            with self.subTest(current_source=relative_path):
+                record = self.fixture_record(relative_path, "unsupported")
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                codes = self.body_finding_codes(record, text, changed_boundary=False)
+                self.assertNotIn("machine-template-example-value", codes)
+
+    @staticmethod
+    def body_tokens(text: str) -> set[str]:
+        return set(re.findall(r"\{\{([a-z][a-z0-9_]*)\}\}", text))
+
+    def copied_profiles_with_role(
+        self,
+        role_name: str,
+        **role_updates: object,
+    ) -> dict[str, object]:
+        roles = dict(self.profiles["template_roles"])
+        roles[role_name] = {**roles[role_name], **role_updates}
+        return {**self.profiles, "template_roles": roles}
+
+    def assert_markdown_role_contract(
+        self,
+        role_name: str,
+        text: str,
+        *,
+        expected_headings: tuple[str, ...],
+        expected_profile: str,
+        expected_tokens: set[str],
+        expected_h1: str,
+        empty_parents: bool = False,
+    ) -> None:
+        role = self.profiles["template_roles"][role_name]
+        h1_headings = [line for line in text.splitlines() if line.startswith("# ")]
+        h2_headings = [line for line in text.splitlines() if line.startswith("## ")]
+        registry_headings = [
+            *role["required_headings"],
+            *role["conditional_headings"],
+        ]
+        expected_frontmatter = {
+            "status": "draft",
+            "artifact_id": "<artifact-id>",
+            "artifact_type": expected_profile,
+            "parent_ids": [] if empty_parents else ["<parent-artifact-id>"],
+        }
+
+        self.assertEqual([expected_h1], h1_headings)
+        self.assertEqual(list(expected_headings), h2_headings)
+        self.assertEqual(
+            collections.Counter(expected_headings),
+            collections.Counter(registry_headings),
+        )
+        self.assertEqual(expected_profile, role["artifact_profile"])
+        self.assertEqual(expected_frontmatter, metadata._parse_frontmatter_text(text))
+        self.assertEqual(expected_tokens, self.body_tokens(text))
+        self.assertNotIn("> Rules:", text)
+        self.assertNotIn("<!-- Target:", text)
+
+    def assert_task_3_markdown_contract(self, role_name: str, text: str) -> None:
+        self.assert_markdown_role_contract(
+            role_name,
+            text,
+            expected_headings=self.TASK_3_ROLE_HEADINGS[role_name],
+            expected_profile=self.TASK_3_ROLE_PROFILES[role_name],
+            expected_tokens=self.TASK_3_ROLE_TOKENS[role_name],
+            expected_h1="# {{title}}",
+            empty_parents=role_name == "prd",
+        )
+
+    def assert_task_4_markdown_contract(self, role_name: str, text: str) -> None:
+        self.assert_markdown_role_contract(
+            role_name,
+            text,
+            expected_headings=self.TASK_4_ROLE_HEADINGS[role_name],
+            expected_profile=self.TASK_4_ROLE_PROFILES[role_name],
+            expected_tokens=self.TASK_4_ROLE_TOKENS[role_name],
+            expected_h1=self.TASK_4_ROLE_H1[role_name],
+        )
+
+    def assert_task_5_markdown_contract(self, role_name: str, text: str) -> None:
+        role = self.profiles["template_roles"][role_name]
+        h1_headings = [line for line in text.splitlines() if line.startswith("# ")]
+        h2_headings = [line for line in text.splitlines() if line.startswith("## ")]
+        expected_frontmatter = {
+            "status": "draft",
+            "artifact_id": "<artifact-id>",
+            "artifact_type": self.TASK_5_ROLE_PROFILES[role_name],
+            "parent_ids": [] if role_name == "incident" else ["<parent-artifact-id>"],
+        }
+        if role_name in {"policy", "runbook"}:
+            expected_frontmatter.update(
+                {"reviewed_at": "<reviewed-at>", "review_cycle": "<review-cycle>"}
+            )
+        elif role_name == "postmortem":
+            expected_frontmatter["reviewed_at"] = "<reviewed-at>"
+
+        self.assertEqual(["# {{title}}"], h1_headings)
+        self.assertEqual(list(self.TASK_5_ROLE_HEADINGS[role_name]), h2_headings)
+        self.assertEqual(
+            collections.Counter(self.TASK_5_ROLE_HEADINGS[role_name]),
+            collections.Counter(
+                [*role["required_headings"], *role["conditional_headings"]]
+            ),
+        )
+        self.assertEqual(self.TASK_5_ROLE_PROFILES[role_name], role["artifact_profile"])
+        self.assertEqual(expected_frontmatter, metadata._parse_frontmatter_text(text))
+        self.assertEqual(self.TASK_5_ROLE_TOKENS[role_name], self.body_tokens(text))
+        self.assertNotIn("> Rules:", text)
+        self.assertNotIn("<!-- Target:", text)
+        self.assertNotIn("<!-- Release Target:", text)
+
+    def assert_machine_source_contract(self, relative_path: str, text: str) -> None:
+        expected_tokens = self.MACHINE_TOKENS[relative_path]
+        actual_tokens = set(re.findall(r"__([A-Z][A-Z0-9_]*)__", text))
+        self.assertEqual(expected_tokens, actual_tokens)
+        comment_prefix = "//" if relative_path.endswith(".proto") else "#"
+        self.assertIn(f"{comment_prefix} Target:", text)
+        self.assertIn(f"{comment_prefix} Cross-links:", text)
+        self.assertNotRegex(text, r"https?://")
+        self.assertNotRegex(
+            text,
+            r"(?i)\b(?:[a-z0-9-]+\.)+(?:com|dev|invalid|io|local|net|org)\b",
+        )
+        self.assertNotRegex(
+            text,
+            r"(?i)\b(?:bearer|basic|oauth2?|openidconnect|api[_-]?key)\b",
+        )
+        self.assertNotRegex(text, r"(?i)\bexample(?:\.com)?\b")
+
+        if relative_path.endswith("openapi.template.yaml"):
+            document = yaml.safe_load(text)
+            self.assertIsInstance(document, dict)
+            self.assertEqual("__SERVER_URL__", document["servers"][0]["url"])
+            self.assertEqual(
+                "__AUTH_SELECTION__", document["x-template-auth-selection"]
+            )
+            self.assertNotIn("security", document)
+            self.assertNotIn("securitySchemes", document.get("components", {}))
+            allowed_path_item_keys = {
+                "$ref",
+                "summary",
+                "description",
+                "get",
+                "put",
+                "post",
+                "delete",
+                "options",
+                "head",
+                "patch",
+                "trace",
+                "servers",
+                "parameters",
+            }
+            for path_item in document["paths"].values():
+                invalid_keys = {
+                    key
+                    for key in path_item
+                    if key not in allowed_path_item_keys and not key.startswith("x-")
+                }
+                self.assertEqual(set(), invalid_keys)
+                operation = path_item["get"]
+                self.assertEqual("__HTTP_METHOD__", operation["x-template-http-method"])
+                self.assertEqual(
+                    "__SUCCESS_STATUS__", operation["x-template-success-status"]
+                )
+                self.assertEqual(
+                    "__ERROR_STATUS__", operation["x-template-error-status"]
+                )
+                response_keys = set(operation["responses"])
+                self.assertEqual({"200", "default"}, response_keys)
+                for key in response_keys:
+                    self.assertRegex(key, r"^(?:default|[1-5](?:[0-9]{2}|XX))$")
+        elif relative_path.endswith("schema.template.graphql"):
+            body = "\n".join(
+                line for line in text.splitlines() if not line.lstrip().startswith("#")
+            )
+            names = re.findall(r"(?<![A-Za-z0-9_])([_A-Za-z][_0-9A-Za-z]*)", body)
+            self.assertEqual([], [name for name in names if name.startswith("__")])
+            sentinel_map = {
+                "_templateQueryField": "__QUERY_FIELD__",
+                "_templateArgument": "__ARGUMENT_NAME__",
+                "_TemplateObject": "__OBJECT_TYPE__",
+                "_templateIdentifier": "__IDENTIFIER_FIELD__",
+                "_templateStatus": "__STATUS_FIELD__",
+            }
+            for sentinel, token in sentinel_map.items():
+                self.assertIn(f"# {sentinel} -> {token}", text)
+                self.assertIn(sentinel, body)
+            self.assertEqual(body.count("{"), body.count("}"))
+        else:
+            body = "\n".join(
+                line for line in text.splitlines() if not line.lstrip().startswith("//")
+            )
+            self.assertIn('syntax = "proto3";', body)
+            self.assertRegex(body, r"package\s+__PACKAGE_NAME__\s*;")
+            self.assertRegex(body, r"service\s+__SERVICE_NAME__\s*\{")
+            self.assertRegex(
+                body,
+                r"rpc\s+__RPC_NAME__\s*\(__REQUEST_MESSAGE__\)\s*"
+                r"returns\s*\(__RESPONSE_MESSAGE__\)\s*;",
+            )
+            self.assertEqual(2, len(re.findall(r"message\s+__[A-Z0-9_]+__\s*\{", body)))
+            self.assertEqual(body.count("{"), body.count("}"))
+
+    def test_task_3_markdown_sources_match_exact_contracts(self) -> None:
+        for role_name in self.TASK_3_ROLE_TOKENS:
+            with self.subTest(role=role_name):
+                role = self.profiles["template_roles"][role_name]
+                text = (ROOT / role["source"]).read_text(encoding="utf-8")
+                self.assert_task_3_markdown_contract(role_name, text)
+
+    def test_task_4_plan_and_task_sources_match_exact_contracts(self) -> None:
+        for role_name in self.TASK_4_ROLE_TOKENS:
+            with self.subTest(role=role_name):
+                role = self.profiles["template_roles"][role_name]
+                text = (ROOT / role["source"]).read_text(encoding="utf-8")
+                self.assert_task_4_markdown_contract(role_name, text)
+
+    def test_task_5_operations_sources_match_exact_contracts(self) -> None:
+        for role_name in self.TASK_5_ROLE_TOKENS:
+            with self.subTest(role=role_name):
+                source = ROOT / self.ALL_ROLE_SOURCES[role_name]
+                self.assert_task_5_markdown_contract(
+                    role_name, source.read_text(encoding="utf-8")
+                )
+
+    def test_operations_forms_have_non_overlapping_headings(self) -> None:
+        base = ROOT / "docs/99.templates/templates/operations"
+        guide = (base / "guide.template.md").read_text(encoding="utf-8")
+        policy = (base / "policy.template.md").read_text(encoding="utf-8")
+        runbook = (base / "runbook.template.md").read_text(encoding="utf-8")
+        for forbidden in ("## Rollback or Recovery", "## Escalation"):
+            with self.subTest(heading=forbidden):
+                self.assertNotIn(forbidden, guide)
+        self.assertNotIn("## Procedure", policy)
+        self.assertEqual(1, runbook.count("## Rollback or Recovery"))
+
+    def test_all_23_markdown_roles_have_independent_literal_contract_coverage(self) -> None:
+        expected_headings = {
+            **self.TASK_2_ROLE_HEADINGS,
+            **self.TASK_3_ROLE_HEADINGS,
+            **self.TASK_4_ROLE_HEADINGS,
+            **self.TASK_5_ROLE_HEADINGS,
+        }
+        expected_profiles = {
+            **self.TASK_2_ROLE_PROFILES,
+            **self.TASK_3_ROLE_PROFILES,
+            **self.TASK_4_ROLE_PROFILES,
+            **self.TASK_5_ROLE_PROFILES,
+        }
+        expected_tokens = {
+            **self.TASK_2_ROLE_TOKENS,
+            **self.TASK_3_ROLE_TOKENS,
+            **self.TASK_4_ROLE_TOKENS,
+            **self.TASK_5_ROLE_TOKENS,
+        }
+        expected_roles = set(self.ALL_ROLE_SOURCES)
+        self.assertEqual(23, len(expected_roles))
+        self.assertEqual(expected_roles, set(self.profiles["template_roles"]))
+        self.assertEqual(expected_roles, set(expected_headings))
+        self.assertEqual(expected_roles, set(expected_profiles))
+        self.assertEqual(expected_roles, set(expected_tokens))
+
+        for role_name, source_path in self.ALL_ROLE_SOURCES.items():
+            with self.subTest(role=role_name):
+                role = self.profiles["template_roles"][role_name]
+                text = (ROOT / source_path).read_text(encoding="utf-8")
+                h1 = [line for line in text.splitlines() if line.startswith("# ")]
+                h2 = [line for line in text.splitlines() if line.startswith("## ")]
+                self.assertEqual(source_path, role["source"])
+                self.assertEqual(expected_profiles[role_name], role["artifact_profile"])
+                self.assertEqual(list(expected_headings[role_name]), h2)
+                self.assertEqual(expected_tokens[role_name], self.body_tokens(text))
+                if role_name in self.TASK_5_MANDATORY_EVIDENCE_TOKENS:
+                    self.assertLessEqual(
+                        self.TASK_5_MANDATORY_EVIDENCE_TOKENS[role_name],
+                        self.body_tokens(text),
+                    )
+                self.assertEqual(1, len(h1))
+                self.assertNotIn("> Rules:", text)
+                self.assertNotRegex(text, r"<!-- (?:Release )?Target:")
+
+    def test_task_5_negative_mutations_are_rejected(self) -> None:
+        role_name = "runbook"
+        text = (ROOT / self.ALL_ROLE_SOURCES[role_name]).read_text(encoding="utf-8")
+        mutations = {
+            "extra-h1": text.replace("# {{title}}", "# {{title}}\n\n# Duplicate", 1),
+            "extra-heading": text.replace(
+                "## Related Documents",
+                "## Routine Usage\n\n{{overview}}\n\n## Related Documents",
+                1,
+            ),
+            "duplicate-recovery": text.replace(
+                "## Escalation",
+                "## Rollback or Recovery\n\n{{rollback_or_recovery}}\n\n## Escalation",
+                1,
+            ),
+            "missing-heading": text.replace("## Evidence\n\n", "", 1),
+            "rules-block": text.replace("## Overview", "> Rules:\n\n## Overview", 1),
+            "target-comment": text.replace(
+                "# {{title}}",
+                "<!-- Target: docs/05.operations/runbooks/fixture.md -->\n\n# {{title}}",
+                1,
+            ),
+            "frontmatter-drift": text.replace(
+                "artifact_type: runbook", "artifact_type: guide", 1
+            ),
+            "token-drift": text.replace(
+                "{{verification_environment}}", "{{verification_context}}", 1
+            ),
+        }
+        for name, mutated in mutations.items():
+            with self.subTest(mutation=name), self.assertRaises(AssertionError):
+                self.assert_task_5_markdown_contract(role_name, mutated)
+
+    def test_task_5_mandatory_evidence_token_removal_is_rejected(self) -> None:
+        for role_name, mandatory_tokens in self.TASK_5_MANDATORY_EVIDENCE_TOKENS.items():
+            text = (ROOT / self.ALL_ROLE_SOURCES[role_name]).read_text(encoding="utf-8")
+            for token in mandatory_tokens:
+                with self.subTest(role=role_name, token=token):
+                    self.assertIn(f"{{{{{token}}}}}", text)
+                    mutated = text.replace(f"{{{{{token}}}}}", "", 1)
+                    with self.assertRaises(AssertionError):
+                        self.assert_task_5_markdown_contract(role_name, mutated)
+
+    def test_plan_form_is_prospective_only(self) -> None:
+        role = self.profiles["template_roles"]["plan"]
+        text = (ROOT / role["source"]).read_text(encoding="utf-8")
+        tokens = self.body_tokens(text)
+        for forbidden_token in (
+            "actual_evidence",
+            "verification_results",
+            "work_log",
+            "implementation_review_verdict",
+            "specification_review_verdict",
+            "quality_review_verdict",
+            "commit_identity",
+        ):
+            with self.subTest(token=forbidden_token):
+                self.assertNotIn(forbidden_token, tokens)
+        for forbidden_heading in (
+            "## Verification Evidence",
+            "## Work Log",
+            "## Review Evidence",
+            "## Commit Ledger",
+        ):
+            with self.subTest(heading=forbidden_heading):
+                self.assertNotIn(forbidden_heading, text)
+
+    def test_task_4_negative_mutations_are_rejected(self) -> None:
+        task_role = self.profiles["template_roles"]["task"]
+        task_text = (ROOT / task_role["source"]).read_text(encoding="utf-8")
+        mutations = {
+            "extra-h1": task_text.replace(
+                "# Task: {{title}}",
+                "# Task: {{title}}\n\n# Duplicate",
+                1,
+            ),
+            "extra-heading": task_text.replace(
+                "## Related Documents",
+                "## Unregistered\n\n{{overview}}\n\n## Related Documents",
+                1,
+            ),
+            "missing-heading": task_text.replace(
+                "## Approval Evidence\n\n", "", 1
+            ),
+            "rules-block": task_text.replace(
+                "## Overview", "> Rules:\n\n## Overview", 1
+            ),
+            "target-comment": task_text.replace(
+                "# Task: {{title}}",
+                "<!-- Target: docs/04.execution/tasks/fixture.md -->\n\n"
+                "# Task: {{title}}",
+                1,
+            ),
+            "frontmatter-drift": task_text.replace(
+                "artifact_type: task", "artifact_type: plan", 1
+            ),
+            "token-drift": task_text.replace(
+                "{{actual_evidence}}", "{{result_summary}}", 1
+            ),
+        }
+        for name, mutated in mutations.items():
+            with self.subTest(mutation=name), self.assertRaises(AssertionError):
+                self.assert_task_4_markdown_contract("task", mutated)
+
+    def test_parent_spec_has_all_child_handoffs_without_child_details(self) -> None:
+        role = self.profiles["template_roles"]["spec"]
+        text = (ROOT / role["source"]).read_text(encoding="utf-8")
+        tokens = self.body_tokens(text)
+        self.assertTrue(self.SPEC_CHILD_HANDOFF_TOKENS <= tokens)
+        self.assertFalse(self.SPEC_CHILD_DETAIL_TOKENS & tokens)
+
+    def test_machine_sources_match_exact_native_safe_contracts(self) -> None:
+        for relative_path in self.MACHINE_TOKENS:
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assert_machine_source_contract(relative_path, text)
+
+    def test_task_3_negative_mutations_are_rejected(self) -> None:
+        spec_role = self.profiles["template_roles"]["spec"]
+        spec_text = (ROOT / spec_role["source"]).read_text(encoding="utf-8")
+        markdown_mutations = {
+            "extra-heading": spec_text.replace(
+                "## Related Documents", "## Unregistered\n\n{{overview}}\n\n## Related Documents"
+            ),
+            "missing-heading": spec_text.replace(
+                "## Agent Role and IO Contract\n\n", "", 1
+            ),
+        }
+        for name, mutated in markdown_mutations.items():
+            with self.subTest(mutation=name), self.assertRaises(AssertionError):
+                self.assert_task_3_markdown_contract("spec", mutated)
+
+        openapi_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        openapi = (ROOT / openapi_path).read_text(encoding="utf-8")
+        machine_mutations = {
+            "concrete-host": (
+                openapi_path,
+                openapi.replace(
+                    "paths:\n",
+                    "x-concrete-host: https://api.production.invalid\npaths:\n",
+                    1,
+                ),
+            ),
+            "concrete-auth": (
+                openapi_path,
+                openapi.replace(
+                    "paths:\n",
+                    "x-concrete-auth-selection: basic\npaths:\n",
+                    1,
+                ),
+            ),
+            "invalid-openapi-operation-key": (
+                openapi_path,
+                openapi.replace("    get:\n", "    __HTTP_METHOD__:\n", 1),
+            ),
+            "invalid-openapi-response-key": (
+                openapi_path,
+                openapi.replace('        "200":\n', '        "__SUCCESS_STATUS__":\n', 1),
+            ),
+        }
+        graphql_path = (
+            "docs/99.templates/templates/spec-contracts/schema.template.graphql"
+        )
+        graphql = (ROOT / graphql_path).read_text(encoding="utf-8")
+        machine_mutations["reserved-graphql-name"] = (
+            graphql_path,
+            graphql + "\ntype __ReservedObject {\n  _templateValue: String\n}\n",
+        )
+        for name, (relative_path, mutated) in machine_mutations.items():
+            with self.subTest(mutation=name), self.assertRaises(AssertionError):
+                self.assert_machine_source_contract(relative_path, mutated)
+
+    def test_coordinated_registry_and_source_heading_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["prd"]
+        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "prd",
+            required_headings=[
+                "## Executive Summary"
+                if heading == "## Overview"
+                else heading
+                for heading in role["required_headings"]
+            ],
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_3_markdown_contract(
+                    "prd",
+                    source.replace("## Overview", "## Executive Summary", 1),
+                )
+        finally:
+            self.profiles = original_profiles
+
+    def test_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["prd"]
+        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "prd",
+            artifact_profile="reference",
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_3_markdown_contract(
+                    "prd",
+                    source.replace("artifact_type: prd", "artifact_type: reference", 1),
+                )
+        finally:
+            self.profiles = original_profiles
+
+    def test_task_4_coordinated_registry_and_source_heading_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["plan"]
+        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "plan",
+            required_headings=[
+                "## Delivery Plan"
+                if heading == "## Work Breakdown"
+                else heading
+                for heading in role["required_headings"]
+            ],
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_4_markdown_contract(
+                    "plan",
+                    source.replace("## Work Breakdown", "## Delivery Plan", 1),
+                )
+        finally:
+            self.profiles = original_profiles
+
+    def test_task_4_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["task"]
+        source = (ROOT / role["source"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "task",
+            artifact_profile="plan",
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_4_markdown_contract(
+                    "task",
+                    source.replace("artifact_type: task", "artifact_type: plan", 1),
+                )
+        finally:
+            self.profiles = original_profiles
+
+    def test_task_5_coordinated_registry_and_source_heading_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["guide"]
+        source = (ROOT / self.ALL_ROLE_SOURCES["guide"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "guide",
+            required_headings=[
+                "## Operator Workflow"
+                if heading == "## Routine Usage"
+                else heading
+                for heading in role["required_headings"]
+            ],
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_5_markdown_contract(
+                    "guide",
+                    source.replace("## Routine Usage", "## Operator Workflow", 1),
+                )
+        finally:
+            self.profiles = original_profiles
+
+    def test_task_5_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
+        role = self.profiles["template_roles"]["release"]
+        source = (ROOT / self.ALL_ROLE_SOURCES["release"]).read_text(encoding="utf-8")
+        mutated_profiles = self.copied_profiles_with_role(
+            "release",
+            artifact_profile="task",
+        )
+        original_profiles = self.profiles
+        self.profiles = mutated_profiles
+        try:
+            with self.assertRaises(AssertionError):
+                self.assert_task_5_markdown_contract(
+                    "release",
+                    source.replace("artifact_type: release", "artifact_type: task", 1),
+                )
+        finally:
+            self.profiles = original_profiles
 
 
 class RepositoryContractIntegrationTests(unittest.TestCase):
@@ -1179,16 +3293,18 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root, profiles = self.fixture(directory)
             values = yaml.safe_load(profiles.read_text(encoding="utf-8"))
-            values["template_sources"].pop(source)
+            values["template_roles"]["api-spec"]["source"] = (
+                "docs/99.templates/templates/spec-contracts/missing.template.md"
+            )
             self.write_profiles(profiles, values)
             result = self.run_contracts(root, profiles)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
-            self.assertIn(f"template-source-unmapped: {source}", result.stdout)
+            self.assertIn("template-source-missing", result.stdout)
 
         with tempfile.TemporaryDirectory() as directory:
             root, profiles = self.fixture(directory)
             values = yaml.safe_load(profiles.read_text(encoding="utf-8"))
-            values["template_sources"][source] = "plan"
+            values["template_roles"]["api-spec"]["artifact_profile"] = "plan"
             self.write_profiles(profiles, values)
             result = self.run_contracts(root, profiles)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
@@ -1259,6 +3375,295 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 result = self.run_contracts(root, profiles)
                 self.assertEqual(1, result.returncode, result.stdout + result.stderr)
                 self.assertIn(f"release-route-incomplete: {route_file}", result.stdout)
+
+    def test_release_is_in_required_inventory(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        release_sources = [
+            role["source"]
+            for role in profiles["template_roles"].values()
+            if role["artifact_profile"] == "release"
+        ]
+        self.assertEqual(
+            ["docs/99.templates/templates/operations/release.template.md"],
+            release_sources,
+        )
+        findings = metadata.validate_repository_contracts(ROOT, profiles)
+        self.assertNotIn(
+            "release-template-cardinality",
+            {finding.code for finding in findings},
+        )
+
+    def test_repository_contracts_enforce_machine_source_safety(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            path = root / relative_path
+            path.write_text(
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "servers:\n"
+                "  - url: https://api.example.com\n",
+                encoding="utf-8",
+            )
+            result = self.run_contracts(root, profiles)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn(
+                f"machine-template-example-value: {relative_path}",
+                result.stdout,
+            )
+
+    def test_repository_contracts_fail_closed_on_openapi_parse_boundaries_without_leaks(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        cases = (
+            (
+                "malformed",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\npaths: [fixture-parse-leak\n",
+                "fixture-parse-leak",
+            ),
+            (
+                "duplicate-key",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\ninfo: fixture-first\ninfo: fixture-duplicate-leak\n",
+                "fixture-duplicate-leak",
+            ),
+            (
+                "constructor",
+                "openapi: 3.1.0\nx-template-token: __API_TITLE__\nx-value: !!python/object:fixture-constructor-leak {}\n",
+                "fixture-constructor-leak",
+            ),
+            (
+                "non-mapping-root",
+                "- __API_TITLE__\n- fixture-root-leak\n",
+                "fixture-root-leak",
+            ),
+        )
+        for label, text, private_value in cases:
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                (root / relative_path).write_text(text, encoding="utf-8")
+                result = self.run_contracts(root, profiles)
+                rendered = result.stdout + result.stderr
+                self.assertEqual(1, result.returncode, rendered)
+                self.assertIn(
+                    f"machine-template-parse-error: {relative_path}: "
+                    "machine template could not be parsed as a safe OpenAPI mapping",
+                    result.stdout,
+                )
+                self.assertNotIn(private_value, rendered)
+                self.assertNotRegex(rendered, r"(?i)(line|column) [0-9]+")
+
+    def test_repository_contracts_bound_openapi_credential_value_keywords(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        values = {
+            "default": "fixture-default-leak",
+            "example": "fixture-example-leak",
+            "const": "fixture-const-leak",
+            "enum": "[fixture-enum-leak, __PASSWORD_SECONDARY__]",
+        }
+        for keyword, value in values.items():
+            with self.subTest(keyword=keyword), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                (root / relative_path).write_text(
+                    "openapi: 3.1.0\n"
+                    "x-template-token: __API_TITLE__\n"
+                    "components:\n"
+                    "  schemas:\n"
+                    "    Login:\n"
+                    "      properties:\n"
+                    "        password:\n"
+                    "          type: string\n"
+                    f"          {keyword}: {value}\n",
+                    encoding="utf-8",
+                )
+                result = self.run_contracts(root, profiles)
+                rendered = result.stdout + result.stderr
+                self.assertEqual(1, result.returncode, rendered)
+                self.assertIn(
+                    f"machine-template-example-value: {relative_path}",
+                    result.stdout,
+                )
+                self.assertNotIn("fixture-", rendered)
+        with self.subTest(keyword="direct-list"), tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            (root / relative_path).write_text(
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "access_token: [__ACCESS_TOKEN__, fixture-direct-list-leak]\n",
+                encoding="utf-8",
+            )
+            result = self.run_contracts(root, profiles)
+            rendered = result.stdout + result.stderr
+            self.assertEqual(1, result.returncode, rendered)
+            self.assertIn(
+                f"machine-template-example-value: {relative_path}",
+                result.stdout,
+            )
+            self.assertNotIn("fixture-direct-list-leak", rendered)
+
+    def test_repository_contracts_reject_openapi_credential_plural_examples_without_leaks(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        cases = {
+            "scalar": "fixture-scalar-cli-private",
+            "list": "[__PASSWORD_PRIMARY__, fixture-list-cli-private]",
+            "map": "{primary: __PASSWORD_PRIMARY__, secondary: fixture-map-cli-private}",
+        }
+        for label, examples in cases.items():
+            with self.subTest(shape=label), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                (root / relative_path).write_text(
+                    "openapi: 3.1.0\n"
+                    "x-template-token: __API_TITLE__\n"
+                    "components:\n"
+                    "  schemas:\n"
+                    "    Login:\n"
+                    "      properties:\n"
+                    "        password:\n"
+                    "          type: string\n"
+                    f"          examples: {examples}\n",
+                    encoding="utf-8",
+                )
+                result = self.run_contracts(root, profiles)
+                rendered = result.stdout + result.stderr
+                self.assertEqual(1, result.returncode, rendered)
+                self.assertIn(
+                    f"machine-template-example-value: {relative_path}",
+                    result.stdout,
+                )
+                self.assertNotIn("fixture-", rendered)
+
+    def test_repository_contracts_accept_exact_nested_openapi_credential_examples_tokens(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            (root / relative_path).write_text(
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          examples:\n"
+                "            primary: __PASSWORD_PRIMARY__\n"
+                "            alternatives:\n"
+                "              - __PASSWORD_SECONDARY__\n"
+                "              - __PASSWORD_TERTIARY__\n",
+                encoding="utf-8",
+            )
+            result = self.run_contracts(root, profiles)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_repository_contracts_accept_safe_openapi_credential_shapes(self) -> None:
+        relative_path = (
+            "docs/99.templates/templates/spec-contracts/openapi.template.yaml"
+        )
+        cases = (
+            (
+                "exact-tokens",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "x-api-key: __API_KEY__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          default: __PASSWORD_DEFAULT__\n"
+                "          example: __PASSWORD_EXAMPLE__\n"
+                "          const: __PASSWORD_CONST__\n"
+                "          enum: [__PASSWORD_PRIMARY__, __PASSWORD_SECONDARY__]\n",
+            ),
+            (
+                "schema-only-unrelated-default",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      required: [password]\n"
+                "      properties:\n"
+                "        password:\n"
+                "          type: string\n"
+                "          format: password\n"
+                "          description: caller-supplied credential\n"
+                "        displayName:\n"
+                "          type: string\n"
+                "          default: fixture display name\n",
+            ),
+            (
+                "standard-example-token",
+                "openapi: 3.1.0\n"
+                "x-template-token: __API_TITLE__\n"
+                "components:\n"
+                "  schemas:\n"
+                "    Login:\n"
+                "      properties:\n"
+                "        password:\n"
+                "          example: __PASSWORD_EXAMPLE__\n",
+            ),
+        )
+        for label, text in cases:
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                root, profiles = self.fixture(directory)
+                (root / relative_path).write_text(text, encoding="utf-8")
+                result = self.run_contracts(root, profiles)
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_changed_checker_enforces_body_contract_on_new_typed_target(self) -> None:
+        relative_path = "docs/01.requirements/901-fixture.md"
+        with tempfile.TemporaryDirectory() as directory:
+            root, profiles = self.fixture(directory)
+            commit_all(root, "base")
+            write_doc(
+                root / relative_path,
+                {
+                    "status": "draft",
+                    "artifact_id": "prd:901-fixture",
+                    "artifact_type": "prd",
+                    "parent_ids": [],
+                },
+                "# Fixture\n\n"
+                "## Overview\n\ncontent\n\n"
+                "## Problem and Stakeholders\n\ncontent\n\n"
+                "## Requirements\n\n> Rules:\n\n{{requirement}}\n\n"
+                "## Acceptance and Verification\n\ncontent\n\n"
+                "## Scope and Non-goals\n\ncontent\n\n"
+                "## Risks and Dependencies\n\ncontent\n\n"
+                "## Related Documents\n\ncontent\n",
+            )
+            result = run_checker(
+                root,
+                "check-changed",
+                "--changed-path",
+                relative_path,
+                profiles=profiles,
+            )
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-instruction-in-target", result.stdout)
+            self.assertIn("template-body-token-in-target", result.stdout)
+
+    def test_shell_delegates_template_schema_without_duplicate_tables(self) -> None:
+        text = (ROOT / "scripts/validation/check-repo-contracts.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "python3 scripts/validation/check-document-metadata.py --mode check-contracts",
+            text,
+        )
+        self.assertNotIn("required_templates=(", text)
+        self.assertNotIn("heading_requirements:", text)
+        self.assertNotIn("operation_forbidden =", text)
 
     def test_human_support_document_cannot_copy_full_registry_array(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1515,6 +3920,7 @@ class ChangedPathGitTests(unittest.TestCase):
                 "artifact_type": "prd",
                 "parent_ids": [],
             },
+            PRD_TARGET_BODY,
         )
         write_doc(
             root / "docs/03.specs/123-child/spec.md",
@@ -1621,6 +4027,7 @@ class ChangedPathGitTests(unittest.TestCase):
                 "artifact_type": "prd",
                 "parent_ids": [],
             }
+            body = PRD_TARGET_BODY
         else:
             values = {
                 "status": "superseded",
@@ -1628,7 +4035,8 @@ class ChangedPathGitTests(unittest.TestCase):
                 "artifact_type": "spec",
                 "parent_ids": ["prd:123-identity-root"],
             }
-        write_doc(target, values)
+            body = SPEC_TARGET_BODY
+        write_doc(target, values, body)
         if staged:
             self.assertEqual(0, git(root, "add", target.relative_to(root).as_posix()).returncode)
 
@@ -1937,6 +4345,183 @@ class ChangedPathGitTests(unittest.TestCase):
             self.assert_changed_failure(root, "--changed-path", relative)
 
 
+class ChangedBodyDeficitGitTests(unittest.TestCase):
+    PATH = "docs/01.requirements/901-body-deficit.md"
+    METADATA = {
+        "status": "draft",
+        "artifact_id": "prd:901-body-deficit",
+        "artifact_type": "prd",
+        "parent_ids": [],
+    }
+
+    def new_repo_with_body(
+        self,
+        body: str,
+    ) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path, str]:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        init_git(root)
+        write_doc(root / self.PATH, self.METADATA, body)
+        commit_all(root, "body-deficit baseline")
+        base = git(root, "rev-parse", "HEAD").stdout.strip()
+        return directory, root, base
+
+    def run_explicit_base(
+        self,
+        root: pathlib.Path,
+        base: str,
+    ) -> subprocess.CompletedProcess[str]:
+        return run_checker(root, "check-changed", "--base-ref", base)
+
+    def test_identical_base_body_deficit_multiset_is_preserved(self) -> None:
+        body = PRD_TARGET_BODY + "\n{{existing_token}}\n"
+        directory, root, base = self.new_repo_with_body(body)
+        with directory:
+            write_doc(root / self.PATH, self.METADATA, body + "\nEditorial text.\n")
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("violations=0", result.stdout)
+
+    def test_additional_same_class_body_deficit_is_blocked_without_value_leakage(self) -> None:
+        base_body = PRD_TARGET_BODY + "\n{{existing_token}}\n"
+        directory, root, base = self.new_repo_with_body(base_body)
+        with directory:
+            write_doc(
+                root / self.PATH,
+                self.METADATA,
+                base_body + "\n{{additional_token}}\n",
+            )
+            result = self.run_explicit_base(root, base)
+            combined = result.stdout + result.stderr
+            self.assertEqual(1, result.returncode, combined)
+            self.assertIn("template-body-token-in-target", result.stdout)
+            self.assertNotIn("existing_token", combined)
+            self.assertNotIn("additional_token", combined)
+
+    def test_different_same_count_body_deficit_is_blocked_without_value_leakage(self) -> None:
+        directory, root, base = self.new_repo_with_body(
+            PRD_TARGET_BODY + "\n{{original_token}}\n"
+        )
+        with directory:
+            write_doc(
+                root / self.PATH,
+                self.METADATA,
+                PRD_TARGET_BODY + "\n{{replacement_token}}\n",
+            )
+            result = self.run_explicit_base(root, base)
+            combined = result.stdout + result.stderr
+            self.assertEqual(1, result.returncode, combined)
+            self.assertIn("template-body-token-in-target", result.stdout)
+            self.assertNotIn("original_token", combined)
+            self.assertNotIn("replacement_token", combined)
+
+    def test_new_instruction_literal_is_blocked_without_literal_echo(self) -> None:
+        directory, root, base = self.new_repo_with_body(PRD_TARGET_BODY)
+        with directory:
+            write_doc(root / self.PATH, self.METADATA, PRD_TARGET_BODY + "\n> Rules:\n")
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-instruction-in-target", result.stdout)
+            self.assertNotIn("> Rules:", result.stdout)
+
+    def test_new_file_body_deficit_is_blocked(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        with directory:
+            init_git(root)
+            write_doc(root / "docs/03.specs/README.md", None)
+            commit_all(root, "empty body-gate baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(
+                root / self.PATH,
+                self.METADATA,
+                PRD_TARGET_BODY + "\n{{new_file_token}}\n",
+            )
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-body-token-in-target", result.stdout)
+
+    def test_preserved_body_deficit_does_not_suppress_relation_impact(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        with directory:
+            init_git(root)
+            parent = root / self.PATH
+            write_doc(
+                parent,
+                self.METADATA,
+                PRD_TARGET_BODY + "\n{{existing_token}}\n",
+            )
+            child = root / "docs/03.specs/901-body-child/spec.md"
+            write_doc(
+                child,
+                {
+                    "status": "draft",
+                    "artifact_id": "spec:901-body-child",
+                    "artifact_type": "spec",
+                    "parent_ids": ["prd:901-body-deficit"],
+                },
+                SPEC_TARGET_BODY,
+            )
+            commit_all(root, "body and relation baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(
+                parent,
+                {**self.METADATA, "artifact_id": "prd:901-renamed"},
+                PRD_TARGET_BODY + "\n{{existing_token}}\n",
+            )
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn(f"{child.relative_to(root).as_posix()}: unresolved-parent", result.stdout)
+            self.assertNotIn("template-body-token-in-target", result.stdout)
+
+    def test_changed_checker_ignores_residue_inside_commonmark_code(self) -> None:
+        cases = (
+            (
+                "backtick fence",
+                "```markdown title=\"~example~\"\n> Rules:\n{{fenced_token}}\n```\n",
+            ),
+            (
+                "tilde fence",
+                "~~~markdown title=\"`example` ~draft~\"\n> Rules:\n{{fenced_token}}\n~~~\n",
+            ),
+            (
+                "unclosed backtick fence",
+                "```markdown title=\"~example~\"\n> Rules:\n{{fenced_token}}\n",
+            ),
+            (
+                "unclosed tilde fence",
+                "~~~markdown title=\"`example`\"\n> Rules:\n{{fenced_token}}\n",
+            ),
+            (
+                "single and multi backtick spans",
+                "Document `> Rules:` and `{{single_token}}`.\n"
+                "Document `` `> Rules:` and `{{multi_token}}` ``.\n",
+            ),
+        )
+        for label, example in cases:
+            with self.subTest(case=label):
+                directory, root, base = self.new_repo_with_body(PRD_TARGET_BODY)
+                with directory:
+                    write_doc(root / self.PATH, self.METADATA, PRD_TARGET_BODY + "\n" + example)
+                    result = self.run_explicit_base(root, base)
+                    self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_changed_checker_rejects_genuine_residue_outside_code(self) -> None:
+        directory, root, base = self.new_repo_with_body(PRD_TARGET_BODY)
+        with directory:
+            body = (
+                PRD_TARGET_BODY
+                + "\n```markdown title=\"~example~\"\n{{fenced_token}}\n```\n"
+                + "Document `` `{{inline_token}}` ``.\n"
+                + "{{outside_token}}\n"
+            )
+            write_doc(root / self.PATH, self.METADATA, body)
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-body-token-in-target", result.stdout)
+
+
 class ChangedModeRolloutTests(unittest.TestCase):
     def new_repo(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path]:
         directory = tempfile.TemporaryDirectory()
@@ -2039,6 +4624,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
+                PRD_TARGET_BODY,
             )
             write_doc(
                 root / "docs/03.specs/124-child/spec.md",
@@ -2048,6 +4634,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "artifact_type": "spec",
                     "parent_ids": ["prd:124-parent"],
                 },
+                SPEC_TARGET_BODY,
             )
             commit_all(root, "valid typed chain")
             result = run_checker(root, "check-changed", "--base-ref", base)

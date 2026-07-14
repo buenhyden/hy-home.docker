@@ -21,9 +21,10 @@ README-specific profile selection is owned separately by
 | Reference | Preserve stable, source-backed facts, vocabulary, inventory, research, or explanatory context. | Supports active work but does not become policy, procedure, execution evidence, or runtime truth. Mutable claims need review evidence and a source date. |
 | Audit | Record a bounded assessment against explicit criteria, evidence, findings, severity, and disposition. | Reports observed state; it routes gaps to canonical owners and does not silently change those owners. Dated counts and verdicts remain historical evidence. |
 | Archive | Preserve a concise tombstone for an active document removed from the current chain. | Records origin, reason, date, and current replacement; it does not retain stale current-truth prose or receive active back-links. |
+| README-adjacent common content | Provide local catalog, navigation, inventory, and routing context around common surfaces. | Exact README classification and heading envelopes belong to the README contract; shared rules remain in their named owner. |
 | Governance | Define agent execution, authoring, approval, provider, or repository policy in its approved governance surface. | Uses governance metadata conventions and must not be projected into ordinary lifecycle artifacts or catalog README files. |
 | Generated output | Present deterministic output owned by a named generator and freshness contract. | Regenerate through the canonical owner; do not hand-edit or add human lifecycle claims the generator does not emit. |
-| Template source | Provide a copyable shape with target guidance and explicit placeholders. | Remains a source artifact under Stage 99; copied targets must resolve placeholders and select an honest target profile. |
+| Template source | Provide a copyable form with explicit placeholders. | Remains a source artifact under Stage 99; selection, lifecycle, migration, and approval rules stay in support owners. |
 | Repo-support | Define the narrow tracked support boundary or hold ignored, non-secret transient handoff material. | It is neither an active documentation stage nor a substitute for canonical task, review, or evidence artifacts. Promote durable outcomes to the owning stage. |
 | Unsupported or native platform surface | Serve a tool-owned path whose consumer is outside the repository documentation model, such as a GitHub-native instruction or configuration surface. | Preserve the native consumer contract. Do not add repository metadata merely for visual uniformity; classify ambiguity before editing. |
 
@@ -45,6 +46,12 @@ README-specific profile selection is owned separately by
 
 ## Source and Evidence Discipline
 
+- Apply the
+  [repository confidentiality boundary](../../00.agent-governance/rules/approval-boundaries.md)
+  to Reference, Audit, generated output, and Repo-support artifacts: do not
+  include secret values, credentials or tokens, private keys, shell history,
+  or raw secret-bearing logs; retain only redacted evidence appropriate to the
+  artifact's role.
 - Use primary sources for normative external claims and record the access date.
 - Distinguish a fixed standard from a mutable product page and a repository
   inference from an observed runtime or remote fact.

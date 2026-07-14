@@ -6,8 +6,6 @@ parent_ids:
   - spec:123-agentic-engineering-audit-remediation
 ---
 
-<!-- Target: docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md -->
-
 # Agentic Engineering Audit and Remediation Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -48,7 +46,7 @@ The future task-evidence document will use the matching path
 `docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md`.
 It is created only after this plan is approved.
 
-## Context
+## Context and Inputs
 
 The research lifecycle is already canonicalized, but the implementation-audit
 lifecycle is not. The 2026-07-05 and 2026-07-07 audit packs are both active,
@@ -64,7 +62,7 @@ transitions, stable cross-stage artifact identity, semantic parent coverage,
 model availability, or closed-loop agent-output quality. This plan preserves
 those distinctions rather than inflating maturity claims.
 
-## Goals & In-Scope
+## Goals and Non-goals
 
 - **Goals**:
   - Revalidate and integrate research for every requested category.
@@ -1241,7 +1239,7 @@ git commit -m "docs(task): close agentic audit remediation"
 | VAL-AER-011 | Review | Task-level and whole-branch independent reports | Spec PASS, Quality APPROVED, Critical 0, Important 0. |
 | VAL-AER-012 | Git | `git diff --check` and final `git status --short` | No whitespace errors and clean worktree. |
 
-## Risks & Mitigations
+## Risks and Rollback
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |

@@ -5,8 +5,6 @@ artifact_type: spec
 parent_ids: []
 ---
 
-<!-- Target: docs/03.specs/123-agentic-engineering-audit-remediation/spec.md -->
-
 # Agentic Engineering Audit and Remediation Technical Specification
 
 ## Overview
@@ -56,7 +54,7 @@ must not be backdated into that catalog.
   exact provider, model ID, role, reasoning control, adapter path, and
   validation path require explicit approval before policy mutation.
 
-## Related Inputs
+## Boundaries and Inputs
 
 - **PRD**: No dedicated PRD is required. This is an approved cross-cutting
   governance, documentation, and development-harness improvement program over
@@ -231,7 +229,7 @@ transition history are distinct: a valid word does not prove a valid change.
 5. Require separate approval before blocking the entire historical active
    corpus.
 
-## Interfaces & Data Structures
+## Interfaces and Data
 
 ### Controlled Pre-commit Wrapper
 
@@ -369,7 +367,7 @@ a single maturity score:
 | Provider model is documented but unavailable to the workspace | Keep research and policy separate; do not change adapters. |
 | Runtime finding needs architecture change | Create independent PRD/ARD/ADR/Spec/Plan artifacts as required and stop before runtime mutation. |
 
-## Failure Modes & Fallback / Human Escalation
+## Failure Modes and Guardrails
 
 | Failure Mode | Fallback | Human Escalation |
 | --- | --- | --- |

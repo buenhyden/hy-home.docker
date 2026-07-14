@@ -5,110 +5,56 @@ artifact_type: spec
 parent_ids: [<parent-artifact-id>]
 ---
 
-<!-- Target: docs/03.specs/NNN-<feature-id>/agent-design.md -->
-
-# [Feature Name] Agent Design
-
-> Use this template for `docs/03.specs/NNN-<feature-id>/agent-design.md`.
->
-> Rules:
->
-> - This document is a child design document under the feature spec.
-> - Keep product intent in PRD and system-wide constraints in ARD.
-> - Keep implementation tasks in `04.execution/tasks/`.
-> - This document focuses on AI Agent behavior, orchestration, safety, and evaluation.
-> - Write this document in English. Preserve code identifiers, command names,
->   service names, environment variables, and quoted upstream terms exactly.
-> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
-
----
+# {{title}}
 
 ## Overview
 
-This document defines the AI Agent design for [feature name]. It specifies the
-agent role, input and output contract, tool use, context management, safeguards,
-and evaluation strategy.
+{{overview}}
 
-## Parent Documents
+## Role and Responsibilities
 
-- **Spec**: [./spec.md](./spec.md)
-- **PRD**: [../../01.requirements/NNN-feature.md](../../01.requirements/NNN-feature.md)
-- **ARD**: [ARD folder](../../02.architecture/requirements/)
-- **Related ADRs**: [ADR folder](../../02.architecture/decisions/)
+{{role_and_responsibilities}}
 
-## Scope & Non-goals
+## Inputs and Outputs
 
-- **Covers**:
-- **Does Not Cover**:
+{{inputs_and_outputs}}
 
-## Agent Role
+## Orchestration
 
-- **Primary Role**:
-- **Primary User / Caller**:
-- **Success Definition**:
+{{orchestration}}
 
-## Inputs / Outputs
+## Tools and Permissions
 
-- **Inputs**:
-- **Outputs**:
-- **Expected Structured Format**:
+{{tools_and_permissions}}
 
-## Orchestration Model
+## Prompt Policy
 
-- `single-agent | planner-worker | router-specialist | handoff`
-- **Why this model**:
-- **Escalation / Handoff rules**:
+{{prompt_policy}}
 
-## Tools & Permissions
+## Context and Memory
 
-| Tool   | Purpose   | Allowed Actions | Forbidden Actions | Failure Handling |
-| ------ | --------- | --------------- | ----------------- | ---------------- |
-| [Tool] | [Purpose] | [Allowed]       | [Forbidden]       | [Fallback]       |
-
-## Prompt / Policy Contract
-
-- **System Instruction Summary**:
-- **Policy Constraints**:
-- **Versioning Rule**:
-
-## Context & Memory Strategy
-
-- **Session Context**:
-- **Retrieval Strategy**:
-- **Persistent Memory Rule**:
-- **Privacy / Retention Notes**:
+{{context_and_memory}}
 
 ## Guardrails
 
-- **Input Guardrails**:
-- **Output Guardrails**:
-- **Blocked Conditions**:
-- **Human Escalation Rule**:
+{{guardrails}}
 
-## Failure Modes & Fallback
+## Failure Handling
 
-- **Failure Mode 1**:
-- **Fallback 1**:
-- **Failure Mode 2**:
-- **Fallback 2**:
+{{failure_handling}}
 
-## Evaluation Plan
+## Evaluation
 
-- **Offline Evals**:
-- **Online Signals**:
-- **Acceptance Thresholds**:
-- **Linked Task / Eval Docs**: [../../04.execution/tasks/YYYY-MM-DD-feature.md](../../04.execution/tasks/YYYY-MM-DD-feature.md)
+{{evaluation}}
 
 ## Observability
 
-- **Trace fields**:
-- **Logs / Events**:
-- **Redaction / Privacy Rules**:
+{{observability}}
+
+## Human Approval
+
+{{human_approval}}
 
 ## Related Documents
 
-- **Tests**: [./tests.md](./tests.md)
-- **Policy, direct operations target**: [../../05.operations/policies/<policy>.md](../../05.operations/policies/<policy>.md)
-- **Policy, domain operations target**: [../../05.operations/policies/<domain>/<policy>.md](../../05.operations/policies/<domain>/<policy>.md)
-- **Runbook, direct operations target**: [../../05.operations/runbooks/<topic>.md](../../05.operations/runbooks/<topic>.md)
-- **Runbook, domain operations target**: [../../05.operations/runbooks/<domain>/<topic>.md](../../05.operations/runbooks/<domain>/<topic>.md)
+{{related_documents}}

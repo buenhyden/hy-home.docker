@@ -32,6 +32,9 @@ Unified task execution checklists for all agent work.
       model policy, and provider adapters require a Stage 04 task record that
       names the target surface, approval source, validation command, rollback or
       recovery path, and redaction boundary.
+- [ ] Use the single canonical Task form for ordinary and harness work; do not
+      select or create a Task subtype. Include conditional approval evidence
+      only when a protected surface is applicable.
 - [ ] Identify key risks (security, data loss, breaking changes, governance drift).
 - [ ] Define verification commands and acceptance criteria before edits.
 - [ ] If full-repository pre-commit is planned, confirm that it is the approved
@@ -44,6 +47,9 @@ Unified task execution checklists for all agent work.
 - [ ] Keep external strategy outputs in canonical stage paths; do not create
       active non-stage specs, plans, or task logs.
 - [ ] Preserve SSoT traceability across affected documentation artifacts.
+- [ ] Keep Plan content prospective. Record actual commands, expected versus
+      actual evidence, impact, review verdicts, commit identity, and deferral
+      destination in the Task evidence.
 - [ ] Route each new gap to exactly one canonical owner first; use downstream
       links instead of duplicating rules or evidence across stages.
 - [ ] Maintain language policy consistency (English governance, Korean human-facing docs).

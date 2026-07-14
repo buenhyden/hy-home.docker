@@ -9,76 +9,53 @@ layer: agentic
 This document defines the non-copyable contract for template source files under
 `docs/99.templates/templates/`.
 
-## Surface Boundaries
+## Ownership Boundary
 
-- Template forms and template rules are separate surfaces.
-- Copyable forms live under `docs/99.templates/templates/`.
-- Non-copyable rules live under `docs/99.templates/support/`.
-- README files are indexes and routing surfaces governed by the
-  [README profile contract](./readme-profile-contract.md); durable shared rules
-  belong in their named canonical support or governance owner.
-- `_workspace` README files are repo-support contract documents, not copyable
-  template sources and not target-stage documents.
+Copyable forms live under `docs/99.templates/templates/`. Exact roles,
+profiles, matchers, headings, and tokens live in the registry. Human role,
+selection, lifecycle, and change governance live in their named support
+owners. Catalog READMEs only route readers. A template source must not copy
+those rules into its body.
 
-## Template Source Rules
+## Markdown Source Form
 
-- Copyable source files live only under `docs/99.templates/templates/`.
-- Markdown template files use the `*.template.md` suffix.
-- Machine-readable contract templates use `*.template.yaml`,
-  `*.template.graphql`, or `*.template.proto`.
-- Markdown template sources start with `status: draft` frontmatter. Registered
-  typed leaf templates also declare the copied target's `artifact_type` and
-  exact Stage 99 placeholders for its required typed keys; README template
-  source remains status-only.
-- Machine-readable templates use comments for `Target:` and cross-link ownership
-  instead of YAML frontmatter.
-- Every Markdown template includes target path guidance, target-relative link
-  guidance, and `## Related Documents`.
-- Non-Markdown contract templates do not include Markdown `## Related Documents`;
-  their parent Markdown spec or API spec owns cross-links.
+Each registered Markdown source contains only:
 
-## Placeholder Rules
+1. profile-compatible source frontmatter and registered placeholders;
+2. exactly one H1;
+3. the registered required and applicable conditional H2 sections;
+4. explicit `{{token_name}}` replacement tokens; and
+5. one `## Related Documents` section.
 
-- Placeholder text must be visually obvious.
-- Target documents must not keep unresolved placeholders.
-- Template-time example links are calculated from the copied target path, not
-  from the template source path.
-- Example commands in templates must be deleted or replaced before target
-  documents are saved.
+Markdown sources use the `*.template.md` suffix and source-draft status. Typed
+forms declare the target `artifact_type`; README validates source draft only;
+Memory and Progress use the governance source metadata defined by the
+frontmatter contract; Archive uses source draft while its rendered target is
+archived.
 
-## Numbered SDLC Path Rules
+Sources must not contain Rules blocks, Target comments, path-selection policy,
+numbering rules, language policy, lifecycle algorithms, migration guidance,
+fixed-depth link examples, or executable-looking sample commands.
 
-- PRD template target guidance uses
-  `docs/01.requirements/NNN-<feature-or-system>.md`.
-- Spec template and spec-child target guidance uses
-  `docs/03.specs/NNN-<feature-id>/...`.
-- `NNN` is a zero-padded three-digit routing prefix and is part of the
-  canonical path, not a frontmatter key.
-- Plan and Task template target guidance remains date-prefixed under
-  `docs/04.execution/`.
-- Template source files must not publish date-prefixed PRD targets or
-  unnumbered Spec targets except inside explicit historical migration tables.
+## Machine-readable Source Form
 
-## Target Document Rules
+OpenAPI, GraphQL, and Protobuf sources stay in their native syntax and do not
+receive Markdown frontmatter or headings. They use visibly unresolved
+`__TOKEN_NAME__` tokens. Their parent Markdown Spec or API Spec owns
+human-readable context and cross-links.
 
-- Target documents inherit from exactly one primary template role.
-- Select SDLC and operations roles through the
-  [SDLC document contract](./sdlc-document-contract.md); select Reference,
-  Archive, governance, generated, template, repo-support, and unsupported
-  surfaces through the [common document contract](./common-document-contract.md).
-- Purpose-specific child templates may supplement a parent spec when the target
-  path and role require them.
-- Target document frontmatter follows [frontmatter contract](./frontmatter-contract.md): replace every template placeholder and select the honest target lifecycle status rather than retaining source-only `status: draft` mechanically.
-- Intentional template deviation must be recorded in Stage 04 task evidence.
-- `_workspace` runtime artifacts are ignored repo-support scratch files. Promote
-  durable outcomes to canonical stages instead of treating `_workspace` as a
-  template target.
-- Archive, duplicate-remove, conflict-remove-or-archive, and evidence-preserve
-  decisions are governed by [template governance](./template-governance.md) and
-  [template selection](./template-selection.md), not by copying additional
-  instructions into target documents.
-- A target document must not keep copied template instructions or unresolved
-  examples as a substitute for topic-specific content.
+## Instantiated Target Contract
+
+An instantiated target resolves exactly one role and replaces every registered
+frontmatter, body, link, and machine token with evidence-backed content. It
+must not retain source-only comments, template instructions, placeholder text,
+valid-looking example credentials, hosts, or commands. The target selects an
+honest lifecycle state and direct parents from its own evidence; source draft
+metadata is never approval or review evidence.
+
+Conditional headings are included only when the concern applies. An
+intentional deviation from the matched form is recorded in the owning Stage 04
+Task with approval and validation evidence.
 
 ## Related Documents
 

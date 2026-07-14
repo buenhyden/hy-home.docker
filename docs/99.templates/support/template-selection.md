@@ -25,7 +25,8 @@ template source.
 | Incident packet incident file | `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md` | [incident.template.md](../templates/operations/incident.template.md) |
 | Incident packet postmortem.md | `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md` | [postmortem.template.md](../templates/operations/postmortem.template.md) |
 | Release | `docs/05.operations/releases/YYYY-MM-DD-release-name.md` | [release.template.md](../templates/operations/release.template.md) |
-| Reference | `docs/90.references/{audits,data,research,learning}/**/*.md` | [reference.template.md](../templates/common/reference.template.md) |
+| Reference | `docs/90.references/{data,learning,llm-wiki,research}/**/*.md` | [reference.template.md](../templates/common/reference.template.md) |
+| Audit | `docs/90.references/audits/**/*.md` except the generated metadata inventory | [audit.template.md](../templates/common/audit.template.md) |
 | Archive | `docs/98.archive/<original-stage>/<original-path>.md` | [archive.template.md](../templates/common/archive.template.md) |
 | README | `README.md`, `docs/README.md`, folder `README.md` files | [readme.template.md](../templates/common/readme.template.md) |
 
@@ -61,23 +62,30 @@ target action from this mapping:
 | --- | --- | --- |
 | Memory | `docs/00.agent-governance/memory/<note>.md` | [memory.template.md](../templates/governance/memory.template.md) |
 | Progress | `docs/00.agent-governance/memory/progress.md` | [progress.template.md](../templates/governance/progress.template.md) |
-| Harness task contract | `docs/04.execution/tasks/YYYY-MM-DD-<harness-stream>.md` | [harness-task-contract.template.md](../templates/governance/harness-task-contract.template.md) |
 
 ## Selection Rules
 
 - Choose exactly one primary template for each target document.
+- Resolve the intended purpose, target path, and inferred artifact profile
+  together. Zero matches or equal-specificity matches are blocking ambiguity.
 - Choose the artifact role using the
   [SDLC document contract](./sdlc-document-contract.md) or
   [common document contract](./common-document-contract.md), then use this file
   only to locate the copyable source.
 - Use spec child templates only inside the matching feature spec directory.
+- Use Plan only for prospective sequence, dependencies, verification strategy,
+  risk, rollback, and completion criteria. Record commands as intended checks,
+  not as executed results.
+- Use the single Task template for ordinary implementation and harness-surface
+  work. Include conditional approval and controlled-wrapper sections only when
+  applicable; no Task subtype or competing governance form is selected.
 - Use operations templates by purpose: guide for usage context, policy for
   controls and exceptions, runbook for ordered procedures and evidence, and
   release for evidence from a real release event.
 - Do not create a Release record from changelog or release-readiness evidence
   alone; deployment runtime remains in its separately approved Spec chain.
-- Use reference templates for stable facts only; do not put active policy or
-  runbook procedure into Stage 90 references.
+- Use Reference for stable facts and Audit for bounded criteria, evidence,
+  findings, and disposition. Neither owns active policy or runbook procedure.
 - Use archive templates only for tombstones, not for preserving stale body text.
 - Keep guide, policy, and runbook roles separate during bucket restructure
   work; path cleanup does not merge their templates or purposes.

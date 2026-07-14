@@ -165,5 +165,5 @@ PR, and operations surfaces.
 
 - **Harness Map**: [Harness implementation map](../../00.agent-governance/harness-implementation-map.md)
 - **Approval Boundaries**: [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md)
-- **Harness Template**: [Harness task contract template](../../99.templates/templates/governance/harness-task-contract.template.md)
+- **Historical Harness Template**: `docs/99.templates/templates/governance/harness-task-contract.template.md` (later consolidated into the canonical SDLC Task form)
 - **Scripts README**: [Scripts README](../../../scripts/README.md)

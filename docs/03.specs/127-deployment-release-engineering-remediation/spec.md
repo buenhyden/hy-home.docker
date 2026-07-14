@@ -6,8 +6,6 @@ parent_ids:
   - spec:123-agentic-engineering-audit-remediation
 ---
 
-<!-- Target: docs/03.specs/127-deployment-release-engineering-remediation/spec.md -->
-
 # Deployment and Release Engineering Remediation Technical Specification (Spec)
 
 ## Overview
@@ -32,7 +30,7 @@ Spec 123 is typed audit lineage only and is not deployment authorization.
   approval authority, release format, promotion strategy, or rollback
   mechanism in this draft.
 
-## Related Inputs
+## Boundaries and Inputs
 
 - **PRD**: Unresolved prerequisite for release/deployment value, environment
   scope, availability/change-risk expectations, approval roles, release record,
@@ -140,7 +138,7 @@ rulesets, environments, and branch protection were not queried.
   reviewed promotion -> separately approved broader rollout. Existing CI and
   manual readiness remain unchanged until gates pass.
 
-## Interfaces & Data Structures
+## Interfaces and Data
 
 ### Core Interfaces
 
@@ -221,7 +219,7 @@ or environment dumps in tracked docs or memory.
   125; do not claim full rollback.
 - Release record exists without artifact/outcome evidence: mark incomplete.
 
-## Failure Modes & Fallback / Human Escalation
+## Failure Modes and Guardrails
 
 - **Failure Mode**: Gate, approval, identity, target, deployment, record,
   health, rollback, or recovery failure.
