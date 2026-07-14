@@ -141,7 +141,7 @@ Redaction boundary:
 | T-DCLM-001 | Machine migration contract and static archive metadata | Complete — final Spec PASS and Quality PASS with Critical 0, Important 0, Minor 0 |
 | T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Complete — final range `9126a0aa..9fe234f6`; terminal Spec PASS and Quality retry PASS, each with Critical 0, Important 0, and Minor 1. The sole deferred Minor is behavior-preserving decomposition of the monolithic dispatcher. |
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Complete — reviewed range `133b3daa..160ff097`; terminal Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 0 |
-| T-DCLM-004 | Repository contracts, local QA, tracked workflow | Implemented — self-review PASS; independent reviews pending |
+| T-DCLM-004 | Repository contracts, local QA, tracked workflow | Implemented in `35b07486` plus generated follow-up `ea2ffd88`; self-review PASS; independent reviews pending |
 | T-DCLM-005 | Foundation manifest and generated evidence | Not run |
 | T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Not run |
 
@@ -174,8 +174,8 @@ Redaction boundary:
 | 2026-07-15 | T-DCLM-003 final independent re-reviews | Fresh specification and quality reviewers | Final specification re-review FAIL with Critical 0, Important 1, Minor 0 found the Stage 99 support catalog still assigning disposition ownership to template governance (I-03). Final quality re-review FAIL with Critical 0, Important 1, Minor 0 found both stale support-catalog roles and the unsynchronized `docs/README.md` Stage 98 parent router (I-Q02). Prior I-01/I-02/I-Q01 were confirmed closed; Task 4 remained blocked. |
 | 2026-07-15 | T-DCLM-003 final-router remediation | Fresh implementation agent | Narrowed the support catalog so Template Governance owns only template-change workflow/protected surfaces/approval and commit boundaries, while Lifecycle Status owns only human status vocabulary/interpretation; executable semantics route to the sole human owners and metadata registry/checker. Synchronized all existing Stage 98 parent-router locations in `docs/README.md` with manifest-first validated results, full typed provenance/preservation, disposition-conditional replacement, safe provenance/confidentiality, rollback, and independent reviews. Added focused owner-role and parent-router regressions. Self-review PASS; terminal independent re-reviews passed as recorded below. |
 | 2026-07-15 | T-DCLM-003 terminal independent reviews | Fresh specification and separate quality reviewers | The complete authored range `133b3daa..160ff097` received Spec PASS with Critical 0, Important 0, and Minor 0 and Quality PASS with Critical 0, Important 0, and Minor 0. I-01/I-02/I-03 and I-Q01/I-Q02 are closed; T-DCLM-003 is complete and T-DCLM-004 is unblocked. |
-| 2026-07-15 | T-DCLM-004 | Fresh implementation agent | Extended the existing `repo-contracts` owner through strict RED/GREEN, added the exact read-only scheduled/manual lifecycle workflow, expanded only the existing repo-contracts pre-push selector, routed lifecycle checks through recommendation and local QA owners, registered the companion, and documented tracked-definition versus remote-state boundaries. Preserved all `ci-quality.yml` job IDs and local required-check names. Self-review PASS; independent reviews remain pending. No workflow dispatch, push, remote GitHub mutation, corpus migration, archive payload, manifest promotion, runtime, secret, provider, or Task 5 surface changed. |
-| 2026-07-15 | T-DCLM-004 generated fallout | Fresh implementation agent | Staged only the new workflow for Git-backed discovery and ran the four canonical Task 4 owners in order. Security readiness, LLM Wiki index, and LLM Wiki coverage changed only for the seventh tracked workflow and its path/category counts; the audit implementation matrix produced no diff. All four check modes passed. |
+| 2026-07-15 | T-DCLM-004 | Fresh implementation agent | Commit `35b07486` extended the existing `repo-contracts` owner through strict RED/GREEN, added the exact read-only scheduled/manual lifecycle workflow, expanded only the existing repo-contracts pre-push selector, routed lifecycle checks through recommendation and local QA owners, registered the companion, and documented tracked-definition versus remote-state boundaries. Preserved all `ci-quality.yml` job IDs and local required-check names. Self-review PASS; independent reviews remain pending. No workflow dispatch, push, remote GitHub mutation, corpus migration, archive payload, manifest promotion, runtime, secret, provider, or Task 5 surface changed. |
+| 2026-07-15 | T-DCLM-004 generated fallout | Fresh implementation agent | Staged only the new workflow for Git-backed discovery and ran the four canonical Task 4 owners in order. Commit `ea2ffd88` records the security readiness, LLM Wiki index, and LLM Wiki coverage changes for the seventh tracked workflow and its path/category counts; the audit implementation matrix produced no diff. All four check modes passed. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -359,6 +359,10 @@ implementation range `9126a0aa..9fe234f6` is GREEN and received terminal Spec
 PASS and separate Quality retry PASS, each with Critical 0, Important 0, and
 Minor 1. The only earlier deferred Minor is behavior-preserving decomposition
 of the monolithic dispatcher.
+
+T-DCLM-004 implementation range `1b42a100..ea2ffd88` is GREEN with implementer
+self-review PASS. Independent specification and quality reviews are pending, so
+T-DCLM-004 is not complete and T-DCLM-005 has not started.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -567,6 +571,8 @@ Foundation logical commits:
 - `46558c30` — T-DCLM-003 generated follow-up `docs(generated): index lifecycle human contracts`.
 - `e42296fa` — T-DCLM-003 first-review remediation `fix(docs): close lifecycle human contract review gaps`. Canonical owners produced no remediation drift, so the generated follow-up was omitted.
 - `160ff097` — T-DCLM-003 final-router remediation `fix(docs): synchronize lifecycle archive routers`. Canonical owners produced no drift, so no generated follow-up is required.
+- `35b07486` — T-DCLM-004 authored implementation `ci(docs): route corpus lifecycle governance checks`.
+- `ea2ffd88` — T-DCLM-004 generated follow-up `docs(generated): index lifecycle workflow`; the audit matrix had no diff and was omitted.
 
 The reviewed T-DCLM-002 implementation and remediation range ends at
 `9fe234f6`. The later ledger-only closure commit records the terminal verdicts
