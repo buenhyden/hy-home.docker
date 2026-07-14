@@ -559,6 +559,56 @@ class ManifestValidationTests(LifecycleTestCase):
             }.issubset(hidden_real_id_codes)
         )
 
+        write_template("<noncanonical-artifact-id>")
+        noncanonical_placeholder_baseline = commit_all(
+            root, "template noncanonical placeholder baseline"
+        )
+        noncanonical_placeholder_document = lifecycle.generate_manifest_skeleton(
+            root,
+            contract,
+            wave="fixture",
+            baseline_ref=noncanonical_placeholder_baseline,
+        )
+        noncanonical_placeholder_row = noncanonical_placeholder_document.entries[0]
+        self.assertEqual(
+            noncanonical_placeholder_row.artifact_id,
+            "<noncanonical-artifact-id>",
+        )
+        noncanonical_placeholder_codes = {
+            finding.code
+            for finding in lifecycle.validate_migration_manifest(
+                root,
+                self.profiles,
+                contract,
+                noncanonical_placeholder_document,
+            )
+        }
+        self.assertIn("manifest-static-invalid", noncanonical_placeholder_codes)
+
+        non_template_path = "docs/03.specs/non-template.md"
+        non_template_source = root / non_template_path
+        non_template_source.parent.mkdir(parents=True, exist_ok=True)
+        non_template_source.write_text(
+            "---\n"
+            "status: active\n"
+            "artifact_id: <artifact-id>\n"
+            "artifact_type: spec\n"
+            "parent_ids: []\n"
+            "---\n\n"
+            "# Non-template\n",
+            encoding="utf-8",
+        )
+        non_template_baseline = commit_all(root, "non-template placeholder baseline")
+        non_template_document = lifecycle.generate_manifest_skeleton(
+            root,
+            self.fixture_contract([non_template_path]),
+            wave="fixture",
+            baseline_ref=non_template_baseline,
+        )
+        non_template_row = non_template_document.entries[0]
+        self.assertEqual(non_template_row.artifact_type, "spec")
+        self.assertEqual(non_template_row.artifact_id, "<artifact-id>")
+
     def test_manifest_coverage_path_type_and_target_conditions(self) -> None:
         temporary, root, baseline = self.make_repo()
         self.addCleanup(temporary.cleanup)
