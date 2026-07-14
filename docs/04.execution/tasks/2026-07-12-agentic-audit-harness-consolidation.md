@@ -6,8 +6,6 @@ parent_ids:
   - plan:2026-07-12-agentic-audit-harness-consolidation
 ---
 
-<!-- Target: docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md -->
-
 # Task: Agentic Audit Harness Consolidation
 
 ## Overview
@@ -28,7 +26,7 @@ close generated evidence.
 - **Previous Closure Evidence**:
   [Spec 123 task](./2026-07-11-agentic-engineering-audit-remediation.md)
 
-## Working Rules
+## Goals and Non-goals
 
 - Use a fresh implementation subagent and separate reviewer for each task.
 - Follow RED/GREEN for validator and generator behavior.
@@ -39,7 +37,7 @@ close generated evidence.
 - Never run direct all-files pre-commit; reserve the controlled wrapper for
   T-AHC-006.
 
-## Approved Surface Evidence
+## Scope and Change Boundaries
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -48,7 +46,7 @@ close generated evidence.
 | Tracked CI workflow | User approval of design section 2 and Spec 128 | Existing `repo-contracts` job | Read-only job and current permissions | Named semantic step, actionlint/zizmor | Revert CI integration commit | No remote run/protection claim or mutation |
 | Controlled pre-commit | User-approved wrapper design and Spec 128 | Final clean linked-worktree gate | Tracked task path and clean state | Hook/path evidence below | Stop without cleanup on unexpected paths | Git-visible, non-ignored repository paths only |
 
-## Task Table
+## Work Breakdown
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -59,7 +57,7 @@ close generated evidence.
 | T-AHC-005 | Wire semantic freshness into generator, contracts, and CI. | impl/ci | QA and CI | Task 5 | Unit/matrix/workflow/contracts, review | CI/CD Engineer | Done |
 | T-AHC-006 | Regenerate, run full QA/wrapper, and close evidence. | test/doc | Verification | Task 6 | Full bundle, wrapper, branch review | QA / Documentation | Done |
 
-## Phase View
+## Work Log
 
 ### Phase 1 — Evidence Organization
 
@@ -76,7 +74,7 @@ close generated evidence.
 
 - [x] T-AHC-006 Generated evidence, controlled QA, and branch review
 
-## Review Ledger
+## Review Evidence
 
 | Task | Implementation Commit(s) | Spec Verdict | Quality Verdict | Findings / Resolution | Review Package |
 | --- | --- | --- | --- | --- | --- |
@@ -449,7 +447,13 @@ close generated evidence.
   `.superpowers/sdd/whole-branch-review.md`; this status-only closure delta is
   validated below without changing any protected surface.
 
-## Verification Summary
+## Commit Ledger
+
+The implementation commit identities remain in the per-task review tables
+above. This preservation migration does not alter those hashes, logical units,
+or independent verdicts.
+
+## Verification Evidence
 
 - **Baseline**: `codex/audit-harness-consolidation` from
   `8b58abc22abb8f93c5580e7185efa0f6a62c4e7b`; unit tests 90/90; repository
@@ -494,7 +498,7 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
 | --- | --- | ---: | --- | --- | --- |
 | Exact command above; internal command `pre-commit run --all-files --show-diff-on-failure` | The sixteen exact `--allow-prefix` values above | 0; hook passed; snapshot passed | before=0; after=0; new=0; changed=0; unexpected=0; all path sets `(none)` | Pass; no unexpected path, formatter modification, or cleanup required | N/A; approved final local gate executed |
 
-## Deviation and Protected-Surface Notes
+## Deferred and Blocked Items
 
 - No deviation is currently recorded.
 - Runtime Compose, infrastructure state, deployment, secrets, credentials,

@@ -3,44 +3,39 @@
 # Do not add a Markdown Related Documents section to this YAML contract.
 openapi: 3.1.0
 info:
-  title: Example Feature API
-  version: 0.1.0
-  description: |
-    Contract-first API definition for the feature.
+  title: __API_TITLE__
+  version: __API_VERSION__
+  description: __API_DESCRIPTION__
 servers:
-  - url: https://api.example.com
+  - url: __SERVER_URL__
+x-template-auth-selection: __AUTH_SELECTION__
 tags:
-  - name: example
+  - name: __TAG_NAME__
 paths:
-  /example:
+  /__RESOURCE_PATH__:
     get:
-      tags: [example]
-      operationId: getExample
-      summary: Get example resource
+      x-template-http-method: __HTTP_METHOD__
+      x-template-success-status: __SUCCESS_STATUS__
+      x-template-error-status: __ERROR_STATUS__
+      tags: [__TAG_NAME__]
+      operationId: __OPERATION_ID__
+      summary: __OPERATION_SUMMARY__
       responses:
         "200":
-          description: Success
+          description: __SUCCESS_DESCRIPTION__
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ExampleResponse"
-        "400":
-          description: Bad request
+                $ref: "#/components/schemas/__RESPONSE_SCHEMA__"
+        default:
+          description: __ERROR_DESCRIPTION__
 components:
   schemas:
-    ExampleResponse:
+    __RESPONSE_SCHEMA__:
       type: object
-      required: [id, status]
+      required: [__IDENTIFIER_FIELD__, __STATUS_FIELD__]
       properties:
-        id:
+        __IDENTIFIER_FIELD__:
           type: string
-        status:
+        __STATUS_FIELD__:
           type: string
-          enum: [ok]
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-security:
-  - bearerAuth: []

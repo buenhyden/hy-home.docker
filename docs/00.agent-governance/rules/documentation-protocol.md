@@ -66,14 +66,24 @@ Protocol for maintaining documentation consistency and governance traceability.
   unless a document type or approved plan explicitly requires them. Do not
   convert existing templates or active stage documents to HADS as incidental
   cleanup.
-- **Template frontmatter exemption**: Markdown template source files under `docs/99.templates/templates/**/*.template.md` use `status: draft` in YAML frontmatter instead of `layer:`. Typed leaf templates additionally declare their copied target profile with the exact Stage 99 placeholder forms; the metadata checker validates those placeholders without resolving them through the active artifact manifest. Copied target documents must replace every placeholder, and README template source remains a status-only exception. `docs/99.templates/README.md` is an active folder README and may use repository README frontmatter such as `layer: agentic`. `docs/99.templates/templates/governance/memory.template.md` and `docs/99.templates/templates/governance/progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
+- **Template source metadata**: The Stage 99 registry owns each template
+  source's exact metadata shape. Governance Memory and Progress template
+  sources use exactly `layer: agentic` and `status: draft`; the README template
+  source remains the registered status-only source; other typed template
+  sources follow their registry-defined source metadata. The metadata checker
+  validates registered placeholders without resolving them through the active
+  artifact manifest, and copied targets must replace every placeholder.
+  `docs/99.templates/README.md` is an active folder README and may use
+  repository README frontmatter such as `layer: agentic`.
 - **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
   and `docs/90` MUST include YAML frontmatter with
   `status: draft | active | completed | superseded`.
   Archive tombstones under `docs/98.archive` MUST use `status: archived`.
   Governance memory files (`docs/00.agent-governance/`) use `layer:`
-  frontmatter instead. Markdown template source files (`docs/99.templates/templates/**/*.template.md`)
-  always use `status: draft` and are exempt from the `layer:` requirement.
+  frontmatter. Markdown template source metadata follows the Stage 99 registry:
+  Governance Memory and Progress sources use exactly `layer: agentic` and
+  `status: draft`, the README source is status-only, and other typed sources
+  use their registered metadata shape.
   A document without this frontmatter is **INCOMPLETE**. Retired aliases such
   as `approved`, `done`, and `archived` must be normalized when found.
 - **Typed metadata profiles (changed/new enforcement):**
@@ -165,6 +175,14 @@ Markdown support files in the feature directory and machine-readable contracts
 under `contracts/`. Parent Markdown Spec or API Spec documents own the
 cross-links for YAML, GraphQL, and Proto files.
 
+Plan and Task are separate Stage 04 roles. Plan is prospective and records
+sequence, intended verification, risk, rollback, and completion criteria. Task
+is evidentiary and records attempted work, allowed and forbidden paths,
+applicable protected-surface approval, impact, exact commands and results,
+reviews, commits, and deferral routing. Ordinary and harness work use the same
+Task template; conditional approval and controlled-wrapper evidence does not
+create a Task subtype.
+
 See `docs/99.templates/README.md` for the full catalog and usage rules.
 
 ## 3.1 Language Boundary by Stage
@@ -193,8 +211,9 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 2. Load `rules/stage-authoring-matrix.md` and follow its stage row.
 3. Resolve exactly one registry profile, load the matching human contract, and
    select the mapped template before drafting or updating the target document.
-4. Instantiate and preserve the template contract: required headings, target path guidance,
-   target-relative links, and one `## Related Documents` section.
+4. Instantiate and preserve the template contract: required headings,
+   applicable conditional headings, resolved target-relative links, and one
+   `## Related Documents` section.
 5. Replace all template placeholders and serialize metadata deterministically
    without treating order as semantic priority.
 6. Preserve historical evidence payloads and fail closed on profile, template,

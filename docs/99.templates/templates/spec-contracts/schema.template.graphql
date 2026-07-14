@@ -1,15 +1,20 @@
 # Target: docs/03.specs/NNN-<feature-id>/contracts/schema.graphql
 # Cross-links: link this contract from the parent Markdown spec or API spec.
 # Do not add a Markdown Related Documents section to this GraphQL contract.
+# _templateQueryField -> __QUERY_FIELD__
+# _templateArgument -> __ARGUMENT_NAME__
+# _TemplateObject -> __OBJECT_TYPE__
+# _templateIdentifier -> __IDENTIFIER_FIELD__
+# _templateStatus -> __STATUS_FIELD__
 schema {
   query: Query
 }
 
 type Query {
-  example(id: ID!): Example!
+  _templateQueryField(_templateArgument: ID!): _TemplateObject!
 }
 
-type Example {
-  id: ID!
-  status: String!
+type _TemplateObject {
+  _templateIdentifier: ID!
+  _templateStatus: String!
 }

@@ -6,8 +6,6 @@ parent_ids:
   - spec:123-agentic-engineering-audit-remediation
 ---
 
-<!-- Target: docs/03.specs/124-compose-runtime-readiness-remediation/spec.md -->
-
 # Compose Runtime Readiness Remediation Technical Specification (Spec)
 
 ## Overview
@@ -35,7 +33,7 @@ requires the unresolved Stage 01/02 predecessors and every approval gate below.
 - Do not select services, profiles, hosts, credentials, or failure-injection
   methods in this draft.
 
-## Related Inputs
+## Boundaries and Inputs
 
 - **PRD**: Unresolved prerequisite. A Stage 01 owner must define approved
   runtime-readiness value, bounded service/profile scope, acceptable disruption,
@@ -131,7 +129,7 @@ or recorded. These static results are prerequisites only.
   evidence. Existing Compose defaults remain unchanged until that sequence
   completes.
 
-## Interfaces & Data Structures
+## Interfaces and Data
 
 ### Core Interfaces
 
@@ -211,7 +209,7 @@ raw logs, runtime dumps, secrets, or credentials in memory or documentation.
 - Teardown leaves services/networks/volumes unexpectedly active: treat as a
   runtime incident boundary and escalate; do not auto-delete state.
 
-## Failure Modes & Fallback / Human Escalation
+## Failure Modes and Guardrails
 
 - **Failure Mode**: Startup, readiness, recovery, or teardown violates the
   approved envelope.

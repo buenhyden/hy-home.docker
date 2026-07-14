@@ -127,7 +127,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/memory/harness-agent-first-gap-audit.md](../../00.agent-governance/memory/harness-agent-first-gap-audit.md) | Markdown reference |
 | [docs/00.agent-governance/memory/progress.md](../../00.agent-governance/memory/progress.md) | Markdown reference |
 | [docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md](../../00.agent-governance/memory/stage-docs-lifecycle-audit.md) | Markdown reference |
-| [docs/00.agent-governance/memory/template.md](../../00.agent-governance/memory/template.md) | Markdown reference |
 | [docs/00.agent-governance/providers/agents-md.md](../../00.agent-governance/providers/agents-md.md) | Markdown reference |
 | [docs/00.agent-governance/providers/claude.md](../../00.agent-governance/providers/claude.md) | Markdown reference |
 | [docs/00.agent-governance/providers/codex.md](../../00.agent-governance/providers/codex.md) | Markdown reference |
@@ -447,6 +446,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/127-deployment-release-engineering-remediation/spec.md](../../03.specs/127-deployment-release-engineering-remediation/spec.md) | Markdown reference |
 | [docs/03.specs/128-agentic-audit-harness-consolidation/spec.md](../../03.specs/128-agentic-audit-harness-consolidation/spec.md) | Markdown reference |
 | [docs/03.specs/129-document-contract-canonicalization/spec.md](../../03.specs/129-document-contract-canonicalization/spec.md) | Markdown reference |
+| [docs/03.specs/130-template-contract-system-canonicalization/spec.md](../../03.specs/130-template-contract-system-canonicalization/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -543,6 +543,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-11-security-supply-chain-remediation.md](../../04.execution/plans/2026-07-11-security-supply-chain-remediation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md](../../04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md](../../04.execution/plans/2026-07-13-document-contract-canonicalization.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md](../../04.execution/plans/2026-07-13-template-contract-system-canonicalization.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -660,6 +661,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md](../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md](../../04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md](../../04.execution/tasks/2026-07-13-document-contract-canonicalization.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md](../../04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -1034,10 +1036,10 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/README.md](../../99.templates/templates/README.md) | folder index |
 | [docs/99.templates/templates/common/README.md](../../99.templates/templates/common/README.md) | folder index |
 | [docs/99.templates/templates/common/archive.template.md](../../99.templates/templates/common/archive.template.md) | Markdown reference |
+| [docs/99.templates/templates/common/audit.template.md](../../99.templates/templates/common/audit.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/readme.template.md](../../99.templates/templates/common/readme.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/reference.template.md](../../99.templates/templates/common/reference.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/README.md](../../99.templates/templates/governance/README.md) | folder index |
-| [docs/99.templates/templates/governance/harness-task-contract.template.md](../../99.templates/templates/governance/harness-task-contract.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/memory.template.md](../../99.templates/templates/governance/memory.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/progress.template.md](../../99.templates/templates/governance/progress.template.md) | Markdown reference |
 | [docs/99.templates/templates/operations/README.md](../../99.templates/templates/operations/README.md) | folder index |

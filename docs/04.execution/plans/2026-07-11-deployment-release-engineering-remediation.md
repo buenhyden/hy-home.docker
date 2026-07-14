@@ -6,8 +6,6 @@ parent_ids:
   - spec:127-deployment-release-engineering-remediation
 ---
 
-<!-- Target: docs/04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md -->
-
 # Deployment and Release Engineering Remediation Implementation Plan
 
 ## Overview
@@ -17,7 +15,7 @@ environments, promotion, approvals, release records, deployments, health gates,
 and rollback/recovery handoffs. It authorizes no workflow, environment, Release,
 artifact, registry, secret, deployment, runtime, or remote change.
 
-## Context
+## Context and Inputs
 
 The repository has substantial CI quality and release-readiness evidence, but
 no tracked CD environment/promotion/deployment/automated rollback or completed
@@ -36,7 +34,7 @@ release record. CI and build success must remain distinct from delivery.
 
 Umbrella approval is documentation lineage only.
 
-## Goals & In-Scope
+## Goals and Non-goals
 
 - **Goals**: Establish immutable artifact-to-environment promotion with
   approvals, security/readiness gates, release/deployment records, and verified
@@ -91,7 +89,7 @@ Umbrella approval is documentation lineage only.
 | `VAL-PLN-DRE-004` | Rollback/recovery | Config/application rollback plus data handoff | Future approved task only | Previous identity/health restored; data recovery disposition explicit. |
 | `VAL-PLN-DRE-005` | Review | Release/security/operations/QA review | Review future task/evidence | No unresolved critical/important finding before broader rollout. |
 
-## Risks & Mitigations
+## Risks and Rollback
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |

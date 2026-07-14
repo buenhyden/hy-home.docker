@@ -4,91 +4,55 @@ artifact_id: <artifact-id>
 artifact_type: spec
 parent_ids: [<parent-artifact-id>]
 ---
-<!-- Target: docs/03.specs/NNN-<feature-id>/tests.md -->
 
-# [Feature Name] Test & Evaluation Strategy
-
-> Use this template for `docs/03.specs/NNN-<feature-id>/tests.md`.
->
-> Rules:
->
-> - This document defines the verification strategy and test inventory for the feature.
-> - Core behavior defaults to TDD.
-> - Agent functionality must include both software tests and eval coverage when applicable.
-> - Execution-tracking remains in `04.execution/tasks/`.
-> - Write this document in English. Preserve code identifiers, command names,
->   service names, environment variables, and quoted upstream terms exactly.
-> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
-
----
+# {{title}}
 
 ## Overview
 
-This document defines unit, integration, contract, performance, and Agent Eval
-criteria for the feature.
+{{overview}}
 
-## Parent Documents
+## Parent and Scope
 
-- **Spec**: [./spec.md](./spec.md)
-- **Agent Design**: [./agent-design.md](./agent-design.md)
-- **API Spec**: [./api-spec.md](./api-spec.md)
+{{parent_spec_link}}
+
+{{scope}}
 
 ## Verification Goals
 
-- **What must be proven**:
-- **What risks are targeted**:
+{{verification_goals}}
 
 ## TDD Scope
 
-- **Core behavior requiring test-first implementation**:
-- **Exceptions and reason**:
+{{tdd_scope}}
 
 ## Test Matrix
 
-| Test ID | Layer | Purpose | Input / Fixture | Expected Result | Automation |
-| --- | --- | --- | --- | --- | --- |
-| TEST-001 | unit | [Purpose] | [Input] | [Result] | yes |
+{{test_matrix}}
 
-## Contract & Integration Tests
+## Contract and Integration Tests
 
-- **API contract checks**:
-- **Consumer compatibility checks**:
-- **Dependency integration checks**:
+{{contract_and_integration_tests}}
 
-## Non-Functional Tests
+## Non-functional Tests
 
-- **Performance / latency**:
-- **Reliability / retry**:
-- **Security / abuse**:
+{{non_functional_tests}}
 
-## Agent Evals (If Applicable)
+## Agent Evaluations
 
-| Eval ID | Type | Scenario | Dataset / Prompt Set | Metric | Threshold |
-| --- | --- | --- | --- | --- | --- |
-| EVAL-001 | offline | [Scenario] | [Dataset] | [Metric] | [Threshold] |
+{{agent_evaluations}}
 
-## Fixtures / Datasets
+## Fixtures
 
-- **Test fixtures**:
-- **Eval datasets**:
-- **Golden outputs**:
+{{fixtures}}
 
-## How to Run
+## Execution
 
-```bash
-pytest tests/
-npm test
-python evals/run_feature_eval.py
-```
+{{execution}}
 
-## Evidence & Reporting
+## Evidence
 
-- **Where results are stored**:
-- **Failure triage rule**:
-- **Linked execution tasks**: [../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md](../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md)
+{{evidence}}
 
 ## Related Documents
 
-- **Spec**: [./spec.md](./spec.md)
-- **Agent Design**: [./agent-design.md](./agent-design.md)
-- **Execution Task**: [../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md](../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md)
+{{related_documents}}

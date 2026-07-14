@@ -6,8 +6,6 @@ parent_ids:
   - spec:125-infrastructure-operations-readiness-remediation
 ---
 
-<!-- Target: docs/04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md -->
-
 # Infrastructure Operations Readiness Remediation Implementation Plan
 
 ## Overview
@@ -16,7 +14,7 @@ This draft sequences the later implementation of Spec 125 for upgrade,
 migration, backup, restore, integrity, and recovery-objective evidence. It is
 not runtime/state/secret/remote authorization and creates no child task.
 
-## Context
+## Context and Inputs
 
 Selected operations guidance exists, but no current program-level upgrade,
 representative migration, comprehensive backup inventory, or restore drill with
@@ -36,7 +34,7 @@ boundaries and execution evidence.
 
 Umbrella approval authorizes this documentation only.
 
-## Goals & In-Scope
+## Goals and Non-goals
 
 - **Goals**: Establish representative, integrity-checked upgrade/migration and
   backup/restore evidence with observed recovery objectives.
@@ -90,7 +88,7 @@ Umbrella approval authorizes this documentation only.
 | `VAL-PLN-IOR-004` | Recovery | Separate backup capture and restore drill | Future approved task only | Restore integrity and observed RTO/RPO/escalation pass. |
 | `VAL-PLN-IOR-005` | Review | Data/security/operations/QA review | Review future task report/evidence | No unresolved critical/important finding. |
 
-## Risks & Mitigations
+## Risks and Rollback
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |

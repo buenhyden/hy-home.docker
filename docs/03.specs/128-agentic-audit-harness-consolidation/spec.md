@@ -6,8 +6,6 @@ parent_ids:
   - spec:123-agentic-engineering-audit-remediation
 ---
 
-<!-- Target: docs/03.specs/128-agentic-audit-harness-consolidation/spec.md -->
-
 # Agentic Audit Harness Consolidation Technical Specification (Spec)
 
 ## Overview
@@ -49,7 +47,7 @@ repository contracts and the tracked CI quality workflow.
   evidence.
 - Keep Specs 124 through 127 as draft, approval-gated runtime follow-ups.
 
-## Related Inputs
+## Boundaries and Inputs
 
 - **PRD**: No dedicated PRD is required. This specification is a bounded
   follow-up to the approved cross-cutting governance and development-harness
@@ -200,7 +198,7 @@ generated audit matrix remains derived data and cannot override either source.
 5. Integrate checks into repository and tracked CI quality gates.
 6. Regenerate derived references and record final evidence.
 
-## Interfaces & Data Structures
+## Interfaces and Data
 
 ### Semantic Closure Assertion
 
@@ -325,7 +323,7 @@ contracts only; it exposes no external API.
 - A shallow Git checkout must not make semantic validation indeterminate,
   because the contract does not depend on path commit history.
 
-## Failure Modes & Fallback / Human Escalation
+## Failure Modes and Guardrails
 
 - **Failure Mode**: Structural and semantic contracts disagree.
   **Fallback**: Treat the audit as invalid, identify the owning criterion, and

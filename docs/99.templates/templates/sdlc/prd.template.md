@@ -4,88 +4,47 @@ artifact_id: <artifact-id>
 artifact_type: prd
 parent_ids: []
 ---
-<!-- Target: docs/01.requirements/NNN-<feature-or-system>.md -->
 
-# [Feature or System Name] Product Requirements
-
-> Use this template for `docs/01.requirements/NNN-<feature-or-system>.md`.
->
-> Rules:
->
-> - Use exactly one meaningful H1.
-> - Use relative links only.
-> - Remove every placeholder before saving.
-> - Keep implementation detail out of the PRD.
-> - Keep one `Overview` summary near the top.
-> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
-> - Replace example links with real target-relative links, or delete unused examples before saving.
->
-> Target-relative examples from `docs/01.requirements/NNN-<feature-or-system>.md`:
->
-> - ARD: `../02.architecture/requirements/####-system-or-domain.md`
-> - ADR: `../02.architecture/decisions/####-short-title.md`
-> - Spec: `../03.specs/NNN-feature-id/spec.md`
-> - Plan: `../04.execution/plans/YYYY-MM-DD-feature.md`
-> - Task: `../04.execution/tasks/YYYY-MM-DD-feature-or-stream.md`
+# {{title}}
 
 ## Overview
 
-이 문서는 [기능 또는 시스템명]의 제품 요구사항을 정의한다. 사용자 가치, 문제 정의, 성공 기준을 명확히 하여 후속 설계와 구현의 기준으로 사용한다.
+{{value_and_outcomes}}
 
-## Vision
+## Problem and Stakeholders
 
-[State the user or business outcome.]
+{{problem_statement}}
 
-## Problem Statement
+{{stakeholders_and_use_cases}}
 
-[What problem exists now and why it matters.]
+## Requirements
 
-## Personas
+{{requirements_with_stable_ids}}
 
-- **Persona 1**: [Role / need]
-- **Persona 2**: [Role / need]
+{{constraints_and_provenance}}
 
-## Key Use Cases
+## Acceptance and Verification
 
-- **STORY-01**: [User story]
-- **STORY-02**: [User story]
+{{acceptance_criteria}}
 
-## Functional Requirements
+{{success_measures}}
 
-- **REQ-PRD-FUN-01**: [Requirement]
-- **REQ-PRD-FUN-02**: [Requirement]
-
-## Non-functional Requirements
-
-- **REQ-PRD-NFR-01**: [Quality, reliability, security, performance, or operability requirement]
-- **REQ-PRD-NFR-02**: [Quality, reliability, security, performance, or operability requirement]
-
-## Success Criteria
-
-- **REQ-PRD-MET-01**: [Metric and target]
-- **REQ-PRD-MET-02**: [Metric and target]
+{{verification_intent}}
 
 ## Scope and Non-goals
 
-- **In Scope**:
-- **Out of Scope**:
-- **Non-goals**:
+{{scope_and_non_goals}}
 
-## Risks, Dependencies, and Assumptions
+## Risks and Dependencies
 
-- [Risk / dependency / assumption]
+{{risks_and_dependencies}}
 
-## AI Agent Requirements (If Applicable)
+{{assumptions}}
 
-- **Allowed Actions**:
-- **Disallowed Actions**:
-- **Human-in-the-loop Requirement**:
-- **Evaluation Expectation**:
+## AI Agent Requirements
+
+{{ai_agent_requirements}}
 
 ## Related Documents
 
-- **ARD**: [Architecture requirements](../02.architecture/requirements/####-system-or-domain.md)
-- **Spec**: [Technical specification](../03.specs/NNN-<feature-id>/spec.md)
-- **Plan**: [Implementation plan](../04.execution/plans/YYYY-MM-DD-<feature>.md)
-- **ADR**: [Architecture decision](../02.architecture/decisions/####-<short-title>.md)
-- **Task**: [Execution evidence](../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md)
+{{related_documents}}

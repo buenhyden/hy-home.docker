@@ -6,8 +6,6 @@ parent_ids:
   - spec:123-agentic-engineering-audit-remediation
 ---
 
-<!-- Target: docs/03.specs/125-infrastructure-operations-readiness-remediation/spec.md -->
-
 # Infrastructure Operations Readiness Remediation Technical Specification (Spec)
 
 ## Overview
@@ -33,7 +31,7 @@ the unresolved predecessors and approval gates below.
 - Do not select production data, services, retention values, storage targets,
   or RTO/RPO commitments in this draft.
 
-## Related Inputs
+## Boundaries and Inputs
 
 - **PRD**: Unresolved prerequisite for service/data scope, business recovery
   objectives, acceptable loss/disruption, retention, and owner acceptance.
@@ -125,7 +123,7 @@ not proof of operational effectiveness.
   activate spec/plan -> create scoped task -> rehearse synthetic/sanitized state
   -> review -> expand only by new approval.
 
-## Interfaces & Data Structures
+## Interfaces and Data
 
 ### Core Interfaces
 
@@ -200,7 +198,7 @@ logs, credentials, and secret values remain outside documentation and memory.
 - Configuration rollback cannot reverse data transformation: use the approved
   data recovery path, never a config-only claim.
 
-## Failure Modes & Fallback / Human Escalation
+## Failure Modes and Guardrails
 
 - **Failure Mode**: Compatibility, integrity, capture, restore, objective, or
   cleanup gate fails.

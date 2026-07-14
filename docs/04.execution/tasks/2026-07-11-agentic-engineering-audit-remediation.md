@@ -7,8 +7,6 @@ parent_ids:
   - plan:2026-07-11-agentic-engineering-audit-remediation
 ---
 
-<!-- Target: docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md -->
-
 # Task: Agentic Engineering Audit and Remediation
 
 ## Overview
@@ -26,7 +24,7 @@ independent task/branch reviews.
 - **Canonical Research**: [Agentic engineering research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Canonical Audit**: [Agentic engineering implementation audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 
-## Working Rules
+## Goals and Non-goals
 
 - Execute tasks sequentially with a fresh implementer and separate
   spec-compliance and quality/security reviewers.
@@ -38,7 +36,7 @@ independent task/branch reviews.
   GitHub settings, branch protection, or model-policy values.
 - Record actual commands/results and any deviation from the approved plan.
 
-## Approved Surface Evidence
+## Scope and Change Boundaries
 
 | Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -48,7 +46,7 @@ independent task/branch reviews.
 | Provider adapters and CI | User approval of governance/development-harness remediation | Stage 00 provider rules, Claude source adapters, generated Codex/Gemini adapters, existing CI repo-contracts job | Provider surfaces synchronized; no metadata/wrapper instruction | No-drift provider output and existing-job metadata step | Correct canonical source and regenerate; remove only the added CI step if invalid | No model literal change, token, credential, remote setting, or branch-protection mutation |
 | Runtime follow-up docs | User approval of audit plus independent follow-up specs/plans | Specs 124-127 and four draft plans | Runtime gaps exist only in audit/research | Implementation-ready gap routing with explicit later approval gates | Keep drafts, revise, or supersede; runtime remains unchanged | No runtime mutation, live diagnostics, secret reads, or deployment action |
 
-## Task Table
+## Work Breakdown
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -65,7 +63,7 @@ independent task/branch reviews.
 | T-AER-011 | Author four independent runtime follow-up specs/plans without runtime mutation | doc | Spec 123 / W5 Runtime Follow-up | PLN-AER-011 | Template/traceability/rollback/approval gates; task review | doc-writer | Done |
 | T-AER-012 | Run full gates, controlled wrapper, whole-branch review, and lifecycle closure | test/eval/doc | Spec 123 / Verification and Success Criteria | PLN-AER-012 | Complete validation bundle; branch review PASS/APPROVED; clean worktree | workflow-supervisor | Done |
 
-## Phase View
+## Work Log
 
 ### Phase 1 — Canonical Research
 
@@ -94,7 +92,7 @@ independent task/branch reviews.
 - [x] T-AER-011 Runtime follow-up specs/plans
 - [x] T-AER-012 Full verification, review, and closure — I-01 through I-03-R1 resolved
 
-## Verification Summary
+## Verification Evidence
 
 ### T-AER-001 Research Evidence
 
@@ -1075,6 +1073,8 @@ values, credentials, and secret material were not persisted.
   the historical result still does not authorize the four draft runtime
   follow-up specifications or plans.
 
+## Review Evidence
+
 ### Task Review Ledger
 
 | Task | Commit range | Spec compliance | Quality | Findings | Review evidence |
@@ -1103,7 +1103,13 @@ values, credentials, and secret material were not persisted.
 - **Full QA Wrapper**: Executed only in Task 12 after wrapper tests and review.
 - **Logs / Evidence Location**: This task document, `.superpowers/sdd/progress.md`, task reports, and review packages. Raw logs are not tracked.
 
-## Deviation Notes
+## Commit Ledger
+
+The exact implementation commit ranges remain recorded in the Task Review
+Ledger above. This preservation migration does not rewrite their identities,
+verdicts, findings, or review evidence.
+
+## Deferred and Blocked Items
 
 - Before execution, the plan's unittest command was normalized to discovery
   mode so `tests/validation/` does not require package marker files. This is a

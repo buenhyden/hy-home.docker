@@ -5,8 +5,6 @@ artifact_type: plan
 parent_ids:
   - spec:129-document-contract-canonicalization
 ---
-<!-- Target: docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md -->
-
 # Document Contract Canonicalization Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
@@ -97,7 +95,7 @@ Stage 00 routing, and current audit truth. Task 5 makes the foundation
 fail-closed in the existing repository/CI gate. Task 6 regenerates evidence,
 runs the complete QA boundary, and closes the reviewed branch.
 
-## Context
+## Context and Inputs
 
 The existing registry already defines typed SDLC profiles and changed/new
 metadata enforcement, but it does not define canonical key order, document
@@ -115,7 +113,7 @@ missing-required-key findings, seven replacement-free supersessions, and 125
 stale-active findings. This plan must not turn those historical deficits into
 an unbounded rewrite.
 
-## Goals & In-Scope
+## Goals and Non-goals
 
 - Extend and validate the single registry with frontmatter order, document
   families, README profiles, deterministic parent serialization, and complete
@@ -733,7 +731,7 @@ waves still explicitly pending.
 | VAL-PLN-009 | Controlled QA | Approved all-files hook boundary is clean. | Controlled wrapper from initially clean worktree. | Exit 0; no unexpected Git-visible paths. |
 | VAL-PLN-010 | Scope | Runtime, secrets, remote GitHub, and corpus migration remain untouched. | `git diff --name-only e2954cc3..HEAD` plus task evidence. | Only approved foundation/evidence paths; no forbidden mutation. |
 
-## Risks & Mitigations
+## Risks and Rollback
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |

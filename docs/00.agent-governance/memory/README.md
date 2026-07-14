@@ -43,7 +43,6 @@ This README is for:
 ```text
 memory/
 ├── progress.md  # Mandatory agent progress log and memory index
-├── template.md  # Local mirror of docs/99.templates/templates/governance/memory.template.md
 ├── *.md         # Durable advisory memory notes
 └── README.md    # This file
 ```
@@ -62,8 +61,12 @@ memory/
 
 - Add an entry after resolving a complex issue or policy conflict.
 - Add an entry when a read-only or out-of-scope issue should survive the current task.
-- Use `docs/99.templates/templates/governance/memory.template.md` for new notes and keep `template.md` synchronized as the local mirror.
-- Update `progress.md` with the current task status, verification evidence, and durable memory note path.
+- Use `docs/99.templates/templates/governance/memory.template.md` as the only
+  source for new Memory notes.
+- Record task progress concisely in `progress.md`; do not paste transcripts,
+  raw logs, shell history, credentials, tokens, private keys, or secret values.
+- Link durable reusable findings to separate Memory notes created from the
+  Stage 99 source, and update the final Progress entry before completion.
 - Revisit memory entries during planning for similar tasks.
 - Do not copy memory text into active policy without updating the relevant rule, scope, provider, or runtime file.
 - Do not store credentials, tokens, private keys, shell history, or raw logs in memory notes.
@@ -80,4 +83,3 @@ memory/
 - [Documentation protocol](../rules/documentation-protocol.md)
 - [Task checklists](../rules/task-checklists.md)
 - [Memory template](../../99.templates/templates/governance/memory.template.md)
-- [Local memory template mirror](./template.md)

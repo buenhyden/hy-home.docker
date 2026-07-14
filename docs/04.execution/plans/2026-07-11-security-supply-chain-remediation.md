@@ -6,8 +6,6 @@ parent_ids:
   - spec:126-security-supply-chain-remediation
 ---
 
-<!-- Target: docs/04.execution/plans/2026-07-11-security-supply-chain-remediation.md -->
-
 # Security Supply-Chain Remediation Implementation Plan
 
 ## Overview
@@ -17,7 +15,7 @@ SBOM, provenance/attestation, signing/verification, and reviewed Scorecard
 signals. It selects no tool and authorizes no scan, workflow, build, secret,
 registry, artifact, runtime, or remote action.
 
-## Context
+## Context and Inputs
 
 The repository has important baseline controls and one scoped npm audit, but no
 broad dependency/image gate or artifact-bound SBOM, provenance, signing,
@@ -37,7 +35,7 @@ architecture before automating any producer or consumer.
 
 Spec 123 approval does not satisfy any gate.
 
-## Goals & In-Scope
+## Goals and Non-goals
 
 - **Goals**: Build a digest-bound, policy/versioned, independently verified
   supply-chain evidence path with explicit advisory/blocking and exception rules.
@@ -90,7 +88,7 @@ Spec 123 approval does not satisfy any gate.
 | `VAL-PLN-SSC-004` | Verification | Correct, tampered, and wrong-identity artifacts | Future approved task only | Verifier accepts/rejects exactly per approved policy. |
 | `VAL-PLN-SSC-005` | Review | Security/artifact/QA and consumer review | Review future task/evidence | No unresolved critical/important finding before blocking rollout. |
 
-## Risks & Mitigations
+## Risks and Rollback
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
