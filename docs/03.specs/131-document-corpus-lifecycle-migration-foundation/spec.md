@@ -81,6 +81,15 @@ counts.
 
 ### Canonical Inputs
 
+The requested `docs/03.specs/requirements/` and
+`docs/03.specs/decisions/` paths do not exist at the approved baseline and must
+not be created as parallel owners. Product requirements remain in Stage 01;
+architecture requirements and decisions remain in Stage 02. Requirement,
+decision, API, data, test, service, or agent details that are genuine focused
+Spec contracts stay inside their owning Stage 03 feature directory and use the
+registered Spec-child role. A later move requires an explicit canonical-owner
+change, not directory-name symmetry.
+
 - [Spec 130: Template Contract System Canonicalization](../130-template-contract-system-canonicalization/spec.md)
 - [Spec 129: Document Contract Canonicalization](../129-document-contract-canonicalization/spec.md)
 - [Agent Governance PRD](../../01.requirements/024-agent-governance-standardization.md)
