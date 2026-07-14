@@ -190,6 +190,8 @@ T-DCLM-001 actual evidence:
 - Advisory baseline: `python3 scripts/validation/check-document-metadata.py --mode check-active` selected 365 active records and retained the pre-existing 1,290 advisory findings. Its nonzero exit is expected and was not promoted to a Foundation blocking gate.
 - Static checks: `git diff --check` and `python3 -m py_compile scripts/validation/check-document-metadata.py` passed.
 - Repository integration before the generated follow-up: metadata repository contracts reported zero violations and document traceability passed 46 catalog pairs with zero failures. The aggregate repository-contract gate reported only the expected stale canonical frontmatter inventory; its owner regeneration and final rerun are recorded in the generated follow-up evidence.
+- Generated owner fallout: the LLM Wiki index regenerated with 1,300 paths, category coverage regenerated with 1,299 safe paths, and the canonical frontmatter semantic inventory regenerated with 904 records and 2,160 advisory findings. The increase is the explicit Wave D debt created by applying registry v2 to the unmodified existing tombstones; it does not promote those records to changed/new blocking.
+- Generated check modes passed for all three outputs. The final `bash scripts/validation/check-repo-contracts.sh` rerun completed with `failures=0`, including metadata repository contracts at zero violations and a fresh advisory inventory.
 - Graphify: `graphify update .` completed with 23,485 nodes, 24,978 edges, and 1,545 communities. Health remained advisory only for two unrelated cross-root inferred edges; zero volume, gitlink, generated/minified, source-contamination, or meaningless-god-node findings were reported. The claims above were corroborated against the tracked validator, registries, tests, Stage 00 governance, Spec 131, and this Plan/Task. Generated Graphify outputs were restored and excluded from the commit.
 
 Verification results: T-DCLM-001 implementation GREEN; independent specification and quality reviews are pending.
@@ -258,7 +260,8 @@ Planning baseline:
 
 Foundation logical commits:
 
-- T-DCLM-001 — `feat(docs): define corpus lifecycle machine contracts`; implementation commit identity is assigned by the commit operation and will be appended with the independent review evidence.
+- `d40540a0` — T-DCLM-001 `feat(docs): define corpus lifecycle machine contracts`.
+- T-DCLM-001 generated follow-up — `docs(generated): index lifecycle machine contract`; identity is assigned by the follow-up commit operation and will be appended with independent review evidence.
 
 Commit validation: each entry must name its work unit, review verdicts, focused
 GREEN commands, and generated fallout before closure.

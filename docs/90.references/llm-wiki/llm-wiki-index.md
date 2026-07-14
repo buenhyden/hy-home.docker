@@ -1027,6 +1027,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |
 | [docs/99.templates/support/README.md](../../99.templates/support/README.md) | folder index |
 | [docs/99.templates/support/common-document-contract.md](../../99.templates/support/common-document-contract.md) | Markdown reference |
+| [docs/99.templates/support/document-corpus-migration-contract.yaml](../../99.templates/support/document-corpus-migration-contract.yaml) | YAML config |
 | [docs/99.templates/support/document-metadata-profiles.yaml](../../99.templates/support/document-metadata-profiles.yaml) | YAML config |
 | [docs/99.templates/support/external-source-rationale.md](../../99.templates/support/external-source-rationale.md) | Markdown reference |
 | [docs/99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md) | Markdown reference |
