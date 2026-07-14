@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: spec:131-document-corpus-lifecycle-migration-foundation
 artifact_type: spec
 parent_ids:
@@ -494,6 +494,8 @@ until the branch is explicitly finished and the user authorizes local merge.
 
 ## Related Documents
 
+- [Foundation implementation plan](../../04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
+- [Foundation task evidence](../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
 - [Stage 03 specifications](../README.md)
 - [Spec 130](../130-template-contract-system-canonicalization/spec.md)
 - [Spec 129](../129-document-contract-canonicalization/spec.md)
