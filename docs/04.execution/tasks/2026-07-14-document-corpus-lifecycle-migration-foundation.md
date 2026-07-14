@@ -190,7 +190,7 @@ Redaction boundary:
 | 2026-07-15 | T-DCLM-005 metadata blocker terminal closure | Fresh specification reviewer and separate quality re-reviewer | The implementation/test range `7fbfab3d..487fb1b1` received terminal Spec PASS C0/I0/M0 and Quality PASS C0/I0/M0. M-Q01 is closed, so Task 5 may resume authored Foundation baseline work. This closure changes evidence only: candidate bytes and untracked state remain unchanged, and no implementation, promotion, runtime, remote, or all-files action occurred. |
 | 2026-07-15 | T-DCLM-005 advisory Foundation baseline | Fresh implementation agent | Commit `f3f870fc` published the 24-row advisory manifest and routing with 23 `migrate` rows, one `preserve` row, pending reviews, and advisory enforcement; it excluded the generated summary. Commit `63829c10` then published the canonical summary plus the three changed downstream owners: Wiki index, Wiki coverage, and metadata inventory. Security readiness and audit matrix were byte-identical and omitted. No promotion, corpus leaf, tombstone, archive payload, runtime, workflow, provider, secret, remote state, Task 6, or all-files QA changed. |
 | 2026-07-15 | T-DCLM-005 advisory independent reviews | Fresh specification reviewer and separate quality reviewer | The exact package `cce4fcde..63829c10` returned Spec FAIL C0/I3/M0 and Quality FAIL C0/I2/M1. Shared Important findings identified false empty `active_consumers` and floating over-broad `e00e1483..HEAD` rollback. Specification I-S03 and Quality M-Q01 also found tracked and ignored handoff evidence stale after the generated commit. Foundation remains advisory with pending verdicts; promotion and Task 6 stay blocked. |
-| 2026-07-15 | T-DCLM-005 advisory review remediation | Fresh remediation agent | Strict RED proved the validator accepted a broad repository grep, a false empty consumer list, and a floating rollback with no findings. GREEN adds a Foundation-only canonical NUL-safe active-root Git scan with exact result equality and immutable per-source rollback attestation. The reviewed manifest now records 506 sorted direct-consumer memberships, no false empty list, full-hash evidence bounded to `63829c10d073817322f401d909d11e1b7dcb74ca`, and exact newest-to-oldest source-changing commits; only unchanged preserve row `docs/04.execution/README.md` has an empty rollback list. Focused negative/positive coverage, real `check-manifest`, Python compile, and the full lifecycle suite 79/79 pass. Metadata, impacted, repository, generated-owner, Graphify, commit, and fresh independent re-review evidence remain pending. |
+| 2026-07-15 | T-DCLM-005 advisory review remediation | Fresh remediation agent | Commit `4e8d23f3` closes the reviewed evidence defects through a Foundation-only canonical NUL-safe active-root Git scan with exact result equality and immutable per-source rollback attestation. The manifest records 506 sorted direct-consumer memberships, no false empty list, full-hash evidence bounded to `63829c10d073817322f401d909d11e1b7dcb74ca`, and exact newest-to-oldest source-changing commits; only the unchanged preserve row has an empty rollback list. Focused negative/positive coverage, lifecycle 79/79, manifest, metadata, impacted, repository, traceability, alignment, and generated-owner checks pass. Canonical regeneration produced no diff, so no empty generated commit exists. Graphify was corroborated and restored. Fresh independent re-reviews remain pending. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -434,6 +434,17 @@ T-DCLM-005 advisory baseline evidence:
   tombstone, archive ledger or snapshot, runtime, Compose, infrastructure,
   deployment, workflow, provider, secret, credential, or remote-state change.
   Direct all-files pre-commit and Task 6 were not run.
+- Remediation integration: lifecycle passed 79/79; metadata changed selected
+  34 with zero violations/exceptions/overrides; impacted selected 302 with zero
+  violations and only the configured directory warning; repository contracts
+  returned `failures=0`; traceability passed 46/0; alignment checked 650 docs
+  and 5,182 links with zero failures. All generated owners were fresh and the
+  metadata inventory rerun retained SHA-256
+  `b9a59cb89f63e903ed2d3aaf7cae6bd8e757f4447f6c079cfe8f323f5e621b3b`.
+  Graphify refreshed at `4e8d23f3` to 24,341 nodes, 26,821 edges, and 1,587
+  communities; two unrelated ambiguous infrastructure edges and 16,358
+  isolated nodes remained advisory. Tracked sources were authoritative and
+  both graph outputs were restored.
 
 Verification results: T-DCLM-001, T-DCLM-002, and T-DCLM-003 are complete.
 The T-DCLM-003 authored range `133b3daa..160ff097` is GREEN and received
@@ -690,6 +701,7 @@ Foundation logical commits:
 - `487fb1b1` — T-DCLM-005 metadata Quality-Minor remediation `test(validation): cover generated registry README rejection`.
 - `f3f870fc` — T-DCLM-005 authored advisory baseline `docs(data): publish corpus lifecycle foundation baseline`.
 - `63829c10` — T-DCLM-005 generated follow-up `docs(generated): refresh corpus lifecycle evidence`; security readiness and audit matrix had no diff and were omitted.
+- `4e8d23f3` — T-DCLM-005 advisory review remediation `fix(validation): bind lifecycle advisory evidence`; canonical summary and downstream owner regeneration produced no diff, so no generated remediation commit was created.
 
 The reviewed T-DCLM-002 implementation and remediation range ends at
 `9fe234f6`. The later ledger-only closure commit records the terminal verdicts
