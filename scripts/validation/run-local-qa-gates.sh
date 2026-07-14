@@ -72,6 +72,9 @@ Local script-backed gates:
 - scripts/operations/sync-tech-stack-versions.sh --check
 - scripts/validation/check-doc-traceability.sh
 - scripts/validation/check-doc-implementation-alignment.sh
+- tests/validation/test_document_corpus_lifecycle.py
+- scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
+- scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
 - scripts/validation/validate-docker-compose.sh
 - scripts/hardening/check-all-hardening.sh
 - scripts/validation/check-template-security-baseline.sh
@@ -112,6 +115,19 @@ run_bash_syntax() {
   bash -n "${bash_files[@]}"
 }
 
+run_lifecycle_gates() {
+  run_step "Document corpus lifecycle tests" python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v
+  run_step "Document corpus lifecycle contract" python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
+  run_step "Promoted document corpus lifecycle manifests" python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
+}
+
+run_generated_freshness_gates() {
+  run_step "Security automation readiness freshness" bash scripts/validation/generate-security-automation-readiness.sh --check
+  run_step "Audit implementation matrix freshness" bash scripts/validation/generate-audit-implementation-matrix.sh --check
+  run_step "LLM Wiki freshness" bash scripts/knowledge/generate-llm-wiki-index.sh --check
+  run_step "LLM Wiki coverage freshness" bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+}
+
 run_script_backed_gates() {
   if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
     # shellcheck source=../operations/use-qa-ci-tools.sh
@@ -124,11 +140,12 @@ run_script_backed_gates() {
   run_step "Tech-stack version drift" bash scripts/operations/sync-tech-stack-versions.sh --check
   run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
   run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
+  run_lifecycle_gates
   run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
   run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh
   run_step "Template/security baseline" bash scripts/validation/check-template-security-baseline.sh
   run_step "QuickWin baseline" bash scripts/validation/check-quickwin-baseline.sh
-  run_step "LLM Wiki freshness" bash scripts/knowledge/generate-llm-wiki-index.sh --check
+  run_generated_freshness_gates
   run_step "Repository contracts" bash scripts/validation/check-repo-contracts.sh
 }
 
@@ -137,9 +154,11 @@ run_harness_gates() {
   run_step "Shell syntax" run_bash_syntax
   run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
   run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
+  run_lifecycle_gates
   run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
   run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh
   run_step "Template/security baseline" bash scripts/validation/check-template-security-baseline.sh
+  run_generated_freshness_gates
   run_step "Repository contracts" bash scripts/validation/check-repo-contracts.sh
 }
 

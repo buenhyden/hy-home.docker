@@ -38,6 +38,45 @@ if ! python3 scripts/validation/check-document-metadata.py --mode check-contract
   failures=$((failures + 1))
 fi
 
+section "Document corpus lifecycle Foundation checks"
+lifecycle_contract="docs/99.templates/support/document-corpus-migration-contract.yaml"
+lifecycle_checker="scripts/validation/check-document-corpus-lifecycle.py"
+lifecycle_tests="tests/validation/test_document_corpus_lifecycle.py"
+lifecycle_workflow=".github/workflows/document-corpus-lifecycle.yml"
+
+[[ -f "$lifecycle_contract" ]] || fail "missing document corpus lifecycle contract: $lifecycle_contract"
+[[ -f "$lifecycle_checker" ]] || fail "missing document corpus lifecycle checker: $lifecycle_checker"
+[[ -f "$lifecycle_tests" ]] || fail "missing document corpus lifecycle tests: $lifecycle_tests"
+[[ -f "$lifecycle_workflow" ]] || fail "missing document corpus lifecycle workflow: $lifecycle_workflow"
+
+if [[ -f "$lifecycle_checker" && -f "$lifecycle_contract" ]]; then
+  if ! python3 "$lifecycle_checker" --mode check-contract; then
+    failures=$((failures + 1))
+  fi
+  if ! python3 "$lifecycle_checker" --mode check-promoted; then
+    failures=$((failures + 1))
+  fi
+
+  lifecycle_base_ref=""
+  if [[ -n "${TEMPLATE_GATE_BASE:-}" ]]; then
+    if git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}" 2>/dev/null; then
+      lifecycle_base_ref="$TEMPLATE_GATE_BASE"
+    else
+      fail "TEMPLATE_GATE_BASE does not resolve to a commit for lifecycle impact validation"
+    fi
+  elif git cat-file -e 'HEAD~1^{commit}' 2>/dev/null; then
+    lifecycle_base_ref="HEAD~1"
+  else
+    echo "SKIP: document corpus lifecycle impact check; no comparison base exists"
+  fi
+
+  if [[ -n "$lifecycle_base_ref" ]]; then
+    if ! python3 "$lifecycle_checker" --mode check-impacted --base-ref "$lifecycle_base_ref"; then
+      failures=$((failures + 1))
+    fi
+  fi
+fi
+
 if [[ "$actual_docs_text" != "$expected_docs" ]]; then
   fail "docs top-level folders do not match the allowed taxonomy"
   echo "Expected:" >&2
@@ -1009,6 +1048,262 @@ if ruleset.is_file():
             failures.append(f"{ruleset}: status check is not a CI Quality Gates job: {check}")
 else:
     failures.append("missing local branch protection proposal: .github/rulesets/main-protection.md")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
+section "Document corpus lifecycle workflow and QA routing contract"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import re
+import subprocess
+import sys
+
+import yaml
+
+failures: list[str] = []
+workflow_path = pathlib.Path(".github/workflows/document-corpus-lifecycle.yml")
+checkout_sha = "9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0"
+setup_python_sha = "ece7cb06caefa5fff74198d8649806c4678c61a1"
+lifecycle_command = "python3 scripts/validation/check-document-corpus-lifecycle.py"
+
+expected_workflow = {
+    "name": "Document Corpus Lifecycle",
+    "on": {
+        "schedule": [{"cron": "17 17 * * 1"}],
+        "workflow_dispatch": None,
+    },
+    "permissions": {"contents": "read"},
+    "concurrency": {
+        "group": "document-corpus-lifecycle-${{ github.ref }}",
+        "cancel-in-progress": True,
+    },
+    "jobs": {
+        "document-corpus-lifecycle": {
+            "permissions": {"contents": "read"},
+            "runs-on": "ubuntu-latest",
+            "timeout-minutes": 15,
+            "steps": [
+                {
+                    "name": "Checkout repository",
+                    "uses": f"actions/checkout@{checkout_sha}",
+                    "with": {
+                        "persist-credentials": False,
+                        "fetch-depth": 0,
+                    },
+                },
+                {
+                    "name": "Set up Python",
+                    "uses": f"actions/setup-python@{setup_python_sha}",
+                    "with": {"python-version": "3.12"},
+                },
+                {
+                    "name": "Install repository contract Python dependencies",
+                    "run": "python -m pip install -r scripts/requirements.txt",
+                },
+                {
+                    "name": "Check lifecycle contract",
+                    "run": f"{lifecycle_command} --mode check-contract",
+                },
+                {
+                    "name": "Check promoted lifecycle waves",
+                    "run": f"{lifecycle_command} --mode check-promoted",
+                },
+                {
+                    "name": "Check impacted lifecycle records",
+                    "shell": "bash",
+                    "run": (
+                        "set -euo pipefail\n"
+                        "if git cat-file -e 'HEAD~1^{commit}' 2>/dev/null; then\n"
+                        f"  {lifecycle_command} --mode check-impacted --base-ref HEAD~1\n"
+                        "else\n"
+                        '  echo "SKIP: HEAD~1 is unavailable; no comparison base exists"\n'
+                        "fi\n"
+                    ),
+                },
+                {
+                    "name": "Report full corpus lifecycle debt",
+                    "run": f"{lifecycle_command} --mode report-full",
+                },
+                {
+                    "name": "Report duplicate candidates",
+                    "shell": "bash",
+                    "run": (
+                        "set -euo pipefail\n"
+                        'report_path="${RUNNER_TEMP}/document-corpus-lifecycle-duplicates.md"\n'
+                        f"{lifecycle_command} --mode report-duplicates --output \"$report_path\"\n"
+                        'cat -- "$report_path"\n'
+                    ),
+                },
+            ],
+        },
+    },
+}
+
+if not workflow_path.is_file():
+    failures.append(f"missing tracked lifecycle workflow: {workflow_path}")
+else:
+    workflow_text = workflow_path.read_text(encoding="utf-8")
+    try:
+        workflow = yaml.safe_load(workflow_text) or {}
+    except yaml.YAMLError as exc:
+        failures.append(f"{workflow_path}: YAML parse failed: {exc}")
+        workflow = {}
+
+    # PyYAML 1.1 resolves the unquoted Actions key `on` as boolean true.
+    if True in workflow and "on" not in workflow:
+        workflow["on"] = workflow.pop(True)
+
+    if workflow != expected_workflow:
+        failures.append(
+            f"{workflow_path}: workflow must match the approved read-only lifecycle contract exactly"
+        )
+
+    forbidden_literals = {
+        "pull_request_target": "pull_request_target is forbidden",
+        "continue-on-error": "continue-on-error is forbidden",
+        "${{ secrets.": "secret interpolation is forbidden",
+        "actions/upload-artifact@": "artifact upload is forbidden",
+    }
+    for literal, reason in forbidden_literals.items():
+        if literal in workflow_text:
+            failures.append(f"{workflow_path}: {reason}")
+
+    if re.search(r"(?m)^\s*(?:actions|checks|contents|deployments|id-token|issues|packages|pages|pull-requests|security-events|statuses):\s*write\b", workflow_text):
+        failures.append(f"{workflow_path}: write permission is forbidden")
+    if re.search(r"(?m)^\s*(?:deployment|environment|release):\s*", workflow_text):
+        failures.append(f"{workflow_path}: deployment, environment, and release keys are forbidden")
+
+    remote_mutation_re = re.compile(
+        r"(?im)(?:"
+        r"\bgit\s+push\b|"
+        r"\bgh\s+(?:api\b[^\n]*(?:--method|-X)\s*(?:POST|PUT|PATCH|DELETE)|"
+        r"pr\s+(?:create|merge)|release\s+create|workflow\s+run)|"
+        r"\bcurl\b[^\n]*(?:-X|--request)\s*(?:POST|PUT|PATCH|DELETE)|"
+        r"\bdocker\s+push\b|\bnpm\s+publish\b"
+        r")"
+    )
+    if remote_mutation_re.search(workflow_text):
+        failures.append(f"{workflow_path}: remote mutation command is forbidden")
+
+pre_commit_path = pathlib.Path(".pre-commit-config.yaml")
+if not pre_commit_path.is_file():
+    failures.append(f"missing pre-commit configuration: {pre_commit_path}")
+else:
+    config = yaml.safe_load(pre_commit_path.read_text(encoding="utf-8")) or {}
+    local_hooks = [
+        hook
+        for repository in config.get("repos", [])
+        if repository.get("repo") == "local"
+        for hook in repository.get("hooks", [])
+    ]
+    repo_contract_hooks = [
+        hook for hook in local_hooks if hook.get("id") == "check-repo-contracts"
+    ]
+    expected_selector = (
+        r"^(docker-compose\.yml|\.env\.example|infra/.*|docs/.*|scripts/.*|"
+        r"tests/validation/test_document_corpus_lifecycle\.py|"
+        r"\.github/workflows/.*\.(yml|yaml)|\.pre-commit-config\.yaml)$"
+    )
+    expected_hook = {
+        "id": "check-repo-contracts",
+        "name": "Repo contracts (docs/infra/scripts drift)",
+        "entry": "./scripts/validation/check-repo-contracts.sh",
+        "language": "script",
+        "files": expected_selector,
+        "pass_filenames": False,
+        "stages": ["pre-push"],
+    }
+    if repo_contract_hooks != [expected_hook]:
+        failures.append(
+            ".pre-commit-config.yaml: repo-contracts hook must match the approved lifecycle routing contract"
+        )
+    else:
+        selector = re.compile(expected_selector)
+        routed_paths = (
+            "docs/99.templates/support/document-corpus-migration-contract.yaml",
+            "scripts/validation/check-document-corpus-lifecycle.py",
+            "tests/validation/test_document_corpus_lifecycle.py",
+            ".github/workflows/document-corpus-lifecycle.yml",
+            ".pre-commit-config.yaml",
+        )
+        for routed_path in routed_paths:
+            if selector.fullmatch(routed_path) is None:
+                failures.append(
+                    f".pre-commit-config.yaml: repo-contracts selector misses {routed_path}"
+                )
+    lifecycle_hooks = [
+        hook for hook in local_hooks if hook.get("id") == "check-document-corpus-lifecycle"
+    ]
+    if lifecycle_hooks:
+        failures.append(
+            ".pre-commit-config.yaml: lifecycle checks must remain inside the existing repo-contracts hook"
+        )
+
+lifecycle_gate_commands = (
+    "python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v",
+    f"{lifecycle_command} --mode check-contract",
+    f"{lifecycle_command} --mode check-promoted",
+)
+lifecycle_surfaces = (
+    "docs/99.templates/support/document-corpus-migration-contract.yaml",
+    "scripts/validation/check-document-corpus-lifecycle.py",
+    "tests/validation/test_document_corpus_lifecycle.py",
+    ".github/workflows/document-corpus-lifecycle.yml",
+    ".pre-commit-config.yaml",
+    "docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml",
+    "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md",
+    "docs/98.archive/example.md",
+)
+recommend_script = pathlib.Path("scripts/validation/recommend-qa-gates.sh")
+if not recommend_script.is_file():
+    failures.append(f"missing QA recommendation owner: {recommend_script}")
+else:
+    for surface in lifecycle_surfaces:
+        result = subprocess.run(
+            ["bash", str(recommend_script), "--files", surface],
+            check=False,
+            cwd=pathlib.Path.cwd(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        if result.returncode != 0:
+            failures.append(f"{recommend_script}: failed to route lifecycle surface {surface}")
+            continue
+        for command in lifecycle_gate_commands:
+            if f"- {command}\n" not in result.stdout:
+                failures.append(
+                    f"{recommend_script}: lifecycle surface {surface} misses gate: {command}"
+                )
+
+local_runner = pathlib.Path("scripts/validation/run-local-qa-gates.sh")
+if not local_runner.is_file():
+    failures.append(f"missing local QA owner: {local_runner}")
+else:
+    local_runner_text = local_runner.read_text(encoding="utf-8")
+    for command in lifecycle_gate_commands:
+        if command not in local_runner_text:
+            failures.append(f"{local_runner}: missing lifecycle gate: {command}")
+
+scripts_readme = pathlib.Path("scripts/README.md")
+if not scripts_readme.is_file():
+    failures.append(f"missing script inventory: {scripts_readme}")
+else:
+    scripts_readme_text = scripts_readme.read_text(encoding="utf-8")
+    for fragment in (
+        "scripts/validation/check-document-corpus-lifecycle.py",
+        "tests/validation/test_document_corpus_lifecycle.py",
+    ):
+        if fragment not in scripts_readme_text:
+            failures.append(f"{scripts_readme}: missing lifecycle inventory fragment: {fragment}")
 
 if failures:
     for failure in failures:

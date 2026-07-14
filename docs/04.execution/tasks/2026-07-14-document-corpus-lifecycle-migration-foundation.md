@@ -141,7 +141,7 @@ Redaction boundary:
 | T-DCLM-001 | Machine migration contract and static archive metadata | Complete — final Spec PASS and Quality PASS with Critical 0, Important 0, Minor 0 |
 | T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Complete — final range `9126a0aa..9fe234f6`; terminal Spec PASS and Quality retry PASS, each with Critical 0, Important 0, and Minor 1. The sole deferred Minor is behavior-preserving decomposition of the monolithic dispatcher. |
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Complete — reviewed range `133b3daa..160ff097`; terminal Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 0 |
-| T-DCLM-004 | Repository contracts, local QA, tracked workflow | Not run |
+| T-DCLM-004 | Repository contracts, local QA, tracked workflow | Implemented — self-review PASS; independent reviews pending |
 | T-DCLM-005 | Foundation manifest and generated evidence | Not run |
 | T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Not run |
 
@@ -174,6 +174,8 @@ Redaction boundary:
 | 2026-07-15 | T-DCLM-003 final independent re-reviews | Fresh specification and quality reviewers | Final specification re-review FAIL with Critical 0, Important 1, Minor 0 found the Stage 99 support catalog still assigning disposition ownership to template governance (I-03). Final quality re-review FAIL with Critical 0, Important 1, Minor 0 found both stale support-catalog roles and the unsynchronized `docs/README.md` Stage 98 parent router (I-Q02). Prior I-01/I-02/I-Q01 were confirmed closed; Task 4 remained blocked. |
 | 2026-07-15 | T-DCLM-003 final-router remediation | Fresh implementation agent | Narrowed the support catalog so Template Governance owns only template-change workflow/protected surfaces/approval and commit boundaries, while Lifecycle Status owns only human status vocabulary/interpretation; executable semantics route to the sole human owners and metadata registry/checker. Synchronized all existing Stage 98 parent-router locations in `docs/README.md` with manifest-first validated results, full typed provenance/preservation, disposition-conditional replacement, safe provenance/confidentiality, rollback, and independent reviews. Added focused owner-role and parent-router regressions. Self-review PASS; terminal independent re-reviews passed as recorded below. |
 | 2026-07-15 | T-DCLM-003 terminal independent reviews | Fresh specification and separate quality reviewers | The complete authored range `133b3daa..160ff097` received Spec PASS with Critical 0, Important 0, and Minor 0 and Quality PASS with Critical 0, Important 0, and Minor 0. I-01/I-02/I-03 and I-Q01/I-Q02 are closed; T-DCLM-003 is complete and T-DCLM-004 is unblocked. |
+| 2026-07-15 | T-DCLM-004 | Fresh implementation agent | Extended the existing `repo-contracts` owner through strict RED/GREEN, added the exact read-only scheduled/manual lifecycle workflow, expanded only the existing repo-contracts pre-push selector, routed lifecycle checks through recommendation and local QA owners, registered the companion, and documented tracked-definition versus remote-state boundaries. Preserved all `ci-quality.yml` job IDs and local required-check names. Self-review PASS; independent reviews remain pending. No workflow dispatch, push, remote GitHub mutation, corpus migration, archive payload, manifest promotion, runtime, secret, provider, or Task 5 surface changed. |
+| 2026-07-15 | T-DCLM-004 generated fallout | Fresh implementation agent | Staged only the new workflow for Git-backed discovery and ran the four canonical Task 4 owners in order. Security readiness, LLM Wiki index, and LLM Wiki coverage changed only for the seventh tracked workflow and its path/category counts; the audit implementation matrix produced no diff. All four check modes passed. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -306,6 +308,48 @@ T-DCLM-003 actual evidence:
 - Final-router generated owners: LLM Wiki remained fresh at 1,302 paths, coverage at 1,301 safe paths, and inventory at 906 records / 2,160 advisory findings with unchanged SHA-256 `b197c11e54c3ee95b8bae9a2bfa300b540945793fd08dbf5bf3c8954c31dbef6`. All owners produced no diff, so no generated follow-up is required.
 - Final-router Graphify: refresh completed with 24,159 nodes, 26,589 edges, and 1,572 communities. Health retained only the same two unrelated Alertmanager and cAdvisor/Pyroscope advisory edges. Router claims were corroborated against tracked Stage 00, Spec 131, this Plan/Task, parent/child Stage 98 routes, Stage 99 catalog/owners, and focused tests; volume, gitlink, generated/minified, source-contamination, and meaningless-god-node counts were zero. Both Graphify outputs were restored.
 - Terminal independent reviews: the exact authored range `133b3daa..160ff097` received Spec PASS and separate Quality PASS, each with Critical 0, Important 0, and Minor 0. Both reviewers confirmed all prior Task 3 findings closed; bounded review checks passed and the 20 existing Stage 98 tombstones remained unchanged.
+
+T-DCLM-004 actual evidence:
+
+- RED: Bash syntax passed. The first repository-contract run exited nonzero
+  with `failures=2`: one direct missing-workflow failure and one aggregated
+  lifecycle workflow/selector/QA/inventory contract failure. Existing
+  lifecycle contract/promoted checks passed and `check-impacted` selected 40
+  records with zero violations.
+- Authored GREEN: exact workflow parsing, trigger/permission/action-SHA/fetch,
+  dependency, command, advisory-report, prohibited-key, secret, upload, and
+  remote-mutation assertions passed. The existing repo-contract hook is still
+  the sole lifecycle consumer; no second lifecycle/schema hook was added.
+- Focused GREEN: lifecycle tests passed 77 of 77 in 108.674 seconds and
+  metadata tests passed 204 of 204 in 66.375 seconds.
+- Live checks: lifecycle `check-contract` and `check-promoted` returned zero;
+  `check-impacted --base-ref e00e1483` selected 283 records with zero blocking
+  violations and only the existing Task-directory warning. Changed metadata
+  selected 28 records with zero violations, legacy exceptions, or transition
+  overrides.
+- Repository and routing: repository contracts returned `failures=0`; the QA
+  recommendation for every Task 4 owned surface included the lifecycle tests,
+  contract, promoted-manifest, and four generated-owner checks. Bash syntax,
+  actionlint 1.7.12, yamllint 1.38.0, working/cached diff hygiene, and the
+  unchanged `ci-quality.yml`/local ruleset comparison passed.
+- Documentation integration: traceability passed 46 catalog pairs with zero
+  failures. Implementation alignment checked 650 stage documents and 5,182
+  repository-local links with zero failures.
+- Generated owners: security readiness remained 13 controls and changed only
+  tracked-workflow counts from six to seven; the audit matrix had no diff; the
+  LLM Wiki index changed from 1,302 to 1,303 paths; coverage changed from 1,301
+  to 1,302 safe paths. All four check modes passed.
+- Graphify: refresh completed with 24,193 nodes, 26,629 edges, and 1,576
+  communities. Health stayed advisory only for two unrelated inferred
+  cross-root edges (`README.md` to root Compose and `llms.txt` to scripts).
+  Volume, gitlink, generated/minified, source-contamination, and meaningless
+  god-node counts were zero. Claims were corroborated against tracked Stage 00,
+  Spec 131, this Plan/Task, the lifecycle registries/checker/tests, workflow,
+  and QA scripts; both Graphify outputs were restored and excluded.
+- Scope preservation: no required job ID, local required-check name,
+  credential, remote GitHub state, environment, deployment, release, runtime,
+  corpus leaf, existing tombstone, archive payload, Foundation manifest,
+  exception, or Task 5 surface changed. Direct all-files pre-commit was not run.
 
 Verification results: T-DCLM-001, T-DCLM-002, and T-DCLM-003 are complete.
 The T-DCLM-003 authored range `133b3daa..160ff097` is GREEN and received
@@ -480,6 +524,17 @@ T-DCLM-003 terminal reviews over `133b3daa..160ff097`: specification PASS with
 Critical 0, Important 0, and Minor 0; separate quality PASS with Critical 0,
 Important 0, and Minor 0. Both reviewers confirmed I-01/I-02/I-03 and
 I-Q01/I-Q02 closed. T-DCLM-003 is complete and T-DCLM-004 is unblocked.
+
+T-DCLM-004 implementer self-review verdict: PASS. The workflow has only the
+approved scheduled/manual triggers, exact cron, immutable action SHAs,
+read-only top/job permissions, full Git history, Python 3.12 dependencies from
+`scripts/requirements.txt`, blocking contract/promoted/impacted checks, and
+advisory safe full/duplicate reporting. The repository path verifies an
+explicit commit or local `HEAD~1` before impact analysis, and the existing
+repo-contract hook remains the sole pre-push owner. Required CI job IDs and
+local status-check names are unchanged. Generated fallout is owner-produced and
+bounded to three expected outputs. Independent Task 4 specification and quality
+reviews are pending; Task 5 remains blocked until they pass.
 
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 

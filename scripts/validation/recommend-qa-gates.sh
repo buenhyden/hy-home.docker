@@ -128,6 +128,16 @@ add_remote_note() {
   fi
 }
 
+add_lifecycle_gates() {
+  add_gate "python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v" "document corpus lifecycle behavior changed"
+  add_gate "python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract" "document corpus lifecycle machine and human contracts changed"
+  add_gate "python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted" "promoted lifecycle manifests must remain valid"
+  add_gate "bash scripts/validation/generate-security-automation-readiness.sh --check" "lifecycle workflow and validation inventory may affect security readiness evidence"
+  add_gate "bash scripts/validation/generate-audit-implementation-matrix.sh --check" "lifecycle workflow and validation inventory may affect audit implementation evidence"
+  add_gate "bash scripts/knowledge/generate-llm-wiki-index.sh --check" "lifecycle documentation and generated data require navigation freshness"
+  add_gate "bash scripts/knowledge/generate-llm-wiki-coverage.sh --check" "lifecycle documentation and generated data require coverage freshness"
+}
+
 recommend_for_path() {
   local path="$1"
 
@@ -199,6 +209,22 @@ recommend_for_path() {
     add_gate "bash scripts/operations/gen-secrets.sh --check" "secret metadata or example environment surface changed"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "secret and environment documentation contracts changed"
     add_remote_note "Do not print or commit secret values; only metadata, IDs, paths, and readiness evidence are valid."
+    ;;
+  esac
+
+  case "$path" in
+  .pre-commit-config.yaml | \
+    .github/workflows/* | .github/workflows/** | \
+    scripts/validation/check-document-corpus-lifecycle.py | \
+    tests/validation/test_document_corpus_lifecycle.py | \
+    docs/98.archive/* | docs/98.archive/** | \
+    docs/99.templates/support/document-corpus-migration-contract.yaml | \
+    docs/99.templates/support/corpus-migration-contract.md | \
+    docs/99.templates/support/archive-retention-contract.md | \
+    docs/99.templates/templates/common/archive.template.md | \
+    docs/90.references/data/governance/document-corpus-lifecycle/* | \
+    docs/90.references/data/governance/document-corpus-lifecycle/**)
+    add_lifecycle_gates
     ;;
   esac
 }
