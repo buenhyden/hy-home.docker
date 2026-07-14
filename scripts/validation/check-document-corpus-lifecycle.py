@@ -563,6 +563,22 @@ def _load_repo_migration_manifest(
     return _load_migration_manifest_text(source)
 
 
+def _load_candidate_migration_manifest(
+    root: pathlib.Path,
+    relative_path: str,
+) -> MigrationManifestDocument:
+    """Load a safe in-root candidate without requiring prior Git staging."""
+
+    payload = _read_regular_repo_bytes(root, relative_path, require_tracked=False)
+    if payload is None:
+        raise ProfileError("candidate manifest must be a regular in-root file")
+    try:
+        source = payload.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise ProfileError("candidate manifest must be UTF-8") from error
+    return _load_migration_manifest_text(source)
+
+
 def _repo_manifest_path(root: pathlib.Path, path: pathlib.Path) -> str:
     """Return a safe repository-relative manifest path without resolving links."""
 
@@ -585,6 +601,17 @@ def _repo_manifest_matches(
     expected: str,
 ) -> bool:
     payload = _read_regular_repo_bytes(root, relative_path, require_tracked=True)
+    return payload == expected.replace("\r\n", "\n").encode("utf-8")
+
+
+def _candidate_manifest_matches(
+    root: pathlib.Path,
+    relative_path: str,
+    expected: str,
+) -> bool:
+    """Compare canonical bytes for a safe candidate before it is staged."""
+
+    payload = _read_regular_repo_bytes(root, relative_path, require_tracked=False)
     return payload == expected.replace("\r\n", "\n").encode("utf-8")
 
 
@@ -2157,13 +2184,13 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             return 0
         if args.mode == "check-manifest":
             manifest_relative = _repo_manifest_path(root, args.manifest)
-            document = _load_repo_migration_manifest(root, manifest_relative)
+            document = _load_candidate_migration_manifest(root, manifest_relative)
             findings = validate_migration_manifest(root, profiles, contract, document)
             if document.wave != args.wave:
                 findings.append(
                     _finding(args.manifest.as_posix(), "manifest-wave-mismatch", "--wave differs from manifest")
                 )
-            if not _repo_manifest_matches(
+            if not _candidate_manifest_matches(
                 root,
                 manifest_relative,
                 render_migration_manifest(document),
@@ -2182,9 +2209,9 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             return 3 if any(_is_safety_finding(item) for item in findings) else (1 if findings else 0)
         if args.mode in {"generate-summary", "check-summary"}:
             manifest_relative = _repo_manifest_path(root, args.manifest)
-            document = _load_repo_migration_manifest(root, manifest_relative)
+            document = _load_candidate_migration_manifest(root, manifest_relative)
             manifest_findings = validate_migration_manifest(root, profiles, contract, document)
-            if not _repo_manifest_matches(
+            if not _candidate_manifest_matches(
                 root,
                 manifest_relative,
                 render_migration_manifest(document),

@@ -159,6 +159,7 @@ Redaction boundary:
 | 2026-07-14 | T-DCLM-002 | Fresh implementation agent | Added the focused lifecycle companion and 22-test suite through strict RED/GREEN. The companion reuses the canonical metadata module without repurposing its `Manifest` type; implements the fixed 16-mode CLI, immutable manifest data contracts, exact YAML load/render, promoted-wave enforcement, introduced-only impact validation, Git commit/blob/path and snapshot SHA-256 provenance, value-free confidentiality findings, duplicate candidates, review signals, 100/150 budgets, bounded exceptions, and deterministic summary/ledger/snapshot interfaces. Self-review PASS; no corpus leaf, existing tombstone, snapshot payload, exception file, runtime, workflow, secret, provider, or remote state changed. |
 | 2026-07-14 | T-DCLM-002 generated fallout | Fresh implementation agent | Staged only the new script and test for Git-backed discovery, then ran the four Task 2 canonical owners in the approved order. Only owner-produced changed files are eligible for the separate generated commit; exact freshness results are recorded below. |
 | 2026-07-14 | T-DCLM-002 review remediation | Fresh remediation agent | Resolved all seven Important specification findings, all five Important quality findings, and both Minor quality findings from the first independent reviews. The companion now validates CLI shape before metadata-module execution, delegates static manifest/exception grammar to the Task 1 canonical validators, processes NUL-delimited deletion/rename evidence and every direct relation class, binds manifest rows to baseline and result truth, preserves unsuppressible explicit safety classes, blocks all remaining `check-full` findings, redacts every declared payload class, reads tracked manifest/snapshot inputs through no-follow directory descriptors, preserves Unicode title identity, and proves all 16 modes through shape, success/write, and exit-class matrices. No Task 3, workflow, runtime, corpus migration, existing tombstone, snapshot payload, secret, provider, or remote surface changed. |
+| 2026-07-14 | T-DCLM-002 specification re-review remediation | Fresh remediation agent | The fresh complete-range specification re-review closed I-01 through I-07 and identified I-08: explicit candidate modes incorrectly required a manifest to be staged before the Plan-authorized validation step. Added separate no-follow in-root candidate loading and canonical-byte comparison without the promoted-manifest tracked-file precondition. Real subprocess regressions prove `check-manifest`, `generate-summary`, and `check-summary` accept a safe untracked candidate before staging while all three reject symlink, traversal, and out-of-root candidates without output mutation. Promoted and impacted manifest consumption remains tracked-only. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -235,11 +236,14 @@ T-DCLM-002 actual evidence:
 - Review-remediation live checks: `check-contract`, `check-promoted`, `check-impacted --base-ref 9126a0aa`, and `report-full` all returned zero. Impacted validation selected 38 records with zero blocking violations and only the existing 118-leaf Task warning. The full report retained 2,774 bounded findings with zero safety failures.
 - Review-remediation generated fallout: security readiness, audit matrix, LLM Wiki index, and LLM Wiki coverage were regenerated in canonical order and produced no Git diff; checks remained fresh at 13 controls, 1,300 paths, and 1,299 safe coverage paths.
 - Review-remediation Graphify: `graphify update .` completed at HEAD `43d7d149` with 23,756 nodes, 25,807 edges, and 1,549 communities. Because the graph cannot include uncommitted remediation and still contains broad generic graph communities, it remains advisory; claims were corroborated against the tracked validator, tests, Stage 00, Spec 131, Plan, Task, and Stage 99 owners. Graphify collateral was restored.
+- I-08 RED: `python3 -m unittest tests.validation.test_document_corpus_lifecycle.CandidateManifestCliTests -v` ran two real-CLI methods; the safe untracked candidate method failed with exit 3 while the unsafe candidate method passed, reproducing the tracked-file precondition without weakening the existing path-safety boundary.
+- I-08 focused GREEN: the same two methods passed in 15.794 seconds. The three explicit modes accepted the canonical untracked Foundation candidate before staging; each mode rejected symlink, traversal, and out-of-root candidates with exit 3 and no output creation.
+- I-08 full GREEN and compatibility: the lifecycle suite passed 40 of 40 tests in 40.696 seconds, canonical metadata compatibility passed 196 of 196 tests in 70.251 seconds, and Python compile passed. Promoted-manifest consumers still use the tracked regular-file loader and comparator; only explicit candidate modes use the untracked no-follow path.
 - Graphify: `graphify update .` completed against HEAD `9126a0aa` with 23,683 nodes, 25,600 edges, and 1,547 communities. The report remained advisory because generic language/test symbols dominated the god-node list and two Compose/config references were ambiguous. Claims were corroborated against the tracked lifecycle validator and tests, the observability Compose source, Stage 00 governance, Spec 131, Plan, and this Task. `graphify-out/GRAPH_REPORT.md` and `graphify-out/graph.json` were restored to HEAD and excluded from the implementation commit.
 - Safety boundary: Git commands use argument arrays and verify commit/blob types before comparison. Library functions return stable findings and never print payload bytes. Snapshot fixtures proved rejection of prohibited confidentiality classes while finding paths/messages remained value-free.
 - Scope preservation: no broad corpus leaf, existing tombstone, archive evidence payload, Stage 04 partition, exception file, workflow, runtime, Compose, infrastructure, deployment, secret, credential, provider instruction, or remote state changed.
 
-Verification results: T-DCLM-001 is complete. T-DCLM-002 implementation is GREEN with implementer self-review PASS; independent specification and quality reviews remain the controller's next gate before T-DCLM-003.
+Verification results: T-DCLM-001 is complete. T-DCLM-002 implementation and I-08 remediation are GREEN; fresh complete-range specification and separate quality reviews remain the gate before T-DCLM-003.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -297,6 +301,8 @@ T-DCLM-002 implementer self-review verdict: PASS. The public names, signatures, 
 
 T-DCLM-002 first independent review verdicts: specification FAIL with Critical 0 and Important 7; quality FAIL with Critical 0, Important 5, and Minor 2. Review-remediation regressions and implementation close I-01 through I-07, I-Q01 through I-Q05, M-Q01, and M-Q02. Fresh specification and separate quality re-reviews of the complete `9126a0aa..NEW_HEAD` range remain pending. T-DCLM-003 must not begin until both pass.
 
+T-DCLM-002 first fresh specification re-review verdict: FAIL with Critical 0, Important 1, and Minor 0 over `9126a0aa..82cbb9c0`. I-01 through I-07 were confirmed closed. I-08 identified the explicit candidate modes' staged-file precondition; the focused RED/GREEN remediation above separates untracked candidate validation from tracked promoted-manifest consumption. A new complete-range specification review and a separate quality review remain pending.
+
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 
 ## Commit Ledger
@@ -314,8 +320,10 @@ Foundation logical commits:
 - `ab33b64f` — T-DCLM-001 specification-review remediation `fix(docs): enforce corpus lifecycle machine contracts`.
 - `602994f2` — T-DCLM-001 specification re-review remediation `fix(docs): honor metadata profile identity rules`.
 - `e9db5afb` — T-DCLM-001 quality-review remediation `fix(docs): harden archive snapshot validation`.
+- `43d7d149` — T-DCLM-002 `feat(validation): add document corpus lifecycle checks`.
+- `82cbb9c0` — T-DCLM-002 first-review remediation `fix(validation): harden document corpus lifecycle checks`.
 
-T-DCLM-002 implementation and generated commit identities are supplied in the controller handoff and will be appended after the commits exist; a commit cannot embed its own object ID.
+The T-DCLM-002 I-08 remediation and final evidence-closure identities are supplied in the controller handoff and appended only after those commits exist; a commit cannot embed its own object ID.
 
 Commit validation: each entry must name its work unit, review verdicts, focused
 GREEN commands, and generated fallout before closure.

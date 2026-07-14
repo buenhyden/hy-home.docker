@@ -450,6 +450,159 @@ class PromotedManifestCliTests(LifecycleTestCase):
             self.assertIn("promoted-enforcement-mismatch", mismatch.stdout)
 
 
+class CandidateManifestCliTests(LifecycleTestCase):
+    def write_config(
+        self,
+        root: pathlib.Path,
+        contract: dict[str, object],
+    ) -> tuple[pathlib.Path, pathlib.Path]:
+        profiles = root / "profiles.yaml"
+        profiles.write_text(PROFILES.read_text(encoding="utf-8"), encoding="utf-8")
+        contract_path = root / "contract.yaml"
+        contract_path.write_text(
+            yaml.safe_dump(contract, sort_keys=False),
+            encoding="utf-8",
+        )
+        return profiles, contract_path
+
+    def invoke(
+        self,
+        root: pathlib.Path,
+        profiles: pathlib.Path,
+        contract: pathlib.Path,
+        mode: str,
+        manifest: pathlib.Path | str,
+        *,
+        output: pathlib.Path | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        arguments = [
+            sys.executable,
+            str(SCRIPT),
+            "--root",
+            str(root),
+            "--profiles",
+            str(profiles),
+            "--contract",
+            str(contract),
+            "--mode",
+            mode,
+            "--manifest",
+            str(manifest),
+        ]
+        if mode == "check-manifest":
+            arguments.extend(("--wave", "foundation"))
+        else:
+            if output is None:
+                raise AssertionError("summary modes require an output fixture")
+            arguments.extend(("--output", str(output)))
+        return run(*arguments, cwd=ROOT)
+
+    def make_fixture(
+        self,
+        root: pathlib.Path,
+    ) -> tuple[pathlib.Path, pathlib.Path, pathlib.Path]:
+        init_repo(root)
+        contract = copy.deepcopy(self.contract)
+        source_paths = contract["waves"]["foundation"]["source_paths"]
+        for source_path in source_paths:
+            source = root / source_path
+            source.parent.mkdir(parents=True, exist_ok=True)
+            if source_path.endswith("archive.template.md"):
+                source.write_text(
+                    "---\nstatus: draft\n---\n\n# Archive fixture\n",
+                    encoding="utf-8",
+                )
+            else:
+                source.write_bytes((ROOT / source_path).read_bytes())
+        baseline = commit_all(root, "candidate baseline")
+        document = lifecycle.generate_manifest_skeleton(
+            root,
+            contract,
+            wave="foundation",
+            baseline_ref=baseline,
+        )
+        candidate = root / "docs/90.references/data/fixture.yaml"
+        candidate.parent.mkdir(parents=True, exist_ok=True)
+        candidate.write_text(
+            lifecycle.render_migration_manifest(document),
+            encoding="utf-8",
+        )
+        profiles, contract_path = self.write_config(root, contract)
+        return candidate, profiles, contract_path
+
+    def test_explicit_modes_accept_safe_untracked_candidate_before_staging(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            candidate, profiles, contract = self.make_fixture(root)
+            self.assertEqual(git(root, "ls-files", "--", candidate.relative_to(root)), "")
+
+            checked = self.invoke(
+                root,
+                profiles,
+                contract,
+                "check-manifest",
+                candidate.relative_to(root),
+            )
+            self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
+            summary = root / "docs/90.references/data/fixture-summary.md"
+            generated = self.invoke(
+                root,
+                profiles,
+                contract,
+                "generate-summary",
+                candidate.relative_to(root),
+                output=summary,
+            )
+            self.assertEqual(generated.returncode, 0, generated.stdout + generated.stderr)
+            self.assertTrue(summary.is_file())
+
+            summary_checked = self.invoke(
+                root,
+                profiles,
+                contract,
+                "check-summary",
+                candidate.relative_to(root),
+                output=summary,
+            )
+            self.assertEqual(
+                summary_checked.returncode,
+                0,
+                summary_checked.stdout + summary_checked.stderr,
+            )
+
+    def test_explicit_modes_reject_unsafe_candidate_paths_without_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            candidate, profiles, contract = self.make_fixture(root)
+            outside = root.parent / f"{root.name}-outside-candidate.yaml"
+            outside.write_bytes(candidate.read_bytes())
+            self.addCleanup(lambda: outside.unlink(missing_ok=True))
+            symlink = root / "docs/90.references/data/symlink.yaml"
+            symlink.symlink_to(outside)
+            unsafe_candidates: tuple[pathlib.Path | str, ...] = (
+                symlink.relative_to(root),
+                pathlib.Path("../escape.yaml"),
+                outside,
+            )
+
+            for mode in ("check-manifest", "generate-summary", "check-summary"):
+                for index, unsafe in enumerate(unsafe_candidates):
+                    with self.subTest(mode=mode, candidate=unsafe):
+                        output = root / f"unsafe-{mode}-{index}.md"
+                        result = self.invoke(
+                            root,
+                            profiles,
+                            contract,
+                            mode,
+                            unsafe,
+                            output=output if mode != "check-manifest" else None,
+                        )
+                        self.assertEqual(result.returncode, 3)
+                        self.assertFalse(output.exists())
+                        self.assertNotIn("Traceback", result.stderr)
+
+
 class ArchiveProvenanceTests(LifecycleTestCase):
     def archive_fixture(
         self, preservation_class: str = "git-history"
@@ -1610,7 +1763,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                     ),
                     mock.patch.object(
                         lifecycle,
-                        "_load_repo_migration_manifest",
+                        "_load_candidate_migration_manifest",
                         return_value=document,
                     ),
                     mock.patch.object(
@@ -1620,7 +1773,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                     ),
                     mock.patch.object(
                         lifecycle,
-                        "_repo_manifest_matches",
+                        "_candidate_manifest_matches",
                         return_value=True,
                     ),
                     mock.patch.object(
@@ -1806,7 +1959,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                     stack.enter_context(
                         mock.patch.object(
                             lifecycle,
-                            "_load_repo_migration_manifest",
+                            "_load_candidate_migration_manifest",
                             return_value=document,
                         )
                     )
@@ -1820,7 +1973,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                     stack.enter_context(
                         mock.patch.object(
                             lifecycle,
-                            "_repo_manifest_matches",
+                            "_candidate_manifest_matches",
                             return_value=True,
                         )
                     )
