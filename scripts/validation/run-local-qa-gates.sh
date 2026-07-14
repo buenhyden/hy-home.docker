@@ -79,7 +79,10 @@ Local script-backed gates:
 - scripts/hardening/check-all-hardening.sh
 - scripts/validation/check-template-security-baseline.sh
 - scripts/validation/check-quickwin-baseline.sh
-- scripts/knowledge/generate-llm-wiki-index.sh --check
+- bash scripts/validation/generate-security-automation-readiness.sh --check
+- bash scripts/validation/generate-audit-implementation-matrix.sh --check
+- bash scripts/knowledge/generate-llm-wiki-index.sh --check
+- bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 - scripts/validation/check-repo-contracts.sh
 
 CI/local-tooling gates:

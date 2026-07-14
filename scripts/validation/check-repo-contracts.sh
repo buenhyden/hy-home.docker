@@ -1252,6 +1252,12 @@ lifecycle_gate_commands = (
     f"{lifecycle_command} --mode check-contract",
     f"{lifecycle_command} --mode check-promoted",
 )
+generated_freshness_commands = (
+    "bash scripts/validation/generate-security-automation-readiness.sh --check",
+    "bash scripts/validation/generate-audit-implementation-matrix.sh --check",
+    "bash scripts/knowledge/generate-llm-wiki-index.sh --check",
+    "bash scripts/knowledge/generate-llm-wiki-coverage.sh --check",
+)
 lifecycle_surfaces = (
     "docs/99.templates/support/document-corpus-migration-contract.yaml",
     "scripts/validation/check-document-corpus-lifecycle.py",
@@ -1292,6 +1298,55 @@ else:
     for command in lifecycle_gate_commands:
         if command not in local_runner_text:
             failures.append(f"{local_runner}: missing lifecycle gate: {command}")
+
+    list_result = subprocess.run(
+        ["bash", str(local_runner), "--list"],
+        check=False,
+        cwd=pathlib.Path.cwd(),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    if list_result.returncode != 0:
+        failures.append(f"{local_runner}: --list failed")
+    else:
+        listed_generated_freshness_commands = tuple(
+            line.removeprefix("- ")
+            for line in list_result.stdout.splitlines()
+            if re.fullmatch(
+                r"- bash scripts/(?:validation|knowledge)/generate-[^ ]+\.sh --check",
+                line,
+            )
+        )
+        if listed_generated_freshness_commands != generated_freshness_commands:
+            failures.append(
+                f"{local_runner}: --list must enumerate every executed generated freshness gate"
+            )
+
+    generated_function_match = re.search(
+        r"(?ms)^run_generated_freshness_gates\(\) \{\n(.*?)^\}\n",
+        local_runner_text,
+    )
+    if generated_function_match is None:
+        failures.append(f"{local_runner}: missing run_generated_freshness_gates function")
+    else:
+        executed_generated_freshness_commands = tuple(
+            re.findall(
+                r'^\s*run_step\s+"[^"]+"\s+(bash scripts/(?:validation|knowledge)/generate-[^ ]+\.sh --check)\s*$',
+                generated_function_match.group(1),
+                flags=re.MULTILINE,
+            )
+        )
+        if executed_generated_freshness_commands != generated_freshness_commands:
+            failures.append(
+                f"{local_runner}: generated freshness execution must match the approved gate set"
+            )
+        if list_result.returncode == 0 and (
+            listed_generated_freshness_commands != executed_generated_freshness_commands
+        ):
+            failures.append(
+                f"{local_runner}: generated freshness --list/execution parity mismatch"
+            )
 
 scripts_readme = pathlib.Path("scripts/README.md")
 if not scripts_readme.is_file():
