@@ -2146,8 +2146,19 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         baseline = commit_all(root, "archive source baseline")
         blob = git(root, "rev-parse", f"{baseline}:{source_relative.as_posix()}")
         source.unlink()
-        replacement = root / "docs/90.references/replacement.md"
-        replacement.write_text("# Replacement\n", encoding="utf-8")
+        replacement = root / "docs/90.references/data/replacement.md"
+        replacement.parent.mkdir(parents=True, exist_ok=True)
+        replacement.write_text(
+            "---\nstatus: active\nartifact_id: reference:replacement\n"
+            "artifact_type: reference\nparent_ids: []\n---\n\n"
+            "# Replacement\n\n## Overview\nCurrent replacement.\n\n"
+            "## Purpose\nCanonical replacement.\n\n## Scope\nCurrent scope.\n\n"
+            "## Facts and Definitions\nReplacement truth.\n\n"
+            "## Sources\nRepository evidence.\n\n## Maintenance\nActive.\n\n"
+            "## Related Documents\nNone.\n",
+            encoding="utf-8",
+        )
+        commit_all(root, "track canonical replacement")
         target_relative = pathlib.PurePosixPath(
             "docs/98.archive/90.references/source.md"
         )
@@ -2165,7 +2176,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
             "archived_commit": baseline,
             "archived_blob": blob,
             "preservation_class": "git-history",
-            "current_replacement": "docs/90.references/replacement.md",
+            "current_replacement": "docs/90.references/data/replacement.md",
         }
         target.write_text(
             "---\n"
@@ -2182,7 +2193,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
             status_after="archived",
             parent_ids=(),
             disposition="archive",
-            canonical_replacement="docs/90.references/replacement.md",
+            canonical_replacement="docs/90.references/data/replacement.md",
             active_consumers=(),
             preservation_class="git-history",
             evidence=lifecycle.ManifestEvidence(
@@ -2306,6 +2317,206 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         }
         self.assertIn("manifest-transition-invalid", reverse_codes)
 
+    def test_archive_binds_manifest_baseline_blob_and_dynamic_replacement_truth(self) -> None:
+        temporary, root, baseline, row, target = self._archive_fixture()
+        self.addCleanup(temporary.cleanup)
+        original_text = target.read_text(encoding="utf-8")
+        original = yaml.safe_load(original_text.split("---", 2)[1])
+
+        archived_bytes = run(
+            "git",
+            "cat-file",
+            "blob",
+            str(original["archived_blob"]),
+            cwd=root,
+        ).stdout.encode("utf-8")
+        digest = hashlib.sha256(archived_bytes).hexdigest()
+        snapshot_relative = pathlib.PurePosixPath(
+            f"docs/98.archive/evidence/{digest}.md.snapshot"
+        )
+        snapshot = root / snapshot_relative
+        snapshot.parent.mkdir(parents=True, exist_ok=True)
+        snapshot.write_bytes(archived_bytes)
+        immutable_values = {
+            **original,
+            "archive_disposition": "evidence-preserve",
+            "preservation_class": "immutable-snapshot",
+            "snapshot_path": snapshot_relative.as_posix(),
+            "content_sha256": digest,
+            "snapshot_reason": "Preserve exact evidence bytes.",
+        }
+        target.write_text(
+            "---\n"
+            + yaml.safe_dump(immutable_values, sort_keys=False)
+            + "---\n\n# Archived Source\n",
+            encoding="utf-8",
+        )
+        commit_all(root, "track immutable archive snapshot")
+        immutable_row = dataclasses.replace(
+            row, preservation_class="immutable-snapshot"
+        )
+        self.assertEqual(self._archive_codes(root, baseline, immutable_row), set())
+        target.write_text(original_text, encoding="utf-8")
+
+        source_path = row.source_path.as_posix()
+        newer_source = root / source_path
+        newer_source.parent.mkdir(parents=True, exist_ok=True)
+        newer_source.write_text(
+            "---\nstatus: active\nartifact_id: reference:source\n"
+            "artifact_type: reference\nparent_ids: []\n---\n\n"
+            "# Source\n\nUnique newer baseline evidence.\n",
+            encoding="utf-8",
+        )
+        newer_baseline = commit_all(root, "newer source boundary")
+        newer_source.unlink()
+        git(root, "add", "-u")
+        self.assertIn(
+            "manifest-archive-baseline-blob-mismatch",
+            self._archive_codes(root, newer_baseline, row),
+        )
+        self.assertNotIn(
+            "manifest-archive-baseline-blob-mismatch",
+            self._archive_codes(root, baseline, row),
+        )
+
+        variants = {
+            "superseded": "docs/90.references/data/replacement.md",
+            "duplicate": "docs/90.references/data/replacement.md",
+            "conflict": "docs/90.references/data/replacement.md",
+            "withdrawn": None,
+            "evidence-preserve": None,
+        }
+        for disposition, replacement in variants.items():
+            with self.subTest(disposition=disposition):
+                values = {
+                    **original,
+                    "archive_disposition": disposition,
+                }
+                if replacement is None:
+                    values.pop("current_replacement", None)
+                else:
+                    values["current_replacement"] = replacement
+                target.write_text(
+                    "---\n" + yaml.safe_dump(values, sort_keys=False) + "---\n\n# Archived Source\n",
+                    encoding="utf-8",
+                )
+                candidate = dataclasses.replace(row, canonical_replacement=replacement)
+                self.assertEqual(self._archive_codes(root, baseline, candidate), set())
+
+        invalid = {
+            "superseded": None,
+            "duplicate": None,
+            "conflict": None,
+            "withdrawn": "docs/90.references/data/replacement.md",
+        }
+        for disposition, replacement in invalid.items():
+            with self.subTest(invalid_disposition=disposition):
+                values = {**original, "archive_disposition": disposition}
+                if replacement is None:
+                    values.pop("current_replacement", None)
+                else:
+                    values["current_replacement"] = replacement
+                target.write_text(
+                    "---\n" + yaml.safe_dump(values, sort_keys=False) + "---\n\n# Archived Source\n",
+                    encoding="utf-8",
+                )
+                candidate = dataclasses.replace(row, canonical_replacement=replacement)
+                codes = self._archive_codes(root, baseline, candidate)
+                self.assertTrue(
+                    {"manifest-replacement-required", "manifest-replacement-forbidden"}
+                    & codes,
+                    (disposition, codes),
+                )
+
+    def test_archive_replacement_resolves_unique_current_canonical_document(self) -> None:
+        temporary, root, baseline, row, target = self._archive_fixture()
+        self.addCleanup(temporary.cleanup)
+        values = yaml.safe_load(target.read_text(encoding="utf-8").split("---", 2)[1])
+
+        self.assertEqual(self._archive_codes(root, baseline, row), set())
+
+        cases = {
+            "missing": "docs/90.references/missing.md",
+            "untracked": "docs/90.references/untracked.md",
+            "self": row.source_path.as_posix(),
+            "target": row.target_path.as_posix(),
+        }
+        (root / "docs/90.references/untracked.md").write_text(
+            (root / "docs/90.references/data/replacement.md").read_text(encoding="utf-8")
+            .replace("reference:replacement", "reference:untracked"),
+            encoding="utf-8",
+        )
+        for name, replacement in cases.items():
+            with self.subTest(case=name):
+                values["current_replacement"] = replacement
+                target.write_text(
+                    "---\n" + yaml.safe_dump(values, sort_keys=False) + "---\n\n# Archived Source\n",
+                    encoding="utf-8",
+                )
+                codes = self._archive_codes(
+                    root,
+                    baseline,
+                    dataclasses.replace(row, canonical_replacement=replacement),
+                )
+                self.assertIn("manifest-replacement-invalid", codes)
+
+        replacement_path = root / "docs/90.references/data/replacement.md"
+        canonical = replacement_path.read_text(encoding="utf-8")
+        outside = pathlib.Path(temporary.name).parent / (
+            pathlib.Path(temporary.name).name + "-outside-replacement"
+        )
+        outside.write_text(canonical, encoding="utf-8")
+        self.addCleanup(lambda: outside.unlink(missing_ok=True))
+        replacement_path.unlink()
+        replacement_path.symlink_to(outside)
+        values["current_replacement"] = "docs/90.references/data/replacement.md"
+        target.write_text(
+            "---\n" + yaml.safe_dump(values, sort_keys=False) + "---\n\n# Archived Source\n",
+            encoding="utf-8",
+        )
+        with self.assertRaises(lifecycle._CorpusSafetyError):
+            self._archive_codes(root, baseline, row)
+        replacement_path.unlink()
+        replacement_path.write_text(canonical, encoding="utf-8")
+        for name, mutation in {
+            "wrong-profile": canonical.replace(
+                "artifact_type: reference", "artifact_type: archive"
+            ),
+            "wrong-status": canonical.replace("status: active", "status: draft"),
+            "wrong-body": canonical.replace("## Sources", "### Sources"),
+        }.items():
+            with self.subTest(case=name):
+                replacement_path.write_text(mutation, encoding="utf-8")
+                values["current_replacement"] = "docs/90.references/data/replacement.md"
+                target.write_text(
+                    "---\n" + yaml.safe_dump(values, sort_keys=False) + "---\n\n# Archived Source\n",
+                    encoding="utf-8",
+                )
+                self.assertIn(
+                    "manifest-replacement-invalid",
+                    self._archive_codes(root, baseline, row),
+                )
+        replacement_path.write_text(canonical, encoding="utf-8")
+        duplicate = root / "docs/90.references/data/duplicate.md"
+        duplicate.parent.mkdir(parents=True, exist_ok=True)
+        duplicate.write_text(canonical, encoding="utf-8")
+        commit_all(root, "duplicate replacement identity")
+        values["current_replacement"] = "reference:replacement"
+        target.write_text(
+            "---\n" + yaml.safe_dump(values, sort_keys=False) + "---\n\n# Archived Source\n",
+            encoding="utf-8",
+        )
+        self.assertIn(
+            "manifest-replacement-invalid",
+            self._archive_codes(
+                root,
+                baseline,
+                dataclasses.replace(
+                    row, canonical_replacement="reference:replacement"
+                ),
+            ),
+        )
+
     def _partition_fixture(
         self,
         *,
@@ -2337,10 +2548,25 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         )
         plan = root / plan_relative
         plan.parent.mkdir(parents=True, exist_ok=True)
+        parent = root / "docs/03.specs/partition/spec.md"
+        parent.parent.mkdir(parents=True, exist_ok=True)
+        parent.write_text(
+            "---\nstatus: active\nartifact_id: spec:partition\n"
+            "artifact_type: spec\nparent_ids: [spec:root]\n---\n\n# Partition Spec\n",
+            encoding="utf-8",
+        )
         valid_plan = (
             "---\nstatus: active\nartifact_id: plan:partition\n"
             "artifact_type: plan\nparent_ids: [spec:partition]\n---\n\n"
-            "# Document Partition Plan\n"
+            "# Document Partition Plan\n\n"
+            "## Overview\nPartition approval.\n\n"
+            "## Context and Inputs\nValidated corpus.\n\n"
+            "## Goals and Non-goals\nBounded partition.\n\n"
+            "## Work Breakdown\nApply the partition.\n\n"
+            "## Verification Plan\nRun lifecycle validation.\n\n"
+            "## Risks and Rollback\nRevert the migration commit.\n\n"
+            "## Completion Criteria\nAll budgets pass.\n\n"
+            "## Related Documents\nParent Spec.\n"
         )
         if plan_state == "missing":
             pass
@@ -2472,6 +2698,61 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         )
         self.assertNotIn("directory-budget-blocked", {item.code for item in approved})
 
+    def test_partition_plan_uses_canonical_metadata_relations_and_body_role(self) -> None:
+        temporary, root, _baseline, row, _records = self._partition_fixture(
+            plan_state="tracked"
+        )
+        self.addCleanup(temporary.cleanup)
+        plan = root / row.partition_plan.as_posix()
+        canonical = plan.read_text(encoding="utf-8")
+        wrong_parent = root / "docs/90.references/data/wrong-parent.md"
+        wrong_parent.parent.mkdir(parents=True, exist_ok=True)
+        wrong_parent.write_text(
+            "---\nstatus: active\nartifact_id: reference:wrong-parent\n"
+            "artifact_type: reference\nparent_ids: []\n---\n\n# Wrong Parent\n",
+            encoding="utf-8",
+        )
+        commit_all(root, "track wrong parent type")
+        cases = {
+            "invalid-optional": canonical.replace(
+                "parent_ids: [spec:partition]",
+                "parent_ids: [spec:partition]\nsupersedes: invalid-scalar",
+            ),
+            "unresolved-parent": canonical.replace(
+                "parent_ids: [spec:partition]", "parent_ids: [spec:missing]"
+            ),
+            "self-parent": canonical.replace(
+                "parent_ids: [spec:partition]", "parent_ids: [plan:partition]"
+            ),
+            "wrong-parent-type": canonical.replace(
+                "parent_ids: [spec:partition]",
+                "parent_ids: [reference:wrong-parent]",
+            ),
+            "frontmatter-order": canonical.replace(
+                "status: active\nartifact_id: plan:partition\nartifact_type: plan",
+                "artifact_type: plan\nstatus: active\nartifact_id: plan:partition",
+            ),
+            "placeholder": canonical.replace(
+                "Partition approval.", "{{overview}}"
+            ),
+            "missing-heading": canonical.replace("## Work Breakdown", "### Work Breakdown"),
+            "forbidden-heading": canonical + "\n## Verification Evidence\nNot permitted.\n",
+        }
+        for name, candidate in cases.items():
+            with self.subTest(case=name):
+                plan.write_text(candidate, encoding="utf-8")
+                codes = {
+                    item.code
+                    for item in lifecycle._partition_plan_findings(
+                        root, self.profiles, row
+                    )
+                }
+                self.assertIn("manifest-partition-plan-profile-invalid", codes)
+        plan.write_text(canonical, encoding="utf-8")
+        self.assertEqual(
+            lifecycle._partition_plan_findings(root, self.profiles, row), []
+        )
+
     def test_directory_budget_counts_only_immediate_eligible_markdown_leaves(self) -> None:
         records = tuple(
             self.record(f"docs/04.execution/tasks/{index:03}.md")
@@ -2498,6 +2779,236 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 for item in findings
             )
         )
+
+    def test_impacted_cli_snapshots_safe_untracked_records_and_blocks_150th_leaf(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_repo(root)
+            git(root, "commit", "--allow-empty", "-q", "-m", "empty baseline")
+            baseline = git(root, "rev-parse", "HEAD")
+            candidate = root / "docs/90.references/data/new.md"
+            candidate.parent.mkdir(parents=True)
+            valid = (
+                "---\nstatus: active\nartifact_id: reference:new\n"
+                "artifact_type: reference\nparent_ids: []\n---\n\n# New Reference\n"
+            )
+            candidate.write_text(valid, encoding="utf-8")
+            accepted = run(
+                sys.executable,
+                str(SCRIPT),
+                "--root",
+                str(root),
+                "--mode",
+                "check-impacted",
+                "--base-ref",
+                baseline,
+                cwd=ROOT,
+            )
+            self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
+            self.assertIn("selected=1 violations=0", accepted.stdout)
+            candidate.write_text(
+                valid.replace("status: active", "status: invalid-status"),
+                encoding="utf-8",
+            )
+            rejected = run(
+                sys.executable,
+                str(SCRIPT),
+                "--root",
+                str(root),
+                "--mode",
+                "check-impacted",
+                "--base-ref",
+                baseline,
+                cwd=ROOT,
+            )
+            self.assertEqual(rejected.returncode, 1, rejected.stdout + rejected.stderr)
+            self.assertIn("selected=1 violations=", rejected.stdout)
+
+        for attack in ("final", "intermediate"):
+            with self.subTest(attack=attack), tempfile.TemporaryDirectory() as directory:
+                fixture = pathlib.Path(directory)
+                root = fixture / "repository"
+                outside = fixture / "outside"
+                root.mkdir()
+                outside.mkdir()
+                init_repo(root)
+                git(root, "commit", "--allow-empty", "-q", "-m", "empty baseline")
+                marker = "outside-untracked-marker"
+                (outside / "leak.md").write_text(marker, encoding="utf-8")
+                target = root / "docs/90.references/data/leak.md"
+                target.parent.mkdir(parents=True)
+                if attack == "final":
+                    target.symlink_to(outside / "leak.md")
+                else:
+                    target.parent.joinpath("nested").symlink_to(
+                        outside, target_is_directory=True
+                    )
+                result = run(
+                    sys.executable,
+                    str(SCRIPT),
+                    "--root",
+                    str(root),
+                    "--mode",
+                    "check-impacted",
+                    "--base-ref",
+                    "HEAD",
+                    cwd=ROOT,
+                )
+                rendered = result.stdout + result.stderr
+                self.assertEqual(result.returncode, 3, rendered)
+                self.assertNotIn(marker, rendered)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_repo(root)
+            budget = root / "docs/90.references/data/budget"
+            budget.mkdir(parents=True)
+            for index in range(148):
+                (budget / f"{index:03}.md").write_text(
+                    "---\nstatus: active\n"
+                    f"artifact_id: reference:budget-{index:03}\n"
+                    "artifact_type: reference\nparent_ids: []\n---\n\n# Budget\n",
+                    encoding="utf-8",
+                )
+            base_148 = commit_all(root, "148 leaves")
+            leaf_149 = budget / "148.md"
+            leaf_149.write_text(
+                "---\nstatus: active\nartifact_id: reference:budget-148\n"
+                "artifact_type: reference\nparent_ids: []\n---\n\n# Budget\n",
+                encoding="utf-8",
+            )
+            before_limit = run(
+                sys.executable,
+                str(SCRIPT),
+                "--root",
+                str(root),
+                "--mode",
+                "check-impacted",
+                "--base-ref",
+                base_148,
+                cwd=ROOT,
+            )
+            self.assertEqual(before_limit.returncode, 0, before_limit.stdout + before_limit.stderr)
+            base_149 = commit_all(root, "149 leaves")
+            (budget / "149.md").write_text(
+                "---\nstatus: active\nartifact_id: reference:budget-149\n"
+                "artifact_type: reference\nparent_ids: []\n---\n\n# Budget\n",
+                encoding="utf-8",
+            )
+            at_limit = run(
+                sys.executable,
+                str(SCRIPT),
+                "--root",
+                str(root),
+                "--mode",
+                "check-impacted",
+                "--base-ref",
+                base_149,
+                cwd=ROOT,
+            )
+            self.assertEqual(at_limit.returncode, 1, at_limit.stdout + at_limit.stderr)
+            self.assertIn("directory-budget-blocked", at_limit.stdout)
+
+    def test_cli_diagnostics_never_emit_metadata_payloads_across_modes(self) -> None:
+        cases = (
+            ("report-full", "sk-do-not-echo-1234567890"),
+            ("check-full", "password=do-not-echo"),
+            ("check-impacted", "credential=do-not-echo"),
+            ("check-archive", "-----BEGIN PRIVATE KEY-----"),
+            ("generate-archive-ledger", "authorization: Bearer do-not-echo-value"),
+            ("check-archive-ledger", ".zsh_history"),
+            ("generate-snapshot-manifest", "2026-07-14T10:00:00 ERROR do-not-echo"),
+            ("check-snapshot-manifest", "token=do-not-echo"),
+        )
+        for mode, marker in cases:
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                init_repo(root)
+                git(root, "commit", "--allow-empty", "-q", "-m", "empty baseline")
+                baseline = git(root, "rev-parse", "HEAD")
+                path = root / "docs/90.references/data/diagnostic.md"
+                path.parent.mkdir(parents=True)
+                path.write_text(
+                    "---\n"
+                    + yaml.safe_dump(
+                        {
+                            "status": "active",
+                            "artifact_id": "reference:diagnostic",
+                            "artifact_type": "reference",
+                            "parent_ids": [marker],
+                        },
+                        sort_keys=False,
+                    )
+                    + "---\n\n# Diagnostic\n",
+                    encoding="utf-8",
+                )
+                commit_all(root, "track diagnostic")
+                output = root / "output.md"
+                arguments = [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--root",
+                    str(root),
+                    "--mode",
+                    mode,
+                ]
+                if mode == "check-impacted":
+                    arguments.extend(("--base-ref", baseline))
+                if mode in {
+                    "generate-archive-ledger",
+                    "check-archive-ledger",
+                    "generate-snapshot-manifest",
+                    "check-snapshot-manifest",
+                }:
+                    arguments.extend(("--output", str(output)))
+                    if mode.startswith("check-"):
+                        output.write_text("sentinel\n", encoding="utf-8")
+                result = run(*arguments, cwd=ROOT)
+                rendered = result.stdout + result.stderr
+                self.assertNotIn(marker, rendered)
+                self.assertNotIn(marker, output.read_text(encoding="utf-8") if output.exists() else "")
+                if mode in {"report-full", "check-full", "check-impacted"}:
+                    self.assertEqual(result.returncode, 3, rendered)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_repo(root)
+            path = root / "docs/90.references/data/ordinary.md"
+            path.parent.mkdir(parents=True)
+            missing_id = "reference:ordinary-unresolved-id"
+            path.write_text(
+                "---\nstatus: active\nartifact_id: reference:ordinary\n"
+                f"artifact_type: reference\nparent_ids: [{missing_id}]\n---\n\n# Ordinary\n",
+                encoding="utf-8",
+            )
+            commit_all(root)
+            result = run(
+                sys.executable,
+                str(SCRIPT),
+                "--root",
+                str(root),
+                "--mode",
+                "report-full",
+                cwd=ROOT,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("unresolved-parent", result.stdout)
+            self.assertNotIn(missing_id, result.stdout + result.stderr)
+
+    def test_generated_markdown_table_cells_escape_pipe_and_control_characters(self) -> None:
+        record = self.record(
+            "docs/98.archive/a|b.md",
+            "archive",
+            archived_from="docs/source|name.md\nnext-row",
+            archive_disposition="withdrawn",
+            preservation_class="git-history",
+            archived_commit="a" * 40,
+            archived_blob="b" * 40,
+        )
+        ledger = lifecycle.render_archive_ledger((record,))
+        self.assertIn("docs/98.archive/a\\|b.md", ledger)
+        self.assertIn("docs/source\\|name.md next-row", ledger)
+        self.assertNotIn("docs/source|name.md\nnext-row", ledger)
 
 
 if __name__ == "__main__":

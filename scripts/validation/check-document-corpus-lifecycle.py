@@ -236,6 +236,7 @@ SAFETY_FINDING_CODES = frozenset(
         "invalid-snapshot-path",
         "invalid-content-sha256",
         "archive-snapshot-disposition-forbidden",
+        "manifest-archive-baseline-blob-mismatch",
         "frontmatter-malformed-yaml",
         "frontmatter-duplicate-key",
         "exception-schema-invalid",
@@ -252,6 +253,7 @@ SAFETY_FINDING_CODES = frozenset(
         "exception-static-invalid",
         "exception-safety-code-forbidden",
         "contract-invalid",
+        "diagnostic-redaction-unsafe",
         "internal-error",
     }
 )
@@ -277,6 +279,7 @@ KNOWN_FINDING_CODES = frozenset(
         "manifest-preservation-required",
         "manifest-replacement-required",
         "manifest-replacement-forbidden",
+        "manifest-replacement-invalid",
         "manifest-serialization-stale",
         "directory-budget-warning",
         "directory-budget-blocked",
@@ -340,7 +343,13 @@ def _safe_path(value: object) -> bool:
 
 
 def _lexically_safe_path(value: object) -> bool:
-    if not isinstance(value, str) or not value or "\\" in value:
+    if (
+        not isinstance(value, str)
+        or not value
+        or "\\" in value
+        or "|" in value
+        or any(ord(character) < 32 or ord(character) == 127 for character in value)
+    ):
         return False
     path = pathlib.PurePosixPath(value)
     return (
@@ -788,6 +797,116 @@ def _profile_required_fields(
     return set(required) if isinstance(required, list) else set()
 
 
+def _blob_at_commit_path(root: pathlib.Path, commit: str, path: str) -> str | None:
+    """Resolve one verified regular blob identity without reading its payload."""
+
+    if not _safe_path(path) or not _baseline_regular_blob(root, commit, path):
+        return None
+    result = _run_git(root, ["rev-parse", f"{commit}:{path}"])
+    object_id = result.stdout.strip() if result.returncode == 0 else ""
+    return object_id if OBJECT_ID.fullmatch(object_id) else None
+
+
+def _canonical_current_snapshot(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+) -> tuple[tuple[Record, ...], dict[str, bytes]]:
+    """Return one tracked, no-follow corpus snapshot for canonical proofs."""
+
+    return _safe_corpus_snapshot(root, profiles, include_untracked=False)
+
+
+def _canonical_replacement_findings(
+    profiles: dict[str, object],
+    *,
+    source: str,
+    target: str,
+    replacement: str,
+    records: collections.abc.Sequence[Record],
+    payloads: collections.abc.Mapping[str, bytes],
+) -> list[Finding]:
+    """Resolve one unique current canonical replacement from held corpus bytes."""
+
+    candidates: list[Record] = []
+    by_path = {record.path.as_posix(): record for record in records}
+    path_candidate = by_path.get(replacement) if _safe_path(replacement) else None
+    if path_candidate is not None:
+        candidates = [path_candidate]
+    else:
+        candidates = [
+            record
+            for record in records
+            if record.metadata.get("artifact_id") == replacement
+        ]
+    if len(candidates) != 1:
+        return [
+            _finding(
+                source,
+                "manifest-replacement-invalid",
+                "canonical replacement must resolve uniquely",
+            )
+        ]
+    candidate = candidates[0]
+    candidate_path = candidate.path.as_posix()
+    if candidate_path in {source, target}:
+        return [
+            _finding(
+                source,
+                "manifest-replacement-invalid",
+                "canonical replacement must be distinct from source and target",
+            )
+        ]
+    if (
+        candidate.artifact_type
+        in {"archive", "generated", "readme", "repo-support", "template-source", "unsupported"}
+        or candidate.metadata.get("status") not in {"active", "completed"}
+    ):
+        return [
+            _finding(
+                source,
+                "manifest-replacement-invalid",
+                "canonical replacement is not an eligible current document",
+            )
+        ]
+    payload = payloads.get(candidate_path)
+    if payload is None:
+        return [
+            _finding(
+                source,
+                "manifest-replacement-invalid",
+                "canonical replacement is not in the held tracked corpus",
+            )
+        ]
+    try:
+        text = payload.decode("utf-8")
+    except UnicodeDecodeError:
+        return [
+            _finding(
+                source,
+                "manifest-replacement-invalid",
+                "canonical replacement is not valid UTF-8",
+            )
+        ]
+    manifest = metadata.build_manifest(records)
+    errors = [
+        finding
+        for finding in (
+            *metadata.validate_record(candidate, profiles, manifest),
+            *metadata.validate_body_contract(candidate, text, profiles, True),
+        )
+        if finding.severity == "error"
+    ]
+    if errors:
+        return [
+            _finding(
+                source,
+                "manifest-replacement-invalid",
+                "canonical replacement fails its metadata or body contract",
+            )
+        ]
+    return []
+
+
 def validate_migration_manifest(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -875,8 +994,15 @@ def validate_migration_manifest(
     registered_types = set(profile_map) if isinstance(profile_map, dict) else set()
     dispositions = set(contract.get("manifest", {}).get("dispositions", []))  # type: ignore[union-attr]
     preservation_classes = set(contract.get("archive", {}).get("preservation_classes", []))  # type: ignore[union-attr]
+    canonical_records: tuple[Record, ...] = ()
+    canonical_payloads: dict[str, bytes] = {}
+    if any(row.canonical_replacement is not None for row in document.entries):
+        canonical_records, canonical_payloads = _canonical_current_snapshot(
+            root, profiles
+        )
     for row_index, row in enumerate(document.entries):
         source = row.source_path.as_posix()
+        archive_disposition: str | None = None
         if not _safe_path(source):
             findings.append(
                 _finding(
@@ -1125,6 +1251,14 @@ def validate_migration_manifest(
                         )
                     if row.disposition == "archive":
                         archive_findings: list[Finding] = []
+                        archive_disposition_value = target_metadata.get(
+                            "archive_disposition"
+                        )
+                        archive_disposition = (
+                            archive_disposition_value
+                            if isinstance(archive_disposition_value, str)
+                            else None
+                        )
                         required_archive = _profile_required_fields(
                             profiles, "archive"
                         )
@@ -1214,6 +1348,61 @@ def validate_migration_manifest(
                         archive_findings.extend(
                             validate_archive_provenance(root, target_record)
                         )
+                        archived_blob = target_metadata.get("archived_blob")
+                        baseline_blob = (
+                            _blob_at_commit_path(root, baseline, source)
+                            if baseline is not None
+                            else None
+                        )
+                        if (
+                            baseline_blob is None
+                            or archived_blob != baseline_blob
+                        ):
+                            archive_findings.append(
+                                _finding(
+                                    target,
+                                    "manifest-archive-baseline-blob-mismatch",
+                                    "archive provenance does not preserve the manifest baseline blob",
+                                )
+                            )
+                        required_replacement_dispositions = {
+                            "superseded",
+                            "duplicate",
+                            "conflict",
+                        }
+                        if (
+                            archive_disposition in required_replacement_dispositions
+                            and row.canonical_replacement is None
+                        ):
+                            archive_findings.append(
+                                _finding(
+                                    source,
+                                    "manifest-replacement-required",
+                                    "archive disposition requires a canonical replacement",
+                                )
+                            )
+                        if (
+                            archive_disposition == "withdrawn"
+                            and row.canonical_replacement is not None
+                        ):
+                            archive_findings.append(
+                                _finding(
+                                    source,
+                                    "manifest-replacement-forbidden",
+                                    "withdrawn archive forbids a canonical replacement",
+                                )
+                            )
+                        if row.canonical_replacement is not None:
+                            archive_findings.extend(
+                                _canonical_replacement_findings(
+                                    profiles,
+                                    source=source,
+                                    target=target,
+                                    replacement=row.canonical_replacement,
+                                    records=canonical_records,
+                                    payloads=canonical_payloads,
+                                )
+                            )
                         findings.extend(archive_findings)
                         evidence_complete = all(
                             values
@@ -1243,7 +1432,7 @@ def validate_migration_manifest(
                     "status transition is not canonical",
                 )
             )
-        if row.disposition in {"merge", "archive"} and not row.canonical_replacement:
+        if row.disposition == "merge" and not row.canonical_replacement:
             findings.append(
                 _finding(source, "manifest-replacement-required", "destructive row requires a replacement")
             )
@@ -1266,7 +1455,15 @@ def validate_migration_manifest(
                     _finding(source, "manifest-evidence-path-invalid", "evidence path is not repository-safe")
                 )
         if row.partition_plan is not None:
-            findings.extend(_partition_plan_findings(root, profiles, row))
+            findings.extend(
+                _partition_plan_findings(
+                    root,
+                    profiles,
+                    row,
+                    records=canonical_records if canonical_payloads else None,
+                    payloads=canonical_payloads if canonical_payloads else None,
+                )
+            )
         deterministic_lists: tuple[tuple[object, ...], ...] = (
             row.parent_ids,
             row.active_consumers,
@@ -1421,6 +1618,9 @@ def _partition_plan_findings(
     root: pathlib.Path,
     profiles: dict[str, object],
     row: MigrationManifestRow,
+    *,
+    records: collections.abc.Sequence[Record] | None = None,
+    payloads: collections.abc.Mapping[str, bytes] | None = None,
 ) -> list[Finding]:
     """Prove a partition approval against a tracked canonical Plan."""
 
@@ -1438,7 +1638,25 @@ def _partition_plan_findings(
                 "partition plan must be a safe tracked regular Stage 04 Plan",
             )
         ]
-    payload = _read_regular_repo_bytes(root, partition, require_tracked=True)
+    tracked_payload = _read_regular_repo_bytes(
+        root, partition, require_tracked=True
+    )
+    if tracked_payload is None:
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-invalid",
+                "partition plan must be a safe tracked regular Stage 04 Plan",
+            )
+        ]
+    if records is None or payloads is None:
+        current_records, current_payloads = _canonical_current_snapshot(
+            root, profiles
+        )
+    else:
+        current_records = tuple(records)
+        current_payloads = dict(payloads)
+    payload = current_payloads.get(partition)
     if payload is None:
         return [
             _finding(
@@ -1457,31 +1675,36 @@ def _partition_plan_findings(
                 "partition plan must be a safe tracked regular Stage 04 Plan",
             )
         ]
-    plan_record = metadata._record_from_text(pathlib.Path(partition), text)
-    profile_map = profiles.get("profiles")
-    plan_profile = profile_map.get("plan") if isinstance(profile_map, dict) else None
-    if not isinstance(plan_profile, dict):
-        raise ProfileError("canonical Plan profile is unavailable")
-    required = set(plan_profile.get("required", []))
-    optional = set(plan_profile.get("optional", []))
-    forbidden = set(plan_profile.get("forbidden", []))
+    by_path = {record.path.as_posix(): record for record in current_records}
+    plan_record = by_path.get(partition)
+    if plan_record is None:
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-invalid",
+                "partition plan must be a safe tracked regular Stage 04 Plan",
+            )
+        ]
     values = plan_record.metadata
-    parent_ids = values.get("parent_ids")
-    profile_valid = (
-        plan_record.parse_error is None
-        and plan_record.frontmatter_present
-        and plan_record.artifact_type == "plan"
-        and values.get("artifact_type") == "plan"
-        and all(key in values and values.get(key) not in (None, "") for key in required)
-        and not (set(values) & forbidden)
-        and not (set(values) - required - optional - forbidden)
-        and metadata._valid_metadata_artifact_id(values.get("artifact_id"))
-        and isinstance(parent_ids, list)
-        and bool(parent_ids)
-        and all(isinstance(item, str) and item.strip() for item in parent_ids)
-        and len(parent_ids) == len(set(parent_ids))
-    )
-    if not profile_valid:
+    plan_errors = [
+        finding
+        for finding in (
+            *metadata.validate_record(
+                plan_record,
+                profiles,
+                metadata.build_manifest(current_records),
+            ),
+            *metadata.validate_body_contract(plan_record, text, profiles, True),
+        )
+        if finding.severity == "error"
+    ]
+    if (
+        plan_record.parse_error is not None
+        or not plan_record.frontmatter_present
+        or plan_record.artifact_type != "plan"
+        or values.get("artifact_type") != "plan"
+        or plan_errors
+    ):
         return [
             _finding(
                 source,
@@ -1949,7 +2172,7 @@ def render_archive_ledger(records: collections.abc.Sequence[Record]) -> str:
             _safe_archive_value(record, "archived_commit") or "",
             _safe_archive_value(record, "archived_blob") or "",
         ]
-        lines.append("| " + " | ".join(values) + " |")
+        lines.append("| " + " | ".join(_escape_markdown_cell(value) for value in values) + " |")
     return "\n".join(lines) + "\n"
 
 
@@ -1974,8 +2197,16 @@ def render_snapshot_manifest(records: collections.abc.Sequence[Record]) -> str:
             _safe_archive_value(record, "content_sha256") or "",
             _safe_archive_value(record, "archived_blob") or "",
         ]
-        lines.append("| " + " | ".join(values) + " |")
+        lines.append("| " + " | ".join(_escape_markdown_cell(value) for value in values) + " |")
     return "\n".join(lines) + "\n"
+
+
+def _escape_markdown_cell(value: object) -> str:
+    """Escape deterministic generated-table content without admitting row injection."""
+
+    text = str(value)
+    text = "".join(" " if ord(character) < 32 or ord(character) == 127 else character for character in text)
+    return text.replace("|", "\\|")
 
 
 def _exception_failure_code(
@@ -2194,7 +2425,8 @@ def _render_summary(document: MigrationManifestDocument) -> str:
         lines.append(
             "| "
             + " | ".join(
-                (
+                _escape_markdown_cell(value)
+                for value in (
                     row.source_path.as_posix(),
                     _safe_path_text(row.target_path) or "",
                     row.disposition,
@@ -2208,11 +2440,13 @@ def _render_summary(document: MigrationManifestDocument) -> str:
 
 
 def _write_output(path: pathlib.Path, content: str) -> None:
+    _assert_safe_generated_output(content)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8", newline="\n")
 
 
 def _check_output(path: pathlib.Path, content: str) -> bool:
+    _assert_safe_generated_output(content)
     try:
         return path.read_bytes() == content.encode("utf-8")
     except OSError:
@@ -2274,16 +2508,74 @@ def _tracked_corpus_paths(
     return tuple(path for path in sorted(candidates) if path not in excluded)
 
 
+def _untracked_corpus_paths(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+) -> tuple[str, ...]:
+    """Discover safe untracked Markdown and reject untracked symlink boundaries."""
+
+    result = _run_git(
+        root,
+        ["ls-files", "-z", "--others", "--exclude-standard"],
+        text=False,
+    )
+    if result.returncode != 0:
+        raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid")
+    common = profiles.get("common")
+    excluded_values = common.get("inventory_excludes") if isinstance(common, dict) else None
+    excluded = set(excluded_values) if isinstance(excluded_values, list) else set()
+    target_prefixes = tuple(metadata.TARGET_MARKDOWN_PREFIXES)
+    candidates: list[str] = []
+    for raw_path in result.stdout.split(b"\0"):
+        if not raw_path:
+            continue
+        try:
+            path = raw_path.decode("utf-8")
+        except UnicodeDecodeError:
+            raise _CorpusSafetyError(
+                "corpus", "corpus-markdown-path-invalid"
+            ) from None
+        if not path.startswith(target_prefixes):
+            continue
+        if not _safe_path(path):
+            raise _CorpusSafetyError(path, "corpus-markdown-path-invalid")
+        try:
+            mode = os.lstat(root / path).st_mode
+        except OSError:
+            raise _CorpusSafetyError(path, "corpus-markdown-file-invalid") from None
+        # Git reports an untracked intermediate symlink as the symlink entry,
+        # not the Markdown file beyond it. Reject the boundary before any read.
+        if stat.S_ISLNK(mode):
+            raise _CorpusSafetyError(path, "corpus-markdown-file-invalid")
+        if path.endswith(".md") and path not in excluded:
+            candidates.append(path)
+    for path in sorted(candidates):
+        descriptor = _open_regular_repo_descriptor(root, path)
+        if descriptor is None:
+            raise _CorpusSafetyError(path, "corpus-markdown-file-invalid")
+        os.close(descriptor)
+    return tuple(sorted(set(candidates)))
+
+
 def _safe_corpus_snapshot(
     root: pathlib.Path,
     profiles: dict[str, object],
+    *,
+    include_untracked: bool = False,
 ) -> tuple[tuple[Record, ...], dict[str, bytes]]:
     """Read one no-follow corpus snapshot, then parse only held safe bytes."""
 
-    paths = _tracked_corpus_paths(root, profiles)
+    tracked_paths = _tracked_corpus_paths(root, profiles)
+    untracked_paths = (
+        _untracked_corpus_paths(root, profiles) if include_untracked else ()
+    )
+    tracked = set(tracked_paths)
+    paths = tuple(sorted(tracked | set(untracked_paths)))
     payloads: dict[str, bytes] = {}
     for path in paths:
-        payload = _read_regular_repo_bytes(root, path, require_tracked=True)
+        payload = _read_regular_repo_bytes(
+            root, path, require_tracked=path in tracked
+        )
         if payload is None:
             raise _CorpusSafetyError(path, "corpus-markdown-file-invalid")
         payloads[path] = payload
@@ -2297,11 +2589,18 @@ def _safe_corpus_snapshot(
     return tuple(records), payloads
 
 
-def _collect_records(root: pathlib.Path, profiles: dict[str, object]) -> tuple[Record, ...]:
+def _collect_records(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    *,
+    include_untracked: bool = False,
+) -> tuple[Record, ...]:
     global _CORPUS_SNAPSHOT_ROOT, _CORPUS_SNAPSHOT_BYTES
     _CORPUS_SNAPSHOT_ROOT = None
     _CORPUS_SNAPSHOT_BYTES = {}
-    records, payloads = _safe_corpus_snapshot(root, profiles)
+    records, payloads = _safe_corpus_snapshot(
+        root, profiles, include_untracked=include_untracked
+    )
     _CORPUS_SNAPSHOT_ROOT = root.resolve()
     _CORPUS_SNAPSHOT_BYTES = payloads
     return records
@@ -2454,9 +2753,42 @@ def _is_safety_finding(finding: Finding) -> bool:
     return finding.code in SAFETY_FINDING_CODES
 
 
+def _diagnostic_payload_is_sensitive(value: str) -> bool:
+    payload = value.encode("utf-8", errors="replace")
+    return any(pattern.search(payload) for pattern in SENSITIVE_PAYLOAD_PATTERNS)
+
+
+def _safe_diagnostic_path(value: object) -> str:
+    path = value if isinstance(value, str) else "corpus"
+    if (
+        len(path.encode("utf-8", errors="replace")) > 512
+        or not _lexically_safe_path(path)
+        or _diagnostic_payload_is_sensitive(path)
+    ):
+        return "corpus"
+    return path
+
+
+def _assert_safe_generated_output(content: str) -> None:
+    if _diagnostic_payload_is_sensitive(content):
+        raise _CorpusSafetyError("output", "diagnostic-redaction-unsafe")
+
+
 def _print_findings(findings: collections.abc.Sequence[Finding]) -> None:
-    for finding in sorted(set(findings)):
-        print(f"{finding.code}: {finding.path}: {finding.message}")
+    ordered = sorted(set(findings))
+    for finding in ordered:
+        if _diagnostic_payload_is_sensitive(
+            f"{finding.path}\n{finding.message}"
+        ):
+            raise _CorpusSafetyError(
+                _safe_diagnostic_path(finding.path),
+                "diagnostic-redaction-unsafe",
+            )
+    for finding in ordered:
+        print(
+            f"{finding.code}: {_safe_diagnostic_path(finding.path)}: "
+            "validation rule is not satisfied"
+        )
 
 
 def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
@@ -2572,7 +2904,7 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
                 _write_output(output_path, rendered)
                 return 0
             if not _check_output(output_path, rendered):
-                print(f"summary-stale: {output_path}")
+                print("summary-stale: output: generated summary differs from canonical bytes")
                 return 1
             return 0
         if args.mode == "check-impacted":
@@ -2582,7 +2914,7 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             if manifest_findings:
                 _print_findings(manifest_findings)
                 return 3 if any(_is_safety_finding(item) for item in manifest_findings) else 1
-            records = _collect_records(root, profiles)
+            records = _collect_records(root, profiles, include_untracked=True)
             impacted = collect_impacted_records(
                 root, records, profiles, contract, documents, base_ref=args.base_ref
             )
