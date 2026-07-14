@@ -139,7 +139,7 @@ Redaction boundary:
 | Work unit | Responsibility | State |
 | --- | --- | --- |
 | T-DCLM-001 | Machine migration contract and static archive metadata | Complete — final Spec PASS and Quality PASS with Critical 0, Important 0, Minor 0 |
-| T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Not run |
+| T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Implementation complete — self-review PASS; independent reviews pending |
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Not run |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Not run |
 | T-DCLM-005 | Foundation manifest and generated evidence | Not run |
@@ -156,6 +156,8 @@ Redaction boundary:
 | 2026-07-14 | T-DCLM-001 specification re-review remediation | Fresh implementation agent | Resolved I-03 by deriving artifact-ID/status nullability from the selected metadata profile and reusing the canonical non-empty artifact-ID value rule. The `readme` profile proves the declared exception path, while `reference` proves `exempt` cannot bypass required identity/status. No Git lookup or snapshot-byte access was added. |
 | 2026-07-14 | T-DCLM-001 quality-review remediation | Fresh implementation agent | Resolved I-Q01 and I-Q02 by sharing the contract-owned immutable-snapshot disposition allowlist with static archive validation and scalar-guarding both archive selectors before conditional membership. Added value-free admission findings, list/mapping regressions for both selectors, and a changed/new CLI no-traceback regression. |
 | 2026-07-14 | T-DCLM-001 final independent reviews | Fresh specification and quality reviewers | The complete range `afc51b29..e9db5afb` received Spec PASS with Critical 0 and Important 0 and Quality PASS with Critical 0, Important 0, and Minor 0. I-01/I-02/I-03 and I-Q01/I-Q02 are closed; T-DCLM-001 is complete and T-DCLM-002 is clear to proceed. |
+| 2026-07-14 | T-DCLM-002 | Fresh implementation agent | Added the focused lifecycle companion and 22-test suite through strict RED/GREEN. The companion reuses the canonical metadata module without repurposing its `Manifest` type; implements the fixed 16-mode CLI, immutable manifest data contracts, exact YAML load/render, promoted-wave enforcement, introduced-only impact validation, Git commit/blob/path and snapshot SHA-256 provenance, value-free confidentiality findings, duplicate candidates, review signals, 100/150 budgets, bounded exceptions, and deterministic summary/ledger/snapshot interfaces. Self-review PASS; no corpus leaf, existing tombstone, snapshot payload, exception file, runtime, workflow, secret, provider, or remote state changed. |
+| 2026-07-14 | T-DCLM-002 generated fallout | Fresh implementation agent | Staged only the new script and test for Git-backed discovery, then ran the four Task 2 canonical owners in the approved order. Only owner-produced changed files are eligible for the separate generated commit; exact freshness results are recorded below. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -216,7 +218,22 @@ T-DCLM-001 actual evidence:
 - Quality-remediation Graphify: `graphify update .` completed with 23,539 nodes, 25,086 edges, and 1,548 communities. The report remained advisory for the same two unrelated ambiguous cross-root references and generic isolated-node/community noise; claims were corroborated against the tracked migration contract, metadata registry, checker, tests, Stage 00 governance, Spec 131, Plan, and Task. Generated Graphify outputs were restored and excluded from the fix commit.
 - Closure evidence: final specification and quality reports cover `afc51b29..e9db5afb`; a fresh explicit-base changed-mode check selected 10 paths with zero violations, zero legacy exceptions, and zero transition overrides, and `git diff --check` passed.
 
-Verification results: T-DCLM-001 implementation and I-01/I-02/I-03/I-Q01/I-Q02 remediation GREEN. Final independent reviews of `afc51b29..e9db5afb` returned Spec PASS with Critical 0 and Important 0 and Quality PASS with Critical 0, Important 0, and Minor 0. T-DCLM-001 is complete.
+T-DCLM-002 actual evidence:
+
+- RED: `python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v` failed with the expected single import error because `check-document-corpus-lifecycle.py` did not exist.
+- Focused GREEN: the same discovery command passed 22 of 22 tests in 13.047 seconds. Coverage includes fixed modes and CLI misuse ordering; frozen public data contracts; exact manifest keys, source coverage, ordering, target/disposition rules, baseline commits, destructive review/evidence; advisory/blocking promoted manifests; Git commit/blob/path equality; immutable snapshot path and dual SHA-256 equality; secret/credential/token/private-key/shell-history/raw-log rejection without payload leakage; paired ledger/snapshot write-check equality; duplicate ordering and cross-type exclusion; direct impacted consumers/links; non-mutating review signals; exact 99/100 and 149/150 budgets; and bounded exceptions including omitted-owner handling.
+- Metadata compatibility: `python3 -m unittest tests.validation.test_document_metadata -q` passed 196 of 196 tests in 64.891 seconds.
+- Static and contract checks: `python3 -m py_compile scripts/validation/check-document-corpus-lifecycle.py scripts/validation/check-document-metadata.py`, `python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract`, and `git diff --check` passed.
+- Deterministic manifest interfaces: Foundation skeleton generation at baseline `e00e1483` produced exactly 24 pending rows; `check-manifest`, `generate-summary`, and `check-summary` passed against temporary outputs without repository publication.
+- Promoted and impacted checks: `check-promoted` reported zero violations. The implementation-agent run of `check-impacted --base-ref e00e1483` selected 126 directly changed or directly related records and reported zero blocking violations; the existing 118-leaf Stage 04 Task directory emitted only its configured advisory warning. The takeover finisher reran the command after the Task/progress evidence edits and selected 127 records with the same zero blocking findings and advisory-only directory warning.
+- Advisory full report: `report-full` completed with 2,774 bounded findings and zero parser, contract, Git, path, redaction, or internal safety failures. It returned zero without suppressing debt or consuming an exception file.
+- Generated fallout: the security-readiness, audit-matrix, LLM Wiki index, and LLM Wiki coverage owners ran in the prescribed order after staging the new script/test discovery paths. All four produced no Git diff, and their check modes passed at 13 controls, 1,300 Wiki paths, and 1,299 safe coverage paths; therefore the Plan-authorized generated commit is correctly omitted.
+- Takeover verification: focused lifecycle tests passed 22 of 22 in 13.636 seconds; metadata compatibility passed 196 of 196 in 71.343 seconds; `py_compile`, lifecycle `check-contract`, `check-promoted`, explicit-base `check-impacted`, `git diff --check`, generated owner check modes, and repository contracts (`failures=0`) passed.
+- Graphify: `graphify update .` completed against HEAD `9126a0aa` with 23,683 nodes, 25,600 edges, and 1,547 communities. The report remained advisory because generic language/test symbols dominated the god-node list and two Compose/config references were ambiguous. Claims were corroborated against the tracked lifecycle validator and tests, the observability Compose source, Stage 00 governance, Spec 131, Plan, and this Task. `graphify-out/GRAPH_REPORT.md` and `graphify-out/graph.json` were restored to HEAD and excluded from the implementation commit.
+- Safety boundary: Git commands use argument arrays and verify commit/blob types before comparison. Library functions return stable findings and never print payload bytes. Snapshot fixtures proved rejection of prohibited confidentiality classes while finding paths/messages remained value-free.
+- Scope preservation: no broad corpus leaf, existing tombstone, archive evidence payload, Stage 04 partition, exception file, workflow, runtime, Compose, infrastructure, deployment, secret, credential, provider instruction, or remote state changed.
+
+Verification results: T-DCLM-001 is complete. T-DCLM-002 implementation is GREEN with implementer self-review PASS; independent specification and quality reviews remain the controller's next gate before T-DCLM-003.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -270,6 +287,10 @@ Specification review verdict: the first T-DCLM-001 review returned FAIL with Cri
 
 Quality review verdict: the first T-DCLM-001 quality review of `afc51b29..602994f2` returned FAIL with Critical 0, Important 2, and Minor 0. I-Q01 identified missing immutable-snapshot disposition admission; I-Q02 identified uncaught non-scalar archive-selector `TypeError` escapes. Both were resolved in `e9db5afb`; the final quality review of `afc51b29..e9db5afb` returned PASS with Critical 0, Important 0, and Minor 0.
 
+T-DCLM-002 implementer self-review verdict: PASS. The public names, signatures, nullability, mode tuple, argument surface, and exit classes match the approved Plan. Invalid CLI shapes return 2 before opening repository files; parser/contract/Git/path/redaction/internal safety failures return 3; ordinary blocking findings return 1; advisory reports return 0. Manifest, summary, archive-ledger, and snapshot-manifest checks compare canonical bytes without mutation. The implementation imports the canonical metadata parser, `Record`, `Finding`, safe-path logic, and artifact-ID manifest builder without renaming or repurposing metadata `Manifest`.
+
+T-DCLM-002 independent review verdicts: pending fresh specification review and separate quality review of the exact implementation and generated commit range. T-DCLM-003 must not begin until both pass and any Critical/Important finding is remediated and re-reviewed.
+
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 
 ## Commit Ledger
@@ -287,6 +308,8 @@ Foundation logical commits:
 - `ab33b64f` — T-DCLM-001 specification-review remediation `fix(docs): enforce corpus lifecycle machine contracts`.
 - `602994f2` — T-DCLM-001 specification re-review remediation `fix(docs): honor metadata profile identity rules`.
 - `e9db5afb` — T-DCLM-001 quality-review remediation `fix(docs): harden archive snapshot validation`.
+
+T-DCLM-002 implementation and generated commit identities are supplied in the controller handoff and will be appended after the commits exist; a commit cannot embed its own object ID.
 
 Commit validation: each entry must name its work unit, review verdicts, focused
 GREEN commands, and generated fallout before closure.
