@@ -49,7 +49,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 ## Coverage Summary
 
-- Safe tracked source paths: `1301`
+- Safe tracked source paths: `1302`
 - Source buckets: `17`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -60,7 +60,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | --- | ---: | --- |
 | `.claude` | 47 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
 | `.codex` | 39 | [.codex/README.md](../../../../.codex/README.md)<br>[.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml)<br>[.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) |
-| `.github` | 14 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
+| `.github` | 15 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
 | `docs/00.agent-governance` | 105 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
 | `docs/01.requirements` | 25 | [docs/01.requirements/001-gateway.md](../../../01.requirements/001-gateway.md)<br>[docs/01.requirements/002-auth.md](../../../01.requirements/002-auth.md)<br>[docs/01.requirements/003-security.md](../../../01.requirements/003-security.md) |
 | `docs/02.architecture` | 51 | [docs/02.architecture/README.md](../../../02.architecture/README.md)<br>[docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)<br>[docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md](../../../02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md) |
@@ -89,7 +89,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | Reference and template docs | 133 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md) |
 | Infrastructure source | 247 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | Scripts and validators | 34 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
-| GitHub workflow surface | 14 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
+| GitHub workflow surface | 15 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
 | Secret-handling policy | 1 | [secrets/README.md](../../../../secrets/README.md) |
 | Other tracked source | 21 | [docs/98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md](../../../98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md)<br>[docs/98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md](../../../98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md)<br>[docs/98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md](../../../98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md) |
 
@@ -99,7 +99,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | --- | ---: |
 | JSON registry | 69 |
 | Markdown reference | 825 |
-| YAML config | 104 |
+| YAML config | 105 |
 | folder index | 221 |
 | script | 50 |
 | source path | 29 |
