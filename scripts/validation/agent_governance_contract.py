@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 import datetime as dt
+import fnmatch
 import pathlib
 import re
+import stat
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from html.parser import HTMLParser
 from types import MappingProxyType
 from urllib.parse import urlparse
 
@@ -35,6 +38,7 @@ EXPECTED_PROVIDER_COUNT = 3
 COMMON_TOP_FIELDS = {"schema_version", "checked_at"}
 ARTIFACT_TOP_FIELDS = COMMON_TOP_FIELDS | {
     "artifacts",
+    "governed_families",
     "root_shims",
     "readme_profiles",
     "path_authority",
@@ -66,6 +70,11 @@ ARTIFACT_FIELDS = {
     "key_order",
     "required_sections",
     "expected_values",
+}
+GOVERNED_FAMILY_FIELDS = {
+    "family_id",
+    "path_pattern",
+    "repository_sections",
 }
 ROOT_SHIM_FIELDS = {
     "path",
@@ -770,6 +779,69 @@ def _check_path(
     return False
 
 
+def _is_supported_enumerated_pattern(value: str) -> bool:
+    """Limit enumerated contracts to the deterministic glob grammar we implement."""
+
+    depth = 0
+    brace_start = -1
+    for index, character in enumerate(value):
+        if character == "{":
+            if depth:
+                return False
+            depth = 1
+            brace_start = index
+        elif character == "}":
+            if depth != 1:
+                return False
+            choices = value[brace_start + 1 : index].split(",")
+            if len(choices) < 2 or any(not choice for choice in choices):
+                return False
+            depth = 0
+    if depth:
+        return False
+    for expanded in _expand_braces(value):
+        for segment in expanded.split("/"):
+            if any(marker in segment for marker in ("?", "[", "]")):
+                return False
+            if "**" in segment and segment != "**":
+                return False
+    return True
+
+
+def _check_enumerated_pattern(
+    value: object,
+    path: str,
+    location: str,
+    findings: list[Finding],
+    source: str,
+) -> bool:
+    if not _check_path(value, path, location, findings, source):
+        return False
+    if isinstance(value, str) and _is_supported_enumerated_pattern(value):
+        if all(_is_safe_repo_path(expanded) for expanded in _expand_braces(value)):
+            return True
+        _add(
+            findings,
+            "AGC-PATH-UNSAFE",
+            path,
+            location,
+            "safe-expanded-repo-paths",
+            "unsafe-expanded-path",
+            source,
+        )
+        return False
+    _add(
+        findings,
+        "AGC-PATTERN-UNSUPPORTED",
+        path,
+        location,
+        "supported-enumerated-pattern",
+        "unsupported-pattern-grammar",
+        source,
+    )
+    return False
+
+
 def _check_common(
     document: Mapping[str, object],
     expected_fields: set[str],
@@ -800,6 +872,7 @@ def _validate_artifact_contract(
 
     artifacts = _as_sequence(document.get("artifacts"), path, "artifacts", findings, source)
     profile_ids: list[str] = []
+    artifact_patterns: list[tuple[str, str, str]] = []
     if artifacts is not None:
         for index, raw in enumerate(artifacts):
             location = f"artifacts[{index}]"
@@ -816,7 +889,15 @@ def _validate_artifact_contract(
                 findings,
                 source,
             )
-            _check_path(entry.get("path_pattern"), path, f"{location}.path_pattern", findings, source)
+            pattern = entry.get("path_pattern")
+            if _check_enumerated_pattern(
+                pattern,
+                path,
+                f"{location}.path_pattern",
+                findings,
+                source,
+            ):
+                artifact_patterns.append((str(profile_id), str(pattern), location))
             _check_enum(
                 entry.get("repository_section"),
                 {"catalog", "harness", "providers"},
@@ -898,6 +979,91 @@ def _validate_artifact_contract(
                         source,
                     )
     _check_sorted_unique_ids(profile_ids, path, "artifacts", findings, source)
+    for left_index, (left_id, left_pattern, left_location) in enumerate(
+        artifact_patterns
+    ):
+        for right_id, right_pattern, right_location in artifact_patterns[left_index + 1 :]:
+            if _artifact_patterns_overlap(left_pattern, right_pattern):
+                _add(
+                    findings,
+                    "AGC-ARTIFACT-PROFILE-OVERLAP",
+                    path,
+                    f"{left_location}.path_pattern|{right_location}.path_pattern",
+                    "disjoint-artifact-profile-patterns",
+                    "intersecting-artifact-profile-patterns",
+                    source,
+                )
+
+    families = _as_sequence(
+        document.get("governed_families"),
+        path,
+        "governed_families",
+        findings,
+        source,
+    )
+    family_ids: list[str] = []
+    family_patterns: list[tuple[str, str, str]] = []
+    if families is not None:
+        for index, raw in enumerate(families):
+            location = f"governed_families[{index}]"
+            entry = _check_fields(
+                raw,
+                GOVERNED_FAMILY_FIELDS,
+                path,
+                location,
+                findings,
+                source,
+            )
+            if entry is None:
+                continue
+            family_id = entry.get("family_id")
+            if _check_string(
+                family_id,
+                path,
+                f"{location}.family_id",
+                findings,
+                source,
+            ):
+                family_ids.append(str(family_id))
+            pattern = entry.get("path_pattern")
+            if _check_enumerated_pattern(
+                pattern,
+                path,
+                f"{location}.path_pattern",
+                findings,
+                source,
+            ):
+                family_patterns.append((str(family_id), str(pattern), location))
+            sections = _check_string_list(
+                entry.get("repository_sections"),
+                path,
+                f"{location}.repository_sections",
+                findings,
+                source,
+                require_sorted=True,
+            )
+            for section_index, repository_section in enumerate(sections or ()):
+                _check_enum(
+                    repository_section,
+                    {"catalog", "harness", "providers"},
+                    path,
+                    f"{location}.repository_sections[{section_index}]",
+                    findings,
+                    source,
+                )
+    _check_sorted_unique_ids(family_ids, path, "governed_families", findings, source)
+    for left_index, (_, left_pattern, left_location) in enumerate(family_patterns):
+        for _, right_pattern, right_location in family_patterns[left_index + 1 :]:
+            if _artifact_patterns_overlap(left_pattern, right_pattern):
+                _add(
+                    findings,
+                    "AGC-GOVERNED-FAMILY-OVERLAP",
+                    path,
+                    f"{left_location}.path_pattern|{right_location}.path_pattern",
+                    "disjoint-governed-family-patterns",
+                    "intersecting-governed-family-patterns",
+                    source,
+                )
 
     root_shims = _as_sequence(document.get("root_shims"), path, "root_shims", findings, source)
     root_paths: list[str] = []
@@ -978,7 +1144,13 @@ def _validate_artifact_contract(
             profile_id = entry.get("profile_id")
             if _check_string(profile_id, path, f"{location}.profile_id", findings, source):
                 readme_ids.append(str(profile_id))
-            _check_path(entry.get("path_pattern"), path, f"{location}.path_pattern", findings, source)
+            _check_enumerated_pattern(
+                entry.get("path_pattern"),
+                path,
+                f"{location}.path_pattern",
+                findings,
+                source,
+            )
             _check_string_list(
                 entry.get("required_sections"),
                 path,
@@ -1986,16 +2158,166 @@ def _expand_braces(pattern: str) -> tuple[str, ...]:
     return tuple(expanded)
 
 
+def _segment_patterns_overlap(left: str, right: str) -> bool:
+    """Return false only when two single-segment globs are provably disjoint."""
+
+    markers = "*?["
+    left_glob = any(marker in left for marker in markers)
+    right_glob = any(marker in right for marker in markers)
+    if not left_glob and not right_glob:
+        return left == right
+    if not left_glob:
+        return fnmatch.fnmatchcase(left, right)
+    if not right_glob:
+        return fnmatch.fnmatchcase(right, left)
+
+    # Two wildcard-bearing segment languages are conservatively treated as
+    # intersecting. Unsupported constructs are rejected by the schema; this
+    # fail-closed branch prevents a false disjoint result for character classes.
+    return True
+
+
+def _simple_glob_patterns_overlap(left: str, right: str) -> bool:
+    left_parts = left.split("/")
+    right_parts = right.split("/")
+    for left_part, right_part in zip(left_parts, right_parts):
+        if left_part == "**" or right_part == "**":
+            return True
+        if not _segment_patterns_overlap(left_part, right_part):
+            return False
+    if len(left_parts) == len(right_parts):
+        return True
+    remainder = (
+        left_parts[len(right_parts) :]
+        if len(left_parts) > len(right_parts)
+        else right_parts[len(left_parts) :]
+    )
+    return all(part == "**" for part in remainder)
+
+
+def _artifact_patterns_overlap(left: str, right: str) -> bool:
+    """Fail closed when artifact glob intersection cannot be disproved."""
+
+    return any(
+        _simple_glob_patterns_overlap(left_expanded, right_expanded)
+        for left_expanded in _expand_braces(_canonical_repo_path(left))
+        for right_expanded in _expand_braces(_canonical_repo_path(right))
+    )
+
+
+def _path_matches_pattern(relative: str, pattern: str) -> bool:
+    path_parts = relative.split("/")
+
+    def matches(pattern_parts: list[str], pattern_index: int, path_index: int) -> bool:
+        if pattern_index == len(pattern_parts):
+            return path_index == len(path_parts)
+        segment = pattern_parts[pattern_index]
+        if segment == "**":
+            return matches(pattern_parts, pattern_index + 1, path_index) or (
+                path_index < len(path_parts)
+                and matches(pattern_parts, pattern_index, path_index + 1)
+            )
+        return (
+            path_index < len(path_parts)
+            and fnmatch.fnmatchcase(path_parts[path_index], segment)
+            and matches(pattern_parts, pattern_index + 1, path_index + 1)
+        )
+
+    return any(matches(expanded.split("/"), 0, 0) for expanded in _expand_braces(pattern))
+
+
 def _registered_paths(root: pathlib.Path, pattern: str) -> tuple[pathlib.Path, ...]:
     paths: set[pathlib.Path] = set()
     for expanded in _expand_braces(pattern):
         if any(marker in expanded for marker in ("*", "?", "[")):
-            paths.update(path for path in root.glob(expanded) if path.is_file())
+            paths.update(root.glob(expanded))
         else:
             candidate = root / expanded
-            if candidate.is_file():
+            if candidate.exists() or candidate.is_symlink():
                 paths.add(candidate)
     return tuple(sorted(paths, key=lambda item: item.relative_to(root).as_posix()))
+
+
+class _RepositoryReader:
+    """Read repository text through one fail-closed, value-free boundary."""
+
+    def __init__(self, root: pathlib.Path, findings: list[Finding]) -> None:
+        self.root = root
+        self.findings = findings
+        self._cache: dict[str, str | None] = {}
+        self._enumeration_cache: dict[str, tuple[pathlib.Path, ...]] = {}
+
+    def paths(self, pattern: str, location: str, source: str) -> tuple[pathlib.Path, ...]:
+        if pattern in self._enumeration_cache:
+            return self._enumeration_cache[pattern]
+        try:
+            paths = _registered_paths(self.root, pattern)
+        except (OSError, ValueError):
+            _add(
+                self.findings,
+                "AGC-REPOSITORY-PATH-ENUMERATION",
+                pattern,
+                location,
+                "deterministic-governed-path-enumeration",
+                "path-enumeration-failed",
+                source,
+            )
+            paths = ()
+        self._enumeration_cache[pattern] = paths
+        return paths
+
+    def read(self, relative: str, location: str, source: str) -> str | None:
+        if relative in self._cache:
+            return self._cache[relative]
+        self._cache[relative] = None
+        path = self.root / pathlib.PurePosixPath(relative)
+        try:
+            root_resolved = self.root.resolve(strict=True)
+            cursor = self.root
+            unsafe = self.root.is_symlink()
+            for part in pathlib.PurePosixPath(relative).parts:
+                cursor = cursor / part
+                unsafe = unsafe or cursor.is_symlink()
+            metadata = path.stat(follow_symlinks=False)
+            resolved = path.resolve(strict=True)
+            unsafe = unsafe or not stat.S_ISREG(metadata.st_mode)
+            unsafe = unsafe or not resolved.is_relative_to(root_resolved)
+            if unsafe:
+                _add(
+                    self.findings,
+                    "AGC-REPOSITORY-UNSAFE-FILE",
+                    relative,
+                    location,
+                    "inside-root-nonsymlink-regular-file",
+                    "unsafe-governed-file",
+                    source,
+                )
+                return None
+            text = path.read_text(encoding="utf-8")
+        except UnicodeError:
+            _add(
+                self.findings,
+                "AGC-REPOSITORY-FILE-ENCODING",
+                relative,
+                location,
+                "utf-8-text",
+                "invalid-text-encoding",
+                source,
+            )
+            return None
+        except OSError:
+            _add(
+                self.findings,
+                "AGC-REPOSITORY-FILE-READ",
+                relative,
+                location,
+                "readable-governed-file",
+                "governed-file-read-failed",
+                source,
+            )
+            return None
+        self._cache[relative] = text
+        return text
 
 
 def _frontmatter(text: str) -> tuple[list[str], Mapping[str, object] | None]:
@@ -2013,12 +2335,74 @@ def _frontmatter(text: str) -> tuple[list[str], Mapping[str, object] | None]:
     return [str(key) for key in values], values
 
 
+def _unfenced_markdown_lines(text: str) -> tuple[str, ...]:
+    lines: list[str] = []
+    fence_marker: str | None = None
+    fence_length = 0
+    for line in text.splitlines():
+        opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+        if fence_marker is None and opening:
+            marker = opening.group(1)
+            info = opening.group(2)
+            if marker[0] == "`" and "`" in info:
+                lines.append(line)
+            else:
+                fence_marker = marker[0]
+                fence_length = len(marker)
+            continue
+        if fence_marker is not None:
+            closing = re.match(
+                rf"^ {{0,3}}{re.escape(fence_marker)}{{{fence_length},}}[ \t]*$",
+                line,
+            )
+            if closing:
+                fence_marker = None
+                fence_length = 0
+            continue
+        lines.append(line)
+    return tuple(lines)
+
+
 def _section_names(text: str) -> tuple[str, ...]:
     headings: list[str] = []
-    for match in re.finditer(r"^##\s+(.+?)\s*$", text, re.MULTILINE):
+    unfenced = "\n".join(_unfenced_markdown_lines(text))
+    for match in re.finditer(r"^##\s+(.+?)\s*$", unfenced, re.MULTILINE):
         heading = re.sub(r"^\d+(?:\.\d+)*\.?\s+", "", match.group(1).strip())
         headings.append(heading)
     return tuple(headings)
+
+
+class _VisibleHTMLTextParser(HTMLParser):
+    _BLOCK_TAGS = {
+        "address", "article", "aside", "blockquote", "br", "dd", "div", "dl",
+        "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2",
+        "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "ol",
+        "p", "pre", "section", "table", "tbody", "td", "tfoot", "th", "thead",
+        "tr", "ul",
+    }
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.parts: list[str] = []
+
+    def handle_data(self, data: str) -> None:
+        self.parts.append(data)
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        del attrs
+        if tag in self._BLOCK_TAGS:
+            self.parts.append(" ")
+
+    def handle_startendtag(
+        self, tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        self.handle_starttag(tag, attrs)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in self._BLOCK_TAGS:
+            self.parts.append(" ")
 
 
 def _readme_policy_prose(text: str) -> str:
@@ -2029,34 +2413,28 @@ def _readme_policy_prose(text: str) -> str:
         if boundary >= 0:
             text = text[boundary + 5 :]
     prose: list[str] = []
-    fence: str | None = None
-    for line in text.splitlines():
-        fence_match = re.match(r"^\s{0,3}(`{3,}|~{3,})", line)
-        if fence_match:
-            marker = fence_match.group(1)[0]
-            if fence is None:
-                fence = marker
-            elif fence == marker:
-                fence = None
-            continue
-        if fence is not None or re.match(r"^\s{0,3}#{1,6}\s+", line):
+    for line in _unfenced_markdown_lines(text):
+        if re.match(r"^\s{0,3}#{1,6}\s+", line):
             continue
         if re.match(r"^\s*\[[^]]+\]:\s*\S+", line):
             continue
         line = re.sub(r"`+[^`\n]*`+", " ", line)
         line = re.sub(r"\]\([^)]*\)", "]", line)
-        line = re.sub(r"<https?://[^>]+>", " ", line)
         line = re.sub(
             r"(?<!\w)(?:\.{0,2}/)?[A-Za-z0-9_.{}*-]+(?:/[A-Za-z0-9_.{}*-]+)+",
             " ",
             line,
         )
         prose.append(line)
-    return " " + re.sub(r"[^a-z0-9]+", " ", "\n".join(prose).lower()).strip() + " "
+    parser = _VisibleHTMLTextParser()
+    parser.feed("\n".join(prose))
+    parser.close()
+    visible = "".join(parser.parts)
+    return " " + re.sub(r"[^a-z0-9]+", " ", visible.lower()).strip() + " "
 
 
 def _validate_artifact_projection(
-    root: pathlib.Path,
+    reader: _RepositoryReader,
     artifact_document: Mapping[str, object],
     section: str,
     findings: list[Finding],
@@ -2070,7 +2448,11 @@ def _validate_artifact_projection(
         pattern = entry.get("path_pattern")
         if not isinstance(pattern, str) or not _is_safe_repo_path(pattern):
             continue
-        paths = _registered_paths(root, pattern)
+        paths = reader.paths(
+            pattern,
+            f"artifacts[{index}].path_pattern",
+            "agent-governance-artifacts",
+        )
         if not paths:
             _add(
                 findings,
@@ -2099,8 +2481,14 @@ def _validate_artifact_projection(
         )
         expected_values = entry.get("expected_values")
         for path in paths:
-            relative = path.relative_to(root).as_posix()
-            text = path.read_text(encoding="utf-8")
+            relative = path.relative_to(reader.root).as_posix()
+            text = reader.read(
+                relative,
+                f"artifacts[{index}].path_pattern",
+                "agent-governance-artifacts",
+            )
+            if text is None:
+                continue
             keys, metadata = _frontmatter(text)
             if metadata is None:
                 _add(
@@ -2161,7 +2549,7 @@ def _validate_artifact_projection(
 
 
 def _validate_root_shims(
-    root: pathlib.Path,
+    reader: _RepositoryReader,
     artifact_document: Mapping[str, object],
     findings: list[Finding],
 ) -> None:
@@ -2169,10 +2557,9 @@ def _validate_root_shims(
         if not isinstance(entry, Mapping) or not isinstance(entry.get("path"), str):
             continue
         relative = str(entry["path"])
-        path = root / relative
-        if not path.is_file():
+        text = reader.read(relative, f"root_shims[{index}]", "agent-governance-artifacts")
+        if text is None:
             continue
-        text = path.read_text(encoding="utf-8")
         targets = [entry.get("bootstrap_target"), entry.get("provider_target")]
         targets.extend(_sequence_or_empty(entry.get("memory_targets")))
         valid_targets = [target for target in targets if isinstance(target, str)]
@@ -2212,16 +2599,38 @@ def _validate_root_shims(
 
 
 def _validate_readme_profiles(
-    root: pathlib.Path,
+    reader: _RepositoryReader,
     artifact_document: Mapping[str, object],
     findings: list[Finding],
 ) -> None:
     for index, entry in enumerate(_sequence_or_empty(artifact_document.get("readme_profiles"))):
         if not isinstance(entry, Mapping) or not isinstance(entry.get("path_pattern"), str):
             continue
-        for path in _registered_paths(root, str(entry["path_pattern"])):
-            relative = path.relative_to(root).as_posix()
-            text = path.read_text(encoding="utf-8")
+        pattern = str(entry["path_pattern"])
+        paths = reader.paths(
+            pattern,
+            f"readme_profiles[{index}].path_pattern",
+            "agent-governance-artifacts",
+        )
+        if not paths:
+            _add(
+                findings,
+                "AGC-REPOSITORY-MISSING-README",
+                pattern,
+                f"readme_profiles[{index}].path_pattern",
+                "registered-readme-path",
+                "missing-readme-path",
+                "agent-governance-artifacts",
+            )
+        for path in paths:
+            relative = path.relative_to(reader.root).as_posix()
+            text = reader.read(
+                relative,
+                f"readme_profiles[{index}].path_pattern",
+                "agent-governance-artifacts",
+            )
+            if text is None:
+                continue
             headings = _section_names(text)
             allowed = set(
                 value
@@ -2271,6 +2680,87 @@ def _validate_readme_profiles(
                     )
 
 
+def _governed_inventory_paths(
+    root: pathlib.Path, artifact_document: Mapping[str, object]
+) -> tuple[pathlib.Path, ...]:
+    paths: set[pathlib.Path] = set()
+    for family in _sequence_or_empty(artifact_document.get("governed_families")):
+        if not isinstance(family, Mapping):
+            continue
+        pattern = family.get("path_pattern")
+        if isinstance(pattern, str) and _is_safe_repo_path(pattern):
+            paths.update(_registered_paths(root, pattern))
+    return tuple(sorted(paths, key=lambda item: item.relative_to(root).as_posix()))
+
+
+def _validate_governed_inventory(
+    reader: _RepositoryReader,
+    artifact_document: Mapping[str, object],
+    findings: list[Finding],
+) -> None:
+    artifacts = tuple(
+        entry
+        for entry in _sequence_or_empty(artifact_document.get("artifacts"))
+        if isinstance(entry, Mapping)
+    )
+    seen: set[str] = set()
+    for family_index, family in enumerate(
+        _sequence_or_empty(artifact_document.get("governed_families"))
+    ):
+        if not isinstance(family, Mapping):
+            continue
+        pattern = family.get("path_pattern")
+        if not isinstance(pattern, str) or not _is_safe_repo_path(pattern):
+            continue
+        allowed_sections = {
+            value
+            for value in _sequence_or_empty(family.get("repository_sections"))
+            if isinstance(value, str)
+        }
+        for path in reader.paths(
+            pattern,
+            f"governed_families[{family_index}].path_pattern",
+            "agent-governance-artifacts",
+        ):
+            relative = path.relative_to(reader.root).as_posix()
+            if relative in seen:
+                continue
+            seen.add(relative)
+            reader.read(
+                relative,
+                f"governed_families[{family_index}].path_pattern",
+                "agent-governance-artifacts",
+            )
+            matches = [
+                entry
+                for entry in artifacts
+                if isinstance(entry.get("path_pattern"), str)
+                and _path_matches_pattern(relative, str(entry["path_pattern"]))
+            ]
+            if len(matches) != 1:
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-PROFILE-COVERAGE",
+                    relative,
+                    f"governed_families[{family_index}]",
+                    "exactly-one-artifact-profile",
+                    "missing-or-ambiguous-artifact-profile",
+                    "agent-governance-artifacts",
+                )
+                continue
+            repository_section = matches[0].get("repository_section")
+            if repository_section not in allowed_sections:
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-PROFILE-SECTION",
+                    relative,
+                    f"governed_families[{family_index}].repository_sections",
+                    "family-permitted-repository-section",
+                    "misrouted-artifact-profile",
+                    "agent-governance-artifacts",
+                )
+
+
 def validate_repository(
     root: pathlib.Path, bundle: ContractBundle, section: str = "all"
 ) -> list[Finding]:
@@ -2293,7 +2783,10 @@ def validate_repository(
             )
         ]
     findings: list[Finding] = []
-    _validate_artifact_projection(root, bundle.artifacts, section, findings)
+    reader = _RepositoryReader(root, findings)
+    if section in {"all", "harness"}:
+        _validate_governed_inventory(reader, bundle.artifacts, findings)
+    _validate_artifact_projection(reader, bundle.artifacts, section, findings)
     if section in {"all", "catalog"}:
         for collection_name in ("agents", "functions"):
             entries = _sequence_or_empty(bundle.catalog.get(collection_name))
@@ -2352,8 +2845,8 @@ def validate_repository(
                     "provider-models",
                 )
     if section in {"all", "harness"}:
-        _validate_root_shims(root, bundle.artifacts, findings)
-        _validate_readme_profiles(root, bundle.artifacts, findings)
+        _validate_root_shims(reader, bundle.artifacts, findings)
+        _validate_readme_profiles(reader, bundle.artifacts, findings)
         harness = root / "docs/00.agent-governance/harness-implementation-map.md"
         if not harness.is_file():
             _add(

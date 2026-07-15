@@ -1,5 +1,15 @@
 schema_version: 1
 checked_at: "2026-07-15T10:00:00+09:00"
+governed_families:
+  - family_id: provider-entry-indexes
+    path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md}"
+    repository_sections: [harness]
+  - family_id: root-instruction-shims
+    path_pattern: "{AGENTS,CLAUDE,GEMINI}.md"
+    repository_sections: [harness]
+  - family_id: stage00-markdown
+    path_pattern: docs/00.agent-governance/**/*.md
+    repository_sections: [catalog, harness]
 artifacts:
   - profile_id: agent-function
     artifact_type: agent-function

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import importlib.util
+import os
 import pathlib
 import re
 import shutil
@@ -9,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -152,6 +154,79 @@ class ContractSchemaTests(unittest.TestCase):
             self.assertIn("AGC-SCHEMA-DUPLICATE-ID", observed)
             self.assertIn("AGC-SCHEMA-INVALID-ENUM", observed)
             self.assertIn("AGC-ARTIFACT-EXPECTED-KEY", observed)
+
+    def test_artifact_profile_patterns_must_not_intersect(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                values["artifacts"][1]["path_pattern"] = values["artifacts"][0][
+                    "path_pattern"
+                ]
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            self.assertIn(
+                "AGC-ARTIFACT-PROFILE-OVERLAP",
+                codes(validate_fixture(root)),
+            )
+
+    def test_artifact_pattern_overlap_fails_closed_for_recursive_and_class_globs(self) -> None:
+        self.assertTrue(
+            contract._artifact_patterns_overlap("docs/*/**", "docs/a/**")
+        )
+        self.assertTrue(
+            contract._artifact_patterns_overlap(
+                "docs/[ab]foo.md", "docs/[bc]foo.md"
+            )
+        )
+
+    def test_enumerated_patterns_reject_unsupported_glob_grammar(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+            mutate_yaml(
+                root,
+                "agent-governance-artifacts.yaml",
+                lambda values: values["readme_profiles"][0].update(
+                    {"path_pattern": "docs/***/README.md"}
+                ),
+            )
+            self.assertIn("AGC-PATTERN-UNSUPPORTED", codes(validate_fixture(root)))
+
+    def test_enumerated_patterns_validate_every_expanded_brace_choice(self) -> None:
+        for pattern in (
+            "{..,docs}/x",
+            "docs/{../..,safe}/x",
+            "{safe,/tmp}/x",
+        ):
+            with self.subTest(pattern=pattern), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                mutate_yaml(
+                    root,
+                    "agent-governance-artifacts.yaml",
+                    lambda values, pattern=pattern: values["readme_profiles"][0].update(
+                        {"path_pattern": pattern}
+                    ),
+                )
+                self.assertIn("AGC-PATH-UNSAFE", codes(validate_fixture(root)))
+
+    def test_governed_families_require_typed_safe_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                values["governed_families"][0]["legacy"] = True
+                del values["governed_families"][1]["repository_sections"]
+                values["governed_families"][2]["path_pattern"] = "../outside/**"
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            observed = codes(validate_fixture(root))
+            self.assertIn("AGC-SCHEMA-UNKNOWN-FIELD", observed)
+            self.assertIn("AGC-SCHEMA-MISSING-FIELD", observed)
+            self.assertIn("AGC-PATH-UNSAFE", observed)
 
     def test_root_and_readme_profiles_require_exact_contract_fields(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -782,6 +857,194 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
+    def test_repository_harness_does_not_accept_fenced_required_heading(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            provider = root / ".claude/CLAUDE.md"
+            provider.write_text(
+                provider.read_text(encoding="utf-8").replace(
+                    "## Scope",
+                    "### Scope\n\n```markdown\n## Scope\n```",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+            self.assertIn(
+                "AGC-REPOSITORY-MISSING-SECTION",
+                codes(contract.validate_repository(root, bundle, "harness")),
+            )
+
+    def test_repository_harness_does_not_close_fence_with_info_text(self) -> None:
+        self.assertNotIn(
+            "Scope",
+            contract._section_names(
+                "```markdown\n```not-a-close\n## Scope\n```\n"
+            ),
+        )
+        for indentation in ("\t", "\N{NO-BREAK SPACE}"):
+            with self.subTest(indentation=repr(indentation)):
+                self.assertNotIn(
+                    "Scope",
+                    contract._section_names(
+                        f"```\n{indentation}```\n## Scope\n```\n"
+                    ),
+                )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            provider = root / ".claude/CLAUDE.md"
+            provider.write_text(
+                provider.read_text(encoding="utf-8").replace(
+                    "## Scope",
+                    "### Scope\n\n```markdown\n```not-a-close\n## Scope\n```",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+            self.assertIn(
+                "AGC-REPOSITORY-MISSING-SECTION",
+                codes(contract.validate_repository(root, bundle, "harness")),
+            )
+
+    def test_repository_harness_requires_exactly_one_profile_for_new_memory_docs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            memory = root / f"{self.GOVERNANCE}/memory/unregistered-note.md"
+            memory.write_text(
+                "---\nlayer: agentic\n---\n\n# Unregistered note\n\n"
+                "## Problem\n\nProblem.\n\n## Context\n\nContext.\n\n"
+                "## Resolution\n\nResolution.\n\n## Evidence\n\nEvidence.\n\n"
+                "## Related Documents\n\n- `README.md`\n",
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+            self.assertIn(
+                "AGC-REPOSITORY-PROFILE-COVERAGE",
+                codes(contract.validate_repository(root, bundle, "harness")),
+            )
+
+    def test_repository_harness_inventory_has_111_uniquely_routed_artifacts(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        inventory = contract._governed_inventory_paths(ROOT, bundle.artifacts)
+        self.assertEqual(111, len(inventory))
+        findings = contract.validate_repository(ROOT, bundle, "harness")
+        self.assertFalse(
+            codes(findings)
+            & {
+                "AGC-REPOSITORY-PROFILE-COVERAGE",
+                "AGC-REPOSITORY-PROFILE-SECTION",
+            }
+        )
+
+    def test_repository_harness_routes_future_catalog_files_without_harness_validation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            catalog = root / f"{self.GOVERNANCE}/agents/agents/future-reviewer.md"
+            catalog.write_text("future catalog placeholder\n", encoding="utf-8")
+            bundle = contract.load_contract_bundle(root)
+            findings = contract.validate_repository(root, bundle, "harness")
+            self.assertFalse(
+                codes(findings)
+                & {
+                    "AGC-REPOSITORY-PROFILE-COVERAGE",
+                    "AGC-REPOSITORY-PROFILE-SECTION",
+                    "AGC-REPOSITORY-METADATA-KEYS",
+                    "AGC-REPOSITORY-MISSING-SECTION",
+                }
+            )
+
+    def test_repository_harness_rejects_governed_symlinks(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            external = root.parent / f"{root.name}-external.md"
+            external.write_text("## Scope\n", encoding="utf-8")
+            provider = root / ".claude/CLAUDE.md"
+            provider.unlink()
+            provider.symlink_to(external)
+            try:
+                bundle = contract.load_contract_bundle(root)
+                findings = contract.validate_repository(root, bundle, "harness")
+            finally:
+                external.unlink(missing_ok=True)
+            self.assertIn("AGC-REPOSITORY-UNSAFE-FILE", codes(findings))
+            self.assertNotIn(str(root), contract.render_findings(findings))
+
+    def test_repository_harness_rejects_missing_and_nonregular_readmes(self) -> None:
+        for replacement in ("missing", "directory", "fifo"):
+            with self.subTest(replacement=replacement), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / "scripts/README.md"
+                readme.unlink()
+                if replacement == "directory":
+                    readme.mkdir()
+                elif replacement == "fifo":
+                    os.mkfifo(readme)
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                if replacement == "missing":
+                    self.assertIn("AGC-REPOSITORY-MISSING-README", observed)
+                else:
+                    self.assertIn("AGC-REPOSITORY-UNSAFE-FILE", observed)
+
+    def test_repository_harness_normalizes_enumeration_errors(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            bundle = contract.load_contract_bundle(root)
+            original = pathlib.Path.glob
+
+            def guarded_glob(path, pattern, *args, **kwargs):
+                if path == root and pattern == "docs/00.agent-governance/**/*.md":
+                    raise OSError("sentinel-private-enumeration-error")
+                return original(path, pattern, *args, **kwargs)
+
+            with mock.patch.object(pathlib.Path, "glob", guarded_glob):
+                findings = contract.validate_repository(root, bundle, "harness")
+            rendered = contract.render_findings(findings)
+            self.assertIn("AGC-REPOSITORY-PATH-ENUMERATION", codes(findings))
+            self.assertNotIn("sentinel-private-enumeration-error", rendered)
+            self.assertNotIn(str(root), rendered)
+
+    def test_repository_harness_converts_read_errors_to_value_free_findings(self) -> None:
+        for relative in ("AGENTS.md", ".claude/CLAUDE.md", "scripts/README.md"):
+            with self.subTest(path=relative), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                bundle = contract.load_contract_bundle(root)
+                target = root / relative
+                original = pathlib.Path.read_text
+
+                def guarded_read(path, *args, **kwargs):
+                    if path == target:
+                        raise OSError("sentinel-private-read-error")
+                    return original(path, *args, **kwargs)
+
+                with mock.patch.object(pathlib.Path, "read_text", guarded_read):
+                    findings = contract.validate_repository(root, bundle, "harness")
+                rendered = contract.render_findings(findings)
+                self.assertIn("AGC-REPOSITORY-FILE-READ", codes(findings))
+                self.assertNotIn("sentinel-private-read-error", rendered)
+                self.assertNotIn(str(root), rendered)
+
+    def test_repository_harness_converts_invalid_utf8_to_value_free_findings(self) -> None:
+        for relative in ("AGENTS.md", ".claude/CLAUDE.md", "scripts/README.md"):
+            with self.subTest(path=relative), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                (root / relative).write_bytes(b"\xff\xfe")
+                bundle = contract.load_contract_bundle(root)
+                findings = contract.validate_repository(root, bundle, "harness")
+                rendered = contract.render_findings(findings)
+                self.assertIn("AGC-REPOSITORY-FILE-ENCODING", codes(findings))
+                self.assertNotIn(str(root), rendered)
+
     def test_repository_harness_rejects_invalid_root_shim_envelope(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -832,6 +1095,43 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
             self.assertNotIn("AGC-REPOSITORY-README-SECTION", observed)
 
+    def test_repository_harness_rejects_html_wrapped_and_entity_policy_prose(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            readme = root / ".codex/README.md"
+            readme.write_text(
+                readme.read_text(encoding="utf-8").replace(
+                    "Change canonical Stage 00 sources first",
+                    "Provider <span>model</span>&#32;defaults are defined here.\n\n"
+                    "Change canonical Stage 00 sources first",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+            observed = codes(contract.validate_repository(root, bundle, "harness"))
+            self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
+            self.assertNotIn("AGC-REPOSITORY-README-SECTION", observed)
+
+    def test_repository_harness_rejects_multiline_and_midtoken_html_policy_prose(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            readme = root / ".codex/README.md"
+            readme.write_text(
+                readme.read_text(encoding="utf-8").replace(
+                    "Change canonical Stage 00 sources first",
+                    "Provider mo<span\n>del</span>&#32;defaults are defined here.\n\n"
+                    "Change canonical Stage 00 sources first",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+            observed = codes(contract.validate_repository(root, bundle, "harness"))
+            self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
+
     def test_registered_readme_routing_prose_does_not_trigger_policy_topics(self) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         findings = contract.validate_repository(ROOT, bundle, "harness")
@@ -862,6 +1162,10 @@ model defaults
         self.assertIn(
             " model defaults ",
             contract._readme_policy_prose("Provider model defaults are defined here."),
+        )
+        self.assertIn(
+            " model defaults ",
+            contract._readme_policy_prose("Provider <span>model</span>&#32;defaults."),
         )
 
     def test_codeowners_keeps_repository_principal_and_covers_governed_surfaces(self) -> None:

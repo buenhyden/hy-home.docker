@@ -322,6 +322,23 @@ T-AGHC-002 README prose remediation verification:
 | Ruff, Yamllint, scoped pre-commit, and diff hygiene | zero failures | zero failures | Pass |
 | Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,112 nodes; 27,020 edges; 1,556 communities; the same two unrelated infrastructure ambiguities, 16,085 isolated nodes, and 73 thin communities were source-corroborated before generated graph output restoration | Pass |
 
+T-AGHC-002 repository-validator quality hardening verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| initial quality reproductions (RED) | overlap, inventory, file-boundary, fenced-heading, and HTML-policy gaps reproduce | 8 methods; 6 assertion failures and 2 uncaught errors | Pass |
+| independent-review reproductions (RED) | recursive/class glob, unsupported grammar, README absence/type, enumeration, fence closer, and multiline HTML gaps reproduce | 7 effective cases; 7 expected failures/errors | Pass |
+| final re-review reproductions (RED) | brace-expanded unsafe paths and non-ASCII fence indentation reproduce | 2 methods; 5 expected subtest failures | Pass |
+| full governance suite (GREEN) | every mutation fails closed without canonical regression | 59 tests; 59 passed | Pass |
+| governed artifact inventory | every inventory file resolves to exactly one permitted profile | 111/111 exact-one matches: 37 catalog and 74 harness | Pass |
+| metadata and lifecycle regression suites | no regression | metadata 211/211; lifecycle 89/89 | Pass |
+| contract and repository harness CLIs | zero failures | contract `3/14/22/3/0`; repository harness `failures=0` | Pass |
+| traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,205 links; 141 operations docs; failures 0 | Pass |
+| Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,153 nodes; 27,183 edges; 1,556 communities; two unrelated infrastructure ambiguities, 16,085 isolated nodes, and 73 thin communities corroborated against tracked Stage 00/03/04 and validator sources before generated output restoration | Pass |
+| scoped pre-commit and diff hygiene | zero failures | all applicable hooks passed across five remediation paths; diff checks clean | Pass |
+| repository aggregate compatibility | preserve planned Task 3–5 dependencies | unchanged `failures=5`; no aggregate checker block modified | Expected interim dependency |
+| independent quality review | close every adversarial finding | initial C0/I5/M0 and intermediate C0/I2/M0 fixed with RED/GREEN coverage; final re-review C0/I0/M0 APPROVED | Pass |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI
