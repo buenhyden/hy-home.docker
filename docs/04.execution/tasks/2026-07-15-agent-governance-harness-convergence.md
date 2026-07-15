@@ -183,6 +183,7 @@ Redaction boundary:
 | 2026-07-15 | T-AGHC-002 multiline-HTML boundary remediation | Fresh remediation agent | Parser-backed re-review returned Critical 0, Important 1, Minor 0 after confirming all three prior gaps closed. The remaining compatibility regex could span a blank line or fence closer before reaching `>`, converting visible policy prose into stripped tag content. Extractor and repository mutations reproduced both blank-boundary and fenced-code cases with four expected failures. GREEN restricts the compatibility form to exactly one physical line ending immediately before the closing `>`, preserves the existing `mo<span\n>del` behavior, and leaves block authority with `markdown-it-py`. |
 | 2026-07-15 | T-AGHC-002 CRLF compatibility remediation | Fresh remediation agent | The next narrow re-review returned Critical 0, Important 1, Minor 0 because the single-line compatibility capture retained `\r` from a CRLF ending. The direct extractor reproduced one expected failure; the repository mutation already passed because text-mode repository reads normalize CRLF to LF and remains as boundary evidence. Excluding both CR and LF from the capture closes the direct-input case without changing parser scope. Focused 2/2 and governance 64/64 pass. |
 | 2026-07-15 | T-AGHC-002 parser correction terminal internal review | Fresh read-only reviewer | Final re-review confirmed the CRLF edge and every prior escape, nested-container, indentation, reference-definition, HTML, blank, and fence case closed. Verdict: Critical 0, Important 0, Minor 0, APPROVED. Controller external specification/quality review remains the separate task gate. |
+| 2026-07-15 | T-AGHC-002 strict tokenization remediation | Fresh remediation agent | Terminal external specification re-review found one Important issue in the remaining pre-parser multiline-HTML compatibility rewrite: even its bounded form transformed arbitrary tag-like source before CommonMark established block and inline semantics. Two repository mutations (`<model\n>defaults` and `<span title=model\n>defaults`) plus an exact parser-input oracle produced three expected failures before production edits. The compatibility rewrite is removed entirely; `markdown-it-py` now receives the frontmatter-stripped source unchanged. Strict CommonMark treats legacy `mo<span\n>del` as literal text plus a block quote, so the synthetic `model` join oracle is removed and replaced by a monotonicity assertion. The reviewer's stronger unbalanced-backtick cross-block case is present in extractor and repository matrices. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -385,6 +386,23 @@ T-AGHC-002 official-source parser correction verification:
 | repository aggregate compatibility | preserve planned Task 3–5 dependencies | unchanged five forward-dependency blocks; no aggregate checker block modified | Expected interim dependency |
 | Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,160 nodes; 27,205 edges; 1,555 communities; two unrelated observability ambiguities, 16,085 isolated nodes, and 73 thin communities corroborated against tracked infrastructure, Stage 00/03/04, validator, and tests; generated outputs restored | Pass |
 | compile, Ruff, scoped pre-commit, and diff hygiene | zero failures | compile/Ruff/diff passed; all applicable hooks passed across five remediation paths | Pass |
+
+T-AGHC-002 strict Markdown tokenization remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| terminal specification re-review | no source transformation before CommonMark parsing | C0/I1/M0; compatibility rewrite identified as the remaining issue | Pass |
+| strict-tokenization reproductions (RED) | visible tag-like prose is detected and parser receives source unchanged | 2 methods; 3 expected assertion failures before production edits | Pass |
+| stronger cross-block reproduction | a tag-like line cannot reconnect unmatched backticks across a block quote | extractor and repository fixtures retained from the reviewer case | Pass |
+| focused strict-tokenization fixtures (GREEN) | visible policy is blocked; legacy source is not synthetically joined | 4 tests; 4 passed | Pass |
+| full governance suite | no regression | 65 tests; 65 passed | Pass |
+| terminal internal quality review | strict token authority has no remaining adversarial gap | C0/I0/M0 APPROVED | Pass |
+| inference, contract, and repository harness | typed integration remains stable | inference 4/4; contract `3/14/22/3/0`; repository harness `failures=0` | Pass |
+| changed metadata and impacted lifecycle against `8c701d85` | zero violations | metadata selected 2/0/0/0; lifecycle selected 136/0 with the configured Task-directory budget warning | Pass |
+| traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,205 links; 141 operations docs; failures 0 | Pass |
+| repository aggregate compatibility | preserve planned Task 3–5 dependencies | unchanged five forward-dependency blocks; no aggregate checker block modified | Expected interim dependency |
+| Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,161 nodes; 27,207 edges; 1,555 communities; unchanged observability ambiguities and graph noise corroborated against tracked infrastructure, Stage 00/03/04, validator, and tests; generated outputs restored | Pass |
+| compile, Ruff, scoped pre-commit, and diff hygiene | zero failures | compile/Ruff/diff passed; all applicable hooks passed across four remediation paths | Pass |
 
 ## Controlled Agent Pre-commit Evidence
 

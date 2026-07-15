@@ -2463,13 +2463,6 @@ def _readme_policy_prose(text: str) -> str:
         boundary = text.find("\n---\n", 4)
         if boundary >= 0:
             text = text[boundary + 5 :]
-    text = re.sub(
-        r"<([A-Za-z][A-Za-z0-9-]*)([^\r\n<>]*)\r?\n([ \t]*)(?=>)",
-        lambda match: (
-            f"<{match.group(1)}{match.group(2)} {match.group(3)}"
-        ),
-        text,
-    )
     if _MarkdownIt is None:  # guarded by load_contract_bundle; keeps helper fail closed
         raise ContractLoadError(
             "AGC-DEPENDENCY-MISSING", "markdown-it-py", "validation-runtime"

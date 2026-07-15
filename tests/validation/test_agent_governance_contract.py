@@ -1121,23 +1121,26 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
             self.assertNotIn("AGC-REPOSITORY-README-SECTION", observed)
 
-    def test_repository_harness_rejects_multiline_and_midtoken_html_policy_prose(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            copy_task2_harness_surfaces(root)
-            readme = root / ".codex/README.md"
-            readme.write_text(
-                readme.read_text(encoding="utf-8").replace(
-                    "Change canonical Stage 00 sources first",
-                    "Provider mo<span\n>del</span>&#32;defaults are defined here.\n\n"
-                    "Change canonical Stage 00 sources first",
-                    1,
-                ),
-                encoding="utf-8",
-            )
-            bundle = contract.load_contract_bundle(root)
-            observed = codes(contract.validate_repository(root, bundle, "harness"))
-            self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
+    def test_repository_harness_rejects_visible_multiline_tag_like_policy_prose(self) -> None:
+        for source in (
+            "Provider <model\n>defaults are defined here.",
+            "Provider <span title=model\n>defaults are defined here.",
+        ):
+            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / ".codex/README.md"
+                readme.write_text(
+                    readme.read_text(encoding="utf-8").replace(
+                        "Change canonical Stage 00 sources first",
+                        f"{source}\n\nChange canonical Stage 00 sources first",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
 
     def test_repository_harness_rejects_policy_hidden_by_unbalanced_code_runs(self) -> None:
         cases = (
@@ -1184,7 +1187,7 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             "Intro `unclosed\n<div>visible block</div>\nProvider model defaults `",
             "Visible <span\n\nProvider model defaults>",
             "```text\n<span\n```\nProvider model defaults>",
-            "Provider mo<span\r\n>del</span> defaults",
+            "Intro `unclosed\n<span\n>Provider model defaults `",
             "Provider model <span title='`'>defaults</span> later `routing`",
             "Provider model <!-- ` -->defaults later `routing`",
             "Intro `unclosed\n<script>const marker=1;</script>\nProvider model defaults `",
@@ -1280,7 +1283,7 @@ model defaults
             "Intro `unclosed\n<div>visible block</div>\nProvider model defaults `",
             "Visible <span\n\nProvider model defaults>",
             "```text\n<span\n```\nProvider model defaults>",
-            "Provider mo<span\r\n>del</span> defaults",
+            "Intro `unclosed\n<span\n>Provider model defaults `",
             "Provider model <span title='`'>defaults</span> later `routing`",
             "Provider model <!-- ` -->defaults later `routing`",
             "Intro `unclosed\n<script>const marker=1;</script>\nProvider model defaults `",
@@ -1307,6 +1310,31 @@ model defaults
                         f"<{tag}>model defaults</{tag}>"
                     ),
                 )
+
+    def test_readme_policy_prose_passes_source_unchanged_to_strict_markdown(self) -> None:
+        real_markdown = contract._MarkdownIt
+        observed_sources: list[str] = []
+
+        class RecordingMarkdown:
+            def __init__(self, *args, **kwargs) -> None:
+                self.delegate = real_markdown(*args, **kwargs)
+
+            def parse(self, source: str):
+                observed_sources.append(source)
+                return self.delegate.parse(source)
+
+        legacy_source = "Provider mo<span\n>del</span> defaults"
+        with mock.patch.object(contract, "_MarkdownIt", RecordingMarkdown):
+            legacy_prose = contract._readme_policy_prose(legacy_source)
+
+        self.assertEqual([legacy_source], observed_sources)
+        self.assertNotIn(" model defaults ", legacy_prose)
+        for source in (
+            "Provider <model\n>defaults are defined here.",
+            "Provider <span title=model\n>defaults are defined here.",
+        ):
+            with self.subTest(source=source):
+                self.assertIn(" model defaults ", contract._readme_policy_prose(source))
 
     def test_codeowners_keeps_repository_principal_and_covers_governed_surfaces(self) -> None:
         text = (ROOT / ".github/CODEOWNERS").read_text(encoding="utf-8")
