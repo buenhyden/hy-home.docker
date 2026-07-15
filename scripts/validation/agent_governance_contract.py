@@ -75,11 +75,19 @@ AUTHORITY_FIELDS = {
     "authority_id",
     "path_patterns",
     "canonical_owner",
+    "entry_owners",
     "permitted_contributors",
     "mandatory_reviewers",
+    "entry_reviewers",
     "protected",
     "validators",
     "rollback",
+}
+ENTRY_AUTHORITY_FIELDS = {
+    "authority_role",
+    "catalog_collection",
+    "identity_field",
+    "agent_field",
 }
 PERMISSION_FIELDS = {"permission_id", "mutation_allowed", "evidence_required"}
 AGENT_FIELDS = {
@@ -178,6 +186,37 @@ AGENT_TIERS = {"supervisor", "worker"}
 AGENT_STATUSES = {"active", "retired"}
 CAPABILITY_DECISIONS = {"adopt", "defer", "merge", "reject"}
 TIMEOUT_UNITS = {"milliseconds", "seconds"}
+
+DOMAIN_OWNER_REFERENCE_FIELDS = MappingProxyType(
+    {
+        "agents": ("agent_id", "agent_id"),
+        "functions": ("function_id", "owner_agent"),
+    }
+)
+CATALOG_AUTHORITY_SEMANTICS = MappingProxyType(
+    {
+        "agent-function-catalog": MappingProxyType(
+            {
+                "canonical_owner": "skill-creator",
+                "mandatory_reviewers": (),
+                "entry_owners": (),
+                "entry_reviewers": (
+                    ("domain-owner", "functions", "function_id", "owner_agent"),
+                ),
+            }
+        ),
+        "agent-role-catalog": MappingProxyType(
+            {
+                "canonical_owner": "rules-engineer",
+                "mandatory_reviewers": ("workflow-supervisor",),
+                "entry_owners": (
+                    ("domain-owner", "agents", "agent_id", "agent_id"),
+                ),
+                "entry_reviewers": (),
+            }
+        ),
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -486,6 +525,112 @@ def _check_string_list(
     return tuple(strings)
 
 
+def _check_entry_authority_list(
+    value: object,
+    path: str,
+    location: str,
+    findings: list[Finding],
+    source: str,
+) -> tuple[tuple[str, str, str, str], ...]:
+    sequence = _as_sequence(value, path, location, findings, source)
+    if sequence is None:
+        return ()
+    references: list[tuple[str, str, str, str]] = []
+    for index, raw in enumerate(sequence):
+        entry_location = f"{location}[{index}]"
+        entry = _check_fields(
+            raw,
+            ENTRY_AUTHORITY_FIELDS,
+            path,
+            entry_location,
+            findings,
+            source,
+        )
+        if entry is None:
+            continue
+        role = entry.get("authority_role")
+        collection = entry.get("catalog_collection")
+        identity_field = entry.get("identity_field")
+        agent_field = entry.get("agent_field")
+        role_valid = _check_enum(
+            role,
+            {"domain-owner"},
+            path,
+            f"{entry_location}.authority_role",
+            findings,
+            source,
+        )
+        collection_valid = _check_enum(
+            collection,
+            set(DOMAIN_OWNER_REFERENCE_FIELDS),
+            path,
+            f"{entry_location}.catalog_collection",
+            findings,
+            source,
+        )
+        identity_valid = _check_string(
+            identity_field,
+            path,
+            f"{entry_location}.identity_field",
+            findings,
+            source,
+        )
+        agent_valid = _check_string(
+            agent_field,
+            path,
+            f"{entry_location}.agent_field",
+            findings,
+            source,
+        )
+        if collection_valid:
+            expected_identity, expected_agent = DOMAIN_OWNER_REFERENCE_FIELDS[str(collection)]
+            if identity_field != expected_identity:
+                _add(
+                    findings,
+                    "AGC-AUTHORITY-REFERENCE",
+                    path,
+                    f"{entry_location}.identity_field",
+                    "catalog-identity-field",
+                    "invalid-identity-field",
+                    source,
+                )
+            if agent_field != expected_agent:
+                _add(
+                    findings,
+                    "AGC-AUTHORITY-REFERENCE",
+                    path,
+                    f"{entry_location}.agent_field",
+                    "catalog-agent-reference-field",
+                    "invalid-agent-reference-field",
+                    source,
+                )
+        if all((role_valid, collection_valid, identity_valid, agent_valid)):
+            references.append(
+                (str(role), str(collection), str(identity_field), str(agent_field))
+            )
+    if len(references) != len(set(references)):
+        _add(
+            findings,
+            "AGC-SCHEMA-DUPLICATE-LIST-VALUE",
+            path,
+            location,
+            "unique-list",
+            "duplicate-list-value",
+            source,
+        )
+    if references != sorted(references):
+        _add(
+            findings,
+            "AGC-SCHEMA-NONDETERMINISTIC-ORDER",
+            path,
+            location,
+            "lexicographic-order",
+            "non-lexicographic-order",
+            source,
+        )
+    return tuple(references)
+
+
 def _check_checked_at(
     value: object,
     path: str,
@@ -744,6 +889,13 @@ def _validate_artifact_contract(
                     ):
                         authority_patterns.append((str(authority_id), pattern, location))
             _check_string(entry.get("canonical_owner"), path, f"{location}.canonical_owner", findings, source)
+            entry_owners = _check_entry_authority_list(
+                entry.get("entry_owners"),
+                path,
+                f"{location}.entry_owners",
+                findings,
+                source,
+            )
             _check_string_list(
                 entry.get("permitted_contributors"),
                 path,
@@ -752,17 +904,49 @@ def _validate_artifact_contract(
                 source,
                 require_sorted=True,
             )
-            _check_string_list(
+            mandatory_reviewers = _check_string_list(
                 entry.get("mandatory_reviewers"),
                 path,
                 f"{location}.mandatory_reviewers",
                 findings,
                 source,
+                allow_empty=True,
                 require_sorted=True,
+            ) or ()
+            entry_reviewers = _check_entry_authority_list(
+                entry.get("entry_reviewers"),
+                path,
+                f"{location}.entry_reviewers",
+                findings,
+                source,
             )
             _check_bool(entry.get("protected"), path, f"{location}.protected", findings, source)
             _check_string_list(entry.get("validators"), path, f"{location}.validators", findings, source)
             _check_string(entry.get("rollback"), path, f"{location}.rollback", findings, source)
+            semantics = CATALOG_AUTHORITY_SEMANTICS.get(str(authority_id))
+            if semantics is not None:
+                observed = {
+                    "canonical_owner": entry.get("canonical_owner"),
+                    "mandatory_reviewers": mandatory_reviewers,
+                    "entry_owners": entry_owners,
+                    "entry_reviewers": entry_reviewers,
+                }
+                for field in (
+                    "canonical_owner",
+                    "mandatory_reviewers",
+                    "entry_owners",
+                    "entry_reviewers",
+                ):
+                    if observed[field] != semantics[field]:
+                        _add(
+                            findings,
+                            "AGC-AUTHORITY-SEMANTICS",
+                            path,
+                            f"{location}.{field}",
+                            "spec-authority-policy",
+                            "authority-policy-mismatch",
+                            source,
+                        )
     _check_sorted_unique_ids(authority_ids, path, "path_authority", findings, source)
     for index, (owner, pattern, location) in enumerate(authority_patterns):
         for other_owner, other_pattern, other_location in authority_patterns[index + 1 :]:
@@ -838,6 +1022,29 @@ def _validate_catalog_contract(
         source,
         require_sorted=True,
     ) or ()
+    provider_targets = {
+        str(entry.get("provider_id"))
+        for entry in provider_document.get("providers", ())
+        if isinstance(entry, Mapping) and _is_nonempty_string(entry.get("provider_id"))
+    }
+    compatibility_targets = {
+        str(entry.get("surface_id"))
+        for entry in provider_document.get("compatibility_surfaces", ())
+        if isinstance(entry, Mapping)
+        and entry.get("status") == "active"
+        and _is_nonempty_string(entry.get("surface_id"))
+    }
+    canonical_projection_targets = tuple(sorted(provider_targets | compatibility_targets))
+    if projections != canonical_projection_targets:
+        _add(
+            findings,
+            "AGC-CATALOG-PROJECTION-TARGET-MISMATCH",
+            path,
+            "projection_targets",
+            "provider-and-active-compatibility-targets",
+            "projection-target-set-mismatch",
+            source,
+        )
     scopes = set(
         _check_string_list(
             document.get("scopes"), path, "scopes", findings, source, require_sorted=True
@@ -1137,6 +1344,35 @@ def _validate_catalog_contract(
                                 findings,
                                 CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
                                 f"path_authority[{index}].{field}",
+                                CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
+                            )
+            for field in ("entry_owners", "entry_reviewers"):
+                references = raw.get(field, ())
+                if not isinstance(references, Sequence) or isinstance(
+                    references, str | bytes
+                ):
+                    continue
+                for reference_index, reference in enumerate(references):
+                    if not isinstance(reference, Mapping):
+                        continue
+                    collection = reference.get("catalog_collection")
+                    agent_field = reference.get("agent_field")
+                    entries = document.get(str(collection), ())
+                    if not isinstance(entries, Sequence) or isinstance(
+                        entries, str | bytes
+                    ):
+                        continue
+                    for catalog_entry in entries:
+                        if not isinstance(catalog_entry, Mapping):
+                            continue
+                        if catalog_entry.get(str(agent_field)) not in agent_set:
+                            _unknown_reference(
+                                findings,
+                                CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
+                                (
+                                    f"path_authority[{index}].{field}"
+                                    f"[{reference_index}].agent_field"
+                                ),
                                 CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
                             )
 

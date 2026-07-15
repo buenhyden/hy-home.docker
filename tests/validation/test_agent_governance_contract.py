@@ -142,7 +142,22 @@ class ContractSchemaTests(unittest.TestCase):
                 values["role_transfers"][0]["successor_agent_ids"] = ["missing-agent"]
 
             mutate_yaml(root, "agent-catalog.yaml", mutate)
-            self.assertIn("AGC-CATALOG-UNKNOWN-REFERENCE", codes(validate_fixture(root)))
+            findings = validate_fixture(root)
+            locations = {
+                item.location
+                for item in findings
+                if item.code == "AGC-CATALOG-UNKNOWN-REFERENCE"
+            }
+            self.assertTrue(
+                {
+                    "agents.ci-cd-engineer.function_ids",
+                    "functions[0].owner_agent",
+                    "path_authority[0].entry_reviewers[0].agent_field",
+                    "role_transfers[0].successor_agent_ids",
+                }
+                <= locations,
+                locations,
+            )
 
     def test_overlapping_canonical_ownership_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -157,6 +172,82 @@ class ContractSchemaTests(unittest.TestCase):
             mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
             self.assertIn("AGC-AUTHORITY-OVERLAP", codes(validate_fixture(root)))
 
+    def test_role_catalog_requires_domain_owner_and_rules_engineer_authority(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                authority = next(
+                    item
+                    for item in values["path_authority"]
+                    if item["authority_id"] == "agent-role-catalog"
+                )
+                authority["canonical_owner"] = "doc-writer"
+                authority["entry_owners"] = []
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            findings = validate_fixture(root)
+            locations = {
+                item.location
+                for item in findings
+                if item.code == "AGC-AUTHORITY-SEMANTICS"
+            }
+            self.assertEqual(
+                {
+                    "path_authority[1].canonical_owner",
+                    "path_authority[1].entry_owners",
+                },
+                locations,
+            )
+
+    def test_function_catalog_requires_skill_creator_and_domain_owner_review(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                authority = next(
+                    item
+                    for item in values["path_authority"]
+                    if item["authority_id"] == "agent-function-catalog"
+                )
+                authority["canonical_owner"] = "rules-engineer"
+                authority["entry_reviewers"] = []
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            findings = validate_fixture(root)
+            locations = {
+                item.location
+                for item in findings
+                if item.code == "AGC-AUTHORITY-SEMANTICS"
+            }
+            self.assertEqual(
+                {
+                    "path_authority[0].canonical_owner",
+                    "path_authority[0].entry_reviewers",
+                },
+                locations,
+            )
+
+    def test_projection_targets_are_derived_from_providers_and_active_compatibility(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                values["projection_targets"].append("unknown-sorted-target")
+
+            mutate_yaml(root, "agent-catalog.yaml", mutate)
+            findings = validate_fixture(root)
+            self.assertEqual(
+                1,
+                sum(
+                    item.code == "AGC-CATALOG-PROJECTION-TARGET-MISMATCH"
+                    for item in findings
+                ),
+            )
+
     def test_invalid_provider_and_model_states_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -167,7 +258,11 @@ class ContractSchemaTests(unittest.TestCase):
                 values["models"][0]["provider_status"] = "sentinel-model-state"
 
             mutate_yaml(root, "provider-models.yaml", mutate)
-            self.assertIn("AGC-PROVIDER-INVALID-STATE", codes(validate_fixture(root)))
+            findings = validate_fixture(root)
+            self.assertEqual(
+                2,
+                sum(item.code == "AGC-PROVIDER-INVALID-STATE" for item in findings),
+            )
 
     def test_missing_source_url_and_checked_time_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -180,7 +275,10 @@ class ContractSchemaTests(unittest.TestCase):
 
             mutate_yaml(root, "provider-models.yaml", mutate)
             findings = validate_fixture(root)
-            self.assertIn("AGC-SCHEMA-MISSING-FIELD", codes(findings))
+            self.assertEqual(
+                2,
+                sum(item.code == "AGC-SCHEMA-MISSING-FIELD" for item in findings),
+            )
 
     def test_default_ineligible_fallback_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -183,11 +183,16 @@ path_authority:
     path_patterns:
       - docs/00.agent-governance/agents/functions/*.md
     canonical_owner: skill-creator
+    entry_owners: []
     permitted_contributors:
       - doc-writer
       - skill-creator
-    mandatory_reviewers:
-      - rules-engineer
+    mandatory_reviewers: []
+    entry_reviewers:
+      - authority_role: domain-owner
+        catalog_collection: functions
+        identity_field: function_id
+        agent_field: owner_agent
     protected: true
     validators:
       - scripts/validation/check-agent-governance-contract.py
@@ -196,11 +201,17 @@ path_authority:
     path_patterns:
       - docs/00.agent-governance/agents/agents/*.md
     canonical_owner: rules-engineer
+    entry_owners:
+      - authority_role: domain-owner
+        catalog_collection: agents
+        identity_field: agent_id
+        agent_field: agent_id
     permitted_contributors:
       - rules-engineer
       - workflow-supervisor
     mandatory_reviewers:
       - workflow-supervisor
+    entry_reviewers: []
     protected: true
     validators:
       - scripts/validation/check-agent-governance-contract.py
@@ -212,12 +223,14 @@ path_authority:
       - .github/labeler.yml
       - .github/workflows/ci-quality.yml
     canonical_owner: ci-cd-engineer
+    entry_owners: []
     permitted_contributors:
       - ci-cd-engineer
       - qa-engineer
     mandatory_reviewers:
       - qa-engineer
       - security-auditor
+    entry_reviewers: []
     protected: true
     validators:
       - scripts/validation/check-repo-contracts.sh
@@ -230,12 +243,14 @@ path_authority:
       - .gemini/**
       - docs/00.agent-governance/providers/*.md
     canonical_owner: hook-developer
+    entry_owners: []
     permitted_contributors:
       - hook-developer
       - rules-engineer
     mandatory_reviewers:
       - rules-engineer
       - security-auditor
+    entry_reviewers: []
     protected: true
     validators:
       - scripts/validation/check-agent-governance-contract.py
@@ -253,12 +268,14 @@ path_authority:
       - docs/00.agent-governance/scopes/**
       - docs/00.agent-governance/subagent-protocol.md
     canonical_owner: rules-engineer
+    entry_owners: []
     permitted_contributors:
       - doc-writer
       - rules-engineer
       - workflow-supervisor
     mandatory_reviewers:
       - workflow-supervisor
+    entry_reviewers: []
     protected: true
     validators:
       - scripts/validation/check-agent-governance-contract.py
@@ -270,12 +287,14 @@ path_authority:
       - scripts/validation/check-agent-governance-contract.py
       - tests/validation/test_agent_governance_contract.py
     canonical_owner: qa-engineer
+    entry_owners: []
     permitted_contributors:
       - eval-engineer
       - qa-engineer
       - rules-engineer
     mandatory_reviewers:
       - rules-engineer
+    entry_reviewers: []
     protected: true
     validators:
       - python3 -m unittest tests.validation.test_agent_governance_contract -v
