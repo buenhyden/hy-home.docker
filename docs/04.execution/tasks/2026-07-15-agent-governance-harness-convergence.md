@@ -184,6 +184,7 @@ Redaction boundary:
 | 2026-07-15 | T-AGHC-002 CRLF compatibility remediation | Fresh remediation agent | The next narrow re-review returned Critical 0, Important 1, Minor 0 because the single-line compatibility capture retained `\r` from a CRLF ending. The direct extractor reproduced one expected failure; the repository mutation already passed because text-mode repository reads normalize CRLF to LF and remains as boundary evidence. Excluding both CR and LF from the capture closes the direct-input case without changing parser scope. Focused 2/2 and governance 64/64 pass. |
 | 2026-07-15 | T-AGHC-002 parser correction terminal internal review | Fresh read-only reviewer | Final re-review confirmed the CRLF edge and every prior escape, nested-container, indentation, reference-definition, HTML, blank, and fence case closed. Verdict: Critical 0, Important 0, Minor 0, APPROVED. Controller external specification/quality review remains the separate task gate. |
 | 2026-07-15 | T-AGHC-002 strict tokenization remediation | Fresh remediation agent | Terminal external specification re-review found one Important issue in the remaining pre-parser multiline-HTML compatibility rewrite: even its bounded form transformed arbitrary tag-like source before CommonMark established block and inline semantics. Two repository mutations (`<model\n>defaults` and `<span title=model\n>defaults`) plus an exact parser-input oracle produced three expected failures before production edits. The compatibility rewrite is removed entirely; `markdown-it-py` now receives the frontmatter-stripped source unchanged. Strict CommonMark treats legacy `mo<span\n>del` as literal text plus a block quote, so the synthetic `model` join oracle is removed and replaced by a monotonicity assertion. The reviewer's stronger unbalanced-backtick cross-block case is present in extractor and repository matrices. |
+| 2026-07-15 | T-AGHC-002 terminal external-quality remediation | Fresh remediation agent | Terminal external quality review of `2cf8a40b..6d27d2ad` returned Critical 0, Important 2, Minor 1: raw HTML could satisfy required headings, the three fixed contract inputs bypassed the repository read boundary, and raw HTML code examples were scanned as policy prose. Initial RED produced fourteen assertions across six methods. GREEN derives only top-level H2 sections from strict Markdown tokens, preserves semantic code text in headings, routes contract and repository text through one root-confined non-symlink regular-file reader, and excludes balanced HTML `pre`/`code` examples from README policy prose. Internal adversarial review then progressed C0/I3/M1 to C0/I1/M0 to C0/I0/M0 after same-FD `openat`-style traversal, nonblocking FIFO rejection, symlink-swap protection, and full non-void HTML ancestor tracking were added. No contract data, aggregate checker, provider adapter, runtime, Compose, deployment, secret, credential, remote, or branch-protection surface changed. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -404,6 +405,26 @@ T-AGHC-002 strict Markdown tokenization remediation verification:
 | Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,161 nodes; 27,207 edges; 1,555 communities; unchanged observability ambiguities and graph noise corroborated against tracked infrastructure, Stage 00/03/04, validator, and tests; generated outputs restored | Pass |
 | compile, Ruff, scoped pre-commit, and diff hygiene | zero failures | compile/Ruff/diff passed; all applicable hooks passed across four remediation paths | Pass |
 
+T-AGHC-002 terminal external-quality remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| terminal external quality review | identify any remaining contract-read, section, or policy-prose boundary gap | C0/I2/M1; strict H2, fixed contract input, and raw HTML code boundaries identified | Pass |
+| external-quality reproductions (RED) | all reviewer cases fail before production edits | 6 methods; 14 expected assertion failures | Pass |
+| initial external-quality fixtures (GREEN) | reviewer cases pass | 6 methods; 6 passed | Pass |
+| first internal adversarial review | independently probe the remediation boundaries | C0/I3/M1; nested headings, same-path reopen race, malformed hidden tags, and semantic raw-code headings identified | Pass |
+| internal-review reproductions (RED) | every new reviewer boundary fails before its production edit | 6 methods; 5 expected failures and 1 expected pre-implementation error | Pass |
+| first internal-review fixtures (GREEN) | top-level headings, same-FD reads, FIFO, and hidden-stack cases pass | 6 methods; 6 passed | Pass |
+| second internal re-review | no malformed visible-ancestor policy bypass remains | C0/I1/M0; visible ancestors closing hidden descendants identified | Pass |
+| visible-ancestor reproductions (RED) | browser-visible prose after `div/code`, `span/code`, and `blockquote/pre` is retained | 2 methods; 6 expected subtest failures across direct and repository paths | Pass |
+| terminal focused and full governance suites | every reviewer regression and prior behavior passes | focused 5/5; full governance 74/74 | Pass |
+| terminal internal quality re-review | no remaining adversarial boundary gap | C0/I0/M0 APPROVED | Pass |
+| inference, contract, and repository harness | typed integration remains stable | inference 4/4; contract `3/14/22/3/0`; repository harness `failures=0` | Pass |
+| traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,205 links; 141 operations docs; failures 0 | Pass |
+| repository aggregate compatibility | preserve planned Task 3–5 dependencies | unchanged `failures=5`; no aggregate checker block modified | Expected interim dependency |
+| Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,171 nodes; 27,241 edges; 1,556 communities; two unrelated observability ambiguities, 16,085 isolated nodes, and 73 thin communities corroborated against tracked infrastructure, Stage 00/03/04, validator, and tests; generated outputs restored | Pass |
+| compile, Ruff, scoped pre-commit, and diff hygiene | zero failures | compile/Ruff/diff passed; all applicable hooks passed across the final four remediation paths | Pass |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI
@@ -478,6 +499,7 @@ with owner, reason, and destination.
 | T-AGHC-001 glob-overlap remediation | `fix(governance): fail closed on glob authority overlap` | `0635c044` | focused and aggregate GREEN; terminal specification and quality reviews PASS C0/I0/M0 |
 | T-AGHC-001 review evidence | `docs(task): record typed contract review closure` | this logical commit | terminal specification and quality reviews PASS C0/I0/M0 |
 | T-AGHC-002 | `refactor(governance): normalize agent authority and metadata` | this logical commit | focused/full GREEN; independent reviews pending |
+| T-AGHC-002 terminal external-quality remediation | `fix(governance): unify Markdown and contract read boundaries` | this logical commit | focused/full GREEN; terminal internal re-review C0/I0/M0; external re-review pending |
 | T-AGHC-003 | `refactor(agents): converge role and function catalogs` | pending | pending |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |
 | T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | pending | pending |

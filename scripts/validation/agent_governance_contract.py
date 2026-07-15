@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import datetime as dt
+import errno
 import fnmatch
+import os
 import pathlib
 import re
 import stat
@@ -21,6 +23,9 @@ try:
     from markdown_it import MarkdownIt as _MarkdownIt
 except ModuleNotFoundError:  # pragma: no cover - exercised through dependency guard
     _MarkdownIt = None  # type: ignore[misc,assignment]
+
+
+_OPEN_SUPPORTS_DIR_FD = os.open in os.supports_dir_fd
 
 
 CONTRACT_RELATIVE_PATHS = MappingProxyType(
@@ -285,6 +290,10 @@ class _NonStringKeyError(yaml.YAMLError):
         super().__init__("non-string mapping key")
 
 
+class _UnsafeRootFileError(Exception):
+    """A repository file failed the root-confined regular-file boundary."""
+
+
 class _UniqueKeyLoader(yaml.SafeLoader):
     pass
 
@@ -318,27 +327,97 @@ def _freeze(value: object) -> object:
     return value
 
 
-def _load_yaml(path: pathlib.Path, relative_path: str) -> Mapping[str, object]:
+def _read_root_confined_regular_text(
+    root: pathlib.Path, relative_path: pathlib.PurePosixPath
+) -> str:
+    required_flags = ("O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")
+    if any(not hasattr(os, name) for name in required_flags):
+        raise _UnsafeRootFileError
+    if not _OPEN_SUPPORTS_DIR_FD:
+        raise _UnsafeRootFileError
+    if (
+        relative_path.is_absolute()
+        or not relative_path.parts
+        or any(part in {"", ".", ".."} for part in relative_path.parts)
+    ):
+        raise _UnsafeRootFileError
+
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    final_flags = os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW
+    close_on_exec = getattr(os, "O_CLOEXEC", 0)
+    directory_flags |= close_on_exec
+    final_flags |= close_on_exec
+    descriptors: list[int] = []
+
+    def open_component(
+        component: os.PathLike[str] | str,
+        flags: int,
+        *,
+        dir_fd: int | None = None,
+    ) -> int:
+        try:
+            descriptor = os.open(component, flags, dir_fd=dir_fd)
+        except OSError as error:
+            if error.errno in {errno.ELOOP, errno.ENOTDIR, errno.ENXIO}:
+                raise _UnsafeRootFileError from error
+            raise
+        descriptors.append(descriptor)
+        return descriptor
+
     try:
-        text = path.read_text(encoding="utf-8")
+        current = open_component(root, directory_flags)
+        for part in relative_path.parts[:-1]:
+            current = open_component(part, directory_flags, dir_fd=current)
+        final = open_component(relative_path.parts[-1], final_flags, dir_fd=current)
+        if not stat.S_ISREG(os.fstat(final).st_mode):
+            raise _UnsafeRootFileError
+        chunks: list[bytes] = []
+        while True:
+            chunk = os.read(final, 64 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        return b"".join(chunks).decode("utf-8")
+    finally:
+        for descriptor in reversed(descriptors):
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+
+
+def _load_yaml(
+    root: pathlib.Path, relative_path: pathlib.PurePosixPath
+) -> Mapping[str, object]:
+    relative_text = relative_path.as_posix()
+    try:
+        text = _read_root_confined_regular_text(root, relative_path)
     except FileNotFoundError as error:
-        raise ContractLoadError("AGC-CONTRACT-MISSING", relative_path, "file") from error
-    except (OSError, UnicodeError) as error:
-        raise ContractLoadError("AGC-CONTRACT-READ", relative_path, "file") from error
+        raise ContractLoadError("AGC-CONTRACT-MISSING", relative_text, "file") from error
+    except _UnsafeRootFileError as error:
+        raise ContractLoadError(
+            "AGC-CONTRACT-UNSAFE-FILE", relative_text, "file"
+        ) from error
+    except UnicodeError as error:
+        raise ContractLoadError(
+            "AGC-CONTRACT-ENCODING", relative_text, "file"
+        ) from error
+    except OSError as error:
+        raise ContractLoadError("AGC-CONTRACT-READ", relative_text, "file") from error
     try:
         value = yaml.load(text, Loader=_UniqueKeyLoader)
     except _DuplicateKeyError as error:
         raise ContractLoadError(
-            "AGC-YAML-DUPLICATE-KEY", relative_path, f"line:{error.line}"
+            "AGC-YAML-DUPLICATE-KEY", relative_text, f"line:{error.line}"
         ) from error
     except _NonStringKeyError as error:
         raise ContractLoadError(
-            "AGC-YAML-NONSTRING-KEY", relative_path, f"line:{error.line}"
+            "AGC-YAML-NONSTRING-KEY", relative_text, f"line:{error.line}"
         ) from error
     except yaml.YAMLError as error:
-        raise ContractLoadError("AGC-YAML-MALFORMED", relative_path, "yaml") from error
+        raise ContractLoadError("AGC-YAML-MALFORMED", relative_text, "yaml") from error
     if not isinstance(value, Mapping):
-        raise ContractLoadError("AGC-YAML-NOT-MAPPING", relative_path, "root")
+        raise ContractLoadError("AGC-YAML-NOT-MAPPING", relative_text, "root")
     return _freeze(value)  # type: ignore[return-value]
 
 
@@ -349,11 +428,9 @@ def load_contract_bundle(root: pathlib.Path) -> ContractBundle:
         raise ContractLoadError(
             "AGC-DEPENDENCY-MISSING", "markdown-it-py", "validation-runtime"
         )
-    resolved_root = root.resolve()
     loaded: dict[str, Mapping[str, object]] = {}
     for key, relative in CONTRACT_RELATIVE_PATHS.items():
-        relative_text = relative.as_posix()
-        loaded[key] = _load_yaml(resolved_root / relative, relative_text)
+        loaded[key] = _load_yaml(root, relative)
     return ContractBundle(
         artifacts=loaded["artifacts"],
         catalog=loaded["catalog"],
@@ -2280,30 +2357,21 @@ class _RepositoryReader:
         if relative in self._cache:
             return self._cache[relative]
         self._cache[relative] = None
-        path = self.root / pathlib.PurePosixPath(relative)
         try:
-            root_resolved = self.root.resolve(strict=True)
-            cursor = self.root
-            unsafe = self.root.is_symlink()
-            for part in pathlib.PurePosixPath(relative).parts:
-                cursor = cursor / part
-                unsafe = unsafe or cursor.is_symlink()
-            metadata = path.stat(follow_symlinks=False)
-            resolved = path.resolve(strict=True)
-            unsafe = unsafe or not stat.S_ISREG(metadata.st_mode)
-            unsafe = unsafe or not resolved.is_relative_to(root_resolved)
-            if unsafe:
-                _add(
-                    self.findings,
-                    "AGC-REPOSITORY-UNSAFE-FILE",
-                    relative,
-                    location,
-                    "inside-root-nonsymlink-regular-file",
-                    "unsafe-governed-file",
-                    source,
-                )
-                return None
-            text = path.read_text(encoding="utf-8")
+            text = _read_root_confined_regular_text(
+                self.root, pathlib.PurePosixPath(relative)
+            )
+        except _UnsafeRootFileError:
+            _add(
+                self.findings,
+                "AGC-REPOSITORY-UNSAFE-FILE",
+                relative,
+                location,
+                "inside-root-nonsymlink-regular-file",
+                "unsafe-governed-file",
+                source,
+            )
+            return None
         except UnicodeError:
             _add(
                 self.findings,
@@ -2345,43 +2413,26 @@ def _frontmatter(text: str) -> tuple[list[str], Mapping[str, object] | None]:
     return [str(key) for key in values], values
 
 
-def _unfenced_markdown_lines(text: str) -> tuple[str, ...]:
-    lines: list[str] = []
-    fence_marker: str | None = None
-    fence_length = 0
-    for line in text.splitlines():
-        opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
-        if fence_marker is None and opening:
-            marker = opening.group(1)
-            info = opening.group(2)
-            if marker[0] == "`" and "`" in info:
-                lines.append(line)
-            else:
-                fence_marker = marker[0]
-                fence_length = len(marker)
-                if not lines or lines[-1] != "":
-                    lines.append("")
-            continue
-        if fence_marker is not None:
-            closing = re.match(
-                rf"^ {{0,3}}{re.escape(fence_marker)}{{{fence_length},}}[ \t]*$",
-                line,
-            )
-            if closing:
-                fence_marker = None
-                fence_length = 0
-                if not lines or lines[-1] != "":
-                    lines.append("")
-            continue
-        lines.append(line)
-    return tuple(lines)
+def _markdown_body(text: str) -> str:
+    if text.startswith("---\n"):
+        boundary = text.find("\n---\n", 4)
+        if boundary >= 0:
+            return text[boundary + 5 :]
+    return text
 
 
 def _section_names(text: str) -> tuple[str, ...]:
     headings: list[str] = []
-    unfenced = "\n".join(_unfenced_markdown_lines(text))
-    for match in re.finditer(r"^##\s+(.+?)\s*$", unfenced, re.MULTILINE):
-        heading = re.sub(r"^\d+(?:\.\d+)*\.?\s+", "", match.group(1).strip())
+    markdown = _markdown_parser()
+    tokens = markdown.parse(_markdown_body(text))
+    for index, token in enumerate(tokens[:-1]):
+        if token.type != "heading_open" or token.tag != "h2" or token.level != 0:
+            continue
+        inline = tokens[index + 1]
+        if inline.type != "inline":
+            continue
+        heading = _visible_inline(inline.children or (), include_code=True).strip()
+        heading = re.sub(r"^\d+(?:\.\d+)*\.?\s+", "", heading)
         headings.append(heading)
     return tuple(headings)
 
@@ -2398,15 +2449,27 @@ class _VisibleHTMLTextParser(HTMLParser):
         "tbody", "td", "textarea", "tfoot", "th", "thead", "title", "tr", "track",
         "ul",
     }
-    _HIDDEN_TAGS = {"script", "style"}
+    _DEFAULT_HIDDEN_TAGS = frozenset({"code", "pre", "script", "style"})
+    _VOID_TAGS = frozenset(
+        {
+            "area", "base", "basefont", "bgsound", "br", "col", "embed",
+            "frame", "hr", "img", "input", "keygen", "link", "meta",
+            "param", "source", "track", "wbr",
+        }
+    )
 
-    def __init__(self) -> None:
+    def __init__(self, *, preserve_code: bool = False) -> None:
         super().__init__(convert_charrefs=True)
         self.parts: list[str] = []
-        self._hidden_depth = 0
+        self._hidden_tags = (
+            frozenset({"script", "style"})
+            if preserve_code
+            else self._DEFAULT_HIDDEN_TAGS
+        )
+        self._element_stack: list[str] = []
 
     def handle_data(self, data: str) -> None:
-        if self._hidden_depth == 0:
+        if not any(tag in self._hidden_tags for tag in self._element_stack):
             self.parts.append(data)
 
     def handle_starttag(
@@ -2415,35 +2478,42 @@ class _VisibleHTMLTextParser(HTMLParser):
         del attrs
         if tag in self._BLOCK_TAGS:
             self.parts.append("\n\n")
-        if tag in self._HIDDEN_TAGS:
-            self._hidden_depth += 1
+        if tag not in self._VOID_TAGS:
+            self._element_stack.append(tag)
 
     def handle_startendtag(
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> None:
-        self.handle_starttag(tag, attrs)
-        self.handle_endtag(tag)
+        del attrs
+        if tag in self._BLOCK_TAGS:
+            self.parts.append("\n\n")
 
     def handle_endtag(self, tag: str) -> None:
-        if tag in self._HIDDEN_TAGS and self._hidden_depth:
-            self._hidden_depth -= 1
+        if tag in self._element_stack:
+            reverse_index = self._element_stack[::-1].index(tag)
+            matching_index = len(self._element_stack) - reverse_index - 1
+            del self._element_stack[matching_index:]
         if tag in self._BLOCK_TAGS:
             self.parts.append("\n\n")
 
 
-def _visible_html(markup: str) -> str:
-    parser = _VisibleHTMLTextParser()
+def _visible_html(markup: str, *, preserve_code: bool = False) -> str:
+    parser = _VisibleHTMLTextParser(preserve_code=preserve_code)
     parser.feed(markup)
     parser.close()
     return "".join(parser.parts)
 
 
-def _visible_inline(children: Sequence[object]) -> str:
+def _visible_inline(
+    children: Sequence[object], *, include_code: bool = False
+) -> str:
     markup: list[str] = []
     for child in children:
         child_type = getattr(child, "type", "")
         content = getattr(child, "content", "")
         if child_type == "code_inline":
+            if include_code:
+                markup.append(html_escape(content))
             continue
         if child_type == "html_inline":
             markup.append(content)
@@ -2453,24 +2523,24 @@ def _visible_inline(children: Sequence[object]) -> str:
             markup.append(html_escape(content))
         elif child_type == "text":
             markup.append(html_escape(content))
-    return _visible_html("".join(markup))
+    return _visible_html("".join(markup), preserve_code=include_code)
+
+
+def _markdown_parser() -> object:
+    if _MarkdownIt is None:  # guarded by load_contract_bundle; keeps helpers fail closed
+        raise ContractLoadError(
+            "AGC-DEPENDENCY-MISSING", "markdown-it-py", "validation-runtime"
+        )
+    return _MarkdownIt("commonmark", {"html": True})
 
 
 def _readme_policy_prose(text: str) -> str:
     """Return normalized natural-language README prose for policy-topic scans."""
 
-    if text.startswith("---\n"):
-        boundary = text.find("\n---\n", 4)
-        if boundary >= 0:
-            text = text[boundary + 5 :]
-    if _MarkdownIt is None:  # guarded by load_contract_bundle; keeps helper fail closed
-        raise ContractLoadError(
-            "AGC-DEPENDENCY-MISSING", "markdown-it-py", "validation-runtime"
-        )
-    markdown = _MarkdownIt("commonmark", {"html": True})
+    markdown = _markdown_parser()
     visible_blocks: list[str] = []
     heading_depth = 0
-    for token in markdown.parse(text):
+    for token in markdown.parse(_markdown_body(text)):
         if token.type == "heading_open":
             heading_depth += 1
             continue

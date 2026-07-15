@@ -142,6 +142,125 @@ class ContractLoadingTests(unittest.TestCase):
             self.assertEqual("AGC-YAML-NONSTRING-KEY", context.exception.code)
             self.assertNotIn("sentinel", str(context.exception))
 
+    def test_fixed_contract_paths_reject_external_symlinks_without_reading_targets(self) -> None:
+        for relative in contract.CONTRACT_RELATIVE_PATHS.values():
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                outside = root.parent / f"outside-{pathlib.Path(relative).name}"
+                outside.write_text("outside-sentinel: true\n", encoding="utf-8")
+                path = root / relative
+                path.unlink()
+                path.symlink_to(outside)
+                try:
+                    with self.assertRaises(contract.ContractLoadError) as context:
+                        contract.load_contract_bundle(root)
+                    self.assertEqual("AGC-CONTRACT-UNSAFE-FILE", context.exception.code)
+                    self.assertEqual(relative.as_posix(), context.exception.path)
+                    self.assertNotIn("outside-sentinel", str(context.exception))
+                finally:
+                    outside.unlink(missing_ok=True)
+
+    def test_contract_reader_fails_closed_for_nonregular_encoding_and_read_errors(self) -> None:
+        original_open = os.open
+        original_read = os.read
+        cases = (
+            ("nonregular-directory", "AGC-CONTRACT-UNSAFE-FILE"),
+            ("nonregular-fifo", "AGC-CONTRACT-UNSAFE-FILE"),
+            ("encoding", "AGC-CONTRACT-ENCODING"),
+            ("read", "AGC-CONTRACT-READ"),
+        )
+        for relative in contract.CONTRACT_RELATIVE_PATHS.values():
+            for mutation, expected in cases:
+                with self.subTest(
+                    relative=relative, mutation=mutation
+                ), tempfile.TemporaryDirectory() as directory:
+                    root = pathlib.Path(directory)
+                    copy_contracts(root)
+                    path = root / relative
+                    if mutation == "nonregular-directory":
+                        path.unlink()
+                        path.mkdir()
+                    elif mutation == "nonregular-fifo":
+                        path.unlink()
+                        os.mkfifo(path)
+                    elif mutation == "encoding":
+                        path.write_bytes(b"\xff\xfe")
+                    if mutation == "read":
+                        target_fd: int | None = None
+
+                        def record_target_open(
+                            candidate, flags: int, mode: int = 0o777, *, dir_fd=None
+                        ) -> int:
+                            nonlocal target_fd
+                            descriptor = original_open(
+                                candidate, flags, mode, dir_fd=dir_fd
+                            )
+                            if candidate == relative.name and dir_fd is not None:
+                                target_fd = descriptor
+                            return descriptor
+
+                        def fail_target_read(descriptor: int, size: int) -> bytes:
+                            if descriptor == target_fd:
+                                raise PermissionError("read-sentinel")
+                            return original_read(descriptor, size)
+
+                        with mock.patch.object(
+                            contract.os, "open", new=record_target_open
+                        ), mock.patch.object(
+                            contract.os, "read", new=fail_target_read
+                        ):
+                            with self.assertRaises(
+                                contract.ContractLoadError
+                            ) as context:
+                                contract.load_contract_bundle(root)
+                    else:
+                        with self.assertRaises(contract.ContractLoadError) as context:
+                            contract.load_contract_bundle(root)
+                    self.assertEqual(expected, context.exception.code)
+                    self.assertEqual(relative.as_posix(), context.exception.path)
+                    self.assertNotIn(directory, str(context.exception))
+
+    def test_contract_reader_opens_and_reads_the_same_confined_file_descriptor(self) -> None:
+        relative = contract.CONTRACT_RELATIVE_PATHS["artifacts"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+            path = root / relative
+            outside = root.parent / "outside-agent-governance-artifacts.yaml"
+            outside.write_text(
+                path.read_text(encoding="utf-8") + "\n# outside-sentinel\n",
+                encoding="utf-8",
+            )
+            original_open = os.open
+            swapped = False
+
+            def swap_before_final_open(
+                candidate, flags: int, mode: int = 0o777, *, dir_fd=None
+            ) -> int:
+                nonlocal swapped
+                if candidate == relative.name and dir_fd is not None and not swapped:
+                    path.unlink()
+                    path.symlink_to(outside)
+                    swapped = True
+                return original_open(candidate, flags, mode, dir_fd=dir_fd)
+
+            try:
+                with mock.patch.object(
+                    contract.os, "open", new=swap_before_final_open
+                ), mock.patch.object(
+                    pathlib.Path,
+                    "read_text",
+                    side_effect=AssertionError("path was reopened after validation"),
+                ):
+                    with self.assertRaises(contract.ContractLoadError) as context:
+                        contract.load_contract_bundle(root)
+                self.assertTrue(swapped)
+                self.assertEqual("AGC-CONTRACT-UNSAFE-FILE", context.exception.code)
+                self.assertNotIn("outside-sentinel", str(context.exception))
+            finally:
+                outside.unlink(missing_ok=True)
+
 
 class ContractSchemaTests(unittest.TestCase):
     def test_artifact_profiles_require_unique_ids_sections_and_registered_values(self) -> None:
@@ -883,6 +1002,75 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
+    def test_repository_harness_does_not_accept_raw_html_required_heading(self) -> None:
+        for raw_html in (
+            "<pre>\n## Scope\n</pre>",
+            "<code>\n## Scope\n</code>",
+        ):
+            with self.subTest(raw_html=raw_html), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                provider = root / ".claude/CLAUDE.md"
+                provider.write_text(
+                    provider.read_text(encoding="utf-8").replace(
+                        "## Scope",
+                        f"### Scope\n\n{raw_html}",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                self.assertIn(
+                    "AGC-REPOSITORY-MISSING-SECTION",
+                    codes(contract.validate_repository(root, bundle, "harness")),
+                )
+
+    def test_section_names_use_only_strict_h2_tokens(self) -> None:
+        source = """\
+## 2. Visible Section
+
+<pre>
+## Pre Example
+</pre>
+
+<code>
+## Code Example
+</code>
+
+```markdown
+## Fence Example
+```
+"""
+        self.assertEqual(("Visible Section",), contract._section_names(source))
+
+    def test_section_names_require_top_level_h2_and_preserve_semantic_code_text(self) -> None:
+        self.assertEqual(
+            ("Scope",),
+            contract._section_names(
+                "## <code>Scope</code>\n\n> ## Quote Example\n\n- ## List Example\n"
+            ),
+        )
+
+    def test_repository_harness_does_not_accept_nested_required_heading(self) -> None:
+        for nested_heading in ("> ## Scope", "- ## Scope"):
+            with self.subTest(
+                nested_heading=nested_heading
+            ), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                provider = root / ".claude/CLAUDE.md"
+                provider.write_text(
+                    provider.read_text(encoding="utf-8").replace(
+                        "## Scope", f"### Scope\n\n{nested_heading}", 1
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                self.assertIn(
+                    "AGC-REPOSITORY-MISSING-SECTION",
+                    codes(contract.validate_repository(root, bundle, "harness")),
+                )
+
     def test_repository_harness_does_not_close_fence_with_info_text(self) -> None:
         self.assertNotIn(
             "Scope",
@@ -1026,14 +1214,19 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 copy_task2_harness_surfaces(root)
                 bundle = contract.load_contract_bundle(root)
                 target = root / relative
-                original = pathlib.Path.read_text
+                target_stat = target.stat()
+                original_read = os.read
 
-                def guarded_read(path, *args, **kwargs):
-                    if path == target:
+                def guarded_read(descriptor: int, size: int) -> bytes:
+                    descriptor_stat = os.fstat(descriptor)
+                    if (
+                        descriptor_stat.st_dev == target_stat.st_dev
+                        and descriptor_stat.st_ino == target_stat.st_ino
+                    ):
                         raise OSError("sentinel-private-read-error")
-                    return original(path, *args, **kwargs)
+                    return original_read(descriptor, size)
 
-                with mock.patch.object(pathlib.Path, "read_text", guarded_read):
+                with mock.patch.object(contract.os, "read", new=guarded_read):
                     findings = contract.validate_repository(root, bundle, "harness")
                 rendered = contract.render_findings(findings)
                 self.assertIn("AGC-REPOSITORY-FILE-READ", codes(findings))
@@ -1120,6 +1313,57 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             observed = codes(contract.validate_repository(root, bundle, "harness"))
             self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
             self.assertNotIn("AGC-REPOSITORY-README-SECTION", observed)
+
+    def test_repository_harness_ignores_policy_examples_in_raw_html_code(self) -> None:
+        for raw_html in (
+            "<pre>Provider model defaults are defined here.</pre>",
+            "<code>Provider model defaults are defined here.</code>",
+        ):
+            with self.subTest(raw_html=raw_html), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / ".codex/README.md"
+                readme.write_text(
+                    readme.read_text(encoding="utf-8").replace(
+                        "Change canonical Stage 00 sources first",
+                        f"{raw_html}\n\nChange canonical Stage 00 sources first",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertNotIn("AGC-REPOSITORY-README-POLICY", observed)
+
+    def test_repository_harness_keeps_visible_prose_after_hidden_html_ancestor_closes(self) -> None:
+        sources = (
+            "<pre><code>example</pre>"
+            "Provider model defaults are defined here.</code>",
+            "<div><code>example</div>"
+            "Provider model defaults are defined here.</code>",
+            "<span><code>example</span>"
+            "Provider model defaults are defined here.</code>",
+            "<blockquote><pre>example</blockquote>"
+            "Provider model defaults are defined here.</pre>",
+        )
+        for source in sources:
+            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / ".codex/README.md"
+                readme.write_text(
+                    readme.read_text(encoding="utf-8").replace(
+                        "Change canonical Stage 00 sources first",
+                        f"{source}\n\nChange canonical Stage 00 sources first",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                self.assertIn(
+                    "AGC-REPOSITORY-README-POLICY",
+                    codes(contract.validate_repository(root, bundle, "harness")),
+                )
 
     def test_repository_harness_rejects_visible_multiline_tag_like_policy_prose(self) -> None:
         for source in (
@@ -1245,6 +1489,41 @@ model defaults
         self.assertIn(
             " model defaults ",
             contract._readme_policy_prose("Provider <span>model</span>&#32;defaults."),
+        )
+        self.assertIn(
+            " model defaults ",
+            contract._readme_policy_prose("Provider <div>model defaults</div>."),
+        )
+        for raw_html in (
+            "Provider <code>model defaults</code> here.",
+            "<pre>Provider model defaults here.</pre>",
+            "<pre><code>Provider model defaults here.</code></pre>",
+        ):
+            with self.subTest(raw_html=raw_html):
+                self.assertNotIn(
+                    " model defaults ", contract._readme_policy_prose(raw_html)
+                )
+        self.assertIn(
+            " model defaults ",
+            contract._readme_policy_prose(
+                "<pre><code>example</pre>Provider model defaults are defined here.</code>"
+            ),
+        )
+        for raw_html in (
+            "<div><code>example</div>Provider model defaults are defined here.</code>",
+            "<span><code>example</span>Provider model defaults are defined here.</code>",
+            "<blockquote><pre>example</blockquote>"
+            "Provider model defaults are defined here.</pre>",
+        ):
+            with self.subTest(raw_html=raw_html):
+                self.assertIn(
+                    " model defaults ", contract._readme_policy_prose(raw_html)
+                )
+        self.assertNotIn(
+            " model defaults ",
+            contract._readme_policy_prose(
+                "<pre>Provider </code>model defaults are an example.</pre>"
+            ),
         )
 
     def test_readme_policy_prose_requires_equal_code_span_delimiters(self) -> None:
