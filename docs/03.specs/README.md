@@ -100,6 +100,7 @@ docs/03.specs/
 ├── 129-document-contract-canonicalization/ # Completed contract-first foundation; post-closure findings resolved
 ├── 130-template-contract-system-canonicalization/ # Completed template-role, body, validator, and direct-consumer canonicalization
 ├── 131-document-corpus-lifecycle-migration-foundation/ # Completed corpus migration manifest, retention, archive, and validation foundation
+├── 132-agent-governance-harness-convergence/ # Draft Stage 00 authority, native provider adapter, catalog, model, and loop convergence design
 └── README.md                            # This file
 ```
 
