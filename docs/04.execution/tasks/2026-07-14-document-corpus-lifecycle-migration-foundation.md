@@ -143,7 +143,7 @@ Redaction boundary:
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Complete — reviewed range `133b3daa..160ff097`; terminal Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 0 |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Complete — final reviewed range `1b42a100..46e3ff5e`; terminal Spec PASS and Quality PASS each returned Critical 0, Important 0, Minor 0; I-Q01 mutation closure is confirmed |
 | T-DCLM-005 | Foundation manifest and generated evidence | Complete — post-promotion Spec and Quality reviews both returned APPROVED C0/I0/M0 at full commit `b3f8c5cb09366cdf045e9f595c9622a521807f71`. Foundation remains blocking with 24/24 `pass`/`pass` rows and the exact Stage 90 manifest route; later waves remain advisory with null manifest paths. Manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. |
-| T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Not run |
+| T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Whole-branch remediation complete; fresh re-reviews pending; wrapper not run |
 
 ## Work Log
 
@@ -194,6 +194,7 @@ Redaction boundary:
 | 2026-07-15 | T-DCLM-005 advisory terminal re-reviews | Fresh specification reviewer and separate quality reviewer | The complete package `cce4fcde..fa27247854777882822cac1e4b58784e42d05076` received Spec PASS C0/I0/M0 and Quality PASS C0/I0/M0. Both reviewers independently confirmed 24/24 canonical consumer lists with 506 memberships and zero mismatches, immutable per-source rollback with zero mismatches, and no floating `HEAD`. The quality review package SHA-256 is `e8c7e43997f5ffe48a8c77a0e3ade25454c9f8b99d05d24f03f68bf6e2491fef`. This approval authorizes only the Plan-defined Foundation promotion. |
 | 2026-07-15 | T-DCLM-005 Foundation promotion | Fresh implementation agent | Applied only the approved promotion boundary: all 24 manifest review verdicts are `pass`/`pass`, manifest enforcement is `blocking`, and the registry Foundation entry is `blocking` with exact path `docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml`. Every later wave remains `advisory` with a null manifest path. The canonical summary was regenerated. The tracked Task and mandatory Stage 00 progress log record the promotion; including `docs/00.agent-governance/memory/progress.md` is the sole documented Plan-surface deviation because the root `AGENTS.md` bootstrap requires progress updates. Final manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. No Task 6, all-files QA, remote, runtime, archive, snapshot, tombstone, corpus-leaf, workflow, provider, or secret action occurred. Explicit post-promotion Spec and Quality reapproval remains required. |
 | 2026-07-15 | T-DCLM-005 post-promotion terminal closure | Fresh specification reviewer and separate quality reviewer | Both reviewers evaluated full promotion commit `b3f8c5cb09366cdf045e9f595c9622a521807f71` and returned APPROVED C0/I0/M0. The committed manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. T-DCLM-005 is complete. This closure changes evidence only; Task 6 has not started, and no test, implementation, generated output, promotion byte, runtime, remote, archive, snapshot, tombstone, workflow, provider, or secret changed. |
+| 2026-07-15 | T-DCLM-006 whole-branch review remediation | Fresh remediation agent | Closed the four Important findings from the first whole-branch review in two logical commits. `9c3fb049` restores the exact public skeleton signature, makes blocking/pass Foundation evidence complete and exact, and applies value-free confidentiality validation to every evidence list. `ae88ae62` updates only existing prose in the four Stage 90 lifecycle routers from reviewed advisory to reviewed blocking Foundation. Focused RED/GREEN, complete metadata/lifecycle suites, wrapper-unit coverage, production gates, generated-owner freshness, repository contracts, and Graphify corroboration pass. The actual all-files wrapper, closure statuses, runtime/remote/archive/later-wave changes, and merge were not performed; fresh whole-branch specification and quality re-reviews remain required. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -481,7 +482,9 @@ Post-promotion Spec and Quality reviews of full commit
 `b3f8c5cb09366cdf045e9f595c9622a521807f71` both returned APPROVED C0/I0/M0.
 Manifest SHA-256 remains
 `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`.
-Task 5 is complete; Task 6 has not started.
+Task 5 is complete. Task 6 remediation is implemented and verified, but remains
+open pending fresh whole-branch specification and quality re-reviews. The
+actual all-files wrapper and closure steps have not run.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -680,9 +683,32 @@ subsequent promotion is deliberately narrow: Foundation alone is blocking with
 24/24 `pass`/`pass` verdicts and the exact canonical manifest route; all later
 waves remain advisory/null. Post-promotion Spec and Quality reviews of full
 commit `b3f8c5cb09366cdf045e9f595c9622a521807f71` both returned APPROVED
-C0/I0/M0. Task 5 is complete; Task 6 has not started.
+C0/I0/M0. Task 5 is complete. Task 6 remediation is implemented and verified,
+but fresh whole-branch specification and quality re-reviews, the actual
+all-files wrapper, and closure remain pending.
 
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
+
+## Task 6 Whole-Branch Review Remediation Evidence
+
+The first whole-branch review returned four Important findings. Commit
+`9c3fb049` resolves the public API, blocking evidence-completeness, exact
+rollback/ownership, and confidentiality findings. Commit `ae88ae62` resolves
+the Stage 90 router-state finding without adding new router policy sections.
+
+| Evidence | Result |
+| --- | --- |
+| Strict RED | Seven focused tests reproduced 39 expected failures; the pending advisory skeleton control passed. |
+| Focused GREEN | Core 6/6, CLI confidentiality 3/3, and reviewer-requested focused suite 10/10 passed. |
+| Full suites | Metadata 209/209 and lifecycle 89/89 passed. The first lifecycle restart exposed one blocking candidate-fixture inheritance defect; the fixture now declares advisory/null explicitly before the complete GREEN rerun. |
+| Wrapper contract | Unit/contract suite 29/29 passed. The actual all-files wrapper was not invoked. |
+| Production gates | Metadata changed selection 37/0/0/0; lifecycle contract 0; Foundation manifest PASS; promoted 0; impacted 370/0 with only the approved Stage 04 Tasks budget warning; traceability 46/0; alignment 650 documents, 5,182 links, 141 operations documents, zero failures; repository contracts `failures=0`. |
+| Generated owners | Security readiness, audit implementation matrix, LLM Wiki index, and LLM Wiki coverage checks were fresh; no generated fallout was required. |
+| Graphify | `graphify update .` passed at 1,150/1,150 files, 24,381 nodes, 26,908 edges, and 1,589 communities. An initial obsolete health-script path exited with `ENOENT`; the corrected `scripts/knowledge/report-graphify-health.sh` exited 0 with advisory status for two unrelated infrastructure cross-root inferences. The report was corroborated against tracked Stage 00, Spec 131, its Plan/Task, Stage 90/99 contracts, executable validators/tests, and routers, then both Graphify outputs were restored. |
+
+The branch is ready only for fresh whole-branch specification and quality
+re-reviews. No closure status, remote or runtime mutation, archive/later-wave
+execution, actual all-files wrapper, or merge is authorized by this evidence.
 
 ## Commit Ledger
 
@@ -728,6 +754,8 @@ Foundation logical commits:
 - `4e8d23f3` — T-DCLM-005 advisory review remediation `fix(validation): bind lifecycle advisory evidence`; canonical summary and downstream owner regeneration produced no diff, so no generated remediation commit was created.
 - `fa272478` — T-DCLM-005 tracked advisory re-review evidence `docs(execution): record lifecycle advisory remediation evidence`; terminal advisory Spec and Quality re-reviews both returned PASS C0/I0/M0 over the complete package.
 - `b3f8c5cb` — T-DCLM-005 Foundation promotion `docs(governance): promote corpus lifecycle foundation gate`; post-promotion Spec and Quality reviewers both returned APPROVED C0/I0/M0 for the full commit.
+- `9c3fb049` — T-DCLM-006 whole-branch validator/test remediation `fix(governance): harden Foundation evidence validation`.
+- `ae88ae62` — T-DCLM-006 Stage 90 router remediation `docs(references): align Foundation lifecycle routing`.
 
 The later ledger-only closure commit records these terminal verdicts and does
 not alter the reviewed promotion, manifest, generated summary, contracts, or
