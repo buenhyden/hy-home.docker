@@ -38,6 +38,31 @@ def copy_contracts(root: pathlib.Path) -> None:
         shutil.copy2(CONTRACT_DIR / name, target / name)
 
 
+def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
+    """Copy the registered Task 2 repository projection into a fixture root."""
+
+    copy_contracts(root)
+    for relative_path in (
+        "AGENTS.md",
+        "CLAUDE.md",
+        "GEMINI.md",
+        ".agents/README.md",
+        ".claude/CLAUDE.md",
+        ".codex/README.md",
+        "scripts/README.md",
+    ):
+        source = ROOT / relative_path
+        target = root / relative_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+    governance = root / "docs/00.agent-governance"
+    shutil.copytree(
+        ROOT / "docs/00.agent-governance",
+        governance,
+        dirs_exist_ok=True,
+    )
+
+
 def mutate_yaml(root: pathlib.Path, name: str, mutate) -> None:
     path = root / "docs/00.agent-governance/contracts" / name
     values = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -110,6 +135,39 @@ class ContractLoadingTests(unittest.TestCase):
 
 
 class ContractSchemaTests(unittest.TestCase):
+    def test_artifact_profiles_require_unique_ids_sections_and_registered_values(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                values["artifacts"][1]["profile_id"] = values["artifacts"][0][
+                    "profile_id"
+                ]
+                values["artifacts"][2]["repository_section"] = "unknown"
+                values["artifacts"][2]["expected_values"]["legacy"] = True
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            observed = codes(validate_fixture(root))
+            self.assertIn("AGC-SCHEMA-DUPLICATE-ID", observed)
+            self.assertIn("AGC-SCHEMA-INVALID-ENUM", observed)
+            self.assertIn("AGC-ARTIFACT-EXPECTED-KEY", observed)
+
+    def test_root_and_readme_profiles_require_exact_contract_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                del values["root_shims"][0]["provider_target"]
+                values["root_shims"][1]["import_style"] = "literal-fence"
+                del values["readme_profiles"][0]["required_sections"]
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            observed = codes(validate_fixture(root))
+            self.assertIn("AGC-SCHEMA-MISSING-FIELD", observed)
+            self.assertIn("AGC-SCHEMA-INVALID-ENUM", observed)
+
     def test_unknown_top_level_key_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -666,8 +724,94 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             with self.subTest(path=path.as_posix()):
                 text = path.read_text(encoding="utf-8")
                 self.assertNotIn("hookify.*.local.md", text)
-                if "hookify" in text.lower():
-                    self.assertIn(".claude/hookify.*.md", text)
+                if "hookify" not in text.lower():
+                    continue
+                self.assertIn(
+                    "docs/00.agent-governance/rules/hooks/hookify.*.md",
+                    text,
+                )
+        matches = sorted(
+            ROOT.glob("docs/00.agent-governance/rules/hooks/hookify.*.md")
+        )
+        self.assertTrue(matches)
+        tracked = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", *[str(path.relative_to(ROOT)) for path in matches]],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, tracked.returncode, tracked.stderr)
+
+    def test_repository_harness_rejects_wrong_metadata_keys_order_and_values(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            provider = root / f"{self.GOVERNANCE}/providers/claude.md"
+            text = provider.read_text(encoding="utf-8")
+            provider.write_text(
+                text.replace(
+                    "layer: agentic\nruntime: claude",
+                    "runtime: wrong-provider\nlayer: agentic\nlegacy: true",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+            observed = codes(contract.validate_repository(root, bundle, "harness"))
+            self.assertIn("AGC-REPOSITORY-METADATA-KEYS", observed)
+            self.assertIn("AGC-REPOSITORY-METADATA-KEY-ORDER", observed)
+            self.assertIn("AGC-REPOSITORY-METADATA-VALUE", observed)
+
+    def test_repository_harness_rejects_missing_required_sections(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            provider = root / f"{self.GOVERNANCE}/providers/claude.md"
+            provider.write_text(
+                provider.read_text(encoding="utf-8").replace(
+                    "## 2. Provider-Specific Rules",
+                    "### Provider-Specific Rules",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+            self.assertIn(
+                "AGC-REPOSITORY-MISSING-SECTION",
+                codes(contract.validate_repository(root, bundle, "harness")),
+            )
+
+    def test_repository_harness_rejects_invalid_root_shim_envelope(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            shim = root / "CLAUDE.md"
+            shim.write_text(
+                shim.read_text(encoding="utf-8")
+                + "\n## Provider Policy\n\nUse an unregistered provider default.\n",
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+            self.assertIn(
+                "AGC-REPOSITORY-ROOT-SHIM-ENVELOPE",
+                codes(contract.validate_repository(root, bundle, "harness")),
+            )
+
+    def test_repository_harness_rejects_readme_sections_and_forbidden_policy(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            readme = root / ".codex/README.md"
+            readme.write_text(
+                readme.read_text(encoding="utf-8")
+                + "\n## Model Defaults\n\nProvider model defaults are owned here.\n",
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+            observed = codes(contract.validate_repository(root, bundle, "harness"))
+            self.assertIn("AGC-REPOSITORY-README-SECTION", observed)
+            self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
 
     def test_codeowners_keeps_repository_principal_and_covers_governed_surfaces(self) -> None:
         text = (ROOT / ".github/CODEOWNERS").read_text(encoding="utf-8")

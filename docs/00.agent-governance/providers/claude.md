@@ -18,8 +18,10 @@ Claude Code-specific guidance for this repository.
 - Keep provider-neutral behavior in `providers/agents-md.md` and shared rules.
 - Use `@path` imports for modular instruction loading.
 - Use project memory hierarchy intentionally (enterprise/project/local) and avoid duplicating the same rule across layers.
-- Keep tracked Hookify rules at `.claude/hookify.*.md`; do not cite or create
-  nonexistent `.local.md` variants.
+- Keep canonical Hookify rules at
+  `docs/00.agent-governance/rules/hooks/hookify.*.md`. The repository does not
+  yet track a Claude-local Hookify projection; do not cite or create one until
+  the registered provider renderer owns it.
 - Claude exposes provider-native Markdown adapters for the Stage 00 canonical
   agent and function catalog (`providers/agents-md.md` §5). `.claude/agents/`
   and `.claude/skills/` are runtime adapters, not separate governance.

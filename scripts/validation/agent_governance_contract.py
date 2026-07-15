@@ -57,17 +57,29 @@ PROVIDER_TOP_FIELDS = COMMON_TOP_FIELDS | {
 }
 
 ARTIFACT_FIELDS = {
+    "profile_id",
     "artifact_type",
     "path_pattern",
+    "repository_section",
     "canonical",
     "required_keys",
     "key_order",
     "required_sections",
+    "expected_values",
 }
-ROOT_SHIM_FIELDS = {"path", "provider", "bootstrap_target", "frontmatter"}
+ROOT_SHIM_FIELDS = {
+    "path",
+    "provider",
+    "bootstrap_target",
+    "provider_target",
+    "memory_targets",
+    "import_style",
+    "frontmatter",
+}
 README_PROFILE_FIELDS = {
     "profile_id",
     "path_pattern",
+    "required_sections",
     "allowed_sections",
     "forbidden_policy_topics",
 }
@@ -787,17 +799,32 @@ def _validate_artifact_contract(
     _check_common(document, ARTIFACT_TOP_FIELDS, path, findings)
 
     artifacts = _as_sequence(document.get("artifacts"), path, "artifacts", findings, source)
-    artifact_ids: list[str] = []
+    profile_ids: list[str] = []
     if artifacts is not None:
         for index, raw in enumerate(artifacts):
             location = f"artifacts[{index}]"
             entry = _check_fields(raw, ARTIFACT_FIELDS, path, location, findings, source)
             if entry is None:
                 continue
-            artifact_type = entry.get("artifact_type")
-            if _check_string(artifact_type, path, f"{location}.artifact_type", findings, source):
-                artifact_ids.append(str(artifact_type))
+            profile_id = entry.get("profile_id")
+            if _check_string(profile_id, path, f"{location}.profile_id", findings, source):
+                profile_ids.append(str(profile_id))
+            _check_string(
+                entry.get("artifact_type"),
+                path,
+                f"{location}.artifact_type",
+                findings,
+                source,
+            )
             _check_path(entry.get("path_pattern"), path, f"{location}.path_pattern", findings, source)
+            _check_enum(
+                entry.get("repository_section"),
+                {"catalog", "harness", "providers"},
+                path,
+                f"{location}.repository_section",
+                findings,
+                source,
+            )
             _check_bool(entry.get("canonical"), path, f"{location}.canonical", findings, source)
             required_keys = _check_string_list(
                 entry.get("required_keys"),
@@ -821,6 +848,7 @@ def _validate_artifact_contract(
                 f"{location}.required_sections",
                 findings,
                 source,
+                allow_empty=True,
             )
             if required_keys is not None and key_order is not None and required_keys != key_order:
                 _add(
@@ -832,7 +860,44 @@ def _validate_artifact_contract(
                     "key-order-mismatch",
                     source,
                 )
-    _check_sorted_unique_ids(artifact_ids, path, "artifacts", findings, source)
+            expected_values = entry.get("expected_values")
+            if not isinstance(expected_values, Mapping):
+                _add(
+                    findings,
+                    "AGC-SCHEMA-TYPE",
+                    path,
+                    f"{location}.expected_values",
+                    "mapping",
+                    "non-mapping",
+                    source,
+                )
+            else:
+                for key, value in expected_values.items():
+                    if not isinstance(key, str) or (
+                        not isinstance(value, str) and not _is_bool(value)
+                    ):
+                        _add(
+                            findings,
+                            "AGC-SCHEMA-TYPE",
+                            path,
+                            f"{location}.expected_values",
+                            "string-keys-and-scalar-values",
+                            "invalid-mapping-entry",
+                            source,
+                        )
+                if required_keys is not None and not set(expected_values).issubset(
+                    required_keys
+                ):
+                    _add(
+                        findings,
+                        "AGC-ARTIFACT-EXPECTED-KEY",
+                        path,
+                        f"{location}.expected_values",
+                        "required-key-subset",
+                        "unregistered-expected-key",
+                        source,
+                    )
+    _check_sorted_unique_ids(profile_ids, path, "artifacts", findings, source)
 
     root_shims = _as_sequence(document.get("root_shims"), path, "root_shims", findings, source)
     root_paths: list[str] = []
@@ -860,6 +925,36 @@ def _validate_artifact_contract(
                 findings,
                 source,
             )
+            _check_path(
+                entry.get("provider_target"),
+                path,
+                f"{location}.provider_target",
+                findings,
+                source,
+            )
+            memory_targets = _check_string_list(
+                entry.get("memory_targets"),
+                path,
+                f"{location}.memory_targets",
+                findings,
+                source,
+            )
+            for target_index, target in enumerate(memory_targets or ()):
+                _check_path(
+                    target,
+                    path,
+                    f"{location}.memory_targets[{target_index}]",
+                    findings,
+                    source,
+                )
+            _check_enum(
+                entry.get("import_style"),
+                {"at-dot-import", "at-import", "numbered-load"},
+                path,
+                f"{location}.import_style",
+                findings,
+                source,
+            )
             _check_enum(
                 entry.get("frontmatter"),
                 {"forbidden", "provider-required"},
@@ -884,6 +979,13 @@ def _validate_artifact_contract(
             if _check_string(profile_id, path, f"{location}.profile_id", findings, source):
                 readme_ids.append(str(profile_id))
             _check_path(entry.get("path_pattern"), path, f"{location}.path_pattern", findings, source)
+            _check_string_list(
+                entry.get("required_sections"),
+                path,
+                f"{location}.required_sections",
+                findings,
+                source,
+            )
             _check_string_list(
                 entry.get("allowed_sections"),
                 path,
@@ -1871,6 +1973,269 @@ def validate_contract_bundle(root: pathlib.Path, bundle: ContractBundle) -> list
     return sorted(findings, key=finding_sort_key)
 
 
+def _expand_braces(pattern: str) -> tuple[str, ...]:
+    """Expand the contract's simple comma-separated brace expressions."""
+
+    match = re.search(r"\{([^{}]+)\}", pattern)
+    if match is None:
+        return (pattern,)
+    expanded: list[str] = []
+    for choice in match.group(1).split(","):
+        candidate = pattern[: match.start()] + choice + pattern[match.end() :]
+        expanded.extend(_expand_braces(candidate))
+    return tuple(expanded)
+
+
+def _registered_paths(root: pathlib.Path, pattern: str) -> tuple[pathlib.Path, ...]:
+    paths: set[pathlib.Path] = set()
+    for expanded in _expand_braces(pattern):
+        if any(marker in expanded for marker in ("*", "?", "[")):
+            paths.update(path for path in root.glob(expanded) if path.is_file())
+        else:
+            candidate = root / expanded
+            if candidate.is_file():
+                paths.add(candidate)
+    return tuple(sorted(paths, key=lambda item: item.relative_to(root).as_posix()))
+
+
+def _frontmatter(text: str) -> tuple[list[str], Mapping[str, object] | None]:
+    if not text.startswith("---\n"):
+        return [], {}
+    boundary = text.find("\n---\n", 4)
+    if boundary < 0:
+        return [], None
+    try:
+        values = yaml.load(text[4:boundary], Loader=_UniqueKeyLoader)
+    except (_DuplicateKeyError, _NonStringKeyError, yaml.YAMLError):
+        return [], None
+    if not isinstance(values, Mapping):
+        return [], None
+    return [str(key) for key in values], values
+
+
+def _section_names(text: str) -> tuple[str, ...]:
+    headings: list[str] = []
+    for match in re.finditer(r"^##\s+(.+?)\s*$", text, re.MULTILINE):
+        heading = re.sub(r"^\d+(?:\.\d+)*\.?\s+", "", match.group(1).strip())
+        headings.append(heading)
+    return tuple(headings)
+
+
+def _validate_artifact_projection(
+    root: pathlib.Path,
+    artifact_document: Mapping[str, object],
+    section: str,
+    findings: list[Finding],
+) -> None:
+    for index, entry in enumerate(_sequence_or_empty(artifact_document.get("artifacts"))):
+        if not isinstance(entry, Mapping):
+            continue
+        repository_section = entry.get("repository_section")
+        if section != "all" and repository_section != section:
+            continue
+        pattern = entry.get("path_pattern")
+        if not isinstance(pattern, str) or not _is_safe_repo_path(pattern):
+            continue
+        paths = _registered_paths(root, pattern)
+        if not paths:
+            _add(
+                findings,
+                "AGC-REPOSITORY-MISSING-ARTIFACT",
+                pattern,
+                f"artifacts[{index}].path_pattern",
+                "registered-artifact",
+                "missing-artifact",
+                "agent-governance-artifacts",
+            )
+            continue
+        required_keys = tuple(
+            value
+            for value in _sequence_or_empty(entry.get("required_keys"))
+            if isinstance(value, str)
+        )
+        key_order = tuple(
+            value
+            for value in _sequence_or_empty(entry.get("key_order"))
+            if isinstance(value, str)
+        )
+        required_sections = tuple(
+            value
+            for value in _sequence_or_empty(entry.get("required_sections"))
+            if isinstance(value, str)
+        )
+        expected_values = entry.get("expected_values")
+        for path in paths:
+            relative = path.relative_to(root).as_posix()
+            text = path.read_text(encoding="utf-8")
+            keys, metadata = _frontmatter(text)
+            if metadata is None:
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-METADATA-PARSE",
+                    relative,
+                    "frontmatter",
+                    "valid-yaml-mapping",
+                    "invalid-frontmatter",
+                    "agent-governance-artifacts",
+                )
+                continue
+            if set(keys) != set(required_keys):
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-METADATA-KEYS",
+                    relative,
+                    "frontmatter",
+                    "exact-profile-keys",
+                    "key-set-mismatch",
+                    "agent-governance-artifacts",
+                )
+            if tuple(keys) != key_order:
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-METADATA-KEY-ORDER",
+                    relative,
+                    "frontmatter",
+                    "exact-profile-key-order",
+                    "key-order-mismatch",
+                    "agent-governance-artifacts",
+                )
+            if isinstance(expected_values, Mapping):
+                for key, expected in expected_values.items():
+                    resolved = path.stem if expected == "$path_stem" else expected
+                    if metadata.get(key) != resolved:
+                        _add(
+                            findings,
+                            "AGC-REPOSITORY-METADATA-VALUE",
+                            relative,
+                            f"frontmatter.{key}",
+                            "registered-profile-value",
+                            "value-mismatch",
+                            "agent-governance-artifacts",
+                        )
+            headings = set(_section_names(text))
+            for required in required_sections:
+                if required not in headings:
+                    _add(
+                        findings,
+                        "AGC-REPOSITORY-MISSING-SECTION",
+                        relative,
+                        f"section.{required}",
+                        "required-profile-section",
+                        "missing-section",
+                        "agent-governance-artifacts",
+                    )
+
+
+def _validate_root_shims(
+    root: pathlib.Path,
+    artifact_document: Mapping[str, object],
+    findings: list[Finding],
+) -> None:
+    for index, entry in enumerate(_sequence_or_empty(artifact_document.get("root_shims"))):
+        if not isinstance(entry, Mapping) or not isinstance(entry.get("path"), str):
+            continue
+        relative = str(entry["path"])
+        path = root / relative
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        targets = [entry.get("bootstrap_target"), entry.get("provider_target")]
+        targets.extend(_sequence_or_empty(entry.get("memory_targets")))
+        valid_targets = [target for target in targets if isinstance(target, str)]
+        metadata_keys, metadata = _frontmatter(text)
+        envelope_valid = metadata == {} and not metadata_keys
+        envelope_valid = envelope_valid and _section_names(text) == ("Bootstrap",)
+        envelope_valid = envelope_valid and all(text.count(target) == 1 for target in valid_targets)
+        nonblank = [line for line in text.splitlines() if line.strip()]
+        style = entry.get("import_style")
+        if style == "at-import":
+            expected = [f"# {relative}", "## Bootstrap", *[f"@{target}" for target in valid_targets]]
+            envelope_valid = envelope_valid and nonblank == expected
+        elif style == "at-dot-import":
+            expected = [f"# {relative}", "## Bootstrap", *[f"@./{target}" for target in valid_targets]]
+            envelope_valid = envelope_valid and nonblank == expected
+        elif style == "numbered-load":
+            envelope_valid = envelope_valid and len(valid_targets) == 4
+            if len(valid_targets) == 4:
+                expected = [
+                    f"# {relative}",
+                    "## Bootstrap",
+                    f"1. Load `{valid_targets[0]}`.",
+                    f"2. Load `{valid_targets[1]}`.",
+                    f"3. Load `{valid_targets[2]}` and `{valid_targets[3]}`.",
+                ]
+                envelope_valid = envelope_valid and nonblank == expected
+        if not envelope_valid:
+            _add(
+                findings,
+                "AGC-REPOSITORY-ROOT-SHIM-ENVELOPE",
+                relative,
+                f"root_shims[{index}]",
+                "exact-bootstrap-envelope",
+                "shim-envelope-mismatch",
+                "agent-governance-artifacts",
+            )
+
+
+def _validate_readme_profiles(
+    root: pathlib.Path,
+    artifact_document: Mapping[str, object],
+    findings: list[Finding],
+) -> None:
+    for index, entry in enumerate(_sequence_or_empty(artifact_document.get("readme_profiles"))):
+        if not isinstance(entry, Mapping) or not isinstance(entry.get("path_pattern"), str):
+            continue
+        for path in _registered_paths(root, str(entry["path_pattern"])):
+            relative = path.relative_to(root).as_posix()
+            text = path.read_text(encoding="utf-8")
+            headings = _section_names(text)
+            allowed = set(
+                value
+                for value in _sequence_or_empty(entry.get("allowed_sections"))
+                if isinstance(value, str)
+            )
+            required = set(
+                value
+                for value in _sequence_or_empty(entry.get("required_sections"))
+                if isinstance(value, str)
+            )
+            for heading in headings:
+                if heading not in allowed:
+                    _add(
+                        findings,
+                        "AGC-REPOSITORY-README-SECTION",
+                        relative,
+                        f"readme_profiles[{index}]",
+                        "allowed-profile-section",
+                        "unexpected-section",
+                        "agent-governance-artifacts",
+                    )
+            for heading in sorted(required - set(headings)):
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-MISSING-SECTION",
+                    relative,
+                    f"section.{heading}",
+                    "required-readme-section",
+                    "missing-section",
+                    "agent-governance-artifacts",
+                )
+            normalized_text = re.sub(
+                r"[^a-z0-9]+", " ", " ".join(headings).lower()
+            )
+            for topic in _sequence_or_empty(entry.get("forbidden_policy_topics")):
+                if isinstance(topic, str) and topic.replace("-", " ") in normalized_text:
+                    _add(
+                        findings,
+                        "AGC-REPOSITORY-README-POLICY",
+                        relative,
+                        f"readme_profiles[{index}].forbidden_policy_topics",
+                        "navigation-only-profile",
+                        "forbidden-policy-topic",
+                        "agent-governance-artifacts",
+                    )
+
+
 def validate_repository(
     root: pathlib.Path, bundle: ContractBundle, section: str = "all"
 ) -> list[Finding]:
@@ -1893,6 +2258,7 @@ def validate_repository(
             )
         ]
     findings: list[Finding] = []
+    _validate_artifact_projection(root, bundle.artifacts, section, findings)
     if section in {"all", "catalog"}:
         for collection_name in ("agents", "functions"):
             entries = _sequence_or_empty(bundle.catalog.get(collection_name))
@@ -1951,6 +2317,8 @@ def validate_repository(
                     "provider-models",
                 )
     if section in {"all", "harness"}:
+        _validate_root_shims(root, bundle.artifacts, findings)
+        _validate_readme_profiles(root, bundle.artifacts, findings)
         harness = root / "docs/00.agent-governance/harness-implementation-map.md"
         if not harness.is_file():
             _add(

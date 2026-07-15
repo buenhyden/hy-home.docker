@@ -14,12 +14,14 @@ in Stage 00 and the root `CLAUDE.md` performs the executable imports.
 
 - `agents/`: Claude-native agent adapters.
 - `skills/`: shared skill projections using canonical `SKILL.md` names.
-- `hooks/`, `hookify.*.md`, `settings.json`: Claude-native event wiring.
+- `hooks/`, `settings.json`: Claude-native event wiring.
 
 ## How to Work in This Area
 
 Change canonical Stage 00 sources first and update this projection only through
-the registered renderer. Use `.claude/hookify.*.md` for tracked Hookify rules.
+the registered renderer. Canonical Hookify rules are tracked at
+`docs/00.agent-governance/rules/hooks/hookify.*.md`; a Claude-local Hookify
+projection is not tracked until the provider renderer owns it.
 
 ## Related Documents
 

@@ -1,8 +1,10 @@
 schema_version: 1
 checked_at: "2026-07-15T10:00:00+09:00"
 artifacts:
-  - artifact_type: agent-function
+  - profile_id: agent-function
+    artifact_type: agent-function
     path_pattern: docs/00.agent-governance/agents/functions/*.md
+    repository_section: catalog
     canonical: true
     required_keys:
       - layer
@@ -24,8 +26,15 @@ artifacts:
       - Gates
       - Failure Handling
       - Related Documents
-  - artifact_type: agent-role
+    expected_values:
+      layer: agentic
+      artifact_type: agent-function
+      function_id: $path_stem
+      status: active
+  - profile_id: agent-role
+    artifact_type: agent-role
     path_pattern: docs/00.agent-governance/agents/agents/*.md
+    repository_section: catalog
     canonical: true
     required_keys:
       - layer
@@ -50,103 +59,356 @@ artifacts:
       - Success Criteria
       - Failure and Escalation
       - Related Documents
-  - artifact_type: governance-document
-    path_pattern: docs/00.agent-governance/{harness-implementation-map.md,memory/*.md,rules/*.md,scopes/*.md,subagent-protocol.md}
+    expected_values:
+      layer: agentic
+      artifact_type: agent-role
+      agent_id: $path_stem
+      status: active
+  - profile_id: governance-harness-map
+    artifact_type: governance-document
+    path_pattern: docs/00.agent-governance/harness-implementation-map.md
+    repository_section: harness
     canonical: true
     required_keys:
       - layer
     key_order:
       - layer
     required_sections:
-      - Context and Objective
-      - Requirements and Constraints
-      - Implementation Flow
-      - Operational Procedures
-      - Maintenance and Safety
+      - Control / Governance
+      - Provider Hooks
+      - Validation / CI
       - Related Documents
-  - artifact_type: hookify-rule
-    path_pattern: docs/00.agent-governance/rules/hooks/hookify.*.md
+    expected_values:
+      layer: agentic
+  - profile_id: governance-memory-index
+    artifact_type: readme-index
+    path_pattern: docs/00.agent-governance/memory/README.md
+    repository_section: harness
     canonical: true
-    required_keys:
-      - name
-      - enabled
-      - event
-      - conditions
-      - action
-    key_order:
-      - name
-      - enabled
-      - event
-      - conditions
-      - action
-    required_sections:
-      - Related Documents
-  - artifact_type: provider-overlay
-    path_pattern: docs/00.agent-governance/providers/{agents-md,claude,codex,gemini}.md
-    canonical: true
-    required_keys:
-      - layer
-      - runtime
-    key_order:
-      - layer
-      - runtime
-    required_sections:
-      - Context and Objective
-      - Provider-Specific Rules
-      - Runtime Boundary
-      - Operational Practices
-      - Related Documents
-  - artifact_type: provider-project-entry
-    path_pattern: .claude/CLAUDE.md
-    canonical: false
-    required_keys:
-      - layer
-      - runtime
-    key_order:
-      - layer
-      - runtime
-    required_sections:
-      - Scope
-      - Structure
-      - How to Work in This Area
-      - Related Documents
-  - artifact_type: readme-index
-    path_pattern: docs/00.agent-governance/**/README.md
-    canonical: true
-    required_keys:
-      - layer
-    key_order:
-      - layer
+    required_keys: [layer]
+    key_order: [layer]
     required_sections:
       - Overview
       - Audience
       - Scope
       - Structure
       - How to Work in This Area
+      - Operational Procedures
+      - Maintenance and Safety
       - Related Documents
-  - artifact_type: root-instruction-shim
+    expected_values:
+      layer: agentic
+  - profile_id: governance-memory-note
+    artifact_type: governance-document
+    path_pattern: docs/00.agent-governance/memory/{2026-05-31-gemini-model-tier-review,agentic-harness-contract-hardening,docker-doc-contract-backlog,execution-stage-legacy-debt,github-ci-contract-audit,governance-memory-usage-contract,harness-agent-first-gap-audit,stage-docs-lifecycle-audit}.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer]
+    key_order: [layer]
+    required_sections:
+      - Problem
+      - Context
+      - Resolution
+      - Evidence
+      - Related Documents
+    expected_values:
+      layer: agentic
+  - profile_id: governance-progress-log
+    artifact_type: governance-document
+    path_pattern: docs/00.agent-governance/memory/progress.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer, status]
+    key_order: [layer, status]
+    required_sections:
+      - Current Work Log
+      - Phase Tracker
+      - Open Issues
+      - Related Documents
+    expected_values:
+      layer: agentic
+      status: active
+  - profile_id: governance-rule
+    artifact_type: governance-document
+    path_pattern: docs/00.agent-governance/rules/*.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer]
+    key_order: [layer]
+    required_sections: [Related Documents]
+    expected_values:
+      layer: agentic
+  - profile_id: governance-scope
+    artifact_type: governance-document
+    path_pattern: docs/00.agent-governance/scopes/*.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer]
+    key_order: [layer]
+    required_sections: [Related Documents]
+    expected_values:
+      layer: $path_stem
+  - profile_id: governance-subagent-protocol
+    artifact_type: governance-document
+    path_pattern: docs/00.agent-governance/subagent-protocol.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer]
+    key_order: [layer]
+    required_sections:
+      - Spawn Rules
+      - Required Delegation Envelope
+      - Agent Catalog Reference
+      - Communication Protocol
+      - Error Handling
+      - Lifecycle
+      - Related Documents
+    expected_values:
+      layer: agentic
+  - profile_id: hookify-bash-pattern
+    artifact_type: hookify-rule
+    path_pattern: docs/00.agent-governance/rules/hooks/{hookify.block-direct-main-push,hookify.block-git-no-verify,hookify.require-logical-commits-before-stop,hookify.warn-branch-naming,hookify.warn-conventional-commit,hookify.warn-docker-infra-stop,hookify.warn-force-push,hookify.warn-pre-commit-manual}.md
+    repository_section: harness
+    canonical: true
+    required_keys:
+      - name
+      - enabled
+      - event
+      - pattern
+      - action
+    key_order:
+      - name
+      - enabled
+      - event
+      - pattern
+      - action
+    required_sections:
+      - Related Documents
+    expected_values:
+      enabled: true
+  - profile_id: hookify-file-conditions
+    artifact_type: hookify-rule
+    path_pattern: docs/00.agent-governance/rules/hooks/{hookify.block-absolute-file-link,hookify.block-gha-secrets-in-run,hookify.block-plaintext-secret-compose,hookify.block-unpinned-gha-action,hookify.warn-governance-memory-edit,hookify.warn-hook-parity-edit,hookify.warn-korean-in-governance,hookify.warn-parallel-doc-file,hookify.warn-post-edit-style-automation,hookify.warn-stage-doc-edit}.md
+    repository_section: harness
+    canonical: true
+    required_keys: [name, enabled, event, conditions, action]
+    key_order: [name, enabled, event, conditions, action]
+    required_sections: [Related Documents]
+    expected_values:
+      enabled: true
+  - profile_id: hookify-file-message
+    artifact_type: hookify-rule
+    path_pattern: docs/00.agent-governance/rules/hooks/hookify.enforce-docs-templates.md
+    repository_section: harness
+    canonical: true
+    required_keys: [name, enabled, event, conditions, action]
+    key_order: [name, enabled, event, conditions, action]
+    required_sections: []
+    expected_values:
+      enabled: true
+  - profile_id: provider-compatibility-index
+    artifact_type: readme-index
+    path_pattern: .agents/README.md
+    repository_section: harness
+    canonical: false
+    required_keys: []
+    key_order: []
+    required_sections:
+      - Scope
+      - Structure
+      - How to Work in This Area
+      - Related Documents
+    expected_values: {}
+  - profile_id: provider-neutral-overlay
+    artifact_type: provider-overlay
+    path_pattern: docs/00.agent-governance/providers/agents-md.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer, runtime]
+    key_order: [layer, runtime]
+    required_sections:
+      - Purpose
+      - Baseline Rules
+      - This Repository Policy
+      - Instruction File Hierarchy and Precedence
+      - Stage 00 Canonical Adapter Model
+      - Related Documents
+      - References
+    expected_values:
+      layer: agentic
+      runtime: shared
+  - profile_id: provider-project-claude
+    artifact_type: provider-project-entry
+    path_pattern: .claude/CLAUDE.md
+    repository_section: harness
+    canonical: false
+    required_keys: [layer, runtime]
+    key_order: [layer, runtime]
+    required_sections:
+      - Scope
+      - Structure
+      - How to Work in This Area
+      - Related Documents
+    expected_values:
+      layer: agentic
+      runtime: claude
+  - profile_id: provider-project-codex
+    artifact_type: provider-project-entry
+    path_pattern: .codex/README.md
+    repository_section: harness
+    canonical: false
+    required_keys: [layer, runtime]
+    key_order: [layer, runtime]
+    required_sections:
+      - Scope
+      - Structure
+      - How to Work in This Area
+      - Related Documents
+    expected_values:
+      layer: agentic
+      runtime: codex
+  - profile_id: provider-runtime-claude
+    artifact_type: provider-overlay
+    path_pattern: docs/00.agent-governance/providers/claude.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer, runtime]
+    key_order: [layer, runtime]
+    required_sections:
+      - Context and Objective
+      - Provider-Specific Rules
+      - Root Import Boundary
+      - Hook Parity Contract
+      - Operational Practices
+      - Related Documents
+      - References
+    expected_values:
+      layer: agentic
+      runtime: claude
+  - profile_id: provider-runtime-codex
+    artifact_type: provider-overlay
+    path_pattern: docs/00.agent-governance/providers/codex.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer, runtime]
+    key_order: [layer, runtime]
+    required_sections:
+      - Context and Objective
+      - Provider-Specific Rules
+      - Runtime Boundary
+      - QA/CI Tooling
+      - Hook Parity Contract
+      - Operational Practices
+      - Related Documents
+    expected_values:
+      layer: agentic
+      runtime: codex
+  - profile_id: provider-runtime-gemini
+    artifact_type: provider-overlay
+    path_pattern: docs/00.agent-governance/providers/gemini.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer, runtime]
+    key_order: [layer, runtime]
+    required_sections:
+      - Context and Objective
+      - Provider-Specific Rules
+      - Root Import Boundary
+      - Hook Parity Contract
+      - Operational Practices
+      - Related Documents
+      - References
+    expected_values:
+      layer: agentic
+      runtime: gemini
+  - profile_id: readme-agent-catalog
+    artifact_type: readme-index
+    path_pattern: docs/00.agent-governance/agents/README.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer]
+    key_order: [layer]
+    required_sections:
+      - Overview
+      - Audience
+      - Purpose
+      - Scope
+      - Structure
+      - Agents
+      - Functions
+      - Function / Skill Lifecycle
+      - How to Work in This Area
+      - Related Documents
+    expected_values:
+      layer: agentic
+  - profile_id: readme-governance-hub
+    artifact_type: readme-index
+    path_pattern: docs/00.agent-governance/README.md
+    repository_section: harness
+    canonical: true
+    required_keys: [layer]
+    key_order: [layer]
+    required_sections:
+      - Overview
+      - Audience
+      - Scope
+      - Core Concepts
+      - Governance Coverage Matrix
+      - Structure
+      - How to Work in This Area
+      - Related Documents
+    expected_values:
+      layer: agentic
+  - profile_id: root-instruction-shim
+    artifact_type: root-instruction-shim
     path_pattern: "{AGENTS,CLAUDE,GEMINI}.md"
+    repository_section: harness
     canonical: false
     required_keys: []
     key_order: []
     required_sections:
       - Bootstrap
+    expected_values: {}
 root_shims:
   - path: AGENTS.md
     provider: shared
     bootstrap_target: docs/00.agent-governance/rules/bootstrap.md
+    provider_target: docs/00.agent-governance/providers/agents-md.md
+    memory_targets:
+      - docs/00.agent-governance/memory/README.md
+      - docs/00.agent-governance/memory/progress.md
+    import_style: numbered-load
     frontmatter: forbidden
   - path: CLAUDE.md
     provider: claude
     bootstrap_target: docs/00.agent-governance/rules/bootstrap.md
+    provider_target: docs/00.agent-governance/providers/claude.md
+    memory_targets:
+      - docs/00.agent-governance/memory/README.md
+      - docs/00.agent-governance/memory/progress.md
+    import_style: at-import
     frontmatter: forbidden
   - path: GEMINI.md
     provider: gemini
     bootstrap_target: docs/00.agent-governance/rules/bootstrap.md
+    provider_target: docs/00.agent-governance/providers/gemini.md
+    memory_targets:
+      - docs/00.agent-governance/memory/README.md
+      - docs/00.agent-governance/memory/progress.md
+    import_style: at-dot-import
     frontmatter: forbidden
 readme_profiles:
   - profile_id: agent-governance-hub
     path_pattern: docs/00.agent-governance/README.md
+    required_sections:
+      - Overview
+      - Audience
+      - Scope
+      - Core Concepts
+      - Governance Coverage Matrix
+      - Structure
+      - How to Work in This Area
+      - Related Documents
     allowed_sections:
       - Overview
       - Audience
@@ -161,7 +423,12 @@ readme_profiles:
       - provider-native-schema
       - retry-policy
   - profile_id: provider-surface-index
-    path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md,.gemini/README.md}"
+    path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md}"
+    required_sections:
+      - Scope
+      - Structure
+      - How to Work in This Area
+      - Related Documents
     allowed_sections:
       - Overview
       - Audience
@@ -175,6 +442,19 @@ readme_profiles:
       - path-authority
   - profile_id: scripts-index
     path_pattern: scripts/README.md
+    required_sections:
+      - Overview
+      - Audience
+      - Scope
+      - Structure
+      - Purpose Folder Implementation
+      - How to Work in This Area
+      - Active Surface Retention Rules
+      - Navigation / Inventory
+      - Hardening Tier Arguments
+      - Script Lifecycle
+      - Utilities & Automation
+      - Related Documents
     allowed_sections:
       - Overview
       - Audience

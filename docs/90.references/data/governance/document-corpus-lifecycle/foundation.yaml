@@ -25,6 +25,7 @@ entries:
   - CLAUDE.md
   - GEMINI.md
   - docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md
+  - docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
   - docs/00.agent-governance/harness-implementation-map.md
   - docs/00.agent-governance/memory/harness-agent-first-gap-audit.md
   - docs/00.agent-governance/rules/agentic.md

@@ -32,8 +32,8 @@ layer: agentic
 - **Agent**: a named role in `agents/agents/` with a scope, purpose, expected
   inputs/outputs, provider adapter bindings, and model tier.
 - **Skill / Function**: a reusable capability in `agents/functions/` and, when
-  supported by a runtime, a provider adapter under `.claude/skills/`,
-  `.claude/skills/` or `.agents/skills/`. Shared skill policy defines when a
+  supported by a runtime, a provider adapter under `.claude/skills/` or
+  `.agents/skills/`. Shared skill policy defines when a
   skill should be considered, what artifact it may produce, and which provider
   surface exposes it; provider-local skill files may not create separate
   governance.
