@@ -199,6 +199,7 @@ Redaction boundary:
 | 2026-07-15 | T-AGHC-003 typed policy compatibility | Fresh implementation agent | Final aggregate verification exposed one cross-generation conflict: the canonical typed policy profile and template require `## Scope`, while the legacy aggregate still required `## Policy Scope` for every policy. The aggregate now selects the scope heading from typed `artifact_type: policy` metadata, rejects the opposite-generation duplicate, and preserves `## Policy Scope` for policies that have not entered the staged typed migration. This removed the Task 3-owned failure without broad corpus migration. |
 | 2026-07-16 | T-AGHC-003 independent-review RED | Fresh remediation agent | Quality review found two Important boundary failures: loose substring ownership plus path-based stale deletion could remove an unowned replacement, and the compatibility wrapper accepted trailing unknown or conflicting arguments. Specification review found two additional Important failures: all 44 generated skill projections retained source-relative links that resolved from the wrong directory, and an empty, symlinked, or non-directory `.codex/skills` root could escape exact-absence drift detection. The dependency-correct focused RED ran 16 methods and produced 9 failures plus 6 errors; the one existing unknown-renderer-flag case remained a negative control. |
 | 2026-07-16 | T-AGHC-003 independent-review remediation | Fresh remediation agent | Marker cleanup now recognizes the exact generated header and source identity, atomically quarantines the current same-directory object, verifies the captured regular object, and deletes only verified renderer-owned content. Unowned or nonregular captures are restored through no-overwrite linking; a restoration collision preserves quarantine and fails closed. Marker parent cleanup is omitted, while exact Codex root removal opens, checks, captures, and identity-verifies only empty owned directories. The wrapper accepts zero arguments as `--check` or exactly one supported mode and rejects all other arities before invoking Python. Markdown links are deterministically rebased from each canonical function source to each generated output; external, absolute, and anchor targets remain unchanged. All 44 projections were regenerated, and the twelve directly added Foundation consumers were reconciled without changing lifecycle status, disposition, review verdict, or enforcement. Independent specification and quality re-reviews remain required. |
+| 2026-07-16 | T-AGHC-003 terminal review closure | Fresh specification and quality reviewers | Independent re-reviews covered remediation delta `07cedeec..8d1d08f4` and full Task 3 range `9941bbb4..8d1d08f4`. The specification reviewer returned PASS C0/I0/M0 and the separate quality reviewer returned APPROVED C0/I0/M0. Both confirmed the four prior Important findings closed, 44 generated projections with 132 resolving local links, exact `.codex/skills` absence, strict wrapper arguments, confined stale ownership, focused 134/134, and only the four planned Task 4/5 aggregate dependencies. T-AGHC-003 is complete. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -632,7 +633,12 @@ final `155a1626..f89fbe09` integration delta returned PASS and APPROVED,
 respectively, both C0/I0/M0. The reviewers independently confirmed governance
 114/114, metadata 213/213, exact contract cardinality `3/14/22/3/0`, and that
 the aggregate's five remaining failures belong only to Tasks 3 through 5.
-T-AGHC-002 is complete. Tasks 3 through 6 remain not run.
+T-AGHC-002 is complete. T-AGHC-003 implementation commit `07cedeec` and
+review-remediation commit `8d1d08f4` received independent terminal
+specification PASS and quality APPROVED verdicts, both C0/I0/M0. The reviewers
+confirmed focused 134/134, 132/132 generated local links, exact obsolete Codex
+skill-root absence, and exactly four planned Task 4/5 aggregate dependencies.
+T-AGHC-003 is complete. Tasks 4 through 6 remain not run.
 
 Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
@@ -645,8 +651,10 @@ re-review at `0635c044` returned PASS with Critical 0, Important 0, and Minor 0.
 T-AGHC-002 terminal quality review of `155a1626..f89fbe09` returned APPROVED
 with Critical 0, Important 0, and Minor 0. Direct catalog/provider
 `Path.is_file()` existence checks predate Task 2 and are recorded as activation
-hardening prerequisites for Tasks 3 and 4, not as an open Task 2 finding.
-Quality review has not run for Tasks 3 through 6 or the whole branch.
+hardening prerequisites for Tasks 3 and 4, not as an open Task 2 finding. Task
+3 terminal quality review of `9941bbb4..8d1d08f4` returned APPROVED with
+Critical 0, Important 0, and Minor 0. Quality review has not run for Tasks 4
+through 6 or the whole branch.
 
 Planning findings and disposition: fixed provider skill discovery, Gemini
 `PreCompress`, wrapper clean-state ordering, staged aggregate-validator
@@ -676,8 +684,9 @@ with owner, reason, and destination.
 | T-AGHC-002 bounded brace expansion remediation | `fix(governance): bound brace expansion cardinality` | `155a1626` | focused/full GREEN; terminal independent review C0/I0/M0 |
 | T-AGHC-002 shared Stage 00 registry matching remediation | `fix(governance): share bounded Stage 00 registry matching` | `f89fbe09` | focused/full GREEN; terminal independent review C0/I0/M0 |
 | T-AGHC-002 terminal review evidence | `docs(task): record metadata governance review closure` | this logical commit | full-range specification PASS; final-delta specification PASS and quality APPROVED, C0/I0/M0 |
-| T-AGHC-003 | `refactor(agents): converge role and function catalogs` | this logical commit | focused and full unit suites GREEN; independent reviews pending |
-| T-AGHC-003 independent-review remediation | `fix(agents): preserve generated surface ownership` | this logical commit | four Important findings reproduced and remediated; focused/full GREEN; independent re-reviews pending |
+| T-AGHC-003 | `refactor(agents): converge role and function catalogs` | `07cedeec` | focused and full unit suites GREEN; first reviews C0/I2/M0 each |
+| T-AGHC-003 independent-review remediation | `fix(agents): preserve generated surface ownership` | `8d1d08f4` | four Important findings reproduced and remediated; focused/full GREEN; terminal specification PASS and quality APPROVED C0/I0/M0 |
+| T-AGHC-003 terminal review evidence | `docs(task): record agent catalog review closure` | this logical commit | full-range and remediation-delta specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |
 | T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | pending | pending |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |
