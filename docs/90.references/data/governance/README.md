@@ -68,7 +68,7 @@ governance/
 - [agent-output-eval-fixtures.md](./agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for documentation, provider, and infrastructure tasks
 - [audit-implementation-matrix.md](./audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
 - [document-corpus-lifecycle/README.md](./document-corpus-lifecycle/README.md) - corpus lifecycle manifest and generated-summary routing
-- [document-corpus-lifecycle/foundation.yaml](./document-corpus-lifecycle/foundation.yaml) - reviewed advisory Foundation migration manifest
+- [document-corpus-lifecycle/foundation.yaml](./document-corpus-lifecycle/foundation.yaml) - reviewed blocking Foundation migration manifest
 - [document-corpus-lifecycle/foundation-summary.md](./document-corpus-lifecycle/foundation-summary.md) - generator-owned safe Foundation summary
 - [gap-to-stage-routing.md](./gap-to-stage-routing.md) - Stage 00 gap-to-stage routing table and recommender contract
 - [provider-hook-parity-matrix.md](./provider-hook-parity-matrix.md) - generated Claude/Codex/Gemini hook parity matrix and Gemini behavioral reminder checklist

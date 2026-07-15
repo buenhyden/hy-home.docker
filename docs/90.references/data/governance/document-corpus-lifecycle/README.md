@@ -49,7 +49,7 @@ evidence가 소유하며, 이 경로는 그 판단 근거를 참조 가능한 da
 ```text
 document-corpus-lifecycle/
 ├── README.md              # This routing index
-├── foundation.yaml        # Reviewed advisory Foundation manifest
+├── foundation.yaml        # Reviewed blocking Foundation manifest
 └── foundation-summary.md  # Generator-owned safe manifest summary
 ```
 

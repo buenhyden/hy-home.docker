@@ -259,6 +259,20 @@ class PublicContractTests(LifecycleTestCase):
 
 
 class HumanContractRoutingTests(LifecycleTestCase):
+    def test_stage90_routers_match_blocking_foundation_state(self) -> None:
+        routers = (
+            ROOT / "docs/90.references" / "README.md",
+            ROOT / "docs/90.references" / "data/README.md",
+            ROOT / "docs/90.references" / "data/governance/README.md",
+            ROOT / "docs/90.references"
+            / "data/governance/document-corpus-lifecycle/README.md",
+        )
+        for path in routers:
+            text = path.read_text(encoding="utf-8").lower()
+            with self.subTest(path=path.relative_to(ROOT).as_posix()):
+                self.assertNotIn("reviewed advisory foundation", text)
+                self.assertIn("reviewed blocking foundation", text)
+
     def test_lifecycle_human_owners_are_unique(self) -> None:
         support = ROOT / "docs/99.templates/support"
         texts = {

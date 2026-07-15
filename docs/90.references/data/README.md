@@ -78,7 +78,7 @@ data/
 - [governance/agent-output-eval-fixtures.md](./governance/agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for docs, provider, and infra tasks
 - [governance/audit-implementation-matrix.md](./governance/audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
 - [governance/document-corpus-lifecycle/README.md](./governance/document-corpus-lifecycle/README.md) - document-corpus lifecycle manifest and summary category
-- [governance/document-corpus-lifecycle/foundation.yaml](./governance/document-corpus-lifecycle/foundation.yaml) - reviewed advisory Foundation migration manifest
+- [governance/document-corpus-lifecycle/foundation.yaml](./governance/document-corpus-lifecycle/foundation.yaml) - reviewed blocking Foundation migration manifest
 - [governance/document-corpus-lifecycle/foundation-summary.md](./governance/document-corpus-lifecycle/foundation-summary.md) - generator-owned safe Foundation summary
 - [governance/gap-to-stage-routing.md](./governance/gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
 - [governance/provider-hook-parity-matrix.md](./governance/provider-hook-parity-matrix.md) - generated provider hook parity matrix and Gemini behavioral reminder checklist
