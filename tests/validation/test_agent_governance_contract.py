@@ -82,6 +82,10 @@ def codes(findings: list[object]) -> set[str]:
     return {finding.code for finding in findings}
 
 
+def deep_span_markup(content: str, depth: int = 1100) -> str:
+    return "<span>" * depth + content + "</span>" * depth
+
+
 class ContractLoadingTests(unittest.TestCase):
     def test_missing_markdown_parser_dependency_fails_contract_loading(self) -> None:
         with mock.patch.object(contract, "_MarkdownIt", None):
@@ -2260,6 +2264,93 @@ model defaults
                 hidden_html_tags=contract._README_HIDDEN_HTML_TAGS,
             ),
         )
+
+    def test_dom_policy_text_handles_deep_visible_hidden_and_tail_order(self) -> None:
+        visible = contract._readme_policy_prose(
+            deep_span_markup("Provider model defaults are defined here.")
+        )
+        self.assertIn(" model defaults ", visible)
+
+        hidden_with_tail = contract._readme_policy_prose(
+            deep_span_markup(
+                "<code>Provider model defaults are defined here.</code>"
+                "Visible tail remains."
+            )
+        )
+        self.assertNotIn(" model defaults ", hidden_with_tail)
+        self.assertIn(" visible tail remains ", hidden_with_tail)
+
+    def test_section_names_handles_deep_semantic_heading_markup(self) -> None:
+        self.assertEqual(
+            ("Deep Heading",),
+            contract._section_names(f"## {deep_span_markup('Deep Heading')}"),
+        )
+
+    def test_repository_harness_handles_deep_visible_and_hidden_readme_prose(self) -> None:
+        cases = (
+            (
+                deep_span_markup("Provider model defaults are defined here."),
+                True,
+            ),
+            (
+                deep_span_markup(
+                    "<code>Provider model defaults are defined here.</code>"
+                    "Visible tail remains."
+                ),
+                False,
+            ),
+        )
+        for source, expected_policy in cases:
+            with self.subTest(expected_policy=expected_policy), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / ".codex/README.md"
+                readme.write_text(
+                    readme.read_text(encoding="utf-8").replace(
+                        "Change canonical Stage 00 sources first",
+                        f"{source}\n\nChange canonical Stage 00 sources first",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+
+                findings = contract.validate_repository(root, bundle, "harness")
+
+                self.assertEqual(
+                    expected_policy,
+                    "AGC-REPOSITORY-README-POLICY" in codes(findings),
+                    contract.render_findings(findings),
+                )
+
+    def test_repository_cli_normalizes_deep_readme_to_contract_finding(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            readme = root / ".codex/README.md"
+            readme.write_text(
+                readme.read_text(encoding="utf-8").replace(
+                    "Change canonical Stage 00 sources first",
+                    f"{deep_span_markup('Provider model defaults are defined here.')}\n\n"
+                    "Change canonical Stage 00 sources first",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+
+            result = CommandLineTests().run_checker_for_root(
+                root,
+                "--mode",
+                "repository",
+                "--section",
+                "harness",
+            )
+
+            self.assertEqual(1, result.returncode)
+            self.assertIn("AGC-REPOSITORY-README-POLICY", result.stderr)
+            self.assertNotIn("RecursionError", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
+            self.assertNotIn(str(root), result.stderr)
 
     def test_runtime_marker_cannot_be_forged_by_raw_or_encoded_html(self) -> None:
         marker_attr = "data-agent-governance-markdown-heading"

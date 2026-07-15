@@ -2588,24 +2588,33 @@ def _visible_dom_text(
     skip_markdown_headings: bool = False,
 ) -> str:
     parts: list[str] = []
+    pending: list[tuple[str, object]] = [("element", root)]
+    while pending:
+        action, value = pending.pop()
+        if action == "text":
+            if isinstance(value, str):
+                parts.append(value)
+            continue
 
-    def append_element(element: object) -> None:
+        element = value
         tag_value = getattr(element, "tag", None)
         if not isinstance(tag_value, str):
-            return
+            continue
         local_name = _html_local_name(element)
         attributes = getattr(element, "attrib", {})
         if id(element) in hidden_element_ids or local_name in hidden_html_tags:
-            return
+            continue
         if marker is not None and (
             (skip_markdown_headings and attributes.get(_MARKDOWN_HEADING_ATTR) == marker)
             or attributes.get(_MARKDOWN_AUTOLINK_ATTR) == marker
         ):
-            return
+            continue
 
         is_block = local_name in _HTML_BLOCK_TAGS
         if is_block or local_name == "br":
             parts.append("\n\n")
+        if is_block:
+            pending.append(("text", "\n\n"))
         if local_name == "img":
             alt = attributes.get("alt")
             if isinstance(alt, str):
@@ -2614,23 +2623,21 @@ def _visible_dom_text(
             element_text = getattr(element, "text", None)
             if isinstance(element_text, str):
                 parts.append(element_text)
-            for child in element:
-                append_element(child)
+            for child in reversed(tuple(element)):
                 child_tail = getattr(child, "tail", None)
                 if isinstance(child_tail, str):
-                    parts.append(child_tail)
-        if is_block:
-            parts.append("\n\n")
+                    pending.append(("text", child_tail))
+                pending.append(("element", child))
 
-    append_element(root)
     return "".join(parts)
 
 
 def _section_names(text: str) -> tuple[str, ...]:
     dom, marker = _markdown_dom(text)
     headings: list[str] = []
-
-    def visit(element: object, hidden_ancestor: bool = False) -> None:
+    pending: list[tuple[object, bool]] = [(dom, False)]
+    while pending:
+        element, hidden_ancestor = pending.pop()
         local_name = _html_local_name(element)
         hidden = hidden_ancestor or local_name in _SECTION_HIDDEN_ANCESTOR_TAGS
         attributes = getattr(element, "attrib", {})
@@ -2641,22 +2648,24 @@ def _section_names(text: str) -> tuple[str, ...]:
             and attributes.get(_MARKDOWN_LEVEL_ATTR) == "0"
         ):
             inherited_hidden_ids: set[int] = set()
-
-            def find_boundary(
-                candidate: object, hidden_path: tuple[object, ...] = ()
-            ) -> None:
+            active_hidden_ids: list[int] = []
+            boundary_pending: list[tuple[str, object]] = [("enter", element)]
+            while boundary_pending:
+                boundary_action, candidate = boundary_pending.pop()
+                if boundary_action == "exit-hidden":
+                    active_hidden_ids.pop()
+                    continue
                 candidate_local = _html_local_name(candidate)
-                next_hidden_path = hidden_path
-                if candidate_local in _SECTION_HIDDEN_ANCESTOR_TAGS:
-                    next_hidden_path = (*hidden_path, candidate)
+                added_hidden = candidate_local in _SECTION_HIDDEN_ANCESTOR_TAGS
+                if added_hidden:
+                    active_hidden_ids.append(id(candidate))
+                    boundary_pending.append(("exit-hidden", candidate))
                 candidate_attributes = getattr(candidate, "attrib", {})
                 if candidate_attributes.get(_MARKDOWN_BOUNDARY_ATTR) == marker:
-                    inherited_hidden_ids.update(id(item) for item in next_hidden_path)
+                    inherited_hidden_ids.update(active_hidden_ids)
                     inherited_hidden_ids.add(id(candidate))
-                for candidate_child in candidate:
-                    find_boundary(candidate_child, next_hidden_path)
-
-            find_boundary(element)
+                for candidate_child in reversed(tuple(candidate)):
+                    boundary_pending.append(("enter", candidate_child))
             heading = _visible_dom_text(
                 element,
                 hidden_html_tags=_SECTION_HIDDEN_DESCENDANT_TAGS,
@@ -2665,10 +2674,9 @@ def _section_names(text: str) -> tuple[str, ...]:
             heading = re.sub(r"^\d+(?:\.\d+)*\.?\s+", "", heading)
             if heading:
                 headings.append(heading)
-        for child in element:
-            visit(child, hidden)
+        for child in reversed(tuple(element)):
+            pending.append((child, hidden))
 
-    visit(dom)
     return tuple(headings)
 
 
