@@ -1,3 +1,4 @@
 # Python dependencies for repository validation scripts.
 PyYAML>=6.0,<7.0
 markdown-it-py>=3.0,<4.0
+html5lib>=1.1,<2.0

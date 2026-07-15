@@ -9,11 +9,10 @@ import fnmatch
 import os
 import pathlib
 import re
+import secrets
 import stat
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from html import escape as html_escape
-from html.parser import HTMLParser
 from types import MappingProxyType
 from urllib.parse import urlparse
 
@@ -23,6 +22,11 @@ try:
     from markdown_it import MarkdownIt as _MarkdownIt
 except ModuleNotFoundError:  # pragma: no cover - exercised through dependency guard
     _MarkdownIt = None  # type: ignore[misc,assignment]
+
+try:
+    import html5lib as _html5lib
+except ModuleNotFoundError:  # pragma: no cover - exercised through dependency guard
+    _html5lib = None  # type: ignore[assignment]
 
 
 _OPEN_SUPPORTS_DIR_FD = os.open in os.supports_dir_fd
@@ -427,6 +431,10 @@ def load_contract_bundle(root: pathlib.Path) -> ContractBundle:
     if _MarkdownIt is None:
         raise ContractLoadError(
             "AGC-DEPENDENCY-MISSING", "markdown-it-py", "validation-runtime"
+        )
+    if _html5lib is None:
+        raise ContractLoadError(
+            "AGC-DEPENDENCY-MISSING", "html5lib", "validation-runtime"
         )
     loaded: dict[str, Mapping[str, object]] = {}
     for key, relative in CONTRACT_RELATIVE_PATHS.items():
@@ -2421,140 +2429,29 @@ def _markdown_body(text: str) -> str:
     return text
 
 
-def _section_names(text: str) -> tuple[str, ...]:
-    headings: list[str] = []
-    markdown = _markdown_parser()
-    tokens = markdown.parse(_markdown_body(text))
-    html_state = _VisibleHTMLTextParser()
-    visible_heading = False
-    for token in tokens:
-        if token.type == "html_block":
-            html_state.feed(token.content)
-            html_state.feed("\n\n")
-            continue
-        if token.type == "heading_open":
-            visible_heading = (
-                token.tag == "h2" and token.level == 0 and not html_state.is_hidden
-            )
-            continue
-        if token.type == "heading_close":
-            visible_heading = False
-            continue
-        if token.type != "inline":
-            continue
-        if visible_heading:
-            heading = _visible_inline(
-                token.children or (), include_code=True
-            ).strip()
-            heading = re.sub(r"^\d+(?:\.\d+)*\.?\s+", "", heading)
-            headings.append(heading)
-        _feed_visible_inline(html_state, token.children or ())
-        html_state.feed("\n\n")
-    html_state.close()
-    return tuple(headings)
-
-
-class _VisibleHTMLTextParser(HTMLParser):
-    _BLOCK_TAGS = {
-        "address", "article", "aside", "base", "basefont", "blockquote", "body",
-        "caption", "center", "col", "colgroup", "dd", "details", "dialog", "dir",
-        "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
-        "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head",
-        "header", "hgroup", "hr", "html", "iframe", "legend", "li", "link", "main",
-        "menu", "menuitem", "nav", "noframes", "ol", "optgroup", "option", "p",
-        "param", "pre", "script", "search", "section", "style", "summary", "table",
-        "tbody", "td", "textarea", "tfoot", "th", "thead", "title", "tr", "track",
-        "ul",
+_HTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
+_MARKDOWN_HEADING_ATTR = "data-agent-governance-markdown-heading"
+_MARKDOWN_LEVEL_ATTR = "data-agent-governance-markdown-level"
+_MARKDOWN_BOUNDARY_ATTR = "data-agent-governance-markdown-boundary"
+_MARKDOWN_AUTOLINK_ATTR = "data-agent-governance-markdown-autolink"
+_README_HIDDEN_HTML_TAGS = frozenset(
+    {"code", "pre", "script", "style", "template"}
+)
+_SECTION_HIDDEN_ANCESTOR_TAGS = frozenset(
+    {"code", "pre", "script", "style", "template"}
+)
+_SECTION_HIDDEN_DESCENDANT_TAGS = frozenset({"script", "style", "template"})
+_HTML_BLOCK_TAGS = frozenset(
+    {
+        "address", "article", "aside", "blockquote", "body", "caption", "center",
+        "colgroup", "dd", "details", "dialog", "dir", "div", "dl", "dt",
+        "fieldset", "figcaption", "figure", "footer", "form", "frameset", "h1",
+        "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr",
+        "html", "iframe", "legend", "li", "main", "menu", "nav", "noframes",
+        "ol", "optgroup", "option", "p", "pre", "search", "section", "summary",
+        "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr", "ul",
     }
-    _DEFAULT_HIDDEN_TAGS = frozenset({"code", "pre", "script", "style"})
-    _VOID_TAGS = frozenset(
-        {
-            "area", "base", "basefont", "bgsound", "br", "col", "embed",
-            "frame", "hr", "img", "input", "keygen", "link", "meta",
-            "param", "source", "track", "wbr",
-        }
-    )
-
-    def __init__(self, *, preserve_code: bool = False) -> None:
-        super().__init__(convert_charrefs=True)
-        self.parts: list[str] = []
-        self._hidden_tags = (
-            frozenset({"script", "style"})
-            if preserve_code
-            else self._DEFAULT_HIDDEN_TAGS
-        )
-        self._element_stack: list[str] = []
-
-    @property
-    def is_hidden(self) -> bool:
-        return any(tag in self._hidden_tags for tag in self._element_stack)
-
-    def handle_data(self, data: str) -> None:
-        if not self.is_hidden:
-            self.parts.append(data)
-
-    def handle_starttag(
-        self, tag: str, attrs: list[tuple[str, str | None]]
-    ) -> None:
-        del attrs
-        if tag in self._BLOCK_TAGS:
-            self.parts.append("\n\n")
-        if tag not in self._VOID_TAGS:
-            self._element_stack.append(tag)
-
-    def handle_startendtag(
-        self, tag: str, attrs: list[tuple[str, str | None]]
-    ) -> None:
-        del attrs
-        if tag in self._BLOCK_TAGS:
-            self.parts.append("\n\n")
-
-    def handle_endtag(self, tag: str) -> None:
-        if tag in self._element_stack:
-            reverse_index = self._element_stack[::-1].index(tag)
-            matching_index = len(self._element_stack) - reverse_index - 1
-            del self._element_stack[matching_index:]
-        if tag in self._BLOCK_TAGS:
-            self.parts.append("\n\n")
-
-
-def _visible_html(markup: str, *, preserve_code: bool = False) -> str:
-    parser = _VisibleHTMLTextParser(preserve_code=preserve_code)
-    parser.feed(markup)
-    parser.close()
-    return "".join(parser.parts)
-
-
-def _feed_visible_inline(
-    parser: _VisibleHTMLTextParser,
-    children: Sequence[object],
-    *,
-    include_code: bool = False,
-) -> None:
-    for child in children:
-        child_type = getattr(child, "type", "")
-        content = getattr(child, "content", "")
-        if child_type == "code_inline":
-            if include_code:
-                parser.feed(html_escape(content))
-            continue
-        if child_type == "html_inline":
-            parser.feed(content)
-        elif child_type in {"softbreak", "hardbreak"}:
-            parser.feed(" ")
-        elif child_type == "image":
-            parser.feed(html_escape(content))
-        elif child_type == "text":
-            parser.feed(html_escape(content))
-
-
-def _visible_inline(
-    children: Sequence[object], *, include_code: bool = False
-) -> str:
-    parser = _VisibleHTMLTextParser(preserve_code=include_code)
-    _feed_visible_inline(parser, children, include_code=include_code)
-    parser.close()
-    return "".join(parser.parts)
+)
 
 
 def _markdown_parser() -> object:
@@ -2565,29 +2462,191 @@ def _markdown_parser() -> object:
     return _MarkdownIt("commonmark", {"html": True})
 
 
+def _html_fragment(markup: str) -> object:
+    if _html5lib is None:  # guarded by load_contract_bundle; keeps helpers fail closed
+        raise ContractLoadError(
+            "AGC-DEPENDENCY-MISSING", "html5lib", "validation-runtime"
+        )
+    return _html5lib.parseFragment(markup, container="div")
+
+
+def _token_stream(tokens: Sequence[object]) -> Sequence[object]:
+    flattened: list[object] = []
+    pending = list(reversed(tokens))
+    while pending:
+        token = pending.pop()
+        flattened.append(token)
+        children = getattr(token, "children", None) or ()
+        pending.extend(reversed(children))
+    return tuple(flattened)
+
+
+def _markdown_dom(text: str) -> tuple[object, str]:
+    """Render strict CommonMark and parse it with WHATWG tree construction."""
+
+    markdown = _markdown_parser()
+    tokens = markdown.parse(_markdown_body(text))
+    raw_markup = markdown.renderer.render(tokens, markdown.options, {})
+    raw_dom = _html_fragment(raw_markup)
+    marker_values = {
+        value
+        for element in raw_dom.iter()
+        for attr in (
+            _MARKDOWN_HEADING_ATTR,
+            _MARKDOWN_BOUNDARY_ATTR,
+            _MARKDOWN_AUTOLINK_ATTR,
+        )
+        if isinstance((value := element.attrib.get(attr)), str)
+    }
+    attempt = 0
+    while True:
+        marker = f"{secrets.token_hex(16)}-{attempt}"
+        if marker not in marker_values:
+            break
+        attempt += 1
+
+    for token in _token_stream(tokens):
+        token_type = getattr(token, "type", "")
+        if token_type == "heading_open":
+            token.attrSet(_MARKDOWN_HEADING_ATTR, marker)
+            token.attrSet(_MARKDOWN_LEVEL_ATTR, str(getattr(token, "level", -1)))
+        elif token_type == "link_open" and getattr(token, "markup", "") == "autolink":
+            token.attrSet(_MARKDOWN_AUTOLINK_ATTR, marker)
+
+    def render_heading_open(
+        rendered_tokens: Sequence[object],
+        index: int,
+        options: Mapping[str, object],
+        environment: Mapping[str, object],
+    ) -> str:
+        opening = markdown.renderer.renderToken(
+            rendered_tokens, index, options, environment
+        )
+        token = rendered_tokens[index]
+        if token.attrGet(_MARKDOWN_HEADING_ATTR) != marker:
+            return opening
+        return (
+            f'{opening}<span {_MARKDOWN_BOUNDARY_ATTR}="{marker}"></span>'
+        )
+
+    markdown.renderer.rules["heading_open"] = render_heading_open
+    markup = markdown.renderer.render(tokens, markdown.options, {})
+    return _html_fragment(markup), marker
+
+
+def _html_local_name(element: object) -> str | None:
+    tag = getattr(element, "tag", None)
+    if not isinstance(tag, str):
+        return None
+    prefix = f"{{{_HTML_NAMESPACE}}}"
+    if not tag.startswith(prefix):
+        return None
+    return tag[len(prefix) :]
+
+
+def _visible_dom_text(
+    root: object,
+    *,
+    hidden_html_tags: frozenset[str],
+    hidden_element_ids: frozenset[int] = frozenset(),
+    marker: str | None = None,
+    skip_markdown_headings: bool = False,
+) -> str:
+    parts: list[str] = []
+
+    def append_element(element: object) -> None:
+        tag_value = getattr(element, "tag", None)
+        if not isinstance(tag_value, str):
+            return
+        local_name = _html_local_name(element)
+        attributes = getattr(element, "attrib", {})
+        if id(element) in hidden_element_ids or local_name in hidden_html_tags:
+            return
+        if marker is not None and (
+            (skip_markdown_headings and attributes.get(_MARKDOWN_HEADING_ATTR) == marker)
+            or attributes.get(_MARKDOWN_AUTOLINK_ATTR) == marker
+        ):
+            return
+
+        is_block = local_name in _HTML_BLOCK_TAGS
+        if is_block or local_name == "br":
+            parts.append("\n\n")
+        if local_name == "img":
+            alt = attributes.get("alt")
+            if isinstance(alt, str):
+                parts.append(alt)
+        else:
+            element_text = getattr(element, "text", None)
+            if isinstance(element_text, str):
+                parts.append(element_text)
+            for child in element:
+                append_element(child)
+                child_tail = getattr(child, "tail", None)
+                if isinstance(child_tail, str):
+                    parts.append(child_tail)
+        if is_block:
+            parts.append("\n\n")
+
+    append_element(root)
+    return "".join(parts)
+
+
+def _section_names(text: str) -> tuple[str, ...]:
+    dom, marker = _markdown_dom(text)
+    headings: list[str] = []
+
+    def visit(element: object, hidden_ancestor: bool = False) -> None:
+        local_name = _html_local_name(element)
+        hidden = hidden_ancestor or local_name in _SECTION_HIDDEN_ANCESTOR_TAGS
+        attributes = getattr(element, "attrib", {})
+        if (
+            not hidden
+            and local_name == "h2"
+            and attributes.get(_MARKDOWN_HEADING_ATTR) == marker
+            and attributes.get(_MARKDOWN_LEVEL_ATTR) == "0"
+        ):
+            inherited_hidden_ids: set[int] = set()
+
+            def find_boundary(
+                candidate: object, hidden_path: tuple[object, ...] = ()
+            ) -> None:
+                candidate_local = _html_local_name(candidate)
+                next_hidden_path = hidden_path
+                if candidate_local in _SECTION_HIDDEN_ANCESTOR_TAGS:
+                    next_hidden_path = (*hidden_path, candidate)
+                candidate_attributes = getattr(candidate, "attrib", {})
+                if candidate_attributes.get(_MARKDOWN_BOUNDARY_ATTR) == marker:
+                    inherited_hidden_ids.update(id(item) for item in next_hidden_path)
+                    inherited_hidden_ids.add(id(candidate))
+                for candidate_child in candidate:
+                    find_boundary(candidate_child, next_hidden_path)
+
+            find_boundary(element)
+            heading = _visible_dom_text(
+                element,
+                hidden_html_tags=_SECTION_HIDDEN_DESCENDANT_TAGS,
+                hidden_element_ids=frozenset(inherited_hidden_ids),
+            ).strip()
+            heading = re.sub(r"^\d+(?:\.\d+)*\.?\s+", "", heading)
+            if heading:
+                headings.append(heading)
+        for child in element:
+            visit(child, hidden)
+
+    visit(dom)
+    return tuple(headings)
+
+
 def _readme_policy_prose(text: str) -> str:
     """Return normalized natural-language README prose for policy-topic scans."""
 
-    markdown = _markdown_parser()
-    visible_parser = _VisibleHTMLTextParser()
-    heading_depth = 0
-    for token in markdown.parse(_markdown_body(text)):
-        if token.type == "heading_open":
-            heading_depth += 1
-            continue
-        if token.type == "heading_close":
-            heading_depth = max(0, heading_depth - 1)
-            continue
-        if heading_depth or token.type in {"fence", "code_block"}:
-            continue
-        if token.type == "inline":
-            _feed_visible_inline(visible_parser, token.children or ())
-            visible_parser.feed("\n\n")
-        elif token.type == "html_block":
-            visible_parser.feed(token.content)
-            visible_parser.feed("\n\n")
-    visible_parser.close()
-    visible = "".join(visible_parser.parts)
+    dom, marker = _markdown_dom(text)
+    visible = _visible_dom_text(
+        dom,
+        hidden_html_tags=_README_HIDDEN_HTML_TAGS,
+        marker=marker,
+        skip_markdown_headings=True,
+    )
     visible = re.sub(
         r"(?<!\w)(?:\.{0,2}/)?[A-Za-z0-9_.{}*-]+(?:/[A-Za-z0-9_.{}*-]+)+",
         " ",

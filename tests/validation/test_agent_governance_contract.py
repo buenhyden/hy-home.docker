@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from unittest import mock
 
 import yaml
@@ -88,6 +89,13 @@ class ContractLoadingTests(unittest.TestCase):
                 contract.load_contract_bundle(ROOT)
         self.assertEqual("AGC-DEPENDENCY-MISSING", context.exception.code)
         self.assertEqual("markdown-it-py", context.exception.path)
+
+    def test_missing_html_tree_builder_dependency_fails_contract_loading(self) -> None:
+        with mock.patch.object(contract, "_html5lib", None):
+            with self.assertRaises(contract.ContractLoadError) as context:
+                contract.load_contract_bundle(ROOT)
+        self.assertEqual("AGC-DEPENDENCY-MISSING", context.exception.code)
+        self.assertEqual("html5lib", context.exception.path)
 
     def test_canonical_contracts_are_valid_and_have_target_counts(self) -> None:
         bundle = contract.load_contract_bundle(ROOT)
@@ -1084,7 +1092,7 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             ),
         )
         self.assertEqual(
-            ("Scope",),
+            (),
             contract._section_names(
                 "<div><code>\n\nexample\n\n</div>\n\n## Scope\n\n</code>"
             ),
@@ -1095,6 +1103,57 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 "<code>\n\nexample\n\n</span>\n\n## Scope\n\n</code>"
             ),
         )
+
+    def test_section_names_stream_html_transitions_inside_h2(self) -> None:
+        cases = (
+            ("<code>\n\n## </code>Scope", ("Scope",)),
+            ("<code>\n\n## Hidden</code>Scope", ("Scope",)),
+            ("<code><span>\n\n## </code>Scope</span>", ("Scope",)),
+            ("<code>\n\n## </span>Scope\n\n</code>", ()),
+            (
+                "<code>\n\n## </code><code>Scope</code>\n\n## Next",
+                ("Scope", "Next"),
+            ),
+            ("## <code>Scope</code>\n\n## Next", ("Scope", "Next")),
+            (
+                "## Example <code>\n\n## Hidden\n\n</code>\n\n## Visible",
+                ("Example", "Visible"),
+            ),
+        )
+        for source, expected in cases:
+            with self.subTest(source=source):
+                self.assertEqual(expected, contract._section_names(source))
+
+    def test_repository_harness_streams_html_transitions_inside_required_h2(self) -> None:
+        cases = (
+            ("<code>\n\n## </code>Scope", False),
+            ("<code><span>\n\n## </code>Scope</span>", False),
+            ("<code>\n\n## </span>Scope\n\n</code>", True),
+            ("## <code>Scope</code>", False),
+            (
+                "## Example <code>\n\n## Scope\n\n</code>\n\n## Visible",
+                True,
+            ),
+        )
+        for replacement, expected_missing in cases:
+            with self.subTest(
+                replacement=replacement, expected_missing=expected_missing
+            ), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                provider = root / ".claude/CLAUDE.md"
+                provider.write_text(
+                    provider.read_text(encoding="utf-8").replace(
+                        "## Scope", replacement, 1
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertEqual(
+                    expected_missing,
+                    "AGC-REPOSITORY-MISSING-SECTION" in observed,
+                )
 
     def test_repository_harness_does_not_accept_nested_required_heading(self) -> None:
         for nested_heading in ("> ## Scope", "- ## Scope"):
@@ -1396,7 +1455,7 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             (
                 "<div><code>\n\nexample\n\n</div>\n\n"
                 "Provider model defaults are defined here.</code>",
-                True,
+                False,
             ),
             (
                 "<code>\n\nexample\n\n</span>\n\n"
@@ -1426,19 +1485,25 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                     "AGC-REPOSITORY-README-POLICY" in observed,
                 )
 
-    def test_repository_harness_keeps_visible_prose_after_hidden_html_ancestor_closes(self) -> None:
-        sources = (
+    def test_repository_harness_follows_active_formatting_reconstruction(self) -> None:
+        hidden_sources = (
             "<pre><code>example</pre>"
             "Provider model defaults are defined here.</code>",
             "<div><code>example</div>"
             "Provider model defaults are defined here.</code>",
             "<span><code>example</span>"
             "Provider model defaults are defined here.</code>",
+        )
+        visible_sources = (
             "<blockquote><pre>example</blockquote>"
             "Provider model defaults are defined here.</pre>",
         )
-        for source in sources:
-            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+        for source, expected_policy in tuple(
+            (item, False) for item in hidden_sources
+        ) + tuple((item, True) for item in visible_sources):
+            with self.subTest(
+                source=source, expected_policy=expected_policy
+            ), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -1451,9 +1516,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                     encoding="utf-8",
                 )
                 bundle = contract.load_contract_bundle(root)
-                self.assertIn(
-                    "AGC-REPOSITORY-README-POLICY",
-                    codes(contract.validate_repository(root, bundle, "harness")),
+                self.assertEqual(
+                    expected_policy,
+                    "AGC-REPOSITORY-README-POLICY"
+                    in codes(contract.validate_repository(root, bundle, "harness")),
                 )
 
     def test_repository_harness_rejects_visible_multiline_tag_like_policy_prose(self) -> None:
@@ -1566,6 +1632,8 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
 
 [routing](https://example.invalid/model-defaults)
 
+<https://example.invalid/model-defaults>
+
 docs/model-defaults/owner.md
 
 ```text
@@ -1594,7 +1662,7 @@ model defaults
                 self.assertNotIn(
                     " model defaults ", contract._readme_policy_prose(raw_html)
                 )
-        self.assertIn(
+        self.assertNotIn(
             " model defaults ",
             contract._readme_policy_prose(
                 "<pre><code>example</pre>Provider model defaults are defined here.</code>"
@@ -1603,13 +1671,18 @@ model defaults
         for raw_html in (
             "<div><code>example</div>Provider model defaults are defined here.</code>",
             "<span><code>example</span>Provider model defaults are defined here.</code>",
-            "<blockquote><pre>example</blockquote>"
-            "Provider model defaults are defined here.</pre>",
         ):
             with self.subTest(raw_html=raw_html):
-                self.assertIn(
+                self.assertNotIn(
                     " model defaults ", contract._readme_policy_prose(raw_html)
                 )
+        self.assertIn(
+            " model defaults ",
+            contract._readme_policy_prose(
+                "<blockquote><pre>example</blockquote>"
+                "Provider model defaults are defined here.</pre>"
+            ),
+        )
         self.assertNotIn(
             " model defaults ",
             contract._readme_policy_prose(
@@ -1635,7 +1708,7 @@ model defaults
                 "Provider model defaults are defined here."
             ),
         )
-        self.assertIn(
+        self.assertNotIn(
             " model defaults ",
             contract._readme_policy_prose(
                 "<div><code>\n\nexample\n\n</div>\n\n"
@@ -1649,6 +1722,238 @@ model defaults
                 "Provider model defaults are defined here.</code>"
             ),
         )
+
+    def test_readme_policy_prose_streams_html_transitions_inside_h2(self) -> None:
+        visible_policy = (
+            "<code>\n\n## </code>\n\n"
+            "Provider model defaults are defined here."
+        )
+        self.assertIn(
+            " model defaults ", contract._readme_policy_prose(visible_policy)
+        )
+        self.assertNotIn(" scope ", contract._readme_policy_prose(visible_policy))
+
+        cases = (
+            (
+                "<code><span>\n\n## </code>Visible</span>\n\n"
+                "Provider model defaults are defined here.",
+                True,
+            ),
+            (
+                "<code>\n\n## </span>Visible\n\n"
+                "Provider model defaults are defined here.\n\n</code>",
+                False,
+            ),
+            (
+                "<code>\n\n## </code><code>Example</code>\n\n"
+                "Provider model defaults are defined here.",
+                True,
+            ),
+            (
+                "## <code>Example</code>\n\n"
+                "Provider model defaults are defined here.",
+                True,
+            ),
+            (
+                "## Example <code>\n\n"
+                "Provider model defaults are defined here.\n\n</code>",
+                False,
+            ),
+        )
+        for source, expected_policy in cases:
+            with self.subTest(source=source, expected_policy=expected_policy):
+                prose = contract._readme_policy_prose(source)
+                self.assertEqual(expected_policy, " model defaults " in prose)
+
+    def test_readme_policy_prose_follows_whatwg_table_cell_recovery(self) -> None:
+        positive_starts = (
+            "caption", "colgroup", "col", "tbody", "tfoot", "thead", "tr",
+            "td", "th",
+        )
+        for hidden_tag in ("code", "pre"):
+            for start_tag in positive_starts:
+                source = (
+                    f"<table><tbody><tr><td><{hidden_tag}>example"
+                    f"<{start_tag}>Provider model defaults are defined here."
+                    "</table>"
+                )
+                with self.subTest(hidden_tag=hidden_tag, start_tag=start_tag):
+                    self.assertIn(
+                        " model defaults ",
+                        contract._readme_policy_prose(source),
+                    )
+        self.assertIn(
+            " model defaults ",
+            contract._readme_policy_prose(
+                "<table><tbody><tr><td><pre>\n\nexample\n\n<td>\n\n"
+                "Provider model defaults are defined here.\n\n</table>"
+            ),
+        )
+
+        negative_sources = (
+            "<ul><li><pre>example<li>Provider model defaults are defined here.</ul>",
+            "<ul><li><code>example<li>Provider model defaults are defined here.</ul>",
+            "<dl><dt><pre>example<dd>Provider model defaults are defined here.</dl>",
+            "<dl><dd><code>example<dt>Provider model defaults are defined here.</dl>",
+            "<table><tbody><tr><td><pre>example<table>"
+            "Provider model defaults are defined here.</table></table>",
+            "<td><pre>example<th>Provider model defaults are defined here.",
+            "<table><tbody><tr><td><pre>example<div>"
+            "Provider model defaults are defined here.</div></table>",
+        )
+        for source in negative_sources:
+            with self.subTest(source=source):
+                self.assertNotIn(
+                    " model defaults ", contract._readme_policy_prose(source)
+                )
+
+    def test_repository_harness_follows_whatwg_table_cell_recovery(self) -> None:
+        positive_starts = (
+            "caption", "colgroup", "col", "tbody", "tfoot", "thead", "tr",
+            "td", "th",
+        )
+        for start_tag in positive_starts:
+            with self.subTest(start_tag=start_tag), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / ".codex/README.md"
+                source = (
+                    "<table><tbody><tr><td><pre>example"
+                    f"<{start_tag}>Provider model defaults are defined here."
+                    "</table>"
+                )
+                readme.write_text(
+                    readme.read_text(encoding="utf-8").replace(
+                        "Change canonical Stage 00 sources first",
+                        f"{source}\n\nChange canonical Stage 00 sources first",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                self.assertIn(
+                    "AGC-REPOSITORY-README-POLICY",
+                    codes(contract.validate_repository(root, bundle, "harness")),
+                )
+
+        negative_sources = (
+            "<ul><li><pre>example<li>Provider model defaults are defined here.</ul>",
+            "<ul><li><code>example<li>Provider model defaults are defined here.</ul>",
+            "<table><tbody><tr><td><pre>example<table>"
+            "Provider model defaults are defined here.</table></table>",
+        )
+        for source in negative_sources:
+            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / ".codex/README.md"
+                readme.write_text(
+                    readme.read_text(encoding="utf-8").replace(
+                        "Change canonical Stage 00 sources first",
+                        f"{source}\n\nChange canonical Stage 00 sources first",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                self.assertNotIn(
+                    "AGC-REPOSITORY-README-POLICY",
+                    codes(contract.validate_repository(root, bundle, "harness")),
+                )
+
+    def test_dom_policy_text_preserves_namespace_tails_alt_and_boundaries(self) -> None:
+        visible_sources = (
+            "Provider model <code>example</code> defaults are defined here.",
+            "Provider mo<span>del</span> defaults are defined here.",
+            "Provider model<div>defaults are defined here.</div>",
+            "Provider ![model defaults](https://example.invalid/image.png)",
+        )
+        for source in visible_sources:
+            with self.subTest(source=source):
+                self.assertIn(
+                    " model defaults ", contract._readme_policy_prose(source)
+                )
+
+        hidden_sources = (
+            "<span title='model defaults'>Visible text only.</span>",
+            "<!-- Provider model defaults are defined here. -->",
+            "<template>Provider model defaults are defined here.</template>",
+            "Provider <code>model defaults</code> example.",
+        )
+        for source in hidden_sources:
+            with self.subTest(source=source):
+                self.assertNotIn(
+                    " model defaults ", contract._readme_policy_prose(source)
+                )
+
+        svg_code = ET.Element("{http://www.w3.org/2000/svg}code")
+        svg_code.text = "Provider model defaults are defined here."
+        self.assertIn(
+            "Provider model defaults",
+            contract._visible_dom_text(
+                svg_code,
+                hidden_html_tags=contract._README_HIDDEN_HTML_TAGS,
+            ),
+        )
+
+    def test_runtime_marker_cannot_be_forged_by_raw_or_encoded_html(self) -> None:
+        marker_attr = "data-agent-governance-markdown-heading"
+        sources = (
+            f'<h2 {marker_attr}="fixed-0">Provider model defaults.</h2>',
+            f'<h2 {marker_attr}="&#x66;ixed-0">Provider model defaults.</h2>',
+        )
+        with mock.patch.object(contract.secrets, "token_hex", return_value="fixed"):
+            for source in sources:
+                with self.subTest(source=source):
+                    self.assertIn(
+                        " model defaults ", contract._readme_policy_prose(source)
+                    )
+                    self.assertEqual((), contract._section_names(source))
+
+    def test_repository_harness_streams_html_transitions_inside_readme_h2(self) -> None:
+        cases = (
+            (
+                "<code>\n\n## </code>\n\n"
+                "Provider model defaults are defined here.",
+                True,
+            ),
+            (
+                "<code><span>\n\n## </code>Visible</span>\n\n"
+                "Provider model defaults are defined here.",
+                True,
+            ),
+            (
+                "<code>\n\n## </span>Visible\n\n"
+                "Provider model defaults are defined here.\n\n</code>",
+                False,
+            ),
+            (
+                "## Example <code>\n\n"
+                "Provider model defaults are defined here.\n\n</code>",
+                False,
+            ),
+        )
+        for source, expected_policy in cases:
+            with self.subTest(
+                source=source, expected_policy=expected_policy
+            ), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / ".codex/README.md"
+                readme.write_text(
+                    readme.read_text(encoding="utf-8").replace(
+                        "Change canonical Stage 00 sources first",
+                        f"{source}\n\nChange canonical Stage 00 sources first",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertEqual(
+                    expected_policy,
+                    "AGC-REPOSITORY-README-POLICY" in observed,
+                )
 
     def test_readme_policy_prose_requires_equal_code_span_delimiters(self) -> None:
         for source in (
@@ -1721,6 +2026,8 @@ model defaults
         class RecordingMarkdown:
             def __init__(self, *args, **kwargs) -> None:
                 self.delegate = real_markdown(*args, **kwargs)
+                self.options = self.delegate.options
+                self.renderer = self.delegate.renderer
 
             def parse(self, source: str):
                 observed_sources.append(source)
