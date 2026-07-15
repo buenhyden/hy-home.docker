@@ -273,6 +273,36 @@ class ContractLoadingTests(unittest.TestCase):
             finally:
                 outside.unlink(missing_ok=True)
 
+    def test_public_artifact_contract_loader_is_confined_and_duplicate_key_safe(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            registry = root / "registry.yaml"
+            registry.write_text("artifacts: []\n", encoding="utf-8")
+
+            loaded = contract.load_artifact_contract(root, registry)
+
+            self.assertEqual((), loaded["artifacts"])
+            registry.write_text("artifacts: []\nartifacts: []\n", encoding="utf-8")
+            with self.assertRaises(contract.ContractLoadError) as duplicate_context:
+                contract.load_artifact_contract(root, registry)
+            self.assertEqual("AGC-YAML-DUPLICATE-KEY", duplicate_context.exception.code)
+
+            outside = root.parent / f"{root.name}-outside-artifacts.yaml"
+            outside.write_text("artifacts: []\n", encoding="utf-8")
+            try:
+                registry.unlink()
+                registry.symlink_to(outside)
+                with self.assertRaises(contract.ContractLoadError) as symlink_context:
+                    contract.load_artifact_contract(root, registry)
+                self.assertEqual("AGC-CONTRACT-UNSAFE-FILE", symlink_context.exception.code)
+                with self.assertRaises(contract.ContractLoadError) as outside_context:
+                    contract.load_artifact_contract(root, outside)
+                self.assertEqual("AGC-CONTRACT-UNSAFE-FILE", outside_context.exception.code)
+                self.assertNotIn(str(root), str(symlink_context.exception))
+                self.assertNotIn(str(outside), str(outside_context.exception))
+            finally:
+                outside.unlink(missing_ok=True)
+
 
 class ContractSchemaTests(unittest.TestCase):
     def test_artifact_contract_requires_exact_path_pattern_limits(self) -> None:
@@ -365,6 +395,46 @@ class ContractSchemaTests(unittest.TestCase):
                 "docs/[ab]foo.md", "docs/[bc]foo.md"
             )
         )
+
+    def test_public_artifact_pattern_match_is_full_path_and_dot_directory_safe(self) -> None:
+        self.assertEqual(
+            ".claude/CLAUDE.md",
+            contract.normalize_repo_relative_path(".claude/CLAUDE.md"),
+        )
+        self.assertEqual(
+            ".claude/CLAUDE.md",
+            contract.normalize_repo_relative_path("./.claude/CLAUDE.md"),
+        )
+        self.assertTrue(
+            contract.path_matches_artifact_pattern(
+                ".claude/CLAUDE.md", ".claude/CLAUDE.md"
+            )
+        )
+        self.assertFalse(
+            contract.path_matches_artifact_pattern(
+                "nested/CLAUDE.md", "CLAUDE.md"
+            )
+        )
+        self.assertFalse(
+            contract.path_matches_artifact_pattern("docs/a.md", "docs/?.md")
+        )
+        for unsafe_pattern in (
+            "{..,docs}/safe.md",
+            "docs/{../outside,safe}.md",
+        ):
+            with self.subTest(unsafe_pattern=unsafe_pattern):
+                self.assertFalse(
+                    contract.path_matches_artifact_pattern(
+                        "docs/safe.md", unsafe_pattern
+                    )
+                )
+
+    def test_artifact_pattern_double_star_match_uses_iterative_state(self) -> None:
+        relative = "/".join(["a"] * 1100 + ["target.md"])
+
+        self.assertTrue(contract._path_matches_pattern(relative, "**/target.md"))
+        self.assertTrue(contract.path_matches_artifact_pattern(relative, "**/target.md"))
+        self.assertFalse(contract.path_matches_artifact_pattern(relative, "**/other.md"))
 
     def test_enumerated_patterns_reject_unsupported_glob_grammar(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -434,6 +434,35 @@ def _load_yaml(
     return _freeze(value)  # type: ignore[return-value]
 
 
+def load_artifact_contract(
+    root: pathlib.Path, contract_path: pathlib.Path
+) -> Mapping[str, object]:
+    """Load one arbitrary artifact registry through the confined YAML boundary."""
+
+    root_absolute = root.absolute()
+    candidate = contract_path
+    try:
+        if candidate.is_absolute():
+            relative = candidate.absolute().relative_to(root_absolute)
+        else:
+            relative = candidate
+        relative_path = pathlib.PurePosixPath(relative.as_posix())
+        if (
+            relative_path.is_absolute()
+            or not relative_path.parts
+            or any(part in {"", ".", ".."} for part in relative_path.parts)
+        ):
+            raise ValueError
+    except (OSError, ValueError) as error:
+        raise ContractLoadError(
+            "AGC-CONTRACT-UNSAFE-FILE", "artifact-contract", "file"
+        ) from error
+    try:
+        return _load_yaml(root_absolute, relative_path)
+    except ContractLoadError as error:
+        raise ContractLoadError(error.code, "artifact-contract", error.location) from error
+
+
 def load_contract_bundle(root: pathlib.Path) -> ContractBundle:
     """Load the three fixed Stage 00 contract files beneath ``root``."""
 
@@ -2377,29 +2406,56 @@ def _artifact_patterns_overlap(left: str, right: str) -> bool:
     )
 
 
+def normalize_repo_relative_path(path: str | pathlib.PurePath) -> str:
+    """Remove one literal ``./`` prefix without stripping dot-directory names."""
+
+    text = path.as_posix() if isinstance(path, pathlib.PurePath) else str(path)
+    return text.removeprefix("./")
+
+
 def _path_matches_pattern(relative: str, pattern: str) -> bool:
     path_parts = relative.split("/")
-
-    def matches(pattern_parts: list[str], pattern_index: int, path_index: int) -> bool:
-        if pattern_index == len(pattern_parts):
-            return path_index == len(path_parts)
-        segment = pattern_parts[pattern_index]
-        if segment == "**":
-            return matches(pattern_parts, pattern_index + 1, path_index) or (
-                path_index < len(path_parts)
-                and matches(pattern_parts, pattern_index, path_index + 1)
-            )
-        return (
-            path_index < len(path_parts)
-            and fnmatch.fnmatchcase(path_parts[path_index], segment)
-            and matches(pattern_parts, pattern_index + 1, path_index + 1)
-        )
 
     try:
         expanded_patterns = _expand_braces(pattern)
     except _BracePatternError:
         return False
-    return any(matches(expanded.split("/"), 0, 0) for expanded in expanded_patterns)
+    for expanded in expanded_patterns:
+        reachable: set[int] = {0}
+        for segment in expanded.split("/"):
+            if not reachable:
+                break
+            if segment == "**":
+                reachable = set(range(min(reachable), len(path_parts) + 1))
+                continue
+            reachable = {
+                path_index + 1
+                for path_index in reachable
+                if path_index < len(path_parts)
+                and fnmatch.fnmatchcase(path_parts[path_index], segment)
+            }
+        if len(path_parts) in reachable:
+            return True
+    return False
+
+
+def path_matches_artifact_pattern(
+    relative: str | pathlib.PurePath, pattern: str
+) -> bool:
+    """Match a bounded artifact pattern against one full repository-relative path."""
+
+    normalized = normalize_repo_relative_path(relative)
+    if not _is_safe_repo_path(normalized) or not _is_supported_enumerated_pattern(
+        pattern
+    ):
+        return False
+    try:
+        expanded_patterns = _expand_braces(pattern)
+    except _BracePatternError:
+        return False
+    if not all(_is_safe_repo_path(expanded) for expanded in expanded_patterns):
+        return False
+    return _path_matches_pattern(normalized, pattern)
 
 
 @dataclass(frozen=True)

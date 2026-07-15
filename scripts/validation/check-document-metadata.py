@@ -15,7 +15,20 @@ import re
 import subprocess
 import sys
 from collections.abc import Mapping, Sequence
+
 import yaml
+
+
+_VALIDATION_DIRECTORY = str(pathlib.Path(__file__).resolve().parent)
+if _VALIDATION_DIRECTORY not in sys.path:
+    sys.path.insert(0, _VALIDATION_DIRECTORY)
+
+from agent_governance_contract import (  # noqa: E402
+    ContractLoadError,
+    load_artifact_contract,
+    normalize_repo_relative_path,
+    path_matches_artifact_pattern,
+)
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -780,36 +793,25 @@ def registered_generated_owner(
     return owner if isinstance(owner, str) else None
 
 
-def _expand_brace_pattern(pattern: str) -> tuple[str, ...]:
-    """Expand the bounded comma-separated braces used by the artifact registry."""
-
-    opening = pattern.find("{")
-    if opening < 0:
-        return (pattern,)
-    closing = pattern.find("}", opening + 1)
-    if closing < 0:
-        return (pattern,)
-    choices = pattern[opening + 1 : closing].split(",")
-    if not choices or any(not choice for choice in choices):
-        return (pattern,)
-    expanded: list[str] = []
-    for choice in choices:
-        expanded.extend(
-            _expand_brace_pattern(pattern[:opening] + choice + pattern[closing + 1 :])
-        )
-    return tuple(expanded)
-
-
 def _stage00_specialization_entry(
     path: pathlib.Path,
     contract_path: pathlib.Path = DEFAULT_AGENT_GOVERNANCE_ARTIFACTS,
 ) -> Mapping[str, object] | None:
     """Return the one registered Stage 00 artifact envelope matching ``path``."""
 
-    normalized = pathlib.PurePosixPath(path.as_posix().lstrip("./"))
+    normalized = normalize_repo_relative_path(path)
     try:
-        loaded = _safe_load_unique(contract_path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, yaml.YAMLError):
+        if contract_path.is_absolute():
+            try:
+                contract_path.absolute().relative_to(ROOT.absolute())
+            except ValueError:
+                contract_root = contract_path.parent
+            else:
+                contract_root = ROOT
+        else:
+            contract_root = ROOT
+        loaded = load_artifact_contract(contract_root, contract_path)
+    except ContractLoadError:
         return None
     if not isinstance(loaded, Mapping):
         return None
@@ -823,7 +825,7 @@ def _stage00_specialization_entry(
         pattern = entry.get("path_pattern")
         if not isinstance(pattern, str):
             continue
-        if any(normalized.match(candidate) for candidate in _expand_brace_pattern(pattern)):
+        if path_matches_artifact_pattern(normalized, pattern):
             matches.append(entry)
     return matches[0] if len(matches) == 1 else None
 
@@ -845,7 +847,7 @@ def infer_artifact_type(
 ) -> str:
     """Infer a supported artifact profile from a repository-relative path."""
 
-    normalized = path.as_posix().lstrip("./")
+    normalized = normalize_repo_relative_path(path)
     name = pathlib.PurePosixPath(normalized).name
     if name == "README.md":
         return "readme"

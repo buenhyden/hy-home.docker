@@ -1241,6 +1241,8 @@ class ArtifactInferenceTests(unittest.TestCase):
             "docs/00.agent-governance/providers/claude.md": "provider-overlay",
             "docs/00.agent-governance/rules/hooks/hookify.block-direct-main-push.md": "hookify-rule",
             "docs/00.agent-governance/rules/bootstrap.md": "governance-document",
+            ".claude/CLAUDE.md": "provider-project-entry",
+            "./.claude/CLAUDE.md": "provider-project-entry",
         }
         for path_text, expected in cases.items():
             with self.subTest(path=path_text):
@@ -1248,6 +1250,151 @@ class ArtifactInferenceTests(unittest.TestCase):
                     expected,
                     metadata.infer_stage00_specialization(pathlib.Path(path_text)),
                 )
+
+        self.assertIsNone(
+            metadata.infer_stage00_specialization(pathlib.Path("nested/CLAUDE.md"))
+        )
+
+    def test_stage00_registry_matching_is_bounded_deduplicated_and_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            registry = root / "agent-governance-artifacts.yaml"
+            duplicate_pattern = "fixture/" + "{a,a}" * 18 + ".md"
+            registry.write_text(
+                yaml.safe_dump(
+                    {
+                        "artifacts": [
+                            {
+                                "artifact_type": "duplicate-safe",
+                                "path_pattern": duplicate_pattern,
+                            }
+                        ]
+                    },
+                    sort_keys=False,
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                "duplicate-safe",
+                metadata.infer_stage00_specialization(
+                    pathlib.Path("fixture/" + "a" * 18 + ".md"), registry
+                ),
+            )
+
+            excessive_groups = "fixture/" + "{a,a}" * 1100 + ".md"
+            registry.write_text(
+                yaml.safe_dump(
+                    {
+                        "artifacts": [
+                            {
+                                "artifact_type": "must-not-recurse",
+                                "path_pattern": excessive_groups,
+                            }
+                        ]
+                    },
+                    sort_keys=False,
+                ),
+                encoding="utf-8",
+            )
+            self.assertIsNone(
+                metadata.infer_stage00_specialization(
+                    pathlib.Path("fixture/a.md"), registry
+                )
+            )
+
+            registry.write_text(
+                yaml.safe_dump(
+                    {
+                        "artifacts": [
+                            {
+                                "artifact_type": "must-not-select-safe-sibling",
+                                "path_pattern": "{..,docs}/safe.md",
+                            }
+                        ]
+                    },
+                    sort_keys=False,
+                ),
+                encoding="utf-8",
+            )
+            self.assertIsNone(
+                metadata.infer_stage00_specialization(
+                    pathlib.Path("docs/safe.md"), registry
+                )
+            )
+
+            registry.write_text(
+                yaml.safe_dump(
+                    {
+                        "artifacts": [
+                            {
+                                "artifact_type": "must-not-expand",
+                                "path_pattern": "fixture/" + "x" * 5000,
+                            }
+                        ]
+                    },
+                    sort_keys=False,
+                ),
+                encoding="utf-8",
+            )
+            self.assertIsNone(
+                metadata.infer_stage00_specialization(
+                    pathlib.Path("fixture/a.md"), registry
+                )
+            )
+
+    def test_stage00_registry_rejects_symlink_duplicate_yaml_and_ambiguity(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            registry = root / "agent-governance-artifacts.yaml"
+            outside = root.parent / f"{root.name}-outside-registry.yaml"
+            outside.write_text(
+                "artifacts:\n"
+                "  - artifact_type: escaped\n"
+                "    path_pattern: docs/escaped.md\n",
+                encoding="utf-8",
+            )
+            try:
+                registry.symlink_to(outside)
+                self.assertIsNone(
+                    metadata.infer_stage00_specialization(
+                        pathlib.Path("docs/escaped.md"), registry
+                    )
+                )
+                registry.unlink()
+                registry.write_text(
+                    "artifacts: []\nartifacts: []\n",
+                    encoding="utf-8",
+                )
+                self.assertIsNone(
+                    metadata.infer_stage00_specialization(
+                        pathlib.Path("docs/escaped.md"), registry
+                    )
+                )
+                registry.write_text(
+                    yaml.safe_dump(
+                        {
+                            "artifacts": [
+                                {
+                                    "artifact_type": "first",
+                                    "path_pattern": "docs/*.md",
+                                },
+                                {
+                                    "artifact_type": "second",
+                                    "path_pattern": "docs/escaped.md",
+                                },
+                            ]
+                        },
+                        sort_keys=False,
+                    ),
+                    encoding="utf-8",
+                )
+                self.assertIsNone(
+                    metadata.infer_stage00_specialization(
+                        pathlib.Path("docs/escaped.md"), registry
+                    )
+                )
+            finally:
+                outside.unlink(missing_ok=True)
 
     def test_governance_profile_is_minimal_and_does_not_duplicate_specialized_schema(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
