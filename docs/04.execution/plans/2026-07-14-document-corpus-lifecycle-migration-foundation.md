@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: plan:2026-07-14-document-corpus-lifecycle-migration-foundation
 artifact_type: plan
 parent_ids:

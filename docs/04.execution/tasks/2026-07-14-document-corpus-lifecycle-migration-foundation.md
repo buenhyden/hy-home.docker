@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-14-document-corpus-lifecycle-migration-foundation
 artifact_type: task
 parent_ids:
@@ -17,8 +17,9 @@ commits, generated evidence, controlled all-files result, and final closure.
 
 Planning evidence was created on branch
 codex/document-corpus-lifecycle-migration in linked worktree
-.worktrees/document-corpus-lifecycle-migration. Implementation results remain
-not run until recorded under the matching work unit.
+.worktrees/document-corpus-lifecycle-migration. All six Foundation work units,
+their independent reviews, and the pre-closure controlled wrapper are complete;
+the post-closure wrapper remains a non-mutating final handoff gate.
 
 ## Inputs
 
@@ -143,7 +144,7 @@ Redaction boundary:
 | T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Complete — reviewed range `133b3daa..160ff097`; terminal Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 0 |
 | T-DCLM-004 | Repository contracts, local QA, tracked workflow | Complete — final reviewed range `1b42a100..46e3ff5e`; terminal Spec PASS and Quality PASS each returned Critical 0, Important 0, Minor 0; I-Q01 mutation closure is confirmed |
 | T-DCLM-005 | Foundation manifest and generated evidence | Complete — post-promotion Spec and Quality reviews both returned APPROVED C0/I0/M0 at full commit `b3f8c5cb09366cdf045e9f595c9622a521807f71`. Foundation remains blocking with 24/24 `pass`/`pass` rows and the exact Stage 90 manifest route; later waves remain advisory with null manifest paths. Manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. |
-| T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Whole-branch remediation complete; fresh re-reviews pending; wrapper not run |
+| T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Complete — whole-branch Spec PASS and Quality PASS C0/I0/M0 at `63865ec601bb19aeb052ef8ffd1b213738c22ad2`; pre-closure wrapper passed with empty path sets |
 
 ## Work Log
 
@@ -195,6 +196,8 @@ Redaction boundary:
 | 2026-07-15 | T-DCLM-005 Foundation promotion | Fresh implementation agent | Applied only the approved promotion boundary: all 24 manifest review verdicts are `pass`/`pass`, manifest enforcement is `blocking`, and the registry Foundation entry is `blocking` with exact path `docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml`. Every later wave remains `advisory` with a null manifest path. The canonical summary was regenerated. The tracked Task and mandatory Stage 00 progress log record the promotion; including `docs/00.agent-governance/memory/progress.md` is the sole documented Plan-surface deviation because the root `AGENTS.md` bootstrap requires progress updates. Final manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. No Task 6, all-files QA, remote, runtime, archive, snapshot, tombstone, corpus-leaf, workflow, provider, or secret action occurred. Explicit post-promotion Spec and Quality reapproval remains required. |
 | 2026-07-15 | T-DCLM-005 post-promotion terminal closure | Fresh specification reviewer and separate quality reviewer | Both reviewers evaluated full promotion commit `b3f8c5cb09366cdf045e9f595c9622a521807f71` and returned APPROVED C0/I0/M0. The committed manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. T-DCLM-005 is complete. This closure changes evidence only; Task 6 has not started, and no test, implementation, generated output, promotion byte, runtime, remote, archive, snapshot, tombstone, workflow, provider, or secret changed. |
 | 2026-07-15 | T-DCLM-006 whole-branch review remediation | Fresh remediation agent | Closed the four Important findings from the first whole-branch review in two logical commits. `9c3fb049` restores the exact public skeleton signature, makes blocking/pass Foundation evidence complete and exact, and applies value-free confidentiality validation to every evidence list. `ae88ae62` updates only existing prose in the four Stage 90 lifecycle routers from reviewed advisory to reviewed blocking Foundation. Focused RED/GREEN, complete metadata/lifecycle suites, wrapper-unit coverage, production gates, generated-owner freshness, repository contracts, and Graphify corroboration pass. The actual all-files wrapper, closure statuses, runtime/remote/archive/later-wave changes, and merge were not performed; fresh whole-branch specification and quality re-reviews remain required. |
+| 2026-07-15 | T-DCLM-006 terminal whole-branch re-reviews | Fresh specification reviewer and separate quality reviewer | Both reviewers evaluated immutable base `e00e1483` through reviewed HEAD `63865ec601bb19aeb052ef8ffd1b213738c22ad2`. Specification returned PASS C0/I0/M0 and Quality returned PASS C0/I0/M0. Every prior Critical and Important finding is closed; no Minor deferral was recorded. |
+| 2026-07-15 | T-DCLM-006 pre-closure controlled wrapper | Controller | Ran the exact Plan Step 4 wrapper from a clean linked worktree. Wrapper and hook exited 0, snapshot comparison passed, and the Git-visible non-ignored before, after, hook-managed changed, and unexpected path sets were all empty. No hook edit required review or commit. |
 
 Each implementation row will record the fresh agent identity, exact bounded
 assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
@@ -482,16 +485,44 @@ Post-promotion Spec and Quality reviews of full commit
 `b3f8c5cb09366cdf045e9f595c9622a521807f71` both returned APPROVED C0/I0/M0.
 Manifest SHA-256 remains
 `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`.
-Task 5 is complete. Task 6 remediation is implemented and verified, but remains
-open pending fresh whole-branch specification and quality re-reviews. The
-actual all-files wrapper and closure steps have not run.
+Task 5 is complete. Task 6 whole-branch re-reviews at
+`63865ec601bb19aeb052ef8ffd1b213738c22ad2` returned Spec PASS C0/I0/M0 and
+Quality PASS C0/I0/M0. The pre-closure controlled wrapper passed from a clean
+linked worktree with empty Git-visible path sets, so Foundation closure is
+unblocked.
 
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command:
 
-scripts/validation/run-agent-precommit-all-files.sh with this tracked Task and
-the explicit allow-prefix set in the Plan.
+~~~bash
+scripts/validation/run-agent-precommit-all-files.sh \
+  --task docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md \
+  --allow-prefix .github/workflows/document-corpus-lifecycle.yml \
+  --allow-prefix .pre-commit-config.yaml \
+  --allow-prefix docs/00.agent-governance/rules \
+  --allow-prefix docs/00.agent-governance/memory/progress.md \
+  --allow-prefix docs/03.specs/131-document-corpus-lifecycle-migration-foundation \
+  --allow-prefix docs/03.specs/README.md \
+  --allow-prefix docs/04.execution \
+  --allow-prefix docs/90.references/data/governance/document-corpus-lifecycle \
+  --allow-prefix docs/90.references/data/governance/audit-implementation-matrix.md \
+  --allow-prefix docs/90.references/data/security/security-automation-readiness.md \
+  --allow-prefix docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md \
+  --allow-prefix docs/90.references/llm-wiki/llm-wiki-index.md \
+  --allow-prefix docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md \
+  --allow-prefix docs/98.archive/README.md \
+  --allow-prefix docs/99.templates/support \
+  --allow-prefix docs/99.templates/templates/common \
+  --allow-prefix scripts/README.md \
+  --allow-prefix scripts/validation/check-document-corpus-lifecycle.py \
+  --allow-prefix scripts/validation/check-document-metadata.py \
+  --allow-prefix scripts/validation/check-repo-contracts.sh \
+  --allow-prefix scripts/validation/recommend-qa-gates.sh \
+  --allow-prefix scripts/validation/run-local-qa-gates.sh \
+  --allow-prefix tests/validation/test_document_metadata.py \
+  --allow-prefix tests/validation/test_document_corpus_lifecycle.py
+~~~
 
 Allowed prefixes:
 
@@ -520,15 +551,24 @@ Allowed prefixes:
 - tests/validation/test_document_metadata.py
 - tests/validation/test_document_corpus_lifecycle.py
 
-Exit status: not run.
+Exit status: wrapper exit 0; `hook_result=passed`; `hook_exit=0`.
 
-Snapshot result: not run.
+Snapshot result: `snapshot_result=passed`.
 
-Observation boundary: Git-visible path sets and safe hook summaries only.
+Observation boundary: `git-visible-non-ignored-repository-status`; Git-visible
+path sets and safe hook summaries only.
 
-Path sets: not run.
+Path sets:
 
-Disposition: not run.
+- before path set: `(none)` (`before_count=0`);
+- after path set: `(none)` (`after_count=0`);
+- hook-managed changed path set: `(none)` (`changed_count=0`);
+- unexpected path set: `(none)` (`unexpected_count=0`).
+
+Disposition: PASS. The exact bounded wrapper ran from reviewed clean HEAD
+`63865ec601bb19aeb052ef8ffd1b213738c22ad2`; it made no Git-visible change, so
+no hook-managed edit, remediation commit, or repeat was required before
+closure. Direct `pre-commit run --all-files` was not invoked.
 
 ## Review Evidence
 
@@ -684,8 +724,10 @@ subsequent promotion is deliberately narrow: Foundation alone is blocking with
 waves remain advisory/null. Post-promotion Spec and Quality reviews of full
 commit `b3f8c5cb09366cdf045e9f595c9622a521807f71` both returned APPROVED
 C0/I0/M0. Task 5 is complete. Task 6 remediation is implemented and verified,
-but fresh whole-branch specification and quality re-reviews, the actual
-all-files wrapper, and closure remain pending.
+and the fresh whole-branch re-reviews at
+`63865ec601bb19aeb052ef8ffd1b213738c22ad2` returned Spec PASS C0/I0/M0 and
+Quality PASS C0/I0/M0. The pre-closure controlled wrapper then passed with
+empty Git-visible path sets, so closure is authorized.
 
 Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
 
@@ -706,9 +748,23 @@ the Stage 90 router-state finding without adding new router policy sections.
 | Generated owners | Security readiness, audit implementation matrix, LLM Wiki index, and LLM Wiki coverage checks were fresh; no generated fallout was required. |
 | Graphify | `graphify update .` passed at 1,150/1,150 files, 24,381 nodes, 26,908 edges, and 1,589 communities. An initial obsolete health-script path exited with `ENOENT`; the corrected `scripts/knowledge/report-graphify-health.sh` exited 0 with advisory status for two unrelated infrastructure cross-root inferences. The report was corroborated against tracked Stage 00, Spec 131, its Plan/Task, Stage 90/99 contracts, executable validators/tests, and routers, then both Graphify outputs were restored. |
 
-The branch is ready only for fresh whole-branch specification and quality
-re-reviews. No closure status, remote or runtime mutation, archive/later-wave
-execution, actual all-files wrapper, or merge is authorized by this evidence.
+Terminal whole-branch re-reviews of
+`e00e1483..63865ec601bb19aeb052ef8ffd1b213738c22ad2` returned Spec PASS
+C0/I0/M0 and Quality PASS C0/I0/M0. Together with the clean pre-closure
+controlled wrapper, this authorizes the Foundation status and index closure
+only. Remote or runtime mutation, archive/later-wave execution, and merge
+remain outside this evidence.
+
+Closure validation:
+
+| Gate | Result |
+| --- | --- |
+| Canonical owner writes | LLM Wiki index generated 1,306 paths with no diff; coverage generated 1,305 safe paths with no diff; metadata inventory generated 908 records and 2,160 findings with only the three planned Foundation status rows changing from active to completed. |
+| Generated freshness | Security readiness, audit implementation matrix, LLM Wiki index, LLM Wiki coverage, and metadata inventory check modes all passed. |
+| Metadata | `check-changed --base-ref e00e1483` selected 38 records with zero violations, legacy exceptions, or transition overrides. |
+| Lifecycle | Contract violations 0; Foundation manifest PASS; promoted violations 0; impacted selected 370 with zero violations and only the approved Stage 04 Tasks directory-budget warning. |
+| Documentation | Traceability passed 46 catalog pairs with zero failures; alignment passed 650 stage documents, 5,182 links, and 141 operations documents with zero failures. |
+| Repository and diff | Repository contracts returned `failures=0`; `git diff --check` passed; the exact closure path set contained nine expected files and zero unexpected files before staging. |
 
 ## Commit Ledger
 
@@ -756,6 +812,7 @@ Foundation logical commits:
 - `b3f8c5cb` — T-DCLM-005 Foundation promotion `docs(governance): promote corpus lifecycle foundation gate`; post-promotion Spec and Quality reviewers both returned APPROVED C0/I0/M0 for the full commit.
 - `9c3fb049` — T-DCLM-006 whole-branch validator/test remediation `fix(governance): harden Foundation evidence validation`.
 - `ae88ae62` — T-DCLM-006 Stage 90 router remediation `docs(references): align Foundation lifecycle routing`.
+- `63865ec6` — T-DCLM-006 review-remediation evidence `docs(execution): record whole-branch review remediation`; terminal whole-branch Spec and Quality reviews both returned PASS C0/I0/M0 for this exact reviewed HEAD.
 
 The later ledger-only closure commit records these terminal verdicts and does
 not alter the reviewed promotion, manifest, generated summary, contracts, or
@@ -784,7 +841,7 @@ Deferred:
 - Spec 136 — Stage 90, README, generated, _workspace, .github, and final
   full-corpus enforcement.
 
-Blocked items: none at planning time.
+Blocked items: none.
 
 Deferral destination: the named later-wave Specs and their separately approved
 Plans/Tasks.

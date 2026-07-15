@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:131-document-corpus-lifecycle-migration-foundation
 artifact_type: spec
 parent_ids:
@@ -14,6 +14,10 @@ This specification defines the control plane for migrating the workspace
 documentation corpus onto the canonical Stage 00 and Stage 99 contracts. It
 continues the deliberately deferred Waves A through E from Spec 130 rather than
 reopening the completed template-system canonicalization.
+
+The Foundation control plane is complete. Its reviewed manifest is promoted to
+blocking, while Waves A through E remain separately gated and outside this
+completed specification.
 
 The program is contract-first and preservation-oriented. It establishes a
 machine-readable migration manifest, typed lifecycle and relation validation,

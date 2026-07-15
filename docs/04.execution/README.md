@@ -81,6 +81,8 @@ docs/04.execution/
 - [Workspace audit gap closure task](tasks/2026-05-26-workspace-audit-gap-closure.md) - execution evidence for GAP-NEW-03~09 closure and deferred item recording
 - [Docs implementation reconciliation plan](plans/2026-06-02-docs-implementation-reconciliation.md) - completed plan for Stage 01-05 current-implementation alignment and archive disposition
 - [Docs implementation reconciliation task](tasks/2026-06-02-docs-implementation-reconciliation.md) - execution evidence for the implementation-alignment validator, stale template cleanup, and CI/governance wiring
+- [Document corpus lifecycle migration Foundation plan](plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md) - completed control-plane plan for lifecycle manifests, archive provenance, validation, QA, and blocking Foundation promotion
+- [Document corpus lifecycle migration Foundation task](tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md) - completed implementation, independent review, and controlled pre-closure QA evidence
 
 ## Execution Contract
 
