@@ -23,7 +23,7 @@ remain solely in the registry and checker.
 | `superseded` | Replaced active docs retained for transition or reference | The document has a current replacement and must point to it while it remains in the active chain. |
 | `archived` | `docs/98.archive/**` tombstones | The original active document was removed from the active chain. |
 
-## Archive-Centered Lifecycle Rules
+## Status Interpretation Boundary
 
 - `completed` does not automatically mean archived. Completed specs, plans,
   tasks, and audit records may remain active evidence.
@@ -31,11 +31,12 @@ remain solely in the registry and checker.
   exists in the active chain and points to a replacement.
 - `archived` is reserved for `docs/98.archive/**` tombstones after the original
   target leaves the active chain.
-- A document restructure disposition such as `historical-archive`,
-  `duplicate-remove`, `conflict-remove-or-archive`, or `evidence-preserve` is a
-  task/audit decision, not a replacement for lifecycle `status`.
-- Preserve `evidence-preserve` documents with their historical wording unless a
-  future task proves active-consumption conflict.
+
+This status vocabulary does not classify migration rows or decide archive
+disposition, preservation, replacement, or evidence conditions. Route those
+decisions to the [corpus migration contract](./corpus-migration-contract.md)
+and [archive and retention contract](./archive-retention-contract.md), with
+machine enforcement in their registries and checkers.
 
 ## Generated Metadata
 
@@ -72,6 +73,13 @@ Human prose, age, formatting cleanup, or a copied template never authorizes an
 exception. Escalate ambiguity before mutation when the registry profile,
 current evidence, and intended lifecycle outcome do not agree.
 
+Review-age thresholds are non-mutating signals owned by the
+[archive and retention contract](./archive-retention-contract.md) and its
+machine registry. A signal requests evidence review only. It cannot infer a
+review date, change `status`, approve a reverse transition, or authorize
+archive. Corpus-wide status changes are classified and reviewed through the
+[corpus migration contract](./corpus-migration-contract.md).
+
 ## Related Documents
 
 - [support README](./README.md)
@@ -79,3 +87,5 @@ current evidence, and intended lifecycle outcome do not agree.
 - [document metadata profiles](./document-metadata-profiles.yaml)
 - [metadata checker](../../../scripts/validation/check-document-metadata.py)
 - [template governance](./template-governance.md)
+- [corpus migration contract](./corpus-migration-contract.md)
+- [archive and retention contract](./archive-retention-contract.md)

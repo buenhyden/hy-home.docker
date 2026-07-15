@@ -77,7 +77,24 @@ Read-only remote checks may be recorded as verification evidence. Remote state
 that was approved but not changed must be reported as verified-only, not as a
 mutation.
 
-### 5.1 Evidence Boundary by Change Type
+### 5.1 Tracked Workflow Definition Boundary
+
+A tracked workflow file is a local repository definition, not evidence that a
+remote schedule, manual dispatch, job, or required check ran. Agents may author
+and validate an approved workflow definition locally, but must not dispatch it,
+push it, enable it remotely, or change GitHub checks, rulesets, branch
+protection, environments, deployments, or releases without separate explicit
+approval for that repository and remote surface.
+
+`.github/workflows/document-corpus-lifecycle.yml` is read-only quality
+automation. Its scheduled and manual job blocks lifecycle contract and promoted
+manifest failures while reporting bounded full-corpus debt and duplicate
+candidates advisory-only. It does not upload corpus or snapshot payloads, add a
+required status check, or replace the existing `repo-contracts` pull-request
+and push consumer. Local validation of this tracked definition must be reported
+separately from unverified remote execution state.
+
+### 5.2 Evidence Boundary by Change Type
 
 Agents must align local checks, CI-only gates, and skipped-check rationale with
 the QA scope matrix. For PR-related work, the completion summary or task
@@ -138,6 +155,12 @@ before the checker runs. An all-zero, missing, or unrelated event base therefore
 fails closed. Manual dispatches have no event delta and use the checker's normal
 safe-base resolution chain.
 
+The same repository-contract path always runs the document corpus lifecycle
+`check-contract` and `check-promoted` modes. It runs `check-impacted` only with
+a verified `TEMPLATE_GATE_BASE` commit, or with a resolvable local `HEAD~1` when
+the explicit environment value is absent. This extends the existing required
+job; it does not create or require another CI job.
+
 ### Required Quality Gates
 
 | Job ID                            | Execution Surface                                      |
@@ -170,6 +193,7 @@ runner.
 | `stale.yml`              | manage stale issues and PRs |
 | `pr-labeler.yml`         | apply PR labels            |
 | `generate-changelog.yml` | generate release changelog |
+| `document-corpus-lifecycle.yml` | report read-only scheduled/manual lifecycle debt and duplicate candidates |
 
 **Coupling constraint:** when adding, removing, or renaming a required job in
 `ci-quality.yml`, update all three places together:

@@ -52,7 +52,7 @@ docs/
 │   ├── runbooks/
 │   └── incidents/
 ├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵, LLM Wiki
-├── 98.archive/                 # active chain에서 제거된 old 문서 tombstone
+├── 98.archive/                 # manifest-first validated tombstone result with full typed provenance and preservation
 ├── 99.templates/               # stage 문서 작성을 위한 표준 템플릿
 └── README.md                   # This file
 ```
@@ -72,7 +72,7 @@ docs/
 | execute recovery or repeatable procedures | `05.operations/runbooks/` |
 | record incidents or postmortems | `05.operations/incidents/YYYY/INC-###-<title>/` |
 | provide LLM-facing repository navigation | `90.references/llm-wiki/` |
-| trace removed old documents | `98.archive/` |
+| inspect a manifest-first validated tombstone result | `98.archive/` |
 
 ## Migration Map
 
@@ -126,7 +126,7 @@ docs/
 | `05.operations/runbooks/` | 한국어 procedures, commands/expected outputs/escalation evidence 원문 보존 |
 | `05.operations/incidents/` | 한국어 incident narrative, timestamps/IDs/commands/evidence labels 원문 보존 |
 | `90.references/` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
-| `98.archive/` | 간결한 tombstone 기록, original path/date/title/replacement 원문 보존 |
+| `98.archive/` | manifest-approved 간결한 tombstone; full typed provenance and preservation, disposition-conditional relation, identifier 원문 보존 |
 | `99.templates/` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |
 
 ## Documentation Contract
@@ -141,7 +141,7 @@ docs/
 | `04.execution/tasks/` | 실제 수행 상태, evidence, deviation, completion record | `99.templates/templates/sdlc/task.template.md` |
 | `05.operations/` | guide, policy, runbook, incident/postmortem | `99.templates/templates/operations/guide.template.md`, `99.templates/templates/operations/policy.template.md`, `99.templates/templates/operations/runbook.template.md`, incident/postmortem templates |
 | `90.references/` | active 판단을 대체하지 않는 stable reference | `99.templates/templates/common/reference.template.md` |
-| `98.archive/` | active chain에서 제거된 old 문서 tombstone | `99.templates/templates/common/archive.template.md` |
+| `98.archive/` | manifest-first validated tombstone result with full typed provenance and preservation; `current_replacement` is disposition-conditional | `99.templates/templates/common/archive.template.md` |
 | `99.templates/` | canonical template source and target-relative link rules | `99.templates/templates/common/readme.template.md` |
 
 문서 lifecycle은 requirement → architecture → specification → execution → operations 순서로 흐릅니다. Reference는 lifecycle을 보조하고, template은 lifecycle 문서의 구조와 링크 계산 기준을 제공합니다.
@@ -152,8 +152,8 @@ docs/
 - 상대 링크는 현재 파일 위치 기준으로 계산합니다.
 - 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
 - README는 폴더 index이므로 파일 추가, 이동, 삭제가 있으면 parent README를 함께 갱신합니다.
-- 오래된 문서를 archive/reference로 옮기거나 삭제하려면 먼저 참조 검색과 migration note가 필요합니다.
-- 현재 구현과 상충하는 whole-document old 문서는 `98.archive/` tombstone으로 이동하고 active 문서에서는 archive로 역링크하지 않습니다.
+- Archive 또는 delete 후보는 [corpus migration contract](99.templates/support/corpus-migration-contract.md)의 approved manifest로 manifest-first 분류하고, [archive and retention contract](99.templates/support/archive-retention-contract.md)에 따라 safe provenance, confidentiality, preservation, rollback evidence, independent specification and quality review를 확인합니다.
+- 검증된 manifest-first validated tombstone result만 `98.archive/`에 기록합니다. Tombstone은 full typed provenance and preservation을 유지하고, `current_replacement` is disposition-conditional이며, exact relation/preservation 조건은 두 Stage 99 owner와 machine registry로 라우팅합니다. Active 문서에서는 archive로 역링크하지 않습니다.
 
 ## Template Usage
 

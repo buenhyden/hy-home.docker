@@ -96,7 +96,7 @@ repos:
         name: Repo contracts (docs/infra/scripts drift)
         entry: ./scripts/validation/check-repo-contracts.sh
         language: script
-        files: ^(docker-compose\.yml|\.env\.example|infra/.*|docs/.*|scripts/.*)$
+        files: ^(docker-compose\.yml|\.env\.example|infra/.*|docs/.*|scripts/.*|tests/validation/test_document_corpus_lifecycle\.py|\.github/workflows/.*\.(yml|yaml)|\.pre-commit-config\.yaml)$
         pass_filenames: false
         stages: [pre-push]
 

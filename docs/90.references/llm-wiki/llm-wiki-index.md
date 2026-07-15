@@ -447,6 +447,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/128-agentic-audit-harness-consolidation/spec.md](../../03.specs/128-agentic-audit-harness-consolidation/spec.md) | Markdown reference |
 | [docs/03.specs/129-document-contract-canonicalization/spec.md](../../03.specs/129-document-contract-canonicalization/spec.md) | Markdown reference |
 | [docs/03.specs/130-template-contract-system-canonicalization/spec.md](../../03.specs/130-template-contract-system-canonicalization/spec.md) | Markdown reference |
+| [docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md](../../03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -544,6 +545,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md](../../04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md](../../04.execution/plans/2026-07-13-document-contract-canonicalization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md](../../04.execution/plans/2026-07-13-template-contract-system-canonicalization.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md](../../04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -662,6 +664,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md](../../04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md](../../04.execution/tasks/2026-07-13-document-contract-canonicalization.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md](../../04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md](../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -985,6 +988,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/governance/README.md](../data/governance/README.md) | folder index |
 | [docs/90.references/data/governance/agent-output-eval-fixtures.md](../data/governance/agent-output-eval-fixtures.md) | Markdown reference |
 | [docs/90.references/data/governance/audit-implementation-matrix.md](../data/governance/audit-implementation-matrix.md) | Markdown reference |
+| [docs/90.references/data/governance/document-corpus-lifecycle/README.md](../data/governance/document-corpus-lifecycle/README.md) | folder index |
+| [docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md](../data/governance/document-corpus-lifecycle/foundation-summary.md) | Markdown reference |
+| [docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml](../data/governance/document-corpus-lifecycle/foundation.yaml) | YAML config |
 | [docs/90.references/data/governance/gap-to-stage-routing.md](../data/governance/gap-to-stage-routing.md) | Markdown reference |
 | [docs/90.references/data/governance/provider-hook-parity-matrix.md](../data/governance/provider-hook-parity-matrix.md) | Markdown reference |
 | [docs/90.references/data/hads/README.md](../data/hads/README.md) | folder index |
@@ -1023,7 +1029,10 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/README.md](../research/README.md) | folder index |
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |
 | [docs/99.templates/support/README.md](../../99.templates/support/README.md) | folder index |
+| [docs/99.templates/support/archive-retention-contract.md](../../99.templates/support/archive-retention-contract.md) | Markdown reference |
 | [docs/99.templates/support/common-document-contract.md](../../99.templates/support/common-document-contract.md) | Markdown reference |
+| [docs/99.templates/support/corpus-migration-contract.md](../../99.templates/support/corpus-migration-contract.md) | Markdown reference |
+| [docs/99.templates/support/document-corpus-migration-contract.yaml](../../99.templates/support/document-corpus-migration-contract.yaml) | YAML config |
 | [docs/99.templates/support/document-metadata-profiles.yaml](../../99.templates/support/document-metadata-profiles.yaml) | YAML config |
 | [docs/99.templates/support/external-source-rationale.md](../../99.templates/support/external-source-rationale.md) | Markdown reference |
 | [docs/99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md) | Markdown reference |
@@ -1371,6 +1380,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.github/labeler.yml](../../../.github/labeler.yml) | YAML config |
 | [.github/rulesets/main-protection.md](../../../.github/rulesets/main-protection.md) | Markdown reference |
 | [.github/workflows/ci-quality.yml](../../../.github/workflows/ci-quality.yml) | YAML config |
+| [.github/workflows/document-corpus-lifecycle.yml](../../../.github/workflows/document-corpus-lifecycle.yml) | YAML config |
 | [.github/workflows/generate-changelog.yml](../../../.github/workflows/generate-changelog.yml) | YAML config |
 | [.github/workflows/greetings.yml](../../../.github/workflows/greetings.yml) | YAML config |
 | [.github/workflows/pr-labeler.yml](../../../.github/workflows/pr-labeler.yml) | YAML config |

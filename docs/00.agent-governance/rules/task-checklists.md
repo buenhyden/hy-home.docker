@@ -37,6 +37,9 @@ Unified task execution checklists for all agent work.
       only when a protected surface is applicable.
 - [ ] Identify key risks (security, data loss, breaking changes, governance drift).
 - [ ] Define verification commands and acceptance criteria before edits.
+- [ ] For corpus migration or archive work, confirm the approved wave and use
+      manifest-first classification from the Stage 99 corpus migration owner
+      before any target mutation.
 - [ ] If full-repository pre-commit is planned, confirm that it is the approved
       final QA gate and name the tracked task path plus minimal allowed prefixes.
 
@@ -69,6 +72,12 @@ Unified task execution checklists for all agent work.
       discovery -> applicability -> provider loading -> canonical artifact ->
       validation evidence.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` for material task progress.
+- [ ] For archive work, run safe provenance and confidentiality checks through
+      the lifecycle validator; do not inspect or record prohibited payloads.
+- [ ] Preserve independent specification and quality review as separate Task
+      evidence before a destructive row or wave promotion can pass.
+- [ ] Refresh each derived output through its canonical generator and inspect
+      the exact owned fallout before staging.
 - [ ] Never run `pre-commit run` directly. The approved final QA all-files gate
       uses only `scripts/validation/run-agent-precommit-all-files.sh` from an
       initially clean linked worktree; stop on unexpected paths without cleanup.
@@ -101,6 +110,9 @@ Unified task execution checklists for all agent work.
       prefixes, hook exit, Git-visible non-ignored modified paths,
       unexpected-path review disposition, and skipped rationale; the wrapper
       never writes this evidence itself.
+- [ ] Confirm migration Task evidence records the reviewed manifest, consumer
+      and replacement proof, provenance result, rollback boundary, generator
+      freshness, independent reviews, and conditional controlled-wrapper evidence.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` with final status, verification evidence, and memory note links.
 - [ ] Create/update out-of-scope or durable finding reports from `docs/99.templates/templates/governance/memory.template.md` when needed.
 - [ ] For completed repository-modifying agent work, create logical Conventional Commits or record why commits were intentionally skipped.
@@ -113,3 +125,5 @@ Unified task execution checklists for all agent work.
 - `docs/00.agent-governance/rules/persona.md`
 - `docs/00.agent-governance/rules/stage-authoring-matrix.md`
 - `docs/00.agent-governance/rules/documentation-protocol.md`
+- `docs/99.templates/support/corpus-migration-contract.md`
+- `docs/99.templates/support/archive-retention-contract.md`

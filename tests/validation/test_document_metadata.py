@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import collections
+import copy
+import datetime as dt
 import importlib.util
 import os
 import pathlib
@@ -17,6 +19,20 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "scripts" / "validation" / "check-document-metadata.py"
 PROFILES = ROOT / "docs" / "99.templates" / "support" / "document-metadata-profiles.yaml"
+MIGRATION_CONTRACT = (
+    ROOT
+    / "docs"
+    / "99.templates"
+    / "support"
+    / "document-corpus-migration-contract.yaml"
+)
+CORPUS_MIGRATION_HUMAN_CONTRACT = (
+    ROOT / "docs/99.templates/support/corpus-migration-contract.md"
+)
+ARCHIVE_RETENTION_HUMAN_CONTRACT = (
+    ROOT / "docs/99.templates/support/archive-retention-contract.md"
+)
+ARCHIVE_TEMPLATE = ROOT / "docs/99.templates/templates/common/archive.template.md"
 
 spec = importlib.util.spec_from_file_location("check_document_metadata", CHECKER)
 if spec is None or spec.loader is None:
@@ -248,6 +264,68 @@ class ProfileSchemaTests(unittest.TestCase):
             with self.assertRaises(metadata.ProfileError):
                 metadata.load_profiles(target)
 
+    def mutate_migration_contract_and_load(self, mutate) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            target = pathlib.Path(directory) / "migration.yaml"
+            values = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
+            mutate(values)
+            target.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
+            with self.assertRaises(metadata.ProfileError):
+                metadata.load_migration_contract(target)
+
+    def valid_static_manifest(self) -> dict[str, object]:
+        return {
+            "schema_version": 1,
+            "wave": "foundation",
+            "baseline_commit": "a" * 40,
+            "generated_by": "scripts/validation/check-document-corpus-lifecycle.py",
+            "enforcement": "blocking",
+            "entries": [
+                {
+                    "source_path": "docs/source.md",
+                    "target_path": None,
+                    "artifact_id": "reference:source",
+                    "artifact_type": "reference",
+                    "status_before": "active",
+                    "status_after": "archived",
+                    "parent_ids": ["spec:source"],
+                    "disposition": "delete",
+                    "canonical_replacement": None,
+                    "active_consumers": [],
+                    "partition_plan": None,
+                    "preservation_class": "git-history",
+                    "evidence": {
+                        "commands": ["git show BASE:docs/source.md"],
+                        "sources": ["docs/source.md"],
+                        "repository_paths": ["docs/source.md"],
+                        "consumer_scan": ["rg --fixed-strings docs/source.md"],
+                        "rollback": ["revert logical task commit"],
+                    },
+                    "review_verdict": {
+                        "specification": "pass",
+                        "quality": "pass",
+                    },
+                }
+            ],
+        }
+
+    def valid_static_exception_document(self) -> dict[str, object]:
+        return {
+            "schema_version": 1,
+            "exceptions": [
+                {
+                    "finding_code": "known-finding",
+                    "scope_paths": ["docs/source.md"],
+                    "owner": "docs-platform",
+                    "reason": "Bounded remediation is scheduled.",
+                    "approved_at": "2026-07-01",
+                    "expires_on": "2026-08-01",
+                    "exit_condition": "Remove after the source is migrated.",
+                    "evidence": ["docs/04.execution/tasks/2026-07-14-fixture.md"],
+                }
+            ],
+        }
+
     def test_schema_version_rejects_boolean(self) -> None:
         self.mutate_and_load(lambda values: values.__setitem__("schema_version", True))
 
@@ -272,7 +350,14 @@ class ProfileSchemaTests(unittest.TestCase):
                 "archived_from",
                 "archived_on",
                 "archive_reason",
+                "archive_disposition",
+                "archived_commit",
+                "archived_blob",
+                "preservation_class",
                 "current_replacement",
+                "snapshot_path",
+                "content_sha256",
+                "snapshot_reason",
             ],
             profiles["common"]["frontmatter_order"],
         )
@@ -284,6 +369,740 @@ class ProfileSchemaTests(unittest.TestCase):
         for mutate in mutations:
             with self.subTest(mutate=mutate):
                 self.mutate_and_load(mutate)
+
+    def test_template_placeholder_registry_matches_all_source_frontmatter(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        placeholders = profiles["common"]["template_placeholders"]
+        self.assertEqual(
+            {
+                "artifact_id": "<artifact-id>",
+                "parent_id": "<parent-artifact-id>",
+                "reviewed_at": "<reviewed-at>",
+                "review_cycle": "<review-cycle>",
+                "archived_from": "docs/<original-path>.md",
+                "archived_on": "YYYY-MM-DD",
+                "archive_reason": "<archive-reason>",
+                "archive_disposition": "<archive-disposition>",
+                "archived_commit": "<archived-commit>",
+                "archived_blob": "<archived-blob>",
+                "preservation_class": "<preservation-class>",
+                "current_replacement": "docs/<replacement-path>.md",
+                "snapshot_path": "docs/98.archive/evidence/<content-sha256>.md.snapshot",
+                "content_sha256": "<content-sha256>",
+                "snapshot_reason": "<snapshot-reason>",
+            },
+            placeholders,
+        )
+
+        def collect_placeholder_scalars(value: object) -> set[str]:
+            if isinstance(value, str):
+                return {value} if "<" in value or value == "YYYY-MM-DD" else set()
+            if isinstance(value, list):
+                return set().union(
+                    *(collect_placeholder_scalars(item) for item in value)
+                )
+            if isinstance(value, dict):
+                return set().union(
+                    *(collect_placeholder_scalars(item) for item in value.values())
+                )
+            return set()
+
+        source_values: set[str] = set()
+        for role in profiles["template_roles"].values():
+            source_values.update(
+                collect_placeholder_scalars(
+                    metadata.parse_frontmatter(ROOT / role["source"])
+                )
+            )
+        self.assertEqual(set(placeholders.values()), source_values)
+
+    def test_generated_outputs_registry_owns_only_exact_safe_paths(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        self.assertEqual(
+            {
+                "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md":
+                    "scripts/validation/check-document-corpus-lifecycle.py",
+            },
+            profiles["common"]["generated_outputs"],
+        )
+
+        mutations = (
+            lambda values: values["common"]["generated_outputs"].__setitem__(
+                "docs/90.references/data/governance/document-corpus-lifecycle/*.md",
+                "scripts/validation/check-document-corpus-lifecycle.py",
+            ),
+            lambda values: values["common"]["generated_outputs"].__setitem__(
+                "docs/90.references/data/governance/document-corpus-lifecycle/README.md",
+                "scripts/validation/check-document-corpus-lifecycle.py",
+            ),
+            lambda values: values["common"]["generated_outputs"].__setitem__(
+                "docs/90.references/data/governance/document-corpus-lifecycle/other.md",
+                "../outside-generator.py",
+            ),
+        )
+        for mutate in mutations:
+            with self.subTest(mutate=mutate):
+                self.mutate_and_load(mutate)
+
+    def test_archive_profile_has_canonical_v2_order(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        self.assertEqual(2, profiles["schema_version"])
+        self.assertEqual(
+            [
+                "status",
+                "artifact_id",
+                "artifact_type",
+                "parent_ids",
+                "supersedes",
+                "reviewed_at",
+                "review_cycle",
+                "generated_by",
+                "archived_from",
+                "archived_on",
+                "archive_reason",
+                "archive_disposition",
+                "archived_commit",
+                "archived_blob",
+                "preservation_class",
+                "current_replacement",
+                "snapshot_path",
+                "content_sha256",
+                "snapshot_reason",
+            ],
+            profiles["common"]["frontmatter_order"],
+        )
+        archive = profiles["profiles"]["archive"]
+        self.assertEqual(
+            [
+                "status",
+                "artifact_id",
+                "artifact_type",
+                "parent_ids",
+                "archived_from",
+                "archived_on",
+                "archive_reason",
+                "archive_disposition",
+                "archived_commit",
+                "archived_blob",
+                "preservation_class",
+            ],
+            archive["required"],
+        )
+        self.assertEqual(
+            [
+                "layer",
+                "supersedes",
+                "current_replacement",
+                "snapshot_path",
+                "content_sha256",
+                "snapshot_reason",
+            ],
+            archive["optional"],
+        )
+        self.assertEqual(
+            {
+                "replacement": {
+                    "field": "current_replacement",
+                    "required_for": ["superseded", "duplicate", "conflict"],
+                    "forbidden_for": ["withdrawn"],
+                    "optional_for": ["evidence-preserve"],
+                },
+                "snapshot": {
+                    "fields": ["snapshot_path", "content_sha256", "snapshot_reason"],
+                    "required_for": ["immutable-snapshot"],
+                    "forbidden_for": ["git-history"],
+                },
+            },
+            archive["conditions"],
+        )
+
+    def test_archive_profile_rejects_unknown_condition_fields(self) -> None:
+        def add_unknown_condition(values) -> None:
+            values["profiles"]["archive"].setdefault("conditions", {})[
+                "undeclared-condition"
+            ] = []
+
+        self.mutate_and_load(add_unknown_condition)
+
+    def test_corpus_migration_human_owner_matches_machine_contract(self) -> None:
+        self.assertTrue(
+            CORPUS_MIGRATION_HUMAN_CONTRACT.is_file(),
+            "canonical corpus migration human owner is missing",
+        )
+        text = CORPUS_MIGRATION_HUMAN_CONTRACT.read_text(encoding="utf-8")
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+
+        expected_sequences = (
+            contract["manifest"]["dispositions"],
+            contract["manifest_schema"]["top_level_fields"],
+            contract["manifest_schema"]["entry_fields"],
+            contract["manifest_schema"]["evidence_fields"],
+            contract["manifest_schema"]["review_verdict_fields"],
+            contract["manifest_schema"]["review_verdict_values"],
+        )
+        for values in expected_sequences:
+            literal = ", ".join(f"`{value}`" for value in values)
+            with self.subTest(literal=literal):
+                self.assertIn(literal, text)
+        for field_name in contract["manifest_schema"]["field_contracts"]:
+            with self.subTest(field=field_name):
+                self.assertIn(f"`{field_name}`", text)
+        for disposition, condition in contract["disposition_conditions"].items():
+            with self.subTest(disposition=disposition):
+                self.assertIn(f"`{disposition}` -> `{condition}`", text)
+        self.assertIn(
+            "document-corpus-migration-contract.yaml",
+            text,
+        )
+
+    def test_archive_retention_human_owner_matches_machine_contract(self) -> None:
+        self.assertTrue(
+            ARCHIVE_RETENTION_HUMAN_CONTRACT.is_file(),
+            "canonical archive and retention human owner is missing",
+        )
+        text = ARCHIVE_RETENTION_HUMAN_CONTRACT.read_text(encoding="utf-8")
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = metadata.load_profiles(PROFILES)
+        archive_profile = profiles["profiles"]["archive"]
+
+        for values in (
+            contract["archive"]["dispositions"],
+            contract["archive"]["preservation_classes"],
+            archive_profile["required"],
+            archive_profile["optional"],
+        ):
+            literal = ", ".join(f"`{value}`" for value in values)
+            with self.subTest(literal=literal):
+                self.assertIn(literal, text)
+        for key, value in contract["directory_budgets"].items():
+            self.assertIn(f"`{key}: {value}`", text)
+        for key, value in contract["review_signals"].items():
+            self.assertIn(f"`{key}: {value}`", text)
+        for source, target in contract["planned_partitions"].items():
+            self.assertIn(f"`{source}` -> `{target}`", text)
+        self.assertIn("document-metadata-profiles.yaml", text)
+        self.assertIn("document-corpus-migration-contract.yaml", text)
+
+    def test_archive_template_uses_canonical_profile_order_and_sections(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        archive_role = profiles["template_roles"]["archive"]
+        values = metadata.parse_frontmatter(ARCHIVE_TEMPLATE)
+        self.assertEqual(
+            [
+                "status",
+                "artifact_id",
+                "artifact_type",
+                "parent_ids",
+                "archived_from",
+                "archived_on",
+                "archive_reason",
+                "archive_disposition",
+                "archived_commit",
+                "archived_blob",
+                "preservation_class",
+                "current_replacement",
+                "snapshot_path",
+                "content_sha256",
+                "snapshot_reason",
+            ],
+            list(values),
+        )
+        self.assertEqual(
+            [
+                "## Overview",
+                "## Archive Metadata",
+                "## Current Replacement",
+                "## Archive Ledger",
+                "## Preserved Evidence",
+                "## Related Documents",
+            ],
+            [
+                line
+                for line in ARCHIVE_TEMPLATE.read_text(encoding="utf-8").splitlines()
+                if line.startswith("## ")
+            ],
+        )
+        self.assertEqual(
+            [
+                "## Overview",
+                "## Archive Metadata",
+                "## Archive Ledger",
+                "## Related Documents",
+            ],
+            archive_role["required_headings"],
+        )
+        self.assertEqual(
+            ["## Current Replacement", "## Preserved Evidence"],
+            archive_role["conditional_headings"],
+        )
+        self.assertNotIn("N/A", ARCHIVE_TEMPLATE.read_text(encoding="utf-8"))
+
+    def test_migration_contract_has_exact_nonoverlapping_ownership(self) -> None:
+        self.assertTrue(MIGRATION_CONTRACT.is_file(), "migration contract is missing")
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
+        self.assertEqual(
+            [
+                "migrate",
+                "preserve",
+                "move",
+                "merge",
+                "archive",
+                "delete",
+                "regenerate",
+                "exempt",
+            ],
+            contract["manifest"]["dispositions"],
+        )
+        self.assertEqual(
+            ["superseded", "duplicate", "conflict", "withdrawn", "evidence-preserve"],
+            contract["archive"]["dispositions"],
+        )
+        self.assertEqual(
+            ["git-history", "immutable-snapshot"],
+            contract["archive"]["preservation_classes"],
+        )
+        self.assertEqual(
+            {"warning_at": 100, "block_new_leaf_at": 150},
+            contract["directory_budgets"],
+        )
+        self.assertEqual(
+            {"draft_days": 30, "active_days": 90, "completed_execution_days": 180},
+            contract["review_signals"],
+        )
+        self.assertEqual(
+            {
+                "schema_version",
+                "manifest",
+                "archive",
+                "directory_budgets",
+                "review_signals",
+                "manifest_schema",
+                "exception_schema",
+                "disposition_conditions",
+                "replacement_requirements",
+                "snapshot_admission",
+                "safe_diagnostics",
+                "waves",
+                "planned_partitions",
+            },
+            set(contract),
+        )
+        self.assertEqual(
+            {"schema_version"},
+            set(contract) & set(profiles),
+        )
+
+        mutations = []
+        duplicate = MIGRATION_CONTRACT.read_text(encoding="utf-8") + "\nschema_version: 1\n"
+        mutations.append(duplicate)
+        for mutate in (
+            lambda values: values["manifest"]["dispositions"].append("unknown"),
+            lambda values: values["directory_budgets"].__setitem__("warning_at", 0),
+            lambda values: values["directory_budgets"].__setitem__("warning_at", 150),
+            lambda values: values["waves"]["wave-d-archive-provenance"].__setitem__(
+                "enforcement", "blocking"
+            ),
+            lambda values: values.__setitem__("profiles", {}),
+            lambda values: values["waves"]["foundation"]["source_paths"].append(
+                "/absolute.md"
+            ),
+            lambda values: values["waves"]["foundation"]["declared_outputs"].append(
+                "docs/../unsafe.md"
+            ),
+        ):
+            values = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
+            mutate(values)
+            mutations.append(yaml.safe_dump(values, sort_keys=False))
+        for source in mutations:
+            with self.subTest(source=source[-80:]):
+                with tempfile.TemporaryDirectory() as directory:
+                    target = pathlib.Path(directory) / "migration.yaml"
+                    target.write_text(source, encoding="utf-8")
+                    with self.assertRaises(metadata.ProfileError):
+                        metadata.load_migration_contract(target)
+
+    def test_migration_contract_declares_manifest_static_semantics(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        schema = contract["manifest_schema"]
+        self.assertEqual(
+            {
+                "schema_version",
+                "wave",
+                "baseline_commit",
+                "generated_by",
+                "enforcement",
+                "entries",
+                "source_path",
+                "target_path",
+                "artifact_id",
+                "artifact_type",
+                "status_before",
+                "status_after",
+                "parent_ids",
+                "disposition",
+                "canonical_replacement",
+                "active_consumers",
+                "partition_plan",
+                "preservation_class",
+                "evidence",
+                "review_verdict",
+                "evidence.commands",
+                "evidence.sources",
+                "evidence.repository_paths",
+                "evidence.consumer_scan",
+                "evidence.rollback",
+                "review_verdict.specification",
+                "review_verdict.quality",
+            },
+            set(schema["field_contracts"]),
+        )
+        self.assertEqual(
+            {
+                "entries": "source_path",
+                "parent_ids": "lexicographic",
+                "active_consumers": "lexicographic",
+                "evidence.commands": "lexicographic",
+                "evidence.sources": "lexicographic",
+                "evidence.repository_paths": "lexicographic",
+                "evidence.consumer_scan": "lexicographic",
+                "evidence.rollback": "lexicographic",
+            },
+            schema["deterministic_order"],
+        )
+        self.assertEqual(
+            {
+                "dispositions": ["merge", "archive", "delete"],
+                "active_consumers_required": True,
+                "empty_consumers_require": "evidence.consumer_scan",
+                "non_empty_evidence": [
+                    "commands",
+                    "sources",
+                    "repository_paths",
+                    "consumer_scan",
+                    "rollback",
+                ],
+                "preservation_class_required": True,
+                "replacement_semantics": "replacement_requirements",
+                "required_review": {"specification": "pass", "quality": "pass"},
+            },
+            schema["destructive_execution"],
+        )
+
+        self.assertEqual(
+            {
+                "artifact_id": {
+                    "type": "string",
+                    "nullable": True,
+                    "domain": "canonical-metadata-artifact-id",
+                    "null_condition": "selected-profile-does-not-require-artifact-id",
+                },
+                "status_before": {
+                    "type": "string",
+                    "nullable": True,
+                    "domain": "registered-lifecycle-status",
+                    "null_condition": "selected-profile-does-not-require-status",
+                },
+                "status_after": {
+                    "type": "string",
+                    "nullable": True,
+                    "domain": "registered-lifecycle-status",
+                    "null_condition": "selected-profile-does-not-require-status",
+                },
+            },
+            {
+                field: schema["field_contracts"][field]
+                for field in ("artifact_id", "status_before", "status_after")
+            },
+        )
+        for mutate in (
+            lambda values: values["manifest_schema"]["field_contracts"][
+                "baseline_commit"
+            ].__setitem__("domain", "string"),
+            lambda values: values["manifest_schema"]["field_contracts"][
+                "target_path"
+            ].__setitem__("nullable", False),
+            lambda values: values["manifest_schema"]["deterministic_order"].pop(
+                "active_consumers"
+            ),
+            lambda values: values["manifest_schema"]["destructive_execution"][
+                "non_empty_evidence"
+            ].remove("consumer_scan"),
+            lambda values: values["manifest_schema"]["destructive_execution"][
+                "required_review"
+            ].__setitem__("quality", "pending"),
+        ):
+            with self.subTest(mutate=mutate):
+                self.mutate_migration_contract_and_load(mutate)
+
+    def test_archive_replacement_is_deferred_to_validated_target_disposition(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        self.assertEqual(
+            {
+                "required_for": ["merge"],
+                "optional_for": ["archive", "delete"],
+                "forbidden_for": [
+                    "migrate",
+                    "preserve",
+                    "move",
+                    "regenerate",
+                    "exempt",
+                ],
+            },
+            contract["replacement_requirements"],
+        )
+        manifest = self.valid_static_manifest()
+        entry = manifest["entries"][0]
+        entry.update(
+            {
+                "target_path": "docs/98.archive/source.md",
+                "disposition": "archive",
+                "canonical_replacement": None,
+            }
+        )
+        metadata.validate_static_migration_manifest(
+            manifest,
+            contract,
+            metadata.load_profiles(PROFILES, MIGRATION_CONTRACT),
+        )
+
+    def test_static_manifest_allows_actual_profile_identity_exception(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = metadata.load_profiles(PROFILES)
+        valid = self.valid_static_manifest()
+        declared_exception = copy.deepcopy(valid)
+        declared_exception["entries"][0].update(
+            {
+                "source_path": "README.md",
+                "target_path": "README.md",
+                "artifact_id": None,
+                "artifact_type": "readme",
+                "status_before": None,
+                "status_after": None,
+                "parent_ids": [],
+                "disposition": "exempt",
+                "preservation_class": None,
+            }
+        )
+        metadata.validate_static_migration_manifest(declared_exception, contract, profiles)
+
+    def test_static_manifest_exempt_cannot_override_required_identity(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = metadata.load_profiles(PROFILES)
+        for field in ("artifact_id", "status_before", "status_after"):
+            with self.subTest(field=field):
+                typed_exempt = self.valid_static_manifest()
+                typed_exempt["entries"][0].update(
+                    {
+                        "target_path": "docs/source.md",
+                        "disposition": "exempt",
+                        "preservation_class": None,
+                        field: None,
+                    }
+                )
+                with self.assertRaises(metadata.ProfileError):
+                    metadata.validate_static_migration_manifest(
+                        typed_exempt,
+                        contract,
+                        profiles,
+                    )
+
+    def test_static_manifest_uses_canonical_artifact_id_validation(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = metadata.load_profiles(PROFILES)
+        canonical_id = "reference:Source"
+        record = metadata.Record(
+            pathlib.Path("docs/source.md"),
+            {
+                "status": "active",
+                "artifact_id": canonical_id,
+                "artifact_type": "reference",
+                "parent_ids": [],
+            },
+            "reference",
+            frontmatter_present=True,
+        )
+        self.assertNotIn(
+            "invalid-artifact-id",
+            {finding.code for finding in metadata.validate_record(record, profiles, {})},
+        )
+        manifest = self.valid_static_manifest()
+        manifest["entries"][0]["artifact_id"] = canonical_id
+        metadata.validate_static_migration_manifest(manifest, contract, profiles)
+
+    def test_static_manifest_validation_fails_closed(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        profiles = metadata.load_profiles(PROFILES)
+        valid = self.valid_static_manifest()
+        metadata.validate_static_migration_manifest(valid, contract, profiles)
+
+        mutations = {
+            "schema-type": lambda value: value.__setitem__("schema_version", True),
+            "empty-wave": lambda value: value.__setitem__("wave", ""),
+            "object-domain": lambda value: value.__setitem__("baseline_commit", "A" * 40),
+            "enforcement-domain": lambda value: value.__setitem__("enforcement", "enforced"),
+            "unsafe-source-path": lambda value: value["entries"][0].__setitem__(
+                "source_path", "../source.md"
+            ),
+            "unsafe-target-path": lambda value: value["entries"][0].__setitem__(
+                "target_path", "/tmp/source.md"
+            ),
+            "artifact-null-for-required-profile": lambda value: value["entries"][0].__setitem__(
+                "artifact_id", None
+            ),
+            "artifact-type-domain": lambda value: value["entries"][0].__setitem__(
+                "artifact_type", "unknown"
+            ),
+            "artifact-type-shape": lambda value: value["entries"][0].__setitem__(
+                "artifact_type", []
+            ),
+            "disposition-shape": lambda value: value["entries"][0].__setitem__(
+                "disposition", []
+            ),
+            "status-domain": lambda value: value["entries"][0].__setitem__(
+                "status_after", "retired"
+            ),
+            "status-shape": lambda value: value["entries"][0].__setitem__(
+                "status_after", []
+            ),
+            "status-null-for-required-profile": lambda value: value["entries"][0].__setitem__(
+                "status_before", None
+            ),
+            "partition-plan-path": lambda value: value["entries"][0].__setitem__(
+                "partition_plan", "docs/04.execution/tasks/not-a-plan.md"
+            ),
+            "unordered-parent-list": lambda value: value["entries"][0].__setitem__(
+                "parent_ids", ["spec:z", "spec:a"]
+            ),
+            "unordered-consumer-list": lambda value: value["entries"][0].__setitem__(
+                "active_consumers", ["docs/z.md", "docs/a.md"]
+            ),
+            "unordered-evidence-list": lambda value: value["entries"][0]["evidence"].__setitem__(
+                "commands", ["z command", "a command"]
+            ),
+            "unordered-entries": lambda value: value["entries"].insert(
+                0,
+                {
+                    **copy.deepcopy(value["entries"][0]),
+                    "source_path": "docs/z-source.md",
+                },
+            ),
+            "delete-target": lambda value: value["entries"][0].__setitem__(
+                "target_path", "docs/source.md"
+            ),
+            "consumer-enumeration": lambda value: value["entries"][0].__setitem__(
+                "active_consumers", None
+            ),
+            "consumer-scan-proof": lambda value: value["entries"][0]["evidence"].__setitem__(
+                "consumer_scan", []
+            ),
+            "destructive-evidence": lambda value: value["entries"][0]["evidence"].__setitem__(
+                "commands", []
+            ),
+            "destructive-preservation": lambda value: value["entries"][0].__setitem__(
+                "preservation_class", None
+            ),
+            "preservation-shape": lambda value: value["entries"][0].__setitem__(
+                "preservation_class", []
+            ),
+            "destructive-review": lambda value: value["entries"][0]["review_verdict"].__setitem__(
+                "quality", "pending"
+            ),
+            "review-shape": lambda value: value["entries"][0]["review_verdict"].__setitem__(
+                "quality", []
+            ),
+            "merge-replacement": lambda value: (
+                value["entries"][0].__setitem__("disposition", "merge"),
+                value["entries"][0].__setitem__("target_path", "docs/merged/source.md"),
+            ),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(name=name):
+                candidate = copy.deepcopy(valid)
+                mutate(candidate)
+                with self.assertRaises(metadata.ProfileError):
+                    metadata.validate_static_migration_manifest(candidate, contract, profiles)
+
+    def test_bounded_exception_contract_rejects_unbounded_entries(self) -> None:
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        schema = contract["exception_schema"]
+        self.assertEqual(
+            {
+                "finding_code_source": "validator-known-finding-codes",
+                "require_non_empty_scope_paths": True,
+                "forbid_wildcards": True,
+                "forbid_global_scopes": ["*", "**", ".", "all", "global"],
+                "require_non_empty_text": ["owner", "reason", "exit_condition"],
+                "approval": "approved_at-not-future",
+                "expiry": "expires_on-after-validation-date",
+                "require_non_empty_safe_evidence_paths": True,
+            },
+            schema["bounded_semantics"],
+        )
+        for mutate in (
+            lambda values: values["exception_schema"]["field_contracts"][
+                "finding_code"
+            ].__setitem__("domain", "string"),
+            lambda values: values["exception_schema"]["bounded_semantics"].__setitem__(
+                "forbid_wildcards", False
+            ),
+            lambda values: values["exception_schema"]["bounded_semantics"][
+                "require_non_empty_text"
+            ].remove("owner"),
+            lambda values: values["exception_schema"]["bounded_semantics"].__setitem__(
+                "expiry", "permanent"
+            ),
+        ):
+            with self.subTest(contract_mutation=mutate):
+                self.mutate_migration_contract_and_load(mutate)
+        valid = self.valid_static_exception_document()
+        validation_date = dt.date(2026, 7, 14)
+        metadata.validate_static_exception_document(
+            valid,
+            contract,
+            {"known-finding"},
+            validation_date,
+        )
+
+        mutations = {
+            "wildcard": lambda value: value["exceptions"][0].__setitem__(
+                "scope_paths", ["docs/*"]
+            ),
+            "global": lambda value: value["exceptions"][0].__setitem__(
+                "scope_paths", ["global"]
+            ),
+            "ownerless": lambda value: value["exceptions"][0].__setitem__("owner", ""),
+            "reasonless": lambda value: value["exceptions"][0].__setitem__("reason", ""),
+            "permanent": lambda value: value["exceptions"][0].__setitem__(
+                "expires_on", "permanent"
+            ),
+            "expired": lambda value: value["exceptions"][0].__setitem__(
+                "expires_on", "2026-07-13"
+            ),
+            "unknown-code": lambda value: value["exceptions"][0].__setitem__(
+                "finding_code", "unknown-finding"
+            ),
+            "empty-exit": lambda value: value["exceptions"][0].__setitem__(
+                "exit_condition", ""
+            ),
+            "unsafe-evidence": lambda value: value["exceptions"][0].__setitem__(
+                "evidence", ["/tmp/evidence.md"]
+            ),
+            "unapproved": lambda value: value["exceptions"][0].__setitem__(
+                "approved_at", "2026-07-15"
+            ),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(name=name):
+                candidate = copy.deepcopy(valid)
+                mutate(candidate)
+                with self.assertRaises(metadata.ProfileError):
+                    metadata.validate_static_exception_document(
+                        candidate,
+                        contract,
+                        {"known-finding"},
+                        validation_date,
+                    )
 
     def test_document_families_require_known_unique_profiles(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
@@ -405,6 +1224,16 @@ class ArtifactInferenceTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertEqual(expected, metadata.infer_artifact_type(pathlib.Path(path)))
 
+    def test_registered_generated_output_overrides_only_its_exact_reference_path(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        generated = pathlib.Path(
+            "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+        )
+        adjacent = generated.with_name("other-summary.md")
+
+        self.assertEqual("generated", metadata.infer_artifact_type(generated, profiles))
+        self.assertEqual("reference", metadata.infer_artifact_type(adjacent, profiles))
+
 
 class TemplateRoleInferenceTests(unittest.TestCase):
     @classmethod
@@ -470,6 +1299,35 @@ class MetadataValidationTests(unittest.TestCase):
         all_records = [*records, record]
         manifest = metadata.build_manifest(all_records)
         return [finding.code for finding in metadata.validate_record(record, self.profiles, manifest)]
+
+    def archive_record(
+        self,
+        overrides: dict[str, object] | None = None,
+        *,
+        remove: tuple[str, ...] = (),
+    ):
+        values: dict[str, object] = {
+            "status": "archived",
+            "artifact_id": "archive:04-execution-example",
+            "artifact_type": "archive",
+            "parent_ids": [],
+            "archived_from": "docs/04.execution/example.md",
+            "archived_on": "2026-07-14",
+            "archive_reason": "Superseded by the canonical execution record.",
+            "archive_disposition": "superseded",
+            "archived_commit": "a" * 40,
+            "archived_blob": "b" * 40,
+            "preservation_class": "git-history",
+            "current_replacement": "docs/04.execution/canonical.md",
+        }
+        values.update(overrides or {})
+        for key in remove:
+            values.pop(key, None)
+        return self.record(
+            "docs/98.archive/04.execution/example.md",
+            values,
+            "archive",
+        )
 
     def test_valid_spec_metadata_passes(self) -> None:
         parent = self.record(
@@ -763,6 +1621,20 @@ class MetadataValidationTests(unittest.TestCase):
         )
         self.assertIn("type-inappropriate-key", self.codes(record))
 
+    def test_registered_generator_owner_satisfies_generated_profile_without_frontmatter(self) -> None:
+        path = "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+        record = self.record(path, {}, metadata.infer_artifact_type(pathlib.Path(path), self.profiles))
+        self.assertEqual([], self.codes(record))
+
+    def test_registered_generated_owner_rejects_conflicting_frontmatter_owner(self) -> None:
+        path = "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+        record = self.record(
+            path,
+            {"generated_by": "scripts/example.py"},
+            metadata.infer_artifact_type(pathlib.Path(path), self.profiles),
+        )
+        self.assertIn("generated-owner-mismatch", self.codes(record))
+
     def test_freshness_requires_strict_iso_date_or_datetime(self) -> None:
         record = self.record(
             "docs/05.operations/policies/00-workspace/example.md",
@@ -805,6 +1677,356 @@ class MetadataValidationTests(unittest.TestCase):
         self.assertIn("invalid-archived-on", codes)
         self.assertIn("invalid-archive-reason", codes)
         self.assertIn("invalid-current-replacement", codes)
+
+    def test_archive_replacement_is_conditional(self) -> None:
+        cases = (
+            ("superseded", False, "archive-replacement-required"),
+            ("duplicate", False, "archive-replacement-required"),
+            ("conflict", False, "archive-replacement-required"),
+            ("withdrawn", True, "archive-replacement-forbidden"),
+        )
+        for disposition, include_replacement, expected_code in cases:
+            with self.subTest(disposition=disposition):
+                remove = () if include_replacement else ("current_replacement",)
+                record = self.archive_record(
+                    {"archive_disposition": disposition},
+                    remove=remove,
+                )
+                self.assertIn(expected_code, self.codes(record))
+
+        for include_replacement in (False, True):
+            with self.subTest(disposition="evidence-preserve", replacement=include_replacement):
+                record = self.archive_record(
+                    {"archive_disposition": "evidence-preserve"},
+                    remove=() if include_replacement else ("current_replacement",),
+                )
+                codes = self.codes(record)
+                self.assertNotIn("archive-replacement-required", codes)
+                self.assertNotIn("archive-replacement-forbidden", codes)
+
+    def test_git_history_forbids_snapshot_fields(self) -> None:
+        record = self.archive_record(
+            {
+                "snapshot_path": (
+                    "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot"
+                ),
+                "content_sha256": "c" * 64,
+                "snapshot_reason": "Audit evidence.",
+            }
+        )
+        codes = self.codes(record)
+        self.assertIn("archive-snapshot-forbidden", codes)
+
+    def test_immutable_snapshot_requires_all_snapshot_fields(self) -> None:
+        snapshot_path = "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot"
+        complete_snapshot = {
+            "archive_disposition": "evidence-preserve",
+            "preservation_class": "immutable-snapshot",
+            "snapshot_path": snapshot_path,
+            "content_sha256": "c" * 64,
+            "snapshot_reason": "Audit evidence.",
+        }
+        cases = (
+            (
+                complete_snapshot,
+                ("snapshot_path",),
+                "archive-snapshot-path-required",
+            ),
+            (
+                complete_snapshot,
+                ("content_sha256",),
+                "archive-content-sha256-required",
+            ),
+            (
+                complete_snapshot,
+                ("snapshot_reason",),
+                "archive-snapshot-reason-required",
+            ),
+            (
+                {"archive_disposition": "withdrawn"},
+                (),
+                "archive-replacement-forbidden",
+            ),
+            (
+                {"archive_disposition": "superseded"},
+                ("current_replacement",),
+                "archive-replacement-required",
+            ),
+            (
+                {"archived_commit": "N/A"},
+                (),
+                "invalid-archived-commit",
+            ),
+            (
+                {"archived_blob": "b" * 39},
+                (),
+                "invalid-archived-blob",
+            ),
+            (
+                {**complete_snapshot, "content_sha256": "C" * 64},
+                (),
+                "invalid-content-sha256",
+            ),
+            (
+                {
+                    **complete_snapshot,
+                    "snapshot_path": "docs/98.archive/evidence/../unsafe.md.snapshot",
+                },
+                (),
+                "invalid-snapshot-path",
+            ),
+        )
+        for overrides, remove, expected_code in cases:
+            with self.subTest(code=expected_code):
+                record = self.archive_record(overrides, remove=remove)
+                self.assertIn(expected_code, self.codes(record))
+
+    def test_immutable_snapshot_requires_admitted_archive_disposition(self) -> None:
+        snapshot = {
+            "preservation_class": "immutable-snapshot",
+            "snapshot_path": "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot",
+            "content_sha256": "c" * 64,
+            "snapshot_reason": "Audit evidence.",
+        }
+        for disposition in ("superseded", "duplicate", "conflict", "withdrawn"):
+            with self.subTest(disposition=disposition):
+                record = self.archive_record(
+                    {**snapshot, "archive_disposition": disposition},
+                    remove=("current_replacement",) if disposition == "withdrawn" else (),
+                )
+                self.assertIn(
+                    "archive-snapshot-disposition-forbidden",
+                    self.codes(record),
+                )
+
+        admitted = self.archive_record(
+            {**snapshot, "archive_disposition": "evidence-preserve"}
+        )
+        self.assertNotIn(
+            "archive-snapshot-disposition-forbidden",
+            self.codes(admitted),
+        )
+
+    def test_archive_selector_shapes_fail_closed(self) -> None:
+        cases = (
+            ("archive_disposition", ["superseded"], "invalid-archive-disposition"),
+            (
+                "archive_disposition",
+                {"value": "superseded"},
+                "invalid-archive-disposition",
+            ),
+            ("preservation_class", ["git-history"], "invalid-preservation-class"),
+            (
+                "preservation_class",
+                {"value": "git-history"},
+                "invalid-preservation-class",
+            ),
+        )
+        for field, malformed, expected_code in cases:
+            with self.subTest(field=field, shape=type(malformed).__name__):
+                self.assertIn(
+                    expected_code,
+                    self.codes(self.archive_record({field: malformed})),
+                )
+
+    def test_archive_rejects_sentinel_paths_hashes_and_object_ids(self) -> None:
+        snapshot = {
+            "archive_disposition": "evidence-preserve",
+            "preservation_class": "immutable-snapshot",
+            "snapshot_path": "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot",
+            "content_sha256": "c" * 64,
+            "snapshot_reason": "Audit evidence.",
+        }
+        cases = (
+            ({"archived_from": "N/A"}, "invalid-archived-from"),
+            ({"current_replacement": "N/A"}, "invalid-current-replacement"),
+            ({"archived_commit": ""}, "invalid-archived-commit"),
+            ({"archived_commit": "A" * 40}, "invalid-archived-commit"),
+            ({"archived_blob": "B" * 64}, "invalid-archived-blob"),
+            ({**snapshot, "content_sha256": "N/A"}, "invalid-content-sha256"),
+            ({**snapshot, "snapshot_path": "/absolute.md.snapshot"}, "invalid-snapshot-path"),
+            ({"archive_disposition": "retired"}, "invalid-archive-disposition"),
+            ({"preservation_class": "snapshot"}, "invalid-preservation-class"),
+        )
+        for overrides, expected_code in cases:
+            with self.subTest(code=expected_code):
+                self.assertIn(expected_code, self.codes(self.archive_record(overrides)))
+
+    def test_existing_tombstones_remain_wave_d_advisory_debt(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            write_doc(
+                root / "docs/98.archive/04.execution/legacy.md",
+                {
+                    "status": "archived",
+                    "archived_from": "docs/04.execution/legacy.md",
+                    "archived_on": "2026-07-01",
+                    "archive_reason": "Legacy archive debt assigned to Wave D.",
+                    "current_replacement": "docs/04.execution/current.md",
+                },
+            )
+            stage_index_body = body_with_headings(
+                "## Overview",
+                "## Audience",
+                "## Scope",
+                "## Structure",
+                "## How to Work in This Area",
+                "## Related Documents",
+            )
+            index = root / "docs/03.specs/README.md"
+            write_doc(index, {"status": "active"}, stage_index_body)
+            commit_all(root, "baseline")
+            index.write_text(
+                index.read_text(encoding="utf-8").replace(
+                    "Fixture content.", "Changed fixture content.", 1
+                ),
+                encoding="utf-8",
+            )
+            result = run_checker(root, "check-changed", "--base-ref", "HEAD")
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertNotIn("docs/98.archive/04.execution/legacy.md", result.stdout)
+
+    def test_archive_template_transition_does_not_relax_target_requirements(self) -> None:
+        record = self.record(
+            "docs/98.archive/04.execution/new-target.md",
+            {
+                "status": "archived",
+                "artifact_id": "archive:04-execution-new-target",
+                "artifact_type": "archive",
+                "parent_ids": [],
+                "archived_from": "docs/04.execution/new-target.md",
+                "archived_on": "2026-07-14",
+                "archive_reason": "Fixture for the Task 3 template handoff.",
+                "current_replacement": "docs/04.execution/current.md",
+            },
+            "archive",
+        )
+        findings = metadata.validate_record(
+            record,
+            self.profiles,
+            metadata.build_manifest([record]),
+        )
+        self.assertEqual(
+            {
+                "required key is missing: archive_disposition",
+                "required key is missing: archived_commit",
+                "required key is missing: archived_blob",
+                "required key is missing: preservation_class",
+            },
+            {
+                finding.message
+                for finding in findings
+                if finding.code == "missing-required-key"
+            },
+        )
+
+    def test_archive_template_source_has_no_transitional_required_debt(self) -> None:
+        canonical = metadata.parse_frontmatter(ARCHIVE_TEMPLATE)
+        for key in (
+            "archive_disposition",
+            "archived_commit",
+            "archived_blob",
+            "preservation_class",
+        ):
+            with self.subTest(key=key):
+                values = dict(canonical)
+                values.pop(key, None)
+                record = metadata.Record(
+                    pathlib.Path(
+                        "docs/99.templates/templates/common/archive.template.md"
+                    ),
+                    values,
+                    "template-source",
+                    frontmatter_present=True,
+                )
+                findings = metadata.validate_record(
+                    record,
+                    self.profiles,
+                    metadata.build_manifest([record]),
+                )
+                self.assertIn(
+                    ("missing-template-key", f"target-profile key is missing: {key}"),
+                    {(finding.code, finding.message) for finding in findings},
+                )
+
+    def test_archive_template_source_uses_every_canonical_field_placeholder(self) -> None:
+        canonical = metadata.parse_frontmatter(ARCHIVE_TEMPLATE)
+        for key in (
+            "archived_from",
+            "archived_on",
+            "archive_reason",
+            "archive_disposition",
+            "archived_commit",
+            "archived_blob",
+            "preservation_class",
+            "current_replacement",
+            "snapshot_path",
+            "content_sha256",
+            "snapshot_reason",
+        ):
+            with self.subTest(key=key):
+                values = dict(canonical)
+                values[key] = "<noncanonical-placeholder>"
+                record = metadata.Record(
+                    pathlib.Path(
+                        "docs/99.templates/templates/common/archive.template.md"
+                    ),
+                    values,
+                    "template-source",
+                    frontmatter_present=True,
+                )
+                findings = metadata.validate_record(
+                    record,
+                    self.profiles,
+                    metadata.build_manifest([record]),
+                )
+                self.assertIn(
+                    (
+                        "invalid-template-placeholder",
+                        f"{key} must use the Stage 99 placeholder",
+                    ),
+                    {(finding.code, finding.message) for finding in findings},
+                )
+
+    def test_instantiated_archive_rejects_every_new_placeholder_value_free(self) -> None:
+        snapshot = {
+            "archive_disposition": "evidence-preserve",
+            "preservation_class": "immutable-snapshot",
+            "snapshot_path": "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot",
+            "content_sha256": "c" * 64,
+            "snapshot_reason": "Approved immutable evidence fixture.",
+        }
+        cases = {
+            "archive_disposition": "<archive-disposition>",
+            "archived_commit": "<archived-commit>",
+            "archived_blob": "<archived-blob>",
+            "preservation_class": "<preservation-class>",
+            "snapshot_path": "docs/98.archive/evidence/<content-sha256>.md.snapshot",
+            "content_sha256": "<content-sha256>",
+            "snapshot_reason": "<snapshot-reason>",
+        }
+        for key, literal in cases.items():
+            with self.subTest(key=key):
+                values = dict(snapshot)
+                values[key] = literal
+                record = self.archive_record(values)
+                findings = metadata.validate_record(
+                    record,
+                    self.profiles,
+                    metadata.build_manifest([record]),
+                )
+                placeholder_findings = [
+                    finding
+                    for finding in findings
+                    if finding.code == "template-placeholder-in-target"
+                ]
+                self.assertEqual(1, len(placeholder_findings))
+                rendered = "\n".join(
+                    f"{finding.path}:{finding.code}:{finding.message}"
+                    for finding in placeholder_findings
+                )
+                self.assertNotIn(literal, rendered)
 
     def test_instantiated_document_rejects_template_placeholders(self) -> None:
         record = self.record(
@@ -915,6 +2137,15 @@ class ReadmeProfileTests(unittest.TestCase):
             metadata.readme_frontmatter_consumer(stage_path, self.profiles),
         )
 
+    def test_lifecycle_namespace_readme_has_exact_nested_stage_index_route(self) -> None:
+        approved = pathlib.Path(
+            "docs/90.references/data/governance/document-corpus-lifecycle/README.md"
+        )
+        adjacent = approved.parent / "nested" / "README.md"
+
+        self.assertEqual(["stage-index"], metadata.matching_readme_profiles(approved, self.profiles))
+        self.assertEqual([], metadata.matching_readme_profiles(adjacent, self.profiles))
+
     def test_current_audit_readme_count_matches_tracked_corpus(self) -> None:
         result = subprocess.run(
             ["git", "ls-files", "-z", "--", "*README.md"],
@@ -955,7 +2186,14 @@ class TemplateMetadataTests(unittest.TestCase):
                 role = self.profiles["template_roles"][role_name]
                 text = (ROOT / role["source"]).read_text(encoding="utf-8")
                 headings = [line for line in text.splitlines() if line.startswith("## ")]
-                self.assertEqual(role["required_headings"], headings)
+                if role_name == "archive":
+                    self.assertLessEqual(set(role["required_headings"]), set(headings))
+                    self.assertEqual(
+                        set(headings),
+                        set(role["required_headings"]) | set(role["conditional_headings"]),
+                    )
+                else:
+                    self.assertEqual(role["required_headings"], headings)
 
     def test_task_2_governance_forms_have_exact_source_frontmatter(self) -> None:
         expected = {"layer": "agentic", "status": "draft"}
@@ -1291,6 +2529,22 @@ class TemplateMetadataTests(unittest.TestCase):
                 values = metadata._parse_frontmatter_text(rendered)
                 if target_type == "archive":
                     values["status"] = "archived"
+                    replacement = values.pop("current_replacement")
+                    for snapshot_key in (
+                        "snapshot_path",
+                        "content_sha256",
+                        "snapshot_reason",
+                    ):
+                        values.pop(snapshot_key)
+                    values.update(
+                        {
+                            "archive_disposition": "superseded",
+                            "archived_commit": "a" * 40,
+                            "archived_blob": "b" * 40,
+                            "preservation_class": "git-history",
+                            "current_replacement": replacement,
+                        }
+                    )
                 record = metadata.Record(
                     pathlib.Path(targets[source_path]),
                     values,
@@ -1414,6 +2668,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## Archive Metadata",
             "## Current Replacement",
             "## Archive Ledger",
+            "## Preserved Evidence",
             "## Related Documents",
         ),
         "memory": (
@@ -1455,7 +2710,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         },
         "archive": {
             "title", "overview", "archive_metadata", "current_replacement",
-            "archive_ledger", "related_documents",
+            "archive_ledger", "preserved_evidence", "related_documents",
         },
         "memory": {
             "title", "date", "layer", "status", "applies_to", "tags",
@@ -3664,6 +4919,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         self.assertNotIn("required_templates=(", text)
         self.assertNotIn("heading_requirements:", text)
         self.assertNotIn("operation_forbidden =", text)
+        self.assertGreaterEqual(text.count('profiles["common"]["generated_outputs"]'), 3)
 
     def test_human_support_document_cannot_copy_full_registry_array(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -3792,6 +5048,34 @@ class CheckerCliTests(unittest.TestCase):
             self.assertEqual(0, passing.returncode, passing.stdout + passing.stderr)
             self.assertNotEqual(0, failing.returncode)
             self.assertIn("missing-required-key", failing.stdout)
+
+    def test_changed_mode_archive_selector_shape_has_no_traceback(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            path = "docs/98.archive/04.execution/new-target.md"
+            write_doc(
+                root / path,
+                {
+                    "status": "archived",
+                    "artifact_id": "archive:04-execution-new-target",
+                    "artifact_type": "archive",
+                    "parent_ids": [],
+                    "archived_from": "docs/04.execution/new-target.md",
+                    "archived_on": "2026-07-14",
+                    "archive_reason": "Bounded selector-shape fixture.",
+                    "archive_disposition": ["superseded"],
+                    "archived_commit": "a" * 40,
+                    "archived_blob": "b" * 40,
+                    "preservation_class": "git-history",
+                    "current_replacement": "docs/04.execution/current.md",
+                },
+            )
+            result = run_checker(root, "check-changed", "--changed-path", path)
+            combined = result.stdout + result.stderr
+            self.assertEqual(1, result.returncode, combined)
+            self.assertIn("invalid-archive-disposition", result.stdout)
+            self.assertNotIn("Traceback", combined)
 
     def test_report_order_is_deterministic_and_sorted_by_path(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

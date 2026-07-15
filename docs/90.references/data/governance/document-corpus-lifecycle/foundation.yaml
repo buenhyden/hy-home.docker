@@ -1,0 +1,1280 @@
+schema_version: 1
+wave: foundation
+baseline_commit: e00e1483e7ab797b354d7c3b22b6d5440e998c14
+generated_by: check-document-corpus-lifecycle.py
+enforcement: blocking
+entries:
+- source_path: docs/00.agent-governance/memory/progress.md
+  target_path: docs/00.agent-governance/memory/progress.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - .claude/skills/infra-cross-validate/skill.md
+  - .claude/skills/policy-gate-agent/skill.md
+  - .claude/skills/workspace-audit-revalidation/skill.md
+  - .codex/skills/infra-cross-validate/skill.md
+  - .codex/skills/policy-gate-agent/skill.md
+  - .codex/skills/workspace-audit-revalidation/skill.md
+  - .markdownlint-cli2.yaml
+  - AGENTS.md
+  - CLAUDE.md
+  - GEMINI.md
+  - docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md
+  - docs/00.agent-governance/harness-implementation-map.md
+  - docs/00.agent-governance/memory/harness-agent-first-gap-audit.md
+  - docs/00.agent-governance/rules/agentic.md
+  - docs/00.agent-governance/rules/bootstrap.md
+  - docs/00.agent-governance/rules/documentation-protocol.md
+  - docs/00.agent-governance/rules/github-governance.md
+  - docs/00.agent-governance/rules/hooks/hookify.warn-docker-infra-stop.md
+  - docs/00.agent-governance/rules/hooks/hookify.warn-governance-memory-edit.md
+  - docs/00.agent-governance/rules/task-checklists.md
+  - docs/03.specs/008-workflow/agent-design.md
+  - docs/03.specs/093-docs-taxonomy-agent-first-migration/README.md
+  - docs/03.specs/096-llm-wiki-agent-first-completion/spec.md
+  - docs/03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md
+  - docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md
+  - docs/03.specs/100-template-system-contract-standardization/spec.md
+  - docs/03.specs/101-template-system-reorganization/spec.md
+  - docs/03.specs/104-agentic-research-pack-refresh/spec.md
+  - docs/03.specs/107-provider-semantic-parity-validator/spec.md
+  - docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md
+  - docs/03.specs/109-gap-routing-recommendation/spec.md
+  - docs/03.specs/110-agent-output-eval-fixtures/spec.md
+  - docs/03.specs/111-qa-gate-recommendation-ci-summary/spec.md
+  - docs/03.specs/112-audit-pack-coverage-report/spec.md
+  - docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md
+  - docs/03.specs/114-tech-stack-version-provenance/spec.md
+  - docs/03.specs/115-provider-hook-parity-matrix/spec.md
+  - docs/03.specs/116-agent-output-eval-runner/spec.md
+  - docs/03.specs/117-security-automation-readiness-snapshot/spec.md
+  - docs/03.specs/118-audit-implementation-matrix-snapshot/spec.md
+  - docs/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md
+  - docs/03.specs/120-agent-output-eval-ci-gate/spec.md
+  - docs/03.specs/121-dependency-vulnerability-audit-gate/spec.md
+  - docs/03.specs/122-agentic-research-pack-consolidation/spec.md
+  - docs/03.specs/123-agentic-engineering-audit-remediation/spec.md
+  - docs/03.specs/128-agentic-audit-harness-consolidation/spec.md
+  - docs/04.execution/plans/2026-05-17-requirements-standardization.md
+  - docs/04.execution/plans/2026-05-18-docs-05-operations-purpose-remediation.md
+  - docs/04.execution/plans/2026-05-18-docs-bounded-consistency-audit.md
+  - docs/04.execution/plans/2026-05-18-execution-stage-remediation.md
+  - docs/04.execution/plans/2026-05-18-targeted-docs-precision-remediation.md
+  - docs/04.execution/plans/2026-05-22-workspace-docs-agent-governance-remediation.md
+  - docs/04.execution/plans/2026-05-24-workspace-audit-improvement.md
+  - docs/04.execution/plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md
+  - docs/04.execution/plans/2026-05-25-home-docker-workspace-audit-improvement.md
+  - docs/04.execution/plans/2026-05-25-large-scale-authored-ssot-review.md
+  - docs/04.execution/plans/2026-05-26-workspace-audit.md
+  - docs/04.execution/plans/2026-07-02-template-system-reorganization.md
+  - docs/04.execution/plans/2026-07-03-document-contract-remediation-batches.md
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md
+  - docs/04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md
+  - docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md
+  - docs/04.execution/plans/2026-07-05-workspace-support-surface-contract.md
+  - docs/04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md
+  - docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md
+  - docs/04.execution/tasks/2026-05-17-requirements-standardization.md
+  - docs/04.execution/tasks/2026-05-17-scripts-ci-qa-cleanup.md
+  - docs/04.execution/tasks/2026-05-18-docs-05-operations-purpose-remediation.md
+  - docs/04.execution/tasks/2026-05-22-lifecycle-readme-debt-closure.md
+  - docs/04.execution/tasks/2026-05-22-workspace-docs-agent-governance-remediation.md
+  - docs/04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md
+  - docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md
+  - docs/04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md
+  - docs/04.execution/tasks/2026-05-26-workspace-audit-gap-closure.md
+  - docs/04.execution/tasks/2026-05-26-workspace-audit.md
+  - docs/04.execution/tasks/2026-05-31-claude-harness-governance-verification.md
+  - docs/04.execution/tasks/2026-06-03-governance-surgical-reverification.md
+  - docs/04.execution/tasks/2026-06-05-harness-engineering.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-boundary-audit.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-hard-enforcement.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-normalization-batch-1.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-normalization-batch-2.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-normalization-batch-3.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-1.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-2.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-3.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-4.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-5.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-6.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-7.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-8.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-reference-normalization.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-1.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-2.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-3.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-4.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-5.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-6.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-7.md
+  - docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md
+  - docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md
+  - docs/04.execution/tasks/2026-07-04-examples-scaffold-contract-remediation.md
+  - docs/04.execution/tasks/2026-07-04-frontmatter-routing-evidence-refresh.md
+  - docs/04.execution/tasks/2026-07-04-infra-tech-stack-version-refresh.md
+  - docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md
+  - docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - docs/99.templates/support/document-metadata-profiles.yaml
+  - docs/99.templates/support/template-selection.md
+  - scripts/README.md
+  - scripts/hooks/agent-event-hook.sh
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - tests/validation/test_document_metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/00.agent-governance/memory/progress.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/00.agent-governance/memory/progress.md
+    sources:
+    - docs/00.agent-governance/memory/progress.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/00.agent-governance/memory/progress.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/00.agent-governance/memory/progress.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/00.agent-governance/memory/progress.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit f3f870fc3390778bb5350170d8de07a2ee11a5ae cce4fcdea0a4dba0637e0bb5bf887ae64e67984c 257a3be7482ae462d39ecc2e64e930e1fb1a8c9d 054dfb0b55d4f1642080d0629c5b8cccc73b8dff 7fbfab3d0553eed4d7665cdcceb744af3963e08e ef0c3a24f84ba8aaf531dffeb76cbf0718328e80 b961e4eb27b1b6291701f3603eee55288940604b 5e7d33e57ed82afdfefc12912c21ea8c13b0a057 46e3ff5e218b52465411042c5e8971248a89b6fa 11ff5edbb697b94191de12c9a6e40ce0cdf7421d 918b9a3b0c6cb28d2f1fabdfff0f129d09d35fe1 35b07486ded5c277294bb66b7a446441eef548df 1b42a10098a809a4342b693e49d554f6575e81bc 160ff09733e23952678914211a617856a32eca52 e42296fadd7512cc2b9dc89f4b160578f1ea8288 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13 133b3daa02f7b56bb5824f1fb2b4cef6a866563a 9fe234f67a546d992dee1703db4d86979fb53d27 7ff6a841ac2a42c8530a21d6946b03cf3edbcb2d 8001a95cf43e93d75794ef1311e29ab105d5564b fedbf39523a272500ee56658b67c5f5a12584629 4e8afaf8f61361d19bfe1a7ee7941fe458fe5d02 8a7c9c7c300d807d820c0b5dafd2a4260620a0ab 554253e60360a19d579e30817679766fcc75a1af
+      ee4b68461f6a8f0dbe6170f61d629baf5a678032 82cbb9c0f6dfa6af6872fc6cd05dc828d1125bf7 43d7d149f2b61da17d8dff83bca63f0ee514a4e1 9126a0aa2ce12d8dfeee6ca1d9e047cfd17d26bd e9db5afbf584ef7c1af8a21c34ea2db56985c28d 602994f2f6d5b5c54d419038d3179285f3dd1747 ab33b64fa196e6dbd47c6e0f90af254a46e01e25 a224f93d8eab63607e50e8cdea12684e7baeef18 d40540a0694ea435ddb746c623f84383d6fd8170 15fdac5d58050a793c8b54a7409590c24b4723c8
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/00.agent-governance/rules/documentation-protocol.md
+  target_path: docs/00.agent-governance/rules/documentation-protocol.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - .agents/workflows/documentation.md
+  - .claude/agents/doc-writer.md
+  - .claude/skills/ops-runbook-agent/skill.md
+  - .codex/skills/ops-runbook-agent/skill.md
+  - README.md
+  - docs/00.agent-governance/rules/hooks/hookify.block-absolute-file-link.md
+  - docs/00.agent-governance/rules/output-style.md
+  - docs/00.agent-governance/rules/postflight-checklist.md
+  - docs/00.agent-governance/rules/provider-capability-matrix.md
+  - docs/00.agent-governance/rules/stage-authoring-matrix.md
+  - docs/00.agent-governance/rules/task-checklists.md
+  - docs/00.agent-governance/rules/workflows.md
+  - docs/00.agent-governance/scopes/docs.md
+  - docs/03.specs/092-workspace-consistency-2026-05b/spec.md
+  - docs/03.specs/094-harness-agent-first-engineering/spec.md
+  - docs/03.specs/095-infra-secrets-docs-refresh/spec.md
+  - docs/03.specs/103-document-restructure-audit-contract-archive/spec.md
+  - docs/03.specs/109-gap-routing-recommendation/spec.md
+  - docs/03.specs/129-document-contract-canonicalization/spec.md
+  - docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md
+  - docs/04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md
+  - docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md
+  - docs/04.execution/plans/2026-06-02-governance-optimization.md
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md
+  - docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md
+  - docs/05.operations/guides/04-data/README.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - docs/99.templates/support/document-metadata-profiles.yaml
+  - scripts/README.md
+  - scripts/validation/check-doc-implementation-alignment.sh
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - scripts/validation/recommend-gap-routing.sh
+  - tests/README.md
+  - tests/validation/test_document_corpus_lifecycle.py
+  - tests/validation/test_document_metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/00.agent-governance/rules/documentation-protocol.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/00.agent-governance/rules/documentation-protocol.md
+    sources:
+    - docs/00.agent-governance/rules/documentation-protocol.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/00.agent-governance/rules/documentation-protocol.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/00.agent-governance/rules/documentation-protocol.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/00.agent-governance/rules/documentation-protocol.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/00.agent-governance/rules/github-governance.md
+  target_path: docs/00.agent-governance/rules/github-governance.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - .claude/agents/ci-cd-engineer.md
+  - .claude/agents/code-reviewer.md
+  - .claude/agents/security-auditor.md
+  - .claude/skills/ci-cd-patterns/skill.md
+  - .claude/skills/code-reviewer/skill.md
+  - .claude/skills/deployment-pipeline-design/skill.md
+  - .claude/skills/infra-cross-validate/skill.md
+  - .claude/skills/security-audit/skill.md
+  - .claude/skills/workspace-audit-revalidation/skill.md
+  - .codex/skills/ci-cd-patterns/skill.md
+  - .codex/skills/code-reviewer/skill.md
+  - .codex/skills/deployment-pipeline-design/skill.md
+  - .codex/skills/infra-cross-validate/skill.md
+  - .codex/skills/security-audit/skill.md
+  - .codex/skills/workspace-audit-revalidation/skill.md
+  - AGENTS.md
+  - README.md
+  - docs/00.agent-governance/memory/progress.md
+  - docs/00.agent-governance/providers/agents-md.md
+  - docs/00.agent-governance/providers/claude.md
+  - docs/00.agent-governance/providers/gemini.md
+  - docs/00.agent-governance/rules/approval-boundaries.md
+  - docs/00.agent-governance/rules/bootstrap.md
+  - docs/00.agent-governance/rules/git-workflow.md
+  - docs/00.agent-governance/rules/hooks/hookify.block-direct-main-push.md
+  - docs/00.agent-governance/rules/hooks/hookify.block-gha-secrets-in-run.md
+  - docs/00.agent-governance/rules/hooks/hookify.block-unpinned-gha-action.md
+  - docs/00.agent-governance/rules/hooks/hookify.warn-docker-infra-stop.md
+  - docs/00.agent-governance/rules/hooks/hookify.warn-force-push.md
+  - docs/00.agent-governance/rules/quality-standards.md
+  - docs/00.agent-governance/rules/standards.md
+  - docs/00.agent-governance/scopes/common.md
+  - docs/00.agent-governance/scopes/frontend.md
+  - docs/03.specs/092-workspace-consistency-2026-05b/spec.md
+  - docs/03.specs/120-agent-output-eval-ci-gate/spec.md
+  - docs/03.specs/121-dependency-vulnerability-audit-gate/spec.md
+  - docs/04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md
+  - docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md
+  - docs/04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md
+  - docs/04.execution/plans/2026-07-06-dependency-vulnerability-audit-gate.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md
+  - docs/04.execution/tasks/2026-06-05-harness-engineering.md
+  - docs/04.execution/tasks/2026-07-04-github-branch-protection-reverification.md
+  - docs/04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md
+  - docs/04.execution/tasks/2026-07-06-dependency-vulnerability-audit-gate.md
+  - docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-doc-implementation-alignment.sh
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/00.agent-governance/rules/github-governance.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/00.agent-governance/rules/github-governance.md
+    sources:
+    - docs/00.agent-governance/rules/github-governance.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/00.agent-governance/rules/github-governance.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/00.agent-governance/rules/github-governance.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/00.agent-governance/rules/github-governance.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 35b07486ded5c277294bb66b7a446441eef548df
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/00.agent-governance/rules/stage-authoring-matrix.md
+  target_path: docs/00.agent-governance/rules/stage-authoring-matrix.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - .agents/workflows/documentation.md
+  - .claude/skills/execution-plan-agent/skill.md
+  - .claude/skills/ops-runbook-agent/skill.md
+  - .claude/skills/requirements-to-design-agent/skill.md
+  - .claude/skills/task-breakdown-agent/skill.md
+  - .claude/skills/workspace-audit-revalidation/skill.md
+  - .codex/skills/execution-plan-agent/skill.md
+  - .codex/skills/ops-runbook-agent/skill.md
+  - .codex/skills/requirements-to-design-agent/skill.md
+  - .codex/skills/task-breakdown-agent/skill.md
+  - .codex/skills/workspace-audit-revalidation/skill.md
+  - README.md
+  - docs/00.agent-governance/rules/agentic.md
+  - docs/00.agent-governance/rules/documentation-protocol.md
+  - docs/00.agent-governance/rules/task-checklists.md
+  - docs/00.agent-governance/rules/workflows.md
+  - docs/00.agent-governance/scopes/docs.md
+  - docs/03.specs/090-workspace-audit-2026-05/spec.md
+  - docs/03.specs/102-workspace-document-contract-audit-pack/spec.md
+  - docs/03.specs/103-document-restructure-audit-contract-archive/spec.md
+  - docs/03.specs/129-document-contract-canonicalization/spec.md
+  - docs/04.execution/plans/2026-06-02-governance-optimization.md
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - docs/99.templates/support/document-metadata-profiles.yaml
+  - scripts/validation/check-doc-implementation-alignment.sh
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - tests/validation/test_document_corpus_lifecycle.py
+  - tests/validation/test_document_metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/00.agent-governance/rules/stage-authoring-matrix.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/00.agent-governance/rules/stage-authoring-matrix.md
+    sources:
+    - docs/00.agent-governance/rules/stage-authoring-matrix.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/00.agent-governance/rules/stage-authoring-matrix.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/00.agent-governance/rules/stage-authoring-matrix.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/00.agent-governance/rules/stage-authoring-matrix.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/00.agent-governance/rules/task-checklists.md
+  target_path: docs/00.agent-governance/rules/task-checklists.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - AGENTS.md
+  - docs/00.agent-governance/memory/governance-memory-usage-contract.md
+  - docs/00.agent-governance/rules/agentic.md
+  - docs/00.agent-governance/rules/bootstrap.md
+  - docs/00.agent-governance/rules/documentation-protocol.md
+  - docs/00.agent-governance/rules/environment-constraints.md
+  - docs/00.agent-governance/rules/persona.md
+  - docs/00.agent-governance/rules/postflight-checklist.md
+  - docs/00.agent-governance/rules/stage-authoring-matrix.md
+  - docs/00.agent-governance/scopes/docs.md
+  - docs/00.agent-governance/subagent-protocol.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/agentic-audit-semantic-contract.json
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - tests/README.md
+  - tests/validation/test_document_corpus_lifecycle.py
+  - tests/validation/test_document_metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/00.agent-governance/rules/task-checklists.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/00.agent-governance/rules/task-checklists.md
+    sources:
+    - docs/00.agent-governance/rules/task-checklists.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/00.agent-governance/rules/task-checklists.md
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/00.agent-governance/rules/task-checklists.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/00.agent-governance/rules/task-checklists.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/03.specs/README.md
+  target_path: docs/03.specs/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - README.md
+  - docs/00.agent-governance/memory/docker-doc-contract-backlog.md
+  - docs/00.agent-governance/memory/progress.md
+  - docs/00.agent-governance/rules/jit-markers.md
+  - docs/03.specs/001-gateway/README.md
+  - docs/03.specs/002-auth/README.md
+  - docs/03.specs/003-security/README.md
+  - docs/03.specs/004-data/README.md
+  - docs/03.specs/005-data-analytics/README.md
+  - docs/03.specs/006-messaging/README.md
+  - docs/03.specs/007-observability/README.md
+  - docs/03.specs/008-workflow/README.md
+  - docs/03.specs/009-ai/README.md
+  - docs/03.specs/010-tooling/README.md
+  - docs/03.specs/011-communication/README.md
+  - docs/03.specs/012-laboratory/README.md
+  - docs/03.specs/090-workspace-audit-2026-05/README.md
+  - docs/03.specs/093-docs-taxonomy-agent-first-migration/README.md
+  - docs/03.specs/094-harness-agent-first-engineering/README.md
+  - docs/03.specs/095-infra-secrets-docs-refresh/README.md
+  - docs/03.specs/096-llm-wiki-agent-first-completion/README.md
+  - docs/03.specs/097-home-docker-revalidation-deferred-follow-up/README.md
+  - docs/03.specs/098-standardize-infra-net/README.md
+  - docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md
+  - docs/04.execution/plans/2026-03-26-02-auth-standardization.md
+  - docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md
+  - docs/04.execution/plans/2026-05-26-workspace-audit.md
+  - docs/04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/tasks/2026-03-26-07-workflow-tasks.md
+  - docs/04.execution/tasks/2026-03-26-08-ai-tasks.md
+  - docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md
+  - docs/04.execution/tasks/2026-05-26-workspace-audit.md
+  - docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md
+  - docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - docs/99.templates/support/document-metadata-profiles.yaml
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - tests/validation/test_document_metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/03.specs/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/03.specs/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/03.specs/README.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/03.specs/README.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/03.specs/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/03.specs/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 15fdac5d58050a793c8b54a7409590c24b4723c8
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/04.execution/README.md
+  target_path: docs/04.execution/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: preserve
+  canonical_replacement: null
+  active_consumers:
+  - .claude/skills/execution-plan-agent/skill.md
+  - .claude/skills/task-breakdown-agent/skill.md
+  - .codex/skills/execution-plan-agent/skill.md
+  - .codex/skills/task-breakdown-agent/skill.md
+  - README.md
+  - docs/00.agent-governance/memory/progress.md
+  - docs/04.execution/plans/2026-05-18-docs-bounded-consistency-audit.md
+  - docs/04.execution/plans/2026-05-18-execution-stage-remediation.md
+  - docs/04.execution/plans/2026-05-18-targeted-docs-precision-remediation.md
+  - docs/04.execution/plans/2026-05-22-workspace-governance-bounded-reaudit.md
+  - docs/04.execution/plans/2026-05-26-workspace-audit.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/tasks/2026-05-18-targeted-docs-precision-remediation.md
+  - docs/04.execution/tasks/2026-05-22-workspace-docs-agent-governance-remediation.md
+  - docs/04.execution/tasks/2026-05-26-workspace-audit.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - docs/99.templates/support/document-metadata-profiles.yaml
+  - scripts/validation/check-doc-traceability.sh
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/04.execution/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/04.execution/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/README.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/README.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/04.execution/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback: []
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/04.execution/plans/README.md
+  target_path: docs/04.execution/plans/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/00.agent-governance/memory/progress.md
+  - docs/00.agent-governance/rules/jit-markers.md
+  - docs/04.execution/plans/2026-03-26-02-auth-standardization.md
+  - docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md
+  - docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md
+  - docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md
+  - docs/04.execution/plans/2026-05-17-requirements-standardization.md
+  - docs/04.execution/plans/2026-05-18-docs-05-operations-purpose-remediation.md
+  - docs/04.execution/plans/2026-05-18-docs-bounded-consistency-audit.md
+  - docs/04.execution/plans/2026-05-18-execution-stage-remediation.md
+  - docs/04.execution/plans/2026-05-24-workspace-audit-improvement.md
+  - docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md
+  - docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/tasks/2026-03-26-07-workflow-tasks.md
+  - docs/04.execution/tasks/2026-03-26-08-ai-tasks.md
+  - docs/04.execution/tasks/2026-05-18-targeted-docs-precision-remediation.md
+  - docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md
+  - docs/04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md
+  - docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md
+  - docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-doc-traceability.sh
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/04.execution/plans/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/04.execution/plans/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/04.execution/plans/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/04.execution/plans/README.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/04.execution/plans/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/plans/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 7a4a940d226a582af05e26bc46b437340cae77a0
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/04.execution/tasks/README.md
+  target_path: docs/04.execution/tasks/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/00.agent-governance/memory/progress.md
+  - docs/00.agent-governance/rules/jit-markers.md
+  - docs/04.execution/plans/2026-03-26-02-auth-standardization.md
+  - docs/04.execution/plans/2026-05-18-docs-05-operations-purpose-remediation.md
+  - docs/04.execution/plans/2026-05-18-docs-bounded-consistency-audit.md
+  - docs/04.execution/plans/2026-05-18-execution-stage-remediation.md
+  - docs/04.execution/plans/2026-05-24-workspace-audit-improvement.md
+  - docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/tasks/2026-05-18-targeted-docs-precision-remediation.md
+  - docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md
+  - docs/04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md
+  - docs/04.execution/tasks/2026-06-05-harness-engineering.md
+  - docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md
+  - docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md
+  - docs/04.execution/tasks/2026-07-04-examples-scaffold-contract-remediation.md
+  - docs/04.execution/tasks/2026-07-04-frontmatter-routing-evidence-refresh.md
+  - docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md
+  - docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-doc-traceability.sh
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - tests/validation/test_document_corpus_lifecycle.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/04.execution/tasks/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/04.execution/tasks/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/04.execution/tasks/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/04.execution/tasks/README.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/04.execution/tasks/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 7a4a940d226a582af05e26bc46b437340cae77a0
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/90.references/README.md
+  target_path: docs/90.references/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - README.md
+  - docs/00.agent-governance/memory/progress.md
+  - docs/00.agent-governance/rules/jit-markers.md
+  - docs/04.execution/plans/2026-05-26-workspace-audit-gap-closure.md
+  - docs/04.execution/plans/2026-05-26-workspace-audit.md
+  - docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md
+  - docs/04.execution/tasks/2026-05-26-workspace-audit-gap-closure.md
+  - docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md
+  - docs/04.execution/tasks/2026-06-05-language-policy-normalization-batch-1.md
+  - docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - docs/99.templates/support/document-metadata-profiles.yaml
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - scripts/validation/run-agent-output-eval-fixtures.sh
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/90.references/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/90.references/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/README.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/90.references/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/90.references/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit f3f870fc3390778bb5350170d8de07a2ee11a5ae
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/90.references/data/README.md
+  target_path: docs/90.references/data/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - scripts/validation/run-agent-output-eval-fixtures.sh
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/90.references/data/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/90.references/data/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/data/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/data/README.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/90.references/data/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/90.references/data/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit f3f870fc3390778bb5350170d8de07a2ee11a5ae
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/90.references/data/governance/README.md
+  target_path: docs/90.references/data/governance/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: active
+  status_after: active
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/90.references/data/governance/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/90.references/data/governance/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/data/governance/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/90.references/data/governance/README.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/90.references/data/governance/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/90.references/data/governance/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit f3f870fc3390778bb5350170d8de07a2ee11a5ae
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/98.archive/README.md
+  target_path: docs/98.archive/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md
+  - docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md
+  - docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - docs/99.templates/support/document-metadata-profiles.yaml
+  - scripts/validation/check-doc-implementation-alignment.sh
+  - scripts/validation/check-document-metadata.py
+  - tests/validation/test_document_corpus_lifecycle.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/98.archive/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/98.archive/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/98.archive/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/98.archive/README.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/98.archive/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/98.archive/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit e42296fadd7512cc2b9dc89f4b160578f1ea8288 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/support/README.md
+  target_path: docs/99.templates/support/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - tests/validation/test_document_corpus_lifecycle.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/README.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/support/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/support/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 160ff09733e23952678914211a617856a32eca52 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/support/common-document-contract.md
+  target_path: docs/99.templates/support/common-document-contract.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/00.agent-governance/rules/documentation-protocol.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - tests/validation/test_document_metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/common-document-contract.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/common-document-contract.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/common-document-contract.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/common-document-contract.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/support/common-document-contract.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/support/common-document-contract.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/support/external-source-rationale.md
+  target_path: docs/99.templates/support/external-source-rationale.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/00.agent-governance/memory/progress.md
+  - docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  - tests/validation/test_document_corpus_lifecycle.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/external-source-rationale.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/external-source-rationale.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/external-source-rationale.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/external-source-rationale.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/support/external-source-rationale.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/support/external-source-rationale.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/support/frontmatter-contract.md
+  target_path: docs/99.templates/support/frontmatter-contract.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/00.agent-governance/memory/progress.md
+  - docs/03.specs/102-workspace-document-contract-audit-pack/spec.md
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md
+  - docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/frontmatter-contract.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/frontmatter-contract.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/frontmatter-contract.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/frontmatter-contract.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/support/frontmatter-contract.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/support/frontmatter-contract.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit e42296fadd7512cc2b9dc89f4b160578f1ea8288 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/support/lifecycle-status.md
+  target_path: docs/99.templates/support/lifecycle-status.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/lifecycle-status.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/lifecycle-status.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/lifecycle-status.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/lifecycle-status.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/support/lifecycle-status.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/support/lifecycle-status.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit e42296fadd7512cc2b9dc89f4b160578f1ea8288 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/support/sdlc-document-contract.md
+  target_path: docs/99.templates/support/sdlc-document-contract.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/00.agent-governance/rules/documentation-protocol.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/sdlc-document-contract.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/sdlc-document-contract.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/sdlc-document-contract.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/sdlc-document-contract.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/support/sdlc-document-contract.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/support/sdlc-document-contract.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/support/template-contract.md
+  target_path: docs/99.templates/support/template-contract.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - .claude/agents/doc-writer.md
+  - docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/template-contract.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/template-contract.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-contract.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-contract.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/support/template-contract.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/support/template-contract.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/support/template-governance.md
+  target_path: docs/99.templates/support/template-governance.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - docs/99.templates/support/document-metadata-profiles.yaml
+  - scripts/validation/check-document-metadata.py
+  - tests/validation/test_document_corpus_lifecycle.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/template-governance.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/template-governance.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-governance.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-governance.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/support/template-governance.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/support/template-governance.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/support/template-selection.md
+  target_path: docs/99.templates/support/template-selection.md
+  artifact_id: null
+  artifact_type: governance
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - .agents/workflows/documentation.md
+  - .claude/skills/ops-runbook-agent/skill.md
+  - .codex/skills/ops-runbook-agent/skill.md
+  - docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md
+  - docs/03.specs/102-workspace-document-contract-audit-pack/spec.md
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md
+  - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-repo-contracts.sh
+  - tests/validation/test_document_metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/template-selection.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/support/template-selection.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-selection.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/support/template-selection.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/support/template-selection.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/support/template-selection.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/templates/common/README.md
+  target_path: docs/99.templates/templates/common/README.md
+  artifact_id: null
+  artifact_type: readme
+  status_before: null
+  status_after: null
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/check-document-metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/templates/common/README.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/templates/common/README.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/templates/common/README.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/templates/common/README.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/templates/common/README.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/templates/common/README.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass
+- source_path: docs/99.templates/templates/common/archive.template.md
+  target_path: docs/99.templates/templates/common/archive.template.md
+  artifact_id: null
+  artifact_type: template-source
+  status_before: draft
+  status_after: draft
+  parent_ids: []
+  disposition: migrate
+  canonical_replacement: null
+  active_consumers:
+  - docs/00.agent-governance/rules/documentation-protocol.md
+  - docs/00.agent-governance/rules/stage-authoring-matrix.md
+  - docs/03.specs/101-template-system-reorganization/spec.md
+  - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
+  - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - docs/99.templates/support/document-metadata-profiles.yaml
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/recommend-qa-gates.sh
+  - tests/validation/test_document_corpus_lifecycle.py
+  - tests/validation/test_document_metadata.py
+  partition_plan: null
+  preservation_class: null
+  evidence:
+    commands:
+    - git diff --name-status e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/templates/common/archive.template.md
+    - git log --format=%H e00e1483e7ab797b354d7c3b22b6d5440e998c14..63829c10d073817322f401d909d11e1b7dcb74ca -- docs/99.templates/templates/common/archive.template.md
+    sources:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/templates/common/archive.template.md
+    repository_paths:
+    - docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+    - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+    - docs/99.templates/templates/common/archive.template.md
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docs/99.templates/templates/common/archive.template.md -- ':(top,glob)*' ':(top,glob).agents/**' ':(top,glob).claude/**' ':(top,glob).codex/**' ':(top,glob).github/**' ':(top,glob).rtk/**' ':(top,glob)docs/00.agent-governance/**' ':(top,glob)docs/01.requirements/**' ':(top,glob)docs/02.architecture/**' ':(top,glob)docs/03.specs/**' ':(top,glob)docs/04.execution/**' ':(top,glob)docs/05.operations/**' ':(top,glob)docs/99.templates/**' ':(top,glob)examples/**' ':(top,glob)infra/**' ':(top,glob)projects/**' ':(top,glob)scripts/**' ':(top,glob)secrets/**' ':(top,glob)tests/**' ':(top,exclude,literal)docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md' ':(top,exclude,literal)docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md' ':(top,exclude,literal)docs/99.templates/templates/common/archive.template.md'
+    - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-impacted --base-ref e00e1483e7ab797b354d7c3b22b6d5440e998c14
+    rollback:
+    - git revert --no-commit 74d5232d31f2011ed6b3d6eeacc98ee6c82cbc13
+  review_verdict:
+    specification: pass
+    quality: pass

@@ -212,6 +212,7 @@ task evidence or progress log records the same item as unresolved.
 - **Agentic Engineering Audit and Remediation Plan (completed; I-01 through I-03-R1 resolved)**: [2026-07-11-agentic-engineering-audit-remediation.md](./2026-07-11-agentic-engineering-audit-remediation.md)
 - **Agentic Audit Harness Consolidation Plan**: [2026-07-12-agentic-audit-harness-consolidation.md](./2026-07-12-agentic-audit-harness-consolidation.md)
 - **Document Contract Canonicalization Plan**: [2026-07-13-document-contract-canonicalization.md](./2026-07-13-document-contract-canonicalization.md)
+- **Document Corpus Lifecycle Migration Foundation Plan (completed)**: [2026-07-14-document-corpus-lifecycle-migration-foundation.md](./2026-07-14-document-corpus-lifecycle-migration-foundation.md)
 - **Compose Runtime Readiness Remediation Plan**: [2026-07-11-compose-runtime-readiness-remediation.md](./2026-07-11-compose-runtime-readiness-remediation.md)
 - **Infrastructure Operations Readiness Remediation Plan**: [2026-07-11-infrastructure-operations-readiness-remediation.md](./2026-07-11-infrastructure-operations-readiness-remediation.md)
 - **Security Supply-Chain Remediation Plan**: [2026-07-11-security-supply-chain-remediation.md](./2026-07-11-security-supply-chain-remediation.md)

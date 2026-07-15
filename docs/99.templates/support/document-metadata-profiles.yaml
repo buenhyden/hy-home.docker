@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 
 common:
   allowed_statuses: [draft, active, completed, superseded, archived]
@@ -23,9 +23,18 @@ common:
     - archived_from
     - archived_on
     - archive_reason
+    - archive_disposition
+    - archived_commit
+    - archived_blob
+    - preservation_class
     - current_replacement
+    - snapshot_path
+    - content_sha256
+    - snapshot_reason
   inventory_excludes:
     - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
+  generated_outputs:
+    docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md: scripts/validation/check-document-corpus-lifecycle.py
   template_placeholders:
     artifact_id: <artifact-id>
     parent_id: <parent-artifact-id>
@@ -34,7 +43,14 @@ common:
     archived_from: docs/<original-path>.md
     archived_on: YYYY-MM-DD
     archive_reason: <archive-reason>
+    archive_disposition: <archive-disposition>
+    archived_commit: <archived-commit>
+    archived_blob: <archived-blob>
+    preservation_class: <preservation-class>
     current_replacement: docs/<replacement-path>.md
+    snapshot_path: docs/98.archive/evidence/<content-sha256>.md.snapshot
+    content_sha256: <content-sha256>
+    snapshot_reason: <snapshot-reason>
   root_exceptions:
     docs/03.specs/123-agentic-engineering-audit-remediation/spec.md: Cross-cutting umbrella spec approved without a manufactured PRD, ARD, or ADR parent.
 
@@ -71,6 +87,7 @@ readme_profiles:
       - docs/90.references/README.md
       - docs/90.references/*/README.md
       - docs/90.references/*/*/README.md
+      - docs/90.references/data/governance/document-corpus-lifecycle/README.md
     frontmatter: optional
     frontmatter_consumer: scripts/validation/check-document-metadata.py
     allowed_frontmatter_keys: [status]
@@ -353,8 +370,8 @@ template_roles:
     source: docs/99.templates/templates/common/archive.template.md
     artifact_profile: archive
     target_globs: [docs/98.archive/**/*.md]
-    required_headings: ["## Overview", "## Archive Metadata", "## Current Replacement", "## Archive Ledger", "## Related Documents"]
-    conditional_headings: ["## Preserved Evidence"]
+    required_headings: ["## Overview", "## Archive Metadata", "## Archive Ledger", "## Related Documents"]
+    conditional_headings: ["## Current Replacement", "## Preserved Evidence"]
     forbidden_headings: ["## Current Implementation"]
   readme:
     source: docs/99.templates/templates/common/readme.template.md
@@ -587,13 +604,23 @@ profiles:
     disposition: governance exception
 
   archive:
-    required: [status, archived_from, archived_on, archive_reason, current_replacement]
-    optional: [layer, artifact_id, artifact_type, parent_ids, supersedes]
+    required: [status, artifact_id, artifact_type, parent_ids, archived_from, archived_on, archive_reason, archive_disposition, archived_commit, archived_blob, preservation_class]
+    optional: [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
     forbidden: [reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, generated_by]
     allowed_statuses: [archived]
     allowed_parent_types: [prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release, reference, audit]
     allow_empty_parents: true
     disposition: archive exception
+    conditions:
+      replacement:
+        field: current_replacement
+        required_for: [superseded, duplicate, conflict]
+        forbidden_for: [withdrawn]
+        optional_for: [evidence-preserve]
+      snapshot:
+        fields: [snapshot_path, content_sha256, snapshot_reason]
+        required_for: [immutable-snapshot]
+        forbidden_for: [git-history]
 
   unsupported:
     required: []

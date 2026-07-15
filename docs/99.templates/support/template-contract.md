@@ -33,6 +33,14 @@ Memory and Progress use the governance source metadata defined by the
 frontmatter contract; Archive uses source draft while its rendered target is
 archived.
 
+The Archive form contains the registry's required source metadata plus the
+conditional replacement and preserved-evidence fields in canonical key order.
+Its required body sections are Overview, Archive Metadata, Archive Ledger, and
+Related Documents. Current Replacement and Preserved Evidence are conditional;
+an instantiated target removes the inapplicable fields and sections instead of
+inventing replacement or preservation evidence. Exact conditions remain in
+the [archive and retention contract](./archive-retention-contract.md).
+
 Sources must not contain Rules blocks, Target comments, path-selection policy,
 numbering rules, language policy, lifecycle algorithms, migration guidance,
 fixed-depth link examples, or executable-looking sample commands.
@@ -66,3 +74,4 @@ Task with approval and validation evidence.
 - [SDLC document contract](./sdlc-document-contract.md)
 - [common document contract](./common-document-contract.md)
 - [README profile contract](./readme-profile-contract.md)
+- [archive and retention contract](./archive-retention-contract.md)

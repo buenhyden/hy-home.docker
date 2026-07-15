@@ -22,6 +22,311 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+DEFAULT_MIGRATION_CONTRACT = (
+    ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
+)
+EXPECTED_ARCHIVE_DISPOSITIONS = (
+    "superseded",
+    "duplicate",
+    "conflict",
+    "withdrawn",
+    "evidence-preserve",
+)
+EXPECTED_PRESERVATION_CLASSES = ("git-history", "immutable-snapshot")
+EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS = ("evidence-preserve",)
+EXPECTED_MANIFEST_DISPOSITIONS = (
+    "migrate",
+    "preserve",
+    "move",
+    "merge",
+    "archive",
+    "delete",
+    "regenerate",
+    "exempt",
+)
+EXPECTED_MANIFEST_SCHEMA = {
+    "top_level_fields": [
+        "schema_version",
+        "wave",
+        "baseline_commit",
+        "generated_by",
+        "enforcement",
+        "entries",
+    ],
+    "entry_fields": [
+        "source_path",
+        "target_path",
+        "artifact_id",
+        "artifact_type",
+        "status_before",
+        "status_after",
+        "parent_ids",
+        "disposition",
+        "canonical_replacement",
+        "active_consumers",
+        "partition_plan",
+        "preservation_class",
+        "evidence",
+        "review_verdict",
+    ],
+    "evidence_fields": [
+        "commands",
+        "sources",
+        "repository_paths",
+        "consumer_scan",
+        "rollback",
+    ],
+    "review_verdict_fields": ["specification", "quality"],
+    "review_verdict_values": ["pending", "pass", "changes-required"],
+    "field_contracts": {
+        "schema_version": {
+            "type": "integer",
+            "nullable": False,
+            "domain": "constant-1",
+        },
+        "wave": {
+            "type": "string",
+            "nullable": False,
+            "domain": "non-empty-string",
+        },
+        "baseline_commit": {
+            "type": "string",
+            "nullable": False,
+            "domain": "lowercase-full-object-id",
+        },
+        "generated_by": {
+            "type": "string",
+            "nullable": False,
+            "domain": "non-empty-string",
+        },
+        "enforcement": {
+            "type": "string",
+            "nullable": False,
+            "domain": "advisory-or-blocking",
+        },
+        "entries": {
+            "type": "list",
+            "nullable": False,
+            "domain": "migration-entry",
+        },
+        "source_path": {
+            "type": "string",
+            "nullable": False,
+            "domain": "safe-baseline-tracked-path",
+        },
+        "target_path": {
+            "type": "string",
+            "nullable": True,
+            "domain": "safe-repository-path",
+            "null_condition": "disposition-delete",
+        },
+        "artifact_id": {
+            "type": "string",
+            "nullable": True,
+            "domain": "canonical-metadata-artifact-id",
+            "null_condition": "selected-profile-does-not-require-artifact-id",
+        },
+        "artifact_type": {
+            "type": "string",
+            "nullable": False,
+            "domain": "registered-artifact-type",
+        },
+        "status_before": {
+            "type": "string",
+            "nullable": True,
+            "domain": "registered-lifecycle-status",
+            "null_condition": "selected-profile-does-not-require-status",
+        },
+        "status_after": {
+            "type": "string",
+            "nullable": True,
+            "domain": "registered-lifecycle-status",
+            "null_condition": "selected-profile-does-not-require-status",
+        },
+        "parent_ids": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "disposition": {
+            "type": "string",
+            "nullable": False,
+            "domain": "registered-manifest-disposition",
+        },
+        "canonical_replacement": {
+            "type": "string",
+            "nullable": True,
+            "domain": "non-empty-string",
+            "null_condition": "replacement-requirements",
+        },
+        "active_consumers": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-safe-path-list",
+        },
+        "partition_plan": {
+            "type": "string",
+            "nullable": True,
+            "domain": "safe-approved-plan-path",
+        },
+        "preservation_class": {
+            "type": "string",
+            "nullable": True,
+            "domain": "registered-preservation-class",
+            "null_condition": "non-destructive-row",
+        },
+        "evidence": {
+            "type": "mapping",
+            "nullable": False,
+            "domain": "exact-evidence-mapping",
+        },
+        "review_verdict": {
+            "type": "mapping",
+            "nullable": False,
+            "domain": "exact-review-verdict-mapping",
+        },
+        "evidence.commands": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "evidence.sources": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "evidence.repository_paths": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "evidence.consumer_scan": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "evidence.rollback": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-string-list",
+        },
+        "review_verdict.specification": {
+            "type": "string",
+            "nullable": False,
+            "domain": "review-verdict-values",
+        },
+        "review_verdict.quality": {
+            "type": "string",
+            "nullable": False,
+            "domain": "review-verdict-values",
+        },
+    },
+    "deterministic_order": {
+        "entries": "source_path",
+        "parent_ids": "lexicographic",
+        "active_consumers": "lexicographic",
+        "evidence.commands": "lexicographic",
+        "evidence.sources": "lexicographic",
+        "evidence.repository_paths": "lexicographic",
+        "evidence.consumer_scan": "lexicographic",
+        "evidence.rollback": "lexicographic",
+    },
+    "destructive_execution": {
+        "dispositions": ["merge", "archive", "delete"],
+        "active_consumers_required": True,
+        "empty_consumers_require": "evidence.consumer_scan",
+        "non_empty_evidence": [
+            "commands",
+            "sources",
+            "repository_paths",
+            "consumer_scan",
+            "rollback",
+        ],
+        "preservation_class_required": True,
+        "replacement_semantics": "replacement_requirements",
+        "required_review": {"specification": "pass", "quality": "pass"},
+    },
+}
+EXPECTED_EXCEPTION_SCHEMA = {
+    "top_level_fields": ["schema_version", "exceptions"],
+    "entry_fields": [
+        "finding_code",
+        "scope_paths",
+        "owner",
+        "reason",
+        "approved_at",
+        "expires_on",
+        "exit_condition",
+        "evidence",
+    ],
+    "field_contracts": {
+        "schema_version": {
+            "type": "integer",
+            "nullable": False,
+            "domain": "constant-1",
+        },
+        "exceptions": {
+            "type": "list",
+            "nullable": False,
+            "domain": "bounded-exception",
+        },
+        "finding_code": {
+            "type": "string",
+            "nullable": False,
+            "domain": "validator-known-finding-code",
+        },
+        "scope_paths": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-bounded-safe-path-list",
+        },
+        "owner": {
+            "type": "string",
+            "nullable": False,
+            "domain": "non-empty-string",
+        },
+        "reason": {
+            "type": "string",
+            "nullable": False,
+            "domain": "non-empty-string",
+        },
+        "approved_at": {
+            "type": "string",
+            "nullable": False,
+            "domain": "strict-iso-date-not-future",
+        },
+        "expires_on": {
+            "type": "string",
+            "nullable": False,
+            "domain": "strict-iso-date-after-validation-date",
+        },
+        "exit_condition": {
+            "type": "string",
+            "nullable": False,
+            "domain": "non-empty-string",
+        },
+        "evidence": {
+            "type": "list",
+            "nullable": False,
+            "domain": "deterministic-non-empty-safe-path-list",
+        },
+    },
+    "deterministic_order": {
+        "exceptions": "finding_code-and-scope-paths",
+        "scope_paths": "lexicographic",
+        "evidence": "lexicographic",
+    },
+    "bounded_semantics": {
+        "finding_code_source": "validator-known-finding-codes",
+        "require_non_empty_scope_paths": True,
+        "forbid_wildcards": True,
+        "forbid_global_scopes": ["*", "**", ".", "all", "global"],
+        "require_non_empty_text": ["owner", "reason", "exit_condition"],
+        "approval": "approved_at-not-future",
+        "expiry": "expires_on-after-validation-date",
+        "require_non_empty_safe_evidence_paths": True,
+    },
+}
 EXPECTED_PROFILE_TYPES = {
     "adr",
     "archive",
@@ -57,8 +362,49 @@ EXPECTED_FRONTMATTER_ORDER = (
     "archived_from",
     "archived_on",
     "archive_reason",
+    "archive_disposition",
+    "archived_commit",
+    "archived_blob",
+    "preservation_class",
     "current_replacement",
+    "snapshot_path",
+    "content_sha256",
+    "snapshot_reason",
 )
+EXPECTED_ARCHIVE_REQUIRED = (
+    "status",
+    "artifact_id",
+    "artifact_type",
+    "parent_ids",
+    "archived_from",
+    "archived_on",
+    "archive_reason",
+    "archive_disposition",
+    "archived_commit",
+    "archived_blob",
+    "preservation_class",
+)
+EXPECTED_ARCHIVE_OPTIONAL = (
+    "layer",
+    "supersedes",
+    "current_replacement",
+    "snapshot_path",
+    "content_sha256",
+    "snapshot_reason",
+)
+EXPECTED_ARCHIVE_CONDITIONS = {
+    "replacement": {
+        "field": "current_replacement",
+        "required_for": ["superseded", "duplicate", "conflict"],
+        "forbidden_for": ["withdrawn"],
+        "optional_for": ["evidence-preserve"],
+    },
+    "snapshot": {
+        "fields": ["snapshot_path", "content_sha256", "snapshot_reason"],
+        "required_for": ["immutable-snapshot"],
+        "forbidden_for": ["git-history"],
+    },
+}
 EXPECTED_DOCUMENT_FAMILIES = {
     "sdlc": (
         "prd",
@@ -215,7 +561,14 @@ EXPECTED_TEMPLATE_PLACEHOLDER_KEYS = frozenset(
         "archived_from",
         "archived_on",
         "archive_reason",
+        "archive_disposition",
+        "archived_commit",
+        "archived_blob",
+        "preservation_class",
         "current_replacement",
+        "snapshot_path",
+        "content_sha256",
+        "snapshot_reason",
     }
 )
 MARKDOWN_BODY_TOKEN = re.compile(r"{{[a-z][a-z0-9_]*}}")
@@ -410,13 +763,34 @@ def parse_frontmatter(path: pathlib.Path) -> dict[str, object]:
     return _parse_frontmatter_text(text)
 
 
-def infer_artifact_type(path: pathlib.Path) -> str:
+def registered_generated_owner(
+    path: pathlib.Path,
+    profiles: Mapping[str, object] | None,
+) -> str | None:
+    """Return the exact registry owner for a generator-owned Markdown output."""
+
+    if not isinstance(profiles, Mapping):
+        return None
+    common = profiles.get("common")
+    generated_outputs = common.get("generated_outputs") if isinstance(common, Mapping) else None
+    if not isinstance(generated_outputs, Mapping):
+        return None
+    owner = generated_outputs.get(path.as_posix())
+    return owner if isinstance(owner, str) else None
+
+
+def infer_artifact_type(
+    path: pathlib.Path,
+    profiles: Mapping[str, object] | None = None,
+) -> str:
     """Infer a supported artifact profile from a repository-relative path."""
 
     normalized = path.as_posix().lstrip("./")
     name = pathlib.PurePosixPath(normalized).name
     if name == "README.md":
         return "readme"
+    if registered_generated_owner(pathlib.Path(normalized), profiles) is not None:
+        return "generated"
     if normalized.startswith("docs/99.templates/templates/") and name.endswith(".template.md"):
         return "template-source"
     if normalized.startswith("docs/00.agent-governance/"):
@@ -497,6 +871,8 @@ DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 DATETIME_RE = re.compile(
     r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})"
 )
+LOWERCASE_OBJECT_ID_RE = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})")
+LOWERCASE_SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 
 def _valid_iso_date(value: object) -> bool:
@@ -534,6 +910,39 @@ def _safe_repo_path(value: object, required_prefix: str | None = None) -> bool:
     if pure.is_absolute() or value != pure.as_posix() or any(part in {"", ".", ".."} for part in pure.parts):
         return False
     return required_prefix is None or value.startswith(required_prefix)
+
+
+def _valid_lowercase_object_id(value: object) -> bool:
+    return isinstance(value, str) and LOWERCASE_OBJECT_ID_RE.fullmatch(value) is not None
+
+
+def _valid_lowercase_sha256(value: object) -> bool:
+    return isinstance(value, str) and LOWERCASE_SHA256_RE.fullmatch(value) is not None
+
+
+def _valid_metadata_artifact_id(value: object) -> bool:
+    """Apply the canonical metadata validator's artifact-ID value rule."""
+
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _safe_snapshot_path(value: object) -> bool:
+    return (
+        _safe_repo_path(value, "docs/98.archive/evidence/")
+        and isinstance(value, str)
+        and value.endswith(".md.snapshot")
+    )
+
+
+def _condition_members(
+    profile: Mapping[str, object],
+    group: str,
+    field: str,
+) -> set[str]:
+    conditions = profile.get("conditions", {})
+    condition_group = conditions.get(group, {}) if isinstance(conditions, dict) else {}
+    values = condition_group.get(field, []) if isinstance(condition_group, dict) else []
+    return set(values) if isinstance(values, list) else set()
 
 
 def _safe_readme_glob(value: object) -> bool:
@@ -925,8 +1334,6 @@ def _validate_template_source(
         findings.append(
             _finding(record, "artifact-type-mismatch", f"template must declare target artifact_type {target_type}")
         )
-    if record.metadata.get("artifact_id") != placeholders.get("artifact_id"):
-        findings.append(_finding(record, "invalid-template-placeholder", "artifact_id must use the Stage 99 placeholder"))
     parents = _string_list(record.metadata.get("parent_ids"))
     parent_placeholder = placeholders.get("parent_id")
     if parents is None:
@@ -935,16 +1342,10 @@ def _validate_template_source(
         findings.append(_finding(record, "missing-parent", f"{target_type} template requires a direct parent placeholder"))
     elif any(parent != parent_placeholder for parent in parents):
         findings.append(_finding(record, "invalid-template-placeholder", "parent_ids contains a noncanonical placeholder"))
-    placeholder_keys = {
-        "reviewed_at": "reviewed_at",
-        "review_cycle": "review_cycle",
-        "archived_from": "archived_from",
-        "archived_on": "archived_on",
-        "archive_reason": "archive_reason",
-        "current_replacement": "current_replacement",
-    }
-    for key, placeholder_key in placeholder_keys.items():
-        if key in required and record.metadata.get(key) != placeholders.get(placeholder_key):
+    for key, placeholder in placeholders.items():
+        if key == "parent_id" or key not in record.metadata:
+            continue
+        if record.metadata.get(key) != placeholder:
             findings.append(_finding(record, "invalid-template-placeholder", f"{key} must use the Stage 99 placeholder"))
     return sorted(set(findings))
 
@@ -1702,8 +2103,11 @@ def validate_record(
     optional = set(raw_profile.get("optional", []))
     forbidden = set(raw_profile.get("forbidden", []))
     global_forbidden = set(common.get("globally_forbidden", []))
+    registered_owner = registered_generated_owner(record.path, profiles)
     for key in sorted(required):
         if key not in record.metadata or record.metadata[key] in (None, ""):
+            if key == "generated_by" and record.artifact_type == "generated" and registered_owner:
+                continue
             findings.append(_finding(record, "missing-required-key", f"required key is missing: {key}"))
     for key in sorted(record.metadata):
         if key not in forbidden:
@@ -1737,7 +2141,7 @@ def validate_record(
             )
 
     artifact_id = record.metadata.get("artifact_id")
-    if artifact_id is not None and (not isinstance(artifact_id, str) or not artifact_id.strip()):
+    if artifact_id is not None and not _valid_metadata_artifact_id(artifact_id):
         findings.append(_finding(record, "invalid-artifact-id", "artifact_id must be a non-empty string"))
     if isinstance(artifact_id, str) and artifact_id.strip() in typed_manifest.duplicates:
         paths = ", ".join(path.as_posix() for path in typed_manifest.duplicates[artifact_id.strip()])
@@ -1871,6 +2275,14 @@ def validate_record(
         findings.append(
             _finding(record, "invalid-generator", "generated_by must be a safe canonical scripts/ repository path")
         )
+    elif registered_owner is not None and generated_by is not None and generated_by != registered_owner:
+        findings.append(
+            _finding(
+                record,
+                "generated-owner-mismatch",
+                "generated_by differs from the exact registered generator owner",
+            )
+        )
 
     if record.artifact_type == "archive":
         archive_path_fields = {
@@ -1888,6 +2300,164 @@ def validate_record(
         if archive_reason is not None and (not isinstance(archive_reason, str) or not archive_reason.strip()):
             findings.append(_finding(record, "invalid-archive-reason", "archive_reason must be a non-empty string"))
 
+        archive_disposition = record.metadata.get("archive_disposition")
+        archive_disposition_valid = (
+            isinstance(archive_disposition, str)
+            and archive_disposition in EXPECTED_ARCHIVE_DISPOSITIONS
+        )
+        if archive_disposition is not None and not archive_disposition_valid:
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-archive-disposition",
+                    "archive_disposition must be a registered archive disposition",
+                )
+            )
+        replacement_required_for = _condition_members(
+            raw_profile,
+            "replacement",
+            "required_for",
+        )
+        replacement_forbidden_for = _condition_members(
+            raw_profile,
+            "replacement",
+            "forbidden_for",
+        )
+        replacement_present = "current_replacement" in record.metadata
+        replacement = record.metadata.get("current_replacement")
+        if (
+            archive_disposition_valid
+            and archive_disposition in replacement_required_for
+            and replacement in (None, "")
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "archive-replacement-required",
+                    "current_replacement is required for this archive disposition",
+                )
+            )
+        if (
+            archive_disposition_valid
+            and archive_disposition in replacement_forbidden_for
+            and replacement_present
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "archive-replacement-forbidden",
+                    "current_replacement is forbidden for this archive disposition",
+                )
+            )
+
+        for key, code in (
+            ("archived_commit", "invalid-archived-commit"),
+            ("archived_blob", "invalid-archived-blob"),
+        ):
+            if key in record.metadata and not _valid_lowercase_object_id(record.metadata.get(key)):
+                findings.append(
+                    _finding(
+                        record,
+                        code,
+                        f"{key} must be a lowercase full 40- or 64-hex object ID",
+                    )
+                )
+
+        preservation_class = record.metadata.get("preservation_class")
+        preservation_class_valid = (
+            isinstance(preservation_class, str)
+            and preservation_class in EXPECTED_PRESERVATION_CLASSES
+        )
+        if preservation_class is not None and not preservation_class_valid:
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-preservation-class",
+                    "preservation_class must be a registered archive preservation class",
+                )
+            )
+        snapshot_fields = ("snapshot_path", "content_sha256", "snapshot_reason")
+        snapshot_required_for = _condition_members(
+            raw_profile,
+            "snapshot",
+            "required_for",
+        )
+        snapshot_forbidden_for = _condition_members(
+            raw_profile,
+            "snapshot",
+            "forbidden_for",
+        )
+        if (
+            preservation_class_valid
+            and preservation_class in snapshot_forbidden_for
+            and any(key in record.metadata for key in snapshot_fields)
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "archive-snapshot-forbidden",
+                    "snapshot fields are forbidden for this preservation class",
+                )
+            )
+        if preservation_class_valid and preservation_class in snapshot_required_for:
+            if (
+                archive_disposition_valid
+                and archive_disposition not in EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS
+            ):
+                findings.append(
+                    _finding(
+                        record,
+                        "archive-snapshot-disposition-forbidden",
+                        "immutable snapshots require an admitted archive disposition",
+                    )
+                )
+            required_codes = {
+                "snapshot_path": "archive-snapshot-path-required",
+                "content_sha256": "archive-content-sha256-required",
+                "snapshot_reason": "archive-snapshot-reason-required",
+            }
+            for key in snapshot_fields:
+                if record.metadata.get(key) in (None, ""):
+                    findings.append(
+                        _finding(
+                            record,
+                            required_codes[key],
+                            f"{key} is required for immutable snapshot preservation",
+                        )
+                    )
+
+        if "snapshot_path" in record.metadata and not _safe_snapshot_path(
+            record.metadata.get("snapshot_path")
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-snapshot-path",
+                    "snapshot_path must be a safe canonical archive evidence path",
+                )
+            )
+        if "content_sha256" in record.metadata and not _valid_lowercase_sha256(
+            record.metadata.get("content_sha256")
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-content-sha256",
+                    "content_sha256 must be a lowercase full 64-hex digest",
+                )
+            )
+        snapshot_reason = record.metadata.get("snapshot_reason")
+        if "snapshot_reason" in record.metadata and (
+            not isinstance(snapshot_reason, str) or not snapshot_reason.strip()
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-snapshot-reason",
+                    "snapshot_reason must be a non-empty string",
+                )
+            )
+
     if not raw_profile.get("allow_additional", False):
         known = required | optional | forbidden
         for key in sorted(set(record.metadata) - known):
@@ -1897,7 +2467,632 @@ def validate_record(
     return sorted(set(findings))
 
 
-def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
+def _exact_string_list(
+    value: object,
+    expected: Sequence[str],
+    field: str,
+) -> list[str]:
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item for item in value
+    ):
+        raise ProfileError(f"{field} must be a list of non-empty strings")
+    if tuple(value) != tuple(expected):
+        raise ProfileError(f"{field} must define the exact canonical values")
+    return value
+
+
+def _safe_contract_path(value: object) -> bool:
+    return (
+        _safe_repo_path(value)
+        and isinstance(value, str)
+        and not any(marker in value for marker in "*?[]{}")
+    )
+
+
+def load_migration_contract(
+    path: pathlib.Path = DEFAULT_MIGRATION_CONTRACT,
+) -> dict[str, object]:
+    """Load and exact-key-check the document corpus migration contract."""
+
+    try:
+        loaded = _safe_load_unique(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as error:
+        raise ProfileError(f"cannot load migration contract YAML: {error}") from error
+    if not isinstance(loaded, dict):
+        raise ProfileError("migration contract must be a mapping")
+    expected_top_level = {
+        "schema_version",
+        "manifest",
+        "archive",
+        "directory_budgets",
+        "review_signals",
+        "manifest_schema",
+        "exception_schema",
+        "disposition_conditions",
+        "replacement_requirements",
+        "snapshot_admission",
+        "safe_diagnostics",
+        "waves",
+        "planned_partitions",
+    }
+    if set(loaded) != expected_top_level:
+        raise ProfileError("migration contract must define the exact top-level fields")
+    schema_version = loaded.get("schema_version")
+    if type(schema_version) is not int or schema_version != 1:
+        raise ProfileError("migration contract schema_version must be the integer 1")
+
+    manifest = loaded.get("manifest")
+    if not isinstance(manifest, dict) or set(manifest) != {"dispositions"}:
+        raise ProfileError("manifest must define only dispositions")
+    _exact_string_list(
+        manifest.get("dispositions"),
+        EXPECTED_MANIFEST_DISPOSITIONS,
+        "manifest.dispositions",
+    )
+
+    archive = loaded.get("archive")
+    if not isinstance(archive, dict) or set(archive) != {
+        "dispositions",
+        "preservation_classes",
+    }:
+        raise ProfileError(
+            "archive must define only dispositions and preservation_classes"
+        )
+    _exact_string_list(
+        archive.get("dispositions"),
+        EXPECTED_ARCHIVE_DISPOSITIONS,
+        "archive.dispositions",
+    )
+    _exact_string_list(
+        archive.get("preservation_classes"),
+        EXPECTED_PRESERVATION_CLASSES,
+        "archive.preservation_classes",
+    )
+
+    budgets = loaded.get("directory_budgets")
+    if not isinstance(budgets, dict) or set(budgets) != {
+        "warning_at",
+        "block_new_leaf_at",
+    }:
+        raise ProfileError("directory_budgets must define the exact thresholds")
+    warning_at = budgets.get("warning_at")
+    block_at = budgets.get("block_new_leaf_at")
+    if (
+        type(warning_at) is not int
+        or type(block_at) is not int
+        or warning_at <= 0
+        or block_at <= 0
+        or warning_at >= block_at
+    ):
+        raise ProfileError(
+            "directory budgets must be positive and warning_at must be below block_new_leaf_at"
+        )
+    if (warning_at, block_at) != (100, 150):
+        raise ProfileError("directory budgets must define the canonical 100/150 thresholds")
+
+    review_signals = loaded.get("review_signals")
+    if (
+        not isinstance(review_signals, dict)
+        or review_signals
+        != {
+            "draft_days": 30,
+            "active_days": 90,
+            "completed_execution_days": 180,
+        }
+        or any(type(value) is not int or value <= 0 for value in review_signals.values())
+    ):
+        raise ProfileError("review_signals must define the exact canonical positive day thresholds")
+
+    manifest_schema = loaded.get("manifest_schema")
+    if manifest_schema != EXPECTED_MANIFEST_SCHEMA:
+        raise ProfileError("manifest_schema must define the exact canonical manifest shape")
+
+    exception_schema = loaded.get("exception_schema")
+    if exception_schema != EXPECTED_EXCEPTION_SCHEMA:
+        raise ProfileError("exception_schema must define the exact bounded exception shape")
+
+    if loaded.get("disposition_conditions") != {
+        "migrate": "source-equals-target",
+        "preserve": "source-equals-target",
+        "move": "target-distinct",
+        "merge": "target-distinct",
+        "archive": "target-distinct",
+        "delete": "target-null",
+        "regenerate": "source-equals-target",
+        "exempt": "source-equals-target",
+    }:
+        raise ProfileError("disposition_conditions must define every canonical disposition")
+    if loaded.get("replacement_requirements") != {
+        "required_for": ["merge"],
+        "optional_for": ["archive", "delete"],
+        "forbidden_for": ["migrate", "preserve", "move", "regenerate", "exempt"],
+    }:
+        raise ProfileError("replacement_requirements must partition every canonical disposition")
+    if loaded.get("snapshot_admission") != {
+        "allowed_archive_dispositions": list(EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS),
+        "required_preservation_class": "immutable-snapshot",
+        "required_fields": ["snapshot_path", "content_sha256", "snapshot_reason"],
+        "required_checks": ["confidentiality-scan", "content-sha256"],
+        "path_prefix": "docs/98.archive/evidence/",
+        "path_suffix": ".md.snapshot",
+        "forbidden_payload_classes": [
+            "secret",
+            "credential",
+            "token",
+            "private-key",
+            "auth-file",
+            "shell-history",
+            "raw-log",
+        ],
+    }:
+        raise ProfileError("snapshot_admission must define the exact safe snapshot conditions")
+    if loaded.get("safe_diagnostics") != {
+        "allowed": [
+            "finding-code",
+            "bounded-path",
+            "safe-metadata",
+            "count",
+            "git-object-id",
+        ],
+        "forbidden": [
+            "body-payload",
+            "snapshot-bytes",
+            "secret-value",
+            "credential",
+            "token",
+            "private-key",
+            "auth-file",
+            "shell-history",
+            "raw-log",
+            "diagnostic-payload",
+        ],
+    }:
+        raise ProfileError("safe_diagnostics must define the exact redaction boundary")
+
+    waves = loaded.get("waves")
+    expected_wave_names = (
+        "foundation",
+        "wave-a-active-sdlc",
+        "wave-b-operations",
+        "wave-c-historical-evidence",
+        "wave-d-archive-provenance",
+        "wave-e-references-final-gates",
+    )
+    if not isinstance(waves, dict) or tuple(waves) != expected_wave_names:
+        raise ProfileError("waves must define the exact ordered Foundation lifecycle")
+    foundation_sources = (
+        "docs/00.agent-governance/memory/progress.md",
+        "docs/00.agent-governance/rules/documentation-protocol.md",
+        "docs/00.agent-governance/rules/github-governance.md",
+        "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+        "docs/00.agent-governance/rules/task-checklists.md",
+        "docs/03.specs/README.md",
+        "docs/04.execution/README.md",
+        "docs/04.execution/plans/README.md",
+        "docs/04.execution/tasks/README.md",
+        "docs/90.references/README.md",
+        "docs/90.references/data/README.md",
+        "docs/90.references/data/governance/README.md",
+        "docs/98.archive/README.md",
+        "docs/99.templates/support/README.md",
+        "docs/99.templates/support/common-document-contract.md",
+        "docs/99.templates/support/external-source-rationale.md",
+        "docs/99.templates/support/frontmatter-contract.md",
+        "docs/99.templates/support/lifecycle-status.md",
+        "docs/99.templates/support/sdlc-document-contract.md",
+        "docs/99.templates/support/template-contract.md",
+        "docs/99.templates/support/template-governance.md",
+        "docs/99.templates/support/template-selection.md",
+        "docs/99.templates/templates/common/README.md",
+        "docs/99.templates/templates/common/archive.template.md",
+    )
+    foundation_outputs = (
+        ".github/workflows/document-corpus-lifecycle.yml",
+        "docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md",
+        "docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
+        "docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
+        "docs/90.references/data/governance/document-corpus-lifecycle/README.md",
+        "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md",
+        "docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml",
+        "docs/99.templates/support/archive-retention-contract.md",
+        "docs/99.templates/support/corpus-migration-contract.md",
+        "docs/99.templates/support/document-corpus-migration-contract.yaml",
+        "scripts/validation/check-document-corpus-lifecycle.py",
+        "tests/validation/test_document_corpus_lifecycle.py",
+    )
+    wave_keys = {
+        "enforcement",
+        "manifest_path",
+        "scope_state",
+        "source_paths",
+        "declared_outputs",
+    }
+    foundation = waves["foundation"]
+    if not isinstance(foundation, dict) or set(foundation) != wave_keys:
+        raise ProfileError("Foundation wave must define the exact wave fields")
+    if foundation.get("enforcement") not in {"advisory", "blocking"}:
+        raise ProfileError("Foundation enforcement must be advisory or blocking")
+    manifest_path = foundation.get("manifest_path")
+    if manifest_path is not None and (
+        not _safe_contract_path(manifest_path)
+        or not isinstance(manifest_path, str)
+        or not manifest_path.startswith("docs/90.references/data/governance/")
+        or not manifest_path.endswith(".yaml")
+    ):
+        raise ProfileError("Foundation manifest_path must be null or a safe governance YAML path")
+    if foundation.get("scope_state") != "approved":
+        raise ProfileError("Foundation scope_state must be approved")
+    _exact_string_list(
+        foundation.get("source_paths"),
+        foundation_sources,
+        "waves.foundation.source_paths",
+    )
+    _exact_string_list(
+        foundation.get("declared_outputs"),
+        foundation_outputs,
+        "waves.foundation.declared_outputs",
+    )
+    for path_value in [*foundation_sources, *foundation_outputs]:
+        if not _safe_contract_path(path_value):
+            raise ProfileError("Foundation paths must be normalized traversal-free repository paths")
+    for wave_name in expected_wave_names[1:]:
+        wave = waves[wave_name]
+        if not isinstance(wave, dict) or set(wave) != wave_keys:
+            raise ProfileError(f"{wave_name} must define the exact wave fields")
+        if wave != {
+            "enforcement": "advisory",
+            "manifest_path": None,
+            "scope_state": "unapproved",
+            "source_paths": [],
+            "declared_outputs": [],
+        }:
+            raise ProfileError(f"{wave_name} must remain an unapproved advisory wave")
+
+    if loaded.get("planned_partitions") != {
+        "docs/04.execution/plans": "docs/04.execution/plans/YYYY",
+        "docs/04.execution/tasks": "docs/04.execution/tasks/YYYY",
+    }:
+        raise ProfileError("planned_partitions must define the exact Stage 04 year routes")
+    return loaded
+
+
+def _require_exact_mapping(
+    value: object,
+    fields: Sequence[str],
+    label: str,
+) -> Mapping[str, object]:
+    if not isinstance(value, Mapping) or set(value) != set(fields):
+        raise ProfileError(f"{label} must define the exact canonical fields")
+    return value
+
+
+def _deterministic_string_list(
+    value: object,
+    label: str,
+    *,
+    require_non_empty: bool = False,
+    safe_paths: bool = False,
+) -> list[str]:
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item and item == item.strip() for item in value
+    ):
+        raise ProfileError(f"{label} must be a deterministic string list")
+    if require_non_empty and not value:
+        raise ProfileError(f"{label} must not be empty")
+    if value != sorted(value) or len(value) != len(set(value)):
+        raise ProfileError(f"{label} must be uniquely lexicographically ordered")
+    if safe_paths and not all(_safe_contract_path(item) for item in value):
+        raise ProfileError(f"{label} must contain only safe bounded repository paths")
+    return value
+
+
+def _non_empty_string(value: object, label: str) -> str:
+    if not isinstance(value, str) or not value.strip() or value != value.strip():
+        raise ProfileError(f"{label} must be a non-empty canonical string")
+    return value
+
+
+def _profile_field_ownership(
+    profile: Mapping[str, object],
+    field: str,
+    label: str,
+) -> str:
+    owners: list[str] = []
+    for group in ("required", "optional", "forbidden"):
+        members = profile.get(group)
+        if not isinstance(members, list) or not all(
+            isinstance(member, str) for member in members
+        ):
+            raise ProfileError(f"{label} selected profile has invalid {group} ownership")
+        if field in members:
+            owners.append(group)
+    if len(owners) != 1:
+        raise ProfileError(
+            f"{label} selected profile must own {field} in exactly one field group"
+        )
+    return owners[0]
+
+
+def validate_static_migration_manifest(
+    document: object,
+    contract: Mapping[str, object],
+    profiles: Mapping[str, object],
+) -> None:
+    """Validate manifest semantics that require no repository or object access."""
+
+    if contract.get("manifest_schema") != EXPECTED_MANIFEST_SCHEMA:
+        raise ProfileError("manifest contract must use the exact static schema")
+    manifest = _require_exact_mapping(
+        document,
+        EXPECTED_MANIFEST_SCHEMA["top_level_fields"],
+        "migration manifest",
+    )
+    if type(manifest.get("schema_version")) is not int or manifest.get("schema_version") != 1:
+        raise ProfileError("manifest schema_version must be the integer 1")
+    _non_empty_string(manifest.get("wave"), "manifest wave")
+    if not _valid_lowercase_object_id(manifest.get("baseline_commit")):
+        raise ProfileError("manifest baseline_commit must be a lowercase full object ID")
+    _non_empty_string(manifest.get("generated_by"), "manifest generated_by")
+    enforcement = manifest.get("enforcement")
+    if not isinstance(enforcement, str) or enforcement not in {"advisory", "blocking"}:
+        raise ProfileError("manifest enforcement must be advisory or blocking")
+
+    raw_profile_map = profiles.get("profiles")
+    raw_common = profiles.get("common")
+    if not isinstance(raw_profile_map, Mapping) or not isinstance(raw_common, Mapping):
+        raise ProfileError("manifest validation requires the typed profile registry")
+    artifact_types = set(raw_profile_map)
+    allowed_status_values = raw_common.get("allowed_statuses")
+    if not isinstance(allowed_status_values, list) or not all(
+        isinstance(status, str) and status for status in allowed_status_values
+    ):
+        raise ProfileError("manifest validation requires registered lifecycle statuses")
+    allowed_statuses = set(allowed_status_values)
+
+    raw_manifest_contract = contract.get("manifest")
+    raw_archive_contract = contract.get("archive")
+    if not isinstance(raw_manifest_contract, Mapping) or not isinstance(
+        raw_archive_contract, Mapping
+    ):
+        raise ProfileError("manifest validation requires disposition registries")
+    dispositions = set(raw_manifest_contract.get("dispositions", []))
+    preservation_classes = set(raw_archive_contract.get("preservation_classes", []))
+    replacement_requirements = contract.get("replacement_requirements")
+    if not isinstance(replacement_requirements, Mapping):
+        raise ProfileError("manifest validation requires replacement semantics")
+    replacement_required = set(replacement_requirements.get("required_for", []))
+    replacement_optional = set(replacement_requirements.get("optional_for", []))
+    replacement_forbidden = set(replacement_requirements.get("forbidden_for", []))
+
+    entries = manifest.get("entries")
+    if not isinstance(entries, list):
+        raise ProfileError("manifest entries must be a list")
+    source_paths: list[str] = []
+    entry_fields = EXPECTED_MANIFEST_SCHEMA["entry_fields"]
+    evidence_fields = EXPECTED_MANIFEST_SCHEMA["evidence_fields"]
+    review_fields = EXPECTED_MANIFEST_SCHEMA["review_verdict_fields"]
+    verdict_values = set(EXPECTED_MANIFEST_SCHEMA["review_verdict_values"])
+    destructive = set(
+        EXPECTED_MANIFEST_SCHEMA["destructive_execution"]["dispositions"]
+    )
+
+    for index, raw_entry in enumerate(entries):
+        label = f"manifest entry {index}"
+        entry = _require_exact_mapping(raw_entry, entry_fields, label)
+        source_path = entry.get("source_path")
+        if not isinstance(source_path, str) or not _safe_contract_path(source_path):
+            raise ProfileError(f"{label} source_path must be a safe repository path")
+        source_paths.append(source_path)
+
+        disposition = entry.get("disposition")
+        if not isinstance(disposition, str) or disposition not in dispositions:
+            raise ProfileError(f"{label} disposition must be registered")
+
+        target_path = entry.get("target_path")
+        if target_path is not None and not _safe_contract_path(target_path):
+            raise ProfileError(f"{label} target_path must be null or a safe repository path")
+        if disposition == "delete" and target_path is not None:
+            raise ProfileError(f"{label} delete target_path must be null")
+        if disposition in {"move", "merge", "archive"} and (
+            target_path is None or target_path == source_path
+        ):
+            raise ProfileError(f"{label} target_path must be distinct for its disposition")
+        if disposition in {"migrate", "preserve", "regenerate", "exempt"} and (
+            target_path != source_path
+        ):
+            raise ProfileError(f"{label} target_path must equal source_path")
+
+        artifact_type = entry.get("artifact_type")
+        if not isinstance(artifact_type, str) or artifact_type not in artifact_types:
+            raise ProfileError(f"{label} artifact_type must be registered")
+        selected_profile = raw_profile_map.get(artifact_type)
+        if not isinstance(selected_profile, Mapping):
+            raise ProfileError(f"{label} artifact_type must select a metadata profile")
+
+        artifact_id_ownership = _profile_field_ownership(
+            selected_profile,
+            "artifact_id",
+            label,
+        )
+        artifact_id = entry.get("artifact_id")
+        if artifact_id is None:
+            if artifact_id_ownership == "required":
+                raise ProfileError(
+                    f"{label} artifact_id is required by the selected metadata profile"
+                )
+        elif artifact_id_ownership == "forbidden":
+            raise ProfileError(
+                f"{label} artifact_id is forbidden by the selected metadata profile"
+            )
+        elif not _valid_metadata_artifact_id(artifact_id):
+            raise ProfileError(
+                f"{label} artifact_id must satisfy canonical metadata validation"
+            )
+
+        status_ownership = _profile_field_ownership(selected_profile, "status", label)
+        for status_field in ("status_before", "status_after"):
+            status = entry.get(status_field)
+            if status is None:
+                if status_ownership == "required":
+                    raise ProfileError(
+                        f"{label} {status_field} is required by the selected metadata profile"
+                    )
+            elif status_ownership == "forbidden":
+                raise ProfileError(
+                    f"{label} {status_field} is forbidden by the selected metadata profile"
+                )
+            elif not isinstance(status, str) or status not in allowed_statuses:
+                raise ProfileError(f"{label} {status_field} must be registered")
+
+        _deterministic_string_list(entry.get("parent_ids"), f"{label} parent_ids")
+        _deterministic_string_list(
+            entry.get("active_consumers"),
+            f"{label} active_consumers",
+            safe_paths=True,
+        )
+
+        replacement = entry.get("canonical_replacement")
+        if replacement is not None:
+            _non_empty_string(replacement, f"{label} canonical_replacement")
+        if disposition in replacement_required and replacement is None:
+            raise ProfileError(f"{label} canonical_replacement is required")
+        if disposition in replacement_forbidden and replacement is not None:
+            raise ProfileError(f"{label} canonical_replacement must be null")
+        if disposition not in replacement_required | replacement_optional | replacement_forbidden:
+            raise ProfileError(f"{label} disposition lacks replacement semantics")
+
+        partition_plan = entry.get("partition_plan")
+        if partition_plan is not None and (
+            not _safe_contract_path(partition_plan)
+            or not isinstance(partition_plan, str)
+            or not partition_plan.startswith("docs/04.execution/plans/")
+            or not partition_plan.endswith(".md")
+        ):
+            raise ProfileError(f"{label} partition_plan must be a safe approved Plan path")
+
+        preservation_class = entry.get("preservation_class")
+        if preservation_class is not None and (
+            not isinstance(preservation_class, str)
+            or preservation_class not in preservation_classes
+        ):
+            raise ProfileError(f"{label} preservation_class must be registered")
+
+        evidence = _require_exact_mapping(
+            entry.get("evidence"), evidence_fields, f"{label} evidence"
+        )
+        evidence_lists = {
+            field: _deterministic_string_list(
+                evidence.get(field), f"{label} evidence.{field}"
+            )
+            for field in evidence_fields
+        }
+        review = _require_exact_mapping(
+            entry.get("review_verdict"), review_fields, f"{label} review_verdict"
+        )
+        for field in review_fields:
+            verdict = review.get(field)
+            if not isinstance(verdict, str) or verdict not in verdict_values:
+                raise ProfileError(f"{label} review_verdict values must be registered")
+
+        if disposition in destructive:
+            if preservation_class is None:
+                raise ProfileError(f"{label} destructive row requires preservation_class")
+            if not evidence_lists["consumer_scan"]:
+                raise ProfileError(f"{label} consumer enumeration requires scan evidence")
+            if any(not evidence_lists[field] for field in evidence_fields):
+                raise ProfileError(f"{label} destructive evidence lists must not be empty")
+            if review != {"specification": "pass", "quality": "pass"}:
+                raise ProfileError(f"{label} destructive row requires pass/pass review")
+
+    if source_paths != sorted(source_paths) or len(source_paths) != len(set(source_paths)):
+        raise ProfileError("manifest entries must be uniquely ordered by source_path")
+
+
+def validate_static_exception_document(
+    document: object,
+    contract: Mapping[str, object],
+    known_finding_codes: Sequence[str] | set[str] | frozenset[str],
+    validation_date: dt.date,
+) -> None:
+    """Validate bounded exceptions without reading repository or payload bytes."""
+
+    if contract.get("exception_schema") != EXPECTED_EXCEPTION_SCHEMA:
+        raise ProfileError("exception contract must use the exact bounded schema")
+    if isinstance(validation_date, dt.datetime) or not isinstance(validation_date, dt.date):
+        raise ProfileError("exception validation_date must be a date")
+    known_codes = set(known_finding_codes)
+    if not known_codes or not all(isinstance(code, str) and code for code in known_codes):
+        raise ProfileError("known finding codes must be a non-empty string set")
+
+    exception_document = _require_exact_mapping(
+        document,
+        EXPECTED_EXCEPTION_SCHEMA["top_level_fields"],
+        "exception document",
+    )
+    if (
+        type(exception_document.get("schema_version")) is not int
+        or exception_document.get("schema_version") != 1
+    ):
+        raise ProfileError("exception schema_version must be the integer 1")
+    exceptions = exception_document.get("exceptions")
+    if not isinstance(exceptions, list):
+        raise ProfileError("exceptions must be a list")
+
+    bounded = EXPECTED_EXCEPTION_SCHEMA["bounded_semantics"]
+    global_scopes = set(bounded["forbid_global_scopes"])
+    ordering_keys: list[tuple[str, tuple[str, ...]]] = []
+    for index, raw_exception in enumerate(exceptions):
+        label = f"exception {index}"
+        exception = _require_exact_mapping(
+            raw_exception,
+            EXPECTED_EXCEPTION_SCHEMA["entry_fields"],
+            label,
+        )
+        finding_code = _non_empty_string(exception.get("finding_code"), f"{label} finding_code")
+        if finding_code in global_scopes or finding_code not in known_codes:
+            raise ProfileError(f"{label} finding_code must be a known specific code")
+
+        scope_paths = _deterministic_string_list(
+            exception.get("scope_paths"),
+            f"{label} scope_paths",
+            require_non_empty=True,
+            safe_paths=True,
+        )
+        if any(path.lower() in global_scopes for path in scope_paths):
+            raise ProfileError(f"{label} scope_paths must not be global")
+        ordering_keys.append((finding_code, tuple(scope_paths)))
+
+        for field in bounded["require_non_empty_text"]:
+            _non_empty_string(exception.get(field), f"{label} {field}")
+
+        approved_at = exception.get("approved_at")
+        expires_on = exception.get("expires_on")
+        if not isinstance(approved_at, str) or not _valid_iso_date(approved_at):
+            raise ProfileError(f"{label} approved_at must be a strict ISO date")
+        if not isinstance(expires_on, str) or not _valid_iso_date(expires_on):
+            raise ProfileError(f"{label} expires_on must be a finite strict ISO date")
+        approved_date = dt.date.fromisoformat(approved_at)
+        expiry_date = dt.date.fromisoformat(expires_on)
+        if approved_date > validation_date:
+            raise ProfileError(f"{label} must already be approved")
+        if expiry_date <= validation_date or expiry_date <= approved_date:
+            raise ProfileError(f"{label} must be unexpired and time-bounded")
+
+        _deterministic_string_list(
+            exception.get("evidence"),
+            f"{label} evidence",
+            require_non_empty=True,
+            safe_paths=True,
+        )
+
+    if ordering_keys != sorted(ordering_keys) or len(ordering_keys) != len(set(ordering_keys)):
+        raise ProfileError("exceptions must be uniquely ordered by finding_code and scope_paths")
+
+
+def load_profiles(
+    path: pathlib.Path = DEFAULT_PROFILES,
+    migration_contract_path: pathlib.Path = DEFAULT_MIGRATION_CONTRACT,
+) -> dict[str, object]:
     """Load and structurally validate the typed metadata profile contract."""
 
     try:
@@ -1908,8 +3103,8 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
     if not isinstance(loaded, dict):
         raise ProfileError("profile document must be a mapping")
     schema_version = loaded.get("schema_version")
-    if type(schema_version) is not int or schema_version != 1:
-        raise ProfileError("schema_version must be the integer 1")
+    if type(schema_version) is not int or schema_version != 2:
+        raise ProfileError("schema_version must be the integer 2")
     common, profile_map = _profile_mapping(loaded)
     if not all(isinstance(name, str) for name in profile_map):
         raise ProfileError("profile names must be strings")
@@ -1955,6 +3150,25 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
             raise ProfileError("common.root_exceptions keys must be canonical target Markdown paths")
         if not isinstance(reason, str) or not reason.strip():
             raise ProfileError("common.root_exceptions reasons must be non-empty strings")
+    generated_outputs = common.get("generated_outputs")
+    if not isinstance(generated_outputs, dict) or not generated_outputs:
+        raise ProfileError("common.generated_outputs must be a non-empty exact-path-to-generator mapping")
+    for output_path, owner in generated_outputs.items():
+        normalized_output = (
+            _normalized_target_path(output_path) if isinstance(output_path, str) else None
+        )
+        if (
+            normalized_output is None
+            or normalized_output.name == "README.md"
+            or any(character in output_path for character in "*?[]")
+        ):
+            raise ProfileError(
+                "common.generated_outputs keys must be exact canonical non-README target Markdown paths"
+            )
+        if not _safe_repo_path(owner, "scripts/"):
+            raise ProfileError(
+                "common.generated_outputs values must be safe canonical scripts/ generator paths"
+            )
     allowed_statuses = set(common_lists["allowed_statuses"])
     terminal_statuses = set(common_lists["terminal_statuses"])
     if not terminal_statuses <= allowed_statuses:
@@ -1979,6 +3193,25 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
     for name, raw_profile in sorted(profile_map.items()):
         if not isinstance(raw_profile, dict):
             raise ProfileError(f"profile {name} must be a mapping")
+        if name == "archive":
+            archive_profile_keys = {
+                "required",
+                "optional",
+                "forbidden",
+                "allowed_statuses",
+                "allowed_parent_types",
+                "allow_empty_parents",
+                "disposition",
+                "conditions",
+            }
+            if set(raw_profile) != archive_profile_keys:
+                raise ProfileError("profile archive must define the exact v2 contract members")
+            if tuple(raw_profile.get("required", ())) != EXPECTED_ARCHIVE_REQUIRED:
+                raise ProfileError("profile archive required must define the exact v2 fields")
+            if tuple(raw_profile.get("optional", ())) != EXPECTED_ARCHIVE_OPTIONAL:
+                raise ProfileError("profile archive optional must define the exact v2 fields")
+            if raw_profile.get("conditions") != EXPECTED_ARCHIVE_CONDITIONS:
+                raise ProfileError("profile archive conditions must define the exact v2 rules")
         required = raw_profile.get("required")
         optional = raw_profile.get("optional")
         forbidden = raw_profile.get("forbidden")
@@ -2178,6 +3411,7 @@ def load_profiles(path: pathlib.Path = DEFAULT_PROFILES) -> dict[str, object]:
             heading_sets.append(set(headings))
         if any(heading_sets[left] & heading_sets[right] for left, right in ((0, 1), (0, 2), (1, 2))):
             raise ProfileError(f"template role {role_name} heading contracts must not overlap")
+    load_migration_contract(migration_contract_path)
     return loaded
 
 
@@ -2647,6 +3881,7 @@ def _record_from_text(
     relative_path: pathlib.Path,
     text: str,
     previous_status: str | None = None,
+    profiles: Mapping[str, object] | None = None,
 ) -> Record:
     lines = text.splitlines()
     frontmatter_present = bool(lines and lines[0].strip() == "---")
@@ -2658,7 +3893,11 @@ def _record_from_text(
         values = {}
         parse_error = str(error)
         parse_error_code = error.code
-    artifact_type = "generated" if "generated_by" in values else infer_artifact_type(relative_path)
+    artifact_type = (
+        "generated"
+        if "generated_by" in values
+        else infer_artifact_type(relative_path, profiles)
+    )
     return Record(
         relative_path,
         values,
@@ -2706,12 +3945,13 @@ def collect_records_at_ref(
         )
         if shown.returncode != 0:
             raise ProfileError(f"cannot read base Markdown record: {relative_path.as_posix()}")
-        records.append(_record_from_text(relative_path, shown.stdout))
+        records.append(_record_from_text(relative_path, shown.stdout, profiles=profiles))
     return records
 
 
 def collect_selected_records_at_ref(
     root: pathlib.Path,
+    profiles: dict[str, object],
     selected_paths: Sequence[str],
     ref: str,
 ) -> dict[str, Record]:
@@ -2729,7 +3969,11 @@ def collect_selected_records_at_ref(
             text=True,
         )
         if shown.returncode == 0:
-            records[relative_path.as_posix()] = _record_from_text(relative_path, shown.stdout)
+            records[relative_path.as_posix()] = _record_from_text(
+                relative_path,
+                shown.stdout,
+                profiles=profiles,
+            )
     return records
 
 
@@ -2764,7 +4008,7 @@ def collect_records(
                 Record(
                     relative_path,
                     {},
-                    infer_artifact_type(relative_path),
+                    infer_artifact_type(relative_path, profiles),
                     parse_error=f"cannot read UTF-8 Markdown: {error}",
                     parse_error_code="malformed-yaml",
                 )
@@ -2776,7 +4020,14 @@ def collect_records(
             if previous_record and isinstance(previous_record.metadata.get("status"), str)
             else _previous_status(root, relative_path, base_ref)
         )
-        records.append(_record_from_text(relative_path, text, previous_status=previous_status))
+        records.append(
+            _record_from_text(
+                relative_path,
+                text,
+                previous_status=previous_status,
+                profiles=profiles,
+            )
+        )
     return records
 
 
@@ -3065,7 +4316,10 @@ def _exception_context(record: Record, codes: set[str], profiles: dict[str, obje
         consumer = declared_consumer if isinstance(declared_consumer, str) and declared_consumer else "not-declared"
         return f"README profile={profile_name}; consumer={consumer}; role=folder-index"
     if record.artifact_type == "generated":
-        owner = record.metadata.get("generated_by")
+        owner = record.metadata.get("generated_by") or registered_generated_owner(
+            record.path,
+            profiles,
+        )
         rendered = owner if isinstance(owner, str) and "invalid-generator" not in codes else "invalid-or-missing"
         return f"generated profile; owner={rendered}"
     if record.artifact_type in {"template-source", "governance", "archive", "unsupported"}:
@@ -3404,6 +4658,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         try:
             head_records_by_path = collect_selected_records_at_ref(
                 root,
+                profiles,
                 changed_selection,
                 "HEAD",
             )

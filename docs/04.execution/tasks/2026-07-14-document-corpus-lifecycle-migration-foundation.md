@@ -1,0 +1,856 @@
+---
+status: completed
+artifact_id: task:2026-07-14-document-corpus-lifecycle-migration-foundation
+artifact_type: task
+parent_ids:
+  - plan:2026-07-14-document-corpus-lifecycle-migration-foundation
+---
+
+# Task: Document Corpus Lifecycle Migration Foundation
+
+## Overview
+
+This Task is the durable execution ledger for Spec 131 and its six-unit
+Foundation Plan. It records the approved baseline, bounded file responsibility,
+fresh-agent assignments, RED/GREEN commands, independent reviews, logical
+commits, generated evidence, controlled all-files result, and final closure.
+
+Planning evidence was created on branch
+codex/document-corpus-lifecycle-migration in linked worktree
+.worktrees/document-corpus-lifecycle-migration. All six Foundation work units,
+their independent reviews, and the pre-closure controlled wrapper are complete;
+the post-closure wrapper remains a non-mutating final handoff gate.
+
+## Inputs
+
+- Spec: docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+- Plan: docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
+- Approved baseline: e00e1483
+- Foundation work units: T-DCLM-001 through T-DCLM-006
+- Current canonical audit:
+  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md
+- Machine metadata owner:
+  docs/99.templates/support/document-metadata-profiles.yaml
+- Controlled QA owner:
+  scripts/validation/run-agent-precommit-all-files.sh
+
+## Goals and Non-goals
+
+Goals:
+
+- establish the migration, archive, retention, manifest, directory-budget, and
+  review-signal control plane;
+- add tested metadata and lifecycle validators with deterministic safe output;
+- align Stage 00, Stage 98, Stage 99, local QA, and tracked CI definitions;
+- publish the approved Foundation manifest and generated evidence;
+- close with independent task and whole-branch reviews plus controlled
+  all-files evidence.
+
+Non-goals:
+
+- migrate the active, operations, historical, archive, reference, generated,
+  or README corpus;
+- move Stage 04 leaves into year partitions;
+- create immutable snapshot payloads;
+- change Compose, infrastructure, deployment, secrets, provider-global
+  settings, model policy, remote GitHub state, releases, or environments.
+
+## Scope and Change Boundaries
+
+Allowed authored paths:
+
+- docs/00.agent-governance rules and progress memory directly required by
+  Foundation;
+- Spec 131 and its Stage 03 routing;
+- this Plan, this Task, and existing Stage 04 routing;
+- docs/90.references data/governance lifecycle evidence, canonical generated
+  outputs, and routing;
+- docs/98.archive/README.md only;
+- Stage 99 support contracts and the common archive template;
+- .github/workflows/document-corpus-lifecycle.yml;
+- .pre-commit-config.yaml existing repo-contract routing only;
+- scripts/README.md and Foundation validation/QA scripts;
+- tests/validation focused Foundation tests.
+
+Prohibited paths and actions:
+
+- existing Stage 01 through Stage 05 corpus leaves;
+- all 20 existing Stage 98 tombstones and any archive snapshot payload;
+- broad Stage 90 authored corpus rewrites;
+- _workspace diagnostics, local logs, auth files, tokens, credentials, private
+  keys, shell history, raw logs, or secret values;
+- runtime Compose, infra, deployment, environment, release, provider-global,
+  or remote GitHub mutation;
+- direct pre-commit run --all-files, --no-verify, history rewriting, or
+  destructive Git cleanup.
+
+Compose impact: none.
+
+Security impact: validation and redaction hardening only. No credential,
+secret-store, identity, network, runtime policy, or security-resource change.
+
+Operations impact: documentation lifecycle governance only. No service,
+incident, release, deployment, or on-call behavior changes.
+
+Runtime impact: none. The tracked workflow is read-only quality automation and
+does not deploy or mutate third-party state.
+
+## Approval Evidence
+
+Approval source:
+
+- The user approved the hybrid archive model: provenance tombstone plus
+  immutable Git commit/blob by default, with checksum-backed full snapshots
+  only for audit, legal, or evidence-preserve cases.
+- The user approved the six-package program and explicitly instructed
+  continued implementation.
+- The user approved Subagent-Driven execution with a fresh implementation agent
+  and separate review agents.
+
+Protected surfaces:
+
+- Stage 00 and Stage 99 contracts may be changed within the approved
+  Foundation scope.
+- Existing archive tombstones, snapshot payloads, runtime surfaces, secrets,
+  provider-global configuration, and remote GitHub state remain protected.
+
+Approval boundary:
+
+- Foundation contracts, validators, tests, local QA routing, and tracked
+  read-only workflow definitions are authorized.
+- Later Waves A through E, snapshot admission, runtime work, and remote
+  mutation require their own approved Spec or explicit user approval.
+- Local merge to main is excluded until finishing and separate user approval.
+
+Rollback or recovery:
+
+- Revert one logical Foundation task commit range in reverse order.
+- Regenerate only derived outputs owned by the reverted task.
+- Never use git reset --hard or rewrite branch history.
+
+Redaction boundary:
+
+- Evidence records commands, exit codes, stable finding codes, bounded paths,
+  counts, and Git object identities.
+- It never records body payloads, snapshot bytes, secret values, tokens,
+  credentials, auth files, private keys, shell history, or raw logs.
+
+## Work Breakdown
+
+| Work unit | Responsibility | State |
+| --- | --- | --- |
+| T-DCLM-001 | Machine migration contract and static archive metadata | Complete — final Spec PASS and Quality PASS with Critical 0, Important 0, Minor 0 |
+| T-DCLM-002 | Lifecycle companion, Git provenance, deterministic data | Complete — final range `9126a0aa..9fe234f6`; terminal Spec PASS and Quality retry PASS, each with Critical 0, Important 0, and Minor 1. The sole deferred Minor is behavior-preserving decomposition of the monolithic dispatcher. |
+| T-DCLM-003 | Human contracts, archive template, Stage 98/00 routing | Complete — reviewed range `133b3daa..160ff097`; terminal Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 0 |
+| T-DCLM-004 | Repository contracts, local QA, tracked workflow | Complete — final reviewed range `1b42a100..46e3ff5e`; terminal Spec PASS and Quality PASS each returned Critical 0, Important 0, Minor 0; I-Q01 mutation closure is confirmed |
+| T-DCLM-005 | Foundation manifest and generated evidence | Complete — post-promotion Spec and Quality reviews both returned APPROVED C0/I0/M0 at full commit `b3f8c5cb09366cdf045e9f595c9622a521807f71`. Foundation remains blocking with 24/24 `pass`/`pass` rows and the exact Stage 90 manifest route; later waves remain advisory with null manifest paths. Manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. |
+| T-DCLM-006 | Full QA, wrapper, whole-branch review, closure | Complete — whole-branch Spec PASS and Quality PASS C0/I0/M0 at `63865ec601bb19aeb052ef8ffd1b213738c22ad2`; pre-closure wrapper passed with empty path sets |
+
+## Work Log
+
+| Date | Work unit | Agent role | Result |
+| --- | --- | --- | --- |
+| 2026-07-14 | Planning | Controller | Spec 131 approved and activated; Plan and Task evidence shell authored. |
+| 2026-07-14 | T-DCLM-001 | Fresh implementation agent | Added the exact migration registry, metadata registry v2, fail-closed static archive validation, and RED/GREEN coverage. The authored scope is the Task 1 file set plus `docs/00.agent-governance/memory/progress.md`, included as a documented deviation because the root `AGENTS.md` bootstrap makes progress updates mandatory. Self-review passed; subsequent rows record the independent reviews and remediation. |
+| 2026-07-14 | T-DCLM-001 generated fallout | Fresh implementation agent | The first repository-contract run found only the canonical frontmatter semantic inventory stale after registry v2. The controller approved regenerating that owner in the Task 1 generated follow-up together with any LLM Wiki/index coverage fallout; this is a scoped deviation from the brief's two-file generated follow-up list, not broad corpus mutation. |
+| 2026-07-14 | T-DCLM-001 specification-review remediation | Fresh implementation agent | Resolved specification findings I-01 and I-02 by machine-declaring exact manifest types, nullability, domains, deterministic ordering, destructive execution prerequisites, and bounded exception semantics. Added static synthetic validation without Git lookup, snapshot-byte access, or a repository exception file. Subsequent independent review confirmed both findings closed. |
+| 2026-07-14 | T-DCLM-001 specification re-review remediation | Fresh implementation agent | Resolved I-03 by deriving artifact-ID/status nullability from the selected metadata profile and reusing the canonical non-empty artifact-ID value rule. The `readme` profile proves the declared exception path, while `reference` proves `exempt` cannot bypass required identity/status. No Git lookup or snapshot-byte access was added. |
+| 2026-07-14 | T-DCLM-001 quality-review remediation | Fresh implementation agent | Resolved I-Q01 and I-Q02 by sharing the contract-owned immutable-snapshot disposition allowlist with static archive validation and scalar-guarding both archive selectors before conditional membership. Added value-free admission findings, list/mapping regressions for both selectors, and a changed/new CLI no-traceback regression. |
+| 2026-07-14 | T-DCLM-001 final independent reviews | Fresh specification and quality reviewers | The complete range `afc51b29..e9db5afb` received Spec PASS with Critical 0 and Important 0 and Quality PASS with Critical 0, Important 0, and Minor 0. I-01/I-02/I-03 and I-Q01/I-Q02 are closed; T-DCLM-001 is complete and T-DCLM-002 is clear to proceed. |
+| 2026-07-14 | T-DCLM-002 | Fresh implementation agent | Added the focused lifecycle companion and 22-test suite through strict RED/GREEN. The companion reuses the canonical metadata module without repurposing its `Manifest` type; implements the fixed 16-mode CLI, immutable manifest data contracts, exact YAML load/render, promoted-wave enforcement, introduced-only impact validation, Git commit/blob/path and snapshot SHA-256 provenance, value-free confidentiality findings, duplicate candidates, review signals, 100/150 budgets, bounded exceptions, and deterministic summary/ledger/snapshot interfaces. Self-review PASS; no corpus leaf, existing tombstone, snapshot payload, exception file, runtime, workflow, secret, provider, or remote state changed. |
+| 2026-07-14 | T-DCLM-002 generated fallout | Fresh implementation agent | Staged only the new script and test for Git-backed discovery, then ran the four Task 2 canonical owners in the approved order. Only owner-produced changed files are eligible for the separate generated commit; exact freshness results are recorded below. |
+| 2026-07-14 | T-DCLM-002 review remediation | Fresh remediation agent | Resolved all seven Important specification findings, all five Important quality findings, and both Minor quality findings from the first independent reviews. The companion now validates CLI shape before metadata-module execution, delegates static manifest/exception grammar to the Task 1 canonical validators, processes NUL-delimited deletion/rename evidence and every direct relation class, binds manifest rows to baseline and result truth, preserves unsuppressible explicit safety classes, blocks all remaining `check-full` findings, redacts every declared payload class, reads tracked manifest/snapshot inputs through no-follow directory descriptors, preserves Unicode title identity, and proves all 16 modes through shape, success/write, and exit-class matrices. No Task 3, workflow, runtime, corpus migration, existing tombstone, snapshot payload, secret, provider, or remote surface changed. |
+| 2026-07-14 | T-DCLM-002 specification re-review remediation | Fresh remediation agent | The fresh complete-range specification re-review closed I-01 through I-07 and identified I-08: explicit candidate modes incorrectly required a manifest to be staged before the Plan-authorized validation step. Added separate no-follow in-root candidate loading and canonical-byte comparison without the promoted-manifest tracked-file precondition. Real subprocess regressions prove `check-manifest`, `generate-summary`, and `check-summary` accept a safe untracked candidate before staging while all three reject symlink, traversal, and out-of-root candidates without output mutation. Promoted and impacted manifest consumption remains tracked-only. |
+| 2026-07-14 | T-DCLM-002 final-review remediation | Fresh remediation and takeover-finisher agents | Resolved final specification I-09 and quality I-FQ01 through I-FQ03. Lifecycle corpus discovery now enumerates tracked regular Markdown blobs, preflights every path component without symlink following, snapshots safe bytes once, and reuses those bytes for link and duplicate inspection. Archive rows bind the original source profile to a canonical validated Stage 98 archive target while preserving stable identity, provenance, replacement, preservation, evidence, and pass/pass review requirements. Directory-budget approval now requires a real tracked regular canonical Plan with active/completed state and pass/pass manifest reviews; missing, untracked, symlinked, wrong-profile, draft, and unreviewed references remain blocked. The companion and focused tests were committed as `eb52185c`; no corpus leaf, tombstone payload, workflow, runtime, provider, secret, or remote surface changed. |
+| 2026-07-14 | T-DCLM-002 closure-review remediation | Fresh remediation agent | Resolved closure specification I-09-R1/I-10/I-11, closure quality I-CQ01 through I-CQ05, and M-CQ02. `check-impacted` now admits safe untracked typed Markdown into the same no-follow held snapshot and applies pre-stage 149/150 budgets; diagnostic and generated-output boundaries never forward metadata payloads; archive admission binds the manifest baseline blob, dynamic disposition replacement semantics, and one tracked canonical replacement; partition approval validates canonical Plan metadata, relationships, serialization order, placeholders, and body role. Generated Markdown tables escape control and pipe characters. No Task 3, corpus leaf, existing tombstone, archive payload, exception, workflow, runtime, provider, secret, or remote surface changed. |
+| 2026-07-14 | T-DCLM-002 final acceptance remediation | Fresh remediation agent | Resolved specification I-12 and quality I-AQ01 through I-AQ04. Real `check-impacted` now omits only index-owned Markdown paths proven absent by the current unstaged delete/rename state while retaining old paths as relation triggers and new rename paths as current records; unsafe modes, symlinks, non-regular paths, malformed Git output, and unexpected I/O remain fail-closed. Every top-level corpus safety path is sanitized before output. Merge replacements resolve uniquely to the tracked canonical merge result by path or artifact ID; optional delete replacements receive the same canonical proof. Archive result relations validate against one held full current/result manifest, including all multi-row result targets, without suppressing missing, self, wrong-type, ordering, cycle, or supersession-state findings. Commit `9bea953b` changes only the lifecycle companion and focused tests; no Task 3, corpus leaf, existing tombstone, archive payload, workflow, runtime, provider, secret, or remote surface changed. |
+| 2026-07-14 | T-DCLM-002 release-gate remediation | Fresh remediation agent | Resolved specification I-13 and quality I-RQ01 in commit `6c33c66c`. A merge row remains bound to removed baseline source A while its uniquely resolved held tracked target retains canonical identity B; target path, profile, body, lifecycle state, current bytes, and pre-existing baseline identity are attested without weakening non-merge identity checks. All five writers and three paired checkers now share descriptor-relative no-follow traversal, reject final/intermediate symlinks and non-regular entries with exit 3, admit normal absolute temporary paths, compare held regular bytes, and publish LF bytes through same-directory atomic replacement. Deterministic swap and interrupted-write regressions prove victim preservation, no redirected creation, no partial publication, and temporary-file cleanup. No Task 3, corpus leaf, tombstone, archive payload, workflow, runtime, provider, secret, or remote surface changed. |
+| 2026-07-14 | T-DCLM-002 final release-quality remediation | Fresh remediation agent | Resolved I-FRQ01 in `8001a95c` through strict RED/GREEN. A resolved merge target whose stable identity B differs from baseline source A must map to exactly one baseline owner; that owner must preserve canonical ID, inferred and declared type, and lifecycle truth at the current result, or be represented by exactly one same-wave move/merge attestation to that result. Real Git regressions reject a B created only after baseline, both path and ID replacement forms, a baseline duplicate B removed before result, and a wrong-profile baseline B corrected only after baseline. Existing pre-baseline distinct-ID path/ID replacements, an explicitly attested same-wave B move, and same-ID new-target consolidation remain valid. Focused 6/6 and combined lifecycle/metadata 262/262 passed; live, four generated-owner, and repository gates passed. Graphify refreshed to 23,999 nodes / 26,386 edges / 1,561 communities, remained advisory for two unrelated inferred edges and generic graph noise, and was corroborated against tracked Stage 00/03/04/99 and executable owners before restoration. No public API, Task 3 surface, corpus leaf, tombstone, archive payload, workflow, runtime, provider, secret, or remote surface changed. |
+| 2026-07-14 | T-DCLM-002 sign-off remediation | Fresh remediation agent | Resolved specification I-FRQ01-R1 and quality I-SQ01/I-SQ02 in `1c9ef624` through strict RED/GREEN. Exact baseline owner paths now require mode `100644` or `100755`, object type `blob`, an exact UTF-8 path match, a full object ID, and blob re-verification before ownership can authorize a distinct-ID merge. A changed same-path owner requires exactly one `migrate` peer with exact source/target/ID/type/status binding, a canonical transition, pass/pass reviews, complete evidence, and no replacement; moved-owner attestations retain their existing `move`/`merge` behavior under the same review/evidence boundary. Real Git fixtures cover parseable `120000` metadata, synthetic `160000`, tree/missing paths, regular modes, path/ID replacements, valid `active` to `completed`, missing/duplicate/wrong/incomplete peers, and reverse transition. No public API, Task 3 surface, corpus leaf, tombstone, archive payload, workflow, runtime, provider, secret, or remote surface changed. |
+| 2026-07-14 | T-DCLM-002 terminal independent reviews | Fresh specification reviewer and separate quality retry reviewer | The complete range `9126a0aa..9fe234f6` received Spec PASS with Critical 0, Important 0, and Minor 1 and Quality retry PASS with Critical 0, Important 0, and Minor 1. Every prior Critical/Important gate is closed. Both reviewers retained only the same non-blocking recommendation to decompose the monolithic lifecycle dispatcher in a later behavior-preserving package with characterization/equivalence tests. T-DCLM-002 is complete and T-DCLM-003 is unblocked. |
+| 2026-07-14 | T-DCLM-003 | Fresh implementation agent | Added the sole human owners for corpus migration and archive/retention, routed Stage 00, Stage 98, and Stage 99 consumers to those owners, aligned the archive template and its machine heading envelope, removed only the exact archive-template transitional source exemption, and added RED/GREEN contract coverage. The machine registry edit is a direct archive-template envelope alignment required to remove that exemption. Self-review PASS; subsequent rows record the independent reviews and remediation. No corpus leaf, existing tombstone, archive evidence payload, Foundation manifest, exception file, workflow, runtime, provider, secret, remote resource, or Task 4 surface changed. |
+| 2026-07-14 | T-DCLM-003 generated fallout | Fresh implementation agent | Staged only the two new human-owner paths for Git-backed discovery and ran the three canonical Task 3 owners. The LLM Wiki index, coverage snapshot, and frontmatter semantic inventory changed only to index the two new governance records; freshness and deterministic rerun checks passed. |
+| 2026-07-14 | T-DCLM-003 first independent reviews | Fresh specification and quality reviewers | Specification FAIL with Critical 0, Important 2, Minor 0 found parallel legacy classification algorithms in non-owner contracts and a contradictory Stage 98 synopsis. Quality FAIL with Critical 0, Important 1, Minor 0 found six new archive literals and seven source fields outside canonical placeholder ownership, allowing `<snapshot-reason>` to survive target validation. Task 4 remained blocked. |
+| 2026-07-14 | T-DCLM-003 first-review remediation | Fresh implementation agent | Removed legacy disposition tables/enums and conditional rules from non-owner frontmatter/status contracts while preserving their narrow key/status responsibilities; routed decisions to the sole owners and registries. Rewrote only the Stage 98 README synopsis/scope around full typed provenance, preservation, and disposition-conditional relations. Registered every archive source field placeholder, enforced canonical values for required and optional source fields, and made every new literal fail target validation through one value-free finding. Self-review PASS; all three canonical owners regenerated with no diff. The subsequent re-reviews confirmed I-01/I-02/I-Q01 closed and identified the final router gaps recorded below. |
+| 2026-07-15 | T-DCLM-003 final independent re-reviews | Fresh specification and quality reviewers | Final specification re-review FAIL with Critical 0, Important 1, Minor 0 found the Stage 99 support catalog still assigning disposition ownership to template governance (I-03). Final quality re-review FAIL with Critical 0, Important 1, Minor 0 found both stale support-catalog roles and the unsynchronized `docs/README.md` Stage 98 parent router (I-Q02). Prior I-01/I-02/I-Q01 were confirmed closed; Task 4 remained blocked. |
+| 2026-07-15 | T-DCLM-003 final-router remediation | Fresh implementation agent | Narrowed the support catalog so Template Governance owns only template-change workflow/protected surfaces/approval and commit boundaries, while Lifecycle Status owns only human status vocabulary/interpretation; executable semantics route to the sole human owners and metadata registry/checker. Synchronized all existing Stage 98 parent-router locations in `docs/README.md` with manifest-first validated results, full typed provenance/preservation, disposition-conditional replacement, safe provenance/confidentiality, rollback, and independent reviews. Added focused owner-role and parent-router regressions. Self-review PASS; terminal independent re-reviews passed as recorded below. |
+| 2026-07-15 | T-DCLM-003 terminal independent reviews | Fresh specification and separate quality reviewers | The complete authored range `133b3daa..160ff097` received Spec PASS with Critical 0, Important 0, and Minor 0 and Quality PASS with Critical 0, Important 0, and Minor 0. I-01/I-02/I-03 and I-Q01/I-Q02 are closed; T-DCLM-003 is complete and T-DCLM-004 is unblocked. |
+| 2026-07-15 | T-DCLM-004 | Fresh implementation agent | Commit `35b07486` extended the existing `repo-contracts` owner through strict RED/GREEN, added the exact read-only scheduled/manual lifecycle workflow, expanded only the existing repo-contracts pre-push selector, routed lifecycle checks through recommendation and local QA owners, registered the companion, and documented tracked-definition versus remote-state boundaries. Preserved all `ci-quality.yml` job IDs and local required-check names. Self-review PASS; independent reviews remain pending. No workflow dispatch, push, remote GitHub mutation, corpus migration, archive payload, manifest promotion, runtime, secret, provider, or Task 5 surface changed. |
+| 2026-07-15 | T-DCLM-004 generated fallout | Fresh implementation agent | Staged only the new workflow for Git-backed discovery and ran the four canonical Task 4 owners in order. Commit `ea2ffd88` records the security readiness, LLM Wiki index, and LLM Wiki coverage changes for the seventh tracked workflow and its path/category counts; the audit implementation matrix produced no diff. All four check modes passed. |
+| 2026-07-15 | T-DCLM-004 independent reviews | Fresh specification and separate quality reviewers | The complete handoff range `1b42a100..918b9a3b` received Spec PASS and Quality PASS, each with Critical 0, Important 0, and Minor 1. Both reviewers identified the same non-blocking gap: local `--list` omitted three generated freshness gates that both executable modes run, and repository assertions did not prove advertised/executed parity. All workflow, lifecycle, pre-push, generated, required-check, and protected-scope boundaries passed. |
+| 2026-07-15 | T-DCLM-004 review remediation | Fresh implementation agent | Commit `9c4998d6` closed the shared Minor through strict RED/GREEN. The repository contract first failed only on incomplete generated freshness enumeration and list/execution mismatch, then the local inventory was aligned to the exact four executed commands and the contract was made to compare approved, listed, and executed sequences. Bash syntax, focused recommendation, all four freshness checks, diff hygiene, and repository contracts passed. No workflow, remote boundary, runtime, generated output, corpus, manifest, archive, secret, provider, or Task 5 surface changed. |
+| 2026-07-15 | T-DCLM-004 terminal quality review | Fresh terminal quality reviewer | The complete range `1b42a100..11ff5edb` returned FAIL with Critical 0, Important 1, and Minor 0. I-Q01 found that the repository contract parsed the generated helper body but did not prove either executable local-QA mode reached it, and per-surface recommendation checks required only the three lifecycle commands rather than all four generated freshness commands. Current behavior and all workflow/protected boundaries remained correct; Task 5 stayed blocked. |
+| 2026-07-15 | T-DCLM-004 terminal-quality remediation | Fresh implementation agent | Commit `25ace7f5` resolved I-Q01 through strict mutation RED/GREEN. Removing the harness helper call and Wiki coverage recommendation produced eight per-surface recommendation failures plus one harness reachability failure and aggregate exit 1. GREEN requires all seven lifecycle/generated commands for each of the eight owned surfaces and exactly one generated-helper invocation from each script-backed/harness function. Bash syntax, list, focused recommendation, four freshness checks, repository contracts, diff hygiene, and Graphify corroboration passed. No workflow, generated output, runtime, remote, corpus, tombstone, manifest, archive, secret, provider, or Task 5 surface changed. Terminal quality re-review is pending. |
+| 2026-07-15 | T-DCLM-004 terminal independent re-reviews | Fresh specification and separate quality reviewers | The complete final range `1b42a100..46e3ff5e` received terminal Spec PASS and terminal Quality PASS, each with Critical 0, Important 0, and Minor 0. Both reviewers independently confirmed I-Q01 closed: all seven lifecycle/generated recommendations are required for each of eight owned surfaces, and both executable local modes must reach the four-command generated helper exactly once. Task 4 is complete; Task 5 remains unstarted. |
+| 2026-07-15 | T-DCLM-005 pre-publication blocker remediation | Fresh bounded remediation agent | Commit `d78676dd` closes the lifecycle validator defect discovered before Foundation manifest publication. Strict RED proved `generate-manifest` copied the canonical template-source `<artifact-id>` placeholder into the row. The shared skeleton/baseline/result identity projection now maps only that exact template-source placeholder to YAML null, while a concrete template-source identity remains visible to static validation and produces baseline/result mismatches if hidden. The real immutable baseline generated 24 rows, the archive template row was null, and candidate `check-manifest` passed. No Foundation manifest, summary, generated owner output, migration-contract promotion, tombstone, archive payload, runtime, workflow, provider, secret, remote state, or all-files QA changed. Task 5 remains paused for fresh independent specification and quality review of this bounded fix. |
+| 2026-07-15 | T-DCLM-005 blocker independent reviews | Fresh specification and separate quality reviewers | The bounded implementation range `5e7d33e5..d78676dd` received Spec PASS C0/I0/M0 and initial Quality PASS C0/I0/M1. Both reviews confirmed the production fix is narrow, consistent across skeleton/baseline/result attestation, and preserves concrete identity enforcement. Quality Minor M-Q01 requested automated narrowness coverage for a different template placeholder and for the canonical token on a non-template type. |
+| 2026-07-15 | T-DCLM-005 blocker quality-Minor remediation | Fresh bounded remediation agent | Test-only commit `fafc504f` adds both M-Q01 boundaries to the existing focused regression. A noncanonical template placeholder remains visible in the skeleton and fails static validation; exact `<artifact-id>` on an inferred `spec` remains unchanged. Production code is untouched. Focused 1/1, ManifestValidationTests 5/5, Python compile, lifecycle contract, and diff hygiene passed. No Foundation manifest/promotion, generated owner output, runtime, workflow, provider, secret, remote state, or all-files QA changed. Fresh quality re-review remains required before Task 5 resumes. |
+| 2026-07-15 | T-DCLM-005 blocker terminal closure | Fresh specification reviewer and separate quality re-reviewer | The full remediation implementation range `5e7d33e5..fafc504f` is closed with Spec PASS C0/I0/M0 and terminal Quality PASS C0/I0/M0. The prior Quality Minor is closed by the two automated narrowness cases in `fafc504f`. The pre-publication blocker no longer gates Task 5; Foundation manifest authoring may resume from the approved Plan. No implementation, canonical manifest/promotion, generated owner output, runtime, workflow, provider, secret, remote state, Task 6, or all-files QA changed in this closure step. |
+| 2026-07-15 | T-DCLM-005 metadata-classification blocker remediation | Fresh bounded metadata remediation agent | Commit `df169722` registers only the approved nested lifecycle README under the Stage 90 stage-index profile and only the exact `foundation-summary.md` path under its canonical lifecycle generator. Metadata, lifecycle, and repository-contract consumers now reuse that registry route, so the generator-owned summary is not forced through typed Reference frontmatter or body contracts. Strict RED reproduced one unclassified README plus five summary violations; focused GREEN passed 5/5, metadata passed 209/209, lifecycle passed 78/78, explicit-base metadata selected 34 with zero violations, and impacted lifecycle selected 302 with zero violations. Repository contracts reduced to one candidate-authored README wording finding (`## Category Role`), which is not a metadata routing or template-instruction defect and remains for the Task 5 implementer. The six candidate paths were preserved byte-for-byte and remain unstaged. No manifest promotion, generated-owner refresh, tombstone, runtime, remote, or all-files action occurred. |
+| 2026-07-15 | T-DCLM-005 metadata Quality-Minor remediation | Fresh bounded remediation agent | Test-only commit `487fb1b1` closes M-Q01 coverage by adding the exact generated-registry README-key mutation to the existing safe-path profile-schema test. The canonical loader already rejects generated output ownership for any `README.md`; production registry, validators, lifecycle, and repository-contract code are unchanged. Focused ProfileSchema GREEN passed 1/1, Python compile and diff hygiene passed, and all Task 5 candidate hashes/untracked state remained unchanged. Fresh quality re-review is required before Foundation authoring resumes. |
+| 2026-07-15 | T-DCLM-005 metadata blocker terminal closure | Fresh specification reviewer and separate quality re-reviewer | The implementation/test range `7fbfab3d..487fb1b1` received terminal Spec PASS C0/I0/M0 and Quality PASS C0/I0/M0. M-Q01 is closed, so Task 5 may resume authored Foundation baseline work. This closure changes evidence only: candidate bytes and untracked state remain unchanged, and no implementation, promotion, runtime, remote, or all-files action occurred. |
+| 2026-07-15 | T-DCLM-005 advisory Foundation baseline | Fresh implementation agent | Commit `f3f870fc` published the 24-row advisory manifest and routing with 23 `migrate` rows, one `preserve` row, pending reviews, and advisory enforcement; it excluded the generated summary. Commit `63829c10` then published the canonical summary plus the three changed downstream owners: Wiki index, Wiki coverage, and metadata inventory. Security readiness and audit matrix were byte-identical and omitted. No promotion, corpus leaf, tombstone, archive payload, runtime, workflow, provider, secret, remote state, Task 6, or all-files QA changed. |
+| 2026-07-15 | T-DCLM-005 advisory independent reviews | Fresh specification reviewer and separate quality reviewer | The exact package `cce4fcde..63829c10` returned Spec FAIL C0/I3/M0 and Quality FAIL C0/I2/M1. Shared Important findings identified false empty `active_consumers` and floating over-broad `e00e1483..HEAD` rollback. Specification I-S03 and Quality M-Q01 also found tracked and ignored handoff evidence stale after the generated commit. Foundation remains advisory with pending verdicts; promotion and Task 6 stay blocked. |
+| 2026-07-15 | T-DCLM-005 advisory review remediation | Fresh remediation agent | Commit `4e8d23f3` closes the reviewed evidence defects through a Foundation-only canonical NUL-safe active-root Git scan with exact result equality and immutable per-source rollback attestation. The manifest records 506 sorted direct-consumer memberships, no false empty list, full-hash evidence bounded to `63829c10d073817322f401d909d11e1b7dcb74ca`, and exact newest-to-oldest source-changing commits; only the unchanged preserve row has an empty rollback list. Focused negative/positive coverage, lifecycle 79/79, manifest, metadata, impacted, repository, traceability, alignment, and generated-owner checks pass. Canonical regeneration produced no diff, so no empty generated commit exists. Graphify was corroborated and restored. Fresh independent re-reviews remain pending. |
+| 2026-07-15 | T-DCLM-005 advisory terminal re-reviews | Fresh specification reviewer and separate quality reviewer | The complete package `cce4fcde..fa27247854777882822cac1e4b58784e42d05076` received Spec PASS C0/I0/M0 and Quality PASS C0/I0/M0. Both reviewers independently confirmed 24/24 canonical consumer lists with 506 memberships and zero mismatches, immutable per-source rollback with zero mismatches, and no floating `HEAD`. The quality review package SHA-256 is `e8c7e43997f5ffe48a8c77a0e3ade25454c9f8b99d05d24f03f68bf6e2491fef`. This approval authorizes only the Plan-defined Foundation promotion. |
+| 2026-07-15 | T-DCLM-005 Foundation promotion | Fresh implementation agent | Applied only the approved promotion boundary: all 24 manifest review verdicts are `pass`/`pass`, manifest enforcement is `blocking`, and the registry Foundation entry is `blocking` with exact path `docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml`. Every later wave remains `advisory` with a null manifest path. The canonical summary was regenerated. The tracked Task and mandatory Stage 00 progress log record the promotion; including `docs/00.agent-governance/memory/progress.md` is the sole documented Plan-surface deviation because the root `AGENTS.md` bootstrap requires progress updates. Final manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. No Task 6, all-files QA, remote, runtime, archive, snapshot, tombstone, corpus-leaf, workflow, provider, or secret action occurred. Explicit post-promotion Spec and Quality reapproval remains required. |
+| 2026-07-15 | T-DCLM-005 post-promotion terminal closure | Fresh specification reviewer and separate quality reviewer | Both reviewers evaluated full promotion commit `b3f8c5cb09366cdf045e9f595c9622a521807f71` and returned APPROVED C0/I0/M0. The committed manifest SHA-256 is `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`. T-DCLM-005 is complete. This closure changes evidence only; Task 6 has not started, and no test, implementation, generated output, promotion byte, runtime, remote, archive, snapshot, tombstone, workflow, provider, or secret changed. |
+| 2026-07-15 | T-DCLM-006 whole-branch review remediation | Fresh remediation agent | Closed the four Important findings from the first whole-branch review in two logical commits. `9c3fb049` restores the exact public skeleton signature, makes blocking/pass Foundation evidence complete and exact, and applies value-free confidentiality validation to every evidence list. `ae88ae62` updates only existing prose in the four Stage 90 lifecycle routers from reviewed advisory to reviewed blocking Foundation. Focused RED/GREEN, complete metadata/lifecycle suites, wrapper-unit coverage, production gates, generated-owner freshness, repository contracts, and Graphify corroboration pass. The actual all-files wrapper, closure statuses, runtime/remote/archive/later-wave changes, and merge were not performed; fresh whole-branch specification and quality re-reviews remain required. |
+| 2026-07-15 | T-DCLM-006 terminal whole-branch re-reviews | Fresh specification reviewer and separate quality reviewer | Both reviewers evaluated immutable base `e00e1483` through reviewed HEAD `63865ec601bb19aeb052ef8ffd1b213738c22ad2`. Specification returned PASS C0/I0/M0 and Quality returned PASS C0/I0/M0. Every prior Critical and Important finding is closed; no Minor deferral was recorded. |
+| 2026-07-15 | T-DCLM-006 pre-closure controlled wrapper | Controller | Ran the exact Plan Step 4 wrapper from a clean linked worktree. Wrapper and hook exited 0, snapshot comparison passed, and the Git-visible non-ignored before, after, hook-managed changed, and unexpected path sets were all empty. No hook edit required review or commit. |
+
+Each implementation row will record the fresh agent identity, exact bounded
+assignment, changed paths, self-review, deviations, and handoff. Reviewer rows
+will be separate from implementation rows.
+
+## Verification Evidence
+
+Planned exact command families:
+
+- metadata registry and changed/new checks;
+- focused metadata and lifecycle unittest suites;
+- Python compile and Bash syntax checks;
+- Foundation contract, manifest, provenance, budget, duplicate, and ledger
+  checks;
+- repository contracts, document traceability, and implementation alignment;
+- canonical security, audit-matrix, LLM Wiki, and metadata-inventory
+  generation/check modes;
+- Graphify refresh and advisory health corroboration;
+- controlled all-files wrapper from a clean linked worktree.
+
+Expected evidence:
+
+- RED before each behavior implementation and GREEN after;
+- zero Foundation blocking findings;
+- legacy full-corpus debt reported as advisory until Wave E;
+- deterministic write/check equality;
+- no payload leakage or unexpected changed path;
+- clean Git status after final closure.
+
+T-DCLM-001 actual evidence:
+
+- RED: `python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests tests.validation.test_document_metadata.MetadataValidationTests -v` ran 41 tests and failed with 25 expected assertion failures. The failures were limited to registry schema v2, the absent migration contract, archive enum/condition validation, object/hash/path shapes, and snapshot/replacement conditions.
+- Focused GREEN: the same command passed 41 of 41 tests.
+- Full GREEN: `python3 -m unittest tests.validation.test_document_metadata -v` passed 187 of 187 tests in 67.458 seconds.
+- Compatibility: `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref e00e1483` selected 10 paths with zero violations, zero legacy exceptions, and zero transition overrides.
+- Advisory baseline: `python3 scripts/validation/check-document-metadata.py --mode check-active` selected 365 active records and retained the pre-existing 1,290 advisory findings. Its nonzero exit is expected and was not promoted to a Foundation blocking gate.
+- Static checks: `git diff --check` and `python3 -m py_compile scripts/validation/check-document-metadata.py` passed.
+- Repository integration before the generated follow-up: metadata repository contracts reported zero violations and document traceability passed 46 catalog pairs with zero failures. The aggregate repository-contract gate reported only the expected stale canonical frontmatter inventory; its owner regeneration and final rerun are recorded in the generated follow-up evidence.
+- Generated owner fallout: the LLM Wiki index regenerated with 1,300 paths, category coverage regenerated with 1,299 safe paths, and the canonical frontmatter semantic inventory regenerated with 904 records and 2,160 advisory findings. The increase is the explicit Wave D debt created by applying registry v2 to the unmodified existing tombstones; it does not promote those records to changed/new blocking.
+- Generated check modes passed for all three outputs. The final `bash scripts/validation/check-repo-contracts.sh` rerun completed with `failures=0`, including metadata repository contracts at zero violations and a fresh advisory inventory.
+- Graphify: `graphify update .` completed with 23,485 nodes, 24,978 edges, and 1,545 communities. Health remained advisory only for two unrelated cross-root inferred edges; zero volume, gitlink, generated/minified, source-contamination, or meaningless-god-node findings were reported. The claims above were corroborated against the tracked validator, registries, tests, Stage 00 governance, Spec 131, and this Plan/Task. Generated Graphify outputs were restored and excluded from the commit.
+- Specification-review RED: three focused tests failed for the intended missing surfaces: absent manifest field-contract declarations, absent static manifest validation, and absent bounded exception validation.
+- Self-review RED: the focused static-manifest method exposed five malformed enum values escaping as `TypeError`; the minimal type-guard fix converted every case to fail-closed `ProfileError` behavior.
+- Remediation focused GREEN: the three manifest/exception contract methods passed 3 of 3 tests, including exact loader mutations and synthetic wildcard, global, ownerless, reasonless, permanent, expired, unknown-code, empty-exit, unsafe-evidence, and future-approval cases.
+- Remediation full GREEN: `python3 -m unittest tests.validation.test_document_metadata -q` passed 190 of 190 tests in 70.351 seconds.
+- Remediation compatibility: explicit-base changed mode selected 10 paths with zero violations, zero legacy exceptions, and zero transition overrides; `python3 -m py_compile` and `git diff --check` passed.
+- Remediation repository integration: `bash scripts/validation/check-repo-contracts.sh` completed with `failures=0`, including metadata repository contracts at zero violations.
+- Remediation Graphify: `graphify update .` completed with 23,519 nodes, 25,050 edges, and 1,545 communities. The report remained advisory for two unrelated ambiguous cross-root references and generic high-degree/isolated-node noise; the remediation claims were corroborated against the tracked migration contract, validator, tests, Stage 00 governance, Spec 131, Plan, and Task. Generated Graphify outputs were restored and excluded from the fix commit.
+- I-03 RED: four focused methods produced the three intended defect signals (two assertion failures and one migration-validation error) while the positive declared `readme` profile exception passed. The failures proved that the contract still named `disposition-exempt`, a typed `reference` row could null required identity/status, and the migration-only lowercase/colon grammar rejected a canonically valid non-empty ID.
+- I-03 focused GREEN: the same four methods passed 4 of 4, covering the exact contract declaration, real `readme` exception, typed `reference` rejection under `exempt`, and canonical acceptance of `reference:Source`.
+- I-03 full GREEN: `python3 -m unittest tests.validation.test_document_metadata -q` passed 193 of 193 tests in the final 69.155-second rerun after strengthening the typed-profile negative into independent artifact-ID/status subcases.
+- I-03 compatibility and integration: explicit-base changed mode selected 10 paths with zero violations, zero legacy exceptions, and zero transition overrides; `python3 -m py_compile`, `git diff --check`, and repository contracts passed with `failures=0`.
+- I-03 Graphify: `graphify update .` completed with 23,525 nodes, 25,064 edges, and 1,546 communities. The report remained advisory for the same two unrelated ambiguous cross-root references and generic isolated-node/community noise; claims were corroborated against the tracked metadata registry, migration contract, checker, tests, Stage 00 governance, Spec 131, Plan, and Task. Generated Graphify outputs were restored and excluded from the fix commit.
+- Quality-remediation RED: three focused methods produced nine intended defect signals—four missing immutable-snapshot admission findings, four uncaught list/mapping selector `TypeError` errors, and one changed/new CLI bounded-output failure—while the `evidence-preserve` positive remained accepted.
+- Quality-remediation focused GREEN: the same three methods passed 3 of 3. Negative archive dispositions `superseded`, `duplicate`, `conflict`, and `withdrawn` receive `archive-snapshot-disposition-forbidden`; `evidence-preserve` does not. List/mapping `archive_disposition` and `preservation_class` values retain their existing invalid-selector findings without exceptions, and the CLI emits no traceback.
+- Quality-remediation full GREEN: `python3 -m unittest tests.validation.test_document_metadata -q` passed 196 of 196 tests in 71.660 seconds.
+- Quality-remediation compatibility and integration: explicit-base changed mode selected 10 paths with zero violations, zero legacy exceptions, and zero transition overrides; `python3 -m py_compile`, `git diff --check`, and repository contracts passed with `failures=0`.
+- Quality-remediation Graphify: `graphify update .` completed with 23,539 nodes, 25,086 edges, and 1,548 communities. The report remained advisory for the same two unrelated ambiguous cross-root references and generic isolated-node/community noise; claims were corroborated against the tracked migration contract, metadata registry, checker, tests, Stage 00 governance, Spec 131, Plan, and Task. Generated Graphify outputs were restored and excluded from the fix commit.
+- Closure evidence: final specification and quality reports cover `afc51b29..e9db5afb`; a fresh explicit-base changed-mode check selected 10 paths with zero violations, zero legacy exceptions, and zero transition overrides, and `git diff --check` passed.
+
+T-DCLM-002 actual evidence:
+
+- RED: `python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v` failed with the expected single import error because `check-document-corpus-lifecycle.py` did not exist.
+- Focused GREEN: the same discovery command passed 22 of 22 tests in 13.047 seconds. Coverage includes fixed modes and CLI misuse ordering; frozen public data contracts; exact manifest keys, source coverage, ordering, target/disposition rules, baseline commits, destructive review/evidence; advisory/blocking promoted manifests; Git commit/blob/path equality; immutable snapshot path and dual SHA-256 equality; secret/credential/token/private-key/shell-history/raw-log rejection without payload leakage; paired ledger/snapshot write-check equality; duplicate ordering and cross-type exclusion; direct impacted consumers/links; non-mutating review signals; exact 99/100 and 149/150 budgets; and bounded exceptions including omitted-owner handling.
+- Metadata compatibility: `python3 -m unittest tests.validation.test_document_metadata -q` passed 196 of 196 tests in 64.891 seconds.
+- Static and contract checks: `python3 -m py_compile scripts/validation/check-document-corpus-lifecycle.py scripts/validation/check-document-metadata.py`, `python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract`, and `git diff --check` passed.
+- Deterministic manifest interfaces: Foundation skeleton generation at baseline `e00e1483` produced exactly 24 pending rows; `check-manifest`, `generate-summary`, and `check-summary` passed against temporary outputs without repository publication.
+- Promoted and impacted checks: `check-promoted` reported zero violations. The implementation-agent run of `check-impacted --base-ref e00e1483` selected 126 directly changed or directly related records and reported zero blocking violations; the existing 118-leaf Stage 04 Task directory emitted only its configured advisory warning. The takeover finisher reran the command after the Task/progress evidence edits and selected 127 records with the same zero blocking findings and advisory-only directory warning.
+- Advisory full report: `report-full` completed with 2,774 bounded findings and zero parser, contract, Git, path, redaction, or internal safety failures. It returned zero without suppressing debt or consuming an exception file.
+- Generated fallout: the security-readiness, audit-matrix, LLM Wiki index, and LLM Wiki coverage owners ran in the prescribed order after staging the new script/test discovery paths. All four produced no Git diff, and their check modes passed at 13 controls, 1,300 Wiki paths, and 1,299 safe coverage paths; therefore the Plan-authorized generated commit is correctly omitted.
+- Takeover verification: focused lifecycle tests passed 22 of 22 in 13.636 seconds; metadata compatibility passed 196 of 196 in 71.343 seconds; `py_compile`, lifecycle `check-contract`, `check-promoted`, explicit-base `check-impacted`, `git diff --check`, generated owner check modes, and repository contracts (`failures=0`) passed.
+- Review-remediation RED: the 13-method regression class produced 21 expected failures and three expected errors before behavior changes. The failures covered early metadata execution, canonical static ownership, nested exception values, delete/rename impact triggers, manifest baseline/result truth, warning-only `check-full`, safety suppression, redaction gaps, symlink escapes, and Unicode title loss.
+- Review-remediation GREEN: the expanded lifecycle suite passed 38 of 38 tests, including table-driven shape, success/write/no-write, ordinary exit, and safety exit matrices for all 16 modes. Canonical metadata compatibility passed 196 of 196 tests in 72.085 seconds. Python compile, `git diff --check`, document traceability (`46/0`), repository contracts (`failures=0`), and the four generated-owner checks passed.
+- Review-remediation live checks: `check-contract`, `check-promoted`, `check-impacted --base-ref 9126a0aa`, and `report-full` all returned zero. Impacted validation selected 38 records with zero blocking violations and only the existing 118-leaf Task warning. The full report retained 2,774 bounded findings with zero safety failures.
+- Review-remediation generated fallout: security readiness, audit matrix, LLM Wiki index, and LLM Wiki coverage were regenerated in canonical order and produced no Git diff; checks remained fresh at 13 controls, 1,300 paths, and 1,299 safe coverage paths.
+- Review-remediation Graphify: `graphify update .` completed at HEAD `43d7d149` with 23,756 nodes, 25,807 edges, and 1,549 communities. Because the graph cannot include uncommitted remediation and still contains broad generic graph communities, it remains advisory; claims were corroborated against the tracked validator, tests, Stage 00, Spec 131, Plan, Task, and Stage 99 owners. Graphify collateral was restored.
+- I-08 RED: `python3 -m unittest tests.validation.test_document_corpus_lifecycle.CandidateManifestCliTests -v` ran two real-CLI methods; the safe untracked candidate method failed with exit 3 while the unsafe candidate method passed, reproducing the tracked-file precondition without weakening the existing path-safety boundary.
+- I-08 focused GREEN: the same two methods passed in 15.794 seconds. The three explicit modes accepted the canonical untracked Foundation candidate before staging; each mode rejected symlink, traversal, and out-of-root candidates with exit 3 and no output creation.
+- I-08 full GREEN and compatibility: the lifecycle suite passed 40 of 40 tests in 40.696 seconds, canonical metadata compatibility passed 196 of 196 tests in 70.251 seconds, and Python compile passed. Promoted-manifest consumers still use the tracked regular-file loader and comparator; only explicit candidate modes use the untracked no-follow path.
+- Graphify: `graphify update .` completed against HEAD `9126a0aa` with 23,683 nodes, 25,600 edges, and 1,547 communities. The report remained advisory because generic language/test symbols dominated the god-node list and two Compose/config references were ambiguous. Claims were corroborated against the tracked lifecycle validator and tests, the observability Compose source, Stage 00 governance, Spec 131, Plan, and this Task. `graphify-out/GRAPH_REPORT.md` and `graphify-out/graph.json` were restored to HEAD and excluded from the implementation commit.
+- Final-review remediation RED: the independent specification review found I-09 and the separate quality review found I-FQ01 through I-FQ03. Bounded temporary-repository probes demonstrated that a nonexistent partition Plan suppressed the 150-leaf block, a tracked Markdown symlink exposed outside bytes, and a valid source-profile-to-archive-profile transition could not satisfy result attestation.
+- Final-review remediation focused GREEN: `python3 -m unittest tests.validation.test_document_corpus_lifecycle.FinalReviewRemediationTests -v` passed 4 of 4 tests in the takeover finisher's 8.624-second rerun. Coverage includes final and intermediate Markdown symlink rejection across every corpus-reading mode without payload or output mutation, positive and negative canonical archive transitions, missing/untracked/symlink/wrong-profile/draft/unreviewed partition Plans, a valid tracked canonical Plan, and immediate eligible-leaf counting exclusions.
+- Final-review remediation full GREEN and compatibility: `python3 -m unittest tests.validation.test_document_corpus_lifecycle -q` passed 44 of 44 tests in 52.746 seconds. The prior final-remediation compatibility run passed canonical metadata 196 of 196. `python3 -m py_compile`, `git diff --check`, document traceability, generated-owner freshness, and the four canonical owner checks passed.
+- Final-review remediation live checks: `check-contract` and `check-promoted` returned zero; `check-impacted --base-ref 9126a0aa` selected 38 records with zero blocking violations and only the existing 118-leaf Task warning. A direct repository-backed probe of `docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md` returned zero partition-approval findings. The advisory full report retained 2,774 bounded findings and zero safety failures.
+- Final-review remediation repository integration: after the evidence edits, explicit-base metadata validation selected 2 paths with zero violations, legacy exceptions, or transition overrides; document traceability passed at 46 catalog pairs and zero failures; and `bash scripts/validation/check-repo-contracts.sh` completed with `failures=0`. Graphify output remained restored and untracked by this change; its stale advisory report was not treated as authoritative, and claims were corroborated against the tracked companion/tests, Stage 00 governance, Spec 131, the active Foundation Plan, and this Task.
+- Closure-review RED: seven focused methods produced 17 intended assertion failures and zero runtime errors. The failures reproduced safe untracked omission, diagnostic payload emission, missing archive baseline-blob binding, unconditional archive replacement, unresolved canonical replacement, incomplete Plan authorization, and Markdown table injection.
+- Closure-review focused GREEN: all seven focused methods passed. Real CLI fixtures cover valid/invalid untracked records, unsafe final/intermediate untracked symlinks with no outside marker, pre-stage 149/150 boundaries, prohibited diagnostic classes across full/impacted/archive/generated modes, and ordinary unresolved IDs without value emission. Git fixtures cover same/different baseline blobs, git-history and immutable-snapshot preservation, every archive disposition replacement variant, missing/untracked/symlink/wrong-profile/wrong-status/wrong-body/self/target/duplicate replacement cases, and path/unique-ID resolution behavior. Plan fixtures cover scalar optional fields, unresolved/self/wrong-type parents, key order, placeholders, required/forbidden headings, and a canonical positive.
+- Closure-review full GREEN and compatibility: lifecycle tests passed 50 of 50 in 104.326 seconds; canonical metadata tests passed 197 of 197 in 79.336 seconds. Python compilation and `git diff --check` passed.
+- Closure-review live checks: `check-contract` and `check-promoted` returned zero; `check-impacted --base-ref 9126a0aa` selected 38 records with zero blocking violations and the existing Task-directory warning only; `report-full` returned zero with 2,774 bounded generic findings and zero safety failures.
+- Closure-review integration: security-readiness, audit-matrix, LLM Wiki index, and LLM Wiki coverage check modes were fresh. `bash scripts/validation/check-repo-contracts.sh` returned `failures=0`. Graphify refreshed at committed contract HEAD `cb84d6c4` to 23,882 nodes, 26,131 edges, and 1,558 communities; two unrelated Compose/config edges remained ambiguous, so the graph was advisory and corroborated against tracked Stage 00/03/04/99 owners and executable sources before generated outputs were restored.
+- Final-acceptance RED: five focused methods produced 25 intended assertion failures and zero runtime errors. The failures reproduced real CLI rejection of unstaged deletion and rename, token-shaped `_CorpusSafetyError` path disclosure across ten corpus-reading modes, missing/mismatched/untracked/invalid merge and delete replacements, and suppressed archive parent/supersession graph errors. The multi-row canonical positive already passed and remained a preservation oracle.
+- Final-acceptance focused GREEN: `python3 -m unittest tests.validation.test_document_corpus_lifecycle.AcceptanceFindingRemediationTests -v` passed 5 of 5 in 11.869 seconds after adding explicit merge symlink and invalid-profile coverage. Real subprocess fixtures prove deletion selects the surviving link dependent, rename selects the new record plus its dependent, every corpus mode exits 3 without emitting the token-shaped filename or mutating output, valid merge path/ID and delete replacement path pass, and invalid replacements fail closed.
+- Final-acceptance full GREEN and compatibility: lifecycle discovery passed 55 of 55 tests in 113.212 seconds; canonical metadata passed 197 of 197 in 74.224 seconds. Python compilation, `git diff --check`, and cached diff hygiene passed.
+- Final-acceptance live and integration checks: `check-contract` and `check-promoted` returned zero; `check-impacted --base-ref 9126a0aa` selected 38 records with zero blocking violations and the existing Task-directory warning only; `report-full` retained 2,774 bounded findings with zero safety failures. Security-readiness, audit-matrix, LLM Wiki index, and LLM Wiki coverage were fresh, and repository contracts returned `failures=0`.
+- Final-acceptance Graphify: `graphify update .` completed with 23,924 nodes, 26,246 edges, and 1,560 communities. Health remained advisory only for two unrelated cross-root inferred edges; claims were corroborated against the tracked lifecycle companion/tests, Stage 00 governance, Spec 131, this Plan/Task, and Stage 99 owners before `graphify-out/GRAPH_REPORT.md` and `graphify-out/graph.json` were restored.
+- Release-gate RED/GREEN: seven focused methods initially produced 22 expected failures and zero errors across the distinct-ID merge positive, sixteen writer/checker symlink cases, three non-regular checker cases, atomic final swap, and interrupted write. After remediation, the focused set passed 7/7; the complete acceptance class passed 12/12 after retaining the prior same-ID consolidation positive.
+- Release-gate full compatibility: `python3 -m unittest tests.validation.test_document_corpus_lifecycle tests.validation.test_document_metadata` passed 258/258 before the additional same-ID preservation regression; the final lifecycle rerun passed 62/62 and the unchanged metadata suite remained 197/197. Python compile and `git diff --check` passed.
+- Release-gate live and generated checks: `check-contract` and `check-promoted` returned zero; `check-impacted --base-ref 9126a0aa` selected 38 with zero blocking violations and the existing Task-directory warning; `report-full` retained 2,774 advisory findings and zero safety failures. Security readiness, audit matrix, LLM Wiki index, and LLM Wiki coverage regenerated without diff and passed check mode at 13 controls, 1,300 paths, and 1,299 safe paths. Repository contracts returned `failures=0`.
+- Release-gate Graphify: `graphify update .` completed with 23,968 nodes, 26,344 edges, and 1,561 communities. The report remained advisory because it was commit-bound to `4e8afaf8` while the fix was initially uncommitted and retained one unrelated ambiguous Compose edge. Claims were corroborated against the held-path implementation/tests, Stage 00 governance, Spec 131, the active Plan/Task, and Stage 99 contracts before both generated Graphify files were restored.
+- Sign-off RED/GREEN: five focused real-Git methods initially produced four expected failures: both path and artifact-ID forms accepted a parseable `120000` baseline owner, and both forms rejected an exact same-path `active` to `completed` owner transition with a separately attested peer. The regular/non-regular characterization and already-failing invalid-peer cases remained preservation oracles. After remediation, the expanded focused set passed 8/8 in 8.642 seconds, including prior moved-owner, same-ID new-target, and ordinary canonical replacement positives.
+- Sign-off full compatibility: `python3 -m unittest tests.validation.test_document_corpus_lifecycle tests.validation.test_document_metadata -q` passed 267/267 in 201.795 seconds. Python compilation, working-tree and cached diff hygiene passed.
+- Sign-off live and generated checks: `check-contract` and `check-promoted` returned zero; `check-impacted --base-ref 9126a0aa` selected 38 with zero blocking violations and the existing Task-directory advisory; `report-full` retained 2,774 advisory findings and zero safety failures. Security readiness, audit matrix, LLM Wiki index, and LLM Wiki coverage check modes were fresh, and repository contracts returned `failures=0`.
+- Sign-off Graphify: `graphify update .` completed at `1c9ef624` with 24,033 nodes, 26,464 edges, and 1,563 communities. The report remained advisory for one unrelated cAdvisor/Pyroscope inferred Compose relationship and generic thin communities. Tracked observability Compose proves those services are independent siblings, and lifecycle claims were corroborated against the tracked validator/tests, Stage 00 governance, Spec 131, this Plan/Task, and Stage 99 before both graph outputs were restored.
+- Safety boundary: Git commands use argument arrays and verify commit/blob types before comparison. Library functions return stable findings and never print payload bytes. Snapshot fixtures proved rejection of prohibited confidentiality classes while finding paths/messages remained value-free.
+- Scope preservation: no broad corpus leaf, existing tombstone, archive evidence payload, Stage 04 partition, exception file, workflow, runtime, Compose, infrastructure, deployment, secret, credential, provider instruction, or remote state changed.
+- Closure bookkeeping verification: explicit-base metadata validation against `9fe234f6` selected the two changed tracked evidence documents with zero violations, zero legacy exceptions, and zero transition overrides; `git diff --check` passed. No implementation, contract, or test file changed during closure.
+
+T-DCLM-003 actual evidence:
+
+- RED metadata: the focused profile/validation command ran 55 tests with 7 expected assertion failures and zero errors for the two absent human owners, incomplete archive form/envelope, and four required archive source keys still admitted by the exact-path exemption.
+- RED lifecycle: the focused lifecycle discovery ran 74 tests with 12 expected assertion failures and zero errors for missing owner markers, source attribution, Stage 00/98 routes, and copied policy in template governance.
+- Focused GREEN: metadata profile/validation passed 55 of 55 and human contract routing passed 4 of 4. The first full metadata run exposed six test-fixture compatibility failures only; archive-specific conditional headings and Git-history snapshot-field removal were corrected without weakening the production contract, and both focused fixtures passed 2 of 2.
+- Full GREEN: metadata passed 201 of 201 in 72.942 seconds; lifecycle passed 74 of 74 in 119.646 seconds with zero safety failures. Printed finding lines are bounded negative-fixture output, not suite failures.
+- Live checks: explicit-base metadata changed mode selected 27 records with zero violations, zero legacy exceptions, and zero transition overrides; lifecycle `check-contract` returned zero violations; Python compilation and `git diff --check` passed.
+- Integration: traceability passed 46 catalog pairs with zero failures; implementation alignment checked 650 stage documents and 5,181 repository-local links with zero failures.
+- Generated owners: the LLM Wiki index regenerated with 1,302 paths, coverage with 1,301 safe paths, and inventory with 906 records and 2,160 advisory findings. Index and coverage check modes passed; inventory rerun preserved SHA-256 `b197c11e54c3ee95b8bae9a2bfa300b540945793fd08dbf5bf3c8954c31dbef6`.
+- Graphify: refresh completed with 24,102 nodes, 26,535 edges, and 1,567 communities. Health was advisory for two unrelated cross-root edges only: the Alertmanager critical route and same-file SMTP placeholders, and adjacent independent cAdvisor/Pyroscope Compose siblings. Tracked Alertmanager and Compose source disproved any Task 3 dependency inference; human-owner and archive claims were corroborated against Stage 00, Spec 131, this Plan/Task, Stage 98/99 contracts, the metadata registry, validator, and tests. Volume, gitlink, generated/minified, graph-source contamination, and meaningless-god-node counts were all zero. Both Graphify outputs were restored and excluded from the commits.
+- Scope preservation: Stage 98 changed only `README.md`; all 20 existing tombstones remain byte-for-byte outside the diff. No corpus migration, archive payload, generated ledger, snapshot manifest, Foundation manifest, exception, workflow, runtime, Compose, infrastructure, deployment, provider, secret, credential, or remote state changed.
+- First independent review verdicts: specification FAIL with Critical 0, Important 2, Minor 0 for I-01/I-02; quality FAIL with Critical 0, Important 1, Minor 0 for I-Q01.
+- Remediation RED: three metadata methods produced 16 expected assertion failures and zero errors across registry parity, source placeholder ownership, and value-free target rejection; two lifecycle methods produced 10 expected assertion failures and zero errors across non-owner legacy vocabulary and Stage 98 synopsis semantics.
+- Remediation focused GREEN: metadata passed 3 of 3 and lifecycle routing passed 2 of 2. Placeholder parity covers all template-source frontmatter values; every present archive source field uses its registry-owned canonical value; all seven new archive field values, including `<snapshot-reason>`, produce exactly one value-free target placeholder finding.
+- Remediation full GREEN: metadata passed 204 of 204 in 74.392 seconds; lifecycle passed 75 of 75 in 120.557 seconds with zero safety failures.
+- Remediation live and integration checks: explicit-base metadata selected 27 with zero violations, zero legacy exceptions, and zero transition overrides; lifecycle contract returned zero; traceability passed 46/46; alignment checked 650 documents and 5,181 links with zero failures; repository contracts returned `failures=0`; Python compilation and diff hygiene passed.
+- Remediation generated owners: LLM Wiki remained fresh at 1,302 paths, coverage at 1,301 safe paths, and inventory at 906 records / 2,160 advisory findings with unchanged SHA-256 `b197c11e54c3ee95b8bae9a2bfa300b540945793fd08dbf5bf3c8954c31dbef6`. All three owners produced no diff, so no generated remediation commit is required.
+- Remediation Graphify: refresh completed with 24,130 nodes, 26,562 edges, and 1,571 communities. Health remained advisory only for the same two unrelated Alertmanager and cAdvisor/Pyroscope cross-root edges. Remediation claims were corroborated against tracked Stage 00, Spec 131, this Plan/Task, Stage 98/99 owners, registry, validator, and tests; volume, gitlink, generated/minified, source-contamination, and meaningless-god-node counts were zero. Both Graphify outputs were restored.
+- Final re-review verdicts: specification FAIL with Critical 0, Important 1, Minor 0 for I-03; quality FAIL with Critical 0, Important 1, Minor 0 for I-Q02. Both re-reviews confirmed I-01/I-02/I-Q01 closed.
+- Final-router RED/GREEN: two focused lifecycle methods produced 18 expected assertion failures and zero errors, then passed 2 of 2 after catalog-role and parent-router synchronization.
+- Final-router full GREEN: metadata passed 204 of 204 in 70.690 seconds; lifecycle passed 77 of 77 in 115.255 seconds with zero safety failures.
+- Final-router live and integration checks: explicit-base metadata selected 27 with zero violations, zero legacy exceptions, and zero transition overrides; lifecycle contract returned zero; traceability passed 46/46; alignment checked 650 documents and 5,181 links with zero failures; repository contracts returned `failures=0`; compilation and diff hygiene passed.
+- Final-router generated owners: LLM Wiki remained fresh at 1,302 paths, coverage at 1,301 safe paths, and inventory at 906 records / 2,160 advisory findings with unchanged SHA-256 `b197c11e54c3ee95b8bae9a2bfa300b540945793fd08dbf5bf3c8954c31dbef6`. All owners produced no diff, so no generated follow-up is required.
+- Final-router Graphify: refresh completed with 24,159 nodes, 26,589 edges, and 1,572 communities. Health retained only the same two unrelated Alertmanager and cAdvisor/Pyroscope advisory edges. Router claims were corroborated against tracked Stage 00, Spec 131, this Plan/Task, parent/child Stage 98 routes, Stage 99 catalog/owners, and focused tests; volume, gitlink, generated/minified, source-contamination, and meaningless-god-node counts were zero. Both Graphify outputs were restored.
+- Terminal independent reviews: the exact authored range `133b3daa..160ff097` received Spec PASS and separate Quality PASS, each with Critical 0, Important 0, and Minor 0. Both reviewers confirmed all prior Task 3 findings closed; bounded review checks passed and the 20 existing Stage 98 tombstones remained unchanged.
+
+T-DCLM-004 actual evidence:
+
+- RED: Bash syntax passed. The first repository-contract run exited nonzero
+  with `failures=2`: one direct missing-workflow failure and one aggregated
+  lifecycle workflow/selector/QA/inventory contract failure. Existing
+  lifecycle contract/promoted checks passed and `check-impacted` selected 40
+  records with zero violations.
+- Authored GREEN: exact workflow parsing, trigger/permission/action-SHA/fetch,
+  dependency, command, advisory-report, prohibited-key, secret, upload, and
+  remote-mutation assertions passed. The existing repo-contract hook is still
+  the sole lifecycle consumer; no second lifecycle/schema hook was added.
+- Focused GREEN: lifecycle tests passed 77 of 77 in 108.674 seconds and
+  metadata tests passed 204 of 204 in 66.375 seconds.
+- Live checks: lifecycle `check-contract` and `check-promoted` returned zero;
+  `check-impacted --base-ref e00e1483` selected 283 records with zero blocking
+  violations and only the existing Task-directory warning. Changed metadata
+  selected 28 records with zero violations, legacy exceptions, or transition
+  overrides.
+- Repository and routing: repository contracts returned `failures=0`; the QA
+  recommendation for every Task 4 owned surface included the lifecycle tests,
+  contract, promoted-manifest, and four generated-owner checks. Bash syntax,
+  actionlint 1.7.12, yamllint 1.38.0, working/cached diff hygiene, and the
+  unchanged `ci-quality.yml`/local ruleset comparison passed.
+- Documentation integration: traceability passed 46 catalog pairs with zero
+  failures. Implementation alignment checked 650 stage documents and 5,182
+  repository-local links with zero failures.
+- Generated owners: security readiness remained 13 controls and changed only
+  tracked-workflow counts from six to seven; the audit matrix had no diff; the
+  LLM Wiki index changed from 1,302 to 1,303 paths; coverage changed from 1,301
+  to 1,302 safe paths. All four check modes passed.
+- Graphify: refresh completed with 24,193 nodes, 26,629 edges, and 1,576
+  communities. Health stayed advisory only for two unrelated inferred
+  cross-root edges (`README.md` to root Compose and `llms.txt` to scripts).
+  Volume, gitlink, generated/minified, source-contamination, and meaningless
+  god-node counts were zero. Claims were corroborated against tracked Stage 00,
+  Spec 131, this Plan/Task, the lifecycle registries/checker/tests, workflow,
+  and QA scripts; both Graphify outputs were restored and excluded.
+- Scope preservation: no required job ID, local required-check name,
+  credential, remote GitHub state, environment, deployment, release, runtime,
+  corpus leaf, existing tombstone, archive payload, Foundation manifest,
+  exception, or Task 5 surface changed. Direct all-files pre-commit was not run.
+- Independent reviews: the complete handoff range `1b42a100..918b9a3b`
+  received Spec PASS and separate Quality PASS, each with Critical 0, Important
+  0, and Minor 1. The shared Minor was incomplete generated-freshness discovery
+  plus insufficient list/execution parity coverage; execution itself was
+  correct.
+- Review-remediation RED: after adding only the parity assertion, repository
+  contracts failed with the two expected messages: `--list` did not enumerate
+  every executed generated freshness gate and list/execution parity mismatched.
+- Review-remediation GREEN: `--list` prints the exact four executed generator
+  commands in order; repository contracts compare the approved, listed, and
+  executed command tuples and returned `failures=0`. Bash syntax for all three
+  validation owners, focused gate recommendation, the four generated freshness
+  check modes, working/cached diff hygiene, and final status checks passed.
+- Review-remediation Graphify: refresh completed with 24,227 nodes, 26,662
+  edges, and 1,577 communities. Its two unrelated Alertmanager and
+  cAdvisor/Pyroscope advisory edges were corroborated against tracked QA,
+  Stage 00, Spec 131, and Plan/Task owners; both graph outputs were restored.
+- Terminal quality review: the complete range `1b42a100..11ff5edb` returned
+  FAIL with Critical 0, Important 1, and Minor 0. I-Q01 proved that generated
+  helper commands could remain textually aligned while both local executable
+  modes or generated recommendations became disconnected.
+- I-Q01 mutation RED: Bash syntax passed, then a temporary removal of the
+  harness helper call plus the Wiki coverage recommendation produced one exact
+  reachability failure and eight exact per-surface recommendation failures;
+  the aggregate repository contract exited 1.
+- I-Q01 GREEN: each of the eight Task 4 lifecycle surfaces must recommend all
+  three lifecycle commands and all four generated freshness commands. Both
+  `run_script_backed_gates` and `run_harness_gates` must invoke
+  `run_generated_freshness_gates` exactly once. Bash syntax, `--list`, the
+  eight-surface recommendation probe, all four freshness checks, diff hygiene,
+  and repository contracts (`failures=0`) passed.
+- I-Q01 Graphify: refresh completed with 24,253 nodes, 26,686 edges, and 1,579
+  communities. Its two unrelated Alertmanager and cAdvisor/Pyroscope advisory
+  edges were corroborated against tracked QA, Stage 00, Spec 131, Plan/Task,
+  and executable owners; both graph outputs were restored.
+- Terminal re-reviews: the final range `1b42a100..46e3ff5e` received Spec PASS
+  and separate Quality PASS, each with Critical 0, Important 0, and Minor 0.
+  Focused mutation evidence confirmed removal of either executable helper call
+  and each generated recommendation is detected. I-Q01 is closed.
+
+T-DCLM-005 advisory baseline evidence:
+
+- Skeleton review classified all 24 paths selected from immutable baseline
+  `e00e1483` in stable order: 23 `migrate` and one `preserve`. Targets remain
+  source-identical, inapplicable fields remain YAML null, destructive
+  dispositions are absent, and both independent review verdicts remain
+  pending under advisory enforcement.
+- Lifecycle `check-contract`, candidate `check-manifest`, and deterministic
+  candidate `check-summary` passed. Explicit-base `check-impacted` selected
+  302 records with zero violations and retained only the configured advisory
+  warning for the existing Stage 04 Task-directory budget.
+- Metadata changed mode selected 34 records with zero violations, zero legacy
+  exceptions, and zero transition overrides. Repository contracts completed
+  with `failures=0`, including the nested Stage 90 README profile and required
+  `Category Role` heading.
+- The authored commit `f3f870fc` excluded the summary. Generated commit
+  `63829c10` added the summary and refreshed Wiki index, Wiki coverage, and
+  metadata inventory; security readiness and audit implementation matrix were
+  fresh and produced no diff.
+- Initial independent reviews failed at Spec C0/I3/M0 and Quality C0/I2/M1.
+  Remediation canonicalizes current tracked active-root consumer scans and
+  source-scoped immutable rollback. The manifest now contains 506 exact
+  consumer memberships and only the unchanged preserve row has no rollback.
+  Focused negative/positive coverage, real `check-manifest`, Python compile,
+  and the full lifecycle suite 79/79 pass.
+- Scope inspection found no manifest promotion, corpus leaf, existing
+  tombstone, archive ledger or snapshot, runtime, Compose, infrastructure,
+  deployment, workflow, provider, secret, credential, or remote-state change.
+  Direct all-files pre-commit and Task 6 were not run.
+- Remediation integration: lifecycle passed 79/79; metadata changed selected
+  34 with zero violations/exceptions/overrides; impacted selected 302 with zero
+  violations and only the configured directory warning; repository contracts
+  returned `failures=0`; traceability passed 46/0; alignment checked 650 docs
+  and 5,182 links with zero failures. All generated owners were fresh and the
+  metadata inventory rerun retained SHA-256
+  `b9a59cb89f63e903ed2d3aaf7cae6bd8e757f4447f6c079cfe8f323f5e621b3b`.
+  Graphify refreshed at `4e8d23f3` to 24,341 nodes, 26,821 edges, and 1,587
+  communities; two unrelated ambiguous infrastructure edges and 16,358
+  isolated nodes remained advisory. Tracked sources were authoritative and
+  both graph outputs were restored.
+- Promotion validation: `check-contract` returned zero violations; the
+  Foundation `check-manifest --wave foundation`, `check-promoted`, and
+  deterministic `check-summary` passed; explicit-base metadata selected 34
+  with zero violations, legacy exceptions, or transition overrides; security
+  readiness, audit matrix, LLM Wiki index, and LLM Wiki coverage were fresh;
+  repository contracts returned `failures=0`; and diff hygiene passed. The
+  first `check-manifest` invocation omitted its required `--wave` argument and
+  exited 2 without validation or mutation; the corrected canonical invocation
+  above passed. Manifest SHA-256 is
+  `a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`.
+
+Verification results: T-DCLM-001, T-DCLM-002, and T-DCLM-003 are complete.
+The T-DCLM-003 authored range `133b3daa..160ff097` is GREEN and received
+terminal Spec PASS and separate Quality PASS, each with Critical 0, Important
+0, and Minor 0. The T-DCLM-002
+implementation range `9126a0aa..9fe234f6` is GREEN and received terminal Spec
+PASS and separate Quality retry PASS, each with Critical 0, Important 0, and
+Minor 1. The only earlier deferred Minor is behavior-preserving decomposition
+of the monolithic dispatcher.
+
+T-DCLM-004 final range `1b42a100..46e3ff5e` is GREEN and received terminal Spec
+PASS C0/I0/M0 and terminal Quality PASS C0/I0/M0. I-Q01 is closed through the
+recorded mutation RED and reachability/recommendation GREEN. T-DCLM-004 is
+complete. T-DCLM-005 terminal advisory re-reviews over the complete package
+`cce4fcde..fa27247854777882822cac1e4b58784e42d05076` returned Spec PASS
+C0/I0/M0 and Quality PASS C0/I0/M0. The Plan-defined promotion changes only the
+Foundation gate to blocking with 24/24 `pass`/`pass` review verdicts and the
+exact Stage 90 manifest route; every later wave remains advisory with a null
+manifest path. The canonical summary matches the promoted manifest.
+Post-promotion Spec and Quality reviews of full commit
+`b3f8c5cb09366cdf045e9f595c9622a521807f71` both returned APPROVED C0/I0/M0.
+Manifest SHA-256 remains
+`a18e0e76b61dc3f706ae5c8f30403ce8b15b9fb66de829439ff474761fa43039`.
+Task 5 is complete. Task 6 whole-branch re-reviews at
+`63865ec601bb19aeb052ef8ffd1b213738c22ad2` returned Spec PASS C0/I0/M0 and
+Quality PASS C0/I0/M0. The pre-closure controlled wrapper passed from a clean
+linked worktree with empty Git-visible path sets, so Foundation closure is
+unblocked.
+
+## Controlled Agent Pre-commit Evidence
+
+Controlled wrapper command:
+
+~~~bash
+scripts/validation/run-agent-precommit-all-files.sh \
+  --task docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md \
+  --allow-prefix .github/workflows/document-corpus-lifecycle.yml \
+  --allow-prefix .pre-commit-config.yaml \
+  --allow-prefix docs/00.agent-governance/rules \
+  --allow-prefix docs/00.agent-governance/memory/progress.md \
+  --allow-prefix docs/03.specs/131-document-corpus-lifecycle-migration-foundation \
+  --allow-prefix docs/03.specs/README.md \
+  --allow-prefix docs/04.execution \
+  --allow-prefix docs/90.references/data/governance/document-corpus-lifecycle \
+  --allow-prefix docs/90.references/data/governance/audit-implementation-matrix.md \
+  --allow-prefix docs/90.references/data/security/security-automation-readiness.md \
+  --allow-prefix docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md \
+  --allow-prefix docs/90.references/llm-wiki/llm-wiki-index.md \
+  --allow-prefix docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md \
+  --allow-prefix docs/98.archive/README.md \
+  --allow-prefix docs/99.templates/support \
+  --allow-prefix docs/99.templates/templates/common \
+  --allow-prefix scripts/README.md \
+  --allow-prefix scripts/validation/check-document-corpus-lifecycle.py \
+  --allow-prefix scripts/validation/check-document-metadata.py \
+  --allow-prefix scripts/validation/check-repo-contracts.sh \
+  --allow-prefix scripts/validation/recommend-qa-gates.sh \
+  --allow-prefix scripts/validation/run-local-qa-gates.sh \
+  --allow-prefix tests/validation/test_document_metadata.py \
+  --allow-prefix tests/validation/test_document_corpus_lifecycle.py
+~~~
+
+Allowed prefixes:
+
+- .github/workflows/document-corpus-lifecycle.yml
+- .pre-commit-config.yaml
+- docs/00.agent-governance/rules
+- docs/00.agent-governance/memory/progress.md
+- docs/03.specs/131-document-corpus-lifecycle-migration-foundation
+- docs/03.specs/README.md
+- docs/04.execution
+- docs/90.references/data/governance/document-corpus-lifecycle
+- docs/90.references/data/governance/audit-implementation-matrix.md
+- docs/90.references/data/security/security-automation-readiness.md
+- docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+- docs/90.references/llm-wiki/llm-wiki-index.md
+- docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
+- docs/98.archive/README.md
+- docs/99.templates/support
+- docs/99.templates/templates/common
+- scripts/README.md
+- scripts/validation/check-document-corpus-lifecycle.py
+- scripts/validation/check-document-metadata.py
+- scripts/validation/check-repo-contracts.sh
+- scripts/validation/recommend-qa-gates.sh
+- scripts/validation/run-local-qa-gates.sh
+- tests/validation/test_document_metadata.py
+- tests/validation/test_document_corpus_lifecycle.py
+
+Exit status: wrapper exit 0; `hook_result=passed`; `hook_exit=0`.
+
+Snapshot result: `snapshot_result=passed`.
+
+Observation boundary: `git-visible-non-ignored-repository-status`; Git-visible
+path sets and safe hook summaries only.
+
+Path sets:
+
+- before path set: `(none)` (`before_count=0`);
+- after path set: `(none)` (`after_count=0`);
+- hook-managed changed path set: `(none)` (`changed_count=0`);
+- unexpected path set: `(none)` (`unexpected_count=0`).
+
+Disposition: PASS. The exact bounded wrapper ran from reviewed clean HEAD
+`63865ec601bb19aeb052ef8ffd1b213738c22ad2`; it made no Git-visible change, so
+no hook-managed edit, remediation commit, or repeat was required before
+closure. Direct `pre-commit run --all-files` was not invoked.
+
+## Review Evidence
+
+Implementation review verdict: T-DCLM-001 self-review PASS after remediation. The implementation is bounded to machine contracts, static manifest/exception and archive-frontmatter validation, tests, Task evidence, and the mandatory progress log. It adds no Git-object probe, snapshot-byte access, corpus migration, existing tombstone edit, exception file, runtime mutation, secret handling, or remote action. Stable diagnostics contain only keys, codes, safe paths, counts, dates, and shape requirements.
+
+Specification review verdict: the first T-DCLM-001 review returned FAIL with Critical 0 and Important 2; I-01 and I-02 were resolved in `ab33b64f`. The re-review returned FAIL with Critical 0 and Important 1; I-03 was resolved in `602994f2`. The final specification review of `afc51b29..e9db5afb` returned PASS with Critical 0 and Important 0.
+
+Quality review verdict: the first T-DCLM-001 quality review of `afc51b29..602994f2` returned FAIL with Critical 0, Important 2, and Minor 0. I-Q01 identified missing immutable-snapshot disposition admission; I-Q02 identified uncaught non-scalar archive-selector `TypeError` escapes. Both were resolved in `e9db5afb`; the final quality review of `afc51b29..e9db5afb` returned PASS with Critical 0, Important 0, and Minor 0.
+
+T-DCLM-002 implementer self-review verdict: PASS. The public names, signatures, nullability, mode tuple, argument surface, and exit classes match the approved Plan. Invalid CLI shapes return 2 before opening repository files; parser/contract/Git/path/redaction/internal safety failures return 3; ordinary blocking findings return 1; advisory reports return 0. Manifest, summary, archive-ledger, and snapshot-manifest checks compare canonical bytes without mutation. The implementation imports the canonical metadata parser, `Record`, `Finding`, safe-path logic, and artifact-ID manifest builder without renaming or repurposing metadata `Manifest`.
+
+T-DCLM-002 first independent review verdicts: specification FAIL with Critical
+0 and Important 7; quality FAIL with Critical 0, Important 5, and Minor 2.
+Review-remediation regressions and implementation closed I-01 through I-07,
+I-Q01 through I-Q05, M-Q01, and M-Q02. Later complete-range reviews verified
+the remediated boundaries.
+
+T-DCLM-002 first fresh specification re-review verdict: FAIL with Critical 0,
+Important 1, and Minor 0 over `9126a0aa..82cbb9c0`. I-01 through I-07 were
+confirmed closed. I-08 identified the explicit candidate modes' staged-file
+precondition; the focused RED/GREEN remediation above separated untracked
+candidate validation from tracked promoted-manifest consumption.
+
+T-DCLM-002 final pre-remediation review verdicts over
+`9126a0aa..ee4b6846`: specification FAIL with Critical 0, Important 1, and
+Minor 1; quality FAIL with Critical 0, Important 3, and Minor 2. Specification
+I-09 and quality I-FQ03 identified the same unproved partition-Plan
+authorization. Quality I-FQ01 identified corpus Markdown symlink following and
+value leakage; I-FQ02 identified the unrepresentable
+source-profile-to-archive-profile transition. Commit `eb52185c` added focused
+regressions and remediated every Important finding. The stale ignored report
+finding was corrected in the implementation handoff.
+
+T-DCLM-002 closure review verdicts over `9126a0aa..554253e6`:
+specification FAIL with Critical 0, Important 3, and Minor 0; quality FAIL with
+Critical 0, Important 5, and Minor 2. Contract commit `cb84d6c4` deferred
+archive replacement truth to the validated target disposition. Lifecycle
+commit `2c1b0c46` closed I-09-R1/I-10/I-11, I-CQ01 through I-CQ05, and M-CQ02
+with the focused and full evidence above. M-CQ01 was retained as a
+non-blocking later orchestration-refactor opportunity.
+
+T-DCLM-002 final acceptance reviews over `9126a0aa..8a7c9c7c`:
+specification FAIL with Critical 0, Important 1, and Minor 1; quality FAIL with
+Critical 0, Important 4, and Minor 1. Commit `9bea953b` closed specification
+I-12 and quality I-AQ01 through I-AQ04 with real CLI deletion/rename handling,
+mandatory final safety-path sanitization, disposition-aware canonical
+replacement binding for merge/delete, and full held result-manifest relation
+validation for archive.
+
+T-DCLM-002 release-gate reviews over `9126a0aa..4e8afaf8`:
+specification FAIL with Critical 0, Important 1, and Minor 1 for I-13; quality
+FAIL with Critical 0, Important 1, and Minor 1 for I-RQ01. Commit `6c33c66c`
+closed both Important findings with distinct source/owner merge attestation and
+one no-follow atomic output boundary.
+
+T-DCLM-002 sign-off reviews over `9126a0aa..7ff6a841`: specification FAIL with
+Critical 0, Important 1, and Minor 1 for I-FRQ01-R1; quality FAIL with Critical
+0, Important 2, and Minor 1 for I-SQ01/I-SQ02. Commit `1c9ef624` closed the
+non-regular baseline-owner and exact same-path lifecycle-attestation gaps
+without changing public interfaces or the preserved merge/output matrix.
+
+T-DCLM-002 terminal reviews over `9126a0aa..9fe234f6`: specification PASS with
+Critical 0, Important 0, and Minor 1; separate quality retry PASS with Critical
+0, Important 0, and Minor 1. All earlier Critical and Important findings are
+closed. Both reviewers retained only the same deferred Minor: split the
+monolithic dispatcher in a later behavior-preserving package with
+characterization/equivalence tests. This does not block Task 3.
+
+T-DCLM-003 implementer self-review verdict: PASS. The two Markdown contracts
+are the sole human owners and route rather than duplicate machine schema. The
+archive template follows the registered key order, publishes required and
+conditional body sections without sample evidence, and no longer receives a
+source-only required-key waiver. Stage 00 and Stage 98 state the manifest-first,
+safe-provenance, review, canonical-generator, and controlled-wrapper routes.
+Approved external sources are attributed only to syntax, rendering,
+documentation organization, provenance vocabulary, Git inspection, CI, and
+hook mechanics; repository authority remains local. Existing tombstones and
+Task 4 surfaces are untouched. The review and remediation sequence below
+records the independent closure path.
+
+T-DCLM-003 first independent review verdicts: specification FAIL with Critical
+0, Important 2, and Minor 0; quality FAIL with Critical 0, Important 1, and
+Minor 0. Specification I-01 identified parallel legacy disposition algorithms
+in `frontmatter-contract.md` and `lifecycle-status.md`; I-02 identified the
+Stage 98 synopsis's incomplete provenance and unconditional-replacement claim.
+Quality I-Q01 identified unregistered archive placeholders and the resulting
+`<snapshot-reason>` target escape.
+
+T-DCLM-003 remediation self-review verdict: PASS. Non-owner contracts now own
+only shared frontmatter/status interpretation and route classification,
+archive admission, replacement, preservation, and evidence decisions to the
+sole human owners and machine registries. Stage 98 describes a full typed
+provenance/preservation tombstone and disposition-conditional relations without
+changing its ledger or any tombstone. The registry owns every source
+frontmatter placeholder, source validation covers present optional fields, and
+target validation rejects every new literal through a value-free finding.
+Task 4 surfaces remained untouched; the subsequent re-reviews identified only
+the final router gaps recorded below.
+
+T-DCLM-003 final independent re-review verdicts: specification FAIL with
+Critical 0, Important 1, and Minor 0 for I-03; quality FAIL with Critical 0,
+Important 1, and Minor 0 for I-Q02. I-03 identified stale disposition ownership
+in the Stage 99 support catalog. I-Q02 identified both catalog role drift and
+the unsynchronized Stage 98 parent router in `docs/README.md`. Both reviewers
+confirmed prior I-01/I-02/I-Q01 closed.
+
+T-DCLM-003 final-router remediation self-review verdict: PASS. The support
+catalog now assigns only workflow/protected-surface/approval/commit boundaries
+to Template Governance and only human status vocabulary/interpretation to
+Lifecycle Status; disposition/archive semantics route to the sole human owners
+and transition execution to the metadata registry/checker. Every existing
+Stage 98 parent-router location now describes a manifest-first validated typed
+provenance/preservation result, disposition-conditional replacement, and the
+safe provenance, confidentiality, rollback, and independent-review route.
+No new README section, tombstone, generated output, or Task 4 surface changed.
+The terminal independent reviews confirmed the remediation complete.
+
+T-DCLM-003 terminal reviews over `133b3daa..160ff097`: specification PASS with
+Critical 0, Important 0, and Minor 0; separate quality PASS with Critical 0,
+Important 0, and Minor 0. Both reviewers confirmed I-01/I-02/I-03 and
+I-Q01/I-Q02 closed. T-DCLM-003 is complete and T-DCLM-004 is unblocked.
+
+T-DCLM-004 implementer self-review verdict: PASS. The workflow has only the
+approved scheduled/manual triggers, exact cron, immutable action SHAs,
+read-only top/job permissions, full Git history, Python 3.12 dependencies from
+`scripts/requirements.txt`, blocking contract/promoted/impacted checks, and
+advisory safe full/duplicate reporting. The repository path verifies an
+explicit commit or local `HEAD~1` before impact analysis, and the existing
+repo-contract hook remains the sole pre-push owner. Required CI job IDs and
+local status-check names are unchanged. Generated fallout is owner-produced and
+bounded to three expected outputs. Independent Task 4 specification and quality
+reviews over `1b42a100..918b9a3b` both passed with Critical 0, Important 0, and
+Minor 1. Their shared local generated-gate inventory/parity Minor was resolved
+in `9c4998d6`, but terminal Quality review over `1b42a100..11ff5edb` returned
+Critical 0, Important 1, Minor 0 for missing helper reachability and complete
+per-surface recommendation assertions. I-Q01 was remediated in `25ace7f5`.
+Terminal Spec and Quality re-reviews over `1b42a100..46e3ff5e` both returned
+PASS C0/I0/M0, closing Task 4. At that review boundary, Task 5 remained
+unstarted.
+
+T-DCLM-005 initial advisory implementer self-review is superseded by the
+independent FAIL. Spec I-S01/I-S02 and Quality I-Q01/I-Q02 showed that sorted
+empty consumer lists and a common floating rollback were structurally valid but
+not truthful. Spec I-S03 and Quality M-Q01 showed the handoff stopped before the
+generated commit. Remediation self-review confirms the 24 rows and dispositions
+are unchanged; every row's canonical scan equals its sorted consumer list, every
+changed source rollback equals its immutable newest-to-oldest Git history, and
+the preserve row has an honest empty rollback. Terminal advisory re-reviews at
+`fa27247854777882822cac1e4b58784e42d05076` returned Spec PASS C0/I0/M0 and
+Quality PASS C0/I0/M0, closing I-S01/I-S02/I-S03, I-Q01/I-Q02, and M-Q01. The
+subsequent promotion is deliberately narrow: Foundation alone is blocking with
+24/24 `pass`/`pass` verdicts and the exact canonical manifest route; all later
+waves remain advisory/null. Post-promotion Spec and Quality reviews of full
+commit `b3f8c5cb09366cdf045e9f595c9622a521807f71` both returned APPROVED
+C0/I0/M0. Task 5 is complete. Task 6 remediation is implemented and verified,
+and the fresh whole-branch re-reviews at
+`63865ec601bb19aeb052ef8ffd1b213738c22ad2` returned Spec PASS C0/I0/M0 and
+Quality PASS C0/I0/M0. The pre-closure controlled wrapper then passed with
+empty Git-visible path sets, so closure is authorized.
+
+Review findings and disposition: I-01 and I-02 resolved in `ab33b64f`; I-03 resolved in `602994f2`; I-Q01 and I-Q02 resolved in `e9db5afb`. Final specification and quality reviews are clean, T-DCLM-001 is closed, and T-DCLM-002 is unblocked.
+
+## Task 6 Whole-Branch Review Remediation Evidence
+
+The first whole-branch review returned four Important findings. Commit
+`9c3fb049` resolves the public API, blocking evidence-completeness, exact
+rollback/ownership, and confidentiality findings. Commit `ae88ae62` resolves
+the Stage 90 router-state finding without adding new router policy sections.
+
+| Evidence | Result |
+| --- | --- |
+| Strict RED | Seven focused tests reproduced 39 expected failures; the pending advisory skeleton control passed. |
+| Focused GREEN | Core 6/6, CLI confidentiality 3/3, and reviewer-requested focused suite 10/10 passed. |
+| Full suites | Metadata 209/209 and lifecycle 89/89 passed. The first lifecycle restart exposed one blocking candidate-fixture inheritance defect; the fixture now declares advisory/null explicitly before the complete GREEN rerun. |
+| Wrapper contract | Unit/contract suite 29/29 passed. The actual all-files wrapper was not invoked. |
+| Production gates | Metadata changed selection 37/0/0/0; lifecycle contract 0; Foundation manifest PASS; promoted 0; impacted 370/0 with only the approved Stage 04 Tasks budget warning; traceability 46/0; alignment 650 documents, 5,182 links, 141 operations documents, zero failures; repository contracts `failures=0`. |
+| Generated owners | Security readiness, audit implementation matrix, LLM Wiki index, and LLM Wiki coverage checks were fresh; no generated fallout was required. |
+| Graphify | `graphify update .` passed at 1,150/1,150 files, 24,381 nodes, 26,908 edges, and 1,589 communities. An initial obsolete health-script path exited with `ENOENT`; the corrected `scripts/knowledge/report-graphify-health.sh` exited 0 with advisory status for two unrelated infrastructure cross-root inferences. The report was corroborated against tracked Stage 00, Spec 131, its Plan/Task, Stage 90/99 contracts, executable validators/tests, and routers, then both Graphify outputs were restored. |
+
+Terminal whole-branch re-reviews of
+`e00e1483..63865ec601bb19aeb052ef8ffd1b213738c22ad2` returned Spec PASS
+C0/I0/M0 and Quality PASS C0/I0/M0. Together with the clean pre-closure
+controlled wrapper, this authorizes the Foundation status and index closure
+only. Remote or runtime mutation, archive/later-wave execution, and merge
+remain outside this evidence.
+
+Closure validation:
+
+| Gate | Result |
+| --- | --- |
+| Canonical owner writes | LLM Wiki index generated 1,306 paths with no diff; coverage generated 1,305 safe paths with no diff; metadata inventory generated 908 records and 2,160 findings with only the three planned Foundation status rows changing from active to completed. |
+| Generated freshness | Security readiness, audit implementation matrix, LLM Wiki index, LLM Wiki coverage, and metadata inventory check modes all passed. |
+| Metadata | `check-changed --base-ref e00e1483` selected 38 records with zero violations, legacy exceptions, or transition overrides. |
+| Lifecycle | Contract violations 0; Foundation manifest PASS; promoted violations 0; impacted selected 370 with zero violations and only the approved Stage 04 Tasks directory-budget warning. |
+| Documentation | Traceability passed 46 catalog pairs with zero failures; alignment passed 650 stage documents, 5,182 links, and 141 operations documents with zero failures. |
+| Repository and diff | Repository contracts returned `failures=0`; `git diff --check` passed; the exact closure path set contained nine expected files and zero unexpected files before staging. |
+
+## Commit Ledger
+
+Planning baseline:
+
+- 15fdac5d — docs(spec): define corpus lifecycle migration foundation
+- 313c36ed — docs(generated): refresh corpus design indexes
+- c6b3d9bc — docs(spec): clarify canonical stage routing
+
+Foundation logical commits:
+
+- `d40540a0` — T-DCLM-001 `feat(docs): define corpus lifecycle machine contracts`.
+- `a224f93d` — T-DCLM-001 generated follow-up `docs(generated): index lifecycle machine contract`.
+- `ab33b64f` — T-DCLM-001 specification-review remediation `fix(docs): enforce corpus lifecycle machine contracts`.
+- `602994f2` — T-DCLM-001 specification re-review remediation `fix(docs): honor metadata profile identity rules`.
+- `e9db5afb` — T-DCLM-001 quality-review remediation `fix(docs): harden archive snapshot validation`.
+- `43d7d149` — T-DCLM-002 `feat(validation): add document corpus lifecycle checks`.
+- `82cbb9c0` — T-DCLM-002 first-review remediation `fix(validation): harden document corpus lifecycle checks`.
+- `ee4b6846` — T-DCLM-002 I-08 remediation `fix(validation): allow pre-stage lifecycle candidates`.
+- `eb52185c` — T-DCLM-002 final-review remediation `fix(validation): close lifecycle safety boundaries`.
+- `cb84d6c4` — T-DCLM-002 closure contract remediation `fix(docs): defer archive replacement truth`.
+- `2c1b0c46` — T-DCLM-002 closure implementation remediation `fix(validation): close lifecycle corpus review blockers`.
+- `9bea953b` — T-DCLM-002 final acceptance remediation `fix(validation): close lifecycle acceptance boundaries`.
+- `6c33c66c` — T-DCLM-002 release-gate remediation `fix(validation): close lifecycle release blockers`.
+- `8001a95c` — T-DCLM-002 final release-quality remediation `fix(validation): bind merge owners to baseline provenance`.
+- `1c9ef624` — T-DCLM-002 sign-off remediation `fix(validation): close lifecycle sign-off gaps`.
+- `74d5232d` — T-DCLM-003 authored implementation `docs(governance): align corpus migration and archive rules`.
+- `46558c30` — T-DCLM-003 generated follow-up `docs(generated): index lifecycle human contracts`.
+- `e42296fa` — T-DCLM-003 first-review remediation `fix(docs): close lifecycle human contract review gaps`. Canonical owners produced no remediation drift, so the generated follow-up was omitted.
+- `160ff097` — T-DCLM-003 final-router remediation `fix(docs): synchronize lifecycle archive routers`. Canonical owners produced no drift, so no generated follow-up is required.
+- `35b07486` — T-DCLM-004 authored implementation `ci(docs): route corpus lifecycle governance checks`.
+- `ea2ffd88` — T-DCLM-004 generated follow-up `docs(generated): index lifecycle workflow`; the audit matrix had no diff and was omitted.
+- `918b9a3b` — T-DCLM-004 evidence-only handoff `docs(execution): record corpus lifecycle Task 4 evidence`.
+- `9c4998d6` — T-DCLM-004 review remediation `fix(validation): align generated QA gate inventory`.
+- `25ace7f5` — T-DCLM-004 terminal-quality remediation `fix(validation): enforce lifecycle QA reachability`.
+- `46e3ff5e` — T-DCLM-004 terminal-quality evidence `docs(execution): record Task 4 quality remediation`.
+- `d78676dd` — T-DCLM-005 pre-publication blocker remediation `fix(validation): normalize template manifest identity`.
+- `fafc504f` — T-DCLM-005 quality-Minor remediation `test(validation): cover template identity boundaries`.
+- `df169722` — T-DCLM-005 metadata-classification blocker remediation `fix(docs): classify lifecycle generated evidence`.
+- `487fb1b1` — T-DCLM-005 metadata Quality-Minor remediation `test(validation): cover generated registry README rejection`.
+- `f3f870fc` — T-DCLM-005 authored advisory baseline `docs(data): publish corpus lifecycle foundation baseline`.
+- `63829c10` — T-DCLM-005 generated follow-up `docs(generated): refresh corpus lifecycle evidence`; security readiness and audit matrix had no diff and were omitted.
+- `4e8d23f3` — T-DCLM-005 advisory review remediation `fix(validation): bind lifecycle advisory evidence`; canonical summary and downstream owner regeneration produced no diff, so no generated remediation commit was created.
+- `fa272478` — T-DCLM-005 tracked advisory re-review evidence `docs(execution): record lifecycle advisory remediation evidence`; terminal advisory Spec and Quality re-reviews both returned PASS C0/I0/M0 over the complete package.
+- `b3f8c5cb` — T-DCLM-005 Foundation promotion `docs(governance): promote corpus lifecycle foundation gate`; post-promotion Spec and Quality reviewers both returned APPROVED C0/I0/M0 for the full commit.
+- `9c3fb049` — T-DCLM-006 whole-branch validator/test remediation `fix(governance): harden Foundation evidence validation`.
+- `ae88ae62` — T-DCLM-006 Stage 90 router remediation `docs(references): align Foundation lifecycle routing`.
+- `63865ec6` — T-DCLM-006 review-remediation evidence `docs(execution): record whole-branch review remediation`; terminal whole-branch Spec and Quality reviews both returned PASS C0/I0/M0 for this exact reviewed HEAD.
+
+The later ledger-only closure commit records these terminal verdicts and does
+not alter the reviewed promotion, manifest, generated summary, contracts, or
+tests.
+
+The reviewed T-DCLM-002 implementation and remediation range ends at
+`9fe234f6`. The later ledger-only closure commit records the terminal verdicts
+and does not alter the reviewed implementation, contracts, or tests.
+
+The reviewed T-DCLM-003 authored implementation and remediation range is
+`133b3daa..160ff097`. This later ledger-only closure commit records the terminal
+verdicts and does not alter the reviewed implementation, contracts, templates,
+tests, or generated outputs.
+
+Commit validation: each entry must name its work unit, review verdicts, focused
+GREEN commands, and generated fallout before closure.
+
+## Deferred and Blocked Items
+
+Deferred:
+
+- Spec 132 — active SDLC graph migration;
+- Spec 133 — operations document migration;
+- Spec 134 — completed/superseded evidence and Stage 04 year partition;
+- Spec 135 — existing tombstone provenance and approved snapshots;
+- Spec 136 — Stage 90, README, generated, _workspace, .github, and final
+  full-corpus enforcement.
+
+Blocked items: none.
+
+Deferral destination: the named later-wave Specs and their separately approved
+Plans/Tasks.
+
+## Related Documents
+
+- [Foundation Spec](../../03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
+- [Foundation Plan](../plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
+- [Stage 04 Tasks](./README.md)
+- [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Metadata registry](../../99.templates/support/document-metadata-profiles.yaml)
+- [Controlled all-files wrapper](../../../scripts/validation/run-agent-precommit-all-files.sh)

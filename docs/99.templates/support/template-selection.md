@@ -30,18 +30,16 @@ template source.
 | Archive | `docs/98.archive/<original-stage>/<original-path>.md` | [archive.template.md](../templates/common/archive.template.md) |
 | README | `README.md`, `docs/README.md`, folder `README.md` files | [readme.template.md](../templates/common/readme.template.md) |
 
-## Restructure Disposition Mapping
+## Corpus Migration Selection Boundary
 
-When a document restructure task classifies a target, choose the template or
-target action from this mapping:
-
-| Disposition | Template or Action | Selection Rule |
-| --- | --- | --- |
-| `active-canonical` | Keep the target's current primary template role. | Do not retag or move only because the document is old. |
-| `historical-archive` | [archive.template.md](../templates/common/archive.template.md) for the tombstone. | Use after active links and current replacement pointers are reviewed. |
-| `duplicate-remove` | Usually no new template; use archive template only when a tombstone is required for traceability. | Remove only after the canonical replacement is recorded. |
-| `conflict-remove-or-archive` | Archive template when removing from active chain; otherwise create a gap/reference record. | Do not leave conflicting current-truth guidance active without a gap. |
-| `evidence-preserve` | Preserve the existing evidence profile; add Stage 90 reference context if needed. | Do not rewrite historical evidence for style-only cleanup. |
+Template selection follows, but never performs, manifest classification. Use
+the [corpus migration contract](./corpus-migration-contract.md) to classify the
+approved baseline row and prove its consumers, replacement, preservation,
+review, and rollback evidence. Use the
+[archive and retention contract](./archive-retention-contract.md) to decide
+whether a validated archive result uses the Archive form and which conditional
+fields and sections apply. This file only maps the resulting target role to its
+copyable source.
 
 ## Spec Child Template Mapping
 
@@ -101,3 +99,5 @@ target action from this mapping:
 - [SDLC document contract](./sdlc-document-contract.md)
 - [common document contract](./common-document-contract.md)
 - [README profile contract](./readme-profile-contract.md)
+- [corpus migration contract](./corpus-migration-contract.md)
+- [archive and retention contract](./archive-retention-contract.md)
