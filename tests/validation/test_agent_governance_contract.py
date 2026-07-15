@@ -1025,6 +1025,26 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                     codes(contract.validate_repository(root, bundle, "harness")),
                 )
 
+    def test_repository_harness_does_not_accept_cross_token_html_hidden_heading(self) -> None:
+        for tag in ("code", "pre", "script", "style"):
+            with self.subTest(tag=tag), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                provider = root / ".claude/CLAUDE.md"
+                provider.write_text(
+                    provider.read_text(encoding="utf-8").replace(
+                        "## Scope",
+                        f"### Scope\n\n<{tag}>\n\n## Scope\n\n</{tag}>",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                self.assertIn(
+                    "AGC-REPOSITORY-MISSING-SECTION",
+                    codes(contract.validate_repository(root, bundle, "harness")),
+                )
+
     def test_section_names_use_only_strict_h2_tokens(self) -> None:
         source = """\
 ## 2. Visible Section
@@ -1048,6 +1068,31 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             ("Scope",),
             contract._section_names(
                 "## <code>Scope</code>\n\n> ## Quote Example\n\n- ## List Example\n"
+            ),
+        )
+
+    def test_section_names_preserve_independent_html_state_across_tokens(self) -> None:
+        for tag in ("code", "pre", "script", "style"):
+            with self.subTest(tag=tag):
+                self.assertEqual(
+                    (), contract._section_names(f"<{tag}>\n\n## Scope\n\n</{tag}>")
+                )
+        self.assertEqual(
+            ("Scope",),
+            contract._section_names(
+                "<code>\n\nexample\n\n</code>\n\n## Scope"
+            ),
+        )
+        self.assertEqual(
+            ("Scope",),
+            contract._section_names(
+                "<div><code>\n\nexample\n\n</div>\n\n## Scope\n\n</code>"
+            ),
+        )
+        self.assertEqual(
+            (),
+            contract._section_names(
+                "<code>\n\nexample\n\n</span>\n\n## Scope\n\n</code>"
             ),
         )
 
@@ -1335,6 +1380,52 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 observed = codes(contract.validate_repository(root, bundle, "harness"))
                 self.assertNotIn("AGC-REPOSITORY-README-POLICY", observed)
 
+    def test_repository_harness_preserves_html_hidden_state_across_markdown_tokens(self) -> None:
+        cases = tuple(
+            (
+                f"<{tag}>\n\nProvider model defaults are defined here.\n\n</{tag}>",
+                False,
+            )
+            for tag in ("code", "pre", "script", "style")
+        ) + (
+            (
+                "<code>\n\nexample\n\n</code>\n\n"
+                "Provider model defaults are defined here.",
+                True,
+            ),
+            (
+                "<div><code>\n\nexample\n\n</div>\n\n"
+                "Provider model defaults are defined here.</code>",
+                True,
+            ),
+            (
+                "<code>\n\nexample\n\n</span>\n\n"
+                "Provider model defaults are defined here.</code>",
+                False,
+            ),
+        )
+        for source, expected_policy in cases:
+            with self.subTest(
+                source=source, expected_policy=expected_policy
+            ), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / ".codex/README.md"
+                readme.write_text(
+                    readme.read_text(encoding="utf-8").replace(
+                        "Change canonical Stage 00 sources first",
+                        f"{source}\n\nChange canonical Stage 00 sources first",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertEqual(
+                    expected_policy,
+                    "AGC-REPOSITORY-README-POLICY" in observed,
+                )
+
     def test_repository_harness_keeps_visible_prose_after_hidden_html_ancestor_closes(self) -> None:
         sources = (
             "<pre><code>example</pre>"
@@ -1523,6 +1614,39 @@ model defaults
             " model defaults ",
             contract._readme_policy_prose(
                 "<pre>Provider </code>model defaults are an example.</pre>"
+            ),
+        )
+
+    def test_readme_policy_prose_preserves_html_state_across_markdown_tokens(self) -> None:
+        for tag in ("code", "pre", "script", "style"):
+            with self.subTest(tag=tag):
+                self.assertNotIn(
+                    " model defaults ",
+                    contract._readme_policy_prose(
+                        f"<{tag}>\n\n"
+                        "Provider model defaults are defined here.\n\n"
+                        f"</{tag}>"
+                    ),
+                )
+        self.assertIn(
+            " model defaults ",
+            contract._readme_policy_prose(
+                "<code>\n\nexample\n\n</code>\n\n"
+                "Provider model defaults are defined here."
+            ),
+        )
+        self.assertIn(
+            " model defaults ",
+            contract._readme_policy_prose(
+                "<div><code>\n\nexample\n\n</div>\n\n"
+                "Provider model defaults are defined here.</code>"
+            ),
+        )
+        self.assertNotIn(
+            " model defaults ",
+            contract._readme_policy_prose(
+                "<code>\n\nexample\n\n</span>\n\n"
+                "Provider model defaults are defined here.</code>"
             ),
         )
 

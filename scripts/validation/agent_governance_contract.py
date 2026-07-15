@@ -2425,15 +2425,32 @@ def _section_names(text: str) -> tuple[str, ...]:
     headings: list[str] = []
     markdown = _markdown_parser()
     tokens = markdown.parse(_markdown_body(text))
-    for index, token in enumerate(tokens[:-1]):
-        if token.type != "heading_open" or token.tag != "h2" or token.level != 0:
+    html_state = _VisibleHTMLTextParser()
+    visible_heading = False
+    for token in tokens:
+        if token.type == "html_block":
+            html_state.feed(token.content)
+            html_state.feed("\n\n")
             continue
-        inline = tokens[index + 1]
-        if inline.type != "inline":
+        if token.type == "heading_open":
+            visible_heading = (
+                token.tag == "h2" and token.level == 0 and not html_state.is_hidden
+            )
             continue
-        heading = _visible_inline(inline.children or (), include_code=True).strip()
-        heading = re.sub(r"^\d+(?:\.\d+)*\.?\s+", "", heading)
-        headings.append(heading)
+        if token.type == "heading_close":
+            visible_heading = False
+            continue
+        if token.type != "inline":
+            continue
+        if visible_heading:
+            heading = _visible_inline(
+                token.children or (), include_code=True
+            ).strip()
+            heading = re.sub(r"^\d+(?:\.\d+)*\.?\s+", "", heading)
+            headings.append(heading)
+        _feed_visible_inline(html_state, token.children or ())
+        html_state.feed("\n\n")
+    html_state.close()
     return tuple(headings)
 
 
@@ -2468,8 +2485,12 @@ class _VisibleHTMLTextParser(HTMLParser):
         )
         self._element_stack: list[str] = []
 
+    @property
+    def is_hidden(self) -> bool:
+        return any(tag in self._hidden_tags for tag in self._element_stack)
+
     def handle_data(self, data: str) -> None:
-        if not any(tag in self._hidden_tags for tag in self._element_stack):
+        if not self.is_hidden:
             self.parts.append(data)
 
     def handle_starttag(
@@ -2504,26 +2525,36 @@ def _visible_html(markup: str, *, preserve_code: bool = False) -> str:
     return "".join(parser.parts)
 
 
-def _visible_inline(
-    children: Sequence[object], *, include_code: bool = False
-) -> str:
-    markup: list[str] = []
+def _feed_visible_inline(
+    parser: _VisibleHTMLTextParser,
+    children: Sequence[object],
+    *,
+    include_code: bool = False,
+) -> None:
     for child in children:
         child_type = getattr(child, "type", "")
         content = getattr(child, "content", "")
         if child_type == "code_inline":
             if include_code:
-                markup.append(html_escape(content))
+                parser.feed(html_escape(content))
             continue
         if child_type == "html_inline":
-            markup.append(content)
+            parser.feed(content)
         elif child_type in {"softbreak", "hardbreak"}:
-            markup.append(" ")
+            parser.feed(" ")
         elif child_type == "image":
-            markup.append(html_escape(content))
+            parser.feed(html_escape(content))
         elif child_type == "text":
-            markup.append(html_escape(content))
-    return _visible_html("".join(markup), preserve_code=include_code)
+            parser.feed(html_escape(content))
+
+
+def _visible_inline(
+    children: Sequence[object], *, include_code: bool = False
+) -> str:
+    parser = _VisibleHTMLTextParser(preserve_code=include_code)
+    _feed_visible_inline(parser, children, include_code=include_code)
+    parser.close()
+    return "".join(parser.parts)
 
 
 def _markdown_parser() -> object:
@@ -2538,7 +2569,7 @@ def _readme_policy_prose(text: str) -> str:
     """Return normalized natural-language README prose for policy-topic scans."""
 
     markdown = _markdown_parser()
-    visible_blocks: list[str] = []
+    visible_parser = _VisibleHTMLTextParser()
     heading_depth = 0
     for token in markdown.parse(_markdown_body(text)):
         if token.type == "heading_open":
@@ -2550,10 +2581,13 @@ def _readme_policy_prose(text: str) -> str:
         if heading_depth or token.type in {"fence", "code_block"}:
             continue
         if token.type == "inline":
-            visible_blocks.append(_visible_inline(token.children or ()))
+            _feed_visible_inline(visible_parser, token.children or ())
+            visible_parser.feed("\n\n")
         elif token.type == "html_block":
-            visible_blocks.append(_visible_html(token.content))
-    visible = "\n\n".join(visible_blocks)
+            visible_parser.feed(token.content)
+            visible_parser.feed("\n\n")
+    visible_parser.close()
+    visible = "".join(visible_parser.parts)
     visible = re.sub(
         r"(?<!\w)(?:\.{0,2}/)?[A-Za-z0-9_.{}*-]+(?:/[A-Za-z0-9_.{}*-]+)+",
         " ",
