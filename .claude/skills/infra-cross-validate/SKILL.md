@@ -37,6 +37,6 @@ Mark runtime-only questions for `drift-detector` and security-sensitive gaps for
 
 ## Related Documents
 
-- [IaC reviewer](../agents/iac-reviewer.md)
-- [Drift detector](../agents/drift-detector.md)
-- [Infrastructure validation](./infra-validate.md)
+- [IaC reviewer](../../../docs/00.agent-governance/agents/agents/iac-reviewer.md)
+- [Drift detector](../../../docs/00.agent-governance/agents/agents/drift-detector.md)
+- [Infrastructure validation](../../../docs/00.agent-governance/agents/functions/infra-validate.md)

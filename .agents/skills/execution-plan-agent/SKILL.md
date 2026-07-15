@@ -37,6 +37,6 @@ Return to specification when interfaces, authority, or completion criteria canno
 
 ## Related Documents
 
-- [Workflow supervisor](../agents/workflow-supervisor.md)
-- [Task breakdown](./task-breakdown-agent.md)
-- [Task checklists](../../rules/task-checklists.md)
+- [Workflow supervisor](../../../docs/00.agent-governance/agents/agents/workflow-supervisor.md)
+- [Task breakdown](../../../docs/00.agent-governance/agents/functions/task-breakdown-agent.md)
+- [Task checklists](../../../docs/00.agent-governance/rules/task-checklists.md)

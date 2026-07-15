@@ -197,6 +197,8 @@ Redaction boundary:
 | 2026-07-15 | T-AGHC-003 lifecycle and generated owners | Fresh implementation agent | Reconciled the six Foundation `active_consumers` affected by retired lowercase and Codex skill paths; no lifecycle status, verdict, disposition, enforcement, or evidence contract changed. Migrated all three Task-affected legacy Operations documents to their exact Guide/Policy/Runbook metadata and section profiles, removing copied scaffold content and reducing explicit-base legacy exceptions from three to zero. Regenerated LLM Wiki index/coverage and the metadata inventory through their owners; inventory is fresh at 910 records and 2,145 advisory findings. |
 | 2026-07-15 | T-AGHC-003 self-review | Fresh implementation agent | Focused post-fix tests passed 10/10. The combined governance and renderer suite passed 124/124 after correcting the expected governed-artifact count from 111 to 110 for the net one-role catalog reduction. Catalog repository mode passes with 14 roles and 22 functions, and renderer drift remains zero. Independent specification and quality reviews remain required before task closure. |
 | 2026-07-15 | T-AGHC-003 typed policy compatibility | Fresh implementation agent | Final aggregate verification exposed one cross-generation conflict: the canonical typed policy profile and template require `## Scope`, while the legacy aggregate still required `## Policy Scope` for every policy. The aggregate now selects the scope heading from typed `artifact_type: policy` metadata, rejects the opposite-generation duplicate, and preserves `## Policy Scope` for policies that have not entered the staged typed migration. This removed the Task 3-owned failure without broad corpus migration. |
+| 2026-07-16 | T-AGHC-003 independent-review RED | Fresh remediation agent | Quality review found two Important boundary failures: loose substring ownership plus path-based stale deletion could remove an unowned replacement, and the compatibility wrapper accepted trailing unknown or conflicting arguments. Specification review found two additional Important failures: all 44 generated skill projections retained source-relative links that resolved from the wrong directory, and an empty, symlinked, or non-directory `.codex/skills` root could escape exact-absence drift detection. The dependency-correct focused RED ran 16 methods and produced 9 failures plus 6 errors; the one existing unknown-renderer-flag case remained a negative control. |
+| 2026-07-16 | T-AGHC-003 independent-review remediation | Fresh remediation agent | Marker cleanup now recognizes the exact generated header and source identity, atomically quarantines the current same-directory object, verifies the captured regular object, and deletes only verified renderer-owned content. Unowned or nonregular captures are restored through no-overwrite linking; a restoration collision preserves quarantine and fails closed. Marker parent cleanup is omitted, while exact Codex root removal opens, checks, captures, and identity-verifies only empty owned directories. The wrapper accepts zero arguments as `--check` or exactly one supported mode and rejects all other arities before invoking Python. Markdown links are deterministically rebased from each canonical function source to each generated output; external, absolute, and anchor targets remain unchanged. All 44 projections were regenerated, and the twelve directly added Foundation consumers were reconciled without changing lifecycle status, disposition, review verdict, or enforcement. Independent specification and quality re-reviews remain required. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -219,6 +221,25 @@ The aggregate check no longer owns catalog or hardcoded model cardinality. Its
 remaining provider/harness blocks are completed by T-AGHC-004 and T-AGHC-005;
 the final observed aggregate count is four. Scoped QA is supplied by the
 automatic commit hook because direct manual pre-commit execution is prohibited.
+
+T-AGHC-003 independent-review remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| renderer regression RED | all four review findings reproduce | 16 methods; 9 failures, 6 errors, 1 negative control pass | Pass |
+| renderer regression GREEN | all focused methods pass | 16/16 | Pass |
+| governance plus renderer full suites | no regression | 134/134, exit 0 | Pass |
+| generated link resolution | every Claude/shared projection link resolves | 44/44 projections; 132/132 local links | Pass |
+| wrapper invalid-argument matrix | exit 2 before renderer invocation | five invalid arity/value combinations rejected; sentinel untouched | Pass |
+| ownership and Codex cleanup matrix | restore or fail closed without outside writes | marker mention, replacement race, symlink, FIFO, restoration collision, quarantine cleanup, empty/symlink/file/nonempty Codex roots pass | Pass |
+| contract and catalog repository modes | exact cardinality and zero catalog findings | `contracts=3 agents=14 functions=22 providers=3 failures=0`; catalog `failures=0` | Pass |
+| renderer check, repeated | deterministic zero drift | `providers=3 drift=0` twice | Pass |
+| changed metadata / promoted / impacted lifecycle against `07cedeec` | zero violations | final metadata selected 2/0/0/0; promoted 0; impacted selected 137 / violations 0 with configured Task-directory warning | Pass |
+| traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,206 links; 141 operations docs; failures 0 | Pass |
+| generated owners | fresh | Foundation summary, LLM Wiki index/coverage, and metadata inventory fresh at 910 records / 2,145 advisory findings | Pass |
+| repository aggregate compatibility | only planned Task 4/5 blocks remain | four existing blocks: root hook parity, provider adapter/harness compatibility, `.agents` compatibility, and governance memory | Expected interim dependency |
+| Graphify refresh | refresh, corroborate advisory output, restore generated files | 24,521 nodes / 27,864 edges / 1,563 communities; two unrelated observability ambiguities, 16,300 isolated nodes, and 68 thin communities corroborated; generated graph files restored | Pass |
+| compile, shell syntax, Ruff, renderer drift, and diff hygiene | zero failures | pass | Pass |
 
 Planning verification:
 
@@ -656,6 +677,7 @@ with owner, reason, and destination.
 | T-AGHC-002 shared Stage 00 registry matching remediation | `fix(governance): share bounded Stage 00 registry matching` | `f89fbe09` | focused/full GREEN; terminal independent review C0/I0/M0 |
 | T-AGHC-002 terminal review evidence | `docs(task): record metadata governance review closure` | this logical commit | full-range specification PASS; final-delta specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-003 | `refactor(agents): converge role and function catalogs` | this logical commit | focused and full unit suites GREEN; independent reviews pending |
+| T-AGHC-003 independent-review remediation | `fix(agents): preserve generated surface ownership` | this logical commit | four Important findings reproduced and remediated; focused/full GREEN; independent re-reviews pending |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |
 | T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | pending | pending |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |

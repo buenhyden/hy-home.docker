@@ -37,6 +37,6 @@ Record unknown boundaries and stop any claim of completeness when configuration 
 
 ## Related Documents
 
-- [Security auditor](../agents/security-auditor.md)
-- [Security audit](./security-audit.md)
-- [Security scope](../../scopes/security.md)
+- [Security auditor](../../../docs/00.agent-governance/agents/agents/security-auditor.md)
+- [Security audit](../../../docs/00.agent-governance/agents/functions/security-audit.md)
+- [Security scope](../../../docs/00.agent-governance/scopes/security.md)

@@ -37,6 +37,6 @@ Return ambiguous or conflicting requirements to Stage 01 with concrete questions
 
 ## Related Documents
 
-- [Rules engineer](../agents/rules-engineer.md)
-- [ADR writing](./adr-writing.md)
-- [Architecture scope](../../scopes/architecture.md)
+- [Rules engineer](../../../docs/00.agent-governance/agents/agents/rules-engineer.md)
+- [ADR writing](../../../docs/00.agent-governance/agents/functions/adr-writing.md)
+- [Architecture scope](../../../docs/00.agent-governance/scopes/architecture.md)

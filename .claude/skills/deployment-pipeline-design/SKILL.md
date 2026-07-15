@@ -37,6 +37,6 @@ Defer implementation when environment credentials, promotion authority, or rollb
 
 ## Related Documents
 
-- [CI/CD engineer](../agents/ci-cd-engineer.md)
-- [CI/CD patterns](./ci-cd-patterns.md)
-- [Approval boundaries](../../rules/approval-boundaries.md)
+- [CI/CD engineer](../../../docs/00.agent-governance/agents/agents/ci-cd-engineer.md)
+- [CI/CD patterns](../../../docs/00.agent-governance/agents/functions/ci-cd-patterns.md)
+- [Approval boundaries](../../../docs/00.agent-governance/rules/approval-boundaries.md)

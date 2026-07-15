@@ -37,6 +37,6 @@ Stop when credentials, remote rulesets, or promotion authority are required; pro
 
 ## Related Documents
 
-- [CI/CD engineer](../agents/ci-cd-engineer.md)
-- [GitHub governance](../../rules/github-governance.md)
-- [Task checklists](../../rules/task-checklists.md)
+- [CI/CD engineer](../../../docs/00.agent-governance/agents/agents/ci-cd-engineer.md)
+- [GitHub governance](../../../docs/00.agent-governance/rules/github-governance.md)
+- [Task checklists](../../../docs/00.agent-governance/rules/task-checklists.md)

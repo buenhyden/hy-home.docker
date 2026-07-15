@@ -39,6 +39,6 @@ Do not publish commands that are unimplemented, destructive without approval, or
 
 ## Related Documents
 
-- [Documentation writer](../agents/doc-writer.md)
-- [Operations scope](../../scopes/ops.md)
-- [Documentation protocol](../../rules/documentation-protocol.md)
+- [Documentation writer](../../../docs/00.agent-governance/agents/agents/doc-writer.md)
+- [Operations scope](../../../docs/00.agent-governance/scopes/ops.md)
+- [Documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)

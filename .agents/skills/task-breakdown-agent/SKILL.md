@@ -37,6 +37,6 @@ Return to planning when a unit cannot be made reversible, testable, or independe
 
 ## Related Documents
 
-- [Workflow supervisor](../agents/workflow-supervisor.md)
-- [Execution plan function](./execution-plan-agent.md)
-- [Subagent protocol](../../subagent-protocol.md)
+- [Workflow supervisor](../../../docs/00.agent-governance/agents/agents/workflow-supervisor.md)
+- [Execution plan function](../../../docs/00.agent-governance/agents/functions/execution-plan-agent.md)
+- [Subagent protocol](../../../docs/00.agent-governance/subagent-protocol.md)

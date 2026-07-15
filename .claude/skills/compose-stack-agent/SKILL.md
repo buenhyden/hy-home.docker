@@ -37,6 +37,6 @@ Stop on unresolved variables, missing secret files, invalid dependency order, or
 
 ## Related Documents
 
-- [Infrastructure implementer](../agents/infra-implementer.md)
-- [Docker Compose patterns](./docker-compose-patterns.md)
-- [Infrastructure validation](./infra-validate.md)
+- [Infrastructure implementer](../../../docs/00.agent-governance/agents/agents/infra-implementer.md)
+- [Docker Compose patterns](../../../docs/00.agent-governance/agents/functions/docker-compose-patterns.md)
+- [Infrastructure validation](../../../docs/00.agent-governance/agents/functions/infra-validate.md)

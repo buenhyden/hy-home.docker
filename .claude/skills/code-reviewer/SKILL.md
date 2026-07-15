@@ -37,6 +37,6 @@ Return `cannot verify` with the missing evidence when the package is incomplete;
 
 ## Related Documents
 
-- [Code reviewer role](../agents/code-reviewer.md)
-- [Code review dimensions](./code-review-dimensions.md)
-- [Subagent protocol](../../subagent-protocol.md)
+- [Code reviewer role](../../../docs/00.agent-governance/agents/agents/code-reviewer.md)
+- [Code review dimensions](../../../docs/00.agent-governance/agents/functions/code-review-dimensions.md)
+- [Subagent protocol](../../../docs/00.agent-governance/subagent-protocol.md)

@@ -37,6 +37,6 @@ Fail closed on ambiguous ownership, conflicting policy, unsafe paths, or missing
 
 ## Related Documents
 
-- [Rules engineer](../agents/rules-engineer.md)
-- [Agent governance artifacts contract](../../contracts/agent-governance-artifacts.yaml)
-- [Approval boundaries](../../rules/approval-boundaries.md)
+- [Rules engineer](../../../docs/00.agent-governance/agents/agents/rules-engineer.md)
+- [Agent governance artifacts contract](../../../docs/00.agent-governance/contracts/agent-governance-artifacts.yaml)
+- [Approval boundaries](../../../docs/00.agent-governance/rules/approval-boundaries.md)

@@ -163,8 +163,12 @@ entries:
   disposition: migrate
   canonical_replacement: null
   active_consumers:
+  - .agents/skills/adr-writing/SKILL.md
+  - .agents/skills/ops-runbook-agent/SKILL.md
   - .agents/workflows/documentation.md
   - .claude/agents/doc-writer.md
+  - .claude/skills/adr-writing/SKILL.md
+  - .claude/skills/ops-runbook-agent/SKILL.md
   - README.md
   - docs/00.agent-governance/rules/hooks/hookify.block-absolute-file-link.md
   - docs/00.agent-governance/rules/output-style.md
@@ -233,9 +237,11 @@ entries:
   disposition: migrate
   canonical_replacement: null
   active_consumers:
+  - .agents/skills/ci-cd-patterns/SKILL.md
   - .claude/agents/ci-cd-engineer.md
   - .claude/agents/code-reviewer.md
   - .claude/agents/security-auditor.md
+  - .claude/skills/ci-cd-patterns/SKILL.md
   - README.md
   - docs/00.agent-governance/memory/progress.md
   - docs/00.agent-governance/providers/agents-md.md
@@ -360,6 +366,12 @@ entries:
   disposition: migrate
   canonical_replacement: null
   active_consumers:
+  - .agents/skills/ci-cd-patterns/SKILL.md
+  - .agents/skills/execution-plan-agent/SKILL.md
+  - .agents/skills/style-validation/SKILL.md
+  - .claude/skills/ci-cd-patterns/SKILL.md
+  - .claude/skills/execution-plan-agent/SKILL.md
+  - .claude/skills/style-validation/SKILL.md
   - docs/00.agent-governance/memory/governance-memory-usage-contract.md
   - docs/00.agent-governance/rules/agentic.md
   - docs/00.agent-governance/rules/bootstrap.md

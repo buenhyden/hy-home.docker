@@ -37,6 +37,6 @@ Quarantine no test silently; isolate flaky environment dependencies and escalate
 
 ## Related Documents
 
-- [QA engineer](../agents/qa-engineer.md)
-- [Test automation](./test-automator.md)
-- [QA scope](../../scopes/qa.md)
+- [QA engineer](../../../docs/00.agent-governance/agents/agents/qa-engineer.md)
+- [Test automation](../../../docs/00.agent-governance/agents/functions/test-automator.md)
+- [QA scope](../../../docs/00.agent-governance/scopes/qa.md)

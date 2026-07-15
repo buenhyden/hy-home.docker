@@ -37,6 +37,6 @@ Exclude unsafe or unverifiable paths, record the omission, and stop if provenanc
 
 ## Related Documents
 
-- [Documentation writer](../agents/doc-writer.md)
-- [Documentation scope](../../scopes/docs.md)
-- [Environment constraints](../../rules/environment-constraints.md)
+- [Documentation writer](../../../docs/00.agent-governance/agents/agents/doc-writer.md)
+- [Documentation scope](../../../docs/00.agent-governance/scopes/docs.md)
+- [Environment constraints](../../../docs/00.agent-governance/rules/environment-constraints.md)

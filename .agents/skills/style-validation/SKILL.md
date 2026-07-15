@@ -37,6 +37,6 @@ Stop on unexpected paths, formatter oscillation, or conflicting style authoritie
 
 ## Related Documents
 
-- [QA engineer](../agents/qa-engineer.md)
-- [Task checklists](../../rules/task-checklists.md)
-- [Quality standards](../../rules/quality-standards.md)
+- [QA engineer](../../../docs/00.agent-governance/agents/agents/qa-engineer.md)
+- [Task checklists](../../../docs/00.agent-governance/rules/task-checklists.md)
+- [Quality standards](../../../docs/00.agent-governance/rules/quality-standards.md)

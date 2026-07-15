@@ -6,6 +6,11 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$REPO_ROOT"
 
+if (( $# > 1 )); then
+  printf 'Usage: %s [--check|--write]\n' "$0" >&2
+  exit 2
+fi
+
 case "${1:---check}" in
   --check)
     exec python3 scripts/operations/provider_surface_renderer.py --check

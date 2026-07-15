@@ -37,6 +37,6 @@ Stop on invalid rendered configuration, missing authority, or unexpected runtime
 
 ## Related Documents
 
-- [Infrastructure implementer](../agents/infra-implementer.md)
-- [Compose stack function](./compose-stack-agent.md)
-- [Infrastructure scope](../../scopes/infra.md)
+- [Infrastructure implementer](../../../docs/00.agent-governance/agents/agents/infra-implementer.md)
+- [Compose stack function](../../../docs/00.agent-governance/agents/functions/compose-stack-agent.md)
+- [Infrastructure scope](../../../docs/00.agent-governance/scopes/infra.md)
