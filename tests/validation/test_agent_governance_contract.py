@@ -813,6 +813,57 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             self.assertIn("AGC-REPOSITORY-README-SECTION", observed)
             self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
 
+    def test_repository_harness_rejects_policy_prose_inside_allowed_readme_section(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            readme = root / ".codex/README.md"
+            readme.write_text(
+                readme.read_text(encoding="utf-8").replace(
+                    "Change canonical Stage 00 sources first",
+                    "Provider model defaults are defined here.\n\n"
+                    "Change canonical Stage 00 sources first",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+            observed = codes(contract.validate_repository(root, bundle, "harness"))
+            self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
+            self.assertNotIn("AGC-REPOSITORY-README-SECTION", observed)
+
+    def test_registered_readme_routing_prose_does_not_trigger_policy_topics(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        findings = contract.validate_repository(ROOT, bundle, "harness")
+        policy_findings = [
+            finding
+            for finding in findings
+            if finding.code == "AGC-REPOSITORY-README-POLICY"
+        ]
+        self.assertEqual([], policy_findings)
+        scripts_text = (ROOT / "scripts/README.md").read_text(encoding="utf-8")
+        self.assertIn("path-authority", scripts_text)
+
+    def test_readme_policy_prose_excludes_non_prose_markdown_surfaces(self) -> None:
+        source = """\
+## Model Defaults
+
+`model defaults`
+
+[routing](https://example.invalid/model-defaults)
+
+docs/model-defaults/owner.md
+
+```text
+model defaults
+```
+"""
+        self.assertNotIn(" model defaults ", contract._readme_policy_prose(source))
+        self.assertIn(
+            " model defaults ",
+            contract._readme_policy_prose("Provider model defaults are defined here."),
+        )
+
     def test_codeowners_keeps_repository_principal_and_covers_governed_surfaces(self) -> None:
         text = (ROOT / ".github/CODEOWNERS").read_text(encoding="utf-8")
         self.assertNotRegex(text, r"@(rules-engineer|qa-engineer|security-auditor)")

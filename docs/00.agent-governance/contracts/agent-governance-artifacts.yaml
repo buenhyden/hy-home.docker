@@ -470,7 +470,7 @@ readme_profiles:
       - Related Documents
     forbidden_policy_topics:
       - agent-role-definition
-      - path-authority
+      - path-authority-policy
       - provider-model-defaults
 path_authority:
   - authority_id: agent-function-catalog

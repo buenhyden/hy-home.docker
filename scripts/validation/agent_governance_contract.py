@@ -2021,6 +2021,40 @@ def _section_names(text: str) -> tuple[str, ...]:
     return tuple(headings)
 
 
+def _readme_policy_prose(text: str) -> str:
+    """Return normalized natural-language README prose for policy-topic scans."""
+
+    if text.startswith("---\n"):
+        boundary = text.find("\n---\n", 4)
+        if boundary >= 0:
+            text = text[boundary + 5 :]
+    prose: list[str] = []
+    fence: str | None = None
+    for line in text.splitlines():
+        fence_match = re.match(r"^\s{0,3}(`{3,}|~{3,})", line)
+        if fence_match:
+            marker = fence_match.group(1)[0]
+            if fence is None:
+                fence = marker
+            elif fence == marker:
+                fence = None
+            continue
+        if fence is not None or re.match(r"^\s{0,3}#{1,6}\s+", line):
+            continue
+        if re.match(r"^\s*\[[^]]+\]:\s*\S+", line):
+            continue
+        line = re.sub(r"`+[^`\n]*`+", " ", line)
+        line = re.sub(r"\]\([^)]*\)", "]", line)
+        line = re.sub(r"<https?://[^>]+>", " ", line)
+        line = re.sub(
+            r"(?<!\w)(?:\.{0,2}/)?[A-Za-z0-9_.{}*-]+(?:/[A-Za-z0-9_.{}*-]+)+",
+            " ",
+            line,
+        )
+        prose.append(line)
+    return " " + re.sub(r"[^a-z0-9]+", " ", "\n".join(prose).lower()).strip() + " "
+
+
 def _validate_artifact_projection(
     root: pathlib.Path,
     artifact_document: Mapping[str, object],
@@ -2220,11 +2254,12 @@ def _validate_readme_profiles(
                     "missing-section",
                     "agent-governance-artifacts",
                 )
-            normalized_text = re.sub(
-                r"[^a-z0-9]+", " ", " ".join(headings).lower()
-            )
+            normalized_text = _readme_policy_prose(text)
             for topic in _sequence_or_empty(entry.get("forbidden_policy_topics")):
-                if isinstance(topic, str) and topic.replace("-", " ") in normalized_text:
+                if not isinstance(topic, str):
+                    continue
+                normalized_topic = re.sub(r"[^a-z0-9]+", " ", topic.lower()).strip()
+                if normalized_topic and f" {normalized_topic} " in normalized_text:
                     _add(
                         findings,
                         "AGC-REPOSITORY-README-POLICY",

@@ -176,6 +176,7 @@ Redaction boundary:
 | 2026-07-15 | T-AGHC-002 lifecycle and generated owners | Fresh implementation agent | Reconciled only three Foundation `active_consumers`: removed `AGENTS.md` from the GitHub-governance and task-checklist sources and added the typed artifact contract as a frontmatter-contract consumer. No lifecycle status, verdict, enforcement, disposition, archive, or corpus payload changed. Regenerated the LLM Wiki index, coverage, metadata inventory, and provider hook parity owners. An intermediate parity drift was resolved by restoring the accurate no-tracked-Gemini-adapter source contract; all four outputs are fresh with no final generated-output diff. |
 | 2026-07-15 | T-AGHC-002 self-review | Fresh implementation agent | Confirmed focused and full metadata/governance tests, explicit-base metadata, impacted lifecycle, traceability, alignment, typed contract mode, compile, Ruff, Yamllint, and diff hygiene. The repository aggregate reports the expected interim `failures=5`: stale root/harness, mixed catalog/provider, compatibility, memory, and LLM-Wiki literal blocks whose replacement is explicitly owned by Tasks 3 through 5. Adding those copied literals would violate the Task 2 minimal-shim and navigation-only README envelope, so the aggregate checker was not modified. Independent specification and quality reviews remain required. |
 | 2026-07-15 | T-AGHC-002 specification-review remediation | Fresh remediation agent | Replaced three nonexistent Claude-local Hookify claims with the tracked canonical Stage 00 rule family and an explicit unrendered-local-projection gap. Split the false shared governance-document envelope into 22 deterministic profiles: two Task 3 catalog profiles and 20 active harness profiles for harness, memory, rule, scope, subagent, Hookify native variants, provider, README, and root-shim surfaces. Repository harness mode now resolves registered files and validates exact metadata keys/order/values, required sections, root imports, and README section/policy boundaries. The generic metadata checker remains admission/inference only. One Foundation `active_consumers` addition records the artifact contract's new explicit progress target; no lifecycle state or verdict changed. Fresh specification and quality re-reviews remain required. |
+| 2026-07-15 | T-AGHC-002 README prose remediation | Fresh remediation agent | Closed the follow-up specification finding that README copied-policy detection inspected headings only. The focused validator now removes frontmatter, headings, fenced and inline code, link destinations, reference definitions, autolinks, and bare routing paths before scanning normalized natural-language prose for contract-owned forbidden topic phrases. A body-only model-default mutation fails without a section finding, while the canonical scripts README `path-authority` routing reference remains valid through the audited `path-authority-policy` prohibition. Diagnostics remain value-free and allowed-section validation is unchanged. Fresh specification and quality re-reviews remain required. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -307,6 +308,19 @@ T-AGHC-002 specification-review remediation verification:
 | Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,107 nodes; 27,010 edges; 1,554 communities; two unrelated infrastructure ambiguities, 16,085 isolated nodes, and 73 thin communities were corroborated against tracked infrastructure, Stage 00, Spec, Task, validator, and tests before generated graph output restoration | Pass |
 | scoped pre-commit | all applicable hooks pass | all applicable hooks passed across the 10 remediation paths | Pass |
 | repository aggregate compatibility | preserve planned Task 3–5 dependencies | existing five forward-dependency blocks remain; no aggregate checker block was modified | Expected interim dependency |
+
+T-AGHC-002 README prose remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| body-only policy mutation (RED) | policy prose fails without a forbidden section | 1 test; 1 expected assertion failure because no README policy finding was emitted | Pass |
+| README prose and routing fixtures (GREEN) | natural policy prose fails; non-prose/routing tokens remain valid | Task 2 surface tests 12/12 | Pass |
+| full governance and inference suites | no regression | governance 42/42; inference 4/4 | Pass |
+| contract and repository harness CLIs | zero failures | contract `3/14/22/3/0`; repository harness `failures=0` | Pass |
+| changed metadata and lifecycle against `116732e2` | zero violations | metadata selected 2/0/0/0; promoted 0; impacted 136/0 with the configured Task-directory budget warning | Pass |
+| traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,205 links; 141 operations docs; failures 0 | Pass |
+| Ruff, Yamllint, scoped pre-commit, and diff hygiene | zero failures | zero failures | Pass |
+| Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,112 nodes; 27,020 edges; 1,556 communities; the same two unrelated infrastructure ambiguities, 16,085 isolated nodes, and 73 thin communities were source-corroborated before generated graph output restoration | Pass |
 
 ## Controlled Agent Pre-commit Evidence
 
