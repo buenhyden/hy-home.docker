@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: spec:132-agent-governance-harness-convergence
 artifact_type: spec
 parent_ids:
@@ -10,7 +10,7 @@ parent_ids:
 
 **Date:** 2026-07-15 (Asia/Seoul)
 
-**Status:** Approved in conversation; awaiting written-spec review
+**Status:** Approved and active
 
 **Scope:** `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/`, `.claude/`,
 `.codex/`, new `.gemini/`, `.github/`, `docs/00.agent-governance/`, and the

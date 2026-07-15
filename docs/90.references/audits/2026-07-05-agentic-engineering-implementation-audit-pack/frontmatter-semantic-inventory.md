@@ -39,7 +39,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 909
+- **Tracked records**: 911
 - **Records with findings**: 561
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
@@ -55,14 +55,14 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `generated` | 7 |
 | `governance` | 113 |
 | `guide` | 66 |
-| `plan` | 96 |
+| `plan` | 97 |
 | `policy` | 64 |
 | `prd` | 24 |
 | `readme` | 149 |
 | `reference` | 30 |
 | `runbook` | 61 |
 | `spec` | 57 |
-| `task` | 118 |
+| `task` | 119 |
 | `template-source` | 23 |
 
 ## Finding Summary
@@ -352,7 +352,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/03.specs/129-document-contract-canonicalization/spec.md` | `spec` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | none | migration candidate |
 | `docs/03.specs/130-template-contract-system-canonicalization/spec.md` | `spec` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | none | migration candidate |
 | `docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md` | `spec` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | none | migration candidate |
-| `docs/03.specs/132-agent-governance-harness-convergence/spec.md` | `spec` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=draft; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | none | migration candidate |
+| `docs/03.specs/132-agent-governance-harness-convergence/spec.md` | `spec` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | none | migration candidate |
 | `docs/03.specs/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/04.execution/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/04.execution/plans/2026-03-26-01-gateway-standardization.md` | `plan` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | missing-required-key | migration candidate |
@@ -451,6 +451,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md` | `plan` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
 | `docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md` | `plan` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
 | `docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md` | `plan` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
+| `docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md` | `plan` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
 | `docs/04.execution/plans/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md` | `task` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | missing-required-key | migration candidate |
 | `docs/04.execution/tasks/2026-03-26-02-auth-tasks.md` | `task` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | missing-required-key | migration candidate |
@@ -570,6 +571,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/04.execution/tasks/2026-07-13-document-contract-canonicalization.md` | `task` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
 | `docs/04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md` | `task` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
 | `docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md` | `task` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=completed; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
+| `docs/04.execution/tasks/2026-07-15-agent-governance-harness-convergence.md` | `task` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | not-applicable | none | migration candidate |
 | `docs/04.execution/tasks/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/05.operations/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/05.operations/guides/00-workspace/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |

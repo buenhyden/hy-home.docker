@@ -84,6 +84,7 @@ entries:
   - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
   - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
   - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md
   - docs/04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md
   - docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md
   - docs/04.execution/tasks/2026-05-17-requirements-standardization.md
@@ -473,6 +474,7 @@ entries:
   - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
   - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
   - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md
   - docs/04.execution/tasks/2026-03-26-07-workflow-tasks.md
   - docs/04.execution/tasks/2026-03-26-08-ai-tasks.md
   - docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md
@@ -583,6 +585,7 @@ entries:
   - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
   - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
   - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md
   - docs/04.execution/tasks/2026-03-26-07-workflow-tasks.md
   - docs/04.execution/tasks/2026-03-26-08-ai-tasks.md
   - docs/04.execution/tasks/2026-05-18-targeted-docs-precision-remediation.md
@@ -639,6 +642,7 @@ entries:
   - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
   - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
   - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
+  - docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md
   - docs/04.execution/tasks/2026-05-18-targeted-docs-precision-remediation.md
   - docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md
   - docs/04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md
@@ -972,6 +976,7 @@ entries:
   - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
   - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
   - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
+  - docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md
   - docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md
   - docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
   - docs/99.templates/support/document-corpus-migration-contract.yaml
