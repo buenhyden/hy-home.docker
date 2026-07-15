@@ -18,33 +18,36 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 - The supervising/orchestrating agent uses the top-spec model; worker subagents use the right-sized model per the Model Policy below.
 - Each runtime's agent frontmatter MUST carry that provider's own model identifier; never copy another provider's model name across surfaces.
 
-### Model Policy (provider-equivalent mapping)
+### Model Policy (work-profile mapping)
 
-| Tier                  | Role                                | Claude       | Gemini             | GPT / Codex       |
-| --------------------- | ----------------------------------- | ------------ | ------------------ | ----------------- |
-| Supervisor (top spec) | routing, final decisions, synthesis, planning, architecture, refactoring | `opus-4.8`   | `gemini-3.1-pro`   | `gpt-5.5`         |
-| Worker (right-sized)  | scoped task execution, repetitive editing, doc organizing, summarization | `sonnet-4.6` | `gemini-3.5-flash` | `gpt-5.4-mini` |
+Exact provider status, entitlement, runtime acceptance, supported controls,
+fallbacks, source URLs, and the historical cutoff are owned by
+`contracts/provider-models.yaml`. This table is the human routing view.
 
-- This table is the single source of truth for the "provider equivalent" model tiers. The
-  Claude column uses human-readable version names; `.claude/agents/*.md` carry the Claude
-  Code model aliases `opus` (Supervisor) and `sonnet` (Worker), which resolve to `opus-4.8`
-  and `sonnet-4.6`. `.codex/agents/*.toml` and `.agents/` carry the literal identifiers shown.
-- `workflow-supervisor` is the only Supervisor-tier role; all other catalog agents are Worker tier.
-- The model mapping is enforced by `scripts/validation/check-repo-contracts.sh`.
-- The Model Policy baseline date is 2026-05-29. The table is enforced as
-  repository policy, but local validation does not prove provider availability
-  on that date. Do not treat newer provider docs as proof of the 2026-05-29
-  baseline. Baseline evidence is recorded in the Phase 3 implementation task.
-  `gpt-5.3-codex` may be introduced only as an explicit code-specialized
-  worker override after official archived/provider evidence or a
-  repository-approved evidence note is linked and the same provider-adapter
-  checks are updated; it is not the default worker model.
-- **Codex Reasoning Effort Policy**: Codex TOML adapters MUST include
-  `model_reasoning_effort`. `workflow-supervisor` uses `xhigh` for governance,
-  planning, architecture, and complex refactors. Default workers use `medium`
-  unless an approved task requires `high`; repetitive formatting-only work may
-  use `low` through a task-specific override.
-- **Gemini Reasoning Policy**: Antigravity IDE manages reasoning effort strictly via model selection. `gemini-3.1-pro` is mandated for tasks requiring high reasoning effort (planning, complex refactors), while `gemini-3.5-flash` is used for standard/low reasoning effort (repetitive edits, text classification).
+| Work profile | Claude | GPT / Codex | Gemini |
+| --- | --- | --- | --- |
+| Supervision, architecture, final synthesis | `claude-opus-4-8` (`high`) | `gpt-5.6` (`xhigh`) | `gemini-3.5-flash` (`high`) |
+| Complex implementation, security, precision review | `claude-sonnet-5` (adaptive) | `gpt-5.6` (`high`) | `gemini-3.5-flash` (`high`) |
+| Exploration, large reads, repetitive organization | `claude-haiku-4-5-20251001` (extended thinking) | `gpt-5.6-terra` (`low`) | `gemini-3.1-flash-lite` (`minimal`) |
+
+- `workflow-supervisor` is the only supervisor-tier role. Other agents select
+  the profile declared in `contracts/agent-catalog.yaml`.
+- Generated Claude agents do not emit a per-agent thinking field. Fable and
+  Mythos have always-on adaptive thinking, Sonnet 5 uses adaptive thinking,
+  Haiku 4.5 documents extended thinking, and Opus 4.8 exposes `high` effort;
+  these provider-specific semantics are not flattened into a common scale.
+- Codex TOML adapters include `model_reasoning_effort`. The repository pins
+  only controls allowed by the selected model record.
+- Gemini adapters select a model but do not invent a per-agent sandbox or
+  reasoning field. Least privilege is expressed through agent tools and the
+  executing runtime's policy/sandbox controls.
+- OpenAI lists GPT-5.6 Sol/Terra but does not assign a stable lifecycle label.
+  The contract therefore records `listed` / `unclassified-listed`, separates
+  the 2026-07-10 10:00 KST cutoff from the later retrieval, and leaves local
+  entitlement/runtime acceptance at `needs_revalidation`.
+- Fable, Spark, Mythos, deprecated entries, and Gemini Pro preview are
+  catalog-only. A fallback must cover every source work profile or carry the
+  approved degraded-fallback record.
 
 ### Model and Provider Adapter Change Protocol
 

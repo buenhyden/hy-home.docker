@@ -1,0 +1,88 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh\" SessionStart",
+            "timeout": 60000
+          }
+        ]
+      }
+    ],
+    "BeforeTool": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh\" BeforeTool",
+            "timeout": 60000
+          }
+        ],
+        "matcher": "read_file|read_many_files|search_file_content|glob|list_directory|write_file|replace|run_shell_command"
+      }
+    ],
+    "AfterTool": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh\" AfterTool",
+            "timeout": 60000
+          }
+        ],
+        "matcher": "write_file|replace|run_shell_command"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh\" SessionEnd",
+            "timeout": 60000
+          }
+        ]
+      }
+    ],
+    "AfterAgent": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh\" AfterAgent",
+            "timeout": 60000
+          }
+        ]
+      }
+    ],
+    "PreCompress": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh\" PreCompress",
+            "timeout": 60000
+          }
+        ]
+      }
+    ],
+    "BeforeAgent": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh\" BeforeAgent",
+            "timeout": 60000
+          }
+        ]
+      }
+    ]
+  },
+  "security": {
+    "environmentVariableRedaction": {
+      "enabled": true
+    }
+  }
+}

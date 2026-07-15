@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import json
 import os
 import pathlib
 import posixpath
@@ -15,6 +16,8 @@ import sys
 import urllib.parse
 from collections.abc import Mapping
 from dataclasses import dataclass
+
+import yaml
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -88,6 +91,9 @@ class AgentRecord:
     tier: str
     category: str
     catalog_path: str
+    permission_profile: str
+    work_profile: str
+    function_ids: tuple[str, ...]
     source_text: str
 
 
@@ -182,6 +188,23 @@ def _has_exact_generated_marker(content: bytes) -> bool:
     return GENERATED_SURFACE_PREFIX_PATTERN.match(content) is not None
 
 
+def _has_native_generated_marker(content: bytes) -> bool:
+    marker = GENERATED_MARKER.encode()
+    if content.startswith(b"---\n"):
+        boundary = content.find(b"\n---\n", 4)
+        if boundary < 0:
+            return False
+        line = content[boundary + 5 :].lstrip().splitlines()[:1]
+        return bool(line and marker in line[0] and b"source:" in line[0])
+    first_line = content.splitlines()[:1]
+    return bool(
+        first_line
+        and first_line[0].startswith(b"# ")
+        and marker in first_line[0]
+        and b"source:" in first_line[0]
+    )
+
+
 def load_catalog(root: pathlib.Path) -> Catalog:
     root = root.absolute()
     bundle = load_contract_bundle(root)
@@ -196,6 +219,9 @@ def load_catalog(root: pathlib.Path) -> Catalog:
             tier=str(entry["tier"]),
             category=str(entry["category"]),
             catalog_path=str(entry["catalog_path"]),
+            permission_profile=str(entry["permission_profile"]),
+            work_profile=str(entry["work_profile"]),
+            function_ids=tuple(str(item) for item in entry["function_ids"]),
             source_text=read_repository_text(root, str(entry["catalog_path"])),
         )
         for entry in sorted(bundle.catalog["agents"], key=lambda item: item["agent_id"])
@@ -265,6 +291,436 @@ def render_function(provider: str, function: FunctionRecord) -> bytes:
     ).encode()
 
 
+def _provider_defaults(root: pathlib.Path) -> dict[tuple[str, str], tuple[str, str]]:
+    bundle = load_contract_bundle(root.absolute())
+    defaults: dict[tuple[str, str], tuple[str, str]] = {}
+    for profile in bundle.providers["work_profiles"]:
+        profile_id = str(profile["profile_id"])
+        for entry in profile["defaults"]:
+            defaults[(profile_id, str(entry["provider"]))] = (
+                str(entry["model_id"]),
+                str(entry["reasoning"]),
+            )
+    return defaults
+
+
+def _agent_description(agent: AgentRecord) -> str:
+    category = agent.category.replace("-", " ")
+    return (
+        f"Canonical {agent.scope} {category} role for {agent.agent_id}; "
+        "use for its Stage 00 catalog responsibilities."
+    )
+
+
+def _agent_body(agent: AgentRecord, output_path: pathlib.PurePosixPath) -> str:
+    source_path = pathlib.PurePosixPath(agent.catalog_path)
+    return _rebase_markdown_links(
+        _frontmatter_free_body(agent.source_text), source_path, output_path
+    )
+
+
+def _markdown_projection(
+    metadata: Mapping[str, object], body: str, source: str
+) -> bytes:
+    frontmatter = yaml.safe_dump(
+        dict(metadata),
+        allow_unicode=True,
+        default_flow_style=False,
+        sort_keys=False,
+        width=1000,
+    ).strip()
+    return (
+        f"---\n{frontmatter}\n---\n\n"
+        f"<!-- {GENERATED_MARKER}; source: {source} -->\n\n"
+        f"{body.rstrip()}\n"
+    ).encode()
+
+
+def _render_claude_agent(
+    agent: AgentRecord, defaults: Mapping[tuple[str, str], tuple[str, str]]
+) -> bytes:
+    model, _reasoning = defaults[(agent.work_profile, "claude")]
+    read_only = agent.permission_profile == "read-only"
+    tools = ["Read", "Grep", "Glob"]
+    if agent.tier == "supervisor":
+        tools.append("Agent")
+    elif not read_only:
+        tools.extend(("Edit", "Write", "Bash"))
+    output = pathlib.PurePosixPath(f".claude/agents/{agent.agent_id}.md")
+    return _markdown_projection(
+        {
+            "name": agent.agent_id,
+            "description": _agent_description(agent),
+            "tools": tools,
+            "model": model,
+            "permissionMode": "plan" if read_only else "default",
+            "skills": list(agent.function_ids),
+        },
+        _agent_body(agent, output),
+        agent.catalog_path,
+    )
+
+
+def _render_codex_agent(
+    agent: AgentRecord, defaults: Mapping[tuple[str, str], tuple[str, str]]
+) -> bytes:
+    model, reasoning = defaults[(agent.work_profile, "codex")]
+    output = pathlib.PurePosixPath(f".codex/agents/{agent.agent_id}.toml")
+    body = (
+        f"{GENERATED_MARKER}; source: {agent.catalog_path}\n\n"
+        f"{_agent_body(agent, output).rstrip()}\n"
+    )
+    fields = {
+        "name": agent.agent_id,
+        "description": _agent_description(agent),
+        "developer_instructions": body,
+        "model": model,
+        "model_reasoning_effort": reasoning,
+        "sandbox_mode": (
+            "read-only"
+            if agent.permission_profile == "read-only"
+            else "workspace-write"
+        ),
+    }
+    return (
+        f"# {GENERATED_MARKER}; source: {agent.catalog_path}\n"
+        + "".join(f"{key} = {json.dumps(value)}\n" for key, value in fields.items())
+    ).encode()
+
+
+def _render_gemini_agent(
+    agent: AgentRecord, defaults: Mapping[tuple[str, str], tuple[str, str]]
+) -> bytes:
+    model, _reasoning = defaults[(agent.work_profile, "gemini")]
+    read_only = agent.permission_profile == "read-only"
+    tools = ["read_file", "read_many_files", "search_file_content", "glob", "list_directory"]
+    if not read_only:
+        tools.extend(("write_file", "replace", "run_shell_command"))
+    output = pathlib.PurePosixPath(f".gemini/agents/{agent.agent_id}.md")
+    return _markdown_projection(
+        {
+            "name": agent.agent_id,
+            "description": _agent_description(agent),
+            "kind": "local",
+            "tools": tools,
+            "model": model,
+            "max_turns": 12 if agent.tier == "supervisor" else 8,
+            "timeout_mins": 30 if agent.tier == "supervisor" else 20,
+        },
+        _agent_body(agent, output),
+        agent.catalog_path,
+    )
+
+
+def _render_compatibility_agent(agent: AgentRecord) -> bytes:
+    output = pathlib.PurePosixPath(f".agents/agents/{agent.agent_id}.md")
+    return _markdown_projection(
+        {
+            "name": agent.agent_id,
+            "description": _agent_description(agent),
+        },
+        _agent_body(agent, output),
+        agent.catalog_path,
+    )
+
+
+def _provider_event_bindings(
+    root: pathlib.Path, provider: str
+) -> dict[str, Mapping[str, object]]:
+    bundle = load_contract_bundle(root.absolute())
+    result: dict[str, Mapping[str, object]] = {}
+    for event in bundle.providers["semantic_events"]:
+        for binding in event["provider_bindings"]:
+            if binding["provider"] == provider:
+                result[str(event["event_id"])] = binding
+    return result
+
+
+def _command_hook(command: str, timeout: int) -> dict[str, object]:
+    return {
+        "type": "command",
+        "command": command,
+        "timeout": timeout,
+    }
+
+
+def _hook_group(
+    command: str,
+    timeout: int,
+    *,
+    matcher: str | None,
+) -> dict[str, object]:
+    value: dict[str, object] = {
+        "hooks": [_command_hook(command, timeout)]
+    }
+    if matcher is not None:
+        value["matcher"] = matcher
+    return value
+
+
+def _render_claude_settings(root: pathlib.Path) -> bytes:
+    bindings = _provider_event_bindings(root, "claude")
+    hook_paths = {
+        "session-start": "session-start.sh",
+        "pre-tool": "docker-compose-pre.sh",
+        "post-tool": "post-tool-validate.sh",
+        "session-end": "session-end.sh",
+        "stop": "stop.sh",
+        "pre-compaction": "pre-compact.sh",
+        "user-prompt-intake": "user-prompt-submit.sh",
+    }
+    matchers = {
+        "pre-tool": "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch",
+        "post-tool": "Write|Edit|MultiEdit|apply_patch|ApplyPatch",
+    }
+    hooks: dict[str, object] = {}
+    for semantic_id, filename in hook_paths.items():
+        binding = bindings[semantic_id]
+        native = str(binding["native_event"])
+        hooks[native] = [
+            _hook_group(
+                f'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/{filename}"',
+                int(binding["timeout_value"]),
+                matcher=matchers.get(semantic_id, "*"),
+            )
+        ]
+    value = {
+        "outputStyle": "hy-home",
+        "permissions": {
+            "allow": [
+                "$defaults",
+                "Bash(git:*)",
+                "Bash(python3:*)",
+                "Bash(grep:*)",
+                "Bash(rg:*)",
+                "Bash(docker ps:*)",
+                "Bash(docker compose ps:*)",
+                "Bash(docker compose config:*)",
+                "Bash(docker compose logs:*)",
+                "Bash(docker inspect:*)",
+                "Bash(docker image ls:*)",
+                "Bash(bash scripts/validation/validate-docker-compose.sh:*)",
+                "Bash(bash scripts/hardening/check-all-hardening.sh:*)",
+                "Bash(bash scripts/validation/check-doc-traceability.sh:*)",
+                "Bash(bash scripts/validation/check-repo-contracts.sh:*)",
+                "Bash(bash scripts/validation/check-quickwin-baseline.sh:*)",
+                "Bash(bash scripts/validation/check-template-security-baseline.sh:*)",
+                "Bash(bash scripts/knowledge/report-graphify-health.sh:*)",
+            ],
+            "deny": [
+                "Bash(docker system prune:*)",
+                "Bash(rm -rf:*)",
+                "Bash(docker compose down:*)",
+                "Bash(docker volume rm:*)",
+            ],
+        },
+        "hooks": hooks,
+        "autoMode": {"allow": ["$defaults"]},
+        "deniedMcpServers": [
+            {"serverName": "MCP_DOCKER"},
+            {"serverName": "notebooklm"},
+        ],
+    }
+    return (json.dumps(value, indent=2) + "\n").encode()
+
+
+def _render_codex_hooks(root: pathlib.Path) -> bytes:
+    bindings = _provider_event_bindings(root, "codex")
+    matchers = {
+        "pre-tool": "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch",
+        "post-tool": "Edit|Write|MultiEdit|apply_patch|ApplyPatch",
+    }
+    hooks: dict[str, object] = {}
+    for semantic_id in (
+        "session-start",
+        "pre-tool",
+        "post-tool",
+        "stop",
+        "pre-compaction",
+        "user-prompt-intake",
+    ):
+        binding = bindings[semantic_id]
+        native = str(binding["native_event"])
+        matcher = None if semantic_id in {"stop", "user-prompt-intake"} else matchers.get(semantic_id, "*")
+        hooks[native] = [
+            _hook_group(
+                'bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}'
+                f'/scripts/hooks/agent-event-hook.sh" {native}',
+                int(binding["timeout_value"]),
+                matcher=matcher,
+            )
+        ]
+    return (json.dumps({"hooks": hooks}, indent=2) + "\n").encode()
+
+
+def _render_gemini_settings(root: pathlib.Path) -> bytes:
+    bindings = _provider_event_bindings(root, "gemini")
+    matchers = {
+        "pre-tool": "read_file|read_many_files|search_file_content|glob|list_directory|write_file|replace|run_shell_command",
+        "post-tool": "write_file|replace|run_shell_command",
+    }
+    hooks: dict[str, object] = {}
+    for semantic_id in (
+        "session-start",
+        "pre-tool",
+        "post-tool",
+        "session-end",
+        "stop",
+        "pre-compaction",
+        "user-prompt-intake",
+    ):
+        binding = bindings[semantic_id]
+        native = str(binding["native_event"])
+        hooks[native] = [
+            _hook_group(
+                'bash "${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}'
+                f'/.gemini/hooks/agent-event-hook.sh" {native}',
+                int(binding["timeout_value"]),
+                matcher=matchers.get(semantic_id),
+            )
+        ]
+    value = {
+        "hooks": hooks,
+        "security": {"environmentVariableRedaction": {"enabled": True}},
+    }
+    return (json.dumps(value, indent=2) + "\n").encode()
+
+
+def _render_claude_hook(event: str, filename: str) -> bytes:
+    return (
+        "#!/usr/bin/env bash\n"
+        f"# {GENERATED_MARKER}; Claude {event} adapter ({filename}).\n"
+        "set -euo pipefail\n\n"
+        'PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"\n'
+        f'exec bash "$PROJECT_DIR/scripts/hooks/agent-event-hook.sh" {event}\n'
+    ).encode()
+
+
+def _render_gemini_hook() -> bytes:
+    return (
+        "#!/usr/bin/env bash\n"
+        f"# {GENERATED_MARKER}; Gemini native-to-semantic event adapter.\n"
+        "set -euo pipefail\n\n"
+        'if [[ "${HY_HOME_GEMINI_HOOK_ACTIVE:-}" == "1" ]]; then\n'
+        "  printf '{}\\n'\n"
+        "  exit 0\n"
+        "fi\n"
+        "export HY_HOME_GEMINI_HOOK_ACTIVE=1\n"
+        'PROJECT_DIR="${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"\n'
+        'NATIVE_EVENT="${1:-}"\n'
+        "case \"$NATIVE_EVENT\" in\n"
+        "  AfterTool) SEMANTIC_EVENT=PostToolUse ;;\n"
+        "  PreCompress) SEMANTIC_EVENT=PreCompact ;;\n"
+        "  BeforeTool) SEMANTIC_EVENT=PreToolUse ;;\n"
+        "  SessionEnd) SEMANTIC_EVENT=SessionEnd ;;\n"
+        "  SessionStart) SEMANTIC_EVENT=SessionStart ;;\n"
+        "  AfterAgent) SEMANTIC_EVENT=Stop ;;\n"
+        "  BeforeAgent) SEMANTIC_EVENT=UserPromptSubmit ;;\n"
+        "  *) printf 'Unsupported Gemini hook event.\\n' >&2; exit 2 ;;\n"
+        "esac\n"
+        'exec bash "$PROJECT_DIR/scripts/hooks/agent-event-hook.sh" "$SEMANTIC_EVENT"\n'
+    ).encode()
+
+
+def _provider_readme(runtime: str) -> bytes:
+    filename = "CLAUDE.md" if runtime == "claude" else "README.md"
+    shared_skill = (
+        "`.claude/skills/`" if runtime == "claude" else "`.agents/skills/`"
+    )
+    return (
+        "---\n"
+        "layer: agentic\n"
+        f"runtime: {runtime}\n"
+        "---\n\n"
+        f"<!-- {GENERATED_MARKER}; provider project entry. -->\n\n"
+        f"# {runtime.title()} Project Surface\n\n"
+        "## Scope\n\n"
+        f"This directory contains {runtime}-native project adapters. Shared governance remains in `docs/00.agent-governance/`.\n\n"
+        "## Structure\n\n"
+        f"- `agents/`: strict {runtime}-native role adapters.\n"
+        f"- {shared_skill}: generated shared skill projections.\n"
+        "- Provider settings and hooks: native lifecycle wiring to shared scripts.\n\n"
+        "## How to Work in This Area\n\n"
+        "Change canonical Stage 00 sources first, then run the registered provider renderer. Do not hand-author policy in generated adapters.\n\n"
+        "## Related Documents\n\n"
+        "- `../docs/00.agent-governance/README.md`\n"
+        f"- `../docs/00.agent-governance/providers/{runtime}.md`\n"
+        "- `../docs/00.agent-governance/rules/provider-capability-matrix.md`\n"
+    ).encode()
+
+
+def _compatibility_readme() -> bytes:
+    return (
+        f"<!-- {GENERATED_MARKER}; shared compatibility entry. -->\n\n"
+        "# Shared Agent Compatibility Surface\n\n"
+        "## Scope\n\n"
+        "`.agents/` is the provider-neutral compatibility and shared-skill projection. It is not a native hook or policy owner.\n\n"
+        "## Structure\n\n"
+        "- `agents/`: compatibility projections of Stage 00 roles.\n"
+        "- `skills/`: shared generated skills consumed by Codex, Gemini, and compatible tools.\n"
+        "- `rules/` and `workflows/`: minimal navigation to canonical governance.\n\n"
+        "## How to Work in This Area\n\n"
+        "Change Stage 00 contracts and sources first, then run the registered renderer. Preserve unknown user-owned files.\n\n"
+        "## Related Documents\n\n"
+        "- [Agent governance hub](../docs/00.agent-governance/README.md)\n"
+        "- [Provider-neutral overlay](../docs/00.agent-governance/providers/agents-md.md)\n"
+        "- [Provider capability matrix](../docs/00.agent-governance/rules/provider-capability-matrix.md)\n"
+    ).encode()
+
+
+def _compatibility_pointer(title: str, target: str) -> bytes:
+    return (
+        "---\nlayer: agentic\n---\n\n"
+        f"<!-- {GENERATED_MARKER}; compatibility pointer. -->\n\n"
+        f"# {title}\n\n"
+        "This compatibility surface does not own policy. Load and follow the canonical Stage 00 document below.\n\n"
+        f"- `{target}`\n"
+    ).encode()
+
+
+CLAUDE_HOOK_EVENTS = {
+    "docker-compose-pre.sh": "PreToolUse",
+    "post-tool-validate.sh": "PostToolUse",
+    "pre-compact.sh": "PreCompact",
+    "session-end.sh": "SessionEnd",
+    "session-start.sh": "SessionStart",
+    "stop.sh": "Stop",
+    "user-prompt-submit.sh": "UserPromptSubmit",
+}
+
+
+def expected_native_projection(root: pathlib.Path) -> Mapping[pathlib.Path, bytes]:
+    root = root.absolute()
+    catalog = load_catalog(root)
+    defaults = _provider_defaults(root)
+    projection: dict[pathlib.Path, bytes] = {}
+    for agent in catalog.agents:
+        projection[pathlib.Path(f".claude/agents/{agent.agent_id}.md")] = _render_claude_agent(agent, defaults)
+        projection[pathlib.Path(f".codex/agents/{agent.agent_id}.toml")] = _render_codex_agent(agent, defaults)
+        projection[pathlib.Path(f".gemini/agents/{agent.agent_id}.md")] = _render_gemini_agent(agent, defaults)
+        projection[pathlib.Path(f".agents/agents/{agent.agent_id}.md")] = _render_compatibility_agent(agent)
+    for function in catalog.functions:
+        projection[pathlib.Path(f".claude/skills/{function.function_id}/SKILL.md")] = render_function("claude", function)
+        projection[pathlib.Path(f".agents/skills/{function.function_id}/SKILL.md")] = render_function("agents-md", function)
+    projection[pathlib.Path(".claude/CLAUDE.md")] = _provider_readme("claude")
+    projection[pathlib.Path(".claude/settings.json")] = _render_claude_settings(root)
+    for filename, event in CLAUDE_HOOK_EVENTS.items():
+        projection[pathlib.Path(f".claude/hooks/{filename}")] = _render_claude_hook(event, filename)
+    projection[pathlib.Path(".codex/README.md")] = _provider_readme("codex")
+    projection[pathlib.Path(".codex/hooks.json")] = _render_codex_hooks(root)
+    projection[pathlib.Path(".gemini/README.md")] = _provider_readme("gemini")
+    projection[pathlib.Path(".gemini/settings.json")] = _render_gemini_settings(root)
+    projection[pathlib.Path(".gemini/hooks/agent-event-hook.sh")] = _render_gemini_hook()
+    projection[pathlib.Path(".agents/README.md")] = _compatibility_readme()
+    projection[pathlib.Path(".agents/rules/workspace.md")] = _compatibility_pointer(
+        "Workspace Rules", "docs/00.agent-governance/rules/agentic.md"
+    )
+    projection[pathlib.Path(".agents/workflows/documentation.md")] = _compatibility_pointer(
+        "Documentation Workflow", "docs/00.agent-governance/rules/documentation-protocol.md"
+    )
+    return projection
+
+
 def expected_projection(
     root: pathlib.Path, provider: str
 ) -> Mapping[pathlib.Path, bytes]:
@@ -317,6 +773,70 @@ def find_managed_stale_files(
             if _has_exact_generated_marker(content.encode()):
                 stale.add(relative)
     return stale
+
+
+NATIVE_AGENT_ROOTS = (
+    pathlib.Path(".agents/agents"),
+    pathlib.Path(".claude/agents"),
+    pathlib.Path(".codex/agents"),
+    pathlib.Path(".gemini/agents"),
+)
+NATIVE_EXECUTABLES = frozenset(
+    {
+        *(pathlib.Path(f".claude/hooks/{filename}") for filename in CLAUDE_HOOK_EVENTS),
+        pathlib.Path(".gemini/hooks/agent-event-hook.sh"),
+    }
+)
+
+
+def find_managed_stale_native_files(
+    root: pathlib.Path, expected: Mapping[pathlib.Path, bytes]
+) -> set[pathlib.Path]:
+    expected_paths = set(expected)
+    stale: set[pathlib.Path] = set()
+    for owned_root in NATIVE_AGENT_ROOTS:
+        absolute = root / owned_root
+        if not absolute.exists() and not absolute.is_symlink():
+            continue
+        _assert_confined_directory(root, owned_root)
+        for pattern in ("*.md", "*.toml"):
+            for path in absolute.glob(pattern):
+                relative = path.relative_to(root)
+                if relative in expected_paths:
+                    continue
+                try:
+                    content = read_repository_text(root, relative.as_posix()).encode()
+                except ContractLoadError as error:
+                    raise ValueError("managed native projection entry is unsafe") from error
+                if _has_native_generated_marker(content):
+                    stale.add(relative)
+    return stale
+
+
+def find_native_projection_drift(root: pathlib.Path) -> list[Finding]:
+    expected = expected_native_projection(root)
+    findings: list[Finding] = []
+    for path, content in expected.items():
+        try:
+            current = read_repository_text(root, path.as_posix()).encode()
+        except ContractLoadError as error:
+            kind = "missing" if error.code == "AGC-REPOSITORY-FILE-MISSING" else "unsafe"
+            findings.append(Finding(path, kind))
+            continue
+        if current != content:
+            findings.append(Finding(path, "content"))
+            continue
+        desired_mode = 0o755 if path in NATIVE_EXECUTABLES else 0o644
+        try:
+            actual_mode = (root / path).lstat().st_mode
+        except OSError:
+            findings.append(Finding(path, "unsafe"))
+            continue
+        if not stat.S_ISREG(actual_mode) or stat.S_IMODE(actual_mode) != desired_mode:
+            findings.append(Finding(path, "mode"))
+    for path in find_managed_stale_native_files(root, expected):
+        findings.append(Finding(path, "stale"))
+    return sorted(set(findings))
 
 
 def _assert_confined_directory(root: pathlib.Path, relative: pathlib.Path) -> None:
@@ -412,10 +932,41 @@ def _read_regular_fd(parent_fd: int, name: str) -> bytes | None:
         os.close(descriptor)
 
 
-def _write_confined(root: pathlib.Path, relative: pathlib.Path, content: bytes) -> None:
+def _normalize_existing_regular(
+    parent_fd: int, name: str, content: bytes, mode: int
+) -> bool:
+    flags = os.O_RDWR | os.O_NONBLOCK | os.O_NOFOLLOW
+    flags |= getattr(os, "O_CLOEXEC", 0)
+    try:
+        descriptor = os.open(name, flags, dir_fd=parent_fd)
+    except FileNotFoundError:
+        return False
+    try:
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            raise ValueError("managed projection output is not a regular file")
+        chunks: list[bytes] = []
+        while True:
+            chunk = os.read(descriptor, 64 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        if b"".join(chunks) != content:
+            return False
+        os.fchmod(descriptor, mode)
+        return True
+    finally:
+        os.close(descriptor)
+
+
+def _write_confined(
+    root: pathlib.Path,
+    relative: pathlib.Path,
+    content: bytes,
+    *,
+    mode: int = 0o644,
+) -> None:
     with _open_confined_directory(root, relative.parent, create=True) as parent_fd:
-        current = _read_regular_fd(parent_fd, relative.name)
-        if current == content:
+        if _normalize_existing_regular(parent_fd, relative.name, content, mode):
             return
         temporary = f".{relative.name}.tmp-{secrets.token_hex(12)}"
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
@@ -429,6 +980,7 @@ def _write_confined(root: pathlib.Path, relative: pathlib.Path, content: bytes) 
                     if written <= 0:
                         raise OSError("managed projection write made no progress")
                     view = view[written:]
+                os.fchmod(descriptor, mode)
                 os.fsync(descriptor)
             finally:
                 os.close(descriptor)
@@ -482,7 +1034,11 @@ def _new_quarantine_name(parent_fd: int, name: str) -> str:
 
 
 def _remove_stale_confined(
-    root: pathlib.Path, relative: pathlib.Path, *, require_marker: bool
+    root: pathlib.Path,
+    relative: pathlib.Path,
+    *,
+    require_marker: bool,
+    marker_predicate=None,
 ) -> None:
     with _open_confined_directory(root, relative.parent, create=False) as parent_fd:
         quarantine = _new_quarantine_name(parent_fd, relative.name)
@@ -499,7 +1055,8 @@ def _remove_stale_confined(
             captured = _read_regular_fd(parent_fd, quarantine)
             if captured is None:
                 raise ValueError("managed stale output capture disappeared")
-            if require_marker and not _has_exact_generated_marker(captured):
+            predicate = marker_predicate or _has_exact_generated_marker
+            if require_marker and not predicate(captured):
                 raise ValueError("managed stale output ownership changed")
         except (OSError, ValueError) as error:
             _restore_quarantine(parent_fd, quarantine, relative.name)
@@ -561,6 +1118,29 @@ def write_projection(root: pathlib.Path, provider: str) -> None:
         _write_confined(root, relative, content)
 
 
+def write_native_projection(root: pathlib.Path) -> None:
+    root = root.absolute()
+    expected = expected_native_projection(root)
+    for provider in MIGRATION_PROVIDERS:
+        write_projection(root, provider)
+    for owned_root in NATIVE_AGENT_ROOTS:
+        _assert_confined_directory(root, owned_root)
+    for relative in sorted(find_managed_stale_native_files(root, expected)):
+        _remove_stale_confined(
+            root,
+            relative,
+            require_marker=True,
+            marker_predicate=_has_native_generated_marker,
+        )
+    for relative, content in sorted(expected.items()):
+        _write_confined(
+            root,
+            relative,
+            content,
+            mode=0o755 if relative in NATIVE_EXECUTABLES else 0o644,
+        )
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Render Stage 00 canonical shared skill projections."
@@ -577,20 +1157,15 @@ def main(argv: list[str] | None = None) -> int:
     root = args.root.absolute()
     try:
         if args.write:
-            for provider in MIGRATION_PROVIDERS:
-                write_projection(root, provider)
-        findings = [
-            (provider, finding)
-            for provider in MIGRATION_PROVIDERS
-            for finding in find_projection_drift(root, provider)
-        ]
+            write_native_projection(root)
+        findings = find_native_projection_drift(root)
     except (ContractLoadError, OSError, ValueError) as error:
         print(f"provider_surface_renderer: ERROR {type(error).__name__}", file=sys.stderr)
         return 1
     if findings:
-        for provider, finding in findings:
+        for finding in findings:
             print(
-                f"projection drift: provider={provider} path={finding.path} kind={finding.kind}",
+                f"projection drift: provider=native path={finding.path} kind={finding.kind}",
                 file=sys.stderr,
             )
         return 1

@@ -2,84 +2,70 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "bash scripts/hooks/agent-event-hook.sh SessionStart",
-            "timeout": 15
+            "command": "bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" SessionStart",
+            "timeout": 600
           }
-        ]
+        ],
+        "matcher": "*"
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch",
         "hooks": [
           {
             "type": "command",
-            "command": "bash scripts/hooks/agent-event-hook.sh PreToolUse",
-            "timeout": 10
+            "command": "bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" PreToolUse",
+            "timeout": 600
           }
-        ]
+        ],
+        "matcher": "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch"
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "Edit|Write|MultiEdit|apply_patch|ApplyPatch",
         "hooks": [
           {
             "type": "command",
-            "command": "bash scripts/hooks/agent-event-hook.sh PostToolUse",
-            "timeout": 30
+            "command": "bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" PostToolUse",
+            "timeout": 600
           }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash scripts/hooks/agent-event-hook.sh SessionEnd",
-            "timeout": 10
-          }
-        ]
+        ],
+        "matcher": "Edit|Write|MultiEdit|apply_patch|ApplyPatch"
       }
     ],
     "Stop": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "bash scripts/hooks/agent-event-hook.sh Stop",
-            "timeout": 30
+            "command": "bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" Stop",
+            "timeout": 600
           }
         ]
       }
     ],
     "PreCompact": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "bash scripts/hooks/agent-event-hook.sh PreCompact",
-            "timeout": 10
+            "command": "bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" PreCompact",
+            "timeout": 600
           }
-        ]
+        ],
+        "matcher": "*"
       }
     ],
     "UserPromptSubmit": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "bash scripts/hooks/agent-event-hook.sh UserPromptSubmit",
-            "timeout": 10
+            "command": "bash \"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh\" UserPromptSubmit",
+            "timeout": 600
           }
         ]
       }

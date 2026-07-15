@@ -52,6 +52,7 @@ def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
         ".agents/README.md",
         ".claude/CLAUDE.md",
         ".codex/README.md",
+        ".gemini/README.md",
         "scripts/README.md",
     ):
         source = ROOT / relative_path
@@ -1338,7 +1339,12 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
 
     def test_provider_entry_indexes_use_navigation_profiles_without_copied_policy(self) -> None:
         allowed = {"Scope", "Structure", "How to Work in This Area", "Related Documents"}
-        for relative_path in (".agents/README.md", ".claude/CLAUDE.md", ".codex/README.md"):
+        for relative_path in (
+            ".agents/README.md",
+            ".claude/CLAUDE.md",
+            ".codex/README.md",
+            ".gemini/README.md",
+        ):
             with self.subTest(path=relative_path):
                 text = (ROOT / relative_path).read_text(encoding="utf-8")
                 headings = {
@@ -1348,6 +1354,16 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 self.assertLessEqual(headings, allowed)
                 self.assertNotIn("Canonical Shared Rules", text)
                 self.assertNotIn("model-default", text.lower())
+
+    def test_repository_harness_requires_registered_gemini_entry(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            (root / ".gemini/README.md").unlink()
+            bundle = contract.load_contract_bundle(root)
+            observed = codes(contract.validate_repository(root, bundle, "harness"))
+            self.assertIn("AGC-REPOSITORY-MISSING-ARTIFACT", observed)
+            self.assertIn("AGC-REPOSITORY-MISSING-README", observed)
 
     def test_hookify_references_resolve_to_tracked_native_files(self) -> None:
         governed = (
@@ -1652,10 +1668,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_inventory_has_110_uniquely_routed_artifacts(self) -> None:
+    def test_repository_harness_inventory_has_111_uniquely_routed_artifacts(self) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         inventory = contract._governed_inventory_paths(ROOT, bundle.artifacts)
-        self.assertEqual(110, len(inventory))
+        self.assertEqual(111, len(inventory))
         findings = contract.validate_repository(ROOT, bundle, "harness")
         self.assertFalse(
             codes(findings)

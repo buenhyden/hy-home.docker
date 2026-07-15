@@ -166,7 +166,6 @@ entries:
   - .agents/skills/adr-writing/SKILL.md
   - .agents/skills/ops-runbook-agent/SKILL.md
   - .agents/workflows/documentation.md
-  - .claude/agents/doc-writer.md
   - .claude/skills/adr-writing/SKILL.md
   - .claude/skills/ops-runbook-agent/SKILL.md
   - README.md
@@ -198,6 +197,7 @@ entries:
   - docs/99.templates/support/document-corpus-migration-contract.yaml
   - docs/99.templates/support/document-metadata-profiles.yaml
   - scripts/README.md
+  - scripts/operations/provider_surface_renderer.py
   - scripts/validation/check-doc-implementation-alignment.sh
   - scripts/validation/check-document-metadata.py
   - scripts/validation/check-repo-contracts.sh
@@ -238,9 +238,6 @@ entries:
   canonical_replacement: null
   active_consumers:
   - .agents/skills/ci-cd-patterns/SKILL.md
-  - .claude/agents/ci-cd-engineer.md
-  - .claude/agents/code-reviewer.md
-  - .claude/agents/security-auditor.md
   - .claude/skills/ci-cd-patterns/SKILL.md
   - README.md
   - docs/00.agent-governance/memory/progress.md
@@ -309,7 +306,6 @@ entries:
   disposition: migrate
   canonical_replacement: null
   active_consumers:
-  - .agents/workflows/documentation.md
   - README.md
   - docs/00.agent-governance/rules/agentic.md
   - docs/00.agent-governance/rules/documentation-protocol.md
@@ -1064,7 +1060,6 @@ entries:
   disposition: migrate
   canonical_replacement: null
   active_consumers:
-  - .claude/agents/doc-writer.md
   - docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md
   - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md
   - docs/04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md
@@ -1146,7 +1141,6 @@ entries:
   disposition: migrate
   canonical_replacement: null
   active_consumers:
-  - .agents/workflows/documentation.md
   - docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md
   - docs/03.specs/102-workspace-document-contract-audit-pack/spec.md
   - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md

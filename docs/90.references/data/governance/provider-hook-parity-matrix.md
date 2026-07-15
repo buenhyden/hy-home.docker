@@ -9,124 +9,92 @@ generated_by: scripts/validation/report-provider-hook-parity.sh
 
 ## Overview
 
-This generated reference compares the repository's Claude, Codex, and Gemini
-hook surfaces. Claude and Codex expose programmatic hook configuration;
-Gemini CLI exposes provider-native hooks and subagents.
-This repository has no tracked `.gemini` hook or agent adapter, and its
-`.agents/` surfaces are behavioral pointers/reminders rather than native
-interception or subagent-adoption evidence.
+This generated reference compares semantic lifecycle coverage across the tracked Claude, Codex, and Gemini native surfaces.
 
 ## Purpose
 
-The matrix helps reviewers inspect provider hook parity without manually
-opening every hook config, wrapper script, and provider note.
+Make event-name, timeout-unit, matcher, delegation, and unsupported-event differences reviewable without claiming false name parity.
 
 ## Repository Role
 
-Use this document as generated audit context only. Active provider policy
-remains in `docs/00.agent-governance/`, and executable hook behavior remains
-in `.claude/`, `.codex/`, `.agents/`, and `scripts/hooks/`.
+Generated audit context only. Stage 00 owns policy and `scripts/hooks/agent-event-hook.sh` owns shared behavior.
 
 ## Scope
 
 ### In Scope
 
-- Tracked `.claude/settings.json` hook configuration.
-- Tracked `.codex/hooks.json` hook configuration.
-- Claude wrapper delegation to `scripts/hooks/agent-event-hook.sh`.
-- Codex provider-neutral hook dispatch commands.
-- Gemini behavioral checklist derived from Stage 00 provider notes.
+- Tracked provider-native hook configuration and generated wrappers.
+- Semantic event mapping, timeout units, matchers, and delegation.
 
 ### Out of Scope
 
-- Personal settings such as `.claude/settings.local.json`.
-- Live provider runtime state, telemetry, shell history, or raw hook logs.
-- Adopting a tracked `.gemini` hook or agent adapter without a separately approved task.
-- Mutating provider configuration, model policy, secrets, credentials, or remote state.
+- Live provider execution, user-global settings, telemetry, logs, credentials, or runtime acceptance.
 
 ## Definitions / Facts
 
-- **native-wrapper**: Claude event is configured and delegates through a tracked wrapper script.
-- **native-dispatch**: Codex event is configured and dispatches directly through `scripts/hooks/agent-event-hook.sh`.
-- **behavioral-reminder**: Gemini CLI has provider-native hooks and subagents, but this repository has no tracked `.gemini` adapter; `.agents/` remains reminder-only.
-- **needs-contract-review**: A required Stage 00 Gemini behavioral contract literal is missing.
+- **native-wrapper**: a Claude native event calls an executable generated wrapper.
+- **native-dispatch**: a Codex native event calls the shared dispatcher directly.
+- **native-adapter**: a Gemini native event passes through the one admitted event-name adapter.
+- **unsupported**: the provider does not expose the semantic event; it is not counted as parity.
 
 ## Snapshot Summary
 
 | Metric | Value |
 | --- | ---: |
-| Hook events tracked | 7 |
+| Semantic events tracked | 7 |
 | Claude native wrapper events | 7 |
-| Codex native dispatch events | 7 |
-| Gemini behavioral reminder events | 7 |
-| Provider-neutral dispatcher present | yes |
-| Gemini contract literals missing | 0 |
+| Codex native dispatch events | 6 |
+| Codex unsupported events | 1 |
+| Gemini native adapter events | 7 |
+| Shared dispatcher present | yes |
 
 ## Provider Hook Parity Matrix
 
-| Event | Purpose | Claude | Codex | Gemini |
+| Semantic Event | Purpose | Claude | Codex | Gemini |
 | --- | --- | --- | --- | --- |
-| `SessionStart` | Session/bootstrap guard | `native-wrapper` - Configured native hook wrapper delegates to provider-neutral dispatcher | `native-dispatch` - Configured hook dispatches through provider-neutral event hook | `behavioral-reminder` - Load `AGENTS.md`, provider notes, bootstrap, persona, checklist, one scope, and progress memory before repository mutation. |
-| `UserPromptSubmit` | Prompt intake and routing guard | `native-wrapper` - Configured native hook wrapper delegates to provider-neutral dispatcher | `native-dispatch` - Configured hook dispatches through provider-neutral event hook | `behavioral-reminder` - Classify task scope, resolve risky ambiguity, and route to the canonical stage before editing. |
-| `PreToolUse` | Pre-mutation guard | `native-wrapper` - Configured native hook wrapper delegates to provider-neutral dispatcher | `native-dispatch` - Configured hook dispatches through provider-neutral event hook | `behavioral-reminder` - Review requirements, guardrails, protected surfaces, and template-first rules before mutating files. |
-| `PostToolUse` | Post-edit validation guard | `native-wrapper` - Configured native hook wrapper delegates to provider-neutral dispatcher | `native-dispatch` - Configured hook dispatches through provider-neutral event hook | `behavioral-reminder` - Run relevant style, docs, generated-output, and repository contract checks after edits. |
-| `Stop` | Completion gate | `native-wrapper` - Configured native hook wrapper delegates to provider-neutral dispatcher | `native-dispatch` - Configured hook dispatches through provider-neutral event hook | `behavioral-reminder` - Confirm completion checklist, logical commit discipline, progress memory, and residual gaps before declaring completion. |
-| `PreCompact` | Context handoff guard | `native-wrapper` - Configured native hook wrapper delegates to provider-neutral dispatcher | `native-dispatch` - Configured hook dispatches through provider-neutral event hook | `behavioral-reminder` - Record durable progress and handoff context before compaction or context transition. |
-| `SessionEnd` | Session closure guard | `native-wrapper` - Configured native hook wrapper delegates to provider-neutral dispatcher | `native-dispatch` - Configured hook dispatches through provider-neutral event hook | `behavioral-reminder` - Update progress evidence and leave the worktree/validation state explicit at session closure. |
+| `session-start` | Session/bootstrap guard | `SessionStart` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `SessionStart` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `SessionStart` / `native-adapter` - Native event adapter delegates to the shared dispatcher |
+| `user-prompt-intake` | Prompt intake and routing guard | `UserPromptSubmit` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `UserPromptSubmit` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `BeforeAgent` / `native-adapter` - Native event adapter delegates to the shared dispatcher |
+| `pre-tool` | Pre-mutation guard | `PreToolUse` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `PreToolUse` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `BeforeTool` / `native-adapter` - Native event adapter delegates to the shared dispatcher |
+| `post-tool` | Post-edit validation guard | `PostToolUse` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `PostToolUse` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `AfterTool` / `native-adapter` - Native event adapter delegates to the shared dispatcher |
+| `stop` | Completion gate | `Stop` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `Stop` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `AfterAgent` / `native-adapter` - Native event adapter delegates to the shared dispatcher with deny/retry-capable semantics |
+| `pre-compaction` | Context handoff guard | `PreCompact` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `PreCompact` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `PreCompress` / `native-adapter` - Native event adapter delegates to the shared dispatcher as provider-inherent asynchronous advisory behavior |
+| `session-end` | Session closure guard | `SessionEnd` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `unsupported` / `unsupported` - Codex has no native SessionEnd event in this contract | `SessionEnd` / `native-adapter` - Native event adapter delegates to the shared dispatcher |
 
 ## Command Provenance
 
-| Event | Claude Matcher | Claude Command | Codex Matcher | Codex Command |
-| --- | --- | --- | --- | --- |
-| `SessionStart` | * | `bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh` timeout=15s | * | `bash scripts/hooks/agent-event-hook.sh SessionStart` timeout=15s |
-| `UserPromptSubmit` | * | `bash $CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh` timeout=10s | * | `bash scripts/hooks/agent-event-hook.sh UserPromptSubmit` timeout=10s |
-| `PreToolUse` | Bash\|Read\|Glob\|Grep\|LS\|Edit\|Write\|MultiEdit\|apply_patch\|ApplyPatch | `bash $CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh` timeout=10s | Bash\|Read\|Glob\|Grep\|LS\|Edit\|Write\|MultiEdit\|apply_patch\|ApplyPatch | `bash scripts/hooks/agent-event-hook.sh PreToolUse` timeout=10s |
-| `PostToolUse` | Write\|Edit\|MultiEdit\|apply_patch\|ApplyPatch | `bash $CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-validate.sh` timeout=30s | Edit\|Write\|MultiEdit\|apply_patch\|ApplyPatch | `bash scripts/hooks/agent-event-hook.sh PostToolUse` timeout=30s |
-| `Stop` | * | `bash $CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh` timeout=30s | * | `bash scripts/hooks/agent-event-hook.sh Stop` timeout=30s |
-| `PreCompact` | * | `bash $CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh` timeout=10s | * | `bash scripts/hooks/agent-event-hook.sh PreCompact` timeout=10s |
-| `SessionEnd` | * | `bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh` timeout=10s | * | `bash scripts/hooks/agent-event-hook.sh SessionEnd` timeout=10s |
-
-## Gemini Behavioral Reminder Checklist
-
-| Event | Manual Reminder |
-| --- | --- |
-| `SessionStart` | Load `AGENTS.md`, provider notes, bootstrap, persona, checklist, one scope, and progress memory before repository mutation. |
-| `UserPromptSubmit` | Classify task scope, resolve risky ambiguity, and route to the canonical stage before editing. |
-| `PreToolUse` | Review requirements, guardrails, protected surfaces, and template-first rules before mutating files. |
-| `PostToolUse` | Run relevant style, docs, generated-output, and repository contract checks after edits. |
-| `Stop` | Confirm completion checklist, logical commit discipline, progress memory, and residual gaps before declaring completion. |
-| `PreCompact` | Record durable progress and handoff context before compaction or context transition. |
-| `SessionEnd` | Update progress evidence and leave the worktree/validation state explicit at session closure. |
+| Semantic Event | Claude Matcher / Command (seconds) | Codex Matcher / Command (seconds) | Gemini Matcher / Command (milliseconds) |
+| --- | --- | --- | --- |
+| `session-start` | *<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"` timeout=15s | *<br>`bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" SessionStart` timeout=600s | N/A<br>`bash "${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh" SessionStart` timeout=60000ms |
+| `user-prompt-intake` | *<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh"` timeout=10s | N/A<br>`bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" UserPromptSubmit` timeout=600s | N/A<br>`bash "${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh" BeforeAgent` timeout=60000ms |
+| `pre-tool` | Bash\|Read\|Glob\|Grep\|LS\|Edit\|Write\|MultiEdit\|apply_patch\|ApplyPatch<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh"` timeout=10s | Bash\|Read\|Glob\|Grep\|LS\|Edit\|Write\|MultiEdit\|apply_patch\|ApplyPatch<br>`bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreToolUse` timeout=600s | read_file\|read_many_files\|search_file_content\|glob\|list_directory\|write_file\|replace\|run_shell_command<br>`bash "${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh" BeforeTool` timeout=60000ms |
+| `post-tool` | Write\|Edit\|MultiEdit\|apply_patch\|ApplyPatch<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-validate.sh"` timeout=30s | Edit\|Write\|MultiEdit\|apply_patch\|ApplyPatch<br>`bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PostToolUse` timeout=600s | write_file\|replace\|run_shell_command<br>`bash "${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh" AfterTool` timeout=60000ms |
+| `stop` | *<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh"` timeout=30s | N/A<br>`bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" Stop` timeout=600s | N/A<br>`bash "${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh" AfterAgent` timeout=60000ms |
+| `pre-compaction` | *<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh"` timeout=10s | *<br>`bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreCompact` timeout=600s | N/A<br>`bash "${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh" PreCompress` timeout=60000ms |
+| `session-end` | *<br>`bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh"` timeout=10s | N/A<br>N/A | N/A<br>`bash "${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/.gemini/hooks/agent-event-hook.sh" SessionEnd` timeout=60000ms |
 
 ## Source Rules
 
-- Regenerate this file after changing Claude/Codex hook configs, Claude hook
-  wrappers, Gemini provider notes, provider capability matrix rules, or
-  `.agents/` runtime guidance.
-- Treat Gemini rows as manual behavioral reminders because this repository
-  has no tracked `.gemini` hook or agent adapter; provider-native capability
-  is not workspace-adoption evidence.
-- Do not read personal settings, hook logs, shell history, credentials,
-  tokens, `.env` values, or live provider runtime state.
+- Regenerate after provider config, wrapper, semantic-event contract, or dispatcher changes.
+- Preserve provider-native names and units; do not add ignored matchers or unsupported config keys.
+- Tracked adoption does not prove provider entitlement or live runtime acceptance.
 
 ## Sources
 
-- [Claude settings](../../../../.claude/settings.json) - tracked Claude hook configuration.
-- [Codex hooks](../../../../.codex/hooks.json) - tracked Codex hook configuration.
-- [Gemini provider notes](../../../00.agent-governance/providers/gemini.md) - Gemini behavioral hook contract.
-- [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) - provider hook capability boundary.
-- [Gemini shared runtime README](../../../../.agents/README.md) - `.agents/` rules and workflows surface.
-- [Provider-neutral dispatcher](../../../../scripts/hooks/agent-event-hook.sh) - shared hook event implementation.
+- [Claude settings](../../../../.claude/settings.json)
+- [Codex hooks](../../../../.codex/hooks.json)
+- [Gemini settings](../../../../.gemini/settings.json)
+- [Gemini native event adapter](../../../../.gemini/hooks/agent-event-hook.sh)
+- [Provider semantic contract](../../../00.agent-governance/contracts/provider-models.yaml)
+- [Provider-neutral dispatcher](../../../../scripts/hooks/agent-event-hook.sh)
 
 ## Maintenance
 
-- **Owner**: Agentic Workflow Specialist / QA Engineer.
-- **Review Cadence**: Review after provider hook, adapter, or provider-note changes.
-- **Update Trigger**: Run the generator after tracked provider hook surfaces change.
+- **Owner**: Hook Developer.
+- **Mandatory Reviewers**: Rules Engineer and Security Auditor.
+- **Update Trigger**: Any tracked provider event or adapter change.
 
 ## Related Documents
 
 - **Governance data index**: [README.md](./README.md)
-- **Provider semantic parity spec**: [../../../03.specs/107-provider-semantic-parity-validator/spec.md](../../../03.specs/107-provider-semantic-parity-validator/spec.md)
+- **Provider capability matrix**: [../../../00.agent-governance/rules/provider-capability-matrix.md](../../../00.agent-governance/rules/provider-capability-matrix.md)
 - **Provider hook parity spec**: [../../../03.specs/115-provider-hook-parity-matrix/spec.md](../../../03.specs/115-provider-hook-parity-matrix/spec.md)
-- **Automation candidates**: [../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

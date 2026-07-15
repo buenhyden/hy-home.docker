@@ -36,8 +36,10 @@ Codex-specific guidance for this repository.
 
 - `.codex/hooks.json` provides Codex-local hooks.
 - `.codex/agents/` uses Codex-native TOML adapter definitions under
-  `.codex/agents/*.toml`. The TOML files bind each Stage 00 agent role to a
-  Codex model, reasoning effort, scope, and source catalog path.
+  `.codex/agents/*.toml`. Each strict adapter contains `name`, `description`,
+  `developer_instructions`, `model`, `model_reasoning_effort`, and
+  `sandbox_mode`; canonical scope, function, and catalog metadata stays in the
+  typed Stage 00 contracts.
 - `.codex/agents/*.toml` is the Codex agent adapter surface. Do not define
   Codex-only roles, QA rules, Template Contract rules, or Model Policy values
   in TOML; those belong in Stage 00.
@@ -49,13 +51,14 @@ Codex-specific guidance for this repository.
 - Shared skills are rendered from typed Stage 00 function sources through
   `scripts/operations/sync-provider-surfaces.sh`; provider skill bodies are
   never used as policy input.
-- Apply the Model Policy (`subagent-protocol.md`): `workflow-supervisor` uses
-  `gpt-5.5` with `xhigh` reasoning effort; default worker agents use
-  `gpt-5.4-mini` with `medium` reasoning effort. Never carry
-  Anthropic model names (`opus-4.8`/`sonnet-4.6`) in `.codex/`.
-- `gpt-5.3-codex` is reserved for a future explicit code-specialized worker override;
-  do not use it until the sync script, validator, and policy table all encode the
-  same exception.
+- Apply the model and reasoning selected by the agent's work profile in
+  `contracts/provider-models.yaml`: GPT-5.6 for supervision and complex work,
+  and GPT-5.6 Terra for read-heavy/repetitive work. OpenAI's raw status is
+  `listed`, not `stable`; local entitlement and runtime acceptance still need
+  revalidation. Never carry Anthropic or Gemini model names into `.codex/`.
+- GPT-5.3 Codex Spark remains non-default preview/catalog context. It cannot be
+  introduced as an override until the contract, renderer, validator, and task
+  evidence all encode the same approved exception.
 - `model` and `model_reasoning_effort` values are configuration outputs of the
   Stage 00 policy. Codex must not introduce new aliases, downgrade reasoning
   gates, or copy speculative model names from prompt context unless Stage 00,
@@ -96,7 +99,12 @@ reviewed Git-visible, non-ignored repository paths in Stage 04 evidence.
 - `PreToolUse` emits Graphify advisory context, Docker Compose guardrails, and template-first guidance.
 - `PostToolUse` delegates to `scripts/hooks/post-tool-validate.sh` after file edits for shell formatting, validation, and diff hygiene.
 - `Stop` blocks completion when changed target-stage docs fail `check-repo-contracts.sh` or task-owned uncommitted paths remain.
-- `SessionEnd` and `PreCompact` route through `agent-event-hook.sh` for lifecycle-safe advisory context.
+- `PreCompact` routes through `agent-event-hook.sh`. Codex does not expose the
+  repository's `SessionEnd` semantic event, so no native `SessionEnd` entry is
+  generated or counted as parity.
+- `UserPromptSubmit` and `Stop` omit ignored matcher keys. Hook commands resolve
+  the quoted project root so execution is robust from subdirectories and paths
+  containing spaces.
 
 ## 7. Hook Parity Contract
 
@@ -123,3 +131,10 @@ reviewed Git-visible, non-ignored repository paths in Stage 04 evidence.
 - `docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md`
 - `docs/00.agent-governance/agents/`
 - `scripts/hooks/agent-event-hook.sh`
+
+## References
+
+- <https://learn.chatgpt.com/docs/agent-configuration/subagents>
+- <https://learn.chatgpt.com/docs/hooks>
+- <https://developers.openai.com/api/docs/models/gpt-5.6-sol>
+- <https://developers.openai.com/api/docs/models/gpt-5.6-terra>

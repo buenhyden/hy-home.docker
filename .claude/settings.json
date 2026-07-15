@@ -3,8 +3,6 @@
   "permissions": {
     "allow": [
       "$defaults",
-      "Write(.claude/skills/*)",
-      "Edit(.claude/skills/*)",
       "Bash(git:*)",
       "Bash(python3:*)",
       "Bash(grep:*)",
@@ -33,94 +31,92 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\"",
             "timeout": 15
           }
-        ]
+        ],
+        "matcher": "*"
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch",
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh\"",
             "timeout": 10
           }
-        ]
+        ],
+        "matcher": "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch"
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "Write|Edit|MultiEdit|apply_patch|ApplyPatch",
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-validate.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-validate.sh\"",
             "timeout": 30
           }
-        ]
+        ],
+        "matcher": "Write|Edit|MultiEdit|apply_patch|ApplyPatch"
       }
     ],
     "SessionEnd": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh\"",
             "timeout": 10
           }
-        ]
+        ],
+        "matcher": "*"
       }
     ],
     "Stop": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh\"",
             "timeout": 30
           }
-        ]
+        ],
+        "matcher": "*"
       }
     ],
     "PreCompact": [
       {
-        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh\"",
             "timeout": 10
           }
-        ]
+        ],
+        "matcher": "*"
       }
     ],
     "UserPromptSubmit": [
-    {
-      "matcher": "*",
-      "hooks": [
-        {
-          "type": "command",
-          "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh",
-          "timeout": 10
-        }
-      ]
-    }
-  ]
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh\"",
+            "timeout": 10
+          }
+        ],
+        "matcher": "*"
+      }
+    ]
   },
   "autoMode": {
     "allow": [
-      "$defaults",
-      "Write(.claude/skills/*)",
-      "Edit(.claude/skills/*)"
+      "$defaults"
     ]
   },
   "deniedMcpServers": [

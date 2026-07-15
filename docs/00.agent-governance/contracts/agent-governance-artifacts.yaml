@@ -6,7 +6,7 @@ path_pattern_limits:
   max_pattern_length: 4096
 governed_families:
   - family_id: provider-entry-indexes
-    path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md}"
+    path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md,.gemini/README.md}"
     repository_sections: [harness]
   - family_id: root-instruction-shims
     path_pattern: "{AGENTS,CLAUDE,GEMINI}.md"
@@ -281,6 +281,21 @@ artifacts:
     expected_values:
       layer: agentic
       runtime: codex
+  - profile_id: provider-project-gemini
+    artifact_type: provider-project-entry
+    path_pattern: .gemini/README.md
+    repository_section: harness
+    canonical: false
+    required_keys: [layer, runtime]
+    key_order: [layer, runtime]
+    required_sections:
+      - Scope
+      - Structure
+      - How to Work in This Area
+      - Related Documents
+    expected_values:
+      layer: agentic
+      runtime: gemini
   - profile_id: provider-runtime-claude
     artifact_type: provider-overlay
     path_pattern: docs/00.agent-governance/providers/claude.md
@@ -437,7 +452,7 @@ readme_profiles:
       - provider-native-schema
       - retry-policy
   - profile_id: provider-surface-index
-    path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md}"
+    path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md,.gemini/README.md}"
     required_sections:
       - Scope
       - Structure

@@ -6,11 +6,13 @@ from __future__ import annotations
 import datetime as dt
 import errno
 import fnmatch
+import json
 import os
 import pathlib
 import re
 import secrets
 import stat
+import tomllib
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from types import MappingProxyType
@@ -71,7 +73,10 @@ CATALOG_TOP_FIELDS = COMMON_TOP_FIELDS | {
     "role_transfers",
     "capability_intake",
 }
-PROVIDER_TOP_FIELDS = COMMON_TOP_FIELDS | {
+PROVIDER_TOP_FIELDS = {
+    "schema_version",
+    "cutoff_at",
+    "retrieved_at",
     "providers",
     "compatibility_surfaces",
     "work_profiles",
@@ -180,8 +185,13 @@ PROVIDER_FIELDS = {
     "adoption_status",
     "native_agent_pattern",
     "native_config_path",
-    "shared_skill_surface",
+    "native_skill_pattern",
+    "canonical_skill_source_pattern",
     "source_url",
+    "hook_source_url",
+    "local_cli_version",
+    "local_cli_observation",
+    "local_runtime_acceptance",
 }
 COMPATIBILITY_FIELDS = {
     "surface_id",
@@ -195,13 +205,22 @@ WORK_PROFILE_DEFAULT_FIELDS = {"provider", "model_id", "reasoning"}
 MODEL_FIELDS = {
     "provider",
     "model_id",
+    "canonical_model_id",
     "provider_status",
+    "normalized_status",
     "repository_default_eligible",
     "entitlement",
     "runtime_acceptance",
-    "reasoning_controls",
+    "reasoning_control_kind",
+    "supported_reasoning_controls",
+    "repository_reasoning_controls",
     "work_profiles",
+    "agent_coding_fit",
+    "task_characteristics",
     "fallback",
+    "fallback_policy",
+    "fallback_approval",
+    "cutoff_evidence_status",
     "checked_at",
     "source_url",
 }
@@ -211,8 +230,10 @@ EVENT_BINDING_FIELDS = {
     "native_event",
     "capability_status",
     "adoption_status",
-    "blocking",
+    "provider_can_block",
+    "repository_hook_mode",
     "timeout_unit",
+    "timeout_value",
 }
 
 PROVIDER_CAPABILITY_STATES = {"supported", "unsupported", "needs_revalidation"}
@@ -223,7 +244,24 @@ PROVIDER_ADOPTION_STATES = {
     "partial",
     "planned",
 }
-MODEL_STATES = {"deprecated", "preview", "stable"}
+MODEL_STATES = {
+    "active",
+    "current",
+    "deprecated",
+    "generally-available",
+    "limited-availability",
+    "listed",
+    "preview",
+    "stable",
+}
+NORMALIZED_MODEL_STATES = {
+    "current",
+    "deprecated",
+    "limited",
+    "preview",
+    "stable",
+    "unclassified-listed",
+}
 ENTITLEMENT_STATES = {"available", "needs_revalidation", "unavailable"}
 RUNTIME_ACCEPTANCE_STATES = {"accepted", "needs_revalidation", "rejected"}
 AGENT_CATEGORIES = {"implementation-operations", "review-evaluation", "supervisor"}
@@ -231,6 +269,20 @@ AGENT_TIERS = {"supervisor", "worker"}
 AGENT_STATUSES = {"active", "retired"}
 CAPABILITY_DECISIONS = {"adopt", "defer", "merge", "reject"}
 TIMEOUT_UNITS = {"milliseconds", "seconds"}
+LOCAL_CLI_OBSERVATIONS = {"observed", "unavailable"}
+REASONING_CONTROL_KINDS = {
+    "adaptive",
+    "adaptive-always-on",
+    "effort",
+    "extended-thinking",
+    "reasoning-effort",
+    "thinking-level",
+    "unverified",
+}
+AGENT_CODING_FITS = {"bounded", "exceptional", "historical", "strong"}
+CUTOFF_EVIDENCE_STATES = {"historical-state-unverified", "verified-before-cutoff"}
+FALLBACK_POLICIES = {"approved-degraded", "same-profile"}
+REPOSITORY_HOOK_MODES = {"advisory", "blocking", "deny-retry", "unsupported"}
 
 DOMAIN_OWNER_REFERENCE_FIELDS = MappingProxyType(
     {
@@ -996,6 +1048,8 @@ def _check_common(
     expected_fields: set[str],
     path: str,
     findings: list[Finding],
+    *,
+    time_field: str = "checked_at",
 ) -> None:
     source = path
     _check_fields(document, expected_fields, path, "root", findings, source)
@@ -1009,7 +1063,9 @@ def _check_common(
             "invalid-version",
             source,
         )
-    _check_checked_at(document.get("checked_at"), path, "checked_at", findings, source)
+    _check_checked_at(
+        document.get(time_field), path, time_field, findings, source
+    )
 
 
 def _validate_artifact_contract(
@@ -1901,7 +1957,32 @@ def _validate_provider_contract(
 ) -> None:
     path = CONTRACT_RELATIVE_PATHS["providers"].as_posix()
     source = path
-    _check_common(document, PROVIDER_TOP_FIELDS, path, findings)
+    _check_common(
+        document, PROVIDER_TOP_FIELDS, path, findings, time_field="retrieved_at"
+    )
+    _check_checked_at(document.get("cutoff_at"), path, "cutoff_at", findings, source)
+    try:
+        cutoff_at = dt.datetime.fromisoformat(str(document.get("cutoff_at")))
+        retrieved_at = dt.datetime.fromisoformat(str(document.get("retrieved_at")))
+    except ValueError:
+        cutoff_at = None
+        retrieved_at = None
+    if (
+        cutoff_at is not None
+        and retrieved_at is not None
+        and cutoff_at.tzinfo is not None
+        and retrieved_at.tzinfo is not None
+        and retrieved_at < cutoff_at
+    ):
+        _add(
+            findings,
+            "AGC-SOURCE-OBSERVATION-ORDER",
+            path,
+            "retrieved_at",
+            "retrieval-not-before-cutoff",
+            "backdated-retrieval",
+            source,
+        )
     providers = _as_sequence(document.get("providers"), path, "providers", findings, source)
     provider_ids: list[str] = []
     if providers is not None:
@@ -1931,9 +2012,58 @@ def _validate_provider_contract(
                 source,
                 code="AGC-PROVIDER-INVALID-STATE",
             )
-            for field in ("native_agent_pattern", "native_config_path", "shared_skill_surface"):
+            for field in (
+                "native_agent_pattern",
+                "native_config_path",
+                "native_skill_pattern",
+                "canonical_skill_source_pattern",
+            ):
                 _check_path(entry.get(field), path, f"{location}.{field}", findings, source)
             _check_source_url(entry.get("source_url"), path, f"{location}.source_url", findings, source)
+            _check_source_url(
+                entry.get("hook_source_url"),
+                path,
+                f"{location}.hook_source_url",
+                findings,
+                source,
+            )
+            observation = entry.get("local_cli_observation")
+            _check_enum(
+                observation,
+                LOCAL_CLI_OBSERVATIONS,
+                path,
+                f"{location}.local_cli_observation",
+                findings,
+                source,
+            )
+            version = entry.get("local_cli_version")
+            if observation == "observed":
+                _check_string(
+                    version,
+                    path,
+                    f"{location}.local_cli_version",
+                    findings,
+                    source,
+                )
+            elif version is not None:
+                _add(
+                    findings,
+                    "AGC-PROVIDER-LOCAL-OBSERVATION",
+                    path,
+                    f"{location}.local_cli_version",
+                    "null-when-unavailable",
+                    "version-without-observation",
+                    source,
+                )
+            _check_enum(
+                entry.get("local_runtime_acceptance"),
+                RUNTIME_ACCEPTANCE_STATES,
+                path,
+                f"{location}.local_runtime_acceptance",
+                findings,
+                source,
+                code="AGC-PROVIDER-INVALID-STATE",
+            )
     _check_sorted_unique_ids(provider_ids, path, "providers", findings, source)
     if providers is not None and len(providers) != EXPECTED_PROVIDER_COUNT:
         _add(
@@ -2060,6 +2190,13 @@ def _validate_provider_contract(
                         "floating-model-id",
                         source,
                     )
+            _check_string(
+                entry.get("canonical_model_id"),
+                path,
+                f"{location}.canonical_model_id",
+                findings,
+                source,
+            )
             if isinstance(provider, str) and isinstance(model_id, str):
                 key = (provider, model_id)
                 model_keys.append(key)
@@ -2073,16 +2210,50 @@ def _validate_provider_contract(
                 source,
                 code="AGC-PROVIDER-INVALID-STATE",
             )
+            normalized_status = entry.get("normalized_status")
+            normalized_valid = _check_enum(
+                normalized_status,
+                NORMALIZED_MODEL_STATES,
+                path,
+                f"{location}.normalized_status",
+                findings,
+                source,
+                code="AGC-PROVIDER-INVALID-STATE",
+            )
+            expected_normalized = {
+                "active": "stable",
+                "current": "stable",
+                "deprecated": "deprecated",
+                "generally-available": "stable",
+                "limited-availability": "limited",
+                "listed": "unclassified-listed",
+                "preview": "preview",
+                "stable": "stable",
+            }.get(entry.get("provider_status"))
+            if status_valid and normalized_valid and normalized_status != expected_normalized:
+                _add(
+                    findings,
+                    "AGC-MODEL-STATUS-NORMALIZATION",
+                    path,
+                    f"{location}.normalized_status",
+                    "evidence-backed-normalization",
+                    "status-normalization-mismatch",
+                    source,
+                )
             eligible = entry.get("repository_default_eligible")
             _check_bool(eligible, path, f"{location}.repository_default_eligible", findings, source)
-            if status_valid and eligible is True and entry.get("provider_status") != "stable":
+            if normalized_valid and eligible is True and normalized_status not in {
+                "current",
+                "stable",
+                "unclassified-listed",
+            }:
                 _add(
                     findings,
                     "AGC-MODEL-INELIGIBLE-STATUS",
                     path,
                     f"{location}.repository_default_eligible",
-                    "stable-model-only",
-                    "nonstable-default",
+                    "current-or-stable-model-only",
+                    "ineligible-normalized-status",
                     source,
                 )
             _check_enum(
@@ -2103,14 +2274,42 @@ def _validate_provider_contract(
                 source,
                 code="AGC-PROVIDER-INVALID-STATE",
             )
-            _check_string_list(
-                entry.get("reasoning_controls"),
+            _check_enum(
+                entry.get("reasoning_control_kind"),
+                REASONING_CONTROL_KINDS,
                 path,
-                f"{location}.reasoning_controls",
+                f"{location}.reasoning_control_kind",
+                findings,
+                source,
+            )
+            supported_controls = _check_string_list(
+                entry.get("supported_reasoning_controls"),
+                path,
+                f"{location}.supported_reasoning_controls",
                 findings,
                 source,
                 require_sorted=True,
-            )
+                allow_empty=True,
+            ) or ()
+            repository_controls = _check_string_list(
+                entry.get("repository_reasoning_controls"),
+                path,
+                f"{location}.repository_reasoning_controls",
+                findings,
+                source,
+                require_sorted=True,
+                allow_empty=True,
+            ) or ()
+            if not set(repository_controls).issubset(supported_controls):
+                _add(
+                    findings,
+                    "AGC-MODEL-REASONING-POLICY",
+                    path,
+                    f"{location}.repository_reasoning_controls",
+                    "subset-of-provider-supported-controls",
+                    "unsupported-repository-control",
+                    source,
+                )
             profiles = _check_string_list(
                 entry.get("work_profiles"),
                 path,
@@ -2118,11 +2317,63 @@ def _validate_provider_contract(
                 findings,
                 source,
                 require_sorted=True,
+                allow_empty=True,
             ) or ()
             for profile in profiles:
                 if profile not in profile_set:
                     _unknown_reference(findings, path, f"{location}.work_profiles", source)
+            _check_enum(
+                entry.get("agent_coding_fit"),
+                AGENT_CODING_FITS,
+                path,
+                f"{location}.agent_coding_fit",
+                findings,
+                source,
+            )
+            _check_string_list(
+                entry.get("task_characteristics"),
+                path,
+                f"{location}.task_characteristics",
+                findings,
+                source,
+                require_sorted=True,
+            )
             _check_string(entry.get("fallback"), path, f"{location}.fallback", findings, source)
+            _check_enum(
+                entry.get("fallback_policy"),
+                FALLBACK_POLICIES,
+                path,
+                f"{location}.fallback_policy",
+                findings,
+                source,
+            )
+            approval = entry.get("fallback_approval")
+            if entry.get("fallback_policy") == "approved-degraded":
+                _check_string(
+                    approval,
+                    path,
+                    f"{location}.fallback_approval",
+                    findings,
+                    source,
+                )
+            elif approval is not None:
+                _add(
+                    findings,
+                    "AGC-MODEL-FALLBACK-POLICY",
+                    path,
+                    f"{location}.fallback_approval",
+                    "null-for-same-profile",
+                    "unexpected-fallback-approval",
+                    source,
+                )
+            _check_enum(
+                entry.get("cutoff_evidence_status"),
+                CUTOFF_EVIDENCE_STATES,
+                path,
+                f"{location}.cutoff_evidence_status",
+                findings,
+                source,
+            )
             _check_checked_at(entry.get("checked_at"), path, f"{location}.checked_at", findings, source)
             _check_source_url(entry.get("source_url"), path, f"{location}.source_url", findings, source)
     if len(model_keys) != len(set(model_keys)):
@@ -2160,6 +2411,41 @@ def _validate_provider_contract(
                 "ineligible-fallback",
                 source,
             )
+        else:
+            source_profiles = {
+                item
+                for item in _sequence_or_empty(entry.get("work_profiles"))
+                if isinstance(item, str)
+            }
+            fallback_profiles = {
+                item
+                for item in _sequence_or_empty(fallback.get("work_profiles"))
+                if isinstance(item, str)
+            }
+            same_profile = bool(source_profiles) and source_profiles.issubset(
+                fallback_profiles
+            )
+            policy = entry.get("fallback_policy")
+            if same_profile and policy != "same-profile":
+                _add(
+                    findings,
+                    "AGC-MODEL-FALLBACK-POLICY",
+                    path,
+                    f"models.{key[0]}.{key[1]}.fallback_policy",
+                    "same-profile-policy",
+                    "unnecessary-degradation-policy",
+                    source,
+                )
+            if not same_profile and policy != "approved-degraded":
+                _add(
+                    findings,
+                    "AGC-MODEL-FALLBACK-POLICY",
+                    path,
+                    f"models.{key[0]}.{key[1]}.fallback_policy",
+                    "approved-degraded-policy",
+                    "unapproved-profile-degradation",
+                    source,
+                )
     for profile_id, provider, model_id, reasoning in profile_defaults:
         model = model_entries.get((provider, model_id))
         if model is None:
@@ -2177,7 +2463,7 @@ def _validate_provider_contract(
                 "ineligible-default-model",
                 source,
             )
-        controls = _sequence_or_empty(model.get("reasoning_controls"))
+        controls = _sequence_or_empty(model.get("repository_reasoning_controls"))
         if reasoning not in controls:
             _add(
                 findings,
@@ -2279,21 +2565,108 @@ def _validate_provider_contract(
                         source,
                         code="AGC-PROVIDER-INVALID-STATE",
                     )
+                    can_block = binding.get("provider_can_block")
                     _check_bool(
-                        binding.get("blocking"),
+                        can_block,
                         path,
-                        f"{binding_location}.blocking",
+                        f"{binding_location}.provider_can_block",
                         findings,
                         source,
                     )
+                    hook_mode = binding.get("repository_hook_mode")
                     _check_enum(
-                        binding.get("timeout_unit"),
+                        hook_mode,
+                        REPOSITORY_HOOK_MODES,
+                        path,
+                        f"{binding_location}.repository_hook_mode",
+                        findings,
+                        source,
+                    )
+                    if capability == "unsupported" and (
+                        can_block is not False or hook_mode != "unsupported"
+                    ):
+                        _add(
+                            findings,
+                            "AGC-EVENT-UNSUPPORTED-MODE",
+                            path,
+                            binding_location,
+                            "unsupported-nonblocking-binding",
+                            "unsupported-binding-mode-mismatch",
+                            source,
+                        )
+                    if hook_mode == "blocking" and can_block is not True:
+                        _add(
+                            findings,
+                            "AGC-EVENT-BLOCKING-MISMATCH",
+                            path,
+                            f"{binding_location}.repository_hook_mode",
+                            "provider-block-capability",
+                            "blocking-without-capability",
+                            source,
+                        )
+                    if hook_mode == "deny-retry" and can_block is not True:
+                        _add(
+                            findings,
+                            "AGC-EVENT-BLOCKING-MISMATCH",
+                            path,
+                            f"{binding_location}.repository_hook_mode",
+                            "provider-deny-retry-capability",
+                            "deny-retry-without-capability",
+                            source,
+                        )
+                    if (
+                        event_id == "stop"
+                        and provider == "gemini"
+                        and (
+                            native_event != "AfterAgent"
+                            or can_block is not True
+                            or hook_mode != "deny-retry"
+                        )
+                    ):
+                        _add(
+                            findings,
+                            "AGC-EVENT-SEMANTICS",
+                            path,
+                            binding_location,
+                            "gemini-after-agent-deny-retry",
+                            "underreported-or-mismapped-after-agent",
+                            source,
+                        )
+                    timeout_unit = binding.get("timeout_unit")
+                    _check_enum(
+                        timeout_unit,
                         TIMEOUT_UNITS,
                         path,
                         f"{binding_location}.timeout_unit",
                         findings,
                         source,
                     )
+                    expected_unit = "milliseconds" if provider == "gemini" else "seconds"
+                    if isinstance(provider, str) and timeout_unit != expected_unit:
+                        _add(
+                            findings,
+                            "AGC-EVENT-TIMEOUT-UNIT",
+                            path,
+                            f"{binding_location}.timeout_unit",
+                            "provider-native-time-unit",
+                            "timeout-unit-mismatch",
+                            source,
+                        )
+                    timeout_value = binding.get("timeout_value")
+                    if (
+                        isinstance(timeout_value, bool)
+                        or not isinstance(timeout_value, int)
+                        or timeout_value <= 0
+                    ):
+                        _add(
+                            findings,
+                            "AGC-EVENT-TIMEOUT-VALUE",
+                            path,
+                            f"{binding_location}.timeout_value",
+                            "positive-integer",
+                            "invalid-timeout-value",
+                            source,
+                        )
             _check_sorted_unique_ids(
                 binding_providers, path, f"{location}.provider_bindings", findings, source
             )
@@ -3239,6 +3612,261 @@ def _validate_governed_inventory(
                 )
 
 
+def _provider_native_schema_finding(
+    findings: list[Finding], path: str, location: str, actual: str
+) -> None:
+    _add(
+        findings,
+        "AGC-PROVIDER-NATIVE-SCHEMA",
+        path,
+        location,
+        "strict-provider-native-schema",
+        actual,
+        "provider-models",
+    )
+
+
+def _validate_provider_native_surfaces(
+    reader: _RepositoryReader, bundle: ContractBundle, findings: list[Finding]
+) -> None:
+    defaults: dict[tuple[str, str], tuple[str, str]] = {}
+    for profile in _sequence_or_empty(bundle.providers.get("work_profiles")):
+        if not isinstance(profile, Mapping):
+            continue
+        profile_id = profile.get("profile_id")
+        if not isinstance(profile_id, str):
+            continue
+        for entry in _sequence_or_empty(profile.get("defaults")):
+            if not isinstance(entry, Mapping):
+                continue
+            provider = entry.get("provider")
+            model_id = entry.get("model_id")
+            reasoning = entry.get("reasoning")
+            if all(isinstance(item, str) for item in (provider, model_id, reasoning)):
+                defaults[(profile_id, str(provider))] = (
+                    str(model_id),
+                    str(reasoning),
+                )
+
+    markdown_schemas = {
+        "claude": {
+            "name",
+            "description",
+            "tools",
+            "model",
+            "permissionMode",
+            "skills",
+        },
+        "gemini": {
+            "name",
+            "description",
+            "kind",
+            "tools",
+            "model",
+            "max_turns",
+            "timeout_mins",
+        },
+        "agents-md": {"name", "description"},
+    }
+    codex_schema = {
+        "name",
+        "description",
+        "developer_instructions",
+        "model",
+        "model_reasoning_effort",
+        "sandbox_mode",
+    }
+    for index, agent in enumerate(_sequence_or_empty(bundle.catalog.get("agents"))):
+        if not isinstance(agent, Mapping):
+            continue
+        agent_id = agent.get("agent_id")
+        profile = agent.get("work_profile")
+        permission = agent.get("permission_profile")
+        catalog_path = agent.get("catalog_path")
+        if not all(isinstance(item, str) for item in (agent_id, profile, permission, catalog_path)):
+            continue
+        source_marker = f"source: {catalog_path}"
+        for provider, relative in (
+            ("claude", f".claude/agents/{agent_id}.md"),
+            ("gemini", f".gemini/agents/{agent_id}.md"),
+            ("agents-md", f".agents/agents/{agent_id}.md"),
+        ):
+            text = reader.read(
+                relative,
+                f"agents[{index}].provider_projections",
+                "provider-models",
+            )
+            if text is None:
+                continue
+            keys, metadata = _frontmatter(text)
+            if (
+                metadata is None
+                or set(keys) != markdown_schemas[provider]
+                or metadata.get("name") != agent_id
+                or source_marker not in text
+            ):
+                _provider_native_schema_finding(
+                    findings, relative, "frontmatter", "key-value-or-origin-mismatch"
+                )
+                continue
+            if provider != "agents-md":
+                expected = defaults.get((str(profile), provider))
+                if expected is None or metadata.get("model") != expected[0]:
+                    _provider_native_schema_finding(
+                        findings, relative, "frontmatter.model", "profile-model-mismatch"
+                    )
+            tools = metadata.get("tools")
+            if provider in {"claude", "gemini"} and not isinstance(tools, (list, tuple)):
+                _provider_native_schema_finding(
+                    findings, relative, "frontmatter.tools", "non-list-tools"
+                )
+            if permission == "read-only" and provider == "claude":
+                if metadata.get("permissionMode") != "plan" or any(
+                    tool in _sequence_or_empty(tools) for tool in ("Edit", "Write")
+                ):
+                    _provider_native_schema_finding(
+                        findings, relative, "frontmatter.permissions", "write-capable-read-only-role"
+                    )
+            if permission == "read-only" and provider == "gemini":
+                if any(
+                    tool in _sequence_or_empty(tools)
+                    for tool in ("*", "replace", "write_file")
+                ):
+                    _provider_native_schema_finding(
+                        findings, relative, "frontmatter.tools", "write-capable-read-only-role"
+                    )
+
+        codex_path = f".codex/agents/{agent_id}.toml"
+        codex_text = reader.read(
+            codex_path,
+            f"agents[{index}].provider_projections",
+            "provider-models",
+        )
+        if codex_text is not None:
+            try:
+                codex = tomllib.loads(codex_text)
+            except tomllib.TOMLDecodeError:
+                codex = {}
+            expected = defaults.get((str(profile), "codex"))
+            valid = set(codex) == codex_schema and codex.get("name") == agent_id
+            valid = valid and source_marker in codex_text and expected is not None
+            if expected is not None:
+                valid = valid and codex.get("model") == expected[0]
+                valid = valid and codex.get("model_reasoning_effort") == expected[1]
+            valid = valid and codex.get("sandbox_mode") == (
+                "read-only" if permission == "read-only" else "workspace-write"
+            )
+            if not valid:
+                _provider_native_schema_finding(
+                    findings, codex_path, "toml", "key-value-or-origin-mismatch"
+                )
+
+    for function_index, function in enumerate(
+        _sequence_or_empty(bundle.catalog.get("functions"))
+    ):
+        if not isinstance(function, Mapping) or not isinstance(
+            function.get("function_id"), str
+        ):
+            continue
+        function_id = str(function["function_id"])
+        for relative in (
+            f".claude/skills/{function_id}/SKILL.md",
+            f".agents/skills/{function_id}/SKILL.md",
+        ):
+            reader.read(
+                relative,
+                f"functions[{function_index}].provider_projections",
+                "provider-models",
+            )
+
+    codex_skills = reader.root / ".codex/skills"
+    if codex_skills.exists() or codex_skills.is_symlink():
+        _provider_native_schema_finding(
+            findings, ".codex/skills", "native_skill_pattern", "forbidden-codex-skill-root"
+        )
+
+    provider_entries = {
+        str(entry["provider_id"]): entry
+        for entry in _sequence_or_empty(bundle.providers.get("providers"))
+        if isinstance(entry, Mapping) and isinstance(entry.get("provider_id"), str)
+    }
+    event_bindings: dict[str, dict[str, Mapping[str, object]]] = {}
+    for event in _sequence_or_empty(bundle.providers.get("semantic_events")):
+        if not isinstance(event, Mapping) or not isinstance(event.get("event_id"), str):
+            continue
+        for binding in _sequence_or_empty(event.get("provider_bindings")):
+            if isinstance(binding, Mapping) and isinstance(binding.get("provider"), str):
+                event_bindings.setdefault(str(binding["provider"]), {})[
+                    str(event["event_id"])
+                ] = binding
+    for provider, entry in provider_entries.items():
+        config_path = entry.get("native_config_path")
+        if not isinstance(config_path, str):
+            continue
+        text = reader.read(config_path, "native_config_path", "provider-models")
+        if text is None:
+            continue
+        try:
+            config = json.loads(text)
+        except json.JSONDecodeError:
+            _provider_native_schema_finding(
+                findings, config_path, "json", "malformed-provider-config"
+            )
+            continue
+        hooks = config.get("hooks") if isinstance(config, Mapping) else None
+        if not isinstance(hooks, Mapping):
+            _provider_native_schema_finding(
+                findings, config_path, "hooks", "missing-hooks-mapping"
+            )
+            continue
+        expected_events = {
+            str(binding["native_event"])
+            for binding in event_bindings.get(provider, {}).values()
+            if binding.get("capability_status") == "supported"
+            and binding.get("adoption_status") == "adopted"
+        }
+        if set(hooks) != expected_events:
+            _provider_native_schema_finding(
+                findings, config_path, "hooks", "native-event-set-mismatch"
+            )
+        for semantic_id, binding in event_bindings.get(provider, {}).items():
+            native = binding.get("native_event")
+            if not isinstance(native, str) or native not in hooks:
+                continue
+            groups = hooks.get(native)
+            try:
+                group = groups[0]
+                handler = group["hooks"][0]
+            except (IndexError, KeyError, TypeError):
+                _provider_native_schema_finding(
+                    findings, config_path, f"hooks.{native}", "invalid-hook-shape"
+                )
+                continue
+            if handler.get("timeout") != binding.get("timeout_value"):
+                _provider_native_schema_finding(
+                    findings, config_path, f"hooks.{native}.timeout", "timeout-unit-or-value-mismatch"
+                )
+            if provider == "codex" and semantic_id in {"stop", "user-prompt-intake"}:
+                if "matcher" in group:
+                    _provider_native_schema_finding(
+                        findings, config_path, f"hooks.{native}.matcher", "ignored-matcher-present"
+                    )
+            if provider == "gemini" and semantic_id == "pre-compaction":
+                if "async" in handler:
+                    _provider_native_schema_finding(
+                        findings, config_path, f"hooks.{native}.async", "unsupported-async-config-key"
+                    )
+            if provider == "gemini":
+                if set(handler) != {"type", "command", "timeout"}:
+                    _provider_native_schema_finding(
+                        findings, config_path, f"hooks.{native}", "invalid-gemini-handler-keys"
+                    )
+                if semantic_id not in {"pre-tool", "post-tool"} and "matcher" in group:
+                    _provider_native_schema_finding(
+                        findings, config_path, f"hooks.{native}.matcher", "non-tool-matcher-present"
+                    )
+
+
 def validate_repository(
     root: pathlib.Path, bundle: ContractBundle, section: str = "all"
 ) -> list[Finding]:
@@ -3321,6 +3949,7 @@ def validate_repository(
                     "missing-provider-config",
                     "provider-models",
                 )
+        _validate_provider_native_surfaces(reader, bundle, findings)
     if section in {"all", "harness"}:
         _validate_root_shims(reader, bundle.artifacts, findings)
         _validate_readme_profiles(reader, bundle.artifacts, findings)

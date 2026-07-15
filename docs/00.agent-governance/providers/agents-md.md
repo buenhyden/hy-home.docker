@@ -54,8 +54,9 @@ agent roles, model tiers, QA rules, template rules, or workflow policy.
   roles, scopes, inputs/outputs, and governing links.
 - `docs/00.agent-governance/agents/functions/` defines reusable functions and
   skill contracts.
-- `subagent-protocol.md` defines provider-equivalent model tiers and Codex
-  reasoning-effort requirements.
+- `contracts/provider-models.yaml` defines typed provider/model/event facts,
+  work profiles, reasoning controls, fallbacks, and observation provenance;
+  `subagent-protocol.md` supplies the human routing and handoff view.
 - The agent and function name sets defined in Stage 00 are authoritative. Every
   provider adapter MUST expose exactly those name sets.
 
@@ -67,8 +68,9 @@ agent roles, model tiers, QA rules, template rules, or workflow policy.
   `.codex/agents/*.toml` and hook compatibility. TOML files
   carry provider-native `model` and `model_reasoning_effort` fields from the
   Model Policy.
-- **Gemini (`.gemini/`)** exposes native agents and hooks after its generated
-  projection is present; `.agents/` remains the shared compatibility surface.
+- **Gemini (`.gemini/`)** exposes generated native agents, settings, and one
+  thin event-name adapter. `.agents/skills/` remains the shared Gemini/Codex
+  skill source and `.agents/` remains the compatibility surface.
 
 ### Adapter Rules
 
@@ -79,8 +81,8 @@ agent roles, model tiers, QA rules, template rules, or workflow policy.
 - **Policy parity:** provider adapters may adapt syntax, frontmatter, or hook
   mechanics, but may not introduce separate governance, QA/CI/CD, Template
   Contract, Model Policy, or workflow rules.
-- **Model parity:** provider adapters MUST use only model identifiers and
-  reasoning-effort values allowed by `subagent-protocol.md`.
+- **Model parity:** provider adapters MUST use only the model identifiers and
+  provider-specific controls allowed by `contracts/provider-models.yaml`.
 - **Validation parity:** `scripts/validation/check-repo-contracts.sh` and
   `scripts/operations/sync-provider-surfaces.sh` enforce or report drift from
   this model.
@@ -111,5 +113,5 @@ described as native interception.
 
 ## References
 
-- <https://openai.com/index/introducing-codex/>
+- <https://learn.chatgpt.com/docs/agent-configuration/subagents>
 - <https://agents.md/>

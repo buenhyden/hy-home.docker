@@ -1,33 +1,51 @@
 schema_version: 1
-checked_at: "2026-07-15T10:00:00+09:00"
+cutoff_at: "2026-07-10T10:00:00+09:00"
+retrieved_at: "2026-07-16T01:17:36+09:00"
 providers:
   - provider_id: claude
     capability_status: supported
-    adoption_status: partial
+    adoption_status: adopted
     native_agent_pattern: .claude/agents/*.md
     native_config_path: .claude/settings.json
-    shared_skill_surface: .agents/skills/**/SKILL.md
+    native_skill_pattern: .claude/skills/**/SKILL.md
+    canonical_skill_source_pattern: docs/00.agent-governance/agents/functions/*.md
     source_url: https://code.claude.com/docs/en/sub-agents
+    hook_source_url: https://code.claude.com/docs/en/hooks
+    local_cli_version: 2.1.209
+    local_cli_observation: observed
+    local_runtime_acceptance: needs_revalidation
   - provider_id: codex
     capability_status: supported
-    adoption_status: partial
+    adoption_status: adopted
     native_agent_pattern: .codex/agents/*.toml
     native_config_path: .codex/hooks.json
-    shared_skill_surface: .agents/skills/**/SKILL.md
+    native_skill_pattern: .agents/skills/**/SKILL.md
+    canonical_skill_source_pattern: docs/00.agent-governance/agents/functions/*.md
     source_url: https://learn.chatgpt.com/docs/agent-configuration/subagents
+    hook_source_url: https://learn.chatgpt.com/docs/hooks
+    local_cli_version: 0.140.0
+    local_cli_observation: observed
+    local_runtime_acceptance: needs_revalidation
   - provider_id: gemini
     capability_status: supported
-    adoption_status: planned
+    adoption_status: adopted
     native_agent_pattern: .gemini/agents/*.md
     native_config_path: .gemini/settings.json
-    shared_skill_surface: .agents/skills/**/SKILL.md
+    native_skill_pattern: .agents/skills/**/SKILL.md
+    canonical_skill_source_pattern: docs/00.agent-governance/agents/functions/*.md
     source_url: https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md
+    hook_source_url: https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/writing-hooks.md
+    local_cli_version: null
+    local_cli_observation: unavailable
+    local_runtime_acceptance: needs_revalidation
 compatibility_surfaces:
   - surface_id: agents-md
     path_pattern: .agents/**
     status: active
     consumers:
       - antigravity
+      - codex
+      - gemini
       - shared-skills
     source_url: https://agents.md/
 work_profiles:
@@ -42,171 +60,400 @@ work_profiles:
         reasoning: high
       - provider: gemini
         model_id: gemini-3.5-flash
-        reasoning: model-selected
+        reasoning: high
   - profile_id: read-heavy-repetitive
     description: Exploration, large reads, repetitive organization, and bounded classification.
     defaults:
       - provider: claude
         model_id: claude-haiku-4-5-20251001
-        reasoning: standard
+        reasoning: extended-thinking
       - provider: codex
         model_id: gpt-5.6-terra
         reasoning: low
       - provider: gemini
         model_id: gemini-3.1-flash-lite
-        reasoning: model-selected
+        reasoning: minimal
   - profile_id: supervision
     description: Supervision, architecture, complex planning, and final synthesis.
     defaults:
       - provider: claude
         model_id: claude-opus-4-8
-        reasoning: adaptive
+        reasoning: high
       - provider: codex
         model_id: gpt-5.6
         reasoning: xhigh
       - provider: gemini
         model_id: gemini-3.5-flash
-        reasoning: model-selected
+        reasoning: high
 models:
   - provider: claude
     model_id: claude-fable-5
-    provider_status: stable
+    canonical_model_id: claude-fable-5
+    provider_status: generally-available
+    normalized_status: stable
     repository_default_eligible: false
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_controls:
-      - adaptive
+    reasoning_control_kind: adaptive-always-on
+    supported_reasoning_controls:
+      - always-on-adaptive
+    repository_reasoning_controls: []
     work_profiles:
       - complex-implementation
       - supervision
+    agent_coding_fit: exceptional
+    task_characteristics:
+      - exceptional-capability
+      - long-running-agent
     fallback: claude-opus-4-8
-    checked_at: "2026-07-15T10:00:00+09:00"
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
     model_id: claude-haiku-4-5-20251001
-    provider_status: stable
+    canonical_model_id: claude-haiku-4-5-20251001
+    provider_status: active
+    normalized_status: stable
     repository_default_eligible: true
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_controls:
-      - standard
+    reasoning_control_kind: extended-thinking
+    supported_reasoning_controls:
+      - extended-thinking
+    repository_reasoning_controls:
+      - extended-thinking
     work_profiles:
       - read-heavy-repetitive
+    agent_coding_fit: bounded
+    task_characteristics:
+      - high-volume
+      - read-heavy
     fallback: claude-sonnet-5
-    checked_at: "2026-07-15T10:00:00+09:00"
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
-    model_id: claude-opus-4-8
-    provider_status: stable
-    repository_default_eligible: true
-    entitlement: needs_revalidation
-    runtime_acceptance: needs_revalidation
-    reasoning_controls:
-      - adaptive
-    work_profiles:
-      - supervision
-    fallback: claude-sonnet-5
-    checked_at: "2026-07-15T10:00:00+09:00"
-    source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
-  - provider: claude
-    model_id: claude-sonnet-5
-    provider_status: stable
-    repository_default_eligible: true
-    entitlement: needs_revalidation
-    runtime_acceptance: needs_revalidation
-    reasoning_controls:
-      - adaptive
-    work_profiles:
-      - complex-implementation
-    fallback: claude-haiku-4-5-20251001
-    checked_at: "2026-07-15T10:00:00+09:00"
-    source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
-  - provider: codex
-    model_id: gpt-5.3-codex-spark
-    provider_status: preview
+    model_id: claude-mythos-5
+    canonical_model_id: claude-mythos-5
+    provider_status: limited-availability
+    normalized_status: limited
     repository_default_eligible: false
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_controls:
-      - high
-      - low
-      - medium
+    reasoning_control_kind: adaptive-always-on
+    supported_reasoning_controls:
+      - always-on-adaptive
+    repository_reasoning_controls: []
     work_profiles:
       - complex-implementation
-    fallback: gpt-5.6-terra
-    checked_at: "2026-07-15T10:00:00+09:00"
-    source_url: https://learn.chatgpt.com/docs/models
-  - provider: codex
-    model_id: gpt-5.6
-    provider_status: stable
+      - supervision
+    agent_coding_fit: exceptional
+    task_characteristics:
+      - defensive-cybersecurity
+      - invitation-only
+    fallback: claude-opus-4-8
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+  - provider: claude
+    model_id: claude-opus-4-1-20250805
+    canonical_model_id: claude-opus-4-1-20250805
+    provider_status: deprecated
+    normalized_status: deprecated
+    repository_default_eligible: false
+    entitlement: unavailable
+    runtime_acceptance: rejected
+    reasoning_control_kind: effort
+    supported_reasoning_controls: []
+    repository_reasoning_controls: []
+    work_profiles: []
+    agent_coding_fit: historical
+    task_characteristics:
+      - migration-only
+    fallback: claude-opus-4-8
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://platform.claude.com/docs/en/about-claude/model-deprecations
+  - provider: claude
+    model_id: claude-opus-4-8
+    canonical_model_id: claude-opus-4-8
+    provider_status: active
+    normalized_status: stable
     repository_default_eligible: true
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_controls:
+    reasoning_control_kind: effort
+    supported_reasoning_controls:
+      - high
+    repository_reasoning_controls:
+      - high
+    work_profiles:
+      - supervision
+    agent_coding_fit: exceptional
+    task_characteristics:
+      - architecture
+      - complex-planning
+      - final-synthesis
+    fallback: claude-sonnet-5
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+  - provider: claude
+    model_id: claude-sonnet-5
+    canonical_model_id: claude-sonnet-5
+    provider_status: current
+    normalized_status: stable
+    repository_default_eligible: true
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    reasoning_control_kind: adaptive
+    supported_reasoning_controls:
+      - adaptive
+    repository_reasoning_controls:
+      - adaptive
+    work_profiles:
+      - complex-implementation
+    agent_coding_fit: strong
+    task_characteristics:
+      - complex-implementation
+      - precision-review
+      - security-analysis
+    fallback: claude-haiku-4-5-20251001
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+  - provider: codex
+    model_id: gpt-5.2-codex
+    canonical_model_id: gpt-5.2-codex
+    provider_status: deprecated
+    normalized_status: deprecated
+    repository_default_eligible: false
+    entitlement: unavailable
+    runtime_acceptance: rejected
+    reasoning_control_kind: reasoning-effort
+    supported_reasoning_controls: []
+    repository_reasoning_controls: []
+    work_profiles: []
+    agent_coding_fit: historical
+    task_characteristics:
+      - migration-only
+    fallback: gpt-5.6-terra
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://developers.openai.com/api/docs/models/gpt-5.2-codex
+  - provider: codex
+    model_id: gpt-5.3-codex-spark
+    canonical_model_id: gpt-5.3-codex-spark
+    provider_status: preview
+    normalized_status: preview
+    repository_default_eligible: false
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    reasoning_control_kind: unverified
+    supported_reasoning_controls: []
+    repository_reasoning_controls: []
+    work_profiles:
+      - complex-implementation
+    agent_coding_fit: strong
+    task_characteristics:
+      - invitation-only
+      - low-latency-coding
+    fallback: gpt-5.6
+    fallback_policy: same-profile
+    fallback_approval: null
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://learn.chatgpt.com/docs/models
+  - provider: codex
+    model_id: gpt-5.6
+    canonical_model_id: gpt-5.6-sol
+    provider_status: listed
+    normalized_status: unclassified-listed
+    repository_default_eligible: true
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    reasoning_control_kind: reasoning-effort
+    supported_reasoning_controls:
+      - high
+      - low
+      - max
+      - medium
+      - none
+      - xhigh
+    repository_reasoning_controls:
       - high
       - medium
       - xhigh
     work_profiles:
       - complex-implementation
       - supervision
+    agent_coding_fit: exceptional
+    task_characteristics:
+      - agentic-coding
+      - architecture
+      - complex-implementation
+      - supervision
     fallback: gpt-5.6-terra
-    checked_at: "2026-07-15T10:00:00+09:00"
-    source_url: https://learn.chatgpt.com/docs/models
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: historical-state-unverified
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://developers.openai.com/api/docs/models/gpt-5.6-sol
   - provider: codex
     model_id: gpt-5.6-terra
-    provider_status: stable
+    canonical_model_id: gpt-5.6-terra
+    provider_status: listed
+    normalized_status: unclassified-listed
     repository_default_eligible: true
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_controls:
+    reasoning_control_kind: reasoning-effort
+    supported_reasoning_controls:
+      - high
+      - low
+      - max
+      - medium
+      - none
+      - xhigh
+    repository_reasoning_controls:
       - low
       - medium
     work_profiles:
       - read-heavy-repetitive
+    agent_coding_fit: strong
+    task_characteristics:
+      - bounded-classification
+      - repetitive-organization
+      - repository-exploration
     fallback: gpt-5.6
-    checked_at: "2026-07-15T10:00:00+09:00"
-    source_url: https://learn.chatgpt.com/docs/models
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: historical-state-unverified
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://developers.openai.com/api/docs/models/gpt-5.6-terra
   - provider: gemini
     model_id: gemini-3.1-flash-lite
+    canonical_model_id: gemini-3.1-flash-lite
     provider_status: stable
+    normalized_status: stable
     repository_default_eligible: true
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_controls:
-      - model-selected
+    reasoning_control_kind: thinking-level
+    supported_reasoning_controls:
+      - high
+      - low
+      - medium
+      - minimal
+    repository_reasoning_controls:
+      - low
+      - minimal
     work_profiles:
       - read-heavy-repetitive
+    agent_coding_fit: bounded
+    task_characteristics:
+      - high-volume
+      - repetitive-organization
     fallback: gemini-3.5-flash
-    checked_at: "2026-07-15T10:00:00+09:00"
-    source_url: https://ai.google.dev/gemini-api/docs/models
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite
+  - provider: gemini
+    model_id: gemini-3.1-flash-lite-preview
+    canonical_model_id: gemini-3.1-flash-lite-preview
+    provider_status: deprecated
+    normalized_status: deprecated
+    repository_default_eligible: false
+    entitlement: unavailable
+    runtime_acceptance: rejected
+    reasoning_control_kind: thinking-level
+    supported_reasoning_controls: []
+    repository_reasoning_controls: []
+    work_profiles: []
+    agent_coding_fit: historical
+    task_characteristics:
+      - migration-only
+    fallback: gemini-3.1-flash-lite
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://ai.google.dev/gemini-api/docs/deprecations
   - provider: gemini
     model_id: gemini-3.1-pro-preview
+    canonical_model_id: gemini-3.1-pro-preview
     provider_status: preview
+    normalized_status: preview
     repository_default_eligible: false
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_controls:
-      - model-selected
+    reasoning_control_kind: thinking-level
+    supported_reasoning_controls:
+      - high
+      - low
+      - medium
+    repository_reasoning_controls: []
     work_profiles:
       - complex-implementation
       - supervision
+    agent_coding_fit: strong
+    task_characteristics:
+      - complex-reasoning
+      - preview-evaluation
     fallback: gemini-3.5-flash
-    checked_at: "2026-07-15T10:00:00+09:00"
-    source_url: https://ai.google.dev/gemini-api/docs/models
+    fallback_policy: same-profile
+    fallback_approval: null
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
   - provider: gemini
     model_id: gemini-3.5-flash
+    canonical_model_id: gemini-3.5-flash
     provider_status: stable
+    normalized_status: stable
     repository_default_eligible: true
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_controls:
-      - model-selected
+    reasoning_control_kind: thinking-level
+    supported_reasoning_controls:
+      - high
+      - low
+      - medium
+      - minimal
+    repository_reasoning_controls:
+      - high
+      - medium
     work_profiles:
       - complex-implementation
       - supervision
+    agent_coding_fit: exceptional
+    task_characteristics:
+      - agentic-coding
+      - complex-implementation
+      - multimodal-tools
+      - supervision
     fallback: gemini-3.1-flash-lite
-    checked_at: "2026-07-15T10:00:00+09:00"
-    source_url: https://ai.google.dev/gemini-api/docs/models
+    fallback_policy: approved-degraded
+    fallback_approval: spec:132-agent-governance-harness-convergence
+    cutoff_evidence_status: verified-before-cutoff
+    checked_at: "2026-07-16T01:17:36+09:00"
+    source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash
 semantic_events:
   - event_id: post-tool
     required: true
@@ -214,144 +461,186 @@ semantic_events:
       - provider: claude
         native_event: PostToolUse
         capability_status: supported
-        adoption_status: partial
-        blocking: true
+        adoption_status: adopted
+        provider_can_block: false
+        repository_hook_mode: advisory
         timeout_unit: seconds
+        timeout_value: 30
       - provider: codex
         native_event: PostToolUse
         capability_status: supported
-        adoption_status: partial
-        blocking: true
+        adoption_status: adopted
+        provider_can_block: false
+        repository_hook_mode: advisory
         timeout_unit: seconds
+        timeout_value: 600
       - provider: gemini
         native_event: AfterTool
         capability_status: supported
-        adoption_status: planned
-        blocking: true
+        adoption_status: adopted
+        provider_can_block: false
+        repository_hook_mode: advisory
         timeout_unit: milliseconds
+        timeout_value: 60000
   - event_id: pre-compaction
     required: true
     provider_bindings:
       - provider: claude
         native_event: PreCompact
         capability_status: supported
-        adoption_status: partial
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: blocking
         timeout_unit: seconds
+        timeout_value: 10
       - provider: codex
         native_event: PreCompact
         capability_status: supported
-        adoption_status: partial
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: blocking
         timeout_unit: seconds
+        timeout_value: 600
       - provider: gemini
         native_event: PreCompress
         capability_status: supported
-        adoption_status: planned
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: false
+        repository_hook_mode: advisory
         timeout_unit: milliseconds
+        timeout_value: 60000
   - event_id: pre-tool
     required: true
     provider_bindings:
       - provider: claude
         native_event: PreToolUse
         capability_status: supported
-        adoption_status: partial
-        blocking: true
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: blocking
         timeout_unit: seconds
+        timeout_value: 10
       - provider: codex
         native_event: PreToolUse
         capability_status: supported
-        adoption_status: partial
-        blocking: true
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: blocking
         timeout_unit: seconds
+        timeout_value: 600
       - provider: gemini
         native_event: BeforeTool
         capability_status: supported
-        adoption_status: planned
-        blocking: true
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: blocking
         timeout_unit: milliseconds
+        timeout_value: 60000
   - event_id: session-end
     required: false
     provider_bindings:
       - provider: claude
         native_event: SessionEnd
         capability_status: supported
-        adoption_status: partial
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: false
+        repository_hook_mode: advisory
         timeout_unit: seconds
+        timeout_value: 10
       - provider: codex
         native_event: null
         capability_status: unsupported
-        adoption_status: deferred
-        blocking: false
+        adoption_status: not_applicable
+        provider_can_block: false
+        repository_hook_mode: unsupported
         timeout_unit: seconds
+        timeout_value: 600
       - provider: gemini
         native_event: SessionEnd
         capability_status: supported
-        adoption_status: planned
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: false
+        repository_hook_mode: advisory
         timeout_unit: milliseconds
+        timeout_value: 60000
   - event_id: session-start
     required: true
     provider_bindings:
       - provider: claude
         native_event: SessionStart
         capability_status: supported
-        adoption_status: partial
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: false
+        repository_hook_mode: advisory
         timeout_unit: seconds
+        timeout_value: 15
       - provider: codex
         native_event: SessionStart
         capability_status: supported
-        adoption_status: partial
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: false
+        repository_hook_mode: advisory
         timeout_unit: seconds
+        timeout_value: 600
       - provider: gemini
         native_event: SessionStart
         capability_status: supported
-        adoption_status: planned
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: false
+        repository_hook_mode: advisory
         timeout_unit: milliseconds
+        timeout_value: 60000
   - event_id: stop
     required: true
     provider_bindings:
       - provider: claude
         native_event: Stop
         capability_status: supported
-        adoption_status: partial
-        blocking: true
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: blocking
         timeout_unit: seconds
+        timeout_value: 30
       - provider: codex
         native_event: Stop
         capability_status: supported
-        adoption_status: partial
-        blocking: true
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: blocking
         timeout_unit: seconds
+        timeout_value: 600
       - provider: gemini
         native_event: AfterAgent
         capability_status: supported
-        adoption_status: planned
-        blocking: true
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: deny-retry
         timeout_unit: milliseconds
+        timeout_value: 60000
   - event_id: user-prompt-intake
     required: true
     provider_bindings:
       - provider: claude
         native_event: UserPromptSubmit
         capability_status: supported
-        adoption_status: partial
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: blocking
         timeout_unit: seconds
+        timeout_value: 10
       - provider: codex
         native_event: UserPromptSubmit
         capability_status: supported
-        adoption_status: partial
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: blocking
         timeout_unit: seconds
+        timeout_value: 600
       - provider: gemini
         native_event: BeforeAgent
         capability_status: supported
-        adoption_status: planned
-        blocking: false
+        adoption_status: adopted
+        provider_can_block: true
+        repository_hook_mode: blocking
         timeout_unit: milliseconds
+        timeout_value: 60000

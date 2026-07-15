@@ -25,7 +25,10 @@ Claude Code-specific guidance for this repository.
 - Claude exposes provider-native Markdown adapters for the Stage 00 canonical
   agent and function catalog (`providers/agents-md.md` §5). `.claude/agents/`
   and `.claude/skills/` are runtime adapters, not separate governance.
-- Apply the Model Policy (`subagent-protocol.md`): `workflow-supervisor` uses `opus-4.8`, all worker agents use `sonnet-4.6`.
+- Apply the work profile in `contracts/agent-catalog.yaml` through the exact
+  Claude model/control record in `contracts/provider-models.yaml`. Do not add a
+  per-agent thinking field; generated adapters use only Claude-supported
+  frontmatter.
 - Define the Claude-native output style under `.claude/output-styles/` implementing `rules/output-style.md`, and follow `rules/provider-capability-matrix.md` and `rules/workflows.md`.
 
 ## 3. Root Import Boundary
@@ -53,7 +56,10 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 ## 5. Hook Parity Contract
 
 - Claude hook events must stay behaviorally aligned with Codex hook events where both runtimes support the event.
-- `SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`, `Stop`, and `PreCompact` route through thin `.claude/hooks/*.sh` wrappers and then the provider-neutral dispatcher in `scripts/hooks/agent-event-hook.sh`.
+- `SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`, `Stop`,
+  `PreCompact`, and `UserPromptSubmit` route through generated executable
+  wrappers and then the provider-neutral dispatcher in
+  `scripts/hooks/agent-event-hook.sh`.
 - Claude `PreToolUse` and `PostToolUse` matchers must cover normal file edits and patch-based edits, including `Write`, `Edit`, `MultiEdit`, `apply_patch`, and `ApplyPatch`.
 - Claude `PostToolUse` must delegate changed-file style normalization and style validation to `scripts/hooks/post-tool-validate.sh` before repository contract checks. The shared script trims text-file whitespace/newline drift, runs `shfmt` for changed hook/script shell files when available, and runs optional `shellcheck`/`yamllint` style checks when those tools are available.
 - Claude hooks must surface template-first guidance before target-stage documentation edits, README template/readiness guidance before README edits, and block Stop when changed target-stage docs fail `bash scripts/validation/check-repo-contracts.sh`.
@@ -85,4 +91,6 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 
 ## References
 
-- <https://docs.anthropic.com/en/docs/claude-code/memory>
+- <https://code.claude.com/docs/en/sub-agents>
+- <https://code.claude.com/docs/en/hooks>
+- <https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions>

@@ -147,7 +147,7 @@ Redaction boundary:
 | T-AGHC-001 | Typed contracts and contract-only validator | Complete; specification and quality reviews PASS C0/I0/M0 |
 | T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Implementation complete; independent reviews pending |
-| T-AGHC-004 | Provider-native adapters and dated model policy | Not run |
+| T-AGHC-004 | Provider-native adapters and dated model policy | Implementation complete; independent reviews pending |
 | T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Not run |
 | T-AGHC-006 | Reference/audit/evidence reconciliation and closure | Not run |
 
@@ -200,6 +200,11 @@ Redaction boundary:
 | 2026-07-16 | T-AGHC-003 independent-review RED | Fresh remediation agent | Quality review found two Important boundary failures: loose substring ownership plus path-based stale deletion could remove an unowned replacement, and the compatibility wrapper accepted trailing unknown or conflicting arguments. Specification review found two additional Important failures: all 44 generated skill projections retained source-relative links that resolved from the wrong directory, and an empty, symlinked, or non-directory `.codex/skills` root could escape exact-absence drift detection. The dependency-correct focused RED ran 16 methods and produced 9 failures plus 6 errors; the one existing unknown-renderer-flag case remained a negative control. |
 | 2026-07-16 | T-AGHC-003 independent-review remediation | Fresh remediation agent | Marker cleanup now recognizes the exact generated header and source identity, atomically quarantines the current same-directory object, verifies the captured regular object, and deletes only verified renderer-owned content. Unowned or nonregular captures are restored through no-overwrite linking; a restoration collision preserves quarantine and fails closed. Marker parent cleanup is omitted, while exact Codex root removal opens, checks, captures, and identity-verifies only empty owned directories. The wrapper accepts zero arguments as `--check` or exactly one supported mode and rejects all other arities before invoking Python. Markdown links are deterministically rebased from each canonical function source to each generated output; external, absolute, and anchor targets remain unchanged. All 44 projections were regenerated, and the twelve directly added Foundation consumers were reconciled without changing lifecycle status, disposition, review verdict, or enforcement. Independent specification and quality re-reviews remain required. |
 | 2026-07-16 | T-AGHC-003 terminal review closure | Fresh specification and quality reviewers | Independent re-reviews covered remediation delta `07cedeec..8d1d08f4` and full Task 3 range `9941bbb4..8d1d08f4`. The specification reviewer returned PASS C0/I0/M0 and the separate quality reviewer returned APPROVED C0/I0/M0. Both confirmed the four prior Important findings closed, 44 generated projections with 132 resolving local links, exact `.codex/skills` absence, strict wrapper arguments, confined stale ownership, focused 134/134, and only the four planned Task 4/5 aggregate dependencies. T-AGHC-003 is complete. |
+| 2026-07-16 | T-AGHC-004 RED | Fresh implementation agent | The initial five focused tests all failed before production edits. The expanded nine-test boundary then reproduced seven status, reasoning, fallback, event-semantic, and native-projection failures; after the typed model corrections, four projection failures remained until the unified renderer existed. No provider adapter, model contract, or aggregate gate was changed before its corresponding RED evidence. |
+| 2026-07-16 | T-AGHC-004 source and model policy | Fresh implementation agent | Revalidated the three official provider surfaces while keeping the approved `2026-07-10T10:00:00+09:00` cutoff distinct from the 2026-07-16 retrieval time. The contract records provider status separately from normalized policy, entitlement, cutoff evidence, and local runtime acceptance. GPT-5.6 remains provider-listed but `unclassified-listed`, not invented stable; Claude reasoning controls preserve each model's exact adaptive, extended-thinking, or effort semantics. No live model call or remote entitlement claim was made. |
+| 2026-07-16 | T-AGHC-004 GREEN | Fresh implementation agent | Extended the confined renderer to generate strict Claude Markdown, Codex TOML, Gemini Markdown, and shared compatibility agents for all 14 roles, shared skills for all 22 functions, provider indexes, and native hook settings/wrappers. Read-only roles receive provider-native least-privilege controls. Seven semantic events map to provider-native names, units, matchers, blocking capability, and repository modes; Codex SessionEnd is explicitly unsupported and Gemini AfterAgent uses deny/retry semantics. |
+| 2026-07-16 | T-AGHC-004 lifecycle and generated owners | Fresh implementation agent | Reconciled five Foundation active-consumer sets after generated adapters removed copied governance links and the renderer became a direct consumer. No lifecycle status, disposition, enforcement, review verdict, or source body changed. Regenerated the Foundation summary and provider hook parity matrix; LLM Wiki index/coverage and metadata inventory were already fresh. |
+| 2026-07-16 | T-AGHC-004 self-review | Fresh implementation agent | Added exact native schema, duplicate-key, model-policy, fallback, event-semantic, permissions, file-mode, drift, strict Gemini-entry, and generated-link tests. The combined governance, renderer, and provider suite passes 145/145; 56 generated role adapters contain 224 resolving local links, 44 shared skill projections remain renderer-owned, `.codex/skills` remains absent, and all typed repository sections pass. Independent specification and quality reviews remain required before Task closure. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -241,6 +246,29 @@ T-AGHC-003 independent-review remediation verification:
 | repository aggregate compatibility | only planned Task 4/5 blocks remain | four existing blocks: root hook parity, provider adapter/harness compatibility, `.agents` compatibility, and governance memory | Expected interim dependency |
 | Graphify refresh | refresh, corroborate advisory output, restore generated files | 24,521 nodes / 27,864 edges / 1,563 communities; two unrelated observability ambiguities, 16,300 isolated nodes, and 68 thin communities corroborated; generated graph files restored | Pass |
 | compile, shell syntax, Ruff, renderer drift, and diff hygiene | zero failures | pass | Pass |
+
+T-AGHC-004 implementation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| focused provider-native tests | all pass | 10/10 | Pass |
+| governance, renderer, and provider-native unit suites | no regression | 145/145 in 120.090s | Pass |
+| generated role link resolution | every local link resolves from its native projection | 56/56 role adapters; 224/224 local links | Pass |
+| typed contract and repository sections | exact cardinality and zero findings | contracts 3; agents 14; functions 22; providers 3; catalog/providers/harness failures 0 | Pass |
+| renderer check, repeated | deterministic zero drift | `providers=3 drift=0` on repeated checks | Pass |
+| provider hook parity owner | generated matrix is fresh | Claude 7 native; Codex 6 native and 1 unsupported; Gemini 7 native | Pass |
+| native syntax and file modes | JSON/TOML/YAML parse; hooks executable; data non-executable | all provider configs parse; 8 hooks mode 0755; generated data mode 0644 | Pass |
+| changed metadata against `2341a996` | zero violations | selected 9; violations 0; legacy exceptions 0; transition overrides 0 | Pass |
+| promoted and impacted lifecycle | zero violations | promoted 0; impacted selected 194 / violations 0 with configured Task-directory warning | Pass |
+| traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,206 local links; 141 operations docs; failures 0 | Pass |
+| generated owners | fresh | Foundation summary, LLM Wiki index/coverage, metadata inventory 910/2,145, and provider parity matrix fresh | Pass |
+| repository aggregate | all active contracts pass | `failures=0`; typed catalog/providers and generated parity owners active | Pass |
+
+Scoped QA is supplied by the automatic commit hook because direct manual
+`pre-commit run --all-files` execution is prohibited. Provider entitlement and
+runtime acceptance remain `needs_revalidation` where local evidence is absent.
+No runtime, Compose, deployment, secret, credential, remote GitHub, or live
+provider state was changed.
 
 Planning verification:
 
