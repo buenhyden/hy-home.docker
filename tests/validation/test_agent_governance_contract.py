@@ -1239,6 +1239,371 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             }
         )
 
+    def test_registered_paths_preserve_exact_brace_inventory_and_stable_dedup(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "surviving.md").write_text("surviving\n", encoding="utf-8")
+
+            inventory = contract._registered_paths(
+                root,
+                "{surviving,missing,missing}.md",
+            )
+
+            self.assertEqual(
+                (root / "surviving.md",),
+                inventory.paths,
+            )
+            self.assertEqual(("missing.md",), inventory.missing_exact)
+
+    def test_registered_paths_expand_sequential_braces_as_exact_cartesian_inventory(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            surviving = root / "fixture/a/c.md"
+            surviving.parent.mkdir(parents=True)
+            surviving.write_text("surviving\n", encoding="utf-8")
+
+            inventory = contract._registered_paths(root, "fixture/{a,b}/{c,d}.md")
+
+            self.assertEqual((surviving,), inventory.paths)
+            self.assertEqual(
+                (
+                    "fixture/a/d.md",
+                    "fixture/b/c.md",
+                    "fixture/b/d.md",
+                ),
+                inventory.missing_exact,
+            )
+
+    def test_repository_harness_requires_every_real_memory_and_hook_brace_member(self) -> None:
+        cases = (
+            (
+                f"{self.GOVERNANCE}/memory/agentic-harness-contract-hardening.md",
+                "AGC-REPOSITORY-MISSING-ARTIFACT",
+            ),
+            (
+                f"{self.GOVERNANCE}/rules/hooks/hookify.block-direct-main-push.md",
+                "AGC-REPOSITORY-MISSING-ARTIFACT",
+            ),
+        )
+        for relative, expected_code in cases:
+            with self.subTest(path=relative), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                (root / relative).unlink()
+                bundle = contract.load_contract_bundle(root)
+
+                findings = contract.validate_repository(root, bundle, "harness")
+                exact = [
+                    finding
+                    for finding in findings
+                    if finding.code == expected_code and finding.path == relative
+                ]
+
+                self.assertEqual(1, len(exact), contract.render_findings(findings))
+
+    def test_repository_harness_requires_all_four_sequential_exact_members(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+
+            def mutate(values) -> None:
+                profile = next(
+                    item
+                    for item in values["artifacts"]
+                    if item["profile_id"] == "governance-memory-note"
+                )
+                profile["path_pattern"] = "fixture/{a,b}/{c,d}.md"
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            surviving = root / "fixture/a/c.md"
+            surviving.parent.mkdir(parents=True)
+            surviving.write_text(
+                "---\nlayer: agentic\n---\n\n# Surviving\n\n"
+                "## Problem\n\nP.\n\n## Context\n\nC.\n\n"
+                "## Resolution\n\nR.\n\n## Evidence\n\nE.\n\n"
+                "## Related Documents\n\n- `README.md`\n",
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+
+            findings = contract.validate_repository(root, bundle, "harness")
+            missing = {
+                finding.path
+                for finding in findings
+                if finding.code == "AGC-REPOSITORY-MISSING-ARTIFACT"
+                and finding.path.startswith("fixture/")
+            }
+
+            self.assertEqual(
+                {
+                    "fixture/a/d.md",
+                    "fixture/b/c.md",
+                    "fixture/b/d.md",
+                },
+                missing,
+            )
+
+    def test_repository_harness_does_not_require_each_wildcard_brace_branch(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+
+            def mutate(values) -> None:
+                profile = next(
+                    item
+                    for item in values["artifacts"]
+                    if item["profile_id"] == "governance-memory-note"
+                )
+                profile["path_pattern"] = "fixture/{one,two}/*.md"
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            surviving = root / "fixture/one/surviving.md"
+            surviving.parent.mkdir(parents=True)
+            surviving.write_text(
+                "---\nlayer: agentic\n---\n\n# Surviving\n\n"
+                "## Problem\n\nP.\n\n## Context\n\nC.\n\n"
+                "## Resolution\n\nR.\n\n## Evidence\n\nE.\n\n"
+                "## Related Documents\n\n- `README.md`\n",
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+
+            findings = contract.validate_repository(root, bundle, "harness")
+
+            self.assertFalse(
+                [
+                    finding
+                    for finding in findings
+                    if finding.code == "AGC-REPOSITORY-MISSING-ARTIFACT"
+                    and finding.path.startswith("fixture/")
+                ],
+                contract.render_findings(findings),
+            )
+
+    def test_repository_harness_retains_whole_profile_zero_match_for_globs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            pattern = "fixture/{one,two}/*.md"
+
+            def mutate(values) -> None:
+                profile = next(
+                    item
+                    for item in values["artifacts"]
+                    if item["profile_id"] == "governance-memory-note"
+                )
+                profile["path_pattern"] = pattern
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            bundle = contract.load_contract_bundle(root)
+
+            findings = contract.validate_repository(root, bundle, "harness")
+            missing = [
+                finding
+                for finding in findings
+                if finding.code == "AGC-REPOSITORY-MISSING-ARTIFACT"
+                and finding.path.startswith("fixture/")
+            ]
+
+            self.assertEqual(1, len(missing), contract.render_findings(findings))
+            self.assertEqual(pattern, missing[0].path)
+
+    def test_repository_harness_reports_mixed_exact_missing_with_glob_survivors(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+
+            def mutate(values) -> None:
+                profile = next(
+                    item
+                    for item in values["artifacts"]
+                    if item["profile_id"] == "governance-memory-note"
+                )
+                profile["path_pattern"] = "{fixture/required.md,fixture/*.md}"
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            surviving = root / "fixture/surviving.md"
+            surviving.parent.mkdir(parents=True)
+            surviving.write_text(
+                "---\nlayer: agentic\n---\n\n# Surviving\n\n"
+                "## Problem\n\nP.\n\n## Context\n\nC.\n\n"
+                "## Resolution\n\nR.\n\n## Evidence\n\nE.\n\n"
+                "## Related Documents\n\n- `README.md`\n",
+                encoding="utf-8",
+            )
+            bundle = contract.load_contract_bundle(root)
+
+            findings = contract.validate_repository(root, bundle, "harness")
+            exact = [
+                finding
+                for finding in findings
+                if finding.code == "AGC-REPOSITORY-MISSING-ARTIFACT"
+                and finding.path == "fixture/required.md"
+            ]
+
+            self.assertEqual(1, len(exact), contract.render_findings(findings))
+
+    def test_repository_harness_keeps_exact_and_whole_profile_mixed_zero_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            pattern = "{fixture/required.md,fixture/*.md}"
+
+            def mutate(values) -> None:
+                profile = next(
+                    item
+                    for item in values["artifacts"]
+                    if item["profile_id"] == "governance-memory-note"
+                )
+                profile["path_pattern"] = pattern
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            bundle = contract.load_contract_bundle(root)
+
+            findings = contract.validate_repository(root, bundle, "harness")
+            missing_paths = [
+                finding.path
+                for finding in findings
+                if finding.code == "AGC-REPOSITORY-MISSING-ARTIFACT"
+                and finding.path.startswith(("fixture/", "{fixture/"))
+            ]
+
+            self.assertEqual(
+                ["fixture/required.md", pattern],
+                sorted(missing_paths),
+                contract.render_findings(findings),
+            )
+
+    def test_repository_harness_preserves_exact_missing_when_glob_enumeration_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+
+            def mutate(values) -> None:
+                profile = next(
+                    item
+                    for item in values["artifacts"]
+                    if item["profile_id"] == "governance-memory-note"
+                )
+                profile["path_pattern"] = "{fixture/required.md,fixture/*.md}"
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            bundle = contract.load_contract_bundle(root)
+            original = pathlib.Path.glob
+
+            def guarded_glob(path, pattern, *args, **kwargs):
+                if path == root and pattern == "fixture/*.md":
+                    raise OSError("private enumeration sentinel")
+                return original(path, pattern, *args, **kwargs)
+
+            with mock.patch.object(pathlib.Path, "glob", guarded_glob):
+                findings = contract.validate_repository(root, bundle, "harness")
+
+            rendered = contract.render_findings(findings)
+            self.assertIn("AGC-REPOSITORY-PATH-ENUMERATION", codes(findings))
+            self.assertEqual(
+                1,
+                sum(
+                    finding.code == "AGC-REPOSITORY-MISSING-ARTIFACT"
+                    and finding.path == "fixture/required.md"
+                    for finding in findings
+                ),
+                rendered,
+            )
+            self.assertNotIn("private enumeration sentinel", rendered)
+
+    def test_repository_harness_keeps_unsafe_and_missing_exact_members_distinct(self) -> None:
+        original_read = os.read
+        for mutation, expected_code in (
+            ("directory", "AGC-REPOSITORY-UNSAFE-FILE"),
+            ("fifo", "AGC-REPOSITORY-UNSAFE-FILE"),
+            ("symlink", "AGC-REPOSITORY-UNSAFE-FILE"),
+            ("read-error", "AGC-REPOSITORY-FILE-READ"),
+        ):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+
+                def mutate(values) -> None:
+                    profile = next(
+                        item
+                        for item in values["artifacts"]
+                        if item["profile_id"] == "governance-memory-note"
+                    )
+                    profile["path_pattern"] = "fixture/{unsafe,missing,missing}.md"
+
+                mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+                unsafe = root / "fixture/unsafe.md"
+                unsafe.parent.mkdir(parents=True)
+                outside: pathlib.Path | None = None
+                if mutation == "directory":
+                    unsafe.mkdir()
+                elif mutation == "fifo":
+                    os.mkfifo(unsafe)
+                elif mutation == "symlink":
+                    outside = root.parent / f"{root.name}-outside.md"
+                    outside.write_text("outside sentinel\n", encoding="utf-8")
+                    unsafe.symlink_to(outside)
+                else:
+                    unsafe.write_text("read sentinel\n", encoding="utf-8")
+                bundle = contract.load_contract_bundle(root)
+                target_stat = unsafe.stat()
+
+                def guarded_read(descriptor: int, size: int) -> bytes:
+                    descriptor_stat = os.fstat(descriptor)
+                    if (
+                        mutation == "read-error"
+                        and descriptor_stat.st_dev == target_stat.st_dev
+                        and descriptor_stat.st_ino == target_stat.st_ino
+                    ):
+                        raise OSError("private read sentinel")
+                    return original_read(descriptor, size)
+
+                try:
+                    with mock.patch.object(contract.os, "read", new=guarded_read):
+                        findings = contract.validate_repository(root, bundle, "harness")
+                finally:
+                    if outside is not None:
+                        outside.unlink(missing_ok=True)
+
+                self.assertEqual(
+                    1,
+                    sum(
+                        finding.code == expected_code
+                        and finding.path == "fixture/unsafe.md"
+                        for finding in findings
+                    ),
+                    contract.render_findings(findings),
+                )
+                self.assertEqual(
+                    1,
+                    sum(
+                        finding.code == "AGC-REPOSITORY-MISSING-ARTIFACT"
+                        and finding.path == "fixture/missing.md"
+                        for finding in findings
+                    ),
+                    contract.render_findings(findings),
+                )
+
+    def test_repository_cli_reports_missing_exact_provider_readme_member(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            (root / ".claude/CLAUDE.md").unlink()
+
+            result = CommandLineTests().run_checker_for_root(
+                root,
+                "--mode",
+                "repository",
+                "--section",
+                "harness",
+            )
+
+            self.assertEqual(1, result.returncode)
+            self.assertIn("AGC-REPOSITORY-MISSING-README", result.stderr)
+            self.assertIn("path=.claude/CLAUDE.md", result.stderr)
+            self.assertNotIn(str(root), result.stderr)
+
     def test_repository_harness_routes_future_catalog_files_without_harness_validation(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)

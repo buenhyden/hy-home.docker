@@ -2321,16 +2321,40 @@ def _path_matches_pattern(relative: str, pattern: str) -> bool:
     return any(matches(expanded.split("/"), 0, 0) for expanded in _expand_braces(pattern))
 
 
-def _registered_paths(root: pathlib.Path, pattern: str) -> tuple[pathlib.Path, ...]:
+@dataclass(frozen=True)
+class _RegisteredPathInventory:
+    paths: tuple[pathlib.Path, ...]
+    missing_exact: tuple[str, ...]
+    has_glob: bool
+    enumeration_failed: bool
+
+
+def _registered_paths(root: pathlib.Path, pattern: str) -> _RegisteredPathInventory:
+    """Resolve a profile pattern without dropping required exact alternatives."""
+
     paths: set[pathlib.Path] = set()
-    for expanded in _expand_braces(pattern):
+    missing_exact: set[str] = set()
+    has_glob = False
+    enumeration_failed = False
+    for expanded in sorted(set(_expand_braces(pattern))):
         if any(marker in expanded for marker in ("*", "?", "[")):
-            paths.update(root.glob(expanded))
+            has_glob = True
+            try:
+                paths.update(root.glob(expanded))
+            except (OSError, ValueError):
+                enumeration_failed = True
         else:
             candidate = root / expanded
             if candidate.exists() or candidate.is_symlink():
                 paths.add(candidate)
-    return tuple(sorted(paths, key=lambda item: item.relative_to(root).as_posix()))
+            else:
+                missing_exact.add(expanded)
+    return _RegisteredPathInventory(
+        paths=tuple(sorted(paths, key=lambda item: item.relative_to(root).as_posix())),
+        missing_exact=tuple(sorted(missing_exact)),
+        has_glob=has_glob,
+        enumeration_failed=enumeration_failed,
+    )
 
 
 class _RepositoryReader:
@@ -2340,14 +2364,23 @@ class _RepositoryReader:
         self.root = root
         self.findings = findings
         self._cache: dict[str, str | None] = {}
-        self._enumeration_cache: dict[str, tuple[pathlib.Path, ...]] = {}
+        self._enumeration_cache: dict[str, _RegisteredPathInventory] = {}
 
-    def paths(self, pattern: str, location: str, source: str) -> tuple[pathlib.Path, ...]:
+    def inventory(
+        self, pattern: str, location: str, source: str
+    ) -> _RegisteredPathInventory:
         if pattern in self._enumeration_cache:
             return self._enumeration_cache[pattern]
         try:
-            paths = _registered_paths(self.root, pattern)
+            inventory = _registered_paths(self.root, pattern)
         except (OSError, ValueError):
+            inventory = _RegisteredPathInventory(
+                paths=(),
+                missing_exact=(),
+                has_glob=any(marker in pattern for marker in ("*", "?", "[")),
+                enumeration_failed=True,
+            )
+        if inventory.enumeration_failed:
             _add(
                 self.findings,
                 "AGC-REPOSITORY-PATH-ENUMERATION",
@@ -2357,9 +2390,11 @@ class _RepositoryReader:
                 "path-enumeration-failed",
                 source,
             )
-            paths = ()
-        self._enumeration_cache[pattern] = paths
-        return paths
+        self._enumeration_cache[pattern] = inventory
+        return inventory
+
+    def paths(self, pattern: str, location: str, source: str) -> tuple[pathlib.Path, ...]:
+        return self.inventory(pattern, location, source).paths
 
     def read(self, relative: str, location: str, source: str) -> str | None:
         if relative in self._cache:
@@ -2670,12 +2705,22 @@ def _validate_artifact_projection(
         pattern = entry.get("path_pattern")
         if not isinstance(pattern, str) or not _is_safe_repo_path(pattern):
             continue
-        paths = reader.paths(
+        inventory = reader.inventory(
             pattern,
             f"artifacts[{index}].path_pattern",
             "agent-governance-artifacts",
         )
-        if not paths:
+        for missing in inventory.missing_exact:
+            _add(
+                findings,
+                "AGC-REPOSITORY-MISSING-ARTIFACT",
+                missing,
+                f"artifacts[{index}].path_pattern",
+                "registered-artifact",
+                "missing-artifact",
+                "agent-governance-artifacts",
+            )
+        if not inventory.paths and inventory.has_glob:
             _add(
                 findings,
                 "AGC-REPOSITORY-MISSING-ARTIFACT",
@@ -2685,6 +2730,8 @@ def _validate_artifact_projection(
                 "missing-artifact",
                 "agent-governance-artifacts",
             )
+        paths = inventory.paths
+        if not paths:
             continue
         required_keys = tuple(
             value
@@ -2829,12 +2876,22 @@ def _validate_readme_profiles(
         if not isinstance(entry, Mapping) or not isinstance(entry.get("path_pattern"), str):
             continue
         pattern = str(entry["path_pattern"])
-        paths = reader.paths(
+        inventory = reader.inventory(
             pattern,
             f"readme_profiles[{index}].path_pattern",
             "agent-governance-artifacts",
         )
-        if not paths:
+        for missing in inventory.missing_exact:
+            _add(
+                findings,
+                "AGC-REPOSITORY-MISSING-README",
+                missing,
+                f"readme_profiles[{index}].path_pattern",
+                "registered-readme-path",
+                "missing-readme-path",
+                "agent-governance-artifacts",
+            )
+        if not inventory.paths and inventory.has_glob:
             _add(
                 findings,
                 "AGC-REPOSITORY-MISSING-README",
@@ -2844,6 +2901,7 @@ def _validate_readme_profiles(
                 "missing-readme-path",
                 "agent-governance-artifacts",
             )
+        paths = inventory.paths
         for path in paths:
             relative = path.relative_to(reader.root).as_posix()
             text = reader.read(
@@ -2911,7 +2969,7 @@ def _governed_inventory_paths(
             continue
         pattern = family.get("path_pattern")
         if isinstance(pattern, str) and _is_safe_repo_path(pattern):
-            paths.update(_registered_paths(root, pattern))
+            paths.update(_registered_paths(root, pattern).paths)
     return tuple(sorted(paths, key=lambda item: item.relative_to(root).as_posix()))
 
 
