@@ -181,6 +181,39 @@ class ContractSchemaTests(unittest.TestCase):
             self.assertIn("AGC-PATH-UNSAFE", codes(findings))
             self.assertIn("AGC-AUTHORITY-OVERLAP", codes(findings))
 
+    def test_glob_authority_overlap_fails_closed_at_literal_prefixes(self) -> None:
+        cases = (
+            ("zz/a*", "zz/ab?", True),
+            ("zz/**", "zz/alpha", True),
+            ("zz/a?", "zz/ab", True),
+            ("zz/[ab]*", "zz/alpha", True),
+            ("zz/[ab]*", "zz/[cd]*", True),
+            ("zz/{alpha,beta}", "zz/alpha", True),
+            ("zz/alpha", "zz/a*", True),
+            ("zz/a*", "zz/a/child", True),
+            ("zz/alpha", "zz/alpha", True),
+            ("zz/a*", "zz/b?", False),
+            ("zz/a/**", "zz/ab/**", False),
+            ("zz/alpha", "zz/alphabet", False),
+            ("zz/a", "zz/a/child", False),
+            ("zz/alpha", "zz/b*", False),
+        )
+        for left, right, expected in cases:
+            with self.subTest(left=left, right=right):
+                self.assertEqual(expected, contract._patterns_overlap(left, right))
+                self.assertEqual(expected, contract._patterns_overlap(right, left))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                values["path_authority"][0]["path_patterns"][0] = "zz/a*"
+                values["path_authority"][1]["path_patterns"][0] = "zz/ab?"
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            self.assertIn("AGC-AUTHORITY-OVERLAP", codes(validate_fixture(root)))
+
     def test_scalar_provider_collections_return_schema_findings(self) -> None:
         for field in ("providers", "compatibility_surfaces", "work_profiles"):
             with self.subTest(field=field), tempfile.TemporaryDirectory() as directory:

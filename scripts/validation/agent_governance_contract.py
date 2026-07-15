@@ -1048,20 +1048,19 @@ def _patterns_overlap(left: str, right: str) -> bool:
     if left == right:
         return True
 
-    def prefix(pattern: str) -> str:
+    def literal_prefix(pattern: str) -> tuple[str, bool]:
         marker_positions = [
             position for marker in ("*", "?", "{", "[") if (position := pattern.find(marker)) >= 0
         ]
-        end = min(marker_positions) if marker_positions else len(pattern)
-        return pattern[:end].rstrip("/")
+        if not marker_positions:
+            return pattern, False
+        return pattern[: min(marker_positions)], True
 
-    left_prefix = prefix(left)
-    right_prefix = prefix(right)
-    if not left_prefix or not right_prefix:
+    left_prefix, left_has_glob = literal_prefix(left)
+    right_prefix, right_has_glob = literal_prefix(right)
+    if not left_has_glob and not right_has_glob:
         return False
-    return left_prefix == right_prefix or left_prefix.startswith(
-        f"{right_prefix}/"
-    ) or right_prefix.startswith(f"{left_prefix}/")
+    return left_prefix.startswith(right_prefix) or right_prefix.startswith(left_prefix)
 
 
 def _validate_catalog_contract(
