@@ -150,9 +150,7 @@ def _rebase_link_destination(
     )
     if canonical_target == ".." or canonical_target.startswith("../"):
         raise ValueError("canonical Markdown link escapes the repository")
-    rebased_path = posixpath.relpath(
-        canonical_target, output_path.parent.as_posix()
-    )
+    rebased_path = posixpath.relpath(canonical_target, output_path.parent.as_posix())
     rebased = urllib.parse.urlunsplit(
         ("", "", rebased_path, parsed.query, parsed.fragment)
     )
@@ -169,15 +167,15 @@ def _rebase_markdown_links(
             match.group("destination"), source_path, output_path
         )
         return (
-            f'{match.group("prefix")}{destination}'
-            f'{match.group("title") or ""}{match.group("suffix")}'
+            f"{match.group('prefix')}{destination}"
+            f"{match.group('title') or ''}{match.group('suffix')}"
         )
 
     def replace_reference(match: re.Match[str]) -> str:
         destination = _rebase_link_destination(
             match.group("destination"), source_path, output_path
         )
-        return f'{match.group("prefix")}{destination}'
+        return f"{match.group('prefix')}{destination}"
 
     return REFERENCE_LINK_PATTERN.sub(
         replace_reference, INLINE_LINK_PATTERN.sub(replace_inline, body)
@@ -190,19 +188,21 @@ def _has_exact_generated_marker(content: bytes) -> bool:
 
 def _has_native_generated_marker(content: bytes) -> bool:
     marker = GENERATED_MARKER.encode()
+    lines = content.splitlines()
+    if len(lines) >= 2 and lines[0] == b"#!/usr/bin/env bash":
+        return lines[1].startswith(b"# " + marker + b";")
     if content.startswith(b"---\n"):
         boundary = content.find(b"\n---\n", 4)
         if boundary < 0:
             return False
         line = content[boundary + 5 :].lstrip().splitlines()[:1]
-        return bool(line and marker in line[0] and b"source:" in line[0])
-    first_line = content.splitlines()[:1]
-    return bool(
-        first_line
-        and first_line[0].startswith(b"# ")
-        and marker in first_line[0]
-        and b"source:" in first_line[0]
-    )
+        return bool(
+            line
+            and line[0].startswith(b"<!-- " + marker + b"; source: ")
+            and line[0].endswith(b" -->")
+        )
+    first_line = lines[:1]
+    return bool(first_line and first_line[0].startswith(b"# " + marker + b"; source: "))
 
 
 def load_catalog(root: pathlib.Path) -> Catalog:
@@ -297,9 +297,12 @@ def _provider_defaults(root: pathlib.Path) -> dict[tuple[str, str], tuple[str, s
     for profile in bundle.providers["work_profiles"]:
         profile_id = str(profile["profile_id"])
         for entry in profile["defaults"]:
+            control = entry.get("reasoning")
+            if control is None:
+                control = entry.get("effort") or entry.get("thinking")
             defaults[(profile_id, str(entry["provider"]))] = (
                 str(entry["model_id"]),
-                str(entry["reasoning"]),
+                str(control),
             )
     return defaults
 
@@ -393,7 +396,13 @@ def _render_gemini_agent(
 ) -> bytes:
     model, _reasoning = defaults[(agent.work_profile, "gemini")]
     read_only = agent.permission_profile == "read-only"
-    tools = ["read_file", "read_many_files", "search_file_content", "glob", "list_directory"]
+    tools = [
+        "read_file",
+        "read_many_files",
+        "search_file_content",
+        "glob",
+        "list_directory",
+    ]
     if not read_only:
         tools.extend(("write_file", "replace", "run_shell_command"))
     output = pathlib.PurePosixPath(f".gemini/agents/{agent.agent_id}.md")
@@ -450,9 +459,7 @@ def _hook_group(
     *,
     matcher: str | None,
 ) -> dict[str, object]:
-    value: dict[str, object] = {
-        "hooks": [_command_hook(command, timeout)]
-    }
+    value: dict[str, object] = {"hooks": [_command_hook(command, timeout)]}
     if matcher is not None:
         value["matcher"] = matcher
     return value
@@ -541,7 +548,11 @@ def _render_codex_hooks(root: pathlib.Path) -> bytes:
     ):
         binding = bindings[semantic_id]
         native = str(binding["native_event"])
-        matcher = None if semantic_id in {"stop", "user-prompt-intake"} else matchers.get(semantic_id, "*")
+        matcher = (
+            None
+            if semantic_id in {"stop", "user-prompt-intake"}
+            else matchers.get(semantic_id, "*")
+        )
         hooks[native] = [
             _hook_group(
                 'bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}'
@@ -550,6 +561,9 @@ def _render_codex_hooks(root: pathlib.Path) -> bytes:
                 matcher=matcher,
             )
         ]
+        hooks[native][0]["hooks"][0]["command"] = "HY_HOME_HOOK_PROVIDER=codex " + str(
+            hooks[native][0]["hooks"][0]["command"]
+        )
     return (json.dumps({"hooks": hooks}, indent=2) + "\n").encode()
 
 
@@ -608,7 +622,8 @@ def _render_gemini_hook() -> bytes:
         "export HY_HOME_GEMINI_HOOK_ACTIVE=1\n"
         'PROJECT_DIR="${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"\n'
         'NATIVE_EVENT="${1:-}"\n'
-        "case \"$NATIVE_EVENT\" in\n"
+        'INPUT="$(cat || true)"\n'
+        'case "$NATIVE_EVENT" in\n'
         "  AfterTool) SEMANTIC_EVENT=PostToolUse ;;\n"
         "  PreCompress) SEMANTIC_EVENT=PreCompact ;;\n"
         "  BeforeTool) SEMANTIC_EVENT=PreToolUse ;;\n"
@@ -618,15 +633,56 @@ def _render_gemini_hook() -> bytes:
         "  BeforeAgent) SEMANTIC_EVENT=UserPromptSubmit ;;\n"
         "  *) printf 'Unsupported Gemini hook event.\\n' >&2; exit 2 ;;\n"
         "esac\n"
-        'exec bash "$PROJECT_DIR/scripts/hooks/agent-event-hook.sh" "$SEMANTIC_EVENT"\n'
+        "set +e\n"
+        'OUTPUT="$(printf \'%s\' "$INPUT" | bash "$PROJECT_DIR/scripts/hooks/agent-event-hook.sh" "$SEMANTIC_EVENT")"\n'
+        "STATUS=$?\n"
+        "set -e\n"
+        'if [[ -z "$OUTPUT" ]]; then\n'
+        '  if [[ $STATUS -ne 0 ]]; then exit "$STATUS"; fi\n'
+        "  printf '{}\\n'\n"
+        "  exit 0\n"
+        "fi\n"
+        'HOOK_OUTPUT="$OUTPUT" NATIVE_EVENT="$NATIVE_EVENT" python3 - <<\'PY\'\n'
+        "import json\n"
+        "import os\n\n"
+        "event = os.environ['NATIVE_EVENT']\n"
+        "try:\n"
+        "    source = json.loads(os.environ.get('HOOK_OUTPUT', '') or '{}')\n"
+        "except (TypeError, ValueError):\n"
+        "    source = {}\n"
+        "if not isinstance(source, dict):\n"
+        "    source = {}\n"
+        "if event == 'PreCompress':\n"
+        "    specific = source.get('hookSpecificOutput')\n"
+        "    message = source.get('systemMessage')\n"
+        "    if not isinstance(message, str) and isinstance(specific, dict):\n"
+        "        message = specific.get('additionalContext')\n"
+        "    result = {'systemMessage': message} if isinstance(message, str) else {}\n"
+        "elif event == 'BeforeTool':\n"
+        "    result = {key: value for key, value in source.items() if key != 'hookSpecificOutput'}\n"
+        "    specific = source.get('hookSpecificOutput')\n"
+        "    if isinstance(specific, dict) and isinstance(specific.get('additionalContext'), str):\n"
+        "        context = specific['additionalContext']\n"
+        "        current = result.get('systemMessage')\n"
+        "        result['systemMessage'] = f'{current}\\n\\n{context}' if isinstance(current, str) else context\n"
+        "elif event in {'SessionEnd'}:\n"
+        "    result = {key: value for key, value in source.items() if key in {'systemMessage', 'suppressOutput'}}\n"
+        "else:\n"
+        "    result = dict(source)\n"
+        "    specific = result.get('hookSpecificOutput')\n"
+        "    if isinstance(specific, dict):\n"
+        "        specific = dict(specific)\n"
+        "        specific['hookEventName'] = event\n"
+        "        result['hookSpecificOutput'] = specific\n"
+        "if result.get('decision') == 'block':\n"
+        "    result['decision'] = 'deny'\n"
+        "print(json.dumps(result))\n"
+        "PY\n"
     ).encode()
 
 
 def _provider_readme(runtime: str) -> bytes:
-    filename = "CLAUDE.md" if runtime == "claude" else "README.md"
-    shared_skill = (
-        "`.claude/skills/`" if runtime == "claude" else "`.agents/skills/`"
-    )
+    shared_skill = "`.claude/skills/`" if runtime == "claude" else "`.agents/skills/`"
     return (
         "---\n"
         "layer: agentic\n"
@@ -695,28 +751,47 @@ def expected_native_projection(root: pathlib.Path) -> Mapping[pathlib.Path, byte
     defaults = _provider_defaults(root)
     projection: dict[pathlib.Path, bytes] = {}
     for agent in catalog.agents:
-        projection[pathlib.Path(f".claude/agents/{agent.agent_id}.md")] = _render_claude_agent(agent, defaults)
-        projection[pathlib.Path(f".codex/agents/{agent.agent_id}.toml")] = _render_codex_agent(agent, defaults)
-        projection[pathlib.Path(f".gemini/agents/{agent.agent_id}.md")] = _render_gemini_agent(agent, defaults)
-        projection[pathlib.Path(f".agents/agents/{agent.agent_id}.md")] = _render_compatibility_agent(agent)
+        projection[pathlib.Path(f".claude/agents/{agent.agent_id}.md")] = (
+            _render_claude_agent(agent, defaults)
+        )
+        projection[pathlib.Path(f".codex/agents/{agent.agent_id}.toml")] = (
+            _render_codex_agent(agent, defaults)
+        )
+        projection[pathlib.Path(f".gemini/agents/{agent.agent_id}.md")] = (
+            _render_gemini_agent(agent, defaults)
+        )
+        projection[pathlib.Path(f".agents/agents/{agent.agent_id}.md")] = (
+            _render_compatibility_agent(agent)
+        )
     for function in catalog.functions:
-        projection[pathlib.Path(f".claude/skills/{function.function_id}/SKILL.md")] = render_function("claude", function)
-        projection[pathlib.Path(f".agents/skills/{function.function_id}/SKILL.md")] = render_function("agents-md", function)
+        projection[pathlib.Path(f".claude/skills/{function.function_id}/SKILL.md")] = (
+            render_function("claude", function)
+        )
+        projection[pathlib.Path(f".agents/skills/{function.function_id}/SKILL.md")] = (
+            render_function("agents-md", function)
+        )
     projection[pathlib.Path(".claude/CLAUDE.md")] = _provider_readme("claude")
     projection[pathlib.Path(".claude/settings.json")] = _render_claude_settings(root)
     for filename, event in CLAUDE_HOOK_EVENTS.items():
-        projection[pathlib.Path(f".claude/hooks/{filename}")] = _render_claude_hook(event, filename)
+        projection[pathlib.Path(f".claude/hooks/{filename}")] = _render_claude_hook(
+            event, filename
+        )
     projection[pathlib.Path(".codex/README.md")] = _provider_readme("codex")
     projection[pathlib.Path(".codex/hooks.json")] = _render_codex_hooks(root)
     projection[pathlib.Path(".gemini/README.md")] = _provider_readme("gemini")
     projection[pathlib.Path(".gemini/settings.json")] = _render_gemini_settings(root)
-    projection[pathlib.Path(".gemini/hooks/agent-event-hook.sh")] = _render_gemini_hook()
+    projection[pathlib.Path(".gemini/hooks/agent-event-hook.sh")] = (
+        _render_gemini_hook()
+    )
     projection[pathlib.Path(".agents/README.md")] = _compatibility_readme()
     projection[pathlib.Path(".agents/rules/workspace.md")] = _compatibility_pointer(
         "Workspace Rules", "docs/00.agent-governance/rules/agentic.md"
     )
-    projection[pathlib.Path(".agents/workflows/documentation.md")] = _compatibility_pointer(
-        "Documentation Workflow", "docs/00.agent-governance/rules/documentation-protocol.md"
+    projection[pathlib.Path(".agents/workflows/documentation.md")] = (
+        _compatibility_pointer(
+            "Documentation Workflow",
+            "docs/00.agent-governance/rules/documentation-protocol.md",
+        )
     )
     return projection
 
@@ -731,9 +806,7 @@ def expected_projection(
     catalog = load_catalog(root)
     base = pathlib.Path(".claude/skills" if provider == "claude" else ".agents/skills")
     return {
-        base / function.function_id / "SKILL.md": render_function(
-            provider, function
-        )
+        base / function.function_id / "SKILL.md": render_function(provider, function)
         for function in catalog.functions
     }
 
@@ -781,6 +854,19 @@ NATIVE_AGENT_ROOTS = (
     pathlib.Path(".codex/agents"),
     pathlib.Path(".gemini/agents"),
 )
+NATIVE_MANAGED_ROOTS = (
+    pathlib.Path(".agents/agents"),
+    pathlib.Path(".agents/rules"),
+    pathlib.Path(".agents/skills"),
+    pathlib.Path(".agents/workflows"),
+    pathlib.Path(".claude/agents"),
+    pathlib.Path(".claude/hooks"),
+    pathlib.Path(".claude/skills"),
+    pathlib.Path(".codex/agents"),
+    pathlib.Path(".codex/skills"),
+    pathlib.Path(".gemini/agents"),
+    pathlib.Path(".gemini/hooks"),
+)
 NATIVE_EXECUTABLES = frozenset(
     {
         *(pathlib.Path(f".claude/hooks/{filename}") for filename in CLAUDE_HOOK_EVENTS),
@@ -807,10 +893,107 @@ def find_managed_stale_native_files(
                 try:
                     content = read_repository_text(root, relative.as_posix()).encode()
                 except ContractLoadError as error:
-                    raise ValueError("managed native projection entry is unsafe") from error
+                    raise ValueError(
+                        "managed native projection entry is unsafe"
+                    ) from error
                 if _has_native_generated_marker(content):
                     stale.add(relative)
     return stale
+
+
+def _is_legacy_migration_path(relative: pathlib.Path) -> bool:
+    return (
+        len(relative.parts) == 4
+        and pathlib.Path(*relative.parts[:2])
+        in {
+            pathlib.Path(".agents/skills"),
+            pathlib.Path(".claude/skills"),
+            pathlib.Path(".codex/skills"),
+        }
+        and relative.parts[2] in LEGACY_SKILL_IDS
+        and relative.name == "skill.md"
+    )
+
+
+def find_native_inventory_drift(
+    root: pathlib.Path, expected: Mapping[pathlib.Path, bytes]
+) -> list[Finding]:
+    """Return exact, non-following inventory drift for renderer-owned trees."""
+
+    expected_paths = set(expected)
+    findings: set[Finding] = set()
+    for managed_root in NATIVE_MANAGED_ROOTS:
+        absolute = root / managed_root
+        if not absolute.exists() and not absolute.is_symlink():
+            continue
+        try:
+            _assert_confined_directory(root, managed_root)
+        except (OSError, ValueError):
+            findings.add(Finding(managed_root, "unsafe"))
+            continue
+
+        allowed_directories = {managed_root}
+        for path in expected_paths:
+            if not path.is_relative_to(managed_root):
+                continue
+            parent = path.parent
+            while parent.is_relative_to(managed_root):
+                allowed_directories.add(parent)
+                if parent == managed_root:
+                    break
+                parent = parent.parent
+
+        stack = [managed_root]
+        while stack:
+            directory = stack.pop()
+            try:
+                entries = sorted(
+                    os.scandir(root / directory), key=lambda entry: entry.name
+                )
+            except OSError:
+                findings.add(Finding(directory, "unsafe"))
+                continue
+            if not entries and directory not in allowed_directories:
+                findings.add(Finding(directory, "unowned"))
+            for entry in entries:
+                relative = directory / entry.name
+                try:
+                    mode = entry.stat(follow_symlinks=False).st_mode
+                except OSError:
+                    findings.add(Finding(relative, "unsafe"))
+                    continue
+                if stat.S_ISDIR(mode):
+                    stack.append(relative)
+                    continue
+                if relative in expected_paths:
+                    if not stat.S_ISREG(mode):
+                        findings.add(Finding(relative, "unsafe"))
+                    continue
+                if _is_legacy_migration_path(relative):
+                    findings.add(Finding(relative, "stale"))
+                    continue
+                if not stat.S_ISREG(mode):
+                    findings.add(Finding(relative, "unsafe"))
+                    continue
+                try:
+                    content = read_repository_text(root, relative.as_posix()).encode()
+                except ContractLoadError:
+                    findings.add(Finding(relative, "unsafe"))
+                    continue
+                marker_owned = _has_exact_generated_marker(
+                    content
+                ) or _has_native_generated_marker(content)
+                findings.add(Finding(relative, "stale" if marker_owned else "unowned"))
+
+        if managed_root == pathlib.Path(".codex/skills") and not findings.intersection(
+            {
+                finding
+                for finding in findings
+                if finding.path.is_relative_to(managed_root)
+            }
+        ):
+            findings.add(Finding(managed_root, "stale"))
+    return sorted(findings)
 
 
 def find_native_projection_drift(root: pathlib.Path) -> list[Finding]:
@@ -820,7 +1003,9 @@ def find_native_projection_drift(root: pathlib.Path) -> list[Finding]:
         try:
             current = read_repository_text(root, path.as_posix()).encode()
         except ContractLoadError as error:
-            kind = "missing" if error.code == "AGC-REPOSITORY-FILE-MISSING" else "unsafe"
+            kind = (
+                "missing" if error.code == "AGC-REPOSITORY-FILE-MISSING" else "unsafe"
+            )
             findings.append(Finding(path, kind))
             continue
         if current != content:
@@ -834,8 +1019,7 @@ def find_native_projection_drift(root: pathlib.Path) -> list[Finding]:
             continue
         if not stat.S_ISREG(actual_mode) or stat.S_IMODE(actual_mode) != desired_mode:
             findings.append(Finding(path, "mode"))
-    for path in find_managed_stale_native_files(root, expected):
-        findings.append(Finding(path, "stale"))
+    findings.extend(find_native_inventory_drift(root, expected))
     return sorted(set(findings))
 
 
@@ -850,9 +1034,7 @@ def _assert_confined_directory(root: pathlib.Path, relative: pathlib.Path) -> No
             raise ValueError("managed projection directory is unsafe")
 
 
-def find_projection_drift(
-    root: pathlib.Path, provider: str
-) -> list[Finding]:
+def find_projection_drift(root: pathlib.Path, provider: str) -> list[Finding]:
     if provider == "codex":
         owned_root = _owned_root(provider)
         absolute = root / owned_root
@@ -869,13 +1051,17 @@ def find_projection_drift(
         try:
             current = read_repository_text(root, path.as_posix()).encode()
         except ContractLoadError as error:
-            kind = "missing" if error.code == "AGC-REPOSITORY-FILE-MISSING" else "unsafe"
+            kind = (
+                "missing" if error.code == "AGC-REPOSITORY-FILE-MISSING" else "unsafe"
+            )
             findings.append(Finding(path, kind))
             continue
         if current != content:
             findings.append(Finding(path, "content"))
     owned_expected = {
-        path: content for path, content in expected.items() if path.is_relative_to(_owned_root(provider))
+        path: content
+        for path, content in expected.items()
+        if path.is_relative_to(_owned_root(provider))
     }
     for path in sorted(find_managed_stale_files(root, owned_expected)):
         if path.is_relative_to(_owned_root(provider)):
@@ -1084,17 +1270,31 @@ def _remove_empty_owned_root(root: pathlib.Path, relative: pathlib.Path) -> None
                     src_dir_fd=parent_fd,
                     dst_dir_fd=parent_fd,
                 )
-                captured = os.stat(
-                    quarantine, dir_fd=parent_fd, follow_symlinks=False
-                )
-                if (captured.st_dev, captured.st_ino) != (
-                    identity.st_dev,
-                    identity.st_ino,
-                ):
-                    raise ValueError("obsolete owned root identity changed")
-                if os.listdir(owned_fd):
-                    raise ValueError("obsolete owned root changed during removal")
-                os.rmdir(quarantine, dir_fd=parent_fd)
+                try:
+                    captured = os.stat(
+                        quarantine, dir_fd=parent_fd, follow_symlinks=False
+                    )
+                    if (captured.st_dev, captured.st_ino) != (
+                        identity.st_dev,
+                        identity.st_ino,
+                    ):
+                        raise ValueError("obsolete owned root identity changed")
+                    if os.listdir(owned_fd):
+                        raise ValueError("obsolete owned root changed during removal")
+                    os.rmdir(quarantine, dir_fd=parent_fd)
+                except (OSError, ValueError) as error:
+                    try:
+                        os.stat(relative.name, dir_fd=parent_fd, follow_symlinks=False)
+                    except FileNotFoundError:
+                        os.rename(
+                            quarantine,
+                            relative.name,
+                            src_dir_fd=parent_fd,
+                            dst_dir_fd=parent_fd,
+                        )
+                    raise ValueError(
+                        "obsolete owned root changed during removal"
+                    ) from error
             finally:
                 os.close(owned_fd)
     except FileNotFoundError:
@@ -1121,6 +1321,25 @@ def write_projection(root: pathlib.Path, provider: str) -> None:
 def write_native_projection(root: pathlib.Path) -> None:
     root = root.absolute()
     expected = expected_native_projection(root)
+    inventory = find_native_inventory_drift(root, expected)
+    blocking = [finding for finding in inventory if finding.kind != "stale"]
+    if blocking:
+        raise ValueError("managed native projection contains unsafe or unowned entries")
+    for finding in inventory:
+        if finding.kind != "stale" or finding.path == pathlib.Path(".codex/skills"):
+            continue
+        legacy = _is_legacy_migration_path(finding.path)
+        _remove_stale_confined(
+            root,
+            finding.path,
+            require_marker=not legacy,
+            marker_predicate=lambda content: (
+                _has_exact_generated_marker(content)
+                or _has_native_generated_marker(content)
+            ),
+        )
+        if finding.path.parent not in NATIVE_MANAGED_ROOTS:
+            _remove_empty_owned_root(root, finding.path.parent)
     for provider in MIGRATION_PROVIDERS:
         write_projection(root, provider)
     for owned_root in NATIVE_AGENT_ROOTS:
@@ -1160,7 +1379,9 @@ def main(argv: list[str] | None = None) -> int:
             write_native_projection(root)
         findings = find_native_projection_drift(root)
     except (ContractLoadError, OSError, ValueError) as error:
-        print(f"provider_surface_renderer: ERROR {type(error).__name__}", file=sys.stderr)
+        print(
+            f"provider_surface_renderer: ERROR {type(error).__name__}", file=sys.stderr
+        )
         return 1
     if findings:
         for finding in findings:

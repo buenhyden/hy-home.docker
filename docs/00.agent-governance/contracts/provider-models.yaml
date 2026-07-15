@@ -54,7 +54,8 @@ work_profiles:
     defaults:
       - provider: claude
         model_id: claude-sonnet-5
-        reasoning: adaptive
+        thinking: adaptive
+        effort: high
       - provider: codex
         model_id: gpt-5.6
         reasoning: high
@@ -66,7 +67,8 @@ work_profiles:
     defaults:
       - provider: claude
         model_id: claude-haiku-4-5-20251001
-        reasoning: extended-thinking
+        thinking: extended-thinking
+        effort: null
       - provider: codex
         model_id: gpt-5.6-terra
         reasoning: low
@@ -78,7 +80,8 @@ work_profiles:
     defaults:
       - provider: claude
         model_id: claude-opus-4-8
-        reasoning: high
+        thinking: adaptive
+        effort: high
       - provider: codex
         model_id: gpt-5.6
         reasoning: xhigh
@@ -94,10 +97,18 @@ models:
     repository_default_eligible: false
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_control_kind: adaptive-always-on
-    supported_reasoning_controls:
+    thinking_control_kind: adaptive-always-on
+    supported_thinking_controls:
       - always-on-adaptive
-    repository_reasoning_controls: []
+    repository_thinking_controls:
+      - always-on-adaptive
+    supported_effort_controls:
+      - high
+      - low
+      - max
+      - medium
+      - xhigh
+    repository_effort_controls: []
     work_profiles:
       - complex-implementation
       - supervision
@@ -107,8 +118,10 @@ models:
       - long-running-agent
     fallback: claude-opus-4-8
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
-    cutoff_evidence_status: verified-before-cutoff
+    fallback_approval: spec:132-agent-governance-harness-convergence#claude-fable-5-to-claude-opus-4-8
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
@@ -119,11 +132,13 @@ models:
     repository_default_eligible: true
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_control_kind: extended-thinking
-    supported_reasoning_controls:
+    thinking_control_kind: extended-thinking
+    supported_thinking_controls:
       - extended-thinking
-    repository_reasoning_controls:
+    repository_thinking_controls:
       - extended-thinking
+    supported_effort_controls: []
+    repository_effort_controls: []
     work_profiles:
       - read-heavy-repetitive
     agent_coding_fit: bounded
@@ -132,8 +147,10 @@ models:
       - read-heavy
     fallback: claude-sonnet-5
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
-    cutoff_evidence_status: verified-before-cutoff
+    fallback_approval: spec:132-agent-governance-harness-convergence#claude-haiku-4-5-20251001-to-claude-sonnet-5
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
@@ -144,10 +161,18 @@ models:
     repository_default_eligible: false
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_control_kind: adaptive-always-on
-    supported_reasoning_controls:
+    thinking_control_kind: adaptive-always-on
+    supported_thinking_controls:
       - always-on-adaptive
-    repository_reasoning_controls: []
+    repository_thinking_controls:
+      - always-on-adaptive
+    supported_effort_controls:
+      - high
+      - low
+      - max
+      - medium
+      - xhigh
+    repository_effort_controls: []
     work_profiles:
       - complex-implementation
       - supervision
@@ -157,8 +182,10 @@ models:
       - invitation-only
     fallback: claude-opus-4-8
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
-    cutoff_evidence_status: verified-before-cutoff
+    fallback_approval: spec:132-agent-governance-harness-convergence#claude-mythos-5-to-claude-opus-4-8
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
@@ -169,17 +196,21 @@ models:
     repository_default_eligible: false
     entitlement: unavailable
     runtime_acceptance: rejected
-    reasoning_control_kind: effort
-    supported_reasoning_controls: []
-    repository_reasoning_controls: []
+    thinking_control_kind: extended-thinking
+    supported_thinking_controls: []
+    repository_thinking_controls: []
+    supported_effort_controls: []
+    repository_effort_controls: []
     work_profiles: []
     agent_coding_fit: historical
     task_characteristics:
       - migration-only
     fallback: claude-opus-4-8
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
-    cutoff_evidence_status: verified-before-cutoff
+    fallback_approval: spec:132-agent-governance-harness-convergence#claude-opus-4-1-20250805-to-claude-opus-4-8
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/model-deprecations
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/model-deprecations
   - provider: claude
@@ -190,10 +221,19 @@ models:
     repository_default_eligible: true
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_control_kind: effort
-    supported_reasoning_controls:
+    thinking_control_kind: adaptive
+    supported_thinking_controls:
+      - adaptive
+      - disabled
+    repository_thinking_controls:
+      - adaptive
+    supported_effort_controls:
       - high
-    repository_reasoning_controls:
+      - low
+      - max
+      - medium
+      - xhigh
+    repository_effort_controls:
       - high
     work_profiles:
       - supervision
@@ -204,8 +244,10 @@ models:
       - final-synthesis
     fallback: claude-sonnet-5
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
-    cutoff_evidence_status: verified-before-cutoff
+    fallback_approval: spec:132-agent-governance-harness-convergence#claude-opus-4-8-to-claude-sonnet-5
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-8
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
@@ -216,11 +258,20 @@ models:
     repository_default_eligible: true
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
-    reasoning_control_kind: adaptive
-    supported_reasoning_controls:
+    thinking_control_kind: adaptive-default
+    supported_thinking_controls:
       - adaptive
-    repository_reasoning_controls:
+      - disabled
+    repository_thinking_controls:
       - adaptive
+    supported_effort_controls:
+      - high
+      - low
+      - max
+      - medium
+      - xhigh
+    repository_effort_controls:
+      - high
     work_profiles:
       - complex-implementation
     agent_coding_fit: strong
@@ -228,10 +279,12 @@ models:
       - complex-implementation
       - precision-review
       - security-analysis
-    fallback: claude-haiku-4-5-20251001
+    fallback: claude-opus-4-8
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
-    cutoff_evidence_status: verified-before-cutoff
+    fallback_approval: spec:132-agent-governance-harness-convergence#claude-sonnet-5-to-claude-opus-4-8
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: codex
@@ -251,8 +304,10 @@ models:
       - migration-only
     fallback: gpt-5.6-terra
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
-    cutoff_evidence_status: verified-before-cutoff
+    fallback_approval: spec:132-agent-governance-harness-convergence#gpt-5.2-codex-to-gpt-5.6-terra
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://developers.openai.com/api/docs/models/gpt-5.2-codex
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://developers.openai.com/api/docs/models/gpt-5.2-codex
   - provider: codex
@@ -275,7 +330,9 @@ models:
     fallback: gpt-5.6
     fallback_policy: same-profile
     fallback_approval: null
-    cutoff_evidence_status: verified-before-cutoff
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://learn.chatgpt.com/docs/models
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://learn.chatgpt.com/docs/models
   - provider: codex
@@ -309,8 +366,10 @@ models:
       - supervision
     fallback: gpt-5.6-terra
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
+    fallback_approval: spec:132-agent-governance-harness-convergence#gpt-5.6-to-gpt-5.6-terra
     cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://developers.openai.com/api/docs/models/gpt-5.6-sol
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://developers.openai.com/api/docs/models/gpt-5.6-sol
   - provider: codex
@@ -341,8 +400,10 @@ models:
       - repository-exploration
     fallback: gpt-5.6
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
+    fallback_approval: spec:132-agent-governance-harness-convergence#gpt-5.6-terra-to-gpt-5.6
     cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://developers.openai.com/api/docs/models/gpt-5.6-terra
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://developers.openai.com/api/docs/models/gpt-5.6-terra
   - provider: gemini
@@ -370,8 +431,10 @@ models:
       - repetitive-organization
     fallback: gemini-3.5-flash
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
-    cutoff_evidence_status: verified-before-cutoff
+    fallback_approval: spec:132-agent-governance-harness-convergence#gemini-3.1-flash-lite-to-gemini-3.5-flash
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite
   - provider: gemini
@@ -391,8 +454,10 @@ models:
       - migration-only
     fallback: gemini-3.1-flash-lite
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
-    cutoff_evidence_status: verified-before-cutoff
+    fallback_approval: spec:132-agent-governance-harness-convergence#gemini-3.1-flash-lite-preview-to-gemini-3.1-flash-lite
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://ai.google.dev/gemini-api/docs/deprecations
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://ai.google.dev/gemini-api/docs/deprecations
   - provider: gemini
@@ -419,7 +484,9 @@ models:
     fallback: gemini-3.5-flash
     fallback_policy: same-profile
     fallback_approval: null
-    cutoff_evidence_status: verified-before-cutoff
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
   - provider: gemini
@@ -450,8 +517,10 @@ models:
       - supervision
     fallback: gemini-3.1-flash-lite
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence
-    cutoff_evidence_status: verified-before-cutoff
+    fallback_approval: spec:132-agent-governance-harness-convergence#gemini-3.5-flash-to-gemini-3.1-flash-lite
+    cutoff_evidence_status: historical-state-unverified
+    cutoff_evidence_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash
+    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash
 semantic_events:
@@ -490,7 +559,7 @@ semantic_events:
         capability_status: supported
         adoption_status: adopted
         provider_can_block: true
-        repository_hook_mode: blocking
+        repository_hook_mode: advisory
         timeout_unit: seconds
         timeout_value: 10
       - provider: codex
@@ -498,7 +567,7 @@ semantic_events:
         capability_status: supported
         adoption_status: adopted
         provider_can_block: true
-        repository_hook_mode: blocking
+        repository_hook_mode: advisory
         timeout_unit: seconds
         timeout_value: 600
       - provider: gemini
@@ -517,7 +586,7 @@ semantic_events:
         capability_status: supported
         adoption_status: adopted
         provider_can_block: true
-        repository_hook_mode: blocking
+        repository_hook_mode: advisory
         timeout_unit: seconds
         timeout_value: 10
       - provider: codex
@@ -525,7 +594,7 @@ semantic_events:
         capability_status: supported
         adoption_status: adopted
         provider_can_block: true
-        repository_hook_mode: blocking
+        repository_hook_mode: advisory
         timeout_unit: seconds
         timeout_value: 600
       - provider: gemini
@@ -533,7 +602,7 @@ semantic_events:
         capability_status: supported
         adoption_status: adopted
         provider_can_block: true
-        repository_hook_mode: blocking
+        repository_hook_mode: advisory
         timeout_unit: milliseconds
         timeout_value: 60000
   - event_id: session-end
@@ -625,7 +694,7 @@ semantic_events:
         capability_status: supported
         adoption_status: adopted
         provider_can_block: true
-        repository_hook_mode: blocking
+        repository_hook_mode: advisory
         timeout_unit: seconds
         timeout_value: 10
       - provider: codex
@@ -633,7 +702,7 @@ semantic_events:
         capability_status: supported
         adoption_status: adopted
         provider_can_block: true
-        repository_hook_mode: blocking
+        repository_hook_mode: advisory
         timeout_unit: seconds
         timeout_value: 600
       - provider: gemini
@@ -641,6 +710,6 @@ semantic_events:
         capability_status: supported
         adoption_status: adopted
         provider_can_block: true
-        repository_hook_mode: blocking
+        repository_hook_mode: advisory
         timeout_unit: milliseconds
         timeout_value: 60000

@@ -399,11 +399,14 @@ reason = (
 if output:
     reason = f"{reason}\n\nValidator output:\n{output[-6000:]}"
 
-print(json.dumps({
-    "decision": "block",
-    "reason": reason,
-    "systemMessage": reason,
-}))
+if os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex":
+    print(json.dumps({"continue": False, "stopReason": reason}))
+else:
+    print(json.dumps({
+        "decision": "block",
+        "reason": reason,
+        "systemMessage": reason,
+    }))
 PY
   return 1
 }
@@ -468,11 +471,14 @@ reason = (
 if paths:
     reason = f"{reason}\n\nUncommitted paths:\n{paths}"
 
-print(json.dumps({
-    "decision": "block",
-    "reason": reason,
-    "systemMessage": reason,
-}))
+if os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex":
+    print(json.dumps({"continue": False, "stopReason": reason}))
+else:
+    print(json.dumps({
+        "decision": "block",
+        "reason": reason,
+        "systemMessage": reason,
+    }))
 PY
   return 1
 }

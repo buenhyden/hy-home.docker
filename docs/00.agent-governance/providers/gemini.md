@@ -51,7 +51,9 @@ adapter. Stage 00 remains canonical.
 - `.gemini/settings.json` maps native events to
   `.gemini/hooks/agent-event-hook.sh`, which translates event names and delegates
   shared behavior to `scripts/hooks/agent-event-hook.sh` with recursion
-  protection.
+  protection. The adapter also translates output schemas: `BeforeAgent` emits
+  its native event name, `PreCompress` emits advisory `systemMessage` output
+  only, and the other five events retain only their permitted native fields.
 - Gemini model identifiers follow the typed work-profile policy: 3.5 Flash for
   supervision/complex work and 3.1 Flash-Lite for read-heavy/repetitive work.
 - The `.agents/` directory is git-tracked.
@@ -63,6 +65,9 @@ adapter. Stage 00 remains canonical.
   default `*` matcher because matching behavior is event-specific.
 - `AfterAgent` may deny a response and force a retry; it maps to the shared Stop
   gate as `deny-retry`, not as an irreversible session stop.
+- `BeforeTool` and `BeforeAgent` expose native block capability, but the current
+  repository dispatcher uses them only for advisory context. Capability and
+  repository behavior are recorded separately in the typed event bindings.
 - `PreCompress` is inherently asynchronous and advisory. No unsupported
   `async` configuration key is emitted. `SessionEnd` is best effort.
 - **Pre-edit validation**: Review requirements and guardrails before mutating files.

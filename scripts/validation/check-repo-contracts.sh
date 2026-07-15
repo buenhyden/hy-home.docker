@@ -1603,6 +1603,9 @@ if ! python3 scripts/validation/check-agent-governance-contract.py \
   --mode repository --section providers; then
   failures=$((failures + 1))
 fi
+if ! bash scripts/operations/sync-provider-surfaces.sh --check; then
+  failures=$((failures + 1))
+fi
 
 
 

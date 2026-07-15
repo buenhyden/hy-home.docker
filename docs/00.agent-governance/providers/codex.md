@@ -99,6 +99,9 @@ reviewed Git-visible, non-ignored repository paths in Stage 04 evidence.
 - `PreToolUse` emits Graphify advisory context, Docker Compose guardrails, and template-first guidance.
 - `PostToolUse` delegates to `scripts/hooks/post-tool-validate.sh` after file edits for shell formatting, validation, and diff hygiene.
 - `Stop` blocks completion when changed target-stage docs fail `check-repo-contracts.sh` or task-owned uncommitted paths remain.
+- A rejected Codex Stop emits the native `continue: false` and `stopReason`
+  fields. `PreToolUse`, `PreCompact`, and `UserPromptSubmit` remain advisory in
+  the repository dispatcher even when Codex exposes a blocking primitive.
 - `PreCompact` routes through `agent-event-hook.sh`. Codex does not expose the
   repository's `SessionEnd` semantic event, so no native `SessionEnd` entry is
   generated or counted as parity.
@@ -111,7 +114,8 @@ reviewed Git-visible, non-ignored repository paths in Stage 04 evidence.
 - Codex hook events must stay behaviorally aligned with Claude hook events.
 - Codex `PreToolUse` and `PostToolUse` matchers must cover normal file edits and patch-based edits including `apply_patch` and `ApplyPatch`.
 - README guidance is provider-neutral (e.g. folder-index README edits route to `docs/99.templates/templates/common/readme.template.md`).
-- Runtime hooks provide advisory context and validation routing only. Policy remains in `docs/00.agent-governance/`.
+- Non-Stop runtime hooks provide advisory context and validation routing only.
+  Policy remains in `docs/00.agent-governance/`.
 
 ## 8. Operational Practices
 

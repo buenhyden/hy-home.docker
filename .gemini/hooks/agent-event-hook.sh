@@ -9,6 +9,7 @@ fi
 export HY_HOME_GEMINI_HOOK_ACTIVE=1
 PROJECT_DIR="${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
 NATIVE_EVENT="${1:-}"
+INPUT="$(cat || true)"
 case "$NATIVE_EVENT" in
   AfterTool) SEMANTIC_EVENT=PostToolUse ;;
   PreCompress) SEMANTIC_EVENT=PreCompact ;;
@@ -19,4 +20,49 @@ case "$NATIVE_EVENT" in
   BeforeAgent) SEMANTIC_EVENT=UserPromptSubmit ;;
   *) printf 'Unsupported Gemini hook event.\n' >&2; exit 2 ;;
 esac
-exec bash "$PROJECT_DIR/scripts/hooks/agent-event-hook.sh" "$SEMANTIC_EVENT"
+set +e
+OUTPUT="$(printf '%s' "$INPUT" | bash "$PROJECT_DIR/scripts/hooks/agent-event-hook.sh" "$SEMANTIC_EVENT")"
+STATUS=$?
+set -e
+if [[ -z "$OUTPUT" ]]; then
+  if [[ $STATUS -ne 0 ]]; then exit "$STATUS"; fi
+  printf '{}\n'
+  exit 0
+fi
+HOOK_OUTPUT="$OUTPUT" NATIVE_EVENT="$NATIVE_EVENT" python3 - <<'PY'
+import json
+import os
+
+event = os.environ['NATIVE_EVENT']
+try:
+    source = json.loads(os.environ.get('HOOK_OUTPUT', '') or '{}')
+except (TypeError, ValueError):
+    source = {}
+if not isinstance(source, dict):
+    source = {}
+if event == 'PreCompress':
+    specific = source.get('hookSpecificOutput')
+    message = source.get('systemMessage')
+    if not isinstance(message, str) and isinstance(specific, dict):
+        message = specific.get('additionalContext')
+    result = {'systemMessage': message} if isinstance(message, str) else {}
+elif event == 'BeforeTool':
+    result = {key: value for key, value in source.items() if key != 'hookSpecificOutput'}
+    specific = source.get('hookSpecificOutput')
+    if isinstance(specific, dict) and isinstance(specific.get('additionalContext'), str):
+        context = specific['additionalContext']
+        current = result.get('systemMessage')
+        result['systemMessage'] = f'{current}\n\n{context}' if isinstance(current, str) else context
+elif event in {'SessionEnd'}:
+    result = {key: value for key, value in source.items() if key in {'systemMessage', 'suppressOutput'}}
+else:
+    result = dict(source)
+    specific = result.get('hookSpecificOutput')
+    if isinstance(specific, dict):
+        specific = dict(specific)
+        specific['hookEventName'] = event
+        result['hookSpecificOutput'] = specific
+if result.get('decision') == 'block':
+    result['decision'] = 'deny'
+print(json.dumps(result))
+PY

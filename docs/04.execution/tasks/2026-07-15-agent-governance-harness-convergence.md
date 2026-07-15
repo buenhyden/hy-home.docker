@@ -147,7 +147,7 @@ Redaction boundary:
 | T-AGHC-001 | Typed contracts and contract-only validator | Complete; specification and quality reviews PASS C0/I0/M0 |
 | T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Implementation complete; independent reviews pending |
-| T-AGHC-004 | Provider-native adapters and dated model policy | Implementation complete; independent reviews pending |
+| T-AGHC-004 | Provider-native adapters and dated model policy | Review remediation complete; independent re-reviews pending |
 | T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Not run |
 | T-AGHC-006 | Reference/audit/evidence reconciliation and closure | Not run |
 
@@ -205,6 +205,8 @@ Redaction boundary:
 | 2026-07-16 | T-AGHC-004 GREEN | Fresh implementation agent | Extended the confined renderer to generate strict Claude Markdown, Codex TOML, Gemini Markdown, and shared compatibility agents for all 14 roles, shared skills for all 22 functions, provider indexes, and native hook settings/wrappers. Read-only roles receive provider-native least-privilege controls. Seven semantic events map to provider-native names, units, matchers, blocking capability, and repository modes; Codex SessionEnd is explicitly unsupported and Gemini AfterAgent uses deny/retry semantics. |
 | 2026-07-16 | T-AGHC-004 lifecycle and generated owners | Fresh implementation agent | Reconciled five Foundation active-consumer sets after generated adapters removed copied governance links and the renderer became a direct consumer. No lifecycle status, disposition, enforcement, review verdict, or source body changed. Regenerated the Foundation summary and provider hook parity matrix; LLM Wiki index/coverage and metadata inventory were already fresh. |
 | 2026-07-16 | T-AGHC-004 self-review | Fresh implementation agent | Added exact native schema, duplicate-key, model-policy, fallback, event-semantic, permissions, file-mode, drift, strict Gemini-entry, and generated-link tests. The combined governance, renderer, and provider suite passes 145/145; 56 generated role adapters contain 224 resolving local links, 44 shared skill projections remain renderer-owned, `.codex/skills` remains absent, and all typed repository sections pass. Independent specification and quality reviews remain required before Task closure. |
+| 2026-07-16 | T-AGHC-004 independent review | Fresh read-only reviewer | Review of the provider-native implementation found six material boundary gaps: managed roots admitted unowned inventory, native JSON schemas and commands were not exact, the aggregate gate did not invoke renderer drift, empty-root cleanup could strand a raced replacement, native ownership-marker grammar was permissive, and unsafe/mode/event-output cases lacked executable coverage. The reviewer also required Claude thinking/effort and dated cutoff/fallback evidence to remain typed instead of being flattened into a generic reasoning field. |
+| 2026-07-16 | T-AGHC-004 review remediation | Fresh remediation agent | Added exact recursive inventory over every managed provider tree, fail-closed preservation of unowned and unsafe entries, exact generated-marker and provider JSON command schemas, renderer drift in the aggregate gate, identity-checked empty-root cleanup, executable mode enforcement, all seven Gemini output translations, and Codex-native Stop denial output. Claude thinking and effort controls are separately typed, degraded fallback approvals identify one exact source-to-target edge, and mutable post-cutoff pages cannot claim verified historical state. Initial remediation RED produced 11 expected failures/errors across six methods; the expanded provider suites and the combined governance/renderer/provider suite are GREEN. Independent specification and quality re-reviews remain required before Task closure. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -251,18 +253,20 @@ T-AGHC-004 implementation verification:
 
 | Command | Expected | Actual | State |
 | --- | --- | --- | --- |
-| focused provider-native tests | all pass | 10/10 | Pass |
-| governance, renderer, and provider-native unit suites | no regression | 145/145 in 120.090s | Pass |
+| focused renderer and provider-native tests | all pass | 35/35 | Pass |
+| governance, renderer, and provider-native unit suites | no regression | 154/154 | Pass |
 | generated role link resolution | every local link resolves from its native projection | 56/56 role adapters; 224/224 local links | Pass |
 | typed contract and repository sections | exact cardinality and zero findings | contracts 3; agents 14; functions 22; providers 3; catalog/providers/harness failures 0 | Pass |
 | renderer check, repeated | deterministic zero drift | `providers=3 drift=0` on repeated checks | Pass |
 | provider hook parity owner | generated matrix is fresh | Claude 7 native; Codex 6 native and 1 unsupported; Gemini 7 native | Pass |
 | native syntax and file modes | JSON/TOML/YAML parse; hooks executable; data non-executable | all provider configs parse; 8 hooks mode 0755; generated data mode 0644 | Pass |
-| changed metadata against `2341a996` | zero violations | selected 9; violations 0; legacy exceptions 0; transition overrides 0 | Pass |
-| promoted and impacted lifecycle | zero violations | promoted 0; impacted selected 194 / violations 0 with configured Task-directory warning | Pass |
+| changed metadata against `e4860179` | zero violations | selected 8; violations 0; legacy exceptions 0; transition overrides 0 | Pass |
+| promoted and impacted lifecycle | zero violations | promoted 0; impacted selected 77 / violations 0 with configured Task-directory warning | Pass |
 | traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,206 local links; 141 operations docs; failures 0 | Pass |
 | generated owners | fresh | Foundation summary, LLM Wiki index/coverage, metadata inventory 910/2,145, and provider parity matrix fresh | Pass |
 | repository aggregate | all active contracts pass | `failures=0`; typed catalog/providers and generated parity owners active | Pass |
+| remediation boundaries | preserve unknown files; reject unsafe/mode/schema/command drift; translate native output | exact managed-tree inventory, identity-safe cleanup, strict JSON/marker grammar, Gemini 7/7 output translation, and Codex Stop denial pass | Pass |
+| Graphify refresh | refresh, corroborate advisory output, restore generated files | 24,800 nodes / 28,311 edges / 1,599 communities; 432 inferred edges, 16,457 isolated nodes, 69 thin communities, and visualization size skip corroborated against tracked Stage 00 contracts, executable renderer/hooks, Spec 132, and this Task; generated graph files restored | Pass |
 
 Scoped QA is supplied by the automatic commit hook because direct manual
 `pre-commit run --all-files` execution is prohibited. Provider entitlement and
@@ -715,7 +719,8 @@ with owner, reason, and destination.
 | T-AGHC-003 | `refactor(agents): converge role and function catalogs` | `07cedeec` | focused and full unit suites GREEN; first reviews C0/I2/M0 each |
 | T-AGHC-003 independent-review remediation | `fix(agents): preserve generated surface ownership` | `8d1d08f4` | four Important findings reproduced and remediated; focused/full GREEN; terminal specification PASS and quality APPROVED C0/I0/M0 |
 | T-AGHC-003 terminal review evidence | `docs(task): record agent catalog review closure` | this logical commit | full-range and remediation-delta specification PASS and quality APPROVED, C0/I0/M0 |
-| T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |
+| T-AGHC-004 | `feat(providers): generate native agent adapters` | `e4860179` | implementation GREEN; independent review found six material gaps |
+| T-AGHC-004 independent-review remediation | `fix(providers): harden native adapter contracts` | pending | exact inventory, schemas, output translation, evidence typing, and aggregate renderer gate GREEN; independent re-reviews pending |
 | T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | pending | pending |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |
 | Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | pending | pending |

@@ -27,8 +27,9 @@ Claude Code-specific guidance for this repository.
   and `.claude/skills/` are runtime adapters, not separate governance.
 - Apply the work profile in `contracts/agent-catalog.yaml` through the exact
   Claude model/control record in `contracts/provider-models.yaml`. Do not add a
-  per-agent thinking field; generated adapters use only Claude-supported
-  frontmatter.
+  per-agent thinking or effort field; generated adapters use only
+  Claude-supported frontmatter. Thinking mode and effort remain separate
+  runtime invocation controls in Stage 00.
 - Define the Claude-native output style under `.claude/output-styles/` implementing `rules/output-style.md`, and follow `rules/provider-capability-matrix.md` and `rules/workflows.md`.
 
 ## 3. Root Import Boundary
@@ -63,9 +64,14 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 - Claude `PreToolUse` and `PostToolUse` matchers must cover normal file edits and patch-based edits, including `Write`, `Edit`, `MultiEdit`, `apply_patch`, and `ApplyPatch`.
 - Claude `PostToolUse` must delegate changed-file style normalization and style validation to `scripts/hooks/post-tool-validate.sh` before repository contract checks. The shared script trims text-file whitespace/newline drift, runs `shfmt` for changed hook/script shell files when available, and runs optional `shellcheck`/`yamllint` style checks when those tools are available.
 - Claude hooks must surface template-first guidance before target-stage documentation edits, README template/readiness guidance before README edits, and block Stop when changed target-stage docs fail `bash scripts/validation/check-repo-contracts.sh`.
+- `PreToolUse`, `PreCompact`, and `UserPromptSubmit` are advisory in the tracked
+  dispatcher even when the provider primitive can block. `provider_can_block`
+  records native capability; `repository_hook_mode` records implemented
+  repository behavior. Only the conditional Stop gates are blocking here.
 - Claude Stop/SessionEnd guidance must require agents to create logical Conventional Commits for completed repository-modifying work unless a higher-priority instruction or incomplete verification prevents committing; Stop blocks while task-owned uncommitted paths remain.
 - README guidance must remain provider-neutral: folder-index README edits route to `docs/99.templates/templates/common/readme.template.md`, and infra service leaf README edits require Service Readiness evidence without reading secret values.
-- Runtime hooks provide advisory context and validation routing only. Policy remains in `docs/00.agent-governance/`.
+- Non-Stop runtime hooks provide advisory context and validation routing only.
+  Policy remains in `docs/00.agent-governance/`.
 
 ## 6. Operational Practices
 

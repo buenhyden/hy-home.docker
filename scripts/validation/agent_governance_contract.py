@@ -6,12 +6,14 @@ from __future__ import annotations
 import datetime as dt
 import errno
 import fnmatch
+import importlib.util
 import json
 import os
 import pathlib
 import re
 import secrets
 import stat
+import sys
 import tomllib
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -201,8 +203,9 @@ COMPATIBILITY_FIELDS = {
     "source_url",
 }
 WORK_PROFILE_FIELDS = {"profile_id", "description", "defaults"}
-WORK_PROFILE_DEFAULT_FIELDS = {"provider", "model_id", "reasoning"}
-MODEL_FIELDS = {
+WORK_PROFILE_DEFAULT_REASONING_FIELDS = {"provider", "model_id", "reasoning"}
+WORK_PROFILE_DEFAULT_CLAUDE_FIELDS = {"provider", "model_id", "thinking", "effort"}
+MODEL_COMMON_FIELDS = {
     "provider",
     "model_id",
     "canonical_model_id",
@@ -211,9 +214,6 @@ MODEL_FIELDS = {
     "repository_default_eligible",
     "entitlement",
     "runtime_acceptance",
-    "reasoning_control_kind",
-    "supported_reasoning_controls",
-    "repository_reasoning_controls",
     "work_profiles",
     "agent_coding_fit",
     "task_characteristics",
@@ -221,8 +221,22 @@ MODEL_FIELDS = {
     "fallback_policy",
     "fallback_approval",
     "cutoff_evidence_status",
+    "cutoff_evidence_url",
+    "cutoff_evidence_observed_at",
     "checked_at",
     "source_url",
+}
+MODEL_REASONING_FIELDS = MODEL_COMMON_FIELDS | {
+    "reasoning_control_kind",
+    "supported_reasoning_controls",
+    "repository_reasoning_controls",
+}
+MODEL_CLAUDE_FIELDS = MODEL_COMMON_FIELDS | {
+    "thinking_control_kind",
+    "supported_thinking_controls",
+    "repository_thinking_controls",
+    "supported_effort_controls",
+    "repository_effort_controls",
 }
 EVENT_FIELDS = {"event_id", "required", "provider_bindings"}
 EVENT_BINDING_FIELDS = {
@@ -273,6 +287,7 @@ LOCAL_CLI_OBSERVATIONS = {"observed", "unavailable"}
 REASONING_CONTROL_KINDS = {
     "adaptive",
     "adaptive-always-on",
+    "adaptive-default",
     "effort",
     "extended-thinking",
     "reasoning-effort",
@@ -306,9 +321,7 @@ CATALOG_AUTHORITY_SEMANTICS = MappingProxyType(
             {
                 "canonical_owner": "rules-engineer",
                 "mandatory_reviewers": ("workflow-supervisor",),
-                "entry_owners": (
-                    ("domain-owner", "agents", "agent_id", "agent_id"),
-                ),
+                "entry_owners": (("domain-owner", "agents", "agent_id", "agent_id"),),
                 "entry_reviewers": (),
             }
         ),
@@ -458,7 +471,9 @@ def _load_yaml(
     try:
         text = _read_root_confined_regular_text(root, relative_path)
     except FileNotFoundError as error:
-        raise ContractLoadError("AGC-CONTRACT-MISSING", relative_text, "file") from error
+        raise ContractLoadError(
+            "AGC-CONTRACT-MISSING", relative_text, "file"
+        ) from error
     except _UnsafeRootFileError as error:
         raise ContractLoadError(
             "AGC-CONTRACT-UNSAFE-FILE", relative_text, "file"
@@ -512,7 +527,9 @@ def load_artifact_contract(
     try:
         return _load_yaml(root_absolute, relative_path)
     except ContractLoadError as error:
-        raise ContractLoadError(error.code, "artifact-contract", error.location) from error
+        raise ContractLoadError(
+            error.code, "artifact-contract", error.location
+        ) from error
 
 
 def load_contract_bundle(root: pathlib.Path) -> ContractBundle:
@@ -803,7 +820,9 @@ def _check_entry_authority_list(
         )
         reference_fields_valid = True
         if collection_valid:
-            expected_identity, expected_agent = DOMAIN_OWNER_REFERENCE_FIELDS[str(collection)]
+            expected_identity, expected_agent = DOMAIN_OWNER_REFERENCE_FIELDS[
+                str(collection)
+            ]
             if identity_field != expected_identity:
                 reference_fields_valid = False
                 _add(
@@ -960,7 +979,15 @@ def _check_path(
 ) -> bool:
     if _is_safe_repo_path(value):
         return True
-    _add(findings, "AGC-PATH-UNSAFE", path, location, "safe-repo-path", "unsafe-path", source)
+    _add(
+        findings,
+        "AGC-PATH-UNSAFE",
+        path,
+        location,
+        "safe-repo-path",
+        "unsafe-path",
+        source,
+    )
     return False
 
 
@@ -1063,9 +1090,7 @@ def _check_common(
             "invalid-version",
             source,
         )
-    _check_checked_at(
-        document.get(time_field), path, time_field, findings, source
-    )
+    _check_checked_at(document.get(time_field), path, time_field, findings, source)
 
 
 def _validate_artifact_contract(
@@ -1102,17 +1127,23 @@ def _validate_artifact_contract(
                     source,
                 )
 
-    artifacts = _as_sequence(document.get("artifacts"), path, "artifacts", findings, source)
+    artifacts = _as_sequence(
+        document.get("artifacts"), path, "artifacts", findings, source
+    )
     profile_ids: list[str] = []
     artifact_patterns: list[tuple[str, str, str]] = []
     if artifacts is not None:
         for index, raw in enumerate(artifacts):
             location = f"artifacts[{index}]"
-            entry = _check_fields(raw, ARTIFACT_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, ARTIFACT_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             profile_id = entry.get("profile_id")
-            if _check_string(profile_id, path, f"{location}.profile_id", findings, source):
+            if _check_string(
+                profile_id, path, f"{location}.profile_id", findings, source
+            ):
                 profile_ids.append(str(profile_id))
             _check_string(
                 entry.get("artifact_type"),
@@ -1138,7 +1169,9 @@ def _validate_artifact_contract(
                 findings,
                 source,
             )
-            _check_bool(entry.get("canonical"), path, f"{location}.canonical", findings, source)
+            _check_bool(
+                entry.get("canonical"), path, f"{location}.canonical", findings, source
+            )
             required_keys = _check_string_list(
                 entry.get("required_keys"),
                 path,
@@ -1163,7 +1196,11 @@ def _validate_artifact_contract(
                 source,
                 allow_empty=True,
             )
-            if required_keys is not None and key_order is not None and required_keys != key_order:
+            if (
+                required_keys is not None
+                and key_order is not None
+                and required_keys != key_order
+            ):
                 _add(
                     findings,
                     "AGC-ARTIFACT-KEY-ORDER",
@@ -1214,7 +1251,9 @@ def _validate_artifact_contract(
     for left_index, (left_id, left_pattern, left_location) in enumerate(
         artifact_patterns
     ):
-        for right_id, right_pattern, right_location in artifact_patterns[left_index + 1 :]:
+        for right_id, right_pattern, right_location in artifact_patterns[
+            left_index + 1 :
+        ]:
             if _artifact_patterns_overlap(left_pattern, right_pattern):
                 _add(
                     findings,
@@ -1297,12 +1336,16 @@ def _validate_artifact_contract(
                     source,
                 )
 
-    root_shims = _as_sequence(document.get("root_shims"), path, "root_shims", findings, source)
+    root_shims = _as_sequence(
+        document.get("root_shims"), path, "root_shims", findings, source
+    )
     root_paths: list[str] = []
     if root_shims is not None:
         for index, raw in enumerate(root_shims):
             location = f"root_shims[{index}]"
-            entry = _check_fields(raw, ROOT_SHIM_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, ROOT_SHIM_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             shim_path = entry.get("path")
@@ -1370,11 +1413,15 @@ def _validate_artifact_contract(
     if readmes is not None:
         for index, raw in enumerate(readmes):
             location = f"readme_profiles[{index}]"
-            entry = _check_fields(raw, README_PROFILE_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, README_PROFILE_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             profile_id = entry.get("profile_id")
-            if _check_string(profile_id, path, f"{location}.profile_id", findings, source):
+            if _check_string(
+                profile_id, path, f"{location}.profile_id", findings, source
+            ):
                 readme_ids.append(str(profile_id))
             _check_enumerated_pattern(
                 entry.get("path_pattern"),
@@ -1415,11 +1462,15 @@ def _validate_artifact_contract(
     if authorities is not None:
         for index, raw in enumerate(authorities):
             location = f"path_authority[{index}]"
-            entry = _check_fields(raw, AUTHORITY_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, AUTHORITY_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             authority_id = entry.get("authority_id")
-            if _check_string(authority_id, path, f"{location}.authority_id", findings, source):
+            if _check_string(
+                authority_id, path, f"{location}.authority_id", findings, source
+            ):
                 authority_ids.append(str(authority_id))
             patterns = _check_string_list(
                 entry.get("path_patterns"),
@@ -1439,8 +1490,16 @@ def _validate_artifact_contract(
                         source,
                     )
                     if isinstance(pattern, str):
-                        authority_patterns.append((str(authority_id), pattern, location))
-            _check_string(entry.get("canonical_owner"), path, f"{location}.canonical_owner", findings, source)
+                        authority_patterns.append(
+                            (str(authority_id), pattern, location)
+                        )
+            _check_string(
+                entry.get("canonical_owner"),
+                path,
+                f"{location}.canonical_owner",
+                findings,
+                source,
+            )
             entry_owners = _check_entry_authority_list(
                 entry.get("entry_owners"),
                 path,
@@ -1456,15 +1515,18 @@ def _validate_artifact_contract(
                 source,
                 require_sorted=True,
             )
-            mandatory_reviewers = _check_string_list(
-                entry.get("mandatory_reviewers"),
-                path,
-                f"{location}.mandatory_reviewers",
-                findings,
-                source,
-                allow_empty=True,
-                require_sorted=True,
-            ) or ()
+            mandatory_reviewers = (
+                _check_string_list(
+                    entry.get("mandatory_reviewers"),
+                    path,
+                    f"{location}.mandatory_reviewers",
+                    findings,
+                    source,
+                    allow_empty=True,
+                    require_sorted=True,
+                )
+                or ()
+            )
             entry_reviewers = _check_entry_authority_list(
                 entry.get("entry_reviewers"),
                 path,
@@ -1484,8 +1546,16 @@ def _validate_artifact_contract(
                     "missing-effective-reviewer",
                     source,
                 )
-            _check_string_list(entry.get("validators"), path, f"{location}.validators", findings, source)
-            _check_string(entry.get("rollback"), path, f"{location}.rollback", findings, source)
+            _check_string_list(
+                entry.get("validators"),
+                path,
+                f"{location}.validators",
+                findings,
+                source,
+            )
+            _check_string(
+                entry.get("rollback"), path, f"{location}.rollback", findings, source
+            )
             semantics = CATALOG_AUTHORITY_SEMANTICS.get(str(authority_id))
             if semantics is not None:
                 observed = {
@@ -1512,7 +1582,9 @@ def _validate_artifact_contract(
                         )
     _check_sorted_unique_ids(authority_ids, path, "path_authority", findings, source)
     for index, (owner, pattern, location) in enumerate(authority_patterns):
-        for other_owner, other_pattern, other_location in authority_patterns[index + 1 :]:
+        for other_owner, other_pattern, other_location in authority_patterns[
+            index + 1 :
+        ]:
             if owner != other_owner and _patterns_overlap(pattern, other_pattern):
                 _add(
                     findings,
@@ -1535,7 +1607,15 @@ def _check_sorted_unique_ids(
     duplicate_code: str = "AGC-SCHEMA-DUPLICATE-ID",
 ) -> None:
     if len(values) != len(set(values)):
-        _add(findings, duplicate_code, path, location, "unique-ids", "duplicate-id", source)
+        _add(
+            findings,
+            duplicate_code,
+            path,
+            location,
+            "unique-ids",
+            "duplicate-id",
+            source,
+        )
     if list(values) != sorted(values):
         _add(
             findings,
@@ -1556,7 +1636,9 @@ def _patterns_overlap(left: str, right: str) -> bool:
 
     def literal_prefix(pattern: str) -> tuple[str, bool]:
         marker_positions = [
-            position for marker in ("*", "?", "{", "[") if (position := pattern.find(marker)) >= 0
+            position
+            for marker in ("*", "?", "{", "[")
+            if (position := pattern.find(marker)) >= 0
         ]
         if not marker_positions:
             return pattern, False
@@ -1578,14 +1660,17 @@ def _validate_catalog_contract(
     path = CONTRACT_RELATIVE_PATHS["catalog"].as_posix()
     source = path
     _check_common(document, CATALOG_TOP_FIELDS, path, findings)
-    projections = _check_string_list(
-        document.get("projection_targets"),
-        path,
-        "projection_targets",
-        findings,
-        source,
-        require_sorted=True,
-    ) or ()
+    projections = (
+        _check_string_list(
+            document.get("projection_targets"),
+            path,
+            "projection_targets",
+            findings,
+            source,
+            require_sorted=True,
+        )
+        or ()
+    )
     provider_targets = {
         str(entry.get("provider_id"))
         for entry in _sequence_or_empty(provider_document.get("providers"))
@@ -1593,14 +1678,14 @@ def _validate_catalog_contract(
     }
     compatibility_targets = {
         str(entry.get("surface_id"))
-        for entry in _sequence_or_empty(
-            provider_document.get("compatibility_surfaces")
-        )
+        for entry in _sequence_or_empty(provider_document.get("compatibility_surfaces"))
         if isinstance(entry, Mapping)
         and entry.get("status") == "active"
         and _is_nonempty_string(entry.get("surface_id"))
     }
-    canonical_projection_targets = tuple(sorted(provider_targets | compatibility_targets))
+    canonical_projection_targets = tuple(
+        sorted(provider_targets | compatibility_targets)
+    )
     if projections != canonical_projection_targets:
         _add(
             findings,
@@ -1613,27 +1698,46 @@ def _validate_catalog_contract(
         )
     scopes = set(
         _check_string_list(
-            document.get("scopes"), path, "scopes", findings, source, require_sorted=True
+            document.get("scopes"),
+            path,
+            "scopes",
+            findings,
+            source,
+            require_sorted=True,
         )
         or ()
     )
 
-    permissions = _as_sequence(document.get("permissions"), path, "permissions", findings, source)
+    permissions = _as_sequence(
+        document.get("permissions"), path, "permissions", findings, source
+    )
     permission_ids: list[str] = []
     if permissions is not None:
         for index, raw in enumerate(permissions):
             location = f"permissions[{index}]"
-            entry = _check_fields(raw, PERMISSION_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, PERMISSION_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             permission_id = entry.get("permission_id")
-            if _check_string(permission_id, path, f"{location}.permission_id", findings, source):
+            if _check_string(
+                permission_id, path, f"{location}.permission_id", findings, source
+            ):
                 permission_ids.append(str(permission_id))
             _check_bool(
-                entry.get("mutation_allowed"), path, f"{location}.mutation_allowed", findings, source
+                entry.get("mutation_allowed"),
+                path,
+                f"{location}.mutation_allowed",
+                findings,
+                source,
             )
             _check_bool(
-                entry.get("evidence_required"), path, f"{location}.evidence_required", findings, source
+                entry.get("evidence_required"),
+                path,
+                f"{location}.evidence_required",
+                findings,
+                source,
             )
     _check_sorted_unique_ids(permission_ids, path, "permissions", findings, source)
     permission_set = set(permission_ids)
@@ -1651,37 +1755,76 @@ def _validate_catalog_contract(
             if _check_string(agent_id, path, f"{location}.agent_id", findings, source):
                 agent_ids.append(str(agent_id))
             _check_enum(
-                entry.get("category"), AGENT_CATEGORIES, path, f"{location}.category", findings, source
+                entry.get("category"),
+                AGENT_CATEGORIES,
+                path,
+                f"{location}.category",
+                findings,
+                source,
             )
             if not _is_registered_string(entry.get("scope"), scopes):
                 _unknown_reference(findings, path, f"{location}.scope", source)
-            _check_enum(entry.get("tier"), AGENT_TIERS, path, f"{location}.tier", findings, source)
             _check_enum(
-                entry.get("status"), AGENT_STATUSES, path, f"{location}.status", findings, source
-            )
-            _check_path(entry.get("catalog_path"), path, f"{location}.catalog_path", findings, source)
-            if not _is_registered_string(entry.get("permission_profile"), permission_set):
-                _unknown_reference(findings, path, f"{location}.permission_profile", source)
-            _check_string(entry.get("work_profile"), path, f"{location}.work_profile", findings, source)
-            function_ids = _check_string_list(
-                entry.get("function_ids"),
+                entry.get("tier"),
+                AGENT_TIERS,
                 path,
-                f"{location}.function_ids",
+                f"{location}.tier",
                 findings,
                 source,
-                allow_empty=True,
-                require_sorted=True,
-            ) or ()
+            )
+            _check_enum(
+                entry.get("status"),
+                AGENT_STATUSES,
+                path,
+                f"{location}.status",
+                findings,
+                source,
+            )
+            _check_path(
+                entry.get("catalog_path"),
+                path,
+                f"{location}.catalog_path",
+                findings,
+                source,
+            )
+            if not _is_registered_string(
+                entry.get("permission_profile"), permission_set
+            ):
+                _unknown_reference(
+                    findings, path, f"{location}.permission_profile", source
+                )
+            _check_string(
+                entry.get("work_profile"),
+                path,
+                f"{location}.work_profile",
+                findings,
+                source,
+            )
+            function_ids = (
+                _check_string_list(
+                    entry.get("function_ids"),
+                    path,
+                    f"{location}.function_ids",
+                    findings,
+                    source,
+                    allow_empty=True,
+                    require_sorted=True,
+                )
+                or ()
+            )
             if isinstance(agent_id, str):
                 agent_functions[agent_id] = set(function_ids)
-            projection_values = _check_string_list(
-                entry.get("provider_projections"),
-                path,
-                f"{location}.provider_projections",
-                findings,
-                source,
-                require_sorted=True,
-            ) or ()
+            projection_values = (
+                _check_string_list(
+                    entry.get("provider_projections"),
+                    path,
+                    f"{location}.provider_projections",
+                    findings,
+                    source,
+                    require_sorted=True,
+                )
+                or ()
+            )
             for projection in projection_values:
                 if projection not in projections:
                     _unknown_reference(
@@ -1707,53 +1850,82 @@ def _validate_catalog_contract(
         )
     agent_set = set(agent_ids)
 
-    functions = _as_sequence(document.get("functions"), path, "functions", findings, source)
+    functions = _as_sequence(
+        document.get("functions"), path, "functions", findings, source
+    )
     function_ids: list[str] = []
     function_owners: dict[str, str] = {}
     if functions is not None:
         for index, raw in enumerate(functions):
             location = f"functions[{index}]"
-            entry = _check_fields(raw, FUNCTION_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, FUNCTION_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             function_id = entry.get("function_id")
-            if _check_string(function_id, path, f"{location}.function_id", findings, source):
+            if _check_string(
+                function_id, path, f"{location}.function_id", findings, source
+            ):
                 function_ids.append(str(function_id))
             if not _is_registered_string(entry.get("scope"), scopes):
                 _unknown_reference(findings, path, f"{location}.scope", source)
             _check_enum(
-                entry.get("status"), AGENT_STATUSES, path, f"{location}.status", findings, source
+                entry.get("status"),
+                AGENT_STATUSES,
+                path,
+                f"{location}.status",
+                findings,
+                source,
             )
-            _check_path(entry.get("catalog_path"), path, f"{location}.catalog_path", findings, source)
+            _check_path(
+                entry.get("catalog_path"),
+                path,
+                f"{location}.catalog_path",
+                findings,
+                source,
+            )
             owner = entry.get("owner_agent")
             if not _is_registered_string(owner, agent_set):
                 _unknown_reference(findings, path, f"{location}.owner_agent", source)
             elif isinstance(function_id, str) and isinstance(owner, str):
                 function_owners[function_id] = owner
-            reviewers = _check_string_list(
-                entry.get("reviewer_agents"),
-                path,
-                f"{location}.reviewer_agents",
-                findings,
-                source,
-                require_sorted=True,
-            ) or ()
+            reviewers = (
+                _check_string_list(
+                    entry.get("reviewer_agents"),
+                    path,
+                    f"{location}.reviewer_agents",
+                    findings,
+                    source,
+                    require_sorted=True,
+                )
+                or ()
+            )
             for reviewer in reviewers:
                 if reviewer not in agent_set:
-                    _unknown_reference(findings, path, f"{location}.reviewer_agents", source)
+                    _unknown_reference(
+                        findings, path, f"{location}.reviewer_agents", source
+                    )
             for field in ("inputs", "outputs", "gates"):
-                _check_string_list(entry.get(field), path, f"{location}.{field}", findings, source)
-            projection_values = _check_string_list(
-                entry.get("provider_projections"),
-                path,
-                f"{location}.provider_projections",
-                findings,
-                source,
-                require_sorted=True,
-            ) or ()
+                _check_string_list(
+                    entry.get(field), path, f"{location}.{field}", findings, source
+                )
+            projection_values = (
+                _check_string_list(
+                    entry.get("provider_projections"),
+                    path,
+                    f"{location}.provider_projections",
+                    findings,
+                    source,
+                    require_sorted=True,
+                )
+                or ()
+            )
             for projection in projection_values:
                 if projection not in projections:
-                    _unknown_reference(findings, path, f"{location}.provider_projections", source)
+                    _unknown_reference(
+                        findings, path, f"{location}.provider_projections", source
+                    )
     _check_sorted_unique_ids(
         function_ids,
         path,
@@ -1776,7 +1948,9 @@ def _validate_catalog_contract(
     for agent_id, referenced_functions in agent_functions.items():
         for function_id in sorted(referenced_functions):
             if function_id not in function_set:
-                _unknown_reference(findings, path, f"agents.{agent_id}.function_ids", source)
+                _unknown_reference(
+                    findings, path, f"agents.{agent_id}.function_ids", source
+                )
             elif function_owners.get(function_id) != agent_id:
                 _add(
                     findings,
@@ -1806,11 +1980,15 @@ def _validate_catalog_contract(
     if transfers is not None:
         for index, raw in enumerate(transfers):
             location = f"role_transfers[{index}]"
-            entry = _check_fields(raw, ROLE_TRANSFER_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, ROLE_TRANSFER_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             retired = entry.get("retired_agent_id")
-            if _check_string(retired, path, f"{location}.retired_agent_id", findings, source):
+            if _check_string(
+                retired, path, f"{location}.retired_agent_id", findings, source
+            ):
                 transfer_ids.append(str(retired))
                 if retired in agent_set:
                     _add(
@@ -1822,32 +2000,49 @@ def _validate_catalog_contract(
                         "retired-id-active",
                         source,
                     )
-            _check_enum(entry.get("status"), {"retired"}, path, f"{location}.status", findings, source)
-            successors = _check_string_list(
-                entry.get("successor_agent_ids"),
+            _check_enum(
+                entry.get("status"),
+                {"retired"},
                 path,
-                f"{location}.successor_agent_ids",
+                f"{location}.status",
                 findings,
                 source,
-                require_sorted=True,
-            ) or ()
-            successor_functions = _check_string_list(
-                entry.get("successor_function_ids"),
-                path,
-                f"{location}.successor_function_ids",
-                findings,
-                source,
-                require_sorted=True,
-            ) or ()
+            )
+            successors = (
+                _check_string_list(
+                    entry.get("successor_agent_ids"),
+                    path,
+                    f"{location}.successor_agent_ids",
+                    findings,
+                    source,
+                    require_sorted=True,
+                )
+                or ()
+            )
+            successor_functions = (
+                _check_string_list(
+                    entry.get("successor_function_ids"),
+                    path,
+                    f"{location}.successor_function_ids",
+                    findings,
+                    source,
+                    require_sorted=True,
+                )
+                or ()
+            )
             for successor in successors:
                 if successor not in agent_set:
-                    _unknown_reference(findings, path, f"{location}.successor_agent_ids", source)
+                    _unknown_reference(
+                        findings, path, f"{location}.successor_agent_ids", source
+                    )
             for function_id in successor_functions:
                 if function_id not in function_set:
                     _unknown_reference(
                         findings, path, f"{location}.successor_function_ids", source
                     )
-            _check_string(entry.get("rationale"), path, f"{location}.rationale", findings, source)
+            _check_string(
+                entry.get("rationale"), path, f"{location}.rationale", findings, source
+            )
     _check_sorted_unique_ids(transfer_ids, path, "role_transfers", findings, source)
 
     intake = _as_sequence(
@@ -1857,14 +2052,26 @@ def _validate_catalog_contract(
     if intake is not None:
         for index, raw in enumerate(intake):
             location = f"capability_intake[{index}]"
-            entry = _check_fields(raw, CAPABILITY_INTAKE_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, CAPABILITY_INTAKE_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             capability_id = entry.get("capability_id")
-            if _check_string(capability_id, path, f"{location}.capability_id", findings, source):
+            if _check_string(
+                capability_id, path, f"{location}.capability_id", findings, source
+            ):
                 intake_ids.append(str(capability_id))
-            _check_string(entry.get("source"), path, f"{location}.source", findings, source)
-            _check_source_url(entry.get("source_url"), path, f"{location}.source_url", findings, source)
+            _check_string(
+                entry.get("source"), path, f"{location}.source", findings, source
+            )
+            _check_source_url(
+                entry.get("source_url"),
+                path,
+                f"{location}.source_url",
+                findings,
+                source,
+            )
             _check_enum(
                 entry.get("decision"),
                 CAPABILITY_DECISIONS,
@@ -1875,8 +2082,12 @@ def _validate_catalog_contract(
             )
             if not _is_registered_string(entry.get("owner_agent"), agent_set):
                 _unknown_reference(findings, path, f"{location}.owner_agent", source)
-            if not _is_registered_string(entry.get("evaluation_function"), function_set):
-                _unknown_reference(findings, path, f"{location}.evaluation_function", source)
+            if not _is_registered_string(
+                entry.get("evaluation_function"), function_set
+            ):
+                _unknown_reference(
+                    findings, path, f"{location}.evaluation_function", source
+                )
     _check_sorted_unique_ids(intake_ids, path, "capability_intake", findings, source)
 
     work_profile_ids = {
@@ -1889,7 +2100,9 @@ def _validate_catalog_contract(
             if isinstance(raw, Mapping) and not _is_registered_string(
                 raw.get("work_profile"), work_profile_ids
             ):
-                _unknown_reference(findings, path, f"agents[{index}].work_profile", source)
+                _unknown_reference(
+                    findings, path, f"agents[{index}].work_profile", source
+                )
 
     path_authorities = _sequence_or_empty(artifact_document.get("path_authority"))
     if path_authorities:
@@ -1983,16 +2196,22 @@ def _validate_provider_contract(
             "backdated-retrieval",
             source,
         )
-    providers = _as_sequence(document.get("providers"), path, "providers", findings, source)
+    providers = _as_sequence(
+        document.get("providers"), path, "providers", findings, source
+    )
     provider_ids: list[str] = []
     if providers is not None:
         for index, raw in enumerate(providers):
             location = f"providers[{index}]"
-            entry = _check_fields(raw, PROVIDER_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, PROVIDER_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             provider_id = entry.get("provider_id")
-            if _check_string(provider_id, path, f"{location}.provider_id", findings, source):
+            if _check_string(
+                provider_id, path, f"{location}.provider_id", findings, source
+            ):
                 provider_ids.append(str(provider_id))
             _check_enum(
                 entry.get("capability_status"),
@@ -2018,8 +2237,16 @@ def _validate_provider_contract(
                 "native_skill_pattern",
                 "canonical_skill_source_pattern",
             ):
-                _check_path(entry.get(field), path, f"{location}.{field}", findings, source)
-            _check_source_url(entry.get("source_url"), path, f"{location}.source_url", findings, source)
+                _check_path(
+                    entry.get(field), path, f"{location}.{field}", findings, source
+                )
+            _check_source_url(
+                entry.get("source_url"),
+                path,
+                f"{location}.source_url",
+                findings,
+                source,
+            )
             _check_source_url(
                 entry.get("hook_source_url"),
                 path,
@@ -2088,14 +2315,31 @@ def _validate_provider_contract(
     if compatibility is not None:
         for index, raw in enumerate(compatibility):
             location = f"compatibility_surfaces[{index}]"
-            entry = _check_fields(raw, COMPATIBILITY_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, COMPATIBILITY_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             surface_id = entry.get("surface_id")
-            if _check_string(surface_id, path, f"{location}.surface_id", findings, source):
+            if _check_string(
+                surface_id, path, f"{location}.surface_id", findings, source
+            ):
                 compatibility_ids.append(str(surface_id))
-            _check_path(entry.get("path_pattern"), path, f"{location}.path_pattern", findings, source)
-            _check_enum(entry.get("status"), {"active", "retired"}, path, f"{location}.status", findings, source)
+            _check_path(
+                entry.get("path_pattern"),
+                path,
+                f"{location}.path_pattern",
+                findings,
+                source,
+            )
+            _check_enum(
+                entry.get("status"),
+                {"active", "retired"},
+                path,
+                f"{location}.status",
+                findings,
+                source,
+            )
             _check_string_list(
                 entry.get("consumers"),
                 path,
@@ -2104,7 +2348,13 @@ def _validate_provider_contract(
                 source,
                 require_sorted=True,
             )
-            _check_source_url(entry.get("source_url"), path, f"{location}.source_url", findings, source)
+            _check_source_url(
+                entry.get("source_url"),
+                path,
+                f"{location}.source_url",
+                findings,
+                source,
+            )
     _check_sorted_unique_ids(
         compatibility_ids, path, "compatibility_surfaces", findings, source
     )
@@ -2113,25 +2363,45 @@ def _validate_provider_contract(
         document.get("work_profiles"), path, "work_profiles", findings, source
     )
     profile_ids: list[str] = []
-    profile_defaults: list[tuple[str, str, str, str]] = []
+    profile_defaults: list[
+        tuple[str, str, str, str | None, str | None, str | None]
+    ] = []
     if work_profiles is not None:
         for index, raw in enumerate(work_profiles):
             location = f"work_profiles[{index}]"
-            entry = _check_fields(raw, WORK_PROFILE_FIELDS, path, location, findings, source)
+            entry = _check_fields(
+                raw, WORK_PROFILE_FIELDS, path, location, findings, source
+            )
             if entry is None:
                 continue
             profile_id = entry.get("profile_id")
-            if _check_string(profile_id, path, f"{location}.profile_id", findings, source):
+            if _check_string(
+                profile_id, path, f"{location}.profile_id", findings, source
+            ):
                 profile_ids.append(str(profile_id))
-            _check_string(entry.get("description"), path, f"{location}.description", findings, source)
-            defaults = _as_sequence(entry.get("defaults"), path, f"{location}.defaults", findings, source)
+            _check_string(
+                entry.get("description"),
+                path,
+                f"{location}.description",
+                findings,
+                source,
+            )
+            defaults = _as_sequence(
+                entry.get("defaults"), path, f"{location}.defaults", findings, source
+            )
             default_providers: list[str] = []
             if defaults is not None:
                 for default_index, raw_default in enumerate(defaults):
                     default_location = f"{location}.defaults[{default_index}]"
+                    default_fields = (
+                        WORK_PROFILE_DEFAULT_CLAUDE_FIELDS
+                        if isinstance(raw_default, Mapping)
+                        and raw_default.get("provider") == "claude"
+                        else WORK_PROFILE_DEFAULT_REASONING_FIELDS
+                    )
                     default = _check_fields(
                         raw_default,
-                        WORK_PROFILE_DEFAULT_FIELDS,
+                        default_fields,
                         path,
                         default_location,
                         findings,
@@ -2142,13 +2412,52 @@ def _validate_provider_contract(
                     provider = default.get("provider")
                     model_id = default.get("model_id")
                     reasoning = default.get("reasoning")
-                    if _check_string(provider, path, f"{default_location}.provider", findings, source):
+                    thinking = default.get("thinking")
+                    effort = default.get("effort")
+                    if _check_string(
+                        provider, path, f"{default_location}.provider", findings, source
+                    ):
                         default_providers.append(str(provider))
-                    _check_string(model_id, path, f"{default_location}.model_id", findings, source)
-                    _check_string(reasoning, path, f"{default_location}.reasoning", findings, source)
-                    if all(isinstance(item, str) for item in (profile_id, provider, model_id, reasoning)):
+                    _check_string(
+                        model_id, path, f"{default_location}.model_id", findings, source
+                    )
+                    if provider == "claude":
+                        _check_string(
+                            thinking,
+                            path,
+                            f"{default_location}.thinking",
+                            findings,
+                            source,
+                        )
+                        if effort is not None:
+                            _check_string(
+                                effort,
+                                path,
+                                f"{default_location}.effort",
+                                findings,
+                                source,
+                            )
+                    else:
+                        _check_string(
+                            reasoning,
+                            path,
+                            f"{default_location}.reasoning",
+                            findings,
+                            source,
+                        )
+                    if all(
+                        isinstance(item, str)
+                        for item in (profile_id, provider, model_id)
+                    ):
                         profile_defaults.append(
-                            (str(profile_id), str(provider), str(model_id), str(reasoning))
+                            (
+                                str(profile_id),
+                                str(provider),
+                                str(model_id),
+                                str(reasoning) if isinstance(reasoning, str) else None,
+                                str(thinking) if isinstance(thinking, str) else None,
+                                str(effort) if isinstance(effort, str) else None,
+                            )
                         )
             _check_sorted_unique_ids(
                 default_providers, path, f"{location}.defaults", findings, source
@@ -2172,7 +2481,12 @@ def _validate_provider_contract(
     if models is not None:
         for index, raw in enumerate(models):
             location = f"models[{index}]"
-            entry = _check_fields(raw, MODEL_FIELDS, path, location, findings, source)
+            model_fields = (
+                MODEL_CLAUDE_FIELDS
+                if isinstance(raw, Mapping) and raw.get("provider") == "claude"
+                else MODEL_REASONING_FIELDS
+            )
+            entry = _check_fields(raw, model_fields, path, location, findings, source)
             if entry is None:
                 continue
             provider = entry.get("provider")
@@ -2230,7 +2544,11 @@ def _validate_provider_contract(
                 "preview": "preview",
                 "stable": "stable",
             }.get(entry.get("provider_status"))
-            if status_valid and normalized_valid and normalized_status != expected_normalized:
+            if (
+                status_valid
+                and normalized_valid
+                and normalized_status != expected_normalized
+            ):
                 _add(
                     findings,
                     "AGC-MODEL-STATUS-NORMALIZATION",
@@ -2241,12 +2559,23 @@ def _validate_provider_contract(
                     source,
                 )
             eligible = entry.get("repository_default_eligible")
-            _check_bool(eligible, path, f"{location}.repository_default_eligible", findings, source)
-            if normalized_valid and eligible is True and normalized_status not in {
-                "current",
-                "stable",
-                "unclassified-listed",
-            }:
+            _check_bool(
+                eligible,
+                path,
+                f"{location}.repository_default_eligible",
+                findings,
+                source,
+            )
+            if (
+                normalized_valid
+                and eligible is True
+                and normalized_status
+                not in {
+                    "current",
+                    "stable",
+                    "unclassified-listed",
+                }
+            ):
                 _add(
                     findings,
                     "AGC-MODEL-INELIGIBLE-STATUS",
@@ -2274,54 +2603,110 @@ def _validate_provider_contract(
                 source,
                 code="AGC-PROVIDER-INVALID-STATE",
             )
-            _check_enum(
-                entry.get("reasoning_control_kind"),
-                REASONING_CONTROL_KINDS,
-                path,
-                f"{location}.reasoning_control_kind",
-                findings,
-                source,
-            )
-            supported_controls = _check_string_list(
-                entry.get("supported_reasoning_controls"),
-                path,
-                f"{location}.supported_reasoning_controls",
-                findings,
-                source,
-                require_sorted=True,
-                allow_empty=True,
-            ) or ()
-            repository_controls = _check_string_list(
-                entry.get("repository_reasoning_controls"),
-                path,
-                f"{location}.repository_reasoning_controls",
-                findings,
-                source,
-                require_sorted=True,
-                allow_empty=True,
-            ) or ()
-            if not set(repository_controls).issubset(supported_controls):
-                _add(
-                    findings,
-                    "AGC-MODEL-REASONING-POLICY",
+            if provider == "claude":
+                _check_enum(
+                    entry.get("thinking_control_kind"),
+                    REASONING_CONTROL_KINDS,
                     path,
-                    f"{location}.repository_reasoning_controls",
-                    "subset-of-provider-supported-controls",
-                    "unsupported-repository-control",
+                    f"{location}.thinking_control_kind",
+                    findings,
                     source,
                 )
-            profiles = _check_string_list(
-                entry.get("work_profiles"),
-                path,
-                f"{location}.work_profiles",
-                findings,
-                source,
-                require_sorted=True,
-                allow_empty=True,
-            ) or ()
+                for prefix in ("thinking", "effort"):
+                    supported_controls = (
+                        _check_string_list(
+                            entry.get(f"supported_{prefix}_controls"),
+                            path,
+                            f"{location}.supported_{prefix}_controls",
+                            findings,
+                            source,
+                            require_sorted=True,
+                            allow_empty=True,
+                        )
+                        or ()
+                    )
+                    repository_controls = (
+                        _check_string_list(
+                            entry.get(f"repository_{prefix}_controls"),
+                            path,
+                            f"{location}.repository_{prefix}_controls",
+                            findings,
+                            source,
+                            require_sorted=True,
+                            allow_empty=True,
+                        )
+                        or ()
+                    )
+                    if not set(repository_controls).issubset(supported_controls):
+                        _add(
+                            findings,
+                            "AGC-MODEL-REASONING-POLICY",
+                            path,
+                            f"{location}.repository_{prefix}_controls",
+                            "subset-of-provider-supported-controls",
+                            "unsupported-repository-control",
+                            source,
+                        )
+            else:
+                _check_enum(
+                    entry.get("reasoning_control_kind"),
+                    REASONING_CONTROL_KINDS,
+                    path,
+                    f"{location}.reasoning_control_kind",
+                    findings,
+                    source,
+                )
+                supported_controls = (
+                    _check_string_list(
+                        entry.get("supported_reasoning_controls"),
+                        path,
+                        f"{location}.supported_reasoning_controls",
+                        findings,
+                        source,
+                        require_sorted=True,
+                        allow_empty=True,
+                    )
+                    or ()
+                )
+                repository_controls = (
+                    _check_string_list(
+                        entry.get("repository_reasoning_controls"),
+                        path,
+                        f"{location}.repository_reasoning_controls",
+                        findings,
+                        source,
+                        require_sorted=True,
+                        allow_empty=True,
+                    )
+                    or ()
+                )
+                if not set(repository_controls).issubset(supported_controls):
+                    _add(
+                        findings,
+                        "AGC-MODEL-REASONING-POLICY",
+                        path,
+                        f"{location}.repository_reasoning_controls",
+                        "subset-of-provider-supported-controls",
+                        "unsupported-repository-control",
+                        source,
+                    )
+            profiles = (
+                _check_string_list(
+                    entry.get("work_profiles"),
+                    path,
+                    f"{location}.work_profiles",
+                    findings,
+                    source,
+                    require_sorted=True,
+                    allow_empty=True,
+                )
+                or ()
+            )
             for profile in profiles:
                 if profile not in profile_set:
-                    _unknown_reference(findings, path, f"{location}.work_profiles", source)
+                    _unknown_reference(
+                        findings, path, f"{location}.work_profiles", source
+                    )
             _check_enum(
                 entry.get("agent_coding_fit"),
                 AGENT_CODING_FITS,
@@ -2338,7 +2723,9 @@ def _validate_provider_contract(
                 source,
                 require_sorted=True,
             )
-            _check_string(entry.get("fallback"), path, f"{location}.fallback", findings, source)
+            _check_string(
+                entry.get("fallback"), path, f"{location}.fallback", findings, source
+            )
             _check_enum(
                 entry.get("fallback_policy"),
                 FALLBACK_POLICIES,
@@ -2356,6 +2743,20 @@ def _validate_provider_contract(
                     findings,
                     source,
                 )
+                expected_approval = (
+                    f"spec:132-agent-governance-harness-convergence#"
+                    f"{model_id}-to-{entry.get('fallback')}"
+                )
+                if approval != expected_approval:
+                    _add(
+                        findings,
+                        "AGC-MODEL-FALLBACK-APPROVAL",
+                        path,
+                        f"{location}.fallback_approval",
+                        "exact-model-fallback-edge",
+                        "approval-edge-mismatch",
+                        source,
+                    )
             elif approval is not None:
                 _add(
                     findings,
@@ -2374,8 +2775,68 @@ def _validate_provider_contract(
                 findings,
                 source,
             )
-            _check_checked_at(entry.get("checked_at"), path, f"{location}.checked_at", findings, source)
-            _check_source_url(entry.get("source_url"), path, f"{location}.source_url", findings, source)
+            evidence_url = entry.get("cutoff_evidence_url")
+            evidence_observed_at = entry.get("cutoff_evidence_observed_at")
+            _check_source_url(
+                evidence_url,
+                path,
+                f"{location}.cutoff_evidence_url",
+                findings,
+                source,
+            )
+            _check_checked_at(
+                evidence_observed_at,
+                path,
+                f"{location}.cutoff_evidence_observed_at",
+                findings,
+                source,
+            )
+            _check_checked_at(
+                entry.get("checked_at"),
+                path,
+                f"{location}.checked_at",
+                findings,
+                source,
+            )
+            _check_source_url(
+                entry.get("source_url"),
+                path,
+                f"{location}.source_url",
+                findings,
+                source,
+            )
+            if entry.get("checked_at") != document.get("retrieved_at"):
+                _add(
+                    findings,
+                    "AGC-SOURCE-OBSERVATION-ORDER",
+                    path,
+                    f"{location}.checked_at",
+                    "equal-to-retrieved-at",
+                    "model-observation-time-mismatch",
+                    source,
+                )
+            if entry.get("cutoff_evidence_status") == "verified-before-cutoff":
+                try:
+                    observed = dt.datetime.fromisoformat(str(evidence_observed_at))
+                except ValueError:
+                    observed = None
+                if (
+                    observed is None
+                    or cutoff_at is None
+                    or observed.tzinfo is None
+                    or cutoff_at.tzinfo is None
+                    or observed > cutoff_at
+                    or evidence_url == entry.get("source_url")
+                ):
+                    _add(
+                        findings,
+                        "AGC-MODEL-CUTOFF-EVIDENCE",
+                        path,
+                        f"{location}.cutoff_evidence_status",
+                        "dated-official-evidence-at-or-before-cutoff",
+                        "mutable-or-post-cutoff-evidence",
+                        source,
+                    )
     if len(model_keys) != len(set(model_keys)):
         _add(
             findings,
@@ -2400,7 +2861,9 @@ def _validate_provider_contract(
         fallback_key = (key[0], str(entry.get("fallback")))
         fallback = model_entries.get(fallback_key)
         if fallback is None:
-            _unknown_reference(findings, path, f"models.{key[0]}.{key[1]}.fallback", source)
+            _unknown_reference(
+                findings, path, f"models.{key[0]}.{key[1]}.fallback", source
+            )
         elif fallback.get("repository_default_eligible") is not True:
             _add(
                 findings,
@@ -2446,11 +2909,14 @@ def _validate_provider_contract(
                     "unapproved-profile-degradation",
                     source,
                 )
-    for profile_id, provider, model_id, reasoning in profile_defaults:
+    for profile_id, provider, model_id, reasoning, thinking, effort in profile_defaults:
         model = model_entries.get((provider, model_id))
         if model is None:
             _unknown_reference(
-                findings, path, f"work_profiles.{profile_id}.defaults.{provider}.model_id", source
+                findings,
+                path,
+                f"work_profiles.{profile_id}.defaults.{provider}.model_id",
+                source,
             )
             continue
         if model.get("repository_default_eligible") is not True:
@@ -2463,17 +2929,33 @@ def _validate_provider_contract(
                 "ineligible-default-model",
                 source,
             )
-        controls = _sequence_or_empty(model.get("repository_reasoning_controls"))
-        if reasoning not in controls:
-            _add(
-                findings,
-                "AGC-MODEL-REASONING-MISMATCH",
-                path,
-                f"work_profiles.{profile_id}.defaults.{provider}.reasoning",
-                "model-supported-reasoning",
-                "unsupported-reasoning",
-                source,
-            )
+        if provider == "claude":
+            controls = _sequence_or_empty(model.get("repository_thinking_controls"))
+            efforts = _sequence_or_empty(model.get("repository_effort_controls"))
+            if thinking not in controls or (
+                effort is not None and effort not in efforts
+            ):
+                _add(
+                    findings,
+                    "AGC-MODEL-REASONING-MISMATCH",
+                    path,
+                    f"work_profiles.{profile_id}.defaults.{provider}",
+                    "model-supported-thinking-and-effort",
+                    "unsupported-thinking-or-effort",
+                    source,
+                )
+        else:
+            controls = _sequence_or_empty(model.get("repository_reasoning_controls"))
+            if reasoning not in controls:
+                _add(
+                    findings,
+                    "AGC-MODEL-REASONING-MISMATCH",
+                    path,
+                    f"work_profiles.{profile_id}.defaults.{provider}.reasoning",
+                    "model-supported-reasoning",
+                    "unsupported-reasoning",
+                    source,
+                )
         profiles = _sequence_or_empty(model.get("work_profiles"))
         if profile_id not in profiles:
             _add(
@@ -2499,7 +2981,9 @@ def _validate_provider_contract(
             event_id = entry.get("event_id")
             if _check_string(event_id, path, f"{location}.event_id", findings, source):
                 event_ids.append(str(event_id))
-            _check_bool(entry.get("required"), path, f"{location}.required", findings, source)
+            _check_bool(
+                entry.get("required"), path, f"{location}.required", findings, source
+            )
             bindings = _as_sequence(
                 entry.get("provider_bindings"),
                 path,
@@ -2522,10 +3006,14 @@ def _validate_provider_contract(
                     if binding is None:
                         continue
                     provider = binding.get("provider")
-                    if _check_string(provider, path, f"{binding_location}.provider", findings, source):
+                    if _check_string(
+                        provider, path, f"{binding_location}.provider", findings, source
+                    ):
                         binding_providers.append(str(provider))
                     if not _is_registered_string(provider, provider_set):
-                        _unknown_reference(findings, path, f"{binding_location}.provider", source)
+                        _unknown_reference(
+                            findings, path, f"{binding_location}.provider", source
+                        )
                     capability = binding.get("capability_status")
                     _check_enum(
                         capability,
@@ -2641,7 +3129,9 @@ def _validate_provider_contract(
                         findings,
                         source,
                     )
-                    expected_unit = "milliseconds" if provider == "gemini" else "seconds"
+                    expected_unit = (
+                        "milliseconds" if provider == "gemini" else "seconds"
+                    )
                     if isinstance(provider, str) and timeout_unit != expected_unit:
                         _add(
                             findings,
@@ -2668,7 +3158,11 @@ def _validate_provider_contract(
                             source,
                         )
             _check_sorted_unique_ids(
-                binding_providers, path, f"{location}.provider_bindings", findings, source
+                binding_providers,
+                path,
+                f"{location}.provider_bindings",
+                findings,
+                source,
             )
             if set(binding_providers) != provider_set:
                 _add(
@@ -2683,14 +3177,20 @@ def _validate_provider_contract(
     _check_sorted_unique_ids(event_ids, path, "semantic_events", findings, source)
 
 
-def validate_contract_bundle(root: pathlib.Path, bundle: ContractBundle) -> list[Finding]:
+def validate_contract_bundle(
+    root: pathlib.Path, bundle: ContractBundle
+) -> list[Finding]:
     """Validate contract schema, identities, references, and deterministic policy."""
 
-    del root  # Fixed contract paths are repository-relative and validated independently.
+    del (
+        root
+    )  # Fixed contract paths are repository-relative and validated independently.
     findings: list[Finding] = []
     _validate_artifact_contract(bundle.artifacts, findings)
     _validate_provider_contract(bundle.providers, findings)
-    _validate_catalog_contract(bundle.catalog, bundle.providers, bundle.artifacts, findings)
+    _validate_catalog_contract(
+        bundle.catalog, bundle.providers, bundle.artifacts, findings
+    )
     return sorted(findings, key=finding_sort_key)
 
 
@@ -2936,7 +3436,9 @@ class _RepositoryReader:
         self._enumeration_cache[pattern] = inventory
         return inventory
 
-    def paths(self, pattern: str, location: str, source: str) -> tuple[pathlib.Path, ...]:
+    def paths(
+        self, pattern: str, location: str, source: str
+    ) -> tuple[pathlib.Path, ...]:
         return self.inventory(pattern, location, source).paths
 
     def read(
@@ -3032,28 +3534,77 @@ _MARKDOWN_HEADING_ATTR = "data-agent-governance-markdown-heading"
 _MARKDOWN_LEVEL_ATTR = "data-agent-governance-markdown-level"
 _MARKDOWN_BOUNDARY_ATTR = "data-agent-governance-markdown-boundary"
 _MARKDOWN_AUTOLINK_ATTR = "data-agent-governance-markdown-autolink"
-_README_HIDDEN_HTML_TAGS = frozenset(
-    {"code", "pre", "script", "style", "template"}
-)
+_README_HIDDEN_HTML_TAGS = frozenset({"code", "pre", "script", "style", "template"})
 _SECTION_HIDDEN_ANCESTOR_TAGS = frozenset(
     {"code", "pre", "script", "style", "template"}
 )
 _SECTION_HIDDEN_DESCENDANT_TAGS = frozenset({"script", "style", "template"})
 _HTML_BLOCK_TAGS = frozenset(
     {
-        "address", "article", "aside", "blockquote", "body", "caption", "center",
-        "colgroup", "dd", "details", "dialog", "dir", "div", "dl", "dt",
-        "fieldset", "figcaption", "figure", "footer", "form", "frameset", "h1",
-        "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr",
-        "html", "iframe", "legend", "li", "main", "menu", "nav", "noframes",
-        "ol", "optgroup", "option", "p", "pre", "search", "section", "summary",
-        "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr", "ul",
+        "address",
+        "article",
+        "aside",
+        "blockquote",
+        "body",
+        "caption",
+        "center",
+        "colgroup",
+        "dd",
+        "details",
+        "dialog",
+        "dir",
+        "div",
+        "dl",
+        "dt",
+        "fieldset",
+        "figcaption",
+        "figure",
+        "footer",
+        "form",
+        "frameset",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "head",
+        "header",
+        "hgroup",
+        "hr",
+        "html",
+        "iframe",
+        "legend",
+        "li",
+        "main",
+        "menu",
+        "nav",
+        "noframes",
+        "ol",
+        "optgroup",
+        "option",
+        "p",
+        "pre",
+        "search",
+        "section",
+        "summary",
+        "table",
+        "tbody",
+        "td",
+        "tfoot",
+        "th",
+        "thead",
+        "title",
+        "tr",
+        "ul",
     }
 )
 
 
 def _markdown_parser() -> object:
-    if _MarkdownIt is None:  # guarded by load_contract_bundle; keeps helpers fail closed
+    if (
+        _MarkdownIt is None
+    ):  # guarded by load_contract_bundle; keeps helpers fail closed
         raise ContractLoadError(
             "AGC-DEPENDENCY-MISSING", "markdown-it-py", "validation-runtime"
         )
@@ -3123,9 +3674,7 @@ def _markdown_dom(text: str) -> tuple[object, str]:
         token = rendered_tokens[index]
         if token.attrGet(_MARKDOWN_HEADING_ATTR) != marker:
             return opening
-        return (
-            f'{opening}<span {_MARKDOWN_BOUNDARY_ATTR}="{marker}"></span>'
-        )
+        return f'{opening}<span {_MARKDOWN_BOUNDARY_ATTR}="{marker}"></span>'
 
     markdown.renderer.rules["heading_open"] = render_heading_open
     markup = markdown.renderer.render(tokens, markdown.options, {})
@@ -3168,7 +3717,10 @@ def _visible_dom_text(
         if id(element) in hidden_element_ids or local_name in hidden_html_tags:
             continue
         if marker is not None and (
-            (skip_markdown_headings and attributes.get(_MARKDOWN_HEADING_ATTR) == marker)
+            (
+                skip_markdown_headings
+                and attributes.get(_MARKDOWN_HEADING_ATTR) == marker
+            )
             or attributes.get(_MARKDOWN_AUTOLINK_ATTR) == marker
         ):
             continue
@@ -3267,7 +3819,9 @@ def _validate_artifact_projection(
     section: str,
     findings: list[Finding],
 ) -> None:
-    for index, entry in enumerate(_sequence_or_empty(artifact_document.get("artifacts"))):
+    for index, entry in enumerate(
+        _sequence_or_empty(artifact_document.get("artifacts"))
+    ):
         if not isinstance(entry, Mapping):
             continue
         repository_section = entry.get("repository_section")
@@ -3393,11 +3947,15 @@ def _validate_root_shims(
     artifact_document: Mapping[str, object],
     findings: list[Finding],
 ) -> None:
-    for index, entry in enumerate(_sequence_or_empty(artifact_document.get("root_shims"))):
+    for index, entry in enumerate(
+        _sequence_or_empty(artifact_document.get("root_shims"))
+    ):
         if not isinstance(entry, Mapping) or not isinstance(entry.get("path"), str):
             continue
         relative = str(entry["path"])
-        text = reader.read(relative, f"root_shims[{index}]", "agent-governance-artifacts")
+        text = reader.read(
+            relative, f"root_shims[{index}]", "agent-governance-artifacts"
+        )
         if text is None:
             continue
         targets = [entry.get("bootstrap_target"), entry.get("provider_target")]
@@ -3406,14 +3964,24 @@ def _validate_root_shims(
         metadata_keys, metadata = _frontmatter(text)
         envelope_valid = metadata == {} and not metadata_keys
         envelope_valid = envelope_valid and _section_names(text) == ("Bootstrap",)
-        envelope_valid = envelope_valid and all(text.count(target) == 1 for target in valid_targets)
+        envelope_valid = envelope_valid and all(
+            text.count(target) == 1 for target in valid_targets
+        )
         nonblank = [line for line in text.splitlines() if line.strip()]
         style = entry.get("import_style")
         if style == "at-import":
-            expected = [f"# {relative}", "## Bootstrap", *[f"@{target}" for target in valid_targets]]
+            expected = [
+                f"# {relative}",
+                "## Bootstrap",
+                *[f"@{target}" for target in valid_targets],
+            ]
             envelope_valid = envelope_valid and nonblank == expected
         elif style == "at-dot-import":
-            expected = [f"# {relative}", "## Bootstrap", *[f"@./{target}" for target in valid_targets]]
+            expected = [
+                f"# {relative}",
+                "## Bootstrap",
+                *[f"@./{target}" for target in valid_targets],
+            ]
             envelope_valid = envelope_valid and nonblank == expected
         elif style == "numbered-load":
             envelope_valid = envelope_valid and len(valid_targets) == 4
@@ -3443,8 +4011,12 @@ def _validate_readme_profiles(
     artifact_document: Mapping[str, object],
     findings: list[Finding],
 ) -> None:
-    for index, entry in enumerate(_sequence_or_empty(artifact_document.get("readme_profiles"))):
-        if not isinstance(entry, Mapping) or not isinstance(entry.get("path_pattern"), str):
+    for index, entry in enumerate(
+        _sequence_or_empty(artifact_document.get("readme_profiles"))
+    ):
+        if not isinstance(entry, Mapping) or not isinstance(
+            entry.get("path_pattern"), str
+        ):
             continue
         pattern = str(entry["path_pattern"])
         inventory = reader.inventory(
@@ -3642,6 +4214,8 @@ def _validate_provider_native_surfaces(
             provider = entry.get("provider")
             model_id = entry.get("model_id")
             reasoning = entry.get("reasoning")
+            if reasoning is None:
+                reasoning = entry.get("effort") or entry.get("thinking")
             if all(isinstance(item, str) for item in (provider, model_id, reasoning)):
                 defaults[(profile_id, str(provider))] = (
                     str(model_id),
@@ -3683,7 +4257,10 @@ def _validate_provider_native_surfaces(
         profile = agent.get("work_profile")
         permission = agent.get("permission_profile")
         catalog_path = agent.get("catalog_path")
-        if not all(isinstance(item, str) for item in (agent_id, profile, permission, catalog_path)):
+        if not all(
+            isinstance(item, str)
+            for item in (agent_id, profile, permission, catalog_path)
+        ):
             continue
         source_marker = f"source: {catalog_path}"
         for provider, relative in (
@@ -3713,10 +4290,15 @@ def _validate_provider_native_surfaces(
                 expected = defaults.get((str(profile), provider))
                 if expected is None or metadata.get("model") != expected[0]:
                     _provider_native_schema_finding(
-                        findings, relative, "frontmatter.model", "profile-model-mismatch"
+                        findings,
+                        relative,
+                        "frontmatter.model",
+                        "profile-model-mismatch",
                     )
             tools = metadata.get("tools")
-            if provider in {"claude", "gemini"} and not isinstance(tools, (list, tuple)):
+            if provider in {"claude", "gemini"} and not isinstance(
+                tools, (list, tuple)
+            ):
                 _provider_native_schema_finding(
                     findings, relative, "frontmatter.tools", "non-list-tools"
                 )
@@ -3725,7 +4307,10 @@ def _validate_provider_native_surfaces(
                     tool in _sequence_or_empty(tools) for tool in ("Edit", "Write")
                 ):
                     _provider_native_schema_finding(
-                        findings, relative, "frontmatter.permissions", "write-capable-read-only-role"
+                        findings,
+                        relative,
+                        "frontmatter.permissions",
+                        "write-capable-read-only-role",
                     )
             if permission == "read-only" and provider == "gemini":
                 if any(
@@ -3733,7 +4318,10 @@ def _validate_provider_native_surfaces(
                     for tool in ("*", "replace", "write_file")
                 ):
                     _provider_native_schema_finding(
-                        findings, relative, "frontmatter.tools", "write-capable-read-only-role"
+                        findings,
+                        relative,
+                        "frontmatter.tools",
+                        "write-capable-read-only-role",
                     )
 
         codex_path = f".codex/agents/{agent_id}.toml"
@@ -3782,7 +4370,10 @@ def _validate_provider_native_surfaces(
     codex_skills = reader.root / ".codex/skills"
     if codex_skills.exists() or codex_skills.is_symlink():
         _provider_native_schema_finding(
-            findings, ".codex/skills", "native_skill_pattern", "forbidden-codex-skill-root"
+            findings,
+            ".codex/skills",
+            "native_skill_pattern",
+            "forbidden-codex-skill-root",
         )
 
     provider_entries = {
@@ -3795,7 +4386,9 @@ def _validate_provider_native_surfaces(
         if not isinstance(event, Mapping) or not isinstance(event.get("event_id"), str):
             continue
         for binding in _sequence_or_empty(event.get("provider_bindings")):
-            if isinstance(binding, Mapping) and isinstance(binding.get("provider"), str):
+            if isinstance(binding, Mapping) and isinstance(
+                binding.get("provider"), str
+            ):
                 event_bindings.setdefault(str(binding["provider"]), {})[
                     str(event["event_id"])
                 ] = binding
@@ -3813,6 +4406,24 @@ def _validate_provider_native_surfaces(
                 findings, config_path, "json", "malformed-provider-config"
             )
             continue
+        top_level_schemas = {
+            "claude": {
+                "autoMode",
+                "deniedMcpServers",
+                "hooks",
+                "outputStyle",
+                "permissions",
+            },
+            "codex": {"hooks"},
+            "gemini": {"hooks", "security"},
+        }
+        if (
+            not isinstance(config, Mapping)
+            or set(config) != top_level_schemas[provider]
+        ):
+            _provider_native_schema_finding(
+                findings, config_path, "json", "invalid-top-level-keys"
+            )
         hooks = config.get("hooks") if isinstance(config, Mapping) else None
         if not isinstance(hooks, Mapping):
             _provider_native_schema_finding(
@@ -3834,37 +4445,146 @@ def _validate_provider_native_surfaces(
             if not isinstance(native, str) or native not in hooks:
                 continue
             groups = hooks.get(native)
-            try:
-                group = groups[0]
-                handler = group["hooks"][0]
-            except (IndexError, KeyError, TypeError):
+            if (
+                not isinstance(groups, Sequence)
+                or isinstance(groups, str | bytes)
+                or len(groups) != 1
+                or not isinstance(groups[0], Mapping)
+            ):
                 _provider_native_schema_finding(
                     findings, config_path, f"hooks.{native}", "invalid-hook-shape"
                 )
                 continue
+            group = groups[0]
+            handlers = group.get("hooks")
+            if (
+                not isinstance(handlers, Sequence)
+                or isinstance(handlers, str | bytes)
+                or len(handlers) != 1
+                or not isinstance(handlers[0], Mapping)
+            ):
+                _provider_native_schema_finding(
+                    findings, config_path, f"hooks.{native}", "invalid-hook-shape"
+                )
+                continue
+            handler = handlers[0]
+            matcher_expected = not (
+                (provider == "codex" and semantic_id in {"stop", "user-prompt-intake"})
+                or (
+                    provider == "gemini"
+                    and semantic_id not in {"pre-tool", "post-tool"}
+                )
+            )
+            expected_group_keys = (
+                {"hooks", "matcher"} if matcher_expected else {"hooks"}
+            )
+            if set(group) != expected_group_keys:
+                _provider_native_schema_finding(
+                    findings, config_path, f"hooks.{native}", "invalid-hook-group-keys"
+                )
+            matchers = {
+                (
+                    "claude",
+                    "pre-tool",
+                ): "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch",
+                ("claude", "post-tool"): "Write|Edit|MultiEdit|apply_patch|ApplyPatch",
+                (
+                    "codex",
+                    "pre-tool",
+                ): "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch",
+                ("codex", "post-tool"): "Edit|Write|MultiEdit|apply_patch|ApplyPatch",
+                (
+                    "gemini",
+                    "pre-tool",
+                ): "read_file|read_many_files|search_file_content|glob|list_directory|write_file|replace|run_shell_command",
+                ("gemini", "post-tool"): "write_file|replace|run_shell_command",
+            }
+            if matcher_expected and group.get("matcher") != matchers.get(
+                (provider, semantic_id), "*"
+            ):
+                _provider_native_schema_finding(
+                    findings, config_path, f"hooks.{native}.matcher", "matcher-mismatch"
+                )
+            if (
+                set(handler) != {"type", "command", "timeout"}
+                or handler.get("type") != "command"
+            ):
+                _provider_native_schema_finding(
+                    findings,
+                    config_path,
+                    f"hooks.{native}",
+                    "invalid-handler-keys-or-type",
+                )
             if handler.get("timeout") != binding.get("timeout_value"):
                 _provider_native_schema_finding(
-                    findings, config_path, f"hooks.{native}.timeout", "timeout-unit-or-value-mismatch"
+                    findings,
+                    config_path,
+                    f"hooks.{native}.timeout",
+                    "timeout-unit-or-value-mismatch",
                 )
-            if provider == "codex" and semantic_id in {"stop", "user-prompt-intake"}:
-                if "matcher" in group:
-                    _provider_native_schema_finding(
-                        findings, config_path, f"hooks.{native}.matcher", "ignored-matcher-present"
-                    )
-            if provider == "gemini" and semantic_id == "pre-compaction":
-                if "async" in handler:
-                    _provider_native_schema_finding(
-                        findings, config_path, f"hooks.{native}.async", "unsupported-async-config-key"
-                    )
-            if provider == "gemini":
-                if set(handler) != {"type", "command", "timeout"}:
-                    _provider_native_schema_finding(
-                        findings, config_path, f"hooks.{native}", "invalid-gemini-handler-keys"
-                    )
-                if semantic_id not in {"pre-tool", "post-tool"} and "matcher" in group:
-                    _provider_native_schema_finding(
-                        findings, config_path, f"hooks.{native}.matcher", "non-tool-matcher-present"
-                    )
+            claude_files = {
+                "session-start": "session-start.sh",
+                "pre-tool": "docker-compose-pre.sh",
+                "post-tool": "post-tool-validate.sh",
+                "session-end": "session-end.sh",
+                "stop": "stop.sh",
+                "pre-compaction": "pre-compact.sh",
+                "user-prompt-intake": "user-prompt-submit.sh",
+            }
+            expected_command = {
+                "claude": f'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/{claude_files.get(semantic_id, "")}"',
+                "codex": (
+                    "HY_HOME_HOOK_PROVIDER=codex bash "
+                    '"${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}'
+                    f'/scripts/hooks/agent-event-hook.sh" {native}'
+                ),
+                "gemini": (
+                    'bash "${GEMINI_PROJECT_DIR:-$(git rev-parse --show-toplevel)}'
+                    f'/.gemini/hooks/agent-event-hook.sh" {native}'
+                ),
+            }[provider]
+            if handler.get("command") != expected_command:
+                _provider_native_schema_finding(
+                    findings, config_path, f"hooks.{native}.command", "command-mismatch"
+                )
+
+
+def _validate_exact_provider_projection(
+    root: pathlib.Path, findings: list[Finding]
+) -> None:
+    renderer_path = (
+        pathlib.Path(__file__).resolve().parents[1]
+        / "operations/provider_surface_renderer.py"
+    )
+    module_name = f"_agent_governance_provider_renderer_{secrets.token_hex(8)}"
+    spec = importlib.util.spec_from_file_location(module_name, renderer_path)
+    if spec is None or spec.loader is None:
+        _provider_native_schema_finding(
+            findings, renderer_path.as_posix(), "renderer", "renderer-unavailable"
+        )
+        return
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    try:
+        spec.loader.exec_module(module)
+        drift = module.find_native_projection_drift(root)
+    except (ContractLoadError, OSError, ValueError):
+        _provider_native_schema_finding(
+            findings, ".", "renderer", "renderer-validation-error"
+        )
+        return
+    finally:
+        sys.modules.pop(module_name, None)
+    for entry in drift:
+        _add(
+            findings,
+            "AGC-PROVIDER-PROJECTION-DRIFT",
+            entry.path.as_posix(),
+            "renderer",
+            "exact-generated-projection",
+            str(entry.kind),
+            "provider-models",
+        )
 
 
 def validate_repository(
@@ -3901,7 +4621,9 @@ def validate_repository(
                     continue
                 catalog_path = entry.get("catalog_path")
                 location = f"{collection_name}[{index}].catalog_path"
-                if isinstance(catalog_path, str) and not _is_safe_repo_path(catalog_path):
+                if isinstance(catalog_path, str) and not _is_safe_repo_path(
+                    catalog_path
+                ):
                     _add(
                         findings,
                         "AGC-REPOSITORY-UNSAFE-PATH",
@@ -3950,6 +4672,7 @@ def validate_repository(
                     "provider-models",
                 )
         _validate_provider_native_surfaces(reader, bundle, findings)
+        _validate_exact_provider_projection(root, findings)
     if section in {"all", "harness"}:
         _validate_root_shims(reader, bundle.artifacts, findings)
         _validate_readme_profiles(reader, bundle.artifacts, findings)

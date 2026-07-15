@@ -26,16 +26,19 @@ fallbacks, source URLs, and the historical cutoff are owned by
 
 | Work profile | Claude | GPT / Codex | Gemini |
 | --- | --- | --- | --- |
-| Supervision, architecture, final synthesis | `claude-opus-4-8` (`high`) | `gpt-5.6` (`xhigh`) | `gemini-3.5-flash` (`high`) |
-| Complex implementation, security, precision review | `claude-sonnet-5` (adaptive) | `gpt-5.6` (`high`) | `gemini-3.5-flash` (`high`) |
-| Exploration, large reads, repetitive organization | `claude-haiku-4-5-20251001` (extended thinking) | `gpt-5.6-terra` (`low`) | `gemini-3.1-flash-lite` (`minimal`) |
+| Supervision, architecture, final synthesis | `claude-opus-4-8` (adaptive thinking; `high` effort) | `gpt-5.6` (`xhigh`) | `gemini-3.5-flash` (`high`) |
+| Complex implementation, security, precision review | `claude-sonnet-5` (adaptive thinking; `high` effort) | `gpt-5.6` (`high`) | `gemini-3.5-flash` (`high`) |
+| Exploration, large reads, repetitive organization | `claude-haiku-4-5-20251001` (extended thinking; no effort control) | `gpt-5.6-terra` (`low`) | `gemini-3.1-flash-lite` (`minimal`) |
 
 - `workflow-supervisor` is the only supervisor-tier role. Other agents select
   the profile declared in `contracts/agent-catalog.yaml`.
-- Generated Claude agents do not emit a per-agent thinking field. Fable and
-  Mythos have always-on adaptive thinking, Sonnet 5 uses adaptive thinking,
-  Haiku 4.5 documents extended thinking, and Opus 4.8 exposes `high` effort;
-  these provider-specific semantics are not flattened into a common scale.
+- Generated Claude agents do not emit per-agent `thinking` or `effort`
+  frontmatter. Stage 00 records thinking mode and effort as separate controls:
+  Fable/Mythos use always-on adaptive thinking, Opus 4.8 uses opt-in adaptive
+  thinking, Sonnet 5 defaults to adaptive thinking and permits disabling it,
+  and Haiku 4.5 uses extended thinking. Supported effort values for Fable,
+  Mythos, Opus 4.8, and Sonnet 5 are `low`, `medium`, `high`, `xhigh`, and
+  `max`; the selected value is applied only by an approved runtime invocation.
 - Codex TOML adapters include `model_reasoning_effort`. The repository pins
   only controls allowed by the selected model record.
 - Gemini adapters select a model but do not invent a per-agent sandbox or
@@ -46,8 +49,10 @@ fallbacks, source URLs, and the historical cutoff are owned by
   the 2026-07-10 10:00 KST cutoff from the later retrieval, and leaves local
   entitlement/runtime acceptance at `needs_revalidation`.
 - Fable, Spark, Mythos, deprecated entries, and Gemini Pro preview are
-  catalog-only. A fallback must cover every source work profile or carry the
-  approved degraded-fallback record.
+  catalog-only. Mutable catalogs retrieved after the cutoff are explicitly
+  `historical-state-unverified`. A degraded fallback must carry an exact
+  `source-model-to-fallback-model` approval edge; Sonnet 5 complex work may
+  escalate to Opus 4.8 only through that recorded edge.
 
 ### Model and Provider Adapter Change Protocol
 
