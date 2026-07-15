@@ -928,6 +928,35 @@ def _is_supported_enumerated_pattern(value: str) -> bool:
     return True
 
 
+def read_repository_text(root: pathlib.Path, relative_path: str) -> str:
+    """Read one UTF-8 repository file through the shared confined boundary."""
+
+    if not _is_safe_repo_path(relative_path):
+        raise ContractLoadError(
+            "AGC-REPOSITORY-UNSAFE-PATH", "repository-artifact", "path"
+        )
+    try:
+        return _read_root_confined_regular_text(
+            root, pathlib.PurePosixPath(relative_path)
+        )
+    except FileNotFoundError as error:
+        raise ContractLoadError(
+            "AGC-REPOSITORY-FILE-MISSING", "repository-artifact", "file"
+        ) from error
+    except _UnsafeRootFileError as error:
+        raise ContractLoadError(
+            "AGC-REPOSITORY-UNSAFE-FILE", "repository-artifact", "file"
+        ) from error
+    except UnicodeError as error:
+        raise ContractLoadError(
+            "AGC-REPOSITORY-FILE-ENCODING", "repository-artifact", "file"
+        ) from error
+    except OSError as error:
+        raise ContractLoadError(
+            "AGC-REPOSITORY-FILE-READ", "repository-artifact", "file"
+        ) from error
+
+
 def _check_enumerated_pattern(
     value: object,
     path: str,
@@ -2537,7 +2566,16 @@ class _RepositoryReader:
     def paths(self, pattern: str, location: str, source: str) -> tuple[pathlib.Path, ...]:
         return self.inventory(pattern, location, source).paths
 
-    def read(self, relative: str, location: str, source: str) -> str | None:
+    def read(
+        self,
+        relative: str,
+        location: str,
+        source: str,
+        *,
+        missing_code: str = "AGC-REPOSITORY-FILE-READ",
+        missing_expected: str = "readable-governed-file",
+        missing_actual: str = "governed-file-read-failed",
+    ) -> str | None:
         if relative in self._cache:
             return self._cache[relative]
         self._cache[relative] = None
@@ -2545,6 +2583,17 @@ class _RepositoryReader:
             text = _read_root_confined_regular_text(
                 self.root, pathlib.PurePosixPath(relative)
             )
+        except FileNotFoundError:
+            _add(
+                self.findings,
+                missing_code,
+                relative,
+                location,
+                missing_expected,
+                missing_actual,
+                source,
+            )
+            return None
         except _UnsafeRootFileError:
             _add(
                 self.findings,
@@ -3235,15 +3284,14 @@ def validate_repository(
                         "agent-catalog",
                     )
                     continue
-                if isinstance(catalog_path, str) and not (root / catalog_path).is_file():
-                    _add(
-                        findings,
-                        "AGC-REPOSITORY-MISSING-CATALOG-PATH",
+                if isinstance(catalog_path, str):
+                    reader.read(
                         catalog_path,
                         location,
-                        "tracked-catalog-file",
-                        "missing-catalog-file",
                         "agent-catalog",
+                        missing_code="AGC-REPOSITORY-MISSING-CATALOG-PATH",
+                        missing_expected="tracked-catalog-file",
+                        missing_actual="missing-catalog-file",
                     )
     if section in {"all", "providers"}:
         providers = _sequence_or_empty(bundle.providers.get("providers"))

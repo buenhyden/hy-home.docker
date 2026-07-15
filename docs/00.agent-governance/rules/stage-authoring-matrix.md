@@ -78,7 +78,8 @@ The following `.claude/skills/` skills are recommended for each stage. Load a sk
 | `knowledge-map-agent`          | 00 governance, 90 references      | Maps codebase knowledge and reference relationships                   |
 | `policy-gate-agent`            | All stages                        | Validates stage artifacts against governance policy before completion |
 
-Skills are available in `.claude/skills/<skill>/skill.md`. Load using the `Skill` tool in Claude Code.
+Claude skill projections are available in `.claude/skills/<skill>/SKILL.md`.
+Shared Codex and Gemini discovery uses `.agents/skills/<skill>/SKILL.md`.
 
 ## 5. Usage Rules
 

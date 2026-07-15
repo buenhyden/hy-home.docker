@@ -1,57 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: e2e-testing
+scope: qa
+status: active
 ---
 
 # e2e-testing
 
-## Overview
+## Preconditions
 
-End-to-end testing function for the `hy-home.docker` workspace. Validates the composed stack
-at runtime through health checks and smoke tests across service boundaries.
+Acceptance criteria, runnable boundary, deterministic fixture strategy, and runtime authority must be approved.
 
-## Purpose
+## Inputs
 
-Confirm that composed services start, become healthy, and satisfy cross-service smoke paths
-before a change is considered done.
+- Acceptance criteria and runnable system boundary.
+- Test data, environment assumptions, health endpoints, and cleanup requirements.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Convert each user-visible acceptance criterion into an observable scenario with controlled setup and teardown.
+2. Execute through public interfaces, capture only sanitized evidence, and distinguish product failures from environment failures.
+3. Re-run the failing scenario to prove reproducibility, then run the focused suite after correction.
 
-- Compose stack bring-up validation (config, dependency order, health)
-- Service health-endpoint and smoke-path checks
-- Read-only runtime inspection (`docker compose ps`, `docker inspect`, logs)
+## Outputs
 
-**Excludes:**
+- End-to-end evidence with scenario, expected/actual result, and reproduction details.
 
-- Unit/integration tooling checks (see `test-automator`)
-- Destructive or stateful test operations
+## Gates
 
-## Structure
+- Fixtures and timing are deterministic enough for repeat execution.
+- Every reported defect includes a reproducible failure path.
 
-- Compose config validate → bring-up → health wait → smoke checks → evidence capture
+## Failure Handling
 
-## Agents
-
-- **qa-engineer** — primary caller
-
-## Skills
-
-- Runtime mirror: `.claude/skills/e2e-testing/skill.md`
-
-## Usage
-
-- Trigger when validating end-to-end runtime behavior of the stack.
-- **Inputs:** target compose project, smoke-path list
-- **Outputs:** e2e evidence in `_workspace/repo-support/` and task docs
-
-## Artifacts
-
-- `_workspace/repo-support/e2e_<date>.md`
+Quarantine no test silently; isolate flaky environment dependencies and escalate with the smallest reproducible scenario.
 
 ## Related Documents
 
-- `../../scopes/common.md`
-- `../../scopes/qa.md`
-- `../functions/test-automator.md`
-- `../README.md`
+- [QA engineer](../agents/qa-engineer.md)
+- [Test automation](./test-automator.md)
+- [QA scope](../../scopes/qa.md)

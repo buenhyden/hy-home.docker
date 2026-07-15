@@ -598,7 +598,7 @@ import sys
 
 required = {
     "guides": ["## Usage", "## Common Checks", "## Runbook Handoff"],
-    "policies": ["## Policy Scope", "## Controls", "## Verification", "## Review Cadence"],
+    "policies": ["## Controls", "## Verification", "## Review Cadence"],
     "runbooks": ["When to Use", "Procedure", "Evidence", "Escalation"],
 }
 forbidden = {
@@ -644,10 +644,22 @@ for bucket in ["guides", "policies", "runbooks"]:
                     f"{path}: guide document must not contain duplicate ### Usage Type headings; found {usage_type_count}"
                 )
         if bucket == "policies":
-            policy_scope_count = sum(1 for line in text.splitlines() if line.strip() == "## Policy Scope")
-            if policy_scope_count != 1:
+            frontmatter = text.split("---", 2)[1] if text.startswith("---") else ""
+            typed_policy = bool(
+                re.search(r"(?m)^artifact_type:\s*policy\s*$", frontmatter)
+            )
+            scope_heading = "## Scope" if typed_policy else "## Policy Scope"
+            stale_scope_heading = "## Policy Scope" if typed_policy else "## Scope"
+            scope_count = sum(
+                1 for line in text.splitlines() if line.strip() == scope_heading
+            )
+            if scope_count != 1:
                 failures.append(
-                    f"{path}: policy document must contain exactly one ## Policy Scope heading; found {policy_scope_count}"
+                    f"{path}: policy document must contain exactly one {scope_heading} heading; found {scope_count}"
+                )
+            if stale_scope_heading in text.splitlines():
+                failures.append(
+                    f"{path}: policy document contains cross-generation scope heading: {stale_scope_heading}"
                 )
         for literal in required[bucket]:
             if literal not in text:
@@ -729,11 +741,11 @@ literal_requirements = {
     pathlib.Path("docs/00.agent-governance/rules/documentation-protocol.md"): [
         "docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md",
     ],
-    pathlib.Path(".claude/skills/ops-runbook-agent/skill.md"): [
+    pathlib.Path(".claude/skills/ops-runbook-agent/SKILL.md"): [
         "incidents/YYYY/INC-###-<incident-title>/",
         "Filename: `postmortem.md`",
     ],
-    pathlib.Path(".claude/skills/incident-response/skill.md"): [
+    pathlib.Path(".claude/skills/incident-response/SKILL.md"): [
         "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md",
     ],
 }
@@ -749,8 +761,8 @@ for path, literals in literal_requirements.items():
 for path in [
     pathlib.Path("docs/99.templates/templates/operations/incident.template.md"),
     pathlib.Path("docs/99.templates/templates/operations/postmortem.template.md"),
-    pathlib.Path(".claude/skills/ops-runbook-agent/skill.md"),
-    pathlib.Path(".claude/skills/incident-response/skill.md"),
+    pathlib.Path(".claude/skills/ops-runbook-agent/SKILL.md"),
+    pathlib.Path(".claude/skills/incident-response/SKILL.md"),
 ]:
     if not path.is_file():
         continue
@@ -871,7 +883,6 @@ section "GitHub workflow security contracts"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
-import json
 import pathlib
 import re
 import sys
@@ -1640,7 +1651,13 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Runtime agent/function catalog"
+section "Typed agent/function catalog"
+if ! python3 scripts/validation/check-agent-governance-contract.py \
+  --mode repository --section catalog; then
+  failures=$((failures + 1))
+fi
+
+section "Provider agent adapter and harness compatibility"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
@@ -1673,17 +1690,10 @@ def canonical_agent_scope(path: pathlib.Path) -> str | None:
     )
     if match:
         return match.group(1)
-    return frontmatter_value(text, "layer")
+    return frontmatter_value(text, "scope")
 
 runtime_agents = sorted(p.stem for p in pathlib.Path(".claude/agents").glob("*.md"))
 governance_agents = sorted(p.stem for p in pathlib.Path("docs/00.agent-governance/agents/agents").glob("*.md"))
-if runtime_agents != governance_agents:
-    failures.append(f"runtime agent catalog mismatch: .claude={runtime_agents} governance={governance_agents}")
-
-runtime_functions = sorted(p.parent.name for p in pathlib.Path(".claude/skills").glob("*/skill.md"))
-governance_functions = sorted(p.stem for p in pathlib.Path("docs/00.agent-governance/agents/functions").glob("*.md"))
-if runtime_functions != governance_functions:
-    failures.append(f"runtime function catalog mismatch: .claude={runtime_functions} governance={governance_functions}")
 
 protocol = pathlib.Path("docs/00.agent-governance/subagent-protocol.md").read_text()
 canonical_scopes: dict[str, str] = {}
@@ -1699,16 +1709,12 @@ for agent in runtime_agents:
     agent_path = pathlib.Path(f".claude/agents/{agent}.md")
     text = read(agent_path)
     protocol_path = f".claude/agents/{agent}.md"
-    model = frontmatter_value(text, "model")
     layer = frontmatter_value(text, "layer")
     canonical_scope = canonical_scopes.get(agent)
-    expected_model = "opus" if agent == "workflow-supervisor" else "sonnet"
     expected_scope = f"@import docs/00.agent-governance/scopes/{canonical_scope}.md" if canonical_scope else None
 
     if protocol_path not in protocol:
         failures.append(f"subagent protocol missing runtime agent: {protocol_path}")
-    if model != expected_model:
-        failures.append(f"{agent_path}: expected model {expected_model!r}, found {model!r}")
     if not canonical_scope:
         failures.append(f"{agent_path}: missing canonical Stage 00 scope")
     elif layer != canonical_scope:
@@ -1721,28 +1727,13 @@ for agent in runtime_agents:
         failures.append(f"subagent protocol missing semantic scope for {agent}: scopes/{canonical_scope}.md")
 
 # --- Cross-provider parity (Stage 00 Canonical Adapter Model: providers/agents-md.md section 5) ---
-codex_agents = sorted(p.stem for p in pathlib.Path(".codex/agents").glob("*.toml"))
-codex_functions = sorted(p.parent.name for p in pathlib.Path(".codex/skills").glob("*/skill.md"))
 gemini_agents = sorted(p.stem for p in pathlib.Path(".agents/agents").glob("*.md"))
-gemini_functions = sorted(p.parent.name for p in pathlib.Path(".agents/skills").glob("*/skill.md"))
 
-# 1. Name-set parity across all three runtimes and governance.
-if codex_agents != governance_agents:
-    failures.append(f"codex agent catalog mismatch: .codex={codex_agents} governance={governance_agents}")
-if codex_functions != governance_functions:
-    failures.append(f"codex function catalog mismatch: .codex={codex_functions} governance={governance_functions}")
-if gemini_agents != governance_agents:
-    failures.append(f"gemini agent catalog mismatch: .agents={gemini_agents} governance={governance_agents}")
-if gemini_functions != governance_functions:
-    failures.append(f"gemini function catalog mismatch: .agents={gemini_functions} governance={governance_functions}")
-
-# 2. Codex agent TOML adapter policy and skill adapter parity.
+# Codex adapter shape and scope semantics.
 for agent in runtime_agents:
     path = pathlib.Path(f".codex/agents/{agent}.toml")
     text = read(path)
     canonical_scope = canonical_scopes.get(agent)
-    expected_model = "gpt-5.5" if agent == "workflow-supervisor" else "gpt-5.4-mini"
-    expected_effort = "xhigh" if agent == "workflow-supervisor" else "medium"
     expected_catalog = f"docs/00.agent-governance/agents/agents/{agent}.md"
     expected_scope_path = f"docs/00.agent-governance/scopes/{canonical_scope}.md" if canonical_scope else None
 
@@ -1750,10 +1741,6 @@ for agent in runtime_agents:
         failures.append(f"{path}: expected name {agent!r}, found {toml_value(text, 'name')!r}")
     if canonical_scope and toml_value(text, "layer") != canonical_scope:
         failures.append(f"{path}: expected semantic layer {canonical_scope!r}, found {toml_value(text, 'layer')!r}")
-    if toml_value(text, "model") != expected_model:
-        failures.append(f"{path}: expected model {expected_model!r}, found {toml_value(text, 'model')!r}")
-    if toml_value(text, "model_reasoning_effort") != expected_effort:
-        failures.append(f"{path}: expected model_reasoning_effort {expected_effort!r}, found {toml_value(text, 'model_reasoning_effort')!r}")
     if toml_value(text, "source_catalog") != expected_catalog:
         failures.append(f"{path}: expected source_catalog {expected_catalog!r}")
     if expected_scope_path and toml_value(text, "scope") != expected_scope_path:
@@ -1766,11 +1753,7 @@ if codex_markdown_agents:
         + ", ".join(str(path) for path in codex_markdown_agents)
     )
 
-for fn in runtime_functions:
-    if read(pathlib.Path(f".claude/skills/{fn}/skill.md")) != read(pathlib.Path(f".codex/skills/{fn}/skill.md")):
-        failures.append(f".codex/skills/{fn}/skill.md: content drift from .claude/skills/{fn}/skill.md adapter")
-
-# 3. Gemini pointer parity + model policy (reference index, never a full copy).
+# Gemini pointer and scope semantics (reference index, never a full copy).
 for agent in gemini_agents:
     path = pathlib.Path(f".agents/agents/{agent}.md")
     text = read(path)
@@ -1780,25 +1763,11 @@ for agent in gemini_agents:
         failures.append(f"{path}: missing Gemini reference-index marker")
     if len(text.splitlines()) > 15:
         failures.append(f"{path}: too long ({len(text.splitlines())} lines); Gemini surface must be a pointer, not a full copy")
-    model = frontmatter_value(text, "model")
     layer = frontmatter_value(text, "layer")
-    expected = "gemini-3.1-pro" if agent == "workflow-supervisor" else "gemini-3.5-flash"
-    if model != expected:
-        failures.append(f"{path}: expected model {expected!r}, found {model!r}")
     canonical_scope = canonical_scopes.get(agent)
     if canonical_scope and layer != canonical_scope:
         failures.append(f"{path}: expected semantic layer {canonical_scope!r}, found {layer!r}")
-for fn in gemini_functions:
-    path = pathlib.Path(f".agents/skills/{fn}/skill.md")
-    text = read(path)
-    if f"@docs/00.agent-governance/agents/functions/{fn}.md" not in text:
-        failures.append(f"{path}: missing reference-index pointer to governance function")
-    if "Gemini reference index" not in text:
-        failures.append(f"{path}: missing Gemini reference-index marker")
-    if len(text.splitlines()) > 15:
-        failures.append(f"{path}: too long ({len(text.splitlines())} lines); Gemini surface must be a pointer, not a full copy")
-
-# 4. Provider metadata and controlled-wrapper semantics.
+# Provider metadata and controlled-wrapper semantics.
 metadata_command = "python3 scripts/validation/check-document-metadata.py --mode check-changed"
 wrapper_path = "scripts/validation/run-agent-precommit-all-files.sh"
 lifecycle = "discovery -> applicability -> provider loading -> canonical artifact -> validation evidence"
@@ -1841,35 +1810,6 @@ provider_contracts = {
     pathlib.Path(".claude/CLAUDE.md"): [
         metadata_command,
         wrapper_path,
-    ],
-    pathlib.Path(".claude/skills/style-validation/skill.md"): [metadata_command, wrapper_path],
-    pathlib.Path(".claude/skills/test-automator/skill.md"): [metadata_command, wrapper_path],
-    pathlib.Path(".claude/skills/ci-cd-patterns/skill.md"): [
-        metadata_command,
-        "Check changed and new document metadata",
-        "TEMPLATE_GATE_BASE",
-    ],
-    pathlib.Path(".codex/skills/style-validation/skill.md"): [metadata_command, wrapper_path],
-    pathlib.Path(".codex/skills/test-automator/skill.md"): [metadata_command, wrapper_path],
-    pathlib.Path(".codex/skills/ci-cd-patterns/skill.md"): [
-        metadata_command,
-        "Check changed and new document metadata",
-        "TEMPLATE_GATE_BASE",
-    ],
-    pathlib.Path(".agents/skills/style-validation/skill.md"): [
-        metadata_command,
-        wrapper_path,
-        "Behavioral reminder",
-    ],
-    pathlib.Path(".agents/skills/test-automator/skill.md"): [
-        metadata_command,
-        wrapper_path,
-        "Behavioral reminder",
-    ],
-    pathlib.Path(".agents/skills/ci-cd-patterns/skill.md"): [
-        "Check changed and new document metadata",
-        "TEMPLATE_GATE_BASE",
-        "Behavioral reminder",
     ],
     pathlib.Path(".agents/README.md"): [
         metadata_command,
@@ -2050,7 +1990,6 @@ import sys
 
 failures: list[str] = []
 agents_root = pathlib.Path(".agents")
-claude_skills_root = pathlib.Path(".claude/skills")
 
 if agents_root.exists():
     readme = agents_root / "README.md"
@@ -2080,22 +2019,6 @@ if agents_root.exists():
         ]:
             if literal not in text:
                 failures.append(f"{graphify_rule}: missing advisory Graphify literal: {literal}")
-
-    skills_root = agents_root / "skills"
-    if skills_root.exists():
-        known_skills = {
-            path.parent.name
-            for path in claude_skills_root.glob("*/skill.md")
-        }
-        for skill_file in sorted(skills_root.glob("*/skill.md")):
-            skill_name = skill_file.parent.name
-            if skill_name not in known_skills:
-                failures.append(f"{skill_file}: unknown compatibility skill not present in .claude/skills")
-            text = skill_file.read_text(errors="ignore")
-            if ".Codex/" in text or ".Codex" in text:
-                failures.append(f"{skill_file}: stale .Codex runtime path reference")
-            if ".codex/agents" in text or ".codex/skills" in text:
-                failures.append(f"{skill_file}: .codex must not be treated as an agent/function catalog")
 
 if failures:
     for failure in failures:
@@ -2148,8 +2071,6 @@ required_literals = {
     pathlib.Path(".agents/rules/workspace.md"): "_workspace/repo-support/",
     pathlib.Path(".agents/workflows/documentation.md"): "_workspace/repo-support/",
     pathlib.Path(".claude/agents/code-reviewer.md"): "_workspace/repo-support/",
-    pathlib.Path(".claude/skills/code-reviewer/skill.md"): "_workspace/repo-support/",
-    pathlib.Path(".codex/skills/code-reviewer/skill.md"): "_workspace/repo-support/",
     workflow_design: "_workspace/repo-support/",
 }
 for path, literal in required_literals.items():
@@ -3214,8 +3135,9 @@ required_files = [
     pathlib.Path("docs/90.references/llm-wiki/repository-map.md"),
     pathlib.Path("docs/90.references/data/knowledge/README.md"),
     pathlib.Path("docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md"),
-    pathlib.Path(".claude/agents/wiki-curator.md"),
-    pathlib.Path("docs/00.agent-governance/agents/agents/wiki-curator.md"),
+    pathlib.Path(".claude/agents/doc-writer.md"),
+    pathlib.Path("docs/00.agent-governance/agents/agents/doc-writer.md"),
+    pathlib.Path("docs/00.agent-governance/agents/functions/knowledge-map-agent.md"),
     pathlib.Path("docs/03.specs/096-llm-wiki-agent-first-completion/spec.md"),
     pathlib.Path("docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md"),
     pathlib.Path("docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md"),
@@ -3275,16 +3197,6 @@ readme_checks = {
     pathlib.Path("docs/90.references/data/README.md"): [
         "knowledge/README.md",
         "knowledge/llm-wiki-stage-category-coverage.md",
-    ],
-    pathlib.Path("docs/00.agent-governance/agents/README.md"): [
-        "wiki-curator",
-    ],
-    pathlib.Path("docs/00.agent-governance/subagent-protocol.md"): [
-        ".claude/agents/wiki-curator.md",
-        "wiki-curator",
-    ],
-    pathlib.Path(".claude/CLAUDE.md"): [
-        "14 workers",
     ],
 }
 for path, literals in readme_checks.items():
@@ -3353,7 +3265,8 @@ if index_path.is_file():
         "Generated tracked repo-local index",
         "## Generated Index",
         "scripts/knowledge/generate-llm-wiki-index.sh --check",
-        "wiki-curator",
+        "doc-writer",
+        "knowledge-map-agent",
     ]:
         if literal not in text:
             failures.append(f"{index_path}: missing generated index literal: {literal}")

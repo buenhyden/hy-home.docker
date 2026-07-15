@@ -1,56 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: code-review-dimensions
+scope: common
+status: active
 ---
 
 # code-review-dimensions
 
-## Overview
+## Preconditions
 
-Reference pattern library for the four code review dimensions: Security, Architecture (SOLID), Performance, and Style. Provides OWASP/CWE checklists, code smell to refactoring mappings, and cross-domain conflict resolution guidance.
+An exact diff and governing specification must be available; review scope and non-goals must be explicit.
 
-## Purpose
+## Inputs
 
-Give the code-reviewer agent a consistent, workspace-calibrated reference set so findings are reproducible and severity-tagged correctly.
+- Exact diff or commit range.
+- Governing specification, risk boundaries, and implementation evidence.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Evaluate correctness, security, maintainability, performance, and governance only where the diff and specification make each dimension relevant.
+2. Reproduce candidate defects against tracked code or tests and cite the narrowest useful file-and-line location.
+3. Calibrate Critical, Important, and Minor severity from impact, reachability, and remediation urgency.
 
-- Security: OWASP Top 10 (2021), CWE Top 25, Docker/container YAML patterns, language-specific vulnerability descriptions (Python, JS, Java, Go)
-- Architecture: SOLID violation signals, code smell → refactoring mapping (Martin Fowler catalog)
-- Performance: cyclomatic/cognitive complexity thresholds, memory/concurrency/DB anti-patterns
-- Style: language style guides (PEP 8, Airbnb JS, Effective Go, Rust Style), auto-fixable indicators
-- Cross-domain conflict resolution (security vs. performance, DRY vs. readability)
+## Outputs
 
-**Excludes:**
+- A dimensioned review with evidence-backed findings and a bounded verdict.
 
-- Threat modeling (see container-threat-modeling)
-- Deployment security gates (see ci-cd-patterns)
+## Gates
 
-## Structure
+- Every finding has a concrete evidence citation.
+- Severity is calibrated and does not inflate style preferences into blockers.
 
-- Domain 1 Security → Domain 2 Architecture → Domain 3 Performance → Domain 4 Style → Cross-domain conflicts
+## Failure Handling
 
-## Agents
-
-- **code-reviewer** — primary caller
-
-## Skills
-
-- This function is a reusable orchestration skill.
-
-## Usage
-
-- Loaded automatically by code-reviewer during four-domain review execution.
-- **Inputs:** changed file list + diff
-- **Outputs:** findings table with severity tags (BLOCK/WARN/NIT)
-
-## Artifacts
-
-- `_workspace/repo-support/review_<branch>_<YYYY-MM-DD>.md`
+Mark unverifiable requirements explicitly and request the missing artifact; do not infer either pass or failure.
 
 ## Related Documents
 
-- `../../scopes/common.md`
-- `../functions/code-reviewer.md`
-- `../README.md`
+- [Code reviewer](../agents/code-reviewer.md)
+- [Code reviewer function](./code-reviewer.md)
+- [Common scope](../../scopes/common.md)

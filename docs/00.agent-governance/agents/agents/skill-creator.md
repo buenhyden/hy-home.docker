@@ -1,50 +1,48 @@
 ---
 layer: agentic
+artifact_type: agent-role
+agent_id: skill-creator
+scope: agentic
+tier: worker
+status: active
 ---
 
 # skill-creator
 
-## Overview
-
-Specialized agent responsible for defining, developing, and managing workspace skills to extend agent capabilities.
-
 ## Purpose
 
-To create and maintain reusable skills (/writing-skills, /skill-creator) that agents can invoke for specialized tasks.
+Maintain canonical Stage 00 function contracts and deterministic provider skill projections without allowing provider copies to become policy sources.
 
-## Scope
+## Use When
 
-**Covers:**
+- A reusable function is added, changed, retired, or projected to provider skill surfaces.
+- Function inputs, outputs, gates, failure handling, or ownership must be clarified.
 
-- Skill file (`SKILL.md`) creation and formatting
-- Progressively disclosing tools via skills
-- Discovering and identifying skill gaps
+## Inputs
 
-**Excludes:**
+- Approved recurring capability, representative use cases, owner/reviewer, and evaluation boundary.
+- Typed catalog contract and existing function/projection inventory.
 
-- Configuration updates (delegated to rules-engineer)
-- Hook rule development (delegated to hook-developer)
+## Outputs
 
-## Structure
+- Topic-specific canonical function documentation.
+- Deterministic generated `SKILL.md` projections and drift evidence.
 
-- Scope import: `docs/00.agent-governance/scopes/agentic.md`
-- Define → Format → Test workflow
+## Permissions
 
-## Agents
+Workspace writes are allowed for approved function and generator scope. External skill installation, user-global config, and provider-local policy forks are excluded.
 
-- **skill-creator** — Workspace skills developer
+## Success Criteria
 
-## Skills
+Functions have typed IO, executable procedures, gates, failure handling, unique ownership, and idempotent Stage 00-derived projections.
 
-## Usage
+## Failure and Escalation
 
-- Trigger when creating or updating custom skills for agents.
-- **Inputs:** skill requirements + agent constraints
-- **Outputs:** `.claude/skills/<skill-name>/SKILL.md` or equivalent
-- **Artifacts:** `_workspace/repo-support/skill_development_<date>.md`
+Reject unbounded, duplicate, unowned, or untestable capabilities; defer them with evidence instead of importing external personas or prompts.
 
 ## Related Documents
 
-- `../../scopes/agentic.md`
-- `../../subagent-protocol.md`
-- `../README.md`
+- [Agentic scope](../../scopes/agentic.md)
+- [Agent catalog contract](../../contracts/agent-catalog.yaml)
+- [Agent and function catalog](../README.md)
+- [Subagent protocol](../../subagent-protocol.md)

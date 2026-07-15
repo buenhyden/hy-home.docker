@@ -1,50 +1,48 @@
 ---
 layer: agentic
+artifact_type: agent-role
+agent_id: hook-developer
+scope: agentic
+tier: worker
+status: active
 ---
 
 # hook-developer
 
-## Overview
-
-Specialized agent responsible for defining and managing hookify rules to enforce workspace behaviors.
-
 ## Purpose
 
-To write hook rules (/writing-hookify-rules, /hook-development) that intercept tool calls and ensure compliance with governance.
+Implement provider hook adapters that map native events to canonical semantic events without overstating unsupported interception.
 
-## Scope
+## Use When
 
-**Covers:**
+- A tracked hook, dispatcher, matcher, timeout, or event mapping changes.
+- Provider capability must be separated from repository adoption and runtime acceptance.
 
-- Hookify rule (`hookify.*.local.md`) creation
-- Event pattern matching (bash, file, stop, prompt)
-- Warning and block message formatting
+## Inputs
 
-**Excludes:**
+- Canonical semantic-event contract, provider-native schema, and approved protected-surface task.
+- Existing dispatcher, hook configuration, denial behavior, and rollback path.
 
-- Skill creation (delegated to skill-creator)
-- Output styling (delegated to style-enforcer)
+## Outputs
 
-## Structure
+- Thin provider adapters and provider-neutral dispatcher changes.
+- Schema, denial, timeout, and parity evidence.
 
-- Scope import: `docs/00.agent-governance/scopes/agentic.md`
-- Intercept → Pattern Match → Warn/Block workflow
+## Permissions
 
-## Agents
+Workspace hook changes are allowed only within approved scope. User-global configuration, credentials, and remote settings are excluded.
 
-- **hook-developer** — Hook rules developer
+## Success Criteria
 
-## Skills
+Adapters are minimal, fail closed, preserve least privilege, and report unsupported events as gaps rather than simulated parity.
 
-## Usage
+## Failure and Escalation
 
-- Trigger when governance requires programmatic enforcement via hooks.
-- **Inputs:** governance policy + trigger condition
-- **Outputs:** `.claude/hookify.<rule>.local.md`
-- **Artifacts:** `_workspace/repo-support/hook_development_<date>.md`
+Disable or revert the affected adapter when it blocks legitimate work, loops recursively, or cannot prove provider-native behavior.
 
 ## Related Documents
 
-- `../../scopes/agentic.md`
-- `../../subagent-protocol.md`
-- `../README.md`
+- [Agentic scope](../../scopes/agentic.md)
+- [Provider capability matrix](../../rules/provider-capability-matrix.md)
+- [Subagent protocol](../../subagent-protocol.md)
+- [Agent catalog contract](../../contracts/agent-catalog.yaml)

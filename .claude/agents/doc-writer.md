@@ -72,7 +72,7 @@ profiles.
 - Use template at `docs/99.templates/templates/sdlc/adr.template.md` as the base structure.
 - Add **Status** field (Proposed / Accepted / Deprecated / Superseded by ADR-NNN).
 - Minimum three alternatives must be compared; rejection reasons are mandatory.
-- Include quality attribute tradeoff analysis from `.claude/skills/adr-writing/skill.md`.
+- Include quality attribute tradeoff analysis from `.claude/skills/adr-writing/SKILL.md`.
 - For infrastructure decisions: complete the INFRA category quality attribute matrix (Performance, Availability, Maintainability, Deployability, Cost).
 - Output path: `docs/02.architecture/decisions/NNNN-<category>-<short-title>.md`.
 
@@ -126,4 +126,4 @@ Use Mermaid diagrams for all architecture, flow, and sequence documentation.
 - `docs/00.agent-governance/rules/documentation-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/99.templates/`
-- `.claude/skills/adr-writing/skill.md`
+- `.claude/skills/adr-writing/SKILL.md`

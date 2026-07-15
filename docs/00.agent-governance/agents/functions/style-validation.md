@@ -1,53 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: style-validation
+scope: qa
+status: active
 ---
 
 # style-validation
 
-## Overview
+## Preconditions
 
-Style validation function for the `hy-home.docker` workspace. Normalizes and validates changed
-text, documentation, and shell files against the repository's style and contract profiles.
+Changed authored files and their language/document style contracts must be identified; generated files remain owned by their generators.
 
-## Purpose
+## Inputs
 
-Keep output and documents consistent with the Output Style Contract and repository contracts so
-completion gates pass deterministically.
+- Changed authored files and style contract.
+- Existing formatters, linters, syntax checks, metadata validators, and exclusion rules.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Classify changed files by formatter, linter, syntax, metadata, and generated-owner obligations.
+2. Run the smallest deterministic checks, apply approved formatter changes, and inspect all hook-managed fallout.
+3. Record commands, results, skipped/CI-only checks, and any remaining style finding without masking semantic defects.
 
-- Changed-file style normalization via `scripts/hooks/post-tool-validate.sh`
-- Markdown/doc profile and template-contract checks via `scripts/validation/check-repo-contracts.sh`
-- Output Style Contract conformance (`rules/output-style.md`)
+## Outputs
 
-**Excludes:**
+- Style-validation evidence and approved deterministic formatting changes.
 
-- Authoring document content (see `doc-writer` and the stage authoring matrix)
-- Policy decisions (governance rules own policy)
+## Gates
 
-## Structure
+- Formatting is deterministic and generated ownership is preserved.
+- Linting is scoped to relevant authored files and does not rely on blanket suppression.
 
-- Detect changed files → normalize style → run contract/profile checks → report residual issues
+## Failure Handling
 
-## Agents
-
-- **style-enforcer** — primary caller
-
-## Skills
-
-- Runtime mirror: `.claude/skills/style-validation/skill.md`
-
-## Usage
-
-- Trigger after edits to normalize and validate style before completion.
-- **Inputs:** changed file list
-- **Outputs:** style report; blocking issues surfaced before Stop
+Stop on unexpected paths, formatter oscillation, or conflicting style authorities; do not run direct all-files pre-commit or delete content to satisfy lint.
 
 ## Related Documents
 
-- `../../scopes/agentic.md`
-- `../../rules/output-style.md`
-- `../../rules/documentation-protocol.md`
-- `../README.md`
+- [QA engineer](../agents/qa-engineer.md)
+- [Task checklists](../../rules/task-checklists.md)
+- [Quality standards](../../rules/quality-standards.md)

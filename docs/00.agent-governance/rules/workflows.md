@@ -37,7 +37,7 @@ contract — do not duplicate it here).
 - **Skill Development**: external `writing-skills` / `skill-creator` → `skill-creator` agent → new reusable skill.
 - **Hook Development**: external `writing-hookify-rules` / `hook-development` → `hook-developer` agent → new `.local.md` hook.
 - **Governance Configuration**: external `update-config` → `rules-engineer` agent → policy updates.
-- **Style Enforcement**: `style-validation` → `style-enforcer` execution → standardized markdown/output.
+- **Style Enforcement**: `style-validation` → `qa-engineer` execution → standardized markdown/output.
 
 Backtick names without an "external" prefix are workspace functions in
 `agents/functions/` and are exposed through provider adapters per the Provider
@@ -82,7 +82,7 @@ runtime:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | Discovery           | Identify requested, named, or obviously applicable workspace functions and external skills before mutation.                                 | Task notes or plan assumptions identify the considered skill set.                                        |
 | Applicability       | Decide whether each skill changes the work method, output artifact, or validation scope.                                                    | Inapplicable skills are recorded as N/A only when they were requested or materially relevant.            |
-| Provider loading    | Load the provider adapter file (`.claude/skills/`, `.codex/skills/`, `.agents/skills/`) or external skill instructions needed for the task. | The loaded source is reflected in the task narrative or session audit trail.                             |
+| Provider loading    | Load the provider adapter file (`.claude/skills/*/SKILL.md`, `.agents/skills/*/SKILL.md`) or external skill instructions needed for the task. | The loaded source is reflected in the task narrative or session audit trail.                             |
 | Canonical artifact  | Write the resulting plan, task, policy, runbook, code, or review output to the repository's canonical stage path.                           | Active artifacts live under `docs/01` to `docs/05`, `docs/90`, `docs/99`, or the scoped runtime surface. |
 | Validation evidence | Run the relevant local checks, record CI-only gates, or explain skipped checks.                                                             | `docs/04.execution/tasks/` and progress logs capture the command, outcome, and rationale.                |
 

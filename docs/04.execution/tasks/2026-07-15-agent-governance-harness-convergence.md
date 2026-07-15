@@ -146,7 +146,7 @@ Redaction boundary:
 | --- | --- | --- |
 | T-AGHC-001 | Typed contracts and contract-only validator | Complete; specification and quality reviews PASS C0/I0/M0 |
 | T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
-| T-AGHC-003 | Agent/function catalog and canonical skill source | Not run |
+| T-AGHC-003 | Agent/function catalog and canonical skill source | Implementation complete; independent reviews pending |
 | T-AGHC-004 | Provider-native adapters and dated model policy | Not run |
 | T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Not run |
 | T-AGHC-006 | Reference/audit/evidence reconciliation and closure | Not run |
@@ -191,10 +191,34 @@ Redaction boundary:
 | 2026-07-15 | T-AGHC-002 iterative DOM depth remediation | Fresh remediation agent and independent reviewer | Replaced recursive visible-text, section-tree, and boundary walks with explicit work stacks after a deeply nested README reproduced direct `RecursionError` and repository CLI traceback leakage. Child/tail order, block separators, image alternatives, hidden/template handling, runtime markers, namespace identity, and heading inheritance remain unchanged. The regression matrix covers direct, repository, and CLI visible/hidden/tail/heading cases. Independent review exercised depth 5,000 and returned C0/I0/M0. No contract data, aggregate checker, provider adapter, runtime, Compose, deployment, secret, credential, remote, or branch-protection surface changed. |
 | 2026-07-15 | T-AGHC-002 bounded brace expansion remediation | Fresh remediation agent and independent reviewer | Added canonical typed path-pattern ceilings of 64 brace groups, 1,024 unique expanded paths, and 4,096 characters, with exact validator constants that contract input cannot raise. Replaced recursive expansion with bounded parsing and iterative stable deduplication of choices and actual partials. Contract, overlap, match, inventory, and repository CLI consumers now share the same limit and normalize unsupported patterns without recursion, memory, traceback, absolute-path, or raw-pattern leakage. Independent review found and verified fixes for product-overcount and expanded-byte resource gaps before returning C0/I0/M0. No aggregate checker, provider adapter, runtime, Compose, deployment, secret, credential, remote, or branch-protection surface changed. |
 | 2026-07-15 | T-AGHC-002 shared Stage 00 registry matching remediation | Fresh remediation agent and independent reviewer | Removed the metadata validator's second registry parser/read/match implementation. Stage 00 specialization inference now imports public confined loading, literal-prefix normalization, bounded brace expansion, expanded-member safety, and full-path matching from the typed governance validator. Dot directories remain intact, basename-only matches are impossible, unsafe brace siblings fail closed, arbitrary registries cannot follow symlinks or duplicate YAML keys, and iterative dynamic `**` state handles deeply segmented paths without recursion. No catalog/provider activation, aggregate checker, provider adapter, runtime, Compose, deployment, secret, credential, remote, or branch-protection surface changed. |
+| 2026-07-15 | T-AGHC-003 RED | Fresh implementation agent | Catalog fixtures exposed 13 expected failures and 408 typed-profile findings across the legacy 15-role/lowercase-skill state. Renderer tests initially failed because the renderer did not exist; subsequent RED cases reproduced followed managed-parent symlinks, overbroad lowercase cleanup, unsafe output reads, leaked temporary files after write failure, and permissive unknown flags before production fixes. |
+| 2026-07-15 | T-AGHC-003 GREEN | Fresh implementation agent | Converged the exact 14-role and 22-function typed catalog, retired `style-enforcer` and `wiki-curator`, introduced `eval-engineer`, and transferred style, knowledge-map, and evaluation ownership without overlaps. Every canonical role/function now has the registered metadata and topic-specific sections. The repository catalog gate is active through the focused validator; obsolete mixed catalog, shared-skill, LLM-Wiki-owner, and hardcoded provider-model assertions were removed without changing model data. |
+| 2026-07-15 | T-AGHC-003 renderer and migration | Fresh implementation agent | Added a Stage 00-only deterministic renderer and thin wrapper. It emits uppercase `.claude/skills/*/SKILL.md` and shared `.agents/skills/*/SKILL.md`, removes only marker-owned stale outputs plus the enumerated lowercase migration set, and deletes `.codex/skills/**`. Confined same-FD reads, no-follow directory traversal, same-directory atomic replacement, temporary cleanup, and value-free unsafe-path findings cover the managed boundary. Renderer check passed twice with `providers=3 drift=0`. |
+| 2026-07-15 | T-AGHC-003 lifecycle and generated owners | Fresh implementation agent | Reconciled the six Foundation `active_consumers` affected by retired lowercase and Codex skill paths; no lifecycle status, verdict, disposition, enforcement, or evidence contract changed. Migrated all three Task-affected legacy Operations documents to their exact Guide/Policy/Runbook metadata and section profiles, removing copied scaffold content and reducing explicit-base legacy exceptions from three to zero. Regenerated LLM Wiki index/coverage and the metadata inventory through their owners; inventory is fresh at 910 records and 2,145 advisory findings. |
+| 2026-07-15 | T-AGHC-003 self-review | Fresh implementation agent | Focused post-fix tests passed 10/10. The combined governance and renderer suite passed 124/124 after correcting the expected governed-artifact count from 111 to 110 for the net one-role catalog reduction. Catalog repository mode passes with 14 roles and 22 functions, and renderer drift remains zero. Independent specification and quality reviews remain required before task closure. |
+| 2026-07-15 | T-AGHC-003 typed policy compatibility | Fresh implementation agent | Final aggregate verification exposed one cross-generation conflict: the canonical typed policy profile and template require `## Scope`, while the legacy aggregate still required `## Policy Scope` for every policy. The aggregate now selects the scope heading from typed `artifact_type: policy` metadata, rejects the opposite-generation duplicate, and preserves `## Policy Scope` for policies that have not entered the staged typed migration. This removed the Task 3-owned failure without broad corpus migration. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
 ## Verification Evidence
+
+T-AGHC-003 implementation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| catalog convergence and renderer focus | all pass | 10 tests passed | Pass |
+| governance plus renderer unit suites | all pass | 124 tests passed in 116.934s | Pass |
+| repository catalog section | zero findings | `failures=0` | Pass |
+| renderer check, repeated | zero drift on both reads | `providers=3 drift=0` twice | Pass |
+| promoted / impacted lifecycle against `9941bbb4` | zero violations | promoted 0; impacted selected 293 / violations 0; configured Task-directory warning only | Pass |
+| changed metadata against `9941bbb4` | zero violations or legacy exceptions | selected 53; violations 0; legacy exceptions 0; transition overrides 0 | Pass |
+| metadata inventory | fresh | 910 records / 2,145 advisory findings | Pass |
+| repository aggregate compatibility | only planned Task 4/5 dependencies remain | `failures=4`; root hook parity, provider adapter/harness compatibility, `.agents` compatibility, and governance memory | Expected interim dependency |
+
+The aggregate check no longer owns catalog or hardcoded model cardinality. Its
+remaining provider/harness blocks are completed by T-AGHC-004 and T-AGHC-005;
+the final observed aggregate count is four. Scoped QA is supplied by the
+automatic commit hook because direct manual pre-commit execution is prohibited.
 
 Planning verification:
 
@@ -631,7 +655,7 @@ with owner, reason, and destination.
 | T-AGHC-002 bounded brace expansion remediation | `fix(governance): bound brace expansion cardinality` | `155a1626` | focused/full GREEN; terminal independent review C0/I0/M0 |
 | T-AGHC-002 shared Stage 00 registry matching remediation | `fix(governance): share bounded Stage 00 registry matching` | `f89fbe09` | focused/full GREEN; terminal independent review C0/I0/M0 |
 | T-AGHC-002 terminal review evidence | `docs(task): record metadata governance review closure` | this logical commit | full-range specification PASS; final-delta specification PASS and quality APPROVED, C0/I0/M0 |
-| T-AGHC-003 | `refactor(agents): converge role and function catalogs` | pending | pending |
+| T-AGHC-003 | `refactor(agents): converge role and function catalogs` | this logical commit | focused and full unit suites GREEN; independent reviews pending |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |
 | T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | pending | pending |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |

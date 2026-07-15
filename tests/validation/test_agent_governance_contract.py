@@ -1060,6 +1060,106 @@ class ContractSchemaTests(unittest.TestCase):
             self.assertIn("AGC-PROVIDER-INVALID-STATE", rendered)
 
 
+class Task3CatalogConvergenceTests(unittest.TestCase):
+    EXPECTED_CATEGORIES = {
+        "supervisor": {"workflow-supervisor"},
+        "implementation-operations": {
+            "ci-cd-engineer",
+            "doc-writer",
+            "hook-developer",
+            "incident-responder",
+            "infra-implementer",
+            "qa-engineer",
+            "skill-creator",
+        },
+        "review-evaluation": {
+            "code-reviewer",
+            "drift-detector",
+            "eval-engineer",
+            "iac-reviewer",
+            "rules-engineer",
+            "security-auditor",
+        },
+    }
+    RETIRED_IDS = {"style-enforcer", "wiki-curator"}
+    DIRECTLY_AFFECTED_SURFACES = (
+        "docs/00.agent-governance/README.md",
+        "docs/00.agent-governance/agents/README.md",
+        "docs/00.agent-governance/subagent-protocol.md",
+        "docs/00.agent-governance/providers/codex.md",
+        "docs/00.agent-governance/rules/workflows.md",
+        "docs/00.agent-governance/scopes/docs.md",
+        "docs/00.agent-governance/agents/agents/hook-developer.md",
+        "docs/00.agent-governance/agents/functions/style-validation.md",
+        "docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md",
+        "docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md",
+        "scripts/README.md",
+        "scripts/hooks/agent-event-hook.sh",
+        "scripts/knowledge/generate-llm-wiki-index.sh",
+        "scripts/knowledge/generate-llm-wiki-coverage.sh",
+    )
+
+    def test_exact_role_categories_and_function_cardinality_are_canonical(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        category_members: dict[str, set[str]] = {}
+        for entry in bundle.catalog["agents"]:
+            category_members.setdefault(entry["category"], set()).add(entry["agent_id"])
+        self.assertEqual(self.EXPECTED_CATEGORIES, category_members)
+        self.assertEqual(14, sum(len(members) for members in category_members.values()))
+        self.assertEqual(22, len(bundle.catalog["functions"]))
+        self.assertEqual(
+            {"style-enforcer", "wiki-curator"},
+            {entry["retired_agent_id"] for entry in bundle.catalog["role_transfers"]},
+        )
+        agent_functions = {
+            entry["agent_id"]: set(entry["function_ids"])
+            for entry in bundle.catalog["agents"]
+        }
+        for entry in bundle.catalog["functions"]:
+            self.assertIn(entry["function_id"], agent_functions[entry["owner_agent"]])
+        self.assertEqual(
+            len(bundle.catalog["functions"]),
+            sum(len(functions) for functions in agent_functions.values()),
+        )
+
+        iac_text = (ROOT / "docs/00.agent-governance/agents/agents/iac-reviewer.md").read_text()
+        drift_text = (ROOT / "docs/00.agent-governance/agents/agents/drift-detector.md").read_text()
+        self.assertIn("before mutation", iac_text)
+        self.assertIn("after change", drift_text)
+
+        for entry in bundle.catalog["functions"]:
+            text = (ROOT / entry["catalog_path"]).read_text(encoding="utf-8")
+            self.assertNotIn("Provider-neutral orchestration function catalog entry", text)
+            procedure = text.split("## Procedure\n", 1)[1].split("\n## ", 1)[0]
+            self.assertGreaterEqual(procedure.count("\n1.") + procedure.count("\n2."), 2)
+
+    def test_catalog_documents_and_generated_path_migration_are_complete(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        self.assertEqual([], contract.validate_repository(ROOT, bundle, "catalog"))
+
+        for retired_id in self.RETIRED_IDS:
+            for directory, suffix in (
+                ("docs/00.agent-governance/agents/agents", ".md"),
+                (".claude/agents", ".md"),
+                (".codex/agents", ".toml"),
+                (".agents/agents", ".md"),
+            ):
+                self.assertFalse((ROOT / directory / f"{retired_id}{suffix}").exists())
+
+        self.assertFalse((ROOT / ".codex/skills").exists())
+        self.assertEqual([], list((ROOT / ".claude/skills").glob("*/skill.md")))
+        self.assertEqual([], list((ROOT / ".agents/skills").glob("*/skill.md")))
+        self.assertEqual(22, len(list((ROOT / ".claude/skills").glob("*/SKILL.md"))))
+        self.assertEqual(22, len(list((ROOT / ".agents/skills").glob("*/SKILL.md"))))
+
+    def test_retired_role_references_are_removed_from_directly_affected_surfaces(self) -> None:
+        for relative in self.DIRECTLY_AFFECTED_SURFACES:
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            for retired_id in self.RETIRED_IDS:
+                with self.subTest(relative=relative, retired_id=retired_id):
+                    self.assertNotIn(retired_id, text)
+
+
 class CommandLineTests(unittest.TestCase):
     def run_checker_for_root(
         self, root: pathlib.Path, *args: str
@@ -1108,6 +1208,41 @@ class CommandLineTests(unittest.TestCase):
             self.assertNotIn(sentinel, rendered)
             self.assertNotIn(str(root), rendered)
 
+    def test_repository_catalog_paths_fail_closed_for_symlinked_files(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+            values = yaml.safe_load(
+                (root / "docs/00.agent-governance/contracts/agent-catalog.yaml").read_text(
+                    encoding="utf-8"
+                )
+            )
+            for collection, identity in (("agents", "agent_id"), ("functions", "function_id")):
+                for entry in values[collection]:
+                    entry["catalog_path"] = f"catalog-inputs/{entry[identity]}.md"
+            (root / "docs/00.agent-governance/contracts/agent-catalog.yaml").write_text(
+                yaml.safe_dump(values, sort_keys=False), encoding="utf-8"
+            )
+            for collection in ("agents", "functions"):
+                for entry in values[collection]:
+                    path = root / entry["catalog_path"]
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text("bounded catalog fixture\n", encoding="utf-8")
+            outside = root.parent / "outside-catalog-sentinel.md"
+            outside.write_text("outside catalog sentinel\n", encoding="utf-8")
+            catalog_path = root / values["agents"][0]["catalog_path"]
+            catalog_path.unlink()
+            catalog_path.symlink_to(outside)
+            try:
+                bundle = contract.load_contract_bundle(root)
+                findings = contract.validate_repository(root, bundle, "catalog")
+                rendered = contract.render_findings(findings)
+                self.assertIn("AGC-REPOSITORY-UNSAFE-FILE", rendered)
+                self.assertNotIn("outside catalog sentinel", rendered)
+                self.assertNotIn(str(root), rendered)
+            finally:
+                outside.unlink(missing_ok=True)
+
     def test_contract_mode_prints_required_pass_marker(self) -> None:
         result = self.run_checker("--mode", "contract")
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
@@ -1117,10 +1252,14 @@ class CommandLineTests(unittest.TestCase):
         )
         self.assertEqual("", result.stderr)
 
-    def test_repository_mode_reports_current_parity_without_aggregate_activation(self) -> None:
+    def test_repository_mode_reports_current_catalog_parity(self) -> None:
         result = self.run_checker("--mode", "repository", "--section", "catalog")
-        self.assertEqual(1, result.returncode)
-        self.assertIn("AGC-REPOSITORY-MISSING-CATALOG-PATH", result.stderr)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertEqual(
+            "agent_governance_contract: PASS mode=repository section=catalog failures=0\n",
+            result.stdout,
+        )
+        self.assertEqual("", result.stderr)
 
     def test_incompatible_section_flag_fails_closed(self) -> None:
         result = self.run_checker("--mode", "contract", "--section", "catalog")
@@ -1513,10 +1652,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_inventory_has_111_uniquely_routed_artifacts(self) -> None:
+    def test_repository_harness_inventory_has_110_uniquely_routed_artifacts(self) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         inventory = contract._governed_inventory_paths(ROOT, bundle.artifacts)
-        self.assertEqual(111, len(inventory))
+        self.assertEqual(110, len(inventory))
         findings = contract.validate_repository(ROOT, bundle, "harness")
         self.assertFalse(
             codes(findings)

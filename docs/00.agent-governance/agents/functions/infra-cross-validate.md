@@ -1,58 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: infra-cross-validate
+scope: infra
+status: active
 ---
 
 # infra-cross-validate
 
-## Overview
+## Preconditions
 
-Cross-validation orchestrator after infra changes. Runs security audit followed by drift + performance validation.
+A proposed infrastructure diff, declared runtime contract, and static validation evidence must be available for independent review.
 
-## Purpose
+## Inputs
 
-Ensure infrastructure changes are validated by independent security and drift/performance checks.
+- Proposed infrastructure diff and declared runtime contract.
+- Related architecture, operations, security, and rollback constraints.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Trace each changed service, network, volume, secret, health, and resource edge across all affected files.
+2. Compare the proposal with architecture and operations contracts, distinguishing pre-change static risk from post-change observed drift.
+3. Report conflicts and required corrections without applying the infrastructure change.
 
-- Security audit handoff to security-auditor
-- Drift/performance validation by iac-reviewer
-- Result capture and notification
+## Outputs
 
-**Excludes:**
+- Cross-validation findings with exact file evidence and downstream observation needs.
 
-- Applying infra changes
+## Gates
 
-## Structure
+- Review remains read-only.
+- Cross-file dependencies and declared behavior are mutually consistent.
 
-- Phase 1: security-auditor audit
-- Phase 2: iac-reviewer drift + performance checks
-- Phase 3: result merge and recording
+## Failure Handling
 
-## Agents
-
-- **infra-implementer** — orchestrates pipeline
-- **security-auditor** — security audit
-- **iac-reviewer** — drift/performance validation
-
-## Skills
-
-- Depends on [infra-validate](./infra-validate.md)
-
-## Usage
-
-- Trigger after infra change and post-flight validation.
-- **Inputs:** changed file list
-- **Outputs:** `_workspace/repo-support/cross-validate_<date>.md`
-
-## Artifacts
-
-- `_workspace/repo-support/cross-validate_<date>.md`
+Mark runtime-only questions for `drift-detector` and security-sensitive gaps for `security-auditor`; never infer live state from configuration.
 
 ## Related Documents
 
-- `../../scopes/infra.md`
-- `../../scopes/security.md`
-- `../../rules/github-governance.md`
-- `../README.md`
+- [IaC reviewer](../agents/iac-reviewer.md)
+- [Drift detector](../agents/drift-detector.md)
+- [Infrastructure validation](./infra-validate.md)

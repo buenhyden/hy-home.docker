@@ -91,15 +91,14 @@ All worker agents use the same adapter pattern:
 | `incident-responder` | `scopes/ops.md` | `agents/agents/incident-responder.md` | `.claude/agents/incident-responder.md` | `.codex/agents/incident-responder.toml` | `.agents/agents/incident-responder.md` |
 | `code-reviewer` | `scopes/common.md` | `agents/agents/code-reviewer.md` | `.claude/agents/code-reviewer.md` | `.codex/agents/code-reviewer.toml` | `.agents/agents/code-reviewer.md` |
 | `doc-writer` | `scopes/docs.md` | `agents/agents/doc-writer.md` | `.claude/agents/doc-writer.md` | `.codex/agents/doc-writer.toml` | `.agents/agents/doc-writer.md` |
-| `wiki-curator` | `scopes/docs.md` | `agents/agents/wiki-curator.md` | `.claude/agents/wiki-curator.md` | `.codex/agents/wiki-curator.toml` | `.agents/agents/wiki-curator.md` |
 | `iac-reviewer` | `scopes/infra.md` | `agents/agents/iac-reviewer.md` | `.claude/agents/iac-reviewer.md` | `.codex/agents/iac-reviewer.toml` | `.agents/agents/iac-reviewer.md` |
 | `drift-detector` | `scopes/infra.md` | `agents/agents/drift-detector.md` | `.claude/agents/drift-detector.md` | `.codex/agents/drift-detector.toml` | `.agents/agents/drift-detector.md` |
 | `qa-engineer` | `scopes/qa.md` | `agents/agents/qa-engineer.md` | `.claude/agents/qa-engineer.md` | `.codex/agents/qa-engineer.toml` | `.agents/agents/qa-engineer.md` |
+| `eval-engineer` | `scopes/qa.md` | `agents/agents/eval-engineer.md` | `.claude/agents/eval-engineer.md` | `.codex/agents/eval-engineer.toml` | `.agents/agents/eval-engineer.md` |
 | `ci-cd-engineer` | `scopes/ops.md` | `agents/agents/ci-cd-engineer.md` | `.claude/agents/ci-cd-engineer.md` | `.codex/agents/ci-cd-engineer.toml` | `.agents/agents/ci-cd-engineer.md` |
 | `skill-creator` | `scopes/agentic.md` | `agents/agents/skill-creator.md` | `.claude/agents/skill-creator.md` | `.codex/agents/skill-creator.toml` | `.agents/agents/skill-creator.md` |
 | `hook-developer` | `scopes/agentic.md` | `agents/agents/hook-developer.md` | `.claude/agents/hook-developer.md` | `.codex/agents/hook-developer.toml` | `.agents/agents/hook-developer.md` |
 | `rules-engineer` | `scopes/agentic.md` | `agents/agents/rules-engineer.md` | `.claude/agents/rules-engineer.md` | `.codex/agents/rules-engineer.toml` | `.agents/agents/rules-engineer.md` |
-| `style-enforcer` | `scopes/agentic.md` | `agents/agents/style-enforcer.md` | `.claude/agents/style-enforcer.md` | `.codex/agents/style-enforcer.toml` | `.agents/agents/style-enforcer.md` |
 
 Per the Stage 00 Canonical Adapter Model (`providers/agents-md.md` §5): Stage 00
 is canonical, provider surfaces are adapters, and all surfaces carry the same

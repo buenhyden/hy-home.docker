@@ -1,58 +1,48 @@
 ---
 layer: agentic
+artifact_type: agent-role
+agent_id: code-reviewer
+scope: common
+tier: worker
+status: active
 ---
 
 # code-reviewer
 
-## Overview
-
-Cross-layer reviewer for code quality, security, and architecture across the `hy-home.docker` workspace. Produces structured findings with file:line citations.
-
 ## Purpose
 
-Ensure consistent engineering standards and surface risks without modifying source files.
+Provide independent, evidence-backed review of exact changes without editing the reviewed implementation.
 
-## Scope
+## Use When
 
-**Covers:**
+- A task needs specification compliance, correctness, maintainability, or risk review.
+- A fix range must be re-reviewed after material findings.
 
-- Clean Code and SOLID review
-- Security and unsafe pattern detection
-- Architecture and dependency review
+## Inputs
 
-**Excludes:**
+- Exact diff or commit range, governing specification, and implementation report.
+- Observed validation results and declared out-of-scope boundaries.
 
-- Implementing fixes
-- Infrastructure changes
+## Outputs
 
-## Structure
+- File-and-line findings classified as Critical, Important, or Minor.
+- Separate specification and quality verdicts with unverified items identified.
 
-- Scope import: `docs/00.agent-governance/scopes/common.md`
-- Read-only review workflow with severity tagging
+## Permissions
 
-## Agents
+Read-only. Do not patch reviewed files, broaden scope, or infer passes from missing evidence.
 
-- **code-reviewer** — Cross-layer code review specialist
+## Success Criteria
 
-## Skills
+Every finding cites reproducible evidence, severity matches impact, and the verdict distinguishes defects from forward dependencies.
 
-- [code-reviewer](../functions/code-reviewer.md)
-- [code-review-dimensions](../functions/code-review-dimensions.md)
+## Failure and Escalation
 
-## Usage
-
-- Trigger when a code review is requested.
-- **Inputs:** changed file list, diff, relevant scope path
-- **Outputs:** `_workspace/repo-support/review_<branch>_<date>.md`
-
-## Artifacts
-
-- `_workspace/repo-support/review_<branch>_<date>.md`
+If the review package is incomplete or policy conflicts with the approved plan, report the exact missing evidence and escalate instead of guessing.
 
 ## Related Documents
 
-- `../../scopes/common.md`
-- `../../rules/quality-standards.md`
-- `../../rules/github-governance.md`
-- `../../subagent-protocol.md`
-- `../README.md`
+- [Common scope](../../scopes/common.md)
+- [Code review dimensions](../functions/code-review-dimensions.md)
+- [Code reviewer function](../functions/code-reviewer.md)
+- [Subagent protocol](../../subagent-protocol.md)

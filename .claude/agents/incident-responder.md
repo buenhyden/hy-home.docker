@@ -124,4 +124,4 @@ For SEV1/SEV2, add impact assessment to the incident record:
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/05.operations/` · `docs/05.operations/incidents/`
-- `.claude/skills/incident-response/skill.md`
+- `.claude/skills/incident-response/SKILL.md`

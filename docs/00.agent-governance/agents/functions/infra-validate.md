@@ -1,56 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: infra-validate
+scope: infra
+status: active
 ---
 
 # infra-validate
 
-## Overview
+## Preconditions
 
-Pre/post Docker Compose validation pipeline. Ensures static correctness, drift detection, SLO checks, and post-flight health verification.
+The approved infrastructure change and its validation contract must identify which checks are static and which runtime checks are authorized.
 
-## Purpose
+## Inputs
 
-Provide a repeatable, auditable validation sequence around infrastructure changes.
+- Approved infrastructure change and validation contract.
+- Expected rendered configuration, health behavior, and rollback boundary.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Run syntax, schema, Compose rendering, referenced-path, and secret-boundary checks on the exact change.
+2. If explicitly approved, perform the smallest scoped runtime observation and compare it with declared invariants.
+3. Record exact commands, outcomes, skips, and rollback disposition after inspecting the final diff.
 
-- Pre-flight Compose validation
-- Drift detection (optional live env)
-- Post-flight health checks
+## Outputs
 
-**Excludes:**
+- Infrastructure validation evidence separated into static, runtime-observed, CI-only, and skipped results.
 
-- Security auditing (handled by security-auditor)
-- Drift/performance review reports (handled by iac-reviewer)
+## Gates
 
-## Structure
+- Static validation passes before any runtime action.
+- Runtime checks remain within approved service and mutation scope.
 
-- Phases: Pre-flight → Static validate → Drift check → Apply → Post-flight
-- Uses `bash scripts/validation/validate-docker-compose.sh` and `docker compose` commands
+## Failure Handling
 
-## Agents
-
-- **infra-implementer** — primary caller
-- **iac-reviewer** — secondary caller
-
-## Skills
-
-- This function is a reusable orchestration skill.
-
-## Usage
-
-- Trigger before and after infra changes.
-- **Inputs:** target compose files, change scope
-- **Outputs:** validation logs and optional drift notes
-
-## Artifacts
-
-- `_workspace/repo-support/drift_<date>.md` (if drift detected)
+Stop on invalid rendered configuration, missing authority, or unexpected runtime impact; revert or escalate according to the approved task.
 
 ## Related Documents
 
-- `../../scopes/infra.md`
-- `../../rules/postflight-checklist.md`
-- `../README.md`
+- [Infrastructure implementer](../agents/infra-implementer.md)
+- [Compose stack function](./compose-stack-agent.md)
+- [Infrastructure scope](../../scopes/infra.md)

@@ -162,12 +162,12 @@ agents:
       - codex
       - gemini
   - agent_id: qa-engineer
-    category: review-evaluation
+    category: implementation-operations
     scope: qa
     tier: worker
     status: active
     catalog_path: docs/00.agent-governance/agents/agents/qa-engineer.md
-    permission_profile: read-only
+    permission_profile: workspace-write
     work_profile: complex-implementation
     function_ids:
       - e2e-testing
@@ -179,12 +179,12 @@ agents:
       - codex
       - gemini
   - agent_id: rules-engineer
-    category: implementation-operations
+    category: review-evaluation
     scope: agentic
     tier: worker
     status: active
     catalog_path: docs/00.agent-governance/agents/agents/rules-engineer.md
-    permission_profile: workspace-write
+    permission_profile: read-only
     work_profile: complex-implementation
     function_ids:
       - policy-gate-agent

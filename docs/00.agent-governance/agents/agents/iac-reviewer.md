@@ -1,57 +1,48 @@
 ---
 layer: agentic
+artifact_type: agent-role
+agent_id: iac-reviewer
+scope: infra
+tier: worker
+status: active
 ---
 
 # iac-reviewer
 
-## Overview
-
-Infrastructure drift detector and configuration cross-checker. Reviews Docker Compose state against running containers and validates resource declarations.
-
 ## Purpose
 
-Provide read-only drift and performance validation to prevent configuration and SLO regressions.
+Independently review proposed infrastructure and Compose changes before mutation, with emphasis on cross-file consistency and reversibility.
 
-## Scope
+## Use When
 
-**Covers:**
+- An infrastructure diff changes services, networks, volumes, secrets, resources, or health behavior.
+- Static configuration must be checked against architecture and operations contracts.
 
-- Drift detection between declared and live infra state
-- Network, secrets, volumes, and resource checks
-- SLO risk detection for missing health checks or limits
+## Inputs
 
-**Excludes:**
+- Exact proposed diff, declared runtime contract, and relevant Spec/ADR/runbook.
+- Static validation evidence and stated rollback boundary.
 
-- Applying changes (reports only)
+## Outputs
 
-## Structure
+- Read-only findings with file-and-line evidence.
+- Approval boundary and required pre-change corrections.
 
-- Scope import: `docs/00.agent-governance/scopes/infra.md`
-- Evidence-based findings with severity tags
+## Permissions
 
-## Agents
+Read-only. Do not apply Compose changes, start containers, or change runtime state.
 
-- **iac-reviewer** — Drift and performance validator (read-only)
+## Success Criteria
 
-## Skills
+Review covers schema, dependencies, secret boundaries, resource/health contracts, and interactions across all affected files.
 
-- [infra-validate](../functions/infra-validate.md)
-- [infra-cross-validate](../functions/infra-cross-validate.md)
+## Failure and Escalation
 
-## Usage
-
-- Trigger after infra changes or as part of cross-validation.
-- **Inputs:** compose files, optional live container snapshot
-- **Outputs:** `_workspace/repo-support/iac_review_<date>.md`, `_workspace/repo-support/cross-validate_<date>.md`
-
-## Artifacts
-
-- `_workspace/repo-support/iac_review_<date>.md`
-- `_workspace/repo-support/cross-validate_<date>.md`
+If runtime behavior is required to decide, mark it as post-change revalidation for `drift-detector`; escalate security concerns to `security-auditor`.
 
 ## Related Documents
 
-- `../../scopes/infra.md`
-- `../../rules/postflight-checklist.md`
-- `../../subagent-protocol.md`
-- `../README.md`
+- [Infrastructure scope](../../scopes/infra.md)
+- [Infrastructure cross-validation](../functions/infra-cross-validate.md)
+- [Drift detector](./drift-detector.md)
+- [Security auditor](./security-auditor.md)

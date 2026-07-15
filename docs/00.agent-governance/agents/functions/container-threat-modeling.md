@@ -1,54 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: container-threat-modeling
+scope: security
+status: active
 ---
 
 # container-threat-modeling
 
-## Overview
+## Preconditions
 
-STRIDE/DREAD threat modeling framework for Docker container trust boundaries. Provides structured threat identification, risk scoring, and countermeasure selection for containerized environments.
+Workload boundaries, assets, actors, data flows, and deployment assumptions must be identified without reading secret payloads.
 
-## Purpose
+## Inputs
 
-Systematically surface container-specific threats before security vulnerabilities reach production.
+- Trust boundaries and workload definition.
+- Compose/network/volume/secret metadata and exposed interfaces.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Map assets and data flows across host, container, network, storage, secret, and control-plane boundaries.
+2. Enumerate plausible spoofing, tampering, disclosure, denial, and privilege-escalation paths tied to tracked configuration.
+3. Rank mitigations by exploitability and impact, assign an owner, and identify residual risk requiring approval.
 
-- Trust boundary identification (user → app, app → DB, app → external)
-- STRIDE threat enumeration per boundary
-- DREAD risk scoring (Damage, Reproducibility, Exploitability, Affected users, Discoverability)
-- Docker-specific countermeasures (no privileged, read-only root fs, resource limits, secret hygiene)
+## Outputs
 
-**Excludes:**
+- A container threat model with scoped threats, mitigations, owners, and residual risks.
 
-- SAST/SCA scanning (see ci-cd-patterns security gates)
-- CVSS-based vulnerability scoring (handled by security-auditor)
+## Gates
 
-## Structure
+- Every material asset and trust boundary is covered.
+- Each accepted mitigation has a canonical implementation or policy owner.
 
-- Trust boundary map → STRIDE enumeration → DREAD scoring → countermeasure selection
+## Failure Handling
 
-## Agents
-
-- **security-auditor** — primary caller
-
-## Skills
-
-- This function is a reusable orchestration skill.
-
-## Usage
-
-- Trigger when adding new services, changing network topology, or handling sensitive data flows.
-- **Inputs:** service architecture description or Compose file
-- **Outputs:** `_workspace/repo-support/threat_model_<date>.md`
-
-## Artifacts
-
-- `_workspace/repo-support/threat_model_<date>.md`
+Record unknown boundaries and stop any claim of completeness when configuration or authority evidence is missing.
 
 ## Related Documents
 
-- `../../scopes/security.md`
-- `../README.md`
+- [Security auditor](../agents/security-auditor.md)
+- [Security audit](./security-audit.md)
+- [Security scope](../../scopes/security.md)

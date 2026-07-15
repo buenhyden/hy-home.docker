@@ -1,58 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: security-audit
+scope: security
+status: active
 ---
 
 # security-audit
 
-## Overview
+## Preconditions
 
-Threat-model-first security audit orchestration function for the workspace. Covers container, Compose, workflow, and code-security audits with remediation-oriented reporting.
+The exact change boundary, security contract, trust assumptions, and read-only authorization must be known.
 
-## Purpose
+## Inputs
 
-Provide a repeatable audit flow that detects security regressions early and records actionable, evidence-backed findings.
+- Exact change boundary and security contract.
+- Threat model, dependency/workflow metadata, secret boundaries, and validation evidence.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Trace exposed inputs, privileges, credentials, data flows, dependencies, and execution sinks affected by the change.
+2. Reproduce plausible weaknesses using safe static or approved local checks and distinguish exploit paths from policy hardening.
+3. Rank findings by impact and reachability, cite evidence, and assign remediation or residual-risk ownership.
 
-- container and Compose security auditing
-- workflow and automation security auditing
-- secret exposure and dependency risk review
+## Outputs
 
-**Excludes:**
+- Severity-ranked security findings with evidence and remediation direction.
 
-- implementing fixes
-- real-time SOC operations
+## Gates
 
-## Structure
+- Every finding cites exact evidence.
+- Secret values and prohibited sensitive payloads are absent from output.
 
-- Runtime mirror: `.claude/skills/security-audit/skill.md`
-- Threat-model first → scan → report workflow
+## Failure Handling
 
-## Agents
-
-- **security-auditor** — primary operator
-- **workflow-supervisor** — coordination support
-- **incident-responder** — incident-linked escalation path
-
-## Skills
-
-- This function is a reusable orchestration skill.
-
-## Usage
-
-- Trigger for security audits of code, infra, or workflow assets.
-- **Inputs:** target paths, audit trigger, optional incident context
-- **Outputs:** `_workspace/repo-support/security_audit_<date>.md`
-
-## Artifacts
-
-- `_workspace/repo-support/security_audit_<date>.md`
+Stop and redact on accidental sensitive-data exposure; escalate Critical risk or missing authorization without probing external systems.
 
 ## Related Documents
 
-- `../../scopes/security.md`
-- `../../rules/github-governance.md`
-- `../../rules/postflight-checklist.md`
-- `../README.md`
+- [Security auditor](../agents/security-auditor.md)
+- [Container threat modeling](./container-threat-modeling.md)
+- [Security scope](../../scopes/security.md)

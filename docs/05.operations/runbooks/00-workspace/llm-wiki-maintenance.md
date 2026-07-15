@@ -1,7 +1,12 @@
 ---
 status: active
+artifact_id: runbook:llm-wiki-maintenance
+artifact_type: runbook
+parent_ids:
+  - policy:llm-wiki-maintenance
+reviewed_at: 2026-07-15
+review_cycle: on-governance-change
 ---
-<!-- Target: docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md -->
 
 # LLM Wiki Maintenance Runbook
 
@@ -9,7 +14,7 @@ status: active
 
 이 런북은 `runbooks/00-workspace/llm-wiki-maintenance.md` 대상의 반복 실행 절차, 검증 evidence, 실패 시 중단 기준을 정의한다.
 
-## LLM Wiki Maintenance Runbook Procedure
+## Trigger and Preconditions
 
 > Scope: LLM Wiki Maintenance Runbook operational execution
 
@@ -24,7 +29,7 @@ status: active
 - **Policy**: [LLM Wiki maintenance policy](../../policies/00-workspace/llm-wiki-maintenance.md)
 - **Guide**: [LLM Wiki maintenance guide](../../guides/00-workspace/llm-wiki-maintenance.md)
 
-## When to Use
+### When to Use
 
 - Root entrypoints, agent governance docs, operations docs, script inventory, infrastructure indexes, or LLM Wiki files changed.
 - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` reports stale generated output.
@@ -93,12 +98,18 @@ status: active
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
-## AI Agent Policy Section
+### AI Agent Controls
 
-- **Model / Prompt Change Process**: `wiki-curator` uses `model: sonnet` and imports `docs/00.agent-governance/scopes/docs.md`.
+- **Model / Prompt Change Process**: `doc-writer` imports `docs/00.agent-governance/scopes/docs.md`; model changes follow the Stage 00 provider adapter change protocol.
 - **Eval / Guardrail Threshold**: stale index, unsafe path inclusion, or forbidden wording is a blocking validation failure.
 - **Log / Trace Retention**: record final verification evidence in `docs/00.agent-governance/memory/progress.md`; do not paste raw secret-adjacent logs.
 - **Safety Incident Thresholds**: suspected secret exposure or public-scope drift requires immediate stop and user escalation.
+
+## Verification Record
+
+| Verification environment | Command or procedure | Result | Evidence location |
+| --- | --- | --- | --- |
+| Local governed worktree | Run both LLM Wiki generators with `--check` and the repository contract checker | Every command exits zero and reports fresh generated outputs | Current Task verification evidence and `docs/00.agent-governance/memory/progress.md` |
 
 ## Evidence
 
@@ -117,6 +128,12 @@ status: active
 
 - Stop if verification fails or secret exposure risk appears.
 - Escalate to the owning operator before making runtime changes outside this runbook.
+
+## Automation Handoff
+
+| Automation candidate or invocation | Human or operator judgment boundary |
+| --- | --- |
+| Generator freshness checks in local QA and CI | A human approves ownership, source-boundary, or public-scope changes before regeneration becomes authoritative |
 
 ## Related Documents
 

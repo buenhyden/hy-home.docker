@@ -1,59 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: code-reviewer
+scope: common
+status: active
 ---
 
 # code-reviewer
 
-## Overview
+## Preconditions
 
-Cross-layer code review orchestration function for the workspace. Applies style, security, performance, and architecture review taxonomy without auto-fixing code.
+The review package must identify the base/head range, task requirements, and observed verification evidence.
 
-## Purpose
+## Inputs
 
-Provide a repeatable review workflow that produces structured, severity-tagged findings and routes specialized concerns to the right worker agents.
+- Exact diff and commit list.
+- Verification evidence, task report, and governing constraints.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Confirm the reviewed range and read the task requirements before inspecting implementation details.
+2. Test each candidate finding against repository evidence, then classify it with a precise remediation condition.
+3. Issue separate specification-compliance and quality verdicts and identify any forward dependency that cannot be verified in this task.
 
-- full and focused code reviews
-- file and diff review workflows
-- cross-domain finding prioritization
+## Outputs
 
-**Excludes:**
+- Actionable findings and explicit PASS/APPROVED or correction-required verdicts.
 
-- implementing fixes
-- infrastructure mutation
+## Gates
 
-## Structure
+- Review remains read-only and independent.
+- No claim is made without reproducible evidence.
 
-- Runtime mirror: `.claude/skills/code-reviewer/skill.md`
-- Review taxonomy: style, security, performance, architecture
+## Failure Handling
 
-## Agents
-
-- **code-reviewer** — primary reviewer
-- **workflow-supervisor** — arbitration and synthesis support
-- **security-auditor** — security escalation path
-- **iac-reviewer** — infrastructure escalation path
-
-## Skills
-
-- This function is a reusable orchestration skill.
-
-## Usage
-
-- Trigger when a code review is requested.
-- **Inputs:** target files, diff, scope, optional review mode
-- **Outputs:** `_workspace/repo-support/review_<branch>_<date>.md`
-
-## Artifacts
-
-- `_workspace/repo-support/review_<branch>_<date>.md`
+Return `cannot verify` with the missing evidence when the package is incomplete; never edit the implementation while acting as reviewer.
 
 ## Related Documents
 
-- `../../rules/quality-standards.md`
-- `../../rules/github-governance.md`
-- `../../subagent-protocol.md`
-- `../README.md`
+- [Code reviewer role](../agents/code-reviewer.md)
+- [Code review dimensions](./code-review-dimensions.md)
+- [Subagent protocol](../../subagent-protocol.md)

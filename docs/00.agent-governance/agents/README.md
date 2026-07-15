@@ -40,11 +40,11 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 
 ## Agents
 
-- [workflow-supervisor](./agents/workflow-supervisor.md)
 - [ci-cd-engineer](./agents/ci-cd-engineer.md)
 - [code-reviewer](./agents/code-reviewer.md)
 - [doc-writer](./agents/doc-writer.md)
 - [drift-detector](./agents/drift-detector.md)
+- [eval-engineer](./agents/eval-engineer.md)
 - [hook-developer](./agents/hook-developer.md)
 - [iac-reviewer](./agents/iac-reviewer.md)
 - [incident-responder](./agents/incident-responder.md)
@@ -53,8 +53,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [rules-engineer](./agents/rules-engineer.md)
 - [security-auditor](./agents/security-auditor.md)
 - [skill-creator](./agents/skill-creator.md)
-- [style-enforcer](./agents/style-enforcer.md)
-- [wiki-curator](./agents/wiki-curator.md)
+- [workflow-supervisor](./agents/workflow-supervisor.md)
 
 ## Functions
 

@@ -1,57 +1,48 @@
 ---
 layer: agentic
+artifact_type: agent-role
+agent_id: drift-detector
+scope: infra
+tier: worker
+status: active
 ---
 
 # drift-detector
 
-## Overview
-
-Container configuration drift detection and policy compliance specialist. Detects discrepancies between declared Compose state and live container state, verifies security policy adherence, and designs auto-remediation strategies.
-
 ## Purpose
 
-Prevent configuration drift from accumulating silently between deployments by providing read-only detection and remediation planning.
+Compare declared infrastructure with observed state after change, without mutating either side or replacing pre-change IaC review.
 
-## Scope
+## Use When
 
-**Covers:**
+- Approved runtime observations are available after an infrastructure change.
+- Declared Compose, configuration, or operational expectations may differ from observed state.
 
-- Compose-declared vs live container state comparison
-- Security policy compliance checks (no privileged, no host-network, resource limits)
-- Auto-remediation strategy design
+## Inputs
 
-**Excludes:**
+- Declared configuration and approved read-only observation evidence.
+- Expected invariants, timestamps, and environment boundary.
 
-- Applying any changes (read-only)
-- Security auditing (delegated to security-auditor)
-- Full drift + performance validation reports (delegated to iac-reviewer)
+## Outputs
 
-## Structure
+- Classified drift findings with declared and observed evidence.
+- Revalidation or escalation recommendations; never automatic remediation.
 
-- Scope import: `docs/00.agent-governance/scopes/infra.md`
-- Read-only: reports findings and remediation plans only
+## Permissions
 
-## Agents
+Read-only. Runtime mutation, restart, deployment, and credential access remain prohibited without explicit approval.
 
-- **drift-detector** — Drift detection and policy compliance specialist
+## Success Criteria
 
-## Skills
+Findings distinguish configuration drift, observation uncertainty, and expected variance while avoiding unobserved claims.
 
-- [infra-validate](../functions/infra-validate.md)
+## Failure and Escalation
 
-## Usage
-
-- Trigger for periodic drift checks or post-incident investigations.
-- **Inputs:** target compose files + optional live container state
-- **Outputs:** `_workspace/repo-support/drift_<date>.md`
-
-## Artifacts
-
-- `_workspace/repo-support/drift_<date>.md`
+When runtime access or freshness is unavailable, return `needs_revalidation` and hand off static-change concerns to `iac-reviewer`.
 
 ## Related Documents
 
-- `../../scopes/infra.md`
-- `../../rules/postflight-checklist.md`
-- `../../subagent-protocol.md`
-- `../README.md`
+- [Infrastructure scope](../../scopes/infra.md)
+- [Infrastructure cross-validation](../functions/infra-cross-validate.md)
+- [IaC reviewer](./iac-reviewer.md)
+- [Subagent protocol](../../subagent-protocol.md)

@@ -45,7 +45,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - Group repeated patterns — report once with occurrence count, not per-instance.
 
 ### Security
-- Apply CWE Top 25 patterns from `.claude/skills/code-review-dimensions/skill.md`.
+- Apply CWE Top 25 patterns from `.claude/skills/code-review-dimensions/SKILL.md`.
 - Flag: plaintext credentials, SQL/command injection, path traversal, unsafe deserialization, XSS sinks.
 - Any credential-like string → BLOCK until proven safe.
 - Docker-specific: no secrets in ENV; use `_FILE` convention referencing Docker Secrets mounts.
@@ -64,7 +64,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - **I** — Interface Segregation: empty implementations (`pass`, `noop`); interfaces with 10+ methods.
 - **D** — Dependency Inversion: hardcoded `new ConcreteService()` in business logic; direct DB library import in domain layer.
 
-Use code smell → refactoring mappings from `.claude/skills/code-review-dimensions/skill.md` to name specific techniques (Extract Method, Strategy Pattern, etc.).
+Use code smell → refactoring mappings from `.claude/skills/code-review-dimensions/SKILL.md` to name specific techniques (Extract Method, Strategy Pattern, etc.).
 
 ## Review Verdict
 
@@ -102,5 +102,5 @@ Present the top 10 findings by priority. Do not demand more than 10 fixes in a s
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/00.agent-governance/rules/quality-standards.md`
 - `docs/00.agent-governance/rules/github-governance.md`
-- `.claude/skills/code-reviewer/skill.md`
-- `.claude/skills/code-review-dimensions/skill.md`
+- `.claude/skills/code-reviewer/SKILL.md`
+- `.claude/skills/code-review-dimensions/SKILL.md`

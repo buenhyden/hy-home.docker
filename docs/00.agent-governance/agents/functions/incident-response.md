@@ -1,55 +1,45 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: incident-response
+scope: ops
+status: active
 ---
 
 # incident-response
 
-## Overview
+## Preconditions
 
-Incident response playbook for Docker infrastructure. Emphasizes timeline reconstruction, evidence-based RCA, and postmortem completion.
+An incident boundary, authorized response owner, current runbook, and safe evidence channel must be established.
 
-## Purpose
+## Inputs
 
-Provide a repeatable response workflow for outages, SLO breaches, and security incidents.
+- Bounded incident evidence and current runbook.
+- Affected services, timestamps, impact, authority, and escalation contacts.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Stabilize the evidence timeline and classify impact without copying secrets, raw auth data, or unrelated logs.
+2. Execute only authorized diagnostic or recovery steps, recording command class, expected result, and observed outcome.
+3. Escalate on blast-radius growth, hand off prevention work, and trigger a postmortem when the incident is stabilized.
 
-- Incident detection and classification
-- Timeline reconstruction and RCA
-- Postmortem creation and follow-up actions
+## Outputs
 
-**Excludes:**
+- A sanitized response record with timeline, actions, decisions, outcome, and handoff.
 
-- Non-infra incidents unrelated to runtime services
+## Gates
 
-## Structure
+- Evidence is redacted and provenance-aware.
+- Response actions stay within the declared escalation boundary.
+- A paired postmortem is routed to
+  `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md`.
 
-- Phases: detect → timeline → mitigation → RCA → recovery → postmortem
+## Failure Handling
 
-## Agents
-
-- **incident-responder** — primary operator
-
-## Skills
-
-- This function is the incident response orchestration skill.
-
-## Usage
-
-- Trigger on service outages, SLO breaches, or suspected secret exposure.
-- **Inputs:** incident trigger, severity, affected services
-- **Outputs:** incident and postmortem documents
-
-## Artifacts
-
-- `docs/05.operations/incidents/YYYY/INC-###-<title>/INC-###-<title>.md`
-- `docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md`
-- `_workspace/repo-support/incident_timeline_<id>.md`
+Stop unsafe recovery, preserve metadata instead of prohibited payloads, and escalate immediately when authority or impact is uncertain.
 
 ## Related Documents
 
-- `../../scopes/ops.md`
-- `../../rules/postflight-checklist.md`
-- `../README.md`
+- [Incident responder](../agents/incident-responder.md)
+- [Operations scope](../../scopes/ops.md)
+- [Approval boundaries](../../rules/approval-boundaries.md)

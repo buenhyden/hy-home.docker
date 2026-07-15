@@ -109,6 +109,6 @@ Include a brief NIST CSF gap table in each audit report:
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/05.operations/incidents/` (incident tracking)
-- `.claude/skills/security-audit/skill.md`
-- `.claude/skills/container-threat-modeling/skill.md`
-- `.claude/skills/ci-cd-patterns/skill.md`
+- `.claude/skills/security-audit/SKILL.md`
+- `.claude/skills/container-threat-modeling/SKILL.md`
+- `.claude/skills/ci-cd-patterns/SKILL.md`

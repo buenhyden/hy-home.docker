@@ -1,57 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: docker-compose-patterns
+scope: infra
+status: active
 ---
 
 # docker-compose-patterns
 
-## Overview
+## Preconditions
 
-Deployment strategy pattern library for Docker Compose environments. Provides Rolling, Blue-Green, and Canary deployment patterns adapted for Docker Compose with Traefik.
+Compose requirements and workspace conventions must identify whether the task is local composition, availability design, or deployment planning.
 
-## Purpose
+## Inputs
 
-Enable safe, zero-downtime deployments using proven patterns without requiring Kubernetes or cloud-native infrastructure.
+- Compose requirements and workspace conventions.
+- Service topology, statefulness, routing, health, resource, and secret constraints.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Classify the workload and eliminate patterns that violate state, network, volume, or host constraints.
+2. Select the simplest Compose pattern that satisfies dependency, health, isolation, and operability requirements.
+3. Record trade-offs and validation obligations without presenting orchestrator-only behavior as native Compose capability.
 
-- Rolling update pattern (`docker compose up -d --no-deps`)
-- Blue-Green pattern (Traefik router switch via compose profiles)
-- Canary pattern (Traefik weighted routing with progressive traffic shift)
-- Health check design (Liveness/Readiness/Startup with compose + Traefik labels)
-- Rollback procedures and trigger conditions
+## Outputs
 
-**Excludes:**
+- A Compose pattern selection with rationale and validation requirements.
 
-- Kubernetes or cloud-specific deployment strategies
-- CI/CD pipeline orchestration (see ci-cd-patterns)
+## Gates
 
-## Structure
+- Selected YAML and Compose features are schema-valid.
+- The pattern matches repository naming, secret, network, and lifecycle rules.
 
-- Pattern selection → health check design → rollback planning
+## Failure Handling
 
-## Agents
-
-- **infra-implementer** — primary caller
-- **iac-reviewer** — uses patterns for review reference
-
-## Skills
-
-- This function is a reusable orchestration skill.
-
-## Usage
-
-- Trigger when planning or implementing deployment strategy changes.
-- **Inputs:** deployment target, traffic split requirements, rollback SLO
-- **Outputs:** deployment YAML configuration + rollback procedure
-
-## Artifacts
-
-- `_workspace/repo-support/deployment_<strategy>_<date>.md`
+Escalate to architecture design when no Compose-native pattern meets the requirement; do not simulate unsupported deployment guarantees.
 
 ## Related Documents
 
-- `../../scopes/infra.md`
-- `../functions/ci-cd-patterns.md`
-- `../README.md`
+- [Infrastructure implementer](../agents/infra-implementer.md)
+- [Compose stack function](./compose-stack-agent.md)
+- [Infrastructure scope](../../scopes/infra.md)

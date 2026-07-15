@@ -169,5 +169,5 @@ Save as `_workspace/repo-support/drift_<YYYY-MM-DD>.md`:
 - `docs/00.agent-governance/scopes/infra.md`
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
-- `.claude/skills/infra-validate/skill.md`
-- `.claude/skills/infra-cross-validate/skill.md`
+- `.claude/skills/infra-validate/SKILL.md`
+- `.claude/skills/infra-cross-validate/SKILL.md`

@@ -502,7 +502,7 @@ prompt = str(data.get("prompt", "")).lower()
 SKILLS = [
     {
         "label": "compose-stack-agent",
-        "path": ".claude/skills/compose-stack-agent/skill.md",
+        "path": ".claude/skills/compose-stack-agent/SKILL.md",
         "desc": "Compose 서비스 스택 검토 및 QW-001~005 인프라 기준선 검사",
         "keywords": [
             "healthcheck", "health check", "restart policy",
@@ -512,7 +512,7 @@ SKILLS = [
     },
     {
         "label": "requirements-to-design-agent",
-        "path": ".claude/skills/requirements-to-design-agent/skill.md",
+        "path": ".claude/skills/requirements-to-design-agent/SKILL.md",
         "desc": "Stage 01→02 PRD→ARD/ADR 트레이서빌리티 갭 분석",
         "keywords": [
             "prd", "ard", "requirements to design", "architecture decision",
@@ -521,7 +521,7 @@ SKILLS = [
     },
     {
         "label": "execution-plan-agent",
-        "path": ".claude/skills/execution-plan-agent/skill.md",
+        "path": ".claude/skills/execution-plan-agent/SKILL.md",
         "desc": "Stage 03→04 스펙→플랜 분해 및 실행 계획 작성",
         "keywords": [
             "execution plan", "spec to plan", "stage 03", "stage 04",
@@ -530,7 +530,7 @@ SKILLS = [
     },
     {
         "label": "task-breakdown-agent",
-        "path": ".claude/skills/task-breakdown-agent/skill.md",
+        "path": ".claude/skills/task-breakdown-agent/SKILL.md",
         "desc": "플랜→태스크 분해 및 실행 증거 기록",
         "keywords": [
             "task breakdown", "task evidence", "plan to task",
@@ -539,7 +539,7 @@ SKILLS = [
     },
     {
         "label": "ops-runbook-agent",
-        "path": ".claude/skills/ops-runbook-agent/skill.md",
+        "path": ".claude/skills/ops-runbook-agent/SKILL.md",
         "desc": "Stage 05 운영 런북 작성 및 장애 대응 절차 문서화",
         "keywords": [
             "runbook", "stage 05", "05.operations", "backup procedure",
@@ -548,7 +548,7 @@ SKILLS = [
     },
     {
         "label": "knowledge-map-agent",
-        "path": ".claude/skills/knowledge-map-agent/skill.md",
+        "path": ".claude/skills/knowledge-map-agent/SKILL.md",
         "desc": "Graphify 지식 그래프 탐색 및 문서 간 트레이서빌리티 갭 감지",
         "keywords": [
             "graphify", "knowledge graph", "traceability gap", "orphaned doc",
@@ -557,7 +557,7 @@ SKILLS = [
     },
     {
         "label": "policy-gate-agent",
-        "path": ".claude/skills/policy-gate-agent/skill.md",
+        "path": ".claude/skills/policy-gate-agent/SKILL.md",
         "desc": "전체 검증 스크립트 오케스트레이션 및 정책 게이트 통과 확인",
         "keywords": [
             "policy gate", "validation suite", "check-quickwin",

@@ -1,73 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: workspace-audit-revalidation
+scope: agentic
+status: active
 ---
 
 # workspace-audit-revalidation
 
-## Overview
+## Preconditions
 
-Bounded revalidation workflow for completed Home Docker workspace-audit
-artifacts.
+A canonical audit, criterion definitions, current repository baseline, and representative evidence boundary must be fixed before scoring.
 
-## Purpose
+## Inputs
 
-Keep audit evidence current and auditable without creating duplicate full-audit
-documents or expanding into deferred runtime, secret, remote, deployment, or
-deletion work.
+- Canonical audit and current repository evidence.
+- Criterion IDs, scorers, thresholds, source cutoff, and known forward dependencies.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Reproduce each criterion against current tracked source and generated freshness, treating advisory graphs and provider claims as non-authoritative.
+2. Apply the defined scorer and threshold to representative evidence, separating repository adoption from runtime acceptance or entitlement.
+3. Record changed statuses, unchanged gaps, confidence, and exact validation evidence without backdating or promoting unobserved claims.
 
-- Existing workspace-audit Plan/Task evidence
-- Bounded revalidation addenda
-- Omission-review and Skill-review follow-ups
-- Progress-log updates
-- Local verification and branch cleanup
+## Outputs
 
-**Excludes:**
+- A calibrated revalidation with criterion-level evidence and explicit uncertainty.
 
-- New full-audit documents unless explicitly approved
-- Secret values and actual `.env` values
-- Docker runtime start/stop/log checks
-- Remote GitHub settings verification
-- Deployment, release, and deletion-risk work
+## Gates
 
-## Structure
+- Evidence is representative, source-bounded, and reproducible.
+- No criterion receives a pass from absent runtime or provider observation.
 
-- Bootstrap repo governance and Graphify posture
-- Confirm canonical Task/progress evidence targets
-- Apply scoped in-place evidence updates
-- Preserve explicit deferrals
-- Run repo gates and report results
+## Failure Handling
 
-## Agents
-
-- **doc-writer** — owns canonical documentation updates
-- **workflow-supervisor** — coordinates multi-lens follow-up work when needed
-
-## Skills
-
-- Runtime mirror: `.claude/skills/workspace-audit-revalidation/skill.md`
-
-## Usage
-
-- Trigger after a completed workspace audit needs revalidation or a follow-up
-  review lens.
-- **Inputs:** existing audit Plan/Task, user-approved review scope, current repo
-  state.
-- **Outputs:** updated canonical Task evidence, progress-log row, verification
-  results, and task-sized commit when committing is approved.
-
-## Artifacts
-
-- `docs/04.execution/tasks/*workspace-audit*.md`
-- `docs/00.agent-governance/memory/progress.md`
+Return `needs_revalidation` when evidence, entitlement, cutoff, or calibration is insufficient; never infer completion from policy text alone.
 
 ## Related Documents
 
-- `../../scopes/agentic.md`
-- `../../scopes/docs.md`
-- `../../rules/stage-authoring-matrix.md`
-- `../../rules/github-governance.md`
-- `../README.md`
+- [Evaluation engineer](../agents/eval-engineer.md)
+- [Agent catalog contract](../../contracts/agent-catalog.yaml)
+- [Agentic scope](../../scopes/agentic.md)

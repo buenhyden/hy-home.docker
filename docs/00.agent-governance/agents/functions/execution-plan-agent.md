@@ -1,11 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: execution-plan-agent
+scope: agentic
+status: active
 ---
 
 # execution-plan-agent
 
-Provider-neutral orchestration function catalog entry for `execution-plan-agent`.
+## Preconditions
+
+An approved specification and corroborated repository baseline must exist; unresolved decisions that alter scope remain blocking.
+
+## Inputs
+
+- Approved specification and repository evidence.
+- File ownership, dependencies, risks, verification commands, and rollback boundaries.
+
+## Procedure
+
+1. Map every acceptance criterion to exact files, implementation steps, tests, and task evidence without claiming prospective results.
+2. Order work by dependency and reversibility, isolating protected or runtime changes into separately approved tasks.
+3. Define RED/GREEN checks, review gates, commit boundaries, and terminal completion criteria.
+
+## Outputs
+
+- An executable Stage 04 Plan with exact file map, sequence, risks, and verification ladder.
+
+## Gates
+
+- File scope and ownership are explicit.
+- Verification commands prove each acceptance criterion and name skipped/CI-only gates.
+
+## Failure Handling
+
+Return to specification when interfaces, authority, or completion criteria cannot be made concrete; do not fill gaps with assumptions.
 
 ## Related Documents
 
-- [Agent Governance Hub](../../README.md)
+- [Workflow supervisor](../agents/workflow-supervisor.md)
+- [Task breakdown](./task-breakdown-agent.md)
+- [Task checklists](../../rules/task-checklists.md)

@@ -14,17 +14,10 @@ entries:
   disposition: migrate
   canonical_replacement: null
   active_consumers:
-  - .claude/skills/infra-cross-validate/skill.md
-  - .claude/skills/policy-gate-agent/skill.md
-  - .claude/skills/workspace-audit-revalidation/skill.md
-  - .codex/skills/infra-cross-validate/skill.md
-  - .codex/skills/policy-gate-agent/skill.md
-  - .codex/skills/workspace-audit-revalidation/skill.md
   - .markdownlint-cli2.yaml
   - AGENTS.md
   - CLAUDE.md
   - GEMINI.md
-  - docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md
   - docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
   - docs/00.agent-governance/harness-implementation-map.md
   - docs/00.agent-governance/memory/harness-agent-first-gap-audit.md
@@ -172,8 +165,6 @@ entries:
   active_consumers:
   - .agents/workflows/documentation.md
   - .claude/agents/doc-writer.md
-  - .claude/skills/ops-runbook-agent/skill.md
-  - .codex/skills/ops-runbook-agent/skill.md
   - README.md
   - docs/00.agent-governance/rules/hooks/hookify.block-absolute-file-link.md
   - docs/00.agent-governance/rules/output-style.md
@@ -245,18 +236,6 @@ entries:
   - .claude/agents/ci-cd-engineer.md
   - .claude/agents/code-reviewer.md
   - .claude/agents/security-auditor.md
-  - .claude/skills/ci-cd-patterns/skill.md
-  - .claude/skills/code-reviewer/skill.md
-  - .claude/skills/deployment-pipeline-design/skill.md
-  - .claude/skills/infra-cross-validate/skill.md
-  - .claude/skills/security-audit/skill.md
-  - .claude/skills/workspace-audit-revalidation/skill.md
-  - .codex/skills/ci-cd-patterns/skill.md
-  - .codex/skills/code-reviewer/skill.md
-  - .codex/skills/deployment-pipeline-design/skill.md
-  - .codex/skills/infra-cross-validate/skill.md
-  - .codex/skills/security-audit/skill.md
-  - .codex/skills/workspace-audit-revalidation/skill.md
   - README.md
   - docs/00.agent-governance/memory/progress.md
   - docs/00.agent-governance/providers/agents-md.md
@@ -325,16 +304,6 @@ entries:
   canonical_replacement: null
   active_consumers:
   - .agents/workflows/documentation.md
-  - .claude/skills/execution-plan-agent/skill.md
-  - .claude/skills/ops-runbook-agent/skill.md
-  - .claude/skills/requirements-to-design-agent/skill.md
-  - .claude/skills/task-breakdown-agent/skill.md
-  - .claude/skills/workspace-audit-revalidation/skill.md
-  - .codex/skills/execution-plan-agent/skill.md
-  - .codex/skills/ops-runbook-agent/skill.md
-  - .codex/skills/requirements-to-design-agent/skill.md
-  - .codex/skills/task-breakdown-agent/skill.md
-  - .codex/skills/workspace-audit-revalidation/skill.md
   - README.md
   - docs/00.agent-governance/rules/agentic.md
   - docs/00.agent-governance/rules/documentation-protocol.md
@@ -517,10 +486,6 @@ entries:
   disposition: preserve
   canonical_replacement: null
   active_consumers:
-  - .claude/skills/execution-plan-agent/skill.md
-  - .claude/skills/task-breakdown-agent/skill.md
-  - .codex/skills/execution-plan-agent/skill.md
-  - .codex/skills/task-breakdown-agent/skill.md
   - README.md
   - docs/00.agent-governance/memory/progress.md
   - docs/04.execution/plans/2026-05-18-docs-bounded-consistency-audit.md
@@ -1170,8 +1135,6 @@ entries:
   canonical_replacement: null
   active_consumers:
   - .agents/workflows/documentation.md
-  - .claude/skills/ops-runbook-agent/skill.md
-  - .codex/skills/ops-runbook-agent/skill.md
   - docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md
   - docs/03.specs/102-workspace-document-contract-audit-pack/spec.md
   - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md

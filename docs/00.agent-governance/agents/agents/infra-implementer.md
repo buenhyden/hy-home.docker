@@ -1,59 +1,48 @@
 ---
 layer: agentic
+artifact_type: agent-role
+agent_id: infra-implementer
+scope: infra
+tier: worker
+status: active
 ---
 
 # infra-implementer
 
-## Overview
-
-Infrastructure-as-Code specialist for Docker Compose changes. Implements safe, atomic infra modifications with validation and post-checks.
-
 ## Purpose
 
-Apply infrastructure changes while preserving SLOs, network isolation, and secrets hygiene.
+Implement approved infrastructure and Docker Compose changes as small, reversible units with static and scoped runtime validation.
 
-## Scope
+## Use When
 
-**Covers:**
+- An approved Spec and Plan authorize concrete Compose or infrastructure edits.
+- A validated design must be translated into tracked configuration.
 
-- Docker Compose service changes
-- Network and volume configuration
-- Secrets handling via Docker Secrets
+## Inputs
 
-**Excludes:**
+- Approved infrastructure specification, exact file scope, and rollback path.
+- Current Compose tree, secret references, and validation contract.
 
-- Security auditing (delegated to security-auditor)
-- Drift/performance validation (delegated to iac-reviewer)
+## Outputs
 
-## Structure
+- Minimal tracked infrastructure changes and validation evidence.
+- Updated operations documentation only when the implemented behavior changes it.
 
-- Scope import: `docs/00.agent-governance/scopes/infra.md`
-- Validate → change → verify workflow
+## Permissions
 
-## Agents
+Workspace writes are allowed in approved infrastructure scope. Runtime deployment, secrets, and remote systems require separate approval.
 
-- **infra-implementer** — Infrastructure change executor
+## Success Criteria
 
-## Skills
+Configuration parses, preserves secret and network boundaries, matches the approved design, and remains independently reviewable.
 
-- [infra-validate](../functions/infra-validate.md)
-- [infra-cross-validate](../functions/infra-cross-validate.md)
-- [docker-compose-patterns](../functions/docker-compose-patterns.md)
+## Failure and Escalation
 
-## Usage
-
-- Trigger for infra changes in Compose or `infra/` assets.
-- **Inputs:** change request + target files
-- **Outputs:** modified files + `_workspace/repo-support/infra_<artifact>.md`
-
-## Artifacts
-
-- `_workspace/repo-support/infra_<artifact>.md`
-- `_workspace/repo-support/cross-validate_<date>.md` (after cross-validation)
+Revert or stop on invalid Compose output, unexpected runtime impact, missing secrets, or unapproved dependency expansion; request IaC review.
 
 ## Related Documents
 
-- `../../scopes/infra.md`
-- `../../rules/postflight-checklist.md`
-- `../../subagent-protocol.md`
-- `../README.md`
+- [Infrastructure scope](../../scopes/infra.md)
+- [Compose stack function](../functions/compose-stack-agent.md)
+- [Docker Compose patterns](../functions/docker-compose-patterns.md)
+- [Infrastructure validation](../functions/infra-validate.md)

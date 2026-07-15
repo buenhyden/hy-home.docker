@@ -1,56 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: deployment-pipeline-design
+scope: ops
+status: active
 ---
 
 # deployment-pipeline-design
 
-## Overview
+## Preconditions
 
-Deployment pipeline design function for the `hy-home.docker` workspace. Designs and audits the
-repository's GitHub Actions workflows and gate placement, adapted for Docker Compose delivery.
+Release policy, deployment constraints, environments, approval authority, and rollback target must be explicit.
 
-## Purpose
+## Inputs
 
-Keep CI/CD pipelines safe, measurable, and aligned with workspace SLOs and the CI/CD pattern set.
+- Approved release policy and deployment constraints.
+- Artifact identity, validation gates, environment boundaries, and recovery requirements.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Separate build, verify, approve, promote, observe, and rollback stages with immutable artifact handoff.
+2. Place security, QA, and manual approval gates according to blast radius and environment authority.
+3. Define rollout observations, stop conditions, and the exact artifact/configuration rollback path.
 
-- GitHub Actions workflow design and review (`.github/workflows/*.yml`, e.g. `ci-quality.yml`)
-- Security/quality gate placement using `ci-cd-patterns`
-- Anti-duplication between local pre-commit and CI jobs (per `rules/github-governance.md`)
+## Outputs
 
-**Excludes:**
+- A deployment pipeline design with stages, authorities, evidence, and rollback semantics.
 
-- Generic deployment runbooks (external `deployment-procedures` skill)
-- Deployment strategy theory (see `ci-cd-patterns`)
+## Gates
 
-## Structure
+- Promotion cannot cross an approval boundary implicitly.
+- Rollback is concrete, versioned, and testable before release.
 
-- Map change → select workflow/gates → validate against governance → capture pipeline doc
+## Failure Handling
 
-## Agents
-
-- **ci-cd-engineer** — primary caller
-
-## Skills
-
-- Runtime mirror: `.claude/skills/deployment-pipeline-design/skill.md`
-
-## Usage
-
-- Trigger when designing or auditing CI/CD pipelines for this repository.
-- **Inputs:** changed workflows, gate requirements
-- **Outputs:** pipeline design/audit doc in `_workspace/repo-support/`
-
-## Artifacts
-
-- `_workspace/repo-support/pipeline_design_<date>.md`
+Defer implementation when environment credentials, promotion authority, or rollback artifacts are absent; never substitute local success for deployment proof.
 
 ## Related Documents
 
-- `../../scopes/ops.md`
-- `../functions/ci-cd-patterns.md`
-- `../../rules/github-governance.md`
-- `../README.md`
+- [CI/CD engineer](../agents/ci-cd-engineer.md)
+- [CI/CD patterns](./ci-cd-patterns.md)
+- [Approval boundaries](../../rules/approval-boundaries.md)

@@ -1,58 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: adr-writing
+scope: architecture
+status: active
 ---
 
 # adr-writing
 
-## Overview
+## Preconditions
 
-MADR-extended ADR writing framework with CAP theorem, ATAM, and quality attribute weighted scoring. Provides a structured approach to Architecture Decision Records for infrastructure, security, operations, data, and architecture decisions.
+Use only when a material architecture choice has approved context, explicit drivers, and at least one viable alternative.
 
-## Purpose
+## Inputs
 
-Ensure architecture decisions are captured with rigorous tradeoff analysis, traceable rationale, and consistent format so future agents and humans can understand and challenge past decisions.
+- Approved architecture context and decision drivers.
+- Alternatives, quality attributes, constraints, and affected parent artifacts.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Frame one decision, its status, scope, and traceable drivers without mixing implementation evidence into the record.
+2. Compare credible alternatives against the named quality attributes and document consequences, risks, and reversibility.
+3. Link the selected outcome to its parent ARD/PRD and the downstream Spec or superseded ADR.
 
-- ADR status lifecycle (Proposed → Accepted → Deprecated/Superseded)
-- Category-prefixed numbering (INFRA/SEC/OPS/DATA/ARCH)
-- MADR-extended template sections (Status, Decision Drivers, Quality Attribute Assessment, Validation Criteria, Change History)
-- CAP theorem classification guide (CP/AP/CA with tool assignments)
-- Weighted quality attribute scoring matrix by decision type
-- Simplified ATAM 6-step procedure
-- ADR writing quality checklist (10 required elements)
+## Outputs
 
-**Excludes:**
+- One typed ADR in `docs/02.architecture/decisions/` with decision rationale and consequences.
 
-- Modifying existing ADR files in `docs/02.architecture/decisions/` (read-only without explicit user approval)
-- Implementation of the decision (handled by domain agents)
+## Gates
 
-## Structure
+- Architecture traceability resolves upstream and downstream links.
+- Decision status and supersession semantics match the metadata contract.
 
-- Status lifecycle → category numbering → template filling → quality attribute scoring → ATAM → checklist
+## Failure Handling
 
-## Agents
-
-- **doc-writer** — primary caller
-
-## Skills
-
-- This function is a reusable orchestration skill.
-
-## Usage
-
-- Trigger for any significant architectural or infrastructure decision.
-- **Inputs:** decision topic + context + alternatives considered
-- **Outputs:** `docs/02.architecture/decisions/NNNN-<category>-<short-title>.md`
-
-## Artifacts
-
-- `docs/02.architecture/decisions/NNNN-<category>-<short-title>.md`
+If the choice, authority, or alternatives are not decision-ready, return a decision-gap report instead of fabricating an accepted ADR.
 
 ## Related Documents
 
-- `../../scopes/docs.md`
-- `../../rules/documentation-protocol.md`
-- `../README.md`
+- [Documentation protocol](../../rules/documentation-protocol.md)
+- [Documentation scope](../../scopes/docs.md)
+- [Agent catalog](../README.md)

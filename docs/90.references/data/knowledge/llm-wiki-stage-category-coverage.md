@@ -49,7 +49,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 ## Coverage Summary
 
-- Safe tracked source paths: `1311`
+- Safe tracked source paths: `1286`
 - Source buckets: `17`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -58,10 +58,10 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 | Source Bucket | Paths | Representative Paths |
 | --- | ---: | --- |
-| `.claude` | 47 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
-| `.codex` | 39 | [.codex/README.md](../../../../.codex/README.md)<br>[.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml)<br>[.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) |
+| `.claude` | 46 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
+| `.codex` | 16 | [.codex/README.md](../../../../.codex/README.md)<br>[.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml)<br>[.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) |
 | `.github` | 15 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
-| `docs/00.agent-governance` | 108 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
+| `docs/00.agent-governance` | 107 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
 | `docs/01.requirements` | 25 | [docs/01.requirements/001-gateway.md](../../../01.requirements/001-gateway.md)<br>[docs/01.requirements/002-auth.md](../../../01.requirements/002-auth.md)<br>[docs/01.requirements/003-security.md](../../../01.requirements/003-security.md) |
 | `docs/02.architecture` | 51 | [docs/02.architecture/README.md](../../../02.architecture/README.md)<br>[docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)<br>[docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md](../../../02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md) |
 | `docs/03.specs` | 96 | [docs/03.specs/001-gateway/README.md](../../../03.specs/001-gateway/README.md)<br>[docs/03.specs/001-gateway/spec.md](../../../03.specs/001-gateway/spec.md)<br>[docs/03.specs/002-auth/README.md](../../../03.specs/002-auth/README.md) |
@@ -82,8 +82,8 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | --- | ---: | --- |
 | Root entrypoints | 8 | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[AGENTS.md](../../../../AGENTS.md)<br>[CLAUDE.md](../../../../CLAUDE.md) |
 | LLM Wiki reference | 2 | [docs/90.references/llm-wiki/README.md](../../llm-wiki/README.md)<br>[docs/90.references/llm-wiki/repository-map.md](../../llm-wiki/repository-map.md) |
-| Agent governance | 108 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
-| Runtime surfaces | 86 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
+| Agent governance | 107 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
+| Runtime surfaces | 62 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
 | Active stage docs | 391 | [docs/01.requirements/001-gateway.md](../../../01.requirements/001-gateway.md)<br>[docs/01.requirements/002-auth.md](../../../01.requirements/002-auth.md)<br>[docs/01.requirements/003-security.md](../../../01.requirements/003-security.md) |
 | Operations docs | 262 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/guides/00-workspace/README.md](../../../05.operations/guides/00-workspace/README.md)<br>[docs/05.operations/guides/00-workspace/developer-setup.md](../../../05.operations/guides/00-workspace/developer-setup.md) |
 | Reference and template docs | 136 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/README.md)<br>[docs/90.references/audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md](../../audits/2026-07-03-workspace-document-contract-audit-pack/automation-coverage-map.md) |
@@ -98,11 +98,11 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | Role | Paths |
 | --- | ---: |
 | JSON registry | 69 |
-| Markdown reference | 829 |
+| Markdown reference | 805 |
 | YAML config | 109 |
 | folder index | 222 |
 | script | 50 |
-| source path | 29 |
+| source path | 28 |
 | text entrypoint | 3 |
 
 ## Sources
@@ -115,7 +115,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 ## Maintenance
 
-- **Owner**: `wiki-curator` / Documentation Specialist.
+- **Owner**: `doc-writer` using the `knowledge-map-agent` function.
 - **Review Cadence**: Review after root entrypoint, governance, operations, script inventory, infrastructure index, or LLM Wiki path changes.
 - **Update Trigger**: Run `bash scripts/knowledge/generate-llm-wiki-coverage.sh` after in-scope path changes and `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` during validation.
 

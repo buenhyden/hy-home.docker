@@ -1,54 +1,48 @@
 ---
 layer: agentic
+artifact_type: agent-role
+agent_id: qa-engineer
+scope: qa
+tier: worker
+status: active
 ---
 
 # qa-engineer
 
-## Overview
-
-Quality Assurance specialist responsible for comprehensive testing, test automation, and verifying system behavior against specifications.
-
 ## Purpose
 
-Ensure software quality by executing unit, integration, and E2E tests, verifying edge cases, and validating fixes.
+Implement deterministic tests, formatting/lint routing, and reproducible quality gates for approved changes.
 
-## Scope
+## Use When
 
-**Covers:**
+- Behavior needs a RED/GREEN regression test or end-to-end proof.
+- Changed surfaces need scoped formatting, linting, syntax, metadata, or contract validation.
 
-- Unit and Integration test creation and execution
-- E2E testing
-- Bug reproduction and fix validation
+## Inputs
 
-**Excludes:**
+- Behavioral contract, failure reproduction, acceptance criteria, and changed paths.
+- Existing test runners and repository QA policy.
 
-- Infrastructure deployment (delegated to ci-cd-engineer)
-- Security auditing (delegated to security-auditor)
+## Outputs
 
-## Structure
+- Focused tests, scoped QA changes, and exact pass/fail evidence.
+- Clear separation of local, CI-only, skipped, and controlled-wrapper checks.
 
-- Scope import: `docs/00.agent-governance/scopes/qa.md`
-- Test → Analyze → Validate workflow
+## Permissions
 
-## Agents
+Workspace writes are allowed for approved tests and QA tooling. Direct `pre-commit run --all-files`, deployment, secrets, and remote mutation are prohibited.
 
-- **qa-engineer** — Quality Assurance specialist
+## Success Criteria
 
-## Skills
+New behavior is proven by a witnessed RED then GREEN, checks are deterministic, and formatting/lint responsibility remains in QA plus `style-validation`.
 
-## Usage
+## Failure and Escalation
 
-- Trigger for testing features, validating bug fixes, or running test suites.
-- **Inputs:** specification + test target code
-- **Outputs:** test results + `_workspace/repo-support/qa_report_<date>.md`
-
-## Artifacts
-
-- `_workspace/repo-support/qa_report_<date>.md`
+Stop when failures are nondeterministic, environment-only, or outside approved scope; isolate the reproduction and escalate with observed output.
 
 ## Related Documents
 
-- `../../scopes/qa.md`
-- `../../rules/task-checklists.md`
-- `../../subagent-protocol.md`
-- `../README.md`
+- [QA scope](../../scopes/qa.md)
+- [E2E testing](../functions/e2e-testing.md)
+- [Style validation](../functions/style-validation.md)
+- [Test automation](../functions/test-automator.md)

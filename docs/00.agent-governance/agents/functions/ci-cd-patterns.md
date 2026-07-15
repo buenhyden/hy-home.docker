@@ -1,60 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: ci-cd-patterns
+scope: ops
+status: active
 ---
 
 # ci-cd-patterns
 
-## Overview
+## Preconditions
 
-CI/CD deployment strategies, security gate placement, and DORA metrics reference for this workspace. Covers pipeline design from pre-commit to production with Docker Compose-adapted deployment patterns.
+The delivery contract, repository workflow state, and protected remote-action boundary must be known before selecting a pipeline pattern.
 
-## Purpose
+## Inputs
 
-Provide a consistent, auditable CI/CD pattern set so pipelines are safe, measurable, and aligned with workspace SLOs.
+- Approved delivery contract and current workflow files.
+- Required checks, permissions, trigger conditions, and failure policy.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Map changed surfaces to deterministic local and CI gates, reusing existing jobs before adding new workflow structure.
+2. Select least-privilege permissions, immutable action references, bounded matrices, and secret-safe output for each job.
+3. Validate trigger/base-SHA behavior and record which deployment or remote gates remain outside local evidence.
 
-- Deployment strategy comparison (Rolling, Blue-Green, Canary, Recreate) adapted for Docker Compose + Traefik
-- Security gate placement (pre-commit, PR, build, staging, production)
-- Gate tool selection (Gitleaks, Semgrep, Trivy, Syft)
-- Vulnerability SLA policy (CVSS-based: Critical ≤24h, High ≤7d, Medium ≤30d, Low ≤90d)
-- DORA metrics targets for this workspace (Deployment frequency, Lead time, Change failure rate, Recovery time)
-- Branch strategy and deployment mapping
+## Outputs
 
-**Excludes:**
+- A pipeline pattern with ordered checks, permissions, evidence, and rollback behavior.
 
-- STRIDE/DREAD threat modeling (see container-threat-modeling)
-- Detailed SOLID/CWE code review patterns (see code-review-dimensions)
+## Gates
 
-## Structure
+- Workflow permissions are least privilege.
+- Every check is reproducible or explicitly classified as CI-only.
 
-- Deployment strategy selection → health check design → gate placement → DORA measurement
+## Failure Handling
 
-## Agents
-
-- **infra-implementer** — deployment pattern caller
-- **security-auditor** — gate configuration caller
-
-## Skills
-
-- This function is a reusable orchestration skill.
-
-## Usage
-
-- Trigger when designing or auditing CI/CD pipelines.
-- **Inputs:** deployment target, branch strategy, security requirements
-- **Outputs:** pipeline YAML configuration + gate policy document
-
-## Artifacts
-
-- `_workspace/repo-support/pipeline_<date>.md`
-- `_workspace/repo-support/gate_policy_<date>.md`
+Stop when credentials, remote rulesets, or promotion authority are required; produce a scoped follow-up rather than weakening the gate.
 
 ## Related Documents
 
-- `../../scopes/infra.md`
-- `../../scopes/security.md`
-- `../functions/docker-compose-patterns.md`
-- `../README.md`
+- [CI/CD engineer](../agents/ci-cd-engineer.md)
+- [GitHub governance](../../rules/github-governance.md)
+- [Task checklists](../../rules/task-checklists.md)

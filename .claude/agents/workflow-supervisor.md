@@ -46,8 +46,9 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 ## Collaboration
 
-- Delegates to: `infra-implementer`, `drift-detector`, `iac-reviewer`, `security-auditor`, `incident-responder`, `code-reviewer`, `doc-writer`, `wiki-curator`.
-- Uses skills from: `.claude/skills/<skill>/skill.md`.
+- Delegates to the 13 worker roles declared by the Stage 00 agent catalog,
+  including `doc-writer`, `eval-engineer`, and `qa-engineer`.
+- Uses skills from: `.claude/skills/<skill>/SKILL.md`.
 - Writes no domain artifacts directly when delegation is the safer path.
 
 ## Related Documents

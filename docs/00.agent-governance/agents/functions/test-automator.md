@@ -1,58 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: test-automator
+scope: qa
+status: active
 ---
 
 # test-automator
 
-## Overview
+## Preconditions
 
-Test automation function for the `hy-home.docker` workspace. Plans and executes unit and
-integration checks for Docker Compose services and repository tooling, reusing existing
-validation scripts rather than introducing parallel runners.
+A behavioral contract and reproducible failure or not-yet-implemented expectation must be available before production edits.
 
-## Purpose
+## Inputs
 
-Give the `qa-engineer` a consistent, auditable way to validate service and tooling behavior
-before changes are marked complete.
+- Behavioral contract and failure reproduction.
+- Existing test framework, fixtures, environment boundary, and acceptance criteria.
 
-## Scope
+## Procedure
 
-**Covers:**
+1. Write one minimal test that demonstrates the required behavior and run it to witness the expected RED failure.
+2. Implement or coordinate the smallest production change, then run the focused test to GREEN before refactoring.
+3. Add boundary/regression cases, run the affected suite, and record exact commands and observed outcomes.
 
-- Integration validation via `scripts/validation/validate-docker-compose.sh`
-- Repository contract checks via `scripts/validation/check-repo-contracts.sh`
-- Test evidence capture for `docs/04.execution/tasks/`
+## Outputs
 
-**Excludes:**
+- Deterministic tests and RED/GREEN/regression evidence.
 
-- End-to-end runtime smoke tests (see `e2e-testing`)
-- CI pipeline design (see `deployment-pipeline-design`)
+## Gates
 
-## Structure
+- The test is witnessed failing for the intended reason before implementation.
+- Regression coverage includes the discovered boundary and keeps existing tests green.
 
-- Identify changed services/tooling → select existing validation scripts → run → capture evidence
+## Failure Handling
 
-## Agents
-
-- **qa-engineer** — primary caller
-
-## Skills
-
-- Runtime mirror: `.claude/skills/test-automator/skill.md`
-
-## Usage
-
-- Trigger when validating service or tooling changes before completion.
-- **Inputs:** changed paths, target services
-- **Outputs:** test evidence in `_workspace/repo-support/` and task docs
-
-## Artifacts
-
-- `_workspace/repo-support/test_<date>.md`
+If the failure cannot be reproduced or the fixture is nondeterministic, stop and isolate the environment rather than weakening assertions.
 
 ## Related Documents
 
-- `../../scopes/common.md`
-- `../../scopes/qa.md`
-- `../functions/e2e-testing.md`
-- `../README.md`
+- [QA engineer](../agents/qa-engineer.md)
+- [E2E testing](./e2e-testing.md)
+- [QA scope](../../scopes/qa.md)

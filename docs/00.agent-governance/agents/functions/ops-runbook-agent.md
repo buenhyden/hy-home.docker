@@ -1,11 +1,45 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: ops-runbook-agent
+scope: ops
+status: active
 ---
 
 # ops-runbook-agent
 
-Provider-neutral orchestration function catalog entry for `ops-runbook-agent`.
+## Preconditions
+
+Operational behavior must be implemented and verified; commands, expected outcomes, rollback, and escalation owners must be known.
+
+## Inputs
+
+- Implemented operational behavior and verification commands.
+- Preconditions, safety controls, rollback/recovery steps, and escalation boundary.
+
+## Procedure
+
+1. Define when the runbook applies, required access, safety checks, and the exact starting state.
+2. Write ordered commands with expected observations, decision points, and stop conditions grounded in current implementation.
+3. Add validation, rollback or recovery, evidence capture, and escalation steps, then test links and commands safely.
+
+## Outputs
+
+- One typed runbook in `docs/05.operations/runbooks/` with executable, topic-specific procedure.
+
+## Gates
+
+- Procedures are executable and expected outcomes are observable.
+- Rollback/recovery and escalation are explicit.
+- Incident packets use `incidents/YYYY/INC-###-<incident-title>/`; the paired
+  postmortem filename is fixed: Filename: `postmortem.md`.
+
+## Failure Handling
+
+Do not publish commands that are unimplemented, destructive without approval, or unverifiable; route design gaps back to Spec/Plan.
 
 ## Related Documents
 
-- [Agent Governance Hub](../../README.md)
+- [Documentation writer](../agents/doc-writer.md)
+- [Operations scope](../../scopes/ops.md)
+- [Documentation protocol](../../rules/documentation-protocol.md)

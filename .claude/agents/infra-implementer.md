@@ -65,6 +65,6 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/02.architecture/requirements/` (architecture reference)
-- `.claude/skills/infra-validate/skill.md`
-- `.claude/skills/infra-cross-validate/skill.md`
-- `.claude/skills/docker-compose-patterns/skill.md`
+- `.claude/skills/infra-validate/SKILL.md`
+- `.claude/skills/infra-cross-validate/SKILL.md`
+- `.claude/skills/docker-compose-patterns/SKILL.md`

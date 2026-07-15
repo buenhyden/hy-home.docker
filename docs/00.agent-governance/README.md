@@ -97,7 +97,9 @@ policy remains in the linked Stage 00 documents.
 - `rules/`: shared governance policies, completion gates, and [JIT Markers](rules/jit-markers.md) (e.g. `[LOAD:MEMORY]`). Includes the cross-provider [Capability Matrix](rules/provider-capability-matrix.md), [Output Style Contract](rules/output-style.md), and [Workflows](rules/workflows.md).
 - `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge guidance.
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, `codex`, provider-neutral `agents-md`).
-- `agents/`: local agent/function catalog of workspace agents and orchestration functions.
+- `agents/`: canonical typed catalog of 14 workspace roles and 22 reusable
+  orchestration functions. Provider skill bodies are projections, not policy
+  inputs.
 - `contracts/`: typed artifact, agent/function, provider/model, path-authority,
   and adoption contracts. Repository projection modes are read-only
   diagnostics until the corresponding convergence task adds them to the
@@ -124,7 +126,10 @@ policy remains in the linked Stage 00 documents.
 9. Run `python3 scripts/validation/check-agent-governance-contract.py --mode contract`
    after editing the typed contracts. Use repository mode only for a section
    whose aggregate activation is owned by the current task.
-10. Run completion checklist and update `memory/progress.md`.
+10. After changing canonical functions, run
+    `scripts/operations/sync-provider-surfaces.sh --write`, inspect the bounded
+    projection diff, and confirm `--check` reports zero drift.
+11. Run completion checklist and update `memory/progress.md`.
 
 ## Related Documents
 

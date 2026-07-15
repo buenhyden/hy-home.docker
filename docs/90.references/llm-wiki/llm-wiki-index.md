@@ -83,6 +83,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/agents/agents/code-reviewer.md](../../00.agent-governance/agents/agents/code-reviewer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/doc-writer.md](../../00.agent-governance/agents/agents/doc-writer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/drift-detector.md](../../00.agent-governance/agents/agents/drift-detector.md) | Markdown reference |
+| [docs/00.agent-governance/agents/agents/eval-engineer.md](../../00.agent-governance/agents/agents/eval-engineer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/hook-developer.md](../../00.agent-governance/agents/agents/hook-developer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/iac-reviewer.md](../../00.agent-governance/agents/agents/iac-reviewer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/incident-responder.md](../../00.agent-governance/agents/agents/incident-responder.md) | Markdown reference |
@@ -91,8 +92,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/agents/agents/rules-engineer.md](../../00.agent-governance/agents/agents/rules-engineer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/security-auditor.md](../../00.agent-governance/agents/agents/security-auditor.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/skill-creator.md](../../00.agent-governance/agents/agents/skill-creator.md) | Markdown reference |
-| [docs/00.agent-governance/agents/agents/style-enforcer.md](../../00.agent-governance/agents/agents/style-enforcer.md) | Markdown reference |
-| [docs/00.agent-governance/agents/agents/wiki-curator.md](../../00.agent-governance/agents/agents/wiki-curator.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/workflow-supervisor.md](../../00.agent-governance/agents/agents/workflow-supervisor.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/adr-writing.md](../../00.agent-governance/agents/functions/adr-writing.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/ci-cd-patterns.md](../../00.agent-governance/agents/functions/ci-cd-patterns.md) | Markdown reference |
@@ -195,6 +194,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/agents/code-reviewer.md](../../../.claude/agents/code-reviewer.md) | Markdown reference |
 | [.claude/agents/doc-writer.md](../../../.claude/agents/doc-writer.md) | Markdown reference |
 | [.claude/agents/drift-detector.md](../../../.claude/agents/drift-detector.md) | Markdown reference |
+| [.claude/agents/eval-engineer.md](../../../.claude/agents/eval-engineer.md) | Markdown reference |
 | [.claude/agents/hook-developer.md](../../../.claude/agents/hook-developer.md) | Markdown reference |
 | [.claude/agents/iac-reviewer.md](../../../.claude/agents/iac-reviewer.md) | Markdown reference |
 | [.claude/agents/incident-responder.md](../../../.claude/agents/incident-responder.md) | Markdown reference |
@@ -203,8 +203,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/agents/rules-engineer.md](../../../.claude/agents/rules-engineer.md) | Markdown reference |
 | [.claude/agents/security-auditor.md](../../../.claude/agents/security-auditor.md) | Markdown reference |
 | [.claude/agents/skill-creator.md](../../../.claude/agents/skill-creator.md) | Markdown reference |
-| [.claude/agents/style-enforcer.md](../../../.claude/agents/style-enforcer.md) | Markdown reference |
-| [.claude/agents/wiki-curator.md](../../../.claude/agents/wiki-curator.md) | Markdown reference |
 | [.claude/agents/workflow-supervisor.md](../../../.claude/agents/workflow-supervisor.md) | Markdown reference |
 | [.claude/hooks/docker-compose-pre.sh](../../../.claude/hooks/docker-compose-pre.sh) | script |
 | [.claude/hooks/post-tool-validate.sh](../../../.claude/hooks/post-tool-validate.sh) | script |
@@ -215,33 +213,34 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/hooks/user-prompt-submit.sh](../../../.claude/hooks/user-prompt-submit.sh) | script |
 | [.claude/output-styles/hy-home.md](../../../.claude/output-styles/hy-home.md) | Markdown reference |
 | [.claude/settings.json](../../../.claude/settings.json) | JSON registry |
-| [.claude/skills/adr-writing/skill.md](../../../.claude/skills/adr-writing/skill.md) | Markdown reference |
-| [.claude/skills/ci-cd-patterns/skill.md](../../../.claude/skills/ci-cd-patterns/skill.md) | Markdown reference |
-| [.claude/skills/code-review-dimensions/skill.md](../../../.claude/skills/code-review-dimensions/skill.md) | Markdown reference |
-| [.claude/skills/code-reviewer/skill.md](../../../.claude/skills/code-reviewer/skill.md) | Markdown reference |
-| [.claude/skills/compose-stack-agent/skill.md](../../../.claude/skills/compose-stack-agent/skill.md) | Markdown reference |
-| [.claude/skills/container-threat-modeling/skill.md](../../../.claude/skills/container-threat-modeling/skill.md) | Markdown reference |
-| [.claude/skills/deployment-pipeline-design/skill.md](../../../.claude/skills/deployment-pipeline-design/skill.md) | Markdown reference |
-| [.claude/skills/docker-compose-patterns/skill.md](../../../.claude/skills/docker-compose-patterns/skill.md) | Markdown reference |
-| [.claude/skills/e2e-testing/skill.md](../../../.claude/skills/e2e-testing/skill.md) | Markdown reference |
-| [.claude/skills/execution-plan-agent/skill.md](../../../.claude/skills/execution-plan-agent/skill.md) | Markdown reference |
-| [.claude/skills/incident-response/skill.md](../../../.claude/skills/incident-response/skill.md) | Markdown reference |
-| [.claude/skills/infra-cross-validate/skill.md](../../../.claude/skills/infra-cross-validate/skill.md) | Markdown reference |
-| [.claude/skills/infra-validate/skill.md](../../../.claude/skills/infra-validate/skill.md) | Markdown reference |
-| [.claude/skills/knowledge-map-agent/skill.md](../../../.claude/skills/knowledge-map-agent/skill.md) | Markdown reference |
-| [.claude/skills/ops-runbook-agent/skill.md](../../../.claude/skills/ops-runbook-agent/skill.md) | Markdown reference |
-| [.claude/skills/policy-gate-agent/skill.md](../../../.claude/skills/policy-gate-agent/skill.md) | Markdown reference |
-| [.claude/skills/requirements-to-design-agent/skill.md](../../../.claude/skills/requirements-to-design-agent/skill.md) | Markdown reference |
-| [.claude/skills/security-audit/skill.md](../../../.claude/skills/security-audit/skill.md) | Markdown reference |
-| [.claude/skills/style-validation/skill.md](../../../.claude/skills/style-validation/skill.md) | Markdown reference |
-| [.claude/skills/task-breakdown-agent/skill.md](../../../.claude/skills/task-breakdown-agent/skill.md) | Markdown reference |
-| [.claude/skills/test-automator/skill.md](../../../.claude/skills/test-automator/skill.md) | Markdown reference |
-| [.claude/skills/workspace-audit-revalidation/skill.md](../../../.claude/skills/workspace-audit-revalidation/skill.md) | Markdown reference |
+| [.claude/skills/adr-writing/SKILL.md](../../../.claude/skills/adr-writing/SKILL.md) | Markdown reference |
+| [.claude/skills/ci-cd-patterns/SKILL.md](../../../.claude/skills/ci-cd-patterns/SKILL.md) | Markdown reference |
+| [.claude/skills/code-review-dimensions/SKILL.md](../../../.claude/skills/code-review-dimensions/SKILL.md) | Markdown reference |
+| [.claude/skills/code-reviewer/SKILL.md](../../../.claude/skills/code-reviewer/SKILL.md) | Markdown reference |
+| [.claude/skills/compose-stack-agent/SKILL.md](../../../.claude/skills/compose-stack-agent/SKILL.md) | Markdown reference |
+| [.claude/skills/container-threat-modeling/SKILL.md](../../../.claude/skills/container-threat-modeling/SKILL.md) | Markdown reference |
+| [.claude/skills/deployment-pipeline-design/SKILL.md](../../../.claude/skills/deployment-pipeline-design/SKILL.md) | Markdown reference |
+| [.claude/skills/docker-compose-patterns/SKILL.md](../../../.claude/skills/docker-compose-patterns/SKILL.md) | Markdown reference |
+| [.claude/skills/e2e-testing/SKILL.md](../../../.claude/skills/e2e-testing/SKILL.md) | Markdown reference |
+| [.claude/skills/execution-plan-agent/SKILL.md](../../../.claude/skills/execution-plan-agent/SKILL.md) | Markdown reference |
+| [.claude/skills/incident-response/SKILL.md](../../../.claude/skills/incident-response/SKILL.md) | Markdown reference |
+| [.claude/skills/infra-cross-validate/SKILL.md](../../../.claude/skills/infra-cross-validate/SKILL.md) | Markdown reference |
+| [.claude/skills/infra-validate/SKILL.md](../../../.claude/skills/infra-validate/SKILL.md) | Markdown reference |
+| [.claude/skills/knowledge-map-agent/SKILL.md](../../../.claude/skills/knowledge-map-agent/SKILL.md) | Markdown reference |
+| [.claude/skills/ops-runbook-agent/SKILL.md](../../../.claude/skills/ops-runbook-agent/SKILL.md) | Markdown reference |
+| [.claude/skills/policy-gate-agent/SKILL.md](../../../.claude/skills/policy-gate-agent/SKILL.md) | Markdown reference |
+| [.claude/skills/requirements-to-design-agent/SKILL.md](../../../.claude/skills/requirements-to-design-agent/SKILL.md) | Markdown reference |
+| [.claude/skills/security-audit/SKILL.md](../../../.claude/skills/security-audit/SKILL.md) | Markdown reference |
+| [.claude/skills/style-validation/SKILL.md](../../../.claude/skills/style-validation/SKILL.md) | Markdown reference |
+| [.claude/skills/task-breakdown-agent/SKILL.md](../../../.claude/skills/task-breakdown-agent/SKILL.md) | Markdown reference |
+| [.claude/skills/test-automator/SKILL.md](../../../.claude/skills/test-automator/SKILL.md) | Markdown reference |
+| [.claude/skills/workspace-audit-revalidation/SKILL.md](../../../.claude/skills/workspace-audit-revalidation/SKILL.md) | Markdown reference |
 | [.codex/README.md](../../../.codex/README.md) | folder index |
 | [.codex/agents/ci-cd-engineer.toml](../../../.codex/agents/ci-cd-engineer.toml) | source path |
 | [.codex/agents/code-reviewer.toml](../../../.codex/agents/code-reviewer.toml) | source path |
 | [.codex/agents/doc-writer.toml](../../../.codex/agents/doc-writer.toml) | source path |
 | [.codex/agents/drift-detector.toml](../../../.codex/agents/drift-detector.toml) | source path |
+| [.codex/agents/eval-engineer.toml](../../../.codex/agents/eval-engineer.toml) | source path |
 | [.codex/agents/hook-developer.toml](../../../.codex/agents/hook-developer.toml) | source path |
 | [.codex/agents/iac-reviewer.toml](../../../.codex/agents/iac-reviewer.toml) | source path |
 | [.codex/agents/incident-responder.toml](../../../.codex/agents/incident-responder.toml) | source path |
@@ -250,32 +249,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.codex/agents/rules-engineer.toml](../../../.codex/agents/rules-engineer.toml) | source path |
 | [.codex/agents/security-auditor.toml](../../../.codex/agents/security-auditor.toml) | source path |
 | [.codex/agents/skill-creator.toml](../../../.codex/agents/skill-creator.toml) | source path |
-| [.codex/agents/style-enforcer.toml](../../../.codex/agents/style-enforcer.toml) | source path |
-| [.codex/agents/wiki-curator.toml](../../../.codex/agents/wiki-curator.toml) | source path |
 | [.codex/agents/workflow-supervisor.toml](../../../.codex/agents/workflow-supervisor.toml) | source path |
 | [.codex/hooks.json](../../../.codex/hooks.json) | JSON registry |
-| [.codex/skills/adr-writing/skill.md](../../../.codex/skills/adr-writing/skill.md) | Markdown reference |
-| [.codex/skills/ci-cd-patterns/skill.md](../../../.codex/skills/ci-cd-patterns/skill.md) | Markdown reference |
-| [.codex/skills/code-review-dimensions/skill.md](../../../.codex/skills/code-review-dimensions/skill.md) | Markdown reference |
-| [.codex/skills/code-reviewer/skill.md](../../../.codex/skills/code-reviewer/skill.md) | Markdown reference |
-| [.codex/skills/compose-stack-agent/skill.md](../../../.codex/skills/compose-stack-agent/skill.md) | Markdown reference |
-| [.codex/skills/container-threat-modeling/skill.md](../../../.codex/skills/container-threat-modeling/skill.md) | Markdown reference |
-| [.codex/skills/deployment-pipeline-design/skill.md](../../../.codex/skills/deployment-pipeline-design/skill.md) | Markdown reference |
-| [.codex/skills/docker-compose-patterns/skill.md](../../../.codex/skills/docker-compose-patterns/skill.md) | Markdown reference |
-| [.codex/skills/e2e-testing/skill.md](../../../.codex/skills/e2e-testing/skill.md) | Markdown reference |
-| [.codex/skills/execution-plan-agent/skill.md](../../../.codex/skills/execution-plan-agent/skill.md) | Markdown reference |
-| [.codex/skills/incident-response/skill.md](../../../.codex/skills/incident-response/skill.md) | Markdown reference |
-| [.codex/skills/infra-cross-validate/skill.md](../../../.codex/skills/infra-cross-validate/skill.md) | Markdown reference |
-| [.codex/skills/infra-validate/skill.md](../../../.codex/skills/infra-validate/skill.md) | Markdown reference |
-| [.codex/skills/knowledge-map-agent/skill.md](../../../.codex/skills/knowledge-map-agent/skill.md) | Markdown reference |
-| [.codex/skills/ops-runbook-agent/skill.md](../../../.codex/skills/ops-runbook-agent/skill.md) | Markdown reference |
-| [.codex/skills/policy-gate-agent/skill.md](../../../.codex/skills/policy-gate-agent/skill.md) | Markdown reference |
-| [.codex/skills/requirements-to-design-agent/skill.md](../../../.codex/skills/requirements-to-design-agent/skill.md) | Markdown reference |
-| [.codex/skills/security-audit/skill.md](../../../.codex/skills/security-audit/skill.md) | Markdown reference |
-| [.codex/skills/style-validation/skill.md](../../../.codex/skills/style-validation/skill.md) | Markdown reference |
-| [.codex/skills/task-breakdown-agent/skill.md](../../../.codex/skills/task-breakdown-agent/skill.md) | Markdown reference |
-| [.codex/skills/test-automator/skill.md](../../../.codex/skills/test-automator/skill.md) | Markdown reference |
-| [.codex/skills/workspace-audit-revalidation/skill.md](../../../.codex/skills/workspace-audit-revalidation/skill.md) | Markdown reference |
 
 ### Active stage docs
 
@@ -1434,7 +1409,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 ## Maintenance
 
-- **Owner**: `wiki-curator`
+- **Owner**: `doc-writer` using the `knowledge-map-agent` function
 - **Review Cadence**: Review when root entrypoints, governance, operations docs, script inventory, infrastructure indexes, or LLM Wiki files change
 - **Update Trigger**: Run `bash scripts/knowledge/generate-llm-wiki-index.sh` after in-scope path changes and `bash scripts/knowledge/generate-llm-wiki-index.sh --check` during validation
 

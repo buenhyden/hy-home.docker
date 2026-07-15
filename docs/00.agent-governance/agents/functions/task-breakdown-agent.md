@@ -1,11 +1,43 @@
 ---
 layer: agentic
+artifact_type: agent-function
+function_id: task-breakdown-agent
+scope: agentic
+status: active
 ---
 
 # task-breakdown-agent
 
-Provider-neutral orchestration function catalog entry for `task-breakdown-agent`.
+## Preconditions
+
+An approved Plan, dependency map, acceptance criteria, and protected-surface decisions must be complete.
+
+## Inputs
+
+- Approved plan and dependency map.
+- Exact files, validation gates, role ownership, review requirements, and rollback boundaries.
+
+## Procedure
+
+1. Split work into independently reversible logical units whose combined output satisfies the approved acceptance map.
+2. Assign one implementer scope, RED/GREEN evidence, validation set, commit boundary, and independent review to each unit.
+3. Order dependencies, isolate protected/runtime work, and define the terminal evidence needed before the task can close.
+
+## Outputs
+
+- Bounded work units suitable for Stage 04 task evidence and logical commits.
+
+## Gates
+
+- Each unit maps to one logical commit or explicitly coupled small commit group.
+- Implementation and independent review roles remain separate.
+
+## Failure Handling
+
+Return to planning when a unit cannot be made reversible, testable, or independently reviewable without hidden dependencies.
 
 ## Related Documents
 
-- [Agent Governance Hub](../../README.md)
+- [Workflow supervisor](../agents/workflow-supervisor.md)
+- [Execution plan function](./execution-plan-agent.md)
+- [Subagent protocol](../../subagent-protocol.md)
