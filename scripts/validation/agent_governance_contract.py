@@ -252,10 +252,10 @@ class _DuplicateKeyError(yaml.YAMLError):
         super().__init__("duplicate mapping key")
 
 
-class _UnhashableKeyError(yaml.YAMLError):
+class _NonStringKeyError(yaml.YAMLError):
     def __init__(self, line: int) -> None:
         self.line = line
-        super().__init__("unhashable mapping key")
+        super().__init__("non-string mapping key")
 
 
 class _UniqueKeyLoader(yaml.SafeLoader):
@@ -268,10 +268,9 @@ def _construct_unique_mapping(
     mapping: dict[object, object] = {}
     for key_node, value_node in node.value:
         key = loader.construct_object(key_node, deep=deep)
-        try:
-            duplicate = key in mapping
-        except TypeError as error:
-            raise _UnhashableKeyError(key_node.start_mark.line + 1) from error
+        if not isinstance(key, str):
+            raise _NonStringKeyError(key_node.start_mark.line + 1)
+        duplicate = key in mapping
         if duplicate:
             raise _DuplicateKeyError(key_node.start_mark.line + 1)
         mapping[key] = loader.construct_object(value_node, deep=deep)
@@ -286,7 +285,7 @@ _UniqueKeyLoader.add_constructor(
 
 def _freeze(value: object) -> object:
     if isinstance(value, Mapping):
-        return MappingProxyType({str(key): _freeze(item) for key, item in value.items()})
+        return MappingProxyType({key: _freeze(item) for key, item in value.items()})
     if isinstance(value, list | tuple):
         return tuple(_freeze(item) for item in value)
     return value
@@ -305,9 +304,9 @@ def _load_yaml(path: pathlib.Path, relative_path: str) -> Mapping[str, object]:
         raise ContractLoadError(
             "AGC-YAML-DUPLICATE-KEY", relative_path, f"line:{error.line}"
         ) from error
-    except _UnhashableKeyError as error:
+    except _NonStringKeyError as error:
         raise ContractLoadError(
-            "AGC-YAML-UNHASHABLE-KEY", relative_path, f"line:{error.line}"
+            "AGC-YAML-NONSTRING-KEY", relative_path, f"line:{error.line}"
         ) from error
     except yaml.YAMLError as error:
         raise ContractLoadError("AGC-YAML-MALFORMED", relative_path, "yaml") from error
@@ -416,6 +415,20 @@ def _as_sequence(
         source,
     )
     return None
+
+
+def _sequence_or_empty(value: object) -> Sequence[object]:
+    """Return only a validated collection shape for downstream reads."""
+
+    if isinstance(value, Sequence) and not isinstance(value, str | bytes):
+        return value
+    return ()
+
+
+def _is_registered_string(value: object, registered: Sequence[str] | set[str]) -> bool:
+    """Check a reference without hashing an unvalidated scalar."""
+
+    return isinstance(value, str) and value in registered
 
 
 def _is_nonempty_string(value: object) -> bool:
@@ -699,16 +712,37 @@ def _check_source_url(
         )
 
 
+def _canonical_repo_path(value: str) -> str:
+    parts: list[str] = []
+    for part in value.split("/"):
+        if part in {"", "."}:
+            continue
+        if part == "..":
+            if parts and parts[-1] != "..":
+                parts.pop()
+            else:
+                parts.append(part)
+            continue
+        parts.append(part)
+    return "/".join(parts)
+
+
 def _is_safe_repo_path(value: object) -> bool:
     if not _is_nonempty_string(value):
         return False
     text = str(value)
-    if "\x00" in text or "\\" in text or text.startswith(("/", "~")):
+    if (
+        any(ord(character) < 32 or 127 <= ord(character) <= 159 for character in text)
+        or "\\" in text
+        or text.startswith(("/", "~"))
+    ):
         return False
     if re.match(r"^[A-Za-z]:", text):
         return False
-    parts = pathlib.PurePosixPath(text).parts
-    return bool(parts) and all(part not in {".", "..", ""} for part in parts)
+    raw_parts = text.split("/")
+    if not raw_parts or any(part in {"", ".", ".."} for part in raw_parts):
+        return False
+    return _canonical_repo_path(text) == text
 
 
 def _check_path(
@@ -891,13 +925,14 @@ def _validate_artifact_contract(
             )
             if patterns is not None:
                 for pattern_index, pattern in enumerate(patterns):
-                    if _check_path(
+                    _check_path(
                         pattern,
                         path,
                         f"{location}.path_patterns[{pattern_index}]",
                         findings,
                         source,
-                    ):
+                    )
+                    if isinstance(pattern, str):
                         authority_patterns.append((str(authority_id), pattern, location))
             _check_string(entry.get("canonical_owner"), path, f"{location}.canonical_owner", findings, source)
             entry_owners = _check_entry_authority_list(
@@ -1008,6 +1043,8 @@ def _check_sorted_unique_ids(
 
 
 def _patterns_overlap(left: str, right: str) -> bool:
+    left = _canonical_repo_path(left)
+    right = _canonical_repo_path(right)
     if left == right:
         return True
 
@@ -1046,12 +1083,14 @@ def _validate_catalog_contract(
     ) or ()
     provider_targets = {
         str(entry.get("provider_id"))
-        for entry in provider_document.get("providers", ())
+        for entry in _sequence_or_empty(provider_document.get("providers"))
         if isinstance(entry, Mapping) and _is_nonempty_string(entry.get("provider_id"))
     }
     compatibility_targets = {
         str(entry.get("surface_id"))
-        for entry in provider_document.get("compatibility_surfaces", ())
+        for entry in _sequence_or_empty(
+            provider_document.get("compatibility_surfaces")
+        )
         if isinstance(entry, Mapping)
         and entry.get("status") == "active"
         and _is_nonempty_string(entry.get("surface_id"))
@@ -1109,14 +1148,14 @@ def _validate_catalog_contract(
             _check_enum(
                 entry.get("category"), AGENT_CATEGORIES, path, f"{location}.category", findings, source
             )
-            if entry.get("scope") not in scopes:
+            if not _is_registered_string(entry.get("scope"), scopes):
                 _unknown_reference(findings, path, f"{location}.scope", source)
             _check_enum(entry.get("tier"), AGENT_TIERS, path, f"{location}.tier", findings, source)
             _check_enum(
                 entry.get("status"), AGENT_STATUSES, path, f"{location}.status", findings, source
             )
             _check_path(entry.get("catalog_path"), path, f"{location}.catalog_path", findings, source)
-            if entry.get("permission_profile") not in permission_set:
+            if not _is_registered_string(entry.get("permission_profile"), permission_set):
                 _unknown_reference(findings, path, f"{location}.permission_profile", source)
             _check_string(entry.get("work_profile"), path, f"{location}.work_profile", findings, source)
             function_ids = _check_string_list(
@@ -1175,14 +1214,14 @@ def _validate_catalog_contract(
             function_id = entry.get("function_id")
             if _check_string(function_id, path, f"{location}.function_id", findings, source):
                 function_ids.append(str(function_id))
-            if entry.get("scope") not in scopes:
+            if not _is_registered_string(entry.get("scope"), scopes):
                 _unknown_reference(findings, path, f"{location}.scope", source)
             _check_enum(
                 entry.get("status"), AGENT_STATUSES, path, f"{location}.status", findings, source
             )
             _check_path(entry.get("catalog_path"), path, f"{location}.catalog_path", findings, source)
             owner = entry.get("owner_agent")
-            if owner not in agent_set:
+            if not _is_registered_string(owner, agent_set):
                 _unknown_reference(findings, path, f"{location}.owner_agent", source)
             elif isinstance(function_id, str) and isinstance(owner, str):
                 function_owners[function_id] = owner
@@ -1329,28 +1368,31 @@ def _validate_catalog_contract(
                 findings,
                 source,
             )
-            if entry.get("owner_agent") not in agent_set:
+            if not _is_registered_string(entry.get("owner_agent"), agent_set):
                 _unknown_reference(findings, path, f"{location}.owner_agent", source)
-            if entry.get("evaluation_function") not in function_set:
+            if not _is_registered_string(entry.get("evaluation_function"), function_set):
                 _unknown_reference(findings, path, f"{location}.evaluation_function", source)
     _check_sorted_unique_ids(intake_ids, path, "capability_intake", findings, source)
 
     work_profile_ids = {
         entry.get("profile_id")
-        for entry in provider_document.get("work_profiles", ())
+        for entry in _sequence_or_empty(provider_document.get("work_profiles"))
         if isinstance(entry, Mapping) and isinstance(entry.get("profile_id"), str)
     }
     if agents is not None:
         for index, raw in enumerate(agents):
-            if isinstance(raw, Mapping) and raw.get("work_profile") not in work_profile_ids:
+            if isinstance(raw, Mapping) and not _is_registered_string(
+                raw.get("work_profile"), work_profile_ids
+            ):
                 _unknown_reference(findings, path, f"agents[{index}].work_profile", source)
 
-    if isinstance(artifact_document.get("path_authority"), Sequence):
-        for index, raw in enumerate(artifact_document["path_authority"]):
+    path_authorities = _sequence_or_empty(artifact_document.get("path_authority"))
+    if path_authorities:
+        for index, raw in enumerate(path_authorities):
             if not isinstance(raw, Mapping):
                 continue
             for field in ("canonical_owner",):
-                if raw.get(field) not in agent_set:
+                if not _is_registered_string(raw.get(field), agent_set):
                     _unknown_reference(
                         findings,
                         CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
@@ -1358,36 +1400,28 @@ def _validate_catalog_contract(
                         CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
                     )
             for field in ("permitted_contributors", "mandatory_reviewers"):
-                values = raw.get(field, ())
-                if isinstance(values, Sequence) and not isinstance(values, str | bytes):
-                    for item in values:
-                        if item not in agent_set:
-                            _unknown_reference(
-                                findings,
-                                CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
-                                f"path_authority[{index}].{field}",
-                                CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
-                            )
+                for item in _sequence_or_empty(raw.get(field)):
+                    if not _is_registered_string(item, agent_set):
+                        _unknown_reference(
+                            findings,
+                            CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
+                            f"path_authority[{index}].{field}",
+                            CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
+                        )
             for field in ("entry_owners", "entry_reviewers"):
-                references = raw.get(field, ())
-                if not isinstance(references, Sequence) or isinstance(
-                    references, str | bytes
-                ):
-                    continue
+                references = _sequence_or_empty(raw.get(field))
                 for reference_index, reference in enumerate(references):
                     if not isinstance(reference, Mapping):
                         continue
                     collection = reference.get("catalog_collection")
                     agent_field = reference.get("agent_field")
-                    entries = document.get(str(collection), ())
-                    if not isinstance(entries, Sequence) or isinstance(
-                        entries, str | bytes
-                    ):
-                        continue
+                    entries = _sequence_or_empty(document.get(str(collection)))
                     for catalog_entry in entries:
                         if not isinstance(catalog_entry, Mapping):
                             continue
-                        if catalog_entry.get(str(agent_field)) not in agent_set:
+                        if not _is_registered_string(
+                            catalog_entry.get(str(agent_field)), agent_set
+                        ):
                             _unknown_reference(
                                 findings,
                                 CONTRACT_RELATIVE_PATHS["artifacts"].as_posix(),
@@ -1564,7 +1598,7 @@ def _validate_provider_contract(
                 continue
             provider = entry.get("provider")
             model_id = entry.get("model_id")
-            if provider not in provider_set:
+            if not _is_registered_string(provider, provider_set):
                 _unknown_reference(findings, path, f"{location}.provider", source)
             if _check_string(model_id, path, f"{location}.model_id", findings, source):
                 if "latest" in str(model_id).lower():
@@ -1694,8 +1728,8 @@ def _validate_provider_contract(
                 "ineligible-default-model",
                 source,
             )
-        controls = model.get("reasoning_controls", ())
-        if not isinstance(controls, Sequence) or reasoning not in controls:
+        controls = _sequence_or_empty(model.get("reasoning_controls"))
+        if reasoning not in controls:
             _add(
                 findings,
                 "AGC-MODEL-REASONING-MISMATCH",
@@ -1705,8 +1739,8 @@ def _validate_provider_contract(
                 "unsupported-reasoning",
                 source,
             )
-        profiles = model.get("work_profiles", ())
-        if not isinstance(profiles, Sequence) or profile_id not in profiles:
+        profiles = _sequence_or_empty(model.get("work_profiles"))
+        if profile_id not in profiles:
             _add(
                 findings,
                 "AGC-MODEL-PROFILE-MISMATCH",
@@ -1755,7 +1789,7 @@ def _validate_provider_contract(
                     provider = binding.get("provider")
                     if _check_string(provider, path, f"{binding_location}.provider", findings, source):
                         binding_providers.append(str(provider))
-                    if provider not in provider_set:
+                    if not _is_registered_string(provider, provider_set):
                         _unknown_reference(findings, path, f"{binding_location}.provider", source)
                     capability = binding.get("capability_status")
                     _check_enum(
@@ -1862,40 +1896,61 @@ def validate_repository(
     findings: list[Finding] = []
     if section in {"all", "catalog"}:
         for collection_name in ("agents", "functions"):
-            entries = bundle.catalog.get(collection_name, ())
-            if not isinstance(entries, Sequence):
-                continue
+            entries = _sequence_or_empty(bundle.catalog.get(collection_name))
             for index, entry in enumerate(entries):
                 if not isinstance(entry, Mapping):
                     continue
                 catalog_path = entry.get("catalog_path")
+                location = f"{collection_name}[{index}].catalog_path"
+                if isinstance(catalog_path, str) and not _is_safe_repo_path(catalog_path):
+                    _add(
+                        findings,
+                        "AGC-REPOSITORY-UNSAFE-PATH",
+                        CONTRACT_RELATIVE_PATHS["catalog"].as_posix(),
+                        location,
+                        "safe-repo-path",
+                        "unsafe-repository-path",
+                        "agent-catalog",
+                    )
+                    continue
                 if isinstance(catalog_path, str) and not (root / catalog_path).is_file():
                     _add(
                         findings,
                         "AGC-REPOSITORY-MISSING-CATALOG-PATH",
                         catalog_path,
-                        f"{collection_name}[{index}].catalog_path",
+                        location,
                         "tracked-catalog-file",
                         "missing-catalog-file",
                         "agent-catalog",
                     )
     if section in {"all", "providers"}:
-        providers = bundle.providers.get("providers", ())
-        if isinstance(providers, Sequence):
-            for index, provider in enumerate(providers):
-                if not isinstance(provider, Mapping):
-                    continue
-                config_path = provider.get("native_config_path")
-                if isinstance(config_path, str) and not (root / config_path).is_file():
-                    _add(
-                        findings,
-                        "AGC-REPOSITORY-MISSING-PROVIDER-CONFIG",
-                        config_path,
-                        f"providers[{index}].native_config_path",
-                        "tracked-provider-config",
-                        "missing-provider-config",
-                        "provider-models",
-                    )
+        providers = _sequence_or_empty(bundle.providers.get("providers"))
+        for index, provider in enumerate(providers):
+            if not isinstance(provider, Mapping):
+                continue
+            config_path = provider.get("native_config_path")
+            location = f"providers[{index}].native_config_path"
+            if isinstance(config_path, str) and not _is_safe_repo_path(config_path):
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-UNSAFE-PATH",
+                    CONTRACT_RELATIVE_PATHS["providers"].as_posix(),
+                    location,
+                    "safe-repo-path",
+                    "unsafe-repository-path",
+                    "provider-models",
+                )
+                continue
+            if isinstance(config_path, str) and not (root / config_path).is_file():
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-MISSING-PROVIDER-CONFIG",
+                    config_path,
+                    location,
+                    "tracked-provider-config",
+                    "missing-provider-config",
+                    "provider-models",
+                )
     if section in {"all", "harness"}:
         harness = root / "docs/00.agent-governance/harness-implementation-map.md"
         if not harness.is_file():

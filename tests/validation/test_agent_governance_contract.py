@@ -92,6 +92,21 @@ class ContractLoadingTests(unittest.TestCase):
             self.assertEqual("AGC-YAML-DUPLICATE-KEY", context.exception.code)
             self.assertNotIn("999", str(context.exception))
 
+    def test_non_string_yaml_key_collision_is_rejected_before_freeze(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+            path = root / "docs/00.agent-governance/contracts/agent-catalog.yaml"
+            path.write_text(
+                path.read_text(encoding="utf-8")
+                + "\n1: sentinel-numeric-key\n'1': sentinel-string-key\n",
+                encoding="utf-8",
+            )
+            with self.assertRaises(contract.ContractLoadError) as context:
+                contract.load_contract_bundle(root)
+            self.assertEqual("AGC-YAML-NONSTRING-KEY", context.exception.code)
+            self.assertNotIn("sentinel", str(context.exception))
+
 
 class ContractSchemaTests(unittest.TestCase):
     def test_unknown_top_level_key_is_rejected(self) -> None:
@@ -117,6 +132,111 @@ class ContractSchemaTests(unittest.TestCase):
             mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
             findings = validate_fixture(root)
             self.assertEqual(2, sum(item.code == "AGC-PATH-UNSAFE" for item in findings))
+
+    def test_control_and_noncanonical_repo_paths_are_rejected(self) -> None:
+        for value in (
+            "",
+            "line\nbreak",
+            ".",
+            "..",
+            "double//slash",
+            "dot/./segment",
+            "back\\slash",
+        ):
+            with self.subTest(value=repr(value)):
+                self.assertFalse(contract._is_safe_repo_path(value))
+        self.assertTrue(contract._is_safe_repo_path("docs/**/{rules,scopes}/*.md"))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                paths = [
+                    "line\nbreak",
+                    ".",
+                    "..",
+                    "double//slash",
+                    "dot/./segment",
+                    "back\\slash",
+                ]
+                for index, value in enumerate(paths):
+                    values["path_authority"][index]["path_patterns"][0] = value
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            findings = validate_fixture(root)
+            self.assertEqual(6, sum(item.code == "AGC-PATH-UNSAFE" for item in findings))
+
+    def test_canonically_equivalent_authority_patterns_still_overlap(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                values["path_authority"][0]["path_patterns"][0] = "zz/target"
+                values["path_authority"][1]["path_patterns"][0] = "zz/./target"
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            findings = validate_fixture(root)
+            self.assertIn("AGC-PATH-UNSAFE", codes(findings))
+            self.assertIn("AGC-AUTHORITY-OVERLAP", codes(findings))
+
+    def test_scalar_provider_collections_return_schema_findings(self) -> None:
+        for field in ("providers", "compatibility_surfaces", "work_profiles"):
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                mutate_yaml(
+                    root,
+                    "provider-models.yaml",
+                    lambda values, field=field: values.update({field: 1}),
+                )
+                findings = validate_fixture(root)
+                self.assertEqual(findings, validate_fixture(root))
+                matching = [
+                    item
+                    for item in findings
+                    if item.code == "AGC-SCHEMA-TYPE" and item.location == field
+                ]
+                self.assertEqual(1, len(matching))
+                self.assertNotIn(str(root), contract.render_findings(findings))
+
+    def test_unhashable_reference_scalars_return_deterministic_findings(self) -> None:
+        sentinel = "sentinel-unhashable-reference"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate_catalog(values) -> None:
+                values["agents"][0]["scope"] = [sentinel]
+                values["agents"][0]["permission_profile"] = {"id": sentinel}
+                values["agents"][0]["work_profile"] = [sentinel]
+                values["functions"][0]["scope"] = {"id": sentinel}
+                values["functions"][0]["owner_agent"] = [sentinel]
+                values["capability_intake"][0]["owner_agent"] = {"id": sentinel}
+                values["capability_intake"][0]["evaluation_function"] = [sentinel]
+
+            def mutate_artifacts(values) -> None:
+                values["path_authority"][0]["canonical_owner"] = [sentinel]
+                values["path_authority"][0]["permitted_contributors"] = [[sentinel]]
+
+            def mutate_providers(values) -> None:
+                values["models"][0]["provider"] = [sentinel]
+                values["semantic_events"][0]["provider_bindings"][0]["provider"] = {
+                    "id": sentinel
+                }
+
+            mutate_yaml(root, "agent-catalog.yaml", mutate_catalog)
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate_artifacts)
+            mutate_yaml(root, "provider-models.yaml", mutate_providers)
+            first = validate_fixture(root)
+            second = validate_fixture(root)
+            self.assertEqual(first, second)
+            self.assertIn("AGC-CATALOG-UNKNOWN-REFERENCE", codes(first))
+            self.assertIn("AGC-SCHEMA-TYPE", codes(first))
+            rendered = contract.render_findings(first)
+            self.assertNotIn(sentinel, rendered)
+            self.assertNotIn(str(root), rendered)
 
     def test_duplicate_agent_and_function_ids_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -353,14 +473,52 @@ class ContractSchemaTests(unittest.TestCase):
 
 
 class CommandLineTests(unittest.TestCase):
-    def run_checker(self, *args: str) -> subprocess.CompletedProcess[str]:
+    def run_checker_for_root(
+        self, root: pathlib.Path, *args: str
+    ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
-            [sys.executable, str(CHECKER), "--root", str(ROOT), *args],
+            [sys.executable, str(CHECKER), "--root", str(root), *args],
             cwd=ROOT,
             capture_output=True,
             text=True,
             check=False,
         )
+
+    def run_checker(self, *args: str) -> subprocess.CompletedProcess[str]:
+        return self.run_checker_for_root(ROOT, *args)
+
+    def test_scalar_provider_collections_fail_without_traceback_or_absolute_path(self) -> None:
+        for field in ("providers", "compatibility_surfaces", "work_profiles"):
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                mutate_yaml(
+                    root,
+                    "provider-models.yaml",
+                    lambda values, field=field: values.update({field: 1}),
+                )
+                result = self.run_checker_for_root(root, "--mode", "contract")
+                self.assertEqual(1, result.returncode)
+                self.assertIn("AGC-SCHEMA-TYPE", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+                self.assertNotIn(str(root), result.stderr)
+
+    def test_repository_mode_never_line_injects_an_unsafe_catalog_path(self) -> None:
+        sentinel = "sentinel-injected-line"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                values["agents"][0]["catalog_path"] = f"safe-prefix\n{sentinel}"
+
+            mutate_yaml(root, "agent-catalog.yaml", mutate)
+            bundle = contract.load_contract_bundle(root)
+            findings = contract.validate_repository(root, bundle, "catalog")
+            rendered = contract.render_findings(findings)
+            self.assertIn("AGC-REPOSITORY-UNSAFE-PATH", rendered)
+            self.assertNotIn(sentinel, rendered)
+            self.assertNotIn(str(root), rendered)
 
     def test_contract_mode_prints_required_pass_marker(self) -> None:
         result = self.run_checker("--mode", "contract")

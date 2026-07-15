@@ -166,6 +166,8 @@ Redaction boundary:
 | 2026-07-15 | T-AGHC-001 review remediation | Fresh remediation agent | Added three focused RED cases: role authority, function review authority, and a sorted unknown projection target all escaped validation. GREEN now uses typed per-entry domain-owner references, enforces the exact Spec 132 static/dynamic authority policies, derives projection targets from provider IDs plus active compatibility IDs, and requires independent same-code mutation counts. Fresh specification and quality re-reviews remain required. |
 | 2026-07-15 | T-AGHC-001 specification re-review | Fresh read-only reviewer | Re-review of `543f6949..3e8cc412` returned Critical 0, Important 1, Minor 1. It found that non-catalog protected authorities could lose every reviewer and that the duplicate agent/function mutation still asserted only their shared code rather than both identity locations. |
 | 2026-07-15 | T-AGHC-001 second review remediation | Fresh remediation agent | Added a RED mutation that clears provider-adapter reviewers and a general effective-reviewer invariant over static plus typed dynamic reviewers. Strengthened duplicate identity evidence to require both `agents` and `functions` findings. The function catalog remains valid through its typed per-function domain-owner review. Fresh specification and quality re-reviews remain required. |
+| 2026-07-15 | T-AGHC-001 quality review | Fresh read-only reviewer | Quality review of `543f6949..201cee93` returned Critical 0, Important 2, Minor 1. It found unguarded scalar collection reads that could traceback, noncanonical or control-bearing repository paths that could bypass overlap checks or inject diagnostic lines, and YAML mapping-key coercion that could collapse typed keys before duplicate detection. |
+| 2026-07-15 | T-AGHC-001 quality remediation | Fresh remediation agent | Added value-free non-string YAML-key rejection before freezing, typed collection and registered-reference boundaries for every downstream contract read, canonical lexical path validation with overlap normalization, and repository diagnostics that never render unsafe path values. Reviewer cases and a broader unhashable-reference matrix are deterministic and traceback-free. Fresh independent specification and quality re-reviews remain required. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -236,6 +238,20 @@ T-AGHC-001 second specification-review remediation verification:
 | scoped pre-commit | all applicable hooks pass | all applicable hooks passed across the 4 second-remediation paths | Pass |
 | Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,057 nodes; 26,836 edges; 1,558 communities; two unrelated infrastructure ambiguities, 16,079 isolated nodes, and thin-community noise were corroborated against tracked contract, validator, Spec, and Task owners; generated graph output restored | Pass |
 
+T-AGHC-001 quality-review remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| six reviewer boundary methods (RED) | malformed collections, paths, and mapping keys are rejected without process failure | at `201cee93`, 5 assertion failures and 3 `TypeError` errors reproduced the three review findings | Pass |
+| full focused unittest (GREEN) | all focused tests pass | 27 tests; 27 passed | Pass |
+| contract-only CLI | exact target cardinality marker unchanged | `contracts=3 agents=14 functions=22 providers=3 failures=0` | Pass |
+| confidentiality and determinism regressions | no traceback, raw sentinel, temporary absolute root, or line injection | scalar CLI, unsafe repository path, typed-key collision, and unhashable-reference cases pass | Pass |
+| Python compile, Ruff, Yamllint, and diff hygiene | zero failures | zero failures | Pass |
+| changed metadata and impacted lifecycle against `201cee93` | zero violations | metadata selected 2 with 0 violations, 0 legacy exceptions, and 0 overrides; lifecycle selected 136 with 0 violations and the configured Task-directory budget warning | Pass |
+| traceability, alignment, and repository contracts | zero failures | 46 catalog pairs; 653 stage docs; 5,205 links; 141 operations docs; repository `failures=0` | Pass |
+| scoped pre-commit | all applicable hooks pass | all applicable hooks passed across the 4 quality-remediation paths | Pass |
+| Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,070 nodes; 26,893 edges; 1,560 communities; two unrelated infrastructure ambiguities, 16,078 isolated nodes, and thin-community noise were corroborated against tracked infrastructure source, Stage 00, Spec, Plan, Task, validator, and tests; generated graph output restored | Pass |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI
@@ -265,6 +281,10 @@ coupling. The first independent specification review returned Critical 0,
 Important 2, and Minor 1; this remediation closes both Important findings and
 the Minor in code and focused tests. The specification re-review then returned
 Critical 0, Important 1, and Minor 1; the second remediation closes both in
+code and focused tests. The first independent quality review of
+`543f6949..201cee93` returned Critical 0, Important 2, and Minor 1; the quality
+remediation closes malformed collection/scalar handling, path canonicalization
+and diagnostic confidentiality, and non-string YAML-key collision handling in
 code and focused tests. Fresh independent specification and quality re-reviews
 remain required. Tasks 2 through 6 remain not run.
 
@@ -272,7 +292,9 @@ Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
 Tasks 1 through 6 and the whole branch remain not run.
 
-Quality review verdict: not run for Tasks 1 through 6 or the whole branch.
+Quality review verdict: T-AGHC-001 failed Critical 0, Important 2, Minor 1 at
+`201cee93`; remediation is implemented and awaits fresh review. Quality review
+has not run for Tasks 2 through 6 or the whole branch.
 
 Planning findings and disposition: fixed provider skill discovery, Gemini
 `PreCompress`, wrapper clean-state ordering, staged aggregate-validator
@@ -289,7 +311,8 @@ with owner, reason, and destination.
 | Planning | `docs(plan): plan agent governance harness convergence` | `543f6949` | pass |
 | T-AGHC-001 | `feat(governance): add typed agent governance contracts` | `8a35d9ff` | focused and aggregate validation pass; first specification review C0/I2/M1 |
 | T-AGHC-001 review remediation | `fix(governance): enforce authority and projection references` | `3e8cc412` | focused and aggregate GREEN; specification re-review C0/I1/M1 |
-| T-AGHC-001 second review remediation | `fix(governance): require protected authority reviewers` | this logical commit | focused GREEN; fresh specification and quality re-reviews pending |
+| T-AGHC-001 second review remediation | `fix(governance): require protected authority reviewers` | `201cee93` | focused and aggregate GREEN; quality review C0/I2/M1 |
+| T-AGHC-001 quality remediation | `fix(governance): harden contract input boundaries` | this logical commit | focused GREEN; fresh specification and quality re-reviews pending |
 | T-AGHC-002 | `refactor(governance): normalize agent authority and metadata` | pending | pending |
 | T-AGHC-003 | `refactor(agents): converge role and function catalogs` | pending | pending |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |
