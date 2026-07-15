@@ -145,7 +145,7 @@ Redaction boundary:
 | Work unit | Responsibility | State |
 | --- | --- | --- |
 | T-AGHC-001 | Typed contracts and contract-only validator | Complete; specification and quality reviews PASS C0/I0/M0 |
-| T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Implementation complete; independent reviews pending |
+| T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Not run |
 | T-AGHC-004 | Provider-native adapters and dated model policy | Not run |
 | T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Not run |
@@ -580,9 +580,14 @@ closes that finding with a bounded fail-closed literal-prefix comparison and
 focused table evidence. Final independent specification and quality re-reviews
 of `543f6949..0635c044` both returned PASS with Critical 0, Important 0, and
 Minor 0. T-AGHC-001 is complete. T-AGHC-002 implementation self-review is
-PASS with the five planned aggregate forward dependencies recorded above;
-fresh independent specification and quality reviews are pending. Tasks 3
-through 6 remain not run.
+PASS with the five planned aggregate forward dependencies recorded above.
+The full-range specification review of `2cf8a40b..155a1626` returned PASS
+C0/I0/M0. A fresh specification review and a separate quality review of the
+final `155a1626..f89fbe09` integration delta returned PASS and APPROVED,
+respectively, both C0/I0/M0. The reviewers independently confirmed governance
+114/114, metadata 213/213, exact contract cardinality `3/14/22/3/0`, and that
+the aggregate's five remaining failures belong only to Tasks 3 through 5.
+T-AGHC-002 is complete. Tasks 3 through 6 remain not run.
 
 Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
@@ -592,7 +597,11 @@ Quality review verdict: T-AGHC-001 failed Critical 0, Important 2, Minor 1 at
 `201cee93`; the quality re-review at `522d2ba9` reduced the result to Critical 0,
 Important 1, Minor 0. After glob-overlap remediation, the terminal quality
 re-review at `0635c044` returned PASS with Critical 0, Important 0, and Minor 0.
-Quality review has not run for Tasks 2 through 6 or the whole branch.
+T-AGHC-002 terminal quality review of `155a1626..f89fbe09` returned APPROVED
+with Critical 0, Important 0, and Minor 0. Direct catalog/provider
+`Path.is_file()` existence checks predate Task 2 and are recorded as activation
+hardening prerequisites for Tasks 3 and 4, not as an open Task 2 finding.
+Quality review has not run for Tasks 3 through 6 or the whole branch.
 
 Planning findings and disposition: fixed provider skill discovery, Gemini
 `PreCompress`, wrapper clean-state ordering, staged aggregate-validator
@@ -613,14 +622,15 @@ with owner, reason, and destination.
 | T-AGHC-001 quality remediation | `fix(governance): harden contract input boundaries` | `522d2ba9` | focused and aggregate GREEN; quality re-review C0/I1/M0 |
 | T-AGHC-001 glob-overlap remediation | `fix(governance): fail closed on glob authority overlap` | `0635c044` | focused and aggregate GREEN; terminal specification and quality reviews PASS C0/I0/M0 |
 | T-AGHC-001 review evidence | `docs(task): record typed contract review closure` | this logical commit | terminal specification and quality reviews PASS C0/I0/M0 |
-| T-AGHC-002 | `refactor(governance): normalize agent authority and metadata` | this logical commit | focused/full GREEN; independent reviews pending |
-| T-AGHC-002 terminal external-quality remediation | `fix(governance): unify Markdown and contract read boundaries` | this logical commit | focused/full GREEN; terminal internal re-review C0/I0/M0; external re-review pending |
-| T-AGHC-002 cross-token HTML-state remediation | `fix(governance): preserve HTML state across Markdown tokens` | this logical commit | focused/full GREEN; terminal internal re-review C0/I0/M0 |
-| T-AGHC-002 WHATWG DOM remediation | `fix(governance): stream heading HTML state transitions` | this logical commit | focused/full GREEN; terminal independent review C0/I0/M0 |
-| T-AGHC-002 exact brace inventory remediation | `fix(governance): require exact brace inventory members` | this logical commit | focused/full GREEN; terminal independent review C0/I0/M0 |
-| T-AGHC-002 iterative DOM depth remediation | `fix(governance): bound DOM traversal depth` | this logical commit | focused/full GREEN; terminal independent review C0/I0/M0 |
-| T-AGHC-002 bounded brace expansion remediation | `fix(governance): bound brace expansion cardinality` | this logical commit | focused/full GREEN; terminal independent review C0/I0/M0 |
-| T-AGHC-002 shared Stage 00 registry matching remediation | `fix(governance): share bounded Stage 00 registry matching` | this logical commit | focused/full GREEN; terminal independent review C0/I0/M0 |
+| T-AGHC-002 | `refactor(governance): normalize agent authority and metadata` | `1465ef6b` | focused/full GREEN; review findings remediated in the logical commits below |
+| T-AGHC-002 terminal external-quality remediation | `fix(governance): unify Markdown and contract read boundaries` | `0bcaa109` | focused/full GREEN; terminal internal re-review C0/I0/M0 |
+| T-AGHC-002 cross-token HTML-state remediation | `fix(governance): preserve HTML state across Markdown tokens` | `5082e47a` | focused/full GREEN; terminal internal re-review C0/I0/M0 |
+| T-AGHC-002 WHATWG DOM remediation | `fix(governance): stream heading HTML state transitions` | `fdee0d43` | focused/full GREEN; terminal independent review C0/I0/M0 |
+| T-AGHC-002 exact brace inventory remediation | `fix(governance): require exact brace inventory members` | `17f772a2` | focused/full GREEN; terminal independent review C0/I0/M0 |
+| T-AGHC-002 iterative DOM depth remediation | `fix(governance): bound DOM traversal depth` | `d451a9d2` | focused/full GREEN; terminal independent review C0/I0/M0 |
+| T-AGHC-002 bounded brace expansion remediation | `fix(governance): bound brace expansion cardinality` | `155a1626` | focused/full GREEN; terminal independent review C0/I0/M0 |
+| T-AGHC-002 shared Stage 00 registry matching remediation | `fix(governance): share bounded Stage 00 registry matching` | `f89fbe09` | focused/full GREEN; terminal independent review C0/I0/M0 |
+| T-AGHC-002 terminal review evidence | `docs(task): record metadata governance review closure` | this logical commit | full-range specification PASS; final-delta specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-003 | `refactor(agents): converge role and function catalogs` | pending | pending |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |
 | T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | pending | pending |
