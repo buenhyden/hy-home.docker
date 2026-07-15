@@ -144,7 +144,7 @@ Redaction boundary:
 
 | Work unit | Responsibility | State |
 | --- | --- | --- |
-| T-AGHC-001 | Typed contracts and contract-only validator | Implemented; independent review pending |
+| T-AGHC-001 | Typed contracts and contract-only validator | Complete; specification and quality reviews PASS C0/I0/M0 |
 | T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Not run |
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Not run |
 | T-AGHC-004 | Provider-native adapters and dated model policy | Not run |
@@ -170,6 +170,7 @@ Redaction boundary:
 | 2026-07-15 | T-AGHC-001 quality remediation | Fresh remediation agent | Added value-free non-string YAML-key rejection before freezing, typed collection and registered-reference boundaries for every downstream contract read, canonical lexical path validation with overlap normalization, and repository diagnostics that never render unsafe path values. Reviewer cases and a broader unhashable-reference matrix are deterministic and traceback-free. Fresh independent specification and quality re-reviews remain required. |
 | 2026-07-15 | T-AGHC-001 quality re-review | Fresh read-only reviewer | Quality re-review of `543f6949..522d2ba9` returned Critical 0, Important 1, Minor 0. It found that two safe glob authorities such as `zz/a*` and `zz/ab?` can intersect even though the path-boundary prefix heuristic reported no overlap. |
 | 2026-07-15 | T-AGHC-001 glob-overlap remediation | Fresh remediation agent | Replaced the path-boundary heuristic with a bounded fail-closed comparison of canonical literal prefixes up to the first supported glob metacharacter. Exact patterns overlap only on equality; if either side is a glob, compatible character-wise prefixes are treated as a potential protected-authority overlap. Bidirectional table tests cover `*`, `**`, `?`, character classes, brace alternatives, exact/glob pairs, disjoint prefixes, and path boundaries. Fresh independent specification and quality re-reviews remain required. |
+| 2026-07-15 | T-AGHC-001 terminal reviews | Independent specification and quality reviewers | Both reviewers approved exact range `543f6949..0635c044` with Critical 0, Important 0, and Minor 0. The specification reviewer confirmed VAL-132-001 and Task 1 scope; the quality reviewer independently reproduced the malformed-collection, unsafe-path, typed-key, and glob-overlap cases and confirmed they fail closed without raw-value or absolute-path disclosure. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -305,8 +306,9 @@ code and focused tests. The quality re-review of `543f6949..522d2ba9` returned
 Critical 0, Important 1, and Minor 0 because intersecting safe glob authorities
 could still evade the path-boundary heuristic. The glob-overlap remediation
 closes that finding with a bounded fail-closed literal-prefix comparison and
-focused table evidence. Fresh independent specification and quality re-reviews
-remain required. Tasks 2 through 6 remain not run.
+focused table evidence. Final independent specification and quality re-reviews
+of `543f6949..0635c044` both returned PASS with Critical 0, Important 0, and
+Minor 0. T-AGHC-001 is complete; Tasks 2 through 6 remain not run.
 
 Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
@@ -314,8 +316,9 @@ Tasks 1 through 6 and the whole branch remain not run.
 
 Quality review verdict: T-AGHC-001 failed Critical 0, Important 2, Minor 1 at
 `201cee93`; the quality re-review at `522d2ba9` reduced the result to Critical 0,
-Important 1, Minor 0. Glob-overlap remediation is implemented and awaits fresh
-review. Quality review has not run for Tasks 2 through 6 or the whole branch.
+Important 1, Minor 0. After glob-overlap remediation, the terminal quality
+re-review at `0635c044` returned PASS with Critical 0, Important 0, and Minor 0.
+Quality review has not run for Tasks 2 through 6 or the whole branch.
 
 Planning findings and disposition: fixed provider skill discovery, Gemini
 `PreCompress`, wrapper clean-state ordering, staged aggregate-validator
@@ -334,7 +337,8 @@ with owner, reason, and destination.
 | T-AGHC-001 review remediation | `fix(governance): enforce authority and projection references` | `3e8cc412` | focused and aggregate GREEN; specification re-review C0/I1/M1 |
 | T-AGHC-001 second review remediation | `fix(governance): require protected authority reviewers` | `201cee93` | focused and aggregate GREEN; quality review C0/I2/M1 |
 | T-AGHC-001 quality remediation | `fix(governance): harden contract input boundaries` | `522d2ba9` | focused and aggregate GREEN; quality re-review C0/I1/M0 |
-| T-AGHC-001 glob-overlap remediation | `fix(governance): fail closed on glob authority overlap` | this logical commit | focused GREEN; fresh specification and quality re-reviews pending |
+| T-AGHC-001 glob-overlap remediation | `fix(governance): fail closed on glob authority overlap` | `0635c044` | focused and aggregate GREEN; terminal specification and quality reviews PASS C0/I0/M0 |
+| T-AGHC-001 review evidence | `docs(task): record typed contract review closure` | this logical commit | terminal specification and quality reviews PASS C0/I0/M0 |
 | T-AGHC-002 | `refactor(governance): normalize agent authority and metadata` | pending | pending |
 | T-AGHC-003 | `refactor(agents): converge role and function catalogs` | pending | pending |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |
