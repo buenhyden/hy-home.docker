@@ -10,11 +10,17 @@ import re
 import stat
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from html import escape as html_escape
 from html.parser import HTMLParser
 from types import MappingProxyType
 from urllib.parse import urlparse
 
 import yaml
+
+try:
+    from markdown_it import MarkdownIt as _MarkdownIt
+except ModuleNotFoundError:  # pragma: no cover - exercised through dependency guard
+    _MarkdownIt = None  # type: ignore[misc,assignment]
 
 
 CONTRACT_RELATIVE_PATHS = MappingProxyType(
@@ -339,6 +345,10 @@ def _load_yaml(path: pathlib.Path, relative_path: str) -> Mapping[str, object]:
 def load_contract_bundle(root: pathlib.Path) -> ContractBundle:
     """Load the three fixed Stage 00 contract files beneath ``root``."""
 
+    if _MarkdownIt is None:
+        raise ContractLoadError(
+            "AGC-DEPENDENCY-MISSING", "markdown-it-py", "validation-runtime"
+        )
     resolved_root = root.resolve()
     loaded: dict[str, Mapping[str, object]] = {}
     for key, relative in CONTRACT_RELATIVE_PATHS.items():
@@ -2421,47 +2431,29 @@ class _VisibleHTMLTextParser(HTMLParser):
             self.parts.append("\n\n")
 
 
-def _strip_markdown_code_spans(text: str) -> str:
-    """Remove only code spans closed by an equal-length backtick run."""
+def _visible_html(markup: str) -> str:
+    parser = _VisibleHTMLTextParser()
+    parser.feed(markup)
+    parser.close()
+    return "".join(parser.parts)
 
-    runs: list[tuple[int, int, int]] = []
-    index = 0
-    while index < len(text):
-        if text[index] != "`":
-            index += 1
-            continue
-        start = index
-        while index < len(text) and text[index] == "`":
-            index += 1
-        runs.append((start, index, index - start))
 
-    next_equal: list[int | None] = [None] * len(runs)
-    nearest_by_length: dict[int, int] = {}
-    for run_index in range(len(runs) - 1, -1, -1):
-        length = runs[run_index][2]
-        next_equal[run_index] = nearest_by_length.get(length)
-        nearest_by_length[length] = run_index
-
-    output: list[str] = []
-    cursor = 0
-    run_index = 0
-    while run_index < len(runs):
-        start, end, _ = runs[run_index]
-        if start < cursor:
-            run_index += 1
+def _visible_inline(children: Sequence[object]) -> str:
+    markup: list[str] = []
+    for child in children:
+        child_type = getattr(child, "type", "")
+        content = getattr(child, "content", "")
+        if child_type == "code_inline":
             continue
-        output.append(text[cursor:start])
-        closing_index = next_equal[run_index]
-        if closing_index is None:
-            output.append(text[start:end])
-            cursor = end
-            run_index += 1
-            continue
-        output.append(" ")
-        cursor = runs[closing_index][1]
-        run_index = closing_index + 1
-    output.append(text[cursor:])
-    return "".join(output)
+        if child_type == "html_inline":
+            markup.append(content)
+        elif child_type in {"softbreak", "hardbreak"}:
+            markup.append(" ")
+        elif child_type == "image":
+            markup.append(html_escape(content))
+        elif child_type == "text":
+            markup.append(html_escape(content))
+    return _visible_html("".join(markup))
 
 
 def _readme_policy_prose(text: str) -> str:
@@ -2471,27 +2463,38 @@ def _readme_policy_prose(text: str) -> str:
         boundary = text.find("\n---\n", 4)
         if boundary >= 0:
             text = text[boundary + 5 :]
-    prose: list[str] = []
-    for line in _unfenced_markdown_lines(text):
-        if re.match(r"^\s{0,3}#{1,6}\s+", line):
-            prose.append("")
-            continue
-        if re.match(r"^\s*\[[^]]+\]:\s*\S+", line):
-            prose.append("")
-            continue
-        line = re.sub(r"\]\([^)]*\)", "]", line)
-        line = re.sub(
-            r"(?<!\w)(?:\.{0,2}/)?[A-Za-z0-9_.{}*-]+(?:/[A-Za-z0-9_.{}*-]+)+",
-            " ",
-            line,
+    text = re.sub(
+        r"<([A-Za-z][A-Za-z0-9-]*)([^\r\n<>]*)\r?\n([ \t]*)(?=>)",
+        lambda match: (
+            f"<{match.group(1)}{match.group(2)} {match.group(3)}"
+        ),
+        text,
+    )
+    if _MarkdownIt is None:  # guarded by load_contract_bundle; keeps helper fail closed
+        raise ContractLoadError(
+            "AGC-DEPENDENCY-MISSING", "markdown-it-py", "validation-runtime"
         )
-        prose.append(line)
-    parser = _VisibleHTMLTextParser()
-    parser.feed("\n".join(prose))
-    parser.close()
-    inline_blocks = re.split(r"\n[ \t]*\n+", "".join(parser.parts))
-    visible = "\n\n".join(
-        _strip_markdown_code_spans(block) for block in inline_blocks
+    markdown = _MarkdownIt("commonmark", {"html": True})
+    visible_blocks: list[str] = []
+    heading_depth = 0
+    for token in markdown.parse(text):
+        if token.type == "heading_open":
+            heading_depth += 1
+            continue
+        if token.type == "heading_close":
+            heading_depth = max(0, heading_depth - 1)
+            continue
+        if heading_depth or token.type in {"fence", "code_block"}:
+            continue
+        if token.type == "inline":
+            visible_blocks.append(_visible_inline(token.children or ()))
+        elif token.type == "html_block":
+            visible_blocks.append(_visible_html(token.content))
+    visible = "\n\n".join(visible_blocks)
+    visible = re.sub(
+        r"(?<!\w)(?:\.{0,2}/)?[A-Za-z0-9_.{}*-]+(?:/[A-Za-z0-9_.{}*-]+)+",
+        " ",
+        visible,
     )
     return " " + re.sub(r"[^a-z0-9]+", " ", visible.lower()).strip() + " "
 

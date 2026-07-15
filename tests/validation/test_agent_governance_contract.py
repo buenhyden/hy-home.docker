@@ -82,6 +82,13 @@ def codes(findings: list[object]) -> set[str]:
 
 
 class ContractLoadingTests(unittest.TestCase):
+    def test_missing_markdown_parser_dependency_fails_contract_loading(self) -> None:
+        with mock.patch.object(contract, "_MarkdownIt", None):
+            with self.assertRaises(contract.ContractLoadError) as context:
+                contract.load_contract_bundle(ROOT)
+        self.assertEqual("AGC-DEPENDENCY-MISSING", context.exception.code)
+        self.assertEqual("markdown-it-py", context.exception.path)
+
     def test_canonical_contracts_are_valid_and_have_target_counts(self) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         self.assertEqual([], contract.validate_contract_bundle(ROOT, bundle))
@@ -1136,6 +1143,7 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
         cases = (
             "Provider model ``defaults` are defined here.",
             "Provider model ``defaults are defined here. Later `routing`.",
+            r"Provider \`model defaults\` are defined here.",
         )
         for source in cases:
             with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
@@ -1157,6 +1165,26 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
     def test_repository_harness_keeps_code_runs_inside_inline_block_boundaries(self) -> None:
         cases = (
             "Intro `unclosed\n\nProvider model defaults `",
+            "Intro `unclosed\n## Existing heading\nProvider model defaults `",
+            "- Intro `unclosed\n- Provider model defaults `",
+            "1. Intro `unclosed\n2. Provider model defaults `",
+            "- Intro `unclosed\n    - Provider model defaults `",
+            "1. Intro `unclosed\n    1. Provider model defaults `",
+            "Intro `unclosed\n> Provider model defaults `",
+            "Intro `unclosed\n\n***\nProvider model defaults `",
+            "Intro `unclosed\nHeading\n---\nProvider model defaults `",
+            "Intro `unclosed\n\n    literal code\nProvider model defaults `",
+            "Intro `unclosed\n```text\nliteral code\n```\nProvider model defaults `",
+            "> ~~~text\n> `unclosed\n> ~~~\n> Provider model defaults `",
+            "- ~~~text\n  `unclosed\n  ~~~\n- Provider model defaults `",
+            " \tIntro `unclosed\nProvider model defaults `",
+            "Intro `unclosed\n\n[label]: https://example.invalid\nProvider model defaults `",
+            "[label]: https://example.invalid\n  \"title `unclosed\"\nProvider model defaults `",
+            "[label]:\n  https://example.invalid\n  \"title `unclosed\"\nProvider model defaults `",
+            "Intro `unclosed\n<div>visible block</div>\nProvider model defaults `",
+            "Visible <span\n\nProvider model defaults>",
+            "```text\n<span\n```\nProvider model defaults>",
+            "Provider mo<span\r\n>del</span> defaults",
             "Provider model <span title='`'>defaults</span> later `routing`",
             "Provider model <!-- ` -->defaults later `routing`",
             "Intro `unclosed\n<script>const marker=1;</script>\nProvider model defaults `",
@@ -1234,6 +1262,25 @@ model defaults
         for source in (
             "Intro `unclosed\n\nProvider model defaults `",
             "Intro `unclosed\n## Existing heading\nProvider model defaults `",
+            "- Intro `unclosed\n- Provider model defaults `",
+            "1. Intro `unclosed\n2. Provider model defaults `",
+            "- Intro `unclosed\n    - Provider model defaults `",
+            "1. Intro `unclosed\n    1. Provider model defaults `",
+            "Intro `unclosed\n> Provider model defaults `",
+            "Intro `unclosed\n\n***\nProvider model defaults `",
+            "Intro `unclosed\nHeading\n---\nProvider model defaults `",
+            "Intro `unclosed\n\n    literal code\nProvider model defaults `",
+            "Intro `unclosed\n```text\nliteral code\n```\nProvider model defaults `",
+            "> ~~~text\n> `unclosed\n> ~~~\n> Provider model defaults `",
+            "- ~~~text\n  `unclosed\n  ~~~\n- Provider model defaults `",
+            " \tIntro `unclosed\nProvider model defaults `",
+            "Intro `unclosed\n\n[label]: https://example.invalid\nProvider model defaults `",
+            "[label]: https://example.invalid\n  \"title `unclosed\"\nProvider model defaults `",
+            "[label]:\n  https://example.invalid\n  \"title `unclosed\"\nProvider model defaults `",
+            "Intro `unclosed\n<div>visible block</div>\nProvider model defaults `",
+            "Visible <span\n\nProvider model defaults>",
+            "```text\n<span\n```\nProvider model defaults>",
+            "Provider mo<span\r\n>del</span> defaults",
             "Provider model <span title='`'>defaults</span> later `routing`",
             "Provider model <!-- ` -->defaults later `routing`",
             "Intro `unclosed\n<script>const marker=1;</script>\nProvider model defaults `",
@@ -1242,9 +1289,15 @@ model defaults
         ):
             with self.subTest(source=source):
                 self.assertIn(" model defaults ", contract._readme_policy_prose(source))
-        self.assertNotIn(
+        self.assertIn(
             " model defaults ",
             contract._readme_policy_prose(r"Provider \`model defaults\` here."),
+        )
+        self.assertNotIn(
+            " model defaults ",
+            contract._readme_policy_prose(
+                "Provider ``model defaults\\`` are defined here."
+            ),
         )
         for tag in ("script", "style"):
             with self.subTest(hidden_html=tag):
