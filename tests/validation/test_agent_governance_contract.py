@@ -129,7 +129,12 @@ class ContractSchemaTests(unittest.TestCase):
 
             mutate_yaml(root, "agent-catalog.yaml", mutate)
             findings = validate_fixture(root)
-            self.assertIn("AGC-CATALOG-DUPLICATE-ID", codes(findings))
+            duplicate_locations = [
+                item.location
+                for item in findings
+                if item.code == "AGC-CATALOG-DUPLICATE-ID"
+            ]
+            self.assertEqual(["agents", "functions"], duplicate_locations)
 
     def test_invalid_catalog_cross_references_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -226,9 +231,33 @@ class ContractSchemaTests(unittest.TestCase):
                 {
                     "path_authority[0].canonical_owner",
                     "path_authority[0].entry_reviewers",
+                    "path_authority[0].mandatory_reviewers",
                 },
                 locations,
             )
+
+    def test_protected_authority_requires_an_effective_reviewer(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+
+            def mutate(values) -> None:
+                authority = next(
+                    item
+                    for item in values["path_authority"]
+                    if item["authority_id"] == "provider-adapters-and-hooks"
+                )
+                authority["mandatory_reviewers"] = []
+
+            mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+            findings = validate_fixture(root)
+            matching = [
+                item
+                for item in findings
+                if item.code == "AGC-AUTHORITY-SEMANTICS"
+                and item.location == "path_authority[3].mandatory_reviewers"
+            ]
+            self.assertEqual(1, len(matching))
 
     def test_projection_targets_are_derived_from_providers_and_active_compatibility(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -164,6 +164,8 @@ Redaction boundary:
 | 2026-07-15 | T-AGHC-001 self-review | Fresh implementation agent | Removed a single shared repository-enforcement toggle that would have coupled later catalog and provider activation. A focused RED reproduced the inactive short-circuit; GREEN now keeps repository mode read-only and diagnostic while later tasks independently activate aggregate section calls. |
 | 2026-07-15 | T-AGHC-001 specification review | Fresh read-only reviewer | Initial review of `543f6949..8a35d9ff` returned Critical 0, Important 2, Minor 1. The Important findings identified unenforced role/function path-authority semantics and projection targets that were not derived from the provider plus approved compatibility registries. The Minor identified same-code multi-mutation tests that did not prove each mutation independently. |
 | 2026-07-15 | T-AGHC-001 review remediation | Fresh remediation agent | Added three focused RED cases: role authority, function review authority, and a sorted unknown projection target all escaped validation. GREEN now uses typed per-entry domain-owner references, enforces the exact Spec 132 static/dynamic authority policies, derives projection targets from provider IDs plus active compatibility IDs, and requires independent same-code mutation counts. Fresh specification and quality re-reviews remain required. |
+| 2026-07-15 | T-AGHC-001 specification re-review | Fresh read-only reviewer | Re-review of `543f6949..3e8cc412` returned Critical 0, Important 1, Minor 1. It found that non-catalog protected authorities could lose every reviewer and that the duplicate agent/function mutation still asserted only their shared code rather than both identity locations. |
+| 2026-07-15 | T-AGHC-001 second review remediation | Fresh remediation agent | Added a RED mutation that clears provider-adapter reviewers and a general effective-reviewer invariant over static plus typed dynamic reviewers. Strengthened duplicate identity evidence to require both `agents` and `functions` findings. The function catalog remains valid through its typed per-function domain-owner review. Fresh specification and quality re-reviews remain required. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -220,6 +222,20 @@ The first advisory metadata inventory command omitted its required `--output`,
 exited 2, and made no mutation. The corrected canonical inventory command
 passed with the counts above.
 
+T-AGHC-001 second specification-review remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| protected provider authority reviewer mutation (RED) | missing effective reviewer is rejected | 1 test; 1 expected assertion failure because no authority-semantic finding was emitted at `3e8cc412` | Pass |
+| duplicate agent/function identity mutation | both independent duplicate locations are required | exact locations `agents` and `functions` detected | Pass |
+| full focused unittest (GREEN) | all tests pass | 20 tests; 20 passed | Pass |
+| contract-only CLI | exact target cardinality marker unchanged | `contracts=3 agents=14 functions=22 providers=3 failures=0` | Pass |
+| Python compile, Ruff, Yamllint, and diff hygiene | zero failures | zero failures | Pass |
+| changed metadata and impacted lifecycle against `3e8cc412` | zero violations | metadata selected 2 with 0 violations, 0 legacy exceptions, and 0 overrides; lifecycle selected 136 with 0 violations and the configured Task-directory budget warning | Pass |
+| traceability, alignment, and repository contracts | zero failures | 46 catalog pairs; 653 stage docs; 5,205 links; 141 operations docs; repository `failures=0` | Pass |
+| scoped pre-commit | all applicable hooks pass | all applicable hooks passed across the 4 second-remediation paths | Pass |
+| Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,057 nodes; 26,836 edges; 1,558 communities; two unrelated infrastructure ambiguities, 16,079 isolated nodes, and thin-community noise were corroborated against tracked contract, validator, Spec, and Task owners; generated graph output restored | Pass |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI
@@ -247,8 +263,10 @@ Planning implementation review verdict: controller self-review PASS. T-AGHC-001
 implementation self-review PASS after removing the cross-section activation
 coupling. The first independent specification review returned Critical 0,
 Important 2, and Minor 1; this remediation closes both Important findings and
-the Minor in code and focused tests. Fresh independent specification and
-quality re-reviews remain required. Tasks 2 through 6 remain not run.
+the Minor in code and focused tests. The specification re-review then returned
+Critical 0, Important 1, and Minor 1; the second remediation closes both in
+code and focused tests. Fresh independent specification and quality re-reviews
+remain required. Tasks 2 through 6 remain not run.
 
 Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
@@ -270,7 +288,8 @@ with owner, reason, and destination.
 | --- | --- | --- | --- |
 | Planning | `docs(plan): plan agent governance harness convergence` | `543f6949` | pass |
 | T-AGHC-001 | `feat(governance): add typed agent governance contracts` | `8a35d9ff` | focused and aggregate validation pass; first specification review C0/I2/M1 |
-| T-AGHC-001 review remediation | `fix(governance): enforce authority and projection references` | this logical commit | focused GREEN; fresh specification and quality re-reviews pending |
+| T-AGHC-001 review remediation | `fix(governance): enforce authority and projection references` | `3e8cc412` | focused and aggregate GREEN; specification re-review C0/I1/M1 |
+| T-AGHC-001 second review remediation | `fix(governance): require protected authority reviewers` | this logical commit | focused GREEN; fresh specification and quality re-reviews pending |
 | T-AGHC-002 | `refactor(governance): normalize agent authority and metadata` | pending | pending |
 | T-AGHC-003 | `refactor(agents): converge role and function catalogs` | pending | pending |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |

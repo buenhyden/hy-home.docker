@@ -582,9 +582,11 @@ def _check_entry_authority_list(
             findings,
             source,
         )
+        reference_fields_valid = True
         if collection_valid:
             expected_identity, expected_agent = DOMAIN_OWNER_REFERENCE_FIELDS[str(collection)]
             if identity_field != expected_identity:
+                reference_fields_valid = False
                 _add(
                     findings,
                     "AGC-AUTHORITY-REFERENCE",
@@ -595,6 +597,7 @@ def _check_entry_authority_list(
                     source,
                 )
             if agent_field != expected_agent:
+                reference_fields_valid = False
                 _add(
                     findings,
                     "AGC-AUTHORITY-REFERENCE",
@@ -604,7 +607,15 @@ def _check_entry_authority_list(
                     "invalid-agent-reference-field",
                     source,
                 )
-        if all((role_valid, collection_valid, identity_valid, agent_valid)):
+        if all(
+            (
+                role_valid,
+                collection_valid,
+                identity_valid,
+                agent_valid,
+                reference_fields_valid,
+            )
+        ):
             references.append(
                 (str(role), str(collection), str(identity_field), str(agent_field))
             )
@@ -920,7 +931,18 @@ def _validate_artifact_contract(
                 findings,
                 source,
             )
-            _check_bool(entry.get("protected"), path, f"{location}.protected", findings, source)
+            protected = entry.get("protected")
+            _check_bool(protected, path, f"{location}.protected", findings, source)
+            if protected is True and not mandatory_reviewers and not entry_reviewers:
+                _add(
+                    findings,
+                    "AGC-AUTHORITY-SEMANTICS",
+                    path,
+                    f"{location}.mandatory_reviewers",
+                    "effective-protected-authority-reviewer",
+                    "missing-effective-reviewer",
+                    source,
+                )
             _check_string_list(entry.get("validators"), path, f"{location}.validators", findings, source)
             _check_string(entry.get("rollback"), path, f"{location}.rollback", findings, source)
             semantics = CATALOG_AUTHORITY_SEMANTICS.get(str(authority_id))
