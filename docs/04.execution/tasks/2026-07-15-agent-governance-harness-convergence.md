@@ -25,7 +25,7 @@ executed.
 - Spec: `docs/03.specs/132-agent-governance-harness-convergence/spec.md`
 - Plan:
   `docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md`
-- Approved planning baseline: `6cde68dc`
+- Approved planning baseline: `543f6949`
 - Work units: `T-AGHC-001` through `T-AGHC-006`
 - Canonical governance: `docs/00.agent-governance/`
 - Canonical audit:
@@ -144,7 +144,7 @@ Redaction boundary:
 
 | Work unit | Responsibility | State |
 | --- | --- | --- |
-| T-AGHC-001 | Typed contracts and contract-only validator | Not run |
+| T-AGHC-001 | Typed contracts and contract-only validator | Implemented; independent review pending |
 | T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Not run |
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Not run |
 | T-AGHC-004 | Provider-native adapters and dated model policy | Not run |
@@ -158,6 +158,10 @@ Redaction boundary:
 | 2026-07-15 | Planning | Controller | Approved Spec 132 activated; Plan and this execution ledger authored. |
 | 2026-07-15 | Planning review | Read-only discovery agents | Exact metadata, provider, CI/eval/audit integration maps requested; findings incorporated before the planning commit. |
 | 2026-07-15 | Planning lifecycle routing | Controller | Added this Plan as the exact new active consumer of five promoted Foundation sources: progress, the Stage 03 index, both Stage 04 indexes, and the frontmatter contract. Regenerated the canonical summary without changing dispositions, verdicts, enforcement, or other rows. |
+| 2026-07-15 | T-AGHC-001 RED | Fresh implementation agent | Added the focused typed-contract test first. The required RED command exited 1 during module import with the expected missing `agent_governance_contract.py`; no test was collected because the production module did not exist. |
+| 2026-07-15 | T-AGHC-001 GREEN | Fresh implementation agent | Added three duplicate-key-safe typed contracts, an immutable deterministic validator, a fail-closed thin CLI, focused tests, and existing README routing. Contract-only validation is active; repository catalog/provider/harness modes remain read-only diagnostics and are not called by the aggregate gate until later tasks converge them. |
+| 2026-07-15 | T-AGHC-001 generated owners | Fresh implementation agent | Regenerated only the LLM Wiki index and stage/category coverage after staging the new contract paths. Security readiness, audit matrix, and the frontmatter semantic inventory were already fresh and received no authored change. |
+| 2026-07-15 | T-AGHC-001 self-review | Fresh implementation agent | Removed a single shared repository-enforcement toggle that would have coupled later catalog and provider activation. A focused RED reproduced the inactive short-circuit; GREEN now keeps repository mode read-only and diagnostic while later tasks independently activate aggregate section calls. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -178,6 +182,22 @@ Planning verification:
 Per-task focused evidence and the final full ladder are appended with exact
 commands, exit states, bounded counts, and observed results. A planned command
 is never recorded as a pass.
+
+T-AGHC-001 implementation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| `python3 -m unittest tests.validation.test_agent_governance_contract -v` (RED) | missing production module | exit 1; expected import-time `FileNotFoundError`; 0 tests collected | Pass |
+| focused unittest (GREEN) | all focused tests pass | 16 tests; 16 passed | Pass |
+| contract-only CLI | exact target cardinality marker | `contracts=3 agents=14 functions=22 providers=3 failures=0` | Pass |
+| Python compile, Ruff, Yamllint, and diff hygiene | zero failures | zero failures | Pass |
+| changed metadata against `543f6949` | zero violations | selected 5; violations 0; legacy exceptions 0; transition overrides 0 | Pass |
+| impacted lifecycle against `543f6949` | zero violations | selected 192; violations 0; configured Task-directory budget warning only | Pass |
+| traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,205 links; 141 operations docs; failures 0 | Pass |
+| repository contracts compatibility | `failures=0` without aggregate activation | impacted selected 211; failures 0 | Pass |
+| generated owners | fresh | index 1,312 paths; coverage 1,311 safe paths; security readiness, audit matrix, and metadata inventory fresh | Pass |
+| Graphify refresh | local refresh succeeds or explicit unavailable evidence | 24,053 nodes; 26,816 edges; 1,555 communities; HTML visualization skipped at the configured size limit | Pass |
+| scoped pre-commit | all applicable hooks pass | 17 applicable/skipped hook results completed without failure across 12 task-owned paths | Pass |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -202,8 +222,10 @@ Disposition: pending Task 6.
 
 ## Review Evidence
 
-Planning implementation review verdict: controller self-review PASS. Tasks 1
-through 6 remain not run.
+Planning implementation review verdict: controller self-review PASS. T-AGHC-001
+implementation self-review PASS after removing the cross-section activation
+coupling; fresh independent specification and quality reviews remain required.
+Tasks 2 through 6 remain not run.
 
 Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
@@ -223,8 +245,8 @@ with owner, reason, and destination.
 
 | Logical unit | Planned commit | Identity | Validation |
 | --- | --- | --- | --- |
-| Planning | `docs(plan): plan agent governance harness convergence` | pending | pending |
-| T-AGHC-001 | `feat(governance): add typed agent governance contracts` | pending | pending |
+| Planning | `docs(plan): plan agent governance harness convergence` | `543f6949` | pass |
+| T-AGHC-001 | `feat(governance): add typed agent governance contracts` | pending until this evidence-bearing commit is created | focused and aggregate validation pass; independent reviews pending |
 | T-AGHC-002 | `refactor(governance): normalize agent authority and metadata` | pending | pending |
 | T-AGHC-003 | `refactor(agents): converge role and function catalogs` | pending | pending |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |

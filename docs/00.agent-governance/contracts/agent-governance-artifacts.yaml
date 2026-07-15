@@ -1,0 +1,282 @@
+schema_version: 1
+checked_at: "2026-07-15T10:00:00+09:00"
+artifacts:
+  - artifact_type: agent-function
+    path_pattern: docs/00.agent-governance/agents/functions/*.md
+    canonical: true
+    required_keys:
+      - layer
+      - artifact_type
+      - function_id
+      - scope
+      - status
+    key_order:
+      - layer
+      - artifact_type
+      - function_id
+      - scope
+      - status
+    required_sections:
+      - Preconditions
+      - Inputs
+      - Procedure
+      - Outputs
+      - Gates
+      - Failure Handling
+      - Related Documents
+  - artifact_type: agent-role
+    path_pattern: docs/00.agent-governance/agents/agents/*.md
+    canonical: true
+    required_keys:
+      - layer
+      - artifact_type
+      - agent_id
+      - scope
+      - tier
+      - status
+    key_order:
+      - layer
+      - artifact_type
+      - agent_id
+      - scope
+      - tier
+      - status
+    required_sections:
+      - Purpose
+      - Use When
+      - Inputs
+      - Outputs
+      - Permissions
+      - Success Criteria
+      - Failure and Escalation
+      - Related Documents
+  - artifact_type: governance-document
+    path_pattern: docs/00.agent-governance/{rules,scopes}/*.md
+    canonical: true
+    required_keys:
+      - layer
+    key_order:
+      - layer
+    required_sections:
+      - Context and Objective
+      - Requirements and Constraints
+      - Implementation Flow
+      - Operational Procedures
+      - Maintenance and Safety
+      - Related Documents
+  - artifact_type: hookify-rule
+    path_pattern: docs/00.agent-governance/rules/hooks/hookify.*.md
+    canonical: true
+    required_keys:
+      - name
+      - enabled
+      - event
+      - conditions
+      - action
+    key_order:
+      - name
+      - enabled
+      - event
+      - conditions
+      - action
+    required_sections:
+      - Related Documents
+  - artifact_type: provider-overlay
+    path_pattern: docs/00.agent-governance/providers/*.md
+    canonical: true
+    required_keys:
+      - layer
+      - runtime
+    key_order:
+      - layer
+      - runtime
+    required_sections:
+      - Context and Objective
+      - Provider-Specific Rules
+      - Runtime Boundary
+      - Operational Practices
+      - Related Documents
+  - artifact_type: readme-index
+    path_pattern: docs/00.agent-governance/**/README.md
+    canonical: true
+    required_keys:
+      - layer
+    key_order:
+      - layer
+    required_sections:
+      - Overview
+      - Audience
+      - Scope
+      - Structure
+      - How to Work in This Area
+      - Related Documents
+  - artifact_type: root-instruction-shim
+    path_pattern: "{AGENTS,CLAUDE,GEMINI}.md"
+    canonical: false
+    required_keys: []
+    key_order: []
+    required_sections:
+      - Related Documents
+root_shims:
+  - path: AGENTS.md
+    provider: shared
+    bootstrap_target: docs/00.agent-governance/rules/bootstrap.md
+    frontmatter: forbidden
+  - path: CLAUDE.md
+    provider: claude
+    bootstrap_target: AGENTS.md
+    frontmatter: forbidden
+  - path: GEMINI.md
+    provider: gemini
+    bootstrap_target: AGENTS.md
+    frontmatter: forbidden
+readme_profiles:
+  - profile_id: agent-governance-hub
+    path_pattern: docs/00.agent-governance/README.md
+    allowed_sections:
+      - Overview
+      - Audience
+      - Scope
+      - Core Concepts
+      - Governance Coverage Matrix
+      - Structure
+      - How to Work in This Area
+      - Related Documents
+    forbidden_policy_topics:
+      - model-defaults
+      - provider-native-schema
+      - retry-policy
+  - profile_id: provider-surface-index
+    path_pattern: .{agents,claude,codex,gemini}/README.md
+    allowed_sections:
+      - Overview
+      - Audience
+      - Scope
+      - Structure
+      - How to Work in This Area
+      - Related Documents
+    forbidden_policy_topics:
+      - canonical-role-definition
+      - model-defaults
+      - path-authority
+  - profile_id: scripts-index
+    path_pattern: scripts/README.md
+    allowed_sections:
+      - Overview
+      - Audience
+      - Scope
+      - Structure
+      - Purpose Folder Implementation
+      - How to Work in This Area
+      - Active Surface Retention Rules
+      - Navigation / Inventory
+      - Hardening Tier Arguments
+      - Script Lifecycle
+      - Utilities & Automation
+      - Related Documents
+    forbidden_policy_topics:
+      - agent-role-definition
+      - path-authority
+      - provider-model-defaults
+path_authority:
+  - authority_id: agent-function-catalog
+    path_patterns:
+      - docs/00.agent-governance/agents/functions/*.md
+    canonical_owner: skill-creator
+    permitted_contributors:
+      - doc-writer
+      - skill-creator
+    mandatory_reviewers:
+      - rules-engineer
+    protected: true
+    validators:
+      - scripts/validation/check-agent-governance-contract.py
+    rollback: revert-logical-commit-and-regenerate-provider-projections
+  - authority_id: agent-role-catalog
+    path_patterns:
+      - docs/00.agent-governance/agents/agents/*.md
+    canonical_owner: rules-engineer
+    permitted_contributors:
+      - rules-engineer
+      - workflow-supervisor
+    mandatory_reviewers:
+      - workflow-supervisor
+    protected: true
+    validators:
+      - scripts/validation/check-agent-governance-contract.py
+    rollback: revert-logical-commit-and-regenerate-provider-projections
+  - authority_id: github-quality-workflow
+    path_patterns:
+      - .github/CODEOWNERS
+      - .github/PULL_REQUEST_TEMPLATE.md
+      - .github/labeler.yml
+      - .github/workflows/ci-quality.yml
+    canonical_owner: ci-cd-engineer
+    permitted_contributors:
+      - ci-cd-engineer
+      - qa-engineer
+    mandatory_reviewers:
+      - qa-engineer
+      - security-auditor
+    protected: true
+    validators:
+      - scripts/validation/check-repo-contracts.sh
+    rollback: revert-logical-commit-without-remote-mutation
+  - authority_id: provider-adapters-and-hooks
+    path_patterns:
+      - .agents/**
+      - .claude/**
+      - .codex/**
+      - .gemini/**
+      - docs/00.agent-governance/providers/*.md
+    canonical_owner: hook-developer
+    permitted_contributors:
+      - hook-developer
+      - rules-engineer
+    mandatory_reviewers:
+      - rules-engineer
+      - security-auditor
+    protected: true
+    validators:
+      - scripts/validation/check-agent-governance-contract.py
+    rollback: revert-logical-commit-and-regenerate-native-adapters
+  - authority_id: stage00-policy-and-contracts
+    path_patterns:
+      - AGENTS.md
+      - CLAUDE.md
+      - GEMINI.md
+      - docs/00.agent-governance/README.md
+      - docs/00.agent-governance/contracts/**
+      - docs/00.agent-governance/harness-implementation-map.md
+      - docs/00.agent-governance/memory/**
+      - docs/00.agent-governance/rules/**
+      - docs/00.agent-governance/scopes/**
+      - docs/00.agent-governance/subagent-protocol.md
+    canonical_owner: rules-engineer
+    permitted_contributors:
+      - doc-writer
+      - rules-engineer
+      - workflow-supervisor
+    mandatory_reviewers:
+      - workflow-supervisor
+    protected: true
+    validators:
+      - scripts/validation/check-agent-governance-contract.py
+      - scripts/validation/check-repo-contracts.sh
+    rollback: revert-logical-commit-and-restore-last-green-contract
+  - authority_id: validator-and-evidence
+    path_patterns:
+      - scripts/validation/agent_governance_contract.py
+      - scripts/validation/check-agent-governance-contract.py
+      - tests/validation/test_agent_governance_contract.py
+    canonical_owner: qa-engineer
+    permitted_contributors:
+      - eval-engineer
+      - qa-engineer
+      - rules-engineer
+    mandatory_reviewers:
+      - rules-engineer
+    protected: true
+    validators:
+      - python3 -m unittest tests.validation.test_agent_governance_contract -v
+    rollback: revert-logical-commit-and-restore-last-green-validator

@@ -98,6 +98,10 @@ policy remains in the linked Stage 00 documents.
 - `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge guidance.
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, `codex`, provider-neutral `agents-md`).
 - `agents/`: local agent/function catalog of workspace agents and orchestration functions.
+- `contracts/`: typed artifact, agent/function, provider/model, path-authority,
+  and adoption contracts. Repository projection modes are read-only
+  diagnostics until the corresponding convergence task adds them to the
+  aggregate gate.
 - `memory/`: durable governance notes, audit findings, and the agent progress log.
   - `memory/README.md` — memory policy.
   - `memory/progress.md` — mandatory work progress log.
@@ -117,7 +121,10 @@ policy remains in the linked Stage 00 documents.
    or governance constraints conflict.
 8. Before changing model/config values, confirm the Stage 00 policy, provider
    sync script, and validators already encode the same permitted value.
-9. Run completion checklist and update `memory/progress.md`.
+9. Run `python3 scripts/validation/check-agent-governance-contract.py --mode contract`
+   after editing the typed contracts. Use repository mode only for a section
+   whose aggregate activation is owned by the current task.
+10. Run completion checklist and update `memory/progress.md`.
 
 ## Related Documents
 
@@ -129,6 +136,9 @@ policy remains in the linked Stage 00 documents.
 - `rules/jit-markers.md`
 - `rules/github-governance.md`
 - `rules/approval-boundaries.md`
+- `contracts/agent-governance-artifacts.yaml`
+- `contracts/agent-catalog.yaml`
+- `contracts/provider-models.yaml`
 - `harness-implementation-map.md`
 - `subagent-protocol.md`
 - `providers/agents-md.md`

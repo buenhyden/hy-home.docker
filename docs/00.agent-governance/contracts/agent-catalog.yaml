@@ -1,0 +1,700 @@
+schema_version: 1
+checked_at: "2026-07-15T10:00:00+09:00"
+projection_targets:
+  - agents-md
+  - claude
+  - codex
+  - gemini
+scopes:
+  - agentic
+  - architecture
+  - common
+  - docs
+  - infra
+  - ops
+  - qa
+  - security
+permissions:
+  - permission_id: read-only
+    mutation_allowed: false
+    evidence_required: true
+  - permission_id: workspace-write
+    mutation_allowed: true
+    evidence_required: true
+agents:
+  - agent_id: ci-cd-engineer
+    category: implementation-operations
+    scope: ops
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/ci-cd-engineer.md
+    permission_profile: workspace-write
+    work_profile: complex-implementation
+    function_ids:
+      - ci-cd-patterns
+      - deployment-pipeline-design
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: code-reviewer
+    category: review-evaluation
+    scope: common
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/code-reviewer.md
+    permission_profile: read-only
+    work_profile: complex-implementation
+    function_ids:
+      - code-review-dimensions
+      - code-reviewer
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: doc-writer
+    category: implementation-operations
+    scope: docs
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/doc-writer.md
+    permission_profile: workspace-write
+    work_profile: read-heavy-repetitive
+    function_ids:
+      - adr-writing
+      - knowledge-map-agent
+      - ops-runbook-agent
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: drift-detector
+    category: review-evaluation
+    scope: infra
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/drift-detector.md
+    permission_profile: read-only
+    work_profile: read-heavy-repetitive
+    function_ids: []
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: eval-engineer
+    category: review-evaluation
+    scope: qa
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/eval-engineer.md
+    permission_profile: read-only
+    work_profile: complex-implementation
+    function_ids:
+      - workspace-audit-revalidation
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: hook-developer
+    category: implementation-operations
+    scope: agentic
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/hook-developer.md
+    permission_profile: workspace-write
+    work_profile: complex-implementation
+    function_ids: []
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: iac-reviewer
+    category: review-evaluation
+    scope: infra
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/iac-reviewer.md
+    permission_profile: read-only
+    work_profile: complex-implementation
+    function_ids:
+      - infra-cross-validate
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: incident-responder
+    category: implementation-operations
+    scope: ops
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/incident-responder.md
+    permission_profile: workspace-write
+    work_profile: complex-implementation
+    function_ids:
+      - incident-response
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: infra-implementer
+    category: implementation-operations
+    scope: infra
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/infra-implementer.md
+    permission_profile: workspace-write
+    work_profile: complex-implementation
+    function_ids:
+      - compose-stack-agent
+      - docker-compose-patterns
+      - infra-validate
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: qa-engineer
+    category: review-evaluation
+    scope: qa
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/qa-engineer.md
+    permission_profile: read-only
+    work_profile: complex-implementation
+    function_ids:
+      - e2e-testing
+      - style-validation
+      - test-automator
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: rules-engineer
+    category: implementation-operations
+    scope: agentic
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/rules-engineer.md
+    permission_profile: workspace-write
+    work_profile: complex-implementation
+    function_ids:
+      - policy-gate-agent
+      - requirements-to-design-agent
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: security-auditor
+    category: review-evaluation
+    scope: security
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/security-auditor.md
+    permission_profile: read-only
+    work_profile: complex-implementation
+    function_ids:
+      - container-threat-modeling
+      - security-audit
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: skill-creator
+    category: implementation-operations
+    scope: agentic
+    tier: worker
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/skill-creator.md
+    permission_profile: workspace-write
+    work_profile: complex-implementation
+    function_ids: []
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+  - agent_id: workflow-supervisor
+    category: supervisor
+    scope: agentic
+    tier: supervisor
+    status: active
+    catalog_path: docs/00.agent-governance/agents/agents/workflow-supervisor.md
+    permission_profile: read-only
+    work_profile: supervision
+    function_ids:
+      - execution-plan-agent
+      - task-breakdown-agent
+    provider_projections:
+      - agents-md
+      - claude
+      - codex
+      - gemini
+functions:
+  - function_id: adr-writing
+    scope: architecture
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/adr-writing.md
+    owner_agent: doc-writer
+    reviewer_agents:
+      - rules-engineer
+    inputs:
+      - approved-architecture-context
+      - decision-drivers
+    outputs:
+      - typed-adr
+    gates:
+      - architecture-traceability
+      - decision-status
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: ci-cd-patterns
+    scope: ops
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/ci-cd-patterns.md
+    owner_agent: ci-cd-engineer
+    reviewer_agents:
+      - qa-engineer
+      - security-auditor
+    inputs:
+      - approved-delivery-contract
+      - repository-workflow-state
+    outputs:
+      - pipeline-pattern
+    gates:
+      - least-privilege
+      - reproducible-validation
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: code-review-dimensions
+    scope: common
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/code-review-dimensions.md
+    owner_agent: code-reviewer
+    reviewer_agents:
+      - qa-engineer
+    inputs:
+      - exact-diff
+      - governing-specification
+    outputs:
+      - dimensioned-review
+    gates:
+      - evidence-citations
+      - severity-calibration
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: code-reviewer
+    scope: common
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/code-reviewer.md
+    owner_agent: code-reviewer
+    reviewer_agents:
+      - qa-engineer
+    inputs:
+      - exact-diff
+      - verification-evidence
+    outputs:
+      - actionable-findings
+    gates:
+      - read-only-review
+      - no-unsubstantiated-claims
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: compose-stack-agent
+    scope: infra
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/compose-stack-agent.md
+    owner_agent: infra-implementer
+    reviewer_agents:
+      - iac-reviewer
+      - security-auditor
+    inputs:
+      - approved-compose-spec
+      - current-compose-tree
+    outputs:
+      - validated-compose-change
+    gates:
+      - compose-config
+      - secret-safety
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: container-threat-modeling
+    scope: security
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/container-threat-modeling.md
+    owner_agent: security-auditor
+    reviewer_agents:
+      - iac-reviewer
+    inputs:
+      - trust-boundaries
+      - workload-definition
+    outputs:
+      - container-threat-model
+    gates:
+      - asset-boundary-coverage
+      - mitigation-ownership
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: deployment-pipeline-design
+    scope: ops
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/deployment-pipeline-design.md
+    owner_agent: ci-cd-engineer
+    reviewer_agents:
+      - qa-engineer
+      - security-auditor
+    inputs:
+      - approved-release-policy
+      - deployment-constraints
+    outputs:
+      - deployment-pipeline-design
+    gates:
+      - approval-boundary
+      - rollback-path
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: docker-compose-patterns
+    scope: infra
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/docker-compose-patterns.md
+    owner_agent: infra-implementer
+    reviewer_agents:
+      - iac-reviewer
+    inputs:
+      - compose-requirements
+      - workspace-conventions
+    outputs:
+      - compose-pattern-selection
+    gates:
+      - schema-validity
+      - workspace-alignment
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: e2e-testing
+    scope: qa
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/e2e-testing.md
+    owner_agent: qa-engineer
+    reviewer_agents:
+      - code-reviewer
+    inputs:
+      - acceptance-criteria
+      - runnable-system-boundary
+    outputs:
+      - e2e-evidence
+    gates:
+      - deterministic-fixture
+      - failure-reproduction
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: execution-plan-agent
+    scope: agentic
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/execution-plan-agent.md
+    owner_agent: workflow-supervisor
+    reviewer_agents:
+      - rules-engineer
+    inputs:
+      - approved-specification
+      - repository-evidence
+    outputs:
+      - executable-plan
+    gates:
+      - exact-file-map
+      - verification-plan
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: incident-response
+    scope: ops
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/incident-response.md
+    owner_agent: incident-responder
+    reviewer_agents:
+      - security-auditor
+    inputs:
+      - bounded-incident-evidence
+      - current-runbook
+    outputs:
+      - response-record
+    gates:
+      - evidence-redaction
+      - escalation-boundary
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: infra-cross-validate
+    scope: infra
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/infra-cross-validate.md
+    owner_agent: iac-reviewer
+    reviewer_agents:
+      - security-auditor
+    inputs:
+      - proposed-infrastructure-diff
+      - declared-runtime-contract
+    outputs:
+      - cross-validation-findings
+    gates:
+      - read-only-review
+      - cross-file-consistency
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: infra-validate
+    scope: infra
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/infra-validate.md
+    owner_agent: infra-implementer
+    reviewer_agents:
+      - iac-reviewer
+    inputs:
+      - approved-infrastructure-change
+      - validation-contract
+    outputs:
+      - infrastructure-validation-evidence
+    gates:
+      - static-validation
+      - scoped-runtime-check
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: knowledge-map-agent
+    scope: docs
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/knowledge-map-agent.md
+    owner_agent: doc-writer
+    reviewer_agents:
+      - rules-engineer
+    inputs:
+      - tracked-source-boundary
+      - canonical-routing
+    outputs:
+      - knowledge-map
+    gates:
+      - generated-freshness
+      - no-parallel-authority
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: ops-runbook-agent
+    scope: ops
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/ops-runbook-agent.md
+    owner_agent: doc-writer
+    reviewer_agents:
+      - incident-responder
+    inputs:
+      - implemented-operational-behavior
+      - verification-commands
+    outputs:
+      - typed-runbook
+    gates:
+      - executable-procedure
+      - rollback-and-escalation
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: policy-gate-agent
+    scope: agentic
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/policy-gate-agent.md
+    owner_agent: rules-engineer
+    reviewer_agents:
+      - workflow-supervisor
+    inputs:
+      - governed-change
+      - canonical-policy
+    outputs:
+      - policy-gate-verdict
+    gates:
+      - one-authority
+      - approval-evidence
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: requirements-to-design-agent
+    scope: architecture
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/requirements-to-design-agent.md
+    owner_agent: rules-engineer
+    reviewer_agents:
+      - workflow-supervisor
+    inputs:
+      - approved-requirements
+      - architecture-constraints
+    outputs:
+      - traceable-design-input
+    gates:
+      - requirement-coverage
+      - architecture-boundary
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: security-audit
+    scope: security
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/security-audit.md
+    owner_agent: security-auditor
+    reviewer_agents:
+      - code-reviewer
+    inputs:
+      - exact-change-boundary
+      - security-contract
+    outputs:
+      - severity-ranked-findings
+    gates:
+      - evidence-citations
+      - secret-redaction
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: style-validation
+    scope: qa
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/style-validation.md
+    owner_agent: qa-engineer
+    reviewer_agents:
+      - doc-writer
+    inputs:
+      - changed-authored-files
+      - style-contract
+    outputs:
+      - style-validation-evidence
+    gates:
+      - deterministic-formatting
+      - scoped-linting
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: task-breakdown-agent
+    scope: agentic
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/task-breakdown-agent.md
+    owner_agent: workflow-supervisor
+    reviewer_agents:
+      - rules-engineer
+    inputs:
+      - approved-plan
+      - dependency-map
+    outputs:
+      - bounded-work-units
+    gates:
+      - logical-commit-boundary
+      - independent-review-boundary
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: test-automator
+    scope: qa
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/test-automator.md
+    owner_agent: qa-engineer
+    reviewer_agents:
+      - code-reviewer
+    inputs:
+      - behavioral-contract
+      - failure-reproduction
+    outputs:
+      - deterministic-tests
+    gates:
+      - red-before-green
+      - regression-coverage
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: workspace-audit-revalidation
+    scope: agentic
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md
+    owner_agent: eval-engineer
+    reviewer_agents:
+      - rules-engineer
+    inputs:
+      - canonical-audit
+      - current-repository-evidence
+    outputs:
+      - calibrated-revalidation
+    gates:
+      - representative-evidence
+      - no-unobserved-pass
+    provider_projections:
+      - agents-md
+      - claude
+role_transfers:
+  - retired_agent_id: style-enforcer
+    status: retired
+    successor_agent_ids:
+      - qa-engineer
+    successor_function_ids:
+      - style-validation
+    rationale: Deterministic style and lint routing belongs in QA rather than a standalone persona.
+  - retired_agent_id: wiki-curator
+    status: retired
+    successor_agent_ids:
+      - doc-writer
+    successor_function_ids:
+      - knowledge-map-agent
+    rationale: Index and knowledge freshness are documentation functions, not a separate runtime identity.
+capability_intake:
+  - capability_id: code-review
+    source: agency-agents
+    source_url: https://github.com/msitarzewski/agency-agents
+    decision: merge
+    owner_agent: code-reviewer
+    evaluation_function: code-review-dimensions
+  - capability_id: devops-automation
+    source: agency-agents
+    source_url: https://github.com/msitarzewski/agency-agents
+    decision: merge
+    owner_agent: ci-cd-engineer
+    evaluation_function: ci-cd-patterns
+  - capability_id: incident-and-sre
+    source: agency-agents
+    source_url: https://github.com/msitarzewski/agency-agents
+    decision: merge
+    owner_agent: incident-responder
+    evaluation_function: incident-response
+  - capability_id: multi-agent-architecture
+    source: agency-agents
+    source_url: https://github.com/msitarzewski/agency-agents
+    decision: merge
+    owner_agent: workflow-supervisor
+    evaluation_function: task-breakdown-agent
+  - capability_id: product-discovery
+    source: agency-agents
+    source_url: https://github.com/msitarzewski/agency-agents
+    decision: defer
+    owner_agent: workflow-supervisor
+    evaluation_function: workspace-audit-revalidation
+  - capability_id: reality-checking
+    source: agency-agents
+    source_url: https://github.com/msitarzewski/agency-agents
+    decision: merge
+    owner_agent: eval-engineer
+    evaluation_function: workspace-audit-revalidation
+  - capability_id: technical-writing
+    source: agency-agents
+    source_url: https://github.com/msitarzewski/agency-agents
+    decision: merge
+    owner_agent: doc-writer
+    evaluation_function: knowledge-map-agent

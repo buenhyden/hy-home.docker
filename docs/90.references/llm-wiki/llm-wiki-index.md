@@ -116,6 +116,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/agents/functions/task-breakdown-agent.md](../../00.agent-governance/agents/functions/task-breakdown-agent.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/test-automator.md](../../00.agent-governance/agents/functions/test-automator.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md](../../00.agent-governance/agents/functions/workspace-audit-revalidation.md) | Markdown reference |
+| [docs/00.agent-governance/contracts/agent-catalog.yaml](../../00.agent-governance/contracts/agent-catalog.yaml) | YAML config |
+| [docs/00.agent-governance/contracts/agent-governance-artifacts.yaml](../../00.agent-governance/contracts/agent-governance-artifacts.yaml) | YAML config |
+| [docs/00.agent-governance/contracts/provider-models.yaml](../../00.agent-governance/contracts/provider-models.yaml) | YAML config |
 | [docs/00.agent-governance/harness-implementation-map.md](../../00.agent-governance/harness-implementation-map.md) | Markdown reference |
 | [docs/00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md](../../00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md) | Markdown reference |
 | [docs/00.agent-governance/memory/README.md](../../00.agent-governance/memory/README.md) | folder index |
