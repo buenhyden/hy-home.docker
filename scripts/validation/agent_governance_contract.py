@@ -2349,6 +2349,8 @@ def _unfenced_markdown_lines(text: str) -> tuple[str, ...]:
             else:
                 fence_marker = marker[0]
                 fence_length = len(marker)
+                if not lines or lines[-1] != "":
+                    lines.append("")
             continue
         if fence_marker is not None:
             closing = re.match(
@@ -2358,6 +2360,8 @@ def _unfenced_markdown_lines(text: str) -> tuple[str, ...]:
             if closing:
                 fence_marker = None
                 fence_length = 0
+                if not lines or lines[-1] != "":
+                    lines.append("")
             continue
         lines.append(line)
     return tuple(lines)
@@ -2374,35 +2378,90 @@ def _section_names(text: str) -> tuple[str, ...]:
 
 class _VisibleHTMLTextParser(HTMLParser):
     _BLOCK_TAGS = {
-        "address", "article", "aside", "blockquote", "br", "dd", "div", "dl",
-        "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2",
-        "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "ol",
-        "p", "pre", "section", "table", "tbody", "td", "tfoot", "th", "thead",
-        "tr", "ul",
+        "address", "article", "aside", "base", "basefont", "blockquote", "body",
+        "caption", "center", "col", "colgroup", "dd", "details", "dialog", "dir",
+        "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form",
+        "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head",
+        "header", "hgroup", "hr", "html", "iframe", "legend", "li", "link", "main",
+        "menu", "menuitem", "nav", "noframes", "ol", "optgroup", "option", "p",
+        "param", "pre", "script", "search", "section", "style", "summary", "table",
+        "tbody", "td", "textarea", "tfoot", "th", "thead", "title", "tr", "track",
+        "ul",
     }
+    _HIDDEN_TAGS = {"script", "style"}
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
         self.parts: list[str] = []
+        self._hidden_depth = 0
 
     def handle_data(self, data: str) -> None:
-        self.parts.append(data)
+        if self._hidden_depth == 0:
+            self.parts.append(data)
 
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> None:
         del attrs
         if tag in self._BLOCK_TAGS:
-            self.parts.append(" ")
+            self.parts.append("\n\n")
+        if tag in self._HIDDEN_TAGS:
+            self._hidden_depth += 1
 
     def handle_startendtag(
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> None:
         self.handle_starttag(tag, attrs)
+        self.handle_endtag(tag)
 
     def handle_endtag(self, tag: str) -> None:
+        if tag in self._HIDDEN_TAGS and self._hidden_depth:
+            self._hidden_depth -= 1
         if tag in self._BLOCK_TAGS:
-            self.parts.append(" ")
+            self.parts.append("\n\n")
+
+
+def _strip_markdown_code_spans(text: str) -> str:
+    """Remove only code spans closed by an equal-length backtick run."""
+
+    runs: list[tuple[int, int, int]] = []
+    index = 0
+    while index < len(text):
+        if text[index] != "`":
+            index += 1
+            continue
+        start = index
+        while index < len(text) and text[index] == "`":
+            index += 1
+        runs.append((start, index, index - start))
+
+    next_equal: list[int | None] = [None] * len(runs)
+    nearest_by_length: dict[int, int] = {}
+    for run_index in range(len(runs) - 1, -1, -1):
+        length = runs[run_index][2]
+        next_equal[run_index] = nearest_by_length.get(length)
+        nearest_by_length[length] = run_index
+
+    output: list[str] = []
+    cursor = 0
+    run_index = 0
+    while run_index < len(runs):
+        start, end, _ = runs[run_index]
+        if start < cursor:
+            run_index += 1
+            continue
+        output.append(text[cursor:start])
+        closing_index = next_equal[run_index]
+        if closing_index is None:
+            output.append(text[start:end])
+            cursor = end
+            run_index += 1
+            continue
+        output.append(" ")
+        cursor = runs[closing_index][1]
+        run_index = closing_index + 1
+    output.append(text[cursor:])
+    return "".join(output)
 
 
 def _readme_policy_prose(text: str) -> str:
@@ -2415,10 +2474,11 @@ def _readme_policy_prose(text: str) -> str:
     prose: list[str] = []
     for line in _unfenced_markdown_lines(text):
         if re.match(r"^\s{0,3}#{1,6}\s+", line):
+            prose.append("")
             continue
         if re.match(r"^\s*\[[^]]+\]:\s*\S+", line):
+            prose.append("")
             continue
-        line = re.sub(r"`+[^`\n]*`+", " ", line)
         line = re.sub(r"\]\([^)]*\)", "]", line)
         line = re.sub(
             r"(?<!\w)(?:\.{0,2}/)?[A-Za-z0-9_.{}*-]+(?:/[A-Za-z0-9_.{}*-]+)+",
@@ -2429,7 +2489,10 @@ def _readme_policy_prose(text: str) -> str:
     parser = _VisibleHTMLTextParser()
     parser.feed("\n".join(prose))
     parser.close()
-    visible = "".join(parser.parts)
+    inline_blocks = re.split(r"\n[ \t]*\n+", "".join(parser.parts))
+    visible = "\n\n".join(
+        _strip_markdown_code_spans(block) for block in inline_blocks
+    )
     return " " + re.sub(r"[^a-z0-9]+", " ", visible.lower()).strip() + " "
 
 

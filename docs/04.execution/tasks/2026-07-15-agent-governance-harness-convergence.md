@@ -339,6 +339,21 @@ T-AGHC-002 repository-validator quality hardening verification:
 | repository aggregate compatibility | preserve planned Task 3–5 dependencies | unchanged `failures=5`; no aggregate checker block modified | Expected interim dependency |
 | independent quality review | close every adversarial finding | initial C0/I5/M0 and intermediate C0/I2/M0 fixed with RED/GREEN coverage; final re-review C0/I0/M0 APPROVED | Pass |
 
+T-AGHC-002 README code-span parser remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| unbalanced code-run reproductions (RED) | unequal and unclosed runs remain visible to policy scanning | 2 methods; 4 expected subtest failures | Pass |
+| inline-block and HTML precedence reproductions (RED) | runs cannot pair across blocks or originate inside raw HTML | 2 methods; 7 expected subtest failures; official backslash-positive oracle already passed | Pass |
+| CommonMark HTML-block reproductions (RED) | type-1 block boundaries and hidden data cannot suppress later prose | script/style/textarea boundary and hidden-data tables; 8 expected subtest failures | Pass |
+| focused code-span fixtures (GREEN) | all precedence cases pass; equal-length spans remain excluded | 5 tests; 5 passed | Pass |
+| full governance and inference suites | no regression | governance 63/63; inference 4/4 | Pass |
+| contract and repository harness CLIs | zero failures | contract `3/14/22/3/0`; repository harness `failures=0` | Pass |
+| traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,205 links; 141 operations docs; failures 0 | Pass |
+| Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,159 nodes; 27,198 edges; 1,555 communities; same two unrelated infrastructure ambiguities, 16,085 isolated nodes, and 73 thin communities; generated outputs restored | Pass |
+| scoped pre-commit and diff hygiene | zero failures | all applicable hooks passed across four remediation paths; diff checks clean | Pass |
+| internal quality review | deterministic equal-run scanner has no adversarial gap | initial C0/I2/M0 and intermediate C0/I1/M0 fixed; final C0/I0/M0 APPROVED | Pass |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI

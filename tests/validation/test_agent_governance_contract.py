@@ -1132,6 +1132,54 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             observed = codes(contract.validate_repository(root, bundle, "harness"))
             self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
 
+    def test_repository_harness_rejects_policy_hidden_by_unbalanced_code_runs(self) -> None:
+        cases = (
+            "Provider model ``defaults` are defined here.",
+            "Provider model ``defaults are defined here. Later `routing`.",
+        )
+        for source in cases:
+            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / ".codex/README.md"
+                readme.write_text(
+                    readme.read_text(encoding="utf-8").replace(
+                        "Change canonical Stage 00 sources first",
+                        f"{source}\n\nChange canonical Stage 00 sources first",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
+
+    def test_repository_harness_keeps_code_runs_inside_inline_block_boundaries(self) -> None:
+        cases = (
+            "Intro `unclosed\n\nProvider model defaults `",
+            "Provider model <span title='`'>defaults</span> later `routing`",
+            "Provider model <!-- ` -->defaults later `routing`",
+            "Intro `unclosed\n<script>const marker=1;</script>\nProvider model defaults `",
+            "Intro `unclosed\n<style>.marker { color: red; }</style>\nProvider model defaults `",
+            "Intro `unclosed\n<textarea>visible value</textarea>\nProvider model defaults `",
+        )
+        for source in cases:
+            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                readme = root / ".codex/README.md"
+                readme.write_text(
+                    readme.read_text(encoding="utf-8").replace(
+                        "Change canonical Stage 00 sources first",
+                        f"{source}\n\nChange canonical Stage 00 sources first",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
+
     def test_registered_readme_routing_prose_does_not_trigger_policy_topics(self) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         findings = contract.validate_repository(ROOT, bundle, "harness")
@@ -1167,6 +1215,45 @@ model defaults
             " model defaults ",
             contract._readme_policy_prose("Provider <span>model</span>&#32;defaults."),
         )
+
+    def test_readme_policy_prose_requires_equal_code_span_delimiters(self) -> None:
+        for source in (
+            "Provider model ``defaults` are defined here.",
+            "Provider model ``defaults are defined here. Later `routing`.",
+        ):
+            with self.subTest(source=source):
+                self.assertIn(" model defaults ", contract._readme_policy_prose(source))
+        self.assertNotIn(
+            " model defaults ",
+            contract._readme_policy_prose(
+                "Provider ``model defaults`` are defined here."
+            ),
+        )
+
+    def test_readme_policy_prose_respects_inline_block_and_html_precedence(self) -> None:
+        for source in (
+            "Intro `unclosed\n\nProvider model defaults `",
+            "Intro `unclosed\n## Existing heading\nProvider model defaults `",
+            "Provider model <span title='`'>defaults</span> later `routing`",
+            "Provider model <!-- ` -->defaults later `routing`",
+            "Intro `unclosed\n<script>const marker=1;</script>\nProvider model defaults `",
+            "Intro `unclosed\n<style>.marker { color: red; }</style>\nProvider model defaults `",
+            "Intro `unclosed\n<textarea>visible value</textarea>\nProvider model defaults `",
+        ):
+            with self.subTest(source=source):
+                self.assertIn(" model defaults ", contract._readme_policy_prose(source))
+        self.assertNotIn(
+            " model defaults ",
+            contract._readme_policy_prose(r"Provider \`model defaults\` here."),
+        )
+        for tag in ("script", "style"):
+            with self.subTest(hidden_html=tag):
+                self.assertNotIn(
+                    " model defaults ",
+                    contract._readme_policy_prose(
+                        f"<{tag}>model defaults</{tag}>"
+                    ),
+                )
 
     def test_codeowners_keeps_repository_principal_and_covers_governed_surfaces(self) -> None:
         text = (ROOT / ".github/CODEOWNERS").read_text(encoding="utf-8")
