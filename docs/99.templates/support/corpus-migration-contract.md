@@ -74,14 +74,23 @@ Every remaining fixed-string match is a current tracked direct consumer and the
 sorted scan result must equal `active_consumers`; a raw repository-wide grep or
 an unverified empty list is invalid.
 
+Once Foundation review has started—because enforcement is `blocking` or either
+independent verdict is `pass`—`commands`, `sources`, `repository_paths`, and
+`consumer_scan` must each be non-empty. Both `sources` and `repository_paths`
+must equal the deterministic set containing the row source, the Foundation
+Spec, and the Foundation Plan. This keeps the evidence owner set explicit and
+prevents a promoted row from discarding the proof that supported review. A
+pending advisory skeleton may retain all five evidence lists empty.
+
 Foundation evidence commands pin both ends of the reviewed range with full Git
 commit IDs. For each source, rollback is either one `git revert --no-commit`
 command containing exactly the source-changing commits in newest-to-oldest
-order, or an empty list when the immutable range proves no source change. A
-symbolic ref, floating range, unrelated commit, or invented rollback action is
-invalid. After an authored rollback, canonical generated owners are rerun in
-their declared order; later promotion rollback is recorded separately against
-the immutable promotion commits.
+order, or an empty list only when the immutable range proves an unchanged
+`preserve` row. A symbolic ref, floating range, unrelated commit, empty rollback
+for another disposition, or invented rollback action is invalid. After an
+authored rollback, canonical generated owners are rerun in their declared
+order; later promotion rollback is recorded separately against the immutable
+promotion commits.
 
 ## Classification and Destructive Proof
 
@@ -126,9 +135,12 @@ contract, or delete evidence merely to make a manifest pass. A failed later
 wave does not authorize reverting a previously approved wave.
 
 Manifest evidence may record bounded paths, stable codes, commands, counts,
-and Git object identities. It must not contain body payloads, snapshot bytes,
-credentials, tokens, keys, auth files, shell history, raw logs, or diagnostic
-payloads.
+and Git object identities. The shared value classifier applies to every string
+in `commands`, `sources`, `repository_paths`, `consumer_scan`, and `rollback`.
+None may contain body payloads, snapshot bytes, credential or secret
+assignments, tokens, private keys, auth files, shell history, raw logs, or
+diagnostic payloads. Findings remain value-free and never echo rejected data;
+safe credential-related option names without assigned values remain allowed.
 
 ## Related Documents
 

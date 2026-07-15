@@ -49,6 +49,10 @@ MODES = (
 )
 
 REVIEWED_EVIDENCE_WAVES = frozenset({"foundation"})
+FOUNDATION_EVIDENCE_OWNER_PATHS = (
+    "docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md",
+    "docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
+)
 ACTIVE_CONSUMER_PATHS = (
     ":(top,glob)*",
     ":(top,glob).agents/**",
@@ -225,6 +229,9 @@ SENSITIVE_PAYLOAD_PATTERNS = (
     re.compile(rb"\bgh[pousr]_[A-Za-z0-9_]{12,}\b"),
     re.compile(rb"\bxox[baprs]-[A-Za-z0-9-]{12,}\b"),
     re.compile(rb"-----BEGIN [A-Z0-9 ]*(?:PRIVATE KEY|PGP PRIVATE KEY BLOCK)-----"),
+    re.compile(
+        rb"(?i)(?:^|/|\\)(?:\.netrc|\.docker/config\.json|auth\.json|credentials)(?:\s|$)"
+    ),
     re.compile(rb"(?i)(?:^|/|\\)\.(?:bash|zsh|sh)_history(?:\s|$)|\bHISTFILE\s*="),
     re.compile(rb"(?m)^\d{4}-\d{2}-\d{2}(?:T|\s).*(?:ERROR|WARN|DEBUG|TRACE)\b"),
     re.compile(rb"(?mi)^(?:TRACE|DEBUG|INFO|WARN|ERROR|FATAL)\b"),
@@ -232,6 +239,15 @@ SENSITIVE_PAYLOAD_PATTERNS = (
     re.compile(rb'(?is)\{.{0,512}"level"\s*:\s*"(?:trace|debug|info|warn|error|fatal)"'),
     re.compile(rb"(?m)^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\S+\s+\S+(?:\[\d+\])?:"),
 )
+
+
+def _sensitive_value_is_present(value: str) -> bool:
+    """Apply one value-free confidentiality classifier to durable and printed data."""
+
+    payload = value.encode("utf-8", errors="replace")
+    return any(pattern.search(payload) for pattern in SENSITIVE_PAYLOAD_PATTERNS)
+
+
 SAFETY_FINDING_CODES = frozenset(
     {
         "manifest-static-invalid",
@@ -243,6 +259,7 @@ SAFETY_FINDING_CODES = frozenset(
         "manifest-target-file-invalid",
         "manifest-consumer-path-invalid",
         "manifest-evidence-path-invalid",
+        "manifest-evidence-confidential",
         "manifest-partition-plan-invalid",
         "corpus-markdown-path-invalid",
         "corpus-markdown-mode-invalid",
@@ -306,6 +323,9 @@ KNOWN_FINDING_CODES = frozenset(
         "manifest-preserve-target-invalid",
         "manifest-consumer-scan-invalid",
         "manifest-consumer-evidence-mismatch",
+        "manifest-reviewed-evidence-required",
+        "manifest-reviewed-source-evidence-invalid",
+        "manifest-reviewed-repository-evidence-invalid",
         "manifest-rollback-invalid",
         "manifest-destructive-review-required",
         "manifest-destructive-evidence-required",
@@ -401,7 +421,12 @@ def _reviewed_evidence_findings(
     if document.wave not in REVIEWED_EVIDENCE_WAVES:
         return []
     evidence = row.evidence
-    if not any(
+    review_started = (
+        document.enforcement == "blocking"
+        or row.review_verdict.specification == "pass"
+        or row.review_verdict.quality == "pass"
+    )
+    evidence_present = any(
         (
             evidence.commands,
             evidence.sources,
@@ -409,12 +434,49 @@ def _reviewed_evidence_findings(
             evidence.consumer_scan,
             evidence.rollback,
         )
-    ):
+    )
+    if not review_started and not evidence_present:
         return []
     source = row.source_path.as_posix()
     if not _safe_path(source):
         return []
     findings: list[Finding] = []
+    required_nonempty = (
+        evidence.commands,
+        evidence.sources,
+        evidence.repository_paths,
+        evidence.consumer_scan,
+    )
+    if review_started and any(not values for values in required_nonempty):
+        findings.append(
+            _finding(
+                source,
+                "manifest-reviewed-evidence-required",
+                "reviewed Foundation evidence requires complete bounded proof",
+            )
+        )
+    expected_sources = tuple(
+        sorted((source, *FOUNDATION_EVIDENCE_OWNER_PATHS))
+    )
+    if review_started and evidence.sources != expected_sources:
+        findings.append(
+            _finding(
+                source,
+                "manifest-reviewed-source-evidence-invalid",
+                "reviewed Foundation sources do not match their canonical owners",
+            )
+        )
+    expected_repository_paths = tuple(
+        pathlib.PurePosixPath(path) for path in expected_sources
+    )
+    if review_started and evidence.repository_paths != expected_repository_paths:
+        findings.append(
+            _finding(
+                source,
+                "manifest-reviewed-repository-evidence-invalid",
+                "reviewed Foundation repository paths do not match their canonical owners",
+            )
+        )
     expected_scan = _active_consumer_scan_command(source)
     if expected_scan not in evidence.consumer_scan:
         findings.append(
@@ -470,7 +532,11 @@ def _reviewed_evidence_findings(
                     if commits
                     else ()
                 )
-    if expected_rollback is None or evidence.rollback != expected_rollback:
+    if (
+        expected_rollback is None
+        or evidence.rollback != expected_rollback
+        or (expected_rollback == () and row.disposition != "preserve")
+    ):
         findings.append(
             _finding(
                 source,
@@ -909,7 +975,7 @@ def _manifest_artifact_id(artifact_type: str, value: object) -> str | None:
     return value if isinstance(value, str) else None
 
 
-def generate_manifest_skeleton(
+def _generate_manifest_skeleton(
     root: pathlib.Path,
     contract: dict[str, object],
     *,
@@ -974,6 +1040,23 @@ def generate_manifest_skeleton(
         generated_by="check-document-corpus-lifecycle.py",
         enforcement=str(wave_contract.get("enforcement", "advisory")),
         entries=tuple(sorted(rows, key=lambda row: row.source_path.as_posix())),
+    )
+
+
+def generate_manifest_skeleton(
+    root: pathlib.Path,
+    contract: dict[str, object],
+    *,
+    wave: str,
+    baseline_ref: str,
+) -> MigrationManifestDocument:
+    """Generate a pending skeleton through the fixed public Plan interface."""
+
+    return _generate_manifest_skeleton(
+        root,
+        contract,
+        wave=wave,
+        baseline_ref=baseline_ref,
     )
 
 
@@ -1894,6 +1977,21 @@ def validate_migration_manifest(
                 findings.append(
                     _finding(source, "manifest-evidence-path-invalid", "evidence path is not repository-safe")
                 )
+        evidence_values = (
+            *row.evidence.commands,
+            *row.evidence.sources,
+            *(path.as_posix() for path in row.evidence.repository_paths),
+            *row.evidence.consumer_scan,
+            *row.evidence.rollback,
+        )
+        if any(_sensitive_value_is_present(value) for value in evidence_values):
+            findings.append(
+                _finding(
+                    source,
+                    "manifest-evidence-confidential",
+                    "manifest evidence contains prohibited confidential data",
+                )
+            )
         findings.extend(_reviewed_evidence_findings(root, document, row))
         if row.partition_plan is not None:
             findings.extend(
@@ -3457,8 +3555,7 @@ def _is_safety_finding(finding: Finding) -> bool:
 
 
 def _diagnostic_payload_is_sensitive(value: str) -> bool:
-    payload = value.encode("utf-8", errors="replace")
-    return any(pattern.search(payload) for pattern in SENSITIVE_PAYLOAD_PATTERNS)
+    return _sensitive_value_is_present(value)
 
 
 def _safe_diagnostic_path(value: object) -> str:
@@ -3551,7 +3648,7 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             print("document corpus lifecycle contract: violations=0")
             return 0
         if args.mode == "generate-manifest":
-            document = generate_manifest_skeleton(
+            document = _generate_manifest_skeleton(
                 root,
                 contract,
                 wave=args.wave,

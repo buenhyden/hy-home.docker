@@ -7,6 +7,7 @@ import datetime
 import hashlib
 import io
 import importlib.util
+import inspect
 import os
 import pathlib
 import shutil
@@ -184,6 +185,13 @@ class PublicContractTests(LifecycleTestCase):
         self.assertIsInstance(row.parent_ids, tuple)
         self.assertIsInstance(row.evidence.commands, tuple)
 
+    def test_manifest_skeleton_public_signature_is_exactly_plan_bound(self) -> None:
+        self.assertEqual(
+            str(inspect.signature(lifecycle.generate_manifest_skeleton)),
+            "(root: 'pathlib.Path', contract: 'dict[str, object]', *, "
+            "wave: 'str', baseline_ref: 'str') -> 'MigrationManifestDocument'",
+        )
+
     def test_cli_misuse_returns_two_before_opening_repository_files(self) -> None:
         result = run(
             sys.executable,
@@ -267,6 +275,20 @@ class HumanContractRoutingTests(LifecycleTestCase):
                     [owner],
                     [path for path, text in texts.items() if marker in text],
                 )
+
+    def test_corpus_contract_owns_reviewed_evidence_and_confidentiality_semantics(
+        self,
+    ) -> None:
+        contract = CORPUS_HUMAN_CONTRACT.read_text(encoding="utf-8")
+        for required in (
+            "enforcement is `blocking` or either",
+            "row source, the Foundation",
+            "empty list only when the immutable range proves an unchanged",
+            "`commands`, `sources`, `repository_paths`, `consumer_scan`, and `rollback`",
+            "Findings remain value-free and never echo rejected data",
+        ):
+            with self.subTest(required=required):
+                self.assertIn(required, contract)
 
     def test_template_governance_routes_algorithms_to_human_owners(self) -> None:
         path = ROOT / "docs/99.templates/support/template-governance.md"
@@ -788,7 +810,346 @@ class ManifestValidationTests(LifecycleTestCase):
             }.isdisjoint(exact_codes)
         )
 
+    def _foundation_reviewed_row(
+        self,
+        baseline: str,
+        *,
+        disposition: str = "preserve",
+    ) -> lifecycle.MigrationManifestRow:
+        source = "docs/03.specs/source.md"
+        evidence_paths = tuple(
+            sorted(
+                (
+                    source,
+                    "docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md",
+                    "docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
+                )
+            )
+        )
+        return self.valid_row(
+            disposition=disposition,
+            evidence=lifecycle.ManifestEvidence(
+                commands=(
+                    f"git diff --name-status {baseline}..{baseline} -- {source}",
+                    f"git log --format=%H {baseline}..{baseline} -- {source}",
+                ),
+                sources=evidence_paths,
+                repository_paths=tuple(
+                    pathlib.PurePosixPath(path) for path in evidence_paths
+                ),
+                consumer_scan=(lifecycle._active_consumer_scan_command(source),),
+                rollback=(),
+            ),
+            review_verdict=lifecycle.ReviewVerdict("pass", "pass"),
+        )
 
+    def _foundation_codes(
+        self,
+        root: pathlib.Path,
+        baseline: str,
+        row: lifecycle.MigrationManifestRow,
+        *,
+        enforcement: str = "blocking",
+    ) -> set[str]:
+        contract = self.fixture_contract(
+            ["docs/03.specs/source.md"],
+            wave="foundation",
+            enforcement=enforcement,
+        )
+        return {
+            finding.code
+            for finding in lifecycle.validate_migration_manifest(
+                root,
+                self.profiles,
+                contract,
+                self.document(
+                    baseline,
+                    entries=(row,),
+                    wave="foundation",
+                    enforcement=enforcement,
+                ),
+            )
+        }
+
+    def test_promoted_foundation_requires_complete_reviewed_evidence(self) -> None:
+        temporary, root, baseline = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        valid = self._foundation_reviewed_row(baseline)
+
+        all_empty = dataclasses.replace(
+            valid,
+            evidence=lifecycle.ManifestEvidence((), (), (), (), ()),
+        )
+        self.assertIn(
+            "manifest-reviewed-evidence-required",
+            self._foundation_codes(root, baseline, all_empty),
+        )
+
+        for field in ("sources", "repository_paths"):
+            with self.subTest(field=field):
+                candidate = dataclasses.replace(
+                    valid,
+                    evidence=dataclasses.replace(valid.evidence, **{field: ()}),
+                )
+                self.assertIn(
+                    "manifest-reviewed-evidence-required",
+                    self._foundation_codes(root, baseline, candidate),
+                )
+
+        wrong_sources = dataclasses.replace(
+            valid,
+            evidence=dataclasses.replace(
+                valid.evidence,
+                sources=("docs/03.specs/source.md",),
+            ),
+        )
+        self.assertIn(
+            "manifest-reviewed-source-evidence-invalid",
+            self._foundation_codes(root, baseline, wrong_sources),
+        )
+        wrong_repository_paths = dataclasses.replace(
+            valid,
+            evidence=dataclasses.replace(
+                valid.evidence,
+                repository_paths=(
+                    pathlib.PurePosixPath("docs/03.specs/source.md"),
+                ),
+            ),
+        )
+        self.assertIn(
+            "manifest-reviewed-repository-evidence-invalid",
+            self._foundation_codes(root, baseline, wrong_repository_paths),
+        )
+
+        self.assertNotIn(
+            "manifest-reviewed-evidence-required",
+            self._foundation_codes(root, baseline, valid),
+        )
+        self.assertNotIn(
+            "manifest-rollback-invalid",
+            self._foundation_codes(root, baseline, valid),
+        )
+
+    def test_empty_rollback_is_only_valid_for_unchanged_preserve(self) -> None:
+        temporary, root, baseline = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        unchanged_migrate = self._foundation_reviewed_row(
+            baseline,
+            disposition="migrate",
+        )
+        self.assertIn(
+            "manifest-rollback-invalid",
+            self._foundation_codes(root, baseline, unchanged_migrate),
+        )
+
+    def test_pending_advisory_foundation_skeleton_allows_empty_evidence(self) -> None:
+        temporary, root, baseline = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        contract = self.fixture_contract(
+            ["docs/03.specs/source.md"],
+            wave="foundation",
+            enforcement="advisory",
+        )
+        document = lifecycle.generate_manifest_skeleton(
+            root,
+            contract,
+            wave="foundation",
+            baseline_ref=baseline,
+        )
+        codes = {
+            finding.code
+            for finding in lifecycle.validate_migration_manifest(
+                root,
+                self.profiles,
+                contract,
+                document,
+            )
+        }
+        self.assertNotIn("manifest-reviewed-evidence-required", codes)
+        self.assertNotIn("manifest-rollback-invalid", codes)
+
+    def test_advisory_foundation_with_one_passing_review_requires_evidence(self) -> None:
+        temporary, root, baseline = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        row = dataclasses.replace(
+            self.valid_row(),
+            evidence=lifecycle.ManifestEvidence((), (), (), (), ()),
+            review_verdict=lifecycle.ReviewVerdict("pass", "pending"),
+        )
+        self.assertIn(
+            "manifest-reviewed-evidence-required",
+            self._foundation_codes(
+                root,
+                baseline,
+                row,
+                enforcement="advisory",
+            ),
+        )
+
+    def test_manifest_evidence_rejects_sensitive_values_without_echoing_them(self) -> None:
+        temporary, root, baseline = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        valid = self._foundation_reviewed_row(baseline)
+        sensitive_values = (
+            "token=supersecretvalue",
+            "password: supersecretvalue",
+            "secret=supersecretvalue",
+            "api_key=supersecretvalue",
+            "-----BEGIN PRIVATE KEY----- supersecretvalue",
+            ".netrc supersecretvalue",
+            ".docker/config.json supersecretvalue",
+            "auth.json supersecretvalue",
+            ".aws/credentials supersecretvalue",
+            ".bash_history supersecretvalue",
+            "2026-07-15T10:00:00Z ERROR supersecretvalue",
+        )
+        fields = ("commands", "sources", "repository_paths", "consumer_scan", "rollback")
+        for field in fields:
+            for marker in sensitive_values:
+                with self.subTest(field=field, payload_class=marker.split("=")[0]):
+                    value: object = (
+                        pathlib.PurePosixPath(marker)
+                        if field == "repository_paths"
+                        else marker
+                    )
+                    current = getattr(valid.evidence, field)
+                    candidate = dataclasses.replace(
+                        valid,
+                        evidence=dataclasses.replace(
+                            valid.evidence,
+                            **{field: tuple(sorted((*current, value)))},
+                        ),
+                    )
+                    findings = lifecycle.validate_migration_manifest(
+                        root,
+                        self.profiles,
+                        self.fixture_contract(
+                            ["docs/03.specs/source.md"],
+                            wave="foundation",
+                            enforcement="blocking",
+                        ),
+                        self.document(
+                            baseline,
+                            entries=(candidate,),
+                            wave="foundation",
+                            enforcement="blocking",
+                        ),
+                    )
+                    self.assertIn(
+                        "manifest-evidence-confidential",
+                        {finding.code for finding in findings},
+                    )
+                    rendered = io.StringIO()
+                    with contextlib.redirect_stdout(rendered):
+                        lifecycle._print_findings(findings)
+                    self.assertNotIn("supersecretvalue", rendered.getvalue())
+
+    def test_manifest_evidence_allows_safe_credential_option_names(self) -> None:
+        temporary, root, baseline = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        valid = self._foundation_reviewed_row(baseline)
+        safe_values = (
+            "tool --token-file config/token-path",
+            "tool --password-stdin",
+            "git config credential.helper",
+            "docs/auth.md",
+            "secrets/README.md",
+        )
+        for value in safe_values:
+            with self.subTest(value=value):
+                candidate = dataclasses.replace(
+                    valid,
+                    evidence=dataclasses.replace(
+                        valid.evidence,
+                        commands=tuple(sorted((*valid.evidence.commands, value))),
+                    ),
+                )
+                self.assertNotIn(
+                    "manifest-evidence-confidential",
+                    self._foundation_codes(root, baseline, candidate),
+                )
+
+        for value in ("docs/auth.md", "secrets/README.md"):
+            with self.subTest(repository_path=value):
+                candidate = dataclasses.replace(
+                    valid,
+                    evidence=dataclasses.replace(
+                        valid.evidence,
+                        repository_paths=tuple(
+                            sorted(
+                                (
+                                    *valid.evidence.repository_paths,
+                                    pathlib.PurePosixPath(value),
+                                )
+                            )
+                        ),
+                    ),
+                )
+                self.assertNotIn(
+                    "manifest-evidence-confidential",
+                    self._foundation_codes(root, baseline, candidate),
+                )
+
+    def test_check_manifest_cli_rejects_evidence_secret_without_echo(self) -> None:
+        temporary, root, baseline = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        marker = "token=supersecretvalue"
+        valid = self._foundation_reviewed_row(baseline)
+        candidate = dataclasses.replace(
+            valid,
+            evidence=dataclasses.replace(
+                valid.evidence,
+                sources=tuple(sorted((*valid.evidence.sources, marker))),
+            ),
+        )
+        document = self.document(
+            baseline,
+            entries=(candidate,),
+            wave="foundation",
+            enforcement="blocking",
+        )
+        manifest = root / "docs/manifest.yaml"
+        manifest.write_text(
+            lifecycle.render_migration_manifest(document),
+            encoding="utf-8",
+        )
+        contract = self.fixture_contract(
+            ["docs/03.specs/source.md"],
+            wave="foundation",
+            enforcement="blocking",
+        )
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with (
+            mock.patch.object(
+                lifecycle,
+                "load_migration_contract",
+                return_value=contract,
+            ),
+            mock.patch.object(
+                lifecycle.metadata,
+                "load_profiles",
+                return_value=self.profiles,
+            ),
+            contextlib.redirect_stdout(stdout),
+            contextlib.redirect_stderr(stderr),
+        ):
+            result = lifecycle.main(
+                [
+                    "--root",
+                    str(root),
+                    "--mode",
+                    "check-manifest",
+                    "--wave",
+                    "foundation",
+                    "--manifest",
+                    "docs/manifest.yaml",
+                ]
+            )
+        rendered = stdout.getvalue() + stderr.getvalue()
+        self.assertEqual(result, 3)
+        self.assertIn("manifest-evidence-confidential", rendered)
+        self.assertNotIn("supersecretvalue", rendered)
 class PromotedManifestCliTests(LifecycleTestCase):
     def canonical_contract(
         self,
@@ -939,6 +1300,8 @@ class CandidateManifestCliTests(LifecycleTestCase):
     ) -> tuple[pathlib.Path, pathlib.Path, pathlib.Path]:
         init_repo(root)
         contract = copy.deepcopy(self.contract)
+        contract["waves"]["foundation"]["enforcement"] = "advisory"
+        contract["waves"]["foundation"]["manifest_path"] = None
         source_paths = contract["waves"]["foundation"]["source_paths"]
         for source_path in source_paths:
             source = root / source_path
@@ -2194,7 +2557,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                     ),
                     mock.patch.object(
                         lifecycle,
-                        "generate_manifest_skeleton",
+                        "_generate_manifest_skeleton",
                         return_value=document,
                     ),
                     mock.patch.object(
@@ -2380,7 +2743,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                         stack.enter_context(
                             mock.patch.object(
                                 lifecycle,
-                                "generate_manifest_skeleton",
+                                "_generate_manifest_skeleton",
                                 side_effect=lifecycle.ProfileError("unsafe baseline"),
                             )
                         )
@@ -2388,7 +2751,7 @@ class ReviewRemediationTests(LifecycleTestCase):
                         stack.enter_context(
                             mock.patch.object(
                                 lifecycle,
-                                "generate_manifest_skeleton",
+                                "_generate_manifest_skeleton",
                                 return_value=document,
                             )
                         )
@@ -4351,7 +4714,7 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
             ),
             mock.patch.object(
                 lifecycle,
-                "generate_manifest_skeleton",
+                "_generate_manifest_skeleton",
                 return_value=document,
             ),
             mock.patch.object(
