@@ -1,6 +1,5 @@
 ---
 layer: ops
-title: 'Operations & SRE Scope'
 ---
 
 # Operations & SRE Scope

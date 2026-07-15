@@ -44,10 +44,8 @@ Codex-specific guidance for this repository.
 - `.codex/agents/*.md` is retired. Do not recreate Codex Markdown agent prompts;
   Stage 00 plus validated `.codex/agents/*.toml` adapters are the Codex agent
   source of truth.
-- `.codex/skills/` remains the Codex-compatible skill adapter surface and must
-  stay aligned with the Stage 00 function catalog and the shared skill
-  lifecycle: discovery -> applicability -> provider loading -> canonical
-  artifact -> validation evidence.
+- Shared skill discovery uses `.agents/skills/*/SKILL.md`; `.codex/skills/` is
+  not a separate policy or projection surface.
 - Apply the Model Policy (`subagent-protocol.md`): `workflow-supervisor` uses
   `gpt-5.5` with `xhigh` reasoning effort; default worker agents use
   `gpt-5.4-mini` with `medium` reasoning effort. Never carry

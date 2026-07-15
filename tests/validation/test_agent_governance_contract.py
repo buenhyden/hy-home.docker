@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import importlib.util
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -408,7 +409,7 @@ class ContractSchemaTests(unittest.TestCase):
                 item
                 for item in findings
                 if item.code == "AGC-AUTHORITY-SEMANTICS"
-                and item.location == "path_authority[3].mandatory_reviewers"
+                and item.location.endswith(".mandatory_reviewers")
             ]
             self.assertEqual(1, len(matching))
 
@@ -576,6 +577,111 @@ class CommandLineTests(unittest.TestCase):
         result = self.run_checker("--mode", "repository")
         self.assertEqual(2, result.returncode)
         self.assertIn("--mode repository requires --section", result.stderr)
+
+
+class Task2GovernanceSurfaceTests(unittest.TestCase):
+    GOVERNANCE = "docs/00.agent-governance"
+    ROOT_SHIMS = {
+        "AGENTS.md": (
+            f"{GOVERNANCE}/rules/bootstrap.md",
+            f"{GOVERNANCE}/providers/agents-md.md",
+            f"{GOVERNANCE}/memory/README.md",
+            f"{GOVERNANCE}/memory/progress.md",
+        ),
+        "CLAUDE.md": (
+            f"{GOVERNANCE}/rules/bootstrap.md",
+            f"{GOVERNANCE}/providers/claude.md",
+            f"{GOVERNANCE}/memory/README.md",
+            f"{GOVERNANCE}/memory/progress.md",
+        ),
+        "GEMINI.md": (
+            f"{GOVERNANCE}/rules/bootstrap.md",
+            f"{GOVERNANCE}/providers/gemini.md",
+            f"{GOVERNANCE}/memory/README.md",
+            f"{GOVERNANCE}/memory/progress.md",
+        ),
+    }
+
+    def test_root_shims_have_no_frontmatter_and_only_executable_bootstrap_envelope(self) -> None:
+        for relative_path, targets in self.ROOT_SHIMS.items():
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertFalse(text.startswith("---\n"))
+                self.assertLessEqual(len(text.splitlines()), 12)
+                for target in targets:
+                    self.assertEqual(1, text.count(target), target)
+                if relative_path in {"CLAUDE.md", "GEMINI.md"}:
+                    imports = [
+                        line.strip().removeprefix("@./").removeprefix("@")
+                        for line in text.splitlines()
+                        if line.strip().startswith("@")
+                    ]
+                    self.assertEqual(list(targets), imports)
+
+    def test_stage00_metadata_uses_exact_registered_envelopes(self) -> None:
+        provider_paths = [
+            ROOT / "docs/00.agent-governance/providers/agents-md.md",
+            ROOT / "docs/00.agent-governance/providers/claude.md",
+            ROOT / "docs/00.agent-governance/providers/codex.md",
+            ROOT / "docs/00.agent-governance/providers/gemini.md",
+        ]
+        expected_runtimes = ["shared", "claude", "codex", "gemini"]
+        for path, runtime in zip(provider_paths, expected_runtimes, strict=True):
+            with self.subTest(path=path.name):
+                self.assertEqual(
+                    {"layer": "agentic", "runtime": runtime},
+                    yaml.safe_load(path.read_text(encoding="utf-8").split("---", 2)[1]),
+                )
+
+        scope_dir = ROOT / "docs/00.agent-governance/scopes"
+        scope_names = (
+            "agentic", "architecture", "backend", "common", "entry", "frontend",
+            "infra", "meta", "mobile", "ops", "product", "qa", "security",
+        )
+        for name in scope_names:
+            with self.subTest(scope=name):
+                source = (scope_dir / f"{name}.md").read_text(encoding="utf-8")
+                self.assertEqual({"layer": name}, yaml.safe_load(source.split("---", 2)[1]))
+
+    def test_provider_entry_indexes_use_navigation_profiles_without_copied_policy(self) -> None:
+        allowed = {"Scope", "Structure", "How to Work in This Area", "Related Documents"}
+        for relative_path in (".agents/README.md", ".claude/CLAUDE.md", ".codex/README.md"):
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                headings = {
+                    match.group(1).strip()
+                    for match in re.finditer(r"^##\s+(.+?)\s*$", text, re.MULTILINE)
+                }
+                self.assertLessEqual(headings, allowed)
+                self.assertNotIn("Canonical Shared Rules", text)
+                self.assertNotIn("model-default", text.lower())
+
+    def test_hookify_references_resolve_to_tracked_native_files(self) -> None:
+        governed = (
+            ROOT / "docs/00.agent-governance/providers/claude.md",
+            ROOT / "docs/00.agent-governance/rules/provider-capability-matrix.md",
+            ROOT / ".claude/CLAUDE.md",
+        )
+        for path in governed:
+            with self.subTest(path=path.as_posix()):
+                text = path.read_text(encoding="utf-8")
+                self.assertNotIn("hookify.*.local.md", text)
+                if "hookify" in text.lower():
+                    self.assertIn(".claude/hookify.*.md", text)
+
+    def test_codeowners_keeps_repository_principal_and_covers_governed_surfaces(self) -> None:
+        text = (ROOT / ".github/CODEOWNERS").read_text(encoding="utf-8")
+        self.assertNotRegex(text, r"@(rules-engineer|qa-engineer|security-auditor)")
+        for pattern in (
+            ".agents/**", ".claude/**", ".codex/**", ".gemini/**",
+            "docs/00.agent-governance/contracts/**",
+            "scripts/validation/check-agent-governance-contract.py",
+            "scripts/validation/check-document-metadata.py",
+            "tests/validation/test_agent_governance_contract.py",
+            "tests/validation/test_document_metadata.py",
+        ):
+            with self.subTest(pattern=pattern):
+                self.assertIn(f"{pattern} @buenhyden", text)
 
 
 if __name__ == "__main__":

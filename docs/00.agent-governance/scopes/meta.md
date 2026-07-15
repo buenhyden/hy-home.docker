@@ -1,6 +1,5 @@
 ---
 layer: meta
-title: 'Metadata & Taxonomy Engineering Scope'
 ---
 
 # Metadata & Taxonomy Engineering Scope

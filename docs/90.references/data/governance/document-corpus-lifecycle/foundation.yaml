@@ -256,7 +256,6 @@ entries:
   - .codex/skills/infra-cross-validate/skill.md
   - .codex/skills/security-audit/skill.md
   - .codex/skills/workspace-audit-revalidation/skill.md
-  - AGENTS.md
   - README.md
   - docs/00.agent-governance/memory/progress.md
   - docs/00.agent-governance/providers/agents-md.md
@@ -391,7 +390,6 @@ entries:
   disposition: migrate
   canonical_replacement: null
   active_consumers:
-  - AGENTS.md
   - docs/00.agent-governance/memory/governance-memory-usage-contract.md
   - docs/00.agent-governance/rules/agentic.md
   - docs/00.agent-governance/rules/bootstrap.md
@@ -969,6 +967,7 @@ entries:
   disposition: migrate
   canonical_replacement: null
   active_consumers:
+  - docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
   - docs/00.agent-governance/memory/progress.md
   - docs/03.specs/102-workspace-document-contract-audit-pack/spec.md
   - docs/04.execution/plans/2026-07-03-template-system-contract-standardization.md

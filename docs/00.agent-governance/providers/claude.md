@@ -1,5 +1,6 @@
 ---
 layer: agentic
+runtime: claude
 ---
 
 # Claude Provider Notes
@@ -13,37 +14,35 @@ Claude Code-specific guidance for this repository.
 
 ## 2. Provider-Specific Rules
 
-- Keep `@AGENTS.md` at the top of root `CLAUDE.md`.
+- Keep direct bootstrap, provider, and memory imports in root `CLAUDE.md`.
 - Keep provider-neutral behavior in `providers/agents-md.md` and shared rules.
 - Use `@path` imports for modular instruction loading.
 - Use project memory hierarchy intentionally (enterprise/project/local) and avoid duplicating the same rule across layers.
-- Keep `.claude/hookify.*.local.md` filenames for Hookify compatibility; in this repository those files are tracked team-shared rules, not personal local overrides.
+- Keep tracked Hookify rules at `.claude/hookify.*.md`; do not cite or create
+  nonexistent `.local.md` variants.
 - Claude exposes provider-native Markdown adapters for the Stage 00 canonical
   agent and function catalog (`providers/agents-md.md` §5). `.claude/agents/`
   and `.claude/skills/` are runtime adapters, not separate governance.
 - Apply the Model Policy (`subagent-protocol.md`): `workflow-supervisor` uses `opus-4.8`, all worker agents use `sonnet-4.6`.
 - Define the Claude-native output style under `.claude/output-styles/` implementing `rules/output-style.md`, and follow `rules/provider-capability-matrix.md` and `rules/workflows.md`.
 
-## 3. Recommended CLAUDE.md Import Sequence
+## 3. Root Import Boundary
 
-The following `@`-imports belong in the root `CLAUDE.md` file. Step 3 refers to this file being loaded by `CLAUDE.md`, not a circular self-reference.
-
-1. `@AGENTS.md`
-2. `@docs/00.agent-governance/providers/agents-md.md`
-3. `@docs/00.agent-governance/providers/claude.md`
-4. bootstrap -> persona -> checklists -> one scope -> JIT stage docs
-5. `rules/github-governance.md` for PR / merge / review tasks
+The root `CLAUDE.md` owns the executable import list. It loads bootstrap, this
+provider overlay, the memory index, and progress in that order; do not copy the
+list into another governance surface.
 
 ## 4. Instruction Precedence (Claude-Specific)
 
 Claude Code loads instruction files in a defined precedence order. Within this repository:
 
-- `CLAUDE.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
+- `CLAUDE.md` is the root shim; it imports bootstrap, this overlay, and memory.
 - `docs/00.agent-governance/` governance files are the policy SSOT and override provider defaults.
 - `.claude/` is the Claude runtime baseline.
 - `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, and `.claude/skills/` are the runtime enforcement layer for Claude-specific behavior.
 - Claude agents and skills must maintain catalog parity with `docs/00.agent-governance/agents/`.
-- The `.agents/` directory acts as the cross-provider compatibility surface and Gemini shared surface, distinct from the Claude-specific `.claude/` runtime.
+- The `.agents/` directory is the cross-provider compatibility and shared-skill
+  surface, distinct from Claude-native `.claude/` and Gemini-native `.gemini/`.
 - `.claude/hooks/*.sh` are thin wrappers that dispatch hook events through `scripts/hooks/agent-event-hook.sh`.
 - Claude `PreToolUse` Graphify advisory context and Docker Compose edit guardrails must route through the shared dispatcher, not inline shell snippets in `.claude/settings.json`.
 - GitHub-native instruction files are not part of this repository's active instruction hierarchy.

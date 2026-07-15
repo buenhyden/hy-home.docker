@@ -1,6 +1,5 @@
 ---
 layer: mobile
-title: 'Mobile Engineering Scope'
 ---
 
 # Mobile Engineering Scope

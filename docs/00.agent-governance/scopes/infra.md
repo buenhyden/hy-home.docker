@@ -1,6 +1,5 @@
 ---
 layer: infra
-title: 'Infrastructure Operational Scope'
 ---
 
 # Infrastructure Operational Scope

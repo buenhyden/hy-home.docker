@@ -1,6 +1,5 @@
 ---
 layer: agentic
-title: 'AI Agent-first Engineering Rule'
 ---
 
 # AI Agent-first Engineering Rule
@@ -30,9 +29,12 @@ Standard behavior contract for repo-local, auditable agent execution.
 - Use persona routing, checklist routing, this rule, and one primary scope before
   task execution.
 - Use the local agent/function catalog as the runtime boundary:
-  - The active provider's runtime agent directory (e.g., `.claude/agents/`, `.agents/agents/`) is the executable runtime surface; each file must have a same-named catalog entry under `docs/00.agent-governance/agents/agents/`.
-  - The active provider's runtime skill directory (e.g., `.claude/skills/`, `.agents/skills/`) is the executable runtime surface; each skill must have a same-named catalog entry under `docs/00.agent-governance/agents/functions/`.
-  - Runtime baselines: Claude uses `.claude/`, Gemini uses `.agents/` as a shared surface/moderate-shim, Codex uses `.codex/`.
+  - Provider agent adapters under `.claude/agents/`, `.codex/agents/`, and
+    `.gemini/agents/` must map to a same-named Stage 00 catalog entry.
+  - Shared skill projections use `.claude/skills/<id>/SKILL.md` and
+    `.agents/skills/<id>/SKILL.md`; provider projections do not own policy.
+  - Runtime baselines: Claude uses `.claude/`, Codex uses `.codex/`, Gemini
+    uses `.gemini/`, and `.agents/` remains compatibility/shared skills.
   - `docs/00.agent-governance/subagent-protocol.md` defines delegation rules.
 - Do not import external harness identities or create GitHub-native instruction
   layers for local execution policy.

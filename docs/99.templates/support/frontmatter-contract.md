@@ -31,6 +31,25 @@ approved active chain and safely selected changed/new documents are enforced.
 | Generated output | Preserve generator-owned metadata and refresh through the canonical generator. |
 | Unsupported or native platform surface | Preserve the real consumer's contract; do not add repository metadata for uniformity. |
 
+## Stage 00 Specialization Boundary
+
+The generic governance profile requires `layer` and permits only the bounded
+`status` and `runtime` additions. It does not own role, function, provider, or
+Hookify schemas. The typed Stage 00 artifact contract registers those path
+specializations:
+
+- `agent-role` and `agent-function` keep their typed identity keys;
+- provider overlays add `runtime` to the governance layer;
+- root instruction shims forbid frontmatter;
+- Hookify rules retain their native metadata envelope; and
+- README entry surfaces follow their registered navigation profile.
+
+The generic metadata checker infers these registrations only so it does not
+misclassify valid subtype keys as generic-governance drift. Exact subtype key
+sets, order, headings, and values remain solely enforced by
+`check-agent-governance-contract.py`; do not duplicate that schema in this
+contract or the generic checker.
+
 Human role and authoring boundaries are split between the
 [SDLC document contract](./sdlc-document-contract.md),
 [common document contract](./common-document-contract.md), and

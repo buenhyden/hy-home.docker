@@ -8,12 +8,21 @@ CLAUDE.md @buenhyden
 GEMINI.md @buenhyden
 RTK.md @buenhyden
 .github/** @buenhyden
+.agents/** @buenhyden
 .claude/** @buenhyden
 .codex/** @buenhyden
+.gemini/** @buenhyden
 infra/** @buenhyden
 scripts/** @buenhyden
 secrets/** @buenhyden
 docs/00.agent-governance/** @buenhyden
+docs/00.agent-governance/contracts/** @buenhyden
 docs/03.specs/** @buenhyden
 docs/05.operations/** @buenhyden
 docs/99.templates/** @buenhyden
+
+# Coupled governance validators and focused regression suites.
+scripts/validation/check-agent-governance-contract.py @buenhyden
+scripts/validation/check-document-metadata.py @buenhyden
+tests/validation/test_agent_governance_contract.py @buenhyden
+tests/validation/test_document_metadata.py @buenhyden

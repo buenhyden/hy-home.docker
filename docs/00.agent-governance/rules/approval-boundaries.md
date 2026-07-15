@@ -19,6 +19,10 @@ points to existing policy; it does not redefine it.
 - Operational service restart, rollout, or deployment requires separate
   approval beyond a code or doc change.
 - Approval granted for one surface does not extend to another.
+- Canonical owners, permitted contributors, mandatory independent reviewers,
+  validators, and rollback routes are machine-owned by
+  `contracts/agent-governance-artifacts.yaml`. GitHub CODEOWNERS contains only
+  valid repository principals and does not substitute agent-role identities.
 
 ## 2. Surface Matrix
 
@@ -31,6 +35,7 @@ points to existing policy; it does not redefine it.
 | `.env.example`                             | Guarded                           | Variable name, default, or comparison-doc change                | `check-repo-contracts.sh`                                              | PR Validation Evidence                              | `git revert`                      |
 | `scripts/**`                               | Guarded                           | Validation, hardening, hook, or operation behavior change       | `validate-harness.sh`                                                  | PR Validation Evidence                              | `git revert`                      |
 | `.github/workflows/**`                     | Protected                         | Any permission expansion, `pull_request_target`, or `write-all` | `check-repo-contracts.sh` + workflow security review                   | PR Validation Evidence                              | `git revert`                      |
+| `.agents/**`, `.claude/**`, `.codex/**`, `.gemini/**` | Protected provider/compatibility surfaces | Adapter, hook, settings, or projection behavior changes | `check-agent-governance-contract.py --mode contract` plus provider renderer check when active | Stage 04 Task | Revert logical commit and regenerate |
 | `docs/00.agent-governance/**`              | Governance SSOT                   | Policy text, agent/skill catalog, or provider parity change     | `validate-harness.sh`                                                  | PR + `memory/progress.md`                           | `git revert`                      |
 | `docs/05.operations/**`                    | Operations SSOT                   | Guide, policy, runbook, or incident change                      | `check-doc-traceability.sh`                                            | PR + runbook                                        | `git revert`                      |
 | `docs/99.templates/**`                     | Template SSOT                     | Template add, remove, or contract change                        | `check-repo-contracts.sh` template loop                                | PR Validation Evidence                              | `git revert`                      |

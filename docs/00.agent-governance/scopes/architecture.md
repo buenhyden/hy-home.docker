@@ -1,6 +1,5 @@
 ---
 layer: architecture
-title: 'Architecture Strategy Scope'
 ---
 
 # Architecture Strategy Scope

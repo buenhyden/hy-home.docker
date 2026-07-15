@@ -15,13 +15,14 @@ import re
 import subprocess
 import sys
 from collections.abc import Mapping, Sequence
-from typing import Any
-
 import yaml
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+DEFAULT_AGENT_GOVERNANCE_ARTIFACTS = (
+    ROOT / "docs/00.agent-governance/contracts/agent-governance-artifacts.yaml"
+)
 DEFAULT_MIGRATION_CONTRACT = (
     ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 )
@@ -777,6 +778,65 @@ def registered_generated_owner(
         return None
     owner = generated_outputs.get(path.as_posix())
     return owner if isinstance(owner, str) else None
+
+
+def _expand_brace_pattern(pattern: str) -> tuple[str, ...]:
+    """Expand the bounded comma-separated braces used by the artifact registry."""
+
+    opening = pattern.find("{")
+    if opening < 0:
+        return (pattern,)
+    closing = pattern.find("}", opening + 1)
+    if closing < 0:
+        return (pattern,)
+    choices = pattern[opening + 1 : closing].split(",")
+    if not choices or any(not choice for choice in choices):
+        return (pattern,)
+    expanded: list[str] = []
+    for choice in choices:
+        expanded.extend(
+            _expand_brace_pattern(pattern[:opening] + choice + pattern[closing + 1 :])
+        )
+    return tuple(expanded)
+
+
+def _stage00_specialization_entry(
+    path: pathlib.Path,
+    contract_path: pathlib.Path = DEFAULT_AGENT_GOVERNANCE_ARTIFACTS,
+) -> Mapping[str, object] | None:
+    """Return the one registered Stage 00 artifact envelope matching ``path``."""
+
+    normalized = pathlib.PurePosixPath(path.as_posix().lstrip("./"))
+    try:
+        loaded = _safe_load_unique(contract_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError):
+        return None
+    if not isinstance(loaded, Mapping):
+        return None
+    entries = loaded.get("artifacts")
+    if not isinstance(entries, Sequence) or isinstance(entries, (str, bytes)):
+        return None
+    matches: list[Mapping[str, object]] = []
+    for entry in entries:
+        if not isinstance(entry, Mapping):
+            continue
+        pattern = entry.get("path_pattern")
+        if not isinstance(pattern, str):
+            continue
+        if any(normalized.match(candidate) for candidate in _expand_brace_pattern(pattern)):
+            matches.append(entry)
+    return matches[0] if len(matches) == 1 else None
+
+
+def infer_stage00_specialization(
+    path: pathlib.Path,
+    contract_path: pathlib.Path = DEFAULT_AGENT_GOVERNANCE_ARTIFACTS,
+) -> str | None:
+    """Infer an exact Stage 00 subtype without changing the generic profile."""
+
+    entry = _stage00_specialization_entry(path, contract_path)
+    artifact_type = entry.get("artifact_type") if entry is not None else None
+    return artifact_type if isinstance(artifact_type, str) else None
 
 
 def infer_artifact_type(
@@ -2099,9 +2159,31 @@ def validate_record(
             )
         )
 
+    specialization = (
+        _stage00_specialization_entry(record.path)
+        if record.artifact_type == "governance"
+        else None
+    )
+    specialization_type = (
+        specialization.get("artifact_type") if specialization is not None else None
+    )
+    if specialization_type == "hookify-rule":
+        # Hookify owns a native metadata schema. Its exact envelope is enforced
+        # by the focused Stage 00 validator, not duplicated here.
+        return sorted(set(findings))
+
+    specialization_keys = {
+        key
+        for key in (
+            specialization.get("required_keys", [])
+            if specialization is not None
+            else []
+        )
+        if isinstance(key, str)
+    }
     required = set(raw_profile.get("required", []))
     optional = set(raw_profile.get("optional", []))
-    forbidden = set(raw_profile.get("forbidden", []))
+    forbidden = set(raw_profile.get("forbidden", [])) - specialization_keys
     global_forbidden = set(common.get("globally_forbidden", []))
     registered_owner = registered_generated_owner(record.path, profiles)
     for key in sorted(required):
@@ -2149,7 +2231,12 @@ def validate_record(
 
     declared_type = record.metadata.get("artifact_type")
     if declared_type is not None:
-        if not isinstance(declared_type, str) or declared_type != record.artifact_type:
+        expected_type = (
+            specialization_type
+            if isinstance(specialization_type, str)
+            else record.artifact_type
+        )
+        if not isinstance(declared_type, str) or declared_type != expected_type:
             findings.append(
                 _finding(
                     record,
@@ -2459,7 +2546,7 @@ def validate_record(
             )
 
     if not raw_profile.get("allow_additional", False):
-        known = required | optional | forbidden
+        known = required | optional | forbidden | specialization_keys
         for key in sorted(set(record.metadata) - known):
             findings.append(
                 _finding(record, "type-inappropriate-key", f"key is not declared for {record.artifact_type}: {key}")

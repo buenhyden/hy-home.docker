@@ -1,5 +1,6 @@
 ---
 layer: agentic
+runtime: shared
 ---
 
 # AGENTS.md Provider-Neutral Notes
@@ -23,7 +24,7 @@ Provider-neutral guidance for `AGENTS.md` style files.
 - Shared policy source of truth: `docs/00.agent-governance/`.
 - Root shim files: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`.
 - Codex entry: `AGENTS.md` plus `.codex/` runtime hooks.
-- `.agents/` is the shared runtime surface and moderate-shim for Gemini, while maintaining compatibility for generic tools.
+- `.agents/` is the provider-neutral compatibility and shared-skill surface.
 - Stage docs `docs/01` to `docs/99`: read-only by default.
 
 ## 4. Instruction File Hierarchy and Precedence
@@ -34,8 +35,8 @@ This repository keeps agent instruction authority inside repo-local files only. 
 2. **Repo-local governance** (`docs/00.agent-governance/`) — authoritative for all policy matters.
 3. **Root shim files** (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) — entry points routing into governance.
 4. **Provider overlays** (`providers/claude.md`, `providers/gemini.md`, `providers/codex.md`) — provider-specific behavior within governance bounds.
-5. **Runtime controls** — executable enforcement and local agent behavior in `.claude/`, Codex hook support in `.codex/`, and Gemini runtime skills/agents in `.agents/`.
-6. **Compatibility surfaces** — The `.agents/` directory doubles as a cross-provider compatibility layer, though its primary role is the Gemini runtime surface.
+5. **Runtime controls** — executable provider behavior in `.claude/`, `.codex/`, and `.gemini/` when tracked and validated.
+6. **Compatibility surfaces** — `.agents/` exposes shared skills and compatibility projections without becoming a native-provider policy owner.
 
 GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 If such files ever appear, they must not be treated as authoritative until governance explicitly adopts them.
@@ -63,17 +64,16 @@ agent roles, model tiers, QA rules, template rules, or workflow policy.
 - **Claude (`.claude/`)** exposes Claude-native Markdown agents and skills. These
   files are provider adapters for the Stage 00 catalog, not the canonical source.
 - **Codex (`.codex/`)** exposes Codex-native TOML agent definitions under
-  `.codex/agents/*.toml`, plus Codex-compatible skills and hooks. TOML files
+  `.codex/agents/*.toml` and hook compatibility. TOML files
   carry provider-native `model` and `model_reasoning_effort` fields from the
   Model Policy.
-- **Gemini (`.agents/`)** exposes reference-index agents and skills pointing to
-  Stage 00 catalog entries, plus native `rules/` and `workflows/` directories
-  where Antigravity IDE supports them.
+- **Gemini (`.gemini/`)** exposes native agents and hooks after its generated
+  projection is present; `.agents/` remains the shared compatibility surface.
 
 ### Adapter Rules
 
 - **Name-set parity:** agent and function name sets MUST be identical across
-  Stage 00, `.claude/`, `.codex/`, and `.agents/`.
+  Stage 00 and all active provider/compatibility projections.
 - **Role parity:** provider adapters MUST point back to the Stage 00 catalog
   entry and preserve the same scope and role intent.
 - **Policy parity:** provider adapters may adapt syntax, frontmatter, or hook

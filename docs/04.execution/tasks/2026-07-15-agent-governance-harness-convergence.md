@@ -145,7 +145,7 @@ Redaction boundary:
 | Work unit | Responsibility | State |
 | --- | --- | --- |
 | T-AGHC-001 | Typed contracts and contract-only validator | Complete; specification and quality reviews PASS C0/I0/M0 |
-| T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Not run |
+| T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Implementation complete; independent reviews pending |
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Not run |
 | T-AGHC-004 | Provider-native adapters and dated model policy | Not run |
 | T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Not run |
@@ -171,6 +171,10 @@ Redaction boundary:
 | 2026-07-15 | T-AGHC-001 quality re-review | Fresh read-only reviewer | Quality re-review of `543f6949..522d2ba9` returned Critical 0, Important 1, Minor 0. It found that two safe glob authorities such as `zz/a*` and `zz/ab?` can intersect even though the path-boundary prefix heuristic reported no overlap. |
 | 2026-07-15 | T-AGHC-001 glob-overlap remediation | Fresh remediation agent | Replaced the path-boundary heuristic with a bounded fail-closed comparison of canonical literal prefixes up to the first supported glob metacharacter. Exact patterns overlap only on equality; if either side is a glob, compatible character-wise prefixes are treated as a potential protected-authority overlap. Bidirectional table tests cover `*`, `**`, `?`, character classes, brace alternatives, exact/glob pairs, disjoint prefixes, and path boundaries. Fresh independent specification and quality re-reviews remain required. |
 | 2026-07-15 | T-AGHC-001 terminal reviews | Independent specification and quality reviewers | Both reviewers approved exact range `543f6949..0635c044` with Critical 0, Important 0, and Minor 0. The specification reviewer confirmed VAL-132-001 and Task 1 scope; the quality reviewer independently reproduced the malformed-collection, unsafe-path, typed-key, and glob-overlap cases and confirmed they fail closed without raw-value or absolute-path disclosure. |
+| 2026-07-15 | T-AGHC-002 RED | Fresh implementation agent | Root/provider surface fixtures produced 32 expected assertion failures across five tests: three root-shim frontmatter/policy envelopes, three provider-overlay runtime envelopes, 13 scope title duplicates, three copied-policy README surfaces, three stale Hookify references, and seven missing CODEOWNERS entries. Two metadata specialization tests separately produced five expected missing-function errors plus the generic-governance profile mismatch. No production file had changed before these RED runs. |
+| 2026-07-15 | T-AGHC-002 GREEN | Fresh implementation agent | Reduced the three root shims to executable bootstrap imports, normalized the three provider entry indexes to navigation-only profiles, added exact provider runtime metadata, removed the 13 duplicated scope titles, corrected Hookify and provider capability boundaries, registered typed Stage 00 specialization inference, and added the missing protected path authority and CODEOWNERS coverage. No provider-native adapter was created and no runtime adoption was claimed. |
+| 2026-07-15 | T-AGHC-002 lifecycle and generated owners | Fresh implementation agent | Reconciled only three Foundation `active_consumers`: removed `AGENTS.md` from the GitHub-governance and task-checklist sources and added the typed artifact contract as a frontmatter-contract consumer. No lifecycle status, verdict, enforcement, disposition, archive, or corpus payload changed. Regenerated the LLM Wiki index, coverage, metadata inventory, and provider hook parity owners. An intermediate parity drift was resolved by restoring the accurate no-tracked-Gemini-adapter source contract; all four outputs are fresh with no final generated-output diff. |
+| 2026-07-15 | T-AGHC-002 self-review | Fresh implementation agent | Confirmed focused and full metadata/governance tests, explicit-base metadata, impacted lifecycle, traceability, alignment, typed contract mode, compile, Ruff, Yamllint, and diff hygiene. The repository aggregate reports the expected interim `failures=5`: stale root/harness, mixed catalog/provider, compatibility, memory, and LLM-Wiki literal blocks whose replacement is explicitly owned by Tasks 3 through 5. Adding those copied literals would violate the Task 2 minimal-shim and navigation-only README envelope, so the aggregate checker was not modified. Independent specification and quality reviews remain required. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -269,6 +273,24 @@ T-AGHC-001 glob-overlap remediation verification:
 | scoped pre-commit | all applicable hooks pass | all applicable hooks passed across the 4 glob-overlap remediation paths | Pass |
 | Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,071 nodes; 26,899 edges; 1,555 communities; two unrelated infrastructure ambiguities, 16,078 isolated nodes, and thin-community noise were corroborated against tracked infrastructure source, Stage 00, Spec, Plan, Task, validator, and tests; generated graph output restored | Pass |
 
+T-AGHC-002 implementation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| focused governance surface tests (RED) | current shims, metadata, references, and owners fail | 5 tests; 32 expected assertion failures | Pass |
+| focused specialization tests (RED) | typed inference/profile boundary is absent | 2 tests; five expected missing-function errors and one expected profile assertion failure | Pass |
+| full governance unittest (GREEN) | all tests pass | 33 tests; 33 passed | Pass |
+| full metadata unittest (GREEN) | all tests pass | 211 tests; 211 passed | Pass |
+| contract-only CLI | exact target cardinality marker | `contracts=3 agents=14 functions=22 providers=3 failures=0` | Pass |
+| changed metadata against `2cf8a40b` | zero violations | selected 30; violations 0; legacy exceptions 0; transition overrides 0 | Pass |
+| impacted lifecycle against `2cf8a40b` | zero violations | selected 293; violations 0; configured Task-directory budget warning only | Pass |
+| Foundation manifest deviation | `active_consumers` only | two stale `AGENTS.md` consumers removed and one typed-contract consumer added; no status, verdict, enforcement, or disposition change | Pass |
+| traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,205 local links; 141 operations docs; failures 0 | Pass |
+| generated owners | fresh | Wiki index 1,312 paths; coverage 1,311 safe paths; inventory 911 records / 2,160 advisory findings; parity events 7 with Claude 7, Codex 7, Gemini behavioral 7 | Pass |
+| Python compile, Ruff, Yamllint, and diff hygiene | zero failures | zero failures | Pass |
+| Graphify refresh and corroboration | refresh succeeds; advisory evidence is source-corroborated | 24,091 nodes; 26,933 edges; 1,555 communities; two unrelated infrastructure ambiguities, 16,085 isolated nodes, and 73 thin communities were corroborated against tracked infrastructure, Stage 00, Spec, Plan, Task, validator, and tests; generated graph output restored | Pass |
+| repository aggregate compatibility | only planned forward dependencies remain | `failures=5`; exact stale blocks are assigned to Tasks 3, 4, and 5 in this Plan; no Task 2-owned generated or focused failure remains | Expected interim dependency |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI
@@ -308,7 +330,10 @@ could still evade the path-boundary heuristic. The glob-overlap remediation
 closes that finding with a bounded fail-closed literal-prefix comparison and
 focused table evidence. Final independent specification and quality re-reviews
 of `543f6949..0635c044` both returned PASS with Critical 0, Important 0, and
-Minor 0. T-AGHC-001 is complete; Tasks 2 through 6 remain not run.
+Minor 0. T-AGHC-001 is complete. T-AGHC-002 implementation self-review is
+PASS with the five planned aggregate forward dependencies recorded above;
+fresh independent specification and quality reviews are pending. Tasks 3
+through 6 remain not run.
 
 Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
@@ -339,7 +364,7 @@ with owner, reason, and destination.
 | T-AGHC-001 quality remediation | `fix(governance): harden contract input boundaries` | `522d2ba9` | focused and aggregate GREEN; quality re-review C0/I1/M0 |
 | T-AGHC-001 glob-overlap remediation | `fix(governance): fail closed on glob authority overlap` | `0635c044` | focused and aggregate GREEN; terminal specification and quality reviews PASS C0/I0/M0 |
 | T-AGHC-001 review evidence | `docs(task): record typed contract review closure` | this logical commit | terminal specification and quality reviews PASS C0/I0/M0 |
-| T-AGHC-002 | `refactor(governance): normalize agent authority and metadata` | pending | pending |
+| T-AGHC-002 | `refactor(governance): normalize agent authority and metadata` | this logical commit | focused/full GREEN; independent reviews pending |
 | T-AGHC-003 | `refactor(agents): converge role and function catalogs` | pending | pending |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | pending | pending |
 | T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | pending | pending |

@@ -111,15 +111,15 @@ readme_profiles:
     canonical_shared_rule_owner: docs/00.agent-governance/README.md
 
   provider-runtime:
-    path_globs: [.agents/README.md, .codex/README.md]
+    path_globs: [.agents/README.md, .codex/README.md, .gemini/README.md]
     frontmatter: optional
     frontmatter_consumer: scripts/validation/check-repo-contracts.sh
     allowed_frontmatter_keys: [layer, runtime]
-    required_headings: [Scope, How to Work in This Area, Related Documents]
-    optional_headings: [Authority, Provider Behavior, Harness Alignment Gates]
+    required_headings: [Scope, Structure, How to Work in This Area, Related Documents]
+    optional_headings: []
     forbidden_headings: [Canonical Shared Rules]
     allowed_local_content_role: Provider runtime entrypoint, compatibility notes, and provider-specific navigation.
-    canonical_shared_rule_owner: docs/00.agent-governance/providers/codex.md
+    canonical_shared_rule_owner: docs/00.agent-governance/providers/agents-md.md
 
   infrastructure-root:
     path_globs: [infra/README.md]
@@ -594,13 +594,13 @@ profiles:
     disposition: template-source exception
 
   governance:
-    required: []
-    optional: [layer, title, status, runtime]
-    forbidden: [artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, generated_by, archived_from, archived_on, archive_reason, current_replacement]
+    required: [layer]
+    optional: [status, runtime]
+    forbidden: [title, artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, generated_by, archived_from, archived_on, archive_reason, current_replacement]
     allowed_statuses: [draft, active, completed, superseded]
     allowed_parent_types: []
     allow_empty_parents: true
-    allow_additional: true
+    allow_additional: false
     disposition: governance exception
 
   archive:

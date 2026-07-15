@@ -1234,6 +1234,48 @@ class ArtifactInferenceTests(unittest.TestCase):
         self.assertEqual("generated", metadata.infer_artifact_type(generated, profiles))
         self.assertEqual("reference", metadata.infer_artifact_type(adjacent, profiles))
 
+    def test_stage00_specializations_are_inferred_from_typed_artifact_contract(self) -> None:
+        cases = {
+            "docs/00.agent-governance/agents/agents/code-reviewer.md": "agent-role",
+            "docs/00.agent-governance/agents/functions/code-reviewer.md": "agent-function",
+            "docs/00.agent-governance/providers/claude.md": "provider-overlay",
+            "docs/00.agent-governance/rules/hooks/hookify.block-direct-main-push.md": "hookify-rule",
+            "docs/00.agent-governance/rules/bootstrap.md": "governance-document",
+        }
+        for path_text, expected in cases.items():
+            with self.subTest(path=path_text):
+                self.assertEqual(
+                    expected,
+                    metadata.infer_stage00_specialization(pathlib.Path(path_text)),
+                )
+
+    def test_governance_profile_is_minimal_and_does_not_duplicate_specialized_schema(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        governance = profiles["profiles"]["governance"]
+        self.assertEqual(["layer"], governance["required"])
+        self.assertEqual(["status", "runtime"], governance["optional"])
+        self.assertFalse(governance["allow_additional"])
+        self.assertNotIn("title", governance["optional"])
+
+        role = metadata.Record(
+            pathlib.Path("docs/00.agent-governance/agents/agents/code-reviewer.md"),
+            {
+                "layer": "agentic",
+                "artifact_type": "agent-role",
+                "agent_id": "code-reviewer",
+                "scope": "common",
+                "tier": "worker",
+                "status": "active",
+            },
+            "governance",
+            frontmatter_present=True,
+        )
+        findings = metadata.validate_record(role, profiles, metadata.build_manifest([role]))
+        self.assertNotIn(
+            "type-inappropriate-key",
+            {finding.code for finding in findings},
+        )
+
 
 class TemplateRoleInferenceTests(unittest.TestCase):
     @classmethod
@@ -4397,7 +4439,6 @@ class TemplateBodyContractTests(unittest.TestCase):
             self.profiles = original_profiles
 
     def test_task_5_coordinated_registry_and_source_profile_drift_is_rejected(self) -> None:
-        role = self.profiles["template_roles"]["release"]
         source = (ROOT / self.ALL_ROLE_SOURCES["release"]).read_text(encoding="utf-8")
         mutated_profiles = self.copied_profiles_with_role(
             "release",

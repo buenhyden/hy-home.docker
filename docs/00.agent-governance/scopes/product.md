@@ -1,6 +1,5 @@
 ---
 layer: product
-title: 'Product Requirements Scope'
 ---
 
 # Product Requirements Scope

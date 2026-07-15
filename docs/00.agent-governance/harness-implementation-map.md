@@ -12,9 +12,10 @@ linked sources. It does not define new policy.
 
 | Surface             | Source                                                     | Role                                  | Required Validation               | Evidence               |
 | ------------------- | ---------------------------------------------------------- | ------------------------------------- | --------------------------------- | ---------------------- |
-| Root shims          | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`                      | Thin entry routing into Stage 00      | `check-repo-contracts.sh`         | PR Validation Evidence |
+| Root shims          | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`                      | Direct bootstrap/provider/memory routing | `check-agent-governance-contract.py --mode contract` | PR Validation Evidence |
 | Governance hub      | `docs/00.agent-governance/README.md`, `rules/bootstrap.md` | Policy SSOT and bootstrap sequence    | `validate-harness.sh`             | `memory/progress.md`   |
-| Approval boundaries | `rules/approval-boundaries.md`                             | Protected-surface and approval matrix | Link integrity                    | PR Validation Evidence |
+| Typed contracts     | `docs/00.agent-governance/contracts/*.yaml`                | Artifact, catalog, provider/model, and authority SSOT | `check-agent-governance-contract.py --mode contract` | Stage 04 Task |
+| Approval boundaries | `rules/approval-boundaries.md`                             | Protected-surface and approval routing | Contract authority matrix + link integrity | PR Validation Evidence |
 
 ## Docker Compose Runtime
 
@@ -46,6 +47,7 @@ linked sources. It does not define new policy.
 | Harness gate   | `scripts/validation/validate-harness.sh`     | Thin wrapper for harness-surface validation    | self                              | PR Validation Evidence |
 | Local QA gate  | `scripts/validation/run-local-qa-gates.sh`   | Script-backed, all-profile, and harness modes  | `--harness` and `--script-backed` | PR Validation Evidence |
 | Repo contracts | `scripts/validation/check-repo-contracts.sh` | Structure, template, and parity contracts     | self                              | PR Validation Evidence |
+| Metadata contract | `scripts/validation/check-document-metadata.py` | Generic lifecycle metadata plus registered Stage 00 specialization routing | focused unit suite | Stage 04 Task |
 | CI quality     | `.github/workflows/ci-quality.yml`           | Remote enforcement of the same gates          | GitHub Actions                    | PR required checks     |
 
 ## Hardening

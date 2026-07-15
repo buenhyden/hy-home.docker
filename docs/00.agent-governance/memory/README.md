@@ -10,7 +10,11 @@ layer: agentic
 
 This folder stores durable, English-only notes that improve future agent runs. It is for governance findings, repeated workflow pitfalls, reusable remediation patterns, and the mandatory agent progress log.
 
-Memory notes are advisory retrieval context. They help agents remember prior pitfalls and fixes, but they do not define active policy. Current user instructions, system/developer instructions, repository rules, scopes, provider overlays, and live repository evidence always take precedence.
+Memory notes are advisory retrieval context. They help agents remember prior
+pitfalls and fixes, but they do not define active policy or path authority.
+Current user instructions, system/developer instructions, typed Stage 00
+contracts, repository rules, scopes, provider overlays, and live repository
+evidence always take precedence.
 
 ## Audience
 

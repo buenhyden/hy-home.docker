@@ -1,6 +1,5 @@
 ---
 layer: qa
-title: 'Quality Assurance Scope'
 ---
 
 # Quality Assurance Scope

@@ -1,6 +1,5 @@
 ---
 layer: backend
-title: 'Backend Engineering Scope'
 ---
 
 # Backend Engineering Scope

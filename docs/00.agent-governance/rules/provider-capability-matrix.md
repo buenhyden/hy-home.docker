@@ -11,12 +11,12 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 
 ## 1. Matrix
 
-| Capability         | Governance SSOT                                            | Claude (`.claude/`)                            | Codex / GPT (`.codex/`)                     | Gemini (`.agents/`)                     |
+| Capability         | Governance SSOT                                            | Claude (`.claude/`)                            | Codex / GPT (`.codex/`)                     | Gemini (`.gemini/`)                     |
 | ------------------ | ---------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------- | --------------------------------------- |
-| Subagents          | `agents/agents/*.md`                                       | `.claude/agents/*.md` (adapter)                | `.codex/agents/*.toml` (adapter)            | `.agents/agents/*.md` (pointer adapter) |
-| Skills / Functions | `agents/functions/*.md`                                    | `.claude/skills/*/skill.md` (adapter)          | `.codex/skills/*/skill.md` (adapter)        | `.agents/skills/*/skill.md` (pointer)   |
-| Rules              | `rules/*.md`                                               | `.claude/hookify.*.local.md` + `settings.json` | governance + `.codex/hooks.json`            | governance (behavioral contract)        |
-| Hooks              | `providers/*.md` Hook Parity Contract                      | `.claude/hooks/*.sh` + `settings.json`         | `.codex/hooks.json`                         | provider-native support exists; no tracked `.gemini` adapter, so workspace behavior is reminder-only |
+| Subagents          | `agents/agents/*.md`                                       | `.claude/agents/*.md` (adapter)                | `.codex/agents/*.toml` (adapter)            | `.gemini/agents/*.md` when rendered     |
+| Skills / Functions | `agents/functions/*.md`                                    | `.claude/skills/*/SKILL.md`                    | `.agents/skills/*/SKILL.md` (shared)        | `.agents/skills/*/SKILL.md` (shared)    |
+| Rules              | `rules/*.md`                                               | `.claude/hookify.*.md` + `settings.json`       | governance + `.codex/hooks.json`            | governance + `.gemini/settings.json` when rendered |
+| Hooks              | `providers/*.md` Hook Parity Contract                      | `.claude/hooks/*.sh` + `settings.json`         | `.codex/hooks.json`                         | provider-native support; no tracked `.gemini` adapter until the projection task |
 | Output style       | `rules/output-style.md`                                    | `.claude/output-styles/*.md` + `settings.json` | behavioral contract                         | behavioral contract                     |
 | Workflows          | `rules/workflows.md` (+ `rules/stage-authoring-matrix.md`) | orchestration skills / commands                | orchestration skills (mirror)               | orchestration skills (pointer)          |
 | Memory             | `memory/` (`progress.md`, notes)                           | read/write `memory/progress.md` + notes        | read/write `memory/progress.md` + notes     | read/write `memory/progress.md` + notes |
@@ -41,8 +41,8 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 
 | Capability                        | Claude                                        | Codex / GPT                       | Gemini                               |
 | --------------------------------- | --------------------------------------------- | --------------------------------- | ------------------------------------ |
-| Custom subagents                  | Supported (`.claude/agents`)                  | Supported (`.codex/agents/*.toml`) | Supported (reference-index pointers) |
-| Skills                            | Supported (`.claude/skills`)                  | Supported (adapter)               | Supported (pointers)                 |
+| Custom subagents                  | Supported (`.claude/agents`)                  | Supported (`.codex/agents/*.toml`) | Provider-supported; workspace projection pending |
+| Skills                            | Supported (`.claude/skills`)                  | Supported through `.agents/skills` | Supported through `.agents/skills`  |
 | Programmatic hooks                | Supported (`settings.json` + `.claude/hooks`) | Supported (`.codex/hooks.json`)   | Provider-supported, not tracked here → behavioral reminder |
 | Per-agent model                   | Supported (alias)                             | Supported (model id + effort)     | Supported (pointer frontmatter)      |
 | Native output style               | Supported (`.claude/output-styles`)           | Unsupported → behavioral contract | Unsupported → behavioral contract    |

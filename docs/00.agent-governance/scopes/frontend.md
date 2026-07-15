@@ -1,6 +1,5 @@
 ---
 layer: frontend
-title: 'Frontend UI/UX Scope'
 ---
 
 # Frontend UI/UX Scope

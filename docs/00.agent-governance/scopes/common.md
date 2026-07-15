@@ -1,6 +1,5 @@
 ---
 layer: common
-title: 'Common Engineering Scope'
 ---
 
 # Common Engineering Scope

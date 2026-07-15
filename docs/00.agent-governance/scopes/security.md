@@ -1,6 +1,5 @@
 ---
 layer: security
-title: 'Security Enforcement Scope'
 ---
 
 # Security Enforcement Scope

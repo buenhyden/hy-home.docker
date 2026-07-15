@@ -33,7 +33,7 @@ layer: agentic
   inputs/outputs, provider adapter bindings, and model tier.
 - **Skill / Function**: a reusable capability in `agents/functions/` and, when
   supported by a runtime, a provider adapter under `.claude/skills/`,
-  `.codex/skills/`, or `.agents/skills/`. Shared skill policy defines when a
+  `.claude/skills/` or `.agents/skills/`. Shared skill policy defines when a
   skill should be considered, what artifact it may produce, and which provider
   surface exposes it; provider-local skill files may not create separate
   governance.

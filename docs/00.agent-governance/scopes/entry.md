@@ -1,6 +1,5 @@
 ---
 layer: entry
-title: 'Entry & Gateway Engineering Scope'
 ---
 
 # Entry & Gateway Engineering Scope

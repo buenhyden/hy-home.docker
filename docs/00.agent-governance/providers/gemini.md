@@ -1,5 +1,6 @@
 ---
 layer: agentic
+runtime: gemini
 ---
 
 # Gemini Provider Notes
@@ -18,44 +19,40 @@ Gemini CLI-specific guidance for this repository.
 - Recommended `.gemini/settings.json` configuration:
   - `"context.fileName": ["GEMINI.md", "AGENTS.md"]`
 
-## 3. Recommended Loading Sequence
+## 3. Root Import Boundary
 
-1. `@AGENTS.md`
-2. `@docs/00.agent-governance/providers/agents-md.md`
-3. `@docs/00.agent-governance/providers/gemini.md`
-4. bootstrap -> persona -> checklists -> one scope -> JIT stage docs
-5. `rules/github-governance.md` for PR / merge / review tasks
+The root `GEMINI.md` owns the executable import list. It loads bootstrap, this
+provider overlay, the memory index, and progress in that order; do not copy the
+list into another governance surface.
 
 ## 4. Instruction Precedence (Gemini-Specific)
 
 Gemini merges context from multiple files. Within this repository:
 
-- `GEMINI.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
+- `GEMINI.md` is the root shim; it imports bootstrap, this overlay, and memory.
 - `docs/00.agent-governance/` governance files are the policy SSOT and override Gemini defaults.
-- `.agents/` is Gemini's shared surface and reference-index shim; it holds pointer-only agent and skill indexes, but actively contains native Antigravity `rules/` and `workflows/` directories for workspace-specific policies.
-- `.agents/agents/` provides the Gemini reference index to the governance agent catalog.
+- `.agents/` is the provider-neutral compatibility and shared-skill surface.
 - GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 
 ## 5. Runtime Surface
 
 Per the Stage 00 Canonical Adapter Model (`providers/agents-md.md` §5), Gemini
-uses a reference-index adapter model — no full duplication and no provider-local
-policy directories.
+uses `.gemini/` for native adapters and hooks when those generated surfaces are
+present. Until the provider projection task creates them, native workspace
+adoption is not claimed.
 
-- `.agents/` is Gemini's shared runtime surface and reference-index shim.
-- `.agents/agents/<name>.md` are reference-index pointers to `docs/00.agent-governance/agents/agents/`.
-- `.agents/skills/<name>/skill.md` are reference-index pointers to `docs/00.agent-governance/agents/functions/`.
-- `.agents/` contains `rules/` and `workflows/` directories natively supported by Antigravity IDE to define workspace-specific behavioral contracts and pipelines.
+- `.agents/agents/<name>.md` are compatibility projections of the Stage 00 role catalog.
+- `.agents/skills/<name>/SKILL.md` are shared skill projections of the Stage 00 function catalog.
+- `.gemini/agents/` and `.gemini/settings.json` are the reserved Gemini-native
+  surfaces; their absence means adoption is pending, not behaviorally complete.
 - Gemini agent model identifiers follow the Model Policy in `subagent-protocol.md` (supervisor `gemini-3.1-pro`, worker `gemini-3.5-flash`).
 - The `.agents/` directory is git-tracked.
 
 ## 6. Hook Parity Contract
 
 - Gemini follows the shared `rules/output-style.md`, `rules/provider-capability-matrix.md`, and `rules/workflows.md` as behavioral contracts.
-- Current Gemini CLI releases expose provider-native hooks, but this repository
-  has no tracked `.gemini` hook or agent adapter. The `.agents/` surface remains
-  a behavioral pointer/reminder, not a tracked native hook adapter, and must not
-  be presented as interception parity with Claude or Codex.
+- Current Gemini CLI releases expose provider-native hooks, but no adoption is
+  claimed until tracked `.gemini/` artifacts are rendered and validated.
 - **Pre-edit validation**: Review requirements and guardrails before mutating files.
 - **Post-edit validation**: Validate style (formatting, trimming), run repository
   contracts, and for changed or new target Markdown run

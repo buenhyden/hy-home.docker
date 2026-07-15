@@ -51,7 +51,7 @@ artifacts:
       - Failure and Escalation
       - Related Documents
   - artifact_type: governance-document
-    path_pattern: docs/00.agent-governance/{rules,scopes}/*.md
+    path_pattern: docs/00.agent-governance/{harness-implementation-map.md,memory/*.md,rules/*.md,scopes/*.md,subagent-protocol.md}
     canonical: true
     required_keys:
       - layer
@@ -82,7 +82,7 @@ artifacts:
     required_sections:
       - Related Documents
   - artifact_type: provider-overlay
-    path_pattern: docs/00.agent-governance/providers/*.md
+    path_pattern: docs/00.agent-governance/providers/{agents-md,claude,codex,gemini}.md
     canonical: true
     required_keys:
       - layer
@@ -95,6 +95,20 @@ artifacts:
       - Provider-Specific Rules
       - Runtime Boundary
       - Operational Practices
+      - Related Documents
+  - artifact_type: provider-project-entry
+    path_pattern: .claude/CLAUDE.md
+    canonical: false
+    required_keys:
+      - layer
+      - runtime
+    key_order:
+      - layer
+      - runtime
+    required_sections:
+      - Scope
+      - Structure
+      - How to Work in This Area
       - Related Documents
   - artifact_type: readme-index
     path_pattern: docs/00.agent-governance/**/README.md
@@ -116,7 +130,7 @@ artifacts:
     required_keys: []
     key_order: []
     required_sections:
-      - Related Documents
+      - Bootstrap
 root_shims:
   - path: AGENTS.md
     provider: shared
@@ -124,11 +138,11 @@ root_shims:
     frontmatter: forbidden
   - path: CLAUDE.md
     provider: claude
-    bootstrap_target: AGENTS.md
+    bootstrap_target: docs/00.agent-governance/rules/bootstrap.md
     frontmatter: forbidden
   - path: GEMINI.md
     provider: gemini
-    bootstrap_target: AGENTS.md
+    bootstrap_target: docs/00.agent-governance/rules/bootstrap.md
     frontmatter: forbidden
 readme_profiles:
   - profile_id: agent-governance-hub
@@ -147,7 +161,7 @@ readme_profiles:
       - provider-native-schema
       - retry-policy
   - profile_id: provider-surface-index
-    path_pattern: .{agents,claude,codex,gemini}/README.md
+    path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md,.gemini/README.md}"
     allowed_sections:
       - Overview
       - Audience
@@ -235,6 +249,24 @@ path_authority:
     validators:
       - scripts/validation/check-repo-contracts.sh
     rollback: revert-logical-commit-without-remote-mutation
+  - authority_id: metadata-contract-and-validator
+    path_patterns:
+      - docs/99.templates/support/document-metadata-profiles.yaml
+      - docs/99.templates/support/frontmatter-contract.md
+      - scripts/validation/check-document-metadata.py
+      - tests/validation/test_document_metadata.py
+    canonical_owner: qa-engineer
+    entry_owners: []
+    permitted_contributors:
+      - qa-engineer
+      - rules-engineer
+    mandatory_reviewers:
+      - rules-engineer
+    entry_reviewers: []
+    protected: true
+    validators:
+      - python3 -m unittest tests.validation.test_document_metadata -v
+    rollback: revert-logical-commit-and-restore-last-green-metadata-contract
   - authority_id: provider-adapters-and-hooks
     path_patterns:
       - .agents/**

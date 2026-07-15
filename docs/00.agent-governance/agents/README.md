@@ -95,13 +95,15 @@ Workspace functions and provider skill adapters use the same lifecycle terms:
 5. **Validation evidence**: record commands, outcomes, CI-only gates, and
    skipped-check rationale.
 
-Provider-local `skill.md` or `SKILL.md` files may describe runtime mechanics;
+Provider-local `SKILL.md` files may describe runtime mechanics;
 the lifecycle policy remains in Stage 00.
 
 ## How to Work in This Area
 
 - Use this catalog when updating `.claude/agents/`, `.agents/agents/`, `.codex/agents/*.toml`, or provider runtime notes.
-- Note that `.agents/skills/` is the Gemini-compatible surface, `.claude/skills/` is the Claude runtime surface, and `.codex/skills/` is the Codex runtime surface.
+- `.agents/skills/` is the provider-neutral shared-skill surface and
+  `.claude/skills/` is the Claude projection. Codex discovers shared skills
+  from `.agents/skills/`; do not create a parallel `.codex/skills/` catalog.
 - Keep agent docs aligned with their scope files under `docs/00.agent-governance/scopes/`.
 - Keep this catalog free of external harness identifiers.
 - Update links here when agent or function files are added, moved, or removed.

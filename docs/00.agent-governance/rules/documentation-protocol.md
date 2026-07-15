@@ -101,6 +101,12 @@ Protocol for maintaining documentation consistency and governance traceability.
   requires every current legacy deficit's stable code/key-message identity to
   have existed at that base; disappearing deficits are allowed. New documents
   can never use this exception.
+- **Stage 00 specializations:** ordinary governance documents use the minimal
+  governance profile. Agent roles, functions, provider overlays, root shims,
+  Hookify rules, and registered entry READMEs are inferred through
+  `contracts/agent-governance-artifacts.yaml`; their exact subtype keys and
+  headings remain owned by the focused Stage 00 validator rather than copied
+  into the generic metadata checker.
 
 ### 2.1 Registry-Driven Contract Selection
 

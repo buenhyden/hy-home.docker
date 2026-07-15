@@ -1,6 +1,5 @@
 ---
 layer: agentic
-title: 'Agentic Behavior Engineering Scope'
 ---
 
 # Agentic Behavior Engineering Scope

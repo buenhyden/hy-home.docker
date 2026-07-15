@@ -12,7 +12,8 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 - The Stage 00 catalog entry for the supervisor is
   `docs/00.agent-governance/agents/agents/workflow-supervisor.md`; each
   provider exposes a runtime adapter for that role.
-- Each subagent MUST `@import` exactly one primary scope file before acting.
+- Each subagent MUST load exactly one primary scope file through the active
+  runtime's supported context or delegation mechanism before acting.
 - Pass the scope path explicitly in the task prompt; do not rely on ambient context.
 - The supervising/orchestrating agent uses the top-spec model; worker subagents use the right-sized model per the Model Policy below.
 - Each runtime's agent frontmatter MUST carry that provider's own model identifier; never copy another provider's model name across surfaces.
@@ -61,10 +62,10 @@ If the task does not name a concrete model value, role, provider, and validation
 path, the approval is recorded as verified-only and existing model/provider
 adapter values remain unchanged.
 
-## 2. Required Preamble (per agent)
+## 2. Required Delegation Envelope
 
 ```text
-@import docs/00.agent-governance/scopes/<layer>.md
+Primary scope: docs/00.agent-governance/scopes/<layer>.md
 # Role: <agent-name> — <one-line purpose>
 # Pattern: <pattern-name>
 ```
@@ -73,7 +74,7 @@ adapter values remain unchanged.
 
 ### Supervising Runtime Agent
 
-| Governance Role | Scope Import | Stage 00 Catalog | Claude Adapter | Codex Adapter | Gemini Adapter |
+| Governance Role | Scope Import | Stage 00 Catalog | Claude Adapter | Codex Adapter | Compatibility Projection |
 | --- | --- | --- | --- | --- | --- |
 | `workflow-supervisor` | `scopes/agentic.md` | `agents/agents/workflow-supervisor.md` | `.claude/agents/workflow-supervisor.md` | `.codex/agents/workflow-supervisor.toml` | `.agents/agents/workflow-supervisor.md` |
 
@@ -83,7 +84,7 @@ The supervisor coordinates workers and should not be treated as a generic worker
 
 All worker agents use the same adapter pattern:
 
-| Governance Role | Scope Import | Stage 00 Catalog | Claude Adapter | Codex Adapter | Gemini Adapter |
+| Governance Role | Scope Import | Stage 00 Catalog | Claude Adapter | Codex Adapter | Compatibility Projection |
 | --- | --- | --- | --- | --- | --- |
 | `infra-implementer` | `scopes/infra.md` | `agents/agents/infra-implementer.md` | `.claude/agents/infra-implementer.md` | `.codex/agents/infra-implementer.toml` | `.agents/agents/infra-implementer.md` |
 | `security-auditor` | `scopes/security.md` | `agents/agents/security-auditor.md` | `.claude/agents/security-auditor.md` | `.codex/agents/security-auditor.toml` | `.agents/agents/security-auditor.md` |
@@ -108,7 +109,8 @@ agent name set.
 
 - **Data handoff**: write non-secret runtime intermediate artifacts to `_workspace/repo-support/<phase>_<agent>_<artifact>.<ext>`.
 - **Audit handoff**: write orchestration reports, matrices, plans, and approval handoffs to `.agent-work/report/` when a workflow prompt requires that location.
-- **Status updates**: use TaskUpdate (`in_progress` → `completed` | `failed`).
+- **Status updates**: use the active runtime's status mechanism and the shared
+  `in_progress` → `completed` or `failed` semantics.
 - **Conflict**: if file ownership conflicts arise, halt and escalate to user — do not overwrite.
 - **Prohibited data**: do not store diagnostics dumps, local logs, raw logs,
   auth files, tokens, credentials, private keys, shell history, secret values,
@@ -123,7 +125,7 @@ agent name set.
 ## 6. Lifecycle
 
 ```text
-Spawn → @import scope → execute → write repo-support artifact → TaskUpdate(completed) → promote durable evidence or cleanup ignored scratch
+Spawn → load scope → execute → write repo-support artifact → report completion → promote durable evidence or cleanup ignored scratch
 ```
 
 Ignored `_workspace/repo-support/` scratch files are task-local. Promote durable
