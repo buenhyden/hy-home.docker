@@ -1,5 +1,9 @@
 schema_version: 1
 checked_at: "2026-07-15T10:00:00+09:00"
+path_pattern_limits:
+  max_brace_groups: 64
+  max_expanded_paths: 1024
+  max_pattern_length: 4096
 governed_families:
   - family_id: provider-entry-indexes
     path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md}"

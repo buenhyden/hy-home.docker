@@ -49,11 +49,15 @@ CONTRACT_RELATIVE_PATHS = MappingProxyType(
 EXPECTED_AGENT_COUNT = 14
 EXPECTED_FUNCTION_COUNT = 22
 EXPECTED_PROVIDER_COUNT = 3
+MAX_BRACE_GROUPS = 64
+MAX_EXPANDED_PATHS = 1024
+MAX_PATTERN_LENGTH = 4096
 
 COMMON_TOP_FIELDS = {"schema_version", "checked_at"}
 ARTIFACT_TOP_FIELDS = COMMON_TOP_FIELDS | {
     "artifacts",
     "governed_families",
+    "path_pattern_limits",
     "root_shims",
     "readme_profiles",
     "path_authority",
@@ -90,6 +94,11 @@ GOVERNED_FAMILY_FIELDS = {
     "family_id",
     "path_pattern",
     "repository_sections",
+}
+PATH_PATTERN_LIMIT_FIELDS = {
+    "max_brace_groups",
+    "max_expanded_paths",
+    "max_pattern_length",
 }
 ROOT_SHIM_FIELDS = {
     "path",
@@ -877,24 +886,11 @@ def _check_path(
 def _is_supported_enumerated_pattern(value: str) -> bool:
     """Limit enumerated contracts to the deterministic glob grammar we implement."""
 
-    depth = 0
-    brace_start = -1
-    for index, character in enumerate(value):
-        if character == "{":
-            if depth:
-                return False
-            depth = 1
-            brace_start = index
-        elif character == "}":
-            if depth != 1:
-                return False
-            choices = value[brace_start + 1 : index].split(",")
-            if len(choices) < 2 or any(not choice for choice in choices):
-                return False
-            depth = 0
-    if depth:
+    try:
+        expanded_patterns = _expand_braces(value)
+    except _BracePatternError:
         return False
-    for expanded in _expand_braces(value):
+    for expanded in expanded_patterns:
         for segment in expanded.split("/"):
             if any(marker in segment for marker in ("?", "[", "]")):
                 return False
@@ -964,6 +960,33 @@ def _validate_artifact_contract(
     path = CONTRACT_RELATIVE_PATHS["artifacts"].as_posix()
     source = path
     _check_common(document, ARTIFACT_TOP_FIELDS, path, findings)
+
+    path_pattern_limits = _check_fields(
+        document.get("path_pattern_limits"),
+        PATH_PATTERN_LIMIT_FIELDS,
+        path,
+        "path_pattern_limits",
+        findings,
+        source,
+    )
+    if path_pattern_limits is not None:
+        expected_limits = {
+            "max_brace_groups": MAX_BRACE_GROUPS,
+            "max_expanded_paths": MAX_EXPANDED_PATHS,
+            "max_pattern_length": MAX_PATTERN_LENGTH,
+        }
+        for field, expected in expected_limits.items():
+            observed = path_pattern_limits.get(field)
+            if type(observed) is not int or observed != expected:
+                _add(
+                    findings,
+                    "AGC-SCHEMA-CONSTANT",
+                    path,
+                    f"path_pattern_limits.{field}",
+                    "validator-safety-ceiling",
+                    "invalid-constant",
+                    source,
+                )
 
     artifacts = _as_sequence(document.get("artifacts"), path, "artifacts", findings, source)
     profile_ids: list[str] = []
@@ -2240,17 +2263,66 @@ def validate_contract_bundle(root: pathlib.Path, bundle: ContractBundle) -> list
     return sorted(findings, key=finding_sort_key)
 
 
-def _expand_braces(pattern: str) -> tuple[str, ...]:
-    """Expand the contract's simple comma-separated brace expressions."""
+class _BracePatternError(ValueError):
+    """Signal unsupported or resource-unsafe simple brace grammar."""
 
-    match = re.search(r"\{([^{}]+)\}", pattern)
-    if match is None:
+
+def _parse_brace_groups(pattern: str) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    """Parse bounded non-nested groups without materializing expanded paths."""
+
+    if len(pattern) > MAX_PATTERN_LENGTH:
+        raise _BracePatternError("pattern length limit")
+    groups: list[tuple[str, tuple[str, ...]]] = []
+    literal_start = 0
+    index = 0
+    while index < len(pattern):
+        character = pattern[index]
+        if character == "}":
+            raise _BracePatternError("unmatched brace")
+        if character != "{":
+            index += 1
+            continue
+
+        if len(groups) >= MAX_BRACE_GROUPS:
+            raise _BracePatternError("brace group limit")
+        brace_end = pattern.find("}", index + 1)
+        if brace_end < 0:
+            raise _BracePatternError("unmatched brace")
+        choice_text = pattern[index + 1 : brace_end]
+        if "{" in choice_text:
+            raise _BracePatternError("nested brace")
+        raw_choices = choice_text.split(",")
+        if len(raw_choices) < 2 or any(not choice for choice in raw_choices):
+            raise _BracePatternError("invalid brace choices")
+        choices = tuple(dict.fromkeys(raw_choices))
+        groups.append((pattern[literal_start:index], choices))
+        index = brace_end + 1
+        literal_start = index
+
+    return tuple(groups)
+
+
+def _expand_braces(pattern: str) -> tuple[str, ...]:
+    """Expand bounded simple braces iteratively with stable early deduplication."""
+
+    groups = _parse_brace_groups(pattern)
+    if not groups:
         return (pattern,)
-    expanded: list[str] = []
-    for choice in match.group(1).split(","):
-        candidate = pattern[: match.start()] + choice + pattern[match.end() :]
-        expanded.extend(_expand_braces(candidate))
-    return tuple(expanded)
+
+    partials: tuple[str, ...] = ("",)
+    for literal, choices in groups:
+        next_partials: dict[str, None] = {}
+        for partial in partials:
+            base = partial + literal
+            for choice in choices:
+                next_partials.setdefault(base + choice, None)
+                if len(next_partials) > MAX_EXPANDED_PATHS:
+                    raise _BracePatternError("expanded path limit")
+        partials = tuple(next_partials)
+
+    final_brace_end = pattern.rfind("}")
+    suffix = pattern[final_brace_end + 1 :]
+    return tuple(partial + suffix for partial in partials)
 
 
 def _segment_patterns_overlap(left: str, right: str) -> bool:
@@ -2293,10 +2365,15 @@ def _simple_glob_patterns_overlap(left: str, right: str) -> bool:
 def _artifact_patterns_overlap(left: str, right: str) -> bool:
     """Fail closed when artifact glob intersection cannot be disproved."""
 
+    try:
+        left_expanded_patterns = _expand_braces(_canonical_repo_path(left))
+        right_expanded_patterns = _expand_braces(_canonical_repo_path(right))
+    except _BracePatternError:
+        return True
     return any(
         _simple_glob_patterns_overlap(left_expanded, right_expanded)
-        for left_expanded in _expand_braces(_canonical_repo_path(left))
-        for right_expanded in _expand_braces(_canonical_repo_path(right))
+        for left_expanded in left_expanded_patterns
+        for right_expanded in right_expanded_patterns
     )
 
 
@@ -2318,7 +2395,11 @@ def _path_matches_pattern(relative: str, pattern: str) -> bool:
             and matches(pattern_parts, pattern_index + 1, path_index + 1)
         )
 
-    return any(matches(expanded.split("/"), 0, 0) for expanded in _expand_braces(pattern))
+    try:
+        expanded_patterns = _expand_braces(pattern)
+    except _BracePatternError:
+        return False
+    return any(matches(expanded.split("/"), 0, 0) for expanded in expanded_patterns)
 
 
 @dataclass(frozen=True)
@@ -2336,7 +2417,11 @@ def _registered_paths(root: pathlib.Path, pattern: str) -> _RegisteredPathInvent
     missing_exact: set[str] = set()
     has_glob = False
     enumeration_failed = False
-    for expanded in sorted(set(_expand_braces(pattern))):
+    try:
+        expanded_patterns = _expand_braces(pattern)
+    except _BracePatternError:
+        return _RegisteredPathInventory((), (), False, True)
+    for expanded in sorted(expanded_patterns):
         if any(marker in expanded for marker in ("*", "?", "[")):
             has_glob = True
             try:

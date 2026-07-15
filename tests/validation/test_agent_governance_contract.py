@@ -275,6 +275,53 @@ class ContractLoadingTests(unittest.TestCase):
 
 
 class ContractSchemaTests(unittest.TestCase):
+    def test_artifact_contract_requires_exact_path_pattern_limits(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        self.assertEqual(
+            {
+                "max_brace_groups": 64,
+                "max_expanded_paths": 1024,
+                "max_pattern_length": 4096,
+            },
+            bundle.artifacts["path_pattern_limits"],
+        )
+
+        cases = (
+            (
+                lambda values: values.pop("path_pattern_limits"),
+                "AGC-SCHEMA-MISSING-FIELD",
+            ),
+            (
+                lambda values: values["path_pattern_limits"].update({"legacy": 1}),
+                "AGC-SCHEMA-UNKNOWN-FIELD",
+            ),
+            (
+                lambda values: values["path_pattern_limits"].update(
+                    {"max_brace_groups": 65}
+                ),
+                "AGC-SCHEMA-CONSTANT",
+            ),
+            (
+                lambda values: values["path_pattern_limits"].update(
+                    {"max_expanded_paths": True}
+                ),
+                "AGC-SCHEMA-CONSTANT",
+            ),
+            (
+                lambda values: values["path_pattern_limits"].update(
+                    {"max_pattern_length": 4097}
+                ),
+                "AGC-SCHEMA-CONSTANT",
+            ),
+        )
+        for mutate, expected in cases:
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
+
+                self.assertIn(expected, codes(validate_fixture(root)))
+
     def test_artifact_profiles_require_unique_ids_sections_and_registered_values(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -349,6 +396,172 @@ class ContractSchemaTests(unittest.TestCase):
                     ),
                 )
                 self.assertIn("AGC-PATH-UNSAFE", codes(validate_fixture(root)))
+
+    def test_brace_expansion_enforces_below_at_and_above_unique_cap(self) -> None:
+        below = "fixture/" + "{a,b}" * 9 + ".md"
+        at_cap = "fixture/" + "{a,b}" * 10 + ".md"
+        above_cap = "fixture/" + "{a,b}" * 11 + ".md"
+
+        self.assertTrue(contract._is_supported_enumerated_pattern(below))
+        self.assertEqual(512, len(contract._expand_braces(below)))
+        self.assertTrue(contract._is_supported_enumerated_pattern(at_cap))
+        self.assertEqual(1024, len(contract._expand_braces(at_cap)))
+        self.assertFalse(contract._is_supported_enumerated_pattern(above_cap))
+        with self.assertRaises(ValueError):
+            contract._expand_braces(above_cap)
+
+    def test_brace_expansion_enforces_below_at_and_above_pattern_length(self) -> None:
+        below = "x" * 4095
+        at_cap = "x" * 4096
+        above_cap = "x" * 4097
+
+        self.assertTrue(contract._is_supported_enumerated_pattern(below))
+        self.assertEqual((below,), contract._expand_braces(below))
+        self.assertTrue(contract._is_supported_enumerated_pattern(at_cap))
+        self.assertEqual((at_cap,), contract._expand_braces(at_cap))
+        self.assertFalse(contract._is_supported_enumerated_pattern(above_cap))
+        with self.assertRaises(ValueError):
+            contract._expand_braces(above_cap)
+
+    def test_brace_expansion_deduplicates_choices_before_cartesian_growth(self) -> None:
+        pattern = "fixture/" + "{a,a}" * 18 + ".md"
+
+        self.assertEqual(
+            ("fixture/" + "a" * 18 + ".md",),
+            contract._expand_braces(pattern),
+        )
+        self.assertTrue(contract._is_supported_enumerated_pattern(pattern))
+
+    def test_brace_expansion_caps_actual_unique_partials_not_choice_product(self) -> None:
+        pattern = "fixture/" + "{a,aa}" * 11 + ".md"
+
+        self.assertEqual(
+            tuple(f"fixture/{'a' * length}.md" for length in range(11, 23)),
+            contract._expand_braces(pattern),
+        )
+        self.assertTrue(contract._is_supported_enumerated_pattern(pattern))
+
+    def test_brace_expansion_rejects_excessive_group_count_without_recursion(self) -> None:
+        at_cap = "fixture/" + "{a,a}" * 64 + ".md"
+        above_cap = "fixture/" + "{a,a}" * 65 + ".md"
+        excessive = "fixture/" + "{a,a}" * 1100 + ".md"
+
+        self.assertEqual(("fixture/" + "a" * 64 + ".md",), contract._expand_braces(at_cap))
+        self.assertTrue(contract._is_supported_enumerated_pattern(at_cap))
+        for pattern in (above_cap, excessive):
+            with self.subTest(groups=pattern.count("{")):
+                self.assertFalse(contract._is_supported_enumerated_pattern(pattern))
+                with self.assertRaises(ValueError):
+                    contract._expand_braces(pattern)
+
+    def test_bounded_brace_policy_is_shared_by_overlap_match_and_inventory(self) -> None:
+        pattern = "fixture/" + "{a,b}" * 11 + ".md"
+
+        self.assertTrue(contract._artifact_patterns_overlap(pattern, "fixture/a.md"))
+        self.assertFalse(contract._path_matches_pattern("fixture/a.md", pattern))
+        with tempfile.TemporaryDirectory() as directory:
+            inventory = contract._registered_paths(pathlib.Path(directory), pattern)
+        self.assertEqual((), inventory.paths)
+        self.assertEqual((), inventory.missing_exact)
+        self.assertTrue(inventory.enumeration_failed)
+
+    def test_contract_and_repository_cli_reject_overlimit_braces_value_free(self) -> None:
+        over_cardinality = "fixture/" + "{a,b}" * 11 + ".md"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+            mutate_yaml(
+                root,
+                "agent-governance-artifacts.yaml",
+                lambda values: values["readme_profiles"][0].update(
+                    {"path_pattern": over_cardinality}
+                ),
+            )
+            findings = validate_fixture(root)
+            matching = [
+                finding
+                for finding in findings
+                if finding.code == "AGC-PATTERN-UNSUPPORTED"
+            ]
+            self.assertEqual(1, len(matching), contract.render_findings(findings))
+            self.assertNotIn(over_cardinality, contract.render_findings(findings))
+
+        excessive_groups = "fixture/" + "{a,a}" * 1100 + ".md"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+            mutate_yaml(
+                root,
+                "agent-governance-artifacts.yaml",
+                lambda values: values["readme_profiles"][0].update(
+                    {"path_pattern": excessive_groups}
+                ),
+            )
+
+            result = CommandLineTests().run_checker_for_root(
+                root,
+                "--mode",
+                "repository",
+                "--section",
+                "harness",
+            )
+
+            self.assertEqual(1, result.returncode)
+            self.assertIn("AGC-PATTERN-UNSUPPORTED", result.stderr)
+            self.assertNotIn("RecursionError", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
+            self.assertNotIn(str(root), result.stderr)
+            self.assertNotIn(excessive_groups, result.stderr)
+
+    def test_contract_and_repository_cli_reject_overlength_pattern_value_free(self) -> None:
+        over_length = "fixture/" + "x" * 4090
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+            mutate_yaml(
+                root,
+                "agent-governance-artifacts.yaml",
+                lambda values: values["readme_profiles"][0].update(
+                    {"path_pattern": over_length}
+                ),
+            )
+            findings = validate_fixture(root)
+            matching = [
+                finding
+                for finding in findings
+                if finding.code == "AGC-PATTERN-UNSUPPORTED"
+            ]
+            self.assertEqual(1, len(matching), contract.render_findings(findings))
+            self.assertNotIn(over_length, contract.render_findings(findings))
+
+        large_bounded_cardinality = (
+            "fixture/" + "{a,b}" * 10 + "x" * 200_000 + ".md"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+            mutate_yaml(
+                root,
+                "agent-governance-artifacts.yaml",
+                lambda values: values["readme_profiles"][0].update(
+                    {"path_pattern": large_bounded_cardinality}
+                ),
+            )
+
+            result = CommandLineTests().run_checker_for_root(
+                root,
+                "--mode",
+                "repository",
+                "--section",
+                "harness",
+            )
+
+            self.assertEqual(1, result.returncode)
+            self.assertIn("AGC-PATTERN-UNSUPPORTED", result.stderr)
+            self.assertNotIn("MemoryError", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
+            self.assertNotIn(str(root), result.stderr)
+            self.assertNotIn(large_bounded_cardinality, result.stderr)
 
     def test_governed_families_require_typed_safe_fields(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
