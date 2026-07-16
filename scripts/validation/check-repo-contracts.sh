@@ -3282,8 +3282,10 @@ section "Script reference integrity"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
+import os
 import pathlib
 import re
+import stat
 import subprocess
 import sys
 
@@ -3304,7 +3306,7 @@ roots = [
         ".pre-commit-config.yaml",
         "docker-compose.yml",
     ]
-    if pathlib.Path(p).exists()
+    if os.path.lexists(p)
 ]
 
 failures: list[str] = []
@@ -3343,46 +3345,207 @@ def allows_deleted_entrypoint_reference(path: pathlib.Path, ref: str) -> bool:
         return False
     return any(is_relative_to(path, root) for root in (*historical_reference_roots, *reference_artifact_roots))
 
-listed = subprocess.run(
-    [
-        "git",
-        "ls-files",
-        "-z",
-        "--cached",
-        "--others",
-        "--exclude-standard",
-        "--",
-        *(root.as_posix() for root in roots),
-    ],
-    capture_output=True,
-    check=False,
-)
-if listed.returncode != 0:
+def git_paths(*arguments: str) -> tuple[pathlib.Path, ...] | None:
+    result = subprocess.run(
+        [
+            "git",
+            "ls-files",
+            "-z",
+            *arguments,
+            "--",
+            *(root.as_posix() for root in roots),
+        ],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return None
+    try:
+        return tuple(
+            pathlib.Path(raw.decode("utf-8", errors="strict"))
+            for raw in result.stdout.split(b"\0")
+            if raw
+        )
+    except UnicodeError:
+        return None
+
+
+tracked = git_paths("--cached")
+untracked = git_paths("--others", "--exclude-standard")
+if tracked is None or untracked is None:
     print("FAIL: unable to enumerate repository script-reference surfaces", file=sys.stderr)
     sys.exit(1)
 
-files = sorted(
-    pathlib.Path(raw.decode("utf-8", errors="strict"))
-    for raw in listed.stdout.split(b"\0")
-    if raw
-)
-for path in files:
-    if path.is_file():
-        if path == pathlib.Path("scripts/validation/check-repo-contracts.sh"):
-            continue
+tracked_set = set(tracked)
+
+
+def is_untracked_python_cache(path: pathlib.Path) -> bool:
+    return path.suffix == ".pyc" and "__pycache__" in path.parts
+
+
+def is_ignored(path: pathlib.Path) -> bool:
+    result = subprocess.run(
+        ["git", "check-ignore", "-q", "--", path.as_posix()],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return result.returncode == 0
+
+
+def untracked_special_paths() -> set[pathlib.Path]:
+    """Find non-regular surfaces Git cannot represent in an untracked listing."""
+
+    discovered: set[pathlib.Path] = set()
+    tracked_prefixes = {
+        parent
+        for path in tracked_set
+        for parent in path.parents
+        if parent != pathlib.Path(".")
+    }
+    pending = list(reversed(roots))
+    while pending:
+        path = pending.pop()
         try:
-            text = path.read_text(errors="ignore")
-        except Exception:
+            metadata = os.lstat(path)
+        except OSError:
             continue
-        for match in pattern.finditer(text):
-            ref = match.group(2)
-            local_target = path.parent / ref
-            root_target = pathlib.Path(ref)
-            if local_target.is_file() or root_target.is_file():
+        if stat.S_ISDIR(metadata.st_mode):
+            if path not in tracked_prefixes and is_ignored(path):
                 continue
-            if allows_deleted_entrypoint_reference(path, ref):
+            try:
+                children = sorted(
+                    (path / name for name in os.listdir(path)),
+                    reverse=True,
+                )
+            except OSError:
+                discovered.add(path)
                 continue
-            failures.append(f"{path}: missing script reference {match.group(0)}")
+            pending.extend(children)
+            continue
+        if (
+            path not in tracked_set
+            and not stat.S_ISREG(metadata.st_mode)
+            and not is_ignored(path)
+        ):
+            discovered.add(path)
+    return discovered
+
+
+files = sorted(
+    tracked_set
+    | {
+        path
+        for path in untracked
+        if path not in tracked_set and not is_untracked_python_cache(path)
+    }
+    | untracked_special_paths()
+)
+
+
+class UnsafeScriptReferenceSurface(Exception):
+    pass
+
+
+def safe_parts(path: pathlib.Path) -> tuple[str, ...]:
+    pure = pathlib.PurePosixPath(path.as_posix())
+    if pure.is_absolute() or not pure.parts or any(
+        part in {"", ".", ".."} for part in pure.parts
+    ):
+        raise UnsafeScriptReferenceSurface
+    return pure.parts
+
+
+def read_confined_regular(path: pathlib.Path) -> str:
+    """lstat then read the same root-confined, non-symlink regular file."""
+
+    parts = safe_parts(path)
+    try:
+        initial = os.lstat(path)
+    except OSError as error:
+        raise UnsafeScriptReferenceSurface from error
+    if not stat.S_ISREG(initial.st_mode):
+        raise UnsafeScriptReferenceSurface
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW
+    file_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK
+    descriptors: list[int] = []
+    try:
+        current = os.open(".", directory_flags)
+        descriptors.append(current)
+        for part in parts[:-1]:
+            current = os.open(part, directory_flags, dir_fd=current)
+            descriptors.append(current)
+        file_descriptor = os.open(parts[-1], file_flags, dir_fd=current)
+        descriptors.append(file_descriptor)
+        opened = os.fstat(file_descriptor)
+        if not stat.S_ISREG(opened.st_mode) or (
+            opened.st_dev,
+            opened.st_ino,
+        ) != (initial.st_dev, initial.st_ino):
+            raise UnsafeScriptReferenceSurface
+        chunks: list[bytes] = []
+        while True:
+            chunk = os.read(file_descriptor, 65_536)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        final = os.fstat(file_descriptor)
+        if (
+            final.st_dev,
+            final.st_ino,
+            final.st_size,
+            final.st_mtime_ns,
+        ) != (
+            opened.st_dev,
+            opened.st_ino,
+            opened.st_size,
+            opened.st_mtime_ns,
+        ):
+            raise UnsafeScriptReferenceSurface
+        return b"".join(chunks).decode("utf-8", errors="ignore")
+    except OSError as error:
+        raise UnsafeScriptReferenceSurface from error
+    finally:
+        for descriptor in reversed(descriptors):
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+
+
+regular_cache: dict[pathlib.Path, bool] = {}
+
+
+def confined_regular_exists(path: pathlib.Path) -> bool:
+    if path not in regular_cache:
+        try:
+            read_confined_regular(path)
+        except UnsafeScriptReferenceSurface:
+            regular_cache[path] = False
+        else:
+            regular_cache[path] = True
+    return regular_cache[path]
+
+
+for path in files:
+    if path == pathlib.Path("scripts/validation/check-repo-contracts.sh"):
+        continue
+    try:
+        text = read_confined_regular(path)
+    except UnsafeScriptReferenceSurface:
+        failures.append("unsafe script-reference surface")
+        continue
+    for match in pattern.finditer(text):
+        ref = match.group(2)
+        local_target = path.parent / ref
+        root_target = pathlib.Path(ref)
+        if confined_regular_exists(local_target) or confined_regular_exists(root_target):
+            continue
+        if allows_deleted_entrypoint_reference(path, ref):
+            continue
+        failures.append(f"{path}: missing script reference {match.group(0)}")
 
 if failures:
     for failure in failures:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import os
 import pathlib
 import re
 import subprocess
@@ -232,6 +233,70 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             )
             self.assertEqual(1, result.returncode)
             self.assertIn("missing-cache.sh", result.stderr)
+
+    def test_script_reference_scan_rejects_unsafe_files_without_dereference(
+        self,
+    ) -> None:
+        source = REPO_CONTRACT.read_text(encoding="utf-8")
+        start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"
+        block = source.split(start, 1)[1].split(
+            "\nPY\n  failures=$((failures + 1))",
+            1,
+        )[0]
+
+        with self.subTest("external-symlink"), self._script_reference_fixture() as root:
+            docs = root / "docs"
+            docs.mkdir()
+            sentinel = root / "external-sentinel.md"
+            sentinel.write_text(
+                "Run scripts/validation/missing-external-sentinel.sh\n",
+                encoding="utf-8",
+            )
+            (docs / "linked.md").symlink_to(sentinel)
+            subprocess.run(["git", "add", "docs/linked.md"], cwd=root, check=True)
+            result = subprocess.run(
+                [sys.executable, "-c", block],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(1, result.returncode)
+            rendered = result.stdout + result.stderr
+            self.assertIn("unsafe script-reference surface", rendered)
+            self.assertNotIn("missing-external-sentinel.sh", rendered)
+
+        with self.subTest("broken-symlink"), self._script_reference_fixture() as root:
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "broken.md").symlink_to(root / "missing-sentinel.md")
+            subprocess.run(["git", "add", "docs/broken.md"], cwd=root, check=True)
+            result = subprocess.run(
+                [sys.executable, "-c", block],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(1, result.returncode)
+            rendered = result.stdout + result.stderr
+            self.assertIn("unsafe script-reference surface", rendered)
+            self.assertNotIn("missing-sentinel.md", rendered)
+
+        with self.subTest("fifo"), self._script_reference_fixture() as root:
+            docs = root / "docs"
+            docs.mkdir()
+            os.mkfifo(docs / "pipe.md")
+            result = subprocess.run(
+                [sys.executable, "-c", block],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=5,
+            )
+            self.assertEqual(1, result.returncode)
+            self.assertIn("unsafe script-reference surface", result.stderr)
 
     def test_typed_harness_replacement_covers_removed_aggregate_routes(self) -> None:
         contract_text = (

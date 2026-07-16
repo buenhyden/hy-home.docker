@@ -216,6 +216,7 @@ Redaction boundary:
 | 2026-07-16 | T-AGHC-005 self-review | Fresh implementation agent | Focused and authoritative governance/provider/evaluator/routing suites, typed repository mode, evaluator markers, provider sync, hook parity, metadata, lifecycle, traceability, alignment, aggregate, static checks, and diff hygiene pass. Direct all-files pre-commit was not run because Task 6 owns the controlled wrapper and sanitized evidence. Independent specification and quality reviews remain required before closure. |
 | 2026-07-16 | T-AGHC-005 independent review | Independent specification and quality reviewers | Specification review returned Critical 0, Important 2, Minor 0; quality review returned Critical 0, Important 7, Minor 0. The union identified the non-executable stable wrapper, missing combined CLI flag, unrestricted or sensitive evaluator input, non-exact fixture calibration, selector self-coverage, over-broad cache exclusion, and missing typed replacement coverage for the harness validator and navigation contracts. |
 | 2026-07-16 | T-AGHC-005 review remediation | Fresh remediation agent | Added fail-closed synthetic-only same-FD input handling, value-free argument failures, exact section-bound fixtures/regressions/thresholds, a directly executable combined-marker wrapper, complete coupled selectors, Git-aware narrow cache exclusion, and typed PR/README/harness mutations. Three Foundation active-consumer entries were added for the evaluator's bounded canonical path references without changing lifecycle identity, status, disposition, verdict, or enforcement. Initial evaluator RED produced five failures and nine errors across twelve methods; routing RED produced 31 failures and one invocation error across seven methods. Focused 21/21, authoritative 187/187, contract/provider gates, and aggregate are GREEN. Independent specification and quality re-reviews remain required before Task closure. |
+| 2026-07-16 | T-AGHC-005 second review remediation | Fresh remediation agent | A terminal review returned Critical 0, Important 3, Minor 0: allowlisted evaluator files could still be untracked or use prohibited dotfile classes and composite environment credentials, fixture tables admitted unknown or reordered fields, and the aggregate script-reference scan could dereference tracked symlinks or silently skip broken and nonregular surfaces. The remediation binds every file input to one stage-zero regular Git index entry and its exact blob, normalizes prohibited path components including dotfiles, recognizes bounded AWS, database, and OAuth credential keys, requires the exact ordered ten-field fixture table, and uses lstat plus a root-confined same-FD non-symlink regular-file read. Regular binary scanning remains byte-safe and compatible; tracked Python cache/docs remain checked while only real untracked cache artifacts are excluded. Initial RED produced thirteen expected failures and zero errors across twenty-one methods. Focused 21/21 and authoritative 190/190 are GREEN; independent re-reviews remain required. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -657,6 +658,19 @@ T-AGHC-005 review-remediation verification:
 | Foundation lifecycle reconciliation | exact consumers only; no lifecycle-state mutation | three evaluator consumers added; promoted violations 0; impacted 87/0 with configured Task-directory advisory | Pass |
 | Graphify refresh and corroboration | advisory evidence source-corroborated and generated output restored | 24,891 nodes; 28,514 edges; 1,602 communities; 432 inferred edges and 70 thin communities corroborated against tracked Stage 00/03/04, evaluator, validator, hooks, and CI; generated graph files restored | Pass |
 
+T-AGHC-005 second review-remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| terminal independent review | identify residual evaluator, fixture-schema, and aggregate-reference gaps | C0/I3/M0 | Pass |
+| reviewer-prescribed RED | all three gaps reproduce without traceback or value disclosure | 21 methods; 13 expected failures; 0 errors | Pass |
+| focused evaluator and aggregate-reference suite | tracked valid input passes; untracked, prohibited, composite-credential, table-drift, symlink, broken-symlink, and FIFO cases fail closed | 21/21 in 1.599s | Pass |
+| authoritative governance/provider/renderer/routing/evaluator suites | no regression | 190/190 in 262.497s | Pass |
+| exact evaluator wrapper and typed repository gates | both evaluator markers pass; contract, repository, and provider projection remain exact | fixtures 8/8; regressions 10/10; contract `3/14/22/3/0`; repository all 0; providers 3 / drift 0 | Pass |
+| aggregate script-reference integrity | regular byte inputs remain compatible; tracked symlink/broken and untracked FIFO fail value-free; tracked cache/docs remain active | adversarial routing 7/7; aggregate `failures=0` | Pass |
+| Graphify refresh and corroboration | advisory graph evidence is source-corroborated and generated output restored | 24,900 nodes; 28,537 edges; 1,601 communities; 432 inferred edges, 16,471 isolated nodes, and 70 omitted thin communities corroborated against tracked Stage 00/03/04, Spec 132, evaluator, aggregate scanner, and focused tests; generated graph files restored | Pass |
+| protected boundaries | no runtime, Compose, deployment, secret, credential, remote, model-call, all-files QA, or new required CI-job mutation | only evaluator, aggregate scanner, focused tests, Task evidence, and progress memory changed | Pass |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI
@@ -767,7 +781,8 @@ with owner, reason, and destination.
 | T-AGHC-004 second specification remediation | `fix(providers): bind model and hook semantics` | `de7e6abb` | Claude native effort, bounded Codex Stop retry, exact fallback authority, and authenticated cutoff evidence GREEN; terminal specification PASS and quality APPROVED C0/I0/M0 |
 | T-AGHC-004 terminal review evidence | `docs(task): record provider adapter review closure` | this logical commit | remediation-delta and full-range specification PASS and quality APPROVED C0/I0/M0 |
 | T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | `44cd5b21` | implementation GREEN; independent review found seven unique Important gaps |
-| T-AGHC-005 independent-review remediation | `fix(harness): close evaluator and routing gaps` | pending | exact synthetic evaluator, wrapper, selector, cache, and typed replacement boundaries GREEN; independent re-reviews pending |
+| T-AGHC-005 independent-review remediation | `fix(harness): close evaluator and routing gaps` | `e7d63c23` | exact synthetic evaluator, wrapper, selector, cache, and typed replacement boundaries GREEN; independent re-reviews found three residual Important gaps |
+| T-AGHC-005 second review remediation | `fix(harness): confine synthetic evidence inputs` | this logical commit | exact tracked-blob input, fixture-field schema, and confined aggregate-reference boundaries GREEN; independent re-reviews pending |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |
 | Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | pending | pending |
 | Closure | `docs(execution): close agent governance convergence` | pending | pending |

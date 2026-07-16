@@ -8,6 +8,7 @@ import os
 import pathlib
 import re
 import stat
+import subprocess
 import sys
 from dataclasses import dataclass
 from typing import Sequence
@@ -29,13 +30,14 @@ SYNTHETIC_INPUT_ROOTS = (
 MAX_SYNTHETIC_INPUT_BYTES = 1_048_576
 PROHIBITED_INPUT_PATH_PARTS = frozenset(
     {
-        ".env",
+        "env",
         "auth",
         "credential",
         "credentials",
         "diagnostic",
         "diagnostics",
         "history",
+        "histories",
         "log",
         "logs",
         "secret",
@@ -43,7 +45,12 @@ PROHIBITED_INPUT_PATH_PARTS = frozenset(
         "shell-history",
         "token",
         "tokens",
+        "oauth",
     }
+)
+PROHIBITED_INPUT_PATH_VARIANT = re.compile(
+    r"^(?:env|oauth|auth|credentials?|tokens?|logs?|history|histories|shellhistory|secrets?|diagnostics?)"
+    r"(?:rc|file|files|data|dump|backup|store|stores|cache|caches)?$"
 )
 
 
@@ -98,7 +105,7 @@ class RegressionResult:
 
 COMMON_BLOCK_PATTERNS: tuple[tuple[str, str], ...] = (
     (
-        r'''(?ix)(?:["']?(?:password|passwd|token|secret|private[_-]?key|credential)["']?)\s*[:=]\s*(?:"[^"]{1,4096}"|'[^']{1,4096}'|[^\s,}\]]+)''',
+        r"""(?ix)(?<![A-Za-z0-9_])(?:["']?(?:password|passwd|token|secret|private[._-]?key|credential|aws[._-]?access[._-]?key[._-]?id|aws[._-]?secret[._-]?access[._-]?key|database[._-]?url|oauth[._-]?client[._-]?id)["']?)\s*[:=]\s*(?:"[^"]{1,4096}"|'[^']{1,4096}'|[^\s,}\]]+)""",
         "AOE-BLOCK-SENSITIVE-KV",
     ),
     (r"-----BEGIN [A-Z ]*PRIVATE KEY-----", "AOE-BLOCK-PRIVATE-KEY"),
@@ -459,28 +466,95 @@ def _contains_sensitive_content(text: str) -> bool:
 
 def _safe_input_parts(path: pathlib.Path) -> tuple[str, ...]:
     pure = pathlib.PurePosixPath(path.as_posix())
-    if pure.is_absolute() or not pure.parts or any(part in {"", ".", ".."} for part in pure.parts):
+    if (
+        pure.is_absolute()
+        or not pure.parts
+        or any(part in {"", ".", ".."} for part in pure.parts)
+    ):
         raise ValueError("AOE-INPUT-PATH-REJECTED")
     allowed = any(
         pure == root or pure.is_relative_to(root) for root in SYNTHETIC_INPUT_ROOTS
     )
     if not allowed:
         raise ValueError("AOE-INPUT-PATH-REJECTED")
-    normalized_parts = {
-        token
-        for part in pure.parts
-        for token in re.split(r"[^a-z0-9]+", part.casefold())
-        if token
-    }
-    if normalized_parts & PROHIBITED_INPUT_PATH_PARTS:
-        raise ValueError("AOE-INPUT-CLASS-REJECTED")
+    for part in pure.parts:
+        normalized_tokens = tuple(
+            token for token in re.split(r"[^a-z0-9]+", part.casefold()) if token
+        )
+        if set(normalized_tokens) & PROHIBITED_INPUT_PATH_PARTS or any(
+            PROHIBITED_INPUT_PATH_VARIANT.fullmatch(token)
+            for token in normalized_tokens
+        ):
+            raise ValueError("AOE-INPUT-CLASS-REJECTED")
     return pure.parts
+
+
+def _tracked_regular_object_id(
+    root: pathlib.Path, relative: pathlib.PurePosixPath
+) -> str:
+    """Return the exact stage-zero Git object for a reviewed regular input."""
+
+    try:
+        result = subprocess.run(
+            [
+                "git",
+                "-C",
+                os.fspath(root),
+                "ls-files",
+                "--stage",
+                "-z",
+                "--",
+                relative.as_posix(),
+            ],
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            check=False,
+        )
+    except OSError as error:
+        raise ValueError("AOE-INPUT-TRACKING-REJECTED") from error
+    entries = tuple(entry for entry in result.stdout.split(b"\0") if entry)
+    if result.returncode != 0 or len(entries) != 1:
+        raise ValueError("AOE-INPUT-TRACKING-REJECTED")
+    try:
+        metadata, found_path = entries[0].split(b"\t", 1)
+        mode, object_id, stage = metadata.decode("ascii", errors="strict").split()
+        expected_path = relative.as_posix().encode("utf-8", errors="strict")
+    except (UnicodeError, ValueError) as error:
+        raise ValueError("AOE-INPUT-TRACKING-REJECTED") from error
+    if (
+        mode not in {"100644", "100755"}
+        or stage != "0"
+        or found_path != expected_path
+        or not re.fullmatch(r"[0-9a-fA-F]{40,64}", object_id)
+    ):
+        raise ValueError("AOE-INPUT-TRACKING-REJECTED")
+    return object_id.casefold()
+
+
+def _matches_tracked_object(
+    root: pathlib.Path, payload: bytes, expected_object_id: str
+) -> bool:
+    """Bind bytes read from the safe descriptor to the reviewed Git index blob."""
+
+    try:
+        result = subprocess.run(
+            ["git", "-C", os.fspath(root), "hash-object", "--stdin"],
+            input=payload,
+            capture_output=True,
+            check=False,
+        )
+        actual = result.stdout.decode("ascii", errors="strict").strip().casefold()
+    except (OSError, UnicodeError):
+        return False
+    return result.returncode == 0 and actual == expected_object_id
 
 
 def _read_synthetic_path(root: pathlib.Path, path: pathlib.Path) -> str:
     """Read an allowlisted synthetic input without following any symlink."""
 
     parts = _safe_input_parts(path)
+    relative = pathlib.PurePosixPath(*parts)
+    expected_object_id = _tracked_regular_object_id(root, relative)
     directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW
     file_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK
     descriptors: list[int] = []
@@ -493,7 +567,10 @@ def _read_synthetic_path(root: pathlib.Path, path: pathlib.Path) -> str:
         file_descriptor = os.open(parts[-1], file_flags, dir_fd=current)
         descriptors.append(file_descriptor)
         metadata = os.fstat(file_descriptor)
-        if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > MAX_SYNTHETIC_INPUT_BYTES:
+        if (
+            not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_size > MAX_SYNTHETIC_INPUT_BYTES
+        ):
             raise ValueError("AOE-INPUT-TYPE-REJECTED")
         chunks: list[bytes] = []
         remaining = MAX_SYNTHETIC_INPUT_BYTES + 1
@@ -506,6 +583,8 @@ def _read_synthetic_path(root: pathlib.Path, path: pathlib.Path) -> str:
         payload = b"".join(chunks)
         if len(payload) > MAX_SYNTHETIC_INPUT_BYTES:
             raise ValueError("AOE-INPUT-SIZE-REJECTED")
+        if not _matches_tracked_object(root, payload, expected_object_id):
+            raise ValueError("AOE-INPUT-TRACKING-REJECTED")
         try:
             return payload.decode("utf-8", errors="strict")
         except UnicodeError as error:
@@ -560,7 +639,16 @@ def _typed_fixture_thresholds(root: pathlib.Path) -> dict[str, float]:
 
 def _table_fields(section: str) -> dict[str, str]:
     fields: dict[str, str] = {}
-    for line in section.splitlines():
+    lines = section.splitlines()
+    try:
+        table_start = lines.index("| Field | Value |")
+    except ValueError:
+        return fields
+    for line in lines[table_start + 1 :]:
+        if not line.startswith("|"):
+            if fields:
+                break
+            continue
         match = re.fullmatch(r"\| ([^|]+?) \| (.*?) \|", line)
         if match is None or match.group(1) in {"Field", "---"}:
             continue
@@ -571,15 +659,30 @@ def _table_fields(section: str) -> dict[str, str]:
     return fields
 
 
+CATALOG_FIELD_ORDER = (
+    "Surface",
+    "Input Scenario",
+    "Required Context",
+    "Expected Output",
+    "Scoring Criteria",
+    "Block Conditions",
+    "Evidence",
+    "Regression Cases",
+    "Block Codes",
+    "Calibration",
+)
+
+
 def _catalog_sections(text: str) -> tuple[dict[str, tuple[str, str]], bool]:
-    matches = list(
-        re.finditer(r"(?m)^### (AOE-[A-Z]+-[0-9]{3}): ([^\n]+)\s*$", text)
-    )
+    matches = list(re.finditer(r"(?m)^### (AOE-[A-Z]+-[0-9]{3}): ([^\n]+)\s*$", text))
     sections: dict[str, tuple[str, str]] = {}
     duplicate = False
     for index, match in enumerate(matches):
         fixture_id = match.group(1)
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        following_h2 = re.search(r"(?m)^## [^#]", text[match.end() : end])
+        if following_h2 is not None:
+            end = match.end() + following_h2.start()
         if fixture_id in sections:
             duplicate = True
         else:
@@ -627,6 +730,8 @@ def check_fixtures(
     for fixture in FIXTURES.values():
         label, section = sections.get(fixture.fixture_id, ("", ""))
         fields = _table_fields(section)
+        if tuple(fields) != CATALOG_FIELD_ORDER:
+            failures.append("AOE-CATALOG-FIELD-SCHEMA-MISMATCH")
         if label != fixture.label:
             failures.append("AOE-CATALOG-METADATA-MISMATCH")
         if fields.get("Surface") != fixture.surface:
@@ -669,9 +774,12 @@ def check_fixtures(
             if not regression_failures
             else "regressions_check=fail"
         )
-    return 0 if (not run_fixture_check or not failures) and (
-        not run_regression_check or not regression_failures
-    ) else 1
+    return (
+        0
+        if (not run_fixture_check or not failures)
+        and (not run_regression_check or not regression_failures)
+        else 1
+    )
 
 
 class _SafeArgumentParser(argparse.ArgumentParser):
@@ -711,7 +819,13 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
     check_mode = args.check_fixtures or args.check_regressions
-    score_mode = bool(args.fixture or args.output or args.stdin or args.evidence or args.classification)
+    score_mode = bool(
+        args.fixture
+        or args.output
+        or args.stdin
+        or args.evidence
+        or args.classification
+    )
     if args.list and (check_mode or score_mode):
         print("FAIL: AOE-ARGUMENTS-INVALID", file=sys.stderr)
         return 2
@@ -729,7 +843,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             run_fixture_check=args.check_fixtures,
             run_regression_check=args.check_regressions,
         )
-    if not args.fixture or not args.classification or (not args.output and not args.stdin):
+    if (
+        not args.fixture
+        or not args.classification
+        or (not args.output and not args.stdin)
+    ):
         print("FAIL: AOE-ARGUMENTS-INVALID", file=sys.stderr)
         return 2
     try:

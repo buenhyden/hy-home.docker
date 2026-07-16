@@ -128,7 +128,9 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         self.assertEqual(0, fixtures.returncode, fixtures.stdout + fixtures.stderr)
         self.assertIn("fixtures_check=pass", fixtures.stdout)
         self.assertNotIn("regressions_check=", fixtures.stdout)
-        self.assertEqual(0, regressions.returncode, regressions.stdout + regressions.stderr)
+        self.assertEqual(
+            0, regressions.returncode, regressions.stdout + regressions.stderr
+        )
         self.assertNotIn("fixtures_check=", regressions.stdout)
         self.assertIn("regressions_check=pass", regressions.stdout)
         self.assertEqual(0, combined.returncode, combined.stdout + combined.stderr)
@@ -151,8 +153,9 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
     def test_catalog_sections_are_exact_and_section_bound(self) -> None:
         evaluator = load_eval_module()
         mutations = {
-            "duplicate": lambda text: text
-            + "\n### AOE-DOC-001: Stage Reference Update\n",
+            "duplicate": lambda text: (
+                text + "\n### AOE-DOC-001: Stage Reference Update\n"
+            ),
             "swapped-label": lambda text: text.replace(
                 "### AOE-DOC-001: Stage Reference Update",
                 "### AOE-DOC-001: Provider Surface Parity",
@@ -171,13 +174,44 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 "`AOE-BLOCK-REFERENCE-AUTHORITY`",
                 "`AOE-BLOCK-LIVE-STATE`",
             ),
+            "unexpected-field": lambda text: text.replace(
+                "| Surface | docs/90.references/** |",
+                "| Surface | docs/90.references/** |\n| Unexpected Field | value |",
+                1,
+            ),
+            "duplicate-field": lambda text: text.replace(
+                "| Surface | docs/90.references/** |",
+                "| Surface | docs/90.references/** |\n| Surface | docs/90.references/** |",
+                1,
+            ),
+            "missing-field": lambda text: text.replace(
+                "| Input Scenario | User asks to add or continue a source-backed research, audit, or data reference. |\n",
+                "",
+                1,
+            ),
+            "moved-field": lambda text: text.replace(
+                "| Surface | docs/90.references/** |\n",
+                "",
+                1,
+            ).replace(
+                "| Calibration | `CAL-AOE-DOC-001`; pass threshold `0.50`. |",
+                "| Calibration | `CAL-AOE-DOC-001`; pass threshold `0.50`. |\n| Surface | docs/90.references/** |",
+                1,
+            ),
+            "swapped-fields": lambda text: text.replace(
+                "| Surface | docs/90.references/** |\n| Input Scenario | User asks to add or continue a source-backed research, audit, or data reference. |",
+                "| Input Scenario | User asks to add or continue a source-backed research, audit, or data reference. |\n| Surface | docs/90.references/** |",
+                1,
+            ),
         }
         for label, mutate in mutations.items():
             with self.subTest(label=label):
                 holder, root = self.catalog_fixture()
                 with holder:
                     path = root / CATALOG.relative_to(ROOT)
-                    path.write_text(mutate(path.read_text(encoding="utf-8")), encoding="utf-8")
+                    path.write_text(
+                        mutate(path.read_text(encoding="utf-8")), encoding="utf-8"
+                    )
                     self.assertEqual(1, evaluator.check_fixtures(root))
 
     def test_catalog_thresholds_are_bound_to_typed_contract(self) -> None:
@@ -209,6 +243,26 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 ["--stdin"],
                 f'{password_key}: "synthetic-value"',
             ),
+            (
+                "quoted-json-aws-access-key",
+                ["--stdin"],
+                '{"AWS_ACCESS_KEY_ID": "synthetic-value"}',
+            ),
+            (
+                "env-aws-secret-key",
+                ["--stdin"],
+                "AWS_SECRET_ACCESS_KEY='synthetic-value'",
+            ),
+            (
+                "quoted-yaml-database-url",
+                ["--stdin"],
+                'DATABASE_URL: "synthetic-value"',
+            ),
+            (
+                "quoted-env-oauth-client",
+                ["--stdin"],
+                "'OAUTH_CLIENT_ID'='synthetic-value'",
+            ),
         )
         for label, source_args, input_text in cases:
             with self.subTest(label=label):
@@ -233,10 +287,16 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         evaluator = load_eval_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
             allowed = root / "tests/fixtures/agent-output-eval"
             allowed.mkdir(parents=True)
             safe = allowed / "synthetic.md"
             safe.write_text("synthetic fixture", encoding="utf-8")
+            subprocess.run(
+                ["git", "add", "tests/fixtures/agent-output-eval/synthetic.md"],
+                cwd=root,
+                check=True,
+            )
             self.assertEqual(
                 "synthetic fixture",
                 evaluator._read_synthetic_path(
@@ -250,30 +310,103 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             os.mkfifo(allowed / "pipe.md")
             prohibited = allowed / "auth-token.log"
             prohibited.write_text("value", encoding="utf-8")
+            (allowed / ".env.local").write_text("value", encoding="utf-8")
             for path in (
                 pathlib.Path("outside.md"),
                 pathlib.Path("tests/fixtures/agent-output-eval/linked.md"),
                 pathlib.Path("tests/fixtures/agent-output-eval/pipe.md"),
                 pathlib.Path("tests/fixtures/agent-output-eval/auth-token.log"),
+                pathlib.Path("tests/fixtures/agent-output-eval/.env.local"),
+                pathlib.Path("tests/fixtures/agent-output-eval/oauth-client.json"),
+                pathlib.Path("tests/fixtures/agent-output-eval/.auth.yaml"),
+                pathlib.Path("tests/fixtures/agent-output-eval/credentials.backup"),
+                pathlib.Path("tests/fixtures/agent-output-eval/token-store.txt"),
+                pathlib.Path("tests/fixtures/agent-output-eval/evaluation.log"),
+                pathlib.Path("tests/fixtures/agent-output-eval/shell-history.txt"),
+                pathlib.Path("tests/fixtures/agent-output-eval/.oauthrc"),
+                pathlib.Path("tests/fixtures/agent-output-eval/.authrc"),
+                pathlib.Path("tests/fixtures/agent-output-eval/.credentialstore"),
+                pathlib.Path("tests/fixtures/agent-output-eval/.tokenfile"),
+                pathlib.Path("tests/fixtures/agent-output-eval/.logdata"),
+                pathlib.Path("tests/fixtures/agent-output-eval/.historybackup"),
             ):
                 with self.subTest(path=path), self.assertRaises(ValueError):
                     evaluator._read_synthetic_path(root, path)
+
+    def test_repo_input_reader_requires_git_tracked_regular_input(self) -> None:
+        evaluator = load_eval_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            allowed = root / "tests/fixtures/agent-output-eval"
+            allowed.mkdir(parents=True)
+            relative = pathlib.Path(
+                "tests/fixtures/agent-output-eval/reviewed-synthetic.md"
+            )
+            candidate = root / relative
+            candidate.write_text("reviewed synthetic fixture", encoding="utf-8")
+
+            with self.assertRaises(ValueError):
+                evaluator._read_synthetic_path(root, relative)
+
+            subprocess.run(["git", "add", relative.as_posix()], cwd=root, check=True)
+            self.assertEqual(
+                "reviewed synthetic fixture",
+                evaluator._read_synthetic_path(root, relative),
+            )
+
+    def test_composite_environment_credentials_are_rejected_in_bounded_formats(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive_cases = (
+            '{"AWS_ACCESS_KEY_ID": "synthetic-value"}',
+            "AWS-SECRET-ACCESS-KEY='synthetic-value'",
+            'DATABASE_URL: "synthetic-value"',
+            "'oauth_client_id' = 'synthetic-value'",
+        )
+        for payload in sensitive_cases:
+            with self.subTest(payload=payload.split("synthetic", 1)[0]):
+                self.assertTrue(evaluator._contains_sensitive_content(payload))
+
+        self.assertFalse(
+            evaluator._contains_sensitive_content(
+                "NOT_AWS_ACCESS_KEY_ID documents a synthetic field name"
+            )
+        )
 
     def test_combined_input_masking_is_rejected_without_values(self) -> None:
         evaluator = load_eval_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
             allowed = root / "tests/fixtures/agent-output-eval"
             allowed.mkdir(parents=True)
             first = allowed / "synthetic-output.md"
             second = allowed / "synthetic-evidence.md"
             first.write_text('Stage 00 contract evidence password: "', encoding="utf-8")
             second.write_text('combined-sensitive-value"', encoding="utf-8")
+            subprocess.run(
+                [
+                    "git",
+                    "add",
+                    "tests/fixtures/agent-output-eval/synthetic-output.md",
+                    "tests/fixtures/agent-output-eval/synthetic-evidence.md",
+                ],
+                cwd=root,
+                check=True,
+            )
             with self.assertRaises(ValueError) as context:
                 evaluator._read_synthetic_inputs(
                     root,
-                    pathlib.Path("tests/fixtures/agent-output-eval/synthetic-output.md"),
-                    (pathlib.Path("tests/fixtures/agent-output-eval/synthetic-evidence.md"),),
+                    pathlib.Path(
+                        "tests/fixtures/agent-output-eval/synthetic-output.md"
+                    ),
+                    (
+                        pathlib.Path(
+                            "tests/fixtures/agent-output-eval/synthetic-evidence.md"
+                        ),
+                    ),
                 )
             self.assertNotIn("combined-sensitive-value", str(context.exception))
 
