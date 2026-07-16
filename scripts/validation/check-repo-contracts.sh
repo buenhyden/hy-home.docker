@@ -3483,8 +3483,20 @@ def safe_parts(path: pathlib.Path) -> tuple[str, ...]:
 total_reference_bytes = 0
 
 
+def metadata_tuple(metadata: os.stat_result) -> tuple[int, int, int, int, int]:
+    """Return the immutable identity and mutation tuple for one descriptor."""
+
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_size,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
+    )
+
+
 def open_confined_regular(
-    path: pathlib.Path, *, enforce_size: bool = False
+    path: pathlib.Path, *, size_limit: int | None = None
 ) -> tuple[list[int], int, os.stat_result]:
     """lstat then read the same root-confined, non-symlink regular file."""
 
@@ -3494,7 +3506,7 @@ def open_confined_regular(
     except OSError as error:
         raise UnsafeScriptReferenceSurface from error
     if not stat.S_ISREG(initial.st_mode) or (
-        enforce_size and initial.st_size > MAX_REFERENCE_FILE_BYTES
+        size_limit is not None and initial.st_size > size_limit
     ):
         raise UnsafeScriptReferenceSurface
     directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW
@@ -3511,8 +3523,8 @@ def open_confined_regular(
         opened = os.fstat(file_descriptor)
         if (
             not stat.S_ISREG(opened.st_mode)
-            or (enforce_size and opened.st_size > MAX_REFERENCE_FILE_BYTES)
-            or (opened.st_dev, opened.st_ino) != (initial.st_dev, initial.st_ino)
+            or (size_limit is not None and opened.st_size > size_limit)
+            or metadata_tuple(opened) != metadata_tuple(initial)
         ):
             raise UnsafeScriptReferenceSurface
         return descriptors, file_descriptor, opened
@@ -3529,14 +3541,18 @@ def read_confined_regular(path: pathlib.Path) -> str:
     """Read at most the immutable per-file and aggregate reference budgets."""
 
     global total_reference_bytes
+    aggregate_remaining = MAX_REFERENCE_TOTAL_BYTES - total_reference_bytes
+    if aggregate_remaining < 0:
+        raise UnsafeScriptReferenceSurface
+    read_limit = min(MAX_REFERENCE_FILE_BYTES, aggregate_remaining)
     descriptors, file_descriptor, opened = open_confined_regular(
-        path, enforce_size=True
+        path, size_limit=read_limit
     )
     try:
-        if opened.st_size > MAX_REFERENCE_FILE_BYTES:
+        if opened.st_size > read_limit:
             raise UnsafeScriptReferenceSurface
         chunks: list[bytes] = []
-        remaining = MAX_REFERENCE_FILE_BYTES + 1
+        remaining = read_limit + 1
         while remaining > 0:
             chunk = os.read(file_descriptor, min(65_536, remaining))
             if not chunk:
@@ -3544,22 +3560,10 @@ def read_confined_regular(path: pathlib.Path) -> str:
             chunks.append(chunk)
             remaining -= len(chunk)
         payload = b"".join(chunks)
-        if len(payload) > MAX_REFERENCE_FILE_BYTES:
+        if len(payload) > read_limit:
             raise UnsafeScriptReferenceSurface
         final = os.fstat(file_descriptor)
-        if (
-            final.st_dev,
-            final.st_ino,
-            final.st_size,
-            final.st_mtime_ns,
-        ) != (
-            opened.st_dev,
-            opened.st_ino,
-            opened.st_size,
-            opened.st_mtime_ns,
-        ):
-            raise UnsafeScriptReferenceSurface
-        if total_reference_bytes + len(payload) > MAX_REFERENCE_TOTAL_BYTES:
+        if metadata_tuple(final) != metadata_tuple(opened):
             raise UnsafeScriptReferenceSurface
         total_reference_bytes += len(payload)
         return payload.decode("utf-8", errors="ignore")

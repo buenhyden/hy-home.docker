@@ -3456,9 +3456,9 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
             "Pre-commit use is approved for agents.",
             "Agents are permitted to execute pre-commit locally.",
             "Pre-commit use is not prohibited for local agents.",
-            "Pre-commit is prohibited in CI; however, agents may invoke it locally.",
-            "Pre-commit is prohibited in CI, yet agents can use it locally.",
-            "Although pre-commit is prohibited in CI, agents should run it locally.",
+            "Pre-commit is prohibited in CI; however, agents may invoke pre-commit locally.",
+            "Pre-commit is prohibited in CI, yet agents can use pre-commit locally.",
+            "Pre-commit is prohibited in CI although agents should run pre-commit locally.",
         )
         for guidance in bypasses:
             self.assertTrue(
@@ -3495,6 +3495,7 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
             "Agents can't use pre-commit directly.",
             "Pre-commit isn't allowed for local QA.",
             "Pre-commit is prohibited; tests may run locally.",
+            "Pre-commit is prohibited in CI; however, agents may invoke it locally.",
             "Agents use scripts/validation/run-agent-precommit-all-files.sh for approved all-files QA.",
         )
         for guidance in safe_guidance:
@@ -3516,6 +3517,47 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
                 bundle = contract.load_contract_bundle(root)
                 observed = codes(contract.validate_repository(root, bundle, "harness"))
                 self.assertNotIn("AGC-REPOSITORY-HARNESS-SEMANTICS", observed)
+
+    def test_precommit_guidance_uses_clause_local_bounded_semantics(self) -> None:
+        unsafe_guidance = (
+            "For pre-commit, run -a locally.",
+            "pre-commit --config policy.yaml run --all-files",
+            "pre-commit --config=policy.yaml run --all-files",
+            "python3 -I -m pre_commit --config policy.yaml run --all-files",
+            "Agents execute pre_commit for local QA.",
+            "Pre-commit may be used by local agents.",
+            "Pre-commit is allowed for agents.",
+            "Pre-commit execution is authorized for local QA.",
+            "Pre-commit isn't prohibited for local agents.",
+            "Pre-commit isn't forbidden for local agents.",
+            "Use scripts/validation/run-agent-precommit-all-files.sh, pre-commit isn't prohibited.",
+        )
+        safe_guidance = (
+            "Pre-commit is prohibited. Agents may run it locally.",
+            "Pre-commit is forbidden; agents may execute it locally.",
+            "Pre-commit is prohibited in CI; however, agents may invoke it locally.",
+            "Agents can't use pre-commit directly.",
+            "Agents won't run pre-commit directly.",
+            "Agents shan't invoke pre-commit directly.",
+            "Agents shouldn't execute pre-commit directly.",
+            "Agents don't run pre-commit directly.",
+            "Pre-commit isn't allowed for agents.",
+            "Pre-commit aren't authorized for local use.",
+            "Use scripts/validation/run-agent-precommit-all-files.sh for approved QA.",
+        )
+
+        self.assertEqual(
+            ("for pre-commit run -a locally",),
+            contract._normalized_guidance_clauses("For pre-commit, run -a locally."),
+        )
+        for guidance in unsafe_guidance:
+            with self.subTest(kind="unsafe", guidance=guidance):
+                self.assertTrue(contract._has_direct_agent_precommit_guidance(guidance))
+        for guidance in safe_guidance:
+            with self.subTest(kind="safe", guidance=guidance):
+                self.assertFalse(
+                    contract._has_direct_agent_precommit_guidance(guidance)
+                )
 
 
 if __name__ == "__main__":

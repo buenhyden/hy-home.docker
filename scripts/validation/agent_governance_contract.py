@@ -56,25 +56,37 @@ EXPECTED_PROVIDER_COUNT = 3
 MAX_BRACE_GROUPS = 64
 MAX_EXPANDED_PATHS = 1024
 MAX_PATTERN_LENGTH = 4096
-_PRECOMMIT_TOOL = re.compile(
-    r"(?:\bpre-commit\b|\bpre_commit\b|"
-    r"\bpython(?:\s+--?[a-z0-9][\w-]*(?:=[^\s]+)?){0,4}\s+-m\s+pre_commit\b)"
+_PRECOMMIT_OPTION_NAME = r"--?[a-z0-9][\w-]*"
+_PRECOMMIT_OPTION_VALUE = r"[^\s,;]+"
+_PRECOMMIT_OPTION = (
+    rf"{_PRECOMMIT_OPTION_NAME}"
+    rf"(?:={_PRECOMMIT_OPTION_VALUE}|\s+(?!run\b|-m\b){_PRECOMMIT_OPTION_VALUE})?"
 )
+_PRECOMMIT_TOOL_GRAMMAR = (
+    r"(?:\bpre-commit\b|\bpre_commit\b|"
+    rf"\bpython3?(?:\s+{_PRECOMMIT_OPTION}){{0,4}}\s+-m\s+pre_commit\b)"
+)
+_PRECOMMIT_TOOL = re.compile(_PRECOMMIT_TOOL_GRAMMAR)
 _PRECOMMIT_ACTION = r"(?:launch|call|use|invoke|execute|run)"
-_DIRECT_PRECOMMIT_COMMAND = re.compile(
-    rf"{_PRECOMMIT_TOOL.pattern}(?:\s+--?[a-z0-9][\w-]*(?:=[^\s]+)?){{0,8}}"
-    r"\s+run\b"
+_PRECOMMIT_COMMAND = re.compile(
+    rf"{_PRECOMMIT_TOOL_GRAMMAR}(?:\s+{_PRECOMMIT_OPTION}){{0,8}}\s+run\b"
 )
 _ACTIVE_PRECOMMIT_ACTION = re.compile(
-    rf"\b{_PRECOMMIT_ACTION}\b(?:\s+\S+){{0,8}}\s+{_PRECOMMIT_TOOL.pattern}"
+    rf"\b{_PRECOMMIT_ACTION}\b(?:\s+\S+){{0,8}}\s+{_PRECOMMIT_TOOL_GRAMMAR}"
 )
 _PASSIVE_PRECOMMIT_ACTION = re.compile(
-    r"\b(?:may|can|could|should|shall|will|would)\b(?:\s+\w+){0,6}"
+    rf"{_PRECOMMIT_TOOL_GRAMMAR}(?:\s+\w+){{0,6}}\s+"
+    r"(?:may|can|could|should|shall|will|would)\b(?:\s+\w+){0,4}"
     r"\s+be\s+(?:used|run|invoked|executed|called|launched)\b"
 )
-_PRECOMMIT_PERMISSION = re.compile(
-    r"\b(?:use|execution|invocation|running)\b(?:\s+\w+){0,5}"
-    r"\s+(?:is|are)\s+(?:approved|allowed|permitted|authorized)\b"
+_DIRECT_PRECOMMIT_PERMISSION = re.compile(
+    rf"{_PRECOMMIT_TOOL_GRAMMAR}(?:\s+\w+){{0,5}}\s+"
+    r"(?:is|are|was|were)\s+(?:approved|allowed|permitted|authorized)\b"
+)
+_PRECOMMIT_NOUN_PERMISSION = re.compile(
+    rf"{_PRECOMMIT_TOOL_GRAMMAR}\s+(?:use|execution|invocation|running)\b"
+    r"(?:\s+\w+){0,5}\s+(?:is|are|was|were)\s+"
+    r"(?:approved|allowed|permitted|authorized)\b"
 )
 _PERMISSIVE_PRECOMMIT_ACTOR = re.compile(r"\b(?:agents?|local|locally)\b")
 _PERMISSIVE_ACTION = re.compile(
@@ -83,11 +95,9 @@ _PERMISSIVE_ACTION = re.compile(
 )
 _EXPLICIT_PROHIBITION = re.compile(
     r"\b(?:may|can|could|should|shall|will|would|must)\s+not\b|"
-    r"\bcannot\b|\b(?:do|does)\s+not\b|\bnever\b|"
-    r"\b(?:can|won|shan)\s+t\b|"
-    r"\b(?:could|should|must|would)n\s+t\b|"
+    r"\bcannot\b|\b(?:do|does|did)\s+not\b|\bnever\b|"
     r"\bnot\s+(?:allowed|approved|permitted|authorized)\b|"
-    r"(?<!not\s)\b(?:forbidden|prohibited)\b"
+    r"\b(?:forbidden|prohibited)\b"
 )
 _NEGATED_PROHIBITION = re.compile(r"\bnot\s+(?:forbidden|prohibited)\b")
 
@@ -5400,9 +5410,30 @@ def _validate_exact_provider_projection(
 def _normalized_guidance_clauses(text: str) -> tuple[str, ...]:
     """Return bounded prose/code clauses for semantic QA-guidance checks."""
 
+    normalized = text.casefold().replace("’", "'")
+    contractions = {
+        "can't": "can not",
+        "won't": "will not",
+        "shan't": "shall not",
+        "isn't": "is not",
+        "aren't": "are not",
+        "wasn't": "was not",
+        "weren't": "were not",
+        "doesn't": "does not",
+        "don't": "do not",
+        "didn't": "did not",
+    }
+    for contraction, expansion in contractions.items():
+        normalized = re.sub(rf"\b{re.escape(contraction)}\b", expansion, normalized)
+    normalized = re.sub(
+        r"\b(could|should|must|would|may|might|need|dare)n['’]?t\b",
+        r"\1 not",
+        normalized,
+    )
+    normalized = normalized.replace(",", " ")
     clauses: list[str] = []
     for raw_clause in re.split(
-        r"[,\r\n.;]+|\b(?:but|however|yet|although)\b", text.casefold()
+        r"[\r\n;]+|\.(?=\s|$)|\b(?:but|however|yet|although)\b", normalized
     ):
         clause = re.sub(r"[`'\"()]", " ", raw_clause)
         clause = re.sub(r"\s+", " ", clause).strip()
@@ -5414,35 +5445,24 @@ def _normalized_guidance_clauses(text: str) -> tuple[str, ...]:
 def _has_direct_agent_precommit_guidance(text: str) -> bool:
     """Reject local-QA prose that authorizes bypassing the controlled wrapper."""
 
-    wrapper_reference = "scripts/validation/run-agent-precommit-all-files.sh"
-    precommit_context = False
     for clause in _normalized_guidance_clauses(text):
         has_tool = _PRECOMMIT_TOOL.search(clause) is not None
-        contextual_reference = bool(
-            re.search(r"\bit\b|\brun\s+(?:-a|--all-files)\b", clause)
-            or (
-                _PERMISSIVE_PRECOMMIT_ACTOR.search(clause)
-                and re.search(r"\b(?:launch|call|use|invoke|execute)\b", clause)
-            )
-        )
-        refers_to_tool = has_tool or (precommit_context and contextual_reference)
-        precommit_context = has_tool
-        if not refers_to_tool:
+        if not has_tool:
             continue
         if _NEGATED_PROHIBITION.search(clause):
             return True
         if _EXPLICIT_PROHIBITION.search(clause):
             continue
-        if has_tool and _DIRECT_PRECOMMIT_COMMAND.search(clause):
+        if _PRECOMMIT_COMMAND.search(clause):
             return True
-        if has_tool and _ACTIVE_PRECOMMIT_ACTION.search(clause):
+        if _ACTIVE_PRECOMMIT_ACTION.search(clause):
             return True
-        if has_tool and _PASSIVE_PRECOMMIT_ACTION.search(clause):
+        if _PASSIVE_PRECOMMIT_ACTION.search(clause):
             return True
-        if has_tool and _PRECOMMIT_PERMISSION.search(clause):
+        if _DIRECT_PRECOMMIT_PERMISSION.search(clause):
             return True
-        if wrapper_reference in clause:
-            continue
+        if _PRECOMMIT_NOUN_PERMISSION.search(clause):
+            return True
         if _PERMISSIVE_ACTION.search(clause):
             return True
         if _PERMISSIVE_PRECOMMIT_ACTOR.search(clause) and re.search(

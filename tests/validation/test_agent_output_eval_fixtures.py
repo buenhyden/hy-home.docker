@@ -665,6 +665,92 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 )
                 self.assertIn("AOE-BLOCK-SENSITIVE-KV", result.block_codes)
 
+    def test_credential_classifier_fails_closed_at_every_shape_boundary(self) -> None:
+        evaluator = load_eval_module()
+        operators = (":=", "+=", "?=", "=", ":")
+        shape_boundaries = (
+            ("service" + ("_" * 8) + "token", "fixture-value", True),
+            ("service" + ("_" * 9) + "token", "fixture-value", False),
+            ("service_a_b_c_d_e_f_token", "fixture-value", True),
+            ("service_a_b_c_d_e_f_g_token", "fixture-value", False),
+            (("a" * 32) + "_token", "fixture-value", True),
+            (("a" * 33) + "_token", "fixture-value", False),
+            ("STRIPE_KEY", "x" * 4_096, True),
+            ("STRIPE_KEY", "x" * 4_097, False),
+        )
+        for key, value, expected_bounded in shape_boundaries:
+            with self.subTest(kind="shape", key=key[:40], bounded=expected_bounded):
+                _components, actual_bounded = evaluator._sensitive_candidate_shape(
+                    key, value
+                )
+                self.assertEqual(expected_bounded, actual_bounded)
+
+        sensitive_keys = (
+            "service" + ("_" * 8) + "token",
+            "service" + ("_" * 9) + "token",
+            "service_a_b_c_d_e_f_token",
+            "service_a_b_c_d_e_f_g_token",
+            ("a" * 32) + "_token",
+            ("a" * 33) + "_token",
+            "STRIPE_KEY",
+            "X-Authorization",
+            "X-Cookie",
+            "X-Set-Cookie",
+            "SERVICE_AUTH",
+            "SERVICE_2_TOKEN",
+            "EDGE_COOKIE",
+        )
+        for key in sensitive_keys:
+            for operator in operators:
+                payload = f'{key}{operator}"fixture-value"'
+                with self.subTest(key=key[:40], operator=operator):
+                    self.assertTrue(evaluator._contains_sensitive_assignment(payload))
+                    result = evaluator.score_text(
+                        evaluator.FIXTURES["AOE-DOC-001"],
+                        evaluator._pass_text(payload),
+                    )
+                    self.assertIn("AOE-BLOCK-SENSITIVE-KV", result.block_codes)
+
+        for value_bytes in (4_096, 4_097):
+            payload = 'STRIPE_KEY="' + ("x" * value_bytes) + '"'
+            with self.subTest(value_bytes=value_bytes):
+                self.assertTrue(evaluator._contains_sensitive_assignment(payload))
+
+        cli_cases = (
+            'service_________token="fixture-value"',
+            'service_a_b_c_d_e_f_g_token="fixture-value"',
+            f'{"a" * 33}_token="fixture-value"',
+            'STRIPE_KEY="fixture-value"',
+            'X-Authorization: "fixture-value"',
+            'STRIPE_KEY="' + ("x" * 4_097) + '"',
+        )
+        for payload in cli_cases:
+            with self.subTest(kind="value-free-cli", key=payload[:40]):
+                cli = self.run_runner(
+                    "--fixture",
+                    "AOE-DOC-001",
+                    "--classification",
+                    "synthetic-fixture",
+                    "--stdin",
+                    input_text=payload,
+                )
+                self.assertEqual(1, cli.returncode)
+                self.assertEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
+                self.assertNotIn("fixture-value", cli.stdout + cli.stderr)
+
+        for key in (
+            "primary_key",
+            "foreign_key",
+            "cache_key",
+            "public_key",
+            "keyboard_key",
+            "database_key",
+        ):
+            with self.subTest(kind="reviewed-safe-namespace", key=key):
+                self.assertFalse(
+                    evaluator._contains_sensitive_assignment(f"{key}=fixture-value")
+                )
+
     def test_evidence_count_and_combined_byte_limits_are_exact(self) -> None:
         evaluator = load_eval_module()
         self.assertEqual(8, evaluator.MAX_EVIDENCE_FILES)

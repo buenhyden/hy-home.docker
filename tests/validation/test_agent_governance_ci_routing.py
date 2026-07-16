@@ -366,7 +366,13 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         for boundary_fragment in (
             "initial = os.lstat(path)",
             "opened = os.fstat(file_descriptor)",
-            "remaining = MAX_REFERENCE_FILE_BYTES + 1",
+            "aggregate_remaining = MAX_REFERENCE_TOTAL_BYTES - total_reference_bytes",
+            "read_limit = min(MAX_REFERENCE_FILE_BYTES, aggregate_remaining)",
+            "opened.st_size > read_limit",
+            "remaining = read_limit + 1",
+            "metadata.st_ctime_ns",
+            "metadata_tuple(opened) != metadata_tuple(initial)",
+            "metadata_tuple(final) != metadata_tuple(opened)",
         ):
             with self.subTest(boundary_fragment=boundary_fragment):
                 self.assertIn(boundary_fragment, block)
@@ -433,6 +439,138 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 self.assertEqual(expected, result.returncode, result.stderr)
                 if expected:
                     self.assertIn("unsafe script-reference surface", result.stderr)
+
+    def test_script_reference_scan_rejects_same_inode_metadata_mutation(self) -> None:
+        source = REPO_CONTRACT.read_text(encoding="utf-8")
+        start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"
+        block = source.split(start, 1)[1].split(
+            "\nPY\n  failures=$((failures + 1))",
+            1,
+        )[0]
+        mutations = (
+            (
+                "lstat-to-open",
+                "        initial = os.lstat(path)",
+                "        initial = os.lstat(path)\n        os.chmod(path, 0o600)",
+            ),
+            (
+                "open-to-final",
+                "        final = os.fstat(file_descriptor)",
+                "        os.chmod(path, 0o600)\n        final = os.fstat(file_descriptor)",
+            ),
+        )
+        for label, mutation_point, replacement in mutations:
+            with self.subTest(label=label):
+                self.assertIn(mutation_point, block)
+                mutated = block.replace(mutation_point, replacement, 1)
+                with self._script_reference_fixture() as root:
+                    docs = root / "docs"
+                    docs.mkdir()
+                    (docs / "active.md").write_text(
+                        "ordinary prose\n", encoding="utf-8"
+                    )
+                    result = subprocess.run(
+                        [sys.executable, "-c", mutated],
+                        cwd=root,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                self.assertEqual(1, result.returncode)
+                self.assertIn("unsafe script-reference surface", result.stderr)
+                self.assertNotIn("active.md", result.stderr)
+
+    def test_script_reference_scan_enforces_literal_ceiling_boundaries(self) -> None:
+        source = REPO_CONTRACT.read_text(encoding="utf-8")
+        start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"
+        block = source.split(start, 1)[1].split(
+            "\nPY\n  failures=$((failures + 1))",
+            1,
+        )[0]
+
+        def run(
+            root: pathlib.Path, program: str = block
+        ) -> subprocess.CompletedProcess[str]:
+            return subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=60,
+            )
+
+        with (
+            self.subTest("surfaces-4096-and-4097"),
+            tempfile.TemporaryDirectory() as directory,
+        ):
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            docs = root / "docs"
+            docs.mkdir()
+            for index in range(4_096):
+                (docs / f"surface-{index:04d}.md").touch()
+            self.assertEqual(0, run(root).returncode)
+            (docs / "surface-over.md").touch()
+            above = run(root)
+            self.assertEqual(1, above.returncode)
+            self.assertEqual("FAIL: unsafe script-reference surface\n", above.stderr)
+
+        with (
+            self.subTest("discovery-8192-and-8193"),
+            tempfile.TemporaryDirectory() as directory,
+        ):
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            docs = root / "docs"
+            docs.mkdir()
+            for index in range(8_191):
+                (docs / f"entry-{index:04d}").mkdir()
+            ignore_start = block.index("def is_ignored(path: pathlib.Path) -> bool:")
+            ignore_end = block.index("\n\n\ndef untracked_special_paths", ignore_start)
+            fast_discovery = (
+                block[:ignore_start]
+                + "def is_ignored(path: pathlib.Path) -> bool:\n    return False"
+                + block[ignore_end:]
+            )
+            self.assertEqual(0, run(root, fast_discovery).returncode)
+            (docs / "entry-over").mkdir()
+            above = run(root, fast_discovery)
+            self.assertEqual(1, above.returncode)
+            self.assertEqual("FAIL: unsafe script-reference surface\n", above.stderr)
+
+        with (
+            self.subTest("file-16mib-and-n-plus-one"),
+            tempfile.TemporaryDirectory() as directory,
+        ):
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            docs = root / "docs"
+            docs.mkdir()
+            surface = docs / "surface.md"
+            surface.write_bytes(b"\0" * (16 * 1_048_576))
+            self.assertEqual(0, run(root).returncode)
+            with surface.open("ab") as stream:
+                stream.write(b"\0")
+            above = run(root)
+            self.assertEqual(1, above.returncode)
+            self.assertEqual("FAIL: unsafe script-reference surface\n", above.stderr)
+
+        with (
+            self.subTest("aggregate-64mib-and-n-plus-one"),
+            tempfile.TemporaryDirectory() as directory,
+        ):
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            docs = root / "docs"
+            docs.mkdir()
+            for index in range(4):
+                (docs / f"surface-{index}.md").write_bytes(b"\0" * (16 * 1_048_576))
+            self.assertEqual(0, run(root).returncode)
+            (docs / "surface-4.md").write_bytes(b"\0")
+            above = run(root)
+            self.assertEqual(1, above.returncode)
+            self.assertEqual("FAIL: unsafe script-reference surface\n", above.stderr)
 
     def test_typed_harness_replacement_covers_removed_aggregate_routes(self) -> None:
         contract_text = (

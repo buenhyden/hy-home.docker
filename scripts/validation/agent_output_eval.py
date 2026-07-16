@@ -61,20 +61,15 @@ MAX_SENSITIVE_KEY_COMPONENTS = 8
 MAX_SENSITIVE_KEY_COMPONENT_BYTES = 32
 MAX_SENSITIVE_SEPARATOR_RUN = 8
 MAX_SENSITIVE_VALUE_BYTES = 4_096
-_SENSITIVE_KEY_COMPONENT = (
-    rf"[A-Za-z][A-Za-z0-9]{{0,{MAX_SENSITIVE_KEY_COMPONENT_BYTES - 1}}}"
-)
-_SENSITIVE_KEY = (
-    rf"{_SENSITIVE_KEY_COMPONENT}"
-    rf"(?:[._-]{{1,{MAX_SENSITIVE_SEPARATOR_RUN}}}{_SENSITIVE_KEY_COMPONENT})"
-    rf"{{0,{MAX_SENSITIVE_KEY_COMPONENTS - 1}}}"
-)
+# Extraction is intentionally broader than the accepted shape. Bounds are
+# classified after a complete line-local candidate is found so an N+1 key or
+# value cannot disappear from the security decision.
+_SENSITIVE_KEY_CANDIDATE = r"[A-Za-z][A-Za-z0-9]*(?:[._-]+[A-Za-z0-9]+)*"
 SENSITIVE_CANDIDATE_PATTERN = re.compile(
-    rf"(?<![A-Za-z0-9_.-])[\"']?(?P<key>{_SENSITIVE_KEY})[\"']?"
-    rf"\s*(?P<operator>:=|\+=|\?=|=|:)\s*"
-    rf"(?P<value>\"[^\"\r\n]{{1,{MAX_SENSITIVE_VALUE_BYTES}}}\"?|"
-    rf"'[^'\r\n]{{1,{MAX_SENSITIVE_VALUE_BYTES}}}'?|"
-    rf"[^\s,}}\]]{{1,{MAX_SENSITIVE_VALUE_BYTES}}})"
+    rf"(?<![A-Za-z0-9_.-])[\"']?(?P<key>{_SENSITIVE_KEY_CANDIDATE})[\"']?"
+    rf"[ \t]*(?P<operator>:=|\+=|\?=|=|:)[ \t]*"
+    rf"(?P<value>\"[^\"\r\n]*\"?|"
+    rf"'[^'\r\n]*'|[^\s,}}\]\r\n]+)"
 )
 _SENSITIVE_EXACT_KEYS = frozenset(
     {
@@ -97,30 +92,20 @@ _SENSITIVE_EXACT_KEYS = frozenset(
     }
 )
 _SENSITIVE_SUFFIXES = frozenset(
-    {"credential", "credentials", "password", "secret", "token"}
-)
-_SENSITIVE_KEY_NAMESPACES = frozenset(
     {
-        "access",
-        "anthropic",
-        "api",
         "auth",
-        "aws",
-        "azure",
-        "client",
-        "encryption",
-        "gemini",
-        "github",
-        "google",
-        "oauth",
-        "openai",
-        "private",
-        "provider",
-        "session",
-        "signing",
+        "authorization",
+        "cookie",
+        "credential",
+        "credentials",
+        "password",
+        "secret",
+        "token",
     }
 )
-_SAFE_KEY_NAMESPACES = frozenset({"cache", "foreign", "keyboard", "primary", "public"})
+_SAFE_KEY_NAMESPACES = frozenset(
+    {"cache", "database", "foreign", "keyboard", "primary", "public"}
+)
 
 
 @dataclass(frozen=True)
@@ -600,25 +585,38 @@ def _contains_sensitive_content(text: str) -> bool:
     )
 
 
-def _sensitive_key_components(key: str) -> tuple[str, ...]:
+def _sensitive_candidate_shape(key: str, value: str) -> tuple[tuple[str, ...], bool]:
+    """Classify exact key/value bounds after broad linear extraction."""
+
     components = tuple(
         component.casefold() for component in re.split(r"[._-]+", key) if component
     )
-    if (
-        not components
-        or len(components) > MAX_SENSITIVE_KEY_COMPONENTS
-        or any(
-            len(component.encode("ascii", errors="strict"))
-            > MAX_SENSITIVE_KEY_COMPONENT_BYTES
-            for component in components
+    separator_runs = tuple(re.findall(r"[._-]+", key))
+    unquoted_value = value
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+        unquoted_value = value[1:-1]
+    within_bounds = bool(components) and all(
+        (
+            len(components) <= MAX_SENSITIVE_KEY_COMPONENTS,
+            all(
+                len(component.encode("ascii", errors="strict"))
+                <= MAX_SENSITIVE_KEY_COMPONENT_BYTES
+                for component in components
+            ),
+            all(
+                len(separator.encode("ascii", errors="strict"))
+                <= MAX_SENSITIVE_SEPARATOR_RUN
+                for separator in separator_runs
+            ),
+            len(unquoted_value.encode("utf-8", errors="strict"))
+            <= MAX_SENSITIVE_VALUE_BYTES,
         )
-    ):
-        return ()
-    return components
+    )
+    return components, within_bounds
 
 
 def _is_sensitive_candidate_key(key: str) -> bool:
-    components = _sensitive_key_components(key)
+    components, _within_bounds = _sensitive_candidate_shape(key, "")
     if not components:
         return False
     normalized = "_".join(components)
@@ -629,18 +627,27 @@ def _is_sensitive_candidate_key(key: str) -> bool:
     if components[-1] != "key":
         return False
     namespaces = set(components[:-1])
-    if namespaces <= _SAFE_KEY_NAMESPACES:
+    if namespaces and namespaces <= _SAFE_KEY_NAMESPACES:
         return False
-    return bool(namespaces & _SENSITIVE_KEY_NAMESPACES)
+    return True
 
 
 def _contains_sensitive_assignment(text: str) -> bool:
-    """Classify bounded assignment/header candidates without inspecting values."""
+    """Extract line-local candidates, then classify shape and key semantics."""
 
-    return any(
-        _is_sensitive_candidate_key(match.group("key"))
-        for match in SENSITIVE_CANDIDATE_PATTERN.finditer(text)
-    )
+    for match in SENSITIVE_CANDIDATE_PATTERN.finditer(text):
+        key = match.group("key")
+        _components, within_bounds = _sensitive_candidate_shape(
+            key, match.group("value")
+        )
+        if not _is_sensitive_candidate_key(key):
+            continue
+        if not within_bounds:
+            # A security-relevant N+1 candidate fails closed; extraction never
+            # treats the configured ceilings as permission to omit it.
+            return True
+        return True
+    return False
 
 
 def _safe_input_parts(path: pathlib.Path) -> tuple[str, ...]:
