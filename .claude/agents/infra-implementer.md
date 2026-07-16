@@ -9,6 +9,7 @@ tools:
 - Write
 - Bash
 model: claude-sonnet-5
+effort: high
 permissionMode: default
 skills:
 - compose-stack-agent

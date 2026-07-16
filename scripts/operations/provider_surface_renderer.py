@@ -291,18 +291,22 @@ def render_function(provider: str, function: FunctionRecord) -> bytes:
     ).encode()
 
 
-def _provider_defaults(root: pathlib.Path) -> dict[tuple[str, str], tuple[str, str]]:
+def _provider_defaults(
+    root: pathlib.Path,
+) -> dict[tuple[str, str], tuple[str, str | None]]:
     bundle = load_contract_bundle(root.absolute())
-    defaults: dict[tuple[str, str], tuple[str, str]] = {}
+    defaults: dict[tuple[str, str], tuple[str, str | None]] = {}
     for profile in bundle.providers["work_profiles"]:
         profile_id = str(profile["profile_id"])
         for entry in profile["defaults"]:
-            control = entry.get("reasoning")
-            if control is None:
-                control = entry.get("effort") or entry.get("thinking")
+            control = (
+                entry.get("effort")
+                if entry.get("provider") == "claude"
+                else entry.get("reasoning")
+            )
             defaults[(profile_id, str(entry["provider"]))] = (
                 str(entry["model_id"]),
-                str(control),
+                str(control) if isinstance(control, str) else None,
             )
     return defaults
 
@@ -340,9 +344,10 @@ def _markdown_projection(
 
 
 def _render_claude_agent(
-    agent: AgentRecord, defaults: Mapping[tuple[str, str], tuple[str, str]]
+    agent: AgentRecord,
+    defaults: Mapping[tuple[str, str], tuple[str, str | None]],
 ) -> bytes:
-    model, _reasoning = defaults[(agent.work_profile, "claude")]
+    model, effort = defaults[(agent.work_profile, "claude")]
     read_only = agent.permission_profile == "read-only"
     tools = ["Read", "Grep", "Glob"]
     if agent.tier == "supervisor":
@@ -350,22 +355,30 @@ def _render_claude_agent(
     elif not read_only:
         tools.extend(("Edit", "Write", "Bash"))
     output = pathlib.PurePosixPath(f".claude/agents/{agent.agent_id}.md")
-    return _markdown_projection(
+    metadata: dict[str, object] = {
+        "name": agent.agent_id,
+        "description": _agent_description(agent),
+        "tools": tools,
+        "model": model,
+    }
+    if effort is not None:
+        metadata["effort"] = effort
+    metadata.update(
         {
-            "name": agent.agent_id,
-            "description": _agent_description(agent),
-            "tools": tools,
-            "model": model,
             "permissionMode": "plan" if read_only else "default",
             "skills": list(agent.function_ids),
-        },
+        }
+    )
+    return _markdown_projection(
+        metadata,
         _agent_body(agent, output),
         agent.catalog_path,
     )
 
 
 def _render_codex_agent(
-    agent: AgentRecord, defaults: Mapping[tuple[str, str], tuple[str, str]]
+    agent: AgentRecord,
+    defaults: Mapping[tuple[str, str], tuple[str, str | None]],
 ) -> bytes:
     model, reasoning = defaults[(agent.work_profile, "codex")]
     output = pathlib.PurePosixPath(f".codex/agents/{agent.agent_id}.toml")
@@ -392,7 +405,8 @@ def _render_codex_agent(
 
 
 def _render_gemini_agent(
-    agent: AgentRecord, defaults: Mapping[tuple[str, str], tuple[str, str]]
+    agent: AgentRecord,
+    defaults: Mapping[tuple[str, str], tuple[str, str | None]],
 ) -> bytes:
     model, _reasoning = defaults[(agent.work_profile, "gemini")]
     read_only = agent.permission_profile == "read-only"

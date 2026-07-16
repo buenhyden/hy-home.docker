@@ -44,7 +44,7 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 | Custom subagents                  | Supported and adopted (`.claude/agents`)      | Supported and adopted (`.codex/agents/*.toml`) | Supported and adopted (`.gemini/agents/*.md`) |
 | Skills                            | Supported (`.claude/skills`)                  | Supported through `.agents/skills` | Supported through `.agents/skills`  |
 | Programmatic hooks                | Supported (`settings.json` + `.claude/hooks`) | Supported with explicit `SessionEnd` gap (`.codex/hooks.json`) | Supported (`.gemini/settings.json` + thin adapter) |
-| Per-agent model                   | Supported model ID; thinking/effort are separate runtime-level controls, not invented frontmatter | Supported (model ID + reasoning effort) | Supported (native model field; no invented reasoning field) |
+| Per-agent model                   | Supported model ID and native `effort`; per-agent `thinking` is unsupported and inherited from the session | Supported (model ID + reasoning effort) | Supported (native model field; no invented reasoning field) |
 | Native output style               | Supported (`.claude/output-styles`)           | Unsupported → behavioral contract | Unsupported → behavioral contract    |
 | Per-subagent tools/permissionMode | Supported (frontmatter)                       | Supported sandbox mode; parent runtime remains authoritative | Supported tool allowlist; sandbox remains runtime-level |
 
@@ -52,9 +52,10 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
   behavioral contract rather than implemented divergently. Do not add provider-specific
   primitives that have no governance contract behind them.
 - Native event capability and tracked repository behavior are independent.
-  Advisory dispatcher outputs must not be labeled blocking; conditional Stop
-  denial is blocking only where the generated adapter emits the provider-native
-  denial schema.
+  Advisory dispatcher outputs must not be labeled blocking. Claude uses a
+  conditional blocking Stop, Codex uses one bounded continuation retry, and
+  Gemini uses deny/retry only where each generated adapter emits the exact
+  provider-native schema.
 
 ## 4. Shared Development-Harness Gates
 

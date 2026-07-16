@@ -147,7 +147,7 @@ Redaction boundary:
 | T-AGHC-001 | Typed contracts and contract-only validator | Complete; specification and quality reviews PASS C0/I0/M0 |
 | T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Implementation complete; independent reviews pending |
-| T-AGHC-004 | Provider-native adapters and dated model policy | Review remediation complete; independent re-reviews pending |
+| T-AGHC-004 | Provider-native adapters and dated model policy | Second specification remediation complete; independent re-review pending |
 | T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Not run |
 | T-AGHC-006 | Reference/audit/evidence reconciliation and closure | Not run |
 
@@ -207,6 +207,8 @@ Redaction boundary:
 | 2026-07-16 | T-AGHC-004 self-review | Fresh implementation agent | Added exact native schema, duplicate-key, model-policy, fallback, event-semantic, permissions, file-mode, drift, strict Gemini-entry, and generated-link tests. The combined governance, renderer, and provider suite passes 145/145; 56 generated role adapters contain 224 resolving local links, 44 shared skill projections remain renderer-owned, `.codex/skills` remains absent, and all typed repository sections pass. Independent specification and quality reviews remain required before Task closure. |
 | 2026-07-16 | T-AGHC-004 independent review | Fresh read-only reviewer | Review of the provider-native implementation found six material boundary gaps: managed roots admitted unowned inventory, native JSON schemas and commands were not exact, the aggregate gate did not invoke renderer drift, empty-root cleanup could strand a raced replacement, native ownership-marker grammar was permissive, and unsafe/mode/event-output cases lacked executable coverage. The reviewer also required Claude thinking/effort and dated cutoff/fallback evidence to remain typed instead of being flattened into a generic reasoning field. |
 | 2026-07-16 | T-AGHC-004 review remediation | Fresh remediation agent | Added exact recursive inventory over every managed provider tree, fail-closed preservation of unowned and unsafe entries, exact generated-marker and provider JSON command schemas, renderer drift in the aggregate gate, identity-checked empty-root cleanup, executable mode enforcement, all seven Gemini output translations, and Codex-native Stop denial output. Claude thinking and effort controls are separately typed, degraded fallback approvals identify one exact source-to-target edge, and mutable post-cutoff pages cannot claim verified historical state. Initial remediation RED produced 11 expected failures/errors across six methods; the expanded provider suites and the combined governance/renderer/provider suite are GREEN. Independent specification and quality re-reviews remain required before Task closure. |
+| 2026-07-16 | T-AGHC-004 terminal specification review | Fresh read-only specification reviewer | Review of `3ef38345` returned Critical 0, Important 4, and Minor 0. It found that Claude native subagents emitted unsupported per-agent `thinking` instead of supported per-agent `effort`, Codex Stop was labeled terminal while its `decision: block` response requests a retry, degraded fallback approvals did not resolve to an exact typed edge authority, and cutoff claims could be backed by arbitrary mutable HTTPS pages or backdated observations. |
+| 2026-07-16 | T-AGHC-004 second specification remediation | Fresh remediation agent | Added eight focused semantic boundaries, initially reproducing three failures and two errors across the first five RED methods. Claude Sonnet and Opus adapters now emit their selected `effort`, Haiku omits it, and no adapter emits unsupported per-agent `thinking`. Codex Stop is typed as a bounded retry: the first failure emits `decision: block` plus `reason`, while an active retry emits precedence-bearing `continue: false` plus `stopReason`. Every degraded fallback resolves through an exact provider/source/target/profile registry row to the real Spec 132 approved-edge authority. Cutoff evidence is a typed official-domain, publication-date, retrieval-date, observation-date, and model-evidence registry; the canonical registry remains empty, all cutoff states remain `historical-state-unverified`, and GPT-5.6 remains unresolved. Independent specification re-review remains required before Task closure. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -253,20 +255,21 @@ T-AGHC-004 implementation verification:
 
 | Command | Expected | Actual | State |
 | --- | --- | --- | --- |
-| focused renderer and provider-native tests | all pass | 35/35 | Pass |
-| governance, renderer, and provider-native unit suites | no regression | 154/154 | Pass |
+| focused second-remediation semantic tests | all pass | 8/8 | Pass |
+| full renderer and provider-native tests | all pass | 42/42 | Pass |
+| governance, renderer, and provider-native unit suites | no regression | 161/161 in 267.237s | Pass |
 | generated role link resolution | every local link resolves from its native projection | 56/56 role adapters; 224/224 local links | Pass |
 | typed contract and repository sections | exact cardinality and zero findings | contracts 3; agents 14; functions 22; providers 3; catalog/providers/harness failures 0 | Pass |
 | renderer check, repeated | deterministic zero drift | `providers=3 drift=0` on repeated checks | Pass |
 | provider hook parity owner | generated matrix is fresh | Claude 7 native; Codex 6 native and 1 unsupported; Gemini 7 native | Pass |
 | native syntax and file modes | JSON/TOML/YAML parse; hooks executable; data non-executable | all provider configs parse; 8 hooks mode 0755; generated data mode 0644 | Pass |
-| changed metadata against `e4860179` | zero violations | selected 8; violations 0; legacy exceptions 0; transition overrides 0 | Pass |
-| promoted and impacted lifecycle | zero violations | promoted 0; impacted selected 77 / violations 0 with configured Task-directory warning | Pass |
+| changed metadata against `3ef38345` | zero violations | selected 6; violations 0; legacy exceptions 0; transition overrides 0 | Pass |
+| promoted and impacted lifecycle | zero violations | promoted 0; impacted selected 71 / violations 0 with configured Task-directory warning | Pass |
 | traceability and alignment | zero failures | 46 catalog pairs; 653 stage docs; 5,206 local links; 141 operations docs; failures 0 | Pass |
 | generated owners | fresh | Foundation summary, LLM Wiki index/coverage, metadata inventory 910/2,145, and provider parity matrix fresh | Pass |
 | repository aggregate | all active contracts pass | `failures=0`; typed catalog/providers and generated parity owners active | Pass |
-| remediation boundaries | preserve unknown files; reject unsafe/mode/schema/command drift; translate native output | exact managed-tree inventory, identity-safe cleanup, strict JSON/marker grammar, Gemini 7/7 output translation, and Codex Stop denial pass | Pass |
-| Graphify refresh | refresh, corroborate advisory output, restore generated files | 24,800 nodes / 28,311 edges / 1,599 communities; 432 inferred edges, 16,457 isolated nodes, 69 thin communities, and visualization size skip corroborated against tracked Stage 00 contracts, executable renderer/hooks, Spec 132, and this Task; generated graph files restored | Pass |
+| remediation boundaries | preserve unknown files; reject unsafe/mode/schema/command drift; translate native output; bind model and retry semantics | exact managed-tree inventory, identity-safe cleanup, strict JSON/marker grammar, Gemini 7/7 output translation, Claude effort without per-agent thinking, bounded Codex Stop retry, exact fallback edge authority, and typed official-date cutoff evidence pass | Pass |
+| Graphify refresh | refresh, corroborate advisory output, restore generated files | 24,809 nodes / 28,341 edges / 1,597 communities; 432 inferred edges, 16,457 isolated nodes, 68 thin communities, and visualization size skip corroborated against tracked Stage 00 contracts, executable renderer/hooks, Spec 132, and this Task; generated graph files restored | Pass |
 
 Scoped QA is supplied by the automatic commit hook because direct manual
 `pre-commit run --all-files` execution is prohibited. Provider entitlement and
@@ -720,7 +723,8 @@ with owner, reason, and destination.
 | T-AGHC-003 independent-review remediation | `fix(agents): preserve generated surface ownership` | `8d1d08f4` | four Important findings reproduced and remediated; focused/full GREEN; terminal specification PASS and quality APPROVED C0/I0/M0 |
 | T-AGHC-003 terminal review evidence | `docs(task): record agent catalog review closure` | this logical commit | full-range and remediation-delta specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-004 | `feat(providers): generate native agent adapters` | `e4860179` | implementation GREEN; independent review found six material gaps |
-| T-AGHC-004 independent-review remediation | `fix(providers): harden native adapter contracts` | pending | exact inventory, schemas, output translation, evidence typing, and aggregate renderer gate GREEN; independent re-reviews pending |
+| T-AGHC-004 independent-review remediation | `fix(providers): harden native adapter contracts` | `3ef38345` | exact inventory, schemas, output translation, evidence typing, and aggregate renderer gate GREEN; specification re-review found four Important semantic gaps |
+| T-AGHC-004 second specification remediation | `fix(providers): bind model and hook semantics` | pending | Claude native effort, bounded Codex Stop retry, exact fallback authority, and authenticated cutoff evidence GREEN; independent specification re-review pending |
 | T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | pending | pending |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |
 | Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | pending | pending |

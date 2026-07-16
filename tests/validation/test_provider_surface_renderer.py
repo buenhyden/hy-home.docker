@@ -35,6 +35,12 @@ def copy_stage00(root: pathlib.Path) -> None:
         root / "docs/00.agent-governance",
         dirs_exist_ok=True,
     )
+    spec_source = (
+        ROOT / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
+    )
+    spec_target = root / spec_source.relative_to(ROOT)
+    spec_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(spec_source, spec_target)
 
 
 def generated_surface(function_id: str = "retired") -> str:

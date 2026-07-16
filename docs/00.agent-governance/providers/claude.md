@@ -26,10 +26,13 @@ Claude Code-specific guidance for this repository.
   agent and function catalog (`providers/agents-md.md` §5). `.claude/agents/`
   and `.claude/skills/` are runtime adapters, not separate governance.
 - Apply the work profile in `contracts/agent-catalog.yaml` through the exact
-  Claude model/control record in `contracts/provider-models.yaml`. Do not add a
-  per-agent thinking or effort field; generated adapters use only
-  Claude-supported frontmatter. Thinking mode and effort remain separate
-  runtime invocation controls in Stage 00.
+  Claude model/control record in `contracts/provider-models.yaml`. Claude
+  subagents support `effort` values `low`, `medium`, `high`, `xhigh`, and
+  `max`; the subagent value overrides the session value. Generated Sonnet and
+  Opus adapters therefore emit the selected `high` effort. Per-subagent
+  `thinking` is unsupported and remains inherited from the session, so no
+  generated adapter emits a `thinking` key. Haiku omits `effort` because its
+  selected model profile does not expose that control.
 - Define the Claude-native output style under `.claude/output-styles/` implementing `rules/output-style.md`, and follow `rules/provider-capability-matrix.md` and `rules/workflows.md`.
 
 ## 3. Root Import Boundary

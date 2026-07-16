@@ -99,9 +99,14 @@ reviewed Git-visible, non-ignored repository paths in Stage 04 evidence.
 - `PreToolUse` emits Graphify advisory context, Docker Compose guardrails, and template-first guidance.
 - `PostToolUse` delegates to `scripts/hooks/post-tool-validate.sh` after file edits for shell formatting, validation, and diff hygiene.
 - `Stop` blocks completion when changed target-stage docs fail `check-repo-contracts.sh` or task-owned uncommitted paths remain.
-- A rejected Codex Stop emits the native `continue: false` and `stopReason`
-  fields. `PreToolUse`, `PreCompact`, and `UserPromptSubmit` remain advisory in
-  the repository dispatcher even when Codex exposes a blocking primitive.
+- On the first failed completion gate, Codex Stop emits native
+  `decision: "block"` plus `reason`, which creates a continuation prompt and
+  retries the task. If `stop_hook_active` shows that continuation already ran,
+  the bounded second failure emits `continue: false` plus `stopReason` to stop
+  instead of looping forever. The repository mode is therefore `retry`, while
+  `provider_can_block` records the separate native capability. `PreToolUse`,
+  `PreCompact`, and `UserPromptSubmit` remain advisory in the repository
+  dispatcher even when Codex exposes a blocking primitive.
 - `PreCompact` routes through `agent-event-hook.sh`. Codex does not expose the
   repository's `SessionEnd` semantic event, so no native `SessionEnd` entry is
   generated or counted as parity.

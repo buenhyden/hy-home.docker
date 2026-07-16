@@ -54,7 +54,6 @@ work_profiles:
     defaults:
       - provider: claude
         model_id: claude-sonnet-5
-        thinking: adaptive
         effort: high
       - provider: codex
         model_id: gpt-5.6
@@ -67,7 +66,6 @@ work_profiles:
     defaults:
       - provider: claude
         model_id: claude-haiku-4-5-20251001
-        thinking: extended-thinking
         effort: null
       - provider: codex
         model_id: gpt-5.6-terra
@@ -80,7 +78,6 @@ work_profiles:
     defaults:
       - provider: claude
         model_id: claude-opus-4-8
-        thinking: adaptive
         effort: high
       - provider: codex
         model_id: gpt-5.6
@@ -88,6 +85,93 @@ work_profiles:
       - provider: gemini
         model_id: gemini-3.5-flash
         reasoning: high
+fallback_approvals:
+  - approval_id: fallback:claude:claude-fable-5-to-claude-opus-4-8
+    provider: claude
+    source_model_id: claude-fable-5
+    target_model_id: claude-opus-4-8
+    work_profiles:
+      - complex-implementation
+      - supervision
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:claude:claude-haiku-4-5-20251001-to-claude-sonnet-5
+    provider: claude
+    source_model_id: claude-haiku-4-5-20251001
+    target_model_id: claude-sonnet-5
+    work_profiles:
+      - read-heavy-repetitive
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:claude:claude-mythos-5-to-claude-opus-4-8
+    provider: claude
+    source_model_id: claude-mythos-5
+    target_model_id: claude-opus-4-8
+    work_profiles:
+      - complex-implementation
+      - supervision
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:claude:claude-opus-4-1-20250805-to-claude-opus-4-8
+    provider: claude
+    source_model_id: claude-opus-4-1-20250805
+    target_model_id: claude-opus-4-8
+    work_profiles: []
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:claude:claude-opus-4-8-to-claude-sonnet-5
+    provider: claude
+    source_model_id: claude-opus-4-8
+    target_model_id: claude-sonnet-5
+    work_profiles:
+      - supervision
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:claude:claude-sonnet-5-to-claude-opus-4-8
+    provider: claude
+    source_model_id: claude-sonnet-5
+    target_model_id: claude-opus-4-8
+    work_profiles:
+      - complex-implementation
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:codex:gpt-5.2-codex-to-gpt-5.6-terra
+    provider: codex
+    source_model_id: gpt-5.2-codex
+    target_model_id: gpt-5.6-terra
+    work_profiles: []
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:codex:gpt-5.6-terra-to-gpt-5.6
+    provider: codex
+    source_model_id: gpt-5.6-terra
+    target_model_id: gpt-5.6
+    work_profiles:
+      - read-heavy-repetitive
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:codex:gpt-5.6-to-gpt-5.6-terra
+    provider: codex
+    source_model_id: gpt-5.6
+    target_model_id: gpt-5.6-terra
+    work_profiles:
+      - complex-implementation
+      - supervision
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:gemini:gemini-3.1-flash-lite-preview-to-gemini-3.1-flash-lite
+    provider: gemini
+    source_model_id: gemini-3.1-flash-lite-preview
+    target_model_id: gemini-3.1-flash-lite
+    work_profiles: []
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:gemini:gemini-3.1-flash-lite-to-gemini-3.5-flash
+    provider: gemini
+    source_model_id: gemini-3.1-flash-lite
+    target_model_id: gemini-3.5-flash
+    work_profiles:
+      - read-heavy-repetitive
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+  - approval_id: fallback:gemini:gemini-3.5-flash-to-gemini-3.1-flash-lite
+    provider: gemini
+    source_model_id: gemini-3.5-flash
+    target_model_id: gemini-3.1-flash-lite
+    work_profiles:
+      - complex-implementation
+      - supervision
+    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
+cutoff_evidence: []
 models:
   - provider: claude
     model_id: claude-fable-5
@@ -118,10 +202,9 @@ models:
       - long-running-agent
     fallback: claude-opus-4-8
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#claude-fable-5-to-claude-opus-4-8
+    fallback_approval: fallback:claude:claude-fable-5-to-claude-opus-4-8
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
@@ -147,10 +230,9 @@ models:
       - read-heavy
     fallback: claude-sonnet-5
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#claude-haiku-4-5-20251001-to-claude-sonnet-5
+    fallback_approval: fallback:claude:claude-haiku-4-5-20251001-to-claude-sonnet-5
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
@@ -182,10 +264,9 @@ models:
       - invitation-only
     fallback: claude-opus-4-8
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#claude-mythos-5-to-claude-opus-4-8
+    fallback_approval: fallback:claude:claude-mythos-5-to-claude-opus-4-8
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
@@ -207,10 +288,9 @@ models:
       - migration-only
     fallback: claude-opus-4-8
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#claude-opus-4-1-20250805-to-claude-opus-4-8
+    fallback_approval: fallback:claude:claude-opus-4-1-20250805-to-claude-opus-4-8
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/model-deprecations
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/model-deprecations
   - provider: claude
@@ -244,10 +324,9 @@ models:
       - final-synthesis
     fallback: claude-sonnet-5
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#claude-opus-4-8-to-claude-sonnet-5
+    fallback_approval: fallback:claude:claude-opus-4-8-to-claude-sonnet-5
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-8
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
@@ -281,10 +360,9 @@ models:
       - security-analysis
     fallback: claude-opus-4-8
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#claude-sonnet-5-to-claude-opus-4-8
+    fallback_approval: fallback:claude:claude-sonnet-5-to-claude-opus-4-8
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: codex
@@ -304,10 +382,9 @@ models:
       - migration-only
     fallback: gpt-5.6-terra
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#gpt-5.2-codex-to-gpt-5.6-terra
+    fallback_approval: fallback:codex:gpt-5.2-codex-to-gpt-5.6-terra
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://developers.openai.com/api/docs/models/gpt-5.2-codex
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://developers.openai.com/api/docs/models/gpt-5.2-codex
   - provider: codex
@@ -331,8 +408,7 @@ models:
     fallback_policy: same-profile
     fallback_approval: null
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://learn.chatgpt.com/docs/models
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://learn.chatgpt.com/docs/models
   - provider: codex
@@ -366,10 +442,9 @@ models:
       - supervision
     fallback: gpt-5.6-terra
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#gpt-5.6-to-gpt-5.6-terra
+    fallback_approval: fallback:codex:gpt-5.6-to-gpt-5.6-terra
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://developers.openai.com/api/docs/models/gpt-5.6-sol
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://developers.openai.com/api/docs/models/gpt-5.6-sol
   - provider: codex
@@ -400,10 +475,9 @@ models:
       - repository-exploration
     fallback: gpt-5.6
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#gpt-5.6-terra-to-gpt-5.6
+    fallback_approval: fallback:codex:gpt-5.6-terra-to-gpt-5.6
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://developers.openai.com/api/docs/models/gpt-5.6-terra
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://developers.openai.com/api/docs/models/gpt-5.6-terra
   - provider: gemini
@@ -431,10 +505,9 @@ models:
       - repetitive-organization
     fallback: gemini-3.5-flash
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#gemini-3.1-flash-lite-to-gemini-3.5-flash
+    fallback_approval: fallback:gemini:gemini-3.1-flash-lite-to-gemini-3.5-flash
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite
   - provider: gemini
@@ -454,10 +527,9 @@ models:
       - migration-only
     fallback: gemini-3.1-flash-lite
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#gemini-3.1-flash-lite-preview-to-gemini-3.1-flash-lite
+    fallback_approval: fallback:gemini:gemini-3.1-flash-lite-preview-to-gemini-3.1-flash-lite
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://ai.google.dev/gemini-api/docs/deprecations
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://ai.google.dev/gemini-api/docs/deprecations
   - provider: gemini
@@ -485,8 +557,7 @@ models:
     fallback_policy: same-profile
     fallback_approval: null
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
   - provider: gemini
@@ -517,10 +588,9 @@ models:
       - supervision
     fallback: gemini-3.1-flash-lite
     fallback_policy: approved-degraded
-    fallback_approval: spec:132-agent-governance-harness-convergence#gemini-3.5-flash-to-gemini-3.1-flash-lite
+    fallback_approval: fallback:gemini:gemini-3.5-flash-to-gemini-3.1-flash-lite
     cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash
-    cutoff_evidence_observed_at: "2026-07-16T01:17:36+09:00"
+    cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash
 semantic_events:
@@ -675,7 +745,7 @@ semantic_events:
         capability_status: supported
         adoption_status: adopted
         provider_can_block: true
-        repository_hook_mode: blocking
+        repository_hook_mode: retry
         timeout_unit: seconds
         timeout_value: 600
       - provider: gemini

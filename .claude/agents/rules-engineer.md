@@ -6,6 +6,7 @@ tools:
 - Grep
 - Glob
 model: claude-sonnet-5
+effort: high
 permissionMode: plan
 skills:
 - policy-gate-agent

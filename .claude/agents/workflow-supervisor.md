@@ -7,6 +7,7 @@ tools:
 - Glob
 - Agent
 model: claude-opus-4-8
+effort: high
 permissionMode: plan
 skills:
 - execution-plan-agent

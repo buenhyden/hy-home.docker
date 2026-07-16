@@ -386,7 +386,7 @@ template_stop_gate() {
     return 0
   fi
 
-  GATE_OUTPUT="$output" python3 - <<'PY'
+  GATE_OUTPUT="$output" HOOK_INPUT="$INPUT" python3 - <<'PY'
 import json
 import os
 
@@ -400,7 +400,17 @@ if output:
     reason = f"{reason}\n\nValidator output:\n{output[-6000:]}"
 
 if os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex":
-    print(json.dumps({"continue": False, "stopReason": reason}))
+    try:
+        payload = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
+    except (TypeError, ValueError):
+        payload = {}
+    if isinstance(payload, dict) and payload.get("stop_hook_active") is True:
+        print(json.dumps({
+            "continue": False,
+            "stopReason": f"Stop retry limit reached. {reason}",
+        }))
+    else:
+        print(json.dumps({"decision": "block", "reason": reason}))
 else:
     print(json.dumps({
         "decision": "block",
@@ -455,7 +465,7 @@ PY
     return 0
   fi
 
-  GATE_OUTPUT="$output" python3 - <<'PY'
+  GATE_OUTPUT="$output" HOOK_INPUT="$INPUT" python3 - <<'PY'
 import json
 import os
 
@@ -472,7 +482,17 @@ if paths:
     reason = f"{reason}\n\nUncommitted paths:\n{paths}"
 
 if os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex":
-    print(json.dumps({"continue": False, "stopReason": reason}))
+    try:
+        payload = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
+    except (TypeError, ValueError):
+        payload = {}
+    if isinstance(payload, dict) and payload.get("stop_hook_active") is True:
+        print(json.dumps({
+            "continue": False,
+            "stopReason": f"Stop retry limit reached. {reason}",
+        }))
+    else:
+        print(json.dumps({"decision": "block", "reason": reason}))
 else:
     print(json.dumps({
         "decision": "block",

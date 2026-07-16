@@ -32,13 +32,15 @@ fallbacks, source URLs, and the historical cutoff are owned by
 
 - `workflow-supervisor` is the only supervisor-tier role. Other agents select
   the profile declared in `contracts/agent-catalog.yaml`.
-- Generated Claude agents do not emit per-agent `thinking` or `effort`
-  frontmatter. Stage 00 records thinking mode and effort as separate controls:
-  Fable/Mythos use always-on adaptive thinking, Opus 4.8 uses opt-in adaptive
-  thinking, Sonnet 5 defaults to adaptive thinking and permits disabling it,
-  and Haiku 4.5 uses extended thinking. Supported effort values for Fable,
-  Mythos, Opus 4.8, and Sonnet 5 are `low`, `medium`, `high`, `xhigh`, and
-  `max`; the selected value is applied only by an approved runtime invocation.
+- Generated Claude agents never emit per-agent `thinking`; Claude inherits
+  thinking from the session. Native subagent `effort` is distinct and
+  overrides the session value, so Sonnet and Opus work profiles emit `high`
+  while the Haiku profile omits the key. Stage 00 separately records model
+  capability: Fable/Mythos use always-on adaptive thinking, Opus 4.8 uses
+  opt-in adaptive thinking, Sonnet 5 defaults to adaptive thinking and permits
+  disabling it, and Haiku 4.5 uses extended thinking. Supported effort values
+  for Fable, Mythos, Opus, and Sonnet are `low`, `medium`, `high`, `xhigh`, and
+  `max`.
 - Codex TOML adapters include `model_reasoning_effort`. The repository pins
   only controls allowed by the selected model record.
 - Gemini adapters select a model but do not invent a per-agent sandbox or
@@ -50,9 +52,14 @@ fallbacks, source URLs, and the historical cutoff are owned by
   entitlement/runtime acceptance at `needs_revalidation`.
 - Fable, Spark, Mythos, deprecated entries, and Gemini Pro preview are
   catalog-only. Mutable catalogs retrieved after the cutoff are explicitly
-  `historical-state-unverified`. A degraded fallback must carry an exact
-  `source-model-to-fallback-model` approval edge; Sonnet 5 complex work may
-  escalate to Opus 4.8 only through that recorded edge.
+  `historical-state-unverified`. A degraded fallback references one typed
+  provider/source/target/profile edge in `fallback_approvals`, whose authority
+  resolves to Spec 132 `#approved-fallback-edges`; Sonnet 5 complex work may
+  escalate to Opus 4.8 only through that recorded edge. Historical status can
+  become verified only through a typed evidence record on an allowlisted
+  official domain with `published_at` at or before cutoff and `observed_at`
+  equal to retrieval. The current evidence registry is intentionally empty,
+  including for unresolved GPT-5.6 history.
 
 ### Model and Provider Adapter Change Protocol
 

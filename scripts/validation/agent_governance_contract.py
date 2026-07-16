@@ -82,6 +82,8 @@ PROVIDER_TOP_FIELDS = {
     "providers",
     "compatibility_surfaces",
     "work_profiles",
+    "fallback_approvals",
+    "cutoff_evidence",
     "models",
     "semantic_events",
 }
@@ -204,7 +206,22 @@ COMPATIBILITY_FIELDS = {
 }
 WORK_PROFILE_FIELDS = {"profile_id", "description", "defaults"}
 WORK_PROFILE_DEFAULT_REASONING_FIELDS = {"provider", "model_id", "reasoning"}
-WORK_PROFILE_DEFAULT_CLAUDE_FIELDS = {"provider", "model_id", "thinking", "effort"}
+WORK_PROFILE_DEFAULT_CLAUDE_FIELDS = {"provider", "model_id", "effort"}
+FALLBACK_APPROVAL_FIELDS = {
+    "approval_id",
+    "provider",
+    "source_model_id",
+    "target_model_id",
+    "work_profiles",
+    "reference",
+}
+CUTOFF_EVIDENCE_FIELDS = {
+    "evidence_id",
+    "provider",
+    "source_url",
+    "published_at",
+    "observed_at",
+}
 MODEL_COMMON_FIELDS = {
     "provider",
     "model_id",
@@ -221,8 +238,7 @@ MODEL_COMMON_FIELDS = {
     "fallback_policy",
     "fallback_approval",
     "cutoff_evidence_status",
-    "cutoff_evidence_url",
-    "cutoff_evidence_observed_at",
+    "cutoff_evidence_id",
     "checked_at",
     "source_url",
 }
@@ -297,7 +313,49 @@ REASONING_CONTROL_KINDS = {
 AGENT_CODING_FITS = {"bounded", "exceptional", "historical", "strong"}
 CUTOFF_EVIDENCE_STATES = {"historical-state-unverified", "verified-before-cutoff"}
 FALLBACK_POLICIES = {"approved-degraded", "same-profile"}
-REPOSITORY_HOOK_MODES = {"advisory", "blocking", "deny-retry", "unsupported"}
+REPOSITORY_HOOK_MODES = {
+    "advisory",
+    "blocking",
+    "deny-retry",
+    "retry",
+    "unsupported",
+}
+FALLBACK_APPROVAL_REFERENCE = (
+    "docs/03.specs/132-agent-governance-harness-convergence/"
+    "spec.md#approved-fallback-edges"
+)
+PROVIDER_OFFICIAL_EVIDENCE_HOSTS = MappingProxyType(
+    {
+        "claude": frozenset({"platform.claude.com"}),
+        "codex": frozenset({"developers.openai.com", "learn.chatgpt.com"}),
+        "gemini": frozenset({"ai.google.dev"}),
+    }
+)
+EXPECTED_REPOSITORY_HOOK_MODES = MappingProxyType(
+    {
+        ("post-tool", "claude"): "advisory",
+        ("post-tool", "codex"): "advisory",
+        ("post-tool", "gemini"): "advisory",
+        ("pre-compaction", "claude"): "advisory",
+        ("pre-compaction", "codex"): "advisory",
+        ("pre-compaction", "gemini"): "advisory",
+        ("pre-tool", "claude"): "advisory",
+        ("pre-tool", "codex"): "advisory",
+        ("pre-tool", "gemini"): "advisory",
+        ("session-end", "claude"): "advisory",
+        ("session-end", "codex"): "unsupported",
+        ("session-end", "gemini"): "advisory",
+        ("session-start", "claude"): "advisory",
+        ("session-start", "codex"): "advisory",
+        ("session-start", "gemini"): "advisory",
+        ("stop", "claude"): "blocking",
+        ("stop", "codex"): "retry",
+        ("stop", "gemini"): "deny-retry",
+        ("user-prompt-intake", "claude"): "advisory",
+        ("user-prompt-intake", "codex"): "advisory",
+        ("user-prompt-intake", "gemini"): "advisory",
+    }
+)
 
 DOMAIN_OWNER_REFERENCE_FIELDS = MappingProxyType(
     {
@@ -920,7 +978,7 @@ def _check_source_url(
     location: str,
     findings: list[Finding],
     source: str,
-) -> None:
+) -> bool:
     valid = False
     if isinstance(value, str):
         parsed = urlparse(value)
@@ -935,6 +993,7 @@ def _check_source_url(
             "invalid-source-url",
             source,
         )
+    return valid
 
 
 def _canonical_repo_path(value: str) -> str:
@@ -2166,7 +2225,9 @@ def _unknown_reference(
 
 
 def _validate_provider_contract(
-    document: Mapping[str, object], findings: list[Finding]
+    root: pathlib.Path,
+    document: Mapping[str, object],
+    findings: list[Finding],
 ) -> None:
     path = CONTRACT_RELATIVE_PATHS["providers"].as_posix()
     source = path
@@ -2363,9 +2424,7 @@ def _validate_provider_contract(
         document.get("work_profiles"), path, "work_profiles", findings, source
     )
     profile_ids: list[str] = []
-    profile_defaults: list[
-        tuple[str, str, str, str | None, str | None, str | None]
-    ] = []
+    profile_defaults: list[tuple[str, str, str, str | None, str | None]] = []
     if work_profiles is not None:
         for index, raw in enumerate(work_profiles):
             location = f"work_profiles[{index}]"
@@ -2412,7 +2471,6 @@ def _validate_provider_contract(
                     provider = default.get("provider")
                     model_id = default.get("model_id")
                     reasoning = default.get("reasoning")
-                    thinking = default.get("thinking")
                     effort = default.get("effort")
                     if _check_string(
                         provider, path, f"{default_location}.provider", findings, source
@@ -2422,13 +2480,6 @@ def _validate_provider_contract(
                         model_id, path, f"{default_location}.model_id", findings, source
                     )
                     if provider == "claude":
-                        _check_string(
-                            thinking,
-                            path,
-                            f"{default_location}.thinking",
-                            findings,
-                            source,
-                        )
                         if effort is not None:
                             _check_string(
                                 effort,
@@ -2455,7 +2506,6 @@ def _validate_provider_contract(
                                 str(provider),
                                 str(model_id),
                                 str(reasoning) if isinstance(reasoning, str) else None,
-                                str(thinking) if isinstance(thinking, str) else None,
                                 str(effort) if isinstance(effort, str) else None,
                             )
                         )
@@ -2475,9 +2525,213 @@ def _validate_provider_contract(
     _check_sorted_unique_ids(profile_ids, path, "work_profiles", findings, source)
     profile_set = set(profile_ids)
 
+    approvals = _as_sequence(
+        document.get("fallback_approvals"),
+        path,
+        "fallback_approvals",
+        findings,
+        source,
+    )
+    approval_ids: list[str] = []
+    approval_entries: dict[str, Mapping[str, object]] = {}
+    if approvals is not None:
+        for index, raw in enumerate(approvals):
+            location = f"fallback_approvals[{index}]"
+            entry = _check_fields(
+                raw,
+                FALLBACK_APPROVAL_FIELDS,
+                path,
+                location,
+                findings,
+                source,
+            )
+            if entry is None:
+                continue
+            approval_id = entry.get("approval_id")
+            provider = entry.get("provider")
+            source_model = entry.get("source_model_id")
+            target_model = entry.get("target_model_id")
+            reference = entry.get("reference")
+            if _check_string(
+                approval_id,
+                path,
+                f"{location}.approval_id",
+                findings,
+                source,
+            ):
+                approval_ids.append(str(approval_id))
+                approval_entries[str(approval_id)] = entry
+            if not _is_registered_string(provider, provider_set):
+                _unknown_reference(findings, path, f"{location}.provider", source)
+            _check_string(
+                source_model,
+                path,
+                f"{location}.source_model_id",
+                findings,
+                source,
+            )
+            _check_string(
+                target_model,
+                path,
+                f"{location}.target_model_id",
+                findings,
+                source,
+            )
+            approval_profiles = (
+                _check_string_list(
+                    entry.get("work_profiles"),
+                    path,
+                    f"{location}.work_profiles",
+                    findings,
+                    source,
+                    allow_empty=True,
+                    require_sorted=True,
+                )
+                or ()
+            )
+            for approval_profile in approval_profiles:
+                if approval_profile not in profile_set:
+                    _unknown_reference(
+                        findings, path, f"{location}.work_profiles", source
+                    )
+            _check_string(
+                reference,
+                path,
+                f"{location}.reference",
+                findings,
+                source,
+            )
+            reference_valid = reference == FALLBACK_APPROVAL_REFERENCE
+            if reference_valid:
+                reference_path, _anchor = FALLBACK_APPROVAL_REFERENCE.split("#", 1)
+                try:
+                    reference_text = _read_root_confined_regular_text(
+                        root, pathlib.PurePosixPath(reference_path)
+                    )
+                except (FileNotFoundError, OSError, UnicodeError, _UnsafeRootFileError):
+                    reference_valid = False
+                else:
+                    reference_valid = bool(
+                        re.search(
+                            r"(?m)^### Approved Fallback Edges\s*$", reference_text
+                        )
+                    )
+            if not reference_valid:
+                _add(
+                    findings,
+                    "AGC-MODEL-FALLBACK-APPROVAL-REFERENCE",
+                    path,
+                    f"{location}.reference",
+                    "resolvable-approved-fallback-edge-authority",
+                    "missing-or-wrong-fallback-authority",
+                    source,
+                )
+    _check_sorted_unique_ids(approval_ids, path, "fallback_approvals", findings, source)
+
+    evidence = _as_sequence(
+        document.get("cutoff_evidence"),
+        path,
+        "cutoff_evidence",
+        findings,
+        source,
+    )
+    evidence_ids: list[str] = []
+    evidence_entries: dict[str, Mapping[str, object]] = {}
+    if evidence is not None:
+        for index, raw in enumerate(evidence):
+            location = f"cutoff_evidence[{index}]"
+            entry = _check_fields(
+                raw,
+                CUTOFF_EVIDENCE_FIELDS,
+                path,
+                location,
+                findings,
+                source,
+            )
+            if entry is None:
+                continue
+            evidence_id = entry.get("evidence_id")
+            provider = entry.get("provider")
+            source_url = entry.get("source_url")
+            published_at = entry.get("published_at")
+            observed_at = entry.get("observed_at")
+            if _check_string(
+                evidence_id,
+                path,
+                f"{location}.evidence_id",
+                findings,
+                source,
+            ):
+                evidence_ids.append(str(evidence_id))
+                evidence_entries[str(evidence_id)] = entry
+            if not _is_registered_string(provider, provider_set):
+                _unknown_reference(findings, path, f"{location}.provider", source)
+            source_valid = _check_source_url(
+                source_url,
+                path,
+                f"{location}.source_url",
+                findings,
+                source,
+            )
+            if source_valid:
+                hostname = (urlparse(str(source_url)).hostname or "").lower()
+                allowed_hosts = PROVIDER_OFFICIAL_EVIDENCE_HOSTS.get(str(provider), ())
+                if hostname not in allowed_hosts:
+                    _add(
+                        findings,
+                        "AGC-MODEL-CUTOFF-EVIDENCE-SOURCE",
+                        path,
+                        f"{location}.source_url",
+                        "provider-allowlisted-official-domain",
+                        "unofficial-evidence-domain",
+                        source,
+                    )
+            _check_checked_at(
+                published_at,
+                path,
+                f"{location}.published_at",
+                findings,
+                source,
+            )
+            _check_checked_at(
+                observed_at,
+                path,
+                f"{location}.observed_at",
+                findings,
+                source,
+            )
+            try:
+                published = dt.datetime.fromisoformat(str(published_at))
+                observed = dt.datetime.fromisoformat(str(observed_at))
+            except ValueError:
+                published = None
+                observed = None
+            if (
+                published is None
+                or observed is None
+                or cutoff_at is None
+                or published.tzinfo is None
+                or observed.tzinfo is None
+                or cutoff_at.tzinfo is None
+                or published > cutoff_at
+                or observed_at != document.get("retrieved_at")
+            ):
+                _add(
+                    findings,
+                    "AGC-MODEL-CUTOFF-EVIDENCE-DATE",
+                    path,
+                    location,
+                    "published-at-or-before-cutoff-and-observed-at-retrieval",
+                    "unbound-or-backdated-evidence-time",
+                    source,
+                )
+    _check_sorted_unique_ids(evidence_ids, path, "cutoff_evidence", findings, source)
+
     models = _as_sequence(document.get("models"), path, "models", findings, source)
     model_keys: list[tuple[str, str]] = []
     model_entries: dict[tuple[str, str], Mapping[str, object]] = {}
+    referenced_approval_ids: set[str] = set()
+    referenced_evidence_ids: set[str] = set()
     if models is not None:
         for index, raw in enumerate(models):
             location = f"models[{index}]"
@@ -2743,20 +2997,47 @@ def _validate_provider_contract(
                     findings,
                     source,
                 )
-                expected_approval = (
-                    f"spec:132-agent-governance-harness-convergence#"
-                    f"{model_id}-to-{entry.get('fallback')}"
-                )
-                if approval != expected_approval:
+                approval_entry = approval_entries.get(str(approval))
+                if approval_entry is None:
                     _add(
                         findings,
-                        "AGC-MODEL-FALLBACK-APPROVAL",
+                        "AGC-MODEL-FALLBACK-APPROVAL-REFERENCE",
                         path,
                         f"{location}.fallback_approval",
-                        "exact-model-fallback-edge",
-                        "approval-edge-mismatch",
+                        "registered-fallback-approval",
+                        "missing-fallback-approval",
                         source,
                     )
+                else:
+                    referenced_approval_ids.add(str(approval))
+                    expected_profiles = tuple(
+                        item
+                        for item in _sequence_or_empty(entry.get("work_profiles"))
+                        if isinstance(item, str)
+                    )
+                    approval_profiles = tuple(
+                        item
+                        for item in _sequence_or_empty(
+                            approval_entry.get("work_profiles")
+                        )
+                        if isinstance(item, str)
+                    )
+                    if (
+                        approval_entry.get("provider") != provider
+                        or approval_entry.get("source_model_id") != model_id
+                        or approval_entry.get("target_model_id")
+                        != entry.get("fallback")
+                        or approval_profiles != expected_profiles
+                    ):
+                        _add(
+                            findings,
+                            "AGC-MODEL-FALLBACK-APPROVAL-EDGE",
+                            path,
+                            f"{location}.fallback_approval",
+                            "exact-provider-source-target-profile-edge",
+                            "fallback-approval-edge-mismatch",
+                            source,
+                        )
             elif approval is not None:
                 _add(
                     findings,
@@ -2775,22 +3056,7 @@ def _validate_provider_contract(
                 findings,
                 source,
             )
-            evidence_url = entry.get("cutoff_evidence_url")
-            evidence_observed_at = entry.get("cutoff_evidence_observed_at")
-            _check_source_url(
-                evidence_url,
-                path,
-                f"{location}.cutoff_evidence_url",
-                findings,
-                source,
-            )
-            _check_checked_at(
-                evidence_observed_at,
-                path,
-                f"{location}.cutoff_evidence_observed_at",
-                findings,
-                source,
-            )
+            evidence_id = entry.get("cutoff_evidence_id")
             _check_checked_at(
                 entry.get("checked_at"),
                 path,
@@ -2816,27 +3082,39 @@ def _validate_provider_contract(
                     source,
                 )
             if entry.get("cutoff_evidence_status") == "verified-before-cutoff":
-                try:
-                    observed = dt.datetime.fromisoformat(str(evidence_observed_at))
-                except ValueError:
-                    observed = None
-                if (
-                    observed is None
-                    or cutoff_at is None
-                    or observed.tzinfo is None
-                    or cutoff_at.tzinfo is None
-                    or observed > cutoff_at
-                    or evidence_url == entry.get("source_url")
-                ):
+                evidence_entry = evidence_entries.get(str(evidence_id))
+                if not isinstance(evidence_id, str) or evidence_entry is None:
                     _add(
                         findings,
-                        "AGC-MODEL-CUTOFF-EVIDENCE",
+                        "AGC-MODEL-CUTOFF-EVIDENCE-REFERENCE",
                         path,
-                        f"{location}.cutoff_evidence_status",
-                        "dated-official-evidence-at-or-before-cutoff",
-                        "mutable-or-post-cutoff-evidence",
+                        f"{location}.cutoff_evidence_id",
+                        "registered-dated-official-evidence",
+                        "missing-cutoff-evidence-reference",
                         source,
                     )
+                else:
+                    referenced_evidence_ids.add(evidence_id)
+                    if evidence_entry.get("provider") != provider:
+                        _add(
+                            findings,
+                            "AGC-MODEL-CUTOFF-EVIDENCE-REFERENCE",
+                            path,
+                            f"{location}.cutoff_evidence_id",
+                            "same-provider-evidence-reference",
+                            "provider-evidence-mismatch",
+                            source,
+                        )
+            elif evidence_id is not None:
+                _add(
+                    findings,
+                    "AGC-MODEL-CUTOFF-EVIDENCE-REFERENCE",
+                    path,
+                    f"{location}.cutoff_evidence_id",
+                    "null-for-unverified-historical-state",
+                    "unverified-model-has-evidence-reference",
+                    source,
+                )
     if len(model_keys) != len(set(model_keys)):
         _add(
             findings,
@@ -2855,6 +3133,26 @@ def _validate_provider_contract(
             "models",
             "provider-model-order",
             "non-provider-model-order",
+            source,
+        )
+    for approval_id in sorted(set(approval_entries) - referenced_approval_ids):
+        _add(
+            findings,
+            "AGC-MODEL-FALLBACK-APPROVAL-EDGE",
+            path,
+            "fallback_approvals",
+            "one-model-edge-per-approval",
+            "unreferenced-fallback-approval",
+            source,
+        )
+    for evidence_id in sorted(set(evidence_entries) - referenced_evidence_ids):
+        _add(
+            findings,
+            "AGC-MODEL-CUTOFF-EVIDENCE-REFERENCE",
+            path,
+            "cutoff_evidence",
+            "referenced-model-evidence",
+            "unreferenced-cutoff-evidence",
             source,
         )
     for key, entry in model_entries.items():
@@ -2909,7 +3207,7 @@ def _validate_provider_contract(
                     "unapproved-profile-degradation",
                     source,
                 )
-    for profile_id, provider, model_id, reasoning, thinking, effort in profile_defaults:
+    for profile_id, provider, model_id, reasoning, effort in profile_defaults:
         model = model_entries.get((provider, model_id))
         if model is None:
             _unknown_reference(
@@ -2930,18 +3228,15 @@ def _validate_provider_contract(
                 source,
             )
         if provider == "claude":
-            controls = _sequence_or_empty(model.get("repository_thinking_controls"))
             efforts = _sequence_or_empty(model.get("repository_effort_controls"))
-            if thinking not in controls or (
-                effort is not None and effort not in efforts
-            ):
+            if effort is not None and effort not in efforts:
                 _add(
                     findings,
                     "AGC-MODEL-REASONING-MISMATCH",
                     path,
                     f"work_profiles.{profile_id}.defaults.{provider}",
-                    "model-supported-thinking-and-effort",
-                    "unsupported-thinking-or-effort",
+                    "model-supported-native-agent-effort",
+                    "unsupported-native-agent-effort",
                     source,
                 )
         else:
@@ -3070,6 +3365,19 @@ def _validate_provider_contract(
                         findings,
                         source,
                     )
+                    expected_mode = EXPECTED_REPOSITORY_HOOK_MODES.get(
+                        (str(event_id), str(provider))
+                    )
+                    if expected_mode is None or hook_mode != expected_mode:
+                        _add(
+                            findings,
+                            "AGC-EVENT-SEMANTICS",
+                            path,
+                            f"{binding_location}.repository_hook_mode",
+                            "exact-provider-event-repository-mode",
+                            "provider-event-mode-mismatch",
+                            source,
+                        )
                     if capability == "unsupported" and (
                         can_block is not False or hook_mode != "unsupported"
                     ):
@@ -3090,6 +3398,16 @@ def _validate_provider_contract(
                             f"{binding_location}.repository_hook_mode",
                             "provider-block-capability",
                             "blocking-without-capability",
+                            source,
+                        )
+                    if hook_mode == "retry" and can_block is not True:
+                        _add(
+                            findings,
+                            "AGC-EVENT-BLOCKING-MISMATCH",
+                            path,
+                            f"{binding_location}.repository_hook_mode",
+                            "provider-retry-capability",
+                            "retry-without-capability",
                             source,
                         )
                     if hook_mode == "deny-retry" and can_block is not True:
@@ -3182,12 +3500,9 @@ def validate_contract_bundle(
 ) -> list[Finding]:
     """Validate contract schema, identities, references, and deterministic policy."""
 
-    del (
-        root
-    )  # Fixed contract paths are repository-relative and validated independently.
     findings: list[Finding] = []
     _validate_artifact_contract(bundle.artifacts, findings)
-    _validate_provider_contract(bundle.providers, findings)
+    _validate_provider_contract(root, bundle.providers, findings)
     _validate_catalog_contract(
         bundle.catalog, bundle.providers, bundle.artifacts, findings
     )
@@ -4201,7 +4516,7 @@ def _provider_native_schema_finding(
 def _validate_provider_native_surfaces(
     reader: _RepositoryReader, bundle: ContractBundle, findings: list[Finding]
 ) -> None:
-    defaults: dict[tuple[str, str], tuple[str, str]] = {}
+    defaults: dict[tuple[str, str], tuple[str, str | None]] = {}
     for profile in _sequence_or_empty(bundle.providers.get("work_profiles")):
         if not isinstance(profile, Mapping):
             continue
@@ -4213,13 +4528,13 @@ def _validate_provider_native_surfaces(
                 continue
             provider = entry.get("provider")
             model_id = entry.get("model_id")
-            reasoning = entry.get("reasoning")
-            if reasoning is None:
-                reasoning = entry.get("effort") or entry.get("thinking")
-            if all(isinstance(item, str) for item in (provider, model_id, reasoning)):
+            control = (
+                entry.get("effort") if provider == "claude" else entry.get("reasoning")
+            )
+            if isinstance(provider, str) and isinstance(model_id, str):
                 defaults[(profile_id, str(provider))] = (
                     str(model_id),
-                    str(reasoning),
+                    str(control) if isinstance(control, str) else None,
                 )
 
     markdown_schemas = {
@@ -4276,9 +4591,17 @@ def _validate_provider_native_surfaces(
             if text is None:
                 continue
             keys, metadata = _frontmatter(text)
+            expected = defaults.get((str(profile), provider))
+            expected_schema = set(markdown_schemas[provider])
+            if (
+                provider == "claude"
+                and expected is not None
+                and expected[1] is not None
+            ):
+                expected_schema.add("effort")
             if (
                 metadata is None
-                or set(keys) != markdown_schemas[provider]
+                or set(keys) != expected_schema
                 or metadata.get("name") != agent_id
                 or source_marker not in text
             ):
@@ -4287,7 +4610,6 @@ def _validate_provider_native_surfaces(
                 )
                 continue
             if provider != "agents-md":
-                expected = defaults.get((str(profile), provider))
                 if expected is None or metadata.get("model") != expected[0]:
                     _provider_native_schema_finding(
                         findings,
@@ -4295,6 +4617,14 @@ def _validate_provider_native_surfaces(
                         "frontmatter.model",
                         "profile-model-mismatch",
                     )
+                if provider == "claude" and expected is not None:
+                    if metadata.get("effort") != expected[1] or "thinking" in metadata:
+                        _provider_native_schema_finding(
+                            findings,
+                            relative,
+                            "frontmatter.effort",
+                            "profile-effort-or-thinking-mismatch",
+                        )
             tools = metadata.get("tools")
             if provider in {"claude", "gemini"} and not isinstance(
                 tools, (list, tuple)

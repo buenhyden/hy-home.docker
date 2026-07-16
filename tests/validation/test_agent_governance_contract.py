@@ -65,6 +65,14 @@ def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
         governance,
         dirs_exist_ok=True,
     )
+    spec_source = (
+        ROOT / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
+    )
+    spec_target = (
+        root / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
+    )
+    spec_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(spec_source, spec_target)
 
 
 def mutate_yaml(root: pathlib.Path, name: str, mutate) -> None:
@@ -155,9 +163,14 @@ class ContractLoadingTests(unittest.TestCase):
             self.assertEqual("AGC-YAML-NONSTRING-KEY", context.exception.code)
             self.assertNotIn("sentinel", str(context.exception))
 
-    def test_fixed_contract_paths_reject_external_symlinks_without_reading_targets(self) -> None:
+    def test_fixed_contract_paths_reject_external_symlinks_without_reading_targets(
+        self,
+    ) -> None:
         for relative in contract.CONTRACT_RELATIVE_PATHS.values():
-            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(relative=relative),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_contracts(root)
                 outside = root.parent / f"outside-{pathlib.Path(relative).name}"
@@ -174,7 +187,9 @@ class ContractLoadingTests(unittest.TestCase):
                 finally:
                     outside.unlink(missing_ok=True)
 
-    def test_contract_reader_fails_closed_for_nonregular_encoding_and_read_errors(self) -> None:
+    def test_contract_reader_fails_closed_for_nonregular_encoding_and_read_errors(
+        self,
+    ) -> None:
         original_open = os.open
         original_read = os.read
         cases = (
@@ -185,9 +200,10 @@ class ContractLoadingTests(unittest.TestCase):
         )
         for relative in contract.CONTRACT_RELATIVE_PATHS.values():
             for mutation, expected in cases:
-                with self.subTest(
-                    relative=relative, mutation=mutation
-                ), tempfile.TemporaryDirectory() as directory:
+                with (
+                    self.subTest(relative=relative, mutation=mutation),
+                    tempfile.TemporaryDirectory() as directory,
+                ):
                     root = pathlib.Path(directory)
                     copy_contracts(root)
                     path = root / relative
@@ -218,10 +234,13 @@ class ContractLoadingTests(unittest.TestCase):
                                 raise PermissionError("read-sentinel")
                             return original_read(descriptor, size)
 
-                        with mock.patch.object(
-                            contract.os, "open", new=record_target_open
-                        ), mock.patch.object(
-                            contract.os, "read", new=fail_target_read
+                        with (
+                            mock.patch.object(
+                                contract.os, "open", new=record_target_open
+                            ),
+                            mock.patch.object(
+                                contract.os, "read", new=fail_target_read
+                            ),
                         ):
                             with self.assertRaises(
                                 contract.ContractLoadError
@@ -234,7 +253,9 @@ class ContractLoadingTests(unittest.TestCase):
                     self.assertEqual(relative.as_posix(), context.exception.path)
                     self.assertNotIn(directory, str(context.exception))
 
-    def test_contract_reader_opens_and_reads_the_same_confined_file_descriptor(self) -> None:
+    def test_contract_reader_opens_and_reads_the_same_confined_file_descriptor(
+        self,
+    ) -> None:
         relative = contract.CONTRACT_RELATIVE_PATHS["artifacts"]
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -259,12 +280,15 @@ class ContractLoadingTests(unittest.TestCase):
                 return original_open(candidate, flags, mode, dir_fd=dir_fd)
 
             try:
-                with mock.patch.object(
-                    contract.os, "open", new=swap_before_final_open
-                ), mock.patch.object(
-                    pathlib.Path,
-                    "read_text",
-                    side_effect=AssertionError("path was reopened after validation"),
+                with (
+                    mock.patch.object(contract.os, "open", new=swap_before_final_open),
+                    mock.patch.object(
+                        pathlib.Path,
+                        "read_text",
+                        side_effect=AssertionError(
+                            "path was reopened after validation"
+                        ),
+                    ),
                 ):
                     with self.assertRaises(contract.ContractLoadError) as context:
                         contract.load_contract_bundle(root)
@@ -274,7 +298,9 @@ class ContractLoadingTests(unittest.TestCase):
             finally:
                 outside.unlink(missing_ok=True)
 
-    def test_public_artifact_contract_loader_is_confined_and_duplicate_key_safe(self) -> None:
+    def test_public_artifact_contract_loader_is_confined_and_duplicate_key_safe(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             registry = root / "registry.yaml"
@@ -295,10 +321,14 @@ class ContractLoadingTests(unittest.TestCase):
                 registry.symlink_to(outside)
                 with self.assertRaises(contract.ContractLoadError) as symlink_context:
                     contract.load_artifact_contract(root, registry)
-                self.assertEqual("AGC-CONTRACT-UNSAFE-FILE", symlink_context.exception.code)
+                self.assertEqual(
+                    "AGC-CONTRACT-UNSAFE-FILE", symlink_context.exception.code
+                )
                 with self.assertRaises(contract.ContractLoadError) as outside_context:
                     contract.load_artifact_contract(root, outside)
-                self.assertEqual("AGC-CONTRACT-UNSAFE-FILE", outside_context.exception.code)
+                self.assertEqual(
+                    "AGC-CONTRACT-UNSAFE-FILE", outside_context.exception.code
+                )
                 self.assertNotIn(str(root), str(symlink_context.exception))
                 self.assertNotIn(str(outside), str(outside_context.exception))
             finally:
@@ -346,14 +376,19 @@ class ContractSchemaTests(unittest.TestCase):
             ),
         )
         for mutate, expected in cases:
-            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(expected=expected),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_contracts(root)
                 mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
 
                 self.assertIn(expected, codes(validate_fixture(root)))
 
-    def test_artifact_profiles_require_unique_ids_sections_and_registered_values(self) -> None:
+    def test_artifact_profiles_require_unique_ids_sections_and_registered_values(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_contracts(root)
@@ -387,17 +422,17 @@ class ContractSchemaTests(unittest.TestCase):
                 codes(validate_fixture(root)),
             )
 
-    def test_artifact_pattern_overlap_fails_closed_for_recursive_and_class_globs(self) -> None:
+    def test_artifact_pattern_overlap_fails_closed_for_recursive_and_class_globs(
+        self,
+    ) -> None:
+        self.assertTrue(contract._artifact_patterns_overlap("docs/*/**", "docs/a/**"))
         self.assertTrue(
-            contract._artifact_patterns_overlap("docs/*/**", "docs/a/**")
-        )
-        self.assertTrue(
-            contract._artifact_patterns_overlap(
-                "docs/[ab]foo.md", "docs/[bc]foo.md"
-            )
+            contract._artifact_patterns_overlap("docs/[ab]foo.md", "docs/[bc]foo.md")
         )
 
-    def test_public_artifact_pattern_match_is_full_path_and_dot_directory_safe(self) -> None:
+    def test_public_artifact_pattern_match_is_full_path_and_dot_directory_safe(
+        self,
+    ) -> None:
         self.assertEqual(
             ".claude/CLAUDE.md",
             contract.normalize_repo_relative_path(".claude/CLAUDE.md"),
@@ -412,9 +447,7 @@ class ContractSchemaTests(unittest.TestCase):
             )
         )
         self.assertFalse(
-            contract.path_matches_artifact_pattern(
-                "nested/CLAUDE.md", "CLAUDE.md"
-            )
+            contract.path_matches_artifact_pattern("nested/CLAUDE.md", "CLAUDE.md")
         )
         self.assertFalse(
             contract.path_matches_artifact_pattern("docs/a.md", "docs/?.md")
@@ -434,8 +467,12 @@ class ContractSchemaTests(unittest.TestCase):
         relative = "/".join(["a"] * 1100 + ["target.md"])
 
         self.assertTrue(contract._path_matches_pattern(relative, "**/target.md"))
-        self.assertTrue(contract.path_matches_artifact_pattern(relative, "**/target.md"))
-        self.assertFalse(contract.path_matches_artifact_pattern(relative, "**/other.md"))
+        self.assertTrue(
+            contract.path_matches_artifact_pattern(relative, "**/target.md")
+        )
+        self.assertFalse(
+            contract.path_matches_artifact_pattern(relative, "**/other.md")
+        )
 
     def test_enumerated_patterns_reject_unsupported_glob_grammar(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -456,7 +493,10 @@ class ContractSchemaTests(unittest.TestCase):
             "docs/{../..,safe}/x",
             "{safe,/tmp}/x",
         ):
-            with self.subTest(pattern=pattern), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(pattern=pattern),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_contracts(root)
                 mutate_yaml(
@@ -503,7 +543,9 @@ class ContractSchemaTests(unittest.TestCase):
         )
         self.assertTrue(contract._is_supported_enumerated_pattern(pattern))
 
-    def test_brace_expansion_caps_actual_unique_partials_not_choice_product(self) -> None:
+    def test_brace_expansion_caps_actual_unique_partials_not_choice_product(
+        self,
+    ) -> None:
         pattern = "fixture/" + "{a,aa}" * 11 + ".md"
 
         self.assertEqual(
@@ -512,12 +554,16 @@ class ContractSchemaTests(unittest.TestCase):
         )
         self.assertTrue(contract._is_supported_enumerated_pattern(pattern))
 
-    def test_brace_expansion_rejects_excessive_group_count_without_recursion(self) -> None:
+    def test_brace_expansion_rejects_excessive_group_count_without_recursion(
+        self,
+    ) -> None:
         at_cap = "fixture/" + "{a,a}" * 64 + ".md"
         above_cap = "fixture/" + "{a,a}" * 65 + ".md"
         excessive = "fixture/" + "{a,a}" * 1100 + ".md"
 
-        self.assertEqual(("fixture/" + "a" * 64 + ".md",), contract._expand_braces(at_cap))
+        self.assertEqual(
+            ("fixture/" + "a" * 64 + ".md",), contract._expand_braces(at_cap)
+        )
         self.assertTrue(contract._is_supported_enumerated_pattern(at_cap))
         for pattern in (above_cap, excessive):
             with self.subTest(groups=pattern.count("{")):
@@ -525,7 +571,9 @@ class ContractSchemaTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     contract._expand_braces(pattern)
 
-    def test_bounded_brace_policy_is_shared_by_overlap_match_and_inventory(self) -> None:
+    def test_bounded_brace_policy_is_shared_by_overlap_match_and_inventory(
+        self,
+    ) -> None:
         pattern = "fixture/" + "{a,b}" * 11 + ".md"
 
         self.assertTrue(contract._artifact_patterns_overlap(pattern, "fixture/a.md"))
@@ -536,7 +584,9 @@ class ContractSchemaTests(unittest.TestCase):
         self.assertEqual((), inventory.missing_exact)
         self.assertTrue(inventory.enumeration_failed)
 
-    def test_contract_and_repository_cli_reject_overlimit_braces_value_free(self) -> None:
+    def test_contract_and_repository_cli_reject_overlimit_braces_value_free(
+        self,
+    ) -> None:
         over_cardinality = "fixture/" + "{a,b}" * 11 + ".md"
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -584,7 +634,9 @@ class ContractSchemaTests(unittest.TestCase):
             self.assertNotIn(str(root), result.stderr)
             self.assertNotIn(excessive_groups, result.stderr)
 
-    def test_contract_and_repository_cli_reject_overlength_pattern_value_free(self) -> None:
+    def test_contract_and_repository_cli_reject_overlength_pattern_value_free(
+        self,
+    ) -> None:
         over_length = "fixture/" + "x" * 4090
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -605,9 +657,7 @@ class ContractSchemaTests(unittest.TestCase):
             self.assertEqual(1, len(matching), contract.render_findings(findings))
             self.assertNotIn(over_length, contract.render_findings(findings))
 
-        large_bounded_cardinality = (
-            "fixture/" + "{a,b}" * 10 + "x" * 200_000 + ".md"
-        )
+        large_bounded_cardinality = "fixture/" + "{a,b}" * 10 + "x" * 200_000 + ".md"
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_contracts(root)
@@ -687,7 +737,9 @@ class ContractSchemaTests(unittest.TestCase):
 
             mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
             findings = validate_fixture(root)
-            self.assertEqual(2, sum(item.code == "AGC-PATH-UNSAFE" for item in findings))
+            self.assertEqual(
+                2, sum(item.code == "AGC-PATH-UNSAFE" for item in findings)
+            )
 
     def test_control_and_noncanonical_repo_paths_are_rejected(self) -> None:
         for value in (
@@ -721,7 +773,9 @@ class ContractSchemaTests(unittest.TestCase):
 
             mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
             findings = validate_fixture(root)
-            self.assertEqual(6, sum(item.code == "AGC-PATH-UNSAFE" for item in findings))
+            self.assertEqual(
+                6, sum(item.code == "AGC-PATH-UNSAFE" for item in findings)
+            )
 
     def test_canonically_equivalent_authority_patterns_still_overlap(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -834,7 +888,9 @@ class ContractSchemaTests(unittest.TestCase):
 
             def mutate(values) -> None:
                 values["agents"][1]["agent_id"] = values["agents"][0]["agent_id"]
-                values["functions"][1]["function_id"] = values["functions"][0]["function_id"]
+                values["functions"][1]["function_id"] = values["functions"][0][
+                    "function_id"
+                ]
 
             mutate_yaml(root, "agent-catalog.yaml", mutate)
             findings = validate_fixture(root)
@@ -879,14 +935,16 @@ class ContractSchemaTests(unittest.TestCase):
             copy_contracts(root)
 
             def mutate(values) -> None:
-                values["path_authority"][1]["path_patterns"][0] = values["path_authority"][0][
-                    "path_patterns"
-                ][0]
+                values["path_authority"][1]["path_patterns"][0] = values[
+                    "path_authority"
+                ][0]["path_patterns"][0]
 
             mutate_yaml(root, "agent-governance-artifacts.yaml", mutate)
             self.assertIn("AGC-AUTHORITY-OVERLAP", codes(validate_fixture(root)))
 
-    def test_role_catalog_requires_domain_owner_and_rules_engineer_authority(self) -> None:
+    def test_role_catalog_requires_domain_owner_and_rules_engineer_authority(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_contracts(root)
@@ -915,7 +973,9 @@ class ContractSchemaTests(unittest.TestCase):
                 locations,
             )
 
-    def test_function_catalog_requires_skill_creator_and_domain_owner_review(self) -> None:
+    def test_function_catalog_requires_skill_creator_and_domain_owner_review(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_contracts(root)
@@ -968,7 +1028,9 @@ class ContractSchemaTests(unittest.TestCase):
             ]
             self.assertEqual(1, len(matching))
 
-    def test_projection_targets_are_derived_from_providers_and_active_compatibility(self) -> None:
+    def test_projection_targets_are_derived_from_providers_and_active_compatibility(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_contracts(root)
@@ -1025,7 +1087,9 @@ class ContractSchemaTests(unittest.TestCase):
 
             def mutate(values) -> None:
                 ineligible = next(
-                    item for item in values["models"] if not item["repository_default_eligible"]
+                    item
+                    for item in values["models"]
+                    if not item["repository_default_eligible"]
                 )
                 eligible = next(
                     item
@@ -1036,7 +1100,9 @@ class ContractSchemaTests(unittest.TestCase):
                 eligible["fallback"] = ineligible["model_id"]
 
             mutate_yaml(root, "provider-models.yaml", mutate)
-            self.assertIn("AGC-MODEL-INELIGIBLE-FALLBACK", codes(validate_fixture(root)))
+            self.assertIn(
+                "AGC-MODEL-INELIGIBLE-FALLBACK", codes(validate_fixture(root))
+            )
 
     def test_findings_are_deterministic_and_rendered_without_raw_values(self) -> None:
         sentinel = "sentinel-do-not-render"
@@ -1123,16 +1189,24 @@ class Task3CatalogConvergenceTests(unittest.TestCase):
             sum(len(functions) for functions in agent_functions.values()),
         )
 
-        iac_text = (ROOT / "docs/00.agent-governance/agents/agents/iac-reviewer.md").read_text()
-        drift_text = (ROOT / "docs/00.agent-governance/agents/agents/drift-detector.md").read_text()
+        iac_text = (
+            ROOT / "docs/00.agent-governance/agents/agents/iac-reviewer.md"
+        ).read_text()
+        drift_text = (
+            ROOT / "docs/00.agent-governance/agents/agents/drift-detector.md"
+        ).read_text()
         self.assertIn("before mutation", iac_text)
         self.assertIn("after change", drift_text)
 
         for entry in bundle.catalog["functions"]:
             text = (ROOT / entry["catalog_path"]).read_text(encoding="utf-8")
-            self.assertNotIn("Provider-neutral orchestration function catalog entry", text)
+            self.assertNotIn(
+                "Provider-neutral orchestration function catalog entry", text
+            )
             procedure = text.split("## Procedure\n", 1)[1].split("\n## ", 1)[0]
-            self.assertGreaterEqual(procedure.count("\n1.") + procedure.count("\n2."), 2)
+            self.assertGreaterEqual(
+                procedure.count("\n1.") + procedure.count("\n2."), 2
+            )
 
     def test_catalog_documents_and_generated_path_migration_are_complete(self) -> None:
         bundle = contract.load_contract_bundle(ROOT)
@@ -1153,7 +1227,9 @@ class Task3CatalogConvergenceTests(unittest.TestCase):
         self.assertEqual(22, len(list((ROOT / ".claude/skills").glob("*/SKILL.md"))))
         self.assertEqual(22, len(list((ROOT / ".agents/skills").glob("*/SKILL.md"))))
 
-    def test_retired_role_references_are_removed_from_directly_affected_surfaces(self) -> None:
+    def test_retired_role_references_are_removed_from_directly_affected_surfaces(
+        self,
+    ) -> None:
         for relative in self.DIRECTLY_AFFECTED_SURFACES:
             text = (ROOT / relative).read_text(encoding="utf-8")
             for retired_id in self.RETIRED_IDS:
@@ -1176,7 +1252,9 @@ class CommandLineTests(unittest.TestCase):
     def run_checker(self, *args: str) -> subprocess.CompletedProcess[str]:
         return self.run_checker_for_root(ROOT, *args)
 
-    def test_scalar_provider_collections_fail_without_traceback_or_absolute_path(self) -> None:
+    def test_scalar_provider_collections_fail_without_traceback_or_absolute_path(
+        self,
+    ) -> None:
         for field in ("providers", "compatibility_surfaces", "work_profiles"):
             with self.subTest(field=field), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
@@ -1214,11 +1292,14 @@ class CommandLineTests(unittest.TestCase):
             root = pathlib.Path(directory)
             copy_contracts(root)
             values = yaml.safe_load(
-                (root / "docs/00.agent-governance/contracts/agent-catalog.yaml").read_text(
-                    encoding="utf-8"
-                )
+                (
+                    root / "docs/00.agent-governance/contracts/agent-catalog.yaml"
+                ).read_text(encoding="utf-8")
             )
-            for collection, identity in (("agents", "agent_id"), ("functions", "function_id")):
+            for collection, identity in (
+                ("agents", "agent_id"),
+                ("functions", "function_id"),
+            ):
                 for entry in values[collection]:
                     entry["catalog_path"] = f"catalog-inputs/{entry[identity]}.md"
             (root / "docs/00.agent-governance/contracts/agent-catalog.yaml").write_text(
@@ -1296,7 +1377,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
         ),
     }
 
-    def test_root_shims_have_no_frontmatter_and_only_executable_bootstrap_envelope(self) -> None:
+    def test_root_shims_have_no_frontmatter_and_only_executable_bootstrap_envelope(
+        self,
+    ) -> None:
         for relative_path, targets in self.ROOT_SHIMS.items():
             with self.subTest(path=relative_path):
                 text = (ROOT / relative_path).read_text(encoding="utf-8")
@@ -1329,16 +1412,36 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
 
         scope_dir = ROOT / "docs/00.agent-governance/scopes"
         scope_names = (
-            "agentic", "architecture", "backend", "common", "entry", "frontend",
-            "infra", "meta", "mobile", "ops", "product", "qa", "security",
+            "agentic",
+            "architecture",
+            "backend",
+            "common",
+            "entry",
+            "frontend",
+            "infra",
+            "meta",
+            "mobile",
+            "ops",
+            "product",
+            "qa",
+            "security",
         )
         for name in scope_names:
             with self.subTest(scope=name):
                 source = (scope_dir / f"{name}.md").read_text(encoding="utf-8")
-                self.assertEqual({"layer": name}, yaml.safe_load(source.split("---", 2)[1]))
+                self.assertEqual(
+                    {"layer": name}, yaml.safe_load(source.split("---", 2)[1])
+                )
 
-    def test_provider_entry_indexes_use_navigation_profiles_without_copied_policy(self) -> None:
-        allowed = {"Scope", "Structure", "How to Work in This Area", "Related Documents"}
+    def test_provider_entry_indexes_use_navigation_profiles_without_copied_policy(
+        self,
+    ) -> None:
+        allowed = {
+            "Scope",
+            "Structure",
+            "How to Work in This Area",
+            "Related Documents",
+        }
         for relative_path in (
             ".agents/README.md",
             ".claude/CLAUDE.md",
@@ -1381,12 +1484,15 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                     "docs/00.agent-governance/rules/hooks/hookify.*.md",
                     text,
                 )
-        matches = sorted(
-            ROOT.glob("docs/00.agent-governance/rules/hooks/hookify.*.md")
-        )
+        matches = sorted(ROOT.glob("docs/00.agent-governance/rules/hooks/hookify.*.md"))
         self.assertTrue(matches)
         tracked = subprocess.run(
-            ["git", "ls-files", "--error-unmatch", *[str(path.relative_to(ROOT)) for path in matches]],
+            [
+                "git",
+                "ls-files",
+                "--error-unmatch",
+                *[str(path.relative_to(ROOT)) for path in matches],
+            ],
             cwd=ROOT,
             capture_output=True,
             text=True,
@@ -1394,7 +1500,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
         )
         self.assertEqual(0, tracked.returncode, tracked.stderr)
 
-    def test_repository_harness_rejects_wrong_metadata_keys_order_and_values(self) -> None:
+    def test_repository_harness_rejects_wrong_metadata_keys_order_and_values(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -1457,7 +1565,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             "<pre>\n## Scope\n</pre>",
             "<code>\n## Scope\n</code>",
         ):
-            with self.subTest(raw_html=raw_html), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(raw_html=raw_html),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 provider = root / ".claude/CLAUDE.md"
@@ -1475,7 +1586,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                     codes(contract.validate_repository(root, bundle, "harness")),
                 )
 
-    def test_repository_harness_does_not_accept_cross_token_html_hidden_heading(self) -> None:
+    def test_repository_harness_does_not_accept_cross_token_html_hidden_heading(
+        self,
+    ) -> None:
         for tag in ("code", "pre", "script", "style"):
             with self.subTest(tag=tag), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
@@ -1513,7 +1626,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
 """
         self.assertEqual(("Visible Section",), contract._section_names(source))
 
-    def test_section_names_require_top_level_h2_and_preserve_semantic_code_text(self) -> None:
+    def test_section_names_require_top_level_h2_and_preserve_semantic_code_text(
+        self,
+    ) -> None:
         self.assertEqual(
             ("Scope",),
             contract._section_names(
@@ -1529,9 +1644,7 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 )
         self.assertEqual(
             ("Scope",),
-            contract._section_names(
-                "<code>\n\nexample\n\n</code>\n\n## Scope"
-            ),
+            contract._section_names("<code>\n\nexample\n\n</code>\n\n## Scope"),
         )
         self.assertEqual(
             (),
@@ -1566,7 +1679,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             with self.subTest(source=source):
                 self.assertEqual(expected, contract._section_names(source))
 
-    def test_repository_harness_streams_html_transitions_inside_required_h2(self) -> None:
+    def test_repository_harness_streams_html_transitions_inside_required_h2(
+        self,
+    ) -> None:
         cases = (
             ("<code>\n\n## </code>Scope", False),
             ("<code><span>\n\n## </code>Scope</span>", False),
@@ -1578,9 +1693,12 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             ),
         )
         for replacement, expected_missing in cases:
-            with self.subTest(
-                replacement=replacement, expected_missing=expected_missing
-            ), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(
+                    replacement=replacement, expected_missing=expected_missing
+                ),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 provider = root / ".claude/CLAUDE.md"
@@ -1599,9 +1717,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
 
     def test_repository_harness_does_not_accept_nested_required_heading(self) -> None:
         for nested_heading in ("> ## Scope", "- ## Scope"):
-            with self.subTest(
-                nested_heading=nested_heading
-            ), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(nested_heading=nested_heading),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 provider = root / ".claude/CLAUDE.md"
@@ -1620,17 +1739,13 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
     def test_repository_harness_does_not_close_fence_with_info_text(self) -> None:
         self.assertNotIn(
             "Scope",
-            contract._section_names(
-                "```markdown\n```not-a-close\n## Scope\n```\n"
-            ),
+            contract._section_names("```markdown\n```not-a-close\n## Scope\n```\n"),
         )
         for indentation in ("\t", "\N{NO-BREAK SPACE}"):
             with self.subTest(indentation=repr(indentation)):
                 self.assertNotIn(
                     "Scope",
-                    contract._section_names(
-                        f"```\n{indentation}```\n## Scope\n```\n"
-                    ),
+                    contract._section_names(f"```\n{indentation}```\n## Scope\n```\n"),
                 )
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -1650,7 +1765,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_requires_exactly_one_profile_for_new_memory_docs(self) -> None:
+    def test_repository_harness_requires_exactly_one_profile_for_new_memory_docs(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -1668,7 +1785,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_inventory_has_111_uniquely_routed_artifacts(self) -> None:
+    def test_repository_harness_inventory_has_111_uniquely_routed_artifacts(
+        self,
+    ) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         inventory = contract._governed_inventory_paths(ROOT, bundle.artifacts)
         self.assertEqual(111, len(inventory))
@@ -1681,7 +1800,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             }
         )
 
-    def test_registered_paths_preserve_exact_brace_inventory_and_stable_dedup(self) -> None:
+    def test_registered_paths_preserve_exact_brace_inventory_and_stable_dedup(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             (root / "surviving.md").write_text("surviving\n", encoding="utf-8")
@@ -1697,7 +1818,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             )
             self.assertEqual(("missing.md",), inventory.missing_exact)
 
-    def test_registered_paths_expand_sequential_braces_as_exact_cartesian_inventory(self) -> None:
+    def test_registered_paths_expand_sequential_braces_as_exact_cartesian_inventory(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             surviving = root / "fixture/a/c.md"
@@ -1716,7 +1839,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 inventory.missing_exact,
             )
 
-    def test_repository_harness_requires_every_real_memory_and_hook_brace_member(self) -> None:
+    def test_repository_harness_requires_every_real_memory_and_hook_brace_member(
+        self,
+    ) -> None:
         cases = (
             (
                 f"{self.GOVERNANCE}/memory/agentic-harness-contract-hardening.md",
@@ -1728,7 +1853,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             ),
         )
         for relative, expected_code in cases:
-            with self.subTest(path=relative), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(path=relative),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 (root / relative).unlink()
@@ -1743,7 +1871,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
 
                 self.assertEqual(1, len(exact), contract.render_findings(findings))
 
-    def test_repository_harness_requires_all_four_sequential_exact_members(self) -> None:
+    def test_repository_harness_requires_all_four_sequential_exact_members(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -1785,7 +1915,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 missing,
             )
 
-    def test_repository_harness_does_not_require_each_wildcard_brace_branch(self) -> None:
+    def test_repository_harness_does_not_require_each_wildcard_brace_branch(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -1822,7 +1954,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 contract.render_findings(findings),
             )
 
-    def test_repository_harness_retains_whole_profile_zero_match_for_globs(self) -> None:
+    def test_repository_harness_retains_whole_profile_zero_match_for_globs(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -1850,7 +1984,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             self.assertEqual(1, len(missing), contract.render_findings(findings))
             self.assertEqual(pattern, missing[0].path)
 
-    def test_repository_harness_reports_mixed_exact_missing_with_glob_survivors(self) -> None:
+    def test_repository_harness_reports_mixed_exact_missing_with_glob_survivors(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -1885,7 +2021,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
 
             self.assertEqual(1, len(exact), contract.render_findings(findings))
 
-    def test_repository_harness_keeps_exact_and_whole_profile_mixed_zero_evidence(self) -> None:
+    def test_repository_harness_keeps_exact_and_whole_profile_mixed_zero_evidence(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -1916,7 +2054,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 contract.render_findings(findings),
             )
 
-    def test_repository_harness_preserves_exact_missing_when_glob_enumeration_fails(self) -> None:
+    def test_repository_harness_preserves_exact_missing_when_glob_enumeration_fails(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -1954,7 +2094,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             )
             self.assertNotIn("private enumeration sentinel", rendered)
 
-    def test_repository_harness_keeps_unsafe_and_missing_exact_members_distinct(self) -> None:
+    def test_repository_harness_keeps_unsafe_and_missing_exact_members_distinct(
+        self,
+    ) -> None:
         original_read = os.read
         for mutation, expected_code in (
             ("directory", "AGC-REPOSITORY-UNSAFE-FILE"),
@@ -1962,7 +2104,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             ("symlink", "AGC-REPOSITORY-UNSAFE-FILE"),
             ("read-error", "AGC-REPOSITORY-FILE-READ"),
         ):
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(mutation=mutation),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
 
@@ -2046,7 +2191,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             self.assertIn("path=.claude/CLAUDE.md", result.stderr)
             self.assertNotIn(str(root), result.stderr)
 
-    def test_repository_harness_routes_future_catalog_files_without_harness_validation(self) -> None:
+    def test_repository_harness_routes_future_catalog_files_without_harness_validation(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -2083,7 +2230,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
 
     def test_repository_harness_rejects_missing_and_nonregular_readmes(self) -> None:
         for replacement in ("missing", "directory", "fifo"):
-            with self.subTest(replacement=replacement), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(replacement=replacement),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / "scripts/README.md"
@@ -2118,9 +2268,14 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             self.assertNotIn("sentinel-private-enumeration-error", rendered)
             self.assertNotIn(str(root), rendered)
 
-    def test_repository_harness_converts_read_errors_to_value_free_findings(self) -> None:
+    def test_repository_harness_converts_read_errors_to_value_free_findings(
+        self,
+    ) -> None:
         for relative in ("AGENTS.md", ".claude/CLAUDE.md", "scripts/README.md"):
-            with self.subTest(path=relative), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(path=relative),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 bundle = contract.load_contract_bundle(root)
@@ -2144,9 +2299,14 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 self.assertNotIn("sentinel-private-read-error", rendered)
                 self.assertNotIn(str(root), rendered)
 
-    def test_repository_harness_converts_invalid_utf8_to_value_free_findings(self) -> None:
+    def test_repository_harness_converts_invalid_utf8_to_value_free_findings(
+        self,
+    ) -> None:
         for relative in ("AGENTS.md", ".claude/CLAUDE.md", "scripts/README.md"):
-            with self.subTest(path=relative), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(path=relative),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 (root / relative).write_bytes(b"\xff\xfe")
@@ -2172,7 +2332,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_rejects_readme_sections_and_forbidden_policy(self) -> None:
+    def test_repository_harness_rejects_readme_sections_and_forbidden_policy(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -2187,7 +2349,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             self.assertIn("AGC-REPOSITORY-README-SECTION", observed)
             self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
 
-    def test_repository_harness_rejects_policy_prose_inside_allowed_readme_section(self) -> None:
+    def test_repository_harness_rejects_policy_prose_inside_allowed_readme_section(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -2206,7 +2370,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
             self.assertNotIn("AGC-REPOSITORY-README-SECTION", observed)
 
-    def test_repository_harness_rejects_html_wrapped_and_entity_policy_prose(self) -> None:
+    def test_repository_harness_rejects_html_wrapped_and_entity_policy_prose(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
@@ -2230,7 +2396,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             "<pre>Provider model defaults are defined here.</pre>",
             "<code>Provider model defaults are defined here.</code>",
         ):
-            with self.subTest(raw_html=raw_html), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(raw_html=raw_html),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -2246,7 +2415,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 observed = codes(contract.validate_repository(root, bundle, "harness"))
                 self.assertNotIn("AGC-REPOSITORY-README-POLICY", observed)
 
-    def test_repository_harness_preserves_html_hidden_state_across_markdown_tokens(self) -> None:
+    def test_repository_harness_preserves_html_hidden_state_across_markdown_tokens(
+        self,
+    ) -> None:
         cases = tuple(
             (
                 f"<{tag}>\n\nProvider model defaults are defined here.\n\n</{tag}>",
@@ -2271,9 +2442,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             ),
         )
         for source, expected_policy in cases:
-            with self.subTest(
-                source=source, expected_policy=expected_policy
-            ), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(source=source, expected_policy=expected_policy),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -2294,10 +2466,8 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
 
     def test_repository_harness_follows_active_formatting_reconstruction(self) -> None:
         hidden_sources = (
-            "<pre><code>example</pre>"
-            "Provider model defaults are defined here.</code>",
-            "<div><code>example</div>"
-            "Provider model defaults are defined here.</code>",
+            "<pre><code>example</pre>Provider model defaults are defined here.</code>",
+            "<div><code>example</div>Provider model defaults are defined here.</code>",
             "<span><code>example</span>"
             "Provider model defaults are defined here.</code>",
         )
@@ -2308,9 +2478,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
         for source, expected_policy in tuple(
             (item, False) for item in hidden_sources
         ) + tuple((item, True) for item in visible_sources):
-            with self.subTest(
-                source=source, expected_policy=expected_policy
-            ), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(source=source, expected_policy=expected_policy),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -2329,12 +2500,17 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                     in codes(contract.validate_repository(root, bundle, "harness")),
                 )
 
-    def test_repository_harness_rejects_visible_multiline_tag_like_policy_prose(self) -> None:
+    def test_repository_harness_rejects_visible_multiline_tag_like_policy_prose(
+        self,
+    ) -> None:
         for source in (
             "Provider <model\n>defaults are defined here.",
             "Provider <span title=model\n>defaults are defined here.",
         ):
-            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(source=source),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -2350,14 +2526,19 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 observed = codes(contract.validate_repository(root, bundle, "harness"))
                 self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
 
-    def test_repository_harness_rejects_policy_hidden_by_unbalanced_code_runs(self) -> None:
+    def test_repository_harness_rejects_policy_hidden_by_unbalanced_code_runs(
+        self,
+    ) -> None:
         cases = (
             "Provider model ``defaults` are defined here.",
             "Provider model ``defaults are defined here. Later `routing`.",
             r"Provider \`model defaults\` are defined here.",
         )
         for source in cases:
-            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(source=source),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -2373,7 +2554,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 observed = codes(contract.validate_repository(root, bundle, "harness"))
                 self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
 
-    def test_repository_harness_keeps_code_runs_inside_inline_block_boundaries(self) -> None:
+    def test_repository_harness_keeps_code_runs_inside_inline_block_boundaries(
+        self,
+    ) -> None:
         cases = (
             "Intro `unclosed\n\nProvider model defaults `",
             "Intro `unclosed\n## Existing heading\nProvider model defaults `",
@@ -2390,8 +2573,8 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             "- ~~~text\n  `unclosed\n  ~~~\n- Provider model defaults `",
             " \tIntro `unclosed\nProvider model defaults `",
             "Intro `unclosed\n\n[label]: https://example.invalid\nProvider model defaults `",
-            "[label]: https://example.invalid\n  \"title `unclosed\"\nProvider model defaults `",
-            "[label]:\n  https://example.invalid\n  \"title `unclosed\"\nProvider model defaults `",
+            '[label]: https://example.invalid\n  "title `unclosed"\nProvider model defaults `',
+            '[label]:\n  https://example.invalid\n  "title `unclosed"\nProvider model defaults `',
             "Intro `unclosed\n<div>visible block</div>\nProvider model defaults `",
             "Visible <span\n\nProvider model defaults>",
             "```text\n<span\n```\nProvider model defaults>",
@@ -2403,7 +2586,10 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             "Intro `unclosed\n<textarea>visible value</textarea>\nProvider model defaults `",
         )
         for source in cases:
-            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(source=source),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -2419,7 +2605,9 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 observed = codes(contract.validate_repository(root, bundle, "harness"))
                 self.assertIn("AGC-REPOSITORY-README-POLICY", observed)
 
-    def test_registered_readme_routing_prose_does_not_trigger_policy_topics(self) -> None:
+    def test_registered_readme_routing_prose_does_not_trigger_policy_topics(
+        self,
+    ) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         findings = contract.validate_repository(ROOT, bundle, "harness")
         policy_findings = [
@@ -2497,7 +2685,9 @@ model defaults
             ),
         )
 
-    def test_readme_policy_prose_preserves_html_state_across_markdown_tokens(self) -> None:
+    def test_readme_policy_prose_preserves_html_state_across_markdown_tokens(
+        self,
+    ) -> None:
         for tag in ("code", "pre", "script", "style"):
             with self.subTest(tag=tag):
                 self.assertNotIn(
@@ -2532,12 +2722,9 @@ model defaults
 
     def test_readme_policy_prose_streams_html_transitions_inside_h2(self) -> None:
         visible_policy = (
-            "<code>\n\n## </code>\n\n"
-            "Provider model defaults are defined here."
+            "<code>\n\n## </code>\n\nProvider model defaults are defined here."
         )
-        self.assertIn(
-            " model defaults ", contract._readme_policy_prose(visible_policy)
-        )
+        self.assertIn(" model defaults ", contract._readme_policy_prose(visible_policy))
         self.assertNotIn(" scope ", contract._readme_policy_prose(visible_policy))
 
         cases = (
@@ -2557,8 +2744,7 @@ model defaults
                 True,
             ),
             (
-                "## <code>Example</code>\n\n"
-                "Provider model defaults are defined here.",
+                "## <code>Example</code>\n\nProvider model defaults are defined here.",
                 True,
             ),
             (
@@ -2574,8 +2760,15 @@ model defaults
 
     def test_readme_policy_prose_follows_whatwg_table_cell_recovery(self) -> None:
         positive_starts = (
-            "caption", "colgroup", "col", "tbody", "tfoot", "thead", "tr",
-            "td", "th",
+            "caption",
+            "colgroup",
+            "col",
+            "tbody",
+            "tfoot",
+            "thead",
+            "tr",
+            "td",
+            "th",
         )
         for hidden_tag in ("code", "pre"):
             for start_tag in positive_starts:
@@ -2616,11 +2809,21 @@ model defaults
 
     def test_repository_harness_follows_whatwg_table_cell_recovery(self) -> None:
         positive_starts = (
-            "caption", "colgroup", "col", "tbody", "tfoot", "thead", "tr",
-            "td", "th",
+            "caption",
+            "colgroup",
+            "col",
+            "tbody",
+            "tfoot",
+            "thead",
+            "tr",
+            "td",
+            "th",
         )
         for start_tag in positive_starts:
-            with self.subTest(start_tag=start_tag), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(start_tag=start_tag),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -2650,7 +2853,10 @@ model defaults
             "Provider model defaults are defined here.</table></table>",
         )
         for source in negative_sources:
-            with self.subTest(source=source), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(source=source),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -2677,9 +2883,7 @@ model defaults
         )
         for source in visible_sources:
             with self.subTest(source=source):
-                self.assertIn(
-                    " model defaults ", contract._readme_policy_prose(source)
-                )
+                self.assertIn(" model defaults ", contract._readme_policy_prose(source))
 
         hidden_sources = (
             "<span title='model defaults'>Visible text only.</span>",
@@ -2724,7 +2928,9 @@ model defaults
             contract._section_names(f"## {deep_span_markup('Deep Heading')}"),
         )
 
-    def test_repository_harness_handles_deep_visible_and_hidden_readme_prose(self) -> None:
+    def test_repository_harness_handles_deep_visible_and_hidden_readme_prose(
+        self,
+    ) -> None:
         cases = (
             (
                 deep_span_markup("Provider model defaults are defined here."),
@@ -2739,7 +2945,10 @@ model defaults
             ),
         )
         for source, expected_policy in cases:
-            with self.subTest(expected_policy=expected_policy), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(expected_policy=expected_policy),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -2807,8 +3016,7 @@ model defaults
     def test_repository_harness_streams_html_transitions_inside_readme_h2(self) -> None:
         cases = (
             (
-                "<code>\n\n## </code>\n\n"
-                "Provider model defaults are defined here.",
+                "<code>\n\n## </code>\n\nProvider model defaults are defined here.",
                 True,
             ),
             (
@@ -2828,9 +3036,10 @@ model defaults
             ),
         )
         for source, expected_policy in cases:
-            with self.subTest(
-                source=source, expected_policy=expected_policy
-            ), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(source=source, expected_policy=expected_policy),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 readme = root / ".codex/README.md"
@@ -2863,7 +3072,9 @@ model defaults
             ),
         )
 
-    def test_readme_policy_prose_respects_inline_block_and_html_precedence(self) -> None:
+    def test_readme_policy_prose_respects_inline_block_and_html_precedence(
+        self,
+    ) -> None:
         for source in (
             "Intro `unclosed\n\nProvider model defaults `",
             "Intro `unclosed\n## Existing heading\nProvider model defaults `",
@@ -2880,8 +3091,8 @@ model defaults
             "- ~~~text\n  `unclosed\n  ~~~\n- Provider model defaults `",
             " \tIntro `unclosed\nProvider model defaults `",
             "Intro `unclosed\n\n[label]: https://example.invalid\nProvider model defaults `",
-            "[label]: https://example.invalid\n  \"title `unclosed\"\nProvider model defaults `",
-            "[label]:\n  https://example.invalid\n  \"title `unclosed\"\nProvider model defaults `",
+            '[label]: https://example.invalid\n  "title `unclosed"\nProvider model defaults `',
+            '[label]:\n  https://example.invalid\n  "title `unclosed"\nProvider model defaults `',
             "Intro `unclosed\n<div>visible block</div>\nProvider model defaults `",
             "Visible <span\n\nProvider model defaults>",
             "```text\n<span\n```\nProvider model defaults>",
@@ -2908,12 +3119,12 @@ model defaults
             with self.subTest(hidden_html=tag):
                 self.assertNotIn(
                     " model defaults ",
-                    contract._readme_policy_prose(
-                        f"<{tag}>model defaults</{tag}>"
-                    ),
+                    contract._readme_policy_prose(f"<{tag}>model defaults</{tag}>"),
                 )
 
-    def test_readme_policy_prose_passes_source_unchanged_to_strict_markdown(self) -> None:
+    def test_readme_policy_prose_passes_source_unchanged_to_strict_markdown(
+        self,
+    ) -> None:
         real_markdown = contract._MarkdownIt
         observed_sources: list[str] = []
 
@@ -2940,11 +3151,16 @@ model defaults
             with self.subTest(source=source):
                 self.assertIn(" model defaults ", contract._readme_policy_prose(source))
 
-    def test_codeowners_keeps_repository_principal_and_covers_governed_surfaces(self) -> None:
+    def test_codeowners_keeps_repository_principal_and_covers_governed_surfaces(
+        self,
+    ) -> None:
         text = (ROOT / ".github/CODEOWNERS").read_text(encoding="utf-8")
         self.assertNotRegex(text, r"@(rules-engineer|qa-engineer|security-auditor)")
         for pattern in (
-            ".agents/**", ".claude/**", ".codex/**", ".gemini/**",
+            ".agents/**",
+            ".claude/**",
+            ".codex/**",
+            ".gemini/**",
             "docs/00.agent-governance/contracts/**",
             "scripts/validation/check-agent-governance-contract.py",
             "scripts/validation/check-document-metadata.py",

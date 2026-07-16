@@ -241,6 +241,35 @@ entitlement state, repository default eligibility, supported reasoning or
 thinking controls, task fit, and a rollback/fallback value. Provider-reported
 availability and local entitlement are never conflated.
 
+### Approved Fallback Edges
+
+An `approved-degraded` fallback is authorized only by a typed
+`fallback_approvals` record in the provider-model contract. Each record binds
+one provider, source model, target model, exact source work-profile set, and
+this resolvable section. A model row references the approval ID; prose-shaped
+or nonexistent fragments do not authorize an edge.
+
+| Provider | Source | Target | Authorized work profiles |
+| --- | --- | --- | --- |
+| Claude | `claude-fable-5` | `claude-opus-4-8` | `complex-implementation`, `supervision` |
+| Claude | `claude-haiku-4-5-20251001` | `claude-sonnet-5` | `read-heavy-repetitive` |
+| Claude | `claude-mythos-5` | `claude-opus-4-8` | `complex-implementation`, `supervision` |
+| Claude | `claude-opus-4-1-20250805` | `claude-opus-4-8` | none; migration-only |
+| Claude | `claude-opus-4-8` | `claude-sonnet-5` | `supervision` |
+| Claude | `claude-sonnet-5` | `claude-opus-4-8` | `complex-implementation` |
+| Codex | `gpt-5.2-codex` | `gpt-5.6-terra` | none; migration-only |
+| Codex | `gpt-5.6-terra` | `gpt-5.6` | `read-heavy-repetitive` |
+| Codex | `gpt-5.6` | `gpt-5.6-terra` | `complex-implementation`, `supervision` |
+| Gemini | `gemini-3.1-flash-lite-preview` | `gemini-3.1-flash-lite` | none; migration-only |
+| Gemini | `gemini-3.1-flash-lite` | `gemini-3.5-flash` | `read-heavy-repetitive` |
+| Gemini | `gemini-3.5-flash` | `gemini-3.1-flash-lite` | `complex-implementation`, `supervision` |
+
+Cutoff evidence is separate from this current provider-schema authority. A
+model can claim `verified-before-cutoff` only by referencing a typed official
+evidence record whose publication time is at or before the approved cutoff and
+whose observation time equals the contract retrieval time. Current CLI
+capability documentation does not retroactively prove historical model state.
+
 #### Claude
 
 - Restore the actual root import sequence.
