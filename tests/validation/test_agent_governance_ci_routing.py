@@ -190,6 +190,17 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertIn(path, COUPLED_PATHS)
 
+    def test_aggregate_delegates_local_qa_semantics_to_typed_authority(self) -> None:
+        source = REPO_CONTRACT.read_text(encoding="utf-8")
+        start = "required_surface_fragments = {"
+        end = "\n}\n\nforbidden_ambiguous_fragments"
+        aggregate_fragments = source.split(start, 1)[1].split(end, 1)[0]
+        self.assertNotIn(
+            'pathlib.Path("scripts/validation/run-local-qa-gates.sh")',
+            aggregate_fragments,
+        )
+        self.assertIn("--mode repository --section all", source)
+
     def test_script_reference_scan_ignores_only_python_cache_artifacts(self) -> None:
         source = REPO_CONTRACT.read_text(encoding="utf-8")
         start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"
@@ -330,6 +341,98 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             )
             self.assertEqual(1, result.returncode)
             self.assertIn("unsafe script-reference surface", result.stderr)
+
+    def test_script_reference_scan_enforces_exact_resource_ceilings(self) -> None:
+        source = REPO_CONTRACT.read_text(encoding="utf-8")
+        start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"
+        block = source.split(start, 1)[1].split(
+            "\nPY\n  failures=$((failures + 1))",
+            1,
+        )[0]
+        expected_constants = (
+            "MAX_REFERENCE_SURFACES: Final = 4_096",
+            "MAX_REFERENCE_FILE_BYTES: Final = 16 * 1_048_576",
+            "MAX_REFERENCE_TOTAL_BYTES: Final = 64 * 1_048_576",
+            "MAX_REFERENCE_DISCOVERY_ENTRIES: Final = 8_192",
+        )
+        for constant in expected_constants:
+            with self.subTest(constant=constant):
+                self.assertIn(constant, block)
+        existence_check = block.split("def confined_regular_exists", 1)[1].split(
+            "\n\nfor path in files:", 1
+        )[0]
+        self.assertIn("open_confined_regular(path)", existence_check)
+        self.assertNotIn("read_confined_regular(path)", existence_check)
+        for boundary_fragment in (
+            "initial = os.lstat(path)",
+            "opened = os.fstat(file_descriptor)",
+            "remaining = MAX_REFERENCE_FILE_BYTES + 1",
+        ):
+            with self.subTest(boundary_fragment=boundary_fragment):
+                self.assertIn(boundary_fragment, block)
+
+        cases = (
+            ("surface-below", 3, 8, 16, 16, 2, (b"a", b"b"), 0),
+            ("surface-at", 2, 8, 16, 16, 2, (b"a", b"b"), 0),
+            ("surface-above", 1, 8, 16, 16, 2, (b"a", b"b"), 1),
+            ("file-below", 2, 5, 16, 16, 2, (b"abcd",), 0),
+            ("file-at", 2, 4, 16, 16, 2, (b"abcd",), 0),
+            ("file-above", 2, 3, 16, 16, 2, (b"abcd",), 1),
+            ("total-below", 2, 8, 9, 16, 2, (b"abcd", b"efgh"), 0),
+            ("total-at", 2, 8, 8, 16, 2, (b"abcd", b"efgh"), 0),
+            ("total-above", 2, 8, 7, 16, 2, (b"abcd", b"efgh"), 1),
+            ("discovery-below", 2, 8, 16, 3, 2, (b"a",), 0),
+            ("discovery-at", 2, 8, 16, 2, 2, (b"a",), 0),
+            ("discovery-above", 2, 8, 16, 1, 2, (b"a",), 1),
+        )
+        for (
+            label,
+            surface_limit,
+            file_limit,
+            total_limit,
+            discovery_limit,
+            discovery_entries,
+            payloads,
+            expected,
+        ) in cases:
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+                docs = root / "docs"
+                docs.mkdir()
+                for index, payload in enumerate(payloads):
+                    (docs / f"surface-{index}.md").write_bytes(payload)
+                while len(list(docs.iterdir())) < discovery_entries - 1:
+                    index = len(list(docs.iterdir()))
+                    (docs / f"discovery-{index}.md").write_bytes(b"")
+                mutated = (
+                    block.replace(
+                        "MAX_REFERENCE_SURFACES: Final = 4_096",
+                        f"MAX_REFERENCE_SURFACES: Final = {surface_limit}",
+                    )
+                    .replace(
+                        "MAX_REFERENCE_FILE_BYTES: Final = 16 * 1_048_576",
+                        f"MAX_REFERENCE_FILE_BYTES: Final = {file_limit}",
+                    )
+                    .replace(
+                        "MAX_REFERENCE_TOTAL_BYTES: Final = 64 * 1_048_576",
+                        f"MAX_REFERENCE_TOTAL_BYTES: Final = {total_limit}",
+                    )
+                    .replace(
+                        "MAX_REFERENCE_DISCOVERY_ENTRIES: Final = 8_192",
+                        f"MAX_REFERENCE_DISCOVERY_ENTRIES: Final = {discovery_limit}",
+                    )
+                )
+                result = subprocess.run(
+                    [sys.executable, "-c", mutated],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(expected, result.returncode, result.stderr)
+                if expected:
+                    self.assertIn("unsafe script-reference surface", result.stderr)
 
     def test_typed_harness_replacement_covers_removed_aggregate_routes(self) -> None:
         contract_text = (

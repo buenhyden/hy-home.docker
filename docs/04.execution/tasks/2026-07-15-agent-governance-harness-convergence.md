@@ -706,6 +706,22 @@ T-AGHC-005 fourth review-remediation verification:
 | Graphify refresh and corroboration | advisory graph evidence source-corroborated and generated output restored | 24,917 nodes / 28,583 edges / 1,600 communities; 432 inferred edges, 16,471 isolated nodes, 70 omitted thin communities, and two unrelated cross-root inferred relationships corroborated against tracked Stage 00/02/03/04, validator, tests, and infrastructure owners; generated output restored | Pass |
 | protected boundaries | no runtime, Compose, deployment, secret, credential, remote, model-call, direct all-files QA, or new required CI-job mutation | evaluator grammar, typed harness validator, aggregate delegation, focused tests, Task evidence, and progress memory only | Pass |
 
+T-AGHC-005 fifth review-remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| terminal independent specification and quality reviews | identify only residual single-authority, typed QA, credential, and scanner-bound gaps | specification C0/I2/M0; quality C0/I3/M0 | Pass |
+| reviewer-prescribed RED | all four bounded remediation areas reproduce before production edits | 4 methods; 47 expected assertion failures; 0 errors | Pass |
+| focused remediation and adversarial self-review | single typed authority, safe/unsafe QA clauses, structured credential candidates, and every resource boundary pass | selected 4/4; complete evaluator/routing/Task 5 set 40/40 | Pass |
+| authoritative governance/provider/renderer/routing/evaluator suites | no regression | terminal rerun 201/201 in 285.889s | Pass |
+| exact evaluator and typed repository gates | both evaluator markers, contract cardinality, repository semantics, provider projection, and hook parity pass | fixtures 8/8; regressions 10/10; contract `3/14/22/3/0`; repository all 0; providers 3 / drift 0; parity fresh | Pass |
+| aggregate single authority | aggregate retains typed `--mode repository --section all` delegation but does not independently parse the local-QA wrapper surface | duplicate `run-local-qa-gates.sh` fragment/ambiguity entry removed; uv aggregate `failures=0` | Pass |
+| bounded script-reference integrity | exact immutable ceilings leave measured headroom and fail closed at N+1 without rereading targets | baseline 1,338 surfaces / 23,602,312 bytes / 9,242,745-byte maximum; ceilings 4,096 surfaces / 8,192 discovery entries / 16 MiB per file / 64 MiB aggregate; at/below/above tables pass | Pass |
+| metadata, lifecycle, traceability, alignment, and generated owners | zero violations or stale generated evidence | final metadata 3/0 and impacted lifecycle 142/0 with configured Task-directory advisory; contract/promoted 0; traceability 46/0; alignment 653/5,206/141/0; inventory 910/2,145; provider/security/audit/Wiki owners fresh | Pass |
+| repository static checks | zero findings | Ruff format/check, Bash syntax, compile, and diff hygiene pass | Pass |
+| Graphify refresh and corroboration | advisory graph evidence source-corroborated and generated output restored | 24,924 nodes / 28,601 edges / 1,602 communities; 432 inferred edges, 16,471 isolated nodes, 70 omitted thin communities, and two unrelated infrastructure ambiguities corroborated against tracked Stage 00/03/04, validator, aggregate scanner, and focused tests; generated output restored | Pass |
+| protected boundaries | no runtime, Compose, deployment, secret, credential, remote, model-call, direct all-files QA, or new required CI-job mutation | governance rule, evaluator, typed validator, aggregate scanner, focused tests, Task evidence, and progress memory only | Pass |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI
@@ -758,9 +774,9 @@ review-remediation commit `8d1d08f4` received independent terminal
 specification PASS and quality APPROVED verdicts, both C0/I0/M0. The reviewers
 confirmed focused 134/134, 132/132 generated local links, exact obsolete Codex
 skill-root absence, and exactly four planned Task 4/5 aggregate dependencies.
-T-AGHC-003 and T-AGHC-004 are complete. T-AGHC-005 implementation and four
-review-remediation rounds are GREEN. The latest quality review returned
-C0/I2/M0, and both findings are remediated; fresh independent specification
+T-AGHC-003 and T-AGHC-004 are complete. T-AGHC-005 implementation and five
+review-remediation rounds are GREEN. The latest specification and quality
+reviews returned C0/I2/M0 and C0/I3/M0; all five findings are remediated. Fresh independent specification
 and quality re-reviews remain pending. Task 6 has not run.
 
 Planning specification/plan review verdict: independent read-only reviewer
@@ -778,9 +794,9 @@ with Critical 0, Important 0, and Minor 0. Direct catalog/provider
 hardening prerequisites for Tasks 3 and 4, not as an open Task 2 finding. Task
 3 terminal quality review of `9941bbb4..8d1d08f4` returned APPROVED with
 Critical 0, Important 0, and Minor 0. Task 4 terminal quality review returned
-APPROVED C0/I0/M0. Task 5 quality review progressed through C0/I7/M0,
-C0/I3/M0, C0/I4/M0, and C0/I2/M0; every recorded finding has a separate
-remediation and
+APPROVED C0/I0/M0. Task 5 review progressed through quality C0/I7/M0,
+C0/I3/M0, C0/I4/M0, C0/I2/M0, and the latest specification C0/I2/M0 plus
+quality C0/I3/M0; every recorded finding has a separate remediation and
 GREEN evidence, while the terminal re-review remains pending. Quality review
 has not run for Task 6 or the whole branch.
 
@@ -823,7 +839,8 @@ with owner, reason, and destination.
 | T-AGHC-005 independent-review remediation | `fix(harness): close evaluator and routing gaps` | `e7d63c23` | exact synthetic evaluator, wrapper, selector, cache, and typed replacement boundaries GREEN; independent re-reviews found three residual Important gaps |
 | T-AGHC-005 second review remediation | `fix(harness): confine synthetic evidence inputs` | `eabba55c` | exact tracked-blob input, fixture-field schema, and confined aggregate-reference boundaries GREEN; quality re-review found four residual Important gaps |
 | T-AGHC-005 third review remediation | `fix(harness): bound evaluator and QA semantics` | `184cfbf2` | compound credential, resource-bound, exact narrative, and controlled-wrapper routing boundaries GREEN; quality re-review found two residual Important gaps |
-| T-AGHC-005 fourth review remediation | `fix(harness): reject credential and QA bypasses` | this logical commit | bounded credential/header grammar and semantic local-QA bypass rejection GREEN; independent re-reviews pending |
+| T-AGHC-005 fourth review remediation | `fix(harness): reject credential and QA bypasses` | `a16a3aa1` | bounded credential/header grammar and semantic local-QA bypass rejection GREEN; independent re-reviews found five residual Important gaps |
+| T-AGHC-005 fifth review remediation | `fix(harness): bound semantic and reference parsing` | this logical commit | single typed QA authority, structured credential classification, and immutable script-reference ceilings GREEN; independent re-reviews pending |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |
 | Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | pending | pending |
 | Closure | `docs(execution): close agent governance convergence` | pending | pending |

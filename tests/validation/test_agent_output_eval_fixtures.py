@@ -101,6 +101,9 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         self,
     ) -> None:
         evaluator = load_eval_module()
+        self.assertEqual(8, evaluator.MAX_SENSITIVE_KEY_COMPONENTS)
+        self.assertEqual(32, evaluator.MAX_SENSITIVE_KEY_COMPONENT_BYTES)
+        self.assertEqual(4_096, evaluator.MAX_SENSITIVE_VALUE_BYTES)
 
         first = evaluator.run_regressions()
         second = evaluator.run_regressions()
@@ -562,6 +565,105 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 )
                 self.assertNotEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
                 self.assertIn("block_failures=0", cli.stdout)
+
+    def test_typed_credential_candidates_cover_assignments_and_false_positives(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive = (
+            "PASSWD:=fixture-value",
+            "GITHUB_PAT+=fixture-value",
+            "service.password?=fixture-value",
+            "team__secret=fixture-value",
+            "service---token=fixture-value",
+            "worker.credentials=fixture-value",
+            "OPENAI_API_KEY=fixture-value",
+            "OPENAI_KEY=fixture-value",
+            "ANTHROPIC_KEY=fixture-value",
+            "GEMINI_KEY=fixture-value",
+            "GITHUB_KEY=fixture-value",
+            "AWS_KEY=fixture-value",
+            "AZURE_KEY=fixture-value",
+            "GOOGLE_KEY=fixture-value",
+            "CLIENT_KEY=fixture-value",
+            "OAUTH_KEY=fixture-value",
+            "SERVICE_AUTH_KEY=fixture-value",
+            "EDGE_ACCESS_KEY=fixture-value",
+            "TLS_PRIVATE_KEY=fixture-value",
+            "RELEASE_SIGNING_KEY=fixture-value",
+            "BACKUP_ENCRYPTION_KEY=fixture-value",
+            "GEMINI_PROVIDER_KEY=fixture-value",
+            "AWS_ACCESS_KEY_ID=fixture-value",
+            "DATABASE_URL=fixture-value",
+            "OAUTH_CLIENT_ID=fixture-value",
+            "GOOGLE_APPLICATION_CREDENTIALS=fixture-value",
+            "X-API-Key: fixture-value",
+            "X-Auth-Token: fixture-value",
+        )
+        safe = (
+            "primary_key=fixture-value",
+            "foreign_key=fixture-value",
+            "cache_key=fixture-value",
+            "public_key=fixture-value",
+            "keyboard_key=fixture-value",
+            "database_key=fixture-value",
+            "OPENAI_API_KEY_ROTATION_POLICY=quarterly",
+            "GITHUB_TOKENIZER=enabled",
+            "TEAM_SECRETARY=assigned",
+            "The API key policy is documented without an assignment.",
+            "Primary key and foreign key are database concepts.",
+        )
+
+        for payload in sensitive:
+            with self.subTest(
+                kind="scorer-sensitive", key=payload.split("fixture", 1)[0]
+            ):
+                result = evaluator.score_text(
+                    evaluator.FIXTURES["AOE-DOC-001"],
+                    evaluator._pass_text(payload),
+                )
+                self.assertIn("AOE-BLOCK-SENSITIVE-KV", result.block_codes)
+            with self.subTest(kind="cli-sensitive", key=payload.split("fixture", 1)[0]):
+                cli = self.run_runner(
+                    "--fixture",
+                    "AOE-DOC-001",
+                    "--classification",
+                    "synthetic-fixture",
+                    "--stdin",
+                    input_text=payload,
+                )
+                self.assertEqual(1, cli.returncode)
+                self.assertEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
+                self.assertNotIn("fixture-value", cli.stdout + cli.stderr)
+
+        for payload in safe:
+            with self.subTest(kind="scorer-safe", payload=payload):
+                result = evaluator.score_text(
+                    evaluator.FIXTURES["AOE-DOC-001"],
+                    evaluator._pass_text(payload),
+                )
+                self.assertNotIn("AOE-BLOCK-SENSITIVE-KV", result.block_codes)
+            with self.subTest(kind="cli-safe", payload=payload):
+                cli = self.run_runner(
+                    "--fixture",
+                    "AOE-DOC-001",
+                    "--classification",
+                    "synthetic-fixture",
+                    "--stdin",
+                    input_text=evaluator._pass_text(payload),
+                )
+                self.assertNotEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
+                self.assertIn("block_failures=0", cli.stdout)
+
+        for value_bytes in (4_096, 4_097):
+            payload = 'OPENAI_API_KEY="' + ("x" * value_bytes) + '"'
+            with self.subTest(value_bytes=value_bytes):
+                self.assertTrue(evaluator._contains_sensitive_content(payload))
+                result = evaluator.score_text(
+                    evaluator.FIXTURES["AOE-DOC-001"],
+                    evaluator._pass_text(payload),
+                )
+                self.assertIn("AOE-BLOCK-SENSITIVE-KV", result.block_codes)
 
     def test_evidence_count_and_combined_byte_limits_are_exact(self) -> None:
         evaluator = load_eval_module()

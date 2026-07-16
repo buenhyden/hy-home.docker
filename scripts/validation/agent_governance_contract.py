@@ -56,21 +56,40 @@ EXPECTED_PROVIDER_COUNT = 3
 MAX_BRACE_GROUPS = 64
 MAX_EXPANDED_PATHS = 1024
 MAX_PATTERN_LENGTH = 4096
-_DIRECT_PRECOMMIT_COMMAND = re.compile(r"\bpre-commit\s+run\b")
-_DIRECT_PRECOMMIT_RUN_MODE = re.compile(
-    r"\bpre-commit\b.{0,32}\brun\s+(?:-a|--all-files)\b"
+_PRECOMMIT_TOOL = re.compile(
+    r"(?:\bpre-commit\b|\bpre_commit\b|"
+    r"\bpython(?:\s+--?[a-z0-9][\w-]*(?:=[^\s]+)?){0,4}\s+-m\s+pre_commit\b)"
 )
-_DIRECT_PRECOMMIT_ACTION = re.compile(
-    r"\b(?:use|invoke|run|execute)\b.{0,80}\bpre-commit\b.{0,80}\bdirectly\b"
+_PRECOMMIT_ACTION = r"(?:launch|call|use|invoke|execute|run)"
+_DIRECT_PRECOMMIT_COMMAND = re.compile(
+    rf"{_PRECOMMIT_TOOL.pattern}(?:\s+--?[a-z0-9][\w-]*(?:=[^\s]+)?){{0,8}}"
+    r"\s+run\b"
+)
+_ACTIVE_PRECOMMIT_ACTION = re.compile(
+    rf"\b{_PRECOMMIT_ACTION}\b(?:\s+\S+){{0,8}}\s+{_PRECOMMIT_TOOL.pattern}"
+)
+_PASSIVE_PRECOMMIT_ACTION = re.compile(
+    r"\b(?:may|can|could|should|shall|will|would)\b(?:\s+\w+){0,6}"
+    r"\s+be\s+(?:used|run|invoked|executed|called|launched)\b"
+)
+_PRECOMMIT_PERMISSION = re.compile(
+    r"\b(?:use|execution|invocation|running)\b(?:\s+\w+){0,5}"
+    r"\s+(?:is|are)\s+(?:approved|allowed|permitted|authorized)\b"
 )
 _PERMISSIVE_PRECOMMIT_ACTOR = re.compile(r"\b(?:agents?|local|locally)\b")
-_PRECOMMIT_ACTION = re.compile(r"\b(?:use|invoke|run|execute)\b.{0,80}\bpre-commit\b")
 _PERMISSIVE_ACTION = re.compile(
-    r"\b(?:may|can|should|will)\s+(?:\w+\s+){0,8}(?:use|invoke|run|execute)\b"
+    rf"\b(?:may|can|could|should|shall|will|would)\b(?:\s+\w+){{0,8}}"
+    rf"\s+{_PRECOMMIT_ACTION}\b"
 )
 _EXPLICIT_PROHIBITION = re.compile(
-    r"\b(?:must\s+not|do\s+not|does\s+not|never|forbidden|prohibited|not\s+allowed)\b"
+    r"\b(?:may|can|could|should|shall|will|would|must)\s+not\b|"
+    r"\bcannot\b|\b(?:do|does)\s+not\b|\bnever\b|"
+    r"\b(?:can|won|shan)\s+t\b|"
+    r"\b(?:could|should|must|would)n\s+t\b|"
+    r"\bnot\s+(?:allowed|approved|permitted|authorized)\b|"
+    r"(?<!not\s)\b(?:forbidden|prohibited)\b"
 )
+_NEGATED_PROHIBITION = re.compile(r"\bnot\s+(?:forbidden|prohibited)\b")
 
 COMMON_TOP_FIELDS = {"schema_version", "checked_at"}
 ARTIFACT_TOP_FIELDS = COMMON_TOP_FIELDS | {
@@ -5382,7 +5401,9 @@ def _normalized_guidance_clauses(text: str) -> tuple[str, ...]:
     """Return bounded prose/code clauses for semantic QA-guidance checks."""
 
     clauses: list[str] = []
-    for raw_clause in re.split(r"[\r\n.;]+|\b(?:but|however)\b", text.casefold()):
+    for raw_clause in re.split(
+        r"[,\r\n.;]+|\b(?:but|however|yet|although)\b", text.casefold()
+    ):
         clause = re.sub(r"[`'\"()]", " ", raw_clause)
         clause = re.sub(r"\s+", " ", clause).strip()
         if clause:
@@ -5394,23 +5415,38 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
     """Reject local-QA prose that authorizes bypassing the controlled wrapper."""
 
     wrapper_reference = "scripts/validation/run-agent-precommit-all-files.sh"
+    precommit_context = False
     for clause in _normalized_guidance_clauses(text):
-        if "pre-commit" not in clause:
+        has_tool = _PRECOMMIT_TOOL.search(clause) is not None
+        contextual_reference = bool(
+            re.search(r"\bit\b|\brun\s+(?:-a|--all-files)\b", clause)
+            or (
+                _PERMISSIVE_PRECOMMIT_ACTOR.search(clause)
+                and re.search(r"\b(?:launch|call|use|invoke|execute)\b", clause)
+            )
+        )
+        refers_to_tool = has_tool or (precommit_context and contextual_reference)
+        precommit_context = has_tool
+        if not refers_to_tool:
             continue
-        prohibited = _EXPLICIT_PROHIBITION.search(clause) is not None
-        permissive = _PERMISSIVE_ACTION.search(clause) is not None
-        if prohibited and not permissive:
+        if _NEGATED_PROHIBITION.search(clause):
+            return True
+        if _EXPLICIT_PROHIBITION.search(clause):
             continue
-        if _DIRECT_PRECOMMIT_COMMAND.search(clause):
+        if has_tool and _DIRECT_PRECOMMIT_COMMAND.search(clause):
             return True
-        if _DIRECT_PRECOMMIT_RUN_MODE.search(clause):
+        if has_tool and _ACTIVE_PRECOMMIT_ACTION.search(clause):
             return True
-        if _DIRECT_PRECOMMIT_ACTION.search(clause):
+        if has_tool and _PASSIVE_PRECOMMIT_ACTION.search(clause):
             return True
-        if (
-            wrapper_reference not in clause
-            and _PERMISSIVE_PRECOMMIT_ACTOR.search(clause)
-            and _PRECOMMIT_ACTION.search(clause)
+        if has_tool and _PRECOMMIT_PERMISSION.search(clause):
+            return True
+        if wrapper_reference in clause:
+            continue
+        if _PERMISSIVE_ACTION.search(clause):
+            return True
+        if _PERMISSIVE_PRECOMMIT_ACTOR.search(clause) and re.search(
+            rf"\b{_PRECOMMIT_ACTION}\b", clause
         ):
             return True
     return False

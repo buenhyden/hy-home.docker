@@ -44,6 +44,11 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
 - Run the completion checklist in `docs/00.agent-governance/rules/task-checklists.md` before declaring done.
 - Provider surface synchronization is a validation-only operation and must run
   with explicit `scripts/operations/sync-provider-surfaces.sh --check`.
+- Repository script-reference validation is bounded to 4,096 scanned surfaces,
+  8,192 discovery entries, 16 MiB per regular file, and 64 MiB in aggregate.
+  These validator-owned ceilings are immutable contract safety limits; a limit
+  failure is value-free and requires an explicit validator review rather than
+  a caller override.
 
 ## 3. Graphify
 

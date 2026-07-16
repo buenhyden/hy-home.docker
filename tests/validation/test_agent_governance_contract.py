@@ -3440,14 +3440,31 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
         bypasses = (
             "Agents may run pre-commit run -a locally.",
             "Agents may run pre-commit run --all-files locally.",
+            "pre-commit -v run --all-files",
+            "python -I -m pre_commit run --all-files",
             "For pre-commit, run -a locally.",
             "Agents can use pre-commit directly for local QA.",
             "Agents can invoke pre-commit directly during local checks.",
             "Local agents may use pre-commit for QA.",
             "Use pre-commit locally for QA.",
             "Pre-commit is not allowed in CI, but agents may run pre-commit locally.",
+            "Agents launch pre-commit -v run for local QA.",
+            "Agents call python -m pre_commit run --all-files for local QA.",
+            "Pre-commit may be used directly by agents.",
+            "Pre-commit can be run locally by agents.",
+            "Pre-commit should be invoked for local QA.",
+            "Pre-commit use is approved for agents.",
+            "Agents are permitted to execute pre-commit locally.",
+            "Pre-commit use is not prohibited for local agents.",
+            "Pre-commit is prohibited in CI; however, agents may invoke it locally.",
+            "Pre-commit is prohibited in CI, yet agents can use it locally.",
+            "Although pre-commit is prohibited in CI, agents should run it locally.",
         )
         for guidance in bypasses:
+            self.assertTrue(
+                contract._has_direct_agent_precommit_guidance(guidance),
+                guidance,
+            )
             with (
                 self.subTest(guidance=guidance),
                 tempfile.TemporaryDirectory() as directory,
@@ -3465,9 +3482,26 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
 
         safe_guidance = (
             "Agents must not invoke pre-commit directly.",
+            "Agents may not run pre-commit directly.",
+            "Agents cannot use pre-commit directly.",
+            "Agents should not invoke pre-commit directly.",
+            "Pre-commit may not be run directly by agents.",
+            "Pre-commit can not be used directly by agents.",
+            "Pre-commit use is not allowed for agents.",
+            "Pre-commit use is not permitted for local QA.",
+            "Pre-commit use is not authorized for agents.",
+            "Agents are not approved to execute pre-commit locally.",
+            "Agents shouldn't run pre-commit directly.",
+            "Agents can't use pre-commit directly.",
+            "Pre-commit isn't allowed for local QA.",
+            "Pre-commit is prohibited; tests may run locally.",
             "Agents use scripts/validation/run-agent-precommit-all-files.sh for approved all-files QA.",
         )
         for guidance in safe_guidance:
+            self.assertFalse(
+                contract._has_direct_agent_precommit_guidance(guidance),
+                guidance,
+            )
             with (
                 self.subTest(guidance=guidance),
                 tempfile.TemporaryDirectory() as directory,

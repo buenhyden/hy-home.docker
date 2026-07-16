@@ -56,28 +56,71 @@ PROHIBITED_INPUT_PATH_VARIANT = re.compile(
     r"(?:rc|file|files|data|dump|backup|store|stores|cache|caches)?$"
 )
 
-SENSITIVE_KEY_COMPONENT = r"[a-z][a-z0-9]{0,31}"
-SENSITIVE_KEY_SEPARATOR = r"[._-]"
-SENSITIVE_KEY_GRAMMAR = rf"""
-    (?:
-      (?:{SENSITIVE_KEY_COMPONENT}{SENSITIVE_KEY_SEPARATOR}){{0,7}}
-        (?:key|secret|token|password|credentials?)|
-      aws[._-]access[._-]key[._-]id|
-      database[._-]url|
-      oauth[._-]client[._-]id|
-      authorization|proxy[._-]authorization|cookie|set[._-]cookie|
-      session(?:[._-](?:id|key|secret|token|cookie))?
-    )
-"""
-SENSITIVE_ASSIGNMENT_OR_HEADER_PATTERN = rf"""(?ix)
-    (?<![A-Za-z0-9_.-])
-    ["']?
-    {SENSITIVE_KEY_GRAMMAR}
-    ["']?
-    (?![A-Za-z0-9_.-])
-    \s*[:=]\s*
-    (?:"[^"\r\n]{{1,4096}}"|'[^'\r\n]{{1,4096}}'|[^\s,}}\]]{{1,4096}})
-"""
+SENSITIVE_BLOCK_CODE = "AOE-BLOCK-SENSITIVE-KV"
+MAX_SENSITIVE_KEY_COMPONENTS = 8
+MAX_SENSITIVE_KEY_COMPONENT_BYTES = 32
+MAX_SENSITIVE_SEPARATOR_RUN = 8
+MAX_SENSITIVE_VALUE_BYTES = 4_096
+_SENSITIVE_KEY_COMPONENT = (
+    rf"[A-Za-z][A-Za-z0-9]{{0,{MAX_SENSITIVE_KEY_COMPONENT_BYTES - 1}}}"
+)
+_SENSITIVE_KEY = (
+    rf"{_SENSITIVE_KEY_COMPONENT}"
+    rf"(?:[._-]{{1,{MAX_SENSITIVE_SEPARATOR_RUN}}}{_SENSITIVE_KEY_COMPONENT})"
+    rf"{{0,{MAX_SENSITIVE_KEY_COMPONENTS - 1}}}"
+)
+SENSITIVE_CANDIDATE_PATTERN = re.compile(
+    rf"(?<![A-Za-z0-9_.-])[\"']?(?P<key>{_SENSITIVE_KEY})[\"']?"
+    rf"\s*(?P<operator>:=|\+=|\?=|=|:)\s*"
+    rf"(?P<value>\"[^\"\r\n]{{1,{MAX_SENSITIVE_VALUE_BYTES}}}\"?|"
+    rf"'[^'\r\n]{{1,{MAX_SENSITIVE_VALUE_BYTES}}}'?|"
+    rf"[^\s,}}\]]{{1,{MAX_SENSITIVE_VALUE_BYTES}}})"
+)
+_SENSITIVE_EXACT_KEYS = frozenset(
+    {
+        "authorization",
+        "aws_access_key_id",
+        "cookie",
+        "database_url",
+        "github_pat",
+        "google_application_credentials",
+        "oauth_client_id",
+        "passwd",
+        "proxy_authorization",
+        "session",
+        "session_cookie",
+        "session_id",
+        "session_key",
+        "session_secret",
+        "session_token",
+        "set_cookie",
+    }
+)
+_SENSITIVE_SUFFIXES = frozenset(
+    {"credential", "credentials", "password", "secret", "token"}
+)
+_SENSITIVE_KEY_NAMESPACES = frozenset(
+    {
+        "access",
+        "anthropic",
+        "api",
+        "auth",
+        "aws",
+        "azure",
+        "client",
+        "encryption",
+        "gemini",
+        "github",
+        "google",
+        "oauth",
+        "openai",
+        "private",
+        "provider",
+        "session",
+        "signing",
+    }
+)
+_SAFE_KEY_NAMESPACES = frozenset({"cache", "foreign", "keyboard", "primary", "public"})
 
 
 @dataclass(frozen=True)
@@ -141,8 +184,8 @@ class RegressionResult:
 
 COMMON_BLOCK_PATTERNS: tuple[tuple[str, str], ...] = (
     (
-        SENSITIVE_ASSIGNMENT_OR_HEADER_PATTERN,
-        "AOE-BLOCK-SENSITIVE-KV",
+        SENSITIVE_CANDIDATE_PATTERN.pattern,
+        SENSITIVE_BLOCK_CODE,
     ),
     (r"-----BEGIN [A-Z ]*PRIVATE KEY-----", "AOE-BLOCK-PRIVATE-KEY"),
     (r"\bsk-[A-Za-z0-9_-]{12,}\b", "AOE-BLOCK-OPENAI-TOKEN"),
@@ -481,15 +524,14 @@ def _term_score(text: str, terms: tuple[str, ...]) -> int:
 
 
 def score_text(fixture: Fixture, text: str) -> ScoreResult:
-    block_codes = tuple(
-        sorted(
-            {
-                code
-                for pattern, code in fixture.block_patterns
-                if re.search(pattern, text, flags=re.MULTILINE)
-            }
-        )
-    )
+    matched_blocks = {
+        code
+        for pattern, code in fixture.block_patterns
+        if code != SENSITIVE_BLOCK_CODE and re.search(pattern, text, flags=re.MULTILINE)
+    }
+    if _contains_sensitive_assignment(text):
+        matched_blocks.add(SENSITIVE_BLOCK_CODE)
+    block_codes = tuple(sorted(matched_blocks))
     criterion_scores = tuple(
         (criterion.name, _term_score(text, criterion.terms))
         for criterion in fixture.criteria
@@ -552,9 +594,52 @@ def _read_utf8(path: pathlib.Path) -> str:
 
 
 def _contains_sensitive_content(text: str) -> bool:
+    return _contains_sensitive_assignment(text) or any(
+        code != SENSITIVE_BLOCK_CODE and re.search(pattern, text, flags=re.MULTILINE)
+        for pattern, code in COMMON_BLOCK_PATTERNS
+    )
+
+
+def _sensitive_key_components(key: str) -> tuple[str, ...]:
+    components = tuple(
+        component.casefold() for component in re.split(r"[._-]+", key) if component
+    )
+    if (
+        not components
+        or len(components) > MAX_SENSITIVE_KEY_COMPONENTS
+        or any(
+            len(component.encode("ascii", errors="strict"))
+            > MAX_SENSITIVE_KEY_COMPONENT_BYTES
+            for component in components
+        )
+    ):
+        return ()
+    return components
+
+
+def _is_sensitive_candidate_key(key: str) -> bool:
+    components = _sensitive_key_components(key)
+    if not components:
+        return False
+    normalized = "_".join(components)
+    if normalized in _SENSITIVE_EXACT_KEYS:
+        return True
+    if components[-1] in _SENSITIVE_SUFFIXES:
+        return True
+    if components[-1] != "key":
+        return False
+    namespaces = set(components[:-1])
+    if namespaces <= _SAFE_KEY_NAMESPACES:
+        return False
+    return bool(namespaces & _SENSITIVE_KEY_NAMESPACES)
+
+
+def _contains_sensitive_assignment(text: str) -> bool:
+    """Classify bounded assignment/header candidates without inspecting values."""
+
     return any(
-        re.search(pattern, text, flags=re.MULTILINE)
-        for pattern, _code in COMMON_BLOCK_PATTERNS
+        _is_sensitive_candidate_key(match.group("key"))
+        for match in SENSITIVE_CANDIDATE_PATTERN.finditer(text)
     )
 
 

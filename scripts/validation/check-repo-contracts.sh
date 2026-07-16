@@ -3244,12 +3244,6 @@ required_surface_fragments = {
         "{{controlled_wrapper_path_sets}}",
         "{{controlled_wrapper_disposition}}",
     ],
-    pathlib.Path("scripts/validation/run-local-qa-gates.sh"): [
-        "scripts/validation/run-agent-precommit-all-files.sh",
-        "initially clean linked worktree",
-        "tracked Task evidence",
-        "--allow-prefix",
-    ],
 }
 
 forbidden_ambiguous_fragments = [
@@ -3294,6 +3288,16 @@ import re
 import stat
 import subprocess
 import sys
+from typing import Final
+
+
+# Baseline 2026-07-16: 1,338 surfaces, 23,602,312 aggregate bytes, and a
+# 9,242,745-byte largest tracked artifact. These immutable ceilings leave
+# measured repository growth headroom while keeping every scan deterministic.
+MAX_REFERENCE_SURFACES: Final = 4_096
+MAX_REFERENCE_FILE_BYTES: Final = 16 * 1_048_576
+MAX_REFERENCE_TOTAL_BYTES: Final = 64 * 1_048_576
+MAX_REFERENCE_DISCOVERY_ENTRIES: Final = 8_192
 
 roots = [
     pathlib.Path(p)
@@ -3401,7 +3405,7 @@ def is_ignored(path: pathlib.Path) -> bool:
     return result.returncode == 0
 
 
-def untracked_special_paths() -> set[pathlib.Path]:
+def untracked_special_paths() -> set[pathlib.Path] | None:
     """Find non-regular surfaces Git cannot represent in an untracked listing."""
 
     discovered: set[pathlib.Path] = set()
@@ -3412,8 +3416,12 @@ def untracked_special_paths() -> set[pathlib.Path]:
         if parent != pathlib.Path(".")
     }
     pending = list(reversed(roots))
+    discovery_count = 0
     while pending:
         path = pending.pop()
+        discovery_count += 1
+        if discovery_count > MAX_REFERENCE_DISCOVERY_ENTRIES:
+            return None
         try:
             metadata = os.lstat(path)
         except OSError:
@@ -3440,6 +3448,11 @@ def untracked_special_paths() -> set[pathlib.Path]:
     return discovered
 
 
+special_paths = untracked_special_paths()
+if special_paths is None:
+    print("FAIL: unsafe script-reference surface", file=sys.stderr)
+    sys.exit(1)
+
 files = sorted(
     tracked_set
     | {
@@ -3447,8 +3460,11 @@ files = sorted(
         for path in untracked
         if path not in tracked_set and not is_untracked_python_cache(path)
     }
-    | untracked_special_paths()
+    | special_paths
 )
+if len(files) > MAX_REFERENCE_SURFACES:
+    print("FAIL: unsafe script-reference surface", file=sys.stderr)
+    sys.exit(1)
 
 
 class UnsafeScriptReferenceSurface(Exception):
@@ -3464,7 +3480,12 @@ def safe_parts(path: pathlib.Path) -> tuple[str, ...]:
     return pure.parts
 
 
-def read_confined_regular(path: pathlib.Path) -> str:
+total_reference_bytes = 0
+
+
+def open_confined_regular(
+    path: pathlib.Path, *, enforce_size: bool = False
+) -> tuple[list[int], int, os.stat_result]:
     """lstat then read the same root-confined, non-symlink regular file."""
 
     parts = safe_parts(path)
@@ -3472,7 +3493,9 @@ def read_confined_regular(path: pathlib.Path) -> str:
         initial = os.lstat(path)
     except OSError as error:
         raise UnsafeScriptReferenceSurface from error
-    if not stat.S_ISREG(initial.st_mode):
+    if not stat.S_ISREG(initial.st_mode) or (
+        enforce_size and initial.st_size > MAX_REFERENCE_FILE_BYTES
+    ):
         raise UnsafeScriptReferenceSurface
     directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW
     file_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK
@@ -3486,17 +3509,43 @@ def read_confined_regular(path: pathlib.Path) -> str:
         file_descriptor = os.open(parts[-1], file_flags, dir_fd=current)
         descriptors.append(file_descriptor)
         opened = os.fstat(file_descriptor)
-        if not stat.S_ISREG(opened.st_mode) or (
-            opened.st_dev,
-            opened.st_ino,
-        ) != (initial.st_dev, initial.st_ino):
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or (enforce_size and opened.st_size > MAX_REFERENCE_FILE_BYTES)
+            or (opened.st_dev, opened.st_ino) != (initial.st_dev, initial.st_ino)
+        ):
+            raise UnsafeScriptReferenceSurface
+        return descriptors, file_descriptor, opened
+    except (OSError, UnsafeScriptReferenceSurface) as error:
+        for descriptor in reversed(descriptors):
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+        raise UnsafeScriptReferenceSurface from error
+
+
+def read_confined_regular(path: pathlib.Path) -> str:
+    """Read at most the immutable per-file and aggregate reference budgets."""
+
+    global total_reference_bytes
+    descriptors, file_descriptor, opened = open_confined_regular(
+        path, enforce_size=True
+    )
+    try:
+        if opened.st_size > MAX_REFERENCE_FILE_BYTES:
             raise UnsafeScriptReferenceSurface
         chunks: list[bytes] = []
-        while True:
-            chunk = os.read(file_descriptor, 65_536)
+        remaining = MAX_REFERENCE_FILE_BYTES + 1
+        while remaining > 0:
+            chunk = os.read(file_descriptor, min(65_536, remaining))
             if not chunk:
                 break
             chunks.append(chunk)
+            remaining -= len(chunk)
+        payload = b"".join(chunks)
+        if len(payload) > MAX_REFERENCE_FILE_BYTES:
+            raise UnsafeScriptReferenceSurface
         final = os.fstat(file_descriptor)
         if (
             final.st_dev,
@@ -3510,7 +3559,10 @@ def read_confined_regular(path: pathlib.Path) -> str:
             opened.st_mtime_ns,
         ):
             raise UnsafeScriptReferenceSurface
-        return b"".join(chunks).decode("utf-8", errors="ignore")
+        if total_reference_bytes + len(payload) > MAX_REFERENCE_TOTAL_BYTES:
+            raise UnsafeScriptReferenceSurface
+        total_reference_bytes += len(payload)
+        return payload.decode("utf-8", errors="ignore")
     except OSError as error:
         raise UnsafeScriptReferenceSurface from error
     finally:
@@ -3527,11 +3579,16 @@ regular_cache: dict[pathlib.Path, bool] = {}
 def confined_regular_exists(path: pathlib.Path) -> bool:
     if path not in regular_cache:
         try:
-            read_confined_regular(path)
+            descriptors, _file_descriptor, _opened = open_confined_regular(path)
         except UnsafeScriptReferenceSurface:
             regular_cache[path] = False
         else:
             regular_cache[path] = True
+            for descriptor in reversed(descriptors):
+                try:
+                    os.close(descriptor)
+                except OSError:
+                    pass
     return regular_cache[path]
 
 
