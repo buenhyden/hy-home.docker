@@ -179,6 +179,17 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         self.assertNotIn("locally use pre-commit", result.stdout)
         self.assertNotIn("pre-commit run --all-files", result.stdout)
 
+    def test_semantic_local_qa_bypass_guard_is_selector_coupled(self) -> None:
+        for path in (
+            "scripts/validation/run-local-qa-gates.sh",
+            "scripts/validation/agent_governance_contract.py",
+            "scripts/validation/check-repo-contracts.sh",
+            "tests/validation/test_agent_governance_contract.py",
+            "tests/validation/test_agent_governance_ci_routing.py",
+        ):
+            with self.subTest(path=path):
+                self.assertIn(path, COUPLED_PATHS)
+
     def test_script_reference_scan_ignores_only_python_cache_artifacts(self) -> None:
         source = REPO_CONTRACT.read_text(encoding="utf-8")
         start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"

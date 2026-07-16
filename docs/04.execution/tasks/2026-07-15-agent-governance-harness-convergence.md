@@ -219,6 +219,8 @@ Redaction boundary:
 | 2026-07-16 | T-AGHC-005 second review remediation | Fresh remediation agent | A terminal review returned Critical 0, Important 3, Minor 0: allowlisted evaluator files could still be untracked or use prohibited dotfile classes and composite environment credentials, fixture tables admitted unknown or reordered fields, and the aggregate script-reference scan could dereference tracked symlinks or silently skip broken and nonregular surfaces. The remediation binds every file input to one stage-zero regular Git index entry and its exact blob, normalizes prohibited path components including dotfiles, recognizes bounded AWS, database, and OAuth credential keys, requires the exact ordered ten-field fixture table, and uses lstat plus a root-confined same-FD non-symlink regular-file read. Regular binary scanning remains byte-safe and compatible; tracked Python cache/docs remain checked while only real untracked cache artifacts are excluded. Initial RED produced thirteen expected failures and zero errors across twenty-one methods. Focused 21/21 and authoritative 190/190 are GREEN; independent re-reviews remain required. |
 | 2026-07-16 | T-AGHC-005 terminal quality review | Fresh read-only quality reviewer | Re-review of the second remediation returned Critical 0, Important 4, Minor 0. It found incomplete boundary-aware compound credential assignments, no exact evidence-file or aggregate byte ceilings, five fixture narrative fields that were schema-present but not value-bound, and direct local pre-commit wording that bypassed the controlled-wrapper and Task-evidence route. |
 | 2026-07-16 | T-AGHC-005 third review remediation | Fresh remediation agent | Added boundary-aware common credential and authorization/cookie/session assignment blocking, an exact eight-evidence ceiling, duplicate path rejection, and one shared 1 MiB UTF-8 budget that counts separators for both file-output and stdin flows. All five narrative fields now live in typed per-fixture data and match their exact catalog values. Local QA names only the controlled wrapper, clean linked worktree, tracked Task evidence, and explicit allowed prefixes; the selector and typed repository validator cover that route. Initial RED produced twenty-one expected assertions and two expected missing-bound errors across twenty-seven selected methods. Focused 27/27 and authoritative 195/195 are GREEN; independent specification and quality re-reviews remain required. |
+| 2026-07-16 | T-AGHC-005 terminal quality re-review | Fresh read-only quality reviewer | Re-review of the third remediation returned Critical 0, Important 2, Minor 0. Provider-prefixed and common compound credential keys or `X-*` authentication headers could still evade the fixed sensitive-key alternatives, and the typed repository validator recognized only a few exact direct-pre-commit phrases instead of alternate command and permissive local-agent guidance. |
+| 2026-07-16 | T-AGHC-005 fourth review remediation | Fresh remediation agent | Replaced the fixed sensitive-key alternatives with one bounded assignment/header grammar: at most eight delimiter-separated components of at most thirty-two characters, exact terminal `key`, `secret`, `token`, `password`, or `credential(s)` classes, and the preserved AWS access-ID, database URL, OAuth client-ID, authorization, cookie, and session families. Provider-prefixed keys and `X-API-Key`/`X-Auth-Token` headers now fail in both scorer and CLI paths, while rotation-policy, tokenizer, secretary, and non-assignment prose controls remain safe. The typed repository harness validator owns bounded clause normalization and rejects direct `pre-commit run`, `run -a`/`--all-files`, direct use/invocation, imperative or permissive local-agent guidance, and contrast-clause bypasses while allowing explicit prohibitions and the canonical wrapper; the aggregate delegates to its existing `--section all` invocation instead of duplicating semantic authority. Exact typed mutations and selector tests cover this route. Initial reviewer RED produced twenty-one expected assertion failures across three methods; an adversarial extension produced three further expected failures, and a typed-authority RED produced eight bypass failures before the detector moved into the canonical validator. Focused and authoritative suites are GREEN; fresh independent terminal re-reviews remain required. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -687,6 +689,23 @@ T-AGHC-005 third review-remediation verification:
 | Graphify refresh and corroboration | advisory graph evidence is source-corroborated and generated output restored | 24,910 nodes; 28,566 edges; 1,602 communities; 432 inferred edges, two cross-root inferred relationships, 16,471 isolated nodes, 70 omitted thin communities, and two legacy infrastructure ambiguities corroborated against tracked Stage 00, Spec 132, Task evidence, evaluator, validator, local QA, and focused tests; generated graph files restored | Pass |
 | protected boundaries | no runtime, Compose, deployment, secret, credential, remote, model-call, direct all-files QA, or new required CI-job mutation | evaluator, validator, local QA selector/wording, focused tests, Task evidence, and progress memory only | Pass |
 
+T-AGHC-005 fourth review-remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| terminal independent quality re-review | identify residual credential-key and local-QA semantic gaps | C0/I2/M0 | Pass |
+| reviewer-prescribed RED | provider-prefixed scorer/CLI and five QA bypass mutations reproduce | 3 methods; 21 expected assertion failures; 0 errors | Pass |
+| adversarial RED extension | comma-separated `run -a`, imperative local use, and prohibition/contrast bypass reproduce | 1 method; 3 expected assertion failures | Pass |
+| typed-authority RED/GREEN | `validate_repository(..., "harness")` must own bypass rejection and preserve prohibition/wrapper controls | RED: 1 method / 8 bypass assertions failed; GREEN: all 8 bypass and 2 safe controls pass with `AGC-REPOSITORY-HARNESS-SEMANTICS` owned by the typed validator | Pass |
+| focused evaluator and routing suites | provider/common compound positives fail value-free and negative controls remain safe; QA bypasses reject while prohibition/wrapper controls pass | complete evaluator/routing plus typed mutation suite 29/29 in 12.440s | Pass |
+| authoritative governance/provider/renderer/routing/evaluator suites | no regression | 198/198 in 255.071s | Pass |
+| exact evaluator and typed repository gates | both evaluator markers, exact contract cardinality, repository semantics, and provider projection pass | fixtures 8/8; regressions 10/10; contract `3/14/22/3/0`; repository all 0; providers 3 / drift 0 | Pass |
+| metadata and lifecycle | zero violations; no false Foundation consumer delta | metadata 2/0/0/0; lifecycle contract/promoted 0; impacted 137/0 with configured Task-directory advisory; Foundation manifest and summary byte-identical and fresh | Pass |
+| traceability, alignment, and generated owners | zero failures or stale generated evidence | traceability 46/0; alignment 653/5,206/141/0; metadata inventory 910/2,145; provider parity, security readiness, audit matrix, Wiki index, and Wiki coverage fresh | Pass |
+| repository aggregate and static checks | zero findings | aggregate `failures=0`; Ruff format/check, Bash syntax, compile, and diff hygiene pass | Pass |
+| Graphify refresh and corroboration | advisory graph evidence source-corroborated and generated output restored | 24,917 nodes / 28,583 edges / 1,600 communities; 432 inferred edges, 16,471 isolated nodes, 70 omitted thin communities, and two unrelated cross-root inferred relationships corroborated against tracked Stage 00/02/03/04, validator, tests, and infrastructure owners; generated output restored | Pass |
+| protected boundaries | no runtime, Compose, deployment, secret, credential, remote, model-call, direct all-files QA, or new required CI-job mutation | evaluator grammar, typed harness validator, aggregate delegation, focused tests, Task evidence, and progress memory only | Pass |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI
@@ -739,9 +758,9 @@ review-remediation commit `8d1d08f4` received independent terminal
 specification PASS and quality APPROVED verdicts, both C0/I0/M0. The reviewers
 confirmed focused 134/134, 132/132 generated local links, exact obsolete Codex
 skill-root absence, and exactly four planned Task 4/5 aggregate dependencies.
-T-AGHC-003 and T-AGHC-004 are complete. T-AGHC-005 implementation and three
+T-AGHC-003 and T-AGHC-004 are complete. T-AGHC-005 implementation and four
 review-remediation rounds are GREEN. The latest quality review returned
-C0/I4/M0, and the four findings are remediated; fresh independent specification
+C0/I2/M0, and both findings are remediated; fresh independent specification
 and quality re-reviews remain pending. Task 6 has not run.
 
 Planning specification/plan review verdict: independent read-only reviewer
@@ -760,7 +779,8 @@ hardening prerequisites for Tasks 3 and 4, not as an open Task 2 finding. Task
 3 terminal quality review of `9941bbb4..8d1d08f4` returned APPROVED with
 Critical 0, Important 0, and Minor 0. Task 4 terminal quality review returned
 APPROVED C0/I0/M0. Task 5 quality review progressed through C0/I7/M0,
-C0/I3/M0, and C0/I4/M0; every recorded finding has a separate remediation and
+C0/I3/M0, C0/I4/M0, and C0/I2/M0; every recorded finding has a separate
+remediation and
 GREEN evidence, while the terminal re-review remains pending. Quality review
 has not run for Task 6 or the whole branch.
 
@@ -802,7 +822,8 @@ with owner, reason, and destination.
 | T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | `44cd5b21` | implementation GREEN; independent review found seven unique Important gaps |
 | T-AGHC-005 independent-review remediation | `fix(harness): close evaluator and routing gaps` | `e7d63c23` | exact synthetic evaluator, wrapper, selector, cache, and typed replacement boundaries GREEN; independent re-reviews found three residual Important gaps |
 | T-AGHC-005 second review remediation | `fix(harness): confine synthetic evidence inputs` | `eabba55c` | exact tracked-blob input, fixture-field schema, and confined aggregate-reference boundaries GREEN; quality re-review found four residual Important gaps |
-| T-AGHC-005 third review remediation | `fix(harness): bound evaluator and QA semantics` | this logical commit | compound credential, resource-bound, exact narrative, and controlled-wrapper routing boundaries GREEN; independent re-reviews pending |
+| T-AGHC-005 third review remediation | `fix(harness): bound evaluator and QA semantics` | `184cfbf2` | compound credential, resource-bound, exact narrative, and controlled-wrapper routing boundaries GREEN; quality re-review found two residual Important gaps |
+| T-AGHC-005 fourth review remediation | `fix(harness): reject credential and QA bypasses` | this logical commit | bounded credential/header grammar and semantic local-QA bypass rejection GREEN; independent re-reviews pending |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |
 | Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | pending | pending |
 | Closure | `docs(execution): close agent governance convergence` | pending | pending |

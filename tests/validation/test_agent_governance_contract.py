@@ -3436,6 +3436,53 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
                 observed = codes(contract.validate_repository(root, bundle, "harness"))
                 self.assertIn("AGC-REPOSITORY-HARNESS-SEMANTICS", observed)
 
+    def test_repository_harness_rejects_semantic_local_qa_bypasses(self) -> None:
+        bypasses = (
+            "Agents may run pre-commit run -a locally.",
+            "Agents may run pre-commit run --all-files locally.",
+            "For pre-commit, run -a locally.",
+            "Agents can use pre-commit directly for local QA.",
+            "Agents can invoke pre-commit directly during local checks.",
+            "Local agents may use pre-commit for QA.",
+            "Use pre-commit locally for QA.",
+            "Pre-commit is not allowed in CI, but agents may run pre-commit locally.",
+        )
+        for guidance in bypasses:
+            with (
+                self.subTest(guidance=guidance),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                local_qa = root / "scripts/validation/run-local-qa-gates.sh"
+                local_qa.write_text(
+                    local_qa.read_text(encoding="utf-8") + f"\n# {guidance}\n",
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertIn("AGC-REPOSITORY-HARNESS-SEMANTICS", observed)
+
+        safe_guidance = (
+            "Agents must not invoke pre-commit directly.",
+            "Agents use scripts/validation/run-agent-precommit-all-files.sh for approved all-files QA.",
+        )
+        for guidance in safe_guidance:
+            with (
+                self.subTest(guidance=guidance),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                local_qa = root / "scripts/validation/run-local-qa-gates.sh"
+                local_qa.write_text(
+                    local_qa.read_text(encoding="utf-8") + f"\n# {guidance}\n",
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertNotIn("AGC-REPOSITORY-HARNESS-SEMANTICS", observed)
+
 
 if __name__ == "__main__":
     unittest.main()

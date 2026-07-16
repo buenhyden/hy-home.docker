@@ -3244,6 +3244,12 @@ required_surface_fragments = {
         "{{controlled_wrapper_path_sets}}",
         "{{controlled_wrapper_disposition}}",
     ],
+    pathlib.Path("scripts/validation/run-local-qa-gates.sh"): [
+        "scripts/validation/run-agent-precommit-all-files.sh",
+        "initially clean linked worktree",
+        "tracked Task evidence",
+        "--allow-prefix",
+    ],
 }
 
 forbidden_ambiguous_fragments = [

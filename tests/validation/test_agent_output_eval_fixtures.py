@@ -468,6 +468,101 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         self.assertEqual("FAIL: AOE-INPUT-REJECTED\n", result.stderr)
         self.assertNotIn("fixture-value", result.stdout + result.stderr)
 
+    def test_provider_prefixed_credentials_and_auth_headers_use_bounded_key_grammar(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive_keys = (
+            "GEMINI_API_KEY",
+            "OPENAI_API_KEY",
+            "ANTHROPIC_API_KEY",
+            "GITHUB_TOKEN",
+            "AWS_SESSION_TOKEN",
+            "SERVICE_SECRET",
+            "ID_TOKEN",
+            "GOOGLE_APPLICATION_CREDENTIALS",
+        )
+        sensitive_headers = (
+            "X-API-Key",
+            "X-Auth-Token",
+        )
+        safe_assignments = (
+            "GEMINI_API_KEY_ROTATION_POLICY=quarterly",
+            "OPENAI_API_KEY_ROTATION_POLICY=quarterly",
+            "GITHUB_TOKENIZER=enabled",
+            "AWS_SESSION_TOKENIZER=enabled",
+            "SERVICE_SECRETARY=assigned",
+            "GOOGLE_APPLICATION_CREDENTIALS_ROTATION_POLICY=quarterly",
+        )
+        safe_prose = (
+            "GEMINI_API_KEY is named in provider documentation",
+            "Use X-API-Key only as a synthetic field label",
+            "The local policy discusses GITHUB_TOKEN rotation",
+        )
+
+        for key in sensitive_keys:
+            payload = f'{key}="fixture-value"'
+            with self.subTest(kind="scorer-assignment", key=key):
+                result = evaluator.score_text(
+                    evaluator.FIXTURES["AOE-DOC-001"],
+                    evaluator._pass_text(payload),
+                )
+                self.assertEqual("fail", result.result)
+                self.assertIn("AOE-BLOCK-SENSITIVE-KV", result.block_codes)
+            with self.subTest(kind="cli-assignment", key=key):
+                cli = self.run_runner(
+                    "--fixture",
+                    "AOE-DOC-001",
+                    "--classification",
+                    "synthetic-fixture",
+                    "--stdin",
+                    input_text=payload,
+                )
+                self.assertEqual(1, cli.returncode)
+                self.assertEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
+                self.assertNotIn("fixture-value", cli.stdout + cli.stderr)
+
+        for header in sensitive_headers:
+            payload = f"{header}: fixture-value"
+            with self.subTest(kind="scorer-header", header=header):
+                result = evaluator.score_text(
+                    evaluator.FIXTURES["AOE-DOC-001"],
+                    evaluator._pass_text(payload),
+                )
+                self.assertEqual("fail", result.result)
+                self.assertIn("AOE-BLOCK-SENSITIVE-KV", result.block_codes)
+            with self.subTest(kind="cli-header", header=header):
+                cli = self.run_runner(
+                    "--fixture",
+                    "AOE-DOC-001",
+                    "--classification",
+                    "synthetic-fixture",
+                    "--stdin",
+                    input_text=payload,
+                )
+                self.assertEqual(1, cli.returncode)
+                self.assertEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
+                self.assertNotIn("fixture-value", cli.stdout + cli.stderr)
+
+        for payload in (*safe_assignments, *safe_prose):
+            with self.subTest(kind="safe-scorer", payload=payload):
+                result = evaluator.score_text(
+                    evaluator.FIXTURES["AOE-DOC-001"],
+                    evaluator._pass_text(payload),
+                )
+                self.assertNotIn("AOE-BLOCK-SENSITIVE-KV", result.block_codes)
+            with self.subTest(kind="safe-cli", payload=payload):
+                cli = self.run_runner(
+                    "--fixture",
+                    "AOE-DOC-001",
+                    "--classification",
+                    "synthetic-fixture",
+                    "--stdin",
+                    input_text=evaluator._pass_text(payload),
+                )
+                self.assertNotEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
+                self.assertIn("block_failures=0", cli.stdout)
+
     def test_evidence_count_and_combined_byte_limits_are_exact(self) -> None:
         evaluator = load_eval_module()
         self.assertEqual(8, evaluator.MAX_EVIDENCE_FILES)

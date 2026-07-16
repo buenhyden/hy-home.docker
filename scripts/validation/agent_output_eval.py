@@ -56,6 +56,29 @@ PROHIBITED_INPUT_PATH_VARIANT = re.compile(
     r"(?:rc|file|files|data|dump|backup|store|stores|cache|caches)?$"
 )
 
+SENSITIVE_KEY_COMPONENT = r"[a-z][a-z0-9]{0,31}"
+SENSITIVE_KEY_SEPARATOR = r"[._-]"
+SENSITIVE_KEY_GRAMMAR = rf"""
+    (?:
+      (?:{SENSITIVE_KEY_COMPONENT}{SENSITIVE_KEY_SEPARATOR}){{0,7}}
+        (?:key|secret|token|password|credentials?)|
+      aws[._-]access[._-]key[._-]id|
+      database[._-]url|
+      oauth[._-]client[._-]id|
+      authorization|proxy[._-]authorization|cookie|set[._-]cookie|
+      session(?:[._-](?:id|key|secret|token|cookie))?
+    )
+"""
+SENSITIVE_ASSIGNMENT_OR_HEADER_PATTERN = rf"""(?ix)
+    (?<![A-Za-z0-9_.-])
+    ["']?
+    {SENSITIVE_KEY_GRAMMAR}
+    ["']?
+    (?![A-Za-z0-9_.-])
+    \s*[:=]\s*
+    (?:"[^"\r\n]{{1,4096}}"|'[^'\r\n]{{1,4096}}'|[^\s,}}\]]{{1,4096}})
+"""
+
 
 @dataclass(frozen=True)
 class Criterion:
@@ -118,34 +141,7 @@ class RegressionResult:
 
 COMMON_BLOCK_PATTERNS: tuple[tuple[str, str], ...] = (
     (
-        r"""(?ix)
-        (?<![A-Za-z0-9_])
-        ["']?
-        (?:
-          password|passwd|token|secret|credential|private[._-]?key|
-          api[._-]?key|client[._-]?secret|access[._-]?token|
-          refresh[._-]?token|azure[._-]?client[._-]?secret|
-          aws[._-]?access[._-]?key[._-]?id|
-          aws[._-]?secret[._-]?access[._-]?key|database[._-]?url|
-          oauth[._-]?client[._-]?id|
-          authorization|proxy[._-]?authorization|cookie|set[._-]?cookie|
-          session(?:[._-]?(?:id|key|secret|token|cookie))?|
-          [a-z][a-z0-9]*(?:[._-][a-z0-9]+)*[._-]password
-        )
-        ["']?
-        (?![A-Za-z0-9_])
-        \s*[:=]\s*
-        (?:"[^"]{1,4096}"|'[^']{1,4096}'|[^\s,}\]]+)
-        """,
-        "AOE-BLOCK-SENSITIVE-KV",
-    ),
-    (
-        r"""(?imx)
-        (?<![A-Za-z0-9_-])
-        (?:authorization|proxy-authorization|cookie|set-cookie)
-        (?![A-Za-z0-9_-])
-        \s*:\s*[^\r\n]{1,4096}
-        """,
+        SENSITIVE_ASSIGNMENT_OR_HEADER_PATTERN,
         "AOE-BLOCK-SENSITIVE-KV",
     ),
     (r"-----BEGIN [A-Z ]*PRIVATE KEY-----", "AOE-BLOCK-PRIVATE-KEY"),

@@ -56,6 +56,21 @@ EXPECTED_PROVIDER_COUNT = 3
 MAX_BRACE_GROUPS = 64
 MAX_EXPANDED_PATHS = 1024
 MAX_PATTERN_LENGTH = 4096
+_DIRECT_PRECOMMIT_COMMAND = re.compile(r"\bpre-commit\s+run\b")
+_DIRECT_PRECOMMIT_RUN_MODE = re.compile(
+    r"\bpre-commit\b.{0,32}\brun\s+(?:-a|--all-files)\b"
+)
+_DIRECT_PRECOMMIT_ACTION = re.compile(
+    r"\b(?:use|invoke|run|execute)\b.{0,80}\bpre-commit\b.{0,80}\bdirectly\b"
+)
+_PERMISSIVE_PRECOMMIT_ACTOR = re.compile(r"\b(?:agents?|local|locally)\b")
+_PRECOMMIT_ACTION = re.compile(r"\b(?:use|invoke|run|execute)\b.{0,80}\bpre-commit\b")
+_PERMISSIVE_ACTION = re.compile(
+    r"\b(?:may|can|should|will)\s+(?:\w+\s+){0,8}(?:use|invoke|run|execute)\b"
+)
+_EXPLICIT_PROHIBITION = re.compile(
+    r"\b(?:must\s+not|do\s+not|does\s+not|never|forbidden|prohibited|not\s+allowed)\b"
+)
 
 COMMON_TOP_FIELDS = {"schema_version", "checked_at"}
 ARTIFACT_TOP_FIELDS = COMMON_TOP_FIELDS | {
@@ -5363,6 +5378,44 @@ def _validate_exact_provider_projection(
         )
 
 
+def _normalized_guidance_clauses(text: str) -> tuple[str, ...]:
+    """Return bounded prose/code clauses for semantic QA-guidance checks."""
+
+    clauses: list[str] = []
+    for raw_clause in re.split(r"[\r\n.;]+|\b(?:but|however)\b", text.casefold()):
+        clause = re.sub(r"[`'\"()]", " ", raw_clause)
+        clause = re.sub(r"\s+", " ", clause).strip()
+        if clause:
+            clauses.append(clause[:MAX_PATTERN_LENGTH])
+    return tuple(clauses)
+
+
+def _has_direct_agent_precommit_guidance(text: str) -> bool:
+    """Reject local-QA prose that authorizes bypassing the controlled wrapper."""
+
+    wrapper_reference = "scripts/validation/run-agent-precommit-all-files.sh"
+    for clause in _normalized_guidance_clauses(text):
+        if "pre-commit" not in clause:
+            continue
+        prohibited = _EXPLICIT_PROHIBITION.search(clause) is not None
+        permissive = _PERMISSIVE_ACTION.search(clause) is not None
+        if prohibited and not permissive:
+            continue
+        if _DIRECT_PRECOMMIT_COMMAND.search(clause):
+            return True
+        if _DIRECT_PRECOMMIT_RUN_MODE.search(clause):
+            return True
+        if _DIRECT_PRECOMMIT_ACTION.search(clause):
+            return True
+        if (
+            wrapper_reference not in clause
+            and _PERMISSIVE_PRECOMMIT_ACTOR.search(clause)
+            and _PRECOMMIT_ACTION.search(clause)
+        ):
+            return True
+    return False
+
+
 def _validate_harness_semantic_surfaces(
     reader: _RepositoryReader,
     bundle: ContractBundle,
@@ -5416,6 +5469,20 @@ def _validate_harness_semantic_surfaces(
                     "missing-harness-semantic",
                     "agent-governance-artifacts",
                 )
+
+        if (
+            relative == "scripts/validation/run-local-qa-gates.sh"
+            and _has_direct_agent_precommit_guidance(text)
+        ):
+            _add(
+                findings,
+                "AGC-REPOSITORY-HARNESS-SEMANTICS",
+                relative,
+                "harness",
+                "controlled-wrapper-only-local-qa-guidance",
+                "direct-agent-precommit-guidance",
+                "agent-governance-artifacts",
+            )
 
     hook_path = "scripts/hooks/agent-event-hook.sh"
     hook_text = reader.read(hook_path, "hook-dispatcher", "provider-models")
