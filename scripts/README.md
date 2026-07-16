@@ -361,7 +361,7 @@ bash scripts/validation/report-provider-hook-parity.sh --check
 
 # List and check local advisory agent-output eval fixtures
 bash scripts/validation/run-agent-output-eval-fixtures.sh --list
-bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
+bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
 
 # Approved final QA only; prefixes must match the task's reviewed scope
 bash scripts/validation/run-agent-precommit-all-files.sh \

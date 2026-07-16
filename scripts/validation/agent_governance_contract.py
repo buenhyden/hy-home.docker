@@ -194,7 +194,10 @@ EVALUATION_FIELDS = {
     "test_path",
     "fixture_count",
     "regression_count",
+    "input_classification",
+    "input_roots",
     "pass_markers",
+    "fixture_thresholds",
 }
 PROVIDER_FIELDS = {
     "provider_id",
@@ -2136,6 +2139,37 @@ def _validate_catalog_contract(
                     "evaluation-cardinality-mismatch",
                     source,
                 )
+        if evaluation.get("input_classification") != "synthetic-fixture":
+            _add(
+                findings,
+                "AGC-EVAL-INPUT-POLICY",
+                path,
+                "evaluation.input_classification",
+                "synthetic-fixture",
+                "evaluation-input-classification-mismatch",
+                source,
+            )
+        input_roots = _check_string_list(
+            evaluation.get("input_roots"),
+            path,
+            "evaluation.input_roots",
+            findings,
+            source,
+            require_sorted=True,
+        )
+        if tuple(input_roots or ()) != (
+            "docs/90.references/data/governance/agent-output-eval-synthetic",
+            "tests/fixtures/agent-output-eval",
+        ):
+            _add(
+                findings,
+                "AGC-EVAL-INPUT-POLICY",
+                path,
+                "evaluation.input_roots",
+                "exact-synthetic-input-roots",
+                "evaluation-input-root-mismatch",
+                source,
+            )
         markers = _check_string_list(
             evaluation.get("pass_markers"),
             path,
@@ -2155,6 +2189,34 @@ def _validate_catalog_contract(
                 "evaluation.pass_markers",
                 "exact-evaluation-pass-markers",
                 "evaluation-marker-mismatch",
+                source,
+            )
+        thresholds = evaluation.get("fixture_thresholds")
+        expected_threshold_ids = {
+            "AOE-ADAPTER-001",
+            "AOE-CLOSURE-001",
+            "AOE-DOC-001",
+            "AOE-HOOK-001",
+            "AOE-INFRA-001",
+            "AOE-PROVIDER-001",
+            "AOE-ROLE-001",
+            "AOE-ROUTING-001",
+        }
+        if (
+            not isinstance(thresholds, Mapping)
+            or set(thresholds) != expected_threshold_ids
+            or any(
+                isinstance(value, bool) or not isinstance(value, int | float) or value != 0.50
+                for value in thresholds.values()
+            )
+        ):
+            _add(
+                findings,
+                "AGC-EVAL-THRESHOLD",
+                path,
+                "evaluation.fixture_thresholds",
+                "exact-per-fixture-threshold-map",
+                "evaluation-threshold-mismatch",
                 source,
             )
 
@@ -5308,14 +5370,29 @@ def _validate_harness_semantic_surfaces(
         "scripts/validation/validate-harness.sh": ("run-local-qa-gates.sh --harness",),
         "scripts/validation/run-local-qa-gates.sh": (
             "sync-provider-surfaces.sh --check",
-            "run-agent-output-eval-fixtures.sh --check-fixtures",
+            "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions",
             "--mode repository --section all",
         ),
         ".github/PULL_REQUEST_TEMPLATE.md": (
             "## Harness Impact",
-            "run-agent-output-eval-fixtures.sh --check-fixtures",
+            "validate-harness.sh",
+            "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions",
             "fixtures_check=pass",
             "regressions_check=pass",
+        ),
+        "scripts/README.md": (
+            "validate-harness.sh",
+            "run-local-qa-gates.sh --harness",
+        ),
+        "docs/00.agent-governance/README.md": ("harness-implementation-map.md",),
+        "docs/00.agent-governance/harness-implementation-map.md": (
+            "scripts/validation/validate-harness.sh",
+        ),
+        "docs/00.agent-governance/rules/approval-boundaries.md": (
+            "validate-harness.sh",
+        ),
+        "docs/99.templates/templates/sdlc/task.template.md": (
+            "## Verification Evidence",
         ),
     }
     for relative, fragments in required_fragments.items():

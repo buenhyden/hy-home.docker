@@ -158,14 +158,18 @@ recommend_for_path() {
     scripts/operations/provider_surface_renderer.py | \
     scripts/validation/agent_governance_contract.py | \
     scripts/validation/check-agent-governance-contract.py | \
+    scripts/validation/check-repo-contracts.sh | \
     scripts/validation/agent_output_eval.py | \
     scripts/validation/run-agent-output-eval-fixtures.sh | \
+    scripts/validation/run-local-qa-gates.sh | \
+    scripts/validation/validate-harness.sh | \
     tests/validation/test_agent_governance_contract.py | \
+    tests/validation/test_agent_governance_ci_routing.py | \
     tests/validation/test_agent_output_eval_fixtures.py | \
     tests/validation/test_provider_native_surfaces.py | \
     tests/validation/test_provider_surface_renderer.py)
     add_gate "bash scripts/validation/check-repo-contracts.sh" "agent governance contract family changed"
-    add_gate "bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures" "agent governance changes require coupled semantic regressions"
+    add_gate "bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions" "agent governance changes require coupled semantic regressions"
     ;;
   esac
 

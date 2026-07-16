@@ -30,9 +30,22 @@ evaluation:
   test_path: tests/validation/test_agent_output_eval_fixtures.py
   fixture_count: 8
   regression_count: 10
+  input_classification: synthetic-fixture
+  input_roots:
+    - docs/90.references/data/governance/agent-output-eval-synthetic
+    - tests/fixtures/agent-output-eval
   pass_markers:
     - fixtures_check=pass
     - regressions_check=pass
+  fixture_thresholds:
+    AOE-ADAPTER-001: 0.50
+    AOE-CLOSURE-001: 0.50
+    AOE-DOC-001: 0.50
+    AOE-HOOK-001: 0.50
+    AOE-INFRA-001: 0.50
+    AOE-PROVIDER-001: 0.50
+    AOE-ROLE-001: 0.50
+    AOE-ROUTING-001: 0.50
 agents:
   - agent_id: ci-cd-engineer
     category: implementation-operations

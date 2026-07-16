@@ -3301,6 +3301,30 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
         self.assertNotEqual(evaluation["owner_agent"], evaluation["reviewer_agent"])
         self.assertEqual(8, evaluation["fixture_count"])
         self.assertEqual(10, evaluation["regression_count"])
+        self.assertEqual("synthetic-fixture", evaluation["input_classification"])
+        self.assertEqual(
+            (
+                "docs/90.references/data/governance/agent-output-eval-synthetic",
+                "tests/fixtures/agent-output-eval",
+            ),
+            evaluation["input_roots"],
+        )
+        self.assertEqual(
+            {
+                "AOE-ADAPTER-001",
+                "AOE-CLOSURE-001",
+                "AOE-DOC-001",
+                "AOE-HOOK-001",
+                "AOE-INFRA-001",
+                "AOE-PROVIDER-001",
+                "AOE-ROLE-001",
+                "AOE-ROUTING-001",
+            },
+            set(evaluation["fixture_thresholds"]),
+        )
+        self.assertTrue(
+            all(value == 0.50 for value in evaluation["fixture_thresholds"].values())
+        )
         self.assertEqual(
             ("fixtures_check=pass", "regressions_check=pass"),
             evaluation["pass_markers"],
@@ -3308,6 +3332,28 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
         self.assertEqual(
             "scripts/validation/agent_output_eval.py", evaluation["scorer_path"]
         )
+
+    def test_evaluation_threshold_and_input_policy_mutations_fail_typed_contract(
+        self,
+    ) -> None:
+        mutations = (
+            lambda values: values["evaluation"]["fixture_thresholds"].update(
+                {"AOE-DOC-001": 0.75}
+            ),
+            lambda values: values["evaluation"].update(
+                {"input_classification": "repository-output"}
+            ),
+            lambda values: values["evaluation"].update({"input_roots": ["/"]}),
+        )
+        for mutate in mutations:
+            with self.subTest(mutate=mutate), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                mutate_yaml(root, "agent-catalog.yaml", mutate)
+                observed = codes(validate_fixture(root))
+                self.assertTrue(
+                    {"AGC-EVAL-THRESHOLD", "AGC-EVAL-INPUT-POLICY"} & observed
+                )
 
     def test_shared_hook_uses_canonical_functions_and_no_session_runtime_probe(
         self,
@@ -3351,6 +3397,26 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
                 contract.validate_repository(root, fixture_bundle, "harness")
             )
             self.assertIn("AGC-REPOSITORY-HOOK-SEMANTICS", observed)
+
+    def test_repository_harness_restores_typed_replacement_routes(self) -> None:
+        mutations = (
+            (".github/PULL_REQUEST_TEMPLATE.md", "validate-harness.sh"),
+            ("scripts/README.md", "validate-harness.sh"),
+            ("scripts/README.md", "run-local-qa-gates.sh --harness"),
+            ("docs/00.agent-governance/README.md", "harness-implementation-map.md"),
+        )
+        for relative, fragment in mutations:
+            with self.subTest(relative=relative, fragment=fragment), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                path = root / relative
+                path.write_text(
+                    path.read_text(encoding="utf-8").replace(fragment, "removed-route"),
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertIn("AGC-REPOSITORY-HARNESS-SEMANTICS", observed)
 
 
 if __name__ == "__main__":

@@ -34,15 +34,17 @@ human review.
 ## Contracts
 
 - **Config Contract**: `scripts/validation/run-agent-output-eval-fixtures.sh`
-  provides `--list`, `--check-fixtures`, and `--fixture ... --output/--stdin`
+  provides `--list`, separate or combined `--check-fixtures` and
+  `--check-regressions`, and `--fixture ... --classification
+  synthetic-fixture --stdin/--output`
   modes.
 - **Data / Interface Contract**: The runner uses
   `docs/90.references/data/governance/agent-output-eval-fixtures.md` as the
   fixture catalog source and embeds deterministic scoring heuristics for the
-  current three fixture IDs.
+  exact eight fixture IDs and ten semantic regressions.
 - **Governance Contract**: `scripts/validation/check-repo-contracts.sh` must run
-  `run-agent-output-eval-fixtures.sh --check-fixtures` so fixture catalog and
-  runner IDs cannot drift.
+  `run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` so
+  fixture catalog, typed thresholds, and regression calibration cannot drift.
 
 ## Core Design
 
@@ -66,9 +68,8 @@ human review.
 
 ```text
 bash scripts/validation/run-agent-output-eval-fixtures.sh --list
-bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
-bash scripts/validation/run-agent-output-eval-fixtures.sh --fixture AOE-DOC-001 --output /tmp/agent-output.md
-bash scripts/validation/run-agent-output-eval-fixtures.sh --fixture AOE-DOC-001 --stdin
+bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
+printf '%s\n' '<synthetic output>' | bash scripts/validation/run-agent-output-eval-fixtures.sh --fixture AOE-DOC-001 --classification synthetic-fixture --stdin
 ```
 
 ## API Contract (If Applicable)
@@ -78,8 +79,9 @@ Not applicable. This change exposes no external API.
 ## Agent Role & IO Contract (If Applicable)
 
 - **Agent Role**: QA Engineer / Agentic Workflow Specialist.
-- **Inputs**: Saved agent output text, optional task evidence files, and selected
-  fixture ID.
+- **Inputs**: Explicitly classified synthetic text or repository-relative files
+  under the two typed synthetic fixture/evidence roots, plus a selected fixture
+  ID.
 - **Outputs**: Advisory score summary, block failures, criterion scores, and
   required context reminders.
 - **Success Definition**: Maintainers can locally score common agent-output
@@ -88,11 +90,13 @@ Not applicable. This change exposes no external API.
 ## Tools & Tool Contract (If Applicable)
 
 - **Tool List**: Bash, Python 3, repo-contract validator.
-- **Permission Boundary**: Read fixture catalog and explicit output/evidence
-  files only; do not read secrets, raw logs, shell history, `.env`, or runtime
-  provider/container state.
-- **Failure Handling**: `--check-fixtures` fails on catalog/runner ID drift;
-  scoring exits non-zero only when block conditions are present.
+- **Permission Boundary**: Read only non-symlink regular UTF-8 files under the
+  typed synthetic roots using same-descriptor validation; reject absolute,
+  outside, special-file, diagnostic, log, auth, token, secret, and shell-history
+  classes.
+- **Failure Handling**: Fixture and regression checks fail independently on
+  exact catalog/calibration drift; scoring exits non-zero for block conditions
+  or required-criterion failure.
 
 ## Prompt / Policy Contract (If Applicable)
 
@@ -115,8 +119,9 @@ Not applicable. This change exposes no external API.
 
 ## Guardrails (If Applicable)
 
-- **Input Guardrails**: Use only saved output/evidence files explicitly passed
-  by the caller or stdin content.
+- **Input Guardrails**: Require `synthetic-fixture` classification. Path input is
+  repository-relative and confined to typed synthetic roots; stdin is bounded
+  and passes the same sensitive-content rejection before scoring.
 - **Output Guardrails**: Print criterion scores and reasons, not raw protected
   values.
 - **Blocked Conditions**: Sensitive-looking key/value content, private keys,
@@ -137,17 +142,17 @@ Not applicable. This change exposes no external API.
 
 ## Edge Cases & Error Handling
 
-- **Piped stdin**: The Bash wrapper captures stdin before invoking the embedded
-  Python scorer so heredoc loading does not consume user input.
+- **Piped stdin**: The executable Bash wrapper delegates stdin directly to the
+  bounded Python scorer.
 - **Block failures**: Block conditions produce `result=fail` and non-zero exit.
-- **Weak output**: Missing required criteria produces `result=needs_review` but
-  exits zero for advisory review flow.
+- **Weak output**: Missing required criteria produces `result=fail` and a
+  non-zero exit without printing input values.
 
 ## Failure Modes & Fallback / Human Escalation
 
 - **Failure Mode**: Runner fixture IDs drift from the Stage 90 fixture catalog.
 - **Fallback**: Update the runner and fixture reference together, then run
-  `--check-fixtures`.
+  `--check-fixtures --check-regressions`.
 - **Human Escalation**: Required before making fixture scores required CI gates
   or replacing human review.
 
@@ -155,8 +160,8 @@ Not applicable. This change exposes no external API.
 
 ```bash
 bash scripts/validation/run-agent-output-eval-fixtures.sh --list
-bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
-printf '%s\n' '<sample output>' | bash scripts/validation/run-agent-output-eval-fixtures.sh --fixture AOE-DOC-001 --stdin
+bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
+printf '%s\n' '<synthetic output>' | bash scripts/validation/run-agent-output-eval-fixtures.sh --fixture AOE-DOC-001 --classification synthetic-fixture --stdin
 bash -n scripts/validation/run-agent-output-eval-fixtures.sh scripts/validation/check-repo-contracts.sh
 git diff --check
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
@@ -168,10 +173,12 @@ bash scripts/validation/check-repo-contracts.sh
 
 ## Success Criteria & Verification Plan
 
-- **VAL-AOR-001**: Runner lists and checks the three existing fixture IDs.
-- **VAL-AOR-002**: Runner can score stdin or file output without model calls or
-  repository mutation.
-- **VAL-AOR-003**: Repo contracts check fixture catalog/runner ID alignment.
+- **VAL-AOR-001**: Runner lists and checks exactly eight fixture IDs and ten
+  regression IDs.
+- **VAL-AOR-002**: Runner can score classified synthetic stdin or confined file
+  input without model calls or repository mutation.
+- **VAL-AOR-003**: Repo contracts check fixture/catalog/threshold/regression
+  alignment.
 - **VAL-AOR-004**: Stage 03/04 evidence, fixture reference, script inventory,
   and automation candidate closure are in sync.
 

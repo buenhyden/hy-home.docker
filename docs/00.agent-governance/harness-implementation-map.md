@@ -50,7 +50,7 @@ linked sources. It does not define new policy.
 | Metadata contract | `scripts/validation/check-document-metadata.py` | Generic lifecycle metadata plus registered Stage 00 specialization routing | focused unit suite | Stage 04 Task |
 | CI quality     | `.github/workflows/ci-quality.yml`           | Remote enforcement of the same gates          | GitHub Actions                    | PR required checks     |
 | Semantic loops | `contracts/provider-models.yaml` `harness_loops` | Bounded bootstrap, implementation, review, and approved all-files gates | `check-agent-governance-contract.py --mode repository --section all` | Stage 04 Task |
-| Agent-output eval | `contracts/agent-catalog.yaml` `evaluation` | Model-free fixture catalog, deterministic scorer, and independent review ownership | `run-agent-output-eval-fixtures.sh --check-fixtures` | PR Validation Evidence |
+| Agent-output eval | `contracts/agent-catalog.yaml` `evaluation` | Model-free fixture catalog, deterministic scorer, synthetic-only inputs, and independent review ownership | `run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` | PR Validation Evidence |
 
 ## Hardening
 

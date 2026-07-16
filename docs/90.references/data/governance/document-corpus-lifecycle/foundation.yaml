@@ -381,6 +381,7 @@ entries:
   - docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md
   - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
   - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/agent_output_eval.py
   - scripts/validation/agentic-audit-semantic-contract.json
   - scripts/validation/check-document-metadata.py
   - scripts/validation/check-repo-contracts.sh
@@ -626,6 +627,7 @@ entries:
   - docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md
   - docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md
   - docs/99.templates/support/document-corpus-migration-contract.yaml
+  - scripts/validation/agent_output_eval.py
   - scripts/validation/check-doc-traceability.sh
   - scripts/validation/check-document-metadata.py
   - scripts/validation/check-repo-contracts.sh
@@ -677,6 +679,7 @@ entries:
   - docs/04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md
   - docs/99.templates/support/document-corpus-migration-contract.yaml
   - docs/99.templates/support/document-metadata-profiles.yaml
+  - scripts/validation/agent_output_eval.py
   - scripts/validation/check-document-metadata.py
   - scripts/validation/check-repo-contracts.sh
   partition_plan: null

@@ -10,7 +10,7 @@ status: completed
 
 This specification defines a lightweight GitHub Actions gate for the existing
 agent-output eval fixture catalog and local advisory runner. The gate runs
-`bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures` so
+`bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` so
 CI catches fixture catalog and runner ID drift without scoring arbitrary agent
 outputs or calling external eval services.
 
@@ -40,7 +40,7 @@ Compose, write credentials, or replace Stage 00 governance and human review.
   `.github/rulesets/main-protection.md`, and
   `docs/00.agent-governance/rules/github-governance.md`.
 - **Data / Interface Contract**: The job invokes
-  `scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures`, which
+  `scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions`, which
   compares runner fixture IDs to
   `docs/90.references/data/governance/agent-output-eval-fixtures.md`.
 - **Governance Contract**: The gate is limited to catalog freshness. Any future
@@ -68,7 +68,7 @@ Compose, write credentials, or replace Stage 00 governance and human review.
 ### Core Interfaces
 
 ```text
-bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
+bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
 ```
 
 ## API Contract (If Applicable)
@@ -151,7 +151,7 @@ Not applicable. This change exposes no external API.
 ## Verification
 
 ```bash
-bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
+bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
 actionlint .github/workflows/ci-quality.yml
 git diff --check
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
@@ -166,8 +166,8 @@ bash scripts/validation/check-repo-contracts.sh
 - **VAL-AOC-001**: CI has a dedicated read-only fixture freshness job and the
   required-job taxonomy is synchronized across workflow, ruleset proposal,
   governance docs, and repo-contract validator.
-- **VAL-AOC-002**: The job runs the existing deterministic runner in
-  `--check-fixtures` mode only.
+- **VAL-AOC-002**: The job runs the existing deterministic runner in combined
+  `--check-fixtures --check-regressions` mode and requires both pass markers.
 - **VAL-AOC-003**: Stage 03/04 evidence, audit-pack wording, generated indexes,
   and progress memory are synchronized.
 - **VAL-AOC-004**: Local workflow/documentation validation passes.

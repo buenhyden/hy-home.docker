@@ -214,6 +214,8 @@ Redaction boundary:
 | 2026-07-16 | T-AGHC-005 GREEN | Fresh implementation agent | Added the four exact bounded loops, deterministic model-free evaluator with eight fixtures and ten regressions, aggregate typed repository enforcement, provider-sync drift checks, local harness routing, existing CI-job integration, native-event runtime-depth honesty, and Stage 00 evidence/permission boundaries. Session bootstrap no longer performs Docker discovery, provider hooks use canonical Stage 00 functions, and no new required CI job or runtime action was introduced. |
 | 2026-07-16 | T-AGHC-005 lifecycle and aggregate reconciliation | Fresh implementation agent | Removed only two stale active-consumer entries left by replacing the inline evaluator wrapper with a thin Python delegation. Source identity, lifecycle status, disposition, verdict, and enforcement remain unchanged; the canonical Foundation summary is byte-identical. The aggregate now passes with zero failures even when ignored Python cache artifacts exist, while active tracked references still fail closed. |
 | 2026-07-16 | T-AGHC-005 self-review | Fresh implementation agent | Focused and authoritative governance/provider/evaluator/routing suites, typed repository mode, evaluator markers, provider sync, hook parity, metadata, lifecycle, traceability, alignment, aggregate, static checks, and diff hygiene pass. Direct all-files pre-commit was not run because Task 6 owns the controlled wrapper and sanitized evidence. Independent specification and quality reviews remain required before closure. |
+| 2026-07-16 | T-AGHC-005 independent review | Independent specification and quality reviewers | Specification review returned Critical 0, Important 2, Minor 0; quality review returned Critical 0, Important 7, Minor 0. The union identified the non-executable stable wrapper, missing combined CLI flag, unrestricted or sensitive evaluator input, non-exact fixture calibration, selector self-coverage, over-broad cache exclusion, and missing typed replacement coverage for the harness validator and navigation contracts. |
+| 2026-07-16 | T-AGHC-005 review remediation | Fresh remediation agent | Added fail-closed synthetic-only same-FD input handling, value-free argument failures, exact section-bound fixtures/regressions/thresholds, a directly executable combined-marker wrapper, complete coupled selectors, Git-aware narrow cache exclusion, and typed PR/README/harness mutations. Three Foundation active-consumer entries were added for the evaluator's bounded canonical path references without changing lifecycle identity, status, disposition, verdict, or enforcement. Initial evaluator RED produced five failures and nine errors across twelve methods; routing RED produced 31 failures and one invocation error across seven methods. Focused 21/21, authoritative 187/187, contract/provider gates, and aggregate are GREEN. Independent specification and quality re-reviews remain required before Task closure. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -644,6 +646,17 @@ T-AGHC-005 implementation verification:
 | protected boundaries | no runtime, Compose, deployment, secret, remote, model-call, or new required CI-job mutation | no protected-boundary path changed; existing CI jobs only | Pass |
 | controlled all-files QA | Task 6 owns the approved wrapper and evidence | direct `pre-commit run --all-files` not run | Deferred by approved sequence |
 
+T-AGHC-005 review-remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| focused evaluator, routing, cache, and typed replacement suite | all review gaps fail closed | 21/21 | Pass |
+| authoritative governance/provider/renderer/routing/evaluator suites | no regression | 187/187 in 218.983s | Pass |
+| stable evaluator wrapper | executable direct combined command with both markers | mode 0755; fixtures 8/8 and regressions 10/10 | Pass |
+| repository aggregate and provider gates | zero findings and zero projection drift | aggregate `failures=0`; contract `3/14/22/3/0`; repository provider and renderer gates pass | Pass |
+| Foundation lifecycle reconciliation | exact consumers only; no lifecycle-state mutation | three evaluator consumers added; promoted violations 0; impacted 87/0 with configured Task-directory advisory | Pass |
+| Graphify refresh and corroboration | advisory evidence source-corroborated and generated output restored | 24,891 nodes; 28,514 edges; 1,602 communities; 432 inferred edges and 70 thin communities corroborated against tracked Stage 00/03/04, evaluator, validator, hooks, and CI; generated graph files restored | Pass |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI
@@ -753,7 +766,8 @@ with owner, reason, and destination.
 | T-AGHC-004 independent-review remediation | `fix(providers): harden native adapter contracts` | `3ef38345` | exact inventory, schemas, output translation, evidence typing, and aggregate renderer gate GREEN; specification re-review found four Important semantic gaps |
 | T-AGHC-004 second specification remediation | `fix(providers): bind model and hook semantics` | `de7e6abb` | Claude native effort, bounded Codex Stop retry, exact fallback authority, and authenticated cutoff evidence GREEN; terminal specification PASS and quality APPROVED C0/I0/M0 |
 | T-AGHC-004 terminal review evidence | `docs(task): record provider adapter review closure` | this logical commit | remediation-delta and full-range specification PASS and quality APPROVED C0/I0/M0 |
-| T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | this logical commit | implementation GREEN; independent specification and quality reviews pending |
+| T-AGHC-005 | `feat(harness): enforce agent loops and semantic gates` | `44cd5b21` | implementation GREEN; independent review found seven unique Important gaps |
+| T-AGHC-005 independent-review remediation | `fix(harness): close evaluator and routing gaps` | pending | exact synthetic evaluator, wrapper, selector, cache, and typed replacement boundaries GREEN; independent re-reviews pending |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |
 | Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | pending | pending |
 | Closure | `docs(execution): close agent governance convergence` | pending | pending |

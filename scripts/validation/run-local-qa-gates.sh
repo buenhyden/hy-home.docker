@@ -69,7 +69,7 @@ Local script-backed gates:
 - bash -n for scripts/**/*.sh and .claude/hooks/*.sh
 - scripts/validation/recommend-qa-gates.sh (advisory; recommends gates, does not execute them)
 - scripts/operations/sync-provider-surfaces.sh --check
-- scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
+- scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
 - scripts/validation/check-agent-governance-contract.py --mode repository --section all
 - scripts/operations/sync-tech-stack-versions.sh --check
 - scripts/validation/check-doc-traceability.sh
@@ -142,7 +142,7 @@ run_script_backed_gates() {
   run_step "Diff whitespace hygiene" git diff --check
   run_step "Shell syntax" run_bash_syntax
   run_step "Provider surface drift" bash scripts/operations/sync-provider-surfaces.sh --check
-  run_step "Agent semantic eval fixtures" bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
+  run_step "Agent semantic eval fixtures" bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
   run_step "Typed agent governance repository contract" python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
   run_step "Tech-stack version drift" bash scripts/operations/sync-tech-stack-versions.sh --check
   run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
@@ -160,7 +160,7 @@ run_harness_gates() {
   run_step "Diff whitespace hygiene" git diff --check
   run_step "Shell syntax" run_bash_syntax
   run_step "Provider surface drift" bash scripts/operations/sync-provider-surfaces.sh --check
-  run_step "Agent semantic eval fixtures" bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
+  run_step "Agent semantic eval fixtures" bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
   run_step "Typed agent governance repository contract" python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
   run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
   run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh

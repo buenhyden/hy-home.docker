@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import os
 import pathlib
 import re
+import stat
 import sys
 from dataclasses import dataclass
 from typing import Sequence
@@ -14,6 +16,34 @@ from typing import Sequence
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 FIXTURE_REFERENCE = pathlib.PurePosixPath(
     "docs/90.references/data/governance/agent-output-eval-fixtures.md"
+)
+CATALOG_CONTRACT = pathlib.PurePosixPath(
+    "docs/00.agent-governance/contracts/agent-catalog.yaml"
+)
+SYNTHETIC_INPUT_ROOTS = (
+    pathlib.PurePosixPath("tests/fixtures/agent-output-eval"),
+    pathlib.PurePosixPath(
+        "docs/90.references/data/governance/agent-output-eval-synthetic"
+    ),
+)
+MAX_SYNTHETIC_INPUT_BYTES = 1_048_576
+PROHIBITED_INPUT_PATH_PARTS = frozenset(
+    {
+        ".env",
+        "auth",
+        "credential",
+        "credentials",
+        "diagnostic",
+        "diagnostics",
+        "history",
+        "log",
+        "logs",
+        "secret",
+        "secrets",
+        "shell-history",
+        "token",
+        "tokens",
+    }
 )
 
 
@@ -68,7 +98,7 @@ class RegressionResult:
 
 COMMON_BLOCK_PATTERNS: tuple[tuple[str, str], ...] = (
     (
-        r"(?i)(?:password|passwd|token|secret|private[_-]?key|credential)\s*[:=]\s*\S+",
+        r'''(?ix)(?:["']?(?:password|passwd|token|secret|private[_-]?key|credential)["']?)\s*[:=]\s*(?:"[^"]{1,4096}"|'[^']{1,4096}'|[^\s,}\]]+)''',
         "AOE-BLOCK-SENSITIVE-KV",
     ),
     (r"-----BEGIN [A-Z ]*PRIVATE KEY-----", "AOE-BLOCK-PRIVATE-KEY"),
@@ -420,7 +450,163 @@ def _read_utf8(path: pathlib.Path) -> str:
         raise ValueError("unreadable evaluation input") from error
 
 
-def check_fixtures(root: pathlib.Path = ROOT) -> int:
+def _contains_sensitive_content(text: str) -> bool:
+    return any(
+        re.search(pattern, text, flags=re.MULTILINE)
+        for pattern, _code in COMMON_BLOCK_PATTERNS
+    )
+
+
+def _safe_input_parts(path: pathlib.Path) -> tuple[str, ...]:
+    pure = pathlib.PurePosixPath(path.as_posix())
+    if pure.is_absolute() or not pure.parts or any(part in {"", ".", ".."} for part in pure.parts):
+        raise ValueError("AOE-INPUT-PATH-REJECTED")
+    allowed = any(
+        pure == root or pure.is_relative_to(root) for root in SYNTHETIC_INPUT_ROOTS
+    )
+    if not allowed:
+        raise ValueError("AOE-INPUT-PATH-REJECTED")
+    normalized_parts = {
+        token
+        for part in pure.parts
+        for token in re.split(r"[^a-z0-9]+", part.casefold())
+        if token
+    }
+    if normalized_parts & PROHIBITED_INPUT_PATH_PARTS:
+        raise ValueError("AOE-INPUT-CLASS-REJECTED")
+    return pure.parts
+
+
+def _read_synthetic_path(root: pathlib.Path, path: pathlib.Path) -> str:
+    """Read an allowlisted synthetic input without following any symlink."""
+
+    parts = _safe_input_parts(path)
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW
+    file_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK
+    descriptors: list[int] = []
+    try:
+        current = os.open(root, directory_flags)
+        descriptors.append(current)
+        for part in parts[:-1]:
+            current = os.open(part, directory_flags, dir_fd=current)
+            descriptors.append(current)
+        file_descriptor = os.open(parts[-1], file_flags, dir_fd=current)
+        descriptors.append(file_descriptor)
+        metadata = os.fstat(file_descriptor)
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > MAX_SYNTHETIC_INPUT_BYTES:
+            raise ValueError("AOE-INPUT-TYPE-REJECTED")
+        chunks: list[bytes] = []
+        remaining = MAX_SYNTHETIC_INPUT_BYTES + 1
+        while remaining > 0:
+            chunk = os.read(file_descriptor, min(65_536, remaining))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        payload = b"".join(chunks)
+        if len(payload) > MAX_SYNTHETIC_INPUT_BYTES:
+            raise ValueError("AOE-INPUT-SIZE-REJECTED")
+        try:
+            return payload.decode("utf-8", errors="strict")
+        except UnicodeError as error:
+            raise ValueError("AOE-INPUT-ENCODING-REJECTED") from error
+    except OSError as error:
+        raise ValueError("AOE-INPUT-PATH-REJECTED") from error
+    finally:
+        for descriptor in reversed(descriptors):
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+
+
+def _read_synthetic_inputs(
+    root: pathlib.Path,
+    output: pathlib.Path,
+    evidence: Sequence[pathlib.Path],
+) -> str:
+    combined = "\n".join(
+        [_read_synthetic_path(root, output)]
+        + [_read_synthetic_path(root, path) for path in evidence]
+    )
+    if _contains_sensitive_content(combined):
+        raise ValueError("AOE-INPUT-SENSITIVE")
+    return combined
+
+
+def _typed_fixture_thresholds(root: pathlib.Path) -> dict[str, float]:
+    try:
+        text = _read_utf8(root / CATALOG_CONTRACT)
+    except ValueError:
+        return {}
+    match = re.search(
+        r"(?m)^  fixture_thresholds:\s*$\n(?P<body>(?:^    [A-Z0-9-]+: [0-9.]+\s*$\n?)+)",
+        text,
+    )
+    if match is None:
+        return {}
+    thresholds: dict[str, float] = {}
+    for fixture_id, raw in re.findall(
+        r"(?m)^    ([A-Z0-9-]+): ([0-9.]+)\s*$", match.group("body")
+    ):
+        if fixture_id in thresholds:
+            return {}
+        try:
+            thresholds[fixture_id] = float(raw)
+        except ValueError:
+            return {}
+    return thresholds
+
+
+def _table_fields(section: str) -> dict[str, str]:
+    fields: dict[str, str] = {}
+    for line in section.splitlines():
+        match = re.fullmatch(r"\| ([^|]+?) \| (.*?) \|", line)
+        if match is None or match.group(1) in {"Field", "---"}:
+            continue
+        key = match.group(1).strip()
+        if key in fields:
+            return {}
+        fields[key] = match.group(2).strip()
+    return fields
+
+
+def _catalog_sections(text: str) -> tuple[dict[str, tuple[str, str]], bool]:
+    matches = list(
+        re.finditer(r"(?m)^### (AOE-[A-Z]+-[0-9]{3}): ([^\n]+)\s*$", text)
+    )
+    sections: dict[str, tuple[str, str]] = {}
+    duplicate = False
+    for index, match in enumerate(matches):
+        fixture_id = match.group(1)
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        if fixture_id in sections:
+            duplicate = True
+        else:
+            sections[fixture_id] = (match.group(2).strip(), text[match.end() : end])
+    return sections, duplicate
+
+
+def _expected_regression_tokens(fixture_id: str) -> tuple[str, ...]:
+    return tuple(
+        sorted(
+            f"{case.case_id}={case.expected_result}"
+            for case in REGRESSION_CASES
+            if case.fixture_id == fixture_id
+        )
+    )
+
+
+def _render_code_tokens(values: Sequence[str]) -> str:
+    return ", ".join(f"`{value}`" for value in values) if values else "none"
+
+
+def check_fixtures(
+    root: pathlib.Path = ROOT,
+    *,
+    run_fixture_check: bool = True,
+    run_regression_check: bool = True,
+) -> int:
     reference_path = root / FIXTURE_REFERENCE
     failures: list[str] = []
     try:
@@ -428,76 +614,141 @@ def check_fixtures(root: pathlib.Path = ROOT) -> int:
     except ValueError:
         text = ""
         failures.append("AOE-CATALOG-UNREADABLE")
-    found = tuple(sorted(set(re.findall(r"^### (AOE-[A-Z]+-[0-9]{3}):", text, re.M))))
+    sections, duplicate = _catalog_sections(text)
+    found = tuple(sorted(sections))
     expected = tuple(sorted(FIXTURES))
-    if found != expected:
+    if duplicate or found != expected:
         failures.append("AOE-CATALOG-ID-MISMATCH")
+    thresholds = _typed_fixture_thresholds(root)
+    if thresholds != {
+        fixture.fixture_id: fixture.pass_threshold for fixture in FIXTURES.values()
+    }:
+        failures.append("AOE-CATALOG-TYPED-THRESHOLD-MISMATCH")
     for fixture in FIXTURES.values():
-        if fixture.label not in text or fixture.calibration_id not in text:
+        label, section = sections.get(fixture.fixture_id, ("", ""))
+        fields = _table_fields(section)
+        if label != fixture.label:
             failures.append("AOE-CATALOG-METADATA-MISMATCH")
-        for context in fixture.required_context:
-            if context not in text and pathlib.PurePosixPath(context).name not in text:
-                failures.append("AOE-CATALOG-CONTEXT-MISMATCH")
+        if fields.get("Surface") != fixture.surface:
+            failures.append("AOE-CATALOG-METADATA-MISMATCH")
+        expected_context = fixture.required_context
+        if fields.get("Required Context") != _render_code_tokens(expected_context):
+            failures.append("AOE-CATALOG-CONTEXT-MISMATCH")
+        if fields.get("Calibration") != (
+            f"`{fixture.calibration_id}`; pass threshold `{fixture.pass_threshold:.2f}`."
+        ):
+            failures.append("AOE-CATALOG-CALIBRATION-MISMATCH")
+        expected_regressions = _expected_regression_tokens(fixture.fixture_id)
+        if fields.get("Regression Cases") != _render_code_tokens(expected_regressions):
+            failures.append("AOE-CATALOG-REGRESSION-MISMATCH")
+        expected_blocks = tuple(
+            sorted({code for _pattern, code in fixture.block_patterns})
+        )
+        if fields.get("Block Codes") != _render_code_tokens(expected_blocks):
+            failures.append("AOE-CATALOG-BLOCK-CODE-MISMATCH")
     regressions = run_regressions()
     regression_failures = [
         result for result in regressions if not result.matched_expectation
     ]
 
-    print("Agent output eval fixture catalog check")
-    print(f"source={FIXTURE_REFERENCE}")
-    print(f"fixtures_expected={len(expected)}")
-    print(f"fixtures_found={len(found)}")
-    print(f"regressions_expected={len(REGRESSION_CASES)}")
-    print(f"regressions_matched={len(REGRESSION_CASES) - len(regression_failures)}")
-    if failures:
-        for code in sorted(set(failures)):
-            print(f"FAIL: {code}", file=sys.stderr)
-    print("fixtures_check=pass" if not failures else "fixtures_check=fail")
-    print(
-        "regressions_check=pass"
-        if not regression_failures
-        else "regressions_check=fail"
-    )
-    return 0 if not failures and not regression_failures else 1
+    if run_fixture_check:
+        print("Agent output eval fixture catalog check")
+        print(f"source={FIXTURE_REFERENCE}")
+        print(f"fixtures_expected={len(expected)}")
+        print(f"fixtures_found={len(found)}")
+        if failures:
+            for code in sorted(set(failures)):
+                print(f"FAIL: {code}", file=sys.stderr)
+        print("fixtures_check=pass" if not failures else "fixtures_check=fail")
+    if run_regression_check:
+        print("Agent output eval semantic regression check")
+        print(f"regressions_expected={len(REGRESSION_CASES)}")
+        print(f"regressions_matched={len(REGRESSION_CASES) - len(regression_failures)}")
+        print(
+            "regressions_check=pass"
+            if not regression_failures
+            else "regressions_check=fail"
+        )
+    return 0 if (not run_fixture_check or not failures) and (
+        not run_regression_check or not regression_failures
+    ) else 1
+
+
+class _SafeArgumentParser(argparse.ArgumentParser):
+    def error(self, message: str) -> None:
+        del message
+        self.exit(2, "FAIL: AOE-ARGUMENTS-INVALID\n")
 
 
 def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
+    parser = _SafeArgumentParser(
         description="Run deterministic local agent-output semantic evaluation."
     )
     parser.add_argument("--list", action="store_true")
     parser.add_argument("--check-fixtures", action="store_true")
+    parser.add_argument("--check-regressions", action="store_true")
     parser.add_argument("--fixture", choices=sorted(FIXTURES))
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--output", type=pathlib.Path)
     source.add_argument("--stdin", action="store_true")
     parser.add_argument("--evidence", action="append", default=[], type=pathlib.Path)
-    return parser.parse_args(argv)
+    parser.add_argument("--classification", choices=("synthetic-fixture",))
+    raw_arguments = list(sys.argv[1:] if argv is None else argv)
+    for option in (
+        "--list",
+        "--check-fixtures",
+        "--check-regressions",
+        "--fixture",
+        "--output",
+        "--stdin",
+        "--classification",
+    ):
+        if raw_arguments.count(option) > 1:
+            parser.error("duplicate singleton option")
+    return parser.parse_args(raw_arguments)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
+    check_mode = args.check_fixtures or args.check_regressions
+    score_mode = bool(args.fixture or args.output or args.stdin or args.evidence or args.classification)
+    if args.list and (check_mode or score_mode):
+        print("FAIL: AOE-ARGUMENTS-INVALID", file=sys.stderr)
+        return 2
+    if check_mode and score_mode:
+        print("FAIL: AOE-ARGUMENTS-INVALID", file=sys.stderr)
+        return 2
     if args.list:
         for fixture in FIXTURES.values():
             print(
                 f"{fixture.fixture_id}\t{fixture.label}\tthreshold={fixture.pass_threshold:.2f}"
             )
         return 0
-    if args.check_fixtures:
-        return check_fixtures()
-    if not args.fixture or (not args.output and not args.stdin):
-        print(
-            "FAIL: --fixture and exactly one of --output or --stdin are required",
-            file=sys.stderr,
+    if check_mode:
+        return check_fixtures(
+            run_fixture_check=args.check_fixtures,
+            run_regression_check=args.check_regressions,
         )
+    if not args.fixture or not args.classification or (not args.output and not args.stdin):
+        print("FAIL: AOE-ARGUMENTS-INVALID", file=sys.stderr)
         return 2
     try:
-        output_text = sys.stdin.read() if args.stdin else _read_utf8(args.output)
-        evidence_text = "\n".join(_read_utf8(path) for path in args.evidence)
+        if args.stdin:
+            output_text = sys.stdin.read(MAX_SYNTHETIC_INPUT_BYTES + 1)
+            if len(output_text.encode("utf-8")) > MAX_SYNTHETIC_INPUT_BYTES:
+                raise ValueError("AOE-INPUT-SIZE-REJECTED")
+            combined = "\n".join(
+                [output_text]
+                + [_read_synthetic_path(ROOT, path) for path in args.evidence]
+            )
+            if _contains_sensitive_content(combined):
+                raise ValueError("AOE-INPUT-SENSITIVE")
+        else:
+            combined = _read_synthetic_inputs(ROOT, args.output, args.evidence)
     except ValueError:
-        print("FAIL: AOE-INPUT-UNREADABLE", file=sys.stderr)
+        print("FAIL: AOE-INPUT-REJECTED", file=sys.stderr)
         return 1
-    result = score_text(FIXTURES[args.fixture], f"{output_text}\n{evidence_text}")
+    result = score_text(FIXTURES[args.fixture], combined)
     print("Agent output eval fixture score")
     print(f"fixture={result.fixture_id}")
     print(f"result={result.result}")

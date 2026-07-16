@@ -127,6 +127,7 @@ from __future__ import annotations
 
 import pathlib
 import re
+import subprocess
 import sys
 
 import yaml
@@ -3127,7 +3128,7 @@ fi
 rm -f /tmp/check-repo-contracts-provider-hook-parity.txt
 
 section "Agent output eval fixture runner"
-if ! bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures >/tmp/check-repo-contracts-agent-output-eval.txt 2>&1; then
+if ! bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions >/tmp/check-repo-contracts-agent-output-eval.txt 2>&1; then
   fail "agent-output eval fixture runner catalog check failed"
   cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
 elif ! grep -q 'fixtures_check=pass' /tmp/check-repo-contracts-agent-output-eval.txt; then
@@ -3283,6 +3284,7 @@ from __future__ import annotations
 
 import pathlib
 import re
+import subprocess
 import sys
 
 roots = [
@@ -3341,20 +3343,31 @@ def allows_deleted_entrypoint_reference(path: pathlib.Path, ref: str) -> bool:
         return False
     return any(is_relative_to(path, root) for root in (*historical_reference_roots, *reference_artifact_roots))
 
-for root in roots:
-    files = (
-        [root]
-        if root.is_file()
-        else [
-            path
-            for path in root.rglob("*")
-            if path.is_file()
-            and "graphify-out" not in path.parts
-            and "__pycache__" not in path.parts
-            and path.suffix != ".pyc"
-        ]
-    )
-    for path in files:
+listed = subprocess.run(
+    [
+        "git",
+        "ls-files",
+        "-z",
+        "--cached",
+        "--others",
+        "--exclude-standard",
+        "--",
+        *(root.as_posix() for root in roots),
+    ],
+    capture_output=True,
+    check=False,
+)
+if listed.returncode != 0:
+    print("FAIL: unable to enumerate repository script-reference surfaces", file=sys.stderr)
+    sys.exit(1)
+
+files = sorted(
+    pathlib.Path(raw.decode("utf-8", errors="strict"))
+    for raw in listed.stdout.split(b"\0")
+    if raw
+)
+for path in files:
+    if path.is_file():
         if path == pathlib.Path("scripts/validation/check-repo-contracts.sh"):
             continue
         try:

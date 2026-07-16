@@ -36,8 +36,13 @@ COUPLED_PATHS = (
     "scripts/operations/provider_surface_renderer.py",
     "scripts/validation/agent_governance_contract.py",
     "scripts/validation/agent_output_eval.py",
+    "scripts/validation/check-agent-governance-contract.py",
+    "scripts/validation/check-repo-contracts.sh",
     "scripts/validation/run-agent-output-eval-fixtures.sh",
+    "scripts/validation/run-local-qa-gates.sh",
+    "scripts/validation/validate-harness.sh",
     "tests/validation/test_agent_governance_contract.py",
+    "tests/validation/test_agent_governance_ci_routing.py",
     "tests/validation/test_agent_output_eval_fixtures.py",
     "tests/validation/test_provider_native_surfaces.py",
     "tests/validation/test_provider_surface_renderer.py",
@@ -61,7 +66,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     result.stdout,
                 )
                 self.assertIn(
-                    "bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures",
+                    "bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions",
                     result.stdout,
                 )
 
@@ -98,10 +103,17 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             str(step.get("run", "")) for step in eval_steps if isinstance(step, dict)
         )
         self.assertIn(
-            "run-agent-output-eval-fixtures.sh --check-fixtures", eval_commands
+            "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions",
+            eval_commands,
         )
         self.assertIn("fixtures_check=pass", eval_commands)
         self.assertIn("regressions_check=pass", eval_commands)
+        for module in (
+            "tests.validation.test_agent_governance_ci_routing",
+            "tests.validation.test_agent_output_eval_fixtures",
+        ):
+            with self.subTest(ci_module=module):
+                self.assertIn(module, repo_commands + eval_commands)
         self.assertEqual({"contents": "read"}, jobs["repo-contracts"]["permissions"])
         self.assertEqual(
             {"contents": "read"},
@@ -133,7 +145,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         template = PR_TEMPLATE.read_text(encoding="utf-8")
         for evidence in (
             "--mode repository --section all",
-            "run-agent-output-eval-fixtures.sh --check-fixtures",
+            "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions",
             "fixtures_check=pass",
             "regressions_check=pass",
             "command, result, rollback, and skipped-check fields",
@@ -182,14 +194,87 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             self.assertEqual(1, result.returncode)
             self.assertIn("missing-active.sh", result.stderr)
 
+        with (
+            self.subTest("doc-under-cache-name-is-checked"),
+            self._script_reference_fixture() as root,
+        ):
+            docs = root / "docs/__pycache__"
+            docs.mkdir(parents=True)
+            (docs / "active.md").write_text(
+                "Run scripts/validation/missing-active-cache-name.sh\n",
+                encoding="utf-8",
+            )
+            subprocess.run(
+                ["git", "add", "-f", "docs/__pycache__/active.md"],
+                cwd=root,
+                check=True,
+            )
+            result = subprocess.run(
+                [sys.executable, "-c", block],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(1, result.returncode)
+            self.assertIn("missing-active-cache-name.sh", result.stderr)
+
+        with (
+            self.subTest("tracked-pyc-is-checked"),
+            self._script_reference_fixture(track_cache=True) as root,
+        ):
+            result = subprocess.run(
+                [sys.executable, "-c", block],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(1, result.returncode)
+            self.assertIn("missing-cache.sh", result.stderr)
+
+    def test_typed_harness_replacement_covers_removed_aggregate_routes(self) -> None:
+        contract_text = (
+            ROOT / "scripts/validation/agent_governance_contract.py"
+        ).read_text(encoding="utf-8")
+        for relative, fragment in (
+            (".github/PULL_REQUEST_TEMPLATE.md", "validate-harness.sh"),
+            ("scripts/README.md", "validate-harness.sh"),
+            ("scripts/README.md", "run-local-qa-gates.sh --harness"),
+            ("docs/00.agent-governance/README.md", "harness-implementation-map.md"),
+        ):
+            with self.subTest(relative=relative, fragment=fragment):
+                self.assertIn(relative, contract_text)
+                self.assertIn(fragment, contract_text)
+        self.assertNotRegex(
+            (ROOT / "scripts/validation/check-repo-contracts.sh").read_text(
+                encoding="utf-8"
+            ),
+            r"grep .*validate-harness",
+        )
+
     @staticmethod
     @contextlib.contextmanager
-    def _script_reference_fixture():
+    def _script_reference_fixture(*, track_cache: bool = False):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            (root / ".gitignore").write_text("__pycache__/\n", encoding="utf-8")
             cache = root / "scripts/validation/__pycache__"
             cache.mkdir(parents=True)
-            (cache / "module.pyc").write_bytes(b"scripts/validation/missing-cache.sh")
+            cache_file = cache / "module.cpython-312.pyc"
+            cache_file.write_bytes(b"scripts/validation/missing-cache.sh")
+            if track_cache:
+                subprocess.run(
+                    [
+                        "git",
+                        "add",
+                        "-f",
+                        "scripts/validation/__pycache__/module.cpython-312.pyc",
+                    ],
+                    cwd=root,
+                    check=True,
+                )
             yield root
 
 
