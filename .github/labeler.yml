@@ -68,8 +68,10 @@ area/governance:
       - any-glob-to-any-file: "CLAUDE.md"
       - any-glob-to-any-file: "GEMINI.md"
       - any-glob-to-any-file: "RTK.md"
+      - any-glob-to-any-file: ".agents/**/*"
       - any-glob-to-any-file: ".claude/**/*"
       - any-glob-to-any-file: ".codex/**/*"
+      - any-glob-to-any-file: ".gemini/**/*"
       - any-glob-to-any-file: "docs/00.agent-governance/**/*"
 
 # GitHub & Workflow

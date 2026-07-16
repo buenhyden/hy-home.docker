@@ -144,10 +144,28 @@ recommend_for_path() {
   add_gate "git diff --check" "all changed files should pass whitespace hygiene"
 
   case "$path" in
-  AGENTS.md | CLAUDE.md | GEMINI.md | .agents/* | .agents/** | .claude/* | .claude/** | .codex/* | .codex/**)
+  AGENTS.md | CLAUDE.md | GEMINI.md | .agents/* | .claude/* | .codex/* | .gemini/*)
     add_gate "bash scripts/operations/sync-provider-surfaces.sh --check" "provider and root agent surfaces changed"
     add_gate "bash scripts/validation/validate-harness.sh" "agent harness surfaces changed"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "provider and harness contracts changed"
+    ;;
+  esac
+
+  case "$path" in
+  AGENTS.md | CLAUDE.md | GEMINI.md | \
+    .agents/* | .claude/* | .codex/* | .gemini/* | \
+    docs/00.agent-governance/* | \
+    scripts/operations/provider_surface_renderer.py | \
+    scripts/validation/agent_governance_contract.py | \
+    scripts/validation/check-agent-governance-contract.py | \
+    scripts/validation/agent_output_eval.py | \
+    scripts/validation/run-agent-output-eval-fixtures.sh | \
+    tests/validation/test_agent_governance_contract.py | \
+    tests/validation/test_agent_output_eval_fixtures.py | \
+    tests/validation/test_provider_native_surfaces.py | \
+    tests/validation/test_provider_surface_renderer.py)
+    add_gate "bash scripts/validation/check-repo-contracts.sh" "agent governance contract family changed"
+    add_gate "bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures" "agent governance changes require coupled semantic regressions"
     ;;
   esac
 

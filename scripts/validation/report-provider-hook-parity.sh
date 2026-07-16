@@ -43,6 +43,8 @@ import re
 import stat
 import sys
 
+import yaml
+
 MODE = sys.argv[1]
 OUTPUT = pathlib.Path(sys.argv[2])
 
@@ -53,6 +55,7 @@ CONFIGS = {
 }
 DISPATCHER = pathlib.Path("scripts/hooks/agent-event-hook.sh")
 GEMINI_WRAPPER = pathlib.Path(".gemini/hooks/agent-event-hook.sh")
+CONTRACT = pathlib.Path("docs/00.agent-governance/contracts/provider-models.yaml")
 
 # Semantic ID, purpose, Claude event, Codex event, Gemini event.
 EVENTS: list[tuple[str, str, str, str | None, str]] = [
@@ -180,6 +183,23 @@ def gemini_status(native_event: str, data: dict[str, object]) -> tuple[str, str]
 
 
 configs = {provider: read_json(path) for provider, path in CONFIGS.items()}
+contract = yaml.safe_load(read_text(CONTRACT))
+if not isinstance(contract, dict):
+    raise SystemExit(f"FAIL: {CONTRACT} must contain a YAML mapping")
+semantic_contract = {
+    entry["event_id"]: {
+        binding["provider"]: binding
+        for binding in entry.get("provider_bindings", [])
+        if isinstance(binding, dict) and isinstance(binding.get("provider"), str)
+    }
+    for entry in contract.get("semantic_events", [])
+    if isinstance(entry, dict) and isinstance(entry.get("event_id"), str)
+}
+harness_loops = [
+    entry
+    for entry in contract.get("harness_loops", [])
+    if isinstance(entry, dict)
+]
 rows: list[dict[str, object]] = []
 for semantic_id, purpose, claude_event, codex_event, gemini_event in EVENTS:
     claude = extract_event(configs["claude"], claude_event)
@@ -204,7 +224,21 @@ for semantic_id, purpose, claude_event, codex_event, gemini_event in EVENTS:
             "gemini": gemini,
             "gemini_status": g_status,
             "gemini_note": g_note,
+            "bindings": semantic_contract.get(semantic_id, {}),
         }
+    )
+
+
+def binding_summary(row: dict[str, object], provider: str) -> str:
+    bindings = row.get("bindings", {})
+    if not isinstance(bindings, dict):
+        return "contract-missing"
+    binding = bindings.get(provider, {})
+    if not isinstance(binding, dict):
+        return "contract-missing"
+    return "/".join(
+        str(binding.get(key, "missing"))
+        for key in ("capability_status", "adoption_status", "runtime_depth")
     )
 
 
@@ -262,6 +296,7 @@ lines = [
     "- **native-dispatch**: a Codex native event calls the shared dispatcher directly.",
     "- **native-adapter**: a Gemini native event passes through the one admitted event-name adapter.",
     "- **unsupported**: the provider does not expose the semantic event; it is not counted as parity.",
+    "- **runtime depth**: tracked repository configuration is reported separately from observed live execution.",
     "",
     "## Snapshot Summary",
     "",
@@ -281,8 +316,31 @@ lines = [
 ]
 for row in rows:
     lines.append(
-        "| `{semantic_id}` | {purpose} | `{claude_event}` / `{claude_status}` - {claude_note} | `{codex_event}` / `{codex_status}` - {codex_note} | `{gemini_event}` / `{gemini_status}` - {gemini_note} |".format(
-            **{key: markdown_escape(value) for key, value in row.items() if not isinstance(value, dict)}
+        "| `{semantic_id}` | {purpose} | `{claude_event}` / `{claude_status}` / `{claude_contract}` - {claude_note} | `{codex_event}` / `{codex_status}` / `{codex_contract}` - {codex_note} | `{gemini_event}` / `{gemini_status}` / `{gemini_contract}` - {gemini_note} |".format(
+            **{
+                key: markdown_escape(value)
+                for key, value in row.items()
+                if not isinstance(value, dict)
+            },
+            claude_contract=markdown_escape(binding_summary(row, "claude")),
+            codex_contract=markdown_escape(binding_summary(row, "codex")),
+            gemini_contract=markdown_escape(binding_summary(row, "gemini")),
+        )
+    )
+
+lines.extend(
+    [
+        "",
+        "## Typed Harness Loops",
+        "",
+        "| Event | Owner | Independent Reviewer | Permission | Attempts | Stop | Failure | Runtime Depth |",
+        "| --- | --- | --- | --- | ---: | --- | --- | --- |",
+    ]
+)
+for loop in harness_loops:
+    lines.append(
+        "| `{event_id}` | `{owner_agent}` | `{reviewer_agent}` | `{permission_profile}` | {max_attempts} | `{stop_condition}` | `{on_failure}` | `{runtime_depth}` |".format(
+            **{key: markdown_escape(value) for key, value in loop.items()}
         )
     )
 
@@ -316,6 +374,7 @@ lines.extend(
         "- Regenerate after provider config, wrapper, semantic-event contract, or dispatcher changes.",
         "- Preserve provider-native names and units; do not add ignored matchers or unsupported config keys.",
         "- Tracked adoption does not prove provider entitlement or live runtime acceptance.",
+        "- Semantic cells render `capability/adoption/runtime-depth`; `configured-not-executed` is not execution evidence.",
         "",
         "## Sources",
         "",

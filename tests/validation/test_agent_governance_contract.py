@@ -53,7 +53,15 @@ def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
         ".claude/CLAUDE.md",
         ".codex/README.md",
         ".gemini/README.md",
+        ".github/PULL_REQUEST_TEMPLATE.md",
         "scripts/README.md",
+        "scripts/hooks/agent-event-hook.sh",
+        "scripts/validation/agent_output_eval.py",
+        "scripts/validation/run-agent-output-eval-fixtures.sh",
+        "scripts/validation/run-local-qa-gates.sh",
+        "scripts/validation/validate-harness.sh",
+        "tests/validation/test_agent_output_eval_fixtures.py",
+        "docs/90.references/data/governance/agent-output-eval-fixtures.md",
     ):
         source = ROOT / relative_path
         target = root / relative_path
@@ -3169,6 +3177,180 @@ model defaults
         ):
             with self.subTest(pattern=pattern):
                 self.assertIn(f"{pattern} @buenhyden", text)
+
+
+class Task5HarnessLoopContractTests(unittest.TestCase):
+    EXPECTED_LOOPS = {
+        "approved-all-files-gate": (1, "controlled-wrapper-pass", "record_and_stop"),
+        "bounded-implementation-loop": (
+            2,
+            "focused-checks-pass",
+            "narrow_then_escalate",
+        ),
+        "context-bootstrap": (1, "bootstrap-contract-pass", "escalate"),
+        "independent-review-loop": (2, "critical_and_important_zero", "escalate"),
+    }
+
+    def test_harness_loops_have_exact_bounds_independence_and_sanitized_evidence(
+        self,
+    ) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        loops = {
+            entry["event_id"]: entry for entry in bundle.providers["harness_loops"]
+        }
+
+        self.assertEqual(set(self.EXPECTED_LOOPS), set(loops))
+        for event_id, expected in self.EXPECTED_LOOPS.items():
+            with self.subTest(event_id=event_id):
+                entry = loops[event_id]
+                self.assertEqual(
+                    expected,
+                    (
+                        entry["max_attempts"],
+                        entry["stop_condition"],
+                        entry["on_failure"],
+                    ),
+                )
+                self.assertNotEqual(entry["owner_agent"], entry["reviewer_agent"])
+                self.assertGreater(entry["max_attempts"], 0)
+                self.assertEqual("supported", entry["capability_status"])
+                self.assertEqual("adopted", entry["adoption_status"])
+                self.assertEqual("repository-enforced", entry["runtime_depth"])
+                self.assertEqual(
+                    ("command", "result", "rollback", "skipped_checks"),
+                    entry["evidence_fields"],
+                )
+                self.assertEqual(
+                    (
+                        "auth_files",
+                        "credentials",
+                        "raw_logs",
+                        "secret_values",
+                        "shell_history",
+                        "tokens",
+                    ),
+                    entry["prohibited_evidence"],
+                )
+                if entry["permission_profile"] == "read-only":
+                    self.assertTrue(
+                        set(entry["allowed_tools"])
+                        <= {"focused-validation", "read", "search"}
+                    )
+
+    def test_harness_loop_mutations_fail_semantically_and_value_free(self) -> None:
+        cases = (
+            (
+                lambda values: values["harness_loops"][0].update(
+                    {"reviewer_agent": values["harness_loops"][0]["owner_agent"]}
+                ),
+                "AGC-LOOP-REVIEWER-INDEPENDENCE",
+            ),
+            (
+                lambda values: values["harness_loops"][1].update({"max_attempts": 0}),
+                "AGC-LOOP-ATTEMPT-BOUND",
+            ),
+            (
+                lambda values: values["harness_loops"][2].update(
+                    {"allowed_tools": ["*"]}
+                ),
+                "AGC-LOOP-LEAST-PRIVILEGE",
+            ),
+            (
+                lambda values: values["harness_loops"][3]["evidence_fields"].append(
+                    "raw_logs"
+                ),
+                "AGC-LOOP-EVIDENCE",
+            ),
+        )
+        for mutate, expected in cases:
+            with (
+                self.subTest(expected=expected),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                mutate_yaml(root, "provider-models.yaml", mutate)
+                findings = validate_fixture(root)
+                rendered = contract.render_findings(findings)
+                self.assertIn(expected, codes(findings))
+                self.assertNotIn("raw_logs", rendered)
+                self.assertNotIn("*", rendered)
+
+    def test_every_provider_event_binding_has_honest_runtime_depth(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        for event in bundle.providers["semantic_events"]:
+            for binding in event["provider_bindings"]:
+                with self.subTest(
+                    event=event["event_id"], provider=binding["provider"]
+                ):
+                    expected = (
+                        "unsupported"
+                        if binding["capability_status"] == "unsupported"
+                        else "configured-not-executed"
+                    )
+                    self.assertEqual(expected, binding["runtime_depth"])
+
+    def test_evaluation_contract_binds_eval_owner_independent_reviewer_and_counts(
+        self,
+    ) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        evaluation = bundle.catalog["evaluation"]
+
+        self.assertEqual("eval-engineer", evaluation["owner_agent"])
+        self.assertEqual("code-reviewer", evaluation["reviewer_agent"])
+        self.assertNotEqual(evaluation["owner_agent"], evaluation["reviewer_agent"])
+        self.assertEqual(8, evaluation["fixture_count"])
+        self.assertEqual(10, evaluation["regression_count"])
+        self.assertEqual(
+            ("fixtures_check=pass", "regressions_check=pass"),
+            evaluation["pass_markers"],
+        )
+        self.assertEqual(
+            "scripts/validation/agent_output_eval.py", evaluation["scorer_path"]
+        )
+
+    def test_shared_hook_uses_canonical_functions_and_no_session_runtime_probe(
+        self,
+    ) -> None:
+        text = (ROOT / "scripts/hooks/agent-event-hook.sh").read_text(encoding="utf-8")
+        self.assertNotIn('run(["docker", "ps"', text)
+        self.assertNotIn(".claude/skills/", text)
+        for function_id in (
+            "compose-stack-agent",
+            "execution-plan-agent",
+            "knowledge-map-agent",
+            "ops-runbook-agent",
+            "policy-gate-agent",
+            "requirements-to-design-agent",
+            "task-breakdown-agent",
+        ):
+            with self.subTest(function_id=function_id):
+                self.assertIn(
+                    f"docs/00.agent-governance/agents/functions/{function_id}.md",
+                    text,
+                )
+        self.assertIn("Canonical Stage 00 function routes", text)
+
+    def test_repository_all_enforces_harness_and_eval_surfaces(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        self.assertEqual([], contract.validate_repository(ROOT, bundle, "all"))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_task2_harness_surfaces(root)
+            hook = root / "scripts/hooks/agent-event-hook.sh"
+            hook.write_text(
+                hook.read_text(encoding="utf-8").replace(
+                    'branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])',
+                    'branch = run(["docker", "ps"])',
+                ),
+                encoding="utf-8",
+            )
+            fixture_bundle = contract.load_contract_bundle(root)
+            observed = codes(
+                contract.validate_repository(root, fixture_bundle, "harness")
+            )
+            self.assertIn("AGC-REPOSITORY-HOOK-SEMANTICS", observed)
 
 
 if __name__ == "__main__":

@@ -593,6 +593,110 @@ models:
     cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash
+harness_loops:
+  - event_id: approved-all-files-gate
+    owner_agent: qa-engineer
+    reviewer_agent: code-reviewer
+    permission_profile: workspace-write
+    allowed_tools:
+      - controlled-qa-wrapper
+      - read
+    max_attempts: 1
+    stop_condition: controlled-wrapper-pass
+    on_failure: record_and_stop
+    evidence_fields:
+      - command
+      - result
+      - rollback
+      - skipped_checks
+    prohibited_evidence:
+      - auth_files
+      - credentials
+      - raw_logs
+      - secret_values
+      - shell_history
+      - tokens
+    capability_status: supported
+    adoption_status: adopted
+    runtime_depth: repository-enforced
+  - event_id: bounded-implementation-loop
+    owner_agent: qa-engineer
+    reviewer_agent: code-reviewer
+    permission_profile: workspace-write
+    allowed_tools:
+      - focused-validation
+      - read
+      - search
+      - workspace-edit
+    max_attempts: 2
+    stop_condition: focused-checks-pass
+    on_failure: narrow_then_escalate
+    evidence_fields:
+      - command
+      - result
+      - rollback
+      - skipped_checks
+    prohibited_evidence:
+      - auth_files
+      - credentials
+      - raw_logs
+      - secret_values
+      - shell_history
+      - tokens
+    capability_status: supported
+    adoption_status: adopted
+    runtime_depth: repository-enforced
+  - event_id: context-bootstrap
+    owner_agent: workflow-supervisor
+    reviewer_agent: rules-engineer
+    permission_profile: read-only
+    allowed_tools:
+      - read
+      - search
+    max_attempts: 1
+    stop_condition: bootstrap-contract-pass
+    on_failure: escalate
+    evidence_fields:
+      - command
+      - result
+      - rollback
+      - skipped_checks
+    prohibited_evidence:
+      - auth_files
+      - credentials
+      - raw_logs
+      - secret_values
+      - shell_history
+      - tokens
+    capability_status: supported
+    adoption_status: adopted
+    runtime_depth: repository-enforced
+  - event_id: independent-review-loop
+    owner_agent: code-reviewer
+    reviewer_agent: eval-engineer
+    permission_profile: read-only
+    allowed_tools:
+      - focused-validation
+      - read
+      - search
+    max_attempts: 2
+    stop_condition: critical_and_important_zero
+    on_failure: escalate
+    evidence_fields:
+      - command
+      - result
+      - rollback
+      - skipped_checks
+    prohibited_evidence:
+      - auth_files
+      - credentials
+      - raw_logs
+      - secret_values
+      - shell_history
+      - tokens
+    capability_status: supported
+    adoption_status: adopted
+    runtime_depth: repository-enforced
 semantic_events:
   - event_id: post-tool
     required: true
@@ -601,6 +705,7 @@ semantic_events:
         native_event: PostToolUse
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: false
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -609,6 +714,7 @@ semantic_events:
         native_event: PostToolUse
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: false
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -617,6 +723,7 @@ semantic_events:
         native_event: AfterTool
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: false
         repository_hook_mode: advisory
         timeout_unit: milliseconds
@@ -628,6 +735,7 @@ semantic_events:
         native_event: PreCompact
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -636,6 +744,7 @@ semantic_events:
         native_event: PreCompact
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -644,6 +753,7 @@ semantic_events:
         native_event: PreCompress
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: false
         repository_hook_mode: advisory
         timeout_unit: milliseconds
@@ -655,6 +765,7 @@ semantic_events:
         native_event: PreToolUse
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -663,6 +774,7 @@ semantic_events:
         native_event: PreToolUse
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -671,6 +783,7 @@ semantic_events:
         native_event: BeforeTool
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: advisory
         timeout_unit: milliseconds
@@ -682,6 +795,7 @@ semantic_events:
         native_event: SessionEnd
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: false
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -690,6 +804,7 @@ semantic_events:
         native_event: null
         capability_status: unsupported
         adoption_status: not_applicable
+        runtime_depth: unsupported
         provider_can_block: false
         repository_hook_mode: unsupported
         timeout_unit: seconds
@@ -698,6 +813,7 @@ semantic_events:
         native_event: SessionEnd
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: false
         repository_hook_mode: advisory
         timeout_unit: milliseconds
@@ -709,6 +825,7 @@ semantic_events:
         native_event: SessionStart
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: false
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -717,6 +834,7 @@ semantic_events:
         native_event: SessionStart
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: false
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -725,6 +843,7 @@ semantic_events:
         native_event: SessionStart
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: false
         repository_hook_mode: advisory
         timeout_unit: milliseconds
@@ -736,6 +855,7 @@ semantic_events:
         native_event: Stop
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: blocking
         timeout_unit: seconds
@@ -744,6 +864,7 @@ semantic_events:
         native_event: Stop
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: retry
         timeout_unit: seconds
@@ -752,6 +873,7 @@ semantic_events:
         native_event: AfterAgent
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: deny-retry
         timeout_unit: milliseconds
@@ -763,6 +885,7 @@ semantic_events:
         native_event: UserPromptSubmit
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -771,6 +894,7 @@ semantic_events:
         native_event: UserPromptSubmit
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: advisory
         timeout_unit: seconds
@@ -779,6 +903,7 @@ semantic_events:
         native_event: BeforeAgent
         capability_status: supported
         adoption_status: adopted
+        runtime_depth: configured-not-executed
         provider_can_block: true
         repository_hook_mode: advisory
         timeout_unit: milliseconds

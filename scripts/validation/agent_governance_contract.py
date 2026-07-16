@@ -74,6 +74,7 @@ CATALOG_TOP_FIELDS = COMMON_TOP_FIELDS | {
     "functions",
     "role_transfers",
     "capability_intake",
+    "evaluation",
 }
 PROVIDER_TOP_FIELDS = {
     "schema_version",
@@ -85,6 +86,7 @@ PROVIDER_TOP_FIELDS = {
     "fallback_approvals",
     "cutoff_evidence",
     "models",
+    "harness_loops",
     "semantic_events",
 }
 
@@ -183,6 +185,17 @@ CAPABILITY_INTAKE_FIELDS = {
     "owner_agent",
     "evaluation_function",
 }
+EVALUATION_FIELDS = {
+    "owner_agent",
+    "reviewer_agent",
+    "fixture_catalog_path",
+    "scorer_path",
+    "runner_path",
+    "test_path",
+    "fixture_count",
+    "regression_count",
+    "pass_markers",
+}
 PROVIDER_FIELDS = {
     "provider_id",
     "capability_status",
@@ -255,11 +268,27 @@ MODEL_CLAUDE_FIELDS = MODEL_COMMON_FIELDS | {
     "repository_effort_controls",
 }
 EVENT_FIELDS = {"event_id", "required", "provider_bindings"}
+HARNESS_LOOP_FIELDS = {
+    "event_id",
+    "owner_agent",
+    "reviewer_agent",
+    "permission_profile",
+    "allowed_tools",
+    "max_attempts",
+    "stop_condition",
+    "on_failure",
+    "evidence_fields",
+    "prohibited_evidence",
+    "capability_status",
+    "adoption_status",
+    "runtime_depth",
+}
 EVENT_BINDING_FIELDS = {
     "provider",
     "native_event",
     "capability_status",
     "adoption_status",
+    "runtime_depth",
     "provider_can_block",
     "repository_hook_mode",
     "timeout_unit",
@@ -320,6 +349,52 @@ REPOSITORY_HOOK_MODES = {
     "retry",
     "unsupported",
 }
+RUNTIME_DEPTH_STATES = {
+    "configured-not-executed",
+    "repository-enforced",
+    "runtime-validated",
+    "unsupported",
+}
+LOOP_PERMISSION_TOOLS = MappingProxyType(
+    {
+        "read-only": frozenset({"focused-validation", "read", "search"}),
+        "workspace-write": frozenset(
+            {
+                "controlled-qa-wrapper",
+                "focused-validation",
+                "read",
+                "search",
+                "workspace-edit",
+            }
+        ),
+    }
+)
+EXPECTED_HARNESS_LOOPS = MappingProxyType(
+    {
+        "approved-all-files-gate": (1, "controlled-wrapper-pass", "record_and_stop"),
+        "bounded-implementation-loop": (
+            2,
+            "focused-checks-pass",
+            "narrow_then_escalate",
+        ),
+        "context-bootstrap": (1, "bootstrap-contract-pass", "escalate"),
+        "independent-review-loop": (2, "critical_and_important_zero", "escalate"),
+    }
+)
+SANITIZED_EVIDENCE_FIELDS = (
+    "command",
+    "result",
+    "rollback",
+    "skipped_checks",
+)
+PROHIBITED_EVIDENCE_FIELDS = (
+    "auth_files",
+    "credentials",
+    "raw_logs",
+    "secret_values",
+    "shell_history",
+    "tokens",
+)
 FALLBACK_APPROVAL_REFERENCE = (
     "docs/03.specs/132-agent-governance-harness-convergence/"
     "spec.md#approved-fallback-edges"
@@ -2004,6 +2079,106 @@ def _validate_catalog_contract(
             source,
         )
     function_set = set(function_ids)
+
+    evaluation = _check_fields(
+        document.get("evaluation"),
+        EVALUATION_FIELDS,
+        path,
+        "evaluation",
+        findings,
+        source,
+    )
+    if evaluation is not None:
+        owner = evaluation.get("owner_agent")
+        reviewer = evaluation.get("reviewer_agent")
+        for field, value in (("owner_agent", owner), ("reviewer_agent", reviewer)):
+            if not _is_registered_string(value, agent_set):
+                _unknown_reference(findings, path, f"evaluation.{field}", source)
+        if owner != "eval-engineer" or reviewer != "code-reviewer" or owner == reviewer:
+            _add(
+                findings,
+                "AGC-EVAL-ROLE-SEPARATION",
+                path,
+                "evaluation",
+                "eval-owner-and-independent-code-reviewer",
+                "evaluation-role-contract-mismatch",
+                source,
+            )
+        expected_paths = {
+            "fixture_catalog_path": "docs/90.references/data/governance/agent-output-eval-fixtures.md",
+            "scorer_path": "scripts/validation/agent_output_eval.py",
+            "runner_path": "scripts/validation/run-agent-output-eval-fixtures.sh",
+            "test_path": "tests/validation/test_agent_output_eval_fixtures.py",
+        }
+        for field, expected_path in expected_paths.items():
+            _check_path(
+                evaluation.get(field), path, f"evaluation.{field}", findings, source
+            )
+            if evaluation.get(field) != expected_path:
+                _add(
+                    findings,
+                    "AGC-EVAL-PATH",
+                    path,
+                    f"evaluation.{field}",
+                    "canonical-evaluation-path",
+                    "evaluation-path-mismatch",
+                    source,
+                )
+        for field, expected_count in (("fixture_count", 8), ("regression_count", 10)):
+            actual = evaluation.get(field)
+            if isinstance(actual, bool) or actual != expected_count:
+                _add(
+                    findings,
+                    "AGC-EVAL-CARDINALITY",
+                    path,
+                    f"evaluation.{field}",
+                    "exact-evaluation-cardinality",
+                    "evaluation-cardinality-mismatch",
+                    source,
+                )
+        markers = _check_string_list(
+            evaluation.get("pass_markers"),
+            path,
+            "evaluation.pass_markers",
+            findings,
+            source,
+            require_sorted=True,
+        )
+        if tuple(markers or ()) != (
+            "fixtures_check=pass",
+            "regressions_check=pass",
+        ):
+            _add(
+                findings,
+                "AGC-EVAL-MARKER",
+                path,
+                "evaluation.pass_markers",
+                "exact-evaluation-pass-markers",
+                "evaluation-marker-mismatch",
+                source,
+            )
+
+    for index, loop in enumerate(
+        _sequence_or_empty(provider_document.get("harness_loops"))
+    ):
+        if not isinstance(loop, Mapping):
+            continue
+        for field in ("owner_agent", "reviewer_agent"):
+            if not _is_registered_string(loop.get(field), agent_set):
+                _unknown_reference(
+                    findings,
+                    CONTRACT_RELATIVE_PATHS["providers"].as_posix(),
+                    f"harness_loops[{index}].{field}",
+                    CONTRACT_RELATIVE_PATHS["providers"].as_posix(),
+                )
+        if not _is_registered_string(loop.get("permission_profile"), permission_set):
+            _unknown_reference(
+                findings,
+                CONTRACT_RELATIVE_PATHS["providers"].as_posix(),
+                f"harness_loops[{index}].permission_profile",
+                CONTRACT_RELATIVE_PATHS["providers"].as_posix(),
+            )
+
     for agent_id, referenced_functions in agent_functions.items():
         for function_id in sorted(referenced_functions):
             if function_id not in function_set:
@@ -3263,6 +3438,189 @@ def _validate_provider_contract(
                 source,
             )
 
+    loops = _as_sequence(
+        document.get("harness_loops"), path, "harness_loops", findings, source
+    )
+    loop_ids: list[str] = []
+    if loops is not None:
+        for index, raw in enumerate(loops):
+            location = f"harness_loops[{index}]"
+            entry = _check_fields(
+                raw, HARNESS_LOOP_FIELDS, path, location, findings, source
+            )
+            if entry is None:
+                continue
+            event_id = entry.get("event_id")
+            if _check_string(event_id, path, f"{location}.event_id", findings, source):
+                loop_ids.append(str(event_id))
+            for field in (
+                "owner_agent",
+                "reviewer_agent",
+                "stop_condition",
+                "on_failure",
+            ):
+                _check_string(
+                    entry.get(field), path, f"{location}.{field}", findings, source
+                )
+            if isinstance(entry.get("owner_agent"), str) and entry.get(
+                "owner_agent"
+            ) == entry.get("reviewer_agent"):
+                _add(
+                    findings,
+                    "AGC-LOOP-REVIEWER-INDEPENDENCE",
+                    path,
+                    f"{location}.reviewer_agent",
+                    "independent-reviewer",
+                    "owner-reviewer-identity-collision",
+                    source,
+                )
+            permission = entry.get("permission_profile")
+            _check_enum(
+                permission,
+                set(LOOP_PERMISSION_TOOLS),
+                path,
+                f"{location}.permission_profile",
+                findings,
+                source,
+            )
+            allowed_tools = (
+                _check_string_list(
+                    entry.get("allowed_tools"),
+                    path,
+                    f"{location}.allowed_tools",
+                    findings,
+                    source,
+                    require_sorted=True,
+                )
+                or ()
+            )
+            if not set(allowed_tools).issubset(
+                LOOP_PERMISSION_TOOLS.get(str(permission), frozenset())
+            ):
+                _add(
+                    findings,
+                    "AGC-LOOP-LEAST-PRIVILEGE",
+                    path,
+                    f"{location}.allowed_tools",
+                    "permission-bounded-tool-set",
+                    "tool-outside-permission-profile",
+                    source,
+                )
+            attempts = entry.get("max_attempts")
+            if (
+                isinstance(attempts, bool)
+                or not isinstance(attempts, int)
+                or attempts <= 0
+            ):
+                _add(
+                    findings,
+                    "AGC-LOOP-ATTEMPT-BOUND",
+                    path,
+                    f"{location}.max_attempts",
+                    "positive-bounded-attempt-count",
+                    "invalid-attempt-bound",
+                    source,
+                )
+            expected = EXPECTED_HARNESS_LOOPS.get(str(event_id))
+            if (
+                expected is None
+                or (
+                    attempts,
+                    entry.get("stop_condition"),
+                    entry.get("on_failure"),
+                )
+                != expected
+            ):
+                _add(
+                    findings,
+                    "AGC-LOOP-SEMANTICS",
+                    path,
+                    location,
+                    "registered-attempt-stop-failure-contract",
+                    "loop-contract-mismatch",
+                    source,
+                )
+            evidence_fields = _check_string_list(
+                entry.get("evidence_fields"),
+                path,
+                f"{location}.evidence_fields",
+                findings,
+                source,
+                require_sorted=True,
+            )
+            prohibited = _check_string_list(
+                entry.get("prohibited_evidence"),
+                path,
+                f"{location}.prohibited_evidence",
+                findings,
+                source,
+                require_sorted=True,
+            )
+            if (
+                tuple(evidence_fields or ()) != SANITIZED_EVIDENCE_FIELDS
+                or tuple(prohibited or ()) != PROHIBITED_EVIDENCE_FIELDS
+            ):
+                _add(
+                    findings,
+                    "AGC-LOOP-EVIDENCE",
+                    path,
+                    location,
+                    "exact-sanitized-evidence-contract",
+                    "unsafe-or-incomplete-evidence-contract",
+                    source,
+                )
+            _check_enum(
+                entry.get("capability_status"),
+                PROVIDER_CAPABILITY_STATES,
+                path,
+                f"{location}.capability_status",
+                findings,
+                source,
+                code="AGC-PROVIDER-INVALID-STATE",
+            )
+            _check_enum(
+                entry.get("adoption_status"),
+                PROVIDER_ADOPTION_STATES,
+                path,
+                f"{location}.adoption_status",
+                findings,
+                source,
+                code="AGC-PROVIDER-INVALID-STATE",
+            )
+            _check_enum(
+                entry.get("runtime_depth"),
+                RUNTIME_DEPTH_STATES,
+                path,
+                f"{location}.runtime_depth",
+                findings,
+                source,
+            )
+            if (
+                entry.get("capability_status") != "supported"
+                or entry.get("adoption_status") != "adopted"
+                or entry.get("runtime_depth") != "repository-enforced"
+            ):
+                _add(
+                    findings,
+                    "AGC-LOOP-ADOPTION-DEPTH",
+                    path,
+                    location,
+                    "supported-adopted-repository-enforced",
+                    "loop-adoption-depth-mismatch",
+                    source,
+                )
+    _check_sorted_unique_ids(loop_ids, path, "harness_loops", findings, source)
+    if set(loop_ids) != set(EXPECTED_HARNESS_LOOPS):
+        _add(
+            findings,
+            "AGC-LOOP-COVERAGE",
+            path,
+            "harness_loops",
+            "exact-semantic-loop-set",
+            "semantic-loop-set-mismatch",
+            source,
+        )
+
     events = _as_sequence(
         document.get("semantic_events"), path, "semantic_events", findings, source
     )
@@ -3348,6 +3706,30 @@ def _validate_provider_contract(
                         source,
                         code="AGC-PROVIDER-INVALID-STATE",
                     )
+                    runtime_depth = binding.get("runtime_depth")
+                    _check_enum(
+                        runtime_depth,
+                        RUNTIME_DEPTH_STATES,
+                        path,
+                        f"{binding_location}.runtime_depth",
+                        findings,
+                        source,
+                    )
+                    expected_depth = (
+                        "unsupported"
+                        if capability == "unsupported"
+                        else "configured-not-executed"
+                    )
+                    if runtime_depth != expected_depth:
+                        _add(
+                            findings,
+                            "AGC-EVENT-RUNTIME-DEPTH",
+                            path,
+                            f"{binding_location}.runtime_depth",
+                            "honest-configured-runtime-depth",
+                            "runtime-depth-mismatch",
+                            source,
+                        )
                     can_block = binding.get("provider_can_block")
                     _check_bool(
                         can_block,
@@ -4917,6 +5299,97 @@ def _validate_exact_provider_projection(
         )
 
 
+def _validate_harness_semantic_surfaces(
+    reader: _RepositoryReader,
+    bundle: ContractBundle,
+    findings: list[Finding],
+) -> None:
+    required_fragments = {
+        "scripts/validation/validate-harness.sh": ("run-local-qa-gates.sh --harness",),
+        "scripts/validation/run-local-qa-gates.sh": (
+            "sync-provider-surfaces.sh --check",
+            "run-agent-output-eval-fixtures.sh --check-fixtures",
+            "--mode repository --section all",
+        ),
+        ".github/PULL_REQUEST_TEMPLATE.md": (
+            "## Harness Impact",
+            "run-agent-output-eval-fixtures.sh --check-fixtures",
+            "fixtures_check=pass",
+            "regressions_check=pass",
+        ),
+    }
+    for relative, fragments in required_fragments.items():
+        text = reader.read(relative, "harness", "agent-governance-artifacts")
+        if text is None:
+            continue
+        for fragment in fragments:
+            if fragment not in text:
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-HARNESS-SEMANTICS",
+                    relative,
+                    "harness",
+                    "canonical-harness-delegation",
+                    "missing-harness-semantic",
+                    "agent-governance-artifacts",
+                )
+
+    hook_path = "scripts/hooks/agent-event-hook.sh"
+    hook_text = reader.read(hook_path, "hook-dispatcher", "provider-models")
+    if hook_text is not None:
+        if 'run(["docker", "ps"' in hook_text or ".claude/skills/" in hook_text:
+            _add(
+                findings,
+                "AGC-REPOSITORY-HOOK-SEMANTICS",
+                hook_path,
+                "session-start",
+                "repository-context-only-canonical-routing",
+                "runtime-probe-or-provider-local-routing",
+                "provider-models",
+            )
+        for function_id in (
+            "compose-stack-agent",
+            "execution-plan-agent",
+            "knowledge-map-agent",
+            "ops-runbook-agent",
+            "policy-gate-agent",
+            "requirements-to-design-agent",
+            "task-breakdown-agent",
+        ):
+            canonical_path = (
+                f"docs/00.agent-governance/agents/functions/{function_id}.md"
+            )
+            if canonical_path not in hook_text:
+                _add(
+                    findings,
+                    "AGC-REPOSITORY-HOOK-SEMANTICS",
+                    hook_path,
+                    "user-prompt-intake",
+                    "complete-canonical-function-routing",
+                    "missing-canonical-function-route",
+                    "provider-models",
+                )
+
+    evaluation = bundle.catalog.get("evaluation")
+    if isinstance(evaluation, Mapping):
+        for field in (
+            "fixture_catalog_path",
+            "scorer_path",
+            "runner_path",
+            "test_path",
+        ):
+            relative = evaluation.get(field)
+            if isinstance(relative, str):
+                reader.read(
+                    relative,
+                    f"evaluation.{field}",
+                    "agent-catalog",
+                    missing_code="AGC-REPOSITORY-MISSING-EVAL-SURFACE",
+                    missing_expected="tracked-evaluation-surface",
+                    missing_actual="missing-evaluation-surface",
+                )
+
+
 def validate_repository(
     root: pathlib.Path, bundle: ContractBundle, section: str = "all"
 ) -> list[Finding]:
@@ -5006,6 +5479,7 @@ def validate_repository(
     if section in {"all", "harness"}:
         _validate_root_shims(reader, bundle.artifacts, findings)
         _validate_readme_profiles(reader, bundle.artifacts, findings)
+        _validate_harness_semantic_surfaces(reader, bundle, findings)
         harness = root / "docs/00.agent-governance/harness-implementation-map.md"
         if not harness.is_file():
             _add(

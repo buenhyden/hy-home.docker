@@ -71,6 +71,11 @@ Unified task execution checklists for all agent work.
 - [ ] Keep provider adapters aligned with Stage 00 lifecycle terms:
       discovery -> applicability -> provider loading -> canonical artifact ->
       validation evidence.
+- [ ] Use only the four typed harness loops and their exact retry, stop,
+      escalation, permission, and evidence bounds from
+      `contracts/provider-models.yaml`; do not add prompt-local loop policy.
+- [ ] Keep loop owners and independent reviewers distinct, and record only
+      `command`, `result`, `rollback`, and `skipped_checks`.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` for material task progress.
 - [ ] For archive work, run safe provenance and confidentiality checks through
       the lifecycle validator; do not inspect or record prohibited payloads.
@@ -106,6 +111,11 @@ Unified task execution checklists for all agent work.
       provider adapter state was actually changed or only verified.
 - [ ] Confirm QA/CI/CD evidence includes local checks, CI-only gates, and
       skipped-check rationale appropriate to the change type.
+- [ ] For agent-harness changes, confirm the typed repository `all` section and
+      the deterministic eval gate pass with both fixture/regression markers.
+- [ ] Distinguish tracked adoption and configured runtime depth from observed
+      live provider execution; do not claim a native event ran without runtime
+      evidence.
 - [ ] When the controlled pre-commit gate applies, record command, allowed
       prefixes, hook exit, Git-visible non-ignored modified paths,
       unexpected-path review disposition, and skipped rationale; the wrapper

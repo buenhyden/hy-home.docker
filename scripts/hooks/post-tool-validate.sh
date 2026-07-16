@@ -167,18 +167,18 @@ for path in "${CHANGED_PATHS[@]}"; do
   esac
 
   case "$rel" in
-  AGENTS.md | CLAUDE.md | GEMINI.md | README.md | llms.txt | docs/* | .github/* | .claude/* | .codex/* | .agents/* | scripts/* | infra/tech-stack.versions.json)
+  AGENTS.md | CLAUDE.md | GEMINI.md | README.md | llms.txt | docs/* | .github/* | .claude/* | .codex/* | .gemini/* | .agents/* | scripts/* | infra/tech-stack.versions.json)
     run_governance=1
     ;;
   esac
 
   case "$rel" in
-  .claude/settings.json | .codex/hooks.json | infra/tech-stack.versions.json)
+  .claude/settings.json | .codex/hooks.json | .gemini/settings.json | infra/tech-stack.versions.json)
     run_json=1
     ;;
   esac
 
-  if [[ "$rel" =~ ^(\.claude/hooks|scripts)/.*\.sh$ ]]; then
+  if [[ "$rel" =~ ^(\.claude/hooks|\.gemini/hooks|scripts)/.*\.sh$ ]]; then
     run_bash=1
     if [[ -f "$rel" ]]; then
       SHELL_STYLE_FILES+=("$rel")
@@ -209,12 +209,13 @@ fi
 if [[ "$run_json" -eq 1 ]]; then
   python3 -m json.tool .claude/settings.json >/dev/null
   python3 -m json.tool .codex/hooks.json >/dev/null
+  python3 -m json.tool .gemini/settings.json >/dev/null
   python3 -m json.tool infra/tech-stack.versions.json >/dev/null
 fi
 
 if [[ "$run_bash" -eq 1 ]]; then
   shopt -s nullglob globstar
-  bash_files=(.claude/hooks/*.sh scripts/*.sh scripts/**/*.sh)
+  bash_files=(.claude/hooks/*.sh .gemini/hooks/*.sh scripts/*.sh scripts/**/*.sh)
   shopt -u nullglob globstar
   if [[ "${#bash_files[@]}" -gt 0 ]]; then
     bash -n "${bash_files[@]}"

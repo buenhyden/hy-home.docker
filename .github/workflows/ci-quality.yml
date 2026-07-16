@@ -109,6 +109,8 @@ jobs:
         run: python3 scripts/validation/check-document-metadata.py --mode check-changed
       - name: Check canonical audit semantic freshness
         run: python3 scripts/validation/check-agentic-audit-semantic-freshness.py
+      - name: Check typed agent governance repository contract
+        run: python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
       - name: Check repository contracts
         run: bash scripts/validation/check-repo-contracts.sh
 
@@ -121,7 +123,13 @@ jobs:
     steps:
       - *checkout
       - name: Check agent-output eval fixture catalog
-        run: bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$(bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures)"
+          printf '%s\n' "$output"
+          grep -Fxq 'fixtures_check=pass' <<<"$output"
+          grep -Fxq 'regressions_check=pass' <<<"$output"
 
   # ── Dependency Vulnerability Audit ─────────────────────────
   dependency-vulnerability-audit:

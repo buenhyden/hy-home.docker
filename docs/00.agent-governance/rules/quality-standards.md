@@ -37,6 +37,10 @@ Quality dimensions:
 - Maintain a strict minimum of 90% unit test coverage for domain logic.
 - Mark the 90% target N/A only for docs-only, policy-only, infrastructure configuration, or validation-script changes where no domain-code coverage signal applies.
 - Bug fixes require regression evidence; refactors require behavior-preserving validation evidence.
+- Agent-loop changes require deterministic fixture and mutation coverage for
+  routing, retired-role rejection, boundary escalation, hook denial, bounded
+  retry, completion evidence, adapter rendering, model fallback, and
+  calibration.
 
 ## 4. Workflow Compliance
 
@@ -54,6 +58,12 @@ Before completion:
 3. Confirm no stale or nonexistent command references remain in editable scope.
 4. Confirm documentation reflects current workspace state.
 5. Record out-of-scope issues (read-only stages) in `docs/00.agent-governance/memory/`.
+6. For agent-harness changes, require all eight fixture catalog entries, all ten
+   deterministic regressions, `fixtures_check=pass`, and
+   `regressions_check=pass` without a network model call.
+7. Confirm semantic-loop evidence is limited to `command`, `result`,
+   `rollback`, and `skipped_checks`, and that the loop owner is not its
+   independent reviewer.
 
 For PR-related tasks, additionally verify the GitHub completion gate:
 

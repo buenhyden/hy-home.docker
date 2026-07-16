@@ -679,7 +679,6 @@ entries:
   - docs/99.templates/support/document-metadata-profiles.yaml
   - scripts/validation/check-document-metadata.py
   - scripts/validation/check-repo-contracts.sh
-  - scripts/validation/run-agent-output-eval-fixtures.sh
   partition_plan: null
   preservation_class: null
   evidence:
@@ -715,7 +714,6 @@ entries:
   - docs/99.templates/support/document-corpus-migration-contract.yaml
   - scripts/validation/check-document-metadata.py
   - scripts/validation/check-repo-contracts.sh
-  - scripts/validation/run-agent-output-eval-fixtures.sh
   partition_plan: null
   preservation_class: null
   evidence:

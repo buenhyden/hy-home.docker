@@ -44,6 +44,18 @@ Run after every agent task before declaring completion.
       filesystem sandboxing
 - [ ] No linter suppressions added without comment explaining why
 
+## Agent Harness Gate (agent/provider/hook surfaces)
+
+- [ ] `check-agent-governance-contract.py --mode repository --section all`
+      exits 0
+- [ ] `run-agent-output-eval-fixtures.sh --check-fixtures` reports exactly eight
+      fixtures, ten regressions, `fixtures_check=pass`, and
+      `regressions_check=pass`
+- [ ] Loop owner and independent reviewer are different, retry bounds were not
+      exceeded, and evidence uses only the four sanitized fields
+- [ ] Provider sync, when applicable, ran only with explicit `--check`
+- [ ] SessionStart performed no Docker or live-service probe
+
 ## Completion Blockers (HALT if any fail)
 
 | Condition                          | Action                               |
@@ -56,6 +68,7 @@ Run after every agent task before declaring completion.
 | Changed/new metadata check fails   | Correct typed metadata or approved transition evidence |
 | Controlled wrapper reports exit 20 | Stop and review unexpected paths; do not reset, checkout, or clean |
 | Plaintext secret found             | Replace with Docker Secret reference |
+| Typed harness or eval gate fails   | Stop; preserve value-free findings and remediate before completion |
 
 ## Related Documents
 

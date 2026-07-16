@@ -1227,9 +1227,9 @@ else:
         hook for hook in local_hooks if hook.get("id") == "check-repo-contracts"
     ]
     expected_selector = (
-        r"^(docker-compose\.yml|\.env\.example|infra/.*|docs/.*|scripts/.*|"
-        r"tests/validation/test_document_corpus_lifecycle\.py|"
-        r"\.github/workflows/.*\.(yml|yaml)|\.pre-commit-config\.yaml)$"
+        r"^(AGENTS\.md|CLAUDE\.md|GEMINI\.md|docker-compose\.yml|\.env\.example|"
+        r"\.agents/.*|\.claude/.*|\.codex/.*|\.gemini/.*|infra/.*|docs/.*|"
+        r"scripts/.*|tests/validation/.*|\.github/.*|\.pre-commit-config\.yaml)$"
     )
     expected_hook = {
         "id": "check-repo-contracts",
@@ -1592,15 +1592,9 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Typed agent/function catalog"
+section "Typed agent governance repository contract"
 if ! python3 scripts/validation/check-agent-governance-contract.py \
-  --mode repository --section catalog; then
-  failures=$((failures + 1))
-fi
-
-section "Typed provider-native adapters"
-if ! python3 scripts/validation/check-agent-governance-contract.py \
-  --mode repository --section providers; then
+  --mode repository --section all; then
   failures=$((failures + 1))
 fi
 if ! bash scripts/operations/sync-provider-surfaces.sh --check; then
@@ -3139,6 +3133,9 @@ if ! bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures 
 elif ! grep -q 'fixtures_check=pass' /tmp/check-repo-contracts-agent-output-eval.txt; then
   fail "agent-output eval fixture runner did not print a pass marker"
   cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
+elif ! grep -q 'regressions_check=pass' /tmp/check-repo-contracts-agent-output-eval.txt; then
+  fail "agent-output eval fixture runner did not print a regression pass marker"
+  cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
 fi
 rm -f /tmp/check-repo-contracts-agent-output-eval.txt
 
@@ -3345,7 +3342,18 @@ def allows_deleted_entrypoint_reference(path: pathlib.Path, ref: str) -> bool:
     return any(is_relative_to(path, root) for root in (*historical_reference_roots, *reference_artifact_roots))
 
 for root in roots:
-    files = [root] if root.is_file() else [p for p in root.rglob("*") if p.is_file() and "graphify-out" not in p.parts]
+    files = (
+        [root]
+        if root.is_file()
+        else [
+            path
+            for path in root.rglob("*")
+            if path.is_file()
+            and "graphify-out" not in path.parts
+            and "__pycache__" not in path.parts
+            and path.suffix != ".pyc"
+        ]
+    )
     for path in files:
         if path == pathlib.Path("scripts/validation/check-repo-contracts.sh"):
             continue
@@ -3967,35 +3975,6 @@ if failures:
     sys.exit(1)
 PY
   failures=$((failures + 1))
-fi
-
-section "Harness surface contracts"
-harness_map="docs/00.agent-governance/harness-implementation-map.md"
-approval_boundaries="docs/00.agent-governance/rules/approval-boundaries.md"
-[[ -f "$harness_map" ]] || fail "missing harness implementation map: $harness_map"
-[[ -f "$approval_boundaries" ]] || fail "missing approval boundaries rule: $approval_boundaries"
-[[ -f "docs/99.templates/templates/sdlc/task.template.md" ]] || fail "missing canonical task template"
-[[ -f "scripts/validation/validate-harness.sh" ]] || fail "missing harness validation wrapper: scripts/validation/validate-harness.sh"
-if ! grep -q -- "--harness" scripts/validation/run-local-qa-gates.sh; then
-  fail "run-local-qa-gates.sh missing --harness mode"
-fi
-if ! grep -q "run-local-qa-gates.sh --harness" scripts/validation/validate-harness.sh; then
-  fail "validate-harness.sh must delegate to run-local-qa-gates.sh --harness"
-fi
-if ! grep -q "validate-harness.sh" scripts/README.md; then
-  fail "scripts/README.md missing reference to validate-harness.sh"
-fi
-if ! grep -q "run-local-qa-gates.sh --harness" scripts/README.md; then
-  fail "scripts/README.md missing reference to the harness gate (run-local-qa-gates.sh --harness)"
-fi
-if ! grep -q "## Harness Impact" .github/PULL_REQUEST_TEMPLATE.md; then
-  fail "PR template missing Harness Impact section"
-fi
-if ! grep -q "validate-harness.sh" .github/PULL_REQUEST_TEMPLATE.md; then
-  fail "PR template missing validate-harness.sh evidence command"
-fi
-if ! grep -q "harness-implementation-map.md" docs/00.agent-governance/README.md; then
-  fail "governance README missing harness implementation map reference"
 fi
 
 echo

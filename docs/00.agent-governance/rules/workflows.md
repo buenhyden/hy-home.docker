@@ -98,7 +98,25 @@ with a safe base. At an approved final QA gate, all-files pre-commit uses only
 remains prohibited, and evidence is limited to reviewed Git-visible,
 non-ignored repository paths.
 
-## 5. Routing Rules
+## 5. Typed Agent Loop
+
+The machine-owned loop contract is
+`contracts/provider-models.yaml` `harness_loops`. The workflow supervisor
+selects one loop by task phase; provider adapters do not redefine it.
+
+| Phase | Attempts | Stop Condition | Failure Route |
+| --- | ---: | --- | --- |
+| Context bootstrap | 1 | `bootstrap-contract-pass` | `escalate` |
+| Bounded implementation | 2 | `focused-checks-pass` | `narrow_then_escalate` |
+| Independent review | 2 | `critical_and_important_zero` | `escalate` |
+| Approved all-files gate | 1 | `controlled-wrapper-pass` | `record_and_stop` |
+
+Each loop uses its typed least-privilege tools and records only `command`,
+`result`, `rollback`, and `skipped_checks`. The independent reviewer differs
+from the owner. Provider hook configuration is tracked adoption, not evidence
+that a live native event executed.
+
+## 6. Routing Rules
 
 1. `workflow-supervisor` selects the workflow and delegates each step to the right
    worker agent with exactly one primary scope (`subagent-protocol.md`).

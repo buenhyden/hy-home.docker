@@ -36,6 +36,7 @@ Generated audit context only. Stage 00 owns policy and `scripts/hooks/agent-even
 - **native-dispatch**: a Codex native event calls the shared dispatcher directly.
 - **native-adapter**: a Gemini native event passes through the one admitted event-name adapter.
 - **unsupported**: the provider does not expose the semantic event; it is not counted as parity.
+- **runtime depth**: tracked repository configuration is reported separately from observed live execution.
 
 ## Snapshot Summary
 
@@ -52,13 +53,22 @@ Generated audit context only. Stage 00 owns policy and `scripts/hooks/agent-even
 
 | Semantic Event | Purpose | Claude | Codex | Gemini |
 | --- | --- | --- | --- | --- |
-| `session-start` | Session/bootstrap guard | `SessionStart` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `SessionStart` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `SessionStart` / `native-adapter` - Native event adapter delegates to the shared dispatcher |
-| `user-prompt-intake` | Prompt intake and routing guard | `UserPromptSubmit` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `UserPromptSubmit` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `BeforeAgent` / `native-adapter` - Native event adapter delegates to the shared dispatcher |
-| `pre-tool` | Pre-mutation guard | `PreToolUse` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `PreToolUse` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `BeforeTool` / `native-adapter` - Native event adapter delegates to the shared dispatcher |
-| `post-tool` | Post-edit validation guard | `PostToolUse` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `PostToolUse` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `AfterTool` / `native-adapter` - Native event adapter delegates to the shared dispatcher |
-| `stop` | Completion gate | `Stop` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `Stop` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `AfterAgent` / `native-adapter` - Native event adapter delegates to the shared dispatcher with deny/retry-capable semantics |
-| `pre-compaction` | Context handoff guard | `PreCompact` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `PreCompact` / `native-dispatch` - Quoted project-root command delegates to the shared dispatcher | `PreCompress` / `native-adapter` - Native event adapter delegates to the shared dispatcher as provider-inherent asynchronous advisory behavior |
-| `session-end` | Session closure guard | `SessionEnd` / `native-wrapper` - Generated executable wrapper delegates to the shared dispatcher | `unsupported` / `unsupported` - Codex has no native SessionEnd event in this contract | `SessionEnd` / `native-adapter` - Native event adapter delegates to the shared dispatcher |
+| `session-start` | Session/bootstrap guard | `SessionStart` / `native-wrapper` / `supported/adopted/configured-not-executed` - Generated executable wrapper delegates to the shared dispatcher | `SessionStart` / `native-dispatch` / `supported/adopted/configured-not-executed` - Quoted project-root command delegates to the shared dispatcher | `SessionStart` / `native-adapter` / `supported/adopted/configured-not-executed` - Native event adapter delegates to the shared dispatcher |
+| `user-prompt-intake` | Prompt intake and routing guard | `UserPromptSubmit` / `native-wrapper` / `supported/adopted/configured-not-executed` - Generated executable wrapper delegates to the shared dispatcher | `UserPromptSubmit` / `native-dispatch` / `supported/adopted/configured-not-executed` - Quoted project-root command delegates to the shared dispatcher | `BeforeAgent` / `native-adapter` / `supported/adopted/configured-not-executed` - Native event adapter delegates to the shared dispatcher |
+| `pre-tool` | Pre-mutation guard | `PreToolUse` / `native-wrapper` / `supported/adopted/configured-not-executed` - Generated executable wrapper delegates to the shared dispatcher | `PreToolUse` / `native-dispatch` / `supported/adopted/configured-not-executed` - Quoted project-root command delegates to the shared dispatcher | `BeforeTool` / `native-adapter` / `supported/adopted/configured-not-executed` - Native event adapter delegates to the shared dispatcher |
+| `post-tool` | Post-edit validation guard | `PostToolUse` / `native-wrapper` / `supported/adopted/configured-not-executed` - Generated executable wrapper delegates to the shared dispatcher | `PostToolUse` / `native-dispatch` / `supported/adopted/configured-not-executed` - Quoted project-root command delegates to the shared dispatcher | `AfterTool` / `native-adapter` / `supported/adopted/configured-not-executed` - Native event adapter delegates to the shared dispatcher |
+| `stop` | Completion gate | `Stop` / `native-wrapper` / `supported/adopted/configured-not-executed` - Generated executable wrapper delegates to the shared dispatcher | `Stop` / `native-dispatch` / `supported/adopted/configured-not-executed` - Quoted project-root command delegates to the shared dispatcher | `AfterAgent` / `native-adapter` / `supported/adopted/configured-not-executed` - Native event adapter delegates to the shared dispatcher with deny/retry-capable semantics |
+| `pre-compaction` | Context handoff guard | `PreCompact` / `native-wrapper` / `supported/adopted/configured-not-executed` - Generated executable wrapper delegates to the shared dispatcher | `PreCompact` / `native-dispatch` / `supported/adopted/configured-not-executed` - Quoted project-root command delegates to the shared dispatcher | `PreCompress` / `native-adapter` / `supported/adopted/configured-not-executed` - Native event adapter delegates to the shared dispatcher as provider-inherent asynchronous advisory behavior |
+| `session-end` | Session closure guard | `SessionEnd` / `native-wrapper` / `supported/adopted/configured-not-executed` - Generated executable wrapper delegates to the shared dispatcher | `unsupported` / `unsupported` / `unsupported/not_applicable/unsupported` - Codex has no native SessionEnd event in this contract | `SessionEnd` / `native-adapter` / `supported/adopted/configured-not-executed` - Native event adapter delegates to the shared dispatcher |
+
+## Typed Harness Loops
+
+| Event | Owner | Independent Reviewer | Permission | Attempts | Stop | Failure | Runtime Depth |
+| --- | --- | --- | --- | ---: | --- | --- | --- |
+| `approved-all-files-gate` | `qa-engineer` | `code-reviewer` | `workspace-write` | 1 | `controlled-wrapper-pass` | `record_and_stop` | `repository-enforced` |
+| `bounded-implementation-loop` | `qa-engineer` | `code-reviewer` | `workspace-write` | 2 | `focused-checks-pass` | `narrow_then_escalate` | `repository-enforced` |
+| `context-bootstrap` | `workflow-supervisor` | `rules-engineer` | `read-only` | 1 | `bootstrap-contract-pass` | `escalate` | `repository-enforced` |
+| `independent-review-loop` | `code-reviewer` | `eval-engineer` | `read-only` | 2 | `critical_and_important_zero` | `escalate` | `repository-enforced` |
 
 ## Command Provenance
 
@@ -77,6 +87,7 @@ Generated audit context only. Stage 00 owns policy and `scripts/hooks/agent-even
 - Regenerate after provider config, wrapper, semantic-event contract, or dispatcher changes.
 - Preserve provider-native names and units; do not add ignored matchers or unsupported config keys.
 - Tracked adoption does not prove provider entitlement or live runtime acceptance.
+- Semantic cells render `capability/adoption/runtime-depth`; `configured-not-executed` is not execution evidence.
 
 ## Sources
 

@@ -48,6 +48,12 @@ artifacts in `hy-home.docker`. Claude exposes it natively via
 - Report outcomes faithfully: failing checks are reported with their output; skipped
   steps are named; completion is stated plainly only when verified.
 - Do not fabricate results or mark work complete while contract checks fail.
+- Agent-loop evidence names only `command`, `result`, `rollback`, and
+  `skipped_checks`. Render deterministic finding codes and outcomes, never raw
+  logs, credentials, tokens, auth files, secret values, or shell history.
+- Say whether a provider behavior is supported, adopted, configured but not
+  executed, unsupported, or runtime-verified. Do not translate tracked config
+  presence into a live-execution claim.
 
 ## Related Documents
 

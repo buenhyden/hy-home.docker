@@ -56,6 +56,7 @@ List exact commands used and outcome.
 - [ ] `.env.example` changed
 - [ ] `scripts/**` validation, hardening, hook, or operation command changed
 - [ ] `.github/workflows/**` changed
+- [ ] Root shims or `.agents/**`, `.claude/**`, `.codex/**`, `.gemini/**` changed
 - [ ] `docs/00.agent-governance/**` changed
 - [ ] `docs/05.operations/**` changed
 - [ ] `docs/99.templates/**` changed
@@ -65,6 +66,8 @@ If any harness surface changed, list exact validation evidence:
 ```bash
 bash scripts/validation/validate-harness.sh
 bash scripts/validation/run-local-qa-gates.sh --script-backed
+python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
+bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures
 # Compose-affecting changes only:
 bash scripts/validation/validate-docker-compose.sh --preflight
 ```
@@ -73,6 +76,14 @@ Secret handling:
 
 - [ ] No secret values, tokens, private keys, or certificate contents are included
 - [ ] Secret-related changes record only path, ID, registry, and redacted evidence
+
+Agent-loop evidence:
+
+- [ ] Loop owner and independent reviewer differ
+- [ ] Retry, stop, escalation, permission, and controlled-wrapper bounds match the typed contract
+- [ ] Evidence contains only command, result, rollback, and skipped-check fields
+- [ ] Both `fixtures_check=pass` and `regressions_check=pass` were recorded when agent-harness surfaces changed
+- [ ] Provider configuration is not presented as proof of live native-event execution
 
 See [Approval Boundaries](../docs/00.agent-governance/rules/approval-boundaries.md) for protected surfaces.
 

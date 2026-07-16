@@ -23,6 +23,9 @@ points to existing policy; it does not redefine it.
   validators, and rollback routes are machine-owned by
   `contracts/agent-governance-artifacts.yaml`. GitHub CODEOWNERS contains only
   valid repository principals and does not substitute agent-role identities.
+- Semantic retry, stop, escalation, tool, and evidence boundaries are
+  machine-owned by `contracts/provider-models.yaml` `harness_loops`. Approval
+  does not authorize an agent to exceed those bounds.
 
 ## 2. Surface Matrix
 
@@ -53,6 +56,10 @@ Stop and record an approval request when work requires any of:
 - Expanding GitHub Actions permissions, or using `pull_request_target` or
   `write-all`.
 - Pushing directly to the `main` branch.
+- Running all-files pre-commit directly or outside the approved controlled
+  wrapper.
+- Recording raw hook output, raw logs, credentials, tokens, secret values,
+  auth files, or shell history as agent-loop evidence.
 
 ## 4. Required Validation Entry Point
 

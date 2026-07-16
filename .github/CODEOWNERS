@@ -23,6 +23,12 @@ docs/99.templates/** @buenhyden
 
 # Coupled governance validators and focused regression suites.
 scripts/validation/check-agent-governance-contract.py @buenhyden
+scripts/validation/agent_governance_contract.py @buenhyden
+scripts/validation/agent_output_eval.py @buenhyden
+scripts/validation/run-agent-output-eval-fixtures.sh @buenhyden
+scripts/validation/report-provider-hook-parity.sh @buenhyden
 scripts/validation/check-document-metadata.py @buenhyden
 tests/validation/test_agent_governance_contract.py @buenhyden
+tests/validation/test_agent_governance_ci_routing.py @buenhyden
+tests/validation/test_agent_output_eval_fixtures.py @buenhyden
 tests/validation/test_document_metadata.py @buenhyden

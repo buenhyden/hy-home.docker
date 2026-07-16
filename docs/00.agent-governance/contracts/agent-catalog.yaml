@@ -21,6 +21,18 @@ permissions:
   - permission_id: workspace-write
     mutation_allowed: true
     evidence_required: true
+evaluation:
+  owner_agent: eval-engineer
+  reviewer_agent: code-reviewer
+  fixture_catalog_path: docs/90.references/data/governance/agent-output-eval-fixtures.md
+  scorer_path: scripts/validation/agent_output_eval.py
+  runner_path: scripts/validation/run-agent-output-eval-fixtures.sh
+  test_path: tests/validation/test_agent_output_eval_fixtures.py
+  fixture_count: 8
+  regression_count: 10
+  pass_markers:
+    - fixtures_check=pass
+    - regressions_check=pass
 agents:
   - agent_id: ci-cd-engineer
     category: implementation-operations

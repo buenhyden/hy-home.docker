@@ -132,9 +132,22 @@ agent name set.
 
 ## 5. Error Handling
 
-1. On first failure: retry once with narrower scope.
-2. On second failure: mark task `failed`, report findings, continue without that result.
-3. Never silently discard output — record gaps in completion notes.
+`contracts/provider-models.yaml` owns the exact semantic loop values. Agents
+must not invent an additional retry policy in prompts or provider adapters.
+
+1. Bootstrap has one attempt and escalates when the bootstrap contract does
+   not pass.
+2. Implementation has at most two attempts. After the first focused-check
+   failure, narrow scope; after the second, escalate.
+3. Independent review has at most two attempts and stops only when Critical and
+   Important findings are zero. The reviewer must differ from the loop owner.
+4. The approved all-files gate has one attempt through the controlled wrapper;
+   on failure, record the result and stop.
+5. Evidence contains only `command`, `result`, `rollback`, and
+   `skipped_checks`. Never include raw logs, auth files, credentials, tokens,
+   secret values, or shell history.
+6. Never silently discard output. Record the value-free failure code and the
+   unresolved gap in Stage 04 task evidence.
 
 ## 6. Lifecycle
 

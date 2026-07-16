@@ -22,6 +22,11 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
 - System, developer, and direct user instructions always override repository instruction files.
 - Use in-place refactors only; do not create parallel replacement files for canonical docs.
 - Never write plaintext secrets; use Docker Secrets or `secrets/` mounts.
+- Session bootstrap is repository-context inspection only. It must not run
+  `docker ps`, probe live services, or imply runtime readiness.
+- Agent-output evaluation is deterministic and model-free. Use only synthetic
+  fixture content; never load diagnostics dumps, local logs, auth files,
+  credentials, tokens, secret values, or shell history as evaluation input.
 
 ## 2. Verification
 
@@ -37,6 +42,8 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
   Ignored or outside-repository writes are not observed, and the wrapper is not
   a process or filesystem sandbox.
 - Run the completion checklist in `docs/00.agent-governance/rules/task-checklists.md` before declaring done.
+- Provider surface synchronization is a validation-only operation and must run
+  with explicit `scripts/operations/sync-provider-surfaces.sh --check`.
 
 ## 3. Graphify
 

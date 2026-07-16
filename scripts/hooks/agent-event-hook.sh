@@ -52,8 +52,6 @@ branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
 changed = run(["git", "status", "--short"], fallback="")
 changed_count = len([line for line in changed.splitlines() if line.strip()]) if changed else 0
 last_commit = run(["git", "log", "-1", "--format=%h %s"])
-containers = run(["docker", "ps", "--format", "{{.Names}}"], fallback="docker not running")
-container_lines = [line for line in containers.splitlines() if line.strip() and line != "docker not running"]
 infra_dir = project / "infra"
 infra_entries = ", ".join(sorted(path.name for path in infra_dir.iterdir())) if infra_dir.is_dir() else "none"
 
@@ -63,10 +61,6 @@ Git status:
 - Branch: `{branch}`
 - Changed files: `{changed_count}`
 - Last commit: `{last_commit}`
-
-Docker services:
-- Running: {len(container_lines)}
-- Services: {', '.join(container_lines) if container_lines else containers}
 
 Infra layer:
 {infra_entries}
@@ -525,10 +519,10 @@ except Exception:
 
 prompt = str(data.get("prompt", "")).lower()
 
-SKILLS = [
+FUNCTIONS = [
     {
         "label": "compose-stack-agent",
-        "path": ".claude/skills/compose-stack-agent/SKILL.md",
+        "path": "docs/00.agent-governance/agents/functions/compose-stack-agent.md",
         "desc": "Compose 서비스 스택 검토 및 QW-001~005 인프라 기준선 검사",
         "keywords": [
             "healthcheck", "health check", "restart policy",
@@ -538,7 +532,7 @@ SKILLS = [
     },
     {
         "label": "requirements-to-design-agent",
-        "path": ".claude/skills/requirements-to-design-agent/SKILL.md",
+        "path": "docs/00.agent-governance/agents/functions/requirements-to-design-agent.md",
         "desc": "Stage 01→02 PRD→ARD/ADR 트레이서빌리티 갭 분석",
         "keywords": [
             "prd", "ard", "requirements to design", "architecture decision",
@@ -547,7 +541,7 @@ SKILLS = [
     },
     {
         "label": "execution-plan-agent",
-        "path": ".claude/skills/execution-plan-agent/SKILL.md",
+        "path": "docs/00.agent-governance/agents/functions/execution-plan-agent.md",
         "desc": "Stage 03→04 스펙→플랜 분해 및 실행 계획 작성",
         "keywords": [
             "execution plan", "spec to plan", "stage 03", "stage 04",
@@ -556,7 +550,7 @@ SKILLS = [
     },
     {
         "label": "task-breakdown-agent",
-        "path": ".claude/skills/task-breakdown-agent/SKILL.md",
+        "path": "docs/00.agent-governance/agents/functions/task-breakdown-agent.md",
         "desc": "플랜→태스크 분해 및 실행 증거 기록",
         "keywords": [
             "task breakdown", "task evidence", "plan to task",
@@ -565,7 +559,7 @@ SKILLS = [
     },
     {
         "label": "ops-runbook-agent",
-        "path": ".claude/skills/ops-runbook-agent/SKILL.md",
+        "path": "docs/00.agent-governance/agents/functions/ops-runbook-agent.md",
         "desc": "Stage 05 운영 런북 작성 및 장애 대응 절차 문서화",
         "keywords": [
             "runbook", "stage 05", "05.operations", "backup procedure",
@@ -574,7 +568,7 @@ SKILLS = [
     },
     {
         "label": "knowledge-map-agent",
-        "path": ".claude/skills/knowledge-map-agent/SKILL.md",
+        "path": "docs/00.agent-governance/agents/functions/knowledge-map-agent.md",
         "desc": "Graphify 지식 그래프 탐색 및 문서 간 트레이서빌리티 갭 감지",
         "keywords": [
             "graphify", "knowledge graph", "traceability gap", "orphaned doc",
@@ -583,7 +577,7 @@ SKILLS = [
     },
     {
         "label": "policy-gate-agent",
-        "path": ".claude/skills/policy-gate-agent/SKILL.md",
+        "path": "docs/00.agent-governance/agents/functions/policy-gate-agent.md",
         "desc": "전체 검증 스크립트 오케스트레이션 및 정책 게이트 통과 확인",
         "keywords": [
             "policy gate", "validation suite", "check-quickwin",
@@ -593,14 +587,16 @@ SKILLS = [
     },
 ]
 
-matched = [s for s in SKILLS if any(kw in prompt for kw in s["keywords"])]
+matched = [function for function in FUNCTIONS if any(keyword in prompt for keyword in function["keywords"])]
 
 if not matched:
     sys.exit(0)
 
-lines = ["Workspace skills that may apply to this prompt:"]
-for s in matched:
-    lines.append(f"  - **{s['label']}** (`{s['path']}`): {s['desc']}")
+lines = ["Canonical Stage 00 function routes that may apply to this prompt:"]
+for function in matched:
+    lines.append(
+        f"  - **{function['label']}** (`{function['path']}`): {function['desc']}"
+    )
 
 print(json.dumps({
     "hookSpecificOutput": {

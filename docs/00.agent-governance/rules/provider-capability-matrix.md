@@ -22,6 +22,7 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 | Memory             | `memory/` (`progress.md`, notes)                           | read/write `memory/progress.md` + notes        | read/write `memory/progress.md` + notes     | read/write `memory/progress.md` + notes |
 | Models             | `contracts/provider-models.yaml` work profiles             | Opus 4.8 / Sonnet 5 / Haiku 4.5                | GPT-5.6 / GPT-5.6 Terra + reasoning effort | Gemini 3.5 Flash / 3.1 Flash-Lite       |
 | Templates          | `docs/99.templates/` via `rules/documentation-protocol.md` | shared                                         | shared                                      | shared                                  |
+| Harness loops      | `contracts/provider-models.yaml` `harness_loops`           | shared bounded contract; native event where configured | shared bounded contract; `SessionEnd` unsupported | shared bounded contract; native event adapter where configured |
 
 ## 2. Rules
 
@@ -36,6 +37,9 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
    Canonical Adapter Model for enforcement details.
 4. Memory is shared: every runtime reads `memory/progress.md` before mutating the
    repository and appends progress after completing repository-modifying work.
+5. Capability, tracked adoption, and runtime depth are independent facts.
+   `configured-not-executed` records a tracked native binding without claiming
+   live execution; only authenticated runtime evidence can establish execution.
 
 ## 3. Supported / Unsupported / Deferred
 
@@ -72,6 +76,10 @@ Provider-specific hook or reminder mechanics do not change these gates:
   Git-visible, non-ignored repository paths in Stage 04 evidence.
 - A provider reminder, pointer, or hook reports the obligation; it does not
   create policy or prove that a provider-native interception occurred.
+- All providers use the same four typed bootstrap, bounded implementation,
+  independent review, and approved all-files loops. Provider event names and
+  native support may differ, but retry, stop, escalation, least-privilege tool,
+  and sanitized evidence rules do not.
 
 ## 5. Output-Style Placement
 
