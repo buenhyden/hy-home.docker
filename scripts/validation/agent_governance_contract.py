@@ -2206,7 +2206,9 @@ def _validate_catalog_contract(
             not isinstance(thresholds, Mapping)
             or set(thresholds) != expected_threshold_ids
             or any(
-                isinstance(value, bool) or not isinstance(value, int | float) or value != 0.50
+                isinstance(value, bool)
+                or not isinstance(value, int | float)
+                or value != 0.50
                 for value in thresholds.values()
             )
         ):
@@ -5372,6 +5374,10 @@ def _validate_harness_semantic_surfaces(
             "sync-provider-surfaces.sh --check",
             "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions",
             "--mode repository --section all",
+            "scripts/validation/run-agent-precommit-all-files.sh",
+            "initially clean linked worktree",
+            "tracked Task evidence",
+            "--allow-prefix",
         ),
         ".github/PULL_REQUEST_TEMPLATE.md": (
             "## Harness Impact",

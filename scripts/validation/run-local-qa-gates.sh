@@ -88,7 +88,10 @@ Local script-backed gates:
 - scripts/validation/check-repo-contracts.sh
 
 CI/local-tooling gates:
-- pre-commit job: run in GitHub Actions; locally use pre-commit when installed.
+- pre-commit job: run in GitHub Actions. Approved local all-files execution uses
+  only scripts/validation/run-agent-precommit-all-files.sh from an initially clean linked worktree
+  with tracked Task evidence and explicit --allow-prefix values; this local QA
+  runner never invokes that gate.
 - frontend-quality and storybook-coverage: run in GitHub Actions after npm ci.
 
 Remote-only gates:

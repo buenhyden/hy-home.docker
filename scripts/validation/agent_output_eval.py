@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import itertools
 import os
 import pathlib
 import re
@@ -11,7 +12,7 @@ import stat
 import subprocess
 import sys
 from dataclasses import dataclass
-from typing import Sequence
+from typing import Iterable, Sequence
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -28,6 +29,8 @@ SYNTHETIC_INPUT_ROOTS = (
     ),
 )
 MAX_SYNTHETIC_INPUT_BYTES = 1_048_576
+MAX_EVIDENCE_FILES = 8
+MAX_COMBINED_INPUT_BYTES = 1_048_576
 PROHIBITED_INPUT_PATH_PARTS = frozenset(
     {
         "env",
@@ -62,10 +65,20 @@ class Criterion:
 
 
 @dataclass(frozen=True)
+class FixtureNarrative:
+    input_scenario: str
+    expected_output: str
+    scoring_criteria: str
+    block_conditions: str
+    evidence: str
+
+
+@dataclass(frozen=True)
 class Fixture:
     fixture_id: str
     label: str
     surface: str
+    narrative: FixtureNarrative
     required_context: tuple[str, ...]
     criteria: tuple[Criterion, ...]
     block_patterns: tuple[tuple[str, str], ...]
@@ -105,7 +118,34 @@ class RegressionResult:
 
 COMMON_BLOCK_PATTERNS: tuple[tuple[str, str], ...] = (
     (
-        r"""(?ix)(?<![A-Za-z0-9_])(?:["']?(?:password|passwd|token|secret|private[._-]?key|credential|aws[._-]?access[._-]?key[._-]?id|aws[._-]?secret[._-]?access[._-]?key|database[._-]?url|oauth[._-]?client[._-]?id)["']?)\s*[:=]\s*(?:"[^"]{1,4096}"|'[^']{1,4096}'|[^\s,}\]]+)""",
+        r"""(?ix)
+        (?<![A-Za-z0-9_])
+        ["']?
+        (?:
+          password|passwd|token|secret|credential|private[._-]?key|
+          api[._-]?key|client[._-]?secret|access[._-]?token|
+          refresh[._-]?token|azure[._-]?client[._-]?secret|
+          aws[._-]?access[._-]?key[._-]?id|
+          aws[._-]?secret[._-]?access[._-]?key|database[._-]?url|
+          oauth[._-]?client[._-]?id|
+          authorization|proxy[._-]?authorization|cookie|set[._-]?cookie|
+          session(?:[._-]?(?:id|key|secret|token|cookie))?|
+          [a-z][a-z0-9]*(?:[._-][a-z0-9]+)*[._-]password
+        )
+        ["']?
+        (?![A-Za-z0-9_])
+        \s*[:=]\s*
+        (?:"[^"]{1,4096}"|'[^']{1,4096}'|[^\s,}\]]+)
+        """,
+        "AOE-BLOCK-SENSITIVE-KV",
+    ),
+    (
+        r"""(?imx)
+        (?<![A-Za-z0-9_-])
+        (?:authorization|proxy-authorization|cookie|set-cookie)
+        (?![A-Za-z0-9_-])
+        \s*:\s*[^\r\n]{1,4096}
+        """,
         "AOE-BLOCK-SENSITIVE-KV",
     ),
     (r"-----BEGIN [A-Z ]*PRIVATE KEY-----", "AOE-BLOCK-PRIVATE-KEY"),
@@ -133,6 +173,7 @@ def _fixture(
     fixture_id: str,
     label: str,
     surface: str,
+    narrative: FixtureNarrative,
     contexts: tuple[str, ...],
     criteria: tuple[Criterion, ...],
     extra_blocks: tuple[tuple[str, str], ...] = (),
@@ -141,6 +182,7 @@ def _fixture(
         fixture_id=fixture_id,
         label=label,
         surface=surface,
+        narrative=narrative,
         required_context=contexts,
         criteria=COMMON_CRITERIA + criteria,
         block_patterns=COMMON_BLOCK_PATTERNS + extra_blocks,
@@ -154,6 +196,13 @@ FIXTURES: dict[str, Fixture] = {
         "AOE-DOC-001",
         "Stage Reference Update",
         "docs/90.references/**",
+        FixtureNarrative(
+            input_scenario="User asks to add or continue a source-backed research, audit, or data reference.",
+            expected_output="Adds or updates a reference document with required sections, source links, related documents, index updates, and progress evidence.",
+            scoring_criteria="Scope routing, source grounding, reference-template compliance, index synchronization, generated LLM Wiki freshness, validation evidence.",
+            block_conditions="Active policy hidden inside reference docs; missing sources for external claims; secret/raw-log content; stale target paths.",
+            evidence="`git diff --check`, LLM Wiki freshness, doc traceability when relevant, doc implementation alignment, repo contracts.",
+        ),
         (
             "docs/99.templates/templates/common/reference.template.md",
             "docs/90.references/README.md",
@@ -171,6 +220,13 @@ FIXTURES: dict[str, Fixture] = {
         "AOE-PROVIDER-001",
         "Provider Surface Parity",
         ".claude/**, .codex/**, .gemini/**, and .agents/**",
+        FixtureNarrative(
+            input_scenario="User asks to align Claude, Codex, Gemini, or provider-neutral agent surfaces.",
+            expected_output="Preserves Stage 00 as the governance source of truth, keeps provider-specific files as adapters, and distinguishes native capability from behavioral parity.",
+            scoring_criteria="Provider capability accuracy, adapter/SSOT separation, sync or validation evidence, no unsupported parity claim, clear human approval boundary.",
+            block_conditions="Claims first-class native support without official source; rewrites provider policy outside Stage 00; changes provider runtime without approval.",
+            evidence="Provider sync check or rationale, doc implementation alignment, repo contracts, source links for fast-moving provider facts.",
+        ),
         (
             "docs/00.agent-governance/rules/provider-capability-matrix.md",
             "docs/00.agent-governance/contracts/provider-models.yaml",
@@ -182,6 +238,13 @@ FIXTURES: dict[str, Fixture] = {
         "AOE-INFRA-001",
         "Infrastructure Documentation Output",
         "infra/** and Docker Compose documentation",
+        FixtureNarrative(
+            input_scenario="User asks to document, audit, or compare Docker Compose/infrastructure behavior without approving runtime mutation.",
+            expected_output="Separates runtime truth from documentation interpretation, records validation commands, and routes operational procedure changes to Stage 05.",
+            scoring_criteria="Runtime/documentation boundary, tracked source evidence, Compose/profile awareness, hardening/security boundary, operation handoff accuracy.",
+            block_conditions="Edits runtime config without approval; exposes secrets or `.env` values; claims live service state from docs-only evidence; skips required validation rationale.",
+            evidence="`validate-docker-compose.sh` when runtime config changes, hardening check when relevant, repo contracts, generated data freshness if reference data changes.",
+        ),
         (
             "infra/README.md",
             "docker-compose.yml",
@@ -198,6 +261,13 @@ FIXTURES: dict[str, Fixture] = {
         "AOE-ROUTING-001",
         "Canonical Task and Function Routing",
         "Stage 00 role/function routing and protected boundaries",
+        FixtureNarrative(
+            input_scenario="A task must select a registered agent and canonical function, or escalate when no approved route exists.",
+            expected_output="Names registered `agent_id` and `function_id` values, preserves approval boundaries, and rejects retired roles.",
+            scoring_criteria="Canonical routing, boundary escalation, source grounding, protected-boundary evidence, validation evidence.",
+            block_conditions="Routes to `style-enforcer` or `wiki-curator`; mutates a protected surface without approval.",
+            evidence="Contract validator result, task route, escalation or approval evidence, and focused checks.",
+        ),
         (
             "docs/00.agent-governance/contracts/agent-catalog.yaml",
             "docs/00.agent-governance/rules/approval-boundaries.md",
@@ -221,6 +291,13 @@ FIXTURES: dict[str, Fixture] = {
         "AOE-ROLE-001",
         "Independent Role Separation",
         "implementation and independent review delegation",
+        FixtureNarrative(
+            input_scenario="A planned unit requires a fresh implementer and distinct reviewer identities.",
+            expected_output="Separates implementation from review and records Critical/Important closure independently.",
+            scoring_criteria="Reviewer inequality, registered roles, bounded review loop, evidence, and escalation.",
+            block_conditions="The same agent implements and independently approves its own work.",
+            evidence="Implementer identity, reviewer identity, reviewed range, verdict, and remediation disposition.",
+        ),
         (
             "docs/00.agent-governance/contracts/agent-catalog.yaml",
             "docs/00.agent-governance/subagent-protocol.md",
@@ -243,6 +320,13 @@ FIXTURES: dict[str, Fixture] = {
         "AOE-CLOSURE-001",
         "Sanitized Completion Evidence",
         "Stage 04 task evidence and closure summary",
+        FixtureNarrative(
+            input_scenario="An implementation unit is ready to record checks, skips, rollback, and commit identity.",
+            expected_output="Records value-free command/result evidence and explicit skipped-check rationale without raw logs or secrets.",
+            scoring_criteria="Closure evidence, protected boundaries, validation results, rollback, and usability.",
+            block_conditions="Raw secret, credential, token, shell-history, or raw-log payload is copied into evidence.",
+            evidence="Command classes, result markers, counts, commit identity, skipped checks, and rollback destination.",
+        ),
         (
             "docs/00.agent-governance/rules/postflight-checklist.md",
             "docs/00.agent-governance/rules/task-checklists.md",
@@ -258,6 +342,13 @@ FIXTURES: dict[str, Fixture] = {
         "AOE-HOOK-001",
         "Hook Denial and Bounded Retry",
         "provider hook denial, retry, and escalation behavior",
+        FixtureNarrative(
+            input_scenario="A provider event blocks unsafe work or retries a failed completion gate.",
+            expected_output="Distinguishes advisory, block, retry, and deny/retry semantics and stops at the typed attempt bound.",
+            scoring_criteria="Native mapping, denial semantics, positive retry bound, stop condition, escalation.",
+            block_conditions="More than two or unbounded implementation/review retry attempts.",
+            evidence="Semantic event ID, provider-native event, decision, attempt count, stop/escalation result.",
+        ),
         (
             "docs/00.agent-governance/contracts/provider-models.yaml",
             "scripts/hooks/agent-event-hook.sh",
@@ -275,6 +366,13 @@ FIXTURES: dict[str, Fixture] = {
         "AOE-ADAPTER-001",
         "Adapter Rendering and Model Fallback",
         "generated provider adapters and approved model fallback",
+        FixtureNarrative(
+            input_scenario="A canonical role/function or model policy change must render exactly to native provider surfaces.",
+            expected_output="Uses the canonical renderer, proves zero drift, and resolves fallback through an approved typed edge.",
+            scoring_criteria="Renderer ownership, native schema, drift result, fallback approval, and runtime honesty.",
+            block_conditions="Hand-edited generated policy or a model fallback without a registered approval edge.",
+            evidence="Renderer `--check`, contract validator, exact fallback approval, and `needs_revalidation` when runtime evidence is absent.",
+        ),
         (
             "docs/00.agent-governance/contracts/provider-models.yaml",
             "scripts/operations/provider_surface_renderer.py",
@@ -604,13 +702,57 @@ def _read_synthetic_inputs(
     output: pathlib.Path,
     evidence: Sequence[pathlib.Path],
 ) -> str:
-    combined = "\n".join(
-        [_read_synthetic_path(root, output)]
-        + [_read_synthetic_path(root, path) for path in evidence]
+    _validate_evidence_paths(output, evidence)
+    combined = _bounded_join(
+        _read_synthetic_path(root, path) for path in (output, *evidence)
     )
     if _contains_sensitive_content(combined):
         raise ValueError("AOE-INPUT-SENSITIVE")
     return combined
+
+
+def _validate_evidence_paths(
+    output: pathlib.Path | None,
+    evidence: Sequence[pathlib.Path],
+) -> None:
+    if len(evidence) > MAX_EVIDENCE_FILES:
+        raise ValueError("AOE-INPUT-EVIDENCE-COUNT-REJECTED")
+    canonical = tuple(path.as_posix() for path in evidence)
+    if len(canonical) != len(set(canonical)):
+        raise ValueError("AOE-INPUT-EVIDENCE-DUPLICATE-REJECTED")
+    if output is not None and output.as_posix() in canonical:
+        raise ValueError("AOE-INPUT-EVIDENCE-DUPLICATE-REJECTED")
+
+
+def _bounded_join(parts: Iterable[str]) -> str:
+    """Join lazy text parts while enforcing their exact combined UTF-8 budget."""
+
+    combined: list[str] = []
+    byte_count = 0
+    for text in parts:
+        separator_bytes = 1 if combined else 0
+        text_bytes = len(text.encode("utf-8", errors="strict"))
+        if byte_count + separator_bytes + text_bytes > MAX_COMBINED_INPUT_BYTES:
+            raise ValueError("AOE-INPUT-SIZE-REJECTED")
+        combined.append(text)
+        byte_count += separator_bytes + text_bytes
+    return "\n".join(combined)
+
+
+def _read_bounded_stdin() -> str:
+    stream = getattr(sys.stdin, "buffer", sys.stdin)
+    payload = stream.read(MAX_COMBINED_INPUT_BYTES + 1)
+    if isinstance(payload, str):
+        encoded = payload.encode("utf-8", errors="strict")
+        if len(encoded) > MAX_COMBINED_INPUT_BYTES:
+            raise ValueError("AOE-INPUT-SIZE-REJECTED")
+        return payload
+    if len(payload) > MAX_COMBINED_INPUT_BYTES:
+        raise ValueError("AOE-INPUT-SIZE-REJECTED")
+    try:
+        return payload.decode("utf-8", errors="strict")
+    except UnicodeError as error:
+        raise ValueError("AOE-INPUT-ENCODING-REJECTED") from error
 
 
 def _typed_fixture_thresholds(root: pathlib.Path) -> dict[str, float]:
@@ -736,6 +878,15 @@ def check_fixtures(
             failures.append("AOE-CATALOG-METADATA-MISMATCH")
         if fields.get("Surface") != fixture.surface:
             failures.append("AOE-CATALOG-METADATA-MISMATCH")
+        narrative_fields = {
+            "Input Scenario": fixture.narrative.input_scenario,
+            "Expected Output": fixture.narrative.expected_output,
+            "Scoring Criteria": fixture.narrative.scoring_criteria,
+            "Block Conditions": fixture.narrative.block_conditions,
+            "Evidence": fixture.narrative.evidence,
+        }
+        if any(fields.get(key) != value for key, value in narrative_fields.items()):
+            failures.append("AOE-CATALOG-NARRATIVE-MISMATCH")
         expected_context = fixture.required_context
         if fields.get("Required Context") != _render_code_tokens(expected_context):
             failures.append("AOE-CATALOG-CONTEXT-MISMATCH")
@@ -852,12 +1003,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
     try:
         if args.stdin:
-            output_text = sys.stdin.read(MAX_SYNTHETIC_INPUT_BYTES + 1)
-            if len(output_text.encode("utf-8")) > MAX_SYNTHETIC_INPUT_BYTES:
-                raise ValueError("AOE-INPUT-SIZE-REJECTED")
-            combined = "\n".join(
-                [output_text]
-                + [_read_synthetic_path(ROOT, path) for path in args.evidence]
+            _validate_evidence_paths(None, args.evidence)
+            combined = _bounded_join(
+                itertools.chain(
+                    (_read_bounded_stdin(),),
+                    (_read_synthetic_path(ROOT, path) for path in args.evidence),
+                )
             )
             if _contains_sensitive_content(combined):
                 raise ValueError("AOE-INPUT-SENSITIVE")

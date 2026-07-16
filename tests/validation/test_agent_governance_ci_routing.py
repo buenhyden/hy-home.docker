@@ -20,6 +20,7 @@ CODEOWNERS = ROOT / ".github/CODEOWNERS"
 LABELER = ROOT / ".github/labeler.yml"
 PR_TEMPLATE = ROOT / ".github/PULL_REQUEST_TEMPLATE.md"
 HARNESS_WRAPPER = ROOT / "scripts/validation/validate-harness.sh"
+LOCAL_QA = ROOT / "scripts/validation/run-local-qa-gates.sh"
 REPO_CONTRACT = ROOT / "scripts/validation/check-repo-contracts.sh"
 
 COUPLED_PATHS = (
@@ -40,6 +41,7 @@ COUPLED_PATHS = (
     "scripts/validation/check-agent-governance-contract.py",
     "scripts/validation/check-repo-contracts.sh",
     "scripts/validation/run-agent-output-eval-fixtures.sh",
+    "scripts/validation/run-agent-precommit-all-files.sh",
     "scripts/validation/run-local-qa-gates.sh",
     "scripts/validation/validate-harness.sh",
     "tests/validation/test_agent_governance_contract.py",
@@ -156,6 +158,26 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
 
         harness = HARNESS_WRAPPER.read_text(encoding="utf-8")
         self.assertIn("run-local-qa-gates.sh --harness", harness)
+
+    def test_local_qa_routes_all_files_through_controlled_wrapper(self) -> None:
+        result = subprocess.run(
+            ["bash", str(LOCAL_QA), "--list"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        for fragment in (
+            "scripts/validation/run-agent-precommit-all-files.sh",
+            "initially clean linked worktree",
+            "tracked Task evidence",
+            "--allow-prefix",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, result.stdout)
+        self.assertNotIn("locally use pre-commit", result.stdout)
+        self.assertNotIn("pre-commit run --all-files", result.stdout)
 
     def test_script_reference_scan_ignores_only_python_cache_artifacts(self) -> None:
         source = REPO_CONTRACT.read_text(encoding="utf-8")

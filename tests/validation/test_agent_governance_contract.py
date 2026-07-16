@@ -3346,7 +3346,10 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
             lambda values: values["evaluation"].update({"input_roots": ["/"]}),
         )
         for mutate in mutations:
-            with self.subTest(mutate=mutate), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(mutate=mutate),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_contracts(root)
                 mutate_yaml(root, "agent-catalog.yaml", mutate)
@@ -3403,10 +3406,25 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
             (".github/PULL_REQUEST_TEMPLATE.md", "validate-harness.sh"),
             ("scripts/README.md", "validate-harness.sh"),
             ("scripts/README.md", "run-local-qa-gates.sh --harness"),
+            (
+                "scripts/validation/run-local-qa-gates.sh",
+                "scripts/validation/run-agent-precommit-all-files.sh",
+            ),
+            (
+                "scripts/validation/run-local-qa-gates.sh",
+                "initially clean linked worktree",
+            ),
+            (
+                "scripts/validation/run-local-qa-gates.sh",
+                "tracked Task evidence",
+            ),
             ("docs/00.agent-governance/README.md", "harness-implementation-map.md"),
         )
         for relative, fragment in mutations:
-            with self.subTest(relative=relative, fragment=fragment), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(relative=relative, fragment=fragment),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 copy_task2_harness_surfaces(root)
                 path = root / relative

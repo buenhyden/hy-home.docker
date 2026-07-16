@@ -161,6 +161,7 @@ recommend_for_path() {
     scripts/validation/check-repo-contracts.sh | \
     scripts/validation/agent_output_eval.py | \
     scripts/validation/run-agent-output-eval-fixtures.sh | \
+    scripts/validation/run-agent-precommit-all-files.sh | \
     scripts/validation/run-local-qa-gates.sh | \
     scripts/validation/validate-harness.sh | \
     tests/validation/test_agent_governance_contract.py | \
