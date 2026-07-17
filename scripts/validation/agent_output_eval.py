@@ -61,6 +61,17 @@ MAX_SENSITIVE_KEY_COMPONENTS = 8
 MAX_SENSITIVE_KEY_COMPONENT_BYTES = 32
 MAX_SENSITIVE_SEPARATOR_RUN = 8
 MAX_SENSITIVE_VALUE_BYTES = 4_096
+MAX_SENSITIVE_SCAN_BYTES = 1_048_576
+MAX_SENSITIVE_SCAN_LINES = 8_192
+MAX_SENSITIVE_LINE_BYTES = 1_048_576
+MAX_SENSITIVE_LOOKAHEAD_LINES = 1
+MAX_FIXTURE_CATALOG_BYTES = 64 * 1_024
+MAX_TYPED_CATALOG_BYTES = 64 * 1_024
+MAX_CATALOG_LINES = 1_024
+MAX_CATALOG_LINE_BYTES = 8_192
+MAX_CATALOG_SECTIONS = 8
+MAX_CATALOG_FIELDS_PER_SECTION = 10
+MAX_TYPED_THRESHOLDS = 8
 # Extraction is intentionally broader than the accepted shape. Bounds are
 # classified after a complete line-local candidate is found so an N+1 key or
 # value cannot disappear from the security decision.
@@ -70,6 +81,9 @@ SENSITIVE_CANDIDATE_PATTERN = re.compile(
     rf"[ \t]*(?P<operator>:=|\+=|\?=|=|:)[ \t]*"
     rf"(?P<value>\"[^\"\r\n]*\"?|"
     rf"'[^'\r\n]*'|[^\s,}}\]\r\n]+)"
+)
+SENSITIVE_MAPPING_KEY_PATTERN = re.compile(
+    rf"^[ \t]*[\"']?(?P<key>{_SENSITIVE_KEY_CANDIDATE})[\"']?[ \t]*:[ \t]*$"
 )
 _SENSITIVE_EXACT_KEYS = frozenset(
     {
@@ -106,6 +120,34 @@ _SENSITIVE_SUFFIXES = frozenset(
 _SAFE_KEY_NAMESPACES = frozenset(
     {"cache", "database", "foreign", "keyboard", "primary", "public"}
 )
+_SENSITIVE_COMPOUND_COMPONENTS = {
+    "apikey": ("api", "key"),
+    "accesstoken": ("access", "token"),
+    "authtoken": ("auth", "token"),
+    "clientsecret": ("client", "secret"),
+    "githubtoken": ("github", "token"),
+    "refreshtoken": ("refresh", "token"),
+}
+_SENSITIVE_TRAILING_QUALIFIERS = frozenset(
+    {
+        "dev",
+        "development",
+        "local",
+        "preview",
+        "prod",
+        "production",
+        "qa",
+        "stage",
+        "staging",
+        "test",
+        "testing",
+        "uat",
+    }
+)
+
+
+class _SensitiveScanBoundsError(ValueError):
+    pass
 
 
 @dataclass(frozen=True)
@@ -571,11 +613,63 @@ def render_regression_results(results: Sequence[RegressionResult]) -> str:
     return "\n".join(lines)
 
 
-def _read_utf8(path: pathlib.Path) -> str:
+def _catalog_identity(metadata: os.stat_result) -> tuple[int, int, int, int, int]:
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_size,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
+    )
+
+
+def _read_confined_catalog(
+    root: pathlib.Path, relative: pathlib.PurePosixPath, *, max_bytes: int
+) -> str:
+    """Read one canonical catalog through bounded root-confined descriptors."""
+
+    if (
+        relative.is_absolute()
+        or not relative.parts
+        or any(part in {"", ".", ".."} for part in relative.parts)
+    ):
+        raise ValueError("AOE-CATALOG-UNREADABLE")
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC | os.O_NOFOLLOW
+    file_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK
+    descriptors: list[int] = []
     try:
-        return path.read_text(encoding="utf-8")
+        current = os.open(root, directory_flags)
+        descriptors.append(current)
+        for part in relative.parts[:-1]:
+            current = os.open(part, directory_flags, dir_fd=current)
+            descriptors.append(current)
+        descriptor = os.open(relative.parts[-1], file_flags, dir_fd=current)
+        descriptors.append(descriptor)
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode) or opened.st_size > max_bytes:
+            raise ValueError("AOE-CATALOG-UNREADABLE")
+        payload = bytearray()
+        remaining = max_bytes + 1
+        while remaining:
+            chunk = os.read(descriptor, min(65_536, remaining))
+            if not chunk:
+                break
+            payload.extend(chunk)
+            remaining -= len(chunk)
+        if len(payload) > max_bytes:
+            raise ValueError("AOE-CATALOG-UNREADABLE")
+        final = os.fstat(descriptor)
+        if _catalog_identity(final) != _catalog_identity(opened):
+            raise ValueError("AOE-CATALOG-UNREADABLE")
+        return payload.decode("utf-8", errors="strict")
     except (OSError, UnicodeError) as error:
-        raise ValueError("unreadable evaluation input") from error
+        raise ValueError("AOE-CATALOG-UNREADABLE") from error
+    finally:
+        for descriptor in reversed(descriptors):
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
 
 
 def _contains_sensitive_content(text: str) -> bool:
@@ -588,13 +682,18 @@ def _contains_sensitive_content(text: str) -> bool:
 def _sensitive_candidate_shape(key: str, value: str) -> tuple[tuple[str, ...], bool]:
     """Classify exact key/value bounds after broad linear extraction."""
 
-    components = tuple(
+    raw_components = tuple(
         component.casefold()
         for segment in re.split(r"[._-]+", key)
         if segment
         for component in re.findall(
             r"[A-Z]+(?=[A-Z][a-z]|[0-9]|$)|[A-Z]?[a-z]+|[0-9]+", segment
         )
+    )
+    components = tuple(
+        expanded
+        for component in raw_components
+        for expanded in _SENSITIVE_COMPOUND_COMPONENTS.get(component, (component,))
     )
     separator_runs = tuple(re.findall(r"[._-]+", key))
     unquoted_value = value
@@ -625,8 +724,15 @@ def _is_sensitive_candidate_key(key: str) -> bool:
     if not components:
         return False
     semantic_components = components
-    while len(semantic_components) > 1 and semantic_components[-1].isdigit():
-        semantic_components = semantic_components[:-1]
+    while len(semantic_components) > 1:
+        terminal = semantic_components[-1]
+        if terminal.isdigit() or terminal in _SENSITIVE_TRAILING_QUALIFIERS:
+            semantic_components = semantic_components[:-1]
+            continue
+        if terminal == "v" and len(semantic_components) > 1:
+            semantic_components = semantic_components[:-1]
+            continue
+        break
     normalized = "_".join(semantic_components)
     if normalized in _SENSITIVE_EXACT_KEYS:
         return True
@@ -640,20 +746,78 @@ def _is_sensitive_candidate_key(key: str) -> bool:
     return True
 
 
-def _contains_sensitive_assignment(text: str) -> bool:
-    """Extract line-local candidates, then classify shape and key semantics."""
+def _iter_bounded_sensitive_lines(text: str) -> Iterable[str]:
+    """Yield lines while enforcing byte and cardinality ceilings before slices."""
 
-    for match in SENSITIVE_CANDIDATE_PATTERN.finditer(text):
-        key = match.group("key")
-        _components, within_bounds = _sensitive_candidate_shape(
-            key, match.group("value")
-        )
-        if not _is_sensitive_candidate_key(key):
-            continue
-        if not within_bounds:
-            # A security-relevant N+1 candidate fails closed; extraction never
-            # treats the configured ceilings as permission to omit it.
-            return True
+    total_bytes = 0
+    line_bytes = 0
+    line_count = 0
+    start = 0
+    for index, character in enumerate(text):
+        encoded_size = len(character.encode("utf-8", errors="strict"))
+        total_bytes += encoded_size
+        line_bytes += encoded_size
+        if (
+            total_bytes > MAX_SENSITIVE_SCAN_BYTES
+            or line_bytes > MAX_SENSITIVE_LINE_BYTES
+        ):
+            raise _SensitiveScanBoundsError
+        if character == "\n":
+            line_count += 1
+            if line_count > MAX_SENSITIVE_SCAN_LINES:
+                raise _SensitiveScanBoundsError
+            end = index - 1 if index > start and text[index - 1] == "\r" else index
+            yield text[start:end]
+            start = index + 1
+            line_bytes = 0
+    if start < len(text) or not text:
+        line_count += 1
+        if line_count > MAX_SENSITIVE_SCAN_LINES:
+            raise _SensitiveScanBoundsError
+        yield text[start:]
+
+
+def _contains_sensitive_assignment(text: str) -> bool:
+    """Classify bounded line-local and one-line mapping/header assignments."""
+
+    pending_key: str | None = None
+    pending_lines = 0
+    try:
+        for line in _iter_bounded_sensitive_lines(text):
+            if pending_key is not None:
+                pending_lines += 1
+                if pending_lines > MAX_SENSITIVE_LOOKAHEAD_LINES:
+                    return True
+                if not line.strip():
+                    continue
+                elif line[:1] in {" ", "\t"} and line.strip():
+                    _components, _within_bounds = _sensitive_candidate_shape(
+                        pending_key, line.strip()
+                    )
+                    return True
+                else:
+                    pending_key = None
+
+            for match in SENSITIVE_CANDIDATE_PATTERN.finditer(line):
+                key = match.group("key")
+                _components, within_bounds = _sensitive_candidate_shape(
+                    key, match.group("value")
+                )
+                if not _is_sensitive_candidate_key(key):
+                    continue
+                if not within_bounds:
+                    # A security-relevant N+1 candidate fails closed; extraction
+                    # never treats configured ceilings as permission to omit it.
+                    return True
+                return True
+
+            mapping = SENSITIVE_MAPPING_KEY_PATTERN.fullmatch(line)
+            if mapping is not None and _is_sensitive_candidate_key(
+                mapping.group("key")
+            ):
+                pending_key = mapping.group("key")
+                pending_lines = 0
+    except (UnicodeError, _SensitiveScanBoundsError):
         return True
     return False
 
@@ -851,49 +1015,89 @@ def _read_bounded_stdin() -> str:
         raise ValueError("AOE-INPUT-ENCODING-REJECTED") from error
 
 
+def _iter_catalog_lines(text: str) -> Iterable[str]:
+    """Yield catalog lines with exact byte/cardinality bounds before slicing."""
+
+    total_lines = 0
+    line_bytes = 0
+    start = 0
+    for index, character in enumerate(text):
+        line_bytes += len(character.encode("utf-8", errors="strict"))
+        if line_bytes > MAX_CATALOG_LINE_BYTES:
+            raise ValueError("AOE-CATALOG-RESOURCE-BOUND")
+        if character != "\n":
+            continue
+        total_lines += 1
+        if total_lines > MAX_CATALOG_LINES:
+            raise ValueError("AOE-CATALOG-RESOURCE-BOUND")
+        end = index - 1 if index > start and text[index - 1] == "\r" else index
+        yield text[start:end]
+        start = index + 1
+        line_bytes = 0
+    if start < len(text) or not text:
+        total_lines += 1
+        if total_lines > MAX_CATALOG_LINES:
+            raise ValueError("AOE-CATALOG-RESOURCE-BOUND")
+        yield text[start:]
+
+
 def _typed_fixture_thresholds(root: pathlib.Path) -> dict[str, float]:
     try:
-        text = _read_utf8(root / CATALOG_CONTRACT)
+        text = _read_confined_catalog(
+            root, CATALOG_CONTRACT, max_bytes=MAX_TYPED_CATALOG_BYTES
+        )
     except ValueError:
         return {}
-    match = re.search(
-        r"(?m)^  fixture_thresholds:\s*$\n(?P<body>(?:^    [A-Z0-9-]+: [0-9.]+\s*$\n?)+)",
-        text,
-    )
-    if match is None:
-        return {}
     thresholds: dict[str, float] = {}
-    for fixture_id, raw in re.findall(
-        r"(?m)^    ([A-Z0-9-]+): ([0-9.]+)\s*$", match.group("body")
-    ):
-        if fixture_id in thresholds:
-            return {}
-        try:
+    in_thresholds = False
+    seen_block = False
+    try:
+        for line in _iter_catalog_lines(text):
+            if line == "  fixture_thresholds:":
+                if seen_block:
+                    return {}
+                seen_block = True
+                in_thresholds = True
+                continue
+            if not in_thresholds:
+                continue
+            if not line.startswith("    "):
+                in_thresholds = False
+                continue
+            match = re.fullmatch(r"    ([A-Z0-9-]+): ([0-9.]+)\s*", line)
+            if match is None:
+                return {}
+            fixture_id, raw = match.groups()
+            if fixture_id in thresholds or len(thresholds) >= MAX_TYPED_THRESHOLDS:
+                return {}
             thresholds[fixture_id] = float(raw)
-        except ValueError:
-            return {}
-    return thresholds
+    except (ValueError, UnicodeError):
+        return {}
+    return thresholds if seen_block else {}
 
 
 def _table_fields(section: str) -> dict[str, str]:
     fields: dict[str, str] = {}
-    lines = section.splitlines()
+    table_started = False
     try:
-        table_start = lines.index("| Field | Value |")
+        for line in _iter_catalog_lines(section):
+            if not table_started:
+                if line == "| Field | Value |":
+                    table_started = True
+                continue
+            if not line.startswith("|"):
+                if fields:
+                    break
+                continue
+            match = re.fullmatch(r"\| ([^|]+?) \| (.*?) \|", line)
+            if match is None or match.group(1) in {"Field", "---"}:
+                continue
+            key = match.group(1).strip()
+            if key in fields or len(fields) >= MAX_CATALOG_FIELDS_PER_SECTION:
+                return {}
+            fields[key] = match.group(2).strip()
     except ValueError:
-        return fields
-    for line in lines[table_start + 1 :]:
-        if not line.startswith("|"):
-            if fields:
-                break
-            continue
-        match = re.fullmatch(r"\| ([^|]+?) \| (.*?) \|", line)
-        if match is None or match.group(1) in {"Field", "---"}:
-            continue
-        key = match.group(1).strip()
-        if key in fields:
-            return {}
-        fields[key] = match.group(2).strip()
+        return {}
     return fields
 
 
@@ -912,20 +1116,42 @@ CATALOG_FIELD_ORDER = (
 
 
 def _catalog_sections(text: str) -> tuple[dict[str, tuple[str, str]], bool]:
-    matches = list(re.finditer(r"(?m)^### (AOE-[A-Z]+-[0-9]{3}): ([^\n]+)\s*$", text))
     sections: dict[str, tuple[str, str]] = {}
-    duplicate = False
-    for index, match in enumerate(matches):
-        fixture_id = match.group(1)
-        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        following_h2 = re.search(r"(?m)^## [^#]", text[match.end() : end])
-        if following_h2 is not None:
-            end = match.end() + following_h2.start()
-        if fixture_id in sections:
-            duplicate = True
-        else:
-            sections[fixture_id] = (match.group(2).strip(), text[match.end() : end])
-    return sections, duplicate
+    current_id: str | None = None
+    current_label = ""
+    current_lines: list[str] = []
+    invalid = False
+
+    def store_current() -> None:
+        nonlocal invalid
+        if current_id is None:
+            return
+        if current_id in sections or len(sections) >= MAX_CATALOG_SECTIONS:
+            invalid = True
+            return
+        sections[current_id] = (current_label, "\n".join(current_lines))
+
+    try:
+        for line in _iter_catalog_lines(text):
+            heading = re.fullmatch(r"### (AOE-[A-Z]+-[0-9]{3}): ([^\n]+)\s*", line)
+            if heading is not None:
+                store_current()
+                current_id = heading.group(1)
+                current_label = heading.group(2).strip()
+                current_lines = []
+                continue
+            if current_id is not None and line.startswith("## "):
+                store_current()
+                current_id = None
+                current_label = ""
+                current_lines = []
+                continue
+            if current_id is not None:
+                current_lines.append(line)
+        store_current()
+    except ValueError:
+        return {}, True
+    return sections, invalid
 
 
 def _expected_regression_tokens(fixture_id: str) -> tuple[str, ...]:
@@ -948,10 +1174,11 @@ def check_fixtures(
     run_fixture_check: bool = True,
     run_regression_check: bool = True,
 ) -> int:
-    reference_path = root / FIXTURE_REFERENCE
     failures: list[str] = []
     try:
-        text = _read_utf8(reference_path)
+        text = _read_confined_catalog(
+            root, FIXTURE_REFERENCE, max_bytes=MAX_FIXTURE_CATALOG_BYTES
+        )
     except ValueError:
         text = ""
         failures.append("AOE-CATALOG-UNREADABLE")

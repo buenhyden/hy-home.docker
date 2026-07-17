@@ -3300,6 +3300,14 @@ MAX_REFERENCE_TOTAL_BYTES: Final = 64 * 1_048_576
 MAX_REFERENCE_DISCOVERY_ENTRIES: Final = 8_192
 MAX_REFERENCE_GIT_OUTPUT_BYTES: Final = 1_048_576
 MAX_REFERENCE_PATH_BYTES: Final = 4_096
+MAX_REFERENCE_MATCHES: Final = 16_384
+MAX_REFERENCE_UNIQUE_TARGETS: Final = 8_192
+MAX_REFERENCE_FAILURES: Final = 4_096
+MAX_REFERENCE_FAILURE_BYTES: Final = 1_048_576
+
+
+class UnsafeScriptReferenceSurface(Exception):
+    pass
 
 roots = [
     pathlib.Path(p)
@@ -3496,22 +3504,30 @@ if special_paths is None:
     print("FAIL: unsafe script-reference surface", file=sys.stderr)
     sys.exit(1)
 
-files = sorted(
-    tracked_set
-    | {
-        path
-        for path in untracked
-        if path not in tracked_set and not is_untracked_python_cache(path)
-    }
-    | special_paths
-)
-if len(files) > MAX_REFERENCE_SURFACES:
+file_set: set[pathlib.Path] = set()
+
+
+def add_surface(path: pathlib.Path) -> None:
+    if path in file_set:
+        return
+    if len(file_set) >= MAX_REFERENCE_SURFACES:
+        raise UnsafeScriptReferenceSurface
+    file_set.add(path)
+
+
+try:
+    for path in tracked_set:
+        add_surface(path)
+    for path in untracked:
+        if path not in tracked_set and not is_untracked_python_cache(path):
+            add_surface(path)
+    for path in special_paths:
+        add_surface(path)
+except UnsafeScriptReferenceSurface:
     print("FAIL: unsafe script-reference surface", file=sys.stderr)
     sys.exit(1)
 
-
-class UnsafeScriptReferenceSurface(Exception):
-    pass
+files = sorted(file_set)
 
 
 def safe_parts(path: pathlib.Path) -> tuple[str, ...]:
@@ -3625,6 +3641,8 @@ regular_cache: dict[pathlib.Path, bool] = {}
 
 def confined_regular_exists(path: pathlib.Path) -> bool:
     if path not in regular_cache:
+        if len(regular_cache) >= MAX_REFERENCE_UNIQUE_TARGETS:
+            raise UnsafeScriptReferenceSurface
         try:
             descriptors, _file_descriptor, _opened = open_confined_regular(path)
         except UnsafeScriptReferenceSurface:
@@ -3639,23 +3657,55 @@ def confined_regular_exists(path: pathlib.Path) -> bool:
     return regular_cache[path]
 
 
-for path in files:
-    if path == pathlib.Path("scripts/validation/check-repo-contracts.sh"):
-        continue
-    try:
+failure_bytes = 0
+match_count = 0
+
+
+def record_missing_failure(
+    path: pathlib.Path, ref: str, *, explicit_dot_prefix: bool
+) -> None:
+    global failure_bytes
+    if len(failures) >= MAX_REFERENCE_FAILURES:
+        raise UnsafeScriptReferenceSurface
+    path_text = path.as_posix()
+    reference_text = ("./" if explicit_dot_prefix else "") + ref
+    message_prefix = f"{path_text}: missing script reference "
+    rendered_bytes = (
+        len("FAIL: \n".encode("ascii"))
+        + len(message_prefix.encode("utf-8", errors="strict"))
+        + len(reference_text.encode("ascii", errors="strict"))
+    )
+    if failure_bytes + rendered_bytes > MAX_REFERENCE_FAILURE_BYTES:
+        raise UnsafeScriptReferenceSurface
+    message = message_prefix + reference_text
+    failures.append(message)
+    failure_bytes += rendered_bytes
+
+
+try:
+    for path in files:
+        if path == pathlib.Path("scripts/validation/check-repo-contracts.sh"):
+            continue
         text = read_confined_regular(path)
-    except UnsafeScriptReferenceSurface:
-        failures.append("unsafe script-reference surface")
-        continue
-    for match in pattern.finditer(text):
-        ref = match.group(2)
-        local_target = path.parent / ref
-        root_target = pathlib.Path(ref)
-        if confined_regular_exists(local_target) or confined_regular_exists(root_target):
-            continue
-        if allows_deleted_entrypoint_reference(path, ref):
-            continue
-        failures.append(f"{path}: missing script reference {match.group(0)}")
+        for match in pattern.finditer(text):
+            match_count += 1
+            if match_count > MAX_REFERENCE_MATCHES:
+                raise UnsafeScriptReferenceSurface
+            if match.end(2) - match.start(2) > MAX_REFERENCE_PATH_BYTES:
+                raise UnsafeScriptReferenceSurface
+            ref = match.group(2)
+            local_target = path.parent / ref
+            root_target = pathlib.Path(ref)
+            if confined_regular_exists(local_target) or confined_regular_exists(root_target):
+                continue
+            if allows_deleted_entrypoint_reference(path, ref):
+                continue
+            record_missing_failure(
+                path, ref, explicit_dot_prefix=match.group(1) is not None
+            )
+except (UnicodeError, UnsafeScriptReferenceSurface):
+    print("FAIL: unsafe script-reference surface", file=sys.stderr)
+    sys.exit(1)
 
 if failures:
     for failure in failures:

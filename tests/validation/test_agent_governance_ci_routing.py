@@ -356,12 +356,16 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             "MAX_REFERENCE_DISCOVERY_ENTRIES: Final = 8_192",
             "MAX_REFERENCE_GIT_OUTPUT_BYTES: Final = 1_048_576",
             "MAX_REFERENCE_PATH_BYTES: Final = 4_096",
+            "MAX_REFERENCE_MATCHES: Final = 16_384",
+            "MAX_REFERENCE_UNIQUE_TARGETS: Final = 8_192",
+            "MAX_REFERENCE_FAILURES: Final = 4_096",
+            "MAX_REFERENCE_FAILURE_BYTES: Final = 1_048_576",
         )
         for constant in expected_constants:
             with self.subTest(constant=constant):
                 self.assertIn(constant, block)
         existence_check = block.split("def confined_regular_exists", 1)[1].split(
-            "\n\nfor path in files:", 1
+            "\n\nfailure_bytes = 0", 1
         )[0]
         self.assertIn("open_confined_regular(path)", existence_check)
         self.assertNotIn("read_confined_regular(path)", existence_check)
@@ -448,6 +452,13 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         block = source.split(start, 1)[1].split(
             "\nPY\n  failures=$((failures + 1))", 1
         )[0]
+        scan_loop = block.split("for match in pattern.finditer(text):", 1)[1]
+        self.assertLess(
+            scan_loop.index("match.end(2) - match.start(2)"),
+            scan_loop.index('ref = match.group("2")')
+            if 'ref = match.group("2")' in scan_loop
+            else scan_loop.index("ref = match.group(2)"),
+        )
         git_reader = block.split("def git_paths", 1)[1].split("\n\ntracked =", 1)[0]
         discovery = block.split("def untracked_special_paths", 1)[1].split(
             "\n\nspecial_paths =", 1
@@ -477,6 +488,110 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         self.assertNotIn("os.listdir", discovery)
         self.assertNotIn("sorted(", discovery)
         self.assertNotIn("tracked_prefixes = {", discovery)
+
+    def test_script_reference_match_target_and_failure_caps_are_exact(self) -> None:
+        source = REPO_CONTRACT.read_text(encoding="utf-8")
+        start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"
+        block = source.split(start, 1)[1].split(
+            "\nPY\n  failures=$((failures + 1))", 1
+        )[0]
+
+        def run(root: pathlib.Path, program: str) -> subprocess.CompletedProcess[str]:
+            return subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            target = root / "scripts/validation/existing.sh"
+            target.parent.mkdir(parents=True)
+            target.write_text("#!/bin/sh\n", encoding="utf-8")
+            readme = root / "README.md"
+            readme.write_text("scripts/validation/existing.sh\n" * 2, encoding="utf-8")
+            exact = block.replace(
+                "MAX_REFERENCE_MATCHES: Final = 16_384",
+                "MAX_REFERENCE_MATCHES: Final = 2",
+            )
+            self.assertEqual(0, run(root, exact).returncode)
+            readme.write_text("scripts/validation/existing.sh\n" * 3, encoding="utf-8")
+            above = run(root, exact)
+            self.assertEqual(1, above.returncode)
+            self.assertEqual("FAIL: unsafe script-reference surface\n", above.stderr)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            readme = root / "README.md"
+            exact_ref = "scripts/validation/exact-path.sh"
+            above_ref = "scripts/validation/exact-pathx.sh"
+            exact = block.replace(
+                "MAX_REFERENCE_PATH_BYTES: Final = 4_096",
+                f"MAX_REFERENCE_PATH_BYTES: Final = {len(exact_ref)}",
+            )
+            readme.write_text(exact_ref + "\n", encoding="utf-8")
+            at_limit = run(root, exact)
+            self.assertEqual(1, at_limit.returncode)
+            self.assertIn("missing script reference", at_limit.stderr)
+            readme.write_text(above_ref + "\n", encoding="utf-8")
+            above = run(root, exact)
+            self.assertEqual(1, above.returncode)
+            self.assertEqual("FAIL: unsafe script-reference surface\n", above.stderr)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            target_root = root / "scripts/validation"
+            target_root.mkdir(parents=True)
+            for name in ("one.sh", "two.sh", "three.sh"):
+                (target_root / name).write_text("#!/bin/sh\n", encoding="utf-8")
+            readme = root / "README.md"
+            readme.write_text(
+                "scripts/validation/one.sh\nscripts/validation/two.sh\n",
+                encoding="utf-8",
+            )
+            exact = block.replace(
+                "MAX_REFERENCE_UNIQUE_TARGETS: Final = 8_192",
+                "MAX_REFERENCE_UNIQUE_TARGETS: Final = 2",
+            )
+            self.assertEqual(0, run(root, exact).returncode)
+            readme.write_text(
+                "scripts/validation/one.sh\nscripts/validation/two.sh\n"
+                "scripts/validation/three.sh\n",
+                encoding="utf-8",
+            )
+            above = run(root, exact)
+            self.assertEqual(1, above.returncode)
+            self.assertEqual("FAIL: unsafe script-reference surface\n", above.stderr)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            readme = root / "README.md"
+            readme.write_text(
+                "scripts/validation/missing-one.sh\n"
+                "scripts/validation/missing-two.sh\n",
+                encoding="utf-8",
+            )
+            exact = block.replace(
+                "MAX_REFERENCE_FAILURES: Final = 4_096",
+                "MAX_REFERENCE_FAILURES: Final = 2",
+            )
+            observed = run(root, exact)
+            self.assertEqual(1, observed.returncode)
+            self.assertEqual(2, observed.stderr.count("missing script reference"))
+            readme.write_text(
+                readme.read_text(encoding="utf-8")
+                + "scripts/validation/missing-three.sh\n",
+                encoding="utf-8",
+            )
+            above = run(root, exact)
+            self.assertEqual(1, above.returncode)
+            self.assertEqual("FAIL: unsafe script-reference surface\n", above.stderr)
 
     def test_script_reference_scan_rejects_same_inode_metadata_mutation(self) -> None:
         source = REPO_CONTRACT.read_text(encoding="utf-8")

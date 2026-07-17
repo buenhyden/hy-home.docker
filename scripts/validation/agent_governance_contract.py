@@ -80,7 +80,8 @@ _ACTIVE_PRECOMMIT_ACTION = re.compile(
 )
 _PASSIVE_PRECOMMIT_ACTION = re.compile(
     rf"{_PRECOMMIT_TOOL_GRAMMAR}(?:\s+\w+){{0,6}}\s+"
-    r"(?:may|can|could|should|shall|will|would)\b(?:\s+\w+){0,4}"
+    r"(?:may|can|could|should|shall|will|would)\b(?!\s+not\b)"
+    r"(?:\s+\w+){0,4}"
     r"\s+be\s+(?:used|run|invoked|executed|called|launched)\b"
 )
 _DIRECT_PRECOMMIT_PERMISSION = re.compile(
@@ -94,8 +95,14 @@ _PRECOMMIT_NOUN_PERMISSION = re.compile(
 )
 _PERMISSIVE_PRECOMMIT_ACTOR = re.compile(r"\b(?:agents?|local|locally)\b")
 _PERMISSIVE_ACTION = re.compile(
-    rf"\b(?:may|can|could|should|shall|will|would)\b(?:\s+\w+){{0,8}}"
+    rf"\b(?:may|can|could|should|shall|will|would)\b(?!\s+not\b)"
+    rf"(?:\s+\w+){{0,8}}"
     rf"\s+{_PRECOMMIT_ACTION}\b"
+)
+_AGENT_PERMISSIVE_ACTION = re.compile(
+    rf"\b(?:local\s+)?agents?\b(?:\s+\w+){{0,4}}\s+"
+    rf"(?:may|can|could|should|shall|will|would)\b(?!\s+not\b)"
+    rf"(?:\s+\w+){{0,8}}\s+{_PRECOMMIT_ACTION}\b"
 )
 _EXPLICIT_PROHIBITION = re.compile(
     r"\b(?:may|can|could|should|shall|will|would|must)\s+not\b|"
@@ -111,14 +118,28 @@ _NEGATED_PROHIBITION = re.compile(
     r"\b(?:do|does|did)\s+not\s+(?:forbid|prohibit)\b|"
     r"\b(?:may|can|could|should|shall|will|would|must)\s+not\s+not\b|"
     r"\bcannot\s+not\b|"
-    r"\b(?:do|does|did)\s+not\s+not\b"
+    r"\b(?:do|does|did)\s+not\s+not\b|"
+    r"\b(?:is|are|was|were)\s+not\s+not\s+"
+    r"(?:allowed|approved|permitted|authorized|forbidden|prohibited)\b"
 )
 _GUIDANCE_CLAUSE_SEPARATOR = re.compile(
-    r"[\r\n;,]+|\.(?=\s|$)|\b(?:but|however|yet|although)\b"
+    r"[\r\n,;:!?()–—]+|\.(?=\s|$)|"
+    r"\b(?:but|however|yet|although)\b|(?=\b(?:unless|except)\b)"
 )
 _GUIDANCE_ANAPHORA = re.compile(r"\b(?:it|this|that)\b")
 _GUIDANCE_TOOL_COMMAND_CONTINUATION = re.compile(
     rf"\b{_PRECOMMIT_ACTION}\b(?:\s+\S+){{0,8}}\s+(?:-a\b|--all-files\b)"
+)
+_GUIDANCE_PASSIVE_PERMISSION = re.compile(
+    r"(?:\b(?:it|this|that)\s+(?:is|are|was|were)\s+"
+    r"(?:allowed|approved|permitted|authorized)\s+(?:for|by)\s+"
+    r"(?:local\s+)?agents?\b|"
+    r"\b(?:local\s+)?agents?\s+(?:is|are|was|were)\s+"
+    r"(?:allowed|approved|permitted|authorized)\b)"
+)
+_GUIDANCE_EXCEPTION = re.compile(r"^(?:unless|except)\b")
+_CONTROLLED_WRAPPER_GUIDANCE = re.compile(
+    r"\b(?:controlled\s+wrapper|run-agent-precommit-all-files\.sh)\b"
 )
 
 COMMON_TOP_FIELDS = {"schema_version", "checked_at"}
@@ -5542,16 +5563,30 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
                 tool_antecedent
                 and _GUIDANCE_TOOL_COMMAND_CONTINUATION.search(clause) is not None
             )
+            has_exception_actor = (
+                tool_antecedent
+                and _GUIDANCE_EXCEPTION.search(clause) is not None
+                and _PERMISSIVE_PRECOMMIT_ACTOR.search(clause) is not None
+            )
             if (
                 not has_tool
                 and not has_anaphoric_tool
                 and not has_tool_command_continuation
+                and not has_exception_actor
             ):
                 tool_antecedent = False
                 continue
             if has_tool and _NEGATED_PROHIBITION.search(clause):
                 return True
             if has_tool and _EXPLICIT_PROHIBITION.search(clause):
+                if (
+                    _AGENT_PERMISSIVE_ACTION.search(clause)
+                    or _PASSIVE_PRECOMMIT_ACTION.search(clause)
+                    or _DIRECT_PRECOMMIT_PERMISSION.search(clause)
+                    or _PRECOMMIT_NOUN_PERMISSION.search(clause)
+                    or _GUIDANCE_PASSIVE_PERMISSION.search(clause)
+                ) and not _CONTROLLED_WRAPPER_GUIDANCE.search(clause):
+                    return True
                 tool_antecedent = True
                 continue
             if has_tool and _PRECOMMIT_COMMAND.search(clause):
@@ -5565,6 +5600,19 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
             if has_tool and _PRECOMMIT_NOUN_PERMISSION.search(clause):
                 return True
             if has_tool_command_continuation:
+                return True
+            if (
+                tool_antecedent
+                and _GUIDANCE_PASSIVE_PERMISSION.search(clause)
+                and not _EXPLICIT_PROHIBITION.search(clause)
+            ):
+                return True
+            if (
+                tool_antecedent
+                and _GUIDANCE_EXCEPTION.search(clause)
+                and _PERMISSIVE_PRECOMMIT_ACTOR.search(clause)
+                and not _CONTROLLED_WRAPPER_GUIDANCE.search(clause)
+            ):
                 return True
             if _PERMISSIVE_ACTION.search(clause):
                 return True

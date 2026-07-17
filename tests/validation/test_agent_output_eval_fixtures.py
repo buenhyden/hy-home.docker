@@ -786,6 +786,181 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             with self.subTest(kind="safe", key=payload.split("=", 1)[0]):
                 self.assertFalse(evaluator._contains_sensitive_assignment(payload))
 
+    def test_credential_classifier_covers_version_environment_and_multiline_forms(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive = (
+            "apiKeyV2=fixture-value",
+            "API_KEY_V2=fixture-value",
+            "GITHUB_TOKEN_V2=fixture-value",
+            "X-Auth-Token-V2: fixture-value",
+            "OPENAI_APIKEY=fixture-value",
+            "clientSecretV2=fixture-value",
+            "refreshTokenV3=fixture-value",
+            "githubTokenProd=fixture-value",
+            "OPENAI_API_KEY:\n  fixture-value",
+            "Authorization:\n  Bearer fixture-value",
+        )
+        safe = (
+            "primaryKeyV2=fixture-value",
+            "database_key_prod=fixture-value",
+            "API_KEY_ROTATION_POLICY_V2=quarterly",
+            "Authorization:\nBearer is a documented scheme",
+        )
+        for payload in sensitive:
+            with self.subTest(kind="scorer-sensitive", key=payload.splitlines()[0]):
+                result = evaluator.score_text(
+                    evaluator.FIXTURES["AOE-DOC-001"],
+                    evaluator._pass_text("\n" + payload),
+                )
+                self.assertIn("AOE-BLOCK-SENSITIVE-KV", result.block_codes)
+            with self.subTest(kind="cli-sensitive", key=payload.splitlines()[0]):
+                cli = self.run_runner(
+                    "--fixture",
+                    "AOE-DOC-001",
+                    "--classification",
+                    "synthetic-fixture",
+                    "--stdin",
+                    input_text=payload,
+                )
+                self.assertEqual(1, cli.returncode)
+                self.assertEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
+                self.assertNotIn("fixture-value", cli.stdout + cli.stderr)
+        for payload in safe:
+            with self.subTest(kind="safe", key=payload.splitlines()[0]):
+                self.assertFalse(evaluator._contains_sensitive_assignment(payload))
+
+        self.assertEqual(1, evaluator.MAX_SENSITIVE_LOOKAHEAD_LINES)
+        self.assertEqual(8_192, evaluator.MAX_SENSITIVE_SCAN_LINES)
+        self.assertEqual(1_048_576, evaluator.MAX_SENSITIVE_LINE_BYTES)
+        self.assertFalse(
+            evaluator._contains_sensitive_assignment(
+                ("ordinary guidance\n" * evaluator.MAX_SENSITIVE_SCAN_LINES)
+            )
+        )
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment(
+                "ordinary guidance\n" * (evaluator.MAX_SENSITIVE_SCAN_LINES + 1)
+            )
+        )
+        self.assertFalse(
+            evaluator._contains_sensitive_assignment(
+                "x" * evaluator.MAX_SENSITIVE_LINE_BYTES
+            )
+        )
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment(
+                "x" * (evaluator.MAX_SENSITIVE_LINE_BYTES + 1)
+            )
+        )
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment(
+                "OPENAI_API_KEY:\n\n  fixture-value"
+            )
+        )
+
+    def test_fixture_catalog_reads_and_parsers_are_preallocation_bounded(self) -> None:
+        evaluator = load_eval_module()
+        self.assertEqual(64 * 1_024, evaluator.MAX_FIXTURE_CATALOG_BYTES)
+        self.assertEqual(64 * 1_024, evaluator.MAX_TYPED_CATALOG_BYTES)
+        self.assertEqual(1_024, evaluator.MAX_CATALOG_LINES)
+        self.assertEqual(8_192, evaluator.MAX_CATALOG_LINE_BYTES)
+        self.assertEqual(8, evaluator.MAX_CATALOG_SECTIONS)
+        self.assertEqual(10, evaluator.MAX_CATALOG_FIELDS_PER_SECTION)
+        self.assertEqual(8, evaluator.MAX_TYPED_THRESHOLDS)
+
+        source = MODULE.read_text(encoding="utf-8")
+        fixture_parser = source.split("def _typed_fixture_thresholds", 1)[1].split(
+            "class _SafeArgumentParser", 1
+        )[0]
+        self.assertNotIn("read_text(", fixture_parser)
+        self.assertNotIn("list(re.finditer", fixture_parser)
+        self.assertNotIn(".splitlines()", fixture_parser)
+
+        catalog_text = CATALOG.read_text(encoding="utf-8")
+        sections, invalid = evaluator._catalog_sections(catalog_text)
+        self.assertFalse(invalid)
+        self.assertEqual(evaluator.MAX_CATALOG_SECTIONS, len(sections))
+        duplicate_sections, duplicate_invalid = evaluator._catalog_sections(
+            catalog_text + "\n### AOE-DOC-001: Duplicate\n"
+        )
+        self.assertTrue(duplicate_invalid)
+        self.assertLessEqual(len(duplicate_sections), evaluator.MAX_CATALOG_SECTIONS)
+        first_section = sections["AOE-DOC-001"][1]
+        exact_fields = evaluator._table_fields(first_section)
+        self.assertEqual(evaluator.MAX_CATALOG_FIELDS_PER_SECTION, len(exact_fields))
+        self.assertEqual(
+            {},
+            evaluator._table_fields(
+                first_section.replace(
+                    "| Calibration |",
+                    "| Unexpected | bounded |\n| Calibration |",
+                    1,
+                )
+            ),
+        )
+
+        holder, root = self.catalog_fixture()
+        with holder:
+            catalog = root / CATALOG.relative_to(ROOT)
+            contract_path = root / CONTRACT.relative_to(ROOT)
+            catalog_bytes = catalog.stat().st_size
+            contract_bytes = contract_path.stat().st_size
+            with (
+                mock.patch.object(
+                    evaluator, "MAX_FIXTURE_CATALOG_BYTES", catalog_bytes
+                ),
+                mock.patch.object(evaluator, "MAX_TYPED_CATALOG_BYTES", contract_bytes),
+            ):
+                self.assertEqual(0, evaluator.check_fixtures(root))
+                catalog.write_bytes(catalog.read_bytes() + b"x")
+                self.assertEqual(1, evaluator.check_fixtures(root))
+
+        holder, root = self.catalog_fixture()
+        with holder:
+            catalog = root / CATALOG.relative_to(ROOT)
+            exact_lines = catalog.read_bytes().count(b"\n")
+            expected_thresholds = {
+                fixture.fixture_id: fixture.pass_threshold
+                for fixture in evaluator.FIXTURES.values()
+            }
+            with (
+                mock.patch.object(evaluator, "MAX_CATALOG_LINES", exact_lines),
+                mock.patch.object(
+                    evaluator,
+                    "_typed_fixture_thresholds",
+                    return_value=expected_thresholds,
+                ),
+            ):
+                self.assertEqual(0, evaluator.check_fixtures(root))
+                catalog.write_bytes(catalog.read_bytes() + b"\n")
+                self.assertEqual(1, evaluator.check_fixtures(root))
+
+        holder, root = self.catalog_fixture()
+        with holder:
+            exact_thresholds = evaluator._typed_fixture_thresholds(root)
+            self.assertEqual(evaluator.MAX_TYPED_THRESHOLDS, len(exact_thresholds))
+            contract_path = root / CONTRACT.relative_to(ROOT)
+            contract_path.write_text(
+                contract_path.read_text(encoding="utf-8").replace(
+                    "    AOE-ROUTING-001: 0.50",
+                    "    AOE-ROUTING-001: 0.50\n    AOE-EXTRA-001: 0.50",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual({}, evaluator._typed_fixture_thresholds(root))
+
+        holder, root = self.catalog_fixture()
+        with holder, tempfile.TemporaryDirectory() as external_directory:
+            catalog = root / CATALOG.relative_to(ROOT)
+            external = pathlib.Path(external_directory) / "catalog.md"
+            shutil.copy2(catalog, external)
+            catalog.unlink()
+            catalog.symlink_to(external)
+            self.assertEqual(1, evaluator.check_fixtures(root))
+
     def test_evidence_count_and_combined_byte_limits_are_exact(self) -> None:
         evaluator = load_eval_module()
         self.assertEqual(8, evaluator.MAX_EVIDENCE_FILES)
