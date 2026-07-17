@@ -161,8 +161,26 @@ _GUIDANCE_EXCEPTION = re.compile(
     r"^(?:unless|except|other\s+than|apart\s+from|save\s+for|"
     r"with\s+the\s+exception\s+of)\b"
 )
+_CONTROLLED_WRAPPER_ROUTE = (
+    r"(?:controlled\s+wrapper|"
+    r"scripts/validation/run-agent-precommit-all-files\.sh|"
+    r"run-agent-precommit-all-files\.sh)"
+)
 _CONTROLLED_WRAPPER_GUIDANCE = re.compile(
-    r"\b(?:controlled\s+wrapper|run-agent-precommit-all-files\.sh)\b"
+    rf"(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])"
+)
+_GUIDANCE_EXCLUSIVE_CONTROLLED_ROUTE = re.compile(
+    rf"\b(?:it|this|that)\s+"
+    rf"(?:may|can|could|should|shall|will|would)\s+be\s+"
+    rf"(?:used|run|invoked|executed|called|launched)\s+only\s+"
+    rf"(?:through|via)\s+(?:the\s+)?"
+    rf"(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])"
+)
+_GUIDANCE_NON_TOOL_SEMANTIC_USE = re.compile(
+    r"\b(?:it|this|that)\s+"
+    r"(?:may|can|could|should|shall|will|would)\s+be\s+used\s+as\s+"
+    r"(?:an?\s+)?(?:guidance|reference|documentation|example)\s+"
+    r"(?:for|by)\s+(?:local\s+)?agents?\b"
 )
 
 COMMON_TOP_FIELDS = {"schema_version", "checked_at"}
@@ -5593,21 +5611,10 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
                 and not has_tool_command_continuation
                 and not has_exception
             ):
-                tool_antecedent = False
                 continue
 
             controlled_route = _CONTROLLED_WRAPPER_GUIDANCE.search(clause) is not None
             explicit_prohibition = _EXPLICIT_PROHIBITION.search(clause) is not None
-            unsafe_agent_permission = any(
-                pattern.search(clause) is not None
-                for pattern in (
-                    _AGENT_PERMISSIVE_ACTION,
-                    _GUIDANCE_AGENT_ANAPHORIC_ACTION,
-                    _GUIDANCE_ANAPHORIC_MODAL_PERMISSION,
-                    _GUIDANCE_PASSIVE_PERMISSION,
-                    _GUIDANCE_REMAINS_PERMISSION,
-                )
-            )
 
             # Double negatives reverse a prohibition and therefore fail closed
             # before ordinary negative forms are allowed to short-circuit.
@@ -5618,17 +5625,16 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
             # names the one governed wrapper route.
             if has_exception:
                 if controlled_route:
-                    tool_antecedent = has_tool
+                    tool_antecedent = tool_antecedent or has_tool
                     continue
-                if _PERMISSIVE_PRECOMMIT_ACTOR.search(clause):
-                    return True
+                return True
 
-            # A route citation is safe when it accompanies a prohibition or an
-            # exception, or when it contains no permissive agent modality.
-            if controlled_route and (
-                explicit_prohibition or has_exception or not unsafe_agent_permission
-            ):
-                tool_antecedent = has_tool
+            if controlled_route and _GUIDANCE_EXCLUSIVE_CONTROLLED_ROUTE.search(clause):
+                tool_antecedent = tool_antecedent or has_tool
+                continue
+
+            if _GUIDANCE_NON_TOOL_SEMANTIC_USE.search(clause):
+                tool_antecedent = tool_antecedent or has_tool
                 continue
 
             direct_permission = has_tool and any(
@@ -5650,6 +5656,18 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
                     _GUIDANCE_REMAINS_PERMISSION,
                 )
             )
+
+            # A route citation alone is operationally neutral. It must never
+            # mask a direct or related agent permission in the same clause;
+            # controlled exceptions and exclusive routes were handled above.
+            if (
+                controlled_route
+                and not direct_permission
+                and not related_permission
+                and not has_tool_command_continuation
+            ):
+                tool_antecedent = tool_antecedent or has_tool
+                continue
 
             # Safe negative clauses are terminal for this related-tool clause,
             # except when the same clause also grants a direct agent permission.
@@ -5673,7 +5691,7 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
 
             if direct_permission or related_permission or has_tool_command_continuation:
                 return True
-            tool_antecedent = has_tool
+            tool_antecedent = tool_antecedent or has_tool
     except _QaGuidanceBoundsError:
         return True
     return False

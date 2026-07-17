@@ -968,6 +968,106 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             ),
         )
 
+    def test_credential_classifier_derives_fused_exact_keys_and_yaml_indicators(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive = (
+            "AWSACCESSKEYID=fixture-value",
+            "OAUTHCLIENTID=fixture-value",
+            "GOOGLEAPPLICATIONCREDENTIALS=fixture-value",
+            "DATABASEURL=fixture-value",
+            "SESSIONCOOKIE=fixture-value",
+            "PROXYAUTHORIZATION=fixture-value",
+            "SESSIONTOKEN=fixture-value",
+            "SETCOOKIE=fixture-value",
+        )
+        safe = (
+            "DATABASEURLROTATIONPOLICY=quarterly",
+            "SESSIONCOOKIEROTATIONPOLICY=quarterly",
+            "PUBLICKEY=fixture-value",
+        )
+        yaml_continuations = (
+            "OPENAI_API_KEY:\n|2",
+            "OPENAI_API_KEY:\n|2-",
+            "OPENAI_API_KEY:\n>+2",
+            "OPENAI_API_KEY:\n|-2",
+            "OPENAI_API_KEY:\n-",
+            "OPENAI_API_KEY:\n  -",
+        )
+        for payload in sensitive:
+            with self.subTest(kind="sensitive", key=payload.split("=", 1)[0]):
+                self.assertTrue(evaluator._contains_sensitive_assignment(payload))
+        for payload in safe:
+            with self.subTest(kind="safe", key=payload.split("=", 1)[0]):
+                self.assertFalse(evaluator._contains_sensitive_assignment(payload))
+        for payload in yaml_continuations:
+            with self.subTest(kind="yaml", marker=payload.splitlines()[1]):
+                self.assertTrue(evaluator._contains_sensitive_assignment(payload))
+
+        for payload in sensitive[:2]:
+            with self.subTest(kind="scorer", key=payload.split("=", 1)[0]):
+                scored = evaluator.score_text(
+                    evaluator.FIXTURES["AOE-DOC-001"],
+                    evaluator._pass_text("\n" + payload),
+                )
+                self.assertIn("AOE-BLOCK-SENSITIVE-KV", scored.block_codes)
+            with self.subTest(kind="cli", key=payload.split("=", 1)[0]):
+                cli = self.run_runner(
+                    "--fixture",
+                    "AOE-DOC-001",
+                    "--classification",
+                    "synthetic-fixture",
+                    "--stdin",
+                    input_text=payload,
+                )
+                self.assertEqual(1, cli.returncode)
+                self.assertEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
+                self.assertNotIn("fixture-value", cli.stdout + cli.stderr)
+
+        self.assertEqual(1, evaluator.MAX_SENSITIVE_LOOKAHEAD_LINES)
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment("OPENAI_API_KEY:\n\nfixture")
+        )
+
+    def test_catalog_table_requires_one_exact_contiguous_state_machine(self) -> None:
+        evaluator = load_eval_module()
+        sections, invalid = evaluator._catalog_sections(
+            CATALOG.read_text(encoding="utf-8")
+        )
+        self.assertFalse(invalid)
+        section = sections["AOE-DOC-001"][1]
+        self.assertEqual(10, len(evaluator._table_fields(section)))
+        calibration_line = next(
+            line for line in section.splitlines() if line.startswith("| Calibration |")
+        )
+
+        malformed_sections = (
+            section.replace(
+                "| --- | --- |",
+                "| Field | Value |\n| --- | --- |",
+                1,
+            ),
+            section.replace("| --- | --- |", "\n| --- | --- |", 1),
+            section.replace(
+                "| Input Scenario |",
+                "| --- | --- |\n| Input Scenario |",
+                1,
+            ),
+            section.replace(
+                calibration_line, calibration_line + "\n\n| Extra | value |", 1
+            ),
+            section.replace(
+                calibration_line,
+                calibration_line + "\nordinary text\n| MALFORMED |",
+                1,
+            ),
+            section.replace(calibration_line, calibration_line + "\n| --- | --- |", 1),
+        )
+        for index, malformed in enumerate(malformed_sections):
+            with self.subTest(index=index):
+                self.assertEqual({}, evaluator._table_fields(malformed))
+
     def test_fixture_catalog_reads_and_parsers_are_preallocation_bounded(self) -> None:
         evaluator = load_eval_module()
         self.assertEqual(64 * 1_024, evaluator.MAX_FIXTURE_CATALOG_BYTES)

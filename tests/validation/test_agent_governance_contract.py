@@ -3759,6 +3759,58 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
                 observed = codes(contract.validate_repository(root, bundle, "harness"))
                 self.assertIn("AGC-REPOSITORY-HARNESS-SEMANTICS", observed)
 
+    def test_precommit_guidance_preserves_state_and_exact_controlled_routes(
+        self,
+    ) -> None:
+        unsafe_guidance = (
+            "Pre-commit is prohibited. This section describes local setup. It may be run by agents.",
+            "Pre-commit is prohibited. Ordinary guidance follows. More context follows. Agents may run it.",
+            "Pre-commit is prohibited. It may be invoked by agents.",
+            "Pre-commit is prohibited. It may be used by agents.",
+            "Pre-commit is prohibited. It remains approved.",
+            "Pre-commit is prohibited unless evil/run-agent-precommit-all-files.sh is used.",
+            "Pre-commit is prohibited unless not-run-agent-precommit-all-files.sh is used.",
+            "Pre-commit is allowed for agents through the controlled wrapper.",
+            "Pre-commit is prohibited. Run -a through the controlled wrapper.",
+        )
+        safe_guidance = (
+            "Pre-commit is prohibited. Ordinary guidance follows. Agents may not use it.",
+            "Pre-commit is prohibited except through the controlled wrapper.",
+            "Pre-commit is prohibited unless run-agent-precommit-all-files.sh is used.",
+            "Pre-commit is prohibited unless scripts/validation/run-agent-precommit-all-files.sh is used.",
+            "Pre-commit is prohibited. It may be run only through the controlled wrapper.",
+            "Pre-commit is prohibited. It may be run only via the controlled wrapper.",
+            "Pre-commit is prohibited. Use the controlled wrapper.",
+            "Pre-commit is prohibited. This may be used as guidance by agents.",
+            "Pre-commit is prohibited. This may be used as a reference by agents.",
+            "Pre-commit is prohibited. This may be used as documentation by agents.",
+            "Pre-commit is prohibited. This may be used as an example by agents.",
+        )
+        for guidance in unsafe_guidance:
+            with self.subTest(kind="unsafe", guidance=guidance):
+                self.assertTrue(contract._has_direct_agent_precommit_guidance(guidance))
+        for guidance in safe_guidance:
+            with self.subTest(kind="safe", guidance=guidance):
+                self.assertFalse(
+                    contract._has_direct_agent_precommit_guidance(guidance)
+                )
+
+        for guidance in unsafe_guidance:
+            with (
+                self.subTest(kind="repository", guidance=guidance),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                local_qa = root / "scripts/validation/run-local-qa-gates.sh"
+                local_qa.write_text(
+                    local_qa.read_text(encoding="utf-8") + f"\n# {guidance}\n",
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertIn("AGC-REPOSITORY-HARNESS-SEMANTICS", observed)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -3300,6 +3300,8 @@ MAX_REFERENCE_TOTAL_BYTES: Final = 64 * 1_048_576
 MAX_REFERENCE_DISCOVERY_ENTRIES: Final = 8_192
 MAX_REFERENCE_GIT_OUTPUT_BYTES: Final = 1_048_576
 MAX_REFERENCE_PATH_BYTES: Final = 4_096
+MAX_REFERENCE_CONTEXT_CHARS: Final = 4_096
+MAX_REFERENCE_CONTEXT_BYTES: Final = 4_096
 MAX_REFERENCE_MATCHES: Final = 16_384
 MAX_REFERENCE_UNIQUE_TARGETS: Final = 8_192
 MAX_REFERENCE_FAILURES: Final = 4_096
@@ -3337,6 +3339,9 @@ approved_reference_prefix = (
 pattern = re.compile(
     r"(?<![\w./$({-])" + approved_reference_prefix
     + r"(?P<ref>scripts/[A-Za-z0-9._/-]+\.sh)"
+)
+uri_scheme_boundary = re.compile(
+    r"(?:^|[=(\[<{\x27\x22])[A-Za-z][A-Za-z0-9+.-]*:"
 )
 deleted_entrypoints = {
     "scripts/hardening/check-ai-hardening.sh",
@@ -3668,6 +3673,27 @@ failure_bytes = 0
 match_count = 0
 
 
+def bounded_backward_context(text: str, start: int) -> str:
+    """Return one bounded non-whitespace token preceding a reference."""
+
+    context_start = start
+    context_chars = 0
+    context_bytes = 0
+    while context_start > 0:
+        character = text[context_start - 1]
+        if character.isspace():
+            break
+        context_chars += 1
+        context_bytes += len(character.encode("utf-8", errors="strict"))
+        if (
+            context_chars > MAX_REFERENCE_CONTEXT_CHARS
+            or context_bytes > MAX_REFERENCE_CONTEXT_BYTES
+        ):
+            raise UnsafeScriptReferenceSurface
+        context_start -= 1
+    return text[context_start:start]
+
+
 def record_missing_failure(path: pathlib.Path, ref: str) -> None:
     global failure_bytes
     if len(failures) >= MAX_REFERENCE_FAILURES:
@@ -3697,6 +3723,9 @@ try:
                 raise UnsafeScriptReferenceSurface
             if match.end("ref") - match.start("ref") > MAX_REFERENCE_PATH_BYTES:
                 raise UnsafeScriptReferenceSurface
+            context = bounded_backward_context(text, match.start("ref"))
+            if uri_scheme_boundary.search(context):
+                continue
             ref = match.group("ref")
             local_target = path.parent / ref
             root_target = pathlib.Path(ref)

@@ -128,6 +128,11 @@ _SENSITIVE_COMPOUND_COMPONENTS = {
     "githubtoken": ("github", "token"),
     "refreshtoken": ("refresh", "token"),
 }
+_SENSITIVE_FUSED_EXACT_COMPONENTS = {
+    key.replace("_", ""): tuple(key.split("_"))
+    for key in _SENSITIVE_EXACT_KEYS
+    if "_" in key
+}
 _SAFE_COMPOUND_COMPONENTS = {
     "cachekey": ("cache", "key"),
     "databasekey": ("database", "key"),
@@ -716,6 +721,9 @@ def _expand_sensitive_component(component: str) -> tuple[str, ...]:
 def _expand_sensitive_component_base(component: str) -> tuple[str, ...]:
     """Expand one bounded compound component without recursive suffix peeling."""
 
+    fused_exact = _SENSITIVE_FUSED_EXACT_COMPONENTS.get(component)
+    if fused_exact is not None:
+        return fused_exact
     exact = _SENSITIVE_COMPOUND_COMPONENTS.get(component)
     if exact is not None:
         return exact
@@ -809,7 +817,10 @@ def _is_sensitive_candidate_key(key: str) -> bool:
         return False
     if _is_sensitive_semantic_components(semantic_components):
         return True
-    for split_index in range(1, len(semantic_components)):
+    # Prefer the longest registered sensitive stem. Short aliases such as
+    # ``session`` must not override a more specific key whose only remaining
+    # tail is reviewed metadata (for example session-cookie rotation policy).
+    for split_index in range(len(semantic_components) - 1, 0, -1):
         stem = semantic_components[:split_index]
         tail = semantic_components[split_index:]
         if not _is_sensitive_semantic_components(stem):
@@ -865,8 +876,10 @@ def _contains_sensitive_assignment(text: str) -> bool:
                     continue
                 is_mapping_value = (
                     line[:1] in {" ", "\t"}
+                    or stripped == "-"
                     or re.match(r"^-[ \t]+\S", stripped) is not None
-                    or re.fullmatch(r"[|>](?:[+-])?", stripped) is not None
+                    or re.fullmatch(r"[|>](?:(?:[+-][1-9]?)|(?:[1-9][+-]?))?", stripped)
+                    is not None
                 )
                 if is_mapping_value:
                     _components, _within_bounds = _sensitive_candidate_shape(
@@ -1155,27 +1168,43 @@ def _typed_fixture_thresholds(root: pathlib.Path) -> dict[str, float]:
 
 def _table_fields(section: str) -> dict[str, str]:
     fields: dict[str, str] = {}
-    table_started = False
+    state = "before-header"
     try:
         for line in _iter_catalog_lines(section):
-            if not table_started:
+            if state == "before-header":
                 if line == "| Field | Value |":
-                    table_started = True
+                    state = "separator"
                 continue
+
+            if state == "separator":
+                if line != "| --- | --- |":
+                    return {}
+                state = "rows"
+                continue
+
+            if state == "after-table":
+                if line.startswith("|"):
+                    return {}
+                continue
+
             if not line.startswith("|"):
-                if fields:
-                    break
-                continue
-            if line == "| --- | --- |":
-                continue
+                return {}
             match = re.fullmatch(r"\| ([^|]+?) \| (.*?) \|", line)
             if match is None or match.group(1) in {"Field", "---"}:
                 return {}
             key = match.group(1).strip()
-            if key in fields or len(fields) >= MAX_CATALOG_FIELDS_PER_SECTION:
+            if (
+                key in fields
+                or len(fields) >= MAX_CATALOG_FIELDS_PER_SECTION
+                or key != CATALOG_FIELD_ORDER[len(fields)]
+            ):
                 return {}
             fields[key] = match.group(2).strip()
+            if len(fields) == MAX_CATALOG_FIELDS_PER_SECTION:
+                state = "after-table"
     except ValueError:
+        return {}
+    if state != "after-table" or tuple(fields) != CATALOG_FIELD_ORDER:
         return {}
     return fields
 

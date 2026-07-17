@@ -657,6 +657,96 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             (root / "README.md").write_text("\n".join(ignored) + "\n", encoding="utf-8")
             self.assertEqual(0, run(root).returncode)
 
+    def test_script_reference_scan_bounds_and_ignores_external_uri_contexts(
+        self,
+    ) -> None:
+        source = REPO_CONTRACT.read_text(encoding="utf-8")
+        start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"
+        block = source.split(start, 1)[1].split(
+            "\nPY\n  failures=$((failures + 1))", 1
+        )[0]
+
+        def run(
+            root: pathlib.Path, program: str = block
+        ) -> subprocess.CompletedProcess[str]:
+            return subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+        ignored = (
+            "https://example.test?next=scripts/validation/missing.sh",
+            "https://example.test#scripts/validation/missing.sh",
+            "url=https://example.test/scripts/validation/missing.sh",
+            "[script](https://example.test/scripts/validation/missing.sh)",
+            "<https://example.test/scripts/validation/missing.sh>",
+            "data:text/plain,scripts/validation/missing.sh",
+            "file:scripts/validation/missing.sh",
+            "https://example.test/scripts/validation/missing.sh",
+            "/tmp/scripts/validation/missing.sh",
+        )
+        checked = (
+            "SCRIPT=scripts/validation/missing.sh",
+            "$BASE_DIR/scripts/validation/missing.sh",
+            "${ROOT}/scripts/validation/missing.sh",
+            "$(git rev-parse --show-toplevel)/scripts/validation/missing.sh",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            (root / "README.md").write_text("\n".join(ignored) + "\n", encoding="utf-8")
+            self.assertEqual(0, run(root).returncode)
+
+        for reference in checked:
+            with (
+                self.subTest(reference=reference),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+                (root / "README.md").write_text(reference + "\n", encoding="utf-8")
+                result = run(root)
+                self.assertEqual(1, result.returncode)
+                self.assertIn(
+                    "missing script reference scripts/validation/missing.sh",
+                    result.stderr,
+                )
+
+        self.assertIn("MAX_REFERENCE_CONTEXT_CHARS: Final = 4_096", block)
+        self.assertIn("MAX_REFERENCE_CONTEXT_BYTES: Final = 4_096", block)
+        scan_loop = block.split("for match in pattern.finditer(text):", 1)[1]
+        self.assertLess(
+            scan_loop.index("bounded_backward_context(text, match.start"),
+            scan_loop.index('ref = match.group("ref")'),
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            readme = root / "README.md"
+            exact = block.replace(
+                "MAX_REFERENCE_CONTEXT_CHARS: Final = 4_096",
+                "MAX_REFERENCE_CONTEXT_CHARS: Final = 16",
+            ).replace(
+                "MAX_REFERENCE_CONTEXT_BYTES: Final = 4_096",
+                "MAX_REFERENCE_CONTEXT_BYTES: Final = 16",
+            )
+            readme.write_text(
+                ("A" * 15) + "=scripts/validation/missing.sh\n", encoding="utf-8"
+            )
+            at_limit = run(root, exact)
+            self.assertEqual(1, at_limit.returncode)
+            self.assertIn("missing script reference", at_limit.stderr)
+            readme.write_text(
+                ("A" * 16) + "=scripts/validation/missing.sh\n", encoding="utf-8"
+            )
+            above = run(root, exact)
+            self.assertEqual(1, above.returncode)
+            self.assertEqual("FAIL: unsafe script-reference surface\n", above.stderr)
+
     def test_script_reference_scan_rejects_same_inode_metadata_mutation(self) -> None:
         source = REPO_CONTRACT.read_text(encoding="utf-8")
         start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"
