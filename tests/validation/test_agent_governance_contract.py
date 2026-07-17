@@ -104,6 +104,59 @@ def deep_span_markup(content: str, depth: int = 1100) -> str:
 
 
 class ContractLoadingTests(unittest.TestCase):
+    def test_confined_text_reader_enforces_immutable_two_mib_pre_read_cap(self) -> None:
+        self.assertEqual(2 * 1_048_576, contract.MAX_REPOSITORY_TEXT_BYTES)
+        source = MODULE.read_text(encoding="utf-8")
+        reader = source.split("def _read_root_confined_regular_text(", 1)[1].split(
+            "\n\ndef _load_yaml", 1
+        )[0]
+        for fragment in (
+            "opened = os.fstat(final)",
+            "opened.st_size > max_bytes",
+            "remaining = max_bytes + 1",
+            "len(payload) > max_bytes",
+            "_root_file_identity(final_state) != _root_file_identity(opened)",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, reader)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            at_limit = root / "at-limit.md"
+            at_limit.write_bytes(b"a" * contract.MAX_REPOSITORY_TEXT_BYTES)
+            self.assertEqual(
+                contract.MAX_REPOSITORY_TEXT_BYTES,
+                len(
+                    contract._read_root_confined_regular_text(
+                        root, pathlib.PurePosixPath(at_limit.name)
+                    )
+                ),
+            )
+            above = root / "above-limit.md"
+            above.write_bytes(b"a" * (contract.MAX_REPOSITORY_TEXT_BYTES + 1))
+            with self.assertRaises(contract._UnsafeRootFileError):
+                contract._read_root_confined_regular_text(
+                    root, pathlib.PurePosixPath(above.name)
+                )
+
+    def test_repository_reader_does_not_reuse_a_high_cap_cache_for_a_low_cap_read(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            governed = root / "governed.md"
+            governed.write_bytes(b"a" * 4_097)
+            findings: list[contract.Finding] = []
+            reader = contract._RepositoryReader(root, findings)
+
+            self.assertIsNotNone(
+                reader.read("governed.md", "high", "test", max_bytes=8_192)
+            )
+            self.assertIsNone(
+                reader.read("governed.md", "low", "test", max_bytes=4_096)
+            )
+            self.assertIn("AGC-REPOSITORY-UNSAFE-FILE", codes(findings))
+
     def test_missing_markdown_parser_dependency_fails_contract_loading(self) -> None:
         with mock.patch.object(contract, "_MarkdownIt", None):
             with self.assertRaises(contract.ContractLoadError) as context:
@@ -3495,7 +3548,7 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
             "Agents can't use pre-commit directly.",
             "Pre-commit isn't allowed for local QA.",
             "Pre-commit is prohibited; tests may run locally.",
-            "Pre-commit is prohibited in CI; however, agents may invoke it locally.",
+            "Pre-commit is prohibited in CI; however, agents may invoke Ruff locally.",
             "Agents use scripts/validation/run-agent-precommit-all-files.sh for approved all-files QA.",
         )
         for guidance in safe_guidance:
@@ -3531,11 +3584,24 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
             "Pre-commit isn't prohibited for local agents.",
             "Pre-commit isn't forbidden for local agents.",
             "Use scripts/validation/run-agent-precommit-all-files.sh, pre-commit isn't prohibited.",
+            "Pre-commit is prohibited. Local agents may run it.",
+            "Pre-commit is prohibited; agents can invoke it locally.",
+            "Agents may not be prohibited from running pre-commit locally.",
+            "Agents cannot be forbidden from invoking pre_commit.",
+            "Do not prohibit agents from using python -m pre_commit locally.",
+            "Pre-commit may be run by local agents.",
+            "Pre-commit execution is permitted for agents.",
+            "Agents may run pre-commit, local agents may invoke pre_commit.",
+            "Use the controlled wrapper; agents may run pre-commit -v run -a.",
+            "Pre-commit is prohibited in CI, agents may run pre-commit locally.",
+            "Agents may not not run pre-commit locally.",
+            "Agents cannot not invoke pre_commit locally.",
+            "Agents do not not execute pre-commit locally.",
         )
         safe_guidance = (
-            "Pre-commit is prohibited. Agents may run it locally.",
-            "Pre-commit is forbidden; agents may execute it locally.",
-            "Pre-commit is prohibited in CI; however, agents may invoke it locally.",
+            "Pre-commit is prohibited. Agents may run Ruff locally.",
+            "Pre-commit is forbidden; agents may execute unit tests locally.",
+            "Pre-commit is prohibited in CI; however, agents may invoke Ruff locally.",
             "Agents can't use pre-commit directly.",
             "Agents won't run pre-commit directly.",
             "Agents shan't invoke pre-commit directly.",
@@ -3544,10 +3610,12 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
             "Pre-commit isn't allowed for agents.",
             "Pre-commit aren't authorized for local use.",
             "Use scripts/validation/run-agent-precommit-all-files.sh for approved QA.",
+            "Pre-commit is prohibited. It remains a CI-owned gate.",
+            "The controlled wrapper is approved; agents may invoke it locally.",
         )
 
         self.assertEqual(
-            ("for pre-commit run -a locally",),
+            ("for pre-commit", "run -a locally"),
             contract._normalized_guidance_clauses("For pre-commit, run -a locally."),
         )
         for guidance in unsafe_guidance:
@@ -3558,6 +3626,29 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
                 self.assertFalse(
                     contract._has_direct_agent_precommit_guidance(guidance)
                 )
+
+    def test_precommit_guidance_has_exact_preallocation_and_clause_caps(self) -> None:
+        self.assertEqual(256 * 1_024, contract.MAX_QA_GUIDANCE_BYTES)
+        self.assertEqual(256, contract.MAX_QA_GUIDANCE_CLAUSES)
+        self.assertEqual(2_048, contract.MAX_QA_GUIDANCE_CLAUSE_CHARS)
+
+        oversized = "Pre-commit is prohibited. " + (
+            "Agents may run it locally. " * 3_000
+        )
+        self.assertTrue(contract._has_direct_agent_precommit_guidance(oversized))
+        self.assertEqual((), contract._normalized_guidance_clauses(oversized))
+
+        multibyte_above = "é" * (contract.MAX_QA_GUIDANCE_BYTES // 2 + 1)
+        self.assertLess(len(multibyte_above), contract.MAX_QA_GUIDANCE_BYTES)
+        self.assertTrue(contract._has_direct_agent_precommit_guidance(multibyte_above))
+        self.assertEqual((), contract._normalized_guidance_clauses(multibyte_above))
+
+        too_many_safe_clauses = ";".join(
+            "ordinary guidance" for _ in range(contract.MAX_QA_GUIDANCE_CLAUSES + 1)
+        )
+        self.assertEqual(
+            (), contract._normalized_guidance_clauses(too_many_safe_clauses)
+        )
 
 
 if __name__ == "__main__":

@@ -64,7 +64,7 @@ MAX_SENSITIVE_VALUE_BYTES = 4_096
 # Extraction is intentionally broader than the accepted shape. Bounds are
 # classified after a complete line-local candidate is found so an N+1 key or
 # value cannot disappear from the security decision.
-_SENSITIVE_KEY_CANDIDATE = r"[A-Za-z][A-Za-z0-9]*(?:[._-]+[A-Za-z0-9]+)*"
+_SENSITIVE_KEY_CANDIDATE = r"[A-Za-z0-9]+(?:[._-]+[A-Za-z0-9]+)*"
 SENSITIVE_CANDIDATE_PATTERN = re.compile(
     rf"(?<![A-Za-z0-9_.-])[\"']?(?P<key>{_SENSITIVE_KEY_CANDIDATE})[\"']?"
     rf"[ \t]*(?P<operator>:=|\+=|\?=|=|:)[ \t]*"
@@ -589,7 +589,12 @@ def _sensitive_candidate_shape(key: str, value: str) -> tuple[tuple[str, ...], b
     """Classify exact key/value bounds after broad linear extraction."""
 
     components = tuple(
-        component.casefold() for component in re.split(r"[._-]+", key) if component
+        component.casefold()
+        for segment in re.split(r"[._-]+", key)
+        if segment
+        for component in re.findall(
+            r"[A-Z]+(?=[A-Z][a-z]|[0-9]|$)|[A-Z]?[a-z]+|[0-9]+", segment
+        )
     )
     separator_runs = tuple(re.findall(r"[._-]+", key))
     unquoted_value = value
@@ -619,14 +624,17 @@ def _is_sensitive_candidate_key(key: str) -> bool:
     components, _within_bounds = _sensitive_candidate_shape(key, "")
     if not components:
         return False
-    normalized = "_".join(components)
+    semantic_components = components
+    while len(semantic_components) > 1 and semantic_components[-1].isdigit():
+        semantic_components = semantic_components[:-1]
+    normalized = "_".join(semantic_components)
     if normalized in _SENSITIVE_EXACT_KEYS:
         return True
-    if components[-1] in _SENSITIVE_SUFFIXES:
+    if semantic_components[-1] in _SENSITIVE_SUFFIXES:
         return True
-    if components[-1] != "key":
+    if semantic_components[-1] != "key":
         return False
-    namespaces = set(components[:-1])
+    namespaces = set(semantic_components[:-1])
     if namespaces and namespaces <= _SAFE_KEY_NAMESPACES:
         return False
     return True

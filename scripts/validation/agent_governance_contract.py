@@ -15,7 +15,7 @@ import secrets
 import stat
 import sys
 import tomllib
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from types import MappingProxyType
 from urllib.parse import urlparse
@@ -56,6 +56,10 @@ EXPECTED_PROVIDER_COUNT = 3
 MAX_BRACE_GROUPS = 64
 MAX_EXPANDED_PATHS = 1024
 MAX_PATTERN_LENGTH = 4096
+MAX_REPOSITORY_TEXT_BYTES = 2 * 1_048_576
+MAX_QA_GUIDANCE_BYTES = 256 * 1_024
+MAX_QA_GUIDANCE_CLAUSES = 256
+MAX_QA_GUIDANCE_CLAUSE_CHARS = 2_048
 _PRECOMMIT_OPTION_NAME = r"--?[a-z0-9][\w-]*"
 _PRECOMMIT_OPTION_VALUE = r"[^\s,;]+"
 _PRECOMMIT_OPTION = (
@@ -99,7 +103,23 @@ _EXPLICIT_PROHIBITION = re.compile(
     r"\bnot\s+(?:allowed|approved|permitted|authorized)\b|"
     r"\b(?:forbidden|prohibited)\b"
 )
-_NEGATED_PROHIBITION = re.compile(r"\bnot\s+(?:forbidden|prohibited)\b")
+_NEGATED_PROHIBITION = re.compile(
+    r"\b(?:is|are|was|were)\s+not\s+(?:forbidden|prohibited)\b|"
+    r"\b(?:may|can|could|should|shall|will|would|must)\s+not\s+be\s+"
+    r"(?:forbidden|prohibited)\b|"
+    r"\bcannot\s+be\s+(?:forbidden|prohibited)\b|"
+    r"\b(?:do|does|did)\s+not\s+(?:forbid|prohibit)\b|"
+    r"\b(?:may|can|could|should|shall|will|would|must)\s+not\s+not\b|"
+    r"\bcannot\s+not\b|"
+    r"\b(?:do|does|did)\s+not\s+not\b"
+)
+_GUIDANCE_CLAUSE_SEPARATOR = re.compile(
+    r"[\r\n;,]+|\.(?=\s|$)|\b(?:but|however|yet|although)\b"
+)
+_GUIDANCE_ANAPHORA = re.compile(r"\b(?:it|this|that)\b")
+_GUIDANCE_TOOL_COMMAND_CONTINUATION = re.compile(
+    rf"\b{_PRECOMMIT_ACTION}\b(?:\s+\S+){{0,8}}\s+(?:-a\b|--all-files\b)"
+)
 
 COMMON_TOP_FIELDS = {"schema_version", "checked_at"}
 ARTIFACT_TOP_FIELDS = COMMON_TOP_FIELDS | {
@@ -552,6 +572,10 @@ class _UnsafeRootFileError(Exception):
     """A repository file failed the root-confined regular-file boundary."""
 
 
+class _QaGuidanceBoundsError(Exception):
+    """QA guidance exceeded an immutable semantic parsing bound."""
+
+
 class _UniqueKeyLoader(yaml.SafeLoader):
     pass
 
@@ -585,8 +609,21 @@ def _freeze(value: object) -> object:
     return value
 
 
+def _root_file_identity(metadata: os.stat_result) -> tuple[int, int, int, int, int]:
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_size,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
+    )
+
+
 def _read_root_confined_regular_text(
-    root: pathlib.Path, relative_path: pathlib.PurePosixPath
+    root: pathlib.Path,
+    relative_path: pathlib.PurePosixPath,
+    *,
+    max_bytes: int = MAX_REPOSITORY_TEXT_BYTES,
 ) -> str:
     required_flags = ("O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")
     if any(not hasattr(os, name) for name in required_flags):
@@ -627,15 +664,23 @@ def _read_root_confined_regular_text(
         for part in relative_path.parts[:-1]:
             current = open_component(part, directory_flags, dir_fd=current)
         final = open_component(relative_path.parts[-1], final_flags, dir_fd=current)
-        if not stat.S_ISREG(os.fstat(final).st_mode):
+        opened = os.fstat(final)
+        if not stat.S_ISREG(opened.st_mode) or opened.st_size > max_bytes:
             raise _UnsafeRootFileError
-        chunks: list[bytes] = []
-        while True:
-            chunk = os.read(final, 64 * 1024)
+        payload = bytearray()
+        remaining = max_bytes + 1
+        while remaining:
+            chunk = os.read(final, min(64 * 1024, remaining))
             if not chunk:
                 break
-            chunks.append(chunk)
-        return b"".join(chunks).decode("utf-8")
+            payload.extend(chunk)
+            remaining -= len(chunk)
+        if len(payload) > max_bytes:
+            raise _UnsafeRootFileError
+        final_state = os.fstat(final)
+        if _root_file_identity(final_state) != _root_file_identity(opened):
+            raise _UnsafeRootFileError
+        return payload.decode("utf-8")
     finally:
         for descriptor in reversed(descriptors):
             try:
@@ -4211,7 +4256,7 @@ class _RepositoryReader:
     def __init__(self, root: pathlib.Path, findings: list[Finding]) -> None:
         self.root = root
         self.findings = findings
-        self._cache: dict[str, str | None] = {}
+        self._cache: dict[tuple[str, int], str | None] = {}
         self._enumeration_cache: dict[str, _RegisteredPathInventory] = {}
 
     def inventory(
@@ -4255,13 +4300,17 @@ class _RepositoryReader:
         missing_code: str = "AGC-REPOSITORY-FILE-READ",
         missing_expected: str = "readable-governed-file",
         missing_actual: str = "governed-file-read-failed",
+        max_bytes: int = MAX_REPOSITORY_TEXT_BYTES,
     ) -> str | None:
-        if relative in self._cache:
-            return self._cache[relative]
-        self._cache[relative] = None
+        cache_key = (relative, max_bytes)
+        if cache_key in self._cache:
+            return self._cache[cache_key]
+        self._cache[cache_key] = None
         try:
             text = _read_root_confined_regular_text(
-                self.root, pathlib.PurePosixPath(relative)
+                self.root,
+                pathlib.PurePosixPath(relative),
+                max_bytes=max_bytes,
             )
         except FileNotFoundError:
             _add(
@@ -4307,7 +4356,7 @@ class _RepositoryReader:
                 source,
             )
             return None
-        self._cache[relative] = text
+        self._cache[cache_key] = text
         return text
 
 
@@ -5407,9 +5456,16 @@ def _validate_exact_provider_projection(
         )
 
 
-def _normalized_guidance_clauses(text: str) -> tuple[str, ...]:
-    """Return bounded prose/code clauses for semantic QA-guidance checks."""
+def _iter_normalized_guidance_clauses(text: str) -> Iterator[str]:
+    """Yield normalized clauses without materializing an unbounded split."""
 
+    if len(text) > MAX_QA_GUIDANCE_BYTES:
+        raise _QaGuidanceBoundsError
+    encoded_bytes = 0
+    for character in text:
+        encoded_bytes += len(character.encode("utf-8"))
+        if encoded_bytes > MAX_QA_GUIDANCE_BYTES:
+            raise _QaGuidanceBoundsError
     normalized = text.casefold().replace("’", "'")
     contractions = {
         "can't": "can not",
@@ -5430,45 +5486,95 @@ def _normalized_guidance_clauses(text: str) -> tuple[str, ...]:
         r"\1 not",
         normalized,
     )
-    normalized = normalized.replace(",", " ")
-    clauses: list[str] = []
-    for raw_clause in re.split(
-        r"[\r\n;]+|\.(?=\s|$)|\b(?:but|however|yet|although)\b", normalized
-    ):
-        clause = re.sub(r"[`'\"()]", " ", raw_clause)
+    clause_count = 0
+    start = 0
+    for separator in _GUIDANCE_CLAUSE_SEPARATOR.finditer(normalized):
+        raw_clause = normalized[start : separator.start()]
+        start = separator.end()
+        clause = re.sub(r"[`'\"(),]", " ", raw_clause)
+        clause = re.sub(r"\s+", " ", clause).strip()
+        if not clause:
+            continue
+        clause_count += 1
+        if (
+            clause_count > MAX_QA_GUIDANCE_CLAUSES
+            or len(clause) > MAX_QA_GUIDANCE_CLAUSE_CHARS
+        ):
+            raise _QaGuidanceBoundsError
+        yield clause
+    raw_clause = normalized[start:]
+    if raw_clause:
+        clause = re.sub(r"[`'\"(),]", " ", raw_clause)
         clause = re.sub(r"\s+", " ", clause).strip()
         if clause:
-            clauses.append(clause[:MAX_PATTERN_LENGTH])
-    return tuple(clauses)
+            clause_count += 1
+            if (
+                clause_count > MAX_QA_GUIDANCE_CLAUSES
+                or len(clause) > MAX_QA_GUIDANCE_CLAUSE_CHARS
+            ):
+                raise _QaGuidanceBoundsError
+            yield clause
+
+
+def _normalized_guidance_clauses(text: str) -> tuple[str, ...]:
+    """Return normalized QA clauses, or empty when immutable bounds are exceeded."""
+
+    try:
+        return tuple(_iter_normalized_guidance_clauses(text))
+    except _QaGuidanceBoundsError:
+        return ()
 
 
 def _has_direct_agent_precommit_guidance(text: str) -> bool:
     """Reject local-QA prose that authorizes bypassing the controlled wrapper."""
 
-    for clause in _normalized_guidance_clauses(text):
-        has_tool = _PRECOMMIT_TOOL.search(clause) is not None
-        if not has_tool:
-            continue
-        if _NEGATED_PROHIBITION.search(clause):
-            return True
-        if _EXPLICIT_PROHIBITION.search(clause):
-            continue
-        if _PRECOMMIT_COMMAND.search(clause):
-            return True
-        if _ACTIVE_PRECOMMIT_ACTION.search(clause):
-            return True
-        if _PASSIVE_PRECOMMIT_ACTION.search(clause):
-            return True
-        if _DIRECT_PRECOMMIT_PERMISSION.search(clause):
-            return True
-        if _PRECOMMIT_NOUN_PERMISSION.search(clause):
-            return True
-        if _PERMISSIVE_ACTION.search(clause):
-            return True
-        if _PERMISSIVE_PRECOMMIT_ACTOR.search(clause) and re.search(
-            rf"\b{_PRECOMMIT_ACTION}\b", clause
-        ):
-            return True
+    try:
+        clauses = _iter_normalized_guidance_clauses(text)
+        tool_antecedent = False
+        for clause in clauses:
+            has_tool = _PRECOMMIT_TOOL.search(clause) is not None
+            has_anaphoric_tool = (
+                tool_antecedent
+                and _GUIDANCE_ANAPHORA.search(clause) is not None
+                and _PERMISSIVE_PRECOMMIT_ACTOR.search(clause) is not None
+            )
+            has_tool_command_continuation = (
+                tool_antecedent
+                and _GUIDANCE_TOOL_COMMAND_CONTINUATION.search(clause) is not None
+            )
+            if (
+                not has_tool
+                and not has_anaphoric_tool
+                and not has_tool_command_continuation
+            ):
+                tool_antecedent = False
+                continue
+            if has_tool and _NEGATED_PROHIBITION.search(clause):
+                return True
+            if has_tool and _EXPLICIT_PROHIBITION.search(clause):
+                tool_antecedent = True
+                continue
+            if has_tool and _PRECOMMIT_COMMAND.search(clause):
+                return True
+            if has_tool and _ACTIVE_PRECOMMIT_ACTION.search(clause):
+                return True
+            if has_tool and _PASSIVE_PRECOMMIT_ACTION.search(clause):
+                return True
+            if has_tool and _DIRECT_PRECOMMIT_PERMISSION.search(clause):
+                return True
+            if has_tool and _PRECOMMIT_NOUN_PERMISSION.search(clause):
+                return True
+            if has_tool_command_continuation:
+                return True
+            if _PERMISSIVE_ACTION.search(clause):
+                return True
+            if _PERMISSIVE_PRECOMMIT_ACTOR.search(clause) and re.search(
+                rf"\b{_PRECOMMIT_ACTION}\b", clause
+            ):
+                return True
+            tool_antecedent = has_tool
+    except _QaGuidanceBoundsError:
+        return True
     return False
 
 
@@ -5511,7 +5617,16 @@ def _validate_harness_semantic_surfaces(
         ),
     }
     for relative, fragments in required_fragments.items():
-        text = reader.read(relative, "harness", "agent-governance-artifacts")
+        text = reader.read(
+            relative,
+            "harness",
+            "agent-governance-artifacts",
+            max_bytes=(
+                MAX_QA_GUIDANCE_BYTES
+                if relative == "scripts/validation/run-local-qa-gates.sh"
+                else MAX_REPOSITORY_TEXT_BYTES
+            ),
+        )
         if text is None:
             continue
         for fragment in fragments:

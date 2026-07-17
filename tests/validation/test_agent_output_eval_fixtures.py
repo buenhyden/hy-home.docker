@@ -751,6 +751,41 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                     evaluator._contains_sensitive_assignment(f"{key}=fixture-value")
                 )
 
+    def test_credential_classifier_covers_numeric_and_camel_case_boundaries(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive = (
+            "2FA_TOKEN=fixture-value",
+            "1PASSWORD_SECRET=fixture-value",
+            "SERVICE2_TOKEN=fixture-value",
+            "apiKey=fixture-value",
+            "clientSecret=fixture-value",
+            "refreshToken=fixture-value",
+            "accessToken=fixture-value",
+            "unknownProviderApiKey=fixture-value",
+            "xAuthToken=fixture-value",
+            "xSessionCookie=fixture-value",
+            "API_KEY_2=fixture-value",
+            "apiKey2=fixture-value",
+            "GITHUB_TOKEN_2=fixture-value",
+        )
+        safe = (
+            "databaseKey=fixture-value",
+            "cacheKey=fixture-value",
+            "publicKey=fixture-value",
+            "primaryKey=fixture-value",
+            "foreignKey=fixture-value",
+            "keyboardKey=fixture-value",
+            "primary_key_2=fixture-value",
+        )
+        for payload in sensitive:
+            with self.subTest(kind="sensitive", key=payload.split("=", 1)[0]):
+                self.assertTrue(evaluator._contains_sensitive_assignment(payload))
+        for payload in safe:
+            with self.subTest(kind="safe", key=payload.split("=", 1)[0]):
+                self.assertFalse(evaluator._contains_sensitive_assignment(payload))
+
     def test_evidence_count_and_combined_byte_limits_are_exact(self) -> None:
         evaluator = load_eval_module()
         self.assertEqual(8, evaluator.MAX_EVIDENCE_FILES)

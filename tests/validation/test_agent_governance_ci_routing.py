@@ -354,6 +354,8 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             "MAX_REFERENCE_FILE_BYTES: Final = 16 * 1_048_576",
             "MAX_REFERENCE_TOTAL_BYTES: Final = 64 * 1_048_576",
             "MAX_REFERENCE_DISCOVERY_ENTRIES: Final = 8_192",
+            "MAX_REFERENCE_GIT_OUTPUT_BYTES: Final = 1_048_576",
+            "MAX_REFERENCE_PATH_BYTES: Final = 4_096",
         )
         for constant in expected_constants:
             with self.subTest(constant=constant):
@@ -439,6 +441,42 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 self.assertEqual(expected, result.returncode, result.stderr)
                 if expected:
                     self.assertIn("unsafe script-reference surface", result.stderr)
+
+    def test_script_reference_discovery_is_bounded_before_allocation(self) -> None:
+        source = REPO_CONTRACT.read_text(encoding="utf-8")
+        start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"
+        block = source.split(start, 1)[1].split(
+            "\nPY\n  failures=$((failures + 1))", 1
+        )[0]
+        git_reader = block.split("def git_paths", 1)[1].split("\n\ntracked =", 1)[0]
+        discovery = block.split("def untracked_special_paths", 1)[1].split(
+            "\n\nspecial_paths =", 1
+        )[0]
+        for fragment in (
+            "subprocess.Popen(",
+            "MAX_REFERENCE_GIT_OUTPUT_BYTES - output_bytes + 1",
+            "MAX_REFERENCE_PATH_BYTES",
+            "len(paths) > MAX_REFERENCE_SURFACES",
+            "process.kill()",
+            "process.wait()",
+        ):
+            with self.subTest(scope="git", fragment=fragment):
+                self.assertIn(fragment, git_reader)
+        self.assertNotIn("capture_output=True", git_reader)
+        self.assertNotIn('.split(b"\\0")', git_reader)
+        for fragment in (
+            "os.scandir(path)",
+            "discovery_count += 1",
+            "discovery_count > MAX_REFERENCE_DISCOVERY_ENTRIES",
+            "tracked_prefixes: set[pathlib.Path] = set()",
+            "if len(tracked_prefixes) >= MAX_REFERENCE_DISCOVERY_ENTRIES",
+            "tracked_prefixes.add(parent)",
+        ):
+            with self.subTest(scope="filesystem", fragment=fragment):
+                self.assertIn(fragment, discovery)
+        self.assertNotIn("os.listdir", discovery)
+        self.assertNotIn("sorted(", discovery)
+        self.assertNotIn("tracked_prefixes = {", discovery)
 
     def test_script_reference_scan_rejects_same_inode_metadata_mutation(self) -> None:
         source = REPO_CONTRACT.read_text(encoding="utf-8")

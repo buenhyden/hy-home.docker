@@ -3298,6 +3298,8 @@ MAX_REFERENCE_SURFACES: Final = 4_096
 MAX_REFERENCE_FILE_BYTES: Final = 16 * 1_048_576
 MAX_REFERENCE_TOTAL_BYTES: Final = 64 * 1_048_576
 MAX_REFERENCE_DISCOVERY_ENTRIES: Final = 8_192
+MAX_REFERENCE_GIT_OUTPUT_BYTES: Final = 1_048_576
+MAX_REFERENCE_PATH_BYTES: Final = 4_096
 
 roots = [
     pathlib.Path(p)
@@ -3356,35 +3358,71 @@ def allows_deleted_entrypoint_reference(path: pathlib.Path, ref: str) -> bool:
     return any(is_relative_to(path, root) for root in (*historical_reference_roots, *reference_artifact_roots))
 
 def git_paths(*arguments: str) -> tuple[pathlib.Path, ...] | None:
-    result = subprocess.run(
-        [
-            "git",
-            "ls-files",
-            "-z",
-            *arguments,
-            "--",
-            *(root.as_posix() for root in roots),
-        ],
-        stdin=subprocess.DEVNULL,
-        capture_output=True,
-        check=False,
-    )
-    if result.returncode != 0:
-        return None
     try:
-        return tuple(
-            pathlib.Path(raw.decode("utf-8", errors="strict"))
-            for raw in result.stdout.split(b"\0")
-            if raw
+        process = subprocess.Popen(
+            [
+                "git",
+                "ls-files",
+                "-z",
+                *arguments,
+                "--",
+                *(root.as_posix() for root in roots),
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
         )
-    except UnicodeError:
+    except OSError:
         return None
+    if process.stdout is None:
+        process.kill()
+        process.wait()
+        return None
+
+    paths: list[pathlib.Path] = []
+    pending = bytearray()
+    output_bytes = 0
+    try:
+        while True:
+            chunk = process.stdout.read(
+                min(64 * 1_024, MAX_REFERENCE_GIT_OUTPUT_BYTES - output_bytes + 1)
+            )
+            if not chunk:
+                break
+            output_bytes += len(chunk)
+            if output_bytes > MAX_REFERENCE_GIT_OUTPUT_BYTES:
+                raise ValueError
+            for byte in chunk:
+                if byte == 0:
+                    if pending:
+                        paths.append(
+                            pathlib.Path(pending.decode("utf-8", errors="strict"))
+                        )
+                        if len(paths) > MAX_REFERENCE_SURFACES:
+                            raise ValueError
+                        pending.clear()
+                    continue
+                if len(pending) >= MAX_REFERENCE_PATH_BYTES:
+                    raise ValueError
+                pending.append(byte)
+        if pending:
+            raise ValueError
+    except (OSError, UnicodeError, ValueError):
+        try:
+            process.kill()
+        except OSError:
+            pass
+        process.wait()
+        return None
+    if process.wait() != 0:
+        return None
+    return tuple(paths)
 
 
 tracked = git_paths("--cached")
 untracked = git_paths("--others", "--exclude-standard")
 if tracked is None or untracked is None:
-    print("FAIL: unable to enumerate repository script-reference surfaces", file=sys.stderr)
+    print("FAIL: unsafe script-reference surface", file=sys.stderr)
     sys.exit(1)
 
 tracked_set = set(tracked)
@@ -3409,19 +3447,20 @@ def untracked_special_paths() -> set[pathlib.Path] | None:
     """Find non-regular surfaces Git cannot represent in an untracked listing."""
 
     discovered: set[pathlib.Path] = set()
-    tracked_prefixes = {
-        parent
-        for path in tracked_set
-        for parent in path.parents
-        if parent != pathlib.Path(".")
-    }
+    tracked_prefixes: set[pathlib.Path] = set()
+    for tracked_path in tracked_set:
+        for parent in tracked_path.parents:
+            if parent == pathlib.Path(".") or parent in tracked_prefixes:
+                continue
+            if len(tracked_prefixes) >= MAX_REFERENCE_DISCOVERY_ENTRIES:
+                return None
+            tracked_prefixes.add(parent)
     pending = list(reversed(roots))
-    discovery_count = 0
+    discovery_count = len(pending)
+    if discovery_count > MAX_REFERENCE_DISCOVERY_ENTRIES:
+        return None
     while pending:
         path = pending.pop()
-        discovery_count += 1
-        if discovery_count > MAX_REFERENCE_DISCOVERY_ENTRIES:
-            return None
         try:
             metadata = os.lstat(path)
         except OSError:
@@ -3430,14 +3469,18 @@ def untracked_special_paths() -> set[pathlib.Path] | None:
             if path not in tracked_prefixes and is_ignored(path):
                 continue
             try:
-                children = sorted(
-                    (path / name for name in os.listdir(path)),
-                    reverse=True,
-                )
+                with os.scandir(path) as entries:
+                    for entry in entries:
+                        discovery_count += 1
+                        if discovery_count > MAX_REFERENCE_DISCOVERY_ENTRIES:
+                            return None
+                        child = path / entry.name
+                        if len(os.fsencode(child.as_posix())) > MAX_REFERENCE_PATH_BYTES:
+                            return None
+                        pending.append(child)
             except OSError:
                 discovered.add(path)
                 continue
-            pending.extend(children)
             continue
         if (
             path not in tracked_set
