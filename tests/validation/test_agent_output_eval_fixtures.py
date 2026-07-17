@@ -1181,6 +1181,57 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             ),
         )
 
+    def test_credential_classifier_distinguishes_lexical_derivations_from_embedded_stems(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive = (
+            "serviceauth=fixture-value",
+            "usercookie=fixture-value",
+            "mysession=fixture-value",
+            "servicetokenblue=fixture-value",
+            "servicetokenprod=fixture-value",
+            "servicetokenbackup=fixture-value",
+            "PRODAWSACCESSKEYIDBLUE=fixture-value",
+            "MYOAUTHCLIENTIDCANARY=fixture-value",
+            "AUTHPROD=fixture-value",
+            "SESSIONQA=fixture-value",
+            "TOKENSTAGING=fixture-value",
+            "CREDENTIALTEST=fixture-value",
+            "PASSWORDDEV=fixture-value",
+            "SECRETLOCAL=fixture-value",
+        )
+        safe = (
+            "AUTHOR=fixture-value",
+            "author=fixture-value",
+            "AUTHORITY=fixture-value",
+            "authority=fixture-value",
+            "AUTHENTICATION=fixture-value",
+            "authenticationmode=fixture-value",
+            "AUTHORSHIP=fixture-value",
+            "AUTHENTIC=fixture-value",
+            "COOKIECUTTER=fixture-value",
+            "cookiecutter=fixture-value",
+            "COOKIEJAR=fixture-value",
+            "SESSIONIZE=fixture-value",
+            "sessionizer=fixture-value",
+            "SESSIONIZATION=fixture-value",
+            "SECRETARIAT=fixture-value",
+            "secretariat=fixture-value",
+            "SECRETARIAL=fixture-value",
+        )
+        observed_sensitive = tuple(
+            payload
+            for payload in sensitive
+            if not evaluator._contains_sensitive_assignment(payload)
+        )
+        observed_safe = tuple(
+            payload
+            for payload in safe
+            if evaluator._contains_sensitive_assignment(payload)
+        )
+        self.assertEqual(((), ()), (observed_sensitive, observed_safe))
+
     def test_explicit_yaml_keys_support_comments_tags_and_multiline_forms(
         self,
     ) -> None:
@@ -1211,6 +1262,76 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             if evaluator._contains_sensitive_assignment(payload)
         )
         self.assertEqual(((), ()), (observed_sensitive, observed_safe))
+
+    def test_explicit_yaml_keys_cover_bounded_sequence_property_and_alias_states(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive = (
+            "- ? API_KEY\n  : fixture-value",
+            "- ? !vault &credential API_KEY\n  : fixture-value",
+            "?\n !!str\n API_KEY\n: fixture-value",
+            "?\n !vault\n &credential\n OAUTH_CLIENT_ID\n: fixture-value",
+            "name: &credential API_KEY\n? *credential\n: fixture-value",
+            "? *credential\n: fixture-value",
+        )
+        safe = (
+            "- ? PUBLIC_KEY\n  : fixture-value",
+            "?\n !!str\n STATUS\n: fixture-value",
+            "name: &public PUBLIC_KEY\n? *public\n: fixture-value",
+        )
+        observed_sensitive = tuple(
+            payload
+            for payload in sensitive
+            if not evaluator._contains_sensitive_assignment(payload)
+        )
+        observed_safe = tuple(
+            payload
+            for payload in safe
+            if evaluator._contains_sensitive_assignment(payload)
+        )
+        self.assertEqual(((), ()), (observed_sensitive, observed_safe))
+
+        self.assertEqual(4, evaluator.MAX_SENSITIVE_EXPLICIT_KEY_LINES)
+        self.assertEqual(4, evaluator.MAX_SENSITIVE_YAML_PROPERTIES)
+        self.assertEqual(4, evaluator.MAX_SENSITIVE_YAML_SEQUENCE_CONTAINERS)
+        self.assertEqual(16, evaluator.MAX_SENSITIVE_YAML_ANCHORS)
+        self.assertEqual(32, evaluator.MAX_SENSITIVE_YAML_ANCHOR_BYTES)
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment(
+                "?\n !one\n !two\n !three\n !four\n API_KEY\n: fixture-value"
+            )
+        )
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment(
+                "- - - - - ? API_KEY\n  : fixture-value"
+            )
+        )
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment(
+                "?\n !one !two !three !four !five\n API_KEY\n: fixture-value"
+            )
+        )
+        exact_anchors = "\n".join(
+            f"name{index}: &anchor{index} STATUS" for index in range(16)
+        )
+        self.assertFalse(
+            evaluator._contains_sensitive_assignment(
+                exact_anchors + "\n? *anchor15\n: fixture-value"
+            )
+        )
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment(
+                exact_anchors
+                + "\nname16: &anchor16 STATUS\n? *anchor16\n: fixture-value"
+            )
+        )
+        long_anchor = "a" * 33
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment(
+                f"name: &{long_anchor} API_KEY\n? *{long_anchor}\n: fixture-value"
+            )
+        )
 
     def test_catalog_table_rejects_competing_and_indented_pipe_rows(self) -> None:
         evaluator = load_eval_module()
@@ -1271,6 +1392,41 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             if evaluator._table_fields(malformed) != {}
         )
         self.assertEqual((), observed)
+
+    def test_catalog_table_rejects_iterated_commonmark_container_pipe_rows(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sections, invalid = evaluator._catalog_sections(
+            CATALOG.read_text(encoding="utf-8")
+        )
+        self.assertFalse(invalid)
+        section = sections["AOE-DOC-001"][1]
+        calibration_line = next(
+            line for line in section.splitlines() if line.startswith("| Calibration |")
+        )
+        contained_rows = (
+            "- > | Competing | row |",
+            "1. > | Competing | row |",
+            "> - | Competing | row |",
+            "  >   2)   -   > | Competing | row |",
+            "> > - 1. > | Competing | row |",
+        )
+        malformed_sections = tuple(
+            row + "\n" + section for row in contained_rows
+        ) + tuple(
+            section.replace(calibration_line, calibration_line + "\n\n" + row, 1)
+            for row in contained_rows
+        )
+        observed = tuple(
+            index
+            for index, malformed in enumerate(malformed_sections)
+            if evaluator._table_fields(malformed) != {}
+        )
+        self.assertEqual((), observed)
+        self.assertEqual(16, evaluator.MAX_CATALOG_CONTAINER_PREFIXES)
+        overflow = ("> " * 17) + "| Competing | row |\n" + section
+        self.assertEqual({}, evaluator._table_fields(overflow))
 
     def test_fixture_catalog_reads_and_parsers_are_preallocation_bounded(self) -> None:
         evaluator = load_eval_module()

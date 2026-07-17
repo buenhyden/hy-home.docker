@@ -3905,6 +3905,36 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
         )
         self.assertEqual(((), ()), (observed_unsafe, observed_safe))
 
+    def test_precommit_related_tool_state_is_actor_neutral_and_negative_aware(
+        self,
+    ) -> None:
+        unsafe_guidance = (
+            "Pre-commit is prohibited. Agents may execute it only through the controlled wrapper. They may also do so directly.",
+            "Pre-commit is prohibited. It may be run only through the controlled wrapper. They may also run it directly.",
+            "Pre-commit is prohibited. Agents may invoke it only through the controlled wrapper. Reviewers may also do so directly.",
+            "Pre-commit is prohibited. Agents may invoke it only through the controlled wrapper. Any delegated reviewer may then execute it locally.",
+        )
+        safe_guidance = (
+            "Pre-commit is prohibited. Agents may execute it only through the controlled wrapper. They may not do so directly.",
+            "Pre-commit is prohibited. Agents may execute it only through the controlled wrapper. They may also not do so directly.",
+            "Pre-commit is prohibited. Agents may execute it only through the controlled wrapper. They may never run it directly.",
+            "Pre-commit is prohibited. It may be run only through the controlled wrapper. Direct execution remains prohibited.",
+            "Pre-commit is prohibited. Agents may invoke it only through the controlled wrapper. Evidence records that direct execution remains prohibited.",
+            "Pre-commit is prohibited. Agents may invoke it only through the controlled wrapper. Reviewers record the sanitized result in the task.",
+        )
+
+        observed_unsafe = tuple(
+            guidance
+            for guidance in unsafe_guidance
+            if not contract._has_direct_agent_precommit_guidance(guidance)
+        )
+        observed_safe = tuple(
+            guidance
+            for guidance in safe_guidance
+            if contract._has_direct_agent_precommit_guidance(guidance)
+        )
+        self.assertEqual(((), ()), (observed_unsafe, observed_safe))
+
 
 if __name__ == "__main__":
     unittest.main()

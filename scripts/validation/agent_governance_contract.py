@@ -158,10 +158,9 @@ _GUIDANCE_AGENT_ANAPHORIC_ACTION = re.compile(
     r"(?:\s+\w+){0,4}\s+(?:it|this|that)\b"
 )
 _GUIDANCE_RELATED_DIRECT_FALLBACK = re.compile(
-    rf"\b(?:local\s+)?agents?\b(?:\s+\w+){{0,3}}\s+"
-    rf"(?:may|can|could|should|shall|will|would)\b(?!\s+not\b)"
-    rf"(?:\s+\w+){{0,4}}\s+"
-    rf"(?:do\s+so|{_PRECOMMIT_ACTION}(?:\s+(?:it|this|that))?)"
+    rf"\b(?:may|can|could|should|shall|will|would)\b(?!\s+not\b)"
+    rf"(?:(?!\s+(?:not|never)\b)\s+\w+){{0,4}}\s+"
+    rf"(?:do\s+so|{_PRECOMMIT_ACTION}\s+(?:it|this|that))"
     rf"\s+(?:directly|locally)\b|"
     r"\b(?:an?\s+)?(?:(?:direct|local)\s+){1,2}"
     r"(?:execution|run|invocation|use)\s+"

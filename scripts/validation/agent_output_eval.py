@@ -65,12 +65,18 @@ MAX_SENSITIVE_SCAN_BYTES = 1_048_576
 MAX_SENSITIVE_SCAN_LINES = 8_192
 MAX_SENSITIVE_LINE_BYTES = 1_048_576
 MAX_SENSITIVE_LOOKAHEAD_LINES = 1
+MAX_SENSITIVE_EXPLICIT_KEY_LINES = 4
+MAX_SENSITIVE_YAML_PROPERTIES = 4
+MAX_SENSITIVE_YAML_SEQUENCE_CONTAINERS = 4
+MAX_SENSITIVE_YAML_ANCHORS = 16
+MAX_SENSITIVE_YAML_ANCHOR_BYTES = 32
 MAX_FIXTURE_CATALOG_BYTES = 64 * 1_024
 MAX_TYPED_CATALOG_BYTES = 64 * 1_024
 MAX_CATALOG_LINES = 1_024
 MAX_CATALOG_LINE_BYTES = 8_192
 MAX_CATALOG_SECTIONS = 8
 MAX_CATALOG_FIELDS_PER_SECTION = 10
+MAX_CATALOG_CONTAINER_PREFIXES = 16
 MAX_TYPED_THRESHOLDS = 8
 # Extraction is intentionally broader than the accepted shape. Bounds are
 # classified after a complete line-local candidate is found so an N+1 key or
@@ -95,12 +101,29 @@ SENSITIVE_EXPLICIT_MAPPING_START_PATTERN = re.compile(
     r"^[ \t]*\?[ \t]*(?:#[^\r\n]*)?[ \t]*$"
 )
 SENSITIVE_EXPLICIT_MAPPING_CONTINUATION_PATTERN = re.compile(
-    rf"^[ \t]+(?:{_SENSITIVE_YAML_KEY_PROPERTY}[ \t]+)*"
+    rf"^[ \t]*(?:{_SENSITIVE_YAML_KEY_PROPERTY}[ \t]+)*"
     rf"(?P<quote>[\"']?)(?P<key>{_SENSITIVE_KEY_CANDIDATE})(?P=quote)"
     rf"(?:[ \t]+#[^\r\n]*)?[ \t]*$"
 )
 SENSITIVE_EXPLICIT_MAPPING_VALUE_PATTERN = re.compile(
     r"^[ \t]*:[ \t]*(?P<value>[^\r\n]*)$"
+)
+SENSITIVE_EXPLICIT_MAPPING_ALIAS_PATTERN = re.compile(
+    rf"^[ \t]*\?[ \t]+(?:{_SENSITIVE_YAML_KEY_PROPERTY}[ \t]+)*"
+    r"\*(?P<alias>[A-Za-z0-9_-]+)(?:[ \t]+#[^\r\n]*)?[ \t]*$"
+)
+SENSITIVE_EXPLICIT_ALIAS_CONTINUATION_PATTERN = re.compile(
+    rf"^[ \t]*(?:{_SENSITIVE_YAML_KEY_PROPERTY}[ \t]+)*"
+    r"\*(?P<alias>[A-Za-z0-9_-]+)(?:[ \t]+#[^\r\n]*)?[ \t]*$"
+)
+SENSITIVE_YAML_PROPERTY_ONLY_PATTERN = re.compile(
+    rf"^[ \t]*(?:{_SENSITIVE_YAML_KEY_PROPERTY})(?:[ \t]+{_SENSITIVE_YAML_KEY_PROPERTY})*"
+    r"(?:[ \t]+#[^\r\n]*)?[ \t]*$"
+)
+SENSITIVE_YAML_ANCHORED_SCALAR_PATTERN = re.compile(
+    rf"(?:^|[ \t])&(?P<anchor>[A-Za-z0-9_-]+)[ \t]+"
+    rf"(?P<quote>[\"']?)(?P<key>{_SENSITIVE_KEY_CANDIDATE})(?P=quote)"
+    r"(?=[ \t]*(?:#[^\r\n]*)?$)"
 )
 _SENSITIVE_EXACT_KEYS = frozenset(
     {
@@ -239,6 +262,9 @@ _SENSITIVE_TRAILING_QUALIFIERS = frozenset(
         "testing",
         "uat",
     }
+)
+_AMBIGUOUS_GENERIC_FUSED_STEMS = frozenset(
+    {"auth", "cookie", "credential", "key", "password", "secret", "session", "token"}
 )
 
 
@@ -804,12 +830,21 @@ def _expand_sensitive_component_base(component: str) -> tuple[str, ...]:
             prefix = component[: -len(suffix)]
             return ((prefix,) if prefix else ()) + (suffix,)
     for marker, expanded in _SENSITIVE_FUSED_STEMS:
-        marker_index = component.find(marker)
-        if marker_index < 0:
+        prefix, separator, tail = component.partition(marker)
+        if not separator:
             continue
-        marker_end = marker_index + len(marker)
-        prefix = component[:marker_index]
-        tail = component[marker_end:]
+        # A short generic stem at the lexical component boundary remains a
+        # word, not a credential namespace (author, cookiejar, sessionizer).
+        # Exact stems and reviewed environment suffixes remain sensitive.
+        # A prefix makes the same marker an embedded/terminal namespace and
+        # therefore sensitive. Long exact compounds never enter this branch.
+        if (
+            not prefix
+            and tail
+            and marker in _AMBIGUOUS_GENERIC_FUSED_STEMS
+            and tail not in _SENSITIVE_TRAILING_QUALIFIERS
+        ):
+            return (component,)
         return ((prefix,) if prefix else ()) + expanded + ((tail,) if tail else ())
     for alias, expanded in _SENSITIVE_FUSED_EXACT_ALIASES:
         if component.endswith(alias):
@@ -968,14 +1003,58 @@ def _iter_bounded_sensitive_lines(text: str) -> Iterable[str]:
         yield text[start:]
 
 
+def _strip_bounded_yaml_sequence_containers(line: str) -> tuple[str, bool]:
+    """Strip a bounded YAML sequence prefix without parsing or allocation."""
+
+    remainder = line.lstrip(" \t")
+    count = 0
+    while re.match(r"^-[ \t]+", remainder) is not None:
+        if count >= MAX_SENSITIVE_YAML_SEQUENCE_CONTAINERS:
+            return remainder, True
+        remainder = re.sub(r"^-[ \t]+", "", remainder, count=1).lstrip(" \t")
+        count += 1
+    return remainder, False
+
+
+def _register_yaml_anchor(anchors: dict[str, str], anchor: str, candidate: str) -> bool:
+    """Register one bounded scalar anchor, returning false on overflow."""
+
+    if len(anchor.encode("ascii", errors="strict")) > MAX_SENSITIVE_YAML_ANCHOR_BYTES:
+        return False
+    if anchor not in anchors and len(anchors) >= MAX_SENSITIVE_YAML_ANCHORS:
+        return False
+    anchors[anchor] = candidate
+    return True
+
+
 def _contains_sensitive_assignment(text: str) -> bool:
     """Classify bounded line-local and one-line mapping/header assignments."""
 
     pending_key: str | None = None
     pending_lines = 0
     explicit_key_pending = False
+    explicit_key_lines = 0
+    explicit_properties = 0
+    explicit_property_anchors: list[str] = []
+    yaml_anchors: dict[str, str] = {}
     try:
         for line in _iter_bounded_sensitive_lines(text):
+            semantic_line, sequence_overflow = _strip_bounded_yaml_sequence_containers(
+                line
+            )
+            if sequence_overflow:
+                return True
+
+            anchored_scalar = SENSITIVE_YAML_ANCHORED_SCALAR_PATTERN.search(
+                semantic_line
+            )
+            if anchored_scalar is not None and not _register_yaml_anchor(
+                yaml_anchors,
+                anchored_scalar.group("anchor"),
+                anchored_scalar.group("key"),
+            ):
+                return True
+
             if pending_key is not None:
                 pending_lines += 1
                 if pending_lines > MAX_SENSITIVE_LOOKAHEAD_LINES:
@@ -991,7 +1070,7 @@ def _contains_sensitive_assignment(text: str) -> bool:
                     is not None
                 )
                 explicit_value = SENSITIVE_EXPLICIT_MAPPING_VALUE_PATTERN.fullmatch(
-                    line
+                    semantic_line
                 )
                 if explicit_value is not None:
                     _components, _within_bounds = _sensitive_candidate_shape(
@@ -1006,16 +1085,67 @@ def _contains_sensitive_assignment(text: str) -> bool:
                 pending_key = None
 
             if explicit_key_pending:
-                explicit_key_pending = False
+                explicit_key_lines += 1
+                if explicit_key_lines > MAX_SENSITIVE_EXPLICIT_KEY_LINES:
+                    return True
+                property_only = SENSITIVE_YAML_PROPERTY_ONLY_PATTERN.fullmatch(
+                    semantic_line
+                )
+                if property_only is not None:
+                    properties = tuple(
+                        re.findall(_SENSITIVE_YAML_KEY_PROPERTY, semantic_line)
+                    )
+                    explicit_properties += len(properties)
+                    if explicit_properties > MAX_SENSITIVE_YAML_PROPERTIES:
+                        return True
+                    for property_value in properties:
+                        if not property_value.startswith("&"):
+                            continue
+                        anchor = property_value[1:]
+                        if (
+                            len(anchor.encode("ascii", errors="strict"))
+                            > MAX_SENSITIVE_YAML_ANCHOR_BYTES
+                        ):
+                            return True
+                        explicit_property_anchors.append(anchor)
+                    continue
+
                 explicit_continuation = (
-                    SENSITIVE_EXPLICIT_MAPPING_CONTINUATION_PATTERN.fullmatch(line)
+                    SENSITIVE_EXPLICIT_MAPPING_CONTINUATION_PATTERN.fullmatch(
+                        semantic_line
+                    )
                 )
                 if explicit_continuation is not None:
                     continuation_key = explicit_continuation.group("key")
+                    for anchor in explicit_property_anchors:
+                        if not _register_yaml_anchor(
+                            yaml_anchors, anchor, continuation_key
+                        ):
+                            return True
                     if _is_sensitive_candidate_key(continuation_key):
                         pending_key = continuation_key
                         pending_lines = 0
+                    explicit_key_pending = False
+                    explicit_property_anchors = []
                     continue
+
+                explicit_alias = (
+                    SENSITIVE_EXPLICIT_ALIAS_CONTINUATION_PATTERN.fullmatch(
+                        semantic_line
+                    )
+                )
+                if explicit_alias is not None:
+                    alias = explicit_alias.group("alias")
+                    resolved = yaml_anchors.get(alias)
+                    if resolved is None or _is_sensitive_candidate_key(resolved):
+                        pending_key = resolved or "authorization"
+                        pending_lines = 0
+                    explicit_key_pending = False
+                    explicit_property_anchors = []
+                    continue
+                # An unresolved complex explicit-key shape exceeds this bounded
+                # scalar grammar and therefore fails closed.
+                return True
 
             for match in SENSITIVE_CANDIDATE_PATTERN.finditer(line):
                 key = match.group("key")
@@ -1037,15 +1167,33 @@ def _contains_sensitive_assignment(text: str) -> bool:
                 pending_key = mapping.group("key")
                 pending_lines = 0
                 continue
-            explicit_mapping = SENSITIVE_EXPLICIT_MAPPING_KEY_PATTERN.fullmatch(line)
+            explicit_mapping = SENSITIVE_EXPLICIT_MAPPING_KEY_PATTERN.fullmatch(
+                semantic_line
+            )
             if explicit_mapping is not None and _is_sensitive_candidate_key(
                 explicit_mapping.group("key")
             ):
                 pending_key = explicit_mapping.group("key")
                 pending_lines = 0
                 continue
-            if SENSITIVE_EXPLICIT_MAPPING_START_PATTERN.fullmatch(line) is not None:
+            explicit_alias = SENSITIVE_EXPLICIT_MAPPING_ALIAS_PATTERN.fullmatch(
+                semantic_line
+            )
+            if explicit_alias is not None:
+                alias = explicit_alias.group("alias")
+                resolved = yaml_anchors.get(alias)
+                if resolved is None or _is_sensitive_candidate_key(resolved):
+                    pending_key = resolved or "authorization"
+                    pending_lines = 0
+                continue
+            if (
+                SENSITIVE_EXPLICIT_MAPPING_START_PATTERN.fullmatch(semantic_line)
+                is not None
+            ):
                 explicit_key_pending = True
+                explicit_key_lines = 0
+                explicit_properties = 0
+                explicit_property_anchors = []
     except (UnicodeError, _SensitiveScanBoundsError):
         return True
     return False
@@ -1310,7 +1458,10 @@ def _table_fields(section: str) -> dict[str, str]:
     state = "before-header"
     try:
         for line in _iter_catalog_lines(section):
-            if re.match(r"^[ \t]*(?:>[ \t]*)+\|", line) is not None:
+            contained_line, container_overflow = _strip_catalog_container_prefix(line)
+            if container_overflow or (
+                contained_line is not None and contained_line.startswith("|")
+            ):
                 return {}
             if state == "before-header":
                 if line == "| Field | Value |":
@@ -1350,6 +1501,25 @@ def _table_fields(section: str) -> dict[str, str]:
     if state != "after-table" or tuple(fields) != CATALOG_FIELD_ORDER:
         return {}
     return fields
+
+
+def _strip_catalog_container_prefix(line: str) -> tuple[str | None, bool]:
+    """Strip bounded CommonMark blockquote/list containers from one line."""
+
+    remainder = line.lstrip(" \t")
+    consumed = False
+    for _ in range(MAX_CATALOG_CONTAINER_PREFIXES):
+        marker = re.match(
+            r"^(?:>[ \t]*|(?:[-+*]|[0-9]{1,9}[.)])(?:[ \t]+|$))",
+            remainder,
+        )
+        if marker is None:
+            return (remainder if consumed else None), False
+        consumed = True
+        remainder = remainder[marker.end() :].lstrip(" \t")
+    if re.match(r"^(?:>[ \t]*|(?:[-+*]|[0-9]{1,9}[.)])(?:[ \t]+|$))", remainder):
+        return remainder, True
+    return remainder, False
 
 
 CATALOG_FIELD_ORDER = (
