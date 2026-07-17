@@ -76,6 +76,7 @@ MAX_TYPED_THRESHOLDS = 8
 # classified after a complete line-local candidate is found so an N+1 key or
 # value cannot disappear from the security decision.
 _SENSITIVE_KEY_CANDIDATE = r"[A-Za-z0-9]+(?:[._-]+[A-Za-z0-9]+)*"
+_SENSITIVE_YAML_KEY_PROPERTY = r"(?:![^ \t#]+|&[A-Za-z0-9_-]+)"
 SENSITIVE_CANDIDATE_PATTERN = re.compile(
     rf"(?<![A-Za-z0-9_.-])[\"']?(?P<key>{_SENSITIVE_KEY_CANDIDATE})[\"']?"
     rf"[ \t]*(?P<operator>:=|\+=|\?=|=|:)[ \t]*"
@@ -86,8 +87,17 @@ SENSITIVE_MAPPING_KEY_PATTERN = re.compile(
     rf"^[ \t]*[\"']?(?P<key>{_SENSITIVE_KEY_CANDIDATE})[\"']?[ \t]*:[ \t]*$"
 )
 SENSITIVE_EXPLICIT_MAPPING_KEY_PATTERN = re.compile(
-    rf"^[ \t]*\?[ \t]+(?P<quote>[\"']?)(?P<key>{_SENSITIVE_KEY_CANDIDATE})"
-    rf"(?P=quote)[ \t]*$"
+    rf"^[ \t]*\?[ \t]+(?:{_SENSITIVE_YAML_KEY_PROPERTY}[ \t]+)*"
+    rf"(?P<quote>[\"']?)(?P<key>{_SENSITIVE_KEY_CANDIDATE})(?P=quote)"
+    rf"(?:[ \t]+#[^\r\n]*)?[ \t]*$"
+)
+SENSITIVE_EXPLICIT_MAPPING_START_PATTERN = re.compile(
+    r"^[ \t]*\?[ \t]*(?:#[^\r\n]*)?[ \t]*$"
+)
+SENSITIVE_EXPLICIT_MAPPING_CONTINUATION_PATTERN = re.compile(
+    rf"^[ \t]+(?:{_SENSITIVE_YAML_KEY_PROPERTY}[ \t]+)*"
+    rf"(?P<quote>[\"']?)(?P<key>{_SENSITIVE_KEY_CANDIDATE})(?P=quote)"
+    rf"(?:[ \t]+#[^\r\n]*)?[ \t]*$"
 )
 SENSITIVE_EXPLICIT_MAPPING_VALUE_PATTERN = re.compile(
     r"^[ \t]*:[ \t]*(?P<value>[^\r\n]*)$"
@@ -170,12 +180,47 @@ _SENSITIVE_FUSED_SUFFIXES = (
     ("secretkey", ("secret", "key")),
     ("apikey", ("api", "key")),
 )
-_SAFE_METADATA_TAILS = frozenset({("rotation", "policy")})
+_SAFE_LEXICAL_SUFFIXES = tuple(
+    sorted(
+        ("tokenization", "tokenizer", "passwordless", "secretary"),
+        key=lambda value: (-len(value), value),
+    )
+)
+_SAFE_METADATA_TAILS = frozenset(
+    {
+        ("identifier",),
+        ("passwordless",),
+        ("rotation", "policy"),
+        ("secretary",),
+        ("tokenization",),
+        ("tokenizer",),
+    }
+)
 _SAFE_METADATA_COMPONENT_KEYS = frozenset(
     {
         ("not", "api", "key", "material"),
         ("password", "policy"),
     }
+)
+_SAFE_FUSED_KEY_CONTROLS = frozenset(
+    {
+        "awsaccesskeyidentifier",
+        "passwordless",
+        "secretary",
+        "servicetokenizer",
+        "tokenizer",
+    }
+)
+_SENSITIVE_FUSED_STEMS = tuple(
+    sorted(
+        tuple(
+            (key.replace("_", ""), tuple(key.split("_")))
+            for key in _SENSITIVE_EXACT_KEYS
+        )
+        + tuple((value, (value,)) for value in _SENSITIVE_SUFFIXES)
+        + _SENSITIVE_FUSED_SUFFIXES,
+        key=lambda item: (-len(item[0]), item[0]),
+    )
 )
 _SENSITIVE_TRAILING_QUALIFIERS = frozenset(
     {
@@ -754,6 +799,18 @@ def _expand_sensitive_component_base(component: str) -> tuple[str, ...]:
     safe = _SAFE_COMPOUND_COMPONENTS.get(component)
     if safe is not None:
         return safe
+    for suffix in _SAFE_LEXICAL_SUFFIXES:
+        if component.endswith(suffix):
+            prefix = component[: -len(suffix)]
+            return ((prefix,) if prefix else ()) + (suffix,)
+    for marker, expanded in _SENSITIVE_FUSED_STEMS:
+        marker_index = component.find(marker)
+        if marker_index < 0:
+            continue
+        marker_end = marker_index + len(marker)
+        prefix = component[:marker_index]
+        tail = component[marker_end:]
+        return ((prefix,) if prefix else ()) + expanded + ((tail,) if tail else ())
     for alias, expanded in _SENSITIVE_FUSED_EXACT_ALIASES:
         if component.endswith(alias):
             prefix = component[: -len(alias)]
@@ -837,6 +894,9 @@ def _sensitive_candidate_shape(key: str, value: str) -> tuple[tuple[str, ...], b
 
 
 def _is_sensitive_candidate_key(key: str) -> bool:
+    collapsed_key = re.sub(r"[._-]+", "", key).casefold()
+    if collapsed_key in _SAFE_FUSED_KEY_CONTROLS:
+        return False
     components, _within_bounds = _sensitive_candidate_shape(key, "")
     if not components:
         return False
@@ -868,7 +928,10 @@ def _is_sensitive_candidate_key(key: str) -> bool:
     for split_index in range(len(semantic_components) - 1, 0, -1):
         stem = semantic_components[:split_index]
         tail = semantic_components[split_index:]
-        if not _is_sensitive_semantic_components(stem):
+        if not (
+            _is_sensitive_semantic_components(stem)
+            or _has_sensitive_exact_component_suffix(stem)
+        ):
             continue
         return tail not in _SAFE_METADATA_TAILS
     return False
@@ -910,6 +973,7 @@ def _contains_sensitive_assignment(text: str) -> bool:
 
     pending_key: str | None = None
     pending_lines = 0
+    explicit_key_pending = False
     try:
         for line in _iter_bounded_sensitive_lines(text):
             if pending_key is not None:
@@ -941,6 +1005,18 @@ def _contains_sensitive_assignment(text: str) -> bool:
                     return True
                 pending_key = None
 
+            if explicit_key_pending:
+                explicit_key_pending = False
+                explicit_continuation = (
+                    SENSITIVE_EXPLICIT_MAPPING_CONTINUATION_PATTERN.fullmatch(line)
+                )
+                if explicit_continuation is not None:
+                    continuation_key = explicit_continuation.group("key")
+                    if _is_sensitive_candidate_key(continuation_key):
+                        pending_key = continuation_key
+                        pending_lines = 0
+                    continue
+
             for match in SENSITIVE_CANDIDATE_PATTERN.finditer(line):
                 key = match.group("key")
                 _components, within_bounds = _sensitive_candidate_shape(
@@ -967,6 +1043,9 @@ def _contains_sensitive_assignment(text: str) -> bool:
             ):
                 pending_key = explicit_mapping.group("key")
                 pending_lines = 0
+                continue
+            if SENSITIVE_EXPLICIT_MAPPING_START_PATTERN.fullmatch(line) is not None:
+                explicit_key_pending = True
     except (UnicodeError, _SensitiveScanBoundsError):
         return True
     return False
@@ -1231,6 +1310,8 @@ def _table_fields(section: str) -> dict[str, str]:
     state = "before-header"
     try:
         for line in _iter_catalog_lines(section):
+            if re.match(r"^[ \t]*(?:>[ \t]*)+\|", line) is not None:
+                return {}
             if state == "before-header":
                 if line == "| Field | Value |":
                     state = "separator"

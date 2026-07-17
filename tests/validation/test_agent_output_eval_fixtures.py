@@ -1123,6 +1123,95 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 self.assertEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
                 self.assertNotIn("fixture-value", cli.stdout + cli.stderr)
 
+    def test_credential_classifier_segments_sensitive_stems_before_qualifiers(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive = (
+            "PRODAWSACCESSKEYIDBLUE=fixture-value",
+            "MYOAUTHCLIENTIDCANARY=fixture-value",
+            "SERVICETOKENBLUE=fixture-value",
+            "SERVICETOKENPROD=fixture-value",
+            "SERVICETOKENBACKUP=fixture-value",
+            "serviceauth=fixture-value",
+            "usercookie=fixture-value",
+            "mysession=fixture-value",
+        )
+        safe = (
+            "TOKENIZER=fixture-value",
+            "SERVICETOKENIZER=fixture-value",
+            "SECRETARY=fixture-value",
+            "PASSWORDLESS=fixture-value",
+            "AWSACCESSKEYIDENTIFIER=fixture-value",
+            "PASSWORD_POLICY=minimum-length",
+            "NOT_API_KEY_MATERIAL=true",
+        )
+        observed_sensitive = tuple(
+            payload
+            for payload in sensitive
+            if not evaluator._contains_sensitive_assignment(payload)
+        )
+        observed_safe = tuple(
+            payload
+            for payload in safe
+            if evaluator._contains_sensitive_assignment(payload)
+        )
+
+        scorer = evaluator.score_text(
+            evaluator.FIXTURES["AOE-DOC-001"],
+            evaluator._pass_text("\n" + sensitive[0]),
+        )
+        cli = self.run_runner(
+            "--fixture",
+            "AOE-DOC-001",
+            "--classification",
+            "synthetic-fixture",
+            "--stdin",
+            input_text=sensitive[1],
+        )
+        self.assertEqual(
+            ((), (), True, 1, "FAIL: AOE-INPUT-REJECTED\n", False),
+            (
+                observed_sensitive,
+                observed_safe,
+                "AOE-BLOCK-SENSITIVE-KV" in scorer.block_codes,
+                cli.returncode,
+                cli.stderr,
+                "fixture-value" in cli.stdout + cli.stderr,
+            ),
+        )
+
+    def test_explicit_yaml_keys_support_comments_tags_and_multiline_forms(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive = (
+            "? API_KEY # comment\n: fixture-value",
+            '? "API_KEY" # comment\n: fixture-value',
+            "? !!str API_KEY\n: fixture-value",
+            "? !vault &credential API_KEY # comment\n: fixture-value",
+            "? &credential !!str API_KEY\n: fixture-value",
+            "?\n  API_KEY\n: fixture-value",
+            "? # deferred key\n  OAUTH_CLIENT_ID # comment\n: fixture-value",
+        )
+        safe = (
+            "? PUBLIC_KEY # comment\n: fixture-value",
+            '? !!str "STATUS" # comment\n: fixture-value',
+            '? !plain &metadata "STATUS" # comment\n: fixture-value',
+            "?\n  PUBLIC_KEY\n: fixture-value",
+        )
+        observed_sensitive = tuple(
+            payload
+            for payload in sensitive
+            if not evaluator._contains_sensitive_assignment(payload)
+        )
+        observed_safe = tuple(
+            payload
+            for payload in safe
+            if evaluator._contains_sensitive_assignment(payload)
+        )
+        self.assertEqual(((), ()), (observed_sensitive, observed_safe))
+
     def test_catalog_table_rejects_competing_and_indented_pipe_rows(self) -> None:
         evaluator = load_eval_module()
         sections, invalid = evaluator._catalog_sections(
@@ -1150,6 +1239,38 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         for index, malformed in enumerate(malformed_sections):
             with self.subTest(index=index):
                 self.assertEqual({}, evaluator._table_fields(malformed))
+
+    def test_catalog_table_rejects_blockquoted_competing_pipe_rows(self) -> None:
+        evaluator = load_eval_module()
+        sections, invalid = evaluator._catalog_sections(
+            CATALOG.read_text(encoding="utf-8")
+        )
+        self.assertFalse(invalid)
+        section = sections["AOE-DOC-001"][1]
+        calibration_line = next(
+            line for line in section.splitlines() if line.startswith("| Calibration |")
+        )
+        malformed_sections = (
+            "> | Competing | row |\n" + section,
+            "> > | Competing | row |\n" + section,
+            ">> | Competing | row |\n" + section,
+            section.replace(
+                calibration_line,
+                calibration_line + "\n\n> | Competing | row |",
+                1,
+            ),
+            section.replace(
+                calibration_line,
+                calibration_line + "\n\n  >   | Competing | row |",
+                1,
+            ),
+        )
+        observed = tuple(
+            index
+            for index, malformed in enumerate(malformed_sections)
+            if evaluator._table_fields(malformed) != {}
+        )
+        self.assertEqual((), observed)
 
     def test_fixture_catalog_reads_and_parsers_are_preallocation_bounded(self) -> None:
         evaluator = load_eval_module()

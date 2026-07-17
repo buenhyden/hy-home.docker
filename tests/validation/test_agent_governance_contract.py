@@ -3854,6 +3854,57 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
                 observed = codes(contract.validate_repository(root, bundle, "harness"))
                 self.assertIn("AGC-REPOSITORY-HARNESS-SEMANTICS", observed)
 
+    def test_precommit_canonical_wrapper_routes_allow_bounded_operational_tails(
+        self,
+    ) -> None:
+        safe_guidance = (
+            "Agents may execute pre-commit only through the controlled wrapper during approved final QA.",
+            "Agents may execute pre-commit through the controlled wrapper and record evidence in task.",
+            "Pre-commit is prohibited except through the controlled wrapper during approved final QA.",
+            "Pre-commit is prohibited unless scripts/validation/run-agent-precommit-all-files.sh is used for approved QA.",
+        )
+        unsafe_guidance = (
+            "Agents may execute pre-commit through the controlled wrapper and then run it directly.",
+            "Pre-commit is prohibited except through the controlled wrapper, but agents may invoke it locally.",
+        )
+
+        observed_safe = tuple(
+            guidance
+            for guidance in safe_guidance
+            if contract._has_direct_agent_precommit_guidance(guidance)
+        )
+        observed_unsafe = tuple(
+            guidance
+            for guidance in unsafe_guidance
+            if not contract._has_direct_agent_precommit_guidance(guidance)
+        )
+        self.assertEqual(((), ()), (observed_safe, observed_unsafe))
+
+    def test_precommit_related_tool_state_rejects_cross_clause_direct_fallbacks(
+        self,
+    ) -> None:
+        unsafe_guidance = (
+            "Pre-commit is prohibited. Agents may execute it only through the controlled wrapper. Agents may also do so directly.",
+            "Pre-commit is prohibited. It may be run only through the controlled wrapper. Direct local execution is also allowed.",
+            "Agents may invoke pre-commit only via run-agent-precommit-all-files.sh. A direct local run is additionally permitted.",
+        )
+        safe_guidance = (
+            "Pre-commit is prohibited. Agents may execute it only through the controlled wrapper. Evidence is recorded in the task.",
+            "Pre-commit is prohibited. It may be run only through the controlled wrapper. Direct local execution remains prohibited.",
+        )
+
+        observed_unsafe = tuple(
+            guidance
+            for guidance in unsafe_guidance
+            if not contract._has_direct_agent_precommit_guidance(guidance)
+        )
+        observed_safe = tuple(
+            guidance
+            for guidance in safe_guidance
+            if contract._has_direct_agent_precommit_guidance(guidance)
+        )
+        self.assertEqual(((), ()), (observed_unsafe, observed_safe))
+
 
 if __name__ == "__main__":
     unittest.main()

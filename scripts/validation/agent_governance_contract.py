@@ -157,6 +157,17 @@ _GUIDANCE_AGENT_ANAPHORIC_ACTION = re.compile(
     rf"(?:\s+\w+){{0,8}}\s+{_PRECOMMIT_ACTION}\b"
     r"(?:\s+\w+){0,4}\s+(?:it|this|that)\b"
 )
+_GUIDANCE_RELATED_DIRECT_FALLBACK = re.compile(
+    rf"\b(?:local\s+)?agents?\b(?:\s+\w+){{0,3}}\s+"
+    rf"(?:may|can|could|should|shall|will|would)\b(?!\s+not\b)"
+    rf"(?:\s+\w+){{0,4}}\s+"
+    rf"(?:do\s+so|{_PRECOMMIT_ACTION}(?:\s+(?:it|this|that))?)"
+    rf"\s+(?:directly|locally)\b|"
+    r"\b(?:an?\s+)?(?:(?:direct|local)\s+){1,2}"
+    r"(?:execution|run|invocation|use)\s+"
+    r"(?:is|are|remains?)\s+(?:also\s+|additionally\s+)?"
+    r"(?:allowed|approved|permitted|authorized)\b"
+)
 _GUIDANCE_EXCEPTION = re.compile(
     r"^(?:unless|except|other\s+than|apart\s+from|save\s+for|"
     r"with\s+the\s+exception\s+of)\b"
@@ -169,6 +180,15 @@ _CONTROLLED_WRAPPER_ROUTE = (
 _CONTROLLED_WRAPPER_GUIDANCE = re.compile(
     rf"(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])"
 )
+_GUIDANCE_CONTROLLED_ROUTE_TAIL = (
+    r"(?:"
+    r"\s+(?:during|for)\s+(?:the\s+)?(?:approved\s+)?(?:final\s+)?"
+    r"(?:qa|verification|validation)|"
+    r"\s+and\s+(?:then\s+)?(?:record|capture|store)\s+"
+    r"(?:the\s+)?(?:qa\s+)?evidence\s+(?:in|to)\s+(?:the\s+)?"
+    r"(?:task|task\s+ledger|evidence\s+ledger)"
+    r")*"
+)
 _GUIDANCE_CONTROLLED_EXCEPTION = re.compile(
     rf"(?:unless|except|other\s+than|apart\s+from|save\s+for|"
     rf"with\s+the\s+exception\s+of)\s+"
@@ -176,6 +196,7 @@ _GUIDANCE_CONTROLLED_EXCEPTION = re.compile(
     rf"(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])|"
     rf"(?:the\s+)?(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])\s+"
     rf"(?:is|are)\s+(?:used|run|invoked|executed|called|launched))"
+    rf"{_GUIDANCE_CONTROLLED_ROUTE_TAIL}"
 )
 _GUIDANCE_EXCLUSIVE_CONTROLLED_ROUTE = re.compile(
     rf"\b(?:it|this|that)\s+"
@@ -183,6 +204,15 @@ _GUIDANCE_EXCLUSIVE_CONTROLLED_ROUTE = re.compile(
     rf"(?:used|run|invoked|executed|called|launched)\s+only\s+"
     rf"(?:through|via)\s+(?:the\s+)?"
     rf"(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])"
+    rf"{_GUIDANCE_CONTROLLED_ROUTE_TAIL}"
+)
+_GUIDANCE_AGENT_ANAPHORIC_CONTROLLED_ROUTE = re.compile(
+    rf"(?:local\s+)?agents?\s+"
+    rf"(?:may|can|could|should|shall|will|would)\s+"
+    rf"{_PRECOMMIT_ACTION}\s+(?:it|this|that)\s+only\s+"
+    rf"(?:through|via)\s+(?:the\s+)?"
+    rf"(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])"
+    rf"{_GUIDANCE_CONTROLLED_ROUTE_TAIL}"
 )
 _GUIDANCE_NON_TOOL_SEMANTIC_USE = re.compile(
     r"\b(?:it|this|that)\s+"
@@ -196,6 +226,7 @@ _GUIDANCE_AGENT_CONTROLLED_ROUTE = re.compile(
     rf"{_PRECOMMIT_ACTION}\s+{_PRECOMMIT_TOOL_GRAMMAR}\s+"
     rf"(?:only\s+)?(?:through|via)\s+(?:the\s+)?"
     rf"(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])"
+    rf"{_GUIDANCE_CONTROLLED_ROUTE_TAIL}"
 )
 
 COMMON_TOP_FIELDS = {"schema_version", "checked_at"}
@@ -5620,11 +5651,15 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
             has_exception = tool_antecedent and (
                 _GUIDANCE_EXCEPTION.search(clause) is not None
             )
+            has_related_direct_fallback = tool_antecedent and (
+                _GUIDANCE_RELATED_DIRECT_FALLBACK.search(clause) is not None
+            )
             if (
                 not has_tool
                 and not has_anaphoric_tool
                 and not has_tool_command_continuation
                 and not has_exception
+                and not has_related_direct_fallback
             ):
                 continue
 
@@ -5645,6 +5680,10 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
                 return True
 
             if _GUIDANCE_EXCLUSIVE_CONTROLLED_ROUTE.fullmatch(clause):
+                tool_antecedent = tool_antecedent or has_tool
+                continue
+
+            if _GUIDANCE_AGENT_ANAPHORIC_CONTROLLED_ROUTE.fullmatch(clause):
                 tool_antecedent = tool_antecedent or has_tool
                 continue
 
@@ -5673,6 +5712,7 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
                     _GUIDANCE_ANAPHORIC_MODAL_PERMISSION,
                     _GUIDANCE_PASSIVE_PERMISSION,
                     _GUIDANCE_REMAINS_PERMISSION,
+                    _GUIDANCE_RELATED_DIRECT_FALLBACK,
                 )
             )
 
