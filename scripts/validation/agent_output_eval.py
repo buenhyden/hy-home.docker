@@ -120,8 +120,9 @@ SENSITIVE_YAML_PROPERTY_ONLY_PATTERN = re.compile(
     rf"^[ \t]*(?:{_SENSITIVE_YAML_KEY_PROPERTY})(?:[ \t]+{_SENSITIVE_YAML_KEY_PROPERTY})*"
     r"(?:[ \t]+#[^\r\n]*)?[ \t]*$"
 )
-SENSITIVE_YAML_ANCHORED_SCALAR_PATTERN = re.compile(
-    rf"(?:^|[ \t])&(?P<anchor>[A-Za-z0-9_-]+)[ \t]+"
+SENSITIVE_YAML_PROPERTY_SCALAR_PATTERN = re.compile(
+    rf"(?P<properties>(?:{_SENSITIVE_YAML_KEY_PROPERTY}[ \t]+)"
+    rf"{{1,{MAX_SENSITIVE_YAML_PROPERTIES + 1}}})"
     rf"(?P<quote>[\"']?)(?P<key>{_SENSITIVE_KEY_CANDIDATE})(?P=quote)"
     r"(?=[ \t]*(?:#[^\r\n]*)?$)"
 )
@@ -1027,6 +1028,32 @@ def _register_yaml_anchor(anchors: dict[str, str], anchor: str, candidate: str) 
     return True
 
 
+def _bounded_yaml_scalar_anchors(
+    line: str,
+) -> tuple[str | None, tuple[str, ...], bool]:
+    """Resolve bounded YAML node properties that precede one plain scalar."""
+
+    property_scalar = SENSITIVE_YAML_PROPERTY_SCALAR_PATTERN.search(line)
+    if property_scalar is None:
+        return None, (), False
+    properties = tuple(
+        re.findall(_SENSITIVE_YAML_KEY_PROPERTY, property_scalar.group("properties"))
+    )
+    if len(properties) > MAX_SENSITIVE_YAML_PROPERTIES:
+        return None, (), True
+    anchors = tuple(
+        property_value[1:]
+        for property_value in properties
+        if property_value.startswith("&")
+    )
+    if any(
+        len(anchor.encode("ascii", errors="strict")) > MAX_SENSITIVE_YAML_ANCHOR_BYTES
+        for anchor in anchors
+    ):
+        return None, (), True
+    return property_scalar.group("key"), anchors, False
+
+
 def _contains_sensitive_assignment(text: str) -> bool:
     """Classify bounded line-local and one-line mapping/header assignments."""
 
@@ -1045,15 +1072,17 @@ def _contains_sensitive_assignment(text: str) -> bool:
             if sequence_overflow:
                 return True
 
-            anchored_scalar = SENSITIVE_YAML_ANCHORED_SCALAR_PATTERN.search(
-                semantic_line
+            anchor_candidate, scalar_anchors, scalar_property_overflow = (
+                _bounded_yaml_scalar_anchors(semantic_line)
             )
-            if anchored_scalar is not None and not _register_yaml_anchor(
-                yaml_anchors,
-                anchored_scalar.group("anchor"),
-                anchored_scalar.group("key"),
-            ):
+            if scalar_property_overflow:
                 return True
+            if anchor_candidate is not None:
+                for scalar_anchor in scalar_anchors:
+                    if not _register_yaml_anchor(
+                        yaml_anchors, scalar_anchor, anchor_candidate
+                    ):
+                        return True
 
             if pending_key is not None:
                 pending_lines += 1

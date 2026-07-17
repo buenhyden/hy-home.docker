@@ -1333,6 +1333,63 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             )
         )
 
+    def test_yaml_scalar_anchor_properties_are_order_independent_and_bounded(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive = (
+            "name: &credential !!str API_KEY\n? *credential\n: fixture-value",
+            "name: !!str &credential API_KEY\n? *credential\n: fixture-value",
+        )
+        safe = (
+            "name: &public !!str PUBLIC_KEY\n? *public\n: fixture-value",
+            "name: !!str &public PUBLIC_KEY\n? *public\n: fixture-value",
+        )
+        observed_sensitive = tuple(
+            payload
+            for payload in sensitive
+            if not evaluator._contains_sensitive_assignment(payload)
+        )
+        observed_safe = tuple(
+            payload
+            for payload in safe
+            if evaluator._contains_sensitive_assignment(payload)
+        )
+        self.assertEqual(((), ()), (observed_sensitive, observed_safe))
+
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment(
+                "name: &public !one !two !three !four PUBLIC_KEY\n"
+                "? *public\n: fixture-value"
+            )
+        )
+        exact_anchors = "\n".join(
+            f"name{index}: !!str &anchor{index} STATUS" for index in range(16)
+        )
+        self.assertFalse(
+            evaluator._contains_sensitive_assignment(
+                exact_anchors + "\n? *anchor15\n: fixture-value"
+            )
+        )
+        self.assertTrue(
+            evaluator._contains_sensitive_assignment(
+                exact_anchors
+                + "\nname16: &anchor16 !!str STATUS\n? *anchor16\n: fixture-value"
+            )
+        )
+
+        cli = self.run_runner(
+            "--fixture",
+            "AOE-DOC-001",
+            "--classification",
+            "synthetic-fixture",
+            "--stdin",
+            input_text=sensitive[0],
+        )
+        self.assertEqual(1, cli.returncode)
+        self.assertEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
+        self.assertNotIn("fixture-value", cli.stdout + cli.stderr)
+
     def test_catalog_table_rejects_competing_and_indented_pipe_rows(self) -> None:
         evaluator = load_eval_module()
         sections, invalid = evaluator._catalog_sections(
