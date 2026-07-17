@@ -1068,6 +1068,89 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             with self.subTest(index=index):
                 self.assertEqual({}, evaluator._table_fields(malformed))
 
+    def test_credential_classifier_handles_prefixed_fused_and_explicit_yaml_keys(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        sensitive = (
+            "PRODAWSACCESSKEYID=fixture-value",
+            "MYOAUTHCLIENTID=fixture-value",
+            "SERVICETOKEN=fixture-value",
+            "DBPASSWORD=fixture-value",
+            "FOOSECRET=fixture-value",
+            "CLOUDCREDENTIAL=fixture-value",
+            "MYTOKEN=fixture-value",
+        )
+        safe = (
+            "TOKENIZER=fixture-value",
+            "SECRETARY=fixture-value",
+            "PUBLICKEY=fixture-value",
+            "SERVICETOKENROTATIONPOLICY=quarterly",
+            "service token policy guidance",
+        )
+        explicit_sensitive = (
+            "? API_KEY\n: fixture-value",
+            '? "API_KEY"\n: fixture-value',
+        )
+        explicit_safe = (
+            "? PUBLIC_KEY\n: fixture-value",
+            '? "STATUS"\n: fixture-value',
+        )
+        for payload in sensitive + explicit_sensitive:
+            with self.subTest(kind="sensitive", payload=payload.splitlines()[0]):
+                self.assertTrue(evaluator._contains_sensitive_assignment(payload))
+        for payload in safe + explicit_safe:
+            with self.subTest(kind="safe", payload=payload.splitlines()[0]):
+                self.assertFalse(evaluator._contains_sensitive_assignment(payload))
+
+        for payload in (sensitive[0], sensitive[2], explicit_sensitive[0]):
+            with self.subTest(kind="scorer", payload=payload.splitlines()[0]):
+                scored = evaluator.score_text(
+                    evaluator.FIXTURES["AOE-DOC-001"],
+                    evaluator._pass_text("\n" + payload),
+                )
+                self.assertIn("AOE-BLOCK-SENSITIVE-KV", scored.block_codes)
+            with self.subTest(kind="cli", payload=payload.splitlines()[0]):
+                cli = self.run_runner(
+                    "--fixture",
+                    "AOE-DOC-001",
+                    "--classification",
+                    "synthetic-fixture",
+                    "--stdin",
+                    input_text=payload,
+                )
+                self.assertEqual(1, cli.returncode)
+                self.assertEqual("FAIL: AOE-INPUT-REJECTED\n", cli.stderr)
+                self.assertNotIn("fixture-value", cli.stdout + cli.stderr)
+
+    def test_catalog_table_rejects_competing_and_indented_pipe_rows(self) -> None:
+        evaluator = load_eval_module()
+        sections, invalid = evaluator._catalog_sections(
+            CATALOG.read_text(encoding="utf-8")
+        )
+        self.assertFalse(invalid)
+        section = sections["AOE-DOC-001"][1]
+        calibration_line = next(
+            line for line in section.splitlines() if line.startswith("| Calibration |")
+        )
+        surface_line = next(
+            line for line in section.splitlines() if line.startswith("| Surface |")
+        )
+        malformed_sections = (
+            "| Other | Table |\n| --- | --- |\n" + section,
+            section.replace("| Field | Value |", " | Field | Value |", 1),
+            section.replace(surface_line, "  " + surface_line, 1),
+            section.replace(
+                calibration_line,
+                calibration_line + "\n\n  | Extra | value |",
+                1,
+            ),
+        )
+        self.assertEqual(10, len(evaluator._table_fields(section)))
+        for index, malformed in enumerate(malformed_sections):
+            with self.subTest(index=index):
+                self.assertEqual({}, evaluator._table_fields(malformed))
+
     def test_fixture_catalog_reads_and_parsers_are_preallocation_bounded(self) -> None:
         evaluator = load_eval_module()
         self.assertEqual(64 * 1_024, evaluator.MAX_FIXTURE_CATALOG_BYTES)

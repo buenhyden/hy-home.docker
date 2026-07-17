@@ -85,6 +85,13 @@ SENSITIVE_CANDIDATE_PATTERN = re.compile(
 SENSITIVE_MAPPING_KEY_PATTERN = re.compile(
     rf"^[ \t]*[\"']?(?P<key>{_SENSITIVE_KEY_CANDIDATE})[\"']?[ \t]*:[ \t]*$"
 )
+SENSITIVE_EXPLICIT_MAPPING_KEY_PATTERN = re.compile(
+    rf"^[ \t]*\?[ \t]+(?P<quote>[\"']?)(?P<key>{_SENSITIVE_KEY_CANDIDATE})"
+    rf"(?P=quote)[ \t]*$"
+)
+SENSITIVE_EXPLICIT_MAPPING_VALUE_PATTERN = re.compile(
+    r"^[ \t]*:[ \t]*(?P<value>[^\r\n]*)$"
+)
 _SENSITIVE_EXACT_KEYS = frozenset(
     {
         "authorization",
@@ -128,11 +135,28 @@ _SENSITIVE_COMPOUND_COMPONENTS = {
     "githubtoken": ("github", "token"),
     "refreshtoken": ("refresh", "token"),
 }
-_SENSITIVE_FUSED_EXACT_COMPONENTS = {
-    key.replace("_", ""): tuple(key.split("_"))
-    for key in _SENSITIVE_EXACT_KEYS
-    if "_" in key
-}
+_SENSITIVE_FUSED_EXACT_ALIASES = tuple(
+    sorted(
+        (
+            (key.replace("_", ""), tuple(key.split("_")))
+            for key in _SENSITIVE_EXACT_KEYS
+            if "_" in key
+        ),
+        key=lambda item: (-len(item[0]), item[0]),
+    )
+)
+_SENSITIVE_EXACT_COMPONENT_SUFFIXES = tuple(
+    sorted(
+        (tuple(key.split("_")) for key in _SENSITIVE_EXACT_KEYS),
+        key=lambda item: (-len(item), item),
+    )
+)
+_SENSITIVE_GENERIC_FUSED_SUFFIXES = tuple(
+    sorted(
+        ("credentials", "credential", "authorization", "password", "secret", "token"),
+        key=lambda item: (-len(item), item),
+    )
+)
 _SAFE_COMPOUND_COMPONENTS = {
     "cachekey": ("cache", "key"),
     "databasekey": ("database", "key"),
@@ -721,15 +745,25 @@ def _expand_sensitive_component(component: str) -> tuple[str, ...]:
 def _expand_sensitive_component_base(component: str) -> tuple[str, ...]:
     """Expand one bounded compound component without recursive suffix peeling."""
 
-    fused_exact = _SENSITIVE_FUSED_EXACT_COMPONENTS.get(component)
-    if fused_exact is not None:
-        return fused_exact
+    for alias, expanded in _SENSITIVE_FUSED_EXACT_ALIASES:
+        if component == alias:
+            return expanded
     exact = _SENSITIVE_COMPOUND_COMPONENTS.get(component)
     if exact is not None:
         return exact
     safe = _SAFE_COMPOUND_COMPONENTS.get(component)
     if safe is not None:
         return safe
+    for alias, expanded in _SENSITIVE_FUSED_EXACT_ALIASES:
+        if component.endswith(alias):
+            prefix = component[: -len(alias)]
+            if prefix:
+                return (prefix,) + expanded
+    for suffix in _SENSITIVE_GENERIC_FUSED_SUFFIXES:
+        if component.endswith(suffix):
+            prefix = component[: -len(suffix)]
+            if prefix:
+                return (prefix, suffix)
     for suffix, expanded in _SENSITIVE_FUSED_SUFFIXES:
         if component.endswith(suffix):
             prefix = component[: -len(suffix)]
@@ -751,6 +785,15 @@ def _is_sensitive_semantic_components(components: tuple[str, ...]) -> bool:
         return False
     namespaces = set(components[:-1])
     return not (namespaces and namespaces <= _SAFE_KEY_NAMESPACES)
+
+
+def _has_sensitive_exact_component_suffix(components: tuple[str, ...]) -> bool:
+    """Recognize an exact sensitive tuple only at the full key terminus."""
+
+    return any(
+        len(components) >= len(suffix) and components[-len(suffix) :] == suffix
+        for suffix in _SENSITIVE_EXACT_COMPONENT_SUFFIXES
+    )
 
 
 def _sensitive_candidate_shape(key: str, value: str) -> tuple[tuple[str, ...], bool]:
@@ -815,7 +858,9 @@ def _is_sensitive_candidate_key(key: str) -> bool:
         break
     if semantic_components in _SAFE_METADATA_COMPONENT_KEYS:
         return False
-    if _is_sensitive_semantic_components(semantic_components):
+    if _is_sensitive_semantic_components(
+        semantic_components
+    ) or _has_sensitive_exact_component_suffix(semantic_components):
         return True
     # Prefer the longest registered sensitive stem. Short aliases such as
     # ``session`` must not override a more specific key whose only remaining
@@ -881,6 +926,14 @@ def _contains_sensitive_assignment(text: str) -> bool:
                     or re.fullmatch(r"[|>](?:(?:[+-][1-9]?)|(?:[1-9][+-]?))?", stripped)
                     is not None
                 )
+                explicit_value = SENSITIVE_EXPLICIT_MAPPING_VALUE_PATTERN.fullmatch(
+                    line
+                )
+                if explicit_value is not None:
+                    _components, _within_bounds = _sensitive_candidate_shape(
+                        pending_key, explicit_value.group("value")
+                    )
+                    return True
                 if is_mapping_value:
                     _components, _within_bounds = _sensitive_candidate_shape(
                         pending_key, stripped
@@ -906,6 +959,13 @@ def _contains_sensitive_assignment(text: str) -> bool:
                 mapping.group("key")
             ):
                 pending_key = mapping.group("key")
+                pending_lines = 0
+                continue
+            explicit_mapping = SENSITIVE_EXPLICIT_MAPPING_KEY_PATTERN.fullmatch(line)
+            if explicit_mapping is not None and _is_sensitive_candidate_key(
+                explicit_mapping.group("key")
+            ):
+                pending_key = explicit_mapping.group("key")
                 pending_lines = 0
     except (UnicodeError, _SensitiveScanBoundsError):
         return True
@@ -1174,6 +1234,8 @@ def _table_fields(section: str) -> dict[str, str]:
             if state == "before-header":
                 if line == "| Field | Value |":
                     state = "separator"
+                elif line.lstrip().startswith("|"):
+                    return {}
                 continue
 
             if state == "separator":
@@ -1183,7 +1245,7 @@ def _table_fields(section: str) -> dict[str, str]:
                 continue
 
             if state == "after-table":
-                if line.startswith("|"):
+                if line.lstrip().startswith("|"):
                     return {}
                 continue
 

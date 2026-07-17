@@ -803,6 +803,20 @@ T-AGHC-005 tenth review-remediation verification:
 | Graphify refresh and corroboration | advisory graph evidence is source-corroborated and generated output excluded from the commit | final refresh 24,966 nodes / 28,713 edges / 1,612 communities; 436 inferred edges, three cross-root test-to-validator inferences, 16,473 isolated nodes, and 75 omitted thin communities corroborated against tracked Stage 00/03/04/90, validator, evaluator, aggregate scanner, and focused tests; contamination and meaningless-god-node counts 0; generated output restored | Pass |
 | protected boundaries | no runtime, Compose, deployment, secret, credential, remote, model-call, direct all-files QA, or new required CI-job mutation | validator, evaluator, aggregate scanner, focused tests, Task evidence, and progress memory only | Pass |
 
+T-AGHC-005 eleventh review-remediation verification:
+
+| Command | Expected | Actual | State |
+| --- | --- | --- | --- |
+| reviewer-prescribed valid RED | exact safe-clause boundaries, provider-prefixed fused credentials, explicit YAML mapping keys, and noncanonical pipe rows reproduce before production correction | 3 methods; 26 expected assertion failures; 0 errors in 3.612s | Pass |
+| focused remediation and related regression | new cases pass without weakening neutral antecedents, safe negatives, reviewed metadata, or canonical catalog rows | focused 3/3 in 4.096s; related regression 14/14 in 39.685s | Pass |
+| authoritative governance/provider/renderer/routing/evaluator suites | no regression, including reviewed lexical negatives | initial 223/225 exposed two safe `AWS_SESSION_TOKENIZER` regressions; terminal rerun 225/225 in 250.055s after exact-suffix evaluation was bound to the full semantic-key terminus | Pass |
+| exact contract, evaluator, provider, and hook gates | deterministic cardinalities, markers, projections, and parity remain exact | contract `3/14/22/3/0`; repository all 0; fixtures 8/8; credential regressions 10/10 in 5.186s; providers 3 / drift 0; hook parity fresh | Pass |
+| harness, lifecycle, traceability, and alignment | no validation regression | validate-harness lifecycle 89/89; lifecycle contract/promoted 0; traceability 46/0; alignment 653/5,206/141/0; aggregate `failures=0` | Pass |
+| changed metadata, impacted lifecycle, and generated owners | zero violations, unsupported transitions, or stale generated evidence | metadata 2/0/0/0; lifecycle contract/promoted 0; impacted 137/0 with the configured Task-directory advisory; traceability 46/0; alignment 653/5,206/141/0; inventory 910/2,145; provider parity, hook parity, security readiness, audit matrix, Wiki index, and Wiki coverage fresh | Pass |
+| repository aggregate and static checks | zero findings under the dependency-locked validation runtime | validate-harness aggregate and final direct uv aggregate both `failures=0`; Ruff format/check, Python compile, and diff hygiene pass | Pass |
+| Graphify refresh and corroboration | advisory graph evidence is source-corroborated and generated output excluded from the commit | refresh 24,971 nodes / 28,727 edges / 1,611 communities and 436 inferred edges; two unrelated infra ambiguity edges, 16,473 isolated nodes, and 73 omitted thin communities corroborated against tracked Stage 00/03/04/90, validator, evaluator, and focused tests; generated report and graph restored | Pass |
+| protected boundaries | no runtime, Compose, deployment, secret, credential, remote, model-call, direct all-files QA, or new required CI-job mutation | validator, evaluator, focused tests, Task evidence, and progress memory only; no no-op integration files added | Pass |
+
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command: not run. Task 6 will record the exact current CLI
@@ -928,6 +942,7 @@ with owner, reason, and destination.
 | T-AGHC-005 eighth review remediation | `fix(harness): close final semantic resource gaps` | this logical commit | final QA grammar, sensitive scan/catalog confinement, and bounded scanner-result growth GREEN; independent re-reviews pending |
 | T-AGHC-005 ninth review remediation | `fix(harness): close adversarial grammar gaps` | this logical commit | related-tool QA state, qualifier/fused/YAML credentials, exact catalog rows, and approved literal script roots GREEN; terminal independent re-reviews pending |
 | T-AGHC-005 tenth review remediation | `fix(harness): enforce exact semantic states` | this logical commit | persistent bounded QA state, derived exact credential aliases, contiguous catalog grammar, and bounded URI-aware local script routing GREEN; terminal independent re-reviews pending |
+| T-AGHC-005 eleventh review remediation | `fix(harness): close residual semantic bypasses` | this logical commit | exact safe-clause states, prefixed fused and explicit-YAML credentials, and strict catalog pipe-row grammar GREEN; terminal independent re-reviews pending |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |
 | Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | pending | pending |
 | Closure | `docs(execution): close agent governance convergence` | pending | pending |

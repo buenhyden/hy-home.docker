@@ -169,6 +169,14 @@ _CONTROLLED_WRAPPER_ROUTE = (
 _CONTROLLED_WRAPPER_GUIDANCE = re.compile(
     rf"(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])"
 )
+_GUIDANCE_CONTROLLED_EXCEPTION = re.compile(
+    rf"(?:unless|except|other\s+than|apart\s+from|save\s+for|"
+    rf"with\s+the\s+exception\s+of)\s+"
+    rf"(?:(?:through|via)\s+(?:the\s+)?"
+    rf"(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])|"
+    rf"(?:the\s+)?(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])\s+"
+    rf"(?:is|are)\s+(?:used|run|invoked|executed|called|launched))"
+)
 _GUIDANCE_EXCLUSIVE_CONTROLLED_ROUTE = re.compile(
     rf"\b(?:it|this|that)\s+"
     rf"(?:may|can|could|should|shall|will|would)\s+be\s+"
@@ -181,6 +189,13 @@ _GUIDANCE_NON_TOOL_SEMANTIC_USE = re.compile(
     r"(?:may|can|could|should|shall|will|would)\s+be\s+used\s+as\s+"
     r"(?:an?\s+)?(?:guidance|reference|documentation|example)\s+"
     r"(?:for|by)\s+(?:local\s+)?agents?\b"
+)
+_GUIDANCE_AGENT_CONTROLLED_ROUTE = re.compile(
+    rf"(?:local\s+)?agents?\s+"
+    rf"(?:may|can|could|should|shall|will|would)\s+"
+    rf"{_PRECOMMIT_ACTION}\s+{_PRECOMMIT_TOOL_GRAMMAR}\s+"
+    rf"(?:only\s+)?(?:through|via)\s+(?:the\s+)?"
+    rf"(?<![\w./-]){_CONTROLLED_WRAPPER_ROUTE}(?![\w./-])"
 )
 
 COMMON_TOP_FIELDS = {"schema_version", "checked_at"}
@@ -5624,16 +5639,20 @@ def _has_direct_agent_precommit_guidance(text: str) -> bool:
             # An exception for an agent is authorization unless the exception
             # names the one governed wrapper route.
             if has_exception:
-                if controlled_route:
+                if _GUIDANCE_CONTROLLED_EXCEPTION.fullmatch(clause):
                     tool_antecedent = tool_antecedent or has_tool
                     continue
                 return True
 
-            if controlled_route and _GUIDANCE_EXCLUSIVE_CONTROLLED_ROUTE.search(clause):
+            if _GUIDANCE_EXCLUSIVE_CONTROLLED_ROUTE.fullmatch(clause):
                 tool_antecedent = tool_antecedent or has_tool
                 continue
 
-            if _GUIDANCE_NON_TOOL_SEMANTIC_USE.search(clause):
+            if _GUIDANCE_AGENT_CONTROLLED_ROUTE.fullmatch(clause):
+                tool_antecedent = tool_antecedent or has_tool
+                continue
+
+            if _GUIDANCE_NON_TOOL_SEMANTIC_USE.fullmatch(clause):
                 tool_antecedent = tool_antecedent or has_tool
                 continue
 
