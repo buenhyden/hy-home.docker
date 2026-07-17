@@ -148,8 +148,8 @@ Redaction boundary:
 | T-AGHC-002 | Metadata, authority, root shims, and governance normalization | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-004 | Provider-native adapters and dated model policy | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
-| T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Review Pending; implementation and self-verification GREEN |
-| T-AGHC-006 | Reference/audit/evidence reconciliation and closure | Not run |
+| T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
+| T-AGHC-006 | Reference/audit/evidence reconciliation and closure | In progress; canonical reconciliation next |
 
 ## Work Log
 
@@ -231,6 +231,7 @@ Redaction boundary:
 | 2026-07-17 | T-AGHC-005 twelfth review remediation | Fresh remediation agent | Generalized the remaining semantic boundaries without weakening reviewed negative controls. Canonical wrapper-only guidance accepts bounded approved-QA and evidence-recording tails, while one related-tool state rejects later direct/local execution permission. Sensitive classification segments registered exact and generic stems inside fused provider keys, preserves bounded lexical and metadata controls, and treats tagged, anchored, commented, or multiline YAML explicit keys through a bounded fail-closed state. Fixture tables reject nested Markdown blockquote pipe containers before or after the canonical table. Initial focused RED produced five expected failures; an added grammar-extension RED produced two more. Focused, related, authoritative, exact contract/evaluator/provider/hook, harness, lifecycle, traceability, alignment, owner-freshness, aggregate, static, and source-corroborated Graphify gates are GREEN. Fresh independent terminal re-reviews remain required; Task 6 still owns controlled all-files evidence. No runtime, Compose, deployment, secret, credential, remote, model-call, CI-job, or direct all-files QA action changed. |
 | 2026-07-17 | T-AGHC-005 thirteenth review remediation | Fresh remediation agent | Replaced the remaining enumerated edge handling with bounded semantic containers and state. Related-tool fallback detection is actor-neutral and negative-aware. Ambiguous short fused stems preserve lexical derivations only at a component boundary, while exact, embedded, terminal, and known-environment forms remain sensitive. YAML explicit keys now bound sequence containers, property continuations, scalar anchors, and aliases without constructing a generic YAML object. Fixture parsing iteratively removes bounded CommonMark list and blockquote prefixes before rejecting competing pipe rows. Initial focused RED produced four expected failures; focused, related, authoritative, exact contract/evaluator/provider/hook, harness, lifecycle, traceability, alignment, owner-freshness, aggregate, static, and source-corroborated Graphify gates are GREEN. Fresh independent terminal re-reviews remain required; Task 6 still owns controlled all-files evidence. No runtime, Compose, deployment, secret, credential, remote, model-call, CI-job, or direct all-files QA action changed. |
 | 2026-07-17 | T-AGHC-005 fourteenth review remediation | Fresh remediation agent | Closed the remaining YAML scalar-property order gap without adding an exact phrase exception or allocating a generic YAML document. One shared bounded property-scalar parser reuses the canonical tag/anchor token grammar, recognizes either tag/anchor order, observes only the property N+1 boundary, and registers each bounded anchor to the exact scalar candidate under the existing anchor-count and anchor-byte ceilings. Safe and sensitive aliases, both property orders, property and anchor overflow, and value-free CLI rejection are covered. Initial RED produced one expected safe-alias failure. Focused, related, authoritative, exact contract/evaluator/provider/hook, harness, lifecycle, traceability, alignment, owner-freshness, aggregate, static, and source-corroborated Graphify gates are GREEN. Fresh independent terminal re-reviews remain required; Task 6 still owns controlled all-files evidence. No runtime, Compose, deployment, secret, credential, remote, model-call, CI-job, or direct all-files QA action changed. |
+| 2026-07-17 | T-AGHC-005 terminal review closure | Independent specification and quality reviewers | Final focused review of `a09a9f5c..4e8b0dca` and the full Task range `69cc84fb..4e8b0dca` returned specification PASS and quality APPROVED, both Critical 0, Important 0, Minor 0. Reviewers confirmed actor-neutral QA fallback state, structural fused-credential boundaries, bounded YAML sequence/property/anchor/alias handling in both tag/anchor orders, iterative CommonMark container rejection, exact N/N+1 ceilings, value-free diagnostics, and accurate Task evidence. T-AGHC-005 is complete; T-AGHC-006 owns canonical reconciliation and controlled all-files evidence. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -914,16 +915,17 @@ review-remediation commit `8d1d08f4` received independent terminal
 specification PASS and quality APPROVED verdicts, both C0/I0/M0. The reviewers
 confirmed focused 134/134, 132/132 generated local links, exact obsolete Codex
 skill-root absence, and exactly four planned Task 4/5 aggregate dependencies.
-T-AGHC-003 and T-AGHC-004 are complete. T-AGHC-005 implementation and six
-review-remediation rounds are GREEN. The fifth-remediation specification and
-quality reviews returned C0/I2/M0 and C0/I3/M0; all five findings are
-remediated. Fresh independent specification
-and quality re-reviews remain pending. Task 6 has not run.
+T-AGHC-003 and T-AGHC-004 are complete. T-AGHC-005 implementation and every
+recorded review remediation are GREEN. Final focused review of
+`a09a9f5c..4e8b0dca` and the full `69cc84fb..4e8b0dca` Task range returned
+specification PASS and quality APPROVED, both C0/I0/M0. T-AGHC-005 is complete.
+Task 6 canonical reconciliation is in progress; controlled all-files evidence
+and whole-branch review have not run.
 
 Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
-Tasks 1 through 4 are complete. Task 5 independent review, Task 6, and the
-whole-branch review remain pending.
+Tasks 1 through 5 are complete. Task 6 and the whole-branch review remain
+pending.
 
 Quality review verdict: T-AGHC-001 failed Critical 0, Important 2, Minor 1 at
 `201cee93`; the quality re-review at `522d2ba9` reduced the result to Critical 0,
@@ -935,11 +937,10 @@ with Critical 0, Important 0, and Minor 0. Direct catalog/provider
 hardening prerequisites for Tasks 3 and 4, not as an open Task 2 finding. Task
 3 terminal quality review of `9941bbb4..8d1d08f4` returned APPROVED with
 Critical 0, Important 0, and Minor 0. Task 4 terminal quality review returned
-APPROVED C0/I0/M0. Task 5 review progressed through quality C0/I7/M0,
-C0/I3/M0, C0/I4/M0, C0/I2/M0, and the fifth-remediation specification C0/I2/M0 plus
-quality C0/I3/M0; every recorded finding has a separate remediation and
-GREEN evidence, while the terminal re-review remains pending. Quality review
-has not run for Task 6 or the whole branch.
+APPROVED C0/I0/M0. Task 5 review findings each received a separate remediation,
+focused regression evidence, and fresh re-review. The final Task 5
+specification and quality verdicts are PASS and APPROVED, both C0/I0/M0.
+Quality review has not run for Task 6 or the whole branch.
 
 Planning findings and disposition: fixed provider skill discovery, Gemini
 `PreCompress`, wrapper clean-state ordering, staged aggregate-validator
@@ -983,14 +984,15 @@ with owner, reason, and destination.
 | T-AGHC-005 fourth review remediation | `fix(harness): reject credential and QA bypasses` | `a16a3aa1` | bounded credential/header grammar and semantic local-QA bypass rejection GREEN; independent re-reviews found five residual Important gaps |
 | T-AGHC-005 fifth review remediation | `fix(harness): bound semantic and reference parsing` | `cba40143` | single typed QA authority, structured credential classification, and immutable script-reference ceilings GREEN; independent re-reviews found five residual Important gaps |
 | T-AGHC-005 sixth review remediation | `fix(harness): close semantic resource boundaries` | `1bbbf3e4` | clause-local QA semantics, fail-closed credential shapes, and pre-read aggregate/metadata boundaries GREEN; independent re-reviews found six residual Important gaps |
-| T-AGHC-005 seventh review remediation | `fix(harness): bound parsing and discovery inputs` | this logical commit | bounded QA/anaphora parsing, camel/numeric credential classification, and pre-materialization Git/filesystem discovery GREEN; independent re-reviews pending |
-| T-AGHC-005 eighth review remediation | `fix(harness): close final semantic resource gaps` | this logical commit | final QA grammar, sensitive scan/catalog confinement, and bounded scanner-result growth GREEN; independent re-reviews pending |
-| T-AGHC-005 ninth review remediation | `fix(harness): close adversarial grammar gaps` | this logical commit | related-tool QA state, qualifier/fused/YAML credentials, exact catalog rows, and approved literal script roots GREEN; terminal independent re-reviews pending |
-| T-AGHC-005 tenth review remediation | `fix(harness): enforce exact semantic states` | this logical commit | persistent bounded QA state, derived exact credential aliases, contiguous catalog grammar, and bounded URI-aware local script routing GREEN; terminal independent re-reviews pending |
-| T-AGHC-005 eleventh review remediation | `fix(harness): close residual semantic bypasses` | this logical commit | exact safe-clause states, prefixed fused and explicit-YAML credentials, and strict catalog pipe-row grammar GREEN; terminal independent re-reviews pending |
-| T-AGHC-005 twelfth review remediation | `fix(harness): generalize semantic boundary states` | this logical commit | bounded safe-route tails, related direct-fallback state, fused sensitive-stem segmentation, explicit-YAML property state, and nested blockquote table rejection GREEN; terminal independent re-reviews pending |
-| T-AGHC-005 thirteenth review remediation | `fix(harness): parse bounded semantic containers` | this logical commit | actor-neutral fallback state, structural lexical boundaries, bounded YAML alias/property/sequence parsing, and iterative CommonMark container rejection GREEN; terminal independent re-reviews pending |
-| T-AGHC-005 fourteenth review remediation | `fix(harness): normalize bounded yaml key properties` | this logical commit | order-independent bounded YAML tag/anchor scalar parsing, safe and sensitive alias controls, and property/anchor overflow boundaries GREEN; terminal independent re-reviews pending |
+| T-AGHC-005 seventh review remediation | `fix(harness): bound parsing and discovery inputs` | `c849a1b7` | bounded QA/anaphora parsing, camel/numeric credential classification, and pre-materialization Git/filesystem discovery GREEN; independent findings remediated in later rows |
+| T-AGHC-005 eighth review remediation | `fix(harness): close final semantic resource gaps` | `938d7645` | final QA grammar, sensitive scan/catalog confinement, and bounded scanner-result growth GREEN; independent findings remediated in later rows |
+| T-AGHC-005 ninth review remediation | `fix(harness): close adversarial grammar gaps` | `4bb7103a` | related-tool QA state, qualifier/fused/YAML credentials, exact catalog rows, and approved literal script roots GREEN; independent findings remediated in later rows |
+| T-AGHC-005 tenth review remediation | `fix(harness): enforce exact semantic states` | `6f59445b` | persistent bounded QA state, derived exact credential aliases, contiguous catalog grammar, and bounded URI-aware local script routing GREEN; independent findings remediated in later rows |
+| T-AGHC-005 eleventh review remediation | `fix(harness): close residual semantic bypasses` | `534ec1b1` | exact safe-clause states, prefixed fused and explicit-YAML credentials, and strict catalog pipe-row grammar GREEN; independent findings remediated in later rows |
+| T-AGHC-005 twelfth review remediation | `fix(harness): generalize semantic boundary states` | `92105045` | bounded safe-route tails, related direct-fallback state, fused sensitive-stem segmentation, explicit-YAML property state, and nested blockquote table rejection GREEN; independent findings remediated in later rows |
+| T-AGHC-005 thirteenth review remediation | `fix(harness): parse bounded semantic containers` | `a09a9f5c` | actor-neutral fallback state, structural lexical boundaries, bounded YAML alias/property/sequence parsing, and iterative CommonMark container rejection GREEN; final property-order finding remediated in the next row |
+| T-AGHC-005 fourteenth review remediation | `fix(harness): normalize bounded yaml key properties` | `4e8b0dca` | order-independent bounded YAML tag/anchor scalar parsing, safe and sensitive alias controls, and property/anchor overflow boundaries GREEN; terminal independent re-reviews C0/I0/M0 |
+| T-AGHC-005 terminal review evidence | `docs(task): record harness review closure` | this logical commit | final delta and full Task range specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |
 | Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | pending | pending |
 | Closure | `docs(execution): close agent governance convergence` | pending | pending |
