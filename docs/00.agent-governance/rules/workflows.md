@@ -35,7 +35,7 @@ contract — do not duplicate it here).
 - **Incident response**: `incident-response` → incident/postmortem docs (Stage 05).
 - **Knowledge / governance**: `knowledge-map-agent`, `workspace-audit-revalidation`.
 - **Skill Development**: external `writing-skills` / `skill-creator` → `skill-creator` agent → new reusable skill.
-- **Hook Development**: external `writing-hookify-rules` / `hook-development` → `hook-developer` agent → new `.local.md` hook.
+- **Hook Development**: external `writing-hookify-rules` / `hook-development` → `hook-developer` agent → canonical `rules/hooks/hookify.*.md` rule.
 - **Governance Configuration**: external `update-config` → `rules-engineer` agent → policy updates.
 - **Style Enforcement**: `style-validation` → `qa-engineer` execution → standardized markdown/output.
 

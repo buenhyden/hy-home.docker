@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:quality-ci-formatting
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-13
+reviewed_at: 2026-07-16
 review_cycle: on-source-change
 ---
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md -->
@@ -79,8 +79,8 @@ this file owns only the concrete QA evidence-surface inventory.
 
 ## Tracked Inventory
 
-The six files under [`.github/workflows/`](../../../../.github/workflows/) define
-**21 job IDs**: 15 in `ci-quality.yml` and six in the other five workflows.
+The seven files under [`.github/workflows/`](../../../../.github/workflows/) define
+**22 job IDs**: 15 in `ci-quality.yml` and seven in the other six workflows.
 The quality workflow's 15 IDs are:
 
 `docs-traceability`, `docs-implementation-alignment`, `repo-contracts`,
@@ -91,17 +91,19 @@ The quality workflow's 15 IDs are:
 `frontend-quality`, `storybook-coverage`, and `zizmor`.
 
 The [pre-commit configuration](../../../../.pre-commit-config.yaml) defines
-**23 hook IDs** across pre-commit, pre-push, and commit-msg stages. This hook
+**24 hook IDs** across pre-commit, pre-push, and commit-msg stages. This hook
 count is not the local-runner count.
 
 The [`run_script_backed_gates` function](../../../../scripts/validation/run-local-qa-gates.sh)
-contains **12 executed `run_step` calls**. The default, `--script-backed`, and
-`--all-profiles` modes all execute those 12 gates; `--harness` executes the 8
-calls in `run_harness_gates`; and `--list` executes no gate. The list output
+reaches **20 script-backed steps** through direct calls and its lifecycle and
+generated-freshness helpers. The default, `--script-backed`, and `--all-profiles`
+modes execute those 20 gates; `--harness` executes 18; and `--list` executes no
+gate. The list output
 names `recommend-qa-gates.sh`, but labels that script advisory and does not
-execute it. Therefore the headline local runner inventory remains **12 executed
-default/script-backed gates + 1 non-executed advisory recommendation**, not 13
-executed gates. The runner separates local checks from CI/local-tooling and
+execute it. Therefore the headline local runner inventory remains **20 executed
+default/script-backed gates + 1 non-executed advisory recommendation**. The
+separate controlled all-files wrapper is not a default
+runner step. The runner separates local checks from CI/local-tooling and
 remote-only responsibilities; it is not a full CI replica.
 
 ## Quality Gate Matrix
@@ -130,7 +132,7 @@ remote-only responsibilities; it is not a full CI replica.
 | Docs traceability | Check execution/operations links | [`check-doc-traceability.sh`](../../../../scripts/validation/check-doc-traceability.sh) | `docs-traceability` | traceability | Blocks local runner or CI job | No external source defines the repository taxonomy | Owner: [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md). |
 | Docs implementation alignment | Compare active docs with tracked implementation surfaces | [`check-doc-implementation-alignment.sh`](../../../../scripts/validation/check-doc-implementation-alignment.sh) | `docs-implementation-alignment` | traceability | Blocks local runner or CI job | External sources do not prove repo-local current truth | Owner: [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md). |
 | Repository contracts | Validate taxonomy, templates, workflow/job coupling, generated references, and implementation drift | [`check-repo-contracts.sh`](../../../../scripts/validation/check-repo-contracts.sh) | `repo-contracts` | contract/security | Blocks local runner or CI job | GitHub syntax supports job structure, not repository-specific contracts | Owner: [`check-repo-contracts.sh`](../../../../scripts/validation/check-repo-contracts.sh). |
-| Agent-output eval fixtures | Validate the tracked fixture catalog | [`run-agent-output-eval-fixtures.sh --check-fixtures`](../../../../scripts/validation/run-agent-output-eval-fixtures.sh) | `agent-output-eval-fixture-gate` | test/eval | CI-blocking; local command is available but not one of the 12 runner steps | No fixed external source defines fixture semantics | This checks fixture integrity, not live model quality. Owner: [eval fixture runner](../../../../scripts/validation/run-agent-output-eval-fixtures.sh). |
+| Agent-output eval fixtures | Validate and score eight exact synthetic fixtures plus ten deterministic regressions | [`run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions`](../../../../scripts/validation/run-agent-output-eval-fixtures.sh) | `agent-output-eval-fixture-gate` | test/eval | CI/local routing requires exact fixture and regression pass markers | No fixed external source defines repository fixture semantics | This gates bounded repository semantics, not live model quality. Owner: [eval fixture runner](../../../../scripts/validation/run-agent-output-eval-fixtures.sh). |
 | Dependency vulnerability audit | Fail on high-severity Storybook Next.js dependency findings | `npm audit --audit-level=high --prefix projects/storybook/nextjs` | `dependency-vulnerability-audit` | security | Dedicated CI job blocks on threshold | GitHub secure-use is complementary, not npm policy | Scope is one project/package lock. Owner: [`ci-quality.yml`](../../../../.github/workflows/ci-quality.yml). |
 | Provider drift | Compare generated Codex/Gemini projections with canonical sources | [`sync-provider-surfaces.sh`](../../../../scripts/operations/sync-provider-surfaces.sh) verify mode | `repo-contracts` supplies broader catalog parity, not the exact command | drift | Blocks the local runner on detected drift | No fixed external source defines provider projection policy | Verification does not prove provider runtime acceptance. Owner: [provider adapter model](../../../00.agent-governance/providers/agents-md.md). |
 | Generated-data freshness | Check Wiki index and generated contract snapshots | [`generate-llm-wiki-index.sh --check`](../../../../scripts/knowledge/generate-llm-wiki-index.sh); generators checked inside repo contracts | `repo-contracts` | freshness | Blocks local runner/repo-contracts when stale | External sources do not define generated artifact ownership | Never hand-edit generated data; run its canonical generator. Owner: [QA scope](../../../00.agent-governance/scopes/qa.md). |
@@ -142,17 +144,17 @@ remote-only responsibilities; it is not a full CI replica.
 | Category | Current state | Primary comparison | Status | Gap | Recommendation | Canonical owner | Evidence | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | QA and evidence classes | Tracked gates distinguish format, lint, syntax, type, test, build, coverage, security, traceability, eval, and freshness evidence. | pre-commit supports hook orchestration; GitHub Actions supports jobs/steps. | Implemented | Applicability still varies by changed surface. | Record named commands/jobs and N/A rationale rather than “all QA.” | `docs/00.agent-governance/scopes/qa.md` | Matrix above; tracked runner/workflow/config | High |
-| CI feedback | Six workflows define 21 jobs; `ci-quality.yml` defines 15 independent quality jobs and none declares a deployment environment. | GitHub workflow syntax defines event triggers, jobs, steps, permissions, and dependencies. | Partially Implemented | Tracked definitions do not prove successful runs or current required-check enforcement. | Report exact job results separately from remote enforcement. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/*.yml` | High |
+| CI feedback | Seven workflows define 22 jobs; `ci-quality.yml` defines 15 independent quality jobs and none declares a deployment environment. | GitHub workflow syntax defines event triggers, jobs, steps, permissions, and dependencies. | Partially Implemented | Tracked definitions do not prove successful runs or current required-check enforcement. | Report exact job results separately from remote enforcement. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/*.yml` | High |
 | CD / promotion | No tracked workflow deploys an application or infrastructure target, references a GitHub environment, promotes across environments, or performs rollback. | GitHub environments support reviewer/custom protection rules, branch restrictions, environment secrets, and deployment history. | Missing | Green CI/build/tag checks can be mislabeled as deployment readiness. | Define promotion, approval, deployment record, verification, and rollback in a later Stage 03/04 delivery contract. | `docs/03.specs/README.md` | Workflow scan plus Stage 05 release runbook | High |
 | Release record | `CHANGELOG.md`, a manual release-management runbook, and a tag-triggered changelog coverage check exist; the workflow does not create release notes or assets. | GitHub Releases bind a tagged iteration to release notes and optional downloadable assets. | Partially Implemented | Tag-string coverage is not a complete release record or artifact integrity statement. | Preserve the manual readiness boundary and define release artifact/record ownership with future CD work. | `docs/05.operations/runbooks/00-workspace/release-management.md` | `CHANGELOG.md`; `.github/workflows/generate-changelog.yml` | High |
-| Pre-commit semantics | The config defines 23 hook IDs; hooks are stage/file filtered, and CI runs the suite with `eslint-nextjs` skipped in favor of its dedicated job. | pre-commit documents staged-file default execution, `--all-files`, explicit stages, file selection, and CI use. | Implemented | Hook count is not equivalent to executed coverage for every change or stage. | Record the invoked stage/files and result; continue to prohibit direct agent all-files execution until the controlled wrapper is implemented. | `.pre-commit-config.yaml` | Config plus CI workflow | High |
+| Pre-commit semantics | The config defines 24 hook IDs; hooks are stage/file filtered, and CI runs the suite with `eslint-nextjs` skipped in favor of its dedicated job. Direct agent all-files execution is prohibited; the implemented wrapper requires an initially clean linked worktree, tracked Task evidence, explicit allowed prefixes, a Git-visible snapshot comparison, and sanitized results. | pre-commit documents staged-file default execution, `--all-files`, explicit stages, file selection, and CI use. | Implemented | Hook count is not equivalent to executed coverage for every change or stage; wrapper observation excludes ignored/outside paths. | Use the controlled wrapper only at the approved QA stage and record markers/path sets rather than raw logs. | `.pre-commit-config.yaml` and wrapper | Config, wrapper tests, CI workflow | High within the bounded observation contract |
 | Formatting | EditorConfig and Prettier configuration exist; pre-commit/post-tool supply other formatting checks. | EditorConfig specifies hierarchical style settings; Prettier documents parsing/reprinting and a CI check mode. | Partially Implemented | No tracked shared automation invokes Prettier. | Do not imply Prettier enforcement unless the active owner approves and implements it. | `docs/00.agent-governance/scopes/common.md` | `.editorconfig`, `.prettierrc.json`, `.prettierignore`, post-tool hook | High |
 
 ## Analysis
 
 The tracked layers intentionally differ. The default/script-backed/all-profile
-runner modes provide a 12-step subset, the harness mode provides 8 steps, and
-list mode provides advisory inventory without execution. Pre-commit adds 23
+runner modes provide 20 script-backed steps, the harness mode provides 18, and
+list mode provides advisory inventory without execution. Pre-commit adds 24
 file/stage-filtered hook IDs; CI adds heavy frontend, coverage, dependency, and
 SARIF behavior. None of those layers proves current branch-protection
 enforcement. DORA's current five
@@ -218,8 +220,8 @@ schema introduction from becoming an accidental corpus-wide or remote gate.
 - [DORA metrics](https://dora.dev/guides/dora-metrics/) - current five-metric throughput/instability model
 - [Martin Fowler: Continuous Delivery](https://martinfowler.com/bliki/ContinuousDelivery.html) - releasability and automated pipeline feedback
 - [CI workflow](../../../../.github/workflows/ci-quality.yml) - 15 tracked quality job IDs
-- [Local QA runner](../../../../scripts/validation/run-local-qa-gates.sh) - 12 executed local gates and responsibility split
-- [pre-commit config](../../../../.pre-commit-config.yaml) - 23 tracked hook IDs
+- [Local QA runner](../../../../scripts/validation/run-local-qa-gates.sh) - 20 script-backed and 18 harness gates plus responsibility split
+- [pre-commit config](../../../../.pre-commit-config.yaml) - 24 tracked hook IDs
 - [Scripts README](../../../../scripts/README.md) - script lifecycle and authority
 
 ## Maintenance

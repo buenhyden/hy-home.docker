@@ -115,6 +115,14 @@ the exact eleven-report / 161-row audit criterion contract. The audit overview
 and eleven criterion leaves form a typed, internally resolved chain; this README
 remains a folder-index exception.
 
+The current derived distribution is 77 `Implemented`, 60 `Partial`, 13
+`Missing`, 2 `Not Applicable`, and 9 `Needs Revalidation`. The prior
+68/68/14/2/9 snapshot is historical. Promotions are limited to tracked
+Stage 00 contracts, strict provider projections, typed retry/stop loops,
+synthetic evaluator evidence, local routing, and controlled-wrapper
+implementation; native runtime acceptance, model entitlement, remote
+enforcement, CD, and live comparative model quality remain unpromoted.
+
 ### Contract and Evidence Boundary
 
 This audit consumes the Stage 99 metadata registry, the SDLC/common/README

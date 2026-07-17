@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:provider-model-landscape
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-07-16
 review_cycle: on-source-change
 ---
 
@@ -22,6 +22,11 @@ date does not prove release by 01:00 UTC. The final exact-ID remediation added
 dated first-party existence evidence for eight OpenAI rows that had previously
 relied only on mutable model pages. Provider-native names and maturity terms are
 preserved before a deliberately narrow cross-provider normalization.
+
+The later typed provider-model registry was retrieved at
+`2026-07-16T01:17:36+09:00`. That observation updates current workspace
+selection and current-page context only; it does not move the cutoff, change
+the 145/142 historical ledger, or backdate GPT-5.6's unzoned `Jul 9` entry.
 
 ## Purpose
 
@@ -113,6 +118,21 @@ catalog tables preserve provider-native facts, the Workspace-policy Comparison
 quotes Stage 00 without changing it, and Task-fit Analysis is explicitly an
 evaluation hypothesis rather than approval evidence.
 
+## 2026-07-16 Typed Current-State Reconciliation
+
+The Stage 00 provider-model contract records current official-page facts,
+repository selection, entitlement, runtime acceptance, and cutoff evidence as
+separate fields. Claude Fable 5 is generally available, Mythos 5 remains
+limited/invitation-only, Sonnet 5 is current, Opus 4.8 and Haiku 4.5 are active,
+and Opus 4.1 is deprecated with retirement scheduled for 2026-08-05. OpenAI
+currently lists GPT-5.6 Sol, Terra, and Luna but does not label an unqualified
+listing Stable/GA; the workspace normalizes that state as
+`unclassified-listed`, maps the `gpt-5.6` alias to Sol, and keeps all three
+cutoff-unverified. Google lists Gemini 3.5 Flash and 3.1 Flash-Lite as Stable
+and the exact Pro preview as `gemini-3.1-pro-preview`; obsolete preview
+endpoints remain deprecated or shut down. Every selected model still has
+entitlement and runtime acceptance set to `needs_revalidation`.
+
 ## Coverage Summary
 
 | Provider | Structural rows | Cutoff-qualified rows | Provider-native structural totals | Normalized structural totals | Cutoff-qualified normalized totals | Cutoff exceptions |
@@ -146,9 +166,9 @@ evaluation hypothesis rather than approval evidence.
 
 | Tier | Stage 00 Claude value | Catalog finding | Stage 00 OpenAI/Codex value | Catalog finding | Stage 00 Gemini value | Catalog finding | Disposition |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Supervisor | `opus-4.8` (Claude Code alias `opus`) | `claude-opus-4-8` is Active; alias resolution is a Claude Code surface | `gpt-5.5` | listed without a maturity label | `gemini-3.1-pro` | Official API ID is `gemini-3.1-pro-preview`; the policy value omits provider `-preview` | Policy unchanged; Gemini value is an unsupported availability gap pending the full approved-change protocol |
-| Worker | `sonnet-4.6` (Claude Code alias `sonnet`) | `claude-sonnet-4-6` is Active, although Sonnet 5 is newer | `gpt-5.4-mini` | listed without a maturity label | `gemini-3.5-flash` | Stable/GA | Policy unchanged; newer/different models do not authorize automatic replacement |
-| Effort | Claude effort is provider/model specific | Opus 4.8 documents `high` default; other controls remain provider-native | supervisor `xhigh`; workers `medium`, approved `high`, formatting-only `low` | Codex config accepts a model and reasoning-effort fields; support remains model-specific | Antigravity selects model rather than a separate workspace effort field | API thinking controls are not assumed to equal Antigravity policy | Preserve distinct controls; no false parity |
+| Supervision | `claude-opus-4-8`, effort `high` | Active; adaptive thinking and provider-native effort | `gpt-5.6`, reasoning `xhigh` | Current listing maps the alias to Sol but supplies no Stable/GA label; cutoff remains unverified | `gemini-3.5-flash`, thinking level `high` | Stable/GA | Exact typed defaults are implemented; entitlement/runtime acceptance remain unverified |
+| Complex implementation | `claude-sonnet-5`, effort `high` | Current/launched 2026-06-30; adaptive thinking | `gpt-5.6`, reasoning `high` | Listed/unclassified, cutoff-unverified | `gemini-3.5-flash`, thinking level `high` | Stable/GA | Provider-native controls are coupled without claiming cross-provider equivalence |
+| Read-heavy/repetitive | `claude-haiku-4-5-20251001`; no effort key | Active; extended thinking, no supported effort control in the repository projection | `gpt-5.6-terra`, reasoning `low` | Listed/unclassified, cutoff-unverified | `gemini-3.1-flash-lite`, thinking level `minimal` | Stable/GA | Right-sized profile is exact and validator-backed; live task fit remains unproved |
 
 ## Provider Catalogs
 
@@ -206,7 +226,7 @@ API documentation.
 | OpenAI | [GPT-5.5 Pro](https://developers.openai.com/api/docs/models/gpt-5.5-pro) | `gpt-5.5-pro` | Listed; frontier | not normalized (listed) | All-models and model page | Responses | Model page | Pro-mode control is provider-native | Higher-compute GPT-5.5 variant | Included; historical state unverified | No benchmark superiority asserted |
 | OpenAI | [GPT-5.4](https://developers.openai.com/api/docs/models/gpt-5.4) | `gpt-5.4` | Listed; frontier | not normalized (listed) | Released 2026-03-05 | Responses; Chat Completions | 1,050,000; multimodal input documented | Configurable | Tool search, computer use, compaction; coding/professional-work positioning | Included; release before cutoff; listing historical state unverified | — |
 | OpenAI | [GPT-5.4 Pro](https://developers.openai.com/api/docs/models/gpt-5.4-pro) | `gpt-5.4-pro` | Listed; frontier | not normalized (listed) | Released 2026-03-05 | Responses | Model page | Pro variant | Tougher-problem positioning | Included; release before cutoff; listing historical state unverified | — |
-| OpenAI | [GPT-5.4 mini](https://developers.openai.com/api/docs/models/gpt-5.4-mini) | `gpt-5.4-mini` | Listed; frontier | not normalized (listed) | Released 2026-03-17 | Responses; Chat Completions | Model page | Model-specific | Tool search, computer use, compaction; coding and subagent positioning | Included; release before cutoff; listing historical state unverified | Workspace Worker value; availability not locally proven |
+| OpenAI | [GPT-5.4 mini](https://developers.openai.com/api/docs/models/gpt-5.4-mini) | `gpt-5.4-mini` | Listed; frontier | not normalized (listed) | Released 2026-03-17 | Responses; Chat Completions | Model page | Model-specific | Tool search, computer use, compaction; coding and subagent positioning | Included; release before cutoff; listing historical state unverified | Former workspace worker value; not a current default and availability is not locally proven |
 | OpenAI | [GPT-5.4 nano](https://developers.openai.com/api/docs/models/gpt-5.4-nano) | `gpt-5.4-nano` | Listed; frontier | not normalized (listed) | Released 2026-03-17 | Responses; Chat Completions | Model page | Model-specific | Compaction; simple high-volume positioning; no tool search/computer use per changelog | Included; release before cutoff; listing historical state unverified | — |
 | OpenAI | [GPT Image 2](https://developers.openai.com/api/docs/models/gpt-image-2) | `gpt-image-2` | Listed; image | not normalized (listed) | Released 2026-04-21 | Images; Batch | Text/image input; image output | Not a reasoning-selection control | Image generation and editing | Included; release before cutoff; listing historical state unverified | — |
 | OpenAI | [GPT Image 1.5](https://developers.openai.com/api/docs/models/gpt-image-1.5) | `gpt-image-1.5` | Deprecated | deprecated | Deprecated 2026-06-02; shutdown 2026-12-01 | Images until shutdown | Text/image input; image output | — | Previous image generation/editing | Included as Deprecated at cutoff | Replacement `gpt-image-2` |
@@ -308,7 +328,7 @@ the official model card groups them.
 | Google | [Nano Banana 2 / Gemini 3.1 Flash Image](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-image) | `gemini-3.1-flash-image` | Stable / GA | stable | Released 2026-05-28 | Gemini API; AI Studio | Multimodal input; image output | Model-page specific | Image generation and editing | Included; dated before cutoff | Family marketing name is not an alias string |
 | Google | [Nano Banana 2 Lite / Gemini 3.1 Flash Lite Image](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-image) | `gemini-3.1-flash-lite-image` | Stable / GA | stable | Released 2026-06-30 | Gemini API; AI Studio | Multimodal input; image output | Model-page specific | Low-latency image generation/editing | Included; dated before cutoff | — |
 | Google | [Nano Banana Pro / Gemini 3 Pro Image](https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image) | `gemini-3-pro-image` | Stable / GA | stable | Released 2026-05-28 | Gemini API; AI Studio | Multimodal input; image output | Reasoning core described | Contextual image generation/editing | Included; dated before cutoff | — |
-| Google | [Gemini 3.1 Pro](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview) | `gemini-3.1-pro-preview`; `gemini-3.1-pro-preview-customtools` | Preview | preview | Released 2026-02-19 | Gemini API; AI Studio | Model page; multimodal | Thinking/model-page controls | Complex problem solving, agentic and coding; custom-tools endpoint documented | Included; dated before cutoff | Workspace `gemini-3.1-pro` omits required `-preview` |
+| Google | [Gemini 3.1 Pro](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview) | `gemini-3.1-pro-preview`; `gemini-3.1-pro-preview-customtools` | Preview | preview | Released 2026-02-19 | Gemini API; AI Studio | Model page; multimodal | Thinking/model-page controls | Complex problem solving, agentic and coding; custom-tools endpoint documented | Included; dated before cutoff | Exact preview suffix is retained in the catalog; this preview is not a workspace default |
 | Google | [Gemini 3 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview) | `gemini-3-flash-preview` | Preview | preview | Released 2025-12-17 | Gemini API; AI Studio | Model page; multimodal | Thinking/model-page controls | Agentic coding and multimodal tool features | Included; dated before cutoff | Replacement target is Stable `gemini-3.5-flash` |
 | Google | [Gemini 3.5 Live Translate](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-live-translate-preview) | `gemini-3.5-live-translate-preview` | Preview | preview | Catalog updated 2026-07-09 UTC | Live API | Realtime speech input/output | — | Streaming speech translation | Included; catalog update before cutoff date | Exact update time is not shown |
 | Google | [Gemini 3.1 Flash Live](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-live-preview) | `gemini-3.1-flash-live-preview` | Preview | preview | Released 2026-03-26 | Live API | Realtime audio-to-audio | Model-page specific | Voice-first dialogue; tool use per Live API | Included; dated before cutoff | — |
@@ -350,8 +370,9 @@ or measured workspace results are supplied.
 
 | Task characteristic | Required capabilities | Claude option | OpenAI/Codex option | Gemini option | Latency/cost consideration | Evidence basis | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Supervisor routing, architecture, final synthesis | Long-horizon reasoning, tool use, large context, synthesis | Workspace `opus` → Claude Opus 4.8 | Workspace `gpt-5.5` at `xhigh` | Official API candidate `gemini-3.1-pro-preview`; workspace string is an availability gap | Top-tier choices prioritize capability; no cross-provider cost rank is established | Stage 00 taxonomy plus official agentic/professional/complex-task descriptions | High for workspace routing; Medium for cross-provider equivalence |
-| Scoped coding implementation and subagents | Code generation, tools, patch/shell or provider-agent surface, bounded task execution | Workspace `sonnet` → Claude Sonnet 4.6 | Workspace `gpt-5.4-mini` at `medium`; `gpt-5.3-codex` is a separate code-specialized API option | Workspace `gemini-3.5-flash` | Mini/Flash descriptions explicitly emphasize efficiency; no numeric comparison | Official coding/subagent descriptions plus Worker taxonomy | High for configured values; Medium for alternatives |
+| Supervisor routing, architecture, final synthesis | Long-horizon reasoning, tool use, large context, synthesis | `claude-opus-4-8`, `high` | `gpt-5.6`, `xhigh` | `gemini-3.5-flash`, `high` | Top-tier choices prioritize capability; no cross-provider cost rank is established | Typed supervision profile plus official agentic/professional/complex-task descriptions | High for workspace routing; Medium for cross-provider equivalence |
+| Scoped coding implementation and subagents | Code generation, tools, patch/shell or provider-agent surface, bounded task execution | `claude-sonnet-5`, `high` | `gpt-5.6`, `high`; Spark remains a separate preview catalog option | `gemini-3.5-flash`, `high` | Provider-native controls are not numeric equivalents | Typed complex-implementation profile plus official coding/subagent descriptions | High for configured values; Medium for live alternatives |
+| Read-heavy organization and bounded classification | Large reads, structured output, bounded repetition | `claude-haiku-4-5-20251001` | `gpt-5.6-terra`, `low` | `gemini-3.1-flash-lite`, `minimal` | The profile is right-sized without making a price or latency guarantee | Typed read-heavy profile plus official model descriptions | High for configured values; Medium for observed fit |
 | High-volume classification, extraction, or routing | Low latency, structured output, multimodal input when needed | Claude Haiku 4.5 candidate; not workspace default | GPT-5.4 nano candidate; no tool search/computer use per changelog | Gemini 3.1 Flash-Lite candidate | Providers position these options for speed/high volume; no price rank | Official model cards | Medium |
 | UI automation | Image/screenshot understanding, action tools, safety controls | Claude Opus 4.8 with documented computer use | GPT-5.4/5.4 mini with built-in computer use; deprecated `computer-use-preview` excluded | Gemini 3.5 Flash computer-use support is Preview; specialized 2.5 Computer Use is Preview | Preview/specialized surfaces increase migration risk; latency/cost not compared | Official tool/model pages and lifecycle status | Medium |
 | Evidence-backed web research | Tool use, search, long context, source synthesis | Current Claude with web search/fetch; model support must be checked | Current GPT-5 family with web search; deprecated deep-research models excluded | Deep Research / Max managed-agent previews or Gemini 3.5 Flash with search | Managed preview agents trade stability for specialized orchestration; no cost rank | Official capability descriptions and lifecycle pages | Medium |
@@ -361,11 +382,11 @@ or measured workspace results are supplied.
 
 | Research category | Workspace current state | External primary-source finding | Comparison | Status | Gap | Recommendation | Canonical owner | Evidence | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Model-policy SSoT | Stage 00 defines two tiers and coupled change surfaces | Provider catalogs change independently | Policy is deliberately slower than catalogs | Implemented | Provider availability is not continuously proven | Keep Stage 00 as SSoT and revalidate before approved changes | `subagent-protocol.md` | Stage 00 Model Policy; this cutoff ledger | High |
-| Claude mapping | `opus-4.8` / `sonnet-4.6` via Claude Code aliases | Both API IDs are Active; newer models also exist | Current policy is supported but not newest-model tracking | Implemented | Alias/account resolution is not validated by repo checks | Preserve values unless full change protocol is approved | Stage 00 + adapter generator | Claude model and lifecycle pages | High |
-| OpenAI/Codex mapping | `gpt-5.5` / `gpt-5.4-mini` with effort controls | Both are listed; OpenAI does not label them stable/GA | Configuration is catalog-consistent, maturity remains unnormalized | Partially Implemented | Repo validators cannot prove entitlement/availability | Add provider evidence to any future approved change task | Stage 00 + Codex generator/validator | OpenAI official-web fallback; Codex config reference | Medium |
-| Gemini mapping | `gemini-3.1-pro` / `gemini-3.5-flash` | Flash is Stable; official Pro ID is `gemini-3.1-pro-preview` | Worker matches; Supervisor string lacks `-preview` | Partially Implemented | Unsupported literal availability for Supervisor value | Record as gap; do not edit without policy, generator, adapters, validators, Stage 04 evidence, and provider sync | Stage 00 + Gemini generator/validator | Google model cards and deprecations | High |
-| Task-fit evaluation | Role taxonomy fixes Supervisor/Worker defaults | Providers expose many specialized/current models | Catalog descriptions are not workspace eval results | Missing | No cross-provider task fixture proves recommendations | Evaluate representative tasks before any model-policy proposal | Eval owner + workflow supervisor | Inference table above | High |
+| Model-policy SSoT | Stage 00 defines three work profiles, exact fallbacks, and coupled change surfaces | Provider catalogs change independently | Contract, renderer, adapters, validators, and evidence change atomically | Implemented | Provider availability is not continuously proven | Keep Stage 00 as SSoT and revalidate before approved changes | `subagent-protocol.md` and provider-model contract | Typed contract, adapters, this cutoff ledger | High |
+| Claude mapping | Opus 4.8 / Sonnet 5 / Haiku 4.5 with supported controls | Active/current official model pages and dated releases | Exact native adapter fields and fallback edges validate | Implemented | Account entitlement and live acceptance remain unverified | Preserve exact values unless the coupled protocol approves a change | Stage 00 + renderer | Claude model/lifecycle pages and contract checks | High |
+| OpenAI/Codex mapping | GPT-5.6 / GPT-5.6 Terra with exact effort controls | Current listing has no Stable/GA label; unzoned Jul 9 remains cutoff-unverified | Configuration is catalog-consistent and normalized as unclassified-listed | Partially Implemented | Repository validators cannot prove entitlement/availability or cutoff timing | Retain explicit unknown states; do not relabel current listing as Stable | Stage 00 + Codex renderer/validator | OpenAI official pages, changelog, Codex config reference | High for tracked mapping; Medium for runtime |
+| Gemini mapping | Gemini 3.5 Flash / 3.1 Flash-Lite with exact thinking levels | Both defaults are Stable; Pro remains exact preview and non-default | Native Gemini adapters and validators are generated | Partially Implemented | Live Gemini CLI/model acceptance and entitlement remain unverified | Retain Stable defaults and separate native/live evidence | Stage 00 + Gemini renderer/validator | Google model cards, changelog, and contract checks | High for tracked mapping |
+| Task-fit evaluation | Role taxonomy assigns three exact profiles | Providers expose many specialized/current models | Eight synthetic repository-semantic fixtures and ten regressions do not compare live model quality/latency/cost | Partial | No live cross-provider task baseline proves equivalence | Evaluate representative live tasks only under a separate privacy/entitlement/cost-approved contract | `eval-engineer` + workflow supervisor | Typed evaluator and inference table above | High for synthetic boundary |
 
 ## Sources
 
@@ -401,7 +422,9 @@ or measured workspace results are supplied.
 
 - **Owner**: Documentation maintainers with Stage 00 model-policy owners
 - **Evidence Cutoff**: 2026-07-10 10:00 KST (01:00 UTC)
-- **Retrieved**: 2026-07-10; mutable official pages revalidated 2026-07-11
+- **Retrieved**: historical ledger 2026-07-10; mutable pages revalidated
+  2026-07-11; typed current-state registry retrieved
+  `2026-07-16T01:17:36+09:00`
 - **Review Cadence**: On provider lifecycle announcement or workspace Model Policy proposal
 - **Update Trigger**: Rebuild a new explicitly dated ledger; never silently rewrite this cutoff as if a mutable current page proved historical state
 

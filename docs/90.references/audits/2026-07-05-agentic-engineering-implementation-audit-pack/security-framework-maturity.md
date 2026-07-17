@@ -82,6 +82,14 @@ corroborated directly against Stage 00 governance, `.github/**`,
 `.pre-commit-config.yaml`, validation scripts, security research, and existing
 audit reports.
 
+The current agent harness adds bounded value-free credential rejection,
+exact synthetic evaluator inputs, protected-path QA routing, strict generated
+provider schemas, and an evidence-bound controlled all-files wrapper. These
+strengthen repository-local validation and redaction controls but do not run a
+live provider, scanner, deployment, or remote enforcement mutation, so no
+supply-chain or remote-security criterion is promoted from those definitions
+alone.
+
 No remote GitHub setting was changed for this report. Read-only evidence
 captured on 2026-07-12 establishes classic `main` protection with 12 required
 contexts, zero repository rulesets, and zero environments. The local contract

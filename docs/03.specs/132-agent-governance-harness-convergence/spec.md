@@ -369,6 +369,22 @@ recovery.
 
 ### Validator, CI, and QA
 
+#### Current implementation reconciliation
+
+As observed on 2026-07-16, Tasks 1 through 5 have implemented the three typed
+contracts, exact 14-role and 22-function catalogs, four role projections,
+Claude/Codex/Gemini native adapters, seven semantic events, four bounded loops,
+and the deterministic eight-fixture/ten-regression evaluator. The canonical
+audit generator now derives 161 unique criterion rows from 11 reports with the
+observed distribution 77 Implemented, 60 Partial, 13 Missing, 2 Not Applicable,
+and 9 Needs Revalidation.
+
+These tracked and deterministic results do not establish live provider
+acceptance, model entitlement or availability, remote CI enforcement, CD,
+deployment, or rollback. Task 6 remains active until generated evidence,
+verification, independent review, the controlled wrapper, and closure evidence
+are completed in the order defined by the Plan.
+
 #### Typed validator
 
 A focused validator and unit-test suite own Stage 00 contract semantics. The

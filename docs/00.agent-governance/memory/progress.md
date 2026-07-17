@@ -11,6 +11,26 @@ This file follows `docs/99.templates/templates/governance/progress.template.md`.
 Its usage and preservation contract is maintained by
 [`memory/README.md`](./README.md) and the Stage 00 task checklists.
 
+## Agent Governance Harness Convergence Task 6
+
+The active T-AGHC-006 pass reconciled the canonical July 5 research and audit
+packs with the completed Task 1-5 implementation. The generated audit matrix
+preserves 11 criterion reports, 161 unique exact-schema rows and all family
+counts, with observed raw status 77 Implemented, 60 Partial, 13 Missing,
+2 Not Applicable, and 9 Needs Revalidation. Model/provider current-state
+retrieval remains bounded to 2026-07-16 and historical cutoff evidence to
+2026-07-10 10:00 KST. Live provider acceptance, entitlement, remote CI/CD,
+deployment, runtime, secrets, and remote state were not promoted or changed.
+The dependency-locked pre-wrapper ladder is complete: focused suites,
+repository contracts, provider drift, semantic eval, metadata, lifecycle,
+traceability, alignment, workflow syntax, generated owners, harness/local QA,
+and aggregate checks pass. Graphify was refreshed to 24,994 nodes, 28,771
+edges, and 1,613 communities; its inferred, isolated, thin-community,
+low-confidence, and visualization-limit output was corroborated against
+tracked Stage 00/03/04/90 and executable owners before generated graph files
+were restored. The controlled all-files wrapper remains `not_run` until the
+committed candidate and independent Task 6 reviews are ready.
+
 ## Task 6 Foundation Closure
 
 Whole-branch specification and quality re-reviews of

@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:agent-instructions-vibe-coding
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-07-16
 review_cycle: on-source-change
 ---
 
@@ -31,6 +31,11 @@ Stage 00 remains the instruction authority; provider files are projections.
 [quality/CI](./quality-ci-formatting.md) owns the tracked evidence-surface
 inventory. This document owns instruction and vibe-coding comparison criteria,
 not runtime or provider policy.
+
+The current implementation expresses that boundary through typed catalog,
+path-authority, provider/model, semantic-event, and loop contracts. Generated
+Claude, Codex, Gemini, and shared compatibility adapters are validation
+surfaces, not additional instruction authorities.
 
 ## Scope
 
@@ -75,7 +80,22 @@ not runtime or provider policy.
 | AIV-13 | Bound vibe coding to a branch/worktree, explicit objective, small increments, and reversible commits. | GitHub vibe-coding tutorial | Suitable for prototypes and approved implementation when the same plan, review, and evidence gates apply. | Scoped plan/task; isolated workspace; per-iteration diff/test; logical commits | Implementation task owner |
 | AIV-14 | Keep vibe coding away from unapproved runtime, production data, secrets, remote mutations, and security-critical decisions. | GitHub vibe-coding permissions/testing; OpenAI/Claude security guidance | Those surfaces need explicit authority, specialist review, rollback/recovery, and validation before action. | Approval record; redaction boundary; rollback; specialist verdict | Security/operations owner |
 | AIV-15 | Use a closed loop: plan, act, observe tool results, verify, review, and either correct or stop. | OpenAI agent guide; Anthropic effective-agent/eval guidance | Agent completion text is not evidence; tracked outputs and checks determine completion. | Plan/task state, tool results, verification, review verdict, residual concerns | Workflow supervisor / QA |
-| AIV-16 | Import external agent knowledge only through the canonical catalog intake boundary. | Official provider instruction docs; pinned upstream catalog evidence | Catalog breadth or publisher maturity claims never authorize installation or execution. | Pin/license/source review; rewritten scope; security and eval evidence | Stage 00 agent catalog owner |
+| AIV-16 | Import external agent knowledge only through the canonical catalog intake boundary. | Official provider instruction docs; pinned upstream catalog evidence | The typed seven-entry capability intake records adopt/merge/reject/defer decisions; catalog breadth or publisher maturity claims never authorize installation or execution. | Pin/license/source review; rewritten scope; security and eval evidence | Stage 00 agent catalog owner |
+
+## Current Workspace Implementation
+
+- Four role surfaces contain the same 14 canonical role IDs while preserving
+  provider-native schemas; `.agents` remains compatibility/shared skills, not
+  Gemini CLI configuration.
+- Twenty-two canonical functions project to Claude and shared skill surfaces.
+  Provider sync and repository contract checks detect drift from Stage 00.
+- Seven semantic hook events and four typed loops bind instruction execution to
+  approval, verification, review, retry, and escalation boundaries.
+- Eight deterministic fixtures and ten synthetic regressions exercise agent
+  output/eval behavior without making a live-model quality claim.
+- The controlled all-files wrapper is implemented but remains an explicit
+  task-evidence gate; direct agent execution of `pre-commit run --all-files`
+  remains prohibited.
 
 ## Safe Boundary
 
@@ -87,14 +107,16 @@ not runtime or provider policy.
 
 ## Source Rules
 
-- External sources were revalidated on **2026-07-11**. OpenAI, Anthropic, and
+- External sources were revalidated on **2026-07-11** and the repo-local
+  implementation comparison was reconciled on **2026-07-16**. OpenAI, Anthropic, and
   GitHub product guidance is mutable and proves retrieval-time behavior only.
 - NIST SSDF v1.1 is a February 2022 high-level secure-development framework;
   this reference does not claim formal conformance.
 - GitHub's vibe-coding tutorial is official workflow guidance, not evidence that
   conversational iteration is safe for every repository surface.
-- Repo-local applicability is based on tracked files at baseline
-  `84d88ee48085304ad5aa3adce0a9e74b574758b0`; Graphify is older and advisory.
+- Repo-local applicability is based on tracked Stage 00 contracts, generated
+  provider surfaces, validators, tests, and QA/CI definitions. Graphify remains
+  advisory and must be corroborated against those sources.
 
 ## Sources
 

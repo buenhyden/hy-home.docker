@@ -46,10 +46,14 @@ scripts, CI, and runtime configuration remain authoritative for behavior.
   `Needs Revalidation` exactly.
 - Enforcement depth is `0` absent, `1` documented, `2` partially applied,
   `3` automated/enforced, and `4` measured with a closed feedback loop.
-- The tracked tree contains 15 role files per provider surface and 22 skill
-  directories per provider surface. `sync-provider-surfaces.sh --check`
-  reports no name/model/projection drift; this does not prove native-schema
-  compatibility or runtime execution.
+- The tracked tree contains 14 canonical roles (one supervisor and thirteen
+  workers), 22 functions, and 14 generated role adapters on each of the
+  Claude, Codex, Gemini, and shared compatibility surfaces. Function skills
+  intentionally project to 22 Claude and 22 shared `.agents` directories;
+  Gemini consumes the canonical functions through generated agents rather than
+  a duplicate `.gemini/skills` tree. `sync-provider-surfaces.sh --check`
+  reports three providers and zero drift; this does not prove native runtime
+  acceptance or account entitlement.
 
 ## Assessment Method
 
@@ -64,19 +68,19 @@ below is corroborated by tracked source.
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | HAR-01 | Discover hierarchical provider instructions with explicit precedence. | Thin `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` shims route to `docs/00.agent-governance/rules/bootstrap.md`; provider sync validates projections. | Implemented | 3 | Retain | Stage 00 bootstrap and provider notes | Existing sync/contracts; add no parallel instruction layer. | `bash scripts/operations/sync-provider-surfaces.sh --check`; inspect root shims. | High: direct tracked evidence; loading still does not prove compliance. |
-| HAR-02 | Use native isolated subagents with bounded schema, tools, model, and handoff. | Stage 00 defines one supervisor and fourteen workers; provider sync reports no drift across 15 Claude agents, 15 Codex TOMLs, and 15 `.agents` pointers. Codex native schema acceptance and `.gemini/agents` adoption remain unproved. | Partial | 2 | Fix | Stage 00 subagent protocol plus provider adapters | Retain synchronized lifecycle/schema projections and provider semantic checks; require separate native acceptance evidence. | Compare `subagent-protocol.md` with all three role directories, run provider sync `--check`, and inspect current PIC evidence. | High for tracked parity; live provider acceptance is unobserved. |
+| HAR-02 | Use native isolated subagents with bounded schema, tools, model, and handoff. | Stage 00 defines one supervisor and thirteen workers; the renderer emits 14 strict native role adapters for Claude, Codex, and Gemini plus 14 shared compatibility adapters. Schema and drift checks pass, while live provider acceptance remains unproved. | Partial | 3 | Retain | Stage 00 subagent protocol plus provider adapters | Retain synchronized lifecycle/schema projections and provider semantic checks; require separate native acceptance evidence. | Compare `subagent-protocol.md` with all four role directories, run provider sync `--check`, and inspect current PIC evidence. | High for tracked parity; live provider acceptance is unobserved. |
 | HAR-03 | Bound tools/MCP by native controls and repository authority. | Approval/environment rules and canonical scripts bound actions, but tracked role metadata is not a tool/path allowlist and no shared tracked project MCP baseline exists. | Partial | 2 | Improve | Stage 00 approval boundaries and provider configuration owners | Candidate denied-action/tool-boundary tests; do not inspect or overwrite user-global config. | Inspect `approval-boundaries.md`, role adapters, and tracked provider config paths. | High for policy; runtime MCP/permissions are unknown. |
-| HAR-04 | Intercept lifecycle events without inventing cross-provider event parity. | The current parity generator reports seven Claude native wrappers, seven Codex native dispatches, and seven Gemini behavioral reminders. No tracked `.gemini` hook adapter or live interception evidence exists. | Partial | 2 | Fix | Stage 00 hook contract and provider adapters | Retain generated hook-parity semantics and the reminder/native-adoption boundary; do not infer live interception. | Run provider hook parity `--check`; inspect `.claude/settings.json`, `.codex/hooks.json`, and provider notes. | High for tracked configuration; live provider interception is unobserved. |
+| HAR-04 | Intercept lifecycle events without inventing cross-provider event parity. | One typed seven-event contract renders seven Claude and seven Gemini native mappings plus six Codex native mappings; Codex `SessionEnd` is explicitly unsupported. Repository checks validate the tracked commands and semantics, but live interception evidence is absent. | Partial | 3 | Retain | Stage 00 hook contract and provider adapters | Retain generated hook-parity semantics and the explicit unsupported-event boundary; do not infer live interception. | Run provider sync and hook-parity checks; inspect `.claude/settings.json`, `.codex/hooks.json`, `.gemini/settings.json`, and provider notes. | High for tracked configuration; live provider interception is unobserved. |
 | HAR-05 | Separate sandbox isolation, approval, network, and repository authority. | Stage 00 documents protected actions and environment constraints; provider settings expose different controls. Tracked files cannot prove the executing sandbox profile, unattended mode, egress, or user-global settings. | Partial | 2 | Improve | Stage 00 environment and approval rules | Record actual execution mode in task evidence where available; do not infer global state. | Inspect `environment-constraints.md`, `approval-boundaries.md`, and task evidence. | Medium-high: policy is direct; runtime mode is intentionally unobserved. |
-| HAR-06 | Select exact models and provider-native reasoning controls with coupled validation. | Policy maps Claude `opus-4.8`/`sonnet-4.6` via `opus`/`sonnet`; Codex `gpt-5.5` `xhigh` and `gpt-5.4-mini` `medium`; Gemini `gemini-3.1-pro` and `gemini-3.5-flash`. Contracts enforce literals, but entitlement is unproven and research flags the Gemini supervisor literal. | Partial | 3 | Improve | `subagent-protocol.md` model policy | Keep current values; any change requires AMS-01..07 evidence, generator/validator coupling, and rollback. | `rg` model literals; provider sync; repo contracts. | High for tracked policy, medium for provider availability/correctness. |
-| HAR-07 | Connect deterministic validation, task evidence, and semantic evaluation. | Validators/CI/task review exist. Three agent-output fixtures and a freshness runner exist; arbitrary-output scoring, baseline, threshold, and regression history do not. | Partial | 3 | Improve | QA scope and Stage 04 task owner | Existing fixture freshness automation; future scored eval requires an approved dataset/scorer contract. | `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures`. | High: direct runner result `3/3`; semantic coverage is explicitly absent. |
+| HAR-06 | Select exact models and provider-native reasoning controls with coupled validation. | The typed policy maps complex implementation to Claude Sonnet 5, Codex GPT-5.6, and Gemini 3.5 Flash; supervision to Opus 4.8, GPT-5.6, and Gemini 3.5 Flash; and read-heavy work to Haiku 4.5, GPT-5.6 Terra, and Gemini 3.1 Flash-Lite. Exact provider-native effort/thinking values, fallbacks, source records, renderer output, and repository validators are coupled. Availability and entitlement remain separately unverified rather than weakening the tracked contract. | Implemented | 3 | Retain | `subagent-protocol.md` and provider-model contract | Preserve atomic contract/renderer/adapter/validator/evidence updates and approved rollback edges. | Run model-contract, provider-sync, and repository-contract checks; inspect exact adapter literals. | High for tracked policy and controls; runtime availability is explicitly out of scope. |
+| HAR-07 | Connect deterministic validation, task evidence, and semantic evaluation. | The harness validator, CI/local routing, Stage 04 evidence, eight versioned fixtures, ten synthetic regressions, exact thresholds, and value-free bounded evaluator form a deterministic corrective loop. The suite makes no live model-quality claim. | Implemented | 4 | Retain | QA scope and Stage 04 task owner | Retain the calibrated synthetic eval and independent review loop; add live/model comparative evaluation only under a separate approved contract. | `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions`; `bash scripts/validation/validate-harness.sh`. | High: exact markers require fixtures `8/8` and regressions `10/10`. |
 
 ## Findings
 
-- Structural projection and deterministic validation are stronger than native
-  compatibility, live permission evidence, and semantic output measurement.
-- No row reaches depth 4: the repository does not yet maintain a measured
-  harness feedback loop with baselines and closed regression history.
+- Structural projection, deterministic validation, and the calibrated synthetic
+  evaluator now close a measured depth-4 repository loop. Native compatibility,
+  live permission evidence, entitlement, and comparative model quality remain
+  separate unverified surfaces.
 - Provider facts in the research pack do not change Stage 00 policy. In
   particular, native Gemini CLI agents/hooks do not make `.agents` a native
   `.gemini` implementation.
@@ -87,14 +91,15 @@ below is corroborated by tracked source.
 | --- | --- | --- |
 | Native agent-schema acceptance and tracked/live hook-event compatibility | Separate provider/runtime verification | Current Stage 00, generator, adapter, validator, and parity evidence is synchronized; retain Partial until native/live acceptance is observed. |
 | Gemini CLI native adoption versus Antigravity pointer behavior | Future approved provider task | Decide explicitly; do not relabel pointers as native adoption. |
-| Semantic agent-output scoring | QA/eval follow-up | Define versioned tasks, scorer, threshold, privacy, and calibration before blocking. |
+| Live or comparative model-quality scoring | QA/eval follow-up | The deterministic synthetic scorer is implemented; define a separate versioned dataset, privacy boundary, and provider-runtime contract before any live comparison. |
 | Runtime sandbox, entitlement, MCP, and egress facts | Executing task/provider owner | Record scoped observations only; leave unobserved global state unknown. |
 
 ## Automation Impact
 
-Retain structural sync and fixture freshness. Improve native-schema/event
-compatibility and semantic scoring only through approved active-stage work;
-no new audit-only automation is introduced here.
+Retain structural sync, exact fixture/regression scoring, and typed harness
+routing. Improve native-schema/event acceptance and live comparative scoring
+only through approved active-stage work; no audit-only runtime automation is
+introduced here.
 
 ## Source Rules
 

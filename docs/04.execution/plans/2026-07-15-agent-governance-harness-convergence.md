@@ -812,18 +812,18 @@ semantic_events:
   `docs/00.agent-governance/memory/progress.md`, generated Stage 90 owners, and
   any cross-links made stale by the retired roles or new `.gemini/` paths.
 
-- [ ] Run a retired-reference search for `style-enforcer`, `wiki-curator`,
+- [x] Run a retired-reference search for `style-enforcer`, `wiki-curator`,
   nonexistent Hookify local paths, `.agents`-as-Gemini-native claims, stale
   model IDs/defaults, literal imports, and provider-local source-of-truth
   language. Classify historical mentions separately from current claims.
-- [ ] Revalidate each changed research statement against the dated official
+- [x] Revalidate each changed research statement against the dated official
   sources already cited by Spec 132. Record source date and distinguish
   inference from provider fact.
-- [ ] Re-run the canonical audit generators and validators. Recalculate the
+- [x] Re-run the canonical audit generators and validators. Recalculate the
   161-criterion distribution from the observed matrix; do not choose counts to
   match the design. Promote a criterion only when the matrix evidence and
   validation depth justify it.
-- [ ] Preserve hard audit invariants: 11 criterion reports; 161 unique IDs;
+- [x] Preserve hard audit invariants: 11 criterion reports; 161 unique IDs;
   the existing ten-column schema; only `Implemented`, `Partial`, `Missing`,
   `Not Applicable`, or `Needs Revalidation`; and criterion-family counts HAR
   7, LOOP 6, PIC 17, WRE 10, AIV 16, AIC 7, AMS 7, AUT 11, SDLC 22, DML 14,
@@ -833,8 +833,8 @@ semantic_events:
 - [ ] Update the Task Work Log, Verification Evidence, Review Evidence, Commit
   Ledger, Deferred Items, and pre-wrapper branch-range evidence with sanitized
   results. Leave wrapper fields `not_run` and lifecycle statuses `active`.
-- [ ] Run the full verification ladder below and resolve all blocking failures.
-- [ ] Run `graphify update .` when available, inspect the new report, and
+- [x] Run the full verification ladder below and resolve all blocking failures.
+- [x] Run `graphify update .` when available, inspect the new report, and
   corroborate advisory results against tracked Stage 00/03/04/90 and executable
   owners. Restore unrelated generated graph noise if it is not an intended
   artifact.
@@ -878,7 +878,7 @@ semantic_events:
 python3 -m unittest tests.validation.test_agent_governance_contract -v
 python3 -m unittest tests.validation.test_document_metadata -q
 python3 scripts/validation/check-agent-governance-contract.py --mode contract
-python3 scripts/validation/check-agent-governance-contract.py --mode repository
+python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
 python3 -m unittest tests.validation.test_provider_surface_renderer -v
 python3 -m unittest tests.validation.test_provider_native_surfaces -v
 bash scripts/operations/sync-provider-surfaces.sh --check

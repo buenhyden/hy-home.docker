@@ -149,7 +149,7 @@ Redaction boundary:
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-004 | Provider-native adapters and dated model policy | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
-| T-AGHC-006 | Reference/audit/evidence reconciliation and closure | In progress; canonical reconciliation next |
+| T-AGHC-006 | Reference/audit/evidence reconciliation and closure | In progress; canonical reconciliation and pre-wrapper verification complete, independent reviews pending |
 
 ## Work Log
 
@@ -235,7 +235,41 @@ Redaction boundary:
 
 Implementation rows are appended only after the relevant agent finishes work.
 
+| 2026-07-18 | T-AGHC-006 canonical reconciliation | Fresh implementation agent | Reconciled the active July 5 research/audit pack with tracked Task 1-5 implementation and the dated provider/model evidence. The generated audit matrix now reports 11 criterion reports, 161 unique ten-column rows, exact family counts, and the observed raw distribution 77 Implemented / 60 Partial / 13 Missing / 2 Not Applicable / 9 Needs Revalidation. Live provider acceptance, entitlement, remote enforcement, CD, deployment, and rollback remain unpromoted. The controlled all-files wrapper remains `not_run`. |
+| 2026-07-18 | T-AGHC-006 pre-wrapper verification | Fresh implementation agent | Completed the dependency-locked unit, typed contract, provider, semantic-eval, metadata, lifecycle, traceability, alignment, workflow, local-harness, aggregate, generated-owner, and Graphify ladder. One stale CLI example and bare-Python dependency resolution were corrected through the tracked Plan and canonical UV runtime; no product finding remained. The controlled all-files wrapper remains `not_run`, and Task 6 independent reviews remain pending. |
+
 ## Verification Evidence
+
+T-AGHC-006 pre-wrapper reconciliation evidence:
+
+| Command or evidence | Expected | Actual | State |
+| --- | --- | --- | --- |
+| canonical audit generator and freshness check | 11 reports, 161 unique exact-schema rows, no structural failure | 11 reports; 161/161 rows/IDs; family counts exact; generator fresh | Pass |
+| audit status distribution | derive from current criterion rows | 77 Implemented; 60 Partial; 13 Missing; 2 Not Applicable; 9 Needs Revalidation; other 0 | Pass |
+| audit coverage report | exact report/prefix cardinalities | HAR 7, LOOP 6, PIC 17, WRE 10, AIV 16, AIC 7, AMS 7, AUT 11, SDLC 22, DML 14, QAF 16, CIO 14, SEC 14 | Pass |
+| focused unit suites | all pass in the dependency-locked runtime | governance 139/139; metadata 213/213; renderer 20/20; provider-native 22/22 | Pass |
+| typed contracts, repository, provider, and semantic eval | exact cardinalities, zero findings/drift, exact fixtures | contract 3/14/22/3/0; repository `failures=0`; provider drift 0; fixtures 8/8 and regressions 10/10 | Pass |
+| metadata, traceability, and alignment | zero introduced violations or link/alignment failures | changed metadata selected 117 / violations 0 / legacy exceptions 3 / overrides 0; traceability 46/0; alignment 653 documents / 5,206 links / 141 operations documents / 0 | Pass |
+| generated owners | fresh after canonical regeneration | audit matrix, security readiness, LLM Wiki index, LLM Wiki coverage, and metadata inventory fresh; inventory 910 records / 2,145 advisory findings | Pass |
+| harness, local QA, and repository aggregate | zero blocking failures | lifecycle 89/89; core Compose static render 5 services; 11 hardening tiers pass; harness and local `--harness` exit 0; aggregate `failures=0` | Pass |
+| provider/workflow syntax | all parsers and linters pass | three provider JSON files, five shell syntax targets, Actionlint, and Yamllint pass | Pass |
+| Graphify refresh and source corroboration | refresh succeeds; advisory graph evidence is corroborated and generated noise restored | 24,994 nodes / 28,771 edges / 1,613 communities; 436 inferred edges, 16,478 isolated nodes, 70 thin communities, two low-confidence ambiguities, and the visualization size skip corroborated against tracked Stage 00/03/04/90 plus executable owners; generated outputs restored | Pass |
+| full verification ladder | zero blocking failures | all pre-wrapper gates above pass under the canonical dependency-locked runtime | Pass |
+| controlled all-files wrapper | remain separate until clean committed candidate and reviews | `not_run` | Not run by design |
+
+Execution deviations were bounded and value-free. The original Plan example
+called repository mode without its required `--section`; it exited 2 with
+usage before repository validation, so the Plan now records `--section all`
+and the corrected UV run reports `failures=0`. Bare Python invocations of the
+governance suite and provider-sync check failed closed with
+`AGC-DEPENDENCY-MISSING` for `html5lib`; the canonical
+`uv run --with-requirements scripts/requirements.txt` reruns produced the pass
+results above. The audit matrix was regenerated once after its canonical
+README metadata counts changed and its subsequent freshness check passed.
+
+Pre-wrapper candidate base is `6cde68dc`; the exact candidate tip is the
+T-AGHC-006 logical commit returned to the independent reviewers. No wrapper or
+closure claim is made by this pre-commit evidence.
 
 T-AGHC-003 implementation verification:
 

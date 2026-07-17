@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:ai-agent-catalogs
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-07-16
 review_cycle: on-source-change
 ---
 
@@ -74,11 +74,15 @@ review, escalation, and vibe-coding criteria are canonical in
 - The upstream README calls the catalog “Production-Ready” and
   “battle-tested.” Those are publisher claims, not independent evaluation or
   workspace adoption evidence.
-- The workspace catalog contains 15 roles (one workflow supervisor and
-  fourteen workers) and 22 tracked skills. Stage 00 is canonical.
-- `scripts/operations/sync-provider-surfaces.sh` generates Codex role TOMLs
-  and Gemini/Antigravity agent/skill pointers from canonical/local sources;
-  `--check` currently reports no drift.
+- The workspace catalog contains 14 roles (one workflow supervisor and
+  thirteen workers) and 22 canonical functions. Stage 00 is canonical.
+- `scripts/operations/sync-provider-surfaces.sh` renders strict Claude, Codex,
+  and Gemini native role adapters plus shared `.agents` compatibility adapters
+  and Claude/shared function skills from canonical sources; `--check` reports
+  three providers and zero drift.
+- The typed `capability_intake` registry records seven bounded upstream
+  capability decisions. Eight fixtures and ten synthetic regressions provide
+  deterministic evaluation evidence; neither proves live-model acceptance.
 
 ## Capability-Family Gap Analysis
 
@@ -100,7 +104,7 @@ disposition is task-fit analysis and does not add or rename a role.
 
 | Catalog concern | agency-agents pattern | Workspace pattern | Importability | Required wrapper/control | Recommendation | Owner |
 | --- | --- | --- | --- | --- | --- | --- |
-| Persona breadth | 230+ role personas across 17 observed division headings optimize for broad business coverage | 15 repository-specific roles optimize for bounded recurring work | Reference only | Candidate role must correspond to a demonstrated workspace gap and avoid duplicate ownership | Use division taxonomy for discovery; add no role without an approved Stage 00 proposal | `docs/00.agent-governance/agents/README.md` |
+| Persona breadth | 230+ role personas across 17 observed division headings optimize for broad business coverage | 14 repository-specific roles optimize for bounded recurring work | Reference only | Candidate role must correspond to a demonstrated workspace gap and avoid duplicate ownership | Use division taxonomy for discovery; add no role without an approved Stage 00 proposal | `docs/00.agent-governance/agents/README.md` |
 | Role boundaries | Persona files emphasize identity, mission, workflows, deliverables, and voice; boundary precision varies by role | Each canonical role is tied to purpose, scope, model policy, delegation, and repository rules | Adapt after review | Rewrite mission into explicit in-scope/out-of-scope and canonical-owner boundaries | Import the job to be done, not the persona's assumed authority | `docs/00.agent-governance/agents/README.md` |
 | Prompt portability | Markdown bodies are copied or converted across many tool formats | Provider adapters are projections of Stage 00 and shared Claude skill content where applicable | Adapt after review | Normalize provider-required fields and remove tool-specific invocation assumptions | Maintain one reviewed canonical role, then generate/test each adapter | `scripts/operations/sync-provider-surfaces.sh` |
 | Scope imports | Upstream personas may refer to generic projects, departments, files, or external systems | Stage 00 scopes route work by repository surface and lifecycle owner | Do not direct-import | Replace all generic scope text with tracked repo paths, stage owners, and explicit exclusions | Reject any definition whose target scope cannot be expressed in the Stage 00 model | `docs/00.agent-governance/scopes/README.md` |
@@ -117,7 +121,7 @@ disposition is task-fit analysis and does not add or rename a role.
 
 | Category | Current state | External primary | Comparison | Status | Gap | Recommendation | Canonical owner | Evidence | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Agent catalog and import boundary | Stage 00 owns 15 roles and provider projections; 22 skills and generated pointer/TOML surfaces are tracked and parity-checked. | Pinned `agency-agents` repository, README, license, and integration documentation | Upstream optimizes for catalog breadth and cross-tool installation; the workspace optimizes for bounded ownership and reviewed projections. | Partially Implemented | No dedicated third-party-agent intake checklist or semantic candidate-role benchmark is adopted. | Keep reference-only as the default; route one pinned candidate through security, QA, Stage 00 proposal, generation, and independent review. | `docs/00.agent-governance/agents/README.md` | Catalog files; sync `--check`; repository contracts; pinned upstream sources | High |
+| Agent catalog and import boundary | Stage 00 owns 14 roles, 22 functions, four role-projection surfaces, and a typed seven-entry `capability_intake` registry; exact renderer and semantic-eval checks are tracked. | Pinned `agency-agents` repository, README, license, and integration documentation | Upstream optimizes for catalog breadth and cross-tool installation; the workspace optimizes for bounded ownership, explicit merge/defer decisions, and reviewed projections. | Implemented | No live candidate-role acceptance benchmark or autonomous catalog import is adopted. | Keep reference-only as the default; route any new pinned candidate through the typed intake, security, QA, Stage 00 proposal, generation, and independent review. | `docs/00.agent-governance/agents/README.md` | Catalog/intake contracts; sync `--check`; `8/8` fixtures and `10/10` regressions; pinned upstream sources | High |
 
 ## Safe Adaptation Sequence
 
@@ -152,7 +156,8 @@ disposition is task-fit analysis and does not add or rename a role.
 - Label publisher maturity claims as self-claims unless independent evidence
   exists.
 - Verify workspace facts against Stage 00 and tracked generator/validator
-  implementations.
+  implementations. Repo-local catalog/projection facts were reconciled on
+  2026-07-16; the immutable upstream pin was last revalidated on 2026-07-11.
 
 ## Sources
 

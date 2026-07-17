@@ -26,6 +26,29 @@ status: active
 - Stage 90은 source-backed comparison과 routing을 제공할 뿐입니다. 현재 policy는 Stage 00/05 policy 문서, execution evidence는 Stage 04, runtime truth는 tracked provider/Compose/script/config surface가 계속 담당합니다.
 - 2026-07-13 document-contract 연구는 이 canonical pack의 관련 leaf만 in-place로 재검증했습니다. 별도 날짜 pack이나 dated audit snapshot을 만들거나 다시 쓰지 않았습니다.
 
+## Current Implementation Reconciliation
+
+2026-07-16 저장소 관찰 결과를 이 pack의 구현 비교에 반영했습니다. Stage
+00은 14개 role, 22개 function, 3개 provider와 4개 role projection surface를
+typed contract로 소유합니다. 생성기는 Claude, Codex, Gemini native adapter와
+공유 `.agents` compatibility adapter를 분리하며, provider sync는 3개
+provider에서 drift 0을 보고합니다. 7개 semantic hook event, 4개 typed loop,
+8개 fixture와 10개 synthetic regression도 tracked validation owner에 연결되어
+있습니다.
+
+QA/CI 관찰값은 7개 workflow와 22개 job, 24개 pre-commit hook, 기본 20개와
+harness 18개의 script-backed local QA step입니다. Controlled all-files wrapper는
+별도 승인된 최종 evidence gate이므로 이 step 수에 포함하지 않습니다. 이
+구현 정합화에 따라 canonical audit 분포는 161개 criterion 중 Implemented 77,
+Partial 60, Missing 13, Not Applicable 2, Needs Revalidation 9입니다.
+
+이 수치는 tracked definition과 deterministic test 깊이만 설명합니다. provider
+CLI의 live acceptance, 모델 entitlement/actual availability, remote required-check
+enforcement, CD·deployment·rollback은 별도 관찰 또는 승인이 없으므로 계속
+Partial 또는 Needs Revalidation 경계에 둡니다. 모델의 historical cutoff는
+2026-07-10 10:00 KST이고 typed current registry의 retrieval boundary는
+2026-07-16입니다.
+
 ## Audience
 
 이 README의 주요 독자:

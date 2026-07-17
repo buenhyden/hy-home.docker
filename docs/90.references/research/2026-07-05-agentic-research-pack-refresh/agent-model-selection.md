@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:agent-model-selection
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-07-16
 review_cycle: on-source-change
 ---
 
@@ -35,7 +35,7 @@ reviewers can reason about model configuration without re-deriving it.
 
 This reference supports `subagent-protocol.md`, `rules/provider-capability-matrix.md`,
 and the provider adapter surfaces (`.claude/agents/`, `.codex/agents/`,
-`.agents/`). It is advisory background only. It does not set model policy, change
+`.gemini/agents/`, `.agents/`). It is advisory background only. It does not set model policy, change
 any agent's model or reasoning effort, or authorize a provider adapter change;
 the Model Policy table and the change protocol in `subagent-protocol.md` remain
 the single source of truth.
@@ -66,35 +66,37 @@ the single source of truth.
   **reasoning effort** (how much deliberation the same model spends on a task).
   Tuning effort is often a better lever than switching models, because it trades
   intelligence for latency and cost within one model.
-- **Tier model** (`subagent-protocol.md`): The repo defines two tiers.
-  **Supervisor (top spec)** covers routing, final decisions, synthesis,
-  planning, architecture, and refactoring. **Worker (right-sized)** covers scoped
-  task execution, repetitive editing, doc organizing, and summarization.
+- **Work profiles** (`subagent-protocol.md`): The repo defines supervision,
+  complex-implementation, and read-heavy-repetitive profiles. Profiles bind an
+  exact provider model and native effort/thinking control to task
+  characteristics; they do not imply cross-provider capability equivalence.
 - **Single-Supervisor rule**: `workflow-supervisor` is the only Supervisor-tier
   role; every other catalog agent is Worker tier. This makes tier selection a
   property of the role, not a per-invocation decision.
-- **Provider-equivalent mapping**: Supervisor resolves to Claude `opus-4.8`,
-  Gemini `gemini-3.1-pro`, and GPT/Codex `gpt-5.5`. Worker resolves to Claude
-  `sonnet-4.6`, Gemini `gemini-3.5-flash`, and GPT/Codex `gpt-5.4-mini`. The
-  Model Policy baseline date is 2026-05-29.
-- **Claude mechanics**: `.claude/agents/*.md` carry the Claude Code aliases
-  `opus` (Supervisor) and `sonnet` (Worker), which resolve to `opus-4.8` and
-  `sonnet-4.6`. Claude expresses reasoning effort with an effort parameter that
-  defaults to `high` on `opus-4.8`. Provider-native effort behavior is not
-  normalized to the Codex effort policy.
-- **Codex mechanics**: `.codex/agents/*.toml` carry the literal model identifier
-  plus a required `model_reasoning_effort`. `workflow-supervisor` uses `xhigh`;
-  default workers use `medium`; an approved task may raise a worker to `high`;
-  repetitive formatting-only work may drop to `low` through a task-specific
-  override. These are workspace values; model support remains model-specific.
-- **Gemini mechanics**: The Antigravity IDE manages reasoning effort strictly
-  through model selection. `gemini-3.1-pro` is mandated for high-effort work
-  (planning, complex refactors); `gemini-3.5-flash` handles standard or low-effort
-  work (repetitive edits, text classification).
-- **Enforcement**: The name/model/scope mapping is machine-checked by
-  `scripts/validation/check-repo-contracts.sh`; provider adapters must keep
-  parity with the Stage 00 catalog. This validation does not prove provider
-  availability.
+- **Current profile mapping**: Supervision resolves to Claude
+  `claude-opus-4-8`, Codex `gpt-5.6`, and Gemini `gemini-3.5-flash`.
+  Complex implementation resolves to `claude-sonnet-5`, `gpt-5.6`, and
+  `gemini-3.5-flash`. Read-heavy/repetitive work resolves to
+  `claude-haiku-4-5-20251001`, `gpt-5.6-terra`, and
+  `gemini-3.1-flash-lite`.
+- **Claude mechanics**: `.claude/agents/*.md` carry exact model IDs and only
+  the supported per-model effort surface. Opus 4.8 and Sonnet 5 use adaptive
+  thinking with configured effort; Haiku 4.5 uses extended thinking and omits
+  the unsupported effort key. Claude controls are not normalized to Codex or
+  Gemini values.
+- **Codex mechanics**: `.codex/agents/*.toml` carry the exact model identifier
+  plus `model_reasoning_effort`. Supervision uses `xhigh`, complex work uses
+  `high`, and read-heavy work uses `low`. GPT-5.6 is provider-listed without a
+  provider maturity label, so the workspace records it as
+  `unclassified-listed`, not `stable`.
+- **Gemini mechanics**: `.gemini/agents/*.md` use `gemini-3.5-flash` with
+  `high` for supervision/complex work and `gemini-3.1-flash-lite` with
+  `minimal` for read-heavy work. `.agents` remains the shared compatibility
+  projection and is not treated as Gemini native configuration.
+- **Enforcement**: The typed provider-model contract, deterministic renderer,
+  provider sync, strict native-schema checks, and repository contracts enforce
+  model/profile/control/fallback coupling across all four adapter surfaces.
+  This validation does not prove provider availability or entitlement.
 - **Catalog/cutoff boundary**: The linked landscape has 145 structural rows from
   the 2026-07-10 retrieval, but only 142 have evidence proving release or
   existence before 01:00 UTC. GPT-5.6 Sol, Terra, and Luna remain retrieval-time
@@ -103,10 +105,13 @@ the single source of truth.
   first-party exact-ID evidence added in the final remediation: one OpenAI-owned
   SDK support commit and four OpenAI release announcements. Their mutable
   listing/lifecycle state remains separately `historical state unverified`.
-- **Cutoff finding**: At the cutoff, `gemini-3.5-flash` is an official Stable
-  model ID. The official Pro ID is `gemini-3.1-pro-preview`; the workspace
-  Supervisor value `gemini-3.1-pro` lacks `-preview` and is recorded as an
-  unsupported-availability gap, not silently corrected here.
+- **Cutoff versus retrieval**: The historical cutoff remains immutable at
+  2026-07-10 10:00 KST. The typed current-state registry was retrieved at
+  `2026-07-16T01:17:36+09:00`; it cannot backdate GPT-5.6's unzoned `Jul 9`
+  changelog entry. GPT-5.6 Sol/Terra/Luna therefore remain cutoff-unverified
+  even though current official pages list them. Gemini 3.5 Flash and 3.1
+  Flash-Lite are Stable; the exact Pro preview ID remains
+  `gemini-3.1-pro-preview` and is non-default.
 
 ## Exact Model-Approval Evidence Contract
 
@@ -127,9 +132,11 @@ Passing this table does not itself authorize a model or adapter change.
 
 The fixed cutoff ledger currently holds GPT-5.6 Sol/Terra/Luna at AMS-01 because
 their unzoned `Jul 9` changelog entry does not prove release before 01:00 UTC.
-It holds the Gemini Supervisor literal at AMS-01/AMS-02 because the official API
-ID is `gemini-3.1-pro-preview`, not the workspace string. Those are evidence
-gaps, not authorization to edit Stage 00.
+The current typed policy may select those exact listed IDs while retaining
+`historical-state-unverified`, `needs_revalidation` entitlement, and
+`needs_revalidation` runtime acceptance. The exact Gemini Pro preview ID remains
+catalog-only. Those boundaries are evidence states, not authorization to infer
+live availability.
 
 ## Task-Characteristic to Configuration Mapping
 
@@ -140,11 +147,11 @@ lives in `provider-model-landscape.md`.
 
 | Task characteristic | Required capabilities | Claude option | OpenAI/Codex option | Gemini option | Latency/cost consideration | Evidence basis | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Routing, arbitration, final synthesis | Long-horizon reasoning, synthesis, tools | Policy `opus-4.8` via `opus` | Policy `gpt-5.5`, `xhigh` | Policy `gemini-3.1-pro`; official API ID gap noted | Capability is prioritized; no cross-provider cost rank | Stage 00 policy plus official descriptions | High for policy; Medium for equivalence |
-| Planning, architecture, complex refactoring | Reasoning, coding, context, verification | Policy `opus-4.8` via `opus` | Policy `gpt-5.5`, `xhigh` | Policy `gemini-3.1-pro`; official ID is Preview | Capability is prioritized; no price claim | Stage 00 policy plus cutoff catalog | High for policy; Medium for availability |
-| Scoped implementation within one domain | Coding, tools, bounded execution | Policy `sonnet-4.6` via `sonnet` | Policy `gpt-5.4-mini`, `medium` (`high` only if approved) | Policy `gemini-3.5-flash` | Mini/Flash official descriptions emphasize efficiency | Stage 00 Worker taxonomy plus model pages | High |
-| Doc organizing, summarization, review | Instruction following, context, structured output | Policy `sonnet-4.6` | Policy `gpt-5.4-mini`, `medium` | Policy `gemini-3.5-flash` | No provider cost rank; evaluate representative docs | Stage 00 taxonomy | High |
-| Repetitive formatting-only editing | Low-latency bounded edits | Policy `sonnet-4.6` | Policy `gpt-5.4-mini`, task override `low` | Policy `gemini-3.5-flash` | Lower effort is the approved workspace lever | Stage 00 reasoning policy | High |
+| Routing, arbitration, final synthesis | Long-horizon reasoning, synthesis, tools | `claude-opus-4-8`, `high` | `gpt-5.6`, `xhigh` | `gemini-3.5-flash`, `high` | Capability is prioritized; no cross-provider cost rank | Stage 00 typed supervision profile plus official descriptions | High for policy; Medium for equivalence |
+| Planning, architecture, complex refactoring | Reasoning, coding, context, verification | `claude-opus-4-8`, `high` | `gpt-5.6`, `xhigh` | `gemini-3.5-flash`, `high` | Capability is prioritized; no price claim | Stage 00 supervision profile plus cutoff/current boundary | High for policy; Medium for live availability |
+| Scoped implementation within one domain | Coding, tools, bounded execution | `claude-sonnet-5`, `high` | `gpt-5.6`, `high` | `gemini-3.5-flash`, `high` | Exact controls are provider-native; no numeric comparison | Stage 00 complex-implementation profile plus model pages | High for tracked policy |
+| Doc organizing, summarization, review | Instruction following, context, structured output | `claude-haiku-4-5-20251001` | `gpt-5.6-terra`, `low` | `gemini-3.1-flash-lite`, `minimal` | No provider cost rank; evaluate representative docs | Stage 00 read-heavy profile | High for tracked policy |
+| Repetitive formatting-only editing | Low-latency bounded edits | `claude-haiku-4-5-20251001` | `gpt-5.6-terra`, `low` | `gemini-3.1-flash-lite`, `minimal` | Right-sized profile is the approved workspace lever | Stage 00 read-heavy profile | High for tracked policy |
 
 ## Analysis
 
@@ -156,23 +163,20 @@ the workflow is optimized, or start from a fast, cheap model for high-volume,
 straightforward tasks and upgrade only for specific capability gaps. Sub-agent
 tasks are explicitly called out as a good fit for the fast, economical tier.
 
-The workspace resolves the first axis structurally: because only
-`workflow-supervisor` is Supervisor tier, top-spec models are reserved for
-orchestration, planning, architecture, and refactoring, and all scoped execution
-runs on the right-sized Worker tier. This keeps the expensive model on the small
-set of tasks where the policy prioritizes capability, and it removes
-per-invocation model-shopping from worker agents. The second axis, reasoning
-effort, is where
-task characteristics still vary the configuration at run time, most visibly in
-the Codex adapter's `model_reasoning_effort` and in Gemini's model-as-effort
-selection.
+The workspace resolves the first axis structurally through one supervisor and
+thirteen workers, each assigned one of three typed work profiles. The second
+axis remains provider-native: Claude effort/thinking, Codex reasoning effort,
+and Gemini thinking level are independently validated rather than presented as
+equivalent. This removes per-invocation model shopping while retaining an
+explicit, reviewed profile-change path.
 
 ## Application Notes for This Workspace
 
-- Read tier as a property of the role. If a task needs Supervisor-tier judgment,
+- Read the work profile as a property of the role. If a task needs supervisor judgment,
   route it to `workflow-supervisor` rather than raising a worker's model.
-- Vary effort, not model, for a worker whose task is unusually hard: request an
-  approved `high` Codex effort for that task instead of promoting the tier.
+- Use only the provider-native control allowed by the typed profile. A harder
+  task is rerouted or changed through the coupled policy protocol, not silently
+  given an unsupported or cross-provider effort value.
 - Treat any change to a model value, reasoning effort default, or provider
   mapping as a Model Policy change. The exact approved-change surfaces are the
   Stage 00 Model Policy, provider adapter generator, generated adapters,
@@ -182,16 +186,14 @@ selection.
   provider's model name onto another provider's adapter.
 - Record any model-selection decision as active-stage work, not inside this
   reference.
-- Treat the `gemini-3.1-pro` literal as a tracked gap until an approved task
-  supplies the concrete value, role, provider evidence, and validation path.
 - Treat newer catalog entries as candidates for evaluation, not automatic
   replacements for the current Supervisor or Worker values.
 
 ## Potential Follow-up / Gap
 
-- The Gemini Supervisor string is unsupported by the official cutoff catalog;
-  the official API page exposes `gemini-3.1-pro-preview` instead.
-- Account/product availability for the configured Claude and OpenAI/Codex values
+- GPT-5.6 is current and provider-listed but its unzoned release entry remains
+  cutoff-unverified and OpenAI does not label the listing Stable/GA.
+- Account/product availability for the configured Claude, OpenAI/Codex, and Gemini values
   is not proven by repository validators or public model catalogs.
 - There is no workspace cross-provider eval establishing task-quality, latency,
   or cost equivalence for the provider mapping.
