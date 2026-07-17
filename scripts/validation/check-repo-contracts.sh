@@ -3330,7 +3330,14 @@ roots = [
 ]
 
 failures: list[str] = []
-pattern = re.compile(r"(?<![\w./-])(\./)?(scripts/[A-Za-z0-9._/-]+\.sh)")
+approved_reference_prefix = (
+    r"(?:\./|\$BASE_DIR/|\$\{ROOT\}/|"
+    r"\$\(git rev-parse --show-toplevel\)/)?"
+)
+pattern = re.compile(
+    r"(?<![\w./$({-])" + approved_reference_prefix
+    + r"(?P<ref>scripts/[A-Za-z0-9._/-]+\.sh)"
+)
 deleted_entrypoints = {
     "scripts/hardening/check-ai-hardening.sh",
     "scripts/hardening/check-auth-hardening.sh",
@@ -3661,23 +3668,20 @@ failure_bytes = 0
 match_count = 0
 
 
-def record_missing_failure(
-    path: pathlib.Path, ref: str, *, explicit_dot_prefix: bool
-) -> None:
+def record_missing_failure(path: pathlib.Path, ref: str) -> None:
     global failure_bytes
     if len(failures) >= MAX_REFERENCE_FAILURES:
         raise UnsafeScriptReferenceSurface
     path_text = path.as_posix()
-    reference_text = ("./" if explicit_dot_prefix else "") + ref
     message_prefix = f"{path_text}: missing script reference "
     rendered_bytes = (
         len("FAIL: \n".encode("ascii"))
         + len(message_prefix.encode("utf-8", errors="strict"))
-        + len(reference_text.encode("ascii", errors="strict"))
+        + len(ref.encode("ascii", errors="strict"))
     )
     if failure_bytes + rendered_bytes > MAX_REFERENCE_FAILURE_BYTES:
         raise UnsafeScriptReferenceSurface
-    message = message_prefix + reference_text
+    message = message_prefix + ref
     failures.append(message)
     failure_bytes += rendered_bytes
 
@@ -3691,18 +3695,16 @@ try:
             match_count += 1
             if match_count > MAX_REFERENCE_MATCHES:
                 raise UnsafeScriptReferenceSurface
-            if match.end(2) - match.start(2) > MAX_REFERENCE_PATH_BYTES:
+            if match.end("ref") - match.start("ref") > MAX_REFERENCE_PATH_BYTES:
                 raise UnsafeScriptReferenceSurface
-            ref = match.group(2)
+            ref = match.group("ref")
             local_target = path.parent / ref
             root_target = pathlib.Path(ref)
             if confined_regular_exists(local_target) or confined_regular_exists(root_target):
                 continue
             if allows_deleted_entrypoint_reference(path, ref):
                 continue
-            record_missing_failure(
-                path, ref, explicit_dot_prefix=match.group(1) is not None
-            )
+            record_missing_failure(path, ref)
 except (UnicodeError, UnsafeScriptReferenceSurface):
     print("FAIL: unsafe script-reference surface", file=sys.stderr)
     sys.exit(1)

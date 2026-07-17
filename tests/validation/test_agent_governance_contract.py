@@ -3704,6 +3704,61 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
                 observed = codes(contract.validate_repository(root, bundle, "harness"))
                 self.assertIn("AGC-REPOSITORY-HARNESS-SEMANTICS", observed)
 
+    def test_precommit_guidance_uses_related_tool_state_for_permissions_and_exceptions(
+        self,
+    ) -> None:
+        unsafe_guidance = (
+            "Pre-commit is prohibited. It may be used by agents.",
+            "Pre-commit is prohibited; it can be invoked by local agents.",
+            "Pre-commit is prohibited: it should be executed by agents.",
+            "Pre-commit is prohibited. It remains approved.",
+            "Pre-commit is prohibited. This remains permitted for agents.",
+            "Pre-commit is prohibited / agents may run it locally.",
+            "Pre-commit is prohibited unless agents run it locally.",
+            "Pre-commit is prohibited except for agents.",
+            "Pre-commit is prohibited other than for local agents.",
+            "Pre-commit is prohibited apart from local agents.",
+            "Pre-commit is prohibited save for local agents.",
+            "Pre-commit is prohibited with the exception of local agents.",
+            "Pre-commit is not not allowed for agents.",
+        )
+        safe_guidance = (
+            "Pre-commit is prohibited. Agents may not use it.",
+            "Pre-commit is prohibited. Agents cannot invoke it.",
+            "Pre-commit is prohibited. It may not be run.",
+            "Pre-commit is prohibited. It can not be used.",
+            "Pre-commit is prohibited. It is not allowed.",
+            "Pre-commit is prohibited. It remains not approved.",
+            "Pre-commit is prohibited. Agents may run Ruff locally.",
+            "Pre-commit is prohibited. Tests may run locally.",
+            "Pre-commit is prohibited except through run-agent-precommit-all-files.sh.",
+            "Pre-commit is prohibited unless scripts/validation/run-agent-precommit-all-files.sh is used.",
+        )
+        for guidance in unsafe_guidance:
+            with self.subTest(kind="unsafe", guidance=guidance):
+                self.assertTrue(contract._has_direct_agent_precommit_guidance(guidance))
+        for guidance in safe_guidance:
+            with self.subTest(kind="safe", guidance=guidance):
+                self.assertFalse(
+                    contract._has_direct_agent_precommit_guidance(guidance)
+                )
+
+        for guidance in unsafe_guidance:
+            with (
+                self.subTest(kind="repository", guidance=guidance),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_task2_harness_surfaces(root)
+                local_qa = root / "scripts/validation/run-local-qa-gates.sh"
+                local_qa.write_text(
+                    local_qa.read_text(encoding="utf-8") + f"\n# {guidance}\n",
+                    encoding="utf-8",
+                )
+                bundle = contract.load_contract_bundle(root)
+                observed = codes(contract.validate_repository(root, bundle, "harness"))
+                self.assertIn("AGC-REPOSITORY-HARNESS-SEMANTICS", observed)
+
 
 if __name__ == "__main__":
     unittest.main()

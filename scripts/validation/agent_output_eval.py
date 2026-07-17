@@ -128,8 +128,29 @@ _SENSITIVE_COMPOUND_COMPONENTS = {
     "githubtoken": ("github", "token"),
     "refreshtoken": ("refresh", "token"),
 }
+_SAFE_COMPOUND_COMPONENTS = {
+    "cachekey": ("cache", "key"),
+    "databasekey": ("database", "key"),
+    "foreignkey": ("foreign", "key"),
+    "keyboardkey": ("keyboard", "key"),
+    "primarykey": ("primary", "key"),
+    "publickey": ("public", "key"),
+}
+_SENSITIVE_FUSED_SUFFIXES = (
+    ("secretaccesskey", ("secret", "access", "key")),
+    ("secretkey", ("secret", "key")),
+    ("apikey", ("api", "key")),
+)
+_SAFE_METADATA_TAILS = frozenset({("rotation", "policy")})
+_SAFE_METADATA_COMPONENT_KEYS = frozenset(
+    {
+        ("not", "api", "key", "material"),
+        ("password", "policy"),
+    }
+)
 _SENSITIVE_TRAILING_QUALIFIERS = frozenset(
     {
+        "ci",
         "dev",
         "development",
         "local",
@@ -137,6 +158,7 @@ _SENSITIVE_TRAILING_QUALIFIERS = frozenset(
         "prod",
         "production",
         "qa",
+        "sandbox",
         "stage",
         "staging",
         "test",
@@ -679,6 +701,50 @@ def _contains_sensitive_content(text: str) -> bool:
     )
 
 
+def _expand_sensitive_component(component: str) -> tuple[str, ...]:
+    """Expand only reviewed fused key forms, preserving bounded semantics."""
+
+    if component.endswith("rotationpolicy"):
+        prefix = component[: -len("rotationpolicy")]
+        if prefix.endswith("rotationpolicy"):
+            return ("secret", "metadata", "overflow")
+        if prefix:
+            return _expand_sensitive_component_base(prefix) + ("rotation", "policy")
+    return _expand_sensitive_component_base(component)
+
+
+def _expand_sensitive_component_base(component: str) -> tuple[str, ...]:
+    """Expand one bounded compound component without recursive suffix peeling."""
+
+    exact = _SENSITIVE_COMPOUND_COMPONENTS.get(component)
+    if exact is not None:
+        return exact
+    safe = _SAFE_COMPOUND_COMPONENTS.get(component)
+    if safe is not None:
+        return safe
+    for suffix, expanded in _SENSITIVE_FUSED_SUFFIXES:
+        if component.endswith(suffix):
+            prefix = component[: -len(suffix)]
+            return ((prefix,) if prefix else ()) + expanded
+    return (component,)
+
+
+def _is_sensitive_semantic_components(components: tuple[str, ...]) -> bool:
+    """Classify one semantic key stem without considering qualifier tails."""
+
+    if not components:
+        return False
+    normalized = "_".join(components)
+    if normalized in _SENSITIVE_EXACT_KEYS:
+        return True
+    if components[-1] in _SENSITIVE_SUFFIXES:
+        return True
+    if components[-1] != "key":
+        return False
+    namespaces = set(components[:-1])
+    return not (namespaces and namespaces <= _SAFE_KEY_NAMESPACES)
+
+
 def _sensitive_candidate_shape(key: str, value: str) -> tuple[tuple[str, ...], bool]:
     """Classify exact key/value bounds after broad linear extraction."""
 
@@ -693,7 +759,7 @@ def _sensitive_candidate_shape(key: str, value: str) -> tuple[tuple[str, ...], b
     components = tuple(
         expanded
         for component in raw_components
-        for expanded in _SENSITIVE_COMPOUND_COMPONENTS.get(component, (component,))
+        for expanded in _expand_sensitive_component(component)
     )
     separator_runs = tuple(re.findall(r"[._-]+", key))
     unquoted_value = value
@@ -724,26 +790,32 @@ def _is_sensitive_candidate_key(key: str) -> bool:
     if not components:
         return False
     semantic_components = components
+    removed_numeric_qualifier = False
     while len(semantic_components) > 1:
         terminal = semantic_components[-1]
-        if terminal.isdigit() or terminal in _SENSITIVE_TRAILING_QUALIFIERS:
+        if terminal.isdigit():
+            semantic_components = semantic_components[:-1]
+            removed_numeric_qualifier = True
+            continue
+        if terminal in _SENSITIVE_TRAILING_QUALIFIERS:
             semantic_components = semantic_components[:-1]
             continue
-        if terminal == "v" and len(semantic_components) > 1:
+        if removed_numeric_qualifier and terminal in {"v", "ver", "version"}:
             semantic_components = semantic_components[:-1]
+            removed_numeric_qualifier = False
             continue
         break
-    normalized = "_".join(semantic_components)
-    if normalized in _SENSITIVE_EXACT_KEYS:
-        return True
-    if semantic_components[-1] in _SENSITIVE_SUFFIXES:
-        return True
-    if semantic_components[-1] != "key":
+    if semantic_components in _SAFE_METADATA_COMPONENT_KEYS:
         return False
-    namespaces = set(semantic_components[:-1])
-    if namespaces and namespaces <= _SAFE_KEY_NAMESPACES:
-        return False
-    return True
+    if _is_sensitive_semantic_components(semantic_components):
+        return True
+    for split_index in range(1, len(semantic_components)):
+        stem = semantic_components[:split_index]
+        tail = semantic_components[split_index:]
+        if not _is_sensitive_semantic_components(stem):
+            continue
+        return tail not in _SAFE_METADATA_TAILS
+    return False
 
 
 def _iter_bounded_sensitive_lines(text: str) -> Iterable[str]:
@@ -788,15 +860,20 @@ def _contains_sensitive_assignment(text: str) -> bool:
                 pending_lines += 1
                 if pending_lines > MAX_SENSITIVE_LOOKAHEAD_LINES:
                     return True
-                if not line.strip():
+                stripped = line.strip()
+                if not stripped:
                     continue
-                elif line[:1] in {" ", "\t"} and line.strip():
+                is_mapping_value = (
+                    line[:1] in {" ", "\t"}
+                    or re.match(r"^-[ \t]+\S", stripped) is not None
+                    or re.fullmatch(r"[|>](?:[+-])?", stripped) is not None
+                )
+                if is_mapping_value:
                     _components, _within_bounds = _sensitive_candidate_shape(
-                        pending_key, line.strip()
+                        pending_key, stripped
                     )
                     return True
-                else:
-                    pending_key = None
+                pending_key = None
 
             for match in SENSITIVE_CANDIDATE_PATTERN.finditer(line):
                 key = match.group("key")
@@ -1089,9 +1166,11 @@ def _table_fields(section: str) -> dict[str, str]:
                 if fields:
                     break
                 continue
+            if line == "| --- | --- |":
+                continue
             match = re.fullmatch(r"\| ([^|]+?) \| (.*?) \|", line)
             if match is None or match.group(1) in {"Field", "---"}:
-                continue
+                return {}
             key = match.group(1).strip()
             if key in fields or len(fields) >= MAX_CATALOG_FIELDS_PER_SECTION:
                 return {}

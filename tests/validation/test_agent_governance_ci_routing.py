@@ -454,10 +454,8 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         )[0]
         scan_loop = block.split("for match in pattern.finditer(text):", 1)[1]
         self.assertLess(
-            scan_loop.index("match.end(2) - match.start(2)"),
-            scan_loop.index('ref = match.group("2")')
-            if 'ref = match.group("2")' in scan_loop
-            else scan_loop.index("ref = match.group(2)"),
+            scan_loop.index('match.end("ref") - match.start("ref")'),
+            scan_loop.index('ref = match.group("ref")'),
         )
         git_reader = block.split("def git_paths", 1)[1].split("\n\ntracked =", 1)[0]
         discovery = block.split("def untracked_special_paths", 1)[1].split(
@@ -592,6 +590,72 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             above = run(root, exact)
             self.assertEqual(1, above.returncode)
             self.assertEqual("FAIL: unsafe script-reference surface\n", above.stderr)
+
+    def test_script_reference_scan_supports_only_approved_root_prefixes(self) -> None:
+        source = REPO_CONTRACT.read_text(encoding="utf-8")
+        start = "section \"Script reference integrity\"\nif ! python3 - <<'PY'; then\n"
+        block = source.split(start, 1)[1].split(
+            "\nPY\n  failures=$((failures + 1))", 1
+        )[0]
+
+        approved = (
+            "$BASE_DIR/scripts/validation/existing.sh",
+            "${ROOT}/scripts/validation/existing.sh",
+            "$(git rev-parse --show-toplevel)/scripts/validation/existing.sh",
+        )
+        ignored = (
+            "$OTHER/scripts/validation/missing.sh",
+            "$(pwd)/scripts/validation/missing.sh",
+            "https://example.test/scripts/validation/missing.sh",
+            "/tmp/scripts/validation/missing.sh",
+            "embedded-scripts/validation/missing.sh",
+        )
+
+        def run(root: pathlib.Path) -> subprocess.CompletedProcess[str]:
+            return subprocess.run(
+                [sys.executable, "-c", block],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+        for reference in approved:
+            with (
+                self.subTest(kind="existing", reference=reference),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+                target = root / "scripts/validation/existing.sh"
+                target.parent.mkdir(parents=True)
+                target.write_text("#!/bin/sh\n", encoding="utf-8")
+                (root / "README.md").write_text(reference + "\n", encoding="utf-8")
+                self.assertEqual(0, run(root).returncode)
+
+            missing = reference.replace("existing.sh", "missing.sh")
+            with (
+                self.subTest(kind="missing", reference=reference),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+                (root / "README.md").write_text(missing + "\n", encoding="utf-8")
+                result = run(root)
+                self.assertEqual(1, result.returncode)
+                self.assertIn(
+                    "missing script reference scripts/validation/missing.sh",
+                    result.stderr,
+                )
+                self.assertNotIn("$BASE_DIR", result.stderr)
+                self.assertNotIn("${ROOT}", result.stderr)
+                self.assertNotIn("git rev-parse", result.stderr)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            (root / "README.md").write_text("\n".join(ignored) + "\n", encoding="utf-8")
+            self.assertEqual(0, run(root).returncode)
 
     def test_script_reference_scan_rejects_same_inode_metadata_mutation(self) -> None:
         source = REPO_CONTRACT.read_text(encoding="utf-8")
