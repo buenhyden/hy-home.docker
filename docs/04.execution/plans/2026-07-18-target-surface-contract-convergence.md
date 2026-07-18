@@ -194,7 +194,7 @@ a bounded remediation commit and both reviews repeat. Task 6 ends with fresh
 whole-branch reviews over
 `32c40e11747bc0bd03789c24861d2e5d60c0e999..FINAL_HEAD`.
 
-### T-TSC-001: Archive, Metadata, Wave, and Manifest Foundation
+### Task 1: T-TSC-001 — Archive, Metadata, Wave, and Manifest Foundation
 
 **Files:** modify
 `docs/99.templates/support/{document-metadata-profiles.yaml,document-corpus-migration-contract.yaml,frontmatter-contract.md,common-document-contract.md,readme-profile-contract.md,archive-retention-contract.md,corpus-migration-contract.md,README.md}`;
@@ -266,7 +266,7 @@ python3 -m py_compile scripts/validation/check-document-metadata.py \
 git diff --check
 ```
 
-### T-TSC-002: README, Typed Example, and Storybook Cleanup
+### Task 2: T-TSC-002 — README, Typed Example, and Storybook Cleanup
 
 **Files:** create `tests/validation/test_target_surface_contracts.py`; modify
 `examples/sample-web-service/{README.md,service.md}`;
@@ -311,7 +311,7 @@ python3 scripts/validation/check-document-metadata.py --mode check-changed \
 git diff --check
 ```
 
-### T-TSC-003: Root Content Archive Provenance Migration
+### Task 3: T-TSC-003 — Root Content Archive Provenance Migration
 
 **Files:** rewrite `archive/Windows-Network-IP.md` in place and update only its
 manifest row, generated summary, Task, and directly required archive owner.
@@ -351,7 +351,7 @@ fi
 git diff --check
 ```
 
-### T-TSC-004: Deprecated Runtime and Duplicate Disposition
+### Task 4: T-TSC-004 — Deprecated Runtime and Duplicate Disposition
 
 **Delete:**
 
@@ -420,7 +420,7 @@ bash scripts/validation/check-doc-implementation-alignment.sh
 git diff --check
 ```
 
-### T-TSC-005: Validator, QA Routing, and Static CI Enforcement
+### Task 5: T-TSC-005 — Validator, QA Routing, and Static CI Enforcement
 
 **Files:** create `scripts/validation/target_surface_contract.py` and its thin
 `check-target-surface-contract.py` CLI; extend the Task 2/4 regression owner
@@ -478,7 +478,7 @@ test module. Existing workflow policy remains in `check-repo-contracts.sh`,
 with deterministic mutation coverage in
 `tests/validation/test_agent_governance_ci_routing.py`.
 
-### T-TSC-006: Research, Audit, Generated Evidence, and Closure
+### Task 6: T-TSC-006 — Research, Audit, Generated Evidence, and Closure
 
 **Authored evidence:** update the canonical research pack `README.md`,
 `quality-ci-formatting.md`, `docker-compose-infrastructure.md`,

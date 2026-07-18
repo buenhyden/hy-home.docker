@@ -127,6 +127,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | 2026-07-18 | Zero-review remediation | Controller | Both absence scans now capture the false-branch status, accept only no-match code 1, and propagate every execution error. Final confirmation remains required. |
 | 2026-07-18 | Planning terminal confirmation | Independent read-only reviewer | PASS and READY with C0/I0/M0. Both absence scans fail on matches, pass only on no-match code 1, propagate execution errors, and remain correct under `set -e`; workflow policy has one canonical owner. |
 | 2026-07-18 | Linked-worktree baseline repair | Controller | After planning commit `5c4e1d55`, the new Plan became a tracked consumer of the promoted frontmatter contract and exposed one stale Foundation consumer row plus three generated-owner freshness gaps that pre-commit index state had hidden. Added only the exact Plan consumer and regenerated the Foundation summary, LLM Wiki index/coverage, and metadata inventory before any implementation task. |
+| 2026-07-18 | SDD handoff compatibility | Controller | Renamed only the six Plan task headings to `Task N: T-TSC-NNN` so the required Superpowers `task-brief` extractor can produce bounded handoff files. Repository-specific ignored brief/report/progress artifacts use `_workspace/repo-support/`; no implementation contract changed. |
 
 ## Verification Evidence
 
@@ -173,7 +174,8 @@ independent verdicts and all finding dispositions are recorded.
 | Work unit | Intended logical commit | Identity | Validation |
 | --- | --- | --- | --- |
 | Planning | `docs(plan): define target surface convergence execution` | `5c4e1d55` | metadata 10/0; traceability 46/0; alignment 656/5,251/141/0; aggregate 0 before the tracked-consumer baseline recheck |
-| Planning repair | `docs(plan): repair tracked planning consumers` | pending | promoted manifest and generated freshness recheck pending |
+| Planning repair | `docs(plan): repair tracked planning consumers` | `f7563631` | promoted manifest 0; generated index 1,290; coverage 1,289; inventory 913/2,145; worktree aggregate failures 0 |
+| SDD compatibility | `docs(plan): align SDD task extraction` | pending | task-brief extraction and diff hygiene pending |
 | T-TSC-001 | `feat(docs): establish target corpus migration contracts` | pending | not_run |
 | T-TSC-002 | `docs(examples): align sample and storybook contracts` | pending | not_run |
 | T-TSC-003 | `docs(archive): preserve Windows network note provenance` | pending | not_run |
