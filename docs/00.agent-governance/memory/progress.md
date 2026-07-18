@@ -28,8 +28,10 @@ and aggregate checks pass. Graphify was refreshed to 24,994 nodes, 28,771
 edges, and 1,613 communities; its inferred, isolated, thin-community,
 low-confidence, and visualization-limit output was corroborated against
 tracked Stage 00/03/04/90 and executable owners before generated graph files
-were restored. The controlled all-files wrapper remains `not_run` until the
-committed candidate and independent Task 6 reviews are ready.
+were restored. The exact Task 6 terminal review range
+`812070ed..65b1703d` returned specification PASS and quality APPROVED, both
+C0/I0/M0. The prior union and residual findings are remediated in `3e81a79a`,
+`6bb2dce4`, and `65b1703d`.
 The residual workspace-rules specification finding is now remediated without
 status promotion: the existing `eval-engineer` with QA owns repository-semantic
 depth 4 through eight fixtures and ten synthetic regressions, while broader
@@ -42,7 +44,11 @@ aggregate, and all affected generated-owner freshness checks pass. Graphify
 refreshed to 24,994 nodes, 28,771 edges, and 1,610 communities; its three
 cross-root inferred edges and unrelated advisory noise were source-corroborated
 with zero tracked-source contamination or meaningless god nodes before graph
-outputs were restored. Fresh re-review remains pending.
+outputs were restored. The exact Plan controlled wrapper then passed from the
+clean linked worktree at `65b1703d`: hook exit 0, snapshot PASS, and empty
+Git-visible non-ignored before, after, changed, and unexpected path sets. Task
+6 remains in progress pending whole-branch review and closure; Spec, Plan, and
+Task statuses remain `active`.
 
 ## Task 6 Foundation Closure
 

@@ -149,7 +149,7 @@ Redaction boundary:
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-004 | Provider-native adapters and dated model policy | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
-| T-AGHC-006 | Reference/audit/evidence reconciliation and closure | In progress; canonical reconciliation and independent-review remediation complete, fresh re-reviews pending |
+| T-AGHC-006 | Reference/audit/evidence reconciliation and closure | In progress; terminal Task 6 reviews and controlled QA pass, whole-branch review and closure pending |
 
 ## Work Log
 
@@ -238,6 +238,8 @@ Redaction boundary:
 | 2026-07-18 | T-AGHC-006 review remediation | Fresh remediation agent | Reconciled tracked Codex/Gemini adoption, synthetic repository evaluation, `eval-engineer` ownership, depth-4 wording, and the exact one-supervisor/thirteen-worker/four-surface inventory without changing any criterion state or the 77/60/13/2/9 distribution. Restored one valid Work Log table and regenerated the canonical audit matrix. Focused verification exposed a pre-existing no-op CI-order mutation fixture; the test-only commit `3e81a79a` binds the current intervening workflow steps and restores 32/32 semantic tests without changing the production validator. Provider tests pass 42/42, aggregate reports zero failures, generated owners are fresh, and source-corroborated Graphify output was restored. Fresh independent re-reviews remain required; the controlled wrapper remains `not_run`. |
 | 2026-07-18 | T-AGHC-006 residual specification review | Fresh read-only specification reviewer | Found one residual generic statement in the workspace-rules audit that denied depth 4 despite the implemented repository-semantic evaluator and assigned its follow-up to a future QA/eval owner. The finding did not authorize criterion-state changes, live/comparative evaluation, the controlled wrapper, or closure promotion. |
 | 2026-07-18 | T-AGHC-006 residual specification remediation | Fresh remediation agent | Bound repository-semantic depth 4 to the existing `eval-engineer`-and-QA-owned eight fixtures and ten synthetic regressions. Limited the unimplemented boundary to live/comparative and cross-task quality, latency, and cost evaluation under a separate approved privacy, entitlement, cost, and runtime scope. Criterion states and the 77/60/13/2/9 distribution remain unchanged; fresh re-review is pending and the controlled wrapper remains `not_run`. |
+| 2026-07-18 | T-AGHC-006 terminal reviews | Independent specification and quality reviewers | Exact range `812070ed..65b1703d` returned specification PASS and quality APPROVED, both Critical 0, Important 0, Minor 0. The prior union and residual findings are remediated in `3e81a79a`, `6bb2dce4`, and `65b1703d`. Whole-branch review and closure remain pending. |
+| 2026-07-18 | T-AGHC-006 controlled QA | Controller | Ran the exact Plan controlled wrapper from a clean linked worktree at `65b1703d`; the hook exited 0, the snapshot passed, and Git-visible non-ignored before, after, changed, and unexpected path sets were all empty. Only sanitized markers and counts are retained. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -298,6 +300,13 @@ T-AGHC-006 residual specification-remediation verification:
 | dependency-locked execution deviation | no product failure from the known bare-runtime dependency boundary | initial bare aggregate failed closed at missing `html5lib`; canonical `UV_CACHE_DIR=/tmp/uv-cache uv run --with-requirements scripts/requirements.txt` rerun passed with `failures=0` | Pass after bounded rerun |
 | Graphify refresh and source corroboration | refresh succeeds; advisory output is corroborated against tracked Stage 00/03/04/90 sources and restored | 24,994 nodes / 28,771 edges / 1,610 communities; three test-to-audit-contract cross-root inferences, two unrelated infrastructure ambiguities, 16,478 isolated nodes, 71 thin communities, and visualization-size skip were advisory; volume/gitlink/generated contamination and meaningless god nodes were zero; claims were corroborated against tracked Stage 00 contracts/QA scope, Spec 132, this Task, the audit source, evaluator, and generator before graph output restoration | Pass |
 | controlled all-files wrapper | remain separate pending committed remediation and fresh re-review | `not_run` | Not run by design |
+
+T-AGHC-006 terminal review and controlled QA evidence:
+
+| Command or evidence | Expected | Actual | State |
+| --- | --- | --- | --- |
+| terminal Task 6 reviews | exact range, separate specification and quality verdicts, no Critical/Important/Minor findings | `812070ed..65b1703d`; specification PASS C0/I0/M0; quality APPROVED C0/I0/M0; prior union/residual remediated in `3e81a79a`, `6bb2dce4`, and `65b1703d` | Pass |
+| controlled all-files wrapper | exact Plan command from clean linked worktree; hook and snapshot pass; no unexpected Git-visible non-ignored paths | `hook_result=passed hook_exit=0`; `snapshot_result=passed`; `before_count=0 after_count=0 changed_count=0 unexpected_count=0` | Pass |
 
 T-AGHC-003 implementation verification:
 
@@ -927,24 +936,31 @@ T-AGHC-005 fourteenth review-remediation verification:
 
 ## Controlled Agent Pre-commit Evidence
 
-Controlled wrapper command: not run. Task 6 will record the exact current CLI
-invocation after checking the wrapper help and contract.
+Controlled wrapper command: the exact command recorded in the Plan's
+Controlled all-files gate was run from the clean linked worktree at
+`65b1703d`. Sanitized inner-command marker:
+`agent_precommit_command=pre-commit run --all-files --show-diff-on-failure`.
 
-Allowed prefixes: not run. The final list must be limited to the approved root
-shims, provider/compatibility trees, Stage 00, coupled Stage 03/04/90/99 paths,
-validation/operations/knowledge scripts, focused tests, CI workflow,
-CODEOWNERS, and `.pre-commit-config.yaml`.
+Allowed prefixes: exactly the Plan controlled-wrapper command's allow-prefix
+list; it is not duplicated here.
 
-Exit status: not run.
+Exit status: `hook_result=passed hook_exit=0`.
 
-Snapshot result: not run.
+Snapshot result: `snapshot_result=passed`.
 
-Observation boundary: clean linked worktree, sanitized summary only, no raw
-logs or secret-bearing data.
+Observation boundary: `observation=git-visible-non-ignored-repository-status`.
+This is a sanitized summary only; it does not claim observation of ignored,
+outside-worktree, or secret-bearing paths.
 
-Observed path sets: not run.
+Observed counts: `before_count=0 after_count=0 changed_count=0
+unexpected_count=0`.
 
-Disposition: pending Task 6.
+Observed path sets: before `(none)`; after `(none)`; changed `(none)`;
+unexpected `(none)`.
+
+Disposition: pass. The controlled wrapper produced no Git-visible non-ignored
+path change. Task 6 remains in progress pending whole-branch review and
+closure.
 
 ## Review Evidence
 
@@ -981,14 +997,16 @@ T-AGHC-003 and T-AGHC-004 are complete. T-AGHC-005 implementation and every
 recorded review remediation are GREEN. Final focused review of
 `a09a9f5c..4e8b0dca` and the full `69cc84fb..4e8b0dca` Task range returned
 specification PASS and quality APPROVED, both C0/I0/M0. T-AGHC-005 is complete.
-Task 6 canonical reconciliation and union-finding remediation are GREEN. Fresh
-Task 6 re-reviews, controlled all-files evidence, and whole-branch review have
-not run, so Task 6 remains in progress.
+Task 6 canonical reconciliation and union/residual remediation are GREEN. The
+exact terminal review range `812070ed..65b1703d` returned specification PASS
+and quality APPROVED, both C0/I0/M0, and controlled all-files QA passed from
+the clean `65b1703d` worktree. Whole-branch review and closure have not run, so
+Task 6 remains in progress.
 
 Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
-Tasks 1 through 5 are complete. Task 6 and the whole-branch review remain
-pending.
+Tasks 1 through 5 are complete. Task 6 terminal reviews and controlled QA pass;
+whole-branch review and closure remain pending.
 
 Quality review verdict: T-AGHC-001 failed Critical 0, Important 2, Minor 1 at
 `201cee93`; the quality re-review at `522d2ba9` reduced the result to Critical 0,
@@ -1003,9 +1021,10 @@ Critical 0, Important 0, and Minor 0. Task 4 terminal quality review returned
 APPROVED C0/I0/M0. Task 5 review findings each received a separate remediation,
 focused regression evidence, and fresh re-review. The final Task 5
 specification and quality verdicts are PASS and APPROVED, both C0/I0/M0.
-Task 6 independent review produced the union findings recorded above;
-remediation and focused verification are complete, while fresh Task 6 re-review
-and whole-branch quality review remain pending.
+Task 6 independent review produced the union and residual findings recorded
+above; `3e81a79a`, `6bb2dce4`, and `65b1703d` remediate them. The terminal
+specification review is PASS and quality review is APPROVED for exact range
+`812070ed..65b1703d`, both C0/I0/M0. Whole-branch review remains pending.
 
 Planning findings and disposition: fixed provider skill discovery, Gemini
 `PreCompress`, wrapper clean-state ordering, staged aggregate-validator
@@ -1060,9 +1079,9 @@ with owner, reason, and destination.
 | T-AGHC-005 terminal review evidence | `docs(task): record harness review closure` | this logical commit | final delta and full Task range specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | `40d6ebc0` | pre-wrapper reconciliation GREEN; independent review findings remediated below |
 | T-AGHC-006 semantic fixture remediation | `fix(harness): complete semantic CI mutation fixture` | `3e81a79a` | current workflow ordering is mutation-sensitive; semantic suite 32/32 and production validator 11/11 GREEN |
-| T-AGHC-006 reconciliation review remediation | `docs(governance): resolve reconciliation review findings` | this logical commit | reviewed stale-claim union closed; audit/provider/eval/metadata/traceability/alignment/aggregate/generated/Graphify gates GREEN; fresh re-reviews pending |
-| T-AGHC-006 residual specification remediation | `docs(governance): clarify semantic evaluation boundary` | this logical commit | repository-semantic depth 4 and the existing `eval-engineer` plus QA ownership are explicit; live/comparative and cross-task quality/latency/cost evaluation remains separately approval-gated; fresh re-review pending |
-| Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | pending | pending |
+| T-AGHC-006 reconciliation review remediation | `docs(governance): resolve reconciliation review findings` | `6bb2dce4` | reviewed stale-claim union closed; audit/provider/eval/metadata/traceability/alignment/aggregate/generated/Graphify gates GREEN; terminal reviews C0/I0/M0 |
+| T-AGHC-006 residual specification remediation | `docs(governance): clarify semantic evaluation boundary` | `65b1703d` | repository-semantic depth 4 and the existing `eval-engineer` plus QA ownership are explicit; live/comparative and cross-task quality/latency/cost evaluation remains separately approval-gated; terminal reviews C0/I0/M0 |
+| Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | this logical commit | exact Plan wrapper passes from clean `65b1703d`; hook exit 0; snapshot pass; zero before/after/changed/unexpected paths |
 | Closure | `docs(execution): close agent governance convergence` | pending | pending |
 
 Material review remediations receive separate rows rather than being folded

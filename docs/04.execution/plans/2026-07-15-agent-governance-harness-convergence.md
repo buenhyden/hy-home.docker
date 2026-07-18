@@ -830,7 +830,7 @@ semantic_events:
   QAF 16, CIO 14, and SEC 14. Do not promote runtime acceptance, entitlement,
   remote CI enforcement, CD, or actual model availability from tracked
   definitions alone.
-- [ ] Update the Task Work Log, Verification Evidence, Review Evidence, Commit
+- [x] Update the Task Work Log, Verification Evidence, Review Evidence, Commit
   Ledger, Deferred Items, and pre-wrapper branch-range evidence with sanitized
   results. Leave wrapper fields `not_run` and lifecycle statuses `active`.
 - [x] Run the full verification ladder below and resolve all blocking failures.
@@ -838,15 +838,15 @@ semantic_events:
   corroborate advisory results against tracked Stage 00/03/04/90 and executable
   owners. Restore unrelated generated graph noise if it is not an intended
   artifact.
-- [ ] Commit `docs(governance): reconcile agent harness evidence`; obtain fresh
+- [x] Commit `docs(governance): reconcile agent harness evidence`; obtain fresh
   Task-6 specification and quality PASS, fix/re-review all blocking findings,
   and commit any remediation. The worktree must then be clean.
-- [ ] From that clean linked worktree, obtain one successful final controlled
+- [x] From that clean linked worktree, obtain one successful final controlled
   wrapper execution with the
   already tracked Task ledger and explicit allowed prefixes. Never edit Task
   evidence before this invocation or the wrapper's dirty-worktree guard will
   stop execution.
-- [ ] After the wrapper returns, record its command, exit status, snapshot
+- [x] After the wrapper returns, record its command, exit status, snapshot
   result, observed path sets, and disposition in the Task; never store raw
   logs. Commit this evidence as
   `docs(governance): record controlled agent QA evidence` and restore a clean
