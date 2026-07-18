@@ -148,13 +148,15 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | 2026-07-18 | T-TSC-002 initial specification review | Independent specification reviewer | CHANGES REQUIRED, C0/I1/M0. I-01 found that the migrated `examples/sample-web-service/service.md` carries canonical target identity, type, status, and parent metadata while its schema-v2 manifest row still reported null identity/type and empty parents. Quality review did not run. |
 | 2026-07-18 | T-TSC-001 foundation correction approval | User | Approved one bounded correction after the row-only RED exposed that schema v2 overloaded the single `artifact_id` as both pinned-baseline and current-target truth. Authorized only the v2 contract/validator semantics, direct tests and contract consumer, the one Service row, deterministic summary, and Task/progress/ignored evidence. |
 | 2026-07-18 | T-TSC-001/T-TSC-002 typed-target remediation | Documentation Specialist | Kept `artifact_type_before` and `status_before` pinned to baseline Git truth; made non-delete migrated typed target identity, after-type/status, and parents match current canonical target metadata; preserved null metadata for non-document surfaces; and left v1, delete/archive, path, binary, destructive, and confidentiality behavior unchanged. The Service row now records `spec:sample-web-service`, `spec`, and parent `spec:133-target-surface-contract-convergence` while all row reviews remain pending. Fresh specification and quality reviews are required for the reopened foundation and Task 2. |
+| 2026-07-18 | T-TSC-001/T-TSC-002 foundation re-review | Independent specification and quality reviewers | Exact reviewed correction range `820e6188307ead1478de200f75a2d08e62ac137a..622666a7b082b26935f225979225993be7582355`: specification CHANGES REQUIRED C0/I3/M1 and quality CHANGES REQUIRED C0/I1/M0. The shared blocking issue was fail-open migrated-target validation: malformed or profile-invalid typed metadata, a failed current-target read, and forged document metadata on a native/static surface were not rejected at the required boundary. The separate quality finding was the stale commit ledger below. No manifest verdict was promoted. |
+| 2026-07-18 | T-TSC-001/T-TSC-002 fail-closed remediation | QA Engineer | Reused the canonical metadata parser and profile validator for migrated typed results, made current-target read failure value-free and blocking, and rejected non-document target metadata before body read/decode. Five focused regressions moved from 0/5 to 5/5 and full lifecycle passed 111/111. Fresh specification and quality re-reviews remain required; all 483 row verdict pairs remain pending. |
 
 ## Verification Evidence
 
 | Work unit | RED evidence | GREEN/aggregate evidence | Result |
 | --- | --- | --- | --- |
-| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; first specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures; exceptional validator RED: two tests produced five expected subcase failures; archive-contract RED: one focused human-owner test exited 1 because the two exact profile sections were absent; final-review fixture RED: 11 tests with four failures across three methods; CLI-shape RED: full lifecycle 101/103; typed-target correction RED: three focused methods emitted six expected failures across missing human semantics, the truthful migrated target, and the null after-type mutation. All RED preceded the corresponding production, contract, or test-boundary change. | Prior terminal range passed C0/I0/M0. Typed-target correction GREEN: focused 3/3; metadata 76/76; target 9/9; full lifecycle 106/106; contract, manifest, and summary pass. The foundation is reopened only for fresh review of the approved correction; all 483 row verdict pairs remain pending. | foundation_correction_implemented_re_reviews_pending |
-| T-TSC-002 | Initial target suite RED: 8 tests ran with eight expected failure records across stale Service metadata/sections/instruction text and five active phantom references. I-01 remediation RED: the focused manifest/document regression failed 1/1 with target `spec:sample-web-service`/`spec`/one parent versus manifest null/null/empty. | README profiles 4/4 and target suite 9/9; the Service row now matches current target identity/type/parents while `artifact_type_before: null` and `status_before: active` remain baseline truth. Seven rows remain `migrate`, 476 remain `preserve`, all 483 review pairs remain pending, and summary bytes remain deterministic. | review_remediation_implemented_re_reviews_pending |
+| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; first specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures; exceptional validator RED: two tests produced five expected subcase failures; archive-contract RED: one focused human-owner test exited 1 because the two exact profile sections were absent; final-review fixture RED: 11 tests with four failures across three methods; CLI-shape RED: full lifecycle 101/103; typed-target correction RED: three focused methods emitted six expected failures across missing human semantics, the truthful migrated target, and the null after-type mutation; fail-closed re-review RED: five focused methods failed 0/5 at the target parse/profile/read/native-body boundaries. All RED preceded the corresponding production, contract, or test-boundary change. | Prior terminal range passed C0/I0/M0. Fail-closed correction GREEN: focused 5/5; full lifecycle 111/111; focused metadata 76/76; target 9/9; contract, manifest, summary, promoted, explicit-base metadata, compile, and Ruff pass. The foundation remains reopened for fresh review; all 483 row verdict pairs remain pending. | foundation_correction_implemented_re_reviews_pending |
+| T-TSC-002 | Initial target suite RED: 8 tests ran with eight expected failure records across stale Service metadata/sections/instruction text and five active phantom references. I-01 remediation RED: the focused manifest/document regression failed 1/1 with target `spec:sample-web-service`/`spec`/one parent versus manifest null/null/empty. Fail-closed re-review RED: five methods failed exactly five assertions. | README profiles 4/4, target suite 9/9, fail-closed focus 5/5, and full lifecycle 111/111; the Service row remains canonical while native/static bodies remain opaque. Seven rows remain `migrate`, 476 remain `preserve`, all 483 review pairs remain pending, and summary bytes remain deterministic. | review_remediation_implemented_re_reviews_pending |
 | T-TSC-003 | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run |
 | T-TSC-005 | not_run | not_run | not_run |
@@ -427,6 +429,37 @@ because its deterministic disposition/verdict projection is unchanged. Fresh
 specification and quality reviews remain pending for the reopened foundation
 and T-TSC-002; no row verdict is promoted.
 
+### T-TSC-001/T-TSC-002 Fail-closed Re-review Remediation Evidence
+
+The exact five-method RED preceded the production edit:
+
+```bash
+python3 -m unittest -v tests.validation.test_document_corpus_lifecycle.ManifestValidationTests.test_v2_migrated_typed_target_requires_canonical_profile_fields tests.validation.test_document_corpus_lifecycle.ManifestValidationTests.test_v2_migrated_readme_rejects_malformed_frontmatter tests.validation.test_document_corpus_lifecycle.ManifestValidationTests.test_v2_migrated_readme_rejects_profile_forbidden_metadata tests.validation.test_document_corpus_lifecycle.ManifestValidationTests.test_v2_migrated_target_read_failure_is_not_an_empty_document tests.validation.test_document_corpus_lifecycle.ManifestValidationTests.test_v2_non_document_target_metadata_is_rejected_without_body_read
+```
+
+RED exited 1 with 5/5 failures: four required target findings were absent, and
+the native JAR mutation produced only transition/file findings after attempting
+the result-body read. GREEN used the same command and passed 5/5. The lifecycle
+validator now reuses `_record_from_text`, `validate_record`, `build_manifest`,
+and `Record` from the canonical metadata checker; the lifecycle-only adapter
+supplies manifest-row identity/type context so valid parent relations remain
+resolvable without broadening the metadata checker API.
+
+Aggregate evidence: full lifecycle passed 111/111; focused metadata passed
+76/76; target/README contracts passed 9/9; contract and promoted checks reported
+zero violations; the target manifest and summary checks passed; explicit-base
+metadata at `820e6188307ead1478de200f75a2d08e62ac137a` selected 3 with zero
+violations, exceptions, or overrides; compile and Ruff passed. Focused archive
+validation exited 1 with exactly the planned value-free
+`archive-commit-missing` and `archive-preservation-missing` findings for
+`archive/Windows-Network-IP.md`, owned by T-TSC-003. The unrelated full metadata
+module remains a non-gate 216/218 because
+`TemplateBodyContractTests.test_all_23_markdown_roles_have_independent_literal_contract_coverage`
+and
+`TemplateMetadataTests.test_leaf_templates_declare_valid_target_profiles_with_safe_placeholders`
+retain stale pre-existing expected-role literals for committed
+`content-archive`; this bounded remediation did not change or stage those tests.
+
 ## Controlled Agent Pre-commit Evidence
 
 - Command: not_run; Task 6 only.
@@ -466,8 +499,8 @@ independent verdicts and all finding dispositions are recorded.
 | T-TSC-001 archive contract fix | `fix(docs): align archive retention profiles` | `8f012c2bb57d19046f1c8c42cd54aae5868a542d` | Focused archive human-owner RED/GREEN; metadata schema 26/26; lifecycle human contract 11/11; contract, manifest, summary, explicit-base metadata, Ruff, and diff checks passed; re-reviews remain pending. |
 | T-TSC-001 fixture fix | `test(docs): isolate target wave lifecycle fixtures` | `a994bac09dc0c24b573a7ea204559eb5b7897671` | FinalReview RED 11 tests with four failures across three methods; exact affected GREEN 3/3; expanded focused lifecycle 56/56; full lifecycle 101/103 with two separate non-gate table-shape subcases; focused metadata 76/76. Production and manifest surfaces remained unchanged; re-reviews remain pending. |
 | T-TSC-001 CLI shape fix | `test(docs): align lifecycle CLI shape expectations` | `c2a8d82832930e9bcde749b58da6843733c4f4b8` | Existing full RED 101/103 and targeted RED exactly two subcases; targeted GREEN 1/1, full lifecycle 103/103, exact fixtures 3/3, expanded lifecycle 56/56, metadata 76/76, and diff hygiene passed. Production and contract surfaces remained unchanged; re-reviews remain pending. |
-| T-TSC-002 | `docs(examples): align sample and storybook contracts` | pending creation; immutable identity recorded in the ignored implementer report | RED/GREEN, README 75/75, shell syntax, no gitlink, fail-closed absence, manifest/summary, explicit-base metadata, links/alignment, compile, Ruff, and diff hygiene passed; independent reviews remain pending. |
-| T-TSC-001/T-TSC-002 typed-target correction | `fix(docs): support typed target migration metadata` | pending creation; immutable identity recorded in ignored Task 1/2 reports | Row-only and foundation RED/GREEN; lifecycle 106/106; metadata 76/76; target 9/9; contract/manifest/summary pass; remaining final gates recorded before commit. Fresh specification and quality reviews remain pending. |
+| T-TSC-002 | `docs(examples): align sample and storybook contracts` | `820e6188307ead1478de200f75a2d08e62ac137a` | RED/GREEN, README 75/75, shell syntax, no gitlink, fail-closed absence, manifest/summary, explicit-base metadata, links/alignment, compile, Ruff, and diff hygiene passed; independent reviews remain pending. |
+| T-TSC-001/T-TSC-002 typed-target correction | `fix(docs): support typed target migration metadata` | `622666a7b082b26935f225979225993be7582355` | Row-only and foundation RED/GREEN; lifecycle 106/106; metadata 76/76; target 9/9; contract/manifest/summary pass. The subsequent exact-range re-review and fail-closed remediation evidence are recorded above; fresh re-reviews remain pending. |
 | T-TSC-003 | `docs(archive): preserve Windows network note provenance` | pending | not_run |
 | T-TSC-004a | `refactor(infra): retire InfluxDB 2 compatibility` | pending | not_run |
 | T-TSC-004b | `chore(infra): remove unconsumed duplicate scaffolds` | pending | not_run |

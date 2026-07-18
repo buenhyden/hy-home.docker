@@ -159,6 +159,22 @@ reviews. All 483 row verdict pairs remain pending; the expected Task 3 archive
 provenance findings remain unchanged. No all-files, runtime, service,
 secret-value, remote, deployment, push, PR, or merge action occurred.
 
+The exact correction range is now immutable in the canonical ledger: T-TSC-002
+is `820e6188307ead1478de200f75a2d08e62ac137a` and the typed-target correction is
+`622666a7b082b26935f225979225993be7582355`. Its re-review returned specification
+C0/I3/M1 and quality C0/I1/M0. The bounded fail-closed remediation reused the
+canonical metadata parser/profile validator, rejects malformed or
+profile-invalid migrated targets, treats a current-target read failure as the
+value-free `manifest-target-file-invalid`, and rejects forged document metadata
+on native/static surfaces before body read/decode. The exact RED was 0/5 and
+GREEN was 5/5; full lifecycle passed 111/111, focused metadata 76/76, target
+contracts 9/9, and all prescribed wave/compile/Ruff gates passed. The unrelated
+full metadata module remains a recorded non-gate 216/218 on two stale
+`content-archive` expected-role tests. Archive validation still reports only
+the two planned Windows provenance findings owned by T-TSC-003. No manifest or
+summary bytes, 483 pending verdict pairs, runtime, secret, remote, deployment,
+or all-files pre-commit surface changed; fresh re-reviews remain required.
+
 ## Agent Governance Harness Convergence Closure Candidate
 
 The completed T-AGHC-006 pass reconciled the canonical July 5 research and audit

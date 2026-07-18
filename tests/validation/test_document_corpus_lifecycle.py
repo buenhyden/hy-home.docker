@@ -606,6 +606,35 @@ class ManifestValidationTests(LifecycleTestCase):
             ),
         )
 
+    def target_codes_with_result_payload(
+        self,
+        document: lifecycle.MigrationManifestDocument,
+        target_path: str,
+        payload: bytes | None,
+    ) -> set[str]:
+        original_read = lifecycle._read_regular_repo_bytes
+
+        def read_result(
+            root: pathlib.Path,
+            relative_path: str,
+            *,
+            require_tracked: bool,
+        ) -> bytes | None:
+            if relative_path == target_path and not require_tracked:
+                return payload
+            return original_read(
+                root,
+                relative_path,
+                require_tracked=require_tracked,
+            )
+
+        with mock.patch.object(
+            lifecycle,
+            "_read_regular_repo_bytes",
+            side_effect=read_result,
+        ):
+            return self.target_codes(document)
+
     def make_repo(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path, str]:
         temporary = tempfile.TemporaryDirectory()
         root = pathlib.Path(temporary.name)
@@ -752,6 +781,104 @@ class ManifestValidationTests(LifecycleTestCase):
             with self.subTest(case=name):
                 candidate = self.replace_target_row(document, candidate_row)
                 self.assertIn(expected_code, self.target_codes(candidate))
+
+    def test_v2_migrated_typed_target_requires_canonical_profile_fields(self) -> None:
+        document = self.target_manifest()
+        row = self.target_row(
+            document, "examples/sample-web-service/service.md"
+        )
+        candidate = self.replace_target_row(
+            document,
+            dataclasses.replace(row, artifact_id=None, parent_ids=()),
+        )
+        payload = (
+            "---\n"
+            "status: active\n"
+            "artifact_type: spec\n"
+            "---\n\n"
+            "# Sample Web Service\n"
+        ).encode()
+
+        self.assertIn(
+            "manifest-target-profile-invalid",
+            self.target_codes_with_result_payload(
+                candidate,
+                "examples/sample-web-service/service.md",
+                payload,
+            ),
+        )
+
+    def test_v2_migrated_readme_rejects_malformed_frontmatter(self) -> None:
+        document = self.target_manifest()
+        target = "projects/storybook/README.md"
+        malformed = b"---\nstatus: [\n---\n\n# Storybook\n"
+
+        self.assertIn(
+            "manifest-target-file-invalid",
+            self.target_codes_with_result_payload(document, target, malformed),
+        )
+
+    def test_v2_migrated_readme_rejects_profile_forbidden_metadata(self) -> None:
+        document = self.target_manifest()
+        target = "projects/storybook/README.md"
+        forbidden = b"---\nartifact_type: readme\n---\n\n# Storybook\n"
+
+        self.assertIn(
+            "manifest-target-profile-invalid",
+            self.target_codes_with_result_payload(document, target, forbidden),
+        )
+
+    def test_v2_migrated_target_read_failure_is_not_an_empty_document(self) -> None:
+        document = self.target_manifest()
+        target = "projects/storybook/README.md"
+
+        self.assertIn(
+            "manifest-target-file-invalid",
+            self.target_codes_with_result_payload(document, target, None),
+        )
+
+    def test_v2_non_document_target_metadata_is_rejected_without_body_read(self) -> None:
+        document = self.target_manifest()
+        target = (
+            "infra/05-messaging/kafka/jmx-exporter/"
+            "jmx_prometheus_javaagent-1.5.0.jar"
+        )
+        row = self.target_row(document, target)
+        candidate = self.replace_target_row(
+            document,
+            dataclasses.replace(
+                row,
+                artifact_type_after="spec",
+                disposition="migrate",
+            ),
+        )
+        original_read = lifecycle._read_regular_repo_bytes
+        result_reads: list[str] = []
+
+        def observe_read(
+            root: pathlib.Path,
+            relative_path: str,
+            *,
+            require_tracked: bool,
+        ) -> bytes | None:
+            if relative_path == target and not require_tracked:
+                result_reads.append(relative_path)
+                return b"\xff"
+            return original_read(
+                root,
+                relative_path,
+                require_tracked=require_tracked,
+            )
+
+        with mock.patch.object(
+            lifecycle,
+            "_read_regular_repo_bytes",
+            side_effect=observe_read,
+        ):
+            codes = self.target_codes(candidate)
+
+        self.assertIn("manifest-target-metadata-forbidden", codes)
+        self.assertEqual([], result_reads)
 
     def test_v2_delete_rejects_a_source_that_remains_in_the_result(self) -> None:
         document = self.target_manifest()

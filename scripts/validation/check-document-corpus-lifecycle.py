@@ -281,6 +281,7 @@ SAFETY_FINDING_CODES = frozenset(
         "manifest-source-parse-invalid",
         "manifest-target-path-invalid",
         "manifest-target-file-invalid",
+        "manifest-target-metadata-forbidden",
         "manifest-consumer-path-invalid",
         "manifest-evidence-path-invalid",
         "manifest-evidence-confidential",
@@ -1988,6 +1989,24 @@ def _surface_result_state_findings(
             )
         )
         return findings, False
+    if row.surface_class not in TYPED_SURFACE_CLASSES:
+        if any(
+            (
+                row.artifact_id is not None,
+                row.artifact_type_after is not None,
+                row.status_after is not None,
+                bool(row.parent_ids),
+            )
+        ):
+            findings.append(
+                _finding(
+                    target,
+                    "manifest-target-metadata-forbidden",
+                    "non-document result target cannot declare document metadata",
+                )
+            )
+            return findings, False
+        return findings, not findings
     pending_advisory_skeleton = (
         document.enforcement == "advisory"
         and row.disposition == "preserve"
@@ -2006,19 +2025,31 @@ def _surface_result_state_findings(
     )
     if pending_advisory_skeleton:
         return findings, not findings
-    if (
-        row.artifact_type_after is None
-        and row.surface_class not in TYPED_SURFACE_CLASSES
-    ):
-        return findings, not findings
-
     payload = _read_regular_repo_bytes(root, target, require_tracked=False)
+    if payload is None:
+        findings.append(
+            _finding(
+                target,
+                "manifest-target-file-invalid",
+                "typed result target cannot be read safely",
+            )
+        )
+        return findings, False
     try:
-        text = payload.decode("utf-8") if payload is not None else ""
+        text = payload.decode("utf-8")
         target_record = metadata._record_from_text(
             pathlib.Path(target), text, profiles=profiles
         )
-    except (UnicodeDecodeError, metadata.FrontmatterError):
+    except UnicodeDecodeError:
+        findings.append(
+            _finding(
+                target,
+                "manifest-target-file-invalid",
+                "typed result target metadata cannot be parsed safely",
+            )
+        )
+        return findings, False
+    if target_record.parse_error:
         findings.append(
             _finding(
                 target,
@@ -2087,6 +2118,62 @@ def _surface_result_state_findings(
                 "result target parents differ from manifest truth",
             )
         )
+    if row.disposition == "migrate":
+        profile_type = row.artifact_type_after
+        profile_errors: list[Finding] = []
+        if not isinstance(profile_type, str) or profile_type not in registered_types:
+            profile_errors.append(
+                _finding(
+                    target,
+                    "manifest-target-profile-invalid",
+                    "migrated result target does not select a registered metadata profile",
+                )
+            )
+        else:
+            profile_record = dataclasses.replace(
+                target_record,
+                artifact_type=profile_type,
+            )
+            context_records = [profile_record]
+            for candidate in document.entries:
+                if candidate.source_path == row.source_path:
+                    continue
+                candidate_type = candidate.artifact_type_after
+                candidate_id = candidate.artifact_id
+                candidate_path = candidate.target_path or candidate.source_path
+                if not isinstance(candidate_type, str) or candidate_id is None:
+                    continue
+                candidate_metadata: dict[str, object] = {
+                    "artifact_id": candidate_id,
+                    "artifact_type": candidate_type,
+                    "parent_ids": list(candidate.parent_ids),
+                }
+                if candidate.status_after is not None:
+                    candidate_metadata["status"] = candidate.status_after
+                context_records.append(
+                    metadata.Record(
+                        pathlib.Path(candidate_path.as_posix()),
+                        candidate_metadata,
+                        candidate_type,
+                    )
+                )
+            profile_errors.extend(
+                finding
+                for finding in metadata.validate_record(
+                    profile_record,
+                    profiles,
+                    metadata.build_manifest(tuple(context_records)),
+                )
+                if finding.severity == "error"
+            )
+        if profile_errors:
+            findings.append(
+                _finding(
+                    target,
+                    "manifest-target-profile-invalid",
+                    "migrated result target does not satisfy its canonical metadata profile",
+                )
+            )
     if row.artifact_type_after == "archive":
         archive_errors = [
             finding
