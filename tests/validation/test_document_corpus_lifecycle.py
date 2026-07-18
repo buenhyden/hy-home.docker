@@ -547,6 +547,18 @@ class HumanContractRoutingTests(LifecycleTestCase):
             corpus,
         )
 
+    def test_human_contract_separates_v2_baseline_and_target_metadata_truth(self) -> None:
+        corpus = CORPUS_HUMAN_CONTRACT.read_text(encoding="utf-8")
+        for literal in (
+            "pinned baseline",
+            "`artifact_type_before` and `status_before`",
+            "`artifact_id`, `artifact_type_after`, `status_after`, and `parent_ids`",
+            "current canonical target metadata",
+            "non-document surfaces",
+        ):
+            with self.subTest(literal=literal):
+                self.assertIn(literal, corpus)
+
 
 class ManifestValidationTests(LifecycleTestCase):
     def target_manifest(self) -> lifecycle.MigrationManifestDocument:
@@ -681,6 +693,65 @@ class ManifestValidationTests(LifecycleTestCase):
         self.assertEqual("archive", windows.artifact_type_after)
         self.assertEqual("pending", windows.review_verdict.specification)
         self.assertEqual("pending", windows.review_verdict.quality)
+
+    def test_v2_migrated_typed_target_uses_current_metadata_truth(self) -> None:
+        document = self.target_manifest()
+        row = self.target_row(
+            document, "examples/sample-web-service/service.md"
+        )
+        self.assertIsNone(row.artifact_type_before)
+        self.assertEqual("spec", row.artifact_type_after)
+        self.assertEqual("spec:sample-web-service", row.artifact_id)
+        self.assertEqual(
+            ("spec:133-target-surface-contract-convergence",), row.parent_ids
+        )
+        self.assertTrue(
+            {
+                "manifest-artifact-transition-invalid",
+                "manifest-baseline-artifact-id-mismatch",
+                "manifest-target-artifact-id-mismatch",
+                "manifest-target-artifact-type-mismatch",
+                "manifest-target-parent-ids-mismatch",
+                "manifest-target-status-mismatch",
+            }.isdisjoint(self.target_codes(document))
+        )
+
+    def test_v2_migrated_typed_target_rejects_false_current_metadata(self) -> None:
+        document = self.target_manifest()
+        row = self.target_row(
+            document, "examples/sample-web-service/service.md"
+        )
+        cases = (
+            (
+                "artifact-id",
+                dataclasses.replace(row, artifact_id="spec:false-service"),
+                "manifest-target-artifact-id-mismatch",
+            ),
+            (
+                "artifact-type",
+                dataclasses.replace(row, artifact_type_after="reference"),
+                "manifest-target-artifact-type-mismatch",
+            ),
+            (
+                "artifact-type-null",
+                dataclasses.replace(row, artifact_type_after=None),
+                "manifest-target-artifact-type-mismatch",
+            ),
+            (
+                "parents",
+                dataclasses.replace(row, parent_ids=()),
+                "manifest-target-parent-ids-mismatch",
+            ),
+            (
+                "status",
+                dataclasses.replace(row, status_after="draft"),
+                "manifest-target-status-mismatch",
+            ),
+        )
+        for name, candidate_row, expected_code in cases:
+            with self.subTest(case=name):
+                candidate = self.replace_target_row(document, candidate_row)
+                self.assertIn(expected_code, self.target_codes(candidate))
 
     def test_v2_delete_rejects_a_source_that_remains_in_the_result(self) -> None:
         document = self.target_manifest()

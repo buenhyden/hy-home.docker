@@ -170,9 +170,9 @@ manifest_schema_v2:
     entries: {type: list, nullable: false, domain: migration-entry}
     source_path: {type: string, nullable: false, domain: safe-baseline-tracked-path}
     target_path: {type: string, nullable: true, domain: safe-repository-path, null_condition: disposition-delete}
-    artifact_id: {type: string, nullable: true, domain: canonical-metadata-artifact-id, null_condition: selected-profile-does-not-require-artifact-id}
-    status_before: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: selected-profile-does-not-require-status}
-    status_after: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: selected-profile-does-not-require-status}
+    artifact_id: {type: string, nullable: true, domain: canonical-metadata-artifact-id, null_condition: target-profile-does-not-require-artifact-id-or-delete}
+    status_before: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: baseline-profile-does-not-require-status}
+    status_after: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: target-profile-does-not-require-status-or-delete}
     parent_ids: {type: list, nullable: false, domain: deterministic-string-list}
     disposition: {type: string, nullable: false, domain: registered-manifest-disposition}
     canonical_replacement: {type: string, nullable: true, domain: non-empty-string, null_condition: replacement-requirements}
@@ -188,8 +188,8 @@ manifest_schema_v2:
     evidence.rollback: {type: list, nullable: false, domain: deterministic-string-list}
     review_verdict.specification: {type: string, nullable: false, domain: review-verdict-values}
     review_verdict.quality: {type: string, nullable: false, domain: review-verdict-values}
-    artifact_type_before: {type: string, nullable: true, domain: registered-artifact-type, null_condition: native-or-unsupported-surface}
-    artifact_type_after: {type: string, nullable: true, domain: registered-artifact-type, null_condition: native-or-unsupported-surface}
+    artifact_type_before: {type: string, nullable: true, domain: registered-artifact-type, null_condition: baseline-surface-is-native-or-unsupported}
+    artifact_type_after: {type: string, nullable: true, domain: registered-artifact-type, null_condition: target-surface-is-native-or-unsupported-or-delete}
     surface_class: {type: string, nullable: false, domain: registered-surface-class}
   deterministic_order:
     entries: source_path

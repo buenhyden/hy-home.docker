@@ -65,6 +65,18 @@ Schema version 2 entries instead use `source_path`, `target_path`, `artifact_id`
 `active_consumers`, `partition_plan`, `preservation_class`, `evidence`, and
 `review_verdict`. Version 2 does not carry the version 1 `artifact_type` field.
 
+For schema version 2, `artifact_type_before` and `status_before` are truth from
+the pinned baseline. On a non-delete `migrate` row with a typed current target,
+`artifact_id`, `artifact_type_after`, `status_after`, and `parent_ids` instead
+describe and must match the current canonical target metadata. Baseline
+identity is verified from the pinned tree and is not overloaded into the
+target-facing `artifact_id` field. A generator may retain a truthful pending
+`preserve` skeleton from baseline metadata. Native, binary, and other
+non-document surfaces retain null target metadata when their selected surface
+or profile does not require it. Version 1 behavior and the existing delete,
+archive, path, binary, destructive-proof, and confidentiality gates are
+unchanged.
+
 The evidence object uses `commands`, `sources`, `repository_paths`, `consumer_scan`, `rollback`.
 The review object uses `specification`, `quality`, and each verdict is one of `pending`, `pass`, `changes-required`.
 

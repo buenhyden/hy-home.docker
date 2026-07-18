@@ -11,6 +11,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "scripts/validation/check-document-metadata.py"
 PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 SERVICE_EXAMPLE = ROOT / "examples/sample-web-service/service.md"
+TARGET_MANIFEST = (
+    ROOT
+    / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+)
 TARGET_ROOTS = (".github", "archive", "examples", "infra", "projects", "scripts", "secrets", "tests")
 
 spec = importlib.util.spec_from_file_location("target_surface_metadata", CHECKER)
@@ -75,6 +79,32 @@ class SampleServiceContractTests(unittest.TestCase):
         ):
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, self.text)
+
+    def test_migrated_typed_example_manifest_target_matches_document(self) -> None:
+        document = metadata._safe_load_unique(  # noqa: SLF001
+            TARGET_MANIFEST.read_text(encoding="utf-8")
+        )
+        row = next(
+            entry
+            for entry in document["entries"]
+            if entry["source_path"] == "examples/sample-web-service/service.md"
+        )
+        frontmatter = metadata.parse_frontmatter(SERVICE_EXAMPLE)
+
+        self.assertEqual("typed-example", row["surface_class"])
+        self.assertEqual("migrate", row["disposition"])
+        self.assertEqual(
+            {
+                "artifact_id": frontmatter["artifact_id"],
+                "artifact_type_after": frontmatter["artifact_type"],
+                "parent_ids": frontmatter["parent_ids"],
+            },
+            {
+                "artifact_id": row["artifact_id"],
+                "artifact_type_after": row["artifact_type_after"],
+                "parent_ids": row["parent_ids"],
+            },
+        )
 
 
 class TargetReadmeProfileTests(unittest.TestCase):

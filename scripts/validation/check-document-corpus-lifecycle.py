@@ -237,6 +237,9 @@ SOURCE_EQUALS_TARGET = frozenset(
 )
 TARGET_DISTINCT = frozenset({"move", "merge", "archive"})
 REVIEW_VALUES = frozenset({"pending", "pass", "changes-required"})
+TYPED_SURFACE_CLASSES = frozenset(
+    {"content-archive", "generated-output", "readme", "typed-example"}
+)
 OBJECT_ID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+[^)]*)?\)")
 SENSITIVE_PAYLOAD_PATTERNS = (
@@ -1985,9 +1988,6 @@ def _surface_result_state_findings(
             )
         )
         return findings, False
-    if row.artifact_type_after is None:
-        return findings, not findings
-
     pending_advisory_skeleton = (
         document.enforcement == "advisory"
         and row.disposition == "preserve"
@@ -2006,6 +2006,11 @@ def _surface_result_state_findings(
     )
     if pending_advisory_skeleton:
         return findings, not findings
+    if (
+        row.artifact_type_after is None
+        and row.surface_class not in TYPED_SURFACE_CLASSES
+    ):
+        return findings, not findings
 
     payload = _read_regular_repo_bytes(root, target, require_tracked=False)
     try:
@@ -2023,6 +2028,21 @@ def _surface_result_state_findings(
         )
         return findings, False
     target_metadata = target_record.metadata
+    registered_profiles = profiles.get("profiles")
+    registered_types = (
+        set(registered_profiles) if isinstance(registered_profiles, dict) else set()
+    )
+    declared_type = target_metadata.get("artifact_type")
+    target_artifact_type = (
+        declared_type
+        if isinstance(declared_type, str)
+        and declared_type in registered_types
+        and declared_type != "unsupported"
+        else target_record.artifact_type
+        if target_record.artifact_type in registered_types
+        and target_record.artifact_type != "unsupported"
+        else None
+    )
     target_status = target_metadata.get("status")
     normalized_status = target_status if isinstance(target_status, str) else None
     target_parents = target_metadata.get("parent_ids")
@@ -2032,7 +2052,7 @@ def _surface_result_state_findings(
         and all(isinstance(item, str) for item in target_parents)
         else ()
     )
-    if target_record.artifact_type != row.artifact_type_after:
+    if target_artifact_type != row.artifact_type_after:
         findings.append(
             _finding(
                 target,
@@ -2040,7 +2060,10 @@ def _surface_result_state_findings(
                 "result target type differs from manifest truth",
             )
         )
-    if target_metadata.get("artifact_id") != row.artifact_id:
+    target_artifact_id = _manifest_artifact_id(
+        target_artifact_type or "unsupported", target_metadata.get("artifact_id")
+    )
+    if target_artifact_id != row.artifact_id:
         findings.append(
             _finding(
                 target,
@@ -2318,14 +2341,17 @@ def _validate_surface_manifest(
             findings.append(
                 _finding(source, "manifest-artifact-type-mismatch", "artifact_type_before differs from typed baseline truth")
             )
-        expected_after = (
-            None
-            if row.disposition == "delete"
-            else "archive"
+        target_metadata_owned = (
+            row.disposition == "migrate"
+            and row.surface_class in TYPED_SURFACE_CLASSES
+            and row.surface_class != "content-archive"
+        )
+        expected_after = None if row.disposition == "delete" else (
+            "archive"
             if row.surface_class == "content-archive"
             else row.artifact_type_before
         )
-        if row.artifact_type_after != expected_after:
+        if not target_metadata_owned and row.artifact_type_after != expected_after:
             findings.append(
                 _finding(source, "manifest-artifact-transition-invalid", "artifact type transition is not admitted")
             )
@@ -2333,11 +2359,11 @@ def _validate_surface_manifest(
             findings.append(
                 _finding(source, "manifest-baseline-status-mismatch", "status_before differs from baseline truth")
             )
-        if not (
-            row.surface_class == "content-archive"
-            and expected.artifact_id is None
-            and isinstance(row.artifact_id, str)
-        ) and row.artifact_id != expected.artifact_id:
+        target_identity_owned = row.surface_class == "content-archive" or (
+            row.disposition == "migrate"
+            and row.surface_class in TYPED_SURFACE_CLASSES
+        )
+        if not target_identity_owned and row.artifact_id != expected.artifact_id:
             findings.append(
                 _finding(source, "manifest-baseline-artifact-id-mismatch", "artifact identity differs from baseline truth")
             )

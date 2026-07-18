@@ -305,17 +305,35 @@ EXPECTED_MANIFEST_SCHEMA_V2 = {
             "nullable": False,
             "domain": "constant-2",
         },
+        "artifact_id": {
+            "type": "string",
+            "nullable": True,
+            "domain": "canonical-metadata-artifact-id",
+            "null_condition": "target-profile-does-not-require-artifact-id-or-delete",
+        },
+        "status_before": {
+            "type": "string",
+            "nullable": True,
+            "domain": "registered-lifecycle-status",
+            "null_condition": "baseline-profile-does-not-require-status",
+        },
+        "status_after": {
+            "type": "string",
+            "nullable": True,
+            "domain": "registered-lifecycle-status",
+            "null_condition": "target-profile-does-not-require-status-or-delete",
+        },
         "artifact_type_before": {
             "type": "string",
             "nullable": True,
             "domain": "registered-artifact-type",
-            "null_condition": "native-or-unsupported-surface",
+            "null_condition": "baseline-surface-is-native-or-unsupported",
         },
         "artifact_type_after": {
             "type": "string",
             "nullable": True,
             "domain": "registered-artifact-type",
-            "null_condition": "native-or-unsupported-surface",
+            "null_condition": "target-surface-is-native-or-unsupported-or-delete",
         },
         "surface_class": {
             "type": "string",

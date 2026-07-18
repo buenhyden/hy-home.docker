@@ -1929,13 +1929,14 @@ entries:
     quality: pending
 - source_path: examples/sample-web-service/service.md
   target_path: examples/sample-web-service/service.md
-  artifact_id: null
+  artifact_id: spec:sample-web-service
   artifact_type_before: null
-  artifact_type_after: null
+  artifact_type_after: spec
   surface_class: typed-example
   status_before: active
   status_after: active
-  parent_ids: []
+  parent_ids:
+  - spec:133-target-surface-contract-convergence
   disposition: migrate
   canonical_replacement: null
   active_consumers: []
