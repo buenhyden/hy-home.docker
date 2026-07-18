@@ -75,6 +75,14 @@ def commit_all(root: pathlib.Path, message: str = "fixture") -> str:
     return git(root, "rev-parse", "HEAD")
 
 
+def archive_command_body_findings(text: str) -> list[str]:
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        if stripped and stripped.split(maxsplit=1)[0].casefold() == "netsh":
+            return ["stale-command-body"]
+    return []
+
+
 class LifecycleTestCase(unittest.TestCase):
     maxDiff = None
 
@@ -2085,6 +2093,19 @@ class CandidateManifestCliTests(LifecycleTestCase):
 
 
 class ArchiveProvenanceTests(LifecycleTestCase):
+    def test_command_body_scan_rejects_abbreviated_case_varied_netsh_line(self) -> None:
+        synthetic_mutation = "  NeTsH i i synthetic-static-address\n"
+        self.assertEqual(
+            ["stale-command-body"],
+            archive_command_body_findings(synthetic_mutation),
+        )
+        for non_command in (
+            "The netsh utility is named only as historical context.\n",
+            "netsh_command = disabled_identifier\n",
+        ):
+            with self.subTest(non_command=non_command):
+                self.assertEqual([], archive_command_body_findings(non_command))
+
     def test_windows_network_note_is_a_provenance_only_content_tombstone(self) -> None:
         path = pathlib.Path("archive/Windows-Network-IP.md")
         text = (ROOT / path).read_text(encoding="utf-8")
@@ -2120,8 +2141,7 @@ class ArchiveProvenanceTests(LifecycleTestCase):
             if key in record.metadata:
                 failures.append(f"forbidden:{key}")
 
-        if any(token in text for token in ("netsh interface", "netsh wlan")):
-            failures.append("stale-command-body")
+        failures.extend(archive_command_body_findings(text))
         for heading in (
             "## Overview",
             "## Current-use Warning",
