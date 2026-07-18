@@ -115,6 +115,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 
 | Date | Work unit | Agent role | Result |
 | --- | --- | --- | --- |
+| 2026-07-19 | T-TSC-006 final clean-head controlled wrapper | Controller | From clean closure commit `1ff8a435c7c671b800b3aa9a6f143f425e3ca43e`, the approved wrapper ran with exact changed prefixes `docs`, `scripts`, and `tests`. Hook exit 0 and snapshot PASS; before, after, changed, and unexpected path counts were all 0 and every path set was `(none)`. No formatter or unexpected mutation occurred. |
 | 2026-07-19 | T-TSC-006 completed-status promotion witness | QA Engineer; independent specification and quality reviewers; Controller | Preserved the promoted manifest's immutable `draft` to `active` attestation and admitted only the exact reviewed `active` to `completed` closure hop for Spec 133. The witness is bound to the exact baseline, promotion evidence, path, artifact ID/type/parents, blocking enforcement, preserve disposition, and pass/pass reviews. Initial quality review found a `superseded` escape; specification review found coordinated identity mutation and YAML diagnostic disclosure. The remediated tests reject archived/superseded, advisory/pending, skipped/reverse, coordinated ID/type/parent, and value-disclosing parse failures. Focused 3/3, metadata 221 tests in the combined run, lifecycle 118/118 after two stale fixture corrections, compile, Ruff, CLI, and diff checks pass. Final specification PASS and quality APPROVED are C0/I0/M0 with TRANSITION_CLOSURE_AUTHORIZED YES. |
 | 2026-07-19 | T-TSC-006 final whole-branch closure reviews | Independent specification and quality reviewers | Exact real range `32c40e11747bc0bd03789c24861d2e5d60c0e999..63039b5b0b20c99a10aae7162627afefcd7a1d8b` returned specification PASS and quality APPROVED C0/I0/M0. Both reviewers returned READY_FOR_CLOSURE YES after independently confirming the 483-row blocking manifest, logical commit history, bounded wrapper evidence, generated/current truth, destructive evidence, and runtime/remote/secret exclusions. Final lifecycle status closure is authorized. |
 | 2026-07-19 | T-TSC-006 blocking promotion | Independent specification and quality reviewers; Controller | The remediated exact synthetic range `c1e086a1159da3490297adeb4e0972d29b976fe0..adc1ec0e1bcdee82fbbdb1e2cb9ac1e394bc68ef` returned specification PASS and quality APPROVED C0/I0/M0 with PROMOTION_AUTHORIZED YES. The real implementation commits `e1e1a9c8` and `b66cdff4` promote the target wave to blocking with all 483 rows pass/pass: 3 delete, 10 migrate, and 470 preserve. The three destructive rows retain complete consumer, preservation, rollback, and review evidence. |
@@ -721,12 +722,10 @@ and no remote read occurred.
 
 ## Controlled Agent Pre-commit Evidence
 
-- Command: `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md` with the exact prefixes below; Task 6 only.
-- Allowed prefixes: `.env.example`, `.github`, `.pre-commit-config.yaml`, `.prettierignore`, `archive`, `docs`, `examples`, `infra`, `projects`, `scripts`, `secrets`, `tests`.
-- Hook exit: `0` on the approved execution and on the post-promotion rerun from
-  clean real HEAD `b66cdff42317a9b1249d6331a6679d8e7bb88e79`. The PATH-only preflight did not
-  run the hook; one sandbox attempt returned hook exit `3` without mutation.
-- Snapshot result: PASS on both successful executions.
+- Command: `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md` with exact bounded prefixes; Task 6 only.
+- Allowed prefixes: the promotion run used `.env.example`, `.github`, `.pre-commit-config.yaml`, `.prettierignore`, `archive`, `docs`, `examples`, `infra`, `projects`, `scripts`, `secrets`, and `tests`; the final closure run used only `docs`, `scripts`, and `tests`.
+- Hook exit: `0` on the approved promotion execution, the post-promotion rerun from clean real HEAD `b66cdff42317a9b1249d6331a6679d8e7bb88e79`, and the final closure rerun from clean real HEAD `1ff8a435c7c671b800b3aa9a6f143f425e3ca43e`. The PATH-only preflight did not run the hook; one sandbox attempt returned hook exit `3` without mutation; one dirty-worktree closure attempt stopped before hook execution with exit `5` and no mutation.
+- Snapshot result: PASS on all three successful executions.
 - Observation boundary: Git-visible, non-ignored repository status only; the
   wrapper does not observe ignored or outside-worktree writes.
 - Before/after/changed/unexpected path sets: all `(none)`; counts all `0`.
@@ -745,7 +744,7 @@ and no remote read occurred.
 | Whole branch | N/A | PASS C0/I0/M0; `32c40e11747bc0bd03789c24861d2e5d60c0e999..c1e086a1159da3490297adeb4e0972d29b976fe0` | APPROVED C0/I0/M0; same range | Both reviewers returned READY_FOR_WRAPPER YES. Promotion and final closure receive subsequent exact-range reviews. |
 | Blocking promotion | recorded | PASS C0/I0/M0; `c1e086a1159da3490297adeb4e0972d29b976fe0..adc1ec0e1bcdee82fbbdb1e2cb9ac1e394bc68ef` | APPROVED C0/I0/M0; same range | Both reviewers returned PROMOTION_AUTHORIZED YES. Real commits `e1e1a9c8` and `b66cdff4` reproduce the reviewed tree; final whole-branch closure reviews remain pending. |
 | Final whole branch | N/A | PASS C0/I0/M0; `32c40e11747bc0bd03789c24861d2e5d60c0e999..63039b5b0b20c99a10aae7162627afefcd7a1d8b` | APPROVED C0/I0/M0; same range | Both reviewers returned READY_FOR_CLOSURE YES. No finding remains. |
-| Completed-status witness | recorded | PASS C0/I0/M0; uncommitted closure delta after `63039b5b` | APPROVED C0/I0/M0; same delta | Initial Important findings for terminal escape, coordinated identity mutation, and diagnostic disclosure are closed. Both reviewers returned TRANSITION_CLOSURE_AUTHORIZED YES. |
+| Completed-status witness | recorded | PASS C0/I0/M0; closure delta `63039b5b..1ff8a435` | APPROVED C0/I0/M0; same delta | Initial Important findings for terminal escape, coordinated identity mutation, and diagnostic disclosure are closed. Both reviewers returned TRANSITION_CLOSURE_AUTHORIZED YES. |
 
 Reviewers are separate fresh agents. A destructive row cannot pass until both
 independent verdicts and all finding dispositions are recorded.
@@ -782,7 +781,7 @@ independent verdicts and all finding dispositions are recorded.
 | T-TSC-006 lifecycle promotion | `feat(docs): promote target surface lifecycle wave` | `e1e1a9c8` | Blocking promotion tests and lifecycle/metadata gates passed; the reviewed manifest has 483 pass/pass rows. |
 | T-TSC-006 promotion evidence | `docs(execution): record target lifecycle promotion evidence` | `b66cdff4` | Exact promotion specification PASS and quality APPROVED C0/I0/M0 with PROMOTION_AUTHORIZED YES; post-promotion wrapper passed without mutation. |
 | T-TSC-006 closure candidate | `docs(execution): prepare target surface closure` | `63039b5b` | Closure-candidate lifecycle, metadata, traceability, alignment, repository, audit, semantic, generated-freshness, promotion-focus, and diff gates passed; exact-range final reviews returned C0/I0/M0. |
-| T-TSC-006 final closure | `docs(execution): close target surface convergence` | this commit; identity intentionally not self-recorded | Exact completed-status witness, generated owners, final specification/quality authorization, and final gates pass. |
+| T-TSC-006 final closure | `docs(execution): close target surface convergence` | `1ff8a435` | Exact completed-status witness, generated owners, final specification/quality authorization, final gates, and the clean-head controlled wrapper pass. |
 
 Material review fixes and generated-only fallout receive additional rows.
 The evidence-only `docs(task): record task one review remediation` commit is
