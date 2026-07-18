@@ -427,6 +427,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/130-template-contract-system-canonicalization/spec.md](../../03.specs/130-template-contract-system-canonicalization/spec.md) | Markdown reference |
 | [docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md](../../03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md) | Markdown reference |
 | [docs/03.specs/132-agent-governance-harness-convergence/spec.md](../../03.specs/132-agent-governance-harness-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/133-target-surface-contract-convergence/spec.md](../../03.specs/133-target-surface-contract-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |

@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: spec:133-target-surface-contract-convergence
 artifact_type: spec
 parent_ids:
@@ -10,7 +10,7 @@ parent_ids:
 
 **Date:** 2026-07-18 (Asia/Seoul)
 
-**Status:** Draft
+**Status:** Active
 
 ## Overview
 
@@ -127,7 +127,7 @@ owner.
 | [YAML 1.2.2](https://yaml.org/spec/1.2.2/) and [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) | Parse duplicate-safe typed metadata before profile validation; keep required, optional, forbidden, and conditional fields machine-readable. |
 | [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/) and [GitHub YAML frontmatter guidance](https://docs.github.com/en/contributing/writing-for-github-docs/using-yaml-frontmatter) | Validate Markdown bodies separately and permit metadata only for a declared consumer. |
 | [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) and [secure use reference](https://docs.github.com/en/actions/reference/security/secure-use) | Validate explicit permissions, concurrency, timeouts, full-commit action pins, and untrusted-input boundaries without claiming remote enforcement. |
-| [GitHub workflow artifacts](https://docs.github.com/en/actions/tutorials/store-and-share-data) | Give CI evidence explicit names, bounded `retention-days`, and integrity handling; do not treat ordinary diagnostics as archival records. |
+| [GitHub workflow artifacts](https://docs.github.com/en/actions/tutorials/store-and-share-data) | Retain the repository's current upload prohibition; this source defines the mandatory name, retention, and integrity review if a later approved contract introduces uploads. |
 | [pre-commit](https://pre-commit.com/) | Treat all-files execution as repository-wide and potentially mutating; agents use only the approved clean-worktree wrapper. |
 | [Docker Compose file reference](https://docs.docker.com/compose/compose-file/), [profiles](https://docs.docker.com/compose/how-tos/profiles/), [secrets](https://docs.docker.com/compose/how-tos/use-secrets/), and [trust model](https://docs.docker.com/compose/trust-model/) | Validate native Compose syntax and every declared profile statically, preserve per-service secret grants, and treat Compose inputs and rendered output as potentially sensitive. |
 | [InfluxDB 3 Core write API](https://docs.influxdata.com/influxdb3/core/api/write-data/) and [Python v3 client](https://docs.influxdata.com/influxdb3/core/reference/client-libraries/v3/python/) | Make database/token and the v3 line-protocol API the sole new-workload contract; remove the unused InfluxDB 2 server and client scaffolding rather than retain an unowned compatibility path. |
@@ -258,11 +258,15 @@ configuration, executable script, test/fixture, secret metadata/scaffold,
 content archive, or unsupported binary/static asset. Classification precedes
 mutation.
 
-The manifest reuses the repository corpus-migration schema and its dispositions
-rather than inventing an ad hoc spreadsheet. Binary/static assets and native
-files may be preserved or exempted with a real consumer and evidence. An exempt
-row is not a permanent policy exception; it states why this wave must preserve
-the native contract.
+The manifest uses schema version 2 while Foundation remains valid schema
+version 1. Version 2 keeps the existing top-level identity fields, adds one
+required `surface_class` per row, and splits the prior single `artifact_type`
+into nullable `artifact_type_before` and `artifact_type_after`. This represents
+native/static rows without inventing a document type and represents the root
+content transition as `null -> archive`. Binary/static assets and native files
+may be preserved or exempted with a real consumer and evidence. An exempt row
+is not a permanent policy exception; it states why this wave preserves the
+native contract.
 
 ### README and Example Migration
 
@@ -336,10 +340,12 @@ Repository validators expose finding codes and safe paths rather than bodies.
 The changed-path QA recommender routes modifications to the smallest sufficient
 gate set. Workflow jobs use exact stable names so local definitions can be
 compared with separately observed remote required contexts without claiming
-that the remote state changed. Uploaded CI evidence uses explicit artifact
-names, bounded retention, and integrity-aware producer/consumer handoffs; test
-reports, traces, screenshots, and diagnostics remain operational artifacts,
-not content or SDLC archives.
+that the remote state changed. The current repository contract continues to
+forbid `actions/upload-artifact`; this work does not introduce an exception.
+Any later artifact handoff requires a separately approved contract change with
+explicit names, bounded retention, and integrity-aware producer/consumer
+semantics. Test reports, traces, screenshots, and diagnostics remain
+operational evidence, not content or SDLC archives.
 
 ## Failure Modes and Guardrails
 
@@ -385,9 +391,9 @@ secret-bearing evidence to make a gate pass.
 - Run Actionlint, YAML lint/syntax, ShellCheck/Bash syntax, Hadolint, applicable
   Python/Node tests, and the repository's static Compose validator.
 - Validate workflow permissions, action pins, job names, timeouts, concurrency,
-  untrusted-input boundaries, artifact names, integrity handoffs, and bounded
-  `retention-days`; keep the 15-local/12-remote comparison explicitly dated and
-  unverified until a separate read-only remote revalidation is approved.
+  untrusted-input boundaries, and continued absence of artifact uploads; keep
+  the 15-local/12-remote comparison explicitly dated and unverified until a
+  separate read-only remote revalidation is approved.
 - Confirm every declared Compose profile still renders and that no command
   starts a service.
 - Run fixed-string consumer scans for every removed path and dependency.
