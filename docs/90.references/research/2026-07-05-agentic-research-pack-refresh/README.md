@@ -51,9 +51,9 @@ Partial 또는 Needs Revalidation 경계에 둡니다. 모델의 historical cuto
 
 2026-07-19 target-surface wave의 현재 저장소 근거도 같은 경계로 반영했습니다.
 root Vault/content와 Stage 98 SDLC archive는 별도 profile로 분류되고, canonical
-manifest는 483행(삭제 3, 이관 7, 보존 473)입니다. 독립 검토가 끝난 InfluxDB 2,
-OpenSearch `.example`, SeaweedFS `security.toml` 세 행만 `pass/pass`이고 나머지
-480행은 `pending/pending`입니다. SeaweedFS의 유지된 `.example`은 현재 Compose에
+manifest promotion 후보는 483행(삭제 3, 이관 10, 보존 470)이며 전체가 독립
+검토를 거친 `pass/pass`입니다. InfluxDB 2, OpenSearch `.example`, SeaweedFS
+`security.toml`의 destructive evidence는 별도 검토를 유지합니다. SeaweedFS의 유지된 `.example`은 현재 Compose에
 mount되지 않으며 활성화는 별도 승인 runtime 작업입니다. 로컬 workflow source의
 품질 job은 15개이지만, 2026-07-12에 관찰한 원격 required context 12개는 최신
 enforcement 증거로 승격하지 않았습니다. 이 정합화는 service startup, remote

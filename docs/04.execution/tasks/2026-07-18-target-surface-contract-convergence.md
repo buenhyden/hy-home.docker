@@ -109,12 +109,15 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | T-TSC-003 | Root content archive provenance migration | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-004 | Deprecated runtime and duplicate disposition | complete |
 | T-TSC-005 | Validator, QA routing, and static CI enforcement | complete |
-| T-TSC-006 | Research, audit, generated evidence, and closure | authored_and_generated_evidence_complete_verification_pending |
+| T-TSC-006 | Research, audit, generated evidence, and closure | verification_wrapper_and_reviews_complete_promotion_review_pending |
 
 ## Work Log
 
 | Date | Work unit | Agent role | Result |
 | --- | --- | --- | --- |
+| 2026-07-19 | T-TSC-006 full verification | Controller | Dependency-locked discovery passed 660/660 in 863.831 seconds. Lifecycle contract/manifest/summary/promoted and impacted checks passed; impacted selected 426 with zero violations and one non-blocking task-directory budget warning. Explicit-base metadata selected 63 with zero violations, 19 unchanged legacy exceptions, and no overrides. Traceability passed 46/0; alignment passed 656 documents, 5,252 local links, 141 Operations service docs, and zero failures; repo contracts passed with failures=0. Static Compose rendered five core services; actionlint, yamllint, audit coverage 11 reports/161 rows, semantic freshness 11/0, generated freshness, compile, and diff hygiene passed. Graphify remained advisory with contamination 0 and three corroborated cross-root inferred edges; tracked graph noise was restored. |
+| 2026-07-19 | T-TSC-006 independent reviews | Independent specification and quality reviewers | The remediated Task 6 evidence candidate `49c4db893a4b53ac6b0e8a4dfe4e76d81c16ddc2..7650066ecdff0b0e4571dfcacdc38f25202b26d5` returned specification PASS and quality APPROVED C0/I0/M0 after closing one stale-state and two current-count findings. Whole-branch range `32c40e11747bc0bd03789c24861d2e5d60c0e999..c1e086a1159da3490297adeb4e0972d29b976fe0` then returned PASS/APPROVED C0/I0/M0 and READY_FOR_WRAPPER YES. |
+| 2026-07-19 | T-TSC-006 controlled wrapper | Controller | Attempt 1 stopped before hook execution because `pre-commit` was absent from the non-login PATH. Attempt 2 reached the hook in the sandbox and returned exit 3 with snapshot PASS and no paths. The approved final execution used the existing user-local pre-commit cache outside the sandbox: hook exit 0, snapshot PASS, before/after/changed/unexpected counts all 0 and path sets all none. No formatter mutation occurred. |
 | 2026-07-19 | T-TSC-006 SeaweedFS duplicate disposition | Infra/DevOps Engineer; independent reviewers; Controller | Removed only inactive `config/security.toml`, retained the unmounted `.example`, aligned direct README/guide/policy truth, and pinned identical baseline blob `ba282b3ad8182c680e9064bea323381149d5ef47`. Specification PASS and quality APPROVED were C0/I0/M0. Implementation commit `f50fdd2670404f9ad32bdf9a6aa1e0ffb5ff6d0f`; evidence promotion commit `49c4db893a4b53ac6b0e8a4dfe4e76d81c16ddc2`. Manifest is 483 rows: 3 delete / 7 migrate / 473 preserve and 3 pass/pass / 480 pending/pending. Static evidence does not activate security or prove runtime. |
 | 2026-07-19 | T-TSC-006 canonical research and audit reconciliation | Documentation Specialist | Updated exactly seven canonical research leaves and eight canonical audit leaves. Only the named high-risk official URLs were re-opened on 2026-07-19; no stale external claim was confirmed, lower-risk dates and the 2026-07-10 10:00 KST model cutoff remain unchanged. Current truth records the archive-profile split, manifest distribution, SeaweedFS unmounted example, 15 local quality jobs, and dated unverified 12-context remote observation. Generated owners, full ladder, controlled wrapper, Task 6 reviews, whole-branch reviews, and closure remain pending. |
 | 2026-07-19 | T-TSC-006 fixed-order generated evidence | Documentation Specialist | Target summary check passed first. Compose coverage generated/checked at 48 files, 168 services, 25 profiles, 8 default, and 160 profile-gated; the owned research/audit census was reconciled to that source. Tech-stack provenance generated/checked at 21 images with none 20/advisory 1/high 0/critical 0. Security readiness generated/checked at 13 controls. Audit matrix generated/checked with the canonical 11-report/161-row distribution. LLM Wiki index then coverage generated/checked at 1,291 indexed and 1,290 safe paths. Frontmatter inventory generated/checked at 916 records and 2,145 advisory findings. Only canonical owners changed; no unrelated graph output appeared. Full verification remains pending. |
@@ -199,7 +202,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | T-TSC-003 | Initial and remediation RED evidence remains recorded below, including the payload-free final-exception unordered and ordered list subcases. | Final-exception GREEN passed listed/bare/current 3/3, `ArchiveProvenanceTests` 8/8, and full lifecycle 114/114. Terminal specification PASS C0/I0/M0 and quality APPROVED C0/I0/M0 each cover exact range `8076a1270023226bedd25721928f12870dc559f5..7315677e339f175cfdc4c53411fa881227ffb7a0`. Terminal evidence sync passed metadata 2/0, traceability 46/0, focused contracts 9/9, manifest/summary, and diff hygiene. All 483 review pairs remain pending and no wave verdict is promoted. | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-004 | OpenSearch and SeaweedFS duplicate RED/evidence reviews are recorded in the Work Log; exact reviews returned PASS/APPROVED C0/I0/M0. | InfluxDB, OpenSearch, and SeaweedFS disposition/evidence commits are immutable. Manifest/summary report 483 rows, 3 delete / 7 migrate / 473 preserve, exactly those three rows pass/pass, and 480 unchanged pending rows. Direct manifest/static, summary, promoted, target, and static Compose checks have zero findings. SeaweedFS activation remains a separate runtime/security chain. | complete |
 | T-TSC-005 | Initial RED, 4-method/11-failure review remediation, and 1-method/2-failure artifact remediation remain recorded. | Artifact focus 1/1, target 35/35, CI routing 23/23, controlled-wrapper contract 29/29, CLI, Ruff, compile, shell syntax, actionlint, yamllint, metadata 2/0, traceability 46/0, diff hygiene, and empty index pass. Final specification PASS C0/I0/M0 and quality APPROVED C0/I0/M0 cover `3dcd8c32063f4d18cf2b29123d0ddfd436e3cb57..264d58e25c2ce047d06059340420442c020c6c06`; implementation commit `e11cb231c001f01937177108a42599466fa4f644`. Aggregate `failures=6` remains environment/Task 6-owned, not passing. | complete |
-| T-TSC-006 | Source revalidation and current-truth reconciliation have no executable RED requirement; prior SeaweedFS disposition RED/reviews are recorded above. | Seven research leaves and eight audit leaves are reconciled. Fixed-order target summary, Compose coverage, tech-stack provenance, security readiness, audit matrix, LLM Wiki index/coverage, and frontmatter inventory generation/freshness checks passed with the counts recorded in the Work Log. Full verification, wrapper, and reviews remain pending. | authored_and_generated_evidence_complete_verification_pending |
+| T-TSC-006 | Promotion contract RED first failed because the canonical target wave was advisory; blocking then exposed exactly four stale target attestations and three generated-owner disposition mismatches. | Seven research leaves and eight audit leaves are reconciled; all fixed-order owners are fresh; full validation and the static ladder pass; Task 6 and whole-branch reviews pass; the controlled wrapper passes without mutation. The fail-closed promotion correction changes only enforcement, 480 verdict pairs, four target attestations, and three generated-owner dispositions. Independent promotion specification re-review remains pending. | verification_wrapper_and_reviews_complete_promotion_review_pending |
 
 Prospective commands and expected results live in the Plan. Record actual exit
 state, bounded result, and skip rationale here without raw logs or secret data.
@@ -714,14 +717,14 @@ and no remote read occurred.
 
 ## Controlled Agent Pre-commit Evidence
 
-- Command: not_run; Task 6 only.
-- Allowed prefixes: not_finalized; must equal actual changed surfaces.
-- Hook exit: not_run.
-- Snapshot result: not_run.
+- Command: `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md` with the exact prefixes below; Task 6 only.
+- Allowed prefixes: `.env.example`, `.github`, `.pre-commit-config.yaml`, `.prettierignore`, `archive`, `docs`, `examples`, `infra`, `projects`, `scripts`, `secrets`, `tests`.
+- Hook exit: `0` on the approved final execution. The PATH-only preflight did not run the hook; one sandbox attempt returned hook exit `3` without mutation.
+- Snapshot result: PASS on the final execution.
 - Observation boundary: Git-visible, non-ignored repository status only; the
   wrapper does not observe ignored or outside-worktree writes.
-- Before/after/changed/unexpected path sets: not_run.
-- Disposition: not_run.
+- Before/after/changed/unexpected path sets: all `(none)`; counts all `0`.
+- Disposition: PASS; no formatter or unexpected-path commit required.
 
 ## Review Evidence
 
@@ -732,8 +735,8 @@ and no remote read occurred.
 | T-TSC-003 | recorded | PASS C0/I0/M0; `8076a1270023226bedd25721928f12870dc559f5..7315677e339f175cfdc4c53411fa881227ffb7a0` | APPROVED C0/I0/M0; `8076a1270023226bedd25721928f12870dc559f5..7315677e339f175cfdc4c53411fa881227ffb7a0` | Terminal reviews close the prior command-body findings and final exception. Implementation and reviews are complete; all 483 manifest review pairs remain pending and no wave verdict is promoted. |
 | T-TSC-004 | recorded | PASS C0/I0/M0 for InfluxDB/OpenSearch and SeaweedFS exact disposition ranges | APPROVED C0/I0/M0 for the same bounded ranges | The three destructive rows are implemented and promoted; activation and runtime evidence remain separate. |
 | T-TSC-005 | recorded; artifact remediation remained inside the existing workflow owner | PASS C0/I0/M0; `3dcd8c32063f4d18cf2b29123d0ddfd436e3cb57..264d58e25c2ce047d06059340420442c020c6c06` | APPROVED C0/I0/M0; same range | Terminal reviews are clean. Actual implementation commit `e11cb231c001f01937177108a42599466fa4f644`; Task 5 complete and Task 6 may proceed. |
-| T-TSC-006 | authored and fixed-order generated evidence recorded | not_run | not_run | full ladder, wrapper, and Task 6 reviews pending |
-| Whole branch | N/A | not_run | not_run | exact final range pending |
+| T-TSC-006 | authored/generated evidence, full ladder, and controlled wrapper recorded | PASS C0/I0/M0; `49c4db893a4b53ac6b0e8a4dfe4e76d81c16ddc2..7650066ecdff0b0e4571dfcacdc38f25202b26d5` | APPROVED C0/I0/M0; same range | Initial I1 stale-state and I2 current-count findings are closed. Blocking promotion has separate review evidence. |
+| Whole branch | N/A | PASS C0/I0/M0; `32c40e11747bc0bd03789c24861d2e5d60c0e999..c1e086a1159da3490297adeb4e0972d29b976fe0` | APPROVED C0/I0/M0; same range | Both reviewers returned READY_FOR_WRAPPER YES. Promotion and final closure receive subsequent exact-range reviews. |
 
 Reviewers are separate fresh agents. A destructive row cannot pass until both
 independent verdicts and all finding dispositions are recorded.

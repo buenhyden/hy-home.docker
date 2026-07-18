@@ -502,10 +502,11 @@ frontmatter inventory.
   and superseded-pack routing.
 - [x] Regenerate each applicable owner in fixed order, run its freshness check,
   inspect exact fallout, and restore unrelated graph/generated noise.
-- [ ] Run the full verification ladder.
-- [ ] Obtain fresh Task 6 reviews and whole-branch reviews over the exact final
-  range.
-- [ ] From an initially clean linked worktree, run the controlled wrapper with
+- [x] Run the full verification ladder.
+- [x] Obtain fresh Task 6 reviews and whole-branch reviews over the exact
+  pre-promotion range; promotion and closure receive subsequent exact-range
+  reviews.
+- [x] From an initially clean linked worktree, run the controlled wrapper with
   only actual changed prefixes and record every required bounded path set.
 - [ ] Validate and separately commit any allowed formatter mutation; re-review
   after it. Promote the manifest and close lifecycle docs only after all gates.

@@ -159,7 +159,7 @@ docs/04.execution/tasks/
 ├── 2026-07-12-agentic-audit-harness-consolidation.md # Completed canonical audit lifecycle, semantic freshness, security precision, and QA/CI evidence
 ├── 2026-07-13-document-contract-canonicalization.md # Completed document-contract evidence; post-closure findings resolved
 ├── 2026-07-15-agent-governance-harness-convergence.md # Completed agent-governance and provider-harness execution evidence
-├── 2026-07-18-target-surface-contract-convergence.md # Active; 483-row manifest has 3 pass and 480 pending, Task 6 closure evidence in progress
+├── 2026-07-18-target-surface-contract-convergence.md # Active; 483-row blocking/pass promotion and final closure review in progress
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence

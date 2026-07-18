@@ -139,15 +139,17 @@ the provider-model cutoff remain owned by the canonical research pack.
 
 ### Current Implementation Evidence Candidate
 
-At commit `49c4db893a4b53ac6b0e8a4dfe4e76d81c16ddc2`, Tasks 1 through 5 and
-the bounded SeaweedFS duplicate disposition are implemented and independently
-reviewed. The canonical manifest has 483 rows: 3 delete, 7 migrate, and 473
-preserve; exactly the InfluxDB 2, OpenSearch `.example`, and SeaweedFS
-`security.toml` rows are `pass/pass`, while 480 remain `pending/pending`.
+At reviewed implementation head
+`c1e086a1159da3490297adeb4e0972d29b976fe0`, Tasks 1 through 6 are
+implemented and independently reviewed. The blocking promotion candidate has
+483 rows: 3 delete, 10 migrate, and 470 preserve; all 483 are `pass/pass`.
+The InfluxDB 2, OpenSearch `.example`, and SeaweedFS `security.toml` deletions
+retain their separately reviewed destructive evidence.
 The retained SeaweedFS `.example` is unmounted and activation is a separate
 approved runtime/security chain. Task 6 authored research/audit and fixed-order
-generated evidence are complete; full verification, the controlled wrapper,
-and whole-branch reviews are not yet closed.
+generated evidence are complete. The full verification ladder, Task 6 reviews,
+whole-branch reviews, and controlled wrapper passed; blocking promotion and
+final lifecycle evidence remain under independent review.
 Tracked workflow source names 15 local quality jobs; the dated remote
 12-context observation remains unverified and no remote or runtime claim is
 promoted by this candidate.
