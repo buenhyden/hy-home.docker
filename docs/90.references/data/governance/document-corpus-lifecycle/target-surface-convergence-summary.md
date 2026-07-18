@@ -7,9 +7,9 @@
 
 ## Dispositions
 
-- `delete`: 1
+- `delete`: 2
 - `migrate`: 7
-- `preserve`: 475
+- `preserve`: 474
 
 ## Reviewed Paths
 
@@ -164,7 +164,7 @@
 | infra/04-data/analytics/opensearch/opensearch/config/opensearch.yml | infra/04-data/analytics/opensearch/opensearch/config/opensearch.yml | preserve | pending | pending |
 | infra/04-data/analytics/opensearch/opensearch/config/opensearch.yml.example | infra/04-data/analytics/opensearch/opensearch/config/opensearch.yml.example | preserve | pending | pending |
 | infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt | infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt | preserve | pending | pending |
-| infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example | infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example | preserve | pending | pending |
+| infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example |  | delete | pass | pass |
 | infra/04-data/analytics/opensearch/opensearch/opensearch-entrypoint.sh | infra/04-data/analytics/opensearch/opensearch/opensearch-entrypoint.sh | preserve | pending | pending |
 | infra/04-data/analytics/warehouses/README.md | infra/04-data/analytics/warehouses/README.md | preserve | pending | pending |
 | infra/04-data/analytics/warehouses/docker-compose.yml | infra/04-data/analytics/warehouses/docker-compose.yml | preserve | pending | pending |

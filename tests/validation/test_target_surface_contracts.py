@@ -232,7 +232,170 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
                 self.assertIn("userdict_ko.txt:", text)
                 self.assertNotIn("userdict_ko.txt.example", text)
 
-    def test_reviewed_influxdb_row_leaves_only_held_opensearch_gap(self) -> None:
+    def test_opensearch_duplicate_manifest_row_records_exact_delete_evidence(
+        self,
+    ) -> None:
+        manifest = yaml.safe_load(TARGET_MANIFEST.read_text(encoding="utf-8"))
+        source_path = (
+            "infra/04-data/analytics/opensearch/opensearch/config/"
+            "userdict_ko.txt.example"
+        )
+        retained_path = (
+            "infra/04-data/analytics/opensearch/opensearch/config/"
+            "userdict_ko.txt"
+        )
+        row = next(
+            entry
+            for entry in manifest["entries"]
+            if entry["source_path"] == source_path
+        )
+
+        self.assertEqual(
+            {
+                "source_path": source_path,
+                "target_path": None,
+                "artifact_id": None,
+                "artifact_type_before": None,
+                "artifact_type_after": None,
+                "surface_class": "configuration",
+                "status_before": None,
+                "status_after": None,
+                "parent_ids": [],
+                "disposition": "delete",
+                "canonical_replacement": None,
+                "active_consumers": [],
+                "partition_plan": None,
+                "preservation_class": "git-history",
+                "evidence": {
+                    "commands": [
+                        "git diff --name-status bad9a4a0aeb014c9eee398ea039ec0076723cd68..190d2296c8ead19f3367157725694755f5d5cbe8 -- infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example",
+                        "git log --format=%H bad9a4a0aeb014c9eee398ea039ec0076723cd68..190d2296c8ead19f3367157725694755f5d5cbe8 -- infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example",
+                        "git rev-parse bad9a4a0aeb014c9eee398ea039ec0076723cd68:infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example bad9a4a0aeb014c9eee398ea039ec0076723cd68:infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt 190d2296c8ead19f3367157725694755f5d5cbe8:infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt",
+                    ],
+                    "sources": [retained_path, source_path],
+                    "repository_paths": [retained_path, source_path],
+                    "consumer_scan": [
+                        "git grep -lz --fixed-strings -- userdict_ko.txt.example -- .env.example infra scripts secrets"
+                    ],
+                    "rollback": [
+                        "git revert --no-commit 190d2296c8ead19f3367157725694755f5d5cbe8"
+                    ],
+                },
+                "review_verdict": {
+                    "specification": "pass",
+                    "quality": "pass",
+                },
+            },
+            row,
+        )
+
+        baseline = subprocess.run(
+            [
+                "git",
+                "show",
+                "190d2296c8ead19f3367157725694755f5d5cbe8:"
+                "docs/90.references/data/governance/document-corpus-lifecycle/"
+                "target-surface-convergence.yaml",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        baseline_manifest = yaml.safe_load(baseline.stdout)
+        influxdb_path = "infra/04-data/analytics/influxdb/docker-compose.v2.yml"
+        influxdb_row = next(
+            entry
+            for entry in manifest["entries"]
+            if entry["source_path"] == influxdb_path
+        )
+        baseline_influxdb_row = next(
+            entry
+            for entry in baseline_manifest["entries"]
+            if entry["source_path"] == influxdb_path
+        )
+
+        self.assertEqual(483, len(manifest["entries"]))
+        self.assertEqual(
+            [influxdb_path, source_path],
+            [
+                entry["source_path"]
+                for entry in manifest["entries"]
+                if entry["disposition"] == "delete"
+            ],
+        )
+        self.assertEqual(
+            7,
+            sum(
+                entry["disposition"] == "migrate"
+                for entry in manifest["entries"]
+            ),
+        )
+        self.assertEqual(
+            474,
+            sum(
+                entry["disposition"] == "preserve"
+                for entry in manifest["entries"]
+            ),
+        )
+        self.assertEqual(baseline_influxdb_row, influxdb_row)
+        self.assertEqual(
+            {"specification": "pass", "quality": "pass"},
+            influxdb_row["review_verdict"],
+        )
+        other_paths = {source_path, influxdb_path}
+        baseline_other_rows = [
+            entry
+            for entry in baseline_manifest["entries"]
+            if entry["source_path"] not in other_paths
+        ]
+        current_other_rows = [
+            entry
+            for entry in manifest["entries"]
+            if entry["source_path"] not in other_paths
+        ]
+        self.assertEqual(481, len(current_other_rows))
+        self.assertEqual(baseline_other_rows, current_other_rows)
+        self.assertTrue(
+            all(
+                entry["review_verdict"]
+                == {"specification": "pending", "quality": "pending"}
+                for entry in current_other_rows
+            )
+        )
+        self.assertEqual(
+            [influxdb_path, source_path],
+            [
+                entry["source_path"]
+                for entry in manifest["entries"]
+                if entry["review_verdict"]
+                == {"specification": "pass", "quality": "pass"}
+            ],
+        )
+        self.assertEqual(
+            481,
+            sum(
+                entry["review_verdict"]
+                == {"specification": "pending", "quality": "pending"}
+                for entry in manifest["entries"]
+            ),
+        )
+
+        summary = TARGET_SUMMARY.read_text(encoding="utf-8")
+        for expected in (
+            "- Entries: 483",
+            "- `delete`: 2",
+            "- `migrate`: 7",
+            "- `preserve`: 474",
+            f"| {influxdb_path} |  | delete | pass | pass |",
+            f"| {source_path} |  | delete | pass | pass |",
+        ):
+            with self.subTest(summary=expected):
+                self.assertIn(expected, summary)
+
+    def test_reviewed_opensearch_row_has_zero_manifest_findings(
+        self,
+    ) -> None:
         result = subprocess.run(
             [
                 sys.executable,
@@ -247,13 +410,8 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             text=True,
             check=False,
         )
-        self.assertEqual(1, result.returncode)
-        self.assertEqual(
-            "manifest-target-missing: "
-            "infra/04-data/analytics/opensearch/opensearch/config/"
-            "userdict_ko.txt.example: validation rule is not satisfied\n",
-            result.stdout,
-        )
+        self.assertEqual(0, result.returncode)
+        self.assertEqual("", result.stdout)
         self.assertEqual("", result.stderr)
 
     def test_influxdb_v2_manifest_row_records_exact_delete_evidence(self) -> None:
@@ -304,23 +462,13 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             },
             row,
         )
-        baseline = subprocess.run(
-            [
-                "git",
-                "show",
-                "cd32264dd5fcb7060a50b516682fe8f3aeb74f85:"
-                "docs/90.references/data/governance/document-corpus-lifecycle/"
-                "target-surface-convergence.yaml",
-            ],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        baseline_manifest = yaml.safe_load(baseline.stdout)
         self.assertEqual(483, len(manifest["entries"]))
         self.assertEqual(
-            [source_path],
+            [
+                source_path,
+                "infra/04-data/analytics/opensearch/opensearch/config/"
+                "userdict_ko.txt.example",
+            ],
             [
                 entry["source_path"]
                 for entry in manifest["entries"]
@@ -328,7 +476,11 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            [source_path],
+            [
+                source_path,
+                "infra/04-data/analytics/opensearch/opensearch/config/"
+                "userdict_ko.txt.example",
+            ],
             [
                 entry["source_path"]
                 for entry in manifest["entries"]
@@ -337,31 +489,19 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            482,
+            481,
             sum(
                 entry["review_verdict"]
                 == {"specification": "pending", "quality": "pending"}
                 for entry in manifest["entries"]
             ),
         )
-        self.assertEqual(
-            [
-                entry
-                for entry in baseline_manifest["entries"]
-                if entry["source_path"] != source_path
-            ],
-            [
-                entry
-                for entry in manifest["entries"]
-                if entry["source_path"] != source_path
-            ],
-        )
         summary = TARGET_SUMMARY.read_text(encoding="utf-8")
         for expected in (
             "- Entries: 483",
-            "- `delete`: 1",
+            "- `delete`: 2",
             "- `migrate`: 7",
-            "- `preserve`: 475",
+            "- `preserve`: 474",
             f"| {source_path} |  | delete | pass | pass |",
         ):
             with self.subTest(summary=expected):

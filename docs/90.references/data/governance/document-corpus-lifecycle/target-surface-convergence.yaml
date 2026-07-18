@@ -3453,7 +3453,7 @@ entries:
     specification: pending
     quality: pending
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example
-  target_path: infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example
+  target_path: null
   artifact_id: null
   artifact_type_before: null
   artifact_type_after: null
@@ -3461,20 +3461,29 @@ entries:
   status_before: null
   status_after: null
   parent_ids: []
-  disposition: preserve
+  disposition: delete
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
-  preservation_class: null
+  preservation_class: git-history
   evidence:
-    commands: []
-    sources: []
-    repository_paths: []
-    consumer_scan: []
-    rollback: []
+    commands:
+    - git diff --name-status bad9a4a0aeb014c9eee398ea039ec0076723cd68..190d2296c8ead19f3367157725694755f5d5cbe8 -- infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example
+    - git log --format=%H bad9a4a0aeb014c9eee398ea039ec0076723cd68..190d2296c8ead19f3367157725694755f5d5cbe8 -- infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example
+    - git rev-parse bad9a4a0aeb014c9eee398ea039ec0076723cd68:infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example bad9a4a0aeb014c9eee398ea039ec0076723cd68:infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt 190d2296c8ead19f3367157725694755f5d5cbe8:infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt
+    sources:
+    - infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt
+    - infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example
+    repository_paths:
+    - infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt
+    - infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example
+    consumer_scan:
+    - git grep -lz --fixed-strings -- userdict_ko.txt.example -- .env.example infra scripts secrets
+    rollback:
+    - git revert --no-commit 190d2296c8ead19f3367157725694755f5d5cbe8
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/opensearch-entrypoint.sh
   target_path: infra/04-data/analytics/opensearch/opensearch/opensearch-entrypoint.sh
   artifact_id: null
