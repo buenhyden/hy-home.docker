@@ -2968,6 +2968,8 @@ class ReviewRemediationTests(LifecycleTestCase):
                 lifecycle._validate_cli_shape(parser, args)
                 if extra:
                     broken = ["--mode", mode, *extra[2:]]
+                elif mode in {"check-promoted", "check-archive"}:
+                    broken = ["--mode", mode, "--base-ref", "HEAD"]
                 else:
                     broken = ["--mode", mode, "--wave", "forbidden"]
                 with self.assertRaises(SystemExit) as raised:
