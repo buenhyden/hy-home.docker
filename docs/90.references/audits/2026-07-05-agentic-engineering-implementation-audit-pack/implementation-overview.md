@@ -159,7 +159,7 @@ not current implementation state.
 | Native schema/event acceptance remains unproved. | Synchronized provider surfaces and parity checks do not prove live native acceptance or complete interception. | Separate approved provider/runtime verification |
 | Native provider runtime acceptance remains unproved despite generated Claude/Codex/Gemini adapters. | `.gemini` native adapters and `.agents` compatibility projections must remain distinct from live acceptance claims. | Separate approved provider/runtime verification |
 | The synthetic evaluator is implemented, but no live cross-provider model-quality baseline exists. | Repository harness semantics can be gated without claiming entitlement, latency, cost, or live model equivalence. | [Agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) |
-| Product discovery and general semantic eval have no bounded catalog owner. | Adding broad personas would duplicate authority or import untested instructions. | Future Stage 00 catalog proposal after demand/eval |
+| Product discovery has no bounded catalog owner; repository semantic evaluation is owned by `eval-engineer`, while no live comparative model-quality baseline exists. | Adding a broad product persona would duplicate authority or import untested instructions; live evaluation needs separate privacy, entitlement, cost, and runtime approval. | Future product proposal after demand/eval; existing QA/eval owner for any approved live comparison |
 | Exact model task fit and entitlement are unproven. | Current literals cannot be changed or described as equivalent from catalog prose. | AMS-01..07 coupled model-change protocol |
 | Historical metadata findings remain advisory. | Changed/new and impacted-dependent violations block, but legacy artifacts are not silently treated as migrated. | [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md) |
 | Release contract routing exists without an actual Release event record. | A profile, template, and index can be mistaken for release or deployment execution evidence. | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md) |
@@ -167,8 +167,8 @@ not current implementation state.
 
 ## Automation Impact
 
-The highest-value remaining automation candidates are provider native-schema/
-event acceptance, semantic agent-output/model scoring, SBOM,
+The highest-value remaining automation candidates are live provider native-schema/
+event acceptance, live comparative agent-output/model scoring, SBOM,
 provenance/attestation automation, Scorecard,
 and broader ecosystem/container vulnerability scanning. Changed/new metadata
 enforcement and the controlled all-files wrapper are implemented. Changed-path QA recommendations are now
@@ -177,9 +177,9 @@ complete 161-row audit implementation matrix are generated and freshness-checked
 through repo contracts, LLM Wiki safe-path
 coverage is grouped by source bucket/category in Stage 90 data, tech-stack
 version source provenance is generated from the registry and listed Compose
-declarations, provider hook parity is generated with Gemini behavioral
-reminders, agent-output eval fixtures have a local advisory runner and CI
-fixture freshness gate, the Storybook Next.js dependency surface has a high
+declarations, provider hook parity is generated with native Gemini settings and
+hook wrappers, and agent-output evaluation requires exact `8/8` fixture and
+`10/10` synthetic-regression markers in local and CI routes. The Storybook Next.js dependency surface has a high
 severity npm audit gate, and security automation readiness is generated from
 tracked workflow/script surfaces.
 

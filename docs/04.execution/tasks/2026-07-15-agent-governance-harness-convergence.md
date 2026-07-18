@@ -149,7 +149,7 @@ Redaction boundary:
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-004 | Provider-native adapters and dated model policy | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
-| T-AGHC-006 | Reference/audit/evidence reconciliation and closure | In progress; canonical reconciliation and pre-wrapper verification complete, independent reviews pending |
+| T-AGHC-006 | Reference/audit/evidence reconciliation and closure | In progress; canonical reconciliation and independent-review remediation complete, fresh re-reviews pending |
 
 ## Work Log
 
@@ -232,11 +232,12 @@ Redaction boundary:
 | 2026-07-17 | T-AGHC-005 thirteenth review remediation | Fresh remediation agent | Replaced the remaining enumerated edge handling with bounded semantic containers and state. Related-tool fallback detection is actor-neutral and negative-aware. Ambiguous short fused stems preserve lexical derivations only at a component boundary, while exact, embedded, terminal, and known-environment forms remain sensitive. YAML explicit keys now bound sequence containers, property continuations, scalar anchors, and aliases without constructing a generic YAML object. Fixture parsing iteratively removes bounded CommonMark list and blockquote prefixes before rejecting competing pipe rows. Initial focused RED produced four expected failures; focused, related, authoritative, exact contract/evaluator/provider/hook, harness, lifecycle, traceability, alignment, owner-freshness, aggregate, static, and source-corroborated Graphify gates are GREEN. Fresh independent terminal re-reviews remain required; Task 6 still owns controlled all-files evidence. No runtime, Compose, deployment, secret, credential, remote, model-call, CI-job, or direct all-files QA action changed. |
 | 2026-07-17 | T-AGHC-005 fourteenth review remediation | Fresh remediation agent | Closed the remaining YAML scalar-property order gap without adding an exact phrase exception or allocating a generic YAML document. One shared bounded property-scalar parser reuses the canonical tag/anchor token grammar, recognizes either tag/anchor order, observes only the property N+1 boundary, and registers each bounded anchor to the exact scalar candidate under the existing anchor-count and anchor-byte ceilings. Safe and sensitive aliases, both property orders, property and anchor overflow, and value-free CLI rejection are covered. Initial RED produced one expected safe-alias failure. Focused, related, authoritative, exact contract/evaluator/provider/hook, harness, lifecycle, traceability, alignment, owner-freshness, aggregate, static, and source-corroborated Graphify gates are GREEN. Fresh independent terminal re-reviews remain required; Task 6 still owns controlled all-files evidence. No runtime, Compose, deployment, secret, credential, remote, model-call, CI-job, or direct all-files QA action changed. |
 | 2026-07-17 | T-AGHC-005 terminal review closure | Independent specification and quality reviewers | Final focused review of `a09a9f5c..4e8b0dca` and the full Task range `69cc84fb..4e8b0dca` returned specification PASS and quality APPROVED, both Critical 0, Important 0, Minor 0. Reviewers confirmed actor-neutral QA fallback state, structural fused-credential boundaries, bounded YAML sequence/property/anchor/alias handling in both tag/anchor orders, iterative CommonMark container rejection, exact N/N+1 ceilings, value-free diagnostics, and accurate Task evidence. T-AGHC-005 is complete; T-AGHC-006 owns canonical reconciliation and controlled all-files evidence. |
-
-Implementation rows are appended only after the relevant agent finishes work.
-
 | 2026-07-18 | T-AGHC-006 canonical reconciliation | Fresh implementation agent | Reconciled the active July 5 research/audit pack with tracked Task 1-5 implementation and the dated provider/model evidence. The generated audit matrix now reports 11 criterion reports, 161 unique ten-column rows, exact family counts, and the observed raw distribution 77 Implemented / 60 Partial / 13 Missing / 2 Not Applicable / 9 Needs Revalidation. Live provider acceptance, entitlement, remote enforcement, CD, deployment, and rollback remain unpromoted. The controlled all-files wrapper remains `not_run`. |
 | 2026-07-18 | T-AGHC-006 pre-wrapper verification | Fresh implementation agent | Completed the dependency-locked unit, typed contract, provider, semantic-eval, metadata, lifecycle, traceability, alignment, workflow, local-harness, aggregate, generated-owner, and Graphify ladder. One stale CLI example and bare-Python dependency resolution were corrected through the tracked Plan and canonical UV runtime; no product finding remained. The controlled all-files wrapper remains `not_run`, and Task 6 independent reviews remain pending. |
+| 2026-07-18 | T-AGHC-006 independent review | Independent specification and quality reviewers | The union review found stale tracked-state claims for strict Codex TOML and native Gemini settings/hooks/agents, contradictory synthetic semantic-eval and depth-4 wording, obsolete `eval-engineer` ownership gaps, an incorrect one-supervisor/fourteen-worker/three-surface inventory, and two Task 6 Work Log rows outside the Markdown table. The review did not authorize live provider/runtime, comparative model-quality, unified telemetry, wrapper, or closure promotion. |
+| 2026-07-18 | T-AGHC-006 review remediation | Fresh remediation agent | Reconciled tracked Codex/Gemini adoption, synthetic repository evaluation, `eval-engineer` ownership, depth-4 wording, and the exact one-supervisor/thirteen-worker/four-surface inventory without changing any criterion state or the 77/60/13/2/9 distribution. Restored one valid Work Log table and regenerated the canonical audit matrix. Focused verification exposed a pre-existing no-op CI-order mutation fixture; the test-only commit `3e81a79a` binds the current intervening workflow steps and restores 32/32 semantic tests without changing the production validator. Provider tests pass 42/42, aggregate reports zero failures, generated owners are fresh, and source-corroborated Graphify output was restored. Fresh independent re-reviews remain required; the controlled wrapper remains `not_run`. |
+
+Implementation rows are appended only after the relevant agent finishes work.
 
 ## Verification Evidence
 
@@ -270,6 +271,20 @@ README metadata counts changed and its subsequent freshness check passed.
 Pre-wrapper candidate base is `6cde68dc`; the exact candidate tip is the
 T-AGHC-006 logical commit returned to the independent reviewers. No wrapper or
 closure claim is made by this pre-commit evidence.
+
+T-AGHC-006 independent-review remediation verification:
+
+| Command or evidence | Expected | Actual | State |
+| --- | --- | --- | --- |
+| exact stale-claim search | no reviewed stale phrase remains | zero matches for the reviewed Codex schema, Gemini fallback, semantic-eval owner/scoring/depth, and role-count phrases | Pass |
+| audit semantic, invariants, distribution, and generated matrix | 11 semantic assertions; 11 reports; 161 unique ten-column rows; exact family counts; distribution derived rather than selected | semantic CLI 11/11; semantic unit suite 32/32; exact report/ID/family checks pass; distribution remains 77 Implemented / 60 Partial / 13 Missing / 2 Not Applicable / 9 Needs Revalidation; matrix fresh | Pass |
+| metadata, traceability, and alignment against `40d6ebc0` | zero new violations or link/alignment failures | metadata selected 9 / violations 0 / legacy exceptions 0 / overrides 0; inventory 910/2,145 fresh; traceability 46/0; alignment 653 documents / 5,206 links / 141 operations documents / 0 | Pass |
+| provider and semantic eval | strict native suites, zero projection drift, and exact synthetic markers | provider renderer/native 42/42 in 113.131s; `providers=3 drift=0`; fixtures 8/8; regressions 10/10; three JSON parses and shell syntax pass | Pass |
+| generated owners and repository aggregate | every affected owner fresh and aggregate zero | audit matrix regenerated and fresh; security readiness, LLM Wiki index/coverage, and metadata inventory fresh; repository aggregate `failures=0` | Pass |
+| semantic negative-control fixture | every mutation changes an input surface and fails the exact integration assertion | initial focused run exposed one no-op `misordered CI step`; minimal test-only correction committed as `3e81a79a`; full focused rerun 32/32 | Pass after remediation |
+| Graphify refresh and corroboration | refresh succeeds; advisory output is source-corroborated and generated noise restored | 24,994 nodes / 28,771 edges / 1,611 communities; 436 inferred edges, three cross-root inferred advisory edges, two unrelated ambiguities, 16,478 isolated nodes, 69 thin communities, and visualization-size skip corroborated against tracked Stage 00/03/04/90 and executable owners; generated report/json restored | Pass |
+| dependency-locked execution deviation | no product failure from sandbox-local cache state | default UV cache was read-only; canonical reruns used `UV_CACHE_DIR=/tmp/uv-cache` and passed | Pass after bounded rerun |
+| controlled all-files wrapper | remain separate until committed remediation and fresh re-reviews | `not_run` | Not run by design |
 
 T-AGHC-003 implementation verification:
 
@@ -953,8 +968,9 @@ T-AGHC-003 and T-AGHC-004 are complete. T-AGHC-005 implementation and every
 recorded review remediation are GREEN. Final focused review of
 `a09a9f5c..4e8b0dca` and the full `69cc84fb..4e8b0dca` Task range returned
 specification PASS and quality APPROVED, both C0/I0/M0. T-AGHC-005 is complete.
-Task 6 canonical reconciliation is in progress; controlled all-files evidence
-and whole-branch review have not run.
+Task 6 canonical reconciliation and union-finding remediation are GREEN. Fresh
+Task 6 re-reviews, controlled all-files evidence, and whole-branch review have
+not run, so Task 6 remains in progress.
 
 Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
@@ -974,7 +990,9 @@ Critical 0, Important 0, and Minor 0. Task 4 terminal quality review returned
 APPROVED C0/I0/M0. Task 5 review findings each received a separate remediation,
 focused regression evidence, and fresh re-review. The final Task 5
 specification and quality verdicts are PASS and APPROVED, both C0/I0/M0.
-Quality review has not run for Task 6 or the whole branch.
+Task 6 independent review produced the union findings recorded above;
+remediation and focused verification are complete, while fresh Task 6 re-review
+and whole-branch quality review remain pending.
 
 Planning findings and disposition: fixed provider skill discovery, Gemini
 `PreCompress`, wrapper clean-state ordering, staged aggregate-validator
@@ -1027,7 +1045,9 @@ with owner, reason, and destination.
 | T-AGHC-005 thirteenth review remediation | `fix(harness): parse bounded semantic containers` | `a09a9f5c` | actor-neutral fallback state, structural lexical boundaries, bounded YAML alias/property/sequence parsing, and iterative CommonMark container rejection GREEN; final property-order finding remediated in the next row |
 | T-AGHC-005 fourteenth review remediation | `fix(harness): normalize bounded yaml key properties` | `4e8b0dca` | order-independent bounded YAML tag/anchor scalar parsing, safe and sensitive alias controls, and property/anchor overflow boundaries GREEN; terminal independent re-reviews C0/I0/M0 |
 | T-AGHC-005 terminal review evidence | `docs(task): record harness review closure` | this logical commit | final delta and full Task range specification PASS and quality APPROVED, C0/I0/M0 |
-| T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | pending | pending |
+| T-AGHC-006 | `docs(governance): reconcile agent harness evidence` | `40d6ebc0` | pre-wrapper reconciliation GREEN; independent review findings remediated below |
+| T-AGHC-006 semantic fixture remediation | `fix(harness): complete semantic CI mutation fixture` | `3e81a79a` | current workflow ordering is mutation-sensitive; semantic suite 32/32 and production validator 11/11 GREEN |
+| T-AGHC-006 reconciliation review remediation | `docs(governance): resolve reconciliation review findings` | this logical commit | reviewed stale-claim union closed; audit/provider/eval/metadata/traceability/alignment/aggregate/generated/Graphify gates GREEN; fresh re-reviews pending |
 | Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | pending | pending |
 | Closure | `docs(execution): close agent governance convergence` | pending | pending |
 

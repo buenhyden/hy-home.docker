@@ -43,8 +43,9 @@ provider adapters, and actual executing environments remain authoritative.
 ## Definitions / Facts
 
 - Stage 00 is the provider-neutral policy authority; provider files are adapters.
-- The tracked catalog has one supervisor, fourteen workers, and 22 functions,
-  with name-set projections across all three provider surfaces.
+- The tracked catalog has one supervisor, thirteen workers, and 22 functions,
+  with name-set projections across four role surfaces: Claude, Codex, Gemini,
+  and shared `.agents` compatibility.
 - No per-agent concrete model selector was available to the collaboration
   runtime for this implementation. The dispatch recorded the repository role
   (`code-reviewer`) and requested Senior tier while the platform chose

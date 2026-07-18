@@ -114,13 +114,14 @@ defined in the canonical Task 2 research; they do not create active catalog role
 | AMS-03 | Preserve lifecycle state and historical cutoff without backdating. | Canonical landscape retains 145 structural/142 cutoff-qualified rows at 2026-07-10 10:00 KST; mutable/later evidence does not resolve every historical exact-ID state. | Needs Revalidation | 2 | Retain | Canonical provider landscape | Retain cutoff ledger; do not alter counts/status from mutable current pages. | Research source ledger and cutoff notes. | High for ledger; deliberately conservative for mutable history. |
 | AMS-04 | Prove required context, tools, coding, agent, and reasoning capabilities on the exact surface. | Role needs are documented; provider catalogs are hypotheses and entitlement/surface equivalence is unproven. | Partial | 1 | Improve | Model policy and role owner | Representative fixtures required before a change. | Compare role IO/tools with exact provider evidence and fixtures. | Medium-high. |
 | AMS-05 | Use only provider-supported reasoning controls and defaults. | The typed profiles preserve provider-native controls: Claude adaptive/extended-thinking constraints, Codex `xhigh`/`high`/`low`, and Gemini `high`/`minimal` thinking levels. Renderer and validators enforce exact supported values without claiming cross-provider equivalence. | Implemented | 3 | Retain | `subagent-protocol.md` and provider-model contract | Retain surface-specific values and official-source evidence; runtime effect remains a separate observation. | Model-contract check, adapter literals, and provider ledger. | High for tracked control semantics; runtime effect is unobserved. |
-| AMS-06 | Demonstrate task fit with versioned tasks, scorer, baseline, failure cases, privacy, and calibration. | Three fixtures test catalog freshness, not comparative model quality/latency/cost; no cross-provider baseline exists. | Missing | 0 | Add | QA/eval future owner | Define representative eval contract before recommending model changes. | Fixture runner and absence of comparative results. | High. |
+| AMS-06 | Demonstrate task fit with versioned tasks, scorer, baseline, failure cases, privacy, and calibration. | `eval-engineer` owns eight exact fixtures, ten synthetic regressions, calibrated deterministic scorers, exact thresholds, and bounded privacy controls for repository semantics. That provider-agnostic gate does not compare live model quality, latency, or cost, so no cross-provider task-fit baseline exists. | Missing | 0 | Add | `eval-engineer` and QA owner | Retain the synthetic repository gate; require a separately approved live comparative dataset and baseline before recommending model changes. | Exact `8/8` and `10/10` runner markers plus the absence of live comparative results. | High. |
 | AMS-07 | Couple policy/generator/adapters/validators/evidence with rollback and independent review. | The provider-model contract, subagent protocol, deterministic renderer, four adapter surfaces, exact validators, typed fallback approvals, Stage 04 evidence, and independent Task 2-4 reviews were changed and verified as one atomic chain. | Implemented | 3 | Retain | Model policy plus Stage 04 task owner | Reuse the same coupled protocol and approved rollback edges for any future exact-model change. | Inspect contract, renderer, sync, exact adapter literals, fallback graph, and review evidence. | High. |
 
 ## Findings
 
-- Capability decisions are: **add later** for bounded product discovery and
-  semantic eval after demand/contracts; **merge/improve** performance,
+- Capability decisions are: **add later** for bounded product discovery;
+  **improve through the existing `eval-engineer` owner** for any approved live
+  comparative model evaluation; **merge/improve** performance,
   reliability, release, software-supply-chain, and routing methods into current
   owners; **reject** overlapping umbrella SRE/DevOps/reality-checker roles, the
   business supply-chain persona, autonomous model-policy mutation, and all
@@ -136,16 +137,17 @@ defined in the canonical Task 2 research; they do not create active catalog role
 | Gap | Action | Boundary |
 | --- | --- | --- |
 | Product discovery/outcome capability | Add only after recurring demand and bounded eval. | Stage 03/04 plus Stage 00 catalog proposal |
-| Semantic agent/model eval capability | Add one bounded function/role only after dataset/scorer/privacy/calibration design. | QA/eval follow-up |
+| Live comparative agent/model evaluation | Extend the existing `eval-engineer` contract only after dataset, privacy, entitlement, cost, runtime, scorer, and calibration approval. | Existing QA/eval owner |
 | Existing-role method gaps | Merge performance, reliability, release, and software-supply-chain checklists. | Existing canonical roles/scopes |
 | Exact model evidence | Retain policy; T-AER-010 changed no model literals, so resolve only via AMS-01..07 and a separately approved coupled rollback task. | Future model-policy owner |
 | Third-party intake | Improve pin/license/source/security/eval checklist when an actual candidate exists. | Stage 00 catalog owner |
 
 ## Automation Impact
 
-Retain provider sync and fixture freshness. Future catalog intake and model
-evaluation automation must start from a specific approved candidate and a
-versioned eval contract; this audit installs or changes nothing.
+Retain provider sync and exact fixture/regression checks. Future catalog intake
+and live comparative model-evaluation automation must start from a specific
+approved candidate and a versioned eval contract; this audit installs or changes
+nothing.
 
 ## Source Rules
 
