@@ -1,62 +1,67 @@
 ---
 status: active
+artifact_id: spec:sample-web-service
+artifact_type: spec
+parent_ids:
+  - spec:133-target-surface-contract-convergence
 ---
 
-<!-- Target: examples/sample-web-service/service.md -->
+# sample-web-service Service Contract
 
-# sample-web-service Service Scaffold
+## Overview
 
-> Example instance of
-> `docs/99.templates/templates/spec-contracts/service.template.md`. When
-> authoring a real service, copy the template to
-> `docs/03.specs/<feature-id>/service.md`.
+이 문서는 `sample-web-service` 정적 웹 컨테이너의 예제 서비스 계약이다. 빌드
+산출물, 런타임 보안, 네트워크, 저장소, secret 경계, 상태 확인과 정적 검증 범위를
+현재 예제 파일에 맞춰 설명한다.
 
-## Overview (KR)
+## Parent and Scope
 
-이 문서는 `sample-web-service`의 컨테이너 런타임 계약 예시다. 이미지/빌드, 보안
-하드닝, 네트워크, 볼륨, secret 참조, healthcheck, 검증 절차를 보여준다.
+이 예제는 [Spec 133](../../docs/03.specs/133-target-surface-contract-convergence/spec.md)의
+typed-example 범위와 [로컬 README](./README.md)의 copyable scaffold 역할을 따른다.
 
-## Scope & Non-goals
+- 단일 정적 웹 컨테이너와 hardened runtime 계약을 다룬다.
+- TLS termination, ingress routing, 영속 저장소, production SLA와 incident
+  response는 다루지 않는다.
 
-- **Covers**: a single static web container and its hardened runtime contract.
-- **Does Not Cover**: TLS termination, ingress routing, and persistence (handled
-  by gateway and data stacks under `infra/`).
+## Image and Build
 
-## Image & Build
+- 빌드 단계는 `alpine:3.21`, 런타임 단계는
+  `nginxinc/nginx-unprivileged:1.27.3-alpine`으로 고정한다.
+- multi-stage build를 사용하며 런타임 이미지에는 정적 자산과 Nginx 설정만
+  포함한다.
+- build argument를 사용하지 않으며 build layer에 secret을 전달하지 않는다.
 
-- **Base image (pinned)**: `nginxinc/nginx-unprivileged:1.27.3-alpine`, build stage `alpine:3.21` — no floating tags.
-- **Build strategy**: multi-stage; the runtime stage carries static assets and config only.
-- **Build args**: none; no secrets in build args or layers.
+## Security
 
-## Security & Hardening
+- unprivileged 이미지의 uid 101로 실행한다.
+- root filesystem은 read-only이며 `/tmp`, `/var/cache/nginx`, `/var/run`만
+  `tmpfs`로 제공한다.
+- 모든 Linux capability를 제거하고 `no-new-privileges:true`를 적용한다.
+- CPU는 `0.50`, memory는 `128M`으로 제한한다.
 
-- **User**: non-root (uid 101 via the unprivileged image).
-- **Filesystem**: `read_only: true` with `tmpfs` for `/tmp`, `/var/cache/nginx`, `/var/run`.
-- **Capabilities**: `cap_drop: [ALL]`.
-- **Privilege**: `no-new-privileges:true`; no `privileged`.
-- **Resource limits**: `cpus: "0.50"`, `memory: 128M`.
+## Networking and Storage
 
-## Networking & Volumes
-
-- **Networks**: `sample-internal` (bridge); only the web port is published.
-- **Ports**: `${WEB_HOST_PORT:-8080}:8080`.
-- **Volumes**: none (stateless); state-bearing services use named volumes.
+- `sample-internal` bridge network에 연결하고 web port만 host에 공개한다.
+- port mapping은 `${WEB_HOST_PORT:-8080}:8080`이다.
+- stateless service이므로 volume을 사용하지 않는다.
 
 ## Secrets
 
-- **Mechanism**: `env_file` (`.env`); no plaintext secrets in compose.
-- **Referenced keys**: `WEB_HOST_PORT` (non-secret port selector).
+- Compose는 `.env`를 `env_file`로 참조하지만 plaintext secret을 선언하지 않는다.
+- `WEB_HOST_PORT`는 비밀값이 아닌 host port 선택자다.
 
-## Healthcheck & Operations
+## Health and Operations
 
-- **Healthcheck**: `wget --spider http://127.0.0.1:8080/`, interval 30s, timeout 3s, retries 3, start period 5s.
-- **Restart policy**: `unless-stopped`.
-- **Logging**: `json-file`, `max-size: 10m`, `max-file: 3`.
+- healthcheck는 container 내부에서 `http://127.0.0.1:8080/`에 `wget --spider`를
+  실행하며 interval 30초, timeout 3초, retry 3회, start period 5초를 사용한다.
+- restart policy는 `unless-stopped`다.
+- `json-file` logging driver의 `max-size: 10m`, `max-file: 3` 제한을 적용한다.
 
 ## Validation
 
-- `docker compose config` — parses without error.
-- `docker compose ps` — reports `healthy` after the start period.
+- repository root에서 `docker compose -f examples/sample-web-service/docker-compose.yml config`
+  명령으로 정적 구성을 검증한다.
+- live `healthy` 상태 확인은 서비스를 시작하는 별도 runtime acceptance 범위다.
 
 ## Related Documents
 

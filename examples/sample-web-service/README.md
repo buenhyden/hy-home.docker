@@ -60,7 +60,8 @@ sample-web-service/
 1. Copy this folder when starting a new containerized service example.
 2. Update names, image tags, ports, healthchecks, and non-secret environment
    keys for the new service.
-3. Keep `service.md` aligned with the current service scaffold template.
+3. Keep `service.md` aligned with the registered Service metadata and section
+   contract.
 4. Validate Compose before using the service.
 
 ## Files
@@ -72,7 +73,7 @@ sample-web-service/
 | `site/index.html`    | Static content served by the service.                           |
 | `docker-compose.yml` | Hardened service definition.                                    |
 | `.env.example`       | Non-secret environment template; copy to `.env`.                |
-| `service.md`         | Filled instance of `service.template.md`.                       |
+| `service.md`         | Sample-specific instance of the canonical Service contract.     |
 
 ## Service Readiness
 

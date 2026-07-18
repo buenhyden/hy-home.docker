@@ -7,7 +7,8 @@
 
 ## Dispositions
 
-- `preserve`: 483
+- `migrate`: 7
+- `preserve`: 476
 
 ## Reviewed Paths
 
@@ -30,7 +31,7 @@
 | .github/workflows/stale.yml | .github/workflows/stale.yml | preserve | pending | pending |
 | .github/workflows/tech-stack-version-sync.yml | .github/workflows/tech-stack-version-sync.yml | preserve | pending | pending |
 | .pre-commit-config.yaml | .pre-commit-config.yaml | preserve | pending | pending |
-| .prettierignore | .prettierignore | preserve | pending | pending |
+| .prettierignore | .prettierignore | migrate | pending | pending |
 | archive/Windows-Network-IP.md | archive/Windows-Network-IP.md | preserve | pending | pending |
 | docs/00.agent-governance/memory/progress.md | docs/00.agent-governance/memory/progress.md | preserve | pending | pending |
 | docs/00.agent-governance/rules/documentation-protocol.md | docs/00.agent-governance/rules/documentation-protocol.md | preserve | pending | pending |
@@ -93,10 +94,10 @@
 | examples/.gitkeep | examples/.gitkeep | preserve | pending | pending |
 | examples/sample-web-service/.env.example | examples/sample-web-service/.env.example | preserve | pending | pending |
 | examples/sample-web-service/Dockerfile | examples/sample-web-service/Dockerfile | preserve | pending | pending |
-| examples/sample-web-service/README.md | examples/sample-web-service/README.md | preserve | pending | pending |
+| examples/sample-web-service/README.md | examples/sample-web-service/README.md | migrate | pending | pending |
 | examples/sample-web-service/docker-compose.yml | examples/sample-web-service/docker-compose.yml | preserve | pending | pending |
 | examples/sample-web-service/nginx.conf | examples/sample-web-service/nginx.conf | preserve | pending | pending |
-| examples/sample-web-service/service.md | examples/sample-web-service/service.md | preserve | pending | pending |
+| examples/sample-web-service/service.md | examples/sample-web-service/service.md | migrate | pending | pending |
 | examples/sample-web-service/site/index.html | examples/sample-web-service/site/index.html | preserve | pending | pending |
 | infra/01-gateway/README.md | infra/01-gateway/README.md | preserve | pending | pending |
 | infra/01-gateway/nginx/README.md | infra/01-gateway/nginx/README.md | preserve | pending | pending |
@@ -372,12 +373,12 @@
 | infra/image-tag-policy.exceptions.json | infra/image-tag-policy.exceptions.json | preserve | pending | pending |
 | infra/tech-stack.versions.json | infra/tech-stack.versions.json | preserve | pending | pending |
 | projects/README.md | projects/README.md | preserve | pending | pending |
-| projects/storybook/README.md | projects/storybook/README.md | preserve | pending | pending |
+| projects/storybook/README.md | projects/storybook/README.md | migrate | pending | pending |
 | projects/storybook/nextjs/.gitignore | projects/storybook/nextjs/.gitignore | preserve | pending | pending |
 | projects/storybook/nextjs/.storybook/main.ts | projects/storybook/nextjs/.storybook/main.ts | preserve | pending | pending |
 | projects/storybook/nextjs/.storybook/preview.ts | projects/storybook/nextjs/.storybook/preview.ts | preserve | pending | pending |
 | projects/storybook/nextjs/.storybook/vitest.setup.ts | projects/storybook/nextjs/.storybook/vitest.setup.ts | preserve | pending | pending |
-| projects/storybook/nextjs/README.md | projects/storybook/nextjs/README.md | preserve | pending | pending |
+| projects/storybook/nextjs/README.md | projects/storybook/nextjs/README.md | migrate | pending | pending |
 | projects/storybook/nextjs/eslint.config.mjs | projects/storybook/nextjs/eslint.config.mjs | preserve | pending | pending |
 | projects/storybook/nextjs/next.config.ts | projects/storybook/nextjs/next.config.ts | preserve | pending | pending |
 | projects/storybook/nextjs/package-lock.json | projects/storybook/nextjs/package-lock.json | preserve | pending | pending |
@@ -425,12 +426,12 @@
 | projects/storybook/nextjs/vitest.shims.d.ts | projects/storybook/nextjs/vitest.shims.d.ts | preserve | pending | pending |
 | scripts/README.md | scripts/README.md | preserve | pending | pending |
 | scripts/hardening/check-all-hardening.sh | scripts/hardening/check-all-hardening.sh | preserve | pending | pending |
-| scripts/hooks/agent-event-hook.sh | scripts/hooks/agent-event-hook.sh | preserve | pending | pending |
+| scripts/hooks/agent-event-hook.sh | scripts/hooks/agent-event-hook.sh | migrate | pending | pending |
 | scripts/hooks/patch-graphify-post-commit.sh | scripts/hooks/patch-graphify-post-commit.sh | preserve | pending | pending |
 | scripts/hooks/post-tool-validate.sh | scripts/hooks/post-tool-validate.sh | preserve | pending | pending |
 | scripts/knowledge/generate-llm-wiki-coverage.sh | scripts/knowledge/generate-llm-wiki-coverage.sh | preserve | pending | pending |
 | scripts/knowledge/generate-llm-wiki-index.sh | scripts/knowledge/generate-llm-wiki-index.sh | preserve | pending | pending |
-| scripts/knowledge/report-graphify-health.sh | scripts/knowledge/report-graphify-health.sh | preserve | pending | pending |
+| scripts/knowledge/report-graphify-health.sh | scripts/knowledge/report-graphify-health.sh | migrate | pending | pending |
 | scripts/lib/hardening-lib.sh | scripts/lib/hardening-lib.sh | preserve | pending | pending |
 | scripts/operations/gen-secrets.sh | scripts/operations/gen-secrets.sh | preserve | pending | pending |
 | scripts/operations/generate-compose-profile-service-coverage.sh | scripts/operations/generate-compose-profile-service-coverage.sh | preserve | pending | pending |

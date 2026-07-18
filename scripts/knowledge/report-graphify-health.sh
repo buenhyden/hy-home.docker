@@ -29,9 +29,8 @@ MANIFEST_PATH = GRAPHIFY_DIR / "manifest.json"
 GRAPH_PATH = GRAPHIFY_DIR / "graph.json"
 REPORT_PATH = GRAPHIFY_DIR / "GRAPH_REPORT.md"
 
-# Current gitlink/submodule roots known to this repository. Keep this local and
-# explicit so the report does not inspect worktree contents outside graphify-out.
-GITLINK_PREFIXES = ("projects/storybook/mcp",)
+# No tracked gitlink roots exist in the current repository tree.
+GITLINK_PREFIXES: tuple[str, ...] = ()
 GENERATED_HINTS = (
     "/node_modules/",
     "/dist/",

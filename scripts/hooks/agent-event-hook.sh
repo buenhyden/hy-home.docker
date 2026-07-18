@@ -427,8 +427,6 @@ from __future__ import annotations
 
 import subprocess
 
-ignored_prefixes = ("projects/storybook/mcp/",)
-
 try:
     result = subprocess.run(
         ["git", "status", "--porcelain=v1"],
@@ -447,8 +445,6 @@ for line in result.stdout.splitlines():
     path = line[3:]
     if " -> " in path:
         path = path.split(" -> ", 1)[1]
-    if path.startswith(ignored_prefixes):
-        continue
     paths.append(path)
 
 print("\n".join(paths[:80]))

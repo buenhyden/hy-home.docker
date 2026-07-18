@@ -404,7 +404,7 @@ entries:
   status_before: null
   status_after: null
   parent_ids: []
-  disposition: preserve
+  disposition: migrate
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
@@ -1867,7 +1867,7 @@ entries:
   status_before: active
   status_after: active
   parent_ids: []
-  disposition: preserve
+  disposition: migrate
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
@@ -1936,7 +1936,7 @@ entries:
   status_before: active
   status_after: active
   parent_ids: []
-  disposition: preserve
+  disposition: migrate
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
@@ -8284,7 +8284,7 @@ entries:
   status_before: null
   status_after: null
   parent_ids: []
-  disposition: preserve
+  disposition: migrate
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
@@ -8399,7 +8399,7 @@ entries:
   status_before: null
   status_after: null
   parent_ids: []
-  disposition: preserve
+  disposition: migrate
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
@@ -9503,7 +9503,7 @@ entries:
   status_before: null
   status_after: null
   parent_ids: []
-  disposition: preserve
+  disposition: migrate
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
@@ -9618,7 +9618,7 @@ entries:
   status_before: null
   status_after: null
   parent_ids: []
-  disposition: preserve
+  disposition: migrate
   canonical_replacement: null
   active_consumers: []
   partition_plan: null

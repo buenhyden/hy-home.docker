@@ -28,7 +28,6 @@
 ### Out of Scope
 
 - Vercel 배포 절차
-- `projects/storybook/mcp` gitlink 내부 MCP 구현
 - `node_modules/`, `.next/`, Storybook 정적 build output
 - 루트 Docker Compose 서비스 운영 절차
 
