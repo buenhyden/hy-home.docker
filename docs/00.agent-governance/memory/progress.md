@@ -67,6 +67,21 @@ pre-commit action occurred. Four expanded FinalReview fixture failures were
 reproduced unchanged from exact HEAD `6766ca25` and remain outside this bounded
 remediation.
 
+The exceptional validator remediation is recorded at full commit
+`90c803d6f48a9afeed1b7d95bf52ebe376b8d2b3`. Its latest independent
+specification re-review returned C0/I1/M1: the validator gaps were closed, but
+the archive human owner still stated one universal field shape instead of the
+machine registry's distinct content/SDLC required, optional, forbidden, and
+conditional semantics. The user explicitly approved one additional bounded
+exception for that human contract and evidence synchronization. Commit
+`8f012c2bb57d19046f1c8c42cd54aae5868a542d` aligns the contract without
+changing registry, templates, validator, or manifest. The focused human-owner
+test failed before the prose change, then metadata schema 26/26 and lifecycle
+human-contract 11/11 passed; contract, manifest, summary, explicit-base
+metadata, Ruff, and diff gates also passed. Fresh specification re-review and
+separate quality review remain pending, no verdict is promoted, and no target,
+runtime, service, secret-value, remote, or all-files pre-commit action occurred.
+
 ## Agent Governance Harness Convergence Closure Candidate
 
 The completed T-AGHC-006 pass reconciled the canonical July 5 research and audit

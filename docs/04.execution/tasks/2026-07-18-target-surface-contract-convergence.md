@@ -134,12 +134,15 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | 2026-07-18 | T-TSC-001 specification re-review | Independent specification reviewer | CHANGES REQUIRED, C0/I2/M0. Wave-focused archive checking selected rows before validating the registry-resolved candidate manifest, and v2 partition approval did not apply the canonical metadata identity and parent-relation contract. Quality review did not run. |
 | 2026-07-18 | T-TSC-001 exceptional retry approval | User | After retry-limit escalation, explicitly approved one exceptional third bounded remediation and re-review for only the two remaining Important findings. |
 | 2026-07-18 | T-TSC-001 exceptional specification remediation | QA Engineer | Made wave-focused archive checking validate candidate semantics and canonical bytes before row selection, and made v2 partition Plan approval reuse canonical metadata identity and parent-relation validation. Independent specification re-review and separate quality review remain pending; no verdict was promoted. |
+| 2026-07-18 | T-TSC-001 exceptional specification re-review | Independent specification reviewer | CHANGES REQUIRED, C0/I1/M1. The exceptional validator findings were accepted as closed, but the human archive contract still stated one universal field shape instead of the registry's separate content/SDLC required, optional, forbidden, and conditional semantics. Quality review did not run and no verdict was promoted. |
+| 2026-07-18 | T-TSC-001 additional exception approval | User | After review C0/I1/M1, explicitly approved one additional bounded remediation for the archive human contract plus canonical and ignored evidence synchronization only. |
+| 2026-07-18 | T-TSC-001 archive-contract remediation | Documentation Specialist | Replaced the universal archive field statement with exact `content-archive` and `sdlc-archive` required/optional/forbidden sets, qualified replacement and snapshot conditions to the SDLC profile, and bound the human owner to the machine registry with a focused regression. Independent specification re-review and separate quality review remain pending. |
 
 ## Verification Evidence
 
 | Work unit | RED evidence | GREEN/aggregate evidence | Result |
 | --- | --- | --- | --- |
-| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; first specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures; exceptional remediation RED: two tests produced five expected subcase failures for three invalid wave candidates and two invalid v2 Plan relations. All RED preceded the corresponding production or contract change. | Metadata 76/76; lifecycle 45/45; first specification-fix mutations 4/4 and human contract 1/1; exceptional mutations 2/2 with five subcases; exact manifest 483=422+61, sorted/unique/exact union, all pending and byte-unchanged; contract, manifest, summary, promoted, explicit-base metadata, compile, lint, and diff gates exit 0. | implementation_complete_review_pending |
+| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; first specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures; exceptional validator RED: two tests produced five expected subcase failures; archive-contract RED: one focused human-owner test exited 1 because the two exact profile sections were absent. All RED preceded the corresponding production or contract change. | Metadata 76/76; lifecycle 45/45; first specification-fix mutations 4/4 and human contract 1/1; exceptional mutations 2/2; archive-contract metadata schema 26/26 and lifecycle human contract 11/11; exact manifest 483=422+61, sorted/unique/exact union, all pending and byte-unchanged; contract, manifest, summary, promoted, explicit-base metadata, compile, Ruff, and diff gates exit 0. | implementation_complete_review_pending |
 | T-TSC-002 | not_run | not_run | not_run |
 | T-TSC-003 | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run |
@@ -233,6 +236,43 @@ value-safe `promoted-manifest-missing` code from an exact exported
 `6766ca25f7300b6f712f6ece6f7458fb3c7fe7dc` tree. They are therefore not caused
 by this remediation and were not broadened into this two-finding scope.
 
+The exceptional validator remediation is commit
+`90c803d6f48a9afeed1b7d95bf52ebe376b8d2b3`. Its specification re-review
+returned C0/I1/M1: the validator findings were closed, but the human archive
+owner still published a universal field shape that contradicted the separate
+machine profiles. The user explicitly approved one additional bounded
+exception for that contract defect and evidence synchronization.
+
+Archive-contract RED preceded the human-owner change:
+
+```bash
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests.test_archive_retention_human_owner_matches_machine_contract -v
+```
+
+Result: exit 1; one focused test errored at the missing exact
+`content-archive`/`sdlc-archive` section boundary. GREEN at commit
+`8f012c2bb57d19046f1c8c42cd54aae5868a542d` used these exact commands:
+
+```bash
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests -v
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_corpus_lifecycle.HumanContractRoutingTests -v
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-manifest --wave target-surface-convergence
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-summary --wave target-surface-convergence
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 90c803d6f48a9afeed1b7d95bf52ebe376b8d2b3
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH ruff check tests/validation/test_document_metadata.py
+git diff --check
+```
+
+Results: exit 0 throughout; metadata schema 26/26 and lifecycle human contract
+11/11 passed; contract violations were 0; the registry-resolved manifest and
+summary were current; explicit-base metadata selected 1 with zero violations,
+legacy exceptions, or transition overrides; Ruff and diff hygiene passed. No
+registry, template, validator, manifest, runtime, service, secret-value,
+remote, or all-files pre-commit change occurred. Independent specification
+re-review and separate quality review remain pending, and no passing verdict is
+promoted.
+
 ## Controlled Agent Pre-commit Evidence
 
 - Command: not_run; Task 6 only.
@@ -248,7 +288,7 @@ by this remediation and were not broadened into this two-finding scope.
 
 | Work unit | Self-review | Specification review | Quality review | Findings/disposition |
 | --- | --- | --- | --- | --- |
-| T-TSC-001 | recorded | changes_required; exceptional_re-review_pending | not_run | Initial specification review C0/I2/M1 and specification re-review C0/I2/M0 were remediated locally. The user explicitly approved one exceptional third remediation/re-review after retry-limit escalation; that re-review and the separate quality review remain pending, and no passing verdict is promoted. |
+| T-TSC-001 | recorded | changes_required; additional_exception_re-review_pending | not_run | Initial specification review C0/I2/M1 and specification re-review C0/I2/M0 were followed by exceptional re-review C0/I1/M1. The user explicitly approved one additional bounded archive-contract remediation and evidence sync. Fresh specification re-review and separate quality review remain pending; no passing verdict is promoted. |
 | T-TSC-002 | not_run | not_run | not_run | not_run |
 | T-TSC-003 | not_run | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run | not_run |
@@ -268,7 +308,8 @@ independent verdicts and all finding dispositions are recorded.
 | SDD compatibility | `docs(plan): align SDD task extraction` | `e5d3d8c4` | task-brief extraction and diff hygiene passed. |
 | T-TSC-001 | `feat(docs): establish target corpus migration contracts` | `6e87a97977c2de48c1c89a278b159f956825fdd1` | Focused metadata 76/76; focused lifecycle 38/38; exact manifest and prescribed Task 1 gates passed. |
 | T-TSC-001 review fix | `fix(docs): enforce target wave safety gates` | `6766ca25f7300b6f712f6ece6f7458fb3c7fe7dc` | Mutation RED/GREEN, focused suites, wave gates, explicit-base metadata, compile, lint, and diff hygiene; independent re-reviews remain pending. |
-| T-TSC-001 exceptional review fix | `fix(docs): close target lifecycle validation gaps` | pending | Exceptional mutations 2/2, focused metadata 76/76, focused lifecycle 45/45, wave gates, explicit-base metadata, compile, Ruff, manifest-byte, and diff hygiene checks; exceptional specification re-review and quality review remain pending. |
+| T-TSC-001 exceptional review fix | `fix(docs): close target lifecycle validation gaps` | `90c803d6f48a9afeed1b7d95bf52ebe376b8d2b3` | Exceptional mutations 2/2, focused metadata 76/76, focused lifecycle 45/45, wave gates, explicit-base metadata, compile, Ruff, manifest-byte, and diff hygiene checks; its specification re-review returned C0/I1/M1 and quality review remains not run. |
+| T-TSC-001 archive contract fix | `fix(docs): align archive retention profiles` | `8f012c2bb57d19046f1c8c42cd54aae5868a542d` | Focused archive human-owner RED/GREEN; metadata schema 26/26; lifecycle human contract 11/11; contract, manifest, summary, explicit-base metadata, Ruff, and diff checks passed; re-reviews remain pending. |
 | T-TSC-002 | `docs(examples): align sample and storybook contracts` | pending | not_run |
 | T-TSC-003 | `docs(archive): preserve Windows network note provenance` | pending | not_run |
 | T-TSC-004a | `refactor(infra): retire InfluxDB 2 compatibility` | pending | not_run |
@@ -277,6 +318,9 @@ independent verdicts and all finding dispositions are recorded.
 | T-TSC-006 | `docs(execution): close target surface convergence` | pending | not_run |
 
 Material review fixes and generated-only fallout receive additional rows.
+The evidence-only `docs(task): record task one review remediation` commit is
+ledger synchronization, not material implementation, and intentionally has no
+commit-ledger row of its own.
 
 ## Deferred and Blocked Items
 
