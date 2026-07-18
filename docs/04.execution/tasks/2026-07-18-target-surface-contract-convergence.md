@@ -131,12 +131,15 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | 2026-07-18 | T-TSC-001 implementation | Documentation Specialist | Added path-selected content/SDLC archive profiles and templates, schema-v2 wave and manifest contracts, binary-safe root/direct selection, wave-resolved read checks, and the pending advisory 483-row target manifest plus generated summary. No target migration, destructive disposition, review promotion, runtime, secret-value, or remote action occurred. Independent specification and quality reviews remain not run. |
 | 2026-07-18 | T-TSC-001 specification review | Independent specification reviewer | CHANGES REQUIRED, C0/I2/M1. Schema-v2 validation bypassed common result-state and safety gates; the Task omitted exact commit/command evidence; and the human contract described one contradictory universal entry shape. Quality review did not run. |
 | 2026-07-18 | T-TSC-001 specification remediation | Fresh bounded fix implementer | Added binary-safe v2 result-state, transition, replacement, immutable rollback, partition-Plan, and confidentiality gates plus mutation regressions; separated v1/v2 human field contracts; and recorded exact value-safe evidence. Independent specification re-review and quality review remain pending. |
+| 2026-07-18 | T-TSC-001 specification re-review | Independent specification reviewer | CHANGES REQUIRED, C0/I2/M0. Wave-focused archive checking selected rows before validating the registry-resolved candidate manifest, and v2 partition approval did not apply the canonical metadata identity and parent-relation contract. Quality review did not run. |
+| 2026-07-18 | T-TSC-001 exceptional retry approval | User | After retry-limit escalation, explicitly approved one exceptional third bounded remediation and re-review for only the two remaining Important findings. |
+| 2026-07-18 | T-TSC-001 exceptional specification remediation | QA Engineer | Made wave-focused archive checking validate candidate semantics and canonical bytes before row selection, and made v2 partition Plan approval reuse canonical metadata identity and parent-relation validation. Independent specification re-review and separate quality review remain pending; no verdict was promoted. |
 
 ## Verification Evidence
 
 | Work unit | RED evidence | GREEN/aggregate evidence | Result |
 | --- | --- | --- | --- |
-| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures. All RED preceded the corresponding production or contract change. | Metadata 76/76; lifecycle 45/45; specification-fix mutations 4/4 and human contract 1/1; exact manifest 483=422+61, sorted/unique/exact union, all pending and byte-unchanged; contract, manifest, summary, promoted, explicit-base metadata, compile, lint, and diff gates exit 0. | implementation_complete_review_pending |
+| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; first specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures; exceptional remediation RED: two tests produced five expected subcase failures for three invalid wave candidates and two invalid v2 Plan relations. All RED preceded the corresponding production or contract change. | Metadata 76/76; lifecycle 45/45; first specification-fix mutations 4/4 and human contract 1/1; exceptional mutations 2/2 with five subcases; exact manifest 483=422+61, sorted/unique/exact union, all pending and byte-unchanged; contract, manifest, summary, promoted, explicit-base metadata, compile, lint, and diff gates exit 0. | implementation_complete_review_pending |
 | T-TSC-002 | not_run | not_run | not_run |
 | T-TSC-003 | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run |
@@ -198,6 +201,38 @@ compile and lint passed, and diff hygiene passed. The canonical target manifest
 remains exactly 483 sorted unique rows with all verdicts pending; its manifest
 and summary bytes are unchanged by this follow-up.
 
+Exceptional retry-limit remediation RED commands preceded the final bounded
+production fix:
+
+```bash
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_corpus_lifecycle.CandidateManifestCliTests.test_wave_archive_check_validates_candidate_before_archive_selection tests.validation.test_document_corpus_lifecycle.FinalReviewRemediationTests.test_v2_partition_plan_requires_canonical_identity_and_parent_relations -v
+```
+
+Result: exit 1; two tests produced five expected subcase failures. Wave-focused
+`check-archive` returned exit 0 for removed and altered archive selectors and
+noncanonical manifest bytes, while the v2 partition helper returned no finding
+for a Plan missing canonical identity or using an unresolved parent. GREEN used
+the exact same command and passed 2/2. Diagnostics assert stable value-safe
+finding codes and do not echo candidate bodies.
+
+Final exceptional-remediation verification repeated the focused metadata and
+lifecycle commands above and passed 76/76 and 45/45. `check-contract`,
+wave-resolved `check-manifest`, `check-summary`, and `check-promoted`, explicit-
+base metadata selected 25 with zero violations, compile, Ruff, and diff hygiene
+all exited 0. The target manifest SHA-256 remained
+`d7b5289b9af8037fb9423060390b7a6f0119d205f83ebbc3a0b900f248889da8`
+and its Git diff remained empty. Focused `check-archive --wave
+target-surface-convergence` now exits 1 with only the planned value-safe Windows
+commit/preservation provenance findings; T-TSC-003 owns that migration.
+
+An expanded non-prescribed FinalReview selection passed 55/59 and exposed four
+temporary-repository `check-impacted` fixture failures because the copied
+contract resolves a target-wave manifest absent from those isolated roots. The
+same three test methods reproduced the identical four failures and the same
+value-safe `promoted-manifest-missing` code from an exact exported
+`6766ca25f7300b6f712f6ece6f7458fb3c7fe7dc` tree. They are therefore not caused
+by this remediation and were not broadened into this two-finding scope.
+
 ## Controlled Agent Pre-commit Evidence
 
 - Command: not_run; Task 6 only.
@@ -213,7 +248,7 @@ and summary bytes are unchanged by this follow-up.
 
 | Work unit | Self-review | Specification review | Quality review | Findings/disposition |
 | --- | --- | --- | --- | --- |
-| T-TSC-001 | recorded | changes_required; re-review_pending | not_run | Initial specification review C0/I2/M1 was remediated locally; independent specification re-review and separate quality review remain pending, and no passing verdict is promoted. |
+| T-TSC-001 | recorded | changes_required; exceptional_re-review_pending | not_run | Initial specification review C0/I2/M1 and specification re-review C0/I2/M0 were remediated locally. The user explicitly approved one exceptional third remediation/re-review after retry-limit escalation; that re-review and the separate quality review remain pending, and no passing verdict is promoted. |
 | T-TSC-002 | not_run | not_run | not_run | not_run |
 | T-TSC-003 | not_run | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run | not_run |
@@ -232,7 +267,8 @@ independent verdicts and all finding dispositions are recorded.
 | Planning repair | `docs(plan): repair tracked planning consumers` | `f7563631` | promoted manifest 0; generated index 1,290; coverage 1,289; inventory 913/2,145; worktree aggregate failures 0 |
 | SDD compatibility | `docs(plan): align SDD task extraction` | `e5d3d8c4` | task-brief extraction and diff hygiene passed. |
 | T-TSC-001 | `feat(docs): establish target corpus migration contracts` | `6e87a97977c2de48c1c89a278b159f956825fdd1` | Focused metadata 76/76; focused lifecycle 38/38; exact manifest and prescribed Task 1 gates passed. |
-| T-TSC-001 review fix | `fix(docs): enforce target wave safety gates` | pending | Mutation RED/GREEN, focused suites, wave gates, explicit-base metadata, compile, lint, and diff hygiene; independent re-reviews remain pending. |
+| T-TSC-001 review fix | `fix(docs): enforce target wave safety gates` | `6766ca25f7300b6f712f6ece6f7458fb3c7fe7dc` | Mutation RED/GREEN, focused suites, wave gates, explicit-base metadata, compile, lint, and diff hygiene; independent re-reviews remain pending. |
+| T-TSC-001 exceptional review fix | `fix(docs): close target lifecycle validation gaps` | pending | Exceptional mutations 2/2, focused metadata 76/76, focused lifecycle 45/45, wave gates, explicit-base metadata, compile, Ruff, manifest-byte, and diff hygiene checks; exceptional specification re-review and quality review remain pending. |
 | T-TSC-002 | `docs(examples): align sample and storybook contracts` | pending | not_run |
 | T-TSC-003 | `docs(archive): preserve Windows network note provenance` | pending | not_run |
 | T-TSC-004a | `refactor(infra): retire InfluxDB 2 compatibility` | pending | not_run |

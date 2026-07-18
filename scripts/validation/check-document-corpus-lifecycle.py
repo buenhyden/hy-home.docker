@@ -1870,19 +1870,28 @@ def _surface_partition_plan_findings(
     profiles: dict[str, object],
     row: MigrationManifestRow,
 ) -> list[Finding]:
-    """Validate only the selected Plan body; native and binary rows stay opaque."""
+    """Validate the selected canonical Plan; native and binary rows stay opaque."""
 
     if row.partition_plan is None:
         return []
     source = row.source_path.as_posix()
     partition = row.partition_plan.as_posix()
-    payload = (
-        _read_regular_repo_bytes(root, partition, require_tracked=True)
-        if _safe_path(partition)
-        and partition.startswith("docs/04.execution/plans/")
-        else None
-    )
-    if payload is None:
+    if not _safe_path(partition) or not partition.startswith(
+        "docs/04.execution/plans/"
+    ):
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-invalid",
+                "partition plan must be a safe tracked regular Stage 04 Plan",
+            )
+        ]
+    current_records, current_payloads = _canonical_current_snapshot(root, profiles)
+    payload = current_payloads.get(partition)
+    plan_record = {
+        record.path.as_posix(): record for record in current_records
+    }.get(partition)
+    if payload is None or plan_record is None:
         return [
             _finding(
                 source,
@@ -1900,21 +1909,27 @@ def _surface_partition_plan_findings(
                 "partition plan must be a UTF-8 canonical Plan",
             )
         ]
-    record = metadata._record_from_text(
-        pathlib.Path(partition), text, profiles=profiles
-    )
-    body_errors = [
+    profile_errors = [
         finding
-        for finding in metadata.validate_body_contract(record, text, profiles, True)
+        for finding in (
+            *metadata.validate_record(
+                plan_record,
+                profiles,
+                metadata.build_manifest(current_records),
+            ),
+            *metadata.validate_body_contract(
+                plan_record, text, profiles, True
+            ),
+        )
         if finding.severity == "error"
     ]
     if (
-        record.parse_error is not None
-        or not record.frontmatter_present
-        or record.artifact_type != "plan"
-        or record.metadata.get("artifact_type") != "plan"
-        or record.metadata.get("status") not in {"active", "completed"}
-        or body_errors
+        plan_record.parse_error is not None
+        or not plan_record.frontmatter_present
+        or plan_record.artifact_type != "plan"
+        or plan_record.metadata.get("artifact_type") != "plan"
+        or plan_record.metadata.get("status") not in {"active", "completed"}
+        or profile_errors
     ):
         return [
             _finding(
@@ -4823,6 +4838,11 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
                 wave_document = _load_candidate_migration_manifest(
                     root, manifest_relative
                 )
+                manifest_findings.extend(
+                    validate_migration_manifest(
+                        root, profiles, contract, wave_document
+                    )
+                )
                 if wave_document.wave != args.wave:
                     manifest_findings.append(
                         _finding(
@@ -4831,7 +4851,23 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
                             "--wave differs from manifest",
                         )
                     )
-                archive_records = archive_records_for_wave(records, wave_document)
+                if not _candidate_manifest_matches(
+                    root,
+                    manifest_relative,
+                    render_migration_manifest(wave_document),
+                ):
+                    manifest_findings.append(
+                        _finding(
+                            manifest_relative,
+                            "manifest-serialization-stale",
+                            "manifest bytes are not canonical",
+                        )
+                    )
+                archive_records = (
+                    ()
+                    if manifest_findings
+                    else archive_records_for_wave(records, wave_document)
+                )
             findings = [
                 finding
                 for record in archive_records

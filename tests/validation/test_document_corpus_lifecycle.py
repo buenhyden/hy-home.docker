@@ -1747,6 +1747,115 @@ class CandidateManifestCliTests(LifecycleTestCase):
                         self.assertFalse(output.exists())
                         self.assertNotIn("Traceback", result.stderr)
 
+    def test_wave_archive_check_validates_candidate_before_archive_selection(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_repo(root)
+            source = root / "archive/item.md"
+            source.parent.mkdir(parents=True)
+            source.write_text("# Archive candidate\n", encoding="utf-8")
+            baseline = commit_all(root, "archive candidate baseline")
+            contract = copy.deepcopy(self.contract)
+            contract["waves"] = {
+                "fixture": {
+                    "baseline_commit": baseline,
+                    "enforcement": "advisory",
+                    "manifest_path": "docs/manifest.yaml",
+                    "summary_path": "docs/manifest-summary.md",
+                    "scope_state": "approved",
+                    "source_roots": ["archive"],
+                    "direct_source_paths": [],
+                    "declared_outputs": [],
+                }
+            }
+            canonical = lifecycle._generate_manifest_skeleton(
+                root,
+                contract,
+                wave="fixture",
+                baseline_ref=baseline,
+                profiles=self.profiles,
+            )
+            archive_row = canonical.entries[0]
+            cases = {
+                "removed-selector": (
+                    dataclasses.replace(canonical, entries=()),
+                    False,
+                    "manifest-source-missing",
+                ),
+                "altered-selector": (
+                    dataclasses.replace(
+                        canonical,
+                        entries=(
+                            dataclasses.replace(
+                                archive_row,
+                                artifact_type_after=None,
+                            ),
+                        ),
+                    ),
+                    False,
+                    "manifest-artifact-transition-invalid",
+                ),
+                "noncanonical-bytes": (
+                    canonical,
+                    True,
+                    "manifest-serialization-stale",
+                ),
+            }
+            manifest = root / "docs/manifest.yaml"
+            manifest.parent.mkdir(parents=True)
+            records = (
+                metadata.Record(pathlib.Path("archive/item.md"), {}, "archive"),
+            )
+            for name, (candidate, tamper_bytes, expected_code) in cases.items():
+                with self.subTest(case=name):
+                    rendered = lifecycle.render_migration_manifest(candidate)
+                    if tamper_bytes:
+                        rendered += "# noncanonical archive selector bytes\n"
+                    manifest.write_text(rendered, encoding="utf-8")
+                    stdout = io.StringIO()
+                    stderr = io.StringIO()
+                    with (
+                        mock.patch.object(
+                            lifecycle,
+                            "load_migration_contract",
+                            return_value=contract,
+                        ),
+                        mock.patch.object(
+                            lifecycle.metadata,
+                            "load_profiles",
+                            return_value=self.profiles,
+                        ),
+                        mock.patch.object(
+                            lifecycle,
+                            "_full_findings",
+                            return_value=(records, []),
+                        ),
+                        mock.patch.object(
+                            lifecycle,
+                            "validate_archive_provenance",
+                            return_value=[],
+                        ),
+                        contextlib.redirect_stdout(stdout),
+                        contextlib.redirect_stderr(stderr),
+                    ):
+                        result = lifecycle.main(
+                            [
+                                "--root",
+                                str(root),
+                                "--mode",
+                                "check-archive",
+                                "--wave",
+                                "fixture",
+                            ]
+                        )
+                    diagnostics = stdout.getvalue() + stderr.getvalue()
+                    self.assertNotEqual(result, 0, diagnostics)
+                    self.assertIn(expected_code, diagnostics)
+                    self.assertNotIn("Archive candidate", diagnostics)
+                    self.assertNotIn("noncanonical archive selector bytes", diagnostics)
+
 
 class ArchiveProvenanceTests(LifecycleTestCase):
     def archive_fixture(
@@ -3898,6 +4007,34 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         self.assertEqual(
             lifecycle._partition_plan_findings(root, self.profiles, row), []
         )
+
+    def test_v2_partition_plan_requires_canonical_identity_and_parent_relations(
+        self,
+    ) -> None:
+        temporary, root, _baseline, row, _records = self._partition_fixture(
+            plan_state="tracked"
+        )
+        self.addCleanup(temporary.cleanup)
+        plan = root / row.partition_plan.as_posix()
+        canonical = plan.read_text(encoding="utf-8")
+        cases = {
+            "missing-identity": canonical.replace(
+                "artifact_id: plan:partition\n", ""
+            ),
+            "unresolved-parent": canonical.replace(
+                "parent_ids: [spec:partition]", "parent_ids: [spec:missing]"
+            ),
+        }
+        for name, candidate in cases.items():
+            with self.subTest(case=name):
+                plan.write_text(candidate, encoding="utf-8")
+                codes = {
+                    item.code
+                    for item in lifecycle._surface_partition_plan_findings(
+                        root, self.profiles, row
+                    )
+                }
+                self.assertIn("manifest-partition-plan-profile-invalid", codes)
 
     def test_directory_budget_counts_only_immediate_eligible_markdown_leaves(self) -> None:
         records = tuple(

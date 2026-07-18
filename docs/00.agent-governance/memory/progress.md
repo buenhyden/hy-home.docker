@@ -48,6 +48,25 @@ because its report is stale/advisory relative to the branch and the generated
 graph is outside this bounded fix, current source/Stage 00 evidence was used and
 the two tracked graph outputs were restored unchanged.
 
+The next T-TSC-001 specification re-review returned C0/I2/M0: wave-focused
+archive checking trusted candidate selectors before full manifest validation,
+and schema-v2 partition authorization did not apply canonical Plan identity and
+parent-relation validation. After retry-limit escalation, the user explicitly
+approved one exceptional third bounded remediation and re-review for only those
+findings. Two focused regressions produced five expected RED subcase failures,
+then passed 2/2 after candidate semantic/canonical-byte validation was moved
+before archive selection and v2 Plan validation reused the canonical metadata
+contract. Focused metadata 76/76 and lifecycle 45/45, contract, manifest,
+summary, promoted, explicit-base metadata, compile, Ruff, manifest-byte, and
+diff gates pass. The 483-row advisory manifest remains byte-unchanged with all
+verdicts pending. The focused archive wave now stops only on the planned
+Windows commit/preservation provenance gap owned by T-TSC-003. Exceptional
+specification re-review and separate quality review have not passed; no target,
+runtime, secret-value, remote, deployment, Graphify staging, or all-files
+pre-commit action occurred. Four expanded FinalReview fixture failures were
+reproduced unchanged from exact HEAD `6766ca25` and remain outside this bounded
+remediation.
+
 ## Agent Governance Harness Convergence Closure Candidate
 
 The completed T-AGHC-006 pass reconciled the canonical July 5 research and audit
