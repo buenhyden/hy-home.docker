@@ -508,8 +508,8 @@ frontmatter inventory.
   reviews.
 - [x] From an initially clean linked worktree, run the controlled wrapper with
   only actual changed prefixes and record every required bounded path set.
-- [ ] Validate and separately commit any allowed formatter mutation; re-review
-  after it. Promote the manifest and close lifecycle docs only after all gates.
+- [x] Validate any allowed formatter mutation; none occurred. Promote the
+  manifest only after all gates and its exact-range independent reviews.
 - [ ] Commit `docs(execution): close target surface convergence`.
 
 ```bash
@@ -619,16 +619,16 @@ Use ordinary `git revert` in reverse dependency order. Do not use
 
 ## Completion Criteria
 
-- [ ] All six tasks have logical commits, specification PASS, quality APPROVED,
+- [x] All six tasks have logical commits, specification PASS, quality APPROVED,
   and no unresolved finding.
-- [ ] The pinned manifest covers its selection once and is promoted only after
+- [x] The pinned manifest covers its selection once and is promoted only after
   complete evidence.
-- [ ] Archive, README, native, example, deprecated, duplicate, workflow, and QA
+- [x] Archive, README, native, example, deprecated, duplicate, workflow, and QA
   contracts are executable and regression-tested.
-- [ ] Every deletion has consumer, preservation, rollback, and review evidence.
-- [ ] All direct service/tooling documents agree with final static source.
-- [ ] Canonical research/audit and generated owners are current.
-- [ ] Full verification and controlled wrapper pass in the clean worktree.
+- [x] Every deletion has consumer, preservation, rollback, and review evidence.
+- [x] All direct service/tooling documents agree with final static source.
+- [x] Canonical research/audit and generated owners are current.
+- [x] Full verification and controlled wrapper pass in the clean worktree.
 - [ ] Fresh whole-branch reviews pass on the exact final range.
 - [ ] Spec/Plan/Task/indexes/memory close with runtime/remote limits explicit.
 - [ ] Worktree is clean and commits are logical Conventional Commits.
