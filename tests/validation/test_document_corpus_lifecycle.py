@@ -504,8 +504,67 @@ class HumanContractRoutingTests(LifecycleTestCase):
             with self.subTest(owner="archive", literal=literal):
                 self.assertIn(literal, archive)
 
+    def test_human_contract_separates_v1_and_v2_entry_fields_and_domains(self) -> None:
+        corpus = CORPUS_HUMAN_CONTRACT.read_text(encoding="utf-8")
+        for literal in (
+            "Schema version 1 entries use",
+            "Schema version 2 entries instead use",
+            "Field domains are schema-specific",
+        ):
+            with self.subTest(literal=literal):
+                self.assertIn(literal, corpus)
+        self.assertNotIn(
+            "Each entry uses `source_path`, `target_path`, `artifact_id`, `artifact_type`",
+            corpus,
+        )
+
 
 class ManifestValidationTests(LifecycleTestCase):
+    def target_manifest(self) -> lifecycle.MigrationManifestDocument:
+        return lifecycle.load_migration_manifest(
+            ROOT
+            / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+        )
+
+    def target_row(
+        self,
+        document: lifecycle.MigrationManifestDocument,
+        source_path: str,
+    ) -> lifecycle.MigrationManifestRow:
+        return next(
+            row
+            for row in document.entries
+            if row.source_path.as_posix() == source_path
+        )
+
+    def target_codes(
+        self,
+        document: lifecycle.MigrationManifestDocument,
+    ) -> set[str]:
+        return {
+            finding.code
+            for finding in lifecycle.validate_migration_manifest(
+                ROOT,
+                self.profiles,
+                self.contract,
+                document,
+            )
+        }
+
+    def replace_target_row(
+        self,
+        document: lifecycle.MigrationManifestDocument,
+        replacement: lifecycle.MigrationManifestRow,
+    ) -> lifecycle.MigrationManifestDocument:
+        source = replacement.source_path
+        return dataclasses.replace(
+            document,
+            entries=tuple(
+                replacement if row.source_path == source else row
+                for row in document.entries
+            ),
+        )
+
     def make_repo(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path, str]:
         temporary = tempfile.TemporaryDirectory()
         root = pathlib.Path(temporary.name)
@@ -593,6 +652,147 @@ class ManifestValidationTests(LifecycleTestCase):
         self.assertEqual("archive", windows.artifact_type_after)
         self.assertEqual("pending", windows.review_verdict.specification)
         self.assertEqual("pending", windows.review_verdict.quality)
+
+    def test_v2_delete_rejects_a_source_that_remains_in_the_result(self) -> None:
+        document = self.target_manifest()
+        source = self.target_row(document, ".env.example")
+        destructive = dataclasses.replace(
+            source,
+            target_path=None,
+            artifact_type_after=None,
+            disposition="delete",
+            preservation_class="git-history",
+            evidence=lifecycle.ManifestEvidence(
+                ("git diff --name-status 32c40e11747bc0bd03789c24861d2e5d60c0e999..6e87a97977c2de48c1c89a278b159f956825fdd1 -- .env.example",),
+                (".env.example",),
+                (pathlib.PurePosixPath(".env.example"),),
+                ("git grep -l --fixed-strings -- .env.example",),
+                ("git revert --no-commit 6e87a97977c2de48c1c89a278b159f956825fdd1",),
+            ),
+            review_verdict=lifecycle.ReviewVerdict("pass", "pass"),
+        )
+        candidate = self.replace_target_row(document, destructive)
+
+        self.assertIn("manifest-source-result-present", self.target_codes(candidate))
+
+    def test_v2_rejects_invalid_transition_rollback_and_replacement(self) -> None:
+        document = self.target_manifest()
+        source = self.target_row(document, ".env.example")
+        destructive = dataclasses.replace(
+            source,
+            target_path=None,
+            artifact_type_after=None,
+            status_after="draft",
+            disposition="delete",
+            canonical_replacement="spec:missing-replacement",
+            preservation_class="git-history",
+            evidence=lifecycle.ManifestEvidence(
+                ("git diff --name-status 32c40e11747bc0bd03789c24861d2e5d60c0e999..6e87a97977c2de48c1c89a278b159f956825fdd1 -- .env.example",),
+                (".env.example",),
+                (pathlib.PurePosixPath(".env.example"),),
+                ("git grep -l --fixed-strings -- .env.example",),
+                ("git revert --no-commit HEAD",),
+            ),
+            review_verdict=lifecycle.ReviewVerdict("pass", "pass"),
+        )
+        codes = self.target_codes(self.replace_target_row(document, destructive))
+
+        self.assertIn("manifest-transition-invalid", codes)
+        self.assertIn("manifest-rollback-invalid", codes)
+        self.assertIn("manifest-replacement-invalid", codes)
+
+    def test_v2_replacement_resolution_accepts_one_current_path_or_identity(self) -> None:
+        expected = "docs/03.specs/133-target-surface-contract-convergence/spec.md"
+        for replacement in (
+            expected,
+            "spec:133-target-surface-contract-convergence",
+        ):
+            with self.subTest(replacement=replacement):
+                record = lifecycle._surface_replacement_record(
+                    ROOT, self.profiles, replacement
+                )
+                self.assertIsNotNone(record)
+                self.assertEqual(expected, record.path.as_posix())
+        self.assertIsNone(
+            lifecycle._surface_replacement_record(
+                ROOT, self.profiles, "spec:missing-replacement"
+            )
+        )
+
+    def test_v2_rejects_sensitive_evidence_without_echoing_the_value(self) -> None:
+        marker = "token=target-wave-secret-sentinel"
+        document = self.target_manifest()
+        source = self.target_row(document, ".env.example")
+        candidate = self.replace_target_row(
+            document,
+            dataclasses.replace(
+                source,
+                evidence=dataclasses.replace(source.evidence, commands=(marker,)),
+            ),
+        )
+
+        findings = lifecycle.validate_migration_manifest(
+            ROOT,
+            self.profiles,
+            self.contract,
+            candidate,
+        )
+        self.assertIn("manifest-evidence-confidential", {item.code for item in findings})
+        self.assertNotIn(marker, "\n".join(map(str, findings)))
+
+    def test_v2_partition_plan_must_resolve_to_a_tracked_canonical_plan(self) -> None:
+        document = self.target_manifest()
+        source = self.target_row(document, ".env.example")
+        candidate = self.replace_target_row(
+            document,
+            dataclasses.replace(
+                source,
+                partition_plan=pathlib.PurePosixPath(
+                    "docs/04.execution/plans/missing-target-wave-plan.md"
+                ),
+            ),
+        )
+
+        self.assertIn("manifest-partition-plan-invalid", self.target_codes(candidate))
+
+    def test_v2_archive_transition_uses_the_validated_result_like_v1(self) -> None:
+        row = self.valid_row(
+            target_path=pathlib.PurePosixPath("docs/98.archive/source.md"),
+            artifact_type="spec",
+            artifact_type_before="spec",
+            artifact_type_after="archive",
+            surface_class="typed-example",
+            status_after="archived",
+            disposition="archive",
+            preservation_class="git-history",
+            evidence=lifecycle.ManifestEvidence(
+                ("git diff --name-status",),
+                ("docs/03.specs/source.md",),
+                (pathlib.PurePosixPath("docs/03.specs/source.md"),),
+                ("git grep -l --fixed-strings",),
+                ("git revert --no-commit",),
+            ),
+            review_verdict=lifecycle.ReviewVerdict("pass", "pass"),
+        )
+        document = dataclasses.replace(
+            self.document("a" * 40, entries=(row,)), schema_version=2
+        )
+        with (
+            mock.patch.object(
+                lifecycle, "_surface_result_state_findings", return_value=([], True)
+            ),
+            mock.patch.object(
+                lifecycle, "_surface_rollback_valid", return_value=True
+            ),
+        ):
+            codes = {
+                finding.code
+                for finding in lifecycle._validate_surface_manifest_semantics(
+                    ROOT, self.profiles, document
+                )
+            }
+
+        self.assertNotIn("manifest-transition-invalid", codes)
 
     def test_native_binary_generation_does_not_decode_blob_body(self) -> None:
         temporary = tempfile.TemporaryDirectory()

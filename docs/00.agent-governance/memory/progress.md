@@ -27,6 +27,27 @@ diff gates pass. Independent specification and quality reviews remain not run;
 no migration, archive mutation, runtime, secret-value, remote, push, PR, merge,
 deployment, or all-files pre-commit action occurred.
 
+The first independent T-TSC-001 specification review returned C0/I2/M1 and
+remains re-review pending. A bounded follow-up closes the identified local
+gaps: schema-v2 validation now applies result-state, lifecycle-transition,
+canonical-replacement, immutable-rollback, partition-Plan, destructive-proof,
+and value-free confidentiality gates without decoding selected native or
+binary bodies; the corpus contract now states distinct v1 and v2 field/domain
+sets; and the canonical Task records implementation commit
+`6e87a97977c2de48c1c89a278b159f956825fdd1` plus exact sanitized RED/GREEN
+commands and results. Four v2 mutation regressions and the field-contract
+regression pass; the final focused suites pass metadata 76/76 and lifecycle
+45/45, with wave contract, manifest, summary, promoted, explicit-base metadata,
+compile, lint, and diff gates passing. The 483-row advisory manifest remains
+byte-unchanged and all verdicts remain pending. Independent specification
+re-review and separate quality review have not passed; no review promotion,
+target mutation, runtime, secret-value, remote, deployment, or all-files
+pre-commit action occurred.
+Graphify refreshed locally to 25,130 nodes, 29,063 edges, and 1,620 communities;
+because its report is stale/advisory relative to the branch and the generated
+graph is outside this bounded fix, current source/Stage 00 evidence was used and
+the two tracked graph outputs were restored unchanged.
+
 ## Agent Governance Harness Convergence Closure Candidate
 
 The completed T-AGHC-006 pass reconciled the canonical July 5 research and audit

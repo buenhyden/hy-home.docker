@@ -1685,6 +1685,530 @@ def _held_result_snapshot(
     )
 
 
+def _surface_regular_result_exists(root: pathlib.Path, path: str) -> bool:
+    """Check one result path without reading or decoding its body."""
+
+    descriptor = _open_regular_repo_descriptor(root, path)
+    if descriptor is None:
+        return False
+    os.close(descriptor)
+    return True
+
+
+def _surface_replacement_record(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    replacement: str,
+) -> Record | None:
+    """Resolve one typed replacement while leaving selected native bodies opaque."""
+
+    candidate_paths: tuple[str, ...] = ()
+    replacement_is_tracked_path = (
+        _safe_path(replacement)
+        and _read_regular_repo_bytes(root, replacement, require_tracked=True)
+        is not None
+    )
+    replacement_is_artifact_id = (
+        not replacement_is_tracked_path
+        and metadata._valid_metadata_artifact_id(replacement)
+    )
+    if replacement_is_tracked_path:
+        candidate_paths = (replacement,)
+    elif replacement_is_artifact_id:
+        result = _run_git(
+            root,
+            [
+                "grep",
+                "-lz",
+                "--fixed-strings",
+                "--",
+                f"artifact_id: {replacement}",
+                "--",
+                ":(top,glob)**/*.md",
+                ":(top,glob)*.md",
+            ],
+            text=False,
+        )
+        if result.returncode not in {0, 1}:
+            return None
+        try:
+            candidate_paths = tuple(
+                sorted(
+                    {
+                        value.decode("utf-8")
+                        for value in result.stdout.split(b"\0")
+                        if value
+                    }
+                )
+            )
+        except UnicodeDecodeError:
+            return None
+    else:
+        return None
+
+    candidates: list[Record] = []
+    for path in candidate_paths:
+        if not _safe_path(path):
+            continue
+        payload = _read_regular_repo_bytes(root, path, require_tracked=True)
+        if payload is None:
+            continue
+        try:
+            text = payload.decode("utf-8")
+        except UnicodeDecodeError:
+            continue
+        record = metadata._record_from_text(
+            pathlib.Path(path), text, profiles=profiles
+        )
+        if (
+            record.parse_error is not None
+            or not record.frontmatter_present
+            or record.artifact_type
+            in {
+                "archive",
+                "generated",
+                "readme",
+                "repo-support",
+                "template-source",
+                "unsupported",
+            }
+            or record.metadata.get("status") not in {"active", "completed"}
+        ):
+            continue
+        if (
+            replacement_is_artifact_id
+            and record.metadata.get("artifact_id") != replacement
+        ):
+            continue
+        candidates.append(record)
+    return candidates[0] if len(candidates) == 1 else None
+
+
+def _surface_replacement_findings(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    row: MigrationManifestRow,
+) -> list[Finding]:
+    """Apply the common replacement contract without scanning selected bodies."""
+
+    source = row.source_path.as_posix()
+    target = _safe_path_text(row.target_path)
+    replacement = row.canonical_replacement
+    if row.disposition == "merge" and replacement is None:
+        return [
+            _finding(
+                source,
+                "manifest-replacement-required",
+                "destructive row requires a replacement",
+            )
+        ]
+    if row.disposition in SOURCE_EQUALS_TARGET | {"move"} and replacement is not None:
+        return [
+            _finding(
+                source,
+                "manifest-replacement-forbidden",
+                "disposition forbids a replacement",
+            )
+        ]
+    if replacement is None:
+        return []
+    candidate = _surface_replacement_record(root, profiles, replacement)
+    if candidate is None:
+        return [
+            _finding(
+                source,
+                "manifest-replacement-invalid",
+                "canonical replacement must resolve uniquely",
+            )
+        ]
+    candidate_path = candidate.path.as_posix()
+    if row.disposition == "merge":
+        valid = target is not None and candidate_path == target
+    else:
+        valid = candidate_path not in {
+            value for value in (source, target) if value is not None
+        }
+    return (
+        []
+        if valid
+        else [
+            _finding(
+                source,
+                "manifest-replacement-invalid",
+                "canonical replacement does not match the selected result",
+            )
+        ]
+    )
+
+
+def _surface_rollback_valid(root: pathlib.Path, commands: tuple[str, ...]) -> bool:
+    """Accept only immutable newest-to-oldest Git revert commands."""
+
+    for command in commands:
+        try:
+            tokens = shlex.split(command)
+        except ValueError:
+            return False
+        if tokens[:3] != ["git", "revert", "--no-commit"] or len(tokens) < 4:
+            return False
+        commits = tokens[3:]
+        if any(
+            not OBJECT_ID.fullmatch(commit)
+            or _verified_commit(root, commit) != commit
+            for commit in commits
+        ):
+            return False
+        for newer, older in zip(commits, commits[1:]):
+            order = _run_git(root, ["merge-base", "--is-ancestor", older, newer])
+            if order.returncode != 0:
+                return False
+    return True
+
+
+def _surface_partition_plan_findings(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    row: MigrationManifestRow,
+) -> list[Finding]:
+    """Validate only the selected Plan body; native and binary rows stay opaque."""
+
+    if row.partition_plan is None:
+        return []
+    source = row.source_path.as_posix()
+    partition = row.partition_plan.as_posix()
+    payload = (
+        _read_regular_repo_bytes(root, partition, require_tracked=True)
+        if _safe_path(partition)
+        and partition.startswith("docs/04.execution/plans/")
+        else None
+    )
+    if payload is None:
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-invalid",
+                "partition plan must be a safe tracked regular Stage 04 Plan",
+            )
+        ]
+    try:
+        text = payload.decode("utf-8")
+    except UnicodeDecodeError:
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-invalid",
+                "partition plan must be a UTF-8 canonical Plan",
+            )
+        ]
+    record = metadata._record_from_text(
+        pathlib.Path(partition), text, profiles=profiles
+    )
+    body_errors = [
+        finding
+        for finding in metadata.validate_body_contract(record, text, profiles, True)
+        if finding.severity == "error"
+    ]
+    if (
+        record.parse_error is not None
+        or not record.frontmatter_present
+        or record.artifact_type != "plan"
+        or record.metadata.get("artifact_type") != "plan"
+        or record.metadata.get("status") not in {"active", "completed"}
+        or body_errors
+    ):
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-profile-invalid",
+                "partition plan does not satisfy the canonical Plan profile",
+            )
+        ]
+    if row.review_verdict != ReviewVerdict("pass", "pass"):
+        return [
+            _finding(
+                source,
+                "manifest-partition-plan-review-required",
+                "partition approval requires independent passing manifest reviews",
+            )
+        ]
+    return []
+
+
+def _surface_result_state_findings(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    document: MigrationManifestDocument,
+    row: MigrationManifestRow,
+) -> tuple[list[Finding], bool]:
+    """Bind v2 result state while decoding only declared typed document targets."""
+
+    findings: list[Finding] = []
+    source = row.source_path.as_posix()
+    target = _safe_path_text(row.target_path)
+    if not _safe_path(source):
+        return findings, False
+    if row.disposition in {"move", "merge", "archive", "delete"} and os.path.lexists(
+        root / source
+    ):
+        findings.append(
+            _finding(
+                source,
+                "manifest-source-result-present",
+                "source path remains present after a removing disposition",
+            )
+        )
+    if row.disposition == "delete":
+        return findings, not findings
+    if target is None or not _safe_path(target) or not _surface_regular_result_exists(
+        root, target
+    ):
+        findings.append(
+            _finding(
+                target or source,
+                "manifest-target-missing",
+                "result target is not a regular in-root file",
+            )
+        )
+        return findings, False
+    if row.artifact_type_after is None:
+        return findings, not findings
+
+    pending_advisory_skeleton = (
+        document.enforcement == "advisory"
+        and row.disposition == "preserve"
+        and row.review_verdict == ReviewVerdict("pending", "pending")
+        and row.canonical_replacement is None
+        and row.partition_plan is None
+        and not any(
+            (
+                row.evidence.commands,
+                row.evidence.sources,
+                row.evidence.repository_paths,
+                row.evidence.consumer_scan,
+                row.evidence.rollback,
+            )
+        )
+    )
+    if pending_advisory_skeleton:
+        return findings, not findings
+
+    payload = _read_regular_repo_bytes(root, target, require_tracked=False)
+    try:
+        text = payload.decode("utf-8") if payload is not None else ""
+        target_record = metadata._record_from_text(
+            pathlib.Path(target), text, profiles=profiles
+        )
+    except (UnicodeDecodeError, metadata.FrontmatterError):
+        findings.append(
+            _finding(
+                target,
+                "manifest-target-file-invalid",
+                "typed result target metadata cannot be parsed safely",
+            )
+        )
+        return findings, False
+    target_metadata = target_record.metadata
+    target_status = target_metadata.get("status")
+    normalized_status = target_status if isinstance(target_status, str) else None
+    target_parents = target_metadata.get("parent_ids")
+    normalized_parents = (
+        tuple(sorted(target_parents))
+        if isinstance(target_parents, list)
+        and all(isinstance(item, str) for item in target_parents)
+        else ()
+    )
+    if target_record.artifact_type != row.artifact_type_after:
+        findings.append(
+            _finding(
+                target,
+                "manifest-target-artifact-type-mismatch",
+                "result target type differs from manifest truth",
+            )
+        )
+    if target_metadata.get("artifact_id") != row.artifact_id:
+        findings.append(
+            _finding(
+                target,
+                "manifest-target-artifact-id-mismatch",
+                "result target identity differs from manifest truth",
+            )
+        )
+    if normalized_status != row.status_after:
+        findings.append(
+            _finding(
+                target,
+                "manifest-target-status-mismatch",
+                "result target status differs from manifest truth",
+            )
+        )
+    if normalized_parents != row.parent_ids:
+        findings.append(
+            _finding(
+                target,
+                "manifest-target-parent-ids-mismatch",
+                "result target parents differ from manifest truth",
+            )
+        )
+    if row.artifact_type_after == "archive":
+        archive_errors = [
+            finding
+            for finding in metadata.validate_record(
+                target_record,
+                profiles,
+                metadata.build_manifest((target_record,)),
+            )
+            if finding.severity == "error"
+        ]
+        if archive_errors:
+            findings.append(
+                _finding(
+                    target,
+                    "manifest-archive-target-profile-invalid",
+                    "archive result does not satisfy its path-selected profile",
+                )
+            )
+        findings.extend(validate_archive_provenance(root, target_record))
+    return findings, not findings
+
+
+def _validate_surface_manifest_semantics(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    document: MigrationManifestDocument,
+) -> list[Finding]:
+    """Apply v1-compatible semantic and safety gates to a schema-v2 wave."""
+
+    findings: list[Finding] = []
+    common = profiles.get("common")
+    transitions = common.get("transitions") if isinstance(common, dict) else {}
+    for row in document.entries:
+        source = row.source_path.as_posix()
+        result_findings, result_valid = _surface_result_state_findings(
+            root, profiles, document, row
+        )
+        findings.extend(result_findings)
+        transition_valid = row.status_before == row.status_after
+        if (
+            not transition_valid
+            and isinstance(row.status_before, str)
+            and isinstance(row.status_after, str)
+            and isinstance(transitions, dict)
+        ):
+            next_statuses = transitions.get(row.status_before)
+            transition_valid = (
+                isinstance(next_statuses, list) and row.status_after in next_statuses
+            )
+        if row.disposition == "archive":
+            transition_valid = (
+                result_valid
+                and row.review_verdict == ReviewVerdict("pass", "pass")
+            )
+        if (
+            not transition_valid
+            and row.surface_class == "content-archive"
+            and row.status_after == "archived"
+        ):
+            transition_valid = (
+                document.enforcement == "advisory"
+                and row.disposition == "preserve"
+                and row.review_verdict == ReviewVerdict("pending", "pending")
+            ) or (
+                result_valid
+                and row.review_verdict == ReviewVerdict("pass", "pass")
+            )
+        if not transition_valid:
+            findings.append(
+                _finding(
+                    source,
+                    "manifest-transition-invalid",
+                    "status transition is not canonical",
+                )
+            )
+        findings.extend(_surface_replacement_findings(root, profiles, row))
+        rollback_invalid = (
+            row.disposition in DESTRUCTIVE_DISPOSITIONS
+            and not row.evidence.rollback
+        ) or (
+            bool(row.evidence.rollback)
+            and not _surface_rollback_valid(root, row.evidence.rollback)
+        )
+        if rollback_invalid:
+            findings.append(
+                _finding(
+                    source,
+                    "manifest-rollback-invalid",
+                    "rollback must pin immutable commits newest-to-oldest",
+                )
+            )
+        findings.extend(_surface_partition_plan_findings(root, profiles, row))
+        for consumer in row.active_consumers:
+            if not _safe_path(consumer.as_posix()):
+                findings.append(
+                    _finding(
+                        source,
+                        "manifest-consumer-path-invalid",
+                        "consumer path is not repository-safe",
+                    )
+                )
+        for repository_path in row.evidence.repository_paths:
+            if not _safe_path(repository_path.as_posix()):
+                findings.append(
+                    _finding(
+                        source,
+                        "manifest-evidence-path-invalid",
+                        "evidence path is not repository-safe",
+                    )
+                )
+        evidence_values = (
+            *row.evidence.commands,
+            *row.evidence.sources,
+            *(path.as_posix() for path in row.evidence.repository_paths),
+            *row.evidence.consumer_scan,
+            *row.evidence.rollback,
+        )
+        if any(_sensitive_value_is_present(value) for value in evidence_values):
+            findings.append(
+                _finding(
+                    source,
+                    "manifest-evidence-confidential",
+                    "manifest evidence contains prohibited confidential data",
+                )
+            )
+        if row.disposition in DESTRUCTIVE_DISPOSITIONS:
+            if row.preservation_class is None:
+                findings.append(
+                    _finding(
+                        source,
+                        "manifest-preservation-required",
+                        "destructive row requires preservation",
+                    )
+                )
+            evidence_lists = (
+                row.evidence.commands,
+                row.evidence.sources,
+                row.evidence.repository_paths,
+                row.evidence.consumer_scan,
+                row.evidence.rollback,
+            )
+            if any(not values for values in evidence_lists):
+                findings.append(
+                    _finding(
+                        source,
+                        "manifest-destructive-evidence-required",
+                        "destructive row requires complete bounded evidence",
+                    )
+                )
+            if row.review_verdict != ReviewVerdict("pass", "pass"):
+                findings.append(
+                    _finding(
+                        source,
+                        "manifest-destructive-review-required",
+                        "destructive row requires independent passing reviews",
+                    )
+                )
+    return sorted(set(findings))
+
+
 def _validate_surface_manifest(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -1807,6 +2331,7 @@ def _validate_surface_manifest(
         findings.append(
             _finding("manifest", "manifest-order-invalid", "entries are not ordered by source_path")
         )
+    findings.extend(_validate_surface_manifest_semantics(root, profiles, document))
     return sorted(set(findings))
 
 

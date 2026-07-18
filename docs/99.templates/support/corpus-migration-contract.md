@@ -54,21 +54,28 @@ unions the direct source paths, and emits one sorted row per selected path.
 Native and binary surfaces are classified from safe path, mode, and blob
 metadata; only declared Markdown/profile surfaces are decoded as UTF-8.
 
-Each entry uses `source_path`, `target_path`, `artifact_id`, `artifact_type`, `status_before`, `status_after`, `parent_ids`, `disposition`, `canonical_replacement`, `active_consumers`, `partition_plan`, `preservation_class`, `evidence`, `review_verdict`.
+Schema version 1 entries use `source_path`, `target_path`, `artifact_id`,
+`artifact_type`, `status_before`, `status_after`, `parent_ids`, `disposition`,
+`canonical_replacement`, `active_consumers`, `partition_plan`,
+`preservation_class`, `evidence`, and `review_verdict`.
+
+Schema version 2 entries instead use `source_path`, `target_path`, `artifact_id`,
+`artifact_type_before`, `artifact_type_after`, `surface_class`, `status_before`,
+`status_after`, `parent_ids`, `disposition`, `canonical_replacement`,
+`active_consumers`, `partition_plan`, `preservation_class`, `evidence`, and
+`review_verdict`. Version 2 does not carry the version 1 `artifact_type` field.
 
 The evidence object uses `commands`, `sources`, `repository_paths`, `consumer_scan`, `rollback`.
 The review object uses `specification`, `quality`, and each verdict is one of `pending`, `pass`, `changes-required`.
 
-The machine contract owns exact types, nullability, and domains for `schema_version`,
-`wave`, `baseline_commit`, `generated_by`, `enforcement`, `entries`,
-`source_path`, `target_path`, `artifact_id`, `artifact_type`, `status_before`,
-`status_after`, `parent_ids`, `disposition`, `canonical_replacement`,
-`active_consumers`, `partition_plan`, `preservation_class`, `evidence`,
-`review_verdict`, `evidence.commands`, `evidence.sources`,
-`evidence.repository_paths`, `evidence.consumer_scan`, `evidence.rollback`,
-`review_verdict.specification`, and `review_verdict.quality`. Authors must use
-YAML null where the machine contract permits absence; sentinel text is not a
-substitute for missing data.
+Field domains are schema-specific. The machine contract's `manifest_schema`
+mapping owns the version 1 types, nullability, and domains, including
+`artifact_type`; `manifest_schema_v2` separately owns the version 2 contract,
+including nullable `artifact_type_before` and `artifact_type_after` plus the
+required `surface_class`. Their shared evidence and review mappings retain the
+same exact keys and verdict vocabulary. Authors must use YAML null only where
+the selected schema permits absence; sentinel text is not a substitute for
+missing data.
 
 Lists and entries are serialized deterministically for reviewable diffs. Their
 order does not create approval rank, dependency priority, or semantic truth.

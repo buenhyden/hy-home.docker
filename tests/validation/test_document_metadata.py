@@ -593,7 +593,6 @@ class ProfileSchemaTests(unittest.TestCase):
         expected_sequences = (
             contract["manifest"]["dispositions"],
             contract["manifest_schema"]["top_level_fields"],
-            contract["manifest_schema"]["entry_fields"],
             contract["manifest_schema"]["evidence_fields"],
             contract["manifest_schema"]["review_verdict_fields"],
             contract["manifest_schema"]["review_verdict_values"],
@@ -602,9 +601,25 @@ class ProfileSchemaTests(unittest.TestCase):
             literal = ", ".join(f"`{value}`" for value in values)
             with self.subTest(literal=literal):
                 self.assertIn(literal, text)
-        for field_name in contract["manifest_schema"]["field_contracts"]:
-            with self.subTest(field=field_name):
-                self.assertIn(f"`{field_name}`", text)
+        v1_fields = text.split("Schema version 1 entries use", 1)[1].split(
+            "Schema version 2 entries instead use", 1
+        )[0]
+        v2_fields = text.split("Schema version 2 entries instead use", 1)[1].split(
+            "The evidence object uses", 1
+        )[0].split("Version 2 does not carry", 1)[0]
+        for schema_name, paragraph in (
+            ("manifest_schema", v1_fields),
+            ("manifest_schema_v2", v2_fields),
+        ):
+            for field_name in contract[schema_name]["entry_fields"]:
+                with self.subTest(schema=schema_name, field=field_name):
+                    self.assertIn(f"`{field_name}`", paragraph)
+        self.assertNotIn("`artifact_type_before`", v1_fields)
+        self.assertNotIn("`artifact_type_after`", v1_fields)
+        self.assertNotIn("`surface_class`", v1_fields)
+        self.assertNotRegex(v2_fields, r"`artifact_type`(?=[,.;\s])")
+        for schema_name in ("manifest_schema", "manifest_schema_v2"):
+            self.assertIn(f"`{schema_name}`", text)
         for disposition, condition in contract["disposition_conditions"].items():
             with self.subTest(disposition=disposition):
                 self.assertIn(f"`{disposition}` -> `{condition}`", text)

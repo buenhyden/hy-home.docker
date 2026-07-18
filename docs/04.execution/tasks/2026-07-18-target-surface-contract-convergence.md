@@ -129,12 +129,14 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | 2026-07-18 | Linked-worktree baseline repair | Controller | After planning commit `5c4e1d55`, the new Plan became a tracked consumer of the promoted frontmatter contract and exposed one stale Foundation consumer row plus three generated-owner freshness gaps that pre-commit index state had hidden. Added only the exact Plan consumer and regenerated the Foundation summary, LLM Wiki index/coverage, and metadata inventory before any implementation task. |
 | 2026-07-18 | SDD handoff compatibility | Controller | Renamed only the six Plan task headings to `Task N: T-TSC-NNN` so the required Superpowers `task-brief` extractor can produce bounded handoff files. Repository-specific ignored brief/report/progress artifacts use `_workspace/repo-support/`; no implementation contract changed. |
 | 2026-07-18 | T-TSC-001 implementation | Documentation Specialist | Added path-selected content/SDLC archive profiles and templates, schema-v2 wave and manifest contracts, binary-safe root/direct selection, wave-resolved read checks, and the pending advisory 483-row target manifest plus generated summary. No target migration, destructive disposition, review promotion, runtime, secret-value, or remote action occurred. Independent specification and quality reviews remain not run. |
+| 2026-07-18 | T-TSC-001 specification review | Independent specification reviewer | CHANGES REQUIRED, C0/I2/M1. Schema-v2 validation bypassed common result-state and safety gates; the Task omitted exact commit/command evidence; and the human contract described one contradictory universal entry shape. Quality review did not run. |
+| 2026-07-18 | T-TSC-001 specification remediation | Fresh bounded fix implementer | Added binary-safe v2 result-state, transition, replacement, immutable rollback, partition-Plan, and confidentiality gates plus mutation regressions; separated v1/v2 human field contracts; and recorded exact value-safe evidence. Independent specification re-review and quality review remain pending. |
 
 ## Verification Evidence
 
 | Work unit | RED evidence | GREEN/aggregate evidence | Result |
 | --- | --- | --- | --- |
-| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors. Both preceded production changes. | Metadata 76/76; lifecycle 38/38; exact manifest 483=422+61, sorted/unique/exact union, all pending; contract, manifest, summary, explicit-base metadata, compile, and diff gates exit 0. | implementation_complete_review_pending |
+| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures. All RED preceded the corresponding production or contract change. | Metadata 76/76; lifecycle 45/45; specification-fix mutations 4/4 and human contract 1/1; exact manifest 483=422+61, sorted/unique/exact union, all pending and byte-unchanged; contract, manifest, summary, promoted, explicit-base metadata, compile, lint, and diff gates exit 0. | implementation_complete_review_pending |
 | T-TSC-002 | not_run | not_run | not_run |
 | T-TSC-003 | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run |
@@ -143,6 +145,58 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 
 Prospective commands and expected results live in the Plan. Record actual exit
 state, bounded result, and skip rationale here without raw logs or secret data.
+
+### T-TSC-001 Exact Command Evidence
+
+Initial implementation RED preceded production changes:
+
+```bash
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests tests.validation.test_document_metadata.ArtifactInferenceTests tests.validation.test_document_metadata.MetadataValidationTests tests.validation.test_document_metadata.ReadmeProfileTests -v
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_corpus_lifecycle.PublicContractTests tests.validation.test_document_corpus_lifecycle.HumanContractRoutingTests tests.validation.test_document_corpus_lifecycle.ManifestValidationTests tests.validation.test_document_corpus_lifecycle.ArchiveProvenanceTests -v
+```
+
+Results: metadata exit 1 with 76 tests, 7 expected failures, and 5 expected
+errors; lifecycle exit 1 with 38 tests, 11 expected failures, and 4 expected
+errors. Initial GREEN at implementation commit
+`6e87a97977c2de48c1c89a278b159f956825fdd1` used the same commands and passed
+76/76 metadata and 38/38 lifecycle tests.
+
+Specification-remediation RED commands preceded the follow-up production and
+human-contract fixes:
+
+```bash
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_corpus_lifecycle.ManifestValidationTests.test_v2_delete_rejects_a_source_that_remains_in_the_result tests.validation.test_document_corpus_lifecycle.ManifestValidationTests.test_v2_rejects_invalid_transition_rollback_and_replacement tests.validation.test_document_corpus_lifecycle.ManifestValidationTests.test_v2_rejects_sensitive_evidence_without_echoing_the_value tests.validation.test_document_corpus_lifecycle.ManifestValidationTests.test_v2_partition_plan_must_resolve_to_a_tracked_canonical_plan -v
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_corpus_lifecycle.HumanContractRoutingTests.test_human_contract_separates_v1_and_v2_entry_fields_and_domains -v
+```
+
+Results: the first command exited 1 with 4/4 expected failures because v2 did
+not emit the required result-state, transition/rollback/replacement,
+confidentiality, or partition finding codes. The second exited 1 with one test
+and four expected assertion failures because the v1/v2 field/domain wording was
+absent and the universal v1-only entry sentence remained. GREEN used the exact
+same commands and passed 4/4 and 1/1. All finding messages remained value-free;
+the sensitive sentinel was absent from rendered findings.
+
+Final follow-up GREEN and repository gates:
+
+```bash
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests tests.validation.test_document_metadata.ArtifactInferenceTests tests.validation.test_document_metadata.MetadataValidationTests tests.validation.test_document_metadata.ReadmeProfileTests
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_corpus_lifecycle.PublicContractTests tests.validation.test_document_corpus_lifecycle.HumanContractRoutingTests tests.validation.test_document_corpus_lifecycle.ManifestValidationTests tests.validation.test_document_corpus_lifecycle.ArchiveProvenanceTests
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-manifest --wave target-surface-convergence
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-summary --wave target-surface-convergence
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted --wave target-surface-convergence
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 32c40e11747bc0bd03789c24861d2e5d60c0e999
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m py_compile scripts/validation/check-document-metadata.py scripts/validation/check-document-corpus-lifecycle.py tests/validation/test_document_metadata.py tests/validation/test_document_corpus_lifecycle.py
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH ruff check scripts/validation/check-document-metadata.py scripts/validation/check-document-corpus-lifecycle.py tests/validation/test_document_metadata.py tests/validation/test_document_corpus_lifecycle.py
+git diff --check
+```
+
+Results: exit 0 throughout; metadata 76/76, lifecycle 45/45, contract and
+promoted violations 0, explicit-base metadata selected 25 with violations 0,
+compile and lint passed, and diff hygiene passed. The canonical target manifest
+remains exactly 483 sorted unique rows with all verdicts pending; its manifest
+and summary bytes are unchanged by this follow-up.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -159,7 +213,7 @@ state, bounded result, and skip rationale here without raw logs or secret data.
 
 | Work unit | Self-review | Specification review | Quality review | Findings/disposition |
 | --- | --- | --- | --- | --- |
-| T-TSC-001 | recorded | not_run | not_run | Independent reviews pending; no review verdict promoted. |
+| T-TSC-001 | recorded | changes_required; re-review_pending | not_run | Initial specification review C0/I2/M1 was remediated locally; independent specification re-review and separate quality review remain pending, and no passing verdict is promoted. |
 | T-TSC-002 | not_run | not_run | not_run | not_run |
 | T-TSC-003 | not_run | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run | not_run |
@@ -176,8 +230,9 @@ independent verdicts and all finding dispositions are recorded.
 | --- | --- | --- | --- |
 | Planning | `docs(plan): define target surface convergence execution` | `5c4e1d55` | metadata 10/0; traceability 46/0; alignment 656/5,251/141/0; aggregate 0 before the tracked-consumer baseline recheck |
 | Planning repair | `docs(plan): repair tracked planning consumers` | `f7563631` | promoted manifest 0; generated index 1,290; coverage 1,289; inventory 913/2,145; worktree aggregate failures 0 |
-| SDD compatibility | `docs(plan): align SDD task extraction` | pending | task-brief extraction and diff hygiene pending |
-| T-TSC-001 | `feat(docs): establish target corpus migration contracts` | pending | Focused metadata 76/76; focused lifecycle 38/38; exact manifest and prescribed Task 1 gates pass. |
+| SDD compatibility | `docs(plan): align SDD task extraction` | `e5d3d8c4` | task-brief extraction and diff hygiene passed. |
+| T-TSC-001 | `feat(docs): establish target corpus migration contracts` | `6e87a97977c2de48c1c89a278b159f956825fdd1` | Focused metadata 76/76; focused lifecycle 38/38; exact manifest and prescribed Task 1 gates passed. |
+| T-TSC-001 review fix | `fix(docs): enforce target wave safety gates` | pending | Mutation RED/GREEN, focused suites, wave gates, explicit-base metadata, compile, lint, and diff hygiene; independent re-reviews remain pending. |
 | T-TSC-002 | `docs(examples): align sample and storybook contracts` | pending | not_run |
 | T-TSC-003 | `docs(archive): preserve Windows network note provenance` | pending | not_run |
 | T-TSC-004a | `refactor(infra): retire InfluxDB 2 compatibility` | pending | not_run |
