@@ -43,7 +43,7 @@ How-to / audit guide.
 2. Read environment and docs maps: `docs/README.md`, `infra/README.md`, `scripts/README.md`.
 3. Check Graphify health with `bash scripts/knowledge/report-graphify-health.sh`; if it reports `status=advisory`, use Graphify only for navigation and corroborate claims against tracked files and canonical docs.
 4. Read governance rules: `docs/00.agent-governance/README.md`, `rules/agentic.md`, `rules/documentation-protocol.md`, `rules/stage-authoring-matrix.md`, `scopes/agentic.md`.
-5. Inspect runtime surfaces: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`, `.agents/skills/*/SKILL.md`, `.codex/README.md`, `.codex/hooks.json`, `scripts/hooks/agent-event-hook.sh`.
+5. Inspect provider-native runtime surfaces: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`; `.codex/README.md`, `.codex/agents/*.toml`, `.codex/hooks.json`; and `.gemini/README.md`, `.gemini/agents/*.md`, `.gemini/settings.json`, `.gemini/hooks/agent-event-hook.sh`. Inspect `.agents/agents/*.md` and `.agents/skills/*/SKILL.md` separately as the provider-neutral compatibility and shared-skill projection, then inspect `scripts/hooks/agent-event-hook.sh` as the shared hook implementation.
 6. Compare runtime mirror against `docs/00.agent-governance/agents/**` and `subagent-protocol.md`.
 7. Review validators: `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh`.
 8. Simulate hook payloads when `.claude/hooks/*.sh`, `.codex/hooks.json`, or `scripts/hooks/post-tool-validate.sh` changes; syntax checks alone do not prove `tool_input` parsing.
@@ -52,7 +52,8 @@ How-to / audit guide.
 
 ## Troubleshooting
 
-- Treating `.codex` as a delegated-agent catalog. It is only a hook/context surface in this repository.
+- Treating `.codex/agents/*.toml` or `.gemini/agents/*.md` as canonical role catalogs instead of provider-native adapters to the Stage 00 catalog.
+- Treating `.agents/` as a provider-native runtime surface instead of the provider-neutral compatibility and shared-skill projection.
 - Editing root shims instead of the governance hub.
 - Treating contaminated Graphify output as authoritative architecture evidence.
 - Treating `status=advisory` Graphify health as a failure or as architecture authority; it is downgraded navigation context only.
