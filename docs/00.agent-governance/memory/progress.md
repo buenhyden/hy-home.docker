@@ -98,6 +98,20 @@ selection passes 56/56, and focused metadata passes 76/76. Full lifecycle is
 table-shape subcases. Fresh specification re-review and separate quality review
 remain pending, and no passing verdict is promoted.
 
+The user then explicitly approved only the remaining stale table-driven CLI
+shape correction from the same C0/I1/M0 review state. The existing full-module
+RED was 101/103, and the current targeted reproduction confirmed exactly the
+`check-promoted` and `check-archive` subcases because they still treated
+intentionally admitted `--wave` as forbidden. Test-only commit
+`c2a8d82832930e9bcde749b58da6843733c4f4b8` replaces those two broken inputs
+with forbidden `--base-ref` arguments. The targeted table test passes 1/1,
+full lifecycle passes 103/103, the exact fixture methods pass 3/3, the expanded
+focused lifecycle selection passes 56/56, and focused metadata passes 76/76;
+diff hygiene also passes. Production, contracts, profiles, manifests, runtime,
+secrets, remote state, and all-files pre-commit remained unchanged. Fresh
+specification re-review and separate quality review remain pending, and no
+passing verdict is promoted.
+
 ## Agent Governance Harness Convergence Closure Candidate
 
 The completed T-AGHC-006 pass reconciled the canonical July 5 research and audit

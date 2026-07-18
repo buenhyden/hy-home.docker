@@ -140,12 +140,14 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | 2026-07-18 | T-TSC-001 final specification review | Independent specification reviewer | CHANGES REQUIRED, C0/I1/M0. The production and contract findings were accepted as closed, but the 11-test `FinalReviewRemediationTests` fixture suite retained four failures across three methods because isolated `check-impacted` roots inherited the repository target wave and emitted `promoted-manifest-missing`. Quality review did not run and no verdict was promoted. |
 | 2026-07-18 | T-TSC-001 fixture-remediation approval | User | Explicitly approved a test-only in-process helper that patches only the contract and metadata-profile loaders while invoking the real `lifecycle.main`; production, contracts, profiles, and manifests were excluded from mutation. |
 | 2026-07-18 | T-TSC-001 fixture remediation | QA Engineer | Replaced serialized copied-contract CLI fixtures with the approved in-process loader boundary for isolated `check-impacted` roots. The exact affected three methods passed 3/3, the expanded focused lifecycle selection passed 56/56, and focused metadata passed 76/76. Full lifecycle passed 101/103; two separate base-existing/non-gate table-shape subcases remain outside this review gate. Independent specification re-review and separate quality review remain pending. |
+| 2026-07-18 | T-TSC-001 CLI-shape remediation approval | User | From the latest C0/I1/M0 review state, explicitly approved only the two remaining stale table-driven CLI shape subcases; production, contracts, manifests, and other tests remained excluded. |
+| 2026-07-18 | T-TSC-001 CLI-shape remediation | QA Engineer | Replaced only the `check-promoted` and `check-archive` broken-case arguments from admitted `--wave` to forbidden `--base-ref`. RED was exactly 101/103 at those two subcases; GREEN was lifecycle 103/103, targeted table 1/1, exact fixtures 3/3, expanded lifecycle 56/56, and metadata 76/76. Re-reviews remain pending. |
 
 ## Verification Evidence
 
 | Work unit | RED evidence | GREEN/aggregate evidence | Result |
 | --- | --- | --- | --- |
-| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; first specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures; exceptional validator RED: two tests produced five expected subcase failures; archive-contract RED: one focused human-owner test exited 1 because the two exact profile sections were absent; final-review fixture RED: 11 tests with four failures across three methods, all caused by the isolated target root resolving the repository target wave and emitting `promoted-manifest-missing`. All RED preceded the corresponding production, contract, or test-boundary change. | Metadata 76/76; lifecycle 45/45; first specification-fix mutations 4/4 and human contract 1/1; exceptional mutations 2/2; archive-contract metadata schema 26/26 and lifecycle human contract 11/11; exact affected fixture methods 3/3; expanded focused lifecycle 56/56; full lifecycle 101/103 with two separate base-existing/non-gate table-shape subcases; exact manifest 483=422+61, sorted/unique/exact union, all pending and byte-unchanged; contract, manifest, summary, promoted, explicit-base metadata, compile, Ruff, and diff gates exit 0. | implementation_complete_review_pending |
+| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; first specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures; exceptional validator RED: two tests produced five expected subcase failures; archive-contract RED: one focused human-owner test exited 1 because the two exact profile sections were absent; final-review fixture RED: 11 tests with four failures across three methods, all caused by the isolated target root resolving the repository target wave and emitting `promoted-manifest-missing`; CLI-shape RED: full lifecycle 101/103 with exactly the `check-promoted` and `check-archive` table subcases failing because admitted `--wave` was used as the broken argument. All RED preceded the corresponding production, contract, or test-boundary change. | Metadata 76/76; lifecycle 45/45; first specification-fix mutations 4/4 and human contract 1/1; exceptional mutations 2/2; archive-contract metadata schema 26/26 and lifecycle human contract 11/11; targeted CLI shape 1/1; exact affected fixture methods 3/3; expanded focused lifecycle 56/56; full lifecycle 103/103; exact manifest 483=422+61, sorted/unique/exact union, all pending and byte-unchanged; contract, manifest, summary, promoted, explicit-base metadata, compile, Ruff, and diff gates exit 0. | implementation_complete_review_pending |
 | T-TSC-002 | not_run | not_run | not_run |
 | T-TSC-003 | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run |
@@ -299,6 +301,33 @@ contracts, metadata profiles, target manifest, and generated summary remained
 unchanged. Independent specification re-review and separate quality review
 remain pending, and no passing verdict is promoted.
 
+The user then explicitly approved only the remaining table-driven CLI-shape
+correction from this latest C0/I1/M0 review state. The existing full lifecycle
+RED was 101/103, and the current targeted reproduction failed exactly the
+`check-promoted` and `check-archive` subcases because their broken-case input
+still used admitted `--wave`. Commit
+`c2a8d82832930e9bcde749b58da6843733c4f4b8` changes only those two inputs to
+forbidden `--base-ref` arguments. The targeted test passed 1/1, full lifecycle
+passed 103/103, exact fixture methods passed 3/3, expanded lifecycle passed
+56/56, focused metadata passed 76/76, and `git diff --check` passed. Production,
+contracts, profiles, manifests, and other tests remained unchanged; fresh
+specification re-review and separate quality review remain pending.
+
+CLI-shape RED/GREEN commands:
+
+```bash
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_corpus_lifecycle.ReviewRemediationTests.test_all_sixteen_modes_have_table_driven_shape_contracts -v
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_corpus_lifecycle
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_corpus_lifecycle.FinalReviewRemediationTests.test_corpus_modes_reject_final_and_intermediate_markdown_symlinks_without_leakage tests.validation.test_document_corpus_lifecycle.FinalReviewRemediationTests.test_impacted_cli_snapshots_safe_untracked_records_and_blocks_150th_leaf tests.validation.test_document_corpus_lifecycle.FinalReviewRemediationTests.test_cli_diagnostics_never_emit_metadata_payloads_across_modes -v
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_corpus_lifecycle.PublicContractTests tests.validation.test_document_corpus_lifecycle.HumanContractRoutingTests tests.validation.test_document_corpus_lifecycle.ManifestValidationTests tests.validation.test_document_corpus_lifecycle.ArchiveProvenanceTests tests.validation.test_document_corpus_lifecycle.FinalReviewRemediationTests
+PATH=/tmp/hy-home-docker-validation-venv/bin:$PATH python3 -m unittest tests.validation.test_document_metadata.ProfileSchemaTests tests.validation.test_document_metadata.ArtifactInferenceTests tests.validation.test_document_metadata.MetadataValidationTests tests.validation.test_document_metadata.ReadmeProfileTests
+git diff --check
+```
+
+The first command exited 1 before the edit with one test and exactly two failed
+subcases, then passed 1/1 after the edit. The remaining commands exited 0 with
+103/103, 3/3, 56/56, and 76/76 tests respectively; diff hygiene also exited 0.
+
 ## Controlled Agent Pre-commit Evidence
 
 - Command: not_run; Task 6 only.
@@ -314,7 +343,7 @@ remain pending, and no passing verdict is promoted.
 
 | Work unit | Self-review | Specification review | Quality review | Findings/disposition |
 | --- | --- | --- | --- | --- |
-| T-TSC-001 | recorded | changes_required; fixture_remediation_re-review_pending | not_run | Initial specification review C0/I2/M1 and specification re-review C0/I2/M0 were followed by exceptional re-review C0/I1/M1 and final review C0/I1/M0. The user explicitly approved the final test-only fixture remediation after the archive-contract finding was accepted as closed. Fresh specification re-review and separate quality review remain pending; no passing verdict is promoted. |
+| T-TSC-001 | recorded | changes_required; cli_shape_remediation_re-review_pending | not_run | Initial specification review C0/I2/M1 and specification re-review C0/I2/M0 were followed by exceptional re-review C0/I1/M1 and final review C0/I1/M0. The user explicitly approved the fixture boundary and then only the remaining stale table-driven CLI shape correction. Both test-only remediations are green; fresh specification re-review and separate quality review remain pending, and no passing verdict is promoted. |
 | T-TSC-002 | not_run | not_run | not_run | not_run |
 | T-TSC-003 | not_run | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run | not_run |
@@ -337,6 +366,7 @@ independent verdicts and all finding dispositions are recorded.
 | T-TSC-001 exceptional review fix | `fix(docs): close target lifecycle validation gaps` | `90c803d6f48a9afeed1b7d95bf52ebe376b8d2b3` | Exceptional mutations 2/2, focused metadata 76/76, focused lifecycle 45/45, wave gates, explicit-base metadata, compile, Ruff, manifest-byte, and diff hygiene checks; its specification re-review returned C0/I1/M1 and quality review remains not run. |
 | T-TSC-001 archive contract fix | `fix(docs): align archive retention profiles` | `8f012c2bb57d19046f1c8c42cd54aae5868a542d` | Focused archive human-owner RED/GREEN; metadata schema 26/26; lifecycle human contract 11/11; contract, manifest, summary, explicit-base metadata, Ruff, and diff checks passed; re-reviews remain pending. |
 | T-TSC-001 fixture fix | `test(docs): isolate target wave lifecycle fixtures` | `a994bac09dc0c24b573a7ea204559eb5b7897671` | FinalReview RED 11 tests with four failures across three methods; exact affected GREEN 3/3; expanded focused lifecycle 56/56; full lifecycle 101/103 with two separate non-gate table-shape subcases; focused metadata 76/76. Production and manifest surfaces remained unchanged; re-reviews remain pending. |
+| T-TSC-001 CLI shape fix | `test(docs): align lifecycle CLI shape expectations` | `c2a8d82832930e9bcde749b58da6843733c4f4b8` | Existing full RED 101/103 and targeted RED exactly two subcases; targeted GREEN 1/1, full lifecycle 103/103, exact fixtures 3/3, expanded lifecycle 56/56, metadata 76/76, and diff hygiene passed. Production and contract surfaces remained unchanged; re-reviews remain pending. |
 | T-TSC-002 | `docs(examples): align sample and storybook contracts` | pending | not_run |
 | T-TSC-003 | `docs(archive): preserve Windows network note provenance` | pending | not_run |
 | T-TSC-004a | `refactor(infra): retire InfluxDB 2 compatibility` | pending | not_run |
