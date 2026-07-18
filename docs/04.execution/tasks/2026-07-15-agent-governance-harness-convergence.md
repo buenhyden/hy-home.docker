@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-15-agent-governance-harness-convergence
 artifact_type: task
 parent_ids:
@@ -15,10 +15,10 @@ It records approved boundaries, fresh-agent assignments, RED/GREEN results,
 independent reviews, logical commits, controlled all-files evidence, generated
 freshness, deviations, and final closure. It does not restate the design.
 
-Execution occurs on branch `codex/agent-governance-harness-convergence` in the
-linked worktree `.worktrees/agent-governance-harness-convergence`. Planning is
-complete; implementation evidence is `not_run` until each command is actually
-executed.
+Execution occurred on branch `codex/agent-governance-harness-convergence` in
+the linked worktree `.worktrees/agent-governance-harness-convergence`.
+Planning and execution are complete; `not_run` remains only where historical
+rows accurately record checks that had not yet run at that point.
 
 ## Inputs
 
@@ -149,7 +149,7 @@ Redaction boundary:
 | T-AGHC-003 | Agent/function catalog and canonical skill source | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-004 | Provider-native adapters and dated model policy | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
 | T-AGHC-005 | Harness loops, semantic eval, local QA, and CI | Complete; terminal specification PASS and quality APPROVED, C0/I0/M0 |
-| T-AGHC-006 | Reference/audit/evidence reconciliation and closure | In progress; terminal Task 6 reviews and controlled QA pass, whole-branch review and closure pending |
+| T-AGHC-006 | Reference/audit/evidence reconciliation and closure | Complete; terminal Task 6 and exact whole-branch reviews pass, controlled QA passes, and closure evidence is recorded |
 
 ## Work Log
 
@@ -242,6 +242,8 @@ Redaction boundary:
 | 2026-07-18 | T-AGHC-006 controlled QA | Controller | Ran the exact Plan controlled wrapper from a clean linked worktree at `65b1703d`; the hook exited 0, the snapshot passed, and Git-visible non-ignored before, after, changed, and unexpected path sets were all empty. Only sanitized markers and counts are retained. |
 | 2026-07-18 | T-AGHC-006 initial whole-branch reviews | Independent specification and quality reviewers | Exact range `6cde68dc..c7e269bf` returned specification PASS C0/I0/M0 with `READY_FOR_CLOSURE: YES` and quality CHANGES REQUIRED C0/I1/M0 with `READY_FOR_CLOSURE: NO`. Quality I-01 found that the current Operations usage guide omitted tracked Codex and Gemini native agent surfaces and falsely described `.codex` as hook/context only. Remediation and fresh quality re-review are required; Task 6 remains in progress. |
 | 2026-07-18 | T-AGHC-006 whole-branch quality I-01 remediation | Fresh remediation agent | Updated only the current Operations usage inventory: Codex now includes `.codex/agents/*.toml` plus hooks/context, Gemini includes `.gemini/agents/*.md`, `.gemini/settings.json`, and `.gemini/hooks/agent-event-hook.sh`, and `.agents/` remains a separate provider-neutral compatibility/shared-skill projection. Metadata 3/0/0/0, traceability 46/0, alignment 653/5,206/141/0, provider drift 0, typed repository and UV aggregate failures 0, all affected generated owners, diff hygiene, and source-corroborated Graphify refresh pass. Graph output was restored. No policy, provider adapter, hook, runtime, wrapper, Compose, deployment, secret, remote, or CI surface changed. Fresh quality re-review remains pending; Task 6 remains in progress. |
+| 2026-07-18 | T-AGHC-006 terminal whole-branch reviews | Independent specification and quality reviewers | Exact range `6cde68dc..bf5cafec` returned specification PASS C0/I0/M0 with `READY_FOR_CLOSURE: YES` and quality APPROVED C0/I0/M0 with `READY_FOR_CLOSURE: YES`. Commit `bf5cafec` closes the initial quality I-01 without changing policy, provider adapters, hooks, runtime, the controlled wrapper, Compose, deployment, secrets, remote state, or CI. The lifecycle transition is now authorized; fresh post-closure independent reviews remain required before final handoff. |
+| 2026-07-18 | T-AGHC-006 lifecycle closure | Closure implementation agent | Transitioned Spec 132, its Plan, this Task, T-AGHC-006, and the Stage 03/04 indexes to completed after both exact whole-branch reviewers authorized closure. Regenerated the Wiki index/coverage and semantic metadata inventory, ran the dependency-locked closure ladder against exact base `bf5cafec`, refreshed and source-corroborated advisory Graphify output, then restored generated graph files. The controlled wrapper was not rerun. Fresh post-closure independent reviews remain required before final handoff. |
 
 Implementation rows are appended only after the relevant agent finishes work.
 
@@ -319,6 +321,27 @@ T-AGHC-006 whole-branch quality I-01 remediation verification:
 | provider, typed repository, aggregate, and generated owners | zero provider drift and repository failures; all affected owners fresh | provider sync `providers=3 drift=0`; typed repository and dependency-locked UV aggregate `failures=0`; security readiness, audit matrix, LLM Wiki index/coverage, and provider hook parity fresh | Pass |
 | Graphify refresh and corroboration | advisory graph evidence is source-corroborated and generated output restored | 24,994 nodes / 28,771 edges / 1,612 communities; three test-to-audit-contract cross-root inferences, two unrelated infrastructure ambiguities, 16,478 isolated nodes, and 71 thin communities corroborated against tracked Stage 00, Spec 132, this Task, provider-native files, and the audit contract; volume/gitlink/generated contamination and meaningless god nodes 0; generated output restored | Pass |
 | diff and protected boundaries | diff hygiene passes; no controlled wrapper or protected runtime/remote mutation | `git diff --check` passes; Task 6 remains in progress and the existing controlled-wrapper evidence is unchanged | Pass |
+
+T-AGHC-006 terminal whole-branch review evidence:
+
+| Command or evidence | Expected | Actual | State |
+| --- | --- | --- | --- |
+| exact whole-branch reviews | separate specification and quality verdicts over the same remediated candidate; no Critical, Important, or Minor findings; both ready for closure | `6cde68dc..bf5cafec`; specification PASS C0/I0/M0 and `READY_FOR_CLOSURE: YES`; quality APPROVED C0/I0/M0 and `READY_FOR_CLOSURE: YES` | Pass |
+| I-01 remediation closure | the provider-native guide remediation is committed and re-reviewed without protected-surface expansion | `bf5cafec`; the tracked Codex/Gemini/native compatibility inventory finding is closed; no policy, adapter, hook, runtime, wrapper, Compose, deployment, secret, remote, or CI mutation | Pass |
+| lifecycle authorization | Spec, Plan, Task, T-AGHC-006, and Stage 03/04 indexes may transition together | exact pre-closure reviews authorize `completed`; post-closure reviews remain a separate required gate before final handoff | Pass |
+
+T-AGHC-006 closure transition verification:
+
+| Command or evidence | Expected | Actual | State |
+| --- | --- | --- | --- |
+| dependency-locked exact-base metadata and lifecycle | forward transitions from exact base `bf5cafec`; zero violations, legacy exceptions, or overrides | changed metadata selected 8 / violations 0 / legacy exceptions 0 / transition overrides 0; impacted lifecycle violations 0 with only the configured Task-directory budget advisory | Pass |
+| generated metadata and navigation owners | semantic inventory, Wiki index, and Wiki coverage regenerate canonically and remain fresh | inventory 910 records / 2,145 advisory findings; Wiki index 1,287 paths; Wiki coverage 1,286 safe paths; all three freshness checks pass | Pass |
+| governance, metadata, and typed repository | dependency-locked suites and exact typed markers pass | governance 139/139; document metadata 213/213; contract `3/14/22/3/0`; repository `failures=0` | Pass |
+| provider and semantic evaluation | native/renderer suites, projection drift, fixtures, and regressions pass | renderer 20/20; native 22/22; `providers=3 drift=0`; fixtures 8/8; regressions 10/10 | Pass |
+| traceability, alignment, harness, local QA, and aggregates | exact documentation counts, lifecycle tests, harness/local routing, and repository aggregates pass | traceability 46/0; alignment 653 documents / 5,206 links / 141 operations documents / 0; harness lifecycle 89/89; local `--harness` lifecycle 89/89; all aggregate executions `failures=0` | Pass |
+| generated, workflow, provider JSON, shell, and diff freshness | every unaffected and affected owner is fresh; static syntax and exact-base diff hygiene pass | security readiness, audit matrix, provider hook parity, Wiki, coverage, and inventory fresh; three provider JSON parses, Actionlint, Yamllint, five shell syntax checks, and `git diff --check bf5cafec` pass | Pass |
+| Graphify refresh and source corroboration | refresh succeeds; advisory graph claims are corroborated; generated graph output is restored | 24,994 nodes / 28,771 edges / 1,611 communities; three inferred cross-root test-to-audit-contract edges match the tracked test import and exception-class owner; volume, gitlink, generated/minified contamination, and meaningless god nodes 0; graph files restored | Pass |
+| protected boundaries | no wrapper rerun, provider-live, runtime, Compose mutation, deployment, secret, remote, or CI change | closure changes only Stage 00 progress, Stage 03/04 lifecycle evidence/indexes, and the generated semantic inventory; existing controlled-wrapper evidence is unchanged | Pass |
 
 T-AGHC-003 implementation verification:
 
@@ -971,8 +994,8 @@ Observed path sets: before `(none)`; after `(none)`; changed `(none)`;
 unexpected `(none)`.
 
 Disposition: pass. The controlled wrapper produced no Git-visible non-ignored
-path change. Task 6 remains in progress pending whole-branch review and
-closure.
+path change. The later exact whole-branch reviews authorize closure; the
+wrapper evidence itself remains unchanged.
 
 ## Review Evidence
 
@@ -1012,19 +1035,18 @@ specification PASS and quality APPROVED, both C0/I0/M0. T-AGHC-005 is complete.
 Task 6 canonical reconciliation and union/residual remediation are GREEN. The
 exact terminal review range `812070ed..65b1703d` returned specification PASS
 and quality APPROVED, both C0/I0/M0, and controlled all-files QA passed from
-the clean `65b1703d` worktree. Initial whole-branch review of exact range
-`6cde68dc..c7e269bf` returned specification PASS C0/I0/M0 with
-`READY_FOR_CLOSURE: YES` and quality CHANGES REQUIRED C0/I1/M0 with
-`READY_FOR_CLOSURE: NO`. The quality I-01 current Operations guide inventory
-finding is remediated in the logical commit recorded below; fresh quality
-re-review remains required, so Task 6 remains in progress.
+the clean `65b1703d` worktree. Initial whole-branch review found quality I-01
+at `c7e269bf`; after remediation in `bf5cafec`, exact whole-branch re-review of
+`6cde68dc..bf5cafec` returned specification PASS and quality APPROVED, both
+C0/I0/M0 and `READY_FOR_CLOSURE: YES`. T-AGHC-006 is complete; fresh
+post-closure reviews remain required before final handoff.
 
 Planning specification/plan review verdict: independent read-only reviewer
 PASS with Critical 0, Important 0, and Minor 0 after three correction rounds.
-Tasks 1 through 5 are complete. Task 6 terminal reviews and controlled QA pass;
-the initial whole-branch specification review is PASS C0/I0/M0 with
-`READY_FOR_CLOSURE: YES`, while quality remains C0/I1/M0 with
-`READY_FOR_CLOSURE: NO` pending remediation re-review. Closure remains pending.
+Tasks 1 through 6 are complete. Task 6 terminal reviews and controlled QA pass;
+the exact whole-branch range `6cde68dc..bf5cafec` has specification PASS and
+quality APPROVED, both C0/I0/M0 and `READY_FOR_CLOSURE: YES`. Closure status
+transition is authorized; post-closure independent review remains pending.
 
 Quality review verdict: T-AGHC-001 failed Critical 0, Important 2, Minor 1 at
 `201cee93`; the quality re-review at `522d2ba9` reduced the result to Critical 0,
@@ -1044,13 +1066,11 @@ above; `3e81a79a`, `6bb2dce4`, and `65b1703d` remediate them. The terminal
 specification review is PASS and quality review is APPROVED for exact range
 `812070ed..65b1703d`, both C0/I0/M0. Initial whole-branch quality review of
 `6cde68dc..c7e269bf` returned CHANGES REQUIRED C0/I1/M0 and
-`READY_FOR_CLOSURE: NO`: the current Operations guide omitted the native Codex
-TOML and Gemini agent/settings/hook inventories and retained a false Codex-only
-hook/context claim. The guide now reflects tracked provider-native surfaces and
-keeps `.agents/` separate. Focused metadata, traceability, alignment, provider
-sync, typed repository, dependency-locked aggregate, generated freshness,
-diff-hygiene, and source-corroborated Graphify gates pass, but fresh quality
-re-review remains pending.
+`READY_FOR_CLOSURE: NO` for the provider-native inventory gap. Commit
+`bf5cafec` aligns the tracked Codex, Gemini, and `.agents` surfaces. Exact
+re-review of `6cde68dc..bf5cafec` returned specification PASS and quality
+APPROVED, both C0/I0/M0 and `READY_FOR_CLOSURE: YES`. The lifecycle transition
+may proceed; post-closure independent reviews remain required.
 
 Planning findings and disposition: fixed provider skill discovery, Gemini
 `PreCompress`, wrapper clean-state ordering, staged aggregate-validator
@@ -1107,9 +1127,9 @@ with owner, reason, and destination.
 | T-AGHC-006 semantic fixture remediation | `fix(harness): complete semantic CI mutation fixture` | `3e81a79a` | current workflow ordering is mutation-sensitive; semantic suite 32/32 and production validator 11/11 GREEN |
 | T-AGHC-006 reconciliation review remediation | `docs(governance): resolve reconciliation review findings` | `6bb2dce4` | reviewed stale-claim union closed; audit/provider/eval/metadata/traceability/alignment/aggregate/generated/Graphify gates GREEN; terminal reviews C0/I0/M0 |
 | T-AGHC-006 residual specification remediation | `docs(governance): clarify semantic evaluation boundary` | `65b1703d` | repository-semantic depth 4 and the existing `eval-engineer` plus QA ownership are explicit; live/comparative and cross-task quality/latency/cost evaluation remains separately approval-gated; terminal reviews C0/I0/M0 |
-| Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | this logical commit | exact Plan wrapper passes from clean `65b1703d`; hook exit 0; snapshot pass; zero before/after/changed/unexpected paths |
-| T-AGHC-006 whole-branch quality I-01 remediation | `docs(operations): align provider native surface guide` | this logical commit | initial whole-branch specification PASS C0/I0/M0 and `READY_FOR_CLOSURE: YES`; quality C0/I1/M0 and `READY_FOR_CLOSURE: NO`; current provider-native guide inventory aligned; focused metadata/traceability/alignment/provider/typed/aggregate/generated/Graphify/diff gates GREEN; fresh quality re-review pending |
-| Closure | `docs(execution): close agent governance convergence` | pending | pending |
+| Controlled QA evidence | `docs(governance): record controlled agent QA evidence` | `c7e269bf` | exact Plan wrapper passes from clean `65b1703d`; hook exit 0; snapshot pass; zero before/after/changed/unexpected paths |
+| T-AGHC-006 whole-branch quality I-01 remediation | `docs(operations): align provider native surface guide` | `bf5cafec` | initial whole-branch specification PASS C0/I0/M0 and `READY_FOR_CLOSURE: YES`; quality C0/I1/M0 and `READY_FOR_CLOSURE: NO`; remediation gates GREEN; exact `6cde68dc..bf5cafec` re-review specification PASS and quality APPROVED C0/I0/M0 with `READY_FOR_CLOSURE: YES` |
+| Closure | `docs(execution): close agent governance convergence` | this logical commit | Spec, Plan, Task, T-AGHC-006, indexes, progress, and generated metadata owners transition together after exact pre-closure reviews; post-closure independent review remains required before final handoff |
 
 Material review remediations receive separate rows rather than being folded
 into unrelated commits.

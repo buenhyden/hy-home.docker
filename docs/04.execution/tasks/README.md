@@ -158,7 +158,7 @@ docs/04.execution/tasks/
 ├── 2026-07-11-agentic-engineering-audit-remediation.md # Completed postclosure metadata-integrity fixes and re-review evidence
 ├── 2026-07-12-agentic-audit-harness-consolidation.md # Completed canonical audit lifecycle, semantic freshness, security precision, and QA/CI evidence
 ├── 2026-07-13-document-contract-canonicalization.md # Completed document-contract evidence; post-closure findings resolved
-├── 2026-07-15-agent-governance-harness-convergence.md # Active agent-governance and provider-harness execution evidence
+├── 2026-07-15-agent-governance-harness-convergence.md # Completed agent-governance and provider-harness execution evidence
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence
@@ -254,7 +254,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Agentic Audit Harness Consolidation Task**: [2026-07-12-agentic-audit-harness-consolidation.md](./2026-07-12-agentic-audit-harness-consolidation.md)
 - **Document Contract Canonicalization Task**: [2026-07-13-document-contract-canonicalization.md](./2026-07-13-document-contract-canonicalization.md)
 - **Document Corpus Lifecycle Migration Foundation Task (completed)**: [2026-07-14-document-corpus-lifecycle-migration-foundation.md](./2026-07-14-document-corpus-lifecycle-migration-foundation.md)
-- **Agent Governance Harness Convergence Task (active)**: [2026-07-15-agent-governance-harness-convergence.md](./2026-07-15-agent-governance-harness-convergence.md)
+- **Agent Governance Harness Convergence Task (completed; post-closure review pending)**: [2026-07-15-agent-governance-harness-convergence.md](./2026-07-15-agent-governance-harness-convergence.md)
 - **Audit Implementation Matrix Snapshot Task**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **SDLC Document Contract Corpus Normalization Task**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)

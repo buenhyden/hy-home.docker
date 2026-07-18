@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:132-agent-governance-harness-convergence
 artifact_type: spec
 parent_ids:
@@ -10,7 +10,7 @@ parent_ids:
 
 **Date:** 2026-07-15 (Asia/Seoul)
 
-**Status:** Approved and active
+**Status:** Completed
 
 **Scope:** `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents/`, `.claude/`,
 `.codex/`, new `.gemini/`, `.github/`, `docs/00.agent-governance/`, and the
@@ -381,9 +381,11 @@ and 9 Needs Revalidation.
 
 These tracked and deterministic results do not establish live provider
 acceptance, model entitlement or availability, remote CI enforcement, CD,
-deployment, or rollback. Task 6 remains active until generated evidence,
+deployment, or rollback. Task 6 is complete after generated evidence,
 verification, independent review, the controlled wrapper, and closure evidence
-are completed in the order defined by the Plan.
+were completed in the order defined by the Plan. Exact whole-branch review of
+`6cde68dc..bf5cafec` returned specification PASS and quality APPROVED, both
+C0/I0/M0 and `READY_FOR_CLOSURE: YES`.
 
 #### Typed validator
 
@@ -488,10 +490,11 @@ artifacts are maintained according to the selected skill.
 
 ## Verification
 
-The implementation is complete only when every task has focused test evidence,
-independent specification and quality approval, and the final exact branch
-range passes the full verification ladder defined above. The commit sequence
-must remain independently reviewable and revertible:
+The implementation is complete: every task has focused test evidence,
+independent specification and quality approval, and the exact pre-closure
+branch range `6cde68dc..bf5cafec` passes whole-branch review with C0/I0/M0 and
+`READY_FOR_CLOSURE: YES` from both reviewers. The commit sequence remains
+independently reviewable and revertible:
 
 1. Design document.
 2. Implementation plan.

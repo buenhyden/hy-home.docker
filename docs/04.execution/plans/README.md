@@ -99,7 +99,7 @@ docs/04.execution/plans/
 ├── 2026-07-11-agentic-engineering-audit-remediation.md # Completed postclosure metadata-integrity fixes and exact-range re-review plan
 ├── 2026-07-12-agentic-audit-harness-consolidation.md # Completed canonical audit lifecycle, freshness, security precision, and QA/CI plan
 ├── 2026-07-13-document-contract-canonicalization.md # Completed document-contract plan; post-closure findings resolved
-├── 2026-07-15-agent-governance-harness-convergence.md # Active agent-governance and provider-harness convergence plan
+├── 2026-07-15-agent-governance-harness-convergence.md # Completed agent-governance and provider-harness convergence plan
 ├── 2026-07-11-compose-runtime-readiness-remediation.md # Draft Compose runtime evidence plan; later runtime approval required
 ├── 2026-07-11-infrastructure-operations-readiness-remediation.md # Draft stateful operations/recovery plan; later runtime approval required
 ├── 2026-07-11-security-supply-chain-remediation.md # Draft supply-chain evidence plan; later security/remote approval required
@@ -214,7 +214,7 @@ task evidence or progress log records the same item as unresolved.
 - **Agentic Audit Harness Consolidation Plan**: [2026-07-12-agentic-audit-harness-consolidation.md](./2026-07-12-agentic-audit-harness-consolidation.md)
 - **Document Contract Canonicalization Plan**: [2026-07-13-document-contract-canonicalization.md](./2026-07-13-document-contract-canonicalization.md)
 - **Document Corpus Lifecycle Migration Foundation Plan (completed)**: [2026-07-14-document-corpus-lifecycle-migration-foundation.md](./2026-07-14-document-corpus-lifecycle-migration-foundation.md)
-- **Agent Governance Harness Convergence Plan (active)**: [2026-07-15-agent-governance-harness-convergence.md](./2026-07-15-agent-governance-harness-convergence.md)
+- **Agent Governance Harness Convergence Plan (completed; post-closure review pending)**: [2026-07-15-agent-governance-harness-convergence.md](./2026-07-15-agent-governance-harness-convergence.md)
 - **Compose Runtime Readiness Remediation Plan**: [2026-07-11-compose-runtime-readiness-remediation.md](./2026-07-11-compose-runtime-readiness-remediation.md)
 - **Infrastructure Operations Readiness Remediation Plan**: [2026-07-11-infrastructure-operations-readiness-remediation.md](./2026-07-11-infrastructure-operations-readiness-remediation.md)
 - **Security Supply-Chain Remediation Plan**: [2026-07-11-security-supply-chain-remediation.md](./2026-07-11-security-supply-chain-remediation.md)

@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: plan:2026-07-15-agent-governance-harness-convergence
 artifact_type: plan
 parent_ids:
@@ -326,33 +326,33 @@ def validate_repository(root: Path, bundle: ContractBundle) -> list[Finding]: ..
 def render_findings(findings: Sequence[Finding]) -> str: ...
 ```
 
-- [ ] Write RED tests for duplicate YAML keys, unknown top-level keys,
+- [x] Write RED tests for duplicate YAML keys, unknown top-level keys,
   traversal/absolute paths, duplicate IDs, invalid cross-references, overlapping
   canonical ownership, invalid provider/model states, missing source URLs or
   checked time, default-ineligible fallback, and nondeterministic findings.
-- [ ] Run
+- [x] Run
   `python3 -m unittest tests.validation.test_agent_governance_contract -v` and
   record the expected import/file failures.
-- [ ] Implement and GREEN duplicate-key-safe YAML loading plus immutable
+- [x] Implement and GREEN duplicate-key-safe YAML loading plus immutable
   `Finding`/`ContractBundle` models.
-- [ ] Implement and GREEN safe repo-relative path and unknown-key validation.
-- [ ] Implement and GREEN artifact ownership/overlap validation.
-- [ ] Implement and GREEN catalog identity/cross-reference validation.
-- [ ] Implement and GREEN provider/model status/source/fallback validation.
-- [ ] Implement and GREEN deterministic sorting and value-free diagnostics.
-- [ ] Implement the thin CLI with `--root`, `--mode contract|repository`,
+- [x] Implement and GREEN safe repo-relative path and unknown-key validation.
+- [x] Implement and GREEN artifact ownership/overlap validation.
+- [x] Implement and GREEN catalog identity/cross-reference validation.
+- [x] Implement and GREEN provider/model status/source/fallback validation.
+- [x] Implement and GREEN deterministic sorting and value-free diagnostics.
+- [x] Implement the thin CLI with `--root`, `--mode contract|repository`,
   repository `--section catalog|providers|harness|all`; Task 1 activates only
   `--mode contract`. Provider render drift remains solely in the renderer's
   `--check` mode. Unknown or
   incompatible flag combinations fail closed.
-- [ ] Run the focused tests and expect all tests to pass.
-- [ ] Run
+- [x] Run the focused tests and expect all tests to pass.
+- [x] Run
   `python3 scripts/validation/check-agent-governance-contract.py --mode contract`
   and expect
   `agent_governance_contract: PASS contracts=3 agents=14 functions=22 providers=3 failures=0`.
-- [ ] Run `python3 -m py_compile` for both Python files and
+- [x] Run `python3 -m py_compile` for both Python files and
   `git diff --check`.
-- [ ] Run applicable generated owners, inspect the exact diff, update Task
+- [x] Run applicable generated owners, inspect the exact diff, update Task
   evidence, commit `feat(governance): add typed agent governance contracts`,
   and complete fresh specification and quality reviews.
 
@@ -411,50 +411,50 @@ def render_findings(findings: Sequence[Finding]) -> str: ...
 The implementation uses the provider's real import syntax where one exists;
 ordinary Markdown links and fenced literals are not counted as imports.
 
-- [ ] Add RED tests for generic frontmatter on root shims, noncanonical key
+- [x] Add RED tests for generic frontmatter on root shims, noncanonical key
   order, missing/extra type-specific keys, duplicate H1/title identity, copied
   policy in README profiles, non-executable imports, nonexistent Hookify local
   references, conflicting path owners, and missing mandatory reviewers.
-- [ ] Run the focused governance and document-metadata tests and record the
+- [x] Run the focused governance and document-metadata tests and record the
   expected failures against current shims and metadata.
-- [ ] Normalize metadata in deterministic inventory order without changing
+- [x] Normalize metadata in deterministic inventory order without changing
   unrelated historical evidence; remove legacy keys and duplicated sections.
-- [ ] Preserve artifact exceptions: root shims have no frontmatter; ordinary
+- [x] Preserve artifact exceptions: root shims have no frontmatter; ordinary
   Stage 00 documents retain minimal `layer`; scope documents retain their real
   scope layer; progress retains `layer + status`; Hookify keeps its native
   schema; role/function subtype migration remains atomic with Task 3.
-- [ ] Normalize the three root shims and rerun only root-shim fixtures.
-- [ ] Normalize the three provider/compatibility README entry surfaces and
+- [x] Normalize the three root shims and rerun only root-shim fixtures.
+- [x] Normalize the three provider/compatibility README entry surfaces and
   rerun only README-profile fixtures.
-- [ ] Normalize the four provider governance documents and rerun their
+- [x] Normalize the four provider governance documents and rerun their
   metadata/authority fixtures.
-- [ ] Normalize the five exact Stage 00 rule owners listed above and rerun
+- [x] Normalize the five exact Stage 00 rule owners listed above and rerun
   ownership fixtures.
-- [ ] Remove duplicate title metadata from `scopes/agentic.md`.
-- [ ] Remove duplicate title metadata from `scopes/architecture.md`.
-- [ ] Remove duplicate title metadata from `scopes/backend.md`.
-- [ ] Remove duplicate title metadata from `scopes/common.md`.
-- [ ] Remove duplicate title metadata from `scopes/entry.md`.
-- [ ] Remove duplicate title metadata from `scopes/frontend.md`.
-- [ ] Remove duplicate title metadata from `scopes/infra.md`.
-- [ ] Remove duplicate title metadata from `scopes/meta.md`.
-- [ ] Remove duplicate title metadata from `scopes/mobile.md`.
-- [ ] Remove duplicate title metadata from `scopes/ops.md`.
-- [ ] Remove duplicate title metadata from `scopes/product.md`.
-- [ ] Remove duplicate title metadata from `scopes/qa.md`.
-- [ ] Remove duplicate title metadata from `scopes/security.md` and rerun the
+- [x] Remove duplicate title metadata from `scopes/agentic.md`.
+- [x] Remove duplicate title metadata from `scopes/architecture.md`.
+- [x] Remove duplicate title metadata from `scopes/backend.md`.
+- [x] Remove duplicate title metadata from `scopes/common.md`.
+- [x] Remove duplicate title metadata from `scopes/entry.md`.
+- [x] Remove duplicate title metadata from `scopes/frontend.md`.
+- [x] Remove duplicate title metadata from `scopes/infra.md`.
+- [x] Remove duplicate title metadata from `scopes/meta.md`.
+- [x] Remove duplicate title metadata from `scopes/mobile.md`.
+- [x] Remove duplicate title metadata from `scopes/ops.md`.
+- [x] Remove duplicate title metadata from `scopes/product.md`.
+- [x] Remove duplicate title metadata from `scopes/qa.md`.
+- [x] Remove duplicate title metadata from `scopes/security.md` and rerun the
   complete scope-profile fixture.
-- [ ] Reduce root/provider README surfaces to bootstrap, scope, structure,
+- [x] Reduce root/provider README surfaces to bootstrap, scope, structure,
   usage, generated-state, and related-document routing already permitted by
   their profiles.
-- [ ] Resolve Stage 00 ownership conflicts using the contract path-authority
+- [x] Resolve Stage 00 ownership conflicts using the contract path-authority
   matrix and distinguish implementation owner from independent reviewer.
-- [ ] Replace literal/fenced imports and stale Hookify references with valid
+- [x] Replace literal/fenced imports and stale Hookify references with valid
   execution or explicit capability-gap language.
-- [ ] Run focused tests; run explicit-base changed metadata validation against
+- [x] Run focused tests; run explicit-base changed metadata validation against
   Task 1 HEAD; run traceability and documentation alignment; expect zero
   blocking failures.
-- [ ] Run contract mode and `git diff --check`; regenerate index, coverage, and
+- [x] Run contract mode and `git diff --check`; regenerate index, coverage, and
   semantic inventory; commit
   `refactor(governance): normalize agent authority and metadata`; complete
   independent specification and quality reviews.
@@ -532,67 +532,67 @@ Each role/function line below is a separate 2–5 minute authored micro-cycle:
 enable the single-ID RED fixture, edit only that canonical file, rerun the
 focused fixture, and inspect its diff before moving to the next ID.
 
-- [ ] Normalize role `workflow-supervisor`.
-- [ ] Normalize role `ci-cd-engineer`.
-- [ ] Normalize role `doc-writer`.
-- [ ] Normalize role `hook-developer`.
-- [ ] Normalize role `incident-responder`.
-- [ ] Normalize role `infra-implementer`.
-- [ ] Normalize role `qa-engineer`.
-- [ ] Normalize role `skill-creator`.
-- [ ] Normalize role `code-reviewer`.
-- [ ] Normalize role `drift-detector`.
-- [ ] Create and normalize role `eval-engineer`.
-- [ ] Normalize role `iac-reviewer`.
-- [ ] Normalize role `rules-engineer`.
-- [ ] Normalize role `security-auditor`.
-- [ ] Normalize function `adr-writing`.
-- [ ] Normalize function `ci-cd-patterns`.
-- [ ] Normalize function `code-review-dimensions`.
-- [ ] Normalize function `code-reviewer`.
-- [ ] Replace stub and normalize function `compose-stack-agent`.
-- [ ] Normalize function `container-threat-modeling`.
-- [ ] Normalize function `deployment-pipeline-design`.
-- [ ] Normalize function `docker-compose-patterns`.
-- [ ] Normalize function `e2e-testing`.
-- [ ] Replace stub and normalize function `execution-plan-agent`.
-- [ ] Normalize function `incident-response`.
-- [ ] Normalize function `infra-cross-validate`.
-- [ ] Normalize function `infra-validate`.
-- [ ] Replace stub and normalize function `knowledge-map-agent`.
-- [ ] Replace stub and normalize function `ops-runbook-agent`.
-- [ ] Replace stub and normalize function `policy-gate-agent`.
-- [ ] Replace stub and normalize function `requirements-to-design-agent`.
-- [ ] Normalize function `security-audit`.
-- [ ] Normalize function `style-validation`.
-- [ ] Replace stub and normalize function `task-breakdown-agent`.
-- [ ] Normalize function `test-automator`.
-- [ ] Normalize function `workspace-audit-revalidation`.
+- [x] Normalize role `workflow-supervisor`.
+- [x] Normalize role `ci-cd-engineer`.
+- [x] Normalize role `doc-writer`.
+- [x] Normalize role `hook-developer`.
+- [x] Normalize role `incident-responder`.
+- [x] Normalize role `infra-implementer`.
+- [x] Normalize role `qa-engineer`.
+- [x] Normalize role `skill-creator`.
+- [x] Normalize role `code-reviewer`.
+- [x] Normalize role `drift-detector`.
+- [x] Create and normalize role `eval-engineer`.
+- [x] Normalize role `iac-reviewer`.
+- [x] Normalize role `rules-engineer`.
+- [x] Normalize role `security-auditor`.
+- [x] Normalize function `adr-writing`.
+- [x] Normalize function `ci-cd-patterns`.
+- [x] Normalize function `code-review-dimensions`.
+- [x] Normalize function `code-reviewer`.
+- [x] Replace stub and normalize function `compose-stack-agent`.
+- [x] Normalize function `container-threat-modeling`.
+- [x] Normalize function `deployment-pipeline-design`.
+- [x] Normalize function `docker-compose-patterns`.
+- [x] Normalize function `e2e-testing`.
+- [x] Replace stub and normalize function `execution-plan-agent`.
+- [x] Normalize function `incident-response`.
+- [x] Normalize function `infra-cross-validate`.
+- [x] Normalize function `infra-validate`.
+- [x] Replace stub and normalize function `knowledge-map-agent`.
+- [x] Replace stub and normalize function `ops-runbook-agent`.
+- [x] Replace stub and normalize function `policy-gate-agent`.
+- [x] Replace stub and normalize function `requirements-to-design-agent`.
+- [x] Normalize function `security-audit`.
+- [x] Normalize function `style-validation`.
+- [x] Replace stub and normalize function `task-breakdown-agent`.
+- [x] Normalize function `test-automator`.
+- [x] Normalize function `workspace-audit-revalidation`.
 
-- [ ] Write RED tests that assert exactly 14 unique agents, exactly 22 unique
+- [x] Write RED tests that assert exactly 14 unique agents, exactly 22 unique
   functions, one supervisor, seven implementation/operations roles, six
   review/eval roles, no retired IDs/references, complete required sections,
   unique owners, `iac-reviewer`/`drift-detector` separation, and the presence of
   `eval-engineer`. Also assert that no lowercase `skill.md` or `.codex/skills`
   path remains.
-- [ ] Add renderer RED tests proving Stage 00-only inputs, deterministic byte
+- [x] Add renderer RED tests proving Stage 00-only inputs, deterministic byte
   output, explicit write mode, read-only `--check`, stale-file deletion, and
   idempotence. Mutating `.claude/skills` alone must not change expected output.
-- [ ] Run focused tests and record the expected current-catalog and missing
+- [x] Run focused tests and record the expected current-catalog and missing
   renderer failures.
-- [ ] Implement the catalog role-transfer ledger: formatting/style to
+- [x] Implement the catalog role-transfer ledger: formatting/style to
   `qa-engineer` plus `style-validation`; knowledge/index freshness to
   `doc-writer` plus `knowledge-map-agent`; representative evaluation to
   `eval-engineer`.
-- [ ] Author topic-specific content for every canonical role/function. Do not
+- [x] Author topic-specific content for every canonical role/function. Do not
   copy template instructions or provider-local prompts verbatim.
-- [ ] Implement deterministic rendering and update the shell wrapper as a thin
+- [x] Implement deterministic rendering and update the shell wrapper as a thin
   compatibility entry point with `--check` default and explicit `--write`.
   Reject unknown flags. Limit stale deletion to the managed manifest/origin
   marker plus the enumerated one-time legacy migration set.
-- [ ] Run renderer write once, inspect exact additions/deletions, then run
+- [x] Run renderer write once, inspect exact additions/deletions, then run
   renderer check twice; expect zero drift and no second-write diff.
-- [ ] Run catalog tests, changed metadata, traceability, repository contracts,
+- [x] Run catalog tests, changed metadata, traceability, repository contracts,
   and `git diff --check`. Repository contracts must pass through the new
   catalog section while the still-current provider checks remain GREEN; commit
   `refactor(agents): converge role and function catalogs`; complete independent
@@ -644,38 +644,38 @@ models:
     source_url: https://learn.chatgpt.com/docs/models
 ```
 
-- [ ] Add RED tests for Claude supported frontmatter, Codex required
+- [x] Add RED tests for Claude supported frontmatter, Codex required
   `name`/`description`/`developer_instructions`, Gemini native
   `name`/`description`/`kind` plus tool/turn/timeout controls, compatibility
   origin markers, strict-schema forbidden keys, and all exact generated paths.
-- [ ] Add RED tests for stable/preview/deprecated separation, dated official
+- [x] Add RED tests for stable/preview/deprecated separation, dated official
   source, entitlement/runtime distinction, no `latest`, eligible defaults,
   reasoning/thinking control validation, fallback compatibility, and the three
   approved work profiles.
-- [ ] Run focused tests and record current schema, missing `.gemini`, and model
+- [x] Run focused tests and record current schema, missing `.gemini`, and model
   drift failures.
-- [ ] Implement and GREEN the Claude agent/skill Markdown serializer only.
-- [ ] Implement and GREEN the Codex agent TOML serializer only.
-- [ ] Implement and GREEN the Gemini agent Markdown serializer only.
-- [ ] Implement and GREEN the Gemini settings/hook JSON-plus-shell projection
+- [x] Implement and GREEN the Claude agent/skill Markdown serializer only.
+- [x] Implement and GREEN the Codex agent TOML serializer only.
+- [x] Implement and GREEN the Gemini agent Markdown serializer only.
+- [x] Implement and GREEN the Gemini settings/hook JSON-plus-shell projection
   only.
-- [ ] Implement and GREEN the `.agents` compatibility/shared-skill serializer
+- [x] Implement and GREEN the `.agents` compatibility/shared-skill serializer
   only. Keep canonical-only metadata in Stage 00.
-- [ ] Implement the approved defaults: Claude Opus 4.8/Sonnet 5/Haiku 4.5;
+- [x] Implement the approved defaults: Claude Opus 4.8/Sonnet 5/Haiku 4.5;
   Codex GPT-5.6 and GPT-5.6 Terra with pinned reasoning; Gemini 3.5 Flash and
   3.1 Flash-Lite. Keep Fable, Spark, Mythos/invitation-only, and Gemini Pro
   preview catalog-only according to observed status.
-- [ ] Map provider hook names to shared semantic events and mark unsupported
+- [x] Map provider hook names to shared semantic events and mark unsupported
   native events as gaps. Specifically remove unsupported Codex `SessionEnd`
   and ignored matchers; map Claude/Codex `PreCompact` and Gemini `PreCompress`
   to the shared pre-compaction event while preserving Gemini's advisory-only
   semantics; distinguish Gemini millisecond hook timeouts from Claude/Codex
   seconds; and add recursion protection plus least-privilege tools.
-- [ ] Enforce read-only sandboxes/tool sets for reviewers, workspace-write only
+- [x] Enforce read-only sandboxes/tool sets for reviewers, workspace-write only
   for approved implementers, and no wildcard tools for Gemini reviewers.
-- [ ] Run explicit renderer write; validate Markdown/YAML, JSON, and TOML with
+- [x] Run explicit renderer write; validate Markdown/YAML, JSON, and TOML with
   local parsers; run renderer check twice and expect no drift.
-- [ ] Run focused tests and blocking contract repository sections,
+- [x] Run focused tests and blocking contract repository sections,
   changed metadata, traceability, repository contracts, and diff hygiene.
   Both catalog and provider sections must now be blocking and GREEN; no old
   model or obsolete provider-path assertion may remain active;
@@ -743,42 +743,42 @@ semantic_events:
     on_failure: record_and_stop
 ```
 
-- [ ] Write RED tests for semantic event ownership, independent reviewer
+- [x] Write RED tests for semantic event ownership, independent reviewer
   inequality, positive retry bounds, stop/escalation rules, least-privilege
   tool sets, sanitized evidence fields, capability/adoption/runtime depth, and
   every provider event mapping.
-- [ ] Add representative RED fixtures for correct role routing, retired-role
+- [x] Add representative RED fixtures for correct role routing, retired-role
   rejection, boundary escalation, hook denial, bounded retry, completion
   evidence, adapter rendering, model fallback, and evaluation calibration.
   Retain the three existing fixture IDs and add `AOE-ROUTING-001`,
   `AOE-ROLE-001`, `AOE-CLOSURE-001`, `AOE-HOOK-001`, and
   `AOE-ADAPTER-001`; the target is eight fixtures and ten deterministic
   positive/negative regression cases.
-- [ ] Add selector RED tests proving that any change under root shims,
+- [x] Add selector RED tests proving that any change under root shims,
   `.agents/**`, `.claude/**`, `.codex/**`, `.gemini/**`, Stage 00, the three
   contracts, renderer, validator, fixture runner, or focused tests selects the
   coupled repository-contract and semantic-eval gates.
-- [ ] Run focused tests/fixtures and record the expected missing enforcement and
+- [x] Run focused tests/fixtures and record the expected missing enforcement and
   selector failures.
-- [ ] Implement semantic loop validation and replace the inline shell checks
+- [x] Implement semantic loop validation and replace the inline shell checks
   with the focused repository-mode CLI while preserving aggregate pass/fail
   behavior.
-- [ ] Extend existing semantic fixtures with deterministic scorers, explicit
+- [x] Extend existing semantic fixtures with deterministic scorers, explicit
   thresholds, calibration metadata, and value-free failure output.
-- [ ] Change shared prompt/function routing to canonical Stage 00 functions,
+- [x] Change shared prompt/function routing to canonical Stage 00 functions,
   remove the non-runtime `docker ps` action from SessionStart, and run provider
   surface synchronization only through explicit `--check` in validation.
-- [ ] Update local selector and existing CI jobs. Preserve read-only
+- [x] Update local selector and existing CI jobs. Preserve read-only
   permissions, SHA-pinned actions, no secrets in command lines, and no
   deployment or remote mutation.
-- [ ] Require the existing eval job to pass all eight fixture catalog entries
+- [x] Require the existing eval job to pass all eight fixture catalog entries
   and ten semantic regressions, with markers
   `fixtures_check=pass` and `regressions_check=pass`; do not add a new required
   job or make a network model call.
-- [ ] Run unit tests, semantic fixtures, selector tests, renderer check,
+- [x] Run unit tests, semantic fixtures, selector tests, renderer check,
   repository contracts, actionlint/yamllint when available, changed metadata,
   traceability, documentation alignment, and diff hygiene.
-- [ ] Run Graphify, corroborate advisory findings, regenerate applicable
+- [x] Run Graphify, corroborate advisory findings, regenerate applicable
   security/audit/index/inventory owners, commit
   `feat(harness): enforce agent loops and semantic gates`, and complete
   independent reviews.
@@ -851,10 +851,10 @@ semantic_events:
   logs. Commit this evidence as
   `docs(governance): record controlled agent QA evidence` and restore a clean
   worktree.
-- [ ] Obtain separate whole-branch specification and quality PASS over
+- [x] Obtain separate whole-branch specification and quality PASS over
   `6cde68dc..EVIDENCE_HEAD`; fix and re-review all Critical/Important findings,
   and keep the worktree clean.
-- [ ] Transition Spec, Plan, and Task to `completed` only after all acceptance
+- [x] Transition Spec, Plan, and Task to `completed` only after all acceptance
   rows, commits, wrapper evidence, generated freshness, and whole-branch
   reviews are current. Regenerate the semantic inventory, LLM Wiki index, and
   coverage after the status/index edits; rerun changed metadata, traceability,
