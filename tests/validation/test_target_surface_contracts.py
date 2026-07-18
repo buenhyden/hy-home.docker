@@ -6,15 +6,19 @@ import subprocess
 import sys
 import unittest
 
+import yaml
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "scripts/validation/check-document-metadata.py"
+LIFECYCLE_CHECKER = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
 PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 SERVICE_EXAMPLE = ROOT / "examples/sample-web-service/service.md"
 TARGET_MANIFEST = (
     ROOT
     / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
 )
+TARGET_SUMMARY = TARGET_MANIFEST.with_name("target-surface-convergence-summary.md")
 TARGET_ROOTS = (".github", "archive", "examples", "infra", "projects", "scripts", "secrets", "tests")
 
 spec = importlib.util.spec_from_file_location("target_surface_metadata", CHECKER)
@@ -179,6 +183,136 @@ class StorybookPhantomContractTests(unittest.TestCase):
 
 
 class DeprecatedRuntimeContractTests(unittest.TestCase):
+    def test_influxdb_v2_reviewed_delete_has_zero_manifest_findings(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(LIFECYCLE_CHECKER),
+                "--mode",
+                "check-manifest",
+                "--wave",
+                "target-surface-convergence",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode)
+        self.assertEqual("", result.stdout)
+        self.assertEqual("", result.stderr)
+
+    def test_influxdb_v2_manifest_row_records_exact_delete_evidence(self) -> None:
+        manifest = yaml.safe_load(TARGET_MANIFEST.read_text(encoding="utf-8"))
+        source_path = "infra/04-data/analytics/influxdb/docker-compose.v2.yml"
+        row = next(
+            entry
+            for entry in manifest["entries"]
+            if entry["source_path"] == source_path
+        )
+
+        self.assertEqual(
+            {
+                "source_path": source_path,
+                "target_path": None,
+                "artifact_id": None,
+                "artifact_type_before": None,
+                "artifact_type_after": None,
+                "surface_class": "runtime",
+                "status_before": None,
+                "status_after": None,
+                "parent_ids": [],
+                "disposition": "delete",
+                "canonical_replacement": (
+                    "infra/04-data/analytics/influxdb/docker-compose.yml"
+                ),
+                "active_consumers": [],
+                "partition_plan": None,
+                "preservation_class": "git-history",
+                "evidence": {
+                    "commands": [
+                        "git diff --name-status cd32264dd5fcb7060a50b516682fe8f3aeb74f85..f300b4f88cc6672445ac25a06602adb62381f7c0 -- infra/04-data/analytics/influxdb/docker-compose.v2.yml",
+                        "git log --format=%H cd32264dd5fcb7060a50b516682fe8f3aeb74f85..f300b4f88cc6672445ac25a06602adb62381f7c0 -- infra/04-data/analytics/influxdb/docker-compose.v2.yml",
+                    ],
+                    "sources": [source_path],
+                    "repository_paths": [source_path],
+                    "consumer_scan": [
+                        "git grep -lz --fixed-strings -- docker-compose.v2.yml -- .env.example infra scripts secrets"
+                    ],
+                    "rollback": [
+                        "git revert --no-commit f300b4f88cc6672445ac25a06602adb62381f7c0"
+                    ],
+                },
+                "review_verdict": {
+                    "specification": "pass",
+                    "quality": "pass",
+                },
+            },
+            row,
+        )
+        baseline = subprocess.run(
+            [
+                "git",
+                "show",
+                "cd32264dd5fcb7060a50b516682fe8f3aeb74f85:"
+                "docs/90.references/data/governance/document-corpus-lifecycle/"
+                "target-surface-convergence.yaml",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        baseline_manifest = yaml.safe_load(baseline.stdout)
+        self.assertEqual(483, len(manifest["entries"]))
+        self.assertEqual(
+            [source_path],
+            [
+                entry["source_path"]
+                for entry in manifest["entries"]
+                if entry["disposition"] == "delete"
+            ],
+        )
+        self.assertEqual(
+            [source_path],
+            [
+                entry["source_path"]
+                for entry in manifest["entries"]
+                if entry["review_verdict"]
+                == {"specification": "pass", "quality": "pass"}
+            ],
+        )
+        self.assertEqual(
+            482,
+            sum(
+                entry["review_verdict"]
+                == {"specification": "pending", "quality": "pending"}
+                for entry in manifest["entries"]
+            ),
+        )
+        self.assertEqual(
+            [
+                entry
+                for entry in baseline_manifest["entries"]
+                if entry["source_path"] != source_path
+            ],
+            [
+                entry
+                for entry in manifest["entries"]
+                if entry["source_path"] != source_path
+            ],
+        )
+        summary = TARGET_SUMMARY.read_text(encoding="utf-8")
+        for expected in (
+            "- Entries: 483",
+            "- `delete`: 1",
+            "- `migrate`: 7",
+            "- `preserve`: 475",
+            f"| {source_path} |  | delete | pass | pass |",
+        ):
+            with self.subTest(summary=expected):
+                self.assertIn(expected, summary)
+
     def test_influxdb_v2_compose_is_removed(self) -> None:
         self.assertFalse(
             (

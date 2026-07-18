@@ -3033,7 +3033,7 @@ entries:
     specification: pending
     quality: pending
 - source_path: infra/04-data/analytics/influxdb/docker-compose.v2.yml
-  target_path: infra/04-data/analytics/influxdb/docker-compose.v2.yml
+  target_path: null
   artifact_id: null
   artifact_type_before: null
   artifact_type_after: null
@@ -3041,20 +3041,26 @@ entries:
   status_before: null
   status_after: null
   parent_ids: []
-  disposition: preserve
-  canonical_replacement: null
+  disposition: delete
+  canonical_replacement: infra/04-data/analytics/influxdb/docker-compose.yml
   active_consumers: []
   partition_plan: null
-  preservation_class: null
+  preservation_class: git-history
   evidence:
-    commands: []
-    sources: []
-    repository_paths: []
-    consumer_scan: []
-    rollback: []
+    commands:
+    - git diff --name-status cd32264dd5fcb7060a50b516682fe8f3aeb74f85..f300b4f88cc6672445ac25a06602adb62381f7c0 -- infra/04-data/analytics/influxdb/docker-compose.v2.yml
+    - git log --format=%H cd32264dd5fcb7060a50b516682fe8f3aeb74f85..f300b4f88cc6672445ac25a06602adb62381f7c0 -- infra/04-data/analytics/influxdb/docker-compose.v2.yml
+    sources:
+    - infra/04-data/analytics/influxdb/docker-compose.v2.yml
+    repository_paths:
+    - infra/04-data/analytics/influxdb/docker-compose.v2.yml
+    consumer_scan:
+    - git grep -lz --fixed-strings -- docker-compose.v2.yml -- .env.example infra scripts secrets
+    rollback:
+    - git revert --no-commit f300b4f88cc6672445ac25a06602adb62381f7c0
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/influxdb/docker-compose.yml
   target_path: infra/04-data/analytics/influxdb/docker-compose.yml
   artifact_id: null

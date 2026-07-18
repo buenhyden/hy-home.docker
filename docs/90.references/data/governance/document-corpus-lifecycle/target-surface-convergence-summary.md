@@ -7,8 +7,9 @@
 
 ## Dispositions
 
+- `delete`: 1
 - `migrate`: 7
-- `preserve`: 476
+- `preserve`: 475
 
 ## Reviewed Paths
 
@@ -145,7 +146,7 @@
 | infra/04-data/README.md | infra/04-data/README.md | preserve | pending | pending |
 | infra/04-data/analytics/README.md | infra/04-data/analytics/README.md | preserve | pending | pending |
 | infra/04-data/analytics/influxdb/README.md | infra/04-data/analytics/influxdb/README.md | preserve | pending | pending |
-| infra/04-data/analytics/influxdb/docker-compose.v2.yml | infra/04-data/analytics/influxdb/docker-compose.v2.yml | preserve | pending | pending |
+| infra/04-data/analytics/influxdb/docker-compose.v2.yml |  | delete | pass | pass |
 | infra/04-data/analytics/influxdb/docker-compose.yml | infra/04-data/analytics/influxdb/docker-compose.yml | preserve | pending | pending |
 | infra/04-data/analytics/ksql/README.md | infra/04-data/analytics/ksql/README.md | preserve | pending | pending |
 | infra/04-data/analytics/ksql/docker-compose.yml | infra/04-data/analytics/ksql/docker-compose.yml | preserve | pending | pending |
