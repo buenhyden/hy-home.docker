@@ -101,6 +101,7 @@ docs/03.specs/
 ├── 130-template-contract-system-canonicalization/ # Completed template-role, body, validator, and direct-consumer canonicalization
 ├── 131-document-corpus-lifecycle-migration-foundation/ # Completed corpus migration manifest, retention, archive, and validation foundation
 ├── 132-agent-governance-harness-convergence/ # Completed Stage 00 authority, native provider adapter, catalog, model, loop, and evidence convergence
+├── 133-target-surface-contract-convergence/ # Draft target corpus, archive split, deprecated runtime removal, and static QA convergence
 └── README.md                            # This file
 ```
 
@@ -144,6 +145,7 @@ docs/03.specs/
 | Contract-first document type, template, README profile, and migration foundation | `129-document-contract-canonicalization/spec.md` |
 | Completed template-role, body-envelope, validator, and direct-consumer canonicalization | `130-template-contract-system-canonicalization/spec.md` |
 | Completed document corpus lifecycle migration manifest, retention, archive, and validation foundation | `131-document-corpus-lifecycle-migration-foundation/spec.md` |
+| Target corpus contract, archive split, deprecated runtime removal, and static QA convergence | `133-target-surface-contract-convergence/spec.md` |
 | Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
 | Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
 | Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
@@ -237,6 +239,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Document Contract Canonicalization Spec**: [129-document-contract-canonicalization/spec.md](./129-document-contract-canonicalization/spec.md)
 - **Template Contract System Canonicalization Spec**: [130-template-contract-system-canonicalization/spec.md](./130-template-contract-system-canonicalization/spec.md)
 - **Document Corpus Lifecycle Migration Foundation Spec (completed)**: [131-document-corpus-lifecycle-migration-foundation/spec.md](./131-document-corpus-lifecycle-migration-foundation/spec.md)
+- **Target Surface Contract and Deprecated Runtime Convergence Spec**: [133-target-surface-contract-convergence/spec.md](./133-target-surface-contract-convergence/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)
