@@ -169,11 +169,25 @@ value-free `manifest-target-file-invalid`, and rejects forged document metadata
 on native/static surfaces before body read/decode. The exact RED was 0/5 and
 GREEN was 5/5; full lifecycle passed 111/111, focused metadata 76/76, target
 contracts 9/9, and all prescribed wave/compile/Ruff gates passed. The unrelated
-full metadata module remains a recorded non-gate 216/218 on two stale
-`content-archive` expected-role tests. Archive validation still reports only
-the two planned Windows provenance findings owned by T-TSC-003. No manifest or
-summary bytes, 483 pending verdict pairs, runtime, secret, remote, deployment,
-or all-files pre-commit surface changed; fresh re-reviews remain required.
+full metadata module was then 216/218 on two stale `content-archive`
+expected-role tests. Archive validation still reports only the two planned
+Windows provenance findings owned by T-TSC-003. No manifest or summary bytes,
+483 pending verdict pairs, runtime, secret, remote, deployment, or all-files
+pre-commit surface changed at that remediation boundary.
+
+Full fail-closed remediation commit
+`dd53a695e6893265a8d72c1810f334a6de5daa95` received foundation specification
+PASS C0/I0/M0, T-TSC-002 specification PASS C0/I0/M0, and T-TSC-002 quality
+APPROVED C0/I0/M0. Foundation quality returned CHANGES REQUIRED C0/I2/M0 for
+the stale aggregate metadata oracles and immutable evidence synchronization;
+foundation quality is not complete. The bounded quality remediation adds only
+the exact committed `content-archive` leaf/profile/six-heading/seven-token
+expectations and renames the aggregate to 24 roles. RED was 0/2; GREEN is 2/2
+and full metadata 218/218. The canonical Task and ignored Task 1/2 reports now
+record the immutable remediation SHA and exact verdict split without
+self-recording the current evidence commit. Fresh foundation quality re-review
+remains required; no validator, contract, manifest, summary, target, runtime,
+secret, remote, deployment, or all-files pre-commit surface changed.
 
 ## Agent Governance Harness Convergence Closure Candidate
 

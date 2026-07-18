@@ -2748,6 +2748,7 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/common/reference.template.md": "reference",
             "docs/99.templates/templates/common/audit.template.md": "audit",
             "docs/99.templates/templates/common/archive.template.md": "archive",
+            "docs/99.templates/templates/common/content-archive.template.md": "archive",
             "docs/99.templates/templates/common/readme.template.md": "readme",
             "docs/99.templates/templates/spec-contracts/agent-design.template.md": "spec",
             "docs/99.templates/templates/spec-contracts/api-spec.template.md": "spec",
@@ -3030,6 +3031,14 @@ class TemplateBodyContractTests(unittest.TestCase):
             "## Preserved Evidence",
             "## Related Documents",
         ),
+        "content-archive": (
+            "## Overview",
+            "## Current-use Warning",
+            "## Archive Metadata",
+            "## Archive Ledger",
+            "## Historical Retrieval",
+            "## Related Documents",
+        ),
         "memory": (
             "## Problem",
             "## Context",
@@ -3051,6 +3060,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         "reference": "reference",
         "audit": "audit",
         "archive": "archive",
+        "content-archive": "archive",
         "memory": "governance",
         "progress": "governance",
     }
@@ -3070,6 +3080,10 @@ class TemplateBodyContractTests(unittest.TestCase):
         "archive": {
             "title", "overview", "archive_metadata", "current_replacement",
             "archive_ledger", "preserved_evidence", "related_documents",
+        },
+        "content-archive": {
+            "title", "overview", "current_use_warning", "archive_metadata",
+            "archive_ledger", "historical_retrieval", "related_documents",
         },
         "memory": {
             "title", "date", "layer", "status", "applies_to", "tags",
@@ -3588,6 +3602,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         "reference": "docs/99.templates/templates/common/reference.template.md",
         "audit": "docs/99.templates/templates/common/audit.template.md",
         "archive": "docs/99.templates/templates/common/archive.template.md",
+        "content-archive": "docs/99.templates/templates/common/content-archive.template.md",
         "memory": "docs/99.templates/templates/governance/memory.template.md",
         "progress": "docs/99.templates/templates/governance/progress.template.md",
         "prd": "docs/99.templates/templates/sdlc/prd.template.md",
@@ -4431,7 +4446,7 @@ class TemplateBodyContractTests(unittest.TestCase):
         self.assertNotIn("## Procedure", policy)
         self.assertEqual(1, runbook.count("## Rollback or Recovery"))
 
-    def test_all_23_markdown_roles_have_independent_literal_contract_coverage(self) -> None:
+    def test_all_24_markdown_roles_have_independent_literal_contract_coverage(self) -> None:
         expected_headings = {
             **self.TASK_2_ROLE_HEADINGS,
             **self.TASK_3_ROLE_HEADINGS,
@@ -4451,7 +4466,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             **self.TASK_5_ROLE_TOKENS,
         }
         expected_roles = set(self.ALL_ROLE_SOURCES)
-        self.assertEqual(23, len(expected_roles))
+        self.assertEqual(24, len(expected_roles))
         self.assertEqual(expected_roles, set(self.profiles["template_roles"]))
         self.assertEqual(expected_roles, set(expected_headings))
         self.assertEqual(expected_roles, set(expected_profiles))
