@@ -183,7 +183,56 @@ class StorybookPhantomContractTests(unittest.TestCase):
 
 
 class DeprecatedRuntimeContractTests(unittest.TestCase):
-    def test_influxdb_v2_reviewed_delete_has_zero_manifest_findings(self) -> None:
+    def test_opensearch_duplicate_example_is_removed_but_mounted_file_remains(
+        self,
+    ) -> None:
+        duplicate = pathlib.Path(
+            "infra/04-data/analytics/opensearch/opensearch/config/"
+            "userdict_ko.txt.example"
+        )
+        retained = pathlib.Path(
+            "infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt"
+        )
+        self.assertFalse((ROOT / duplicate).exists())
+        self.assertTrue((ROOT / retained).is_file())
+
+        pre_delete_commit = "bad9a4a0aeb014c9eee398ea039ec0076723cd68"
+        empty_blob = "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        for path in (duplicate, retained):
+            with self.subTest(blob=path.as_posix()):
+                result = subprocess.run(
+                    [
+                        "git",
+                        "rev-parse",
+                        f"{pre_delete_commit}:{path.as_posix()}",
+                    ],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                self.assertEqual(empty_blob, result.stdout.strip())
+
+        result = subprocess.run(
+            ["git", "rev-parse", f"HEAD:{retained.as_posix()}"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        self.assertEqual(empty_blob, result.stdout.strip())
+
+        compose_paths = (
+            ROOT / "infra/04-data/analytics/opensearch/docker-compose.yml",
+            ROOT / "infra/04-data/analytics/opensearch/docker-compose.cluster.yml",
+        )
+        for path in compose_paths:
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(compose=path.name):
+                self.assertIn("userdict_ko.txt:", text)
+                self.assertNotIn("userdict_ko.txt.example", text)
+
+    def test_reviewed_influxdb_row_leaves_only_held_opensearch_gap(self) -> None:
         result = subprocess.run(
             [
                 sys.executable,
@@ -198,8 +247,13 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             text=True,
             check=False,
         )
-        self.assertEqual(0, result.returncode)
-        self.assertEqual("", result.stdout)
+        self.assertEqual(1, result.returncode)
+        self.assertEqual(
+            "manifest-target-missing: "
+            "infra/04-data/analytics/opensearch/opensearch/config/"
+            "userdict_ko.txt.example: validation rule is not satisfied\n",
+            result.stdout,
+        )
         self.assertEqual("", result.stderr)
 
     def test_influxdb_v2_manifest_row_records_exact_delete_evidence(self) -> None:
