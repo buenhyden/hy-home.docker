@@ -140,20 +140,49 @@ class LifecycleTestCase(unittest.TestCase):
         }
         return contract
 
-    def isolated_impacted_cli_args(self) -> tuple[str, str]:
-        """Return an explicit non-promoted contract for isolated CLI fixtures."""
+    def run_isolated_impacted_cli(
+        self,
+        root: pathlib.Path,
+        *,
+        base_ref: str,
+    ) -> subprocess.CompletedProcess[str]:
+        """Run check-impacted without repository-owned wave manifests."""
         contract = copy.deepcopy(self.contract)
-        foundation = contract["waves"]["foundation"]
-        foundation["enforcement"] = "advisory"
-        foundation["manifest_path"] = None
-        directory = pathlib.Path(tempfile.mkdtemp(prefix="lifecycle-impacted-contract-"))
-        self.addCleanup(shutil.rmtree, directory, True)
-        contract_path = directory / "contract.yaml"
-        contract_path.write_text(
-            yaml.safe_dump(contract, sort_keys=False),
-            encoding="utf-8",
+        for wave_name in ("foundation", TARGET_WAVE):
+            wave = contract["waves"][wave_name]
+            wave["enforcement"] = "advisory"
+            wave["manifest_path"] = None
+        arguments = [
+            "--root",
+            str(root),
+            "--mode",
+            "check-impacted",
+            "--base-ref",
+            base_ref,
+        ]
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with (
+            mock.patch.object(
+                lifecycle,
+                "load_migration_contract",
+                return_value=contract,
+            ),
+            mock.patch.object(
+                lifecycle.metadata,
+                "load_profiles",
+                return_value=self.profiles,
+            ),
+            contextlib.redirect_stdout(stdout),
+            contextlib.redirect_stderr(stderr),
+        ):
+            returncode = lifecycle.main(arguments)
+        return subprocess.CompletedProcess(
+            [sys.executable, str(SCRIPT), *arguments],
+            returncode,
+            stdout.getvalue(),
+            stderr.getvalue(),
         )
-        return "--contract", str(contract_path)
 
 
 class PublicContractTests(LifecycleTestCase):
@@ -3293,6 +3322,8 @@ class FinalReviewRemediationTests(LifecycleTestCase):
         mode: str,
         output: pathlib.Path,
     ) -> subprocess.CompletedProcess[str]:
+        if mode == "check-impacted":
+            return self.run_isolated_impacted_cli(root, base_ref="HEAD")
         arguments = [
             sys.executable,
             str(SCRIPT),
@@ -3301,9 +3332,6 @@ class FinalReviewRemediationTests(LifecycleTestCase):
             "--mode",
             mode,
         ]
-        if mode == "check-impacted":
-            arguments.extend(("--base-ref", "HEAD"))
-            arguments.extend(self.isolated_impacted_cli_args())
         if mode in {
             "report-duplicates",
             "generate-archive-ledger",
@@ -4076,36 +4104,14 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 "artifact_type: reference\nparent_ids: []\n---\n\n# New Reference\n"
             )
             candidate.write_text(valid, encoding="utf-8")
-            accepted = run(
-                sys.executable,
-                str(SCRIPT),
-                "--root",
-                str(root),
-                "--mode",
-                "check-impacted",
-                "--base-ref",
-                baseline,
-                *self.isolated_impacted_cli_args(),
-                cwd=ROOT,
-            )
+            accepted = self.run_isolated_impacted_cli(root, base_ref=baseline)
             self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
             self.assertIn("selected=1 violations=0", accepted.stdout)
             candidate.write_text(
                 valid.replace("status: active", "status: invalid-status"),
                 encoding="utf-8",
             )
-            rejected = run(
-                sys.executable,
-                str(SCRIPT),
-                "--root",
-                str(root),
-                "--mode",
-                "check-impacted",
-                "--base-ref",
-                baseline,
-                *self.isolated_impacted_cli_args(),
-                cwd=ROOT,
-            )
+            rejected = self.run_isolated_impacted_cli(root, base_ref=baseline)
             self.assertEqual(rejected.returncode, 1, rejected.stdout + rejected.stderr)
             self.assertIn("selected=1 violations=", rejected.stdout)
 
@@ -4128,18 +4134,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                     target.parent.joinpath("nested").symlink_to(
                         outside, target_is_directory=True
                     )
-                result = run(
-                    sys.executable,
-                    str(SCRIPT),
-                    "--root",
-                    str(root),
-                    "--mode",
-                    "check-impacted",
-                    "--base-ref",
-                    "HEAD",
-                    *self.isolated_impacted_cli_args(),
-                    cwd=ROOT,
-                )
+                result = self.run_isolated_impacted_cli(root, base_ref="HEAD")
                 rendered = result.stdout + result.stderr
                 self.assertEqual(result.returncode, 3, rendered)
                 self.assertNotIn(marker, rendered)
@@ -4163,18 +4158,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 "artifact_type: reference\nparent_ids: []\n---\n\n# Budget\n",
                 encoding="utf-8",
             )
-            before_limit = run(
-                sys.executable,
-                str(SCRIPT),
-                "--root",
-                str(root),
-                "--mode",
-                "check-impacted",
-                "--base-ref",
-                base_148,
-                *self.isolated_impacted_cli_args(),
-                cwd=ROOT,
-            )
+            before_limit = self.run_isolated_impacted_cli(root, base_ref=base_148)
             self.assertEqual(before_limit.returncode, 0, before_limit.stdout + before_limit.stderr)
             base_149 = commit_all(root, "149 leaves")
             (budget / "149.md").write_text(
@@ -4182,18 +4166,7 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                 "artifact_type: reference\nparent_ids: []\n---\n\n# Budget\n",
                 encoding="utf-8",
             )
-            at_limit = run(
-                sys.executable,
-                str(SCRIPT),
-                "--root",
-                str(root),
-                "--mode",
-                "check-impacted",
-                "--base-ref",
-                base_149,
-                *self.isolated_impacted_cli_args(),
-                cwd=ROOT,
-            )
+            at_limit = self.run_isolated_impacted_cli(root, base_ref=base_149)
             self.assertEqual(at_limit.returncode, 1, at_limit.stdout + at_limit.stderr)
             self.assertIn("directory-budget-blocked", at_limit.stdout)
 
@@ -4240,9 +4213,6 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                     "--mode",
                     mode,
                 ]
-                if mode == "check-impacted":
-                    arguments.extend(("--base-ref", baseline))
-                    arguments.extend(self.isolated_impacted_cli_args())
                 if mode in {
                     "generate-archive-ledger",
                     "check-archive-ledger",
@@ -4252,7 +4222,11 @@ class FinalReviewRemediationTests(LifecycleTestCase):
                     arguments.extend(("--output", str(output)))
                     if mode.startswith("check-"):
                         output.write_text("sentinel\n", encoding="utf-8")
-                result = run(*arguments, cwd=ROOT)
+                result = (
+                    self.run_isolated_impacted_cli(root, base_ref=baseline)
+                    if mode == "check-impacted"
+                    else run(*arguments, cwd=ROOT)
+                )
                 rendered = result.stdout + result.stderr
                 self.assertNotIn(marker, rendered)
                 self.assertNotIn(marker, output.read_text(encoding="utf-8") if output.exists() else "")
@@ -4349,6 +4323,8 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
         *,
         base_ref: str = "HEAD",
     ) -> subprocess.CompletedProcess[str]:
+        if mode == "check-impacted":
+            return self.run_isolated_impacted_cli(root, base_ref=base_ref)
         arguments = [
             sys.executable,
             str(SCRIPT),
@@ -4357,9 +4333,6 @@ class AcceptanceFindingRemediationTests(LifecycleTestCase):
             "--mode",
             mode,
         ]
-        if mode == "check-impacted":
-            arguments.extend(("--base-ref", base_ref))
-            arguments.extend(self.isolated_impacted_cli_args())
         if mode in {
             "report-duplicates",
             "generate-archive-ledger",
