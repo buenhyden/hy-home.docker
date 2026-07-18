@@ -82,6 +82,22 @@ metadata, Ruff, and diff gates also passed. Fresh specification re-review and
 separate quality review remain pending, no verdict is promoted, and no target,
 runtime, service, secret-value, remote, or all-files pre-commit action occurred.
 
+The next final T-TSC-001 specification review returned C0/I1/M0. The archive
+contract finding was accepted as closed; its only Important finding was the
+expanded `FinalReviewRemediationTests` fixture boundary. The 11-test RED run had
+four failures across three `check-impacted` methods because isolated temporary
+repositories inherited the repository target wave and emitted the value-safe
+`promoted-manifest-missing` code. The user explicitly approved a test-only
+in-process helper that patches only the contract and metadata-profile loaders
+while invoking the real `lifecycle.main`. Commit
+`a994bac09dc0c24b573a7ea204559eb5b7897671` applies that boundary without
+changing production, contracts, profiles, the 483-row target manifest, or its
+summary. The exact affected methods pass 3/3, the expanded focused lifecycle
+selection passes 56/56, and focused metadata passes 76/76. Full lifecycle is
+101/103; the two remaining failures are separate base-existing/non-gate
+table-shape subcases. Fresh specification re-review and separate quality review
+remain pending, and no passing verdict is promoted.
+
 ## Agent Governance Harness Convergence Closure Candidate
 
 The completed T-AGHC-006 pass reconciled the canonical July 5 research and audit
