@@ -67,7 +67,9 @@ SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선
 ### Common Pitfalls
 
 - Referring to old SeaweedFS image versions. The current compose image is `chrislusf/seaweedfs:4.31`.
-- Assuming `security.toml` is mounted into the current compose. It exists in the directory but is not mounted by the current service definitions.
+- Assuming SeaweedFS security config is mounted into the current compose. Only
+  `config/security.toml.example` remains as a future scaffold; the current
+  service definitions do not mount or use it.
 - Treating `seaweedfs-mount` as a normal read-only service. It has elevated host-facing privileges.
 - Running unverified master metadata restore or reshard commands from documentation without owner approval.
 

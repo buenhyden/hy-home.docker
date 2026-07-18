@@ -16,7 +16,9 @@ status: active
 ## Policy Scope
 
 - **Systems**: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`
-- **Configs**: `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`; `config/security.toml` is present but not mounted by current compose
+- **Configs**: `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`;
+  `config/security.toml.example` remains as a future scaffold and is not
+  mounted by current compose
 - **Profiles**: `data`
 - **Networks**: `infra_net`
 - **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or file/object-storage runtime boundaries
@@ -33,7 +35,8 @@ status: active
   - Read-only service health/log checks.
   - Mount container restart only after capturing evidence and confirming host-impacting scope.
 - **Disallowed**:
-  - Claiming `security.toml` authentication is active unless the compose file mounts and uses it.
+  - Claiming SeaweedFS authentication is active unless a reviewed security
+    config is created, mounted, and used by the compose file.
   - Running destructive master metadata restore, volume deletion, unmount, or reshard operations as documentation-only actions.
   - Treating the S3 gateway as credential-protected by the current compose unless credential config is explicitly added and documented.
   - Recording private data, tokens, or credentials in documentation or task evidence.

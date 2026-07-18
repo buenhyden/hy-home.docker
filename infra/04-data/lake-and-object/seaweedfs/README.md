@@ -28,14 +28,16 @@ SeaweedFS provides a distributed file and object storage surface for `hy-home.do
 ### Out of Scope
 
 - Secret values, private file contents, or credential material
-- Runtime activation of `config/security.toml`; it is present but not mounted by the current compose file
+- Runtime activation of SeaweedFS security configuration; only
+  `config/security.toml.example` remains as a future scaffold and it is not
+  mounted by the current compose file
 - Unapproved metadata restore, volume deletion, forced unmount, or reshard operations
 
 ## Structure
 
 ```text
 seaweedfs/
-├── config/              # Security config files present for future/optional use
+├── config/              # Future security scaffold; current compose does not mount it
 ├── docker-compose.yml   # Current SeaweedFS data-profile stack
 └── README.md            # This file
 ```
@@ -45,7 +47,7 @@ seaweedfs/
 | Field | Evidence |
 | --- | --- |
 | Purpose | SeaweedFS service leaf in `04-data`; services: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount` |
-| Config files | `docker-compose.yml`, `config/security.toml`, `config/security.toml.example` |
+| Config files | `docker-compose.yml`, `config/security.toml.example` |
 | Config values | profile: `data`; image: `chrislusf/seaweedfs:4.31` |
 | Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` |
 | Networks | `infra_net`; static IPs `172.19.0.140` through `172.19.0.144` |
@@ -63,7 +65,8 @@ seaweedfs/
 
 1. Review the linked operations guide, policy, and runbook before changing SeaweedFS configuration.
 2. Treat `seaweedfs-mount` changes as host-impacting because of `privileged` and `SYS_ADMIN`.
-3. Do not claim `security.toml` authentication is active unless the compose file mounts and uses it.
+3. Do not claim SeaweedFS authentication is active unless a reviewed security
+   config is created, mounted, and used by the compose file.
 4. After compose, route, or mount changes, run the validation commands listed below.
 
 ## Runtime Surface
