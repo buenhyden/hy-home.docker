@@ -343,6 +343,13 @@ EXPECTED_MANIFEST_SCHEMA_V2 = {
     },
 }
 TARGET_SURFACE_BASELINE = "32c40e11747bc0bd03789c24861d2e5d60c0e999"
+TARGET_SURFACE_PROMOTION_EVIDENCE = {
+    "review_base_commit": TARGET_SURFACE_BASELINE,
+    "review_head_commit": "c1e086a1159da3490297adeb4e0972d29b976fe0",
+    "specification_review": "pass-c0-i0-m0",
+    "quality_review": "approved-c0-i0-m0",
+    "controlled_wrapper": "pass",
+}
 TARGET_SURFACE_SOURCE_ROOTS = (
     ".github",
     "archive",
@@ -3087,6 +3094,7 @@ def load_migration_contract(
         "manifest_path",
         "summary_path",
         "scope_state",
+        "promotion_evidence",
         "source_roots",
         "direct_source_paths",
         "declared_outputs",
@@ -3095,8 +3103,24 @@ def load_migration_contract(
         raise ProfileError("target-surface-convergence must define the exact v2 wave fields")
     if target_wave.get("baseline_commit") != TARGET_SURFACE_BASELINE:
         raise ProfileError("target-surface-convergence must pin the approved baseline commit")
-    if target_wave.get("enforcement") != "advisory" or target_wave.get("scope_state") != "approved":
-        raise ProfileError("target-surface-convergence must remain an approved advisory wave")
+    if target_wave.get("scope_state") != "approved":
+        raise ProfileError("target-surface-convergence scope must remain approved")
+    target_enforcement = target_wave.get("enforcement")
+    promotion_evidence = target_wave.get("promotion_evidence")
+    if target_enforcement == "advisory":
+        if promotion_evidence is not None:
+            raise ProfileError(
+                "advisory target-surface-convergence must not claim promotion evidence"
+            )
+    elif target_enforcement == "blocking":
+        if promotion_evidence != TARGET_SURFACE_PROMOTION_EVIDENCE:
+            raise ProfileError(
+                "blocking target-surface-convergence requires exact approved promotion evidence"
+            )
+    else:
+        raise ProfileError(
+            "target-surface-convergence enforcement must be advisory or blocking"
+        )
     if target_wave.get("manifest_path") != (
         "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
     ):

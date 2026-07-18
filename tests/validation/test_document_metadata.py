@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import copy
 import datetime as dt
+import hashlib
 import importlib.util
 import os
 import pathlib
@@ -25,6 +26,10 @@ MIGRATION_CONTRACT = (
     / "99.templates"
     / "support"
     / "document-corpus-migration-contract.yaml"
+)
+TARGET_SURFACE_MANIFEST = (
+    ROOT
+    / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
 )
 CORPUS_MIGRATION_HUMAN_CONTRACT = (
     ROOT / "docs/99.templates/support/corpus-migration-contract.md"
@@ -59,6 +64,44 @@ def body_with_headings(*headings: str) -> str:
 
     sections = "\n\n".join(f"{heading}\n\nFixture content." for heading in headings)
     return f"# Fixture\n\n{sections}\n"
+
+
+def target_promotion_invariant_digest(path: pathlib.Path) -> str:
+    """Hash bytes outside the approved promotion and seven semantic corrections."""
+
+    attestation_fields = {
+        "docs/03.specs/133-target-surface-contract-convergence/spec.md": "status_after",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md": "artifact_type_after",
+        "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md": "artifact_type_after",
+        "docs/90.references/llm-wiki/llm-wiki-index.md": "artifact_type_after",
+    }
+    migrated_generated_outputs = {
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md",
+        "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md",
+        "docs/90.references/llm-wiki/llm-wiki-index.md",
+    }
+    output: list[bytes] = []
+    current_source: str | None = None
+    for line in path.read_bytes().splitlines(keepends=True):
+        if line.startswith(b"- source_path: "):
+            current_source = (
+                line.removeprefix(b"- source_path: ").strip().decode("utf-8")
+            )
+        if (
+            line.startswith(b"enforcement: ")
+            or line.startswith(b"    specification: ")
+            or line.startswith(b"    quality: ")
+        ):
+            continue
+        attestation_field = attestation_fields.get(current_source)
+        if attestation_field and line.startswith(f"  {attestation_field}: ".encode("utf-8")):
+            continue
+        if current_source in migrated_generated_outputs and line.startswith(
+            b"  disposition: "
+        ):
+            continue
+        output.append(line)
+    return hashlib.sha256(b"".join(output)).hexdigest()
 
 
 PRD_TARGET_BODY = body_with_headings(
@@ -822,6 +865,109 @@ class ProfileSchemaTests(unittest.TestCase):
                     target.write_text(source, encoding="utf-8")
                     with self.assertRaises(metadata.ProfileError):
                         metadata.load_migration_contract(target)
+
+    def test_target_surface_wave_requires_exact_promotion_evidence_for_blocking(self) -> None:
+        expected = {
+            "review_base_commit": "32c40e11747bc0bd03789c24861d2e5d60c0e999",
+            "review_head_commit": "c1e086a1159da3490297adeb4e0972d29b976fe0",
+            "specification_review": "pass-c0-i0-m0",
+            "quality_review": "approved-c0-i0-m0",
+            "controlled_wrapper": "pass",
+        }
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        wave = contract["waves"]["target-surface-convergence"]
+        self.assertEqual("blocking", wave["enforcement"])
+        self.assertEqual(expected, wave["promotion_evidence"])
+
+        pre_promotion = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
+        pre_promotion_wave = pre_promotion["waves"]["target-surface-convergence"]
+        pre_promotion_wave["enforcement"] = "advisory"
+        pre_promotion_wave["promotion_evidence"] = None
+        with tempfile.TemporaryDirectory() as directory:
+            target = pathlib.Path(directory) / "migration.yaml"
+            target.write_text(
+                yaml.safe_dump(pre_promotion, sort_keys=False), encoding="utf-8"
+            )
+            loaded = metadata.load_migration_contract(target)
+            self.assertEqual(
+                "advisory",
+                loaded["waves"]["target-surface-convergence"]["enforcement"],
+            )
+
+        for field, replacement in (
+            ("review_base_commit", "0" * 40),
+            ("review_head_commit", "f" * 40),
+            ("specification_review", "pending"),
+            ("quality_review", "changes-required"),
+            ("controlled_wrapper", "not-run"),
+        ):
+            values = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
+            values["waves"]["target-surface-convergence"]["promotion_evidence"][
+                field
+            ] = replacement
+            with self.subTest(field=field):
+                with tempfile.TemporaryDirectory() as directory:
+                    target = pathlib.Path(directory) / "migration.yaml"
+                    target.write_text(
+                        yaml.safe_dump(values, sort_keys=False),
+                        encoding="utf-8",
+                    )
+                    with self.assertRaises(metadata.ProfileError):
+                        metadata.load_migration_contract(target)
+
+        missing = yaml.safe_load(MIGRATION_CONTRACT.read_text(encoding="utf-8"))
+        missing["waves"]["target-surface-convergence"]["promotion_evidence"] = None
+        with tempfile.TemporaryDirectory() as directory:
+            target = pathlib.Path(directory) / "migration.yaml"
+            target.write_text(yaml.safe_dump(missing, sort_keys=False), encoding="utf-8")
+            with self.assertRaises(metadata.ProfileError):
+                metadata.load_migration_contract(target)
+
+    def test_target_surface_promotion_changes_only_approved_fields(self) -> None:
+        manifest = yaml.safe_load(TARGET_SURFACE_MANIFEST.read_text(encoding="utf-8"))
+        self.assertEqual("blocking", manifest["enforcement"])
+        self.assertEqual(483, len(manifest["entries"]))
+        self.assertEqual(
+            {"delete": 3, "migrate": 10, "preserve": 470},
+            dict(
+                collections.Counter(
+                    row["disposition"] for row in manifest["entries"]
+                )
+            ),
+        )
+        self.assertEqual(
+            {("pass", "pass"): 483},
+            dict(
+                collections.Counter(
+                    (
+                        row["review_verdict"]["specification"],
+                        row["review_verdict"]["quality"],
+                    )
+                    for row in manifest["entries"]
+                )
+            ),
+        )
+
+        rows = {row["source_path"]: row for row in manifest["entries"]}
+        self.assertEqual(
+            "active",
+            rows["docs/03.specs/133-target-surface-contract-convergence/spec.md"][
+                "status_after"
+            ],
+        )
+        for path in (
+            "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md",
+            "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md",
+            "docs/90.references/llm-wiki/llm-wiki-index.md",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual("generated", rows[path]["artifact_type_after"])
+                self.assertEqual("migrate", rows[path]["disposition"])
+
+        self.assertEqual(
+            "e61a21ba081c84c7a0bf4789e131ed8b0b8cc1bf18f22aec20d69fe9176348fd",
+            target_promotion_invariant_digest(TARGET_SURFACE_MANIFEST),
+        )
 
     def test_migration_contract_declares_manifest_static_semantics(self) -> None:
         contract = metadata.load_migration_contract(MIGRATION_CONTRACT)

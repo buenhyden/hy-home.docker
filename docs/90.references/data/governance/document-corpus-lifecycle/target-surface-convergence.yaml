@@ -2,7 +2,7 @@ schema_version: 2
 wave: target-surface-convergence
 baseline_commit: 32c40e11747bc0bd03789c24861d2e5d60c0e999
 generated_by: check-document-corpus-lifecycle.py
-enforcement: advisory
+enforcement: blocking
 entries:
 - source_path: .env.example
   target_path: .env.example
@@ -25,8 +25,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/CODEOWNERS
   target_path: .github/CODEOWNERS
   artifact_id: null
@@ -48,8 +48,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/ISSUE_TEMPLATE/bug_report.yml
   target_path: .github/ISSUE_TEMPLATE/bug_report.yml
   artifact_id: null
@@ -71,8 +71,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/ISSUE_TEMPLATE/feature_request.yml
   target_path: .github/ISSUE_TEMPLATE/feature_request.yml
   artifact_id: null
@@ -94,8 +94,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/PULL_REQUEST_TEMPLATE.md
   target_path: .github/PULL_REQUEST_TEMPLATE.md
   artifact_id: null
@@ -117,8 +117,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/SECURITY.md
   target_path: .github/SECURITY.md
   artifact_id: null
@@ -140,8 +140,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/dependabot.yml
   target_path: .github/dependabot.yml
   artifact_id: null
@@ -163,8 +163,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/labeler.yml
   target_path: .github/labeler.yml
   artifact_id: null
@@ -186,8 +186,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/rulesets/main-protection.md
   target_path: .github/rulesets/main-protection.md
   artifact_id: null
@@ -209,8 +209,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/workflows/ci-quality.yml
   target_path: .github/workflows/ci-quality.yml
   artifact_id: null
@@ -232,8 +232,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/workflows/document-corpus-lifecycle.yml
   target_path: .github/workflows/document-corpus-lifecycle.yml
   artifact_id: null
@@ -255,8 +255,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/workflows/generate-changelog.yml
   target_path: .github/workflows/generate-changelog.yml
   artifact_id: null
@@ -278,8 +278,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/workflows/greetings.yml
   target_path: .github/workflows/greetings.yml
   artifact_id: null
@@ -301,8 +301,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/workflows/pr-labeler.yml
   target_path: .github/workflows/pr-labeler.yml
   artifact_id: null
@@ -324,8 +324,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/workflows/stale.yml
   target_path: .github/workflows/stale.yml
   artifact_id: null
@@ -347,8 +347,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .github/workflows/tech-stack-version-sync.yml
   target_path: .github/workflows/tech-stack-version-sync.yml
   artifact_id: null
@@ -370,8 +370,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .pre-commit-config.yaml
   target_path: .pre-commit-config.yaml
   artifact_id: null
@@ -393,8 +393,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: .prettierignore
   target_path: .prettierignore
   artifact_id: null
@@ -416,8 +416,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: archive/Windows-Network-IP.md
   target_path: archive/Windows-Network-IP.md
   artifact_id: archive:windows-network-ip
@@ -439,8 +439,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/00.agent-governance/memory/progress.md
   target_path: docs/00.agent-governance/memory/progress.md
   artifact_id: null
@@ -462,8 +462,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/00.agent-governance/rules/documentation-protocol.md
   target_path: docs/00.agent-governance/rules/documentation-protocol.md
   artifact_id: null
@@ -485,8 +485,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/00.agent-governance/rules/stage-authoring-matrix.md
   target_path: docs/00.agent-governance/rules/stage-authoring-matrix.md
   artifact_id: null
@@ -508,8 +508,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/00.agent-governance/rules/task-checklists.md
   target_path: docs/00.agent-governance/rules/task-checklists.md
   artifact_id: null
@@ -531,8 +531,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/01.requirements/005-data-analytics.md
   target_path: docs/01.requirements/005-data-analytics.md
   artifact_id: null
@@ -554,8 +554,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/02.architecture/decisions/0015-analytics-engine-selection.md
   target_path: docs/02.architecture/decisions/0015-analytics-engine-selection.md
   artifact_id: null
@@ -577,8 +577,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/02.architecture/requirements/0012-data-analytics-architecture.md
   target_path: docs/02.architecture/requirements/0012-data-analytics-architecture.md
   artifact_id: null
@@ -600,8 +600,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/03.specs/005-data-analytics/README.md
   target_path: docs/03.specs/005-data-analytics/README.md
   artifact_id: null
@@ -623,8 +623,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/03.specs/005-data-analytics/spec.md
   target_path: docs/03.specs/005-data-analytics/spec.md
   artifact_id: null
@@ -646,8 +646,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/03.specs/133-target-surface-contract-convergence/spec.md
   target_path: docs/03.specs/133-target-surface-contract-convergence/spec.md
   artifact_id: spec:133-target-surface-contract-convergence
@@ -655,7 +655,7 @@ entries:
   artifact_type_after: spec
   surface_class: typed-example
   status_before: draft
-  status_after: draft
+  status_after: active
   parent_ids:
   - spec:131-document-corpus-lifecycle-migration-foundation
   disposition: preserve
@@ -670,8 +670,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/03.specs/README.md
   target_path: docs/03.specs/README.md
   artifact_id: null
@@ -693,8 +693,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/04.execution/plans/README.md
   target_path: docs/04.execution/plans/README.md
   artifact_id: null
@@ -716,8 +716,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/04.execution/tasks/README.md
   target_path: docs/04.execution/tasks/README.md
   artifact_id: null
@@ -739,8 +739,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/guides/04-data/analytics/README.md
   target_path: docs/05.operations/guides/04-data/analytics/README.md
   artifact_id: null
@@ -762,8 +762,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/guides/04-data/analytics/influxdb.md
   target_path: docs/05.operations/guides/04-data/analytics/influxdb.md
   artifact_id: null
@@ -785,8 +785,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md
   target_path: docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md
   artifact_id: null
@@ -808,8 +808,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/guides/09-tooling/k6.md
   target_path: docs/05.operations/guides/09-tooling/k6.md
   artifact_id: null
@@ -831,8 +831,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/guides/09-tooling/locust.md
   target_path: docs/05.operations/guides/09-tooling/locust.md
   artifact_id: null
@@ -854,8 +854,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/guides/09-tooling/performance-testing.md
   target_path: docs/05.operations/guides/09-tooling/performance-testing.md
   artifact_id: null
@@ -877,8 +877,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/policies/04-data/analytics/influxdb.md
   target_path: docs/05.operations/policies/04-data/analytics/influxdb.md
   artifact_id: null
@@ -900,8 +900,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md
   target_path: docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md
   artifact_id: null
@@ -923,8 +923,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/policies/09-tooling/k6.md
   target_path: docs/05.operations/policies/09-tooling/k6.md
   artifact_id: null
@@ -946,8 +946,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/policies/09-tooling/locust.md
   target_path: docs/05.operations/policies/09-tooling/locust.md
   artifact_id: null
@@ -969,8 +969,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/policies/09-tooling/performance-testing.md
   target_path: docs/05.operations/policies/09-tooling/performance-testing.md
   artifact_id: null
@@ -992,8 +992,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/runbooks/04-data/analytics/influxdb.md
   target_path: docs/05.operations/runbooks/04-data/analytics/influxdb.md
   artifact_id: null
@@ -1015,8 +1015,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/runbooks/09-tooling/k6.md
   target_path: docs/05.operations/runbooks/09-tooling/k6.md
   artifact_id: null
@@ -1038,8 +1038,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/runbooks/09-tooling/locust.md
   target_path: docs/05.operations/runbooks/09-tooling/locust.md
   artifact_id: null
@@ -1061,8 +1061,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/05.operations/runbooks/09-tooling/performance-testing.md
   target_path: docs/05.operations/runbooks/09-tooling/performance-testing.md
   artifact_id: null
@@ -1084,8 +1084,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md
   target_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md
   artifact_id: null
@@ -1107,8 +1107,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md
   target_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md
   artifact_id: audit:agentic-engineering-implementation:automation-candidates
@@ -1131,8 +1131,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md
   target_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md
   artifact_id: audit:agentic-engineering-implementation:compose-infrastructure-operations-readiness
@@ -1155,18 +1155,18 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
   target_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
   artifact_id: null
   artifact_type_before: audit
-  artifact_type_after: audit
+  artifact_type_after: generated
   surface_class: typed-example
   status_before: active
   status_after: active
   parent_ids: []
-  disposition: preserve
+  disposition: migrate
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
@@ -1178,8 +1178,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md
   target_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md
   artifact_id: audit:agentic-engineering-implementation:frontmatter-template-readme
@@ -1202,8 +1202,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md
   target_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md
   artifact_id: audit:agentic-engineering-implementation:overview
@@ -1227,8 +1227,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md
   target_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md
   artifact_id: audit:agentic-engineering-implementation:sdlc-document-contracts
@@ -1251,8 +1251,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md
   target_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md
   artifact_id: audit:agentic-engineering-implementation:sdlc-quality-formatting
@@ -1275,8 +1275,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md
   target_path: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md
   artifact_id: audit:agentic-engineering-implementation:security-framework-maturity
@@ -1299,8 +1299,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/data/governance/document-corpus-lifecycle/README.md
   target_path: docs/90.references/data/governance/document-corpus-lifecycle/README.md
   artifact_id: null
@@ -1322,18 +1322,18 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
   target_path: docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
   artifact_id: null
   artifact_type_before: reference
-  artifact_type_after: reference
+  artifact_type_after: generated
   surface_class: typed-example
   status_before: active
   status_after: active
   parent_ids: []
-  disposition: preserve
+  disposition: migrate
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
@@ -1345,18 +1345,18 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/llm-wiki/llm-wiki-index.md
   target_path: docs/90.references/llm-wiki/llm-wiki-index.md
   artifact_id: null
   artifact_type_before: reference
-  artifact_type_after: reference
+  artifact_type_after: generated
   surface_class: typed-example
   status_before: active
   status_after: active
   parent_ids: []
-  disposition: preserve
+  disposition: migrate
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
@@ -1368,8 +1368,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md
   target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md
   artifact_id: null
@@ -1391,8 +1391,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md
   target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md
   artifact_id: reference:agentic-research:automation-pipeline-workflow
@@ -1415,8 +1415,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md
   target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md
   artifact_id: null
@@ -1438,8 +1438,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md
   target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md
   artifact_id: reference:agentic-research:document-metadata-lifecycle
@@ -1462,8 +1462,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md
   target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md
   artifact_id: reference:agentic-research:quality-ci-formatting
@@ -1486,8 +1486,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md
   target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md
   artifact_id: reference:agentic-research:security-governance
@@ -1510,8 +1510,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md
   target_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md
   artifact_id: reference:agentic-research:workspace-baseline
@@ -1534,8 +1534,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/README.md
   target_path: docs/99.templates/support/README.md
   artifact_id: null
@@ -1557,8 +1557,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/archive-retention-contract.md
   target_path: docs/99.templates/support/archive-retention-contract.md
   artifact_id: null
@@ -1580,8 +1580,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/common-document-contract.md
   target_path: docs/99.templates/support/common-document-contract.md
   artifact_id: null
@@ -1603,8 +1603,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/corpus-migration-contract.md
   target_path: docs/99.templates/support/corpus-migration-contract.md
   artifact_id: null
@@ -1626,8 +1626,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/document-corpus-migration-contract.yaml
   target_path: docs/99.templates/support/document-corpus-migration-contract.yaml
   artifact_id: null
@@ -1649,8 +1649,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/document-metadata-profiles.yaml
   target_path: docs/99.templates/support/document-metadata-profiles.yaml
   artifact_id: null
@@ -1672,8 +1672,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/frontmatter-contract.md
   target_path: docs/99.templates/support/frontmatter-contract.md
   artifact_id: null
@@ -1695,8 +1695,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/support/readme-profile-contract.md
   target_path: docs/99.templates/support/readme-profile-contract.md
   artifact_id: null
@@ -1718,8 +1718,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/templates/README.md
   target_path: docs/99.templates/templates/README.md
   artifact_id: null
@@ -1741,8 +1741,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/templates/common/README.md
   target_path: docs/99.templates/templates/common/README.md
   artifact_id: null
@@ -1764,8 +1764,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: docs/99.templates/templates/common/archive.template.md
   target_path: docs/99.templates/templates/common/archive.template.md
   artifact_id: <artifact-id>
@@ -1787,8 +1787,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: examples/.gitkeep
   target_path: examples/.gitkeep
   artifact_id: null
@@ -1810,8 +1810,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: examples/sample-web-service/.env.example
   target_path: examples/sample-web-service/.env.example
   artifact_id: null
@@ -1833,8 +1833,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: examples/sample-web-service/Dockerfile
   target_path: examples/sample-web-service/Dockerfile
   artifact_id: null
@@ -1856,8 +1856,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: examples/sample-web-service/README.md
   target_path: examples/sample-web-service/README.md
   artifact_id: null
@@ -1879,8 +1879,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: examples/sample-web-service/docker-compose.yml
   target_path: examples/sample-web-service/docker-compose.yml
   artifact_id: null
@@ -1902,8 +1902,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: examples/sample-web-service/nginx.conf
   target_path: examples/sample-web-service/nginx.conf
   artifact_id: null
@@ -1925,8 +1925,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: examples/sample-web-service/service.md
   target_path: examples/sample-web-service/service.md
   artifact_id: spec:sample-web-service
@@ -1949,8 +1949,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: examples/sample-web-service/site/index.html
   target_path: examples/sample-web-service/site/index.html
   artifact_id: null
@@ -1972,8 +1972,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/README.md
   target_path: infra/01-gateway/README.md
   artifact_id: null
@@ -1995,8 +1995,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/nginx/README.md
   target_path: infra/01-gateway/nginx/README.md
   artifact_id: null
@@ -2018,8 +2018,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/nginx/config/nginx.conf
   target_path: infra/01-gateway/nginx/config/nginx.conf
   artifact_id: null
@@ -2041,8 +2041,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/nginx/docker-compose.yml
   target_path: infra/01-gateway/nginx/docker-compose.yml
   artifact_id: null
@@ -2064,8 +2064,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/README.md
   target_path: infra/01-gateway/traefik/README.md
   artifact_id: null
@@ -2087,8 +2087,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/config/README.md
   target_path: infra/01-gateway/traefik/config/README.md
   artifact_id: null
@@ -2110,8 +2110,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/config/traefik.yml
   target_path: infra/01-gateway/traefik/config/traefik.yml
   artifact_id: null
@@ -2133,8 +2133,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/docker-compose.yml
   target_path: infra/01-gateway/traefik/docker-compose.yml
   artifact_id: null
@@ -2156,8 +2156,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/dynamic/README.md
   target_path: infra/01-gateway/traefik/dynamic/README.md
   artifact_id: null
@@ -2179,8 +2179,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/dynamic/adminer-k3d.yaml
   target_path: infra/01-gateway/traefik/dynamic/adminer-k3d.yaml
   artifact_id: null
@@ -2202,8 +2202,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/dynamic/argocd-k3d.yaml
   target_path: infra/01-gateway/traefik/dynamic/argocd-k3d.yaml
   artifact_id: null
@@ -2225,8 +2225,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/dynamic/headlamp-k3d.yaml
   target_path: infra/01-gateway/traefik/dynamic/headlamp-k3d.yaml
   artifact_id: null
@@ -2248,8 +2248,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/dynamic/kiali-k3d.yaml
   target_path: infra/01-gateway/traefik/dynamic/kiali-k3d.yaml
   artifact_id: null
@@ -2271,8 +2271,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/dynamic/middleware.yml
   target_path: infra/01-gateway/traefik/dynamic/middleware.yml
   artifact_id: null
@@ -2294,8 +2294,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/dynamic/rollouts-k3d.yaml
   target_path: infra/01-gateway/traefik/dynamic/rollouts-k3d.yaml
   artifact_id: null
@@ -2317,8 +2317,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/01-gateway/traefik/dynamic/tls.yaml
   target_path: infra/01-gateway/traefik/dynamic/tls.yaml
   artifact_id: null
@@ -2340,8 +2340,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/README.md
   target_path: infra/02-auth/README.md
   artifact_id: null
@@ -2363,8 +2363,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/keycloak/Dockerfile
   target_path: infra/02-auth/keycloak/Dockerfile
   artifact_id: null
@@ -2386,8 +2386,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/keycloak/README.md
   target_path: infra/02-auth/keycloak/README.md
   artifact_id: null
@@ -2409,8 +2409,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/keycloak/docker-compose.yml
   target_path: infra/02-auth/keycloak/docker-compose.yml
   artifact_id: null
@@ -2432,8 +2432,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/oauth2-proxy/Dockerfile
   target_path: infra/02-auth/oauth2-proxy/Dockerfile
   artifact_id: null
@@ -2455,8 +2455,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/oauth2-proxy/README.md
   target_path: infra/02-auth/oauth2-proxy/README.md
   artifact_id: null
@@ -2478,8 +2478,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg
   target_path: infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg
   artifact_id: null
@@ -2501,8 +2501,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/oauth2-proxy/dev.Dockerfile
   target_path: infra/02-auth/oauth2-proxy/dev.Dockerfile
   artifact_id: null
@@ -2524,8 +2524,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/oauth2-proxy/docker-compose.dev.yml
   target_path: infra/02-auth/oauth2-proxy/docker-compose.dev.yml
   artifact_id: null
@@ -2547,8 +2547,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/oauth2-proxy/docker-compose.yml
   target_path: infra/02-auth/oauth2-proxy/docker-compose.yml
   artifact_id: null
@@ -2570,8 +2570,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh
   target_path: infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh
   artifact_id: null
@@ -2593,8 +2593,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/02-auth/oauth2-proxy/docker-entrypoint.sh
   target_path: infra/02-auth/oauth2-proxy/docker-entrypoint.sh
   artifact_id: null
@@ -2616,8 +2616,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/README.md
   target_path: infra/03-security/README.md
   artifact_id: null
@@ -2639,8 +2639,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/README.md
   target_path: infra/03-security/vault/README.md
   artifact_id: null
@@ -2662,8 +2662,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/templates/app_env.ctmpl
   target_path: infra/03-security/vault/config/templates/app_env.ctmpl
   artifact_id: null
@@ -2685,8 +2685,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/templates/grafana_admin_password.ctmpl
   target_path: infra/03-security/vault/config/templates/grafana_admin_password.ctmpl
   artifact_id: null
@@ -2708,8 +2708,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/templates/grafana_client_secret.ctmpl
   target_path: infra/03-security/vault/config/templates/grafana_client_secret.ctmpl
   artifact_id: null
@@ -2731,8 +2731,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/templates/grafana_db_password.ctmpl
   target_path: infra/03-security/vault/config/templates/grafana_db_password.ctmpl
   artifact_id: null
@@ -2754,8 +2754,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/templates/keycloak_admin_password.ctmpl
   target_path: infra/03-security/vault/config/templates/keycloak_admin_password.ctmpl
   artifact_id: null
@@ -2777,8 +2777,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/templates/keycloak_admin_username.ctmpl
   target_path: infra/03-security/vault/config/templates/keycloak_admin_username.ctmpl
   artifact_id: null
@@ -2800,8 +2800,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/templates/keycloak_db_password.ctmpl
   target_path: infra/03-security/vault/config/templates/keycloak_db_password.ctmpl
   artifact_id: null
@@ -2823,8 +2823,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/templates/oauth2_proxy_client_secret.ctmpl
   target_path: infra/03-security/vault/config/templates/oauth2_proxy_client_secret.ctmpl
   artifact_id: null
@@ -2846,8 +2846,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/templates/oauth2_proxy_cookie_secret.ctmpl
   target_path: infra/03-security/vault/config/templates/oauth2_proxy_cookie_secret.ctmpl
   artifact_id: null
@@ -2869,8 +2869,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/templates/postgres_password.ctmpl
   target_path: infra/03-security/vault/config/templates/postgres_password.ctmpl
   artifact_id: null
@@ -2892,8 +2892,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/vault-agent.hcl
   target_path: infra/03-security/vault/config/vault-agent.hcl
   artifact_id: null
@@ -2915,8 +2915,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/config/vault.hcl
   target_path: infra/03-security/vault/config/vault.hcl
   artifact_id: null
@@ -2938,8 +2938,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/03-security/vault/docker-compose.yml
   target_path: infra/03-security/vault/docker-compose.yml
   artifact_id: null
@@ -2961,8 +2961,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/README.md
   target_path: infra/04-data/README.md
   artifact_id: null
@@ -2984,8 +2984,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/README.md
   target_path: infra/04-data/analytics/README.md
   artifact_id: null
@@ -3007,8 +3007,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/influxdb/README.md
   target_path: infra/04-data/analytics/influxdb/README.md
   artifact_id: null
@@ -3030,8 +3030,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/influxdb/docker-compose.v2.yml
   target_path: null
   artifact_id: null
@@ -3082,8 +3082,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/ksql/README.md
   target_path: infra/04-data/analytics/ksql/README.md
   artifact_id: null
@@ -3105,8 +3105,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/ksql/docker-compose.yml
   target_path: infra/04-data/analytics/ksql/docker-compose.yml
   artifact_id: null
@@ -3128,8 +3128,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/Dockerfile
   target_path: infra/04-data/analytics/opensearch/Dockerfile
   artifact_id: null
@@ -3151,8 +3151,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/README.md
   target_path: infra/04-data/analytics/opensearch/README.md
   artifact_id: null
@@ -3174,8 +3174,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/docker-compose.cluster.yml
   target_path: infra/04-data/analytics/opensearch/docker-compose.cluster.yml
   artifact_id: null
@@ -3197,8 +3197,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/docker-compose.yml
   target_path: infra/04-data/analytics/opensearch/docker-compose.yml
   artifact_id: null
@@ -3220,8 +3220,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch-dashboards/config/opensearch_dashboards.yml
   target_path: infra/04-data/analytics/opensearch/opensearch-dashboards/config/opensearch_dashboards.yml
   artifact_id: null
@@ -3243,8 +3243,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/action_groups.yml
   target_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/action_groups.yml
   artifact_id: null
@@ -3266,8 +3266,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/config.yml
   target_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/config.yml
   artifact_id: null
@@ -3289,8 +3289,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/internal_users.template.yml
   target_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/internal_users.template.yml
   artifact_id: null
@@ -3312,8 +3312,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/roles.yml
   target_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/roles.yml
   artifact_id: null
@@ -3335,8 +3335,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/roles_mapping.yml
   target_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/roles_mapping.yml
   artifact_id: null
@@ -3358,8 +3358,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/tenants.yml
   target_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/tenants.yml
   artifact_id: null
@@ -3381,8 +3381,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch.yml
   target_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch.yml
   artifact_id: null
@@ -3404,8 +3404,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch.yml.example
   target_path: infra/04-data/analytics/opensearch/opensearch/config/opensearch.yml.example
   artifact_id: null
@@ -3427,8 +3427,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt
   target_path: infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt
   artifact_id: null
@@ -3450,8 +3450,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example
   target_path: null
   artifact_id: null
@@ -3505,8 +3505,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/warehouses/README.md
   target_path: infra/04-data/analytics/warehouses/README.md
   artifact_id: null
@@ -3528,8 +3528,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/analytics/warehouses/docker-compose.yml
   target_path: infra/04-data/analytics/warehouses/docker-compose.yml
   artifact_id: null
@@ -3551,8 +3551,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/cache-and-kv/README.md
   target_path: infra/04-data/cache-and-kv/README.md
   artifact_id: null
@@ -3574,8 +3574,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/cache-and-kv/valkey-cluster/README.md
   target_path: infra/04-data/cache-and-kv/valkey-cluster/README.md
   artifact_id: null
@@ -3597,8 +3597,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/cache-and-kv/valkey-cluster/config/valkey.conf
   target_path: infra/04-data/cache-and-kv/valkey-cluster/config/valkey.conf
   artifact_id: null
@@ -3620,8 +3620,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml
   target_path: infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml
   artifact_id: null
@@ -3643,8 +3643,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-cluster-init.sh
   target_path: infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-cluster-init.sh
   artifact_id: null
@@ -3666,8 +3666,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-start.sh
   target_path: infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-start.sh
   artifact_id: null
@@ -3689,8 +3689,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/lake-and-object/README.md
   target_path: infra/04-data/lake-and-object/README.md
   artifact_id: null
@@ -3712,8 +3712,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/lake-and-object/minio/README.md
   target_path: infra/04-data/lake-and-object/minio/README.md
   artifact_id: null
@@ -3735,8 +3735,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml
   target_path: infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml
   artifact_id: null
@@ -3758,8 +3758,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/lake-and-object/minio/docker-compose.yml
   target_path: infra/04-data/lake-and-object/minio/docker-compose.yml
   artifact_id: null
@@ -3781,8 +3781,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/lake-and-object/seaweedfs/README.md
   target_path: infra/04-data/lake-and-object/seaweedfs/README.md
   artifact_id: null
@@ -3804,8 +3804,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/lake-and-object/seaweedfs/config/security.toml
   target_path: null
   artifact_id: null
@@ -3862,8 +3862,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
   target_path: infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
   artifact_id: null
@@ -3885,8 +3885,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/nosql/README.md
   target_path: infra/04-data/nosql/README.md
   artifact_id: null
@@ -3908,8 +3908,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/nosql/cassandra/README.md
   target_path: infra/04-data/nosql/cassandra/README.md
   artifact_id: null
@@ -3931,8 +3931,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/nosql/cassandra/docker-compose.yml
   target_path: infra/04-data/nosql/cassandra/docker-compose.yml
   artifact_id: null
@@ -3954,8 +3954,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/nosql/couchdb/README.md
   target_path: infra/04-data/nosql/couchdb/README.md
   artifact_id: null
@@ -3977,8 +3977,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/nosql/couchdb/docker-compose.yml
   target_path: infra/04-data/nosql/couchdb/docker-compose.yml
   artifact_id: null
@@ -4000,8 +4000,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/nosql/mongodb/README.md
   target_path: infra/04-data/nosql/mongodb/README.md
   artifact_id: null
@@ -4023,8 +4023,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/nosql/mongodb/docker-compose.yml
   target_path: infra/04-data/nosql/mongodb/docker-compose.yml
   artifact_id: null
@@ -4046,8 +4046,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/operational/README.md
   target_path: infra/04-data/operational/README.md
   artifact_id: null
@@ -4069,8 +4069,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/operational/mng-db/README.md
   target_path: infra/04-data/operational/mng-db/README.md
   artifact_id: null
@@ -4092,8 +4092,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/operational/mng-db/docker-compose.yml
   target_path: infra/04-data/operational/mng-db/docker-compose.yml
   artifact_id: null
@@ -4115,8 +4115,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/operational/mng-db/pg/init-scripts/init_users_dbs.sql
   target_path: infra/04-data/operational/mng-db/pg/init-scripts/init_users_dbs.sql
   artifact_id: null
@@ -4138,8 +4138,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/operational/mng-db/valkey/.gitkeep
   target_path: infra/04-data/operational/mng-db/valkey/.gitkeep
   artifact_id: null
@@ -4161,8 +4161,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/operational/supabase/.env.example
   target_path: infra/04-data/operational/supabase/.env.example
   artifact_id: null
@@ -4184,8 +4184,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/operational/supabase/README.md
   target_path: infra/04-data/operational/supabase/README.md
   artifact_id: null
@@ -4207,8 +4207,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/operational/supabase/docker-compose.yml
   target_path: infra/04-data/operational/supabase/docker-compose.yml
   artifact_id: null
@@ -4230,8 +4230,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/relational/README.md
   target_path: infra/04-data/relational/README.md
   artifact_id: null
@@ -4253,8 +4253,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/relational/postgresql-cluster/README.md
   target_path: infra/04-data/relational/postgresql-cluster/README.md
   artifact_id: null
@@ -4276,8 +4276,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/relational/postgresql-cluster/config/haproxy.cfg.tpl
   target_path: infra/04-data/relational/postgresql-cluster/config/haproxy.cfg.tpl
   artifact_id: null
@@ -4299,8 +4299,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/relational/postgresql-cluster/docker-compose.yml
   target_path: infra/04-data/relational/postgresql-cluster/docker-compose.yml
   artifact_id: null
@@ -4322,8 +4322,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/relational/postgresql-cluster/init-scripts/init_users_dbs.sql
   target_path: infra/04-data/relational/postgresql-cluster/init-scripts/init_users_dbs.sql
   artifact_id: null
@@ -4345,8 +4345,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/relational/postgresql-cluster/scripts/spilo-entrypoint-with-secrets.sh
   target_path: infra/04-data/relational/postgresql-cluster/scripts/spilo-entrypoint-with-secrets.sh
   artifact_id: null
@@ -4368,8 +4368,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/specialized/README.md
   target_path: infra/04-data/specialized/README.md
   artifact_id: null
@@ -4391,8 +4391,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/specialized/neo4j/README.md
   target_path: infra/04-data/specialized/neo4j/README.md
   artifact_id: null
@@ -4414,8 +4414,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/specialized/neo4j/docker-compose.yml
   target_path: infra/04-data/specialized/neo4j/docker-compose.yml
   artifact_id: null
@@ -4437,8 +4437,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/specialized/neo4j/scripts/neo4j-entrypoint-with-secrets.sh
   target_path: infra/04-data/specialized/neo4j/scripts/neo4j-entrypoint-with-secrets.sh
   artifact_id: null
@@ -4460,8 +4460,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/specialized/qdrant/README.md
   target_path: infra/04-data/specialized/qdrant/README.md
   artifact_id: null
@@ -4483,8 +4483,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/specialized/qdrant/docker-compose.yml
   target_path: infra/04-data/specialized/qdrant/docker-compose.yml
   artifact_id: null
@@ -4506,8 +4506,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/05-messaging/README.md
   target_path: infra/05-messaging/README.md
   artifact_id: null
@@ -4529,8 +4529,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/05-messaging/kafka/README.md
   target_path: infra/05-messaging/kafka/README.md
   artifact_id: null
@@ -4552,8 +4552,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/05-messaging/kafka/docker-compose.dev.yml
   target_path: infra/05-messaging/kafka/docker-compose.dev.yml
   artifact_id: null
@@ -4575,8 +4575,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/05-messaging/kafka/docker-compose.yml
   target_path: infra/05-messaging/kafka/docker-compose.yml
   artifact_id: null
@@ -4598,8 +4598,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/05-messaging/kafka/jmx-exporter/jmx_prometheus_javaagent-1.5.0.jar
   target_path: infra/05-messaging/kafka/jmx-exporter/jmx_prometheus_javaagent-1.5.0.jar
   artifact_id: null
@@ -4621,8 +4621,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/05-messaging/kafka/jmx-exporter/kafka-config.yaml
   target_path: infra/05-messaging/kafka/jmx-exporter/kafka-config.yaml
   artifact_id: null
@@ -4644,8 +4644,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/05-messaging/kafka/kafbat-ui/dynamic_config.template.yaml
   target_path: infra/05-messaging/kafka/kafbat-ui/dynamic_config.template.yaml
   artifact_id: null
@@ -4667,8 +4667,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/05-messaging/rabbitmq/README.md
   target_path: infra/05-messaging/rabbitmq/README.md
   artifact_id: null
@@ -4690,8 +4690,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/05-messaging/rabbitmq/docker-compose.yml
   target_path: infra/05-messaging/rabbitmq/docker-compose.yml
   artifact_id: null
@@ -4713,8 +4713,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/README.md
   target_path: infra/06-observability/README.md
   artifact_id: null
@@ -4736,8 +4736,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/alertmanager/README.md
   target_path: infra/06-observability/alertmanager/README.md
   artifact_id: null
@@ -4759,8 +4759,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/alertmanager/config/config.yml
   target_path: infra/06-observability/alertmanager/config/config.yml
   artifact_id: null
@@ -4782,8 +4782,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/alloy/README.md
   target_path: infra/06-observability/alloy/README.md
   artifact_id: null
@@ -4805,8 +4805,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/alloy/config/config.alloy
   target_path: infra/06-observability/alloy/config/config.alloy
   artifact_id: null
@@ -4828,8 +4828,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/docker-compose.dev.yml
   target_path: infra/06-observability/docker-compose.dev.yml
   artifact_id: null
@@ -4851,8 +4851,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/docker-compose.yml
   target_path: infra/06-observability/docker-compose.yml
   artifact_id: null
@@ -4874,8 +4874,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/README.md
   target_path: infra/06-observability/grafana/README.md
   artifact_id: null
@@ -4897,8 +4897,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/airflow-dag-overview.json
   target_path: infra/06-observability/grafana/dashboards/Applications/airflow-dag-overview.json
   artifact_id: null
@@ -4920,8 +4920,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/airflow-dag.json
   target_path: infra/06-observability/grafana/dashboards/Applications/airflow-dag.json
   artifact_id: null
@@ -4943,8 +4943,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/airflow-monitoring.json
   target_path: infra/06-observability/grafana/dashboards/Applications/airflow-monitoring.json
   artifact_id: null
@@ -4966,8 +4966,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/airflow-operators.json
   target_path: infra/06-observability/grafana/dashboards/Applications/airflow-operators.json
   artifact_id: null
@@ -4989,8 +4989,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/airflow3-monitoring.json
   target_path: infra/06-observability/grafana/dashboards/Applications/airflow3-monitoring.json
   artifact_id: null
@@ -5012,8 +5012,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/argocd-app-overview.json
   target_path: infra/06-observability/grafana/dashboards/Applications/argocd-app-overview.json
   artifact_id: null
@@ -5035,8 +5035,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/argocd-notifications.json
   target_path: infra/06-observability/grafana/dashboards/Applications/argocd-notifications.json
   artifact_id: null
@@ -5058,8 +5058,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/argocd-operational.json
   target_path: infra/06-observability/grafana/dashboards/Applications/argocd-operational.json
   artifact_id: null
@@ -5081,8 +5081,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/argocd.json
   target_path: infra/06-observability/grafana/dashboards/Applications/argocd.json
   artifact_id: null
@@ -5104,8 +5104,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/n8n-system-health.json
   target_path: infra/06-observability/grafana/dashboards/Applications/n8n-system-health.json
   artifact_id: null
@@ -5127,8 +5127,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/n8n-workflow-analytics.json
   target_path: infra/06-observability/grafana/dashboards/Applications/n8n-workflow-analytics.json
   artifact_id: null
@@ -5150,8 +5150,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/ollama.json
   target_path: infra/06-observability/grafana/dashboards/Applications/ollama.json
   artifact_id: null
@@ -5173,8 +5173,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Applications/vllm-monitoring.json
   target_path: infra/06-observability/grafana/dashboards/Applications/vllm-monitoring.json
   artifact_id: null
@@ -5196,8 +5196,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Gateway/traefik.json
   target_path: infra/06-observability/grafana/dashboards/Gateway/traefik.json
   artifact_id: null
@@ -5219,8 +5219,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/cadvisor.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/cadvisor.json
   artifact_id: null
@@ -5242,8 +5242,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/docker-metrics.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/docker-metrics.json
   artifact_id: null
@@ -5265,8 +5265,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/docker-monitoring.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/docker-monitoring.json
   artifact_id: null
@@ -5288,8 +5288,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/docker-registry.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/docker-registry.json
   artifact_id: null
@@ -5311,8 +5311,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/etcd.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/etcd.json
   artifact_id: null
@@ -5334,8 +5334,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/haproxy.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/haproxy.json
   artifact_id: null
@@ -5357,8 +5357,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/k6.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/k6.json
   artifact_id: null
@@ -5380,8 +5380,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/kafka-exporter.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/kafka-exporter.json
   artifact_id: null
@@ -5403,8 +5403,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/kafka-overview.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/kafka-overview.json
   artifact_id: null
@@ -5426,8 +5426,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/minio-bucket.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/minio-bucket.json
   artifact_id: null
@@ -5449,8 +5449,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/minio.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/minio.json
   artifact_id: null
@@ -5472,8 +5472,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/neo4j-operations.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/neo4j-operations.json
   artifact_id: null
@@ -5495,8 +5495,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/neo4j.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/neo4j.json
   artifact_id: null
@@ -5518,8 +5518,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/opensearch.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/opensearch.json
   artifact_id: null
@@ -5541,8 +5541,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/postgres-exporter.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/postgres-exporter.json
   artifact_id: null
@@ -5564,8 +5564,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/postgres.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/postgres.json
   artifact_id: null
@@ -5587,8 +5587,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/qdrant.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/qdrant.json
   artifact_id: null
@@ -5610,8 +5610,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/redis-overview.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/redis-overview.json
   artifact_id: null
@@ -5633,8 +5633,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/valkey-overview.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/valkey-overview.json
   artifact_id: null
@@ -5656,8 +5656,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/vault-hcp.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/vault-hcp.json
   artifact_id: null
@@ -5679,8 +5679,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Infrastructure/vaults.json
   target_path: infra/06-observability/grafana/dashboards/Infrastructure/vaults.json
   artifact_id: null
@@ -5702,8 +5702,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/argo-rollouts.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/argo-rollouts.json
   artifact_id: null
@@ -5725,8 +5725,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/cluster-policy-report.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/cluster-policy-report.json
   artifact_id: null
@@ -5748,8 +5748,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/external-secrets.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/external-secrets.json
   artifact_id: null
@@ -5771,8 +5771,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/istio-control-plane.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/istio-control-plane.json
   artifact_id: null
@@ -5794,8 +5794,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k3s-monitoring.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k3s-monitoring.json
   artifact_id: null
@@ -5817,8 +5817,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-apiserver.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-apiserver.json
   artifact_id: null
@@ -5840,8 +5840,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-app-metrics.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-app-metrics.json
   artifact_id: null
@@ -5863,8 +5863,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-autoscaler.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-autoscaler.json
   artifact_id: null
@@ -5886,8 +5886,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-cluster-monitoring-1.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-cluster-monitoring-1.json
   artifact_id: null
@@ -5909,8 +5909,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-cluster.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-cluster.json
   artifact_id: null
@@ -5932,8 +5932,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-dashboard-1.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-dashboard-1.json
   artifact_id: null
@@ -5955,8 +5955,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-deployment-metrics.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-deployment-metrics.json
   artifact_id: null
@@ -5978,8 +5978,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-nginx-ingress.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-nginx-ingress.json
   artifact_id: null
@@ -6001,8 +6001,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-nodes.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-nodes.json
   artifact_id: null
@@ -6024,8 +6024,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-pod-metrics.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-pod-metrics.json
   artifact_id: null
@@ -6047,8 +6047,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-storage.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-storage.json
   artifact_id: null
@@ -6070,8 +6070,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-views-pods.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/k8s-views-pods.json
   artifact_id: null
@@ -6093,8 +6093,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/kube-state-metrics.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/kube-state-metrics.json
   artifact_id: null
@@ -6116,8 +6116,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/kubernetes-compute-resources.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/kubernetes-compute-resources.json
   artifact_id: null
@@ -6139,8 +6139,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Kubernetes/policy-report.json
   target_path: infra/06-observability/grafana/dashboards/Kubernetes/policy-report.json
   artifact_id: null
@@ -6162,8 +6162,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Observability/alertmanager.json
   target_path: infra/06-observability/grafana/dashboards/Observability/alertmanager.json
   artifact_id: null
@@ -6185,8 +6185,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Observability/loki-dashboard.json
   target_path: infra/06-observability/grafana/dashboards/Observability/loki-dashboard.json
   artifact_id: null
@@ -6208,8 +6208,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Observability/loki-global.json
   target_path: infra/06-observability/grafana/dashboards/Observability/loki-global.json
   artifact_id: null
@@ -6231,8 +6231,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Observability/loki-metrics.json
   target_path: infra/06-observability/grafana/dashboards/Observability/loki-metrics.json
   artifact_id: null
@@ -6254,8 +6254,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Observability/otel-collector.json
   target_path: infra/06-observability/grafana/dashboards/Observability/otel-collector.json
   artifact_id: null
@@ -6277,8 +6277,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Observability/otel-tempo.json
   target_path: infra/06-observability/grafana/dashboards/Observability/otel-tempo.json
   artifact_id: null
@@ -6300,8 +6300,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Observability/prometheus.json
   target_path: infra/06-observability/grafana/dashboards/Observability/prometheus.json
   artifact_id: null
@@ -6323,8 +6323,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/dashboards/Security/keycloak.json
   target_path: infra/06-observability/grafana/dashboards/Security/keycloak.json
   artifact_id: null
@@ -6346,8 +6346,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/provisioning/dashboards/dashboards.yml
   target_path: infra/06-observability/grafana/provisioning/dashboards/dashboards.yml
   artifact_id: null
@@ -6369,8 +6369,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/grafana/provisioning/datasources/datasource.yml
   target_path: infra/06-observability/grafana/provisioning/datasources/datasource.yml
   artifact_id: null
@@ -6392,8 +6392,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/loki/Dockerfile
   target_path: infra/06-observability/loki/Dockerfile
   artifact_id: null
@@ -6415,8 +6415,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/loki/README.md
   target_path: infra/06-observability/loki/README.md
   artifact_id: null
@@ -6438,8 +6438,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/loki/config/loki-config.yaml
   target_path: infra/06-observability/loki/config/loki-config.yaml
   artifact_id: null
@@ -6461,8 +6461,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/loki/docker-entrypoint.sh
   target_path: infra/06-observability/loki/docker-entrypoint.sh
   artifact_id: null
@@ -6484,8 +6484,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/README.md
   target_path: infra/06-observability/prometheus/README.md
   artifact_id: null
@@ -6507,8 +6507,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.k8s.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.k8s.yml
   artifact_id: null
@@ -6530,8 +6530,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.keycloak.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.keycloak.yml
   artifact_id: null
@@ -6553,8 +6553,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.auth.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.auth.yml
   artifact_id: null
@@ -6576,8 +6576,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.datastores.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.datastores.yml
   artifact_id: null
@@ -6599,8 +6599,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.gateway.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.gateway.yml
   artifact_id: null
@@ -6622,8 +6622,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml
   artifact_id: null
@@ -6645,8 +6645,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.messaging.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.messaging.yml
   artifact_id: null
@@ -6668,8 +6668,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.observability.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.observability.yml
   artifact_id: null
@@ -6691,8 +6691,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.prometheus.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.prometheus.yml
   artifact_id: null
@@ -6714,8 +6714,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.search.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.local.search.yml
   artifact_id: null
@@ -6737,8 +6737,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.vault.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/alert_rules.vault.yml
   artifact_id: null
@@ -6760,8 +6760,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/alert_rules/recording_rules.yml
   target_path: infra/06-observability/prometheus/config/alert_rules/recording_rules.yml
   artifact_id: null
@@ -6783,8 +6783,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/prometheus.dev.yml
   target_path: infra/06-observability/prometheus/config/prometheus.dev.yml
   artifact_id: null
@@ -6806,8 +6806,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/prometheus/config/prometheus.yml
   target_path: infra/06-observability/prometheus/config/prometheus.yml
   artifact_id: null
@@ -6829,8 +6829,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/pushgateway/README.md
   target_path: infra/06-observability/pushgateway/README.md
   artifact_id: null
@@ -6852,8 +6852,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/pyroscope/README.md
   target_path: infra/06-observability/pyroscope/README.md
   artifact_id: null
@@ -6875,8 +6875,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/pyroscope/config/pyroscope.yaml
   target_path: infra/06-observability/pyroscope/config/pyroscope.yaml
   artifact_id: null
@@ -6898,8 +6898,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/tempo/Dockerfile
   target_path: infra/06-observability/tempo/Dockerfile
   artifact_id: null
@@ -6921,8 +6921,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/tempo/README.md
   target_path: infra/06-observability/tempo/README.md
   artifact_id: null
@@ -6944,8 +6944,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/tempo/config/tempo.yaml
   target_path: infra/06-observability/tempo/config/tempo.yaml
   artifact_id: null
@@ -6967,8 +6967,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/06-observability/tempo/docker-entrypoint.sh
   target_path: infra/06-observability/tempo/docker-entrypoint.sh
   artifact_id: null
@@ -6990,8 +6990,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/README.md
   target_path: infra/07-workflow/README.md
   artifact_id: null
@@ -7013,8 +7013,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/airflow/README.md
   target_path: infra/07-workflow/airflow/README.md
   artifact_id: null
@@ -7036,8 +7036,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/airflow/config/statsd_mapping.yml
   target_path: infra/07-workflow/airflow/config/statsd_mapping.yml
   artifact_id: null
@@ -7059,8 +7059,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/airflow/docker-compose.dev.yml
   target_path: infra/07-workflow/airflow/docker-compose.dev.yml
   artifact_id: null
@@ -7082,8 +7082,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/airflow/docker-compose.yml
   target_path: infra/07-workflow/airflow/docker-compose.yml
   artifact_id: null
@@ -7105,8 +7105,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/n8n/Dockerfile
   target_path: infra/07-workflow/n8n/Dockerfile
   artifact_id: null
@@ -7128,8 +7128,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/n8n/README.md
   target_path: infra/07-workflow/n8n/README.md
   artifact_id: null
@@ -7151,8 +7151,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/n8n/custom/.gitkeep
   target_path: infra/07-workflow/n8n/custom/.gitkeep
   artifact_id: null
@@ -7174,8 +7174,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/n8n/dev.Dockerfile
   target_path: infra/07-workflow/n8n/dev.Dockerfile
   artifact_id: null
@@ -7197,8 +7197,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/n8n/docker-compose.dev.yml
   target_path: infra/07-workflow/n8n/docker-compose.dev.yml
   artifact_id: null
@@ -7220,8 +7220,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/n8n/docker-compose.yml
   target_path: infra/07-workflow/n8n/docker-compose.yml
   artifact_id: null
@@ -7243,8 +7243,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/n8n/docker-entrypoint.dev.sh
   target_path: infra/07-workflow/n8n/docker-entrypoint.dev.sh
   artifact_id: null
@@ -7266,8 +7266,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/07-workflow/n8n/docker-entrypoint.sh
   target_path: infra/07-workflow/n8n/docker-entrypoint.sh
   artifact_id: null
@@ -7289,8 +7289,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/08-ai/README.md
   target_path: infra/08-ai/README.md
   artifact_id: null
@@ -7312,8 +7312,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/08-ai/ollama/README.md
   target_path: infra/08-ai/ollama/README.md
   artifact_id: null
@@ -7335,8 +7335,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/08-ai/ollama/docker-compose.yml
   target_path: infra/08-ai/ollama/docker-compose.yml
   artifact_id: null
@@ -7358,8 +7358,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/08-ai/open-webui/README.md
   target_path: infra/08-ai/open-webui/README.md
   artifact_id: null
@@ -7381,8 +7381,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/08-ai/open-webui/docker-compose.yml
   target_path: infra/08-ai/open-webui/docker-compose.yml
   artifact_id: null
@@ -7404,8 +7404,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/README.md
   target_path: infra/09-tooling/README.md
   artifact_id: null
@@ -7427,8 +7427,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/k6/README.md
   target_path: infra/09-tooling/k6/README.md
   artifact_id: null
@@ -7450,8 +7450,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/k6/docker-compose.yml
   target_path: infra/09-tooling/k6/docker-compose.yml
   artifact_id: null
@@ -7473,8 +7473,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/locust/Dockerfile
   target_path: infra/09-tooling/locust/Dockerfile
   artifact_id: null
@@ -7496,8 +7496,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/locust/README.md
   target_path: infra/09-tooling/locust/README.md
   artifact_id: null
@@ -7519,8 +7519,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/locust/docker-compose.yml
   target_path: infra/09-tooling/locust/docker-compose.yml
   artifact_id: null
@@ -7542,8 +7542,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/registry/README.md
   target_path: infra/09-tooling/registry/README.md
   artifact_id: null
@@ -7565,8 +7565,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/registry/docker-compose.yml
   target_path: infra/09-tooling/registry/docker-compose.yml
   artifact_id: null
@@ -7588,8 +7588,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/sonarqube/README.md
   target_path: infra/09-tooling/sonarqube/README.md
   artifact_id: null
@@ -7611,8 +7611,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/sonarqube/docker-compose.yml
   target_path: infra/09-tooling/sonarqube/docker-compose.yml
   artifact_id: null
@@ -7634,8 +7634,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/syncthing/README.md
   target_path: infra/09-tooling/syncthing/README.md
   artifact_id: null
@@ -7657,8 +7657,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/syncthing/docker-compose.yml
   target_path: infra/09-tooling/syncthing/docker-compose.yml
   artifact_id: null
@@ -7680,8 +7680,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/terraform/README.md
   target_path: infra/09-tooling/terraform/README.md
   artifact_id: null
@@ -7703,8 +7703,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/terraform/docker-compose.yml
   target_path: infra/09-tooling/terraform/docker-compose.yml
   artifact_id: null
@@ -7726,8 +7726,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/terrakube/README.md
   target_path: infra/09-tooling/terrakube/README.md
   artifact_id: null
@@ -7749,8 +7749,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/09-tooling/terrakube/docker-compose.yml
   target_path: infra/09-tooling/terrakube/docker-compose.yml
   artifact_id: null
@@ -7772,8 +7772,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/10-communication/README.md
   target_path: infra/10-communication/README.md
   artifact_id: null
@@ -7795,8 +7795,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/10-communication/mail/README.md
   target_path: infra/10-communication/mail/README.md
   artifact_id: null
@@ -7818,8 +7818,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/10-communication/mail/docker-compose.yml
   target_path: infra/10-communication/mail/docker-compose.yml
   artifact_id: null
@@ -7841,8 +7841,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/README.md
   target_path: infra/11-laboratory/README.md
   artifact_id: null
@@ -7864,8 +7864,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/dashboard/README.md
   target_path: infra/11-laboratory/dashboard/README.md
   artifact_id: null
@@ -7887,8 +7887,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/dashboard/config/config.yml
   target_path: infra/11-laboratory/dashboard/config/config.yml
   artifact_id: null
@@ -7910,8 +7910,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/dashboard/docker-compose.yml
   target_path: infra/11-laboratory/dashboard/docker-compose.yml
   artifact_id: null
@@ -7933,8 +7933,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/dozzle/README.md
   target_path: infra/11-laboratory/dozzle/README.md
   artifact_id: null
@@ -7956,8 +7956,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/dozzle/docker-compose.yml
   target_path: infra/11-laboratory/dozzle/docker-compose.yml
   artifact_id: null
@@ -7979,8 +7979,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/open-notebook/README.md
   target_path: infra/11-laboratory/open-notebook/README.md
   artifact_id: null
@@ -8002,8 +8002,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/open-notebook/docker-compose.yml
   target_path: infra/11-laboratory/open-notebook/docker-compose.yml
   artifact_id: null
@@ -8025,8 +8025,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/open-notebook/surrealdb/Dockerfile
   target_path: infra/11-laboratory/open-notebook/surrealdb/Dockerfile
   artifact_id: null
@@ -8048,8 +8048,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/open-notebook/surrealdb/docker-entrypoint.sh
   target_path: infra/11-laboratory/open-notebook/surrealdb/docker-entrypoint.sh
   artifact_id: null
@@ -8071,8 +8071,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/portainer/README.md
   target_path: infra/11-laboratory/portainer/README.md
   artifact_id: null
@@ -8094,8 +8094,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/portainer/docker-compose.yml
   target_path: infra/11-laboratory/portainer/docker-compose.yml
   artifact_id: null
@@ -8117,8 +8117,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/redisinsight/README.md
   target_path: infra/11-laboratory/redisinsight/README.md
   artifact_id: null
@@ -8140,8 +8140,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/11-laboratory/redisinsight/docker-compose.yml
   target_path: infra/11-laboratory/redisinsight/docker-compose.yml
   artifact_id: null
@@ -8163,8 +8163,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/README.md
   target_path: infra/README.md
   artifact_id: null
@@ -8186,8 +8186,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/common-optimizations.exceptions.json
   target_path: infra/common-optimizations.exceptions.json
   artifact_id: null
@@ -8209,8 +8209,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/common-optimizations.yml
   target_path: infra/common-optimizations.yml
   artifact_id: null
@@ -8232,8 +8232,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/image-tag-policy.exceptions.json
   target_path: infra/image-tag-policy.exceptions.json
   artifact_id: null
@@ -8255,8 +8255,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/tech-stack.versions.json
   target_path: infra/tech-stack.versions.json
   artifact_id: null
@@ -8278,8 +8278,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/README.md
   target_path: projects/README.md
   artifact_id: null
@@ -8301,8 +8301,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/README.md
   target_path: projects/storybook/README.md
   artifact_id: null
@@ -8324,8 +8324,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/.gitignore
   target_path: projects/storybook/nextjs/.gitignore
   artifact_id: null
@@ -8347,8 +8347,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/.storybook/main.ts
   target_path: projects/storybook/nextjs/.storybook/main.ts
   artifact_id: null
@@ -8370,8 +8370,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/.storybook/preview.ts
   target_path: projects/storybook/nextjs/.storybook/preview.ts
   artifact_id: null
@@ -8393,8 +8393,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/.storybook/vitest.setup.ts
   target_path: projects/storybook/nextjs/.storybook/vitest.setup.ts
   artifact_id: null
@@ -8416,8 +8416,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/README.md
   target_path: projects/storybook/nextjs/README.md
   artifact_id: null
@@ -8439,8 +8439,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/eslint.config.mjs
   target_path: projects/storybook/nextjs/eslint.config.mjs
   artifact_id: null
@@ -8462,8 +8462,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/next.config.ts
   target_path: projects/storybook/nextjs/next.config.ts
   artifact_id: null
@@ -8485,8 +8485,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/package-lock.json
   target_path: projects/storybook/nextjs/package-lock.json
   artifact_id: null
@@ -8508,8 +8508,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/package.json
   target_path: projects/storybook/nextjs/package.json
   artifact_id: null
@@ -8531,8 +8531,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/postcss.config.mjs
   target_path: projects/storybook/nextjs/postcss.config.mjs
   artifact_id: null
@@ -8554,8 +8554,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/public/favicon.ico
   target_path: projects/storybook/nextjs/public/favicon.ico
   artifact_id: null
@@ -8577,8 +8577,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/public/file.svg
   target_path: projects/storybook/nextjs/public/file.svg
   artifact_id: null
@@ -8600,8 +8600,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/public/globe.svg
   target_path: projects/storybook/nextjs/public/globe.svg
   artifact_id: null
@@ -8623,8 +8623,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/public/next.svg
   target_path: projects/storybook/nextjs/public/next.svg
   artifact_id: null
@@ -8646,8 +8646,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/public/vercel.svg
   target_path: projects/storybook/nextjs/public/vercel.svg
   artifact_id: null
@@ -8669,8 +8669,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/public/window.svg
   target_path: projects/storybook/nextjs/public/window.svg
   artifact_id: null
@@ -8692,8 +8692,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/pages/_app.tsx
   target_path: projects/storybook/nextjs/src/pages/_app.tsx
   artifact_id: null
@@ -8715,8 +8715,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/pages/_document.tsx
   target_path: projects/storybook/nextjs/src/pages/_document.tsx
   artifact_id: null
@@ -8738,8 +8738,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/pages/api/hello.ts
   target_path: projects/storybook/nextjs/src/pages/api/hello.ts
   artifact_id: null
@@ -8761,8 +8761,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/pages/index.tsx
   target_path: projects/storybook/nextjs/src/pages/index.tsx
   artifact_id: null
@@ -8784,8 +8784,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/Button.stories.ts
   target_path: projects/storybook/nextjs/src/stories/Button.stories.ts
   artifact_id: null
@@ -8807,8 +8807,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/Button.tsx
   target_path: projects/storybook/nextjs/src/stories/Button.tsx
   artifact_id: null
@@ -8830,8 +8830,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/Configure.mdx
   target_path: projects/storybook/nextjs/src/stories/Configure.mdx
   artifact_id: null
@@ -8853,8 +8853,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/Header.stories.ts
   target_path: projects/storybook/nextjs/src/stories/Header.stories.ts
   artifact_id: null
@@ -8876,8 +8876,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/Header.tsx
   target_path: projects/storybook/nextjs/src/stories/Header.tsx
   artifact_id: null
@@ -8899,8 +8899,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/Page.stories.ts
   target_path: projects/storybook/nextjs/src/stories/Page.stories.ts
   artifact_id: null
@@ -8922,8 +8922,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/Page.tsx
   target_path: projects/storybook/nextjs/src/stories/Page.tsx
   artifact_id: null
@@ -8945,8 +8945,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/accessibility.png
   target_path: projects/storybook/nextjs/src/stories/assets/accessibility.png
   artifact_id: null
@@ -8968,8 +8968,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/accessibility.svg
   target_path: projects/storybook/nextjs/src/stories/assets/accessibility.svg
   artifact_id: null
@@ -8991,8 +8991,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/addon-library.png
   target_path: projects/storybook/nextjs/src/stories/assets/addon-library.png
   artifact_id: null
@@ -9014,8 +9014,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/assets.png
   target_path: projects/storybook/nextjs/src/stories/assets/assets.png
   artifact_id: null
@@ -9037,8 +9037,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/avif-test-image.avif
   target_path: projects/storybook/nextjs/src/stories/assets/avif-test-image.avif
   artifact_id: null
@@ -9060,8 +9060,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/context.png
   target_path: projects/storybook/nextjs/src/stories/assets/context.png
   artifact_id: null
@@ -9083,8 +9083,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/discord.svg
   target_path: projects/storybook/nextjs/src/stories/assets/discord.svg
   artifact_id: null
@@ -9106,8 +9106,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/docs.png
   target_path: projects/storybook/nextjs/src/stories/assets/docs.png
   artifact_id: null
@@ -9129,8 +9129,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/figma-plugin.png
   target_path: projects/storybook/nextjs/src/stories/assets/figma-plugin.png
   artifact_id: null
@@ -9152,8 +9152,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/github.svg
   target_path: projects/storybook/nextjs/src/stories/assets/github.svg
   artifact_id: null
@@ -9175,8 +9175,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/share.png
   target_path: projects/storybook/nextjs/src/stories/assets/share.png
   artifact_id: null
@@ -9198,8 +9198,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/styling.png
   target_path: projects/storybook/nextjs/src/stories/assets/styling.png
   artifact_id: null
@@ -9221,8 +9221,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/testing.png
   target_path: projects/storybook/nextjs/src/stories/assets/testing.png
   artifact_id: null
@@ -9244,8 +9244,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/theming.png
   target_path: projects/storybook/nextjs/src/stories/assets/theming.png
   artifact_id: null
@@ -9267,8 +9267,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/tutorials.svg
   target_path: projects/storybook/nextjs/src/stories/assets/tutorials.svg
   artifact_id: null
@@ -9290,8 +9290,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/assets/youtube.svg
   target_path: projects/storybook/nextjs/src/stories/assets/youtube.svg
   artifact_id: null
@@ -9313,8 +9313,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/button.css
   target_path: projects/storybook/nextjs/src/stories/button.css
   artifact_id: null
@@ -9336,8 +9336,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/header.css
   target_path: projects/storybook/nextjs/src/stories/header.css
   artifact_id: null
@@ -9359,8 +9359,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/stories/page.css
   target_path: projects/storybook/nextjs/src/stories/page.css
   artifact_id: null
@@ -9382,8 +9382,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/src/styles/globals.css
   target_path: projects/storybook/nextjs/src/styles/globals.css
   artifact_id: null
@@ -9405,8 +9405,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/tsconfig.json
   target_path: projects/storybook/nextjs/tsconfig.json
   artifact_id: null
@@ -9428,8 +9428,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/vitest.config.ts
   target_path: projects/storybook/nextjs/vitest.config.ts
   artifact_id: null
@@ -9451,8 +9451,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: projects/storybook/nextjs/vitest.shims.d.ts
   target_path: projects/storybook/nextjs/vitest.shims.d.ts
   artifact_id: null
@@ -9474,8 +9474,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/README.md
   target_path: scripts/README.md
   artifact_id: null
@@ -9497,8 +9497,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/hardening/check-all-hardening.sh
   target_path: scripts/hardening/check-all-hardening.sh
   artifact_id: null
@@ -9520,8 +9520,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/hooks/agent-event-hook.sh
   target_path: scripts/hooks/agent-event-hook.sh
   artifact_id: null
@@ -9543,8 +9543,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/hooks/patch-graphify-post-commit.sh
   target_path: scripts/hooks/patch-graphify-post-commit.sh
   artifact_id: null
@@ -9566,8 +9566,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/hooks/post-tool-validate.sh
   target_path: scripts/hooks/post-tool-validate.sh
   artifact_id: null
@@ -9589,8 +9589,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/knowledge/generate-llm-wiki-coverage.sh
   target_path: scripts/knowledge/generate-llm-wiki-coverage.sh
   artifact_id: null
@@ -9612,8 +9612,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/knowledge/generate-llm-wiki-index.sh
   target_path: scripts/knowledge/generate-llm-wiki-index.sh
   artifact_id: null
@@ -9635,8 +9635,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/knowledge/report-graphify-health.sh
   target_path: scripts/knowledge/report-graphify-health.sh
   artifact_id: null
@@ -9658,8 +9658,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/lib/hardening-lib.sh
   target_path: scripts/lib/hardening-lib.sh
   artifact_id: null
@@ -9681,8 +9681,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/operations/gen-secrets.sh
   target_path: scripts/operations/gen-secrets.sh
   artifact_id: null
@@ -9704,8 +9704,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/operations/generate-compose-profile-service-coverage.sh
   target_path: scripts/operations/generate-compose-profile-service-coverage.sh
   artifact_id: null
@@ -9727,8 +9727,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/operations/generate-tech-stack-version-provenance.sh
   target_path: scripts/operations/generate-tech-stack-version-provenance.sh
   artifact_id: null
@@ -9750,8 +9750,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/operations/provider_surface_renderer.py
   target_path: scripts/operations/provider_surface_renderer.py
   artifact_id: null
@@ -9773,8 +9773,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/operations/sync-provider-surfaces.sh
   target_path: scripts/operations/sync-provider-surfaces.sh
   artifact_id: null
@@ -9796,8 +9796,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/operations/sync-tech-stack-versions.sh
   target_path: scripts/operations/sync-tech-stack-versions.sh
   artifact_id: null
@@ -9819,8 +9819,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/operations/use-qa-ci-tools.sh
   target_path: scripts/operations/use-qa-ci-tools.sh
   artifact_id: null
@@ -9842,8 +9842,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/requirements.txt
   target_path: scripts/requirements.txt
   artifact_id: null
@@ -9865,8 +9865,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/agent_governance_contract.py
   target_path: scripts/validation/agent_governance_contract.py
   artifact_id: null
@@ -9888,8 +9888,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/agent_output_eval.py
   target_path: scripts/validation/agent_output_eval.py
   artifact_id: null
@@ -9911,8 +9911,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/agentic-audit-semantic-contract.json
   target_path: scripts/validation/agentic-audit-semantic-contract.json
   artifact_id: null
@@ -9934,8 +9934,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/audit_criterion_contract.py
   target_path: scripts/validation/audit_criterion_contract.py
   artifact_id: null
@@ -9957,8 +9957,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/check-agent-governance-contract.py
   target_path: scripts/validation/check-agent-governance-contract.py
   artifact_id: null
@@ -9980,8 +9980,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/check-agentic-audit-semantic-freshness.py
   target_path: scripts/validation/check-agentic-audit-semantic-freshness.py
   artifact_id: null
@@ -10003,8 +10003,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/check-doc-implementation-alignment.sh
   target_path: scripts/validation/check-doc-implementation-alignment.sh
   artifact_id: null
@@ -10026,8 +10026,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/check-doc-traceability.sh
   target_path: scripts/validation/check-doc-traceability.sh
   artifact_id: null
@@ -10049,8 +10049,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/check-document-corpus-lifecycle.py
   target_path: scripts/validation/check-document-corpus-lifecycle.py
   artifact_id: null
@@ -10072,8 +10072,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/check-document-metadata.py
   target_path: scripts/validation/check-document-metadata.py
   artifact_id: null
@@ -10095,8 +10095,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/check-quickwin-baseline.sh
   target_path: scripts/validation/check-quickwin-baseline.sh
   artifact_id: null
@@ -10118,8 +10118,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/check-repo-contracts.sh
   target_path: scripts/validation/check-repo-contracts.sh
   artifact_id: null
@@ -10141,8 +10141,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/check-storybook-contract.sh
   target_path: scripts/validation/check-storybook-contract.sh
   artifact_id: null
@@ -10164,8 +10164,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/check-template-security-baseline.sh
   target_path: scripts/validation/check-template-security-baseline.sh
   artifact_id: null
@@ -10187,8 +10187,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/generate-audit-implementation-matrix.sh
   target_path: scripts/validation/generate-audit-implementation-matrix.sh
   artifact_id: null
@@ -10210,8 +10210,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/generate-security-automation-readiness.sh
   target_path: scripts/validation/generate-security-automation-readiness.sh
   artifact_id: null
@@ -10233,8 +10233,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/recommend-gap-routing.sh
   target_path: scripts/validation/recommend-gap-routing.sh
   artifact_id: null
@@ -10256,8 +10256,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/recommend-qa-gates.sh
   target_path: scripts/validation/recommend-qa-gates.sh
   artifact_id: null
@@ -10279,8 +10279,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/report-audit-pack-coverage.sh
   target_path: scripts/validation/report-audit-pack-coverage.sh
   artifact_id: null
@@ -10302,8 +10302,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/report-provider-hook-parity.sh
   target_path: scripts/validation/report-provider-hook-parity.sh
   artifact_id: null
@@ -10325,8 +10325,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/run-agent-output-eval-fixtures.sh
   target_path: scripts/validation/run-agent-output-eval-fixtures.sh
   artifact_id: null
@@ -10348,8 +10348,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/run-agent-precommit-all-files.sh
   target_path: scripts/validation/run-agent-precommit-all-files.sh
   artifact_id: null
@@ -10371,8 +10371,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/run-local-qa-gates.sh
   target_path: scripts/validation/run-local-qa-gates.sh
   artifact_id: null
@@ -10394,8 +10394,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/validate-docker-compose.sh
   target_path: scripts/validation/validate-docker-compose.sh
   artifact_id: null
@@ -10417,8 +10417,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: scripts/validation/validate-harness.sh
   target_path: scripts/validation/validate-harness.sh
   artifact_id: null
@@ -10440,8 +10440,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/README.md
   target_path: secrets/README.md
   artifact_id: null
@@ -10463,8 +10463,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/SENSITIVE_ENV_VARS.md.example
   target_path: secrets/SENSITIVE_ENV_VARS.md.example
   artifact_id: null
@@ -10486,8 +10486,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/auth/.gitkeep
   target_path: secrets/auth/.gitkeep
   artifact_id: null
@@ -10509,8 +10509,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/automation/.gitkeep
   target_path: secrets/automation/.gitkeep
   artifact_id: null
@@ -10532,8 +10532,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/certs/.gitkeep
   target_path: secrets/certs/.gitkeep
   artifact_id: null
@@ -10555,8 +10555,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/common/.gitkeep
   target_path: secrets/common/.gitkeep
   artifact_id: null
@@ -10578,8 +10578,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/data/.gitkeep
   target_path: secrets/data/.gitkeep
   artifact_id: null
@@ -10601,8 +10601,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/db/.gitkeep
   target_path: secrets/db/.gitkeep
   artifact_id: null
@@ -10624,8 +10624,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/db/cassandra/.gitkeep
   target_path: secrets/db/cassandra/.gitkeep
   artifact_id: null
@@ -10647,8 +10647,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/db/couchdb/.gitkeep
   target_path: secrets/db/couchdb/.gitkeep
   artifact_id: null
@@ -10670,8 +10670,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/db/influxdb/.gitkeep
   target_path: secrets/db/influxdb/.gitkeep
   artifact_id: null
@@ -10693,8 +10693,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/db/mongodb/.gitkeep
   target_path: secrets/db/mongodb/.gitkeep
   artifact_id: null
@@ -10716,8 +10716,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/db/neo4j/.gitkeep
   target_path: secrets/db/neo4j/.gitkeep
   artifact_id: null
@@ -10739,8 +10739,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/db/postgres/.gitkeep
   target_path: secrets/db/postgres/.gitkeep
   artifact_id: null
@@ -10762,8 +10762,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/db/valkey/.gitkeep
   target_path: secrets/db/valkey/.gitkeep
   artifact_id: null
@@ -10785,8 +10785,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/messaging/.gitkeep
   target_path: secrets/messaging/.gitkeep
   artifact_id: null
@@ -10808,8 +10808,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/observability/.gitkeep
   target_path: secrets/observability/.gitkeep
   artifact_id: null
@@ -10831,8 +10831,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/storage/.gitkeep
   target_path: secrets/storage/.gitkeep
   artifact_id: null
@@ -10854,8 +10854,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: secrets/tools/.gitkeep
   target_path: secrets/tools/.gitkeep
   artifact_id: null
@@ -10877,8 +10877,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/README.md
   target_path: tests/README.md
   artifact_id: null
@@ -10900,8 +10900,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_agent_governance_ci_routing.py
   target_path: tests/validation/test_agent_governance_ci_routing.py
   artifact_id: null
@@ -10923,8 +10923,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_agent_governance_contract.py
   target_path: tests/validation/test_agent_governance_contract.py
   artifact_id: null
@@ -10946,8 +10946,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_agent_output_eval_fixtures.py
   target_path: tests/validation/test_agent_output_eval_fixtures.py
   artifact_id: null
@@ -10969,8 +10969,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_agentic_audit_semantic_freshness.py
   target_path: tests/validation/test_agentic_audit_semantic_freshness.py
   artifact_id: null
@@ -10992,8 +10992,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_audit_criterion_contract.py
   target_path: tests/validation/test_audit_criterion_contract.py
   artifact_id: null
@@ -11015,8 +11015,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_document_corpus_lifecycle.py
   target_path: tests/validation/test_document_corpus_lifecycle.py
   artifact_id: null
@@ -11038,8 +11038,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_document_metadata.py
   target_path: tests/validation/test_document_metadata.py
   artifact_id: null
@@ -11061,8 +11061,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_provider_native_surfaces.py
   target_path: tests/validation/test_provider_native_surfaces.py
   artifact_id: null
@@ -11084,8 +11084,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_provider_surface_renderer.py
   target_path: tests/validation/test_provider_surface_renderer.py
   artifact_id: null
@@ -11107,8 +11107,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_run_agent_precommit_all_files.sh
   target_path: tests/validation/test_run_agent_precommit_all_files.sh
   artifact_id: null
@@ -11130,8 +11130,8 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: tests/validation/test_security_automation_readiness.py
   target_path: tests/validation/test_security_automation_readiness.py
   artifact_id: null
@@ -11153,5 +11153,5 @@ entries:
     consumer_scan: []
     rollback: []
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
