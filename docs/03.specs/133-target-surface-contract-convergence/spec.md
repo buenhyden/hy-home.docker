@@ -37,6 +37,12 @@ README files already contain the six core navigation headings, but they expose
 carry frontmatter. These facts require consumer-aware normalization, not bulk
 frontmatter insertion or a uniform body copy.
 
+The tracked quality workflow currently defines 15 local job names. The latest
+read-only remote observation recorded 12 required contexts and no deployment
+environment; that dated difference remains `Needs Revalidation`. This wave may
+correct tracked workflow and validator contracts, but it cannot present a
+local definition as remote enforcement or add an unapproved CD target.
+
 The user explicitly approved destructive cleanup, protected-surface contract
 changes, direct-consumer migration, removal of deprecated implementations, and
 Subagent-Driven Development. In particular, the previous compatibility
@@ -121,6 +127,7 @@ owner.
 | [YAML 1.2.2](https://yaml.org/spec/1.2.2/) and [JSON Schema 2020-12](https://json-schema.org/draft/2020-12) | Parse duplicate-safe typed metadata before profile validation; keep required, optional, forbidden, and conditional fields machine-readable. |
 | [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/) and [GitHub YAML frontmatter guidance](https://docs.github.com/en/contributing/writing-for-github-docs/using-yaml-frontmatter) | Validate Markdown bodies separately and permit metadata only for a declared consumer. |
 | [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) and [secure use reference](https://docs.github.com/en/actions/reference/security/secure-use) | Validate explicit permissions, concurrency, timeouts, full-commit action pins, and untrusted-input boundaries without claiming remote enforcement. |
+| [GitHub workflow artifacts](https://docs.github.com/en/actions/tutorials/store-and-share-data) | Give CI evidence explicit names, bounded `retention-days`, and integrity handling; do not treat ordinary diagnostics as archival records. |
 | [pre-commit](https://pre-commit.com/) | Treat all-files execution as repository-wide and potentially mutating; agents use only the approved clean-worktree wrapper. |
 | [Docker Compose file reference](https://docs.docker.com/compose/compose-file/), [profiles](https://docs.docker.com/compose/how-tos/profiles/), [secrets](https://docs.docker.com/compose/how-tos/use-secrets/), and [trust model](https://docs.docker.com/compose/trust-model/) | Validate native Compose syntax and every declared profile statically, preserve per-service secret grants, and treat Compose inputs and rendered output as potentially sensitive. |
 | [InfluxDB 3 Core write API](https://docs.influxdata.com/influxdb3/core/api/write-data/) and [Python v3 client](https://docs.influxdata.com/influxdb3/core/reference/client-libraries/v3/python/) | Make database/token and the v3 line-protocol API the sole new-workload contract; remove the unused InfluxDB 2 server and client scaffolding rather than retain an unowned compatibility path. |
@@ -166,7 +173,7 @@ security policy, deployment policy, or provider-neutral agent policy.
 The machine registry exposes two path-selected archive profiles while retaining
 the common semantic role `artifact_type: archive`:
 
-1. `content-archive` matches root `archive/**/*.md`. It preserves non-SDLC
+1. `content-archive` matches root `archive/*.md` and `archive/**/*.md`. It preserves non-SDLC
    Vault/content provenance, has no SDLC parent relation, and does not present
    archived commands or prose as current operational guidance.
 2. `sdlc-archive` matches `docs/98.archive/**/*.md`. It preserves a removed
@@ -329,7 +336,10 @@ Repository validators expose finding codes and safe paths rather than bodies.
 The changed-path QA recommender routes modifications to the smallest sufficient
 gate set. Workflow jobs use exact stable names so local definitions can be
 compared with separately observed remote required contexts without claiming
-that the remote state changed.
+that the remote state changed. Uploaded CI evidence uses explicit artifact
+names, bounded retention, and integrity-aware producer/consumer handoffs; test
+reports, traces, screenshots, and diagnostics remain operational artifacts,
+not content or SDLC archives.
 
 ## Failure Modes and Guardrails
 
@@ -374,6 +384,10 @@ secret-bearing evidence to make a gate pass.
   owner freshness, link checks, and the corpus lifecycle validator.
 - Run Actionlint, YAML lint/syntax, ShellCheck/Bash syntax, Hadolint, applicable
   Python/Node tests, and the repository's static Compose validator.
+- Validate workflow permissions, action pins, job names, timeouts, concurrency,
+  untrusted-input boundaries, artifact names, integrity handoffs, and bounded
+  `retention-days`; keep the 15-local/12-remote comparison explicitly dated and
+  unverified until a separate read-only remote revalidation is approved.
 - Confirm every declared Compose profile still renders and that no command
   starts a service.
 - Run fixed-string consumer scans for every removed path and dependency.
