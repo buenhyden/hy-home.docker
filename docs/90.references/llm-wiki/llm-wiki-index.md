@@ -975,6 +975,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/governance/document-corpus-lifecycle/README.md](../data/governance/document-corpus-lifecycle/README.md) | folder index |
 | [docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md](../data/governance/document-corpus-lifecycle/foundation-summary.md) | Markdown reference |
 | [docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml](../data/governance/document-corpus-lifecycle/foundation.yaml) | YAML config |
+| [docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md](../data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md) | Markdown reference |
+| [docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml](../data/governance/document-corpus-lifecycle/target-surface-convergence.yaml) | YAML config |
 | [docs/90.references/data/governance/gap-to-stage-routing.md](../data/governance/gap-to-stage-routing.md) | Markdown reference |
 | [docs/90.references/data/governance/provider-hook-parity-matrix.md](../data/governance/provider-hook-parity-matrix.md) | Markdown reference |
 | [docs/90.references/data/hads/README.md](../data/hads/README.md) | folder index |
@@ -1030,6 +1032,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/common/README.md](../../99.templates/templates/common/README.md) | folder index |
 | [docs/99.templates/templates/common/archive.template.md](../../99.templates/templates/common/archive.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/audit.template.md](../../99.templates/templates/common/audit.template.md) | Markdown reference |
+| [docs/99.templates/templates/common/content-archive.template.md](../../99.templates/templates/common/content-archive.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/readme.template.md](../../99.templates/templates/common/readme.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/reference.template.md](../../99.templates/templates/common/reference.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/README.md](../../99.templates/templates/governance/README.md) | folder index |
@@ -1096,7 +1099,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/04-data/README.md](../../../infra/04-data/README.md) | folder index |
 | [infra/04-data/analytics/README.md](../../../infra/04-data/analytics/README.md) | folder index |
 | [infra/04-data/analytics/influxdb/README.md](../../../infra/04-data/analytics/influxdb/README.md) | folder index |
-| [infra/04-data/analytics/influxdb/docker-compose.v2.yml](../../../infra/04-data/analytics/influxdb/docker-compose.v2.yml) | YAML config |
 | [infra/04-data/analytics/influxdb/docker-compose.yml](../../../infra/04-data/analytics/influxdb/docker-compose.yml) | YAML config |
 | [infra/04-data/analytics/ksql/README.md](../../../infra/04-data/analytics/ksql/README.md) | folder index |
 | [infra/04-data/analytics/ksql/docker-compose.yml](../../../infra/04-data/analytics/ksql/docker-compose.yml) | YAML config |
@@ -1127,7 +1129,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml](../../../infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml) | YAML config |
 | [infra/04-data/lake-and-object/minio/docker-compose.yml](../../../infra/04-data/lake-and-object/minio/docker-compose.yml) | YAML config |
 | [infra/04-data/lake-and-object/seaweedfs/README.md](../../../infra/04-data/lake-and-object/seaweedfs/README.md) | folder index |
-| [infra/04-data/lake-and-object/seaweedfs/config/security.toml](../../../infra/04-data/lake-and-object/seaweedfs/config/security.toml) | source path |
 | [infra/04-data/lake-and-object/seaweedfs/docker-compose.yml](../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml) | YAML config |
 | [infra/04-data/nosql/README.md](../../../infra/04-data/nosql/README.md) | folder index |
 | [infra/04-data/nosql/cassandra/README.md](../../../infra/04-data/nosql/cassandra/README.md) | folder index |

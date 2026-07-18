@@ -39,7 +39,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 913
+- **Tracked records**: 916
 - **Records with findings**: 558
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
@@ -49,10 +49,10 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | Profile | Records |
 | --- | ---: |
 | `adr` | 24 |
-| `archive` | 20 |
+| `archive` | 21 |
 | `ard` | 24 |
 | `audit` | 33 |
-| `generated` | 7 |
+| `generated` | 8 |
 | `governance` | 112 |
 | `guide` | 66 |
 | `plan` | 98 |
@@ -63,7 +63,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `runbook` | 61 |
 | `spec` | 58 |
 | `task` | 120 |
-| `template-source` | 23 |
+| `template-source` | 24 |
 
 ## Finding Summary
 
@@ -77,6 +77,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 | Path | Profile | Frontmatter | Identity | Relations | Lifecycle | Transition Evidence | Freshness | Exception Context | Findings | Disposition |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `archive/Windows-Network-IP.md` | `archive` | allowed-syntax | valid | parents=missing; order=not-provided; supersedes=not-provided | status=archived; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | archive profile | none | archive exception |
 | `docs/00.agent-governance/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=governance-catalog; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/00.agent-governance/agents/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=governance-catalog; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/00.agent-governance/agents/agents/ci-cd-engineer.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
@@ -888,6 +889,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/90.references/data/governance/audit-implementation-matrix.md` | `generated` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | generated profile; owner=scripts/validation/generate-audit-implementation-matrix.sh | none | generated exception |
 | `docs/90.references/data/governance/document-corpus-lifecycle/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md` | `generated` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | generated profile; owner=scripts/validation/check-document-corpus-lifecycle.py | none | generated exception |
+| `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md` | `generated` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | generated profile; owner=scripts/validation/check-document-corpus-lifecycle.py | none | generated exception |
 | `docs/90.references/data/governance/gap-to-stage-routing.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key | migration candidate |
 | `docs/90.references/data/governance/provider-hook-parity-matrix.md` | `generated` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | generated profile; owner=scripts/validation/report-provider-hook-parity.sh | none | generated exception |
 | `docs/90.references/data/hads/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
@@ -965,6 +967,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/99.templates/templates/common/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=template-catalog; consumer=scripts/validation/check-repo-contracts.sh; role=folder-index | none | README exception |
 | `docs/99.templates/templates/common/archive.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/common/audit.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
+| `docs/99.templates/templates/common/content-archive.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/common/readme.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/common/reference.template.md` | `template-source` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=draft; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | template-source profile | none | template-source exception |
 | `docs/99.templates/templates/governance/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=template-catalog; consumer=scripts/validation/check-repo-contracts.sh; role=folder-index | none | README exception |
