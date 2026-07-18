@@ -73,6 +73,12 @@ OPENSEARCH_DUPLICATE_PATH = (
 OPENSEARCH_RETAINED_PATH = (
     "infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt"
 )
+SEAWEEDFS_DUPLICATE_PATH = (
+    "infra/04-data/lake-and-object/seaweedfs/config/security.toml"
+)
+SEAWEEDFS_RETAINED_PATH = (
+    "infra/04-data/lake-and-object/seaweedfs/config/security.toml.example"
+)
 
 VALID_SAMPLE_SERVICE = """---
 status: active
@@ -181,7 +187,11 @@ def _manifest_row(path: str) -> dict[str, object]:
     }
     if path == "examples/sample-web-service/service.md":
         row["disposition"] = "migrate"
-    if path in {INFLUX_V2_PATH, OPENSEARCH_DUPLICATE_PATH}:
+    if path in {
+        INFLUX_V2_PATH,
+        OPENSEARCH_DUPLICATE_PATH,
+        SEAWEEDFS_DUPLICATE_PATH,
+    }:
         row.update(
             {
                 "target_path": None,
@@ -193,7 +203,7 @@ def _manifest_row(path: str) -> dict[str, object]:
 
 
 @contextlib.contextmanager
-def target_contract_fixture():
+def target_contract_fixture(*, seaweedfs_scaffold_text: str = ""):
     with tempfile.TemporaryDirectory() as directory:
         root = pathlib.Path(directory)
         subprocess.run(["git", "init", "-q"], cwd=root, check=True)
@@ -214,6 +224,8 @@ def target_contract_fixture():
             INFLUX_V2_PATH: "services: {}\n",
             OPENSEARCH_DUPLICATE_PATH: "",
             OPENSEARCH_RETAINED_PATH: "",
+            SEAWEEDFS_DUPLICATE_PATH: "",
+            SEAWEEDFS_RETAINED_PATH: seaweedfs_scaffold_text,
         }
         files.update(
             {path: "Current target surface.\n" for path in PHANTOM_CLAIM_PATHS[1:]}
@@ -238,6 +250,7 @@ def target_contract_fixture():
 
         (root / INFLUX_V2_PATH).unlink()
         (root / OPENSEARCH_DUPLICATE_PATH).unlink()
+        (root / SEAWEEDFS_DUPLICATE_PATH).unlink()
 
         manifest = root / TARGET_MANIFEST.relative_to(ROOT)
         manifest.parent.mkdir(parents=True, exist_ok=True)
@@ -538,6 +551,42 @@ class TargetSurfaceValidatorFindingTests(unittest.TestCase):
                 path=OPENSEARCH_DUPLICATE_PATH,
             )
 
+    def test_seaweedfs_pending_review_is_not_a_reviewed_duplicate(self) -> None:
+        def mutation(document: dict[str, object]) -> None:
+            row = next(
+                entry
+                for entry in document["entries"]
+                if entry["source_path"] == SEAWEEDFS_DUPLICATE_PATH
+            )
+            row["review_verdict"] = {
+                "specification": "pending",
+                "quality": "pending",
+            }
+
+        with target_contract_fixture() as (root, manifest, _baseline):
+            _mutate_manifest(manifest, mutation)
+            self._assert_code(
+                "target-duplicate-disposition-invalid",
+                root,
+                manifest,
+                path=SEAWEEDFS_DUPLICATE_PATH,
+            )
+
+    def test_seaweedfs_baseline_blob_mismatch_is_value_safe(self) -> None:
+        sentinel = "seaweedfs-blob-secret-sentinel"
+        with target_contract_fixture(seaweedfs_scaffold_text=sentinel) as (
+            root,
+            manifest,
+            _baseline,
+        ):
+            findings = self._assert_code(
+                "target-duplicate-disposition-invalid",
+                root,
+                manifest,
+                path=SEAWEEDFS_DUPLICATE_PATH,
+            )
+        self.assertNotIn(sentinel, repr(findings))
+
     def test_clean_fixture_has_no_findings(self) -> None:
         with target_contract_fixture() as (root, manifest, _baseline):
             self.assertEqual((), self._findings(root, manifest))
@@ -690,6 +739,50 @@ class StorybookPhantomContractTests(unittest.TestCase):
 
 
 class DeprecatedRuntimeContractTests(unittest.TestCase):
+    def test_seaweedfs_unmounted_duplicate_is_removed_but_scaffold_remains(
+        self,
+    ) -> None:
+        duplicate = ROOT / SEAWEEDFS_DUPLICATE_PATH
+        retained = ROOT / SEAWEEDFS_RETAINED_PATH
+
+        self.assertFalse(duplicate.exists())
+        self.assertTrue(retained.is_file())
+
+        pre_delete_commit = "6c3cbc2e417cba6ca466c28efd8a5c4c408a397c"
+        for path in (SEAWEEDFS_DUPLICATE_PATH, SEAWEEDFS_RETAINED_PATH):
+            with self.subTest(blob=path):
+                result = subprocess.run(
+                    ["git", "rev-parse", f"{pre_delete_commit}:{path}"],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                self.assertEqual(
+                    "ba282b3ad8182c680e9064bea323381149d5ef47",
+                    result.stdout.strip(),
+                )
+
+        compose = (
+            ROOT / "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("security.toml", compose)
+
+    def test_seaweedfs_direct_docs_keep_only_the_unmounted_example_claim(self) -> None:
+        paths = (
+            "infra/04-data/lake-and-object/seaweedfs/README.md",
+            "docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md",
+            "docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md",
+        )
+        for path in paths:
+            text = (ROOT / path).read_text(encoding="utf-8")
+            with self.subTest(path=path):
+                self.assertIn("config/security.toml.example", text)
+                self.assertNotIn("config/security.toml`", text)
+                self.assertIn("separate approved runtime", text)
+                self.assertIn("chrislusf/seaweedfs:4.38", text)
+                self.assertNotIn("chrislusf/seaweedfs:4.31", text)
+
     def test_opensearch_duplicate_example_is_removed_but_mounted_file_remains(
         self,
     ) -> None:
@@ -821,9 +914,10 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             if entry["source_path"] == influxdb_path
         )
 
+        seaweedfs_path = SEAWEEDFS_DUPLICATE_PATH
         self.assertEqual(483, len(manifest["entries"]))
         self.assertEqual(
-            [influxdb_path, source_path],
+            [influxdb_path, source_path, seaweedfs_path],
             [
                 entry["source_path"]
                 for entry in manifest["entries"]
@@ -835,7 +929,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             sum(entry["disposition"] == "migrate" for entry in manifest["entries"]),
         )
         self.assertEqual(
-            474,
+            473,
             sum(entry["disposition"] == "preserve" for entry in manifest["entries"]),
         )
         self.assertEqual(baseline_influxdb_row, influxdb_row)
@@ -843,7 +937,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             {"specification": "pass", "quality": "pass"},
             influxdb_row["review_verdict"],
         )
-        other_paths = {source_path, influxdb_path}
+        other_paths = {source_path, influxdb_path, seaweedfs_path}
         baseline_other_rows = [
             entry
             for entry in baseline_manifest["entries"]
@@ -854,7 +948,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             for entry in manifest["entries"]
             if entry["source_path"] not in other_paths
         ]
-        self.assertEqual(481, len(current_other_rows))
+        self.assertEqual(480, len(current_other_rows))
         self.assertEqual(baseline_other_rows, current_other_rows)
         self.assertTrue(
             all(
@@ -864,7 +958,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             )
         )
         self.assertEqual(
-            [influxdb_path, source_path],
+            [influxdb_path, source_path, seaweedfs_path],
             [
                 entry["source_path"]
                 for entry in manifest["entries"]
@@ -873,7 +967,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            481,
+            480,
             sum(
                 entry["review_verdict"]
                 == {"specification": "pending", "quality": "pending"}
@@ -883,17 +977,14 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
 
         summary = TARGET_SUMMARY.read_text(encoding="utf-8")
         for expected in (
-            "- Entries: 483",
-            "- `delete`: 2",
-            "- `migrate`: 7",
-            "- `preserve`: 474",
             f"| {influxdb_path} |  | delete | pass | pass |",
             f"| {source_path} |  | delete | pass | pass |",
+            f"| {seaweedfs_path} |  | delete | pass | pass |",
         ):
             with self.subTest(summary=expected):
                 self.assertIn(expected, summary)
 
-    def test_reviewed_opensearch_row_has_zero_manifest_findings(
+    def test_reviewed_seaweedfs_row_has_zero_manifest_findings(
         self,
     ) -> None:
         result = subprocess.run(
@@ -962,12 +1053,14 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             },
             row,
         )
+        seaweedfs_path = SEAWEEDFS_DUPLICATE_PATH
         self.assertEqual(483, len(manifest["entries"]))
         self.assertEqual(
             [
                 source_path,
                 "infra/04-data/analytics/opensearch/opensearch/config/"
                 "userdict_ko.txt.example",
+                seaweedfs_path,
             ],
             [
                 entry["source_path"]
@@ -980,6 +1073,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
                 source_path,
                 "infra/04-data/analytics/opensearch/opensearch/config/"
                 "userdict_ko.txt.example",
+                seaweedfs_path,
             ],
             [
                 entry["source_path"]
@@ -989,7 +1083,102 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            481,
+            480,
+            sum(
+                entry["review_verdict"]
+                == {"specification": "pending", "quality": "pending"}
+                for entry in manifest["entries"]
+            ),
+        )
+        summary = TARGET_SUMMARY.read_text(encoding="utf-8")
+        self.assertIn(
+            f"| {source_path} |  | delete | pass | pass |",
+            summary,
+        )
+
+    def test_seaweedfs_duplicate_manifest_row_records_exact_delete_evidence(
+        self,
+    ) -> None:
+        manifest = yaml.safe_load(TARGET_MANIFEST.read_text(encoding="utf-8"))
+        row = next(
+            entry
+            for entry in manifest["entries"]
+            if entry["source_path"] == SEAWEEDFS_DUPLICATE_PATH
+        )
+
+        self.assertEqual(
+            {
+                "source_path": SEAWEEDFS_DUPLICATE_PATH,
+                "target_path": None,
+                "artifact_id": None,
+                "artifact_type_before": None,
+                "artifact_type_after": None,
+                "surface_class": "configuration",
+                "status_before": None,
+                "status_after": None,
+                "parent_ids": [],
+                "disposition": "delete",
+                "canonical_replacement": None,
+                "active_consumers": [],
+                "partition_plan": None,
+                "preservation_class": "git-history",
+                "evidence": {
+                    "commands": [
+                        "git diff --name-status 6c3cbc2e417cba6ca466c28efd8a5c4c408a397c..f50fdd2670404f9ad32bdf9a6aa1e0ffb5ff6d0f -- infra/04-data/lake-and-object/seaweedfs/config/security.toml",
+                        "git log --format=%H 6c3cbc2e417cba6ca466c28efd8a5c4c408a397c..f50fdd2670404f9ad32bdf9a6aa1e0ffb5ff6d0f -- infra/04-data/lake-and-object/seaweedfs/config/security.toml",
+                        "git rev-parse 6c3cbc2e417cba6ca466c28efd8a5c4c408a397c:infra/04-data/lake-and-object/seaweedfs/config/security.toml 6c3cbc2e417cba6ca466c28efd8a5c4c408a397c:infra/04-data/lake-and-object/seaweedfs/config/security.toml.example f50fdd2670404f9ad32bdf9a6aa1e0ffb5ff6d0f:infra/04-data/lake-and-object/seaweedfs/config/security.toml.example",
+                    ],
+                    "sources": [
+                        SEAWEEDFS_DUPLICATE_PATH,
+                        SEAWEEDFS_RETAINED_PATH,
+                    ],
+                    "repository_paths": [
+                        "docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md",
+                        "docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md",
+                        "infra/04-data/lake-and-object/seaweedfs/README.md",
+                        SEAWEEDFS_DUPLICATE_PATH,
+                        SEAWEEDFS_RETAINED_PATH,
+                    ],
+                    "consumer_scan": [
+                        "git grep -lz --fixed-strings -- security.toml -- infra/04-data/lake-and-object/seaweedfs docs/05.operations"
+                    ],
+                    "rollback": [
+                        "git revert --no-commit f50fdd2670404f9ad32bdf9a6aa1e0ffb5ff6d0f"
+                    ],
+                },
+                "review_verdict": {
+                    "specification": "pass",
+                    "quality": "pass",
+                },
+            },
+            row,
+        )
+        self.assertEqual(483, len(manifest["entries"]))
+        self.assertEqual(
+            3,
+            sum(entry["disposition"] == "delete" for entry in manifest["entries"]),
+        )
+        self.assertEqual(
+            7,
+            sum(entry["disposition"] == "migrate" for entry in manifest["entries"]),
+        )
+        self.assertEqual(
+            473,
+            sum(
+                entry["disposition"] == "preserve"
+                for entry in manifest["entries"]
+            ),
+        )
+        self.assertEqual(
+            3,
+            sum(
+                entry["review_verdict"]
+                == {"specification": "pass", "quality": "pass"}
+                for entry in manifest["entries"]
+            ),
+        )
+        self.assertEqual(
+            480,
             sum(
                 entry["review_verdict"]
                 == {"specification": "pending", "quality": "pending"}
@@ -999,10 +1188,10 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
         summary = TARGET_SUMMARY.read_text(encoding="utf-8")
         for expected in (
             "- Entries: 483",
-            "- `delete`: 2",
+            "- `delete`: 3",
             "- `migrate`: 7",
-            "- `preserve`: 474",
-            f"| {source_path} |  | delete | pass | pass |",
+            "- `preserve`: 473",
+            f"| {SEAWEEDFS_DUPLICATE_PATH} |  | delete | pass | pass |",
         ):
             with self.subTest(summary=expected):
                 self.assertIn(expected, summary)

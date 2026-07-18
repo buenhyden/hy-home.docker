@@ -3807,7 +3807,7 @@ entries:
     specification: pending
     quality: pending
 - source_path: infra/04-data/lake-and-object/seaweedfs/config/security.toml
-  target_path: infra/04-data/lake-and-object/seaweedfs/config/security.toml
+  target_path: null
   artifact_id: null
   artifact_type_before: null
   artifact_type_after: null
@@ -3815,20 +3815,32 @@ entries:
   status_before: null
   status_after: null
   parent_ids: []
-  disposition: preserve
+  disposition: delete
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
-  preservation_class: null
+  preservation_class: git-history
   evidence:
-    commands: []
-    sources: []
-    repository_paths: []
-    consumer_scan: []
-    rollback: []
+    commands:
+    - git diff --name-status 6c3cbc2e417cba6ca466c28efd8a5c4c408a397c..f50fdd2670404f9ad32bdf9a6aa1e0ffb5ff6d0f -- infra/04-data/lake-and-object/seaweedfs/config/security.toml
+    - git log --format=%H 6c3cbc2e417cba6ca466c28efd8a5c4c408a397c..f50fdd2670404f9ad32bdf9a6aa1e0ffb5ff6d0f -- infra/04-data/lake-and-object/seaweedfs/config/security.toml
+    - git rev-parse 6c3cbc2e417cba6ca466c28efd8a5c4c408a397c:infra/04-data/lake-and-object/seaweedfs/config/security.toml 6c3cbc2e417cba6ca466c28efd8a5c4c408a397c:infra/04-data/lake-and-object/seaweedfs/config/security.toml.example f50fdd2670404f9ad32bdf9a6aa1e0ffb5ff6d0f:infra/04-data/lake-and-object/seaweedfs/config/security.toml.example
+    sources:
+    - infra/04-data/lake-and-object/seaweedfs/config/security.toml
+    - infra/04-data/lake-and-object/seaweedfs/config/security.toml.example
+    repository_paths:
+    - docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md
+    - docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md
+    - infra/04-data/lake-and-object/seaweedfs/README.md
+    - infra/04-data/lake-and-object/seaweedfs/config/security.toml
+    - infra/04-data/lake-and-object/seaweedfs/config/security.toml.example
+    consumer_scan:
+    - git grep -lz --fixed-strings -- security.toml -- infra/04-data/lake-and-object/seaweedfs docs/05.operations
+    rollback:
+    - git revert --no-commit f50fdd2670404f9ad32bdf9a6aa1e0ffb5ff6d0f
   review_verdict:
-    specification: pending
-    quality: pending
+    specification: pass
+    quality: pass
 - source_path: infra/04-data/lake-and-object/seaweedfs/config/security.toml.example
   target_path: infra/04-data/lake-and-object/seaweedfs/config/security.toml.example
   artifact_id: null

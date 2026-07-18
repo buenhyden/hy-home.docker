@@ -95,6 +95,12 @@ OPENSEARCH_DUPLICATE_PATH: Final = (
 OPENSEARCH_RETAINED_PATH: Final = (
     "infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt"
 )
+SEAWEEDFS_DUPLICATE_PATH: Final = (
+    "infra/04-data/lake-and-object/seaweedfs/config/security.toml"
+)
+SEAWEEDFS_RETAINED_PATH: Final = (
+    "infra/04-data/lake-and-object/seaweedfs/config/security.toml.example"
+)
 MAX_CONTRACT_FILE_BYTES: Final = 2 * 1_048_576
 FULL_SHA_RE: Final = re.compile(r"^[0-9a-f]{40}$")
 
@@ -321,6 +327,8 @@ def _manifest_coverage_findings(
         SAMPLE_SERVICE_PATH,
         OPENSEARCH_DUPLICATE_PATH,
         OPENSEARCH_RETAINED_PATH,
+        SEAWEEDFS_DUPLICATE_PATH,
+        SEAWEEDFS_RETAINED_PATH,
     }
     missing = sorted((expected | required_contract_paths) - rows.keys())
     return [
@@ -460,45 +468,73 @@ def _blob_at(repo_root: pathlib.Path, revision: str, path: str) -> str | None:
     return value if FULL_SHA_RE.fullmatch(value) else None
 
 
-def _duplicate_disposition_findings(
+def _duplicate_pair_valid(
     repo_root: pathlib.Path,
     baseline: str,
     rows: dict[str, dict[str, object]],
-) -> list[Finding]:
-    duplicate = rows.get(OPENSEARCH_DUPLICATE_PATH)
-    retained = rows.get(OPENSEARCH_RETAINED_PATH)
-    duplicate_blob = _blob_at(repo_root, baseline, OPENSEARCH_DUPLICATE_PATH)
-    retained_blob = _blob_at(repo_root, baseline, OPENSEARCH_RETAINED_PATH)
+    duplicate_path: str,
+    retained_path: str,
+) -> bool:
+    duplicate = rows.get(duplicate_path)
+    retained = rows.get(retained_path)
+    duplicate_blob = _blob_at(repo_root, baseline, duplicate_path)
+    retained_blob = _blob_at(repo_root, baseline, retained_path)
     try:
-        duplicate_exists = os.path.lexists(repo_root / OPENSEARCH_DUPLICATE_PATH)
-        retained_metadata = os.lstat(repo_root / OPENSEARCH_RETAINED_PATH)
+        duplicate_exists = os.path.lexists(repo_root / duplicate_path)
+        retained_metadata = os.lstat(repo_root / retained_path)
         retained_exists = stat.S_ISREG(retained_metadata.st_mode)
     except OSError:
-        duplicate_exists = os.path.lexists(repo_root / OPENSEARCH_DUPLICATE_PATH)
+        duplicate_exists = os.path.lexists(repo_root / duplicate_path)
         retained_exists = False
 
-    valid = (
+    return (
         isinstance(duplicate, dict)
         and duplicate.get("target_path") is None
         and duplicate.get("disposition") == "delete"
         and duplicate.get("review_verdict")
         == {"specification": "pass", "quality": "pass"}
         and isinstance(retained, dict)
-        and retained.get("target_path") == OPENSEARCH_RETAINED_PATH
+        and retained.get("target_path") == retained_path
         and not duplicate_exists
         and retained_exists
         and duplicate_blob is not None
         and duplicate_blob == retained_blob
     )
-    if valid:
-        return []
-    return [
-        Finding(
-            "target-duplicate-disposition-invalid",
+
+
+def _duplicate_disposition_findings(
+    repo_root: pathlib.Path,
+    baseline: str,
+    rows: dict[str, dict[str, object]],
+) -> list[Finding]:
+    findings: list[Finding] = []
+    duplicate_pairs = (
+        (
             OPENSEARCH_DUPLICATE_PATH,
-            "reviewed duplicate disposition does not match retained target evidence",
+            OPENSEARCH_RETAINED_PATH,
+        ),
+        (
+            SEAWEEDFS_DUPLICATE_PATH,
+            SEAWEEDFS_RETAINED_PATH,
+        ),
+    )
+    for duplicate_path, retained_path in duplicate_pairs:
+        if _duplicate_pair_valid(
+            repo_root,
+            baseline,
+            rows,
+            duplicate_path,
+            retained_path,
+        ):
+            continue
+        findings.append(
+            Finding(
+                "target-duplicate-disposition-invalid",
+                duplicate_path,
+                "reviewed duplicate disposition does not match retained target evidence",
+            )
         )
-    ]
+    return findings
 
 
 def validate(

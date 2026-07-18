@@ -7,9 +7,9 @@
 
 ## Dispositions
 
-- `delete`: 2
+- `delete`: 3
 - `migrate`: 7
-- `preserve`: 474
+- `preserve`: 473
 
 ## Reviewed Paths
 
@@ -179,7 +179,7 @@
 | infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml | infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml | preserve | pending | pending |
 | infra/04-data/lake-and-object/minio/docker-compose.yml | infra/04-data/lake-and-object/minio/docker-compose.yml | preserve | pending | pending |
 | infra/04-data/lake-and-object/seaweedfs/README.md | infra/04-data/lake-and-object/seaweedfs/README.md | preserve | pending | pending |
-| infra/04-data/lake-and-object/seaweedfs/config/security.toml | infra/04-data/lake-and-object/seaweedfs/config/security.toml | preserve | pending | pending |
+| infra/04-data/lake-and-object/seaweedfs/config/security.toml |  | delete | pass | pass |
 | infra/04-data/lake-and-object/seaweedfs/config/security.toml.example | infra/04-data/lake-and-object/seaweedfs/config/security.toml.example | preserve | pending | pending |
 | infra/04-data/lake-and-object/seaweedfs/docker-compose.yml | infra/04-data/lake-and-object/seaweedfs/docker-compose.yml | preserve | pending | pending |
 | infra/04-data/nosql/README.md | infra/04-data/nosql/README.md | preserve | pending | pending |

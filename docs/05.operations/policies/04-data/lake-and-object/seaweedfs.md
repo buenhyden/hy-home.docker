@@ -18,7 +18,7 @@ status: active
 - **Systems**: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`
 - **Configs**: `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`;
   `config/security.toml.example` remains as a future scaffold and is not
-  mounted by current compose
+  mounted by current compose. Activation is a separate approved runtime change.
 - **Profiles**: `data`
 - **Networks**: `infra_net`
 - **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or file/object-storage runtime boundaries
@@ -26,7 +26,7 @@ status: active
 ## Controls
 
 - **Required**:
-  - Compose-facing documentation must list image `chrislusf/seaweedfs:4.31` and the current five-service set.
+  - Compose-facing documentation must list image `chrislusf/seaweedfs:4.38` and the current five-service set.
   - Health checks are documented for `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, and `seaweedfs-s3`; `seaweedfs-mount` has no compose healthcheck.
   - `seaweedfs-mount` privileged/SYS_ADMIN behavior must be treated as host-impacting.
   - Public access must use the declared Traefik routes: `seaweedfs.${DEFAULT_URL}`, `cdn.${DEFAULT_URL}`, and `s3.${DEFAULT_URL}`.
@@ -36,7 +36,7 @@ status: active
   - Mount container restart only after capturing evidence and confirming host-impacting scope.
 - **Disallowed**:
   - Claiming SeaweedFS authentication is active unless a reviewed security
-    config is created, mounted, and used by the compose file.
+    config is created, mounted, and used by the compose file through a separate approved runtime change.
   - Running destructive master metadata restore, volume deletion, unmount, or reshard operations as documentation-only actions.
   - Treating the S3 gateway as credential-protected by the current compose unless credential config is explicitly added and documented.
   - Recording private data, tokens, or credentials in documentation or task evidence.
