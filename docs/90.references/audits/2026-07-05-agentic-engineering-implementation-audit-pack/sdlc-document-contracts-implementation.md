@@ -138,6 +138,14 @@ baseline remains a later migration concern.
 
 ## Findings and Task Routing
 
+The 2026-07-19 target-surface evidence confirms the archive split intended by
+the lifecycle contract: Vault/content provenance uses root `archive/**`, while
+SDLC provenance tombstones stay in Stage 98. The canonical manifest has 483
+rows (3 delete, 7 migrate, 473 preserve), three independently reviewed
+`pass/pass` rows, and 480 pending rows. This is partial-wave review evidence,
+not lifecycle closure; Spec 133, its Plan/Task, Stage indexes, and progress
+memory remain active until final QA and independent whole-branch reviews pass.
+
 - Naming, leaf-status syntax, template shape, broad link/alignment checks, and
   semantic identity/parent/transition validation for migrated/changed scope are
   implemented; none is retroactive proof of full historical lifecycle coverage.

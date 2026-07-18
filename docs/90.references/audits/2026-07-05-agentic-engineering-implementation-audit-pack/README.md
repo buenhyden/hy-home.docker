@@ -123,6 +123,16 @@ synthetic evaluator evidence, local routing, and controlled-wrapper
 implementation; native runtime acceptance, model entitlement, remote
 enforcement, CD, and live comparative model quality remain unpromoted.
 
+The 2026-07-19 target-surface evidence candidate adds two path-selected archive
+profiles (`content-archive` and `sdlc-archive`) and a deterministic 483-row
+manifest: 3 delete, 7 migrate, and 473 preserve. Only the independently reviewed
+InfluxDB 2, OpenSearch `.example`, and SeaweedFS `security.toml` rows are
+`pass/pass`; 480 rows remain `pending/pending`. The retained SeaweedFS
+`security.toml.example` is not mounted by current Compose. Activation, service
+health, deployment, and remote enforcement remain outside this audit evidence.
+The tracked quality workflow has 15 local jobs; the dated remote observation of
+12 required contexts has not been revalidated and is not current remote truth.
+
 ### Contract and Evidence Boundary
 
 This audit consumes the Stage 99 metadata registry, the SDLC/common/README

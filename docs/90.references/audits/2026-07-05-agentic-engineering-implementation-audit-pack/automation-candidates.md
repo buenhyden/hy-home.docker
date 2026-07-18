@@ -161,6 +161,11 @@ model evaluation, or security classification.
   that it would improve.
 - Keep tracked definitions, observed remote configuration, recent run results,
   and remote mutation/read-back as separate evidence classes.
+- Exact GitHub workflow, secure-use, deployments/environments, and rulesets
+  URLs plus pre-commit and DORA metrics were re-opened on 2026-07-19; no stale
+  claim was confirmed. Fifteen tracked local quality jobs do not refresh or
+  prove the dated remote 12-context observation, and CI YAML alone provides no
+  delivery-performance dataset.
 
 ## Sources
 

@@ -209,6 +209,10 @@ SBOM generation, SLSA provenance, Scorecard reporting, or threat-model evidence.
 - Treat local policy and last-recorded remote evidence separately.
 - Separate tracked definitions, dated remote configuration, recent run results,
   and remote mutation/read-back.
+- The exact GitHub secure-use and rulesets URLs, SLSA v1.2, and NIST SP 800-61
+  Rev. 3 were re-opened on 2026-07-19; no stale claim was confirmed. This does
+  not establish SLSA conformance, NIST adoption, remote enforcement, or runtime
+  security posture.
 - Do not record secret values, private keys, tokens, shell history, raw secret
   logs, or `.env` values.
 

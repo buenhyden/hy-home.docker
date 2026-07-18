@@ -197,6 +197,12 @@ schema introduction from becoming an accidental corpus-wide or remote gate.
   GitHub ruleset, protected-branch/required-check, and deployment-environment
   guidance was re-opened on **2026-07-13**; the earlier dated inventory remains
   unchanged.
+- The exact official GitHub workflow-syntax, secure-use,
+  deployments/environments, and rulesets URLs, plus pre-commit and DORA metrics,
+  were re-opened on **2026-07-19**. No stale claim was confirmed in that bounded
+  set. Lower-risk sources retain their earlier retrieval dates. Tracked YAML and
+  15 local quality jobs still do not prove remote runs or enforcement; the dated
+  12-context observation remains unverified rather than current truth.
 - Mutable official pages prove retrieval-time guidance, not historical behavior
   or workspace enforcement.
 - Repo-local claims cite tracked sources at baseline `cf8790ca`; Graphify is

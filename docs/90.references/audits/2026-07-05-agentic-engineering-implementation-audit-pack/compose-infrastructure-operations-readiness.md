@@ -59,14 +59,14 @@ authorize Docker, infrastructure, secret, deployment, or remote mutations.
   not prove a live workload resists attack or failure.
 - **Operations readiness** requires procedure plus observed, dated rehearsal or
   execution evidence with acceptance and rollback criteria.
-- The fresh generated snapshot covers 49 Compose files, 48 files with services,
-  169 service entries, 25 profile labels including `default`, 9 default service
+- The fresh generated snapshot covers 48 Compose files, 47 files with services,
+  168 service entries, 25 profile labels including `default`, 8 default service
   entries, and 160 profile-gated entries.
 
 ## Assessment Method
 
 Task 6 reproduced the tracked inventory and ran non-mutating checks on
-2026-07-11. `validate-docker-compose.sh` rendered the `core` profile with five
+2026-07-19. `validate-docker-compose.sh` rendered the `core` profile with five
 services, and `check-all-hardening.sh` passed all eleven tiers. The generated
 profile/service snapshot was fresh. No service was started, no runtime or
 secret data was read, and no procedure was executed. Graphify remains advisory
@@ -77,7 +77,7 @@ validation sources.
 
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
-| CIO-01 | Maintain a deterministic inventory of Compose files, services, profiles, and default activation. | The generated coverage snapshot reports 49 files, 169 service entries, 25 profiles, 9 default entries, and 160 profile-gated entries. | Implemented | 3 | Retain | Stage 90 Docker reference data and Compose owners | Existing canonical generator and freshness check. | `bash scripts/operations/generate-compose-profile-service-coverage.sh --check`. | High: deterministic tracked-source evidence. |
+| CIO-01 | Maintain a deterministic inventory of Compose files, services, profiles, and default activation. | The generated coverage snapshot reports 48 files, 168 service entries, 25 profiles, 8 default entries, and 160 profile-gated entries. | Implemented | 3 | Retain | Stage 90 Docker reference data and Compose owners | Existing canonical generator and freshness check. | `bash scripts/operations/generate-compose-profile-service-coverage.sh --check`. | High: deterministic tracked-source evidence. |
 | CIO-02 | Render governed Compose configurations without starting services. | Root/core rendering is implemented locally and in two CI jobs; Task 6 core render passed with five services. | Implemented | 3 | Retain | `scripts/validation/validate-docker-compose.sh` | Existing local/CI automation; keep render explicitly non-runtime. | `bash scripts/validation/validate-docker-compose.sh`. | High: direct static validation evidence. |
 | CIO-03 | Enforce repository-defined infrastructure hardening baselines by tier. | The unified hardening script and CI job cover all eleven tiers; Task 6 passed all tiers. | Implemented | 3 | Retain | Security scope and tier Compose owners | Existing local/CI hardening automation. | `bash scripts/hardening/check-all-hardening.sh`. | High for tracked static controls; runtime posture unobserved. |
 | CIO-04 | Track image declarations and version provenance without claiming artifact provenance. | Curated version registry, image-tag exceptions, sync logic, and a fresh generated provenance snapshot exist. | Implemented | 3 | Retain | Infra registry owners and Stage 90 Docker data | Existing drift/provenance generators; do not conflate with SBOM/SLSA evidence. | `bash scripts/operations/generate-tech-stack-version-provenance.sh --check`. | High for tracked declarations. |
@@ -118,6 +118,13 @@ Future runtime automation must begin advisory or sandboxed, name a bounded
 profile/service set, protect secrets and state, record before/after paths, and
 stop on unexpected mutation. This audit adds no runtime automation.
 
+The 2026-07-19 target-surface evidence removes only the unmounted SeaweedFS
+`config/security.toml` duplicate and retains `config/security.toml.example`.
+The deleted and retained baselines are pinned to the same immutable Git blob;
+current Compose does not mount the example. Static SeaweedFS render and the
+canonical core render passed, but activation, startup, health, persistence,
+recovery, and deployment remain unobserved runtime work.
+
 ## Source Rules
 
 - Use tracked Compose, generators, validators, and Stage 05 documents for
@@ -126,6 +133,9 @@ stop on unexpected mutation. This audit adds no runtime automation.
   evidence only.
 - Require observed, dated evidence before claiming startup, health, recovery,
   upgrade, migration, backup/restore, promotion, or rollback readiness.
+- The exact Docker Compose include, profiles, secrets, and trust-model pages and
+  NIST SP 800-61 Rev. 3 were re-opened on 2026-07-19; no stale claim was
+  confirmed. Other source dates retain their existing caveats.
 
 ## Sources
 

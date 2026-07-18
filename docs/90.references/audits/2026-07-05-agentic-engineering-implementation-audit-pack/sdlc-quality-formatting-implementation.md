@@ -155,6 +155,10 @@ runtime cost before adding new gates.
 
 - Use repository scripts and CI workflow for current implementation claims.
 - Use external quality/security standards as criteria, not as adopted policy.
+- Exact GitHub workflow-syntax and secure-use URLs plus pre-commit were
+  re-opened on 2026-07-19; no stale claim was confirmed. The tracked 15-job
+  quality workflow is local source truth, while the 2026-07-12 remote
+  12-context observation remains dated and unverified.
 - Do not record raw logs or secret values as QA evidence.
 
 ## Sources

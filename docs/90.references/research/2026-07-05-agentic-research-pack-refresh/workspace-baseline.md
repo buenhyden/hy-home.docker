@@ -158,6 +158,12 @@ external frameworks do not become adopted policy through Stage 90.
   enforcement/deployment sources used for the bounded rows above were re-opened
   on `2026-07-13`; mutable pages without a displayed update date prove
   retrieval-time content only.
+- On `2026-07-19`, only the exact high-risk official URLs for GitHub workflow
+  syntax, secure use, deployments/environments, and rulesets; pre-commit and
+  DORA; Docker Compose include, profiles, secrets, and trust model; SLSA v1.2;
+  and NIST SP 800-61 Rev. 3 were re-opened. No stale claim was confirmed in
+  that bounded set. Lower-risk source dates and the `2026-07-10 10:00 KST`
+  provider-model cutoff remain unchanged.
 - ISO public pages provide metadata and summaries, not full standard text.
 - ISO/IEC/IEEE 12207:2017 is marked withdrawn and is used only as historical
   lifecycle framing.

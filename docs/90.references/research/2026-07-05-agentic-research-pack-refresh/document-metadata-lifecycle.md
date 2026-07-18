@@ -115,6 +115,10 @@ merge enforcement. None of these layers authorizes a bulk historical rewrite.
   frontmatter/content guidance, Diataxis, CommonMark/GFM, and GitHub enforcement
   and environment sources were re-opened on **2026-07-13** for this in-place
   canonicalization; the earlier retrieval record remains historical evidence.
+- The exact official GitHub rulesets URL was re-opened again on **2026-07-19**;
+  no stale claim was confirmed. The other standards and lower-risk sources keep
+  their earlier retrieval dates. A passing tracked metadata check remains local
+  evidence and is not proof that a remote ruleset requires it.
 - DCMI 2020, W3C PROV-O, RFC 8288, and fixed standard/version pages provide
   stable vocabulary or provenance concepts; they do not define this repository's schema.
 - Mutable official pages prove retrieval-time guidance only. ISO public pages

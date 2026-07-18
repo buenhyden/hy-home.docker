@@ -49,6 +49,23 @@ Partial 또는 Needs Revalidation 경계에 둡니다. 모델의 historical cuto
 2026-07-10 10:00 KST이고 typed current registry의 retrieval boundary는
 2026-07-16입니다.
 
+2026-07-19 target-surface wave의 현재 저장소 근거도 같은 경계로 반영했습니다.
+root Vault/content와 Stage 98 SDLC archive는 별도 profile로 분류되고, canonical
+manifest는 483행(삭제 3, 이관 7, 보존 473)입니다. 독립 검토가 끝난 InfluxDB 2,
+OpenSearch `.example`, SeaweedFS `security.toml` 세 행만 `pass/pass`이고 나머지
+480행은 `pending/pending`입니다. SeaweedFS의 유지된 `.example`은 현재 Compose에
+mount되지 않으며 활성화는 별도 승인 runtime 작업입니다. 로컬 workflow source의
+품질 job은 15개이지만, 2026-07-12에 관찰한 원격 required context 12개는 최신
+enforcement 증거로 승격하지 않았습니다. 이 정합화는 service startup, remote
+query/mutation, secret value inspection 또는 deployment 증거를 포함하지 않습니다.
+
+2026-07-19에는 GitHub workflow syntax·secure use·deployments/environments·rulesets,
+pre-commit, DORA metrics, Docker Compose include·profiles·secrets·trust model,
+SLSA v1.2, NIST SP 800-61 Rev. 3의 정확한 공식 URL만 다시 열었습니다. 재개방한
+범위에서 낡은 외부 주장은 확인되지 않았습니다. 그 밖의 안정적·저위험 출처는
+기존 retrieval 날짜와 caveat를 유지하며, provider model cutoff도 변경하지
+않습니다.
+
 ## Audience
 
 이 README의 주요 독자:

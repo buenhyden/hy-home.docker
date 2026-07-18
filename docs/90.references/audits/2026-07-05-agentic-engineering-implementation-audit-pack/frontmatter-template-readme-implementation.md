@@ -117,6 +117,15 @@ and impacted-dependent selection is blocking.
 
 ## Syntax Compliance Versus Semantic Correctness
 
+The target-surface wave exercises the profile model without introducing a
+universal frontmatter shape. Root `archive/**` selects `content-archive`, while
+`docs/98.archive/**` selects `sdlc-archive`; both keep semantic
+`artifact_type: archive` but have different relation and preservation rules.
+The target manifest remains advisory at 483 rows, with only three destructive
+rows independently promoted and 480 review pairs pending. Native GitHub,
+Compose, script, configuration, and asset surfaces retain their consumer-native
+schemas rather than receiving Markdown metadata.
+
 | Surface | Syntax result | Current semantic result |
 | --- | --- | --- |
 | Leaf lifecycle status | The dated syntax baseline remains preserved; current typed profiles validate allowed status by artifact role. | Implemented for migrated/changed documents, including transition and explicit reverse-override rules; historical inventory findings remain advisory. |

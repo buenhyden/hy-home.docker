@@ -167,6 +167,12 @@ another merely because one automation loop completed successfully.
   ruleset, protected-branch/required-check, environment, and deployment-history
   guidance was re-opened on **2026-07-13** without changing the dated workflow
   inventory or remote-state verdict.
+- The exact official GitHub workflow-syntax, secure-use,
+  deployments/environments, and rulesets URLs, plus pre-commit and DORA metrics,
+  were re-opened on **2026-07-19**. No stale claim was confirmed in that bounded
+  set; lower-risk source dates remain unchanged. The repository still has 15
+  local quality jobs, while the dated 12-context remote observation is not a
+  current enforcement claim and no delivery metric is inferred from CI YAML.
 - GitHub and tool pages are mutable retrieval-time guidance.
 - Repo-local facts come from tracked workflow/job/script/config definitions;
   Graphify is advisory and was not used for counts.

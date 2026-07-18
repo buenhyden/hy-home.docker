@@ -98,6 +98,15 @@ model scoring, live execution, and model entitlement
 remain Partial or Needs Revalidation as appropriate. The model catalog remains fixed
 at 2026-07-10 10:00 KST and no model policy is changed by this audit.
 
+The bounded target-surface reconciliation observed on 2026-07-19 does not alter
+the 161-row criterion distribution. It records distinct root content and Stage
+98 SDLC archive profiles; a 483-row migration manifest with 3 delete, 7 migrate,
+and 473 preserve dispositions; and exactly 3 independently reviewed
+`pass/pass` rows with 480 still pending. The SeaweedFS inactive duplicate is
+removed while the retained `.example` remains unmounted. These are tracked
+source and review facts, not runtime, deployment, secret-value, recent remote
+run, or required-check enforcement evidence.
+
 The generated matrix and coverage report consume one overview and eleven
 criterion reports containing 161 unique rows. The shared parser validates the
 ten-field schema, vocabularies, ID uniqueness, exact per-report counts, and all
