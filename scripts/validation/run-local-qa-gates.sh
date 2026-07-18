@@ -77,6 +77,8 @@ Local script-backed gates:
 - tests/validation/test_document_corpus_lifecycle.py
 - scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
 - scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
+- python3 -m unittest tests.validation.test_target_surface_contracts -v
+- python3 scripts/validation/check-target-surface-contract.py
 - scripts/validation/validate-docker-compose.sh
 - scripts/hardening/check-all-hardening.sh
 - scripts/validation/check-template-security-baseline.sh
@@ -129,6 +131,11 @@ run_lifecycle_gates() {
   run_step "Promoted document corpus lifecycle manifests" python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
 }
 
+run_target_surface_gates() {
+  run_step "Target surface contract tests" python3 -m unittest tests.validation.test_target_surface_contracts -v
+  run_step "Target surface contracts" python3 scripts/validation/check-target-surface-contract.py
+}
+
 run_generated_freshness_gates() {
   run_step "Security automation readiness freshness" bash scripts/validation/generate-security-automation-readiness.sh --check
   run_step "Audit implementation matrix freshness" bash scripts/validation/generate-audit-implementation-matrix.sh --check
@@ -151,6 +158,7 @@ run_script_backed_gates() {
   run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
   run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
   run_lifecycle_gates
+  run_target_surface_gates
   run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
   run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh
   run_step "Template/security baseline" bash scripts/validation/check-template-security-baseline.sh
@@ -168,6 +176,7 @@ run_harness_gates() {
   run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
   run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
   run_lifecycle_gates
+  run_target_surface_gates
   run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
   run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh
   run_step "Template/security baseline" bash scripts/validation/check-template-security-baseline.sh

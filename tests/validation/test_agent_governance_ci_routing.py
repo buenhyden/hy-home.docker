@@ -4,6 +4,7 @@ import contextlib
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -22,6 +23,23 @@ PR_TEMPLATE = ROOT / ".github/PULL_REQUEST_TEMPLATE.md"
 HARNESS_WRAPPER = ROOT / "scripts/validation/validate-harness.sh"
 LOCAL_QA = ROOT / "scripts/validation/run-local-qa-gates.sh"
 REPO_CONTRACT = ROOT / "scripts/validation/check-repo-contracts.sh"
+TARGET_CLI_COMMAND = "python3 scripts/validation/check-target-surface-contract.py"
+TARGET_TEST_COMMAND = (
+    "python3 -m unittest tests.validation.test_target_surface_contracts -v"
+)
+
+TARGET_SURFACE_PATHS = (
+    ".prettierignore",
+    ".github/workflows/ci-quality.yml",
+    "archive/Windows-Network-IP.md",
+    "examples/sample-web-service/service.md",
+    "infra/04-data/analytics/influxdb/README.md",
+    "projects/storybook/README.md",
+    "scripts/validation/target_surface_contract.py",
+    "secrets/SENSITIVE_ENV_VARS.md.example",
+    "tests/validation/test_target_surface_contracts.py",
+    "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml",
+)
 
 COUPLED_PATHS = (
     "AGENTS.md",
@@ -53,6 +71,260 @@ COUPLED_PATHS = (
 
 
 class AgentGovernanceRoutingTests(unittest.TestCase):
+    def test_target_surface_paths_select_the_focused_gate(self) -> None:
+        for path in TARGET_SURFACE_PATHS:
+            with self.subTest(path=path):
+                result = subprocess.run(
+                    ["bash", str(RECOMMENDER), "--files", path],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertIn(TARGET_CLI_COMMAND, result.stdout)
+                self.assertIn(TARGET_TEST_COMMAND, result.stdout)
+
+    def test_target_surface_paths_select_the_existing_pre_push_owner(self) -> None:
+        data = yaml.safe_load(PRE_COMMIT.read_text(encoding="utf-8"))
+        hooks = [
+            hook
+            for repo in data["repos"]
+            if repo["repo"] == "local"
+            for hook in repo["hooks"]
+            if hook["id"] == "check-repo-contracts"
+        ]
+        self.assertEqual(1, len(hooks))
+        selector = re.compile(hooks[0]["files"])
+        for path in TARGET_SURFACE_PATHS:
+            with self.subTest(path=path):
+                self.assertIsNotNone(selector.fullmatch(path))
+        self.assertFalse(
+            any(
+                hook["id"] == "check-target-surface-contract"
+                for repo in data["repos"]
+                if repo["repo"] == "local"
+                for hook in repo["hooks"]
+            )
+        )
+
+    def test_local_runner_and_tool_bootstrap_expose_the_target_gate(self) -> None:
+        result = subprocess.run(
+            ["bash", str(LOCAL_QA), "--list"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn(TARGET_CLI_COMMAND, result.stdout)
+        self.assertIn(TARGET_TEST_COMMAND, result.stdout)
+        local_text = LOCAL_QA.read_text(encoding="utf-8")
+        self.assertIn(TARGET_CLI_COMMAND, local_text)
+        self.assertIn(TARGET_TEST_COMMAND, local_text)
+        tool_bootstrap = (ROOT / "scripts/operations/use-qa-ci-tools.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertRegex(tool_bootstrap, r"\bpython3\b.*\bruff\b")
+
+    def test_existing_repo_contracts_job_runs_target_surface_contracts(self) -> None:
+        workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+        jobs = workflow["jobs"]
+        self.assertEqual(15, len(jobs))
+        repo_steps = jobs["repo-contracts"]["steps"]
+        commands = "\n".join(
+            str(step.get("run", "")) for step in repo_steps if isinstance(step, dict)
+        )
+        self.assertIn(TARGET_CLI_COMMAND, commands)
+        self.assertIn(
+            "tests.validation.test_target_surface_contracts",
+            commands,
+        )
+        self.assertEqual(
+            1,
+            sum(
+                step.get("name") == "Check target surface contracts"
+                for step in repo_steps
+                if isinstance(step, dict)
+            ),
+        )
+
+    def test_ci_quality_policy_mutations_fail_closed(self) -> None:
+        cases = (
+            (
+                "permissions",
+                "repo-contracts:\n    permissions:\n      contents: read",
+                "repo-contracts:\n    permissions:\n      contents: read\n      issues: read",
+                "permissions must match",
+            ),
+            (
+                "concurrency",
+                "cancel-in-progress: true",
+                "cancel-in-progress: false",
+                "concurrency must match",
+            ),
+            (
+                "timeout",
+                "repo-contracts:\n    permissions:\n      contents: read\n    runs-on: ubuntu-latest\n    timeout-minutes: 10",
+                "repo-contracts:\n    permissions:\n      contents: read\n    runs-on: ubuntu-latest",
+                "timeout-minutes must equal",
+            ),
+            (
+                "action-pin",
+                "actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0",
+                "actions/checkout@v4",
+                "full commit SHA",
+            ),
+            (
+                "untrusted-run-input",
+                "run: bash scripts/validation/check-repo-contracts.sh",
+                "run: bash scripts/validation/check-repo-contracts.sh '${{ github.event.pull_request.title }}'",
+                "untrusted GitHub context",
+            ),
+            (
+                "untrusted-direct-ref",
+                "run: bash scripts/validation/check-repo-contracts.sh",
+                "run: bash scripts/validation/check-repo-contracts.sh '${{ github.ref }}'",
+                "untrusted GitHub context",
+            ),
+            (
+                "stable-job-name",
+                "  repo-contracts:\n",
+                "  target-repo-contracts:\n",
+                "missing required QA/CI job: repo-contracts",
+            ),
+            (
+                "artifact-upload",
+                "      - name: Check docs traceability sync",
+                "      - name: Forbidden artifact upload\n        uses: actions/upload-artifact@0000000000000000000000000000000000000000\n      - name: Check docs traceability sync",
+                "artifact upload is forbidden",
+            ),
+            (
+                "artifact-upload-mixed-owner-case",
+                "      - name: Check docs traceability sync",
+                "      - name: Forbidden artifact upload\n        uses: Actions/upload-artifact@0000000000000000000000000000000000000000\n      - name: Check docs traceability sync",
+                "artifact upload is forbidden",
+            ),
+            (
+                "artifact-upload-mixed-action-case",
+                "      - name: Check docs traceability sync",
+                "      - name: Forbidden artifact upload\n        uses: actions/Upload-Artifact@0000000000000000000000000000000000000000\n      - name: Check docs traceability sync",
+                "artifact upload is forbidden",
+            ),
+        )
+        program = self._workflow_security_program()
+        for label, old, new, expected in cases:
+            with self.subTest(label=label), self._workflow_fixture() as root:
+                workflow_path = root / ".github/workflows/ci-quality.yml"
+                text = workflow_path.read_text(encoding="utf-8")
+                self.assertIn(old, text)
+                workflow_path.write_text(text.replace(old, new, 1), encoding="utf-8")
+                result = subprocess.run(
+                    [sys.executable, "-c", program],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(1, result.returncode, result.stderr)
+                self.assertIn(expected, result.stderr)
+
+        with (
+            self.subTest(label="ref-env-indirection-is-safe"),
+            self._workflow_fixture() as root,
+        ):
+            workflow_path = root / ".github/workflows/ci-quality.yml"
+            text = workflow_path.read_text(encoding="utf-8")
+            old = "        run: bash scripts/validation/check-repo-contracts.sh"
+            new = (
+                "        env:\n"
+                "          SAFE_REF: ${{ github.ref }}\n"
+                '        run: bash scripts/validation/check-repo-contracts.sh "$SAFE_REF"'
+            )
+            self.assertIn(old, text)
+            workflow_path.write_text(text.replace(old, new, 1), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+
+        safe_actions = (
+            "actions/download-artifact@0000000000000000000000000000000000000000",
+            "example/upload-artifact-helper@0000000000000000000000000000000000000000",
+        )
+        for action in safe_actions:
+            with (
+                self.subTest(label="non-upload-action-is-safe", action=action),
+                self._workflow_fixture() as root,
+            ):
+                workflow_path = root / ".github/workflows/ci-quality.yml"
+                text = workflow_path.read_text(encoding="utf-8")
+                old = "      - name: Check docs traceability sync"
+                new = (
+                    f"      - name: Safe action control\n        uses: {action}\n{old}"
+                )
+                self.assertIn(old, text)
+                workflow_path.write_text(text.replace(old, new, 1), encoding="utf-8")
+                result = subprocess.run(
+                    [sys.executable, "-c", program],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_ci_quality_duplicate_yaml_keys_fail_closed(self) -> None:
+        sentinel = "duplicate-workflow-secret-sentinel"
+        cases = (
+            (
+                "top-level",
+                "permissions:\n  contents: read\n\nconcurrency:",
+                "permissions:\n  contents: read\n"
+                f"permissions:\n  contents: read # {sentinel}\n\nconcurrency:",
+            ),
+            (
+                "job-id",
+                "  docs-implementation-alignment:\n",
+                "  docs-traceability:\n"
+                "    permissions:\n"
+                f"      contents: read # {sentinel}\n"
+                "    runs-on: ubuntu-latest\n"
+                "    timeout-minutes: 5\n"
+                "    steps: []\n\n"
+                "  docs-implementation-alignment:\n",
+            ),
+            (
+                "job-policy",
+                "    timeout-minutes: 10\n    env:\n      TEMPLATE_GATE_BASE:",
+                "    timeout-minutes: 10\n"
+                f"    timeout-minutes: 10 # {sentinel}\n"
+                "    env:\n"
+                "      TEMPLATE_GATE_BASE:",
+            ),
+        )
+        program = self._workflow_security_program()
+        for label, old, new in cases:
+            with self.subTest(label=label), self._workflow_fixture() as root:
+                workflow_path = root / ".github/workflows/ci-quality.yml"
+                text = workflow_path.read_text(encoding="utf-8")
+                self.assertIn(old, text)
+                workflow_path.write_text(text.replace(old, new, 1), encoding="utf-8")
+                result = subprocess.run(
+                    [sys.executable, "-c", program],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(1, result.returncode, result.stderr)
+                self.assertIn("duplicate YAML mapping key", result.stderr)
+                self.assertNotIn(sentinel, result.stderr)
+
     def test_recommender_selects_coupled_contract_and_eval_gates(self) -> None:
         for path in COUPLED_PATHS:
             with self.subTest(path=path):
@@ -898,6 +1170,23 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             ),
             r"grep .*validate-harness",
         )
+
+    @staticmethod
+    def _workflow_security_program() -> str:
+        source = REPO_CONTRACT.read_text(encoding="utf-8")
+        start = "section \"GitHub workflow security contracts\"\nif ! python3 - <<'PY'; then\n"
+        return source.split(start, 1)[1].split(
+            "\nPY\n  failures=$((failures + 1))",
+            1,
+        )[0]
+
+    @staticmethod
+    @contextlib.contextmanager
+    def _workflow_fixture():
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            shutil.copytree(ROOT / ".github", root / ".github")
+            yield root
 
     @staticmethod
     @contextlib.contextmanager

@@ -61,7 +61,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 
 | Purpose    | Canonical paths                                                                                                                                                                                                                                                                                                                                                                                                    |
 | :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/validate-harness.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-document-metadata.py`, `scripts/validation/check-agentic-audit-semantic-freshness.py`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `scripts/validation/recommend-gap-routing.sh`, `scripts/validation/recommend-qa-gates.sh`, `scripts/validation/report-audit-pack-coverage.sh`, `scripts/validation/report-provider-hook-parity.sh`, `scripts/validation/run-agent-output-eval-fixtures.sh`, `scripts/validation/run-agent-precommit-all-files.sh`, `scripts/validation/run-local-qa-gates.sh` |
+| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/validate-harness.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-target-surface-contract.py`, `scripts/validation/target_surface_contract.py`, `scripts/validation/check-document-metadata.py`, `scripts/validation/check-agentic-audit-semantic-freshness.py`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `scripts/validation/recommend-gap-routing.sh`, `scripts/validation/recommend-qa-gates.sh`, `scripts/validation/report-audit-pack-coverage.sh`, `scripts/validation/report-provider-hook-parity.sh`, `scripts/validation/run-agent-output-eval-fixtures.sh`, `scripts/validation/run-agent-precommit-all-files.sh`, `scripts/validation/run-local-qa-gates.sh` |
 | Hardening  | `scripts/hardening/check-all-hardening.sh`                                                                                                                                                                                                                                                                                                                                                                         |
 | Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/patch-graphify-post-commit.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                          |
 | Knowledge  | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/generate-llm-wiki-coverage.sh`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                      |
@@ -106,6 +106,7 @@ script.
 | Agentic Audit Semantic Freshness       | [check-agentic-audit-semantic-freshness.py](./validation/check-agentic-audit-semantic-freshness.py) | Enforce the bounded canonical-audit closure assertions and lifecycle routes from tracked repository evidence                                                                                                     |
 | Document Metadata Inventory / Changed Gate | [check-document-metadata.py](./validation/check-document-metadata.py)                    | Parse typed metadata profiles, generate/check the advisory inventory, and enforce safely selected changed/new Markdown without rewriting documents                                                              |
 | Document Corpus Lifecycle Gate         | [check-document-corpus-lifecycle.py](./validation/check-document-corpus-lifecycle.py)    | Enforce migration contracts, promoted manifests, impacted records, safe Git provenance, duplicate reports, review signals, directory budgets, and deterministic lifecycle evidence without mutating corpus documents |
+| Target Surface Contract Gate           | [check-target-surface-contract.py](./validation/check-target-surface-contract.py)          | Run the thin CLI over the immutable `target_surface_contract.py` finding API for manifest coverage, removed active targets/claims, phantom gitlinks, the sample Service, and reviewed duplicate disposition without rendering bodies or values |
 | Storybook Contract Check               | [check-storybook-contract.sh](./validation/check-storybook-contract.sh)                     | Enforce Storybook CI scripts, workflow wiring, and 90% coverage threshold metadata                                                                                                                              |
 | QuickWin Baseline Check                | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh)                       | Enforce PLN-QW-001~005 baseline controls                                                                                                                                                                        |
 | Template & Security Baseline Check     | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh)     | Enforce template adoption and required security controls                                                                                                                                                        |
@@ -247,6 +248,13 @@ Run its focused inventory with
 The executable test inventory is
 `tests/validation/test_document_corpus_lifecycle.py`.
 
+`scripts/validation/check-target-surface-contract.py` is the thin focused gate
+for Spec 133 target convergence. The immutable library finding records expose
+stable codes, safe repository paths, and value-free messages. Metadata,
+archive, Compose, and workflow semantics remain delegated to their existing
+owners. Run its focused suite with
+`python3 -m unittest tests.validation.test_target_surface_contracts -v`.
+
 `scripts/validation/run-agent-precommit-all-files.sh` is the only approved
 agent entrypoint for `pre-commit run --all-files`. Use it only at the approved
 final QA gate, from an initially clean linked worktree, with one tracked
@@ -313,6 +321,9 @@ not automatically accepted by this repository.
 
 # Enforce repository contracts
 ./scripts/validation/check-repo-contracts.sh
+
+# Enforce focused target-surface convergence contracts
+python3 scripts/validation/check-target-surface-contract.py
 
 # Enforce active docs to tracked implementation alignment
 bash scripts/validation/check-doc-implementation-alignment.sh

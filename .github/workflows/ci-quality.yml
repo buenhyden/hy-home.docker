@@ -108,7 +108,9 @@ jobs:
       - name: Check changed and new document metadata
         run: python3 scripts/validation/check-document-metadata.py --mode check-changed
       - name: Check agent governance routing and eval regressions
-        run: python3 -m unittest tests.validation.test_agent_governance_ci_routing tests.validation.test_agent_output_eval_fixtures -v
+        run: python3 -m unittest tests.validation.test_agent_governance_ci_routing tests.validation.test_agent_output_eval_fixtures tests.validation.test_target_surface_contracts -v
+      - name: Check target surface contracts
+        run: python3 scripts/validation/check-target-surface-contract.py
       - name: Check canonical audit semantic freshness
         run: python3 scripts/validation/check-agentic-audit-semantic-freshness.py
       - name: Check typed agent governance repository contract

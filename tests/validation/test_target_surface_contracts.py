@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import contextlib
 import importlib.util
 import pathlib
 import subprocess
 import sys
+import tempfile
 import unittest
 
 import yaml
@@ -19,7 +21,105 @@ TARGET_MANIFEST = (
     / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
 )
 TARGET_SUMMARY = TARGET_MANIFEST.with_name("target-surface-convergence-summary.md")
-TARGET_ROOTS = (".github", "archive", "examples", "infra", "projects", "scripts", "secrets", "tests")
+TARGET_VALIDATOR = ROOT / "scripts/validation/target_surface_contract.py"
+TARGET_CLI = ROOT / "scripts/validation/check-target-surface-contract.py"
+TARGET_ROOTS = (
+    ".github",
+    "archive",
+    "examples",
+    "infra",
+    "projects",
+    "scripts",
+    "secrets",
+    "tests",
+)
+EXPECTED_FINDING_CODES = frozenset(
+    {
+        "target-duplicate-disposition-invalid",
+        "target-manifest-coverage-missing",
+        "target-manifest-invalid",
+        "target-phantom-gitlink-claim",
+        "target-phantom-gitlink-present",
+        "target-removed-active-claim",
+        "target-removed-path-present",
+        "target-sample-service-metadata-invalid",
+        "target-sample-service-sections-invalid",
+        "target-sample-service-template-residue",
+    }
+)
+PHANTOM_CLAIM_PATHS = (
+    ".prettierignore",
+    "projects/storybook/README.md",
+    "projects/storybook/nextjs/README.md",
+    "scripts/knowledge/report-graphify-health.sh",
+    "scripts/hooks/agent-event-hook.sh",
+)
+INFLUX_ACTIVE_PATHS = (
+    "infra/04-data/analytics/influxdb/README.md",
+    "docs/01.requirements/005-data-analytics.md",
+    "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
+    "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
+    "docs/03.specs/005-data-analytics/README.md",
+    "docs/03.specs/005-data-analytics/spec.md",
+    "docs/05.operations/guides/04-data/analytics/README.md",
+    "docs/05.operations/guides/04-data/analytics/influxdb.md",
+    "docs/05.operations/policies/04-data/analytics/influxdb.md",
+    "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
+)
+INFLUX_V2_PATH = "infra/04-data/analytics/influxdb/docker-compose.v2.yml"
+OPENSEARCH_DUPLICATE_PATH = (
+    "infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt.example"
+)
+OPENSEARCH_RETAINED_PATH = (
+    "infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt"
+)
+
+VALID_SAMPLE_SERVICE = """---
+status: active
+artifact_id: spec:sample-web-service
+artifact_type: spec
+parent_ids:
+  - spec:133-target-surface-contract-convergence
+---
+
+# sample-web-service Service Contract
+
+## Overview
+
+Fixture overview.
+
+## Parent and Scope
+
+Fixture scope.
+
+## Image and Build
+
+Fixture image.
+
+## Security
+
+Fixture security.
+
+## Networking and Storage
+
+Fixture network.
+
+## Secrets
+
+Fixture secret boundary.
+
+## Health and Operations
+
+Fixture health.
+
+## Validation
+
+Fixture validation.
+
+## Related Documents
+
+- Fixture relation.
+"""
 
 spec = importlib.util.spec_from_file_location("target_surface_metadata", CHECKER)
 if spec is None or spec.loader is None:
@@ -36,7 +136,411 @@ def tracked_paths(*pathspecs: str) -> list[pathlib.Path]:
         capture_output=True,
         check=True,
     )
-    return [pathlib.Path(raw.decode("utf-8")) for raw in result.stdout.split(b"\0") if raw]
+    return [
+        pathlib.Path(raw.decode("utf-8")) for raw in result.stdout.split(b"\0") if raw
+    ]
+
+
+def load_target_validator():
+    validator_spec = importlib.util.spec_from_file_location(
+        "target_surface_contract", TARGET_VALIDATOR
+    )
+    if validator_spec is None or validator_spec.loader is None:
+        raise RuntimeError(f"unable to load target validator: {TARGET_VALIDATOR}")
+    module = importlib.util.module_from_spec(validator_spec)
+    sys.modules[validator_spec.name] = module
+    validator_spec.loader.exec_module(module)
+    return module
+
+
+def _write_text(root: pathlib.Path, relative: str, text: str) -> None:
+    target = root / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(text, encoding="utf-8")
+
+
+def _manifest_row(path: str) -> dict[str, object]:
+    surface_class = "configuration"
+    if path.endswith("README.md"):
+        surface_class = "readme"
+    elif path == "examples/sample-web-service/service.md":
+        surface_class = "typed-example"
+    elif path.endswith(".sh"):
+        surface_class = "executable-script"
+    elif path.endswith("docker-compose.v2.yml"):
+        surface_class = "runtime"
+    elif path == OPENSEARCH_RETAINED_PATH:
+        surface_class = "unsupported-static"
+
+    row: dict[str, object] = {
+        "source_path": path,
+        "target_path": path,
+        "surface_class": surface_class,
+        "disposition": "preserve",
+        "review_verdict": {"specification": "pending", "quality": "pending"},
+    }
+    if path == "examples/sample-web-service/service.md":
+        row["disposition"] = "migrate"
+    if path in {INFLUX_V2_PATH, OPENSEARCH_DUPLICATE_PATH}:
+        row.update(
+            {
+                "target_path": None,
+                "disposition": "delete",
+                "review_verdict": {"specification": "pass", "quality": "pass"},
+            }
+        )
+    return row
+
+
+@contextlib.contextmanager
+def target_contract_fixture():
+    with tempfile.TemporaryDirectory() as directory:
+        root = pathlib.Path(directory)
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(
+            ["git", "config", "user.name", "Target Contract Test"],
+            cwd=root,
+            check=True,
+        )
+        subprocess.run(
+            ["git", "config", "user.email", "target@example.invalid"],
+            cwd=root,
+            check=True,
+        )
+
+        files: dict[str, str] = {
+            ".prettierignore": "# governed ignore paths\n",
+            "examples/sample-web-service/service.md": VALID_SAMPLE_SERVICE,
+            INFLUX_V2_PATH: "services: {}\n",
+            OPENSEARCH_DUPLICATE_PATH: "",
+            OPENSEARCH_RETAINED_PATH: "",
+        }
+        files.update(
+            {path: "Current target surface.\n" for path in PHANTOM_CLAIM_PATHS[1:]}
+        )
+        files.update(
+            {path: "InfluxDB 3 current contract.\n" for path in INFLUX_ACTIVE_PATHS}
+        )
+        for relative, text in files.items():
+            _write_text(root, relative, text)
+
+        subprocess.run(["git", "add", "."], cwd=root, check=True)
+        subprocess.run(
+            ["git", "commit", "-qm", "fixture baseline"], cwd=root, check=True
+        )
+        baseline = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+
+        (root / INFLUX_V2_PATH).unlink()
+        (root / OPENSEARCH_DUPLICATE_PATH).unlink()
+
+        manifest = root / TARGET_MANIFEST.relative_to(ROOT)
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        document = {
+            "schema_version": 2,
+            "wave": "target-surface-convergence",
+            "baseline_commit": baseline,
+            "generated_by": "check-document-corpus-lifecycle.py",
+            "enforcement": "advisory",
+            "entries": [_manifest_row(path) for path in sorted(files)],
+        }
+        manifest.write_text(
+            yaml.safe_dump(document, sort_keys=False, allow_unicode=True),
+            encoding="utf-8",
+        )
+        yield root, manifest, baseline
+
+
+def _mutate_manifest(manifest: pathlib.Path, mutation) -> None:
+    document = yaml.safe_load(manifest.read_text(encoding="utf-8"))
+    mutation(document)
+    manifest.write_text(
+        yaml.safe_dump(document, sort_keys=False, allow_unicode=True),
+        encoding="utf-8",
+    )
+
+
+class TargetSurfaceValidatorPublicContractTests(unittest.TestCase):
+    def test_validator_exposes_every_stable_target_finding_code(self) -> None:
+        validator = load_target_validator()
+        self.assertEqual(EXPECTED_FINDING_CODES, validator.FINDING_CODES)
+        finding = validator.Finding("code", "safe/path", "message")
+        with self.assertRaises((AttributeError, TypeError)):
+            finding.code = "changed"
+
+    def test_thin_cli_accepts_the_current_repository_without_diagnostics(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(TARGET_CLI)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual("", result.stdout)
+        self.assertEqual("", result.stderr)
+
+
+class TargetSurfaceValidatorFindingTests(unittest.TestCase):
+    def _findings(
+        self, root: pathlib.Path, manifest: pathlib.Path
+    ) -> tuple[object, ...]:
+        return load_target_validator().validate(root, manifest)
+
+    def _assert_code(
+        self,
+        expected: str,
+        root: pathlib.Path,
+        manifest: pathlib.Path,
+        *,
+        path: str | None = None,
+    ) -> tuple[object, ...]:
+        findings = self._findings(root, manifest)
+        matches = [finding for finding in findings if finding.code == expected]
+        self.assertEqual(1, len(matches), findings)
+        if path is not None:
+            self.assertEqual(path, matches[0].path)
+        self.assertEqual(tuple(sorted(findings)), findings)
+        return findings
+
+    def test_invalid_manifest_is_value_free(self) -> None:
+        sentinel = "manifest-secret-sentinel"
+        with target_contract_fixture() as (root, manifest, _baseline):
+            manifest.write_text(f"entries: [{{unsafe: {sentinel}}}\n", encoding="utf-8")
+            findings = self._assert_code(
+                "target-manifest-invalid",
+                root,
+                manifest,
+                path=manifest.relative_to(root).as_posix(),
+            )
+        self.assertNotIn(sentinel, repr(findings))
+
+    def test_duplicate_manifest_keys_fail_closed_without_values(self) -> None:
+        sentinel = "duplicate-manifest-secret-sentinel"
+        mutations = (
+            (
+                "top-level",
+                "wave: target-surface-convergence\n",
+                "wave: target-surface-convergence\n"
+                f"wave: target-surface-convergence # {sentinel}\n",
+            ),
+            (
+                "row-level",
+                "- source_path: .prettierignore\n",
+                "- source_path: .prettierignore\n"
+                f"  source_path: .prettierignore # {sentinel}\n",
+            ),
+        )
+        for label, old, new in mutations:
+            with (
+                self.subTest(label=label),
+                target_contract_fixture() as (
+                    root,
+                    manifest,
+                    _baseline,
+                ),
+            ):
+                text = manifest.read_text(encoding="utf-8")
+                self.assertIn(old, text)
+                manifest.write_text(text.replace(old, new, 1), encoding="utf-8")
+                findings = self._findings(root, manifest)
+                self.assertEqual(1, len(findings), findings)
+                self.assertEqual("target-manifest-invalid", findings[0].code)
+                self.assertEqual(
+                    manifest.relative_to(root).as_posix(), findings[0].path
+                )
+                self.assertNotIn(sentinel, repr(findings))
+
+    def test_manifest_must_cover_every_baseline_target_path(self) -> None:
+        with target_contract_fixture() as (root, manifest, _baseline):
+            _mutate_manifest(
+                manifest,
+                lambda document: document["entries"].__setitem__(
+                    slice(None),
+                    [
+                        row
+                        for row in document["entries"]
+                        if row["source_path"] != ".prettierignore"
+                    ],
+                ),
+            )
+            self._assert_code(
+                "target-manifest-coverage-missing",
+                root,
+                manifest,
+                path=".prettierignore",
+            )
+
+    def test_reviewed_removed_path_must_stay_absent(self) -> None:
+        with target_contract_fixture() as (root, manifest, _baseline):
+            _write_text(root, INFLUX_V2_PATH, "services: {}\n")
+            self._assert_code(
+                "target-removed-path-present",
+                root,
+                manifest,
+                path=INFLUX_V2_PATH,
+            )
+
+    def test_removed_active_claim_is_value_free(self) -> None:
+        sentinel = "claim-secret-sentinel"
+        path = "infra/04-data/analytics/influxdb/README.md"
+        with target_contract_fixture() as (root, manifest, _baseline):
+            _write_text(root, path, f"InfluxDB 2 {sentinel}\n")
+            findings = self._assert_code(
+                "target-removed-active-claim", root, manifest, path=path
+            )
+        self.assertNotIn(sentinel, repr(findings))
+
+    def test_removed_active_claim_patterns_are_bounded_and_case_insensitive(
+        self,
+    ) -> None:
+        path = "infra/04-data/analytics/influxdb/README.md"
+        sentinel = "runtime-claim-secret-sentinel"
+        removed_claims = (
+            "InfluxDB v2",
+            "influxdb 2",
+            "legacy flux",
+            "DOCKER-COMPOSE.V2.YML",
+            "8086",
+        )
+        for claim in removed_claims:
+            with (
+                self.subTest(claim=claim),
+                target_contract_fixture() as (
+                    root,
+                    manifest,
+                    _baseline,
+                ),
+            ):
+                _write_text(root, path, f"{claim} {sentinel}\n")
+                findings = self._assert_code(
+                    "target-removed-active-claim", root, manifest, path=path
+                )
+                self.assertNotIn(sentinel, repr(findings))
+
+        safe_controls = (
+            "InfluxDB 20",
+            "InfluxDB v20",
+            "legacy fluxion",
+            "docker-compose.v2.yml.bak",
+            "18086",
+        )
+        with target_contract_fixture() as (root, manifest, _baseline):
+            _write_text(root, path, "\n".join(safe_controls) + "\n")
+            _write_text(root, "archive/historical-influxdb.md", "InfluxDB v2\n")
+            self.assertEqual((), self._findings(root, manifest))
+
+    def test_phantom_gitlink_claim_is_value_free(self) -> None:
+        sentinel = "phantom-secret-sentinel"
+        with target_contract_fixture() as (root, manifest, _baseline):
+            _write_text(
+                root,
+                ".prettierignore",
+                f"projects/storybook/mcp {sentinel}\n",
+            )
+            findings = self._assert_code(
+                "target-phantom-gitlink-claim",
+                root,
+                manifest,
+                path=".prettierignore",
+            )
+        self.assertNotIn(sentinel, repr(findings))
+
+    def test_phantom_gitlink_index_entry_is_rejected(self) -> None:
+        with target_contract_fixture() as (root, manifest, baseline):
+            subprocess.run(
+                [
+                    "git",
+                    "update-index",
+                    "--add",
+                    "--cacheinfo",
+                    f"160000,{baseline},projects/storybook/mcp",
+                ],
+                cwd=root,
+                check=True,
+            )
+            self._assert_code(
+                "target-phantom-gitlink-present",
+                root,
+                manifest,
+                path="projects/storybook/mcp",
+            )
+
+    def test_sample_service_metadata_is_exact(self) -> None:
+        with target_contract_fixture() as (root, manifest, _baseline):
+            service = root / "examples/sample-web-service/service.md"
+            service.write_text(
+                service.read_text(encoding="utf-8").replace(
+                    "spec:sample-web-service", "spec:wrong-service", 1
+                ),
+                encoding="utf-8",
+            )
+            self._assert_code(
+                "target-sample-service-metadata-invalid",
+                root,
+                manifest,
+                path="examples/sample-web-service/service.md",
+            )
+
+    def test_sample_service_sections_are_exact(self) -> None:
+        with target_contract_fixture() as (root, manifest, _baseline):
+            service = root / "examples/sample-web-service/service.md"
+            service.write_text(
+                service.read_text(encoding="utf-8").replace("## Security\n", ""),
+                encoding="utf-8",
+            )
+            self._assert_code(
+                "target-sample-service-sections-invalid",
+                root,
+                manifest,
+                path="examples/sample-web-service/service.md",
+            )
+
+    def test_sample_service_rejects_template_residue_without_echo(self) -> None:
+        sentinel = "template-secret-sentinel"
+        with target_contract_fixture() as (root, manifest, _baseline):
+            service = root / "examples/sample-web-service/service.md"
+            service.write_text(
+                service.read_text(encoding="utf-8") + f"\n{{{{ {sentinel} }}}}\n",
+                encoding="utf-8",
+            )
+            findings = self._assert_code(
+                "target-sample-service-template-residue",
+                root,
+                manifest,
+                path="examples/sample-web-service/service.md",
+            )
+        self.assertNotIn(sentinel, repr(findings))
+
+    def test_reviewed_duplicate_disposition_is_exact(self) -> None:
+        def mutation(document: dict[str, object]) -> None:
+            row = next(
+                entry
+                for entry in document["entries"]
+                if entry["source_path"] == OPENSEARCH_DUPLICATE_PATH
+            )
+            row["review_verdict"] = {
+                "specification": "pass",
+                "quality": "pending",
+            }
+
+        with target_contract_fixture() as (root, manifest, _baseline):
+            _mutate_manifest(manifest, mutation)
+            self._assert_code(
+                "target-duplicate-disposition-invalid",
+                root,
+                manifest,
+                path=OPENSEARCH_DUPLICATE_PATH,
+            )
+
+    def test_clean_fixture_has_no_findings(self) -> None:
+        with target_contract_fixture() as (root, manifest, _baseline):
+            self.assertEqual((), self._findings(root, manifest))
 
 
 class SampleServiceContractTests(unittest.TestCase):
@@ -72,7 +576,9 @@ class SampleServiceContractTests(unittest.TestCase):
         self.assertEqual(role["required_headings"], headings)
         self.assertNotIn("## Template Usage", headings)
 
-    def test_sample_service_contains_no_template_instruction_or_placeholder(self) -> None:
+    def test_sample_service_contains_no_template_instruction_or_placeholder(
+        self,
+    ) -> None:
         for forbidden in (
             "<artifact-id>",
             "<parent-artifact-id>",
@@ -118,9 +624,7 @@ class TargetReadmeProfileTests(unittest.TestCase):
 
     def test_all_75_target_readmes_match_exactly_one_profile(self) -> None:
         readmes = [
-            path
-            for path in tracked_paths(*TARGET_ROOTS)
-            if path.name == "README.md"
+            path for path in tracked_paths(*TARGET_ROOTS) if path.name == "README.md"
         ]
         self.assertEqual(75, len(readmes))
         for path in readmes:
@@ -130,7 +634,9 @@ class TargetReadmeProfileTests(unittest.TestCase):
                     len(metadata.matching_readme_profiles(path, self.profiles)),
                 )
 
-    def test_native_markdown_and_typed_example_do_not_inherit_readme_profiles(self) -> None:
+    def test_native_markdown_and_typed_example_do_not_inherit_readme_profiles(
+        self,
+    ) -> None:
         native_or_typed_paths = (
             pathlib.Path(".github/PULL_REQUEST_TEMPLATE.md"),
             pathlib.Path(".github/SECURITY.md"),
@@ -173,7 +679,8 @@ class StorybookPhantomContractTests(unittest.TestCase):
     def test_historical_spec_and_plan_evidence_remains_allowed(self) -> None:
         historical_owners = (
             ROOT / "docs/03.specs/133-target-surface-contract-convergence/spec.md",
-            ROOT / "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
+            ROOT
+            / "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
         )
         for path in historical_owners:
             with self.subTest(path=path.relative_to(ROOT).as_posix()):
@@ -241,8 +748,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             "userdict_ko.txt.example"
         )
         retained_path = (
-            "infra/04-data/analytics/opensearch/opensearch/config/"
-            "userdict_ko.txt"
+            "infra/04-data/analytics/opensearch/opensearch/config/userdict_ko.txt"
         )
         row = next(
             entry
@@ -326,17 +832,11 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
         )
         self.assertEqual(
             7,
-            sum(
-                entry["disposition"] == "migrate"
-                for entry in manifest["entries"]
-            ),
+            sum(entry["disposition"] == "migrate" for entry in manifest["entries"]),
         )
         self.assertEqual(
             474,
-            sum(
-                entry["disposition"] == "preserve"
-                for entry in manifest["entries"]
-            ),
+            sum(entry["disposition"] == "preserve" for entry in manifest["entries"]),
         )
         self.assertEqual(baseline_influxdb_row, influxdb_row)
         self.assertEqual(
@@ -509,17 +1009,14 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
 
     def test_influxdb_v2_compose_is_removed(self) -> None:
         self.assertFalse(
-            (
-                ROOT
-                / "infra/04-data/analytics/influxdb/docker-compose.v2.yml"
-            ).exists()
+            (ROOT / "infra/04-data/analytics/influxdb/docker-compose.v2.yml").exists()
         )
 
     def test_v2_only_example_and_metadata_keys_are_removed(self) -> None:
         env_example = (ROOT / ".env.example").read_text(encoding="utf-8")
-        metadata_example = (
-            ROOT / "secrets/SENSITIVE_ENV_VARS.md.example"
-        ).read_text(encoding="utf-8")
+        metadata_example = (ROOT / "secrets/SENSITIVE_ENV_VARS.md.example").read_text(
+            encoding="utf-8"
+        )
 
         for forbidden in (
             "INFLUXDB_ORG",
@@ -598,7 +1095,8 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
         active_paths = (
             ROOT / "infra/04-data/analytics/influxdb/README.md",
             ROOT / "docs/01.requirements/005-data-analytics.md",
-            ROOT / "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
+            ROOT
+            / "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
             ROOT / "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
             ROOT / "docs/03.specs/005-data-analytics/README.md",
             ROOT / "docs/03.specs/005-data-analytics/spec.md",
@@ -641,7 +1139,8 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
     def test_historical_and_negative_influxdb_v2_evidence_remains_allowed(self) -> None:
         historical_owners = (
             ROOT / "docs/03.specs/133-target-surface-contract-convergence/spec.md",
-            ROOT / "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
+            ROOT
+            / "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
         )
         for path in historical_owners:
             with self.subTest(path=path.relative_to(ROOT).as_posix()):

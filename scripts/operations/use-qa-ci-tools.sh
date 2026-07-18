@@ -53,7 +53,7 @@ fi
 
 if [ "$qa_ci_is_sourced" -eq 0 ]; then
   missing=0
-  for tool in git bash python3 docker jq node npm pnpm pre-commit zizmor yamllint markdownlint-cli2 shellcheck shfmt actionlint hadolint gitleaks check-jsonschema cz; do
+  for tool in git bash python3 ruff docker jq node npm pnpm pre-commit zizmor yamllint markdownlint-cli2 shellcheck shfmt actionlint hadolint gitleaks check-jsonschema cz; do
     if command -v "$tool" >/dev/null 2>&1; then
       printf '%s=%s\n' "$tool" "$(command -v "$tool")"
     else

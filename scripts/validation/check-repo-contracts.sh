@@ -77,6 +77,20 @@ if [[ -f "$lifecycle_checker" && -f "$lifecycle_contract" ]]; then
   fi
 fi
 
+section "Target surface convergence contracts"
+target_surface_checker="scripts/validation/check-target-surface-contract.py"
+target_surface_library="scripts/validation/target_surface_contract.py"
+target_surface_tests="tests/validation/test_target_surface_contracts.py"
+
+[[ -f "$target_surface_checker" ]] || fail "missing target surface checker: $target_surface_checker"
+[[ -f "$target_surface_library" ]] || fail "missing target surface library: $target_surface_library"
+[[ -f "$target_surface_tests" ]] || fail "missing target surface tests: $target_surface_tests"
+if [[ -f "$target_surface_checker" && -f "$target_surface_library" ]]; then
+  if ! python3 "$target_surface_checker"; then
+    failures=$((failures + 1))
+  fi
+fi
+
 if [[ "$actual_docs_text" != "$expected_docs" ]]; then
   fail "docs top-level folders do not match the allowed taxonomy"
   echo "Expected:" >&2
@@ -900,11 +914,70 @@ workflow_files = sorted(
     + list(pathlib.Path(".github/workflows").glob("*.yaml"))
 )
 sha_re = re.compile(r"^[0-9a-f]{40}$")
+workflow_documents: dict[pathlib.Path, dict[object, object]] = {}
+
+
+class DuplicateKeyError(yaml.YAMLError):
+    pass
+
+
+class UniqueKeyLoader(yaml.SafeLoader):
+    pass
+
+
+def construct_unique_mapping(
+    loader: UniqueKeyLoader,
+    node: yaml.nodes.MappingNode,
+    deep: bool = False,
+) -> dict[object, object]:
+    mapping: dict[object, object] = {}
+    for key_node, value_node in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        try:
+            duplicate = key in mapping
+        except TypeError as error:
+            raise yaml.constructor.ConstructorError(
+                "while constructing a mapping",
+                node.start_mark,
+                "mapping key must be a hashable scalar",
+                key_node.start_mark,
+            ) from error
+        if duplicate:
+            raise DuplicateKeyError("duplicate mapping key")
+        mapping[key] = loader.construct_object(value_node, deep=deep)
+    return mapping
+
+
+UniqueKeyLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+    construct_unique_mapping,
+)
+
+
+def load_workflow(path: pathlib.Path, text: str) -> dict[object, object] | None:
+    try:
+        data = yaml.load(text, Loader=UniqueKeyLoader)
+    except DuplicateKeyError:
+        failures.append(f"{path}: duplicate YAML mapping key")
+        return None
+    except yaml.YAMLError:
+        failures.append(f"{path}: invalid workflow YAML")
+        return None
+    if not isinstance(data, dict):
+        failures.append(f"{path}: workflow root must be a mapping")
+        return None
+    return data
 
 for path in workflow_files:
     text = path.read_text()
-    data = yaml.safe_load(text) or {}
+    data = load_workflow(path, text)
+    if data is None:
+        continue
+    workflow_documents[path] = data
     jobs = data.get("jobs") or {}
+    if not isinstance(jobs, dict):
+        failures.append(f"{path}: workflow jobs must be a mapping")
+        jobs = {}
     top_permissions = data.get("permissions")
 
     if top_permissions is None:
@@ -915,12 +988,21 @@ for path in workflow_files:
         failures.append(f"{path}: contents: write is not allowed")
     if "git push origin main" in text:
         failures.append(f"{path}: direct push to main is not allowed")
+    raw_upload_artifact = "actions/upload-artifact@" in text
+    if raw_upload_artifact:
+        failures.append(f"{path}: artifact upload is forbidden")
 
     for line_no, line in enumerate(text.splitlines(), start=1):
         match = re.match(r"^\s*uses:\s*([^#\s]+)", line)
         if not match:
             continue
         action = match.group(1).strip("'\"")
+        if (
+            action.casefold().startswith("actions/upload-artifact@")
+            and not raw_upload_artifact
+        ):
+            failures.append(f"{path}: artifact upload is forbidden")
+            continue
         if action.startswith("./"):
             continue
         if "@" not in action:
@@ -961,17 +1043,76 @@ required_jobs = {
     "storybook-coverage",
 }
 ci_jobs: set[str] = set()
-if ci_quality.is_file():
-    data = yaml.safe_load(ci_quality.read_text()) or {}
+if ci_quality in workflow_documents:
+    data = workflow_documents[ci_quality]
     ci_text = ci_quality.read_text()
-    jobs = data.get("jobs") or {}
+    raw_jobs = data.get("jobs") or {}
+    jobs = raw_jobs if isinstance(raw_jobs, dict) else {}
     ci_jobs = set(jobs.keys())
+    expected_top_permissions = {"contents": "read"}
+    expected_concurrency = {
+        "group": "${{ github.workflow }}-${{ github.ref }}",
+        "cancel-in-progress": True,
+    }
+    if data.get("permissions") != expected_top_permissions:
+        failures.append(f"{ci_quality}: top-level permissions must match read-only quality policy")
+    if data.get("concurrency") != expected_concurrency:
+        failures.append(f"{ci_quality}: concurrency must match the stable quality policy")
     missing_jobs = sorted(required_jobs - ci_jobs)
     for job_id in missing_jobs:
         failures.append(f"{ci_quality}: missing required QA/CI job: {job_id}")
     unexpected_jobs = sorted(ci_jobs - required_jobs)
     for job_id in unexpected_jobs:
         failures.append(f"{ci_quality}: unexpected QA/CI job outside the ruleset contract: {job_id}")
+    expected_timeouts = {
+        "docs-traceability": 5,
+        "docs-implementation-alignment": 5,
+        "repo-contracts": 10,
+        "agent-output-eval-fixture-gate": 5,
+        "dependency-vulnerability-audit": 10,
+        "git-flow-contract": 5,
+        "compose-validation": 10,
+        "compose-all-profiles-validation": 10,
+        "infrastructure-hardening": 10,
+        "template-security-baseline": 10,
+        "quickwin-baseline": 10,
+        "pre-commit": 20,
+        "frontend-quality": 20,
+        "storybook-coverage": 20,
+        "zizmor": 10,
+    }
+    read_only_permissions = {"contents": "read"}
+    zizmor_permissions = {
+        "security-events": "write",
+        "actions": "read",
+        "contents": "read",
+    }
+    untrusted_run_re = re.compile(
+        r"\$\{\{\s*github\.(?:event(?:\.|_)|head_ref\b|ref_name\b|ref\b)"
+    )
+    for job_id, job in jobs.items():
+        if not isinstance(job, dict):
+            failures.append(f"{ci_quality}: job {job_id!r} must be a mapping")
+            continue
+        expected_permissions = (
+            zizmor_permissions if job_id == "zizmor" else read_only_permissions
+        )
+        if job.get("permissions") != expected_permissions:
+            failures.append(
+                f"{ci_quality}: job {job_id!r} permissions must match the approved policy"
+            )
+        if job.get("timeout-minutes") != expected_timeouts.get(job_id):
+            failures.append(
+                f"{ci_quality}: job {job_id!r} timeout-minutes must equal the approved bound"
+            )
+        for step in job.get("steps") or []:
+            if not isinstance(step, dict):
+                continue
+            run = step.get("run")
+            if isinstance(run, str) and untrusted_run_re.search(run):
+                failures.append(
+                    f"{ci_quality}: job {job_id!r} run step uses an untrusted GitHub context directly"
+                )
     for literal in [
         "Publish QA gate recommendations",
         "GITHUB_STEP_SUMMARY",
@@ -1228,9 +1369,10 @@ else:
         hook for hook in local_hooks if hook.get("id") == "check-repo-contracts"
     ]
     expected_selector = (
-        r"^(AGENTS\.md|CLAUDE\.md|GEMINI\.md|docker-compose\.yml|\.env\.example|"
+        r"^(AGENTS\.md|CLAUDE\.md|GEMINI\.md|docker-compose\.yml|\.env\.example|\.prettierignore|"
         r"\.agents/.*|\.claude/.*|\.codex/.*|\.gemini/.*|infra/.*|docs/.*|"
-        r"scripts/.*|tests/validation/.*|\.github/.*|\.pre-commit-config\.yaml)$"
+        r"archive/.*|examples/.*|projects/.*|scripts/.*|secrets/.*|tests/.*|"
+        r"\.github/.*|\.pre-commit-config\.yaml)$"
     )
     expected_hook = {
         "id": "check-repo-contracts",
@@ -1253,6 +1395,13 @@ else:
             "tests/validation/test_document_corpus_lifecycle.py",
             ".github/workflows/document-corpus-lifecycle.yml",
             ".pre-commit-config.yaml",
+            ".prettierignore",
+            "archive/Windows-Network-IP.md",
+            "examples/sample-web-service/service.md",
+            "projects/storybook/README.md",
+            "secrets/SENSITIVE_ENV_VARS.md.example",
+            "scripts/validation/target_surface_contract.py",
+            "tests/validation/test_target_surface_contracts.py",
         )
         for routed_path in routed_paths:
             if selector.fullmatch(routed_path) is None:

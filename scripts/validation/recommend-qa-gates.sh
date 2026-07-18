@@ -138,10 +138,44 @@ add_lifecycle_gates() {
   add_gate "bash scripts/knowledge/generate-llm-wiki-coverage.sh --check" "lifecycle documentation and generated data require coverage freshness"
 }
 
+add_target_surface_gates() {
+  add_gate "python3 -m unittest tests.validation.test_target_surface_contracts -v" "target surface behavior changed"
+  add_gate "python3 scripts/validation/check-target-surface-contract.py" "target surface convergence contract changed"
+}
+
+is_target_surface_path() {
+  local path="$1"
+  local manifest="docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+
+  case "$path" in
+  .github/workflows/ci-quality.yml | \
+    .pre-commit-config.yaml | \
+    scripts/operations/use-qa-ci-tools.sh | \
+    scripts/validation/check-repo-contracts.sh | \
+    scripts/validation/check-target-surface-contract.py | \
+    scripts/validation/target_surface_contract.py | \
+    scripts/validation/recommend-qa-gates.sh | \
+    scripts/validation/run-agent-precommit-all-files.sh | \
+    scripts/validation/run-local-qa-gates.sh | \
+    tests/validation/test_agent_governance_ci_routing.py | \
+    tests/validation/test_run_agent_precommit_all_files.sh | \
+    tests/validation/test_target_surface_contracts.py | \
+    "$manifest")
+    return 0
+    ;;
+  esac
+
+  [[ -f "$manifest" ]] && grep -Fqx -- "- source_path: $path" "$manifest"
+}
+
 recommend_for_path() {
   local path="$1"
 
   add_gate "git diff --check" "all changed files should pass whitespace hygiene"
+
+  if is_target_surface_path "$path"; then
+    add_target_surface_gates
+  fi
 
   case "$path" in
   AGENTS.md | CLAUDE.md | GEMINI.md | .agents/* | .claude/* | .codex/* | .gemini/*)

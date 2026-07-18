@@ -108,7 +108,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | T-TSC-002 | README, typed example, and Storybook cleanup | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-003 | Root content archive provenance migration | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-004 | Deprecated runtime and duplicate disposition | implemented_with_task6_deferred_generated_fallout |
-| T-TSC-005 | Validator, QA routing, and static CI enforcement | not_run |
+| T-TSC-005 | Validator, QA routing, and static CI enforcement | artifact_remediation_candidate_spec_re_review_pending |
 | T-TSC-006 | Research, audit, generated evidence, and closure | not_run |
 
 ## Work Log
@@ -180,6 +180,11 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | 2026-07-19 | T-TSC-004b manifest evidence reviews and promotion | Independent specification and quality reviewers; QA Engineer | Exact evidence range `190d2296c8ead19f3367157725694755f5d5cbe8..f8c04687a4b523e0ac14c0b697dd781d1153ca89` returned specification PASS C0/I0/M0 and quality APPROVED C0/I0/M0. Controller authorized only the OpenSearch row verdict promotion from pending/pending to pass/pass. Its delete/null-target/no-replacement/evidence/rollback bytes remain unchanged; InfluxDB stays pass/pass and the other 481 rows stay pending/pending. Direct manifest/static and summary validation are zero-finding. |
 | 2026-07-19 | T-TSC-004 terminal whole-task reviews | Independent specification and quality reviewers | Over exact real range `cd32264dd5fcb7060a50b516682fe8f3aeb74f85..cb4d8cfaeada5af7173373e19885fb3561e59f92`, specification returned PASS C0/I0/M0 and quality returned APPROVED C0/I0/M0. InfluxDB and OpenSearch implementation/evidence are complete. Task 5 may proceed. |
 | 2026-07-19 | T-TSC-004 terminal generated-fallout routing | Controller | Repo-contract generated freshness is explicitly deferred, not passed: SeaweedFS `config/security.toml`, its direct README/guide/policy consumers, and `docs/90.references/llm-wiki/llm-wiki-index.md` remain one atomic Task 6 owner. No SeaweedFS, direct-doc, generated-index, implementation, manifest, summary, or runtime byte changed in this evidence sync. |
+| 2026-07-19 | T-TSC-005 validator and static QA candidate | QA Engineer | Added one immutable, value-free target-surface authority and thin CLI, routed it through the existing aggregate, QA recommender/runner, controlled pre-push selector, tool bootstrap, and existing `repo-contracts` CI job, and strengthened the existing workflow policy owner. All ten target finding codes had mutation RED before implementation. GREEN passed target 33/33, CI routing 22/22, and controlled-wrapper contract 29/29. The local workflow remains exactly 15 jobs; the dated 12-context remote observation remains separate and unverified. No new job, remote call, artifact upload, generated refresh, direct all-files run, SeaweedFS, runtime, secret-value, stage, or commit action occurred. Independent reviews remain pending. |
+| 2026-07-19 | T-TSC-005 initial independent reviews | Independent quality and replacement specification reviewers | Quality returned CHANGES_REQUIRED C0/I2/M0. The replacement specification review returned FAIL C0/I3/M0 over synthetic range `3dcd8c32..70fe5f21`. The findings required duplicate-key rejection for target/workflow YAML, bounded case-insensitive removed-runtime concepts, and direct `${{ github.ref }}` interpolation rejection. No candidate promotion or commit occurred. |
+| 2026-07-19 | T-TSC-005 bounded review remediation candidate | QA Engineer | Four focused methods produced 11 expected RED assertions before production changes: two duplicate manifest cases, five runtime variant/boundary cases, three duplicate workflow cases, and one direct-ref case. Added local safe unique-key loaders to the existing target and workflow owners, exact-scope bounded case-insensitive runtime patterns with safe/historical controls, and direct-ref rejection while preserving environment indirection. Focused GREEN passed 4/4; full target 35/35, CI routing 23/23, and wrapper contract 29/29 pass. Aggregate classification remains the same 1 environment dependency plus 5 baseline/Task 6 drifts. Fresh independent re-reviews remain pending; no stage, commit, generated refresh, runtime, SeaweedFS, remote, or secret-value action occurred. |
+| 2026-07-19 | T-TSC-005 remediation re-reviews | Independent specification and quality reviewers | Specification returned FAIL C0/I1/M0 over synthetic `3dcd8c32..3e6f3b8c` because mixed-case `actions/upload-artifact` references bypassed the raw repository-wide absence check. Quality returned APPROVED C0/I0/M0, but the specification finding controls. No candidate promotion or commit occurred. |
+| 2026-07-19 | T-TSC-005 artifact-policy remediation candidate | QA Engineer | Existing CI routing mutation RED was 1 method / 2 expected failures for mixed owner/action casing; full-SHA download-artifact and representative non-upload controls passed. The existing workflow owner now case-normalizes parsed `uses:` references while retaining the raw repository-wide prohibition and value-free diagnostic. Focused GREEN passed 1/1; full CI routing 23/23, target 35/35, and wrapper 29/29 pass. Aggregate Task 5 sections pass with the unchanged 1 environment plus 5 delegated/baseline failures. Fresh specification re-review remains pending; quality is approved. |
 
 ## Verification Evidence
 
@@ -189,7 +194,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | T-TSC-002 | Initial target suite RED: 8 tests ran with eight expected failure records across stale Service metadata/sections/instruction text and five active phantom references. I-01 remediation RED: the focused manifest/document regression failed 1/1 with target `spec:sample-web-service`/`spec`/one parent versus manifest null/null/empty. Fail-closed re-review RED: five methods failed exactly five assertions. | README profiles 4/4, target suite 9/9, fail-closed focus 5/5, and full lifecycle 111/111. Final specification PASS C0/I0/M0 and quality APPROVED C0/I0/M0 each cover `f037630ddeef4e7cc738dd9489b9218c452510ae..dd53a695e6893265a8d72c1810f334a6de5daa95`. Seven rows remain `migrate`, 476 remain `preserve`, all 483 review pairs remain pending, and summary bytes remain deterministic. | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-003 | Initial and remediation RED evidence remains recorded below, including the payload-free final-exception unordered and ordered list subcases. | Final-exception GREEN passed listed/bare/current 3/3, `ArchiveProvenanceTests` 8/8, and full lifecycle 114/114. Terminal specification PASS C0/I0/M0 and quality APPROVED C0/I0/M0 each cover exact range `8076a1270023226bedd25721928f12870dc559f5..7315677e339f175cfdc4c53411fa881227ffb7a0`. Terminal evidence sync passed metadata 2/0, traceability 46/0, focused contracts 9/9, manifest/summary, and diff hygiene. All 483 review pairs remain pending and no wave verdict is promoted. | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-004 | OpenSearch deletion RED failed 1/1 while the duplicate existed; exact-row evidence RED failed 1/1 on preserve/current truth. Duplicate pre-reviews and exact evidence reviews both returned PASS/APPROVED C0/I0/M0 over their recorded ranges. | Immutable deletion commit `190d2296c8ead19f3367157725694755f5d5cbe8`; exact promotion focus 2/2, target 20/20, and lifecycle 117/117 GREEN. Manifest/summary report 483 rows, 2 delete / 7 migrate / 474 preserve, exactly InfluxDB and OpenSearch pass/pass, and 481 unchanged pending rows. Direct manifest/static, summary, and promoted checks have zero findings. Terminal metadata is 2/0/0/0, traceability 46/0, diff hygiene and index pass. Whole-task specification PASS C0/I0/M0 and quality APPROVED C0/I0/M0 cover `cd32264dd5fcb7060a50b516682fe8f3aeb74f85..cb4d8cfaeada5af7173373e19885fb3561e59f92`. Generated freshness drift is explicitly Task 6; Task 5 may proceed. | implemented_with_task6_deferred_generated_fallout |
-| T-TSC-005 | not_run | not_run | not_run |
+| T-TSC-005 | Initial RED and the 4-method/11-failure review remediation remain recorded. Artifact follow-up RED was 1 method / 2 expected failures for mixed owner/action casing while download-artifact and a representative non-upload action remained safe. | Artifact focus 1/1, target 35/35, CI routing 23/23, controlled-wrapper contract 29/29, CLI, Ruff, compile, shell syntax, actionlint, yamllint, and diff hygiene pass. The aggregate target/workflow sections pass; aggregate remains 6-failure due one missing `html5lib` runtime plus five recorded Task 6/baseline Markdown and generated-freshness drifts. Shellcheck reproduces only the same SC2221/SC2222 warnings at base `3dcd8c32063f4d18cf2b29123d0ddfd436e3cb57`. | artifact_remediation_candidate_spec_re_review_pending |
 | T-TSC-006 | not_run | not_run | not_run |
 
 Prospective commands and expected results live in the Plan. Record actual exit
@@ -634,6 +639,67 @@ pass 16/16, native replacement tests pass 3/3, leaf/core/all-profile Compose
 pass with 1/5/60 services, and hadolint passes. Quality re-review remains
 pending; no staging, commit, manifest-row, or duplicate-unit action occurred.
 
+### T-TSC-005 Validator and Static QA Candidate Evidence
+
+RED preceded each production boundary. The public contract failed because the
+library and CLI did not exist. Ten code-specific mutations then exercised
+`target-manifest-invalid`, `target-manifest-coverage-missing`,
+`target-removed-path-present`, `target-removed-active-claim`,
+`target-phantom-gitlink-claim`, `target-phantom-gitlink-present`,
+`target-sample-service-metadata-invalid`,
+`target-sample-service-sections-invalid`,
+`target-sample-service-template-residue`, and
+`target-duplicate-disposition-invalid`, with safe-path and payload-absence
+assertions. Routing RED found ten missing focused recommendations, five missing
+pre-push path families, absent local runner/bootstrap exposure, absent existing
+job integration, and fail-open workflow-policy mutations.
+
+Initial independent quality review returned CHANGES_REQUIRED C0/I2/M0, and the
+replacement specification review returned FAIL C0/I3/M0 over synthetic range
+`3dcd8c32..70fe5f21`. The bounded remediation RED then ran four methods with 11
+expected assertion failures: duplicate target-manifest keys 2, removed-runtime
+variant/boundary cases 5, duplicate workflow keys 3, and direct
+`${{ github.ref }}` interpolation 1. The replacement uses local safe unique-key
+loaders compatible with existing owners, bounded case-insensitive patterns only
+on the exact active paths, value-free diagnostics, and safe environment
+indirection controls. Focused remediation GREEN passed 4/4.
+
+The next specification re-review returned FAIL C0/I1/M0 over synthetic
+`3dcd8c32..3e6f3b8c`; quality returned APPROVED C0/I0/M0, but the specification
+finding controls. Artifact-policy RED was one existing method with two expected
+failures for `Actions/upload-artifact` and `actions/Upload-Artifact`. Full-SHA
+download-artifact and representative non-upload controls remained safe. The
+existing workflow owner now case-normalizes parsed action references, retains
+the raw repository-wide absence policy, and emits only the value-free existing
+diagnostic. Focused artifact GREEN passed 1/1.
+
+The candidate GREEN and required local gates used these exact commands:
+
+```bash
+python3 -m unittest tests.validation.test_target_surface_contracts -v
+python3 -m unittest tests.validation.test_agent_governance_ci_routing -v
+bash tests/validation/test_run_agent_precommit_all_files.sh
+python3 scripts/validation/check-target-surface-contract.py
+python3 -m py_compile scripts/validation/target_surface_contract.py scripts/validation/check-target-surface-contract.py
+bash -n scripts/validation/check-repo-contracts.sh scripts/validation/recommend-qa-gates.sh scripts/validation/run-local-qa-gates.sh scripts/validation/run-agent-precommit-all-files.sh scripts/operations/use-qa-ci-tools.sh
+actionlint .github/workflows/*.yml
+yamllint -c .yamllint .github/workflows/*.yml
+shellcheck --severity=warning scripts/validation/check-repo-contracts.sh scripts/validation/recommend-qa-gates.sh scripts/validation/run-local-qa-gates.sh scripts/operations/use-qa-ci-tools.sh
+bash scripts/validation/check-repo-contracts.sh
+git diff --check
+```
+
+Latest results are target 35/35, CI routing 23/23, wrapper contract 29/29, CLI,
+compile, Bash syntax, actionlint, yamllint, and diff hygiene PASS. Shellcheck
+exits 1 only for SC2221/SC2222 warnings that reproduce unchanged from base
+`3dcd8c32063f4d18cf2b29123d0ddfd436e3cb57`. The aggregate target section
+passes. Aggregate exit 1 / `failures=6` is not recorded as passing: one
+environment dependency (`html5lib`) is absent, and the remaining five are the
+recorded Markdown/LLM Wiki/Compose/metadata-inventory freshness fallout owned
+outside this unit. Generated outputs were not refreshed. The workflow retains
+15 local job names; the dated 12-context remote observation was not revalidated
+and no remote read occurred.
+
 ## Controlled Agent Pre-commit Evidence
 
 - Command: not_run; Task 6 only.
@@ -653,7 +719,7 @@ pending; no staging, commit, manifest-row, or duplicate-unit action occurred.
 | T-TSC-002 | recorded | PASS C0/I0/M0; `f037630ddeef4e7cc738dd9489b9218c452510ae..dd53a695e6893265a8d72c1810f334a6de5daa95` | APPROVED C0/I0/M0; `f037630ddeef4e7cc738dd9489b9218c452510ae..dd53a695e6893265a8d72c1810f334a6de5daa95` | The migrated typed target and fail-closed correction passed both independent Task 2 reviews. Seven rows remain `migrate`, 476 `preserve`, and all manifest verdicts remain pending. |
 | T-TSC-003 | recorded | PASS C0/I0/M0; `8076a1270023226bedd25721928f12870dc559f5..7315677e339f175cfdc4c53411fa881227ffb7a0` | APPROVED C0/I0/M0; `8076a1270023226bedd25721928f12870dc559f5..7315677e339f175cfdc4c53411fa881227ffb7a0` | Terminal reviews close the prior command-body findings and final exception. Implementation and reviews are complete; all 483 manifest review pairs remain pending and no wave verdict is promoted. |
 | T-TSC-004 | recorded | PASS C0/I0/M0; `cd32264dd5fcb7060a50b516682fe8f3aeb74f85..cb4d8cfaeada5af7173373e19885fb3561e59f92` | APPROVED C0/I0/M0; same range | Task 4 is implemented. Task 5 may proceed; SeaweedFS/direct-doc/LLM Wiki generated fallout remains explicitly owned atomically by Task 6. |
-| T-TSC-005 | not_run | not_run | not_run | not_run |
+| T-TSC-005 | recorded; artifact remediation remained inside the existing workflow owner | FAIL C0/I1/M0; synthetic `3dcd8c32..3e6f3b8c` | APPROVED C0/I0/M0 | Artifact casing finding is remediated in the candidate; fresh specification re-review remains mandatory and controls promotion. |
 | T-TSC-006 | not_run | not_run | not_run | not_run |
 | Whole branch | N/A | not_run | not_run | exact final range pending |
 
@@ -682,7 +748,7 @@ independent verdicts and all finding dispositions are recorded.
 | T-TSC-003 final specification fix | `test(docs): detect listed archived commands` | `7315677e339f175cfdc4c53411fa881227ffb7a0` | Listed-command RED one method/two subcases; focused GREEN 3/3; archive 8/8; lifecycle 114/114; explicit-base metadata, immutable bytes/invariants, compile, Ruff, and diff gates passed; terminal reviews are PASS/APPROVED C0/I0/M0. |
 | T-TSC-004a | `refactor(infra): retire InfluxDB 2 compatibility` | `f300b4f88cc6672445ac25a06602adb62381f7c0` | Runtime package specification PASS and quality APPROVED C0/I0/M0; manifest evidence review remains separate and pending. |
 | T-TSC-004b | `chore(infra): remove unconsumed duplicate scaffolds` | `190d2296c8ead19f3367157725694755f5d5cbe8` | Duplicate and evidence specification PASS / quality APPROVED; exact row promoted pass/pass. |
-| T-TSC-005 | `feat(qa): enforce target surface contracts` | pending | not_run |
+| T-TSC-005 | `feat(qa): enforce target surface contracts` | pending | Artifact RED 1 method/2 failures and GREEN 1/1 are recorded above; latest target 35/35, CI 23/23, wrapper 29/29. Quality is approved, specification re-review remains pending, and shellcheck/aggregate baselines remain explicit. Controller owns re-review package and commit. |
 | T-TSC-006 | `docs(execution): close target surface convergence` | pending | not_run |
 
 Material review fixes and generated-only fallout receive additional rows.
