@@ -527,6 +527,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md](../../04.execution/plans/2026-07-13-template-contract-system-canonicalization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md](../../04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md](../../04.execution/plans/2026-07-15-agent-governance-harness-convergence.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md](../../04.execution/plans/2026-07-18-target-surface-contract-convergence.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -647,6 +648,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md](../../04.execution/tasks/2026-07-13-template-contract-system-canonicalization.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md](../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-15-agent-governance-harness-convergence.md](../../04.execution/tasks/2026-07-15-agent-governance-harness-convergence.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md](../../04.execution/tasks/2026-07-18-target-surface-contract-convergence.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs

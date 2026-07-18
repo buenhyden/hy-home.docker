@@ -951,6 +951,7 @@ entries:
   - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
   - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
   - docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md
+  - docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md
   - docs/04.execution/tasks/2026-07-03-document-contract-remediation-batches.md
   - docs/04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md
   - docs/99.templates/support/document-corpus-migration-contract.yaml
