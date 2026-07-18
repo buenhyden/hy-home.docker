@@ -32,7 +32,7 @@ This document defines the technical design and interface contracts for the `04-d
   - Every engine must be attached to the `infra_net` bridge network.
   - Persistent data is mounted through bind-backed named volumes, and current compose device paths are service-specific under `${DEFAULT_DATA_DIR}` rather than a shared `analytics/` prefix.
 - **Data / Interface Contract**:
-  - InfluxDB: primary InfluxDB 3.x HTTP/Line Protocol + SQL query interface; legacy InfluxDB 2.x compose preserves Flux compatibility.
+  - InfluxDB: InfluxDB 3 Core SQL query interface and `POST /api/v3/write_lp?db=${INFLUXDB_DB_NAME}` line-protocol endpoint/schema contract on port `8181`; an authorized operator/named token is required, but provisioning and authenticated-write acceptance remain runtime-unverified.
   - ksqlDB: SQL stream-processing interface based on Kafka topics.
   - OpenSearch: REST API on port `9200` and Lucene-based search interface.
   - StarRocks: MySQL Protocol-compatible interface on port `9030`.
@@ -50,7 +50,7 @@ This document defines the technical design and interface contracts for the `04-d
 - **Key Dependencies**:
   - `04-data/operational` and `04-data/relational`: source snapshot and transactional data sources.
   - `05-messaging/kafka`: ksqlDB upstream broker, Schema Registry, and Kafka Connect dependency.
-- **Tech Stack**: Docker, InfluxDB 3.x Core primary with InfluxDB 2.x legacy compose, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
+- **Tech Stack**: Docker, InfluxDB 3 Core, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
 
 ## Data Modeling & Storage Strategy
 
@@ -76,11 +76,13 @@ This document defines the technical design and interface contracts for the `04-d
 ## Verification
 
 ```bash
-# InfluxDB 3.x primary health check
+# InfluxDB 3 Core health check (source contract only)
 curl -i http://influxdb:8181/
 
-# InfluxDB 2.x legacy compose health check, only when docker-compose.v2.yml is selected
-curl -f http://influxdb:8086/health
+# InfluxDB 3 Core line-protocol write contract
+# POST http://influxdb:8181/api/v3/write_lp?db=${INFLUXDB_DB_NAME}
+# Authorization requires a separately provisioned operator/named token.
+# Source-only validation cannot prove authorization or write acceptance.
 
 # OpenSearch status requires HTTPS and the admin Docker Secret
 read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo

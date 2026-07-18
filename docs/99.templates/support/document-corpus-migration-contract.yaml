@@ -276,6 +276,9 @@ disposition_conditions:
   exempt: source-equals-target
 
 replacement_requirements:
+  # A schema-v2 native runtime/configuration replacement is a safe path owned
+  # by exactly one selected manifest row. It must be a distinct, compatible,
+  # tracked regular current result; validation uses path/mode metadata only.
   required_for:
     - merge
   optional_for:

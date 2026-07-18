@@ -1699,6 +1699,79 @@ def _surface_regular_result_exists(root: pathlib.Path, path: str) -> bool:
     return True
 
 
+def _surface_tracked_regular_mode(root: pathlib.Path, path: str) -> str | None:
+    """Return the exact tracked regular-file mode without reading the file body."""
+
+    if not _safe_path(path):
+        return None
+    tracked = _run_git(
+        root,
+        ["ls-files", "--stage", "-z", "--", path],
+        text=False,
+    )
+    if tracked.returncode != 0:
+        return None
+    entries = [entry for entry in tracked.stdout.split(b"\0") if entry]
+    if len(entries) != 1 or b"\t" not in entries[0]:
+        return None
+    header, raw_path = entries[0].split(b"\t", 1)
+    fields = header.split()
+    try:
+        mode = fields[0].decode("ascii") if len(fields) == 3 else ""
+        object_id = fields[1].decode("ascii") if len(fields) == 3 else ""
+        stage = fields[2].decode("ascii") if len(fields) == 3 else ""
+        tracked_path = raw_path.decode("utf-8")
+    except UnicodeDecodeError:
+        return None
+    if (
+        mode not in {"100644", "100755"}
+        or not OBJECT_ID.fullmatch(object_id)
+        or stage != "0"
+        or tracked_path != path
+    ):
+        return None
+    descriptor = _open_regular_repo_descriptor(root, path)
+    if descriptor is None:
+        return None
+    os.close(descriptor)
+    return mode
+
+
+def _surface_native_replacement_valid(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    document: MigrationManifestDocument,
+    row: MigrationManifestRow,
+    replacement: str,
+) -> bool:
+    """Validate one selected native replacement using path and mode truth only."""
+
+    native_classes = {"runtime", "configuration"}
+    source = row.source_path.as_posix()
+    target = _safe_path_text(row.target_path)
+    if (
+        row.surface_class not in native_classes
+        or not _safe_path(replacement)
+        or replacement in {source, target}
+    ):
+        return False
+    candidates = [
+        candidate
+        for candidate in document.entries
+        if _safe_path_text(candidate.target_path) == replacement
+    ]
+    if len(candidates) != 1:
+        return False
+    candidate = candidates[0]
+    mode = _surface_tracked_regular_mode(root, replacement)
+    return (
+        candidate.disposition != "delete"
+        and candidate.surface_class == row.surface_class
+        and mode is not None
+        and _surface_class(replacement, mode, profiles) == row.surface_class
+    )
+
+
 def _surface_replacement_record(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -1791,6 +1864,7 @@ def _surface_replacement_record(
 def _surface_replacement_findings(
     root: pathlib.Path,
     profiles: dict[str, object],
+    document: MigrationManifestDocument,
     row: MigrationManifestRow,
 ) -> list[Finding]:
     """Apply the common replacement contract without scanning selected bodies."""
@@ -1816,6 +1890,27 @@ def _surface_replacement_findings(
         ]
     if replacement is None:
         return []
+    if (
+        document.schema_version == 2
+        and row.surface_class in {"runtime", "configuration"}
+    ):
+        return (
+            []
+            if _surface_native_replacement_valid(
+                root,
+                profiles,
+                document,
+                row,
+                replacement,
+            )
+            else [
+                _finding(
+                    source,
+                    "manifest-replacement-invalid",
+                    "canonical native replacement must resolve uniquely",
+                )
+            ]
+        )
     candidate = _surface_replacement_record(root, profiles, replacement)
     if candidate is None:
         return [
@@ -2249,7 +2344,9 @@ def _validate_surface_manifest_semantics(
                     "status transition is not canonical",
                 )
             )
-        findings.extend(_surface_replacement_findings(root, profiles, row))
+        findings.extend(
+            _surface_replacement_findings(root, profiles, document, row)
+        )
         rollback_invalid = (
             row.disposition in DESTRUCTIVE_DISPOSITIONS
             and not row.evidence.rollback

@@ -9,7 +9,7 @@ status: active
 
 ### Overview
 
-이 문서는 `09-tooling` 성능 테스트 워크플로우의 공통 사용 기준을 설명한다. 현재 구현은 `locust` leaf의 master/worker 구성과 `k6` leaf의 단일 `k6-master` Locust wrapper를 제공하며, 둘 다 InfluxDB 지표 전송과 host port UI 경계를 사용한다.
+이 문서는 `09-tooling` 성능 테스트 워크플로우의 공통 사용 기준을 설명한다. 현재 구현은 `locust` leaf의 master/worker 구성과 `k6` leaf의 단일 `k6-master` Locust wrapper를 제공하며, 둘 다 Locust 결과 통계와 host port UI 경계를 사용한다.
 
 ### Usage Type
 
@@ -29,7 +29,7 @@ status: active
 
 - `locust` leaf는 `locust-master`, `locust-worker` 분산 실행에 사용한다.
 - `k6` leaf는 현재 단일 `k6-master` Locust wrapper이며 별도 worker service가 없다.
-- InfluxDB service, Docker Secret `influxdb_api_token`, root `infra_net` context가 필요하다.
+- Root `infra_net` context가 필요하다.
 - 대규모 테스트는 승인된 테스트 윈도우와 대상 서비스 owner 승인이 필요하다.
 
 ### Step-by-step Instructions
@@ -67,7 +67,7 @@ status: active
 
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
 - `bash scripts/validation/check-repo-contracts.sh`
-- 실행 승인 시 root+leaf overlay가 선택 leaf service와 InfluxDB dependency를 함께 렌더링하는지 확인한다.
+- 실행 승인 시 root+leaf overlay가 선택 leaf service와 `infra_net`을 함께 렌더링하는지 확인한다.
 
 ## Runbook Handoff
 

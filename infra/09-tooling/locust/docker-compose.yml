@@ -24,26 +24,12 @@ services:
       <<: *tier-label
     ports:
       - '${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}'
-    environment:
-      - LOCUST_INFLUXDB_HOST=influxdb
-      - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT:-8181}
-      - LOCUST_INFLUXDB_ORG=${INFLUXDB_ORG}
-      - LOCUST_INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
     volumes:
       - locust-data:/mnt/locust:rw
     networks:
       infra_net:
         ipv4_address: 172.19.0.250
-    secrets:
-      - influxdb_api_token
-    command: >
-      /bin/sh -c "
-      export LOCUST_INFLUXDB_TOKEN=$$(cat /run/secrets/influxdb_api_token | tr -d '') &&
-      exec locust -f /mnt/locust/locustfile.py --master
-      "
-    depends_on:
-      influxdb:
-        condition: service_healthy
+    command: locust -f /mnt/locust/locustfile.py --master
     healthcheck:
       test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:8089']
       interval: 30s
@@ -62,23 +48,12 @@ services:
     read_only: false
     labels:
       <<: *tier-label
-    environment:
-      - LOCUST_INFLUXDB_HOST=influxdb
-      - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT:-8181}
-      - LOCUST_INFLUXDB_ORG=${INFLUXDB_ORG}
-      - LOCUST_INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
     volumes:
       - locust-data:/mnt/locust:rw
     networks:
       infra_net:
         ipv4_address: 172.19.0.253
-    secrets:
-      - influxdb_api_token
-    command: >
-      /bin/sh -c "
-      export LOCUST_INFLUXDB_TOKEN=$$(cat /run/secrets/influxdb_api_token | tr -d '') &&
-      exec locust -f /mnt/locust/locustfile.py --worker --master-host locust-master
-      "
+    command: locust -f /mnt/locust/locustfile.py --worker --master-host locust-master
     depends_on:
       locust-master:
         condition: service_healthy

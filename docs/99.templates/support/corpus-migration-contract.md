@@ -144,6 +144,15 @@ replacement must resolve to the one validated current target. Archive-specific
 replacement truth is interpreted with the archive disposition by the
 [archive and retention contract](./archive-retention-contract.md).
 
+Schema version 2 native `runtime` and `configuration` replacements may name a
+safe tracked regular current result represented exactly once by the same
+selected manifest. The replacement must be distinct from the removed source
+and its target, remain non-deleted, and have a compatible path-derived surface
+classification. The validator establishes those facts from Git and filesystem
+metadata without reading or decoding the native body. Missing, untracked,
+ambiguous, deleted, incompatible, self/target, and forged candidates all fail
+with the same value-free `manifest-replacement-invalid` finding.
+
 ## Wave Promotion and Dry Runs
 
 Generator output under `_workspace/repo-support/` is transient, ignored,

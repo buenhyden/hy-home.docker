@@ -51,7 +51,7 @@ guides/04-data/analytics/
 
 | Path | Purpose |
 | --- | --- |
-| [influxdb.md](./influxdb.md) | InfluxDB 3.x primary and 2.x legacy compose guide |
+| [influxdb.md](./influxdb.md) | InfluxDB 3 Core database/line-protocol source contract and runtime token-provisioning boundary |
 | [ksqldb.md](./ksqldb.md) | ksqlDB server/CLI/datagen profile guide |
 | [opensearch.md](./opensearch.md) | OpenSearch primary stack and optional cluster variant guide |
 | [warehouses.md](./warehouses.md) | StarRocks FE/BE compose guide |

@@ -27,7 +27,7 @@ status: active
 
 - 테스트 중 target SLI가 승인된 한계 아래로 떨어진다.
 - Gateway/Auth/Data tier가 부하 테스트 영향으로 degraded 상태가 된다.
-- InfluxDB 지표 전송 실패로 테스트 결과 신뢰도가 떨어진다.
+- Locust 요청 통계가 누락되거나 일관되지 않아 테스트 결과 신뢰도가 떨어진다.
 - 실행 leaf가 `locust`인지 `k6` wrapper인지 불명확하다.
 
 ## Procedure
@@ -68,7 +68,7 @@ status: active
 ### Observability and Evidence Sources
 
 - **Logs**: load generator logs, target logs, gateway/auth/data tier logs
-- **Metrics**: target SLI, request error rate, response latency, InfluxDB write status
+- **Metrics**: target SLI, request error rate, response latency, Locust request statistics
 - **Evidence to Capture**: service names, test parameters, stop time, recovery time, failed checks
 
 ### Safe Rollback or Recovery Procedure
@@ -91,7 +91,7 @@ status: active
 
 ## Rollback or Recovery
 
-Use the leaf-specific stop procedure and target-specific recovery runbook. No verified procedure is documented here for restarting target services or mutating InfluxDB data.
+Use the leaf-specific stop procedure and target-specific recovery runbook. No verified procedure is documented here for restarting target services.
 
 ## Escalation
 

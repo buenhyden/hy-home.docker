@@ -5,7 +5,7 @@
 
 ## Overview
 
-이 서비스 유닛은 플랫폼의 서비스를 로드 테스팅하기 위한 분산 부하 테스트 엔진(Locust)을 제공합니다. 마스터 노드가 여러 워커 노드를 오케스트레이션하여 대규모 동시 트래픽을 시뮬레이션하며, 결과 지표는 **InfluxDB**에 영구 저장됩니다.
+이 서비스 유닛은 플랫폼의 서비스를 로드 테스팅하기 위한 분산 부하 테스트 엔진(Locust)을 제공합니다. 마스터 노드가 여러 워커 노드를 오케스트레이션하여 대규모 동시 트래픽을 시뮬레이션하며, 결과는 Locust 통계와 로그를 통해 수집합니다.
 
 ## Audience
 
@@ -18,20 +18,20 @@
 ### In Scope
 
 - **Locust Master/Worker**: 분산 부하 생성 및 관리 UI.
-- **Custom Docker Build**: `influxdb-client` 등 필수 플러그인이 포함된 빌드.
+- **Custom Docker Build**: pinned Locust base image를 사용하는 빌드.
 - **Scenario Orchestration**: `locustfile.py`를 통한 테스트 로직 관리.
 
 ### Out of Scope
 
 - **Metric Visualization**: Grafana 대시보드 구성은 관여하지 않음.
-- **Long-term Metric Storage**: InfluxDB 자체의 클러스터링 및 백업은 Data 계층 담당.
+- **Long-term Metric Storage**: 장기 지표 저장소의 선택과 운영은 이 leaf의 책임이 아님.
 
 ## Structure
 
 ```text
 locust/
 ├── locustfile.py       # 기본 테스트 스크립트 (시나리오 정의)
-├── Dockerfile          # Locust 커스텀 빌드 (influxdb-client 포함)
+├── Dockerfile          # Locust 2.44.4 base image
 ├── docker-compose.yml  # Master/Worker 오케스트레이션 정의
 └── README.md           # This file
 ```
@@ -51,15 +51,13 @@ locust/
 | Variable          | Required | Description                                  |
 | ----------------- | -------- | -------------------------------------------- |
 | `LOCUST_HOST_PORT` | No      | 외부 UI 접속 포트 (기본: 18089)              |
-| `INFLUXDB_ORG`    | Yes      | InfluxDB v2 조직 명칭                        |
-| `INFLUXDB_BUCKET` | Yes      | 지표를 저장할 버켓 명칭                      |
 | `DEFAULT_TOOLING_DIR` | Yes  | Locust 데이터 마운트 경로                    |
 
 ## Validation
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect Locust.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
-- Runtime rendering must include root `infra_net`, `influxdb`, and `influxdb_api_token` context because the root include is optional/commented.
+- Runtime rendering must include root `infra_net` context because the root include is optional/commented.
 
 ## Troubleshooting
 
@@ -78,13 +76,13 @@ locust/
 | --- | --- |
 | Purpose | 🦗 Locust Load Testing Infrastructure service leaf in `09-tooling`; services: `locust-master`, `locust-worker`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `LOCUST_INFLUXDB_HOST`, `LOCUST_INFLUXDB_PORT`, `LOCUST_INFLUXDB_ORG`, `LOCUST_INFLUXDB_BUCKET`; profiles: `tooling`, `testing` |
+| Config values | profiles: `tooling`, `testing`; UI port keys: `LOCUST_HOST_PORT`, `LOCUST_PORT` |
 | Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `locust-data:/mnt/locust:rw`, `locust-data` |
 | Ports | `${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}` |
 | Labels | `hy-home.tier` |
-| Secret refs | names: `influxdb_api_token`; mounts: `/run/secrets/influxdb_api_token` |
+| Secret refs | None declared |
 | Healthcheck | Compose healthcheck declared for `locust-master`, `locust-worker` |
 | Operations | [Guide](../../../docs/05.operations/guides/09-tooling/locust.md), [Policy](../../../docs/05.operations/policies/09-tooling/locust.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/locust.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |

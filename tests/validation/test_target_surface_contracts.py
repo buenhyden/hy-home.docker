@@ -178,5 +178,147 @@ class StorybookPhantomContractTests(unittest.TestCase):
                 )
 
 
+class DeprecatedRuntimeContractTests(unittest.TestCase):
+    def test_influxdb_v2_compose_is_removed(self) -> None:
+        self.assertFalse(
+            (
+                ROOT
+                / "infra/04-data/analytics/influxdb/docker-compose.v2.yml"
+            ).exists()
+        )
+
+    def test_v2_only_example_and_metadata_keys_are_removed(self) -> None:
+        env_example = (ROOT / ".env.example").read_text(encoding="utf-8")
+        metadata_example = (
+            ROOT / "secrets/SENSITIVE_ENV_VARS.md.example"
+        ).read_text(encoding="utf-8")
+
+        for forbidden in (
+            "INFLUXDB_ORG",
+            "INFLUXDB_BUCKET",
+            "INFLUXDB_USERNAME",
+        ):
+            with self.subTest(path=".env.example", forbidden=forbidden):
+                self.assertNotIn(forbidden, env_example)
+        self.assertIn("INFLUXDB_DB_NAME", env_example)
+        self.assertNotIn("INFLUXDB_USERNAME", metadata_example)
+        self.assertIn("influxdb_api_token", metadata_example)
+
+    def test_locust_image_has_no_influxdb_v2_client(self) -> None:
+        dockerfile = (ROOT / "infra/09-tooling/locust/Dockerfile").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("influxdb-client", dockerfile)
+
+    def test_k6_and_locust_have_no_unused_influxdb_wiring(self) -> None:
+        compose_paths = (
+            ROOT / "infra/09-tooling/k6/docker-compose.yml",
+            ROOT / "infra/09-tooling/locust/docker-compose.yml",
+        )
+        for path in compose_paths:
+            text = path.read_text(encoding="utf-8")
+            for forbidden in (
+                "LOCUST_INFLUXDB_",
+                "influxdb_api_token",
+                "depends_on:\n      influxdb:",
+            ):
+                with self.subTest(
+                    path=path.relative_to(ROOT).as_posix(), forbidden=forbidden
+                ):
+                    self.assertNotIn(forbidden, text)
+
+    def test_influxdb_leaf_does_not_claim_unprovisioned_token_wiring(self) -> None:
+        leaf_compose = (
+            ROOT / "infra/04-data/analytics/influxdb/docker-compose.yml"
+        ).read_text(encoding="utf-8")
+        for forbidden in (
+            "influxdb_password",
+            "influxdb_api_token",
+            "--admin-token-file",
+            "INFLUXDB3_ADMIN_TOKEN_FILE",
+        ):
+            with self.subTest(owner="leaf-compose", forbidden=forbidden):
+                self.assertNotIn(forbidden, leaf_compose)
+
+        current_docs = (
+            ROOT / "infra/04-data/analytics/influxdb/README.md",
+            ROOT / "docs/03.specs/005-data-analytics/spec.md",
+            ROOT / "docs/05.operations/guides/04-data/analytics/influxdb.md",
+            ROOT / "docs/05.operations/policies/04-data/analytics/influxdb.md",
+            ROOT / "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
+        )
+        corpus = "\n".join(path.read_text(encoding="utf-8") for path in current_docs)
+        for forbidden in (
+            "Compose mounts `influxdb_api_token`",
+            "Docker Secret `influxdb_api_token`을 사용한다",
+            "Authorization: Bearer token from the influxdb_api_token secret",
+            "docker exec influxdb test -r /run/secrets/influxdb_api_token",
+            "source Compose declares `influxdb_api_token`",
+        ):
+            with self.subTest(owner="current-docs", forbidden=forbidden):
+                self.assertNotIn(forbidden, corpus)
+        for required in (
+            "root declarations and metadata are not leaf server wiring",
+            "separate runtime approval",
+            "source-only validation cannot prove authorization",
+            "https://docs.influxdata.com/influxdb3/core/admin/tokens/",
+        ):
+            with self.subTest(owner="current-docs", required=required):
+                self.assertIn(required, corpus)
+
+    def test_active_docs_describe_only_influxdb_3_contract(self) -> None:
+        active_paths = (
+            ROOT / "infra/04-data/analytics/influxdb/README.md",
+            ROOT / "docs/01.requirements/005-data-analytics.md",
+            ROOT / "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
+            ROOT / "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
+            ROOT / "docs/03.specs/005-data-analytics/README.md",
+            ROOT / "docs/03.specs/005-data-analytics/spec.md",
+            ROOT / "docs/05.operations/guides/04-data/analytics/README.md",
+            ROOT / "docs/05.operations/guides/04-data/analytics/influxdb.md",
+            ROOT / "docs/05.operations/policies/04-data/analytics/influxdb.md",
+            ROOT / "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
+        )
+        for path in active_paths:
+            text = path.read_text(encoding="utf-8")
+            for forbidden in (
+                "InfluxDB 2",
+                "docker-compose.v2.yml",
+                "legacy Flux",
+                "8086",
+            ):
+                with self.subTest(
+                    path=path.relative_to(ROOT).as_posix(), forbidden=forbidden
+                ):
+                    self.assertNotIn(forbidden, text)
+
+        canonical_docs = (
+            ROOT / "infra/04-data/analytics/influxdb/README.md",
+            ROOT / "docs/03.specs/005-data-analytics/spec.md",
+            ROOT / "docs/05.operations/guides/04-data/analytics/influxdb.md",
+        )
+        for path in canonical_docs:
+            text = path.read_text(encoding="utf-8")
+            for required in (
+                "InfluxDB 3",
+                "8181",
+                "/api/v3/write_lp",
+                "INFLUXDB_DB_NAME",
+            ):
+                with self.subTest(
+                    path=path.relative_to(ROOT).as_posix(), required=required
+                ):
+                    self.assertIn(required, text)
+
+    def test_historical_and_negative_influxdb_v2_evidence_remains_allowed(self) -> None:
+        historical_owners = (
+            ROOT / "docs/03.specs/133-target-surface-contract-convergence/spec.md",
+            ROOT / "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
+        )
+        for path in historical_owners:
+            with self.subTest(path=path.relative_to(ROOT).as_posix()):
+                self.assertIn("InfluxDB 2", path.read_text(encoding="utf-8"))
+
+
 if __name__ == "__main__":
     unittest.main()

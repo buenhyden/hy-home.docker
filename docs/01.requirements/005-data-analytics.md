@@ -41,7 +41,7 @@ status: active
 
 ## Success Criteria
 
-- **REQ-PRD-MET-01**: InfluxDB 3.x Core primary compose와 InfluxDB 2.x legacy compose의 역할이 문서와 compose에서 구분되어야 한다.
+- **REQ-PRD-MET-01**: InfluxDB 3 Core 단일 compose, database 이름, port `8181`, `/api/v3/write_lp` endpoint/schema, current healthcheck가 문서와 정적 source에서 일치해야 한다. Token provisioning과 authenticated write acceptance는 별도 runtime 승인 전까지 검증된 것으로 간주하지 않는다.
 - **REQ-PRD-MET-02**: ksqlDB compose는 Kafka/Schema Registry/Connect 의존성을 명시하고 `data`/`ksql` profile 경계를 유지해야 한다.
 - **REQ-PRD-MET-03**: OpenSearch와 StarRocks 문서는 현재 compose가 증명하는 단일 primary stack, optional cluster variant, FE/BE 구성, secret/volume/healthcheck 경계를 과장 없이 설명해야 한다.
 - **REQ-PRD-MET-04**: live 성능 수치(P95, indexing latency, large join runtime)는 별도 runtime benchmark evidence가 있을 때만 success evidence로 기록한다.

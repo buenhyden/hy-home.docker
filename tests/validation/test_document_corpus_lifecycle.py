@@ -574,6 +574,26 @@ class HumanContractRoutingTests(LifecycleTestCase):
             with self.subTest(literal=literal):
                 self.assertIn(literal, corpus)
 
+    def test_v2_native_replacement_contract_keeps_native_bodies_opaque(self) -> None:
+        machine_contract = " ".join(CONTRACT.read_text(encoding="utf-8").split())
+        human_contract = " ".join(
+            CORPUS_HUMAN_CONTRACT.read_text(encoding="utf-8").split()
+        )
+        for literal in (
+            "schema-v2 native runtime/configuration replacement",
+            "selected manifest row",
+            "tracked regular current result",
+        ):
+            with self.subTest(owner="machine", literal=literal):
+                self.assertIn(literal, machine_contract)
+        for literal in (
+            "Schema version 2 native `runtime` and `configuration` replacements",
+            "same selected manifest",
+            "without reading or decoding the native body",
+        ):
+            with self.subTest(owner="human", literal=literal):
+                self.assertIn(literal, human_contract)
+
 
 class ManifestValidationTests(LifecycleTestCase):
     def target_manifest(self) -> lifecycle.MigrationManifestDocument:
@@ -959,6 +979,195 @@ class ManifestValidationTests(LifecycleTestCase):
             lifecycle._surface_replacement_record(
                 ROOT, self.profiles, "spec:missing-replacement"
             )
+        )
+
+    def test_v2_native_replacement_accepts_selected_current_runtime_without_body_read(
+        self,
+    ) -> None:
+        document = self.target_manifest()
+        source_path = "infra/04-data/analytics/influxdb/docker-compose.v2.yml"
+        replacement_path = "infra/04-data/analytics/influxdb/docker-compose.yml"
+        source = self.target_row(document, source_path)
+        destructive = dataclasses.replace(
+            source,
+            target_path=None,
+            disposition="delete",
+            canonical_replacement=replacement_path,
+        )
+        candidate = self.replace_target_row(document, destructive)
+        original_read = lifecycle._read_regular_repo_bytes
+
+        def reject_native_body_read(
+            root: pathlib.Path,
+            relative_path: str,
+            *,
+            require_tracked: bool,
+        ) -> bytes | None:
+            if relative_path == replacement_path:
+                raise AssertionError("native replacement body must remain opaque")
+            return original_read(
+                root,
+                relative_path,
+                require_tracked=require_tracked,
+            )
+
+        with (
+            mock.patch.object(
+                lifecycle,
+                "_read_regular_repo_bytes",
+                side_effect=reject_native_body_read,
+            ),
+            mock.patch.object(
+                lifecycle.metadata,
+                "_record_from_text",
+                wraps=lifecycle.metadata._record_from_text,
+            ) as record_from_text,
+        ):
+            findings = lifecycle._surface_replacement_findings(
+                ROOT,
+                self.profiles,
+                candidate,
+                destructive,
+            )
+
+        self.assertEqual([], findings)
+        self.assertEqual([], record_from_text.call_args_list)
+
+    def test_v2_native_replacement_rejects_unsafe_result_mutations(self) -> None:
+        document = self.target_manifest()
+        source_path = "infra/04-data/analytics/influxdb/docker-compose.v2.yml"
+        replacement_path = "infra/04-data/analytics/influxdb/docker-compose.yml"
+        source = self.target_row(document, source_path)
+        replacement = self.target_row(document, replacement_path)
+        env_row = self.target_row(document, ".env.example")
+        destructive = dataclasses.replace(
+            source,
+            target_path=None,
+            disposition="delete",
+            canonical_replacement=replacement_path,
+        )
+        base_candidate = self.replace_target_row(document, destructive)
+        cases = (
+            (
+                "missing",
+                dataclasses.replace(
+                    destructive,
+                    canonical_replacement="infra/04-data/analytics/influxdb/missing.yml",
+                ),
+                base_candidate,
+            ),
+            (
+                "self",
+                dataclasses.replace(
+                    destructive,
+                    canonical_replacement=source_path,
+                ),
+                base_candidate,
+            ),
+            (
+                "target",
+                dataclasses.replace(
+                    destructive,
+                    target_path=pathlib.PurePosixPath(replacement_path),
+                    disposition="archive",
+                ),
+                base_candidate,
+            ),
+            (
+                "incompatible",
+                dataclasses.replace(
+                    destructive,
+                    canonical_replacement=".env.example",
+                ),
+                base_candidate,
+            ),
+            (
+                "deleted",
+                destructive,
+                dataclasses.replace(
+                    base_candidate,
+                    entries=tuple(
+                        dataclasses.replace(
+                            row,
+                            target_path=None,
+                            disposition="delete",
+                        )
+                        if row.source_path == replacement.source_path
+                        else row
+                        for row in base_candidate.entries
+                    ),
+                ),
+            ),
+            (
+                "ambiguous",
+                destructive,
+                dataclasses.replace(
+                    base_candidate,
+                    entries=base_candidate.entries + (replacement,),
+                ),
+            ),
+            (
+                "forged-class",
+                dataclasses.replace(
+                    destructive,
+                    canonical_replacement=".env.example",
+                ),
+                dataclasses.replace(
+                    base_candidate,
+                    entries=tuple(
+                        dataclasses.replace(row, surface_class="runtime")
+                        if row.source_path == env_row.source_path
+                        else row
+                        for row in base_candidate.entries
+                    ),
+                ),
+            ),
+        )
+        for name, candidate_row, candidate_document in cases:
+            with self.subTest(case=name):
+                findings = lifecycle._surface_replacement_findings(
+                    ROOT,
+                    self.profiles,
+                    candidate_document,
+                    candidate_row,
+                )
+                self.assertEqual(
+                    {"manifest-replacement-invalid"},
+                    {finding.code for finding in findings},
+                )
+
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = pathlib.Path(temporary.name)
+        init_repo(root)
+        tracked_source = root / source_path
+        tracked_source.parent.mkdir(parents=True)
+        tracked_source.write_text("services: {}\n", encoding="utf-8")
+        commit_all(root)
+        untracked_replacement = root / replacement_path
+        untracked_replacement.write_text("services: {}\n", encoding="utf-8")
+        untracked_source_row = dataclasses.replace(
+            destructive,
+            source_path=pathlib.PurePosixPath(source_path),
+        )
+        untracked_replacement_row = dataclasses.replace(
+            replacement,
+            source_path=pathlib.PurePosixPath(replacement_path),
+            target_path=pathlib.PurePosixPath(replacement_path),
+        )
+        untracked_document = dataclasses.replace(
+            document,
+            entries=(untracked_source_row, untracked_replacement_row),
+        )
+        findings = lifecycle._surface_replacement_findings(
+            root,
+            self.profiles,
+            untracked_document,
+            untracked_source_row,
+        )
+        self.assertEqual(
+            {"manifest-replacement-invalid"},
+            {finding.code for finding in findings},
         )
 
     def test_v2_rejects_sensitive_evidence_without_echoing_the_value(self) -> None:

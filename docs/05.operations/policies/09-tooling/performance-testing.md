@@ -17,7 +17,7 @@ status: active
 
 - `infra/09-tooling/locust/docker-compose.yml`
 - `infra/09-tooling/k6/docker-compose.yml`
-- InfluxDB metric sink and Docker Secret `influxdb_api_token`
+- Locust request statistics and test evidence
 - Approved local, development, and homelab performance-test windows
 
 ## Target Audience
@@ -30,7 +30,7 @@ status: active
 
 - **재현 가능성**: 모든 부하 테스트는 동일한 조건에서 재현될 수 있도록 관리되어야 함.
 - **가용성 보존**: 테스트 중 임계 시스템(Gateway, Identity)의 다운타임을 방지해야 함.
-- **데이터 보존**: 테스트 결과 지표(InfluxDB)를 벤치마킹 자산으로 안전하게 보관해야 함.
+- **데이터 보존**: 테스트 결과 지표와 evidence를 벤치마킹 자산으로 안전하게 보관해야 함.
 
 ## Operational Standards
 
@@ -46,8 +46,8 @@ status: active
 
 ### 3. 지표 관리 및 보존 (Retention)
 
-- **이력 관리**: 공식 테스트 결과는 실행 시간, target, users, spawn rate, 시나리오, InfluxDB bucket, 결과 요약을 evidence로 남긴다.
-- **보존 경계**: InfluxDB 보존/백업은 data/observability 정책을 따른다. 이 정책에서 별도 백업 주기를 단정하지 않는다.
+- **이력 관리**: 공식 테스트 결과는 실행 시간, target, users, spawn rate, 시나리오, Locust 요청 통계, 결과 요약을 evidence로 남긴다.
+- **보존 경계**: 결과 보존은 관련 Task/Incident 정책을 따른다. 이 정책에서 별도 백업 주기를 단정하지 않는다.
 
 ## Security Controls
 

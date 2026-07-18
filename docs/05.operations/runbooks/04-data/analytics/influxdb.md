@@ -7,16 +7,16 @@ status: active
 
 ## InfluxDB Recovery Procedure
 
-> Scope: InfluxDB service readiness, token mount verification, and primary/legacy compose selection.
+> Scope: InfluxDB 3 Core service readiness, database/endpoint verification, and unprovisioned-token escalation.
 
 ### Overview
 
-이 런북은 InfluxDB primary v3 service가 unhealthy이거나 token mount/readiness 문제가 의심될 때 사용한다. Legacy v2 절차는 `docker-compose.v2.yml`을 명시한 경우에만 적용한다.
+이 런북은 InfluxDB 3 Core service가 unhealthy이거나 database/endpoint readiness 또는 token-provisioning 문제가 의심될 때 사용한다.
 
 ### Purpose
 
-- InfluxDB variant mismatch를 방지한다.
-- secret value를 노출하지 않고 token mount와 health 상태를 확인한다.
+- InfluxDB 3 Core database/endpoint source contract mismatch를 방지한다.
+- Root secret metadata를 leaf token provisioning으로 오인하지 않고 health 상태를 확인한다.
 - cleanup or retention changes를 escalation 없이 임의 수행하지 않도록 한다.
 
 ### Canonical References
@@ -28,15 +28,15 @@ status: active
 ## When to Use
 
 - `influxdb` container healthcheck가 실패할 때
-- token mount가 누락되었거나 write/read request가 `401` 또는 service unavailable 상태를 보일 때
-- primary v3와 legacy v2 compose 선택이 불명확할 때
+- token provisioning이 승인/검증되지 않았거나 write/read request가 `401` 또는 service unavailable 상태를 보일 때
+- database 이름, port `8181`, 또는 `/api/v3/write_lp` 경로가 current contract와 다를 때
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 선택한 compose file이 `docker-compose.yml`인지 `docker-compose.v2.yml`인지 기록한다.
-- [ ] Docker Secret mount paths만 확인하고 secret value는 출력하지 않는다.
+- [ ] compose file이 `docker-compose.yml`인지 기록한다.
+- [ ] Root secret declarations are not leaf mounts; token provisioning evidence가 없음을 기록한다.
 - [ ] volume cleanup이나 retention 변경이 필요한 경우 owner approval을 확보한다.
 
 ### Steps
@@ -55,13 +55,9 @@ status: active
    docker logs influxdb --tail 100
    ```
 
-3. Secret mount 존재만 확인한다.
+3. Token provisioning은 이 source-only runbook 범위 밖임을 확인한다. Operator/named token creation과 authenticated write acceptance에는 separate runtime approval이 필요하다.
 
-   ```bash
-   docker exec influxdb test -r /run/secrets/influxdb_api_token
-   ```
-
-4. Primary v3 readiness endpoint를 확인한다.
+4. InfluxDB 3 Core readiness endpoint를 확인한다.
 
    ```bash
    curl -i http://influxdb:8181/
@@ -71,13 +67,14 @@ status: active
 
 - [ ] compose file exists and docs implementation alignment passes.
 - [ ] primary v3 endpoint returns `200`, `204`, or `401` as accepted by compose healthcheck.
+- [ ] write endpoint/schema contract is `POST /api/v3/write_lp?db=${INFLUXDB_DB_NAME}`; source-only validation cannot prove authorization and no write is sent during a readiness check.
 - [ ] final evidence records compose file, container state, and whether escalation was needed.
 
 ### Observability and Evidence Sources
 
 - **Logs**: `docker compose ... logs influxdb --tail 100`
 - **Metrics**: N/A - no metrics endpoint is declared in the InfluxDB compose.
-- **Evidence**: compose file selected, health response code, secret mount existence, volume pressure summary
+- **Evidence**: compose file selected, health response code, token-provisioning escalation state, volume pressure summary
 
 ### Safe Rollback or Recovery Procedure
 
@@ -94,7 +91,7 @@ status: active
 
 ## Evidence
 
-- Record compose file, health response code, secret mount existence check, log summary, and final action.
+- Record compose file, health response code, token-provisioning escalation state, log summary, and final action.
 - Do not record secret values.
 
 ## Rollback or Recovery
@@ -103,7 +100,7 @@ N/A - no verified rollback procedure can restore deleted InfluxDB data from this
 
 ## Escalation
 
-Escalate when secret mounts are missing, health does not match accepted response codes, disk pressure requires cleanup, or the observed service variant differs from the selected compose file.
+Escalate when token provisioning or authenticated write acceptance is needed, health does not match accepted response codes, disk pressure requires cleanup, or the observed database/endpoint contract differs from source.
 
 ## Related Documents
 

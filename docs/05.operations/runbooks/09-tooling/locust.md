@@ -13,11 +13,11 @@ status: active
 
 ### Overview
 
-이 런북은 Locust master/worker 연결 끊김, InfluxDB 지표 전송 실패, 또는 테스트 부하로 인한 target service 영향이 발생했을 때 사용한다.
+이 런북은 Locust master/worker 연결 끊김, 요청 통계 이상, 또는 테스트 부하로 인한 target service 영향이 발생했을 때 사용한다.
 
 ### Purpose
 
-부하 생성을 즉시 통제하고, master/worker 연결과 metric sink를 확인한 뒤 안전하게 재시작 또는 escalation한다.
+부하 생성을 즉시 통제하고 master/worker 연결과 Locust 결과를 확인한 뒤 안전하게 재시작 또는 escalation한다.
 
 ### Canonical References
 
@@ -29,7 +29,7 @@ status: active
 
 - Locust UI나 로그에 worker disconnect가 나타난다.
 - `locust-worker` healthcheck가 실패하거나 restart loop에 들어간다.
-- InfluxDB write error 또는 token 관련 오류가 발생한다.
+- Locust request error 또는 통계 수집 이상이 발생한다.
 - target service SLI가 테스트 중 급격히 저하된다.
 
 ## Procedure
@@ -82,8 +82,8 @@ status: active
 
 ### Observability and Evidence Sources
 
-- **Logs**: `locust-master`, `locust-worker`, target service logs, InfluxDB write-error logs
-- **Metrics**: target SLI, request error rate, worker count, InfluxDB write status
+- **Logs**: `locust-master`, `locust-worker`, target service logs
+- **Metrics**: target SLI, request error rate, worker count, Locust request statistics
 - **Evidence to Capture**: 실행 명령, 중단 시각, users/spawn rate, target, worker count, 오류 요약
 
 ### Safe Rollback or Recovery Procedure
@@ -106,7 +106,7 @@ status: active
 
 ## Rollback or Recovery
 
-Use the stop, inspect, and worker-only recreate procedure above. No broader verified rollback procedure is documented for target services, InfluxDB data, or host networking from this runbook.
+Use the stop, inspect, and worker-only recreate procedure above. No broader verified rollback procedure is documented for target services or host networking from this runbook.
 
 ## Escalation
 

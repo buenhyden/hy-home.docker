@@ -21,12 +21,12 @@
 ### In Scope
 
 - **Benchmark Orchestration**: `k6-master`를 통한 Locust-wrapper 부하 생성 시나리오 관리.
-- **Metric Exporting**: InfluxDB 연동을 통한 성능 지표 실시간 전송.
+- **Result Evidence**: Locust wrapper의 요청 통계와 로그를 테스트 evidence로 기록.
 - **Scenario Mount**: `k6-data:/mnt/locust:rw` volume 계약 유지.
 
 ### Out of Scope
 
-- **Metric Storage Layer**: InfluxDB 자체의 운영 및 백업은 Data 계층 담당.
+- **Metric Storage Layer**: 장기 지표 저장소의 선택과 운영은 이 leaf의 책임이 아님.
 - **Visualization**: Grafana 대시보드 연동 작업.
 
 ## Structure
@@ -34,7 +34,6 @@
 ```text
 k6/
 ├── locustfile.py       # 테스트 시나리오 정의 (Python 기반)
-├── Dockerfile          # Locust 커스텀 빌드 (influxdb-client 포함)
 ├── docker-compose.yml  # 분산 테스팅 오케스트레이션
 └── README.md           # This file
 ```
@@ -51,17 +50,15 @@ k6/
 
 ### Environment Variables
 
-| Variable          | Required | Description                                  |
-| ----------------- | -------- | -------------------------------------------- |
-| `LOCUST_HOST_PORT` | No      | 외부 UI 접속 포트 (기본: 18089)              |
-| `INFLUXDB_ORG`    | Yes      | InfluxDB v2 조직 명칭                        |
-| `INFLUXDB_BUCKET` | Yes      | 지표를 저장할 버켓 명칭                      |
+| Variable | Required | Description |
+| --- | --- | --- |
+| `LOCUST_HOST_PORT` | No | 외부 UI 접속 포트 (기본: 18089) |
 
 ## Validation
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect k6.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
-- Root `docker-compose.yml` does not currently include this leaf; runtime rendering must provide root `infra_net`, `influxdb`, and `influxdb_api_token` context.
+- Root `docker-compose.yml` does not currently include this leaf; runtime rendering must provide root `infra_net` context.
 
 ## Troubleshooting
 
@@ -80,13 +77,13 @@ k6/
 | --- | --- |
 | Purpose | 🧪 k6 Performance Testing Infrastructure service leaf in `09-tooling`; services: `k6-master`; local compose only: `docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `LOCUST_INFLUXDB_HOST`, `LOCUST_INFLUXDB_PORT`, `LOCUST_INFLUXDB_ORG`, `LOCUST_INFLUXDB_BUCKET`; profiles: `tooling`, `testing` |
+| Config values | profiles: `tooling`, `testing`; UI port keys: `LOCUST_HOST_PORT`, `LOCUST_PORT` |
 | Compose linkage | local compose only: `docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `k6-data:/mnt/locust:rw`, `k6-data` |
 | Ports | `${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}` |
 | Labels | `hy-home.tier` |
-| Secret refs | names: `influxdb_api_token`; mounts: `/run/secrets/influxdb_api_token` |
+| Secret refs | None declared |
 | Healthcheck | Compose healthcheck declared for `k6-master` |
 | Operations | [Guide](../../../docs/05.operations/guides/09-tooling/k6.md), [Policy](../../../docs/05.operations/policies/09-tooling/k6.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/k6.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |

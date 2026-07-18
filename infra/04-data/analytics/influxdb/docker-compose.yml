@@ -33,9 +33,6 @@ services:
       - --object-store=file
       - --data-dir=/var/lib/influxdb3/data
       - --plugin-dir=/var/lib/influxdb3/plugins
-    secrets:
-      - influxdb_password
-      - influxdb_api_token
     volumes:
       - influxdb-data:/var/lib/influxdb3/data:rw
       - influxdb-plugins:/var/lib/influxdb3/plugins:rw

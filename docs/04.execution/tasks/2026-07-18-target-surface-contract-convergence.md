@@ -107,7 +107,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | T-TSC-001 | Archive, metadata, wave, and manifest foundation | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-002 | README, typed example, and Storybook cleanup | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-003 | Root content archive provenance migration | implementation_and_reviews_complete_wave_verdicts_pending |
-| T-TSC-004 | Deprecated runtime and duplicate disposition | not_run |
+| T-TSC-004 | Deprecated runtime and duplicate disposition | runtime_remediation_ready_re_review_pending |
 | T-TSC-005 | Validator, QA routing, and static CI enforcement | not_run |
 | T-TSC-006 | Research, audit, generated evidence, and closure | not_run |
 
@@ -161,6 +161,11 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | 2026-07-18 | T-TSC-003 final exceptional remediation | QA Engineer | Added payload-free unordered and ordered Markdown-list mutations, then normalized exactly one standalone list marker before the existing exact case-insensitive first command-token comparison. Bare-line detection and prose/identifier negatives remain intact; no substring matching was introduced. RED was one method with two expected subcase failures; GREEN was listed/bare/current 3/3, archive 8/8, and full lifecycle 114/114. Final authorized specification re-review remains required. |
 | 2026-07-18 | T-TSC-003 terminal independent reviews | Independent specification and quality reviewers | Over exact range `8076a1270023226bedd25721928f12870dc559f5..7315677e339f175cfdc4c53411fa881227ffb7a0`, specification returned PASS C0/I0/M0 and quality returned APPROVED C0/I0/M0. All prior command-body findings and the user-approved third/final exception remain historical evidence. Implementation and reviews are complete; all 483 manifest review pairs remain pending and no wave verdict is promoted. |
 | 2026-07-18 | T-TSC-003 terminal evidence sync | Documentation Specialist | Synchronized only this canonical Task, Stage 00 progress, and ignored Task 3/SDD reports. Explicit-base metadata selected 2 with zero violations, exceptions, or overrides; traceability passed 46/0; focused target-surface contracts passed 9/9; manifest and summary checks passed with all 483 review pairs pending; diff hygiene passed. The evidence commit identity is intentionally not self-recorded. |
+| 2026-07-19 | T-TSC-004 runtime preflight and implementation candidate | Infra/DevOps Engineer | A fail-closed tracked-source scan found no executable InfluxDB 2 query, data, or migration consumer. Removed the approved v2 server surface, v2-only example/metadata/client/wiring consumers, and normalized active runtime and Operations truth to the InfluxDB 3 Core database/endpoint source contract without service start, data access, secret-value access, remote action, or duplicate-unit work. Runtime contract RED was seven new methods with 39 expected subcase failures; the duplicate tests were then removed from the held runtime unit so Task 4b retains separate TDD ownership. Runtime GREEN initially passed the 15-test target suite. |
+| 2026-07-19 | T-TSC-004 lifecycle design approval | User | Explicitly approved the minimal schema-v2 native-replacement extension and two-stage deletion/evidence commit sequence after the existing typed-Markdown-only resolver rejected the canonical InfluxDB 3 Compose replacement and the uncommitted deletion lacked an immutable rollback identity. The manifest row remains unchanged until a real runtime commit exists. Candidate validation may use only a safe tracked regular `runtime`/`configuration` result represented exactly once by the same selected manifest, with compatible path classification and no native-body read or decode. |
+| 2026-07-19 | T-TSC-004 native replacement candidate | Infra/DevOps Engineer | Added the bounded schema-v2 path/mode-only validator extension, stable value-free failure behavior, human/machine wording, and positive InfluxDB 3 plus missing, untracked, ambiguous, deleted, incompatible, self/target, forged, and no-read regressions. Native replacement RED was two methods with nine expected old-signature errors; GREEN passed 3/3 including the contract wording test. V1 and typed Markdown semantics remain unchanged. The runtime deletion is held unstaged for controller-created review-only Git evidence; no manifest row, duplicate unit, stage, or commit action occurred. |
+| 2026-07-19 | T-TSC-004 quality pre-review | Independent quality reviewer | I-01 found that the leaf Compose merely mounted the root-declared raw `influxdb_password` and `influxdb_api_token` secrets without wiring an InfluxDB 3 admin-token file or post-start token creation, while active docs claimed the mounted API token authorized writes. The candidate could not claim token provisioning or authenticated-write readiness. No real commit or manifest evidence edit was authorized. |
+| 2026-07-19 | T-TSC-004 quality I-01 remediation | Infra/DevOps Engineer | Added one focused regression, removed both unused leaf secret mounts, and downgraded current truth to the database/endpoint/schema source contract plus runtime-approved, not-yet-verified token provisioning. No offline admin token file was invented or enabled. The focused RED produced ten expected subcase failures; GREEN passed target contracts 16/16 and native replacement 3/3. Leaf/core/all-profile Compose passed with 1/5/60 services and hadolint remained clean. Re-review remains pending. |
 
 ## Verification Evidence
 
@@ -169,7 +174,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; first specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures; exceptional validator RED: two tests produced five expected subcase failures; archive-contract RED: one focused human-owner test exited 1 because the two exact profile sections were absent; final-review fixture RED: 11 tests with four failures across three methods; CLI-shape RED: full lifecycle 101/103; typed-target correction RED: three focused methods emitted six expected failures across missing human semantics, the truthful migrated target, and the null after-type mutation; fail-closed re-review RED: five focused methods failed 0/5 at the target parse/profile/read/native-body boundaries; foundation-quality aggregate RED: 0/2 with `content-archive` the sole missing role. All RED preceded the corresponding production, contract, or test-boundary change. | Fail-closed correction passed focused 5/5, full lifecycle 111/111, focused metadata 76/76, target 9/9, and all prescribed gates. Quality remediation passed aggregate 2/2 and full metadata 218/218. Final foundation specification PASS C0/I0/M0 covers `820e6188307ead1478de200f75a2d08e62ac137a..dd53a695e6893265a8d72c1810f334a6de5daa95`; final quality APPROVED C0/I0/M0 covers `820e6188307ead1478de200f75a2d08e62ac137a..4cac2af5d7508abd2b9722ee2c6a2d4f01ba7899`. All 483 row verdict pairs remain pending. | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-002 | Initial target suite RED: 8 tests ran with eight expected failure records across stale Service metadata/sections/instruction text and five active phantom references. I-01 remediation RED: the focused manifest/document regression failed 1/1 with target `spec:sample-web-service`/`spec`/one parent versus manifest null/null/empty. Fail-closed re-review RED: five methods failed exactly five assertions. | README profiles 4/4, target suite 9/9, fail-closed focus 5/5, and full lifecycle 111/111. Final specification PASS C0/I0/M0 and quality APPROVED C0/I0/M0 each cover `f037630ddeef4e7cc738dd9489b9218c452510ae..dd53a695e6893265a8d72c1810f334a6de5daa95`. Seven rows remain `migrate`, 476 remain `preserve`, all 483 review pairs remain pending, and summary bytes remain deterministic. | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-003 | Initial and remediation RED evidence remains recorded below, including the payload-free final-exception unordered and ordered list subcases. | Final-exception GREEN passed listed/bare/current 3/3, `ArchiveProvenanceTests` 8/8, and full lifecycle 114/114. Terminal specification PASS C0/I0/M0 and quality APPROVED C0/I0/M0 each cover exact range `8076a1270023226bedd25721928f12870dc559f5..7315677e339f175cfdc4c53411fa881227ffb7a0`. Terminal evidence sync passed metadata 2/0, traceability 46/0, focused contracts 9/9, manifest/summary, and diff hygiene. All 483 review pairs remain pending and no wave verdict is promoted. | implementation_and_reviews_complete_wave_verdicts_pending |
-| T-TSC-004 | not_run | not_run | not_run |
+| T-TSC-004 | Runtime RED: seven methods with 39 expected subcase failures. Native-replacement RED: two methods with nine expected old-signature errors; contract wording RED: one method with six expected assertions. Quality I-01 RED: one method with ten expected subcase failures. | Remediated target GREEN 16/16; native replacement and wording GREEN 3/3; full metadata 218/218; full lifecycle 116/117 with only the intentionally held preserve-row `manifest-target-missing`; static Compose and Dockerfile gates passed. | runtime_remediation_ready_re_review_pending |
 | T-TSC-005 | not_run | not_run | not_run |
 | T-TSC-006 | not_run | not_run | not_run |
 
@@ -566,6 +571,55 @@ manifest, summary, contract, validator, 483-pending, byte/count, and hash gates
 pass. Final authorized specification re-review remains required; quality has
 not run.
 
+### T-TSC-004 Runtime Candidate Evidence
+
+The required root Compose preflight passed at base commit
+`cd32264dd5fcb7060a50b516682fe8f3aeb74f85` with five core services. Before
+mutation, the focused target suite ran 17 methods: the nine existing methods
+and historical-permission control passed, while seven new runtime contract
+methods produced 39 expected subcase failures. The duplicate assertions were
+removed from this held unit before GREEN so Task 4b retains an independent RED.
+The runtime-only target suite then passed 15/15.
+
+The approved schema-v2 native-replacement change used a separate TDD boundary.
+Two methods produced nine expected errors against the old three-argument
+resolver signature. After the minimal extension, the positive InfluxDB 3
+Compose path and eight negative/no-read mutations passed 2/2; the machine and
+human contract wording test moved from six expected assertions to GREEN, for a
+combined 3/3. The validator uses exact tracked index path/mode metadata and a
+no-follow regular-file existence check. It never reads or decodes a native
+replacement body, and missing, untracked, ambiguous, deleted, incompatible,
+self/target, or forged candidates emit only `manifest-replacement-invalid`.
+V1 and existing typed Markdown resolution are unchanged.
+
+Candidate aggregate evidence before quality pre-review was full metadata 218/218, target contracts 15/15,
+leaf InfluxDB/k6/Locust Compose 3/3, root core Compose 5 services, all-profile
+Compose 60 services, Locust Dockerfile hadolint PASS, explicit-base metadata
+21 selected / 0 violations / 16 unchanged legacy exceptions / 0 overrides,
+traceability 46/0, alignment 656 documents / 5,251 links / 141 Operations
+documents / 0 failures, and Python compile PASS. Full lifecycle is 116/117:
+the sole generic promoted-manifest fixture failure is the intentional held
+candidate state, and direct wave validation emits exactly
+`manifest-target-missing` for the still-`preserve` InfluxDB 2 row. The manifest
+and summary remain byte-unchanged. No manifest row may change until the
+controller creates the review-only Git object/package, both independent
+pre-reviews pass, and a real runtime commit supplies the immutable rollback
+identity. No stage, commit, duplicate-unit, service, data, secret-value, remote,
+or all-files pre-commit action occurred.
+
+Quality pre-review I-01 established that mounting the root-declared raw secrets
+did not provision an InfluxDB 3 Core server token and that the current docs
+overclaimed authorization. The focused remediation RED was one method with ten
+expected failures: two leaf mounts, four stale mount/authorization claims, and
+four missing source/runtime boundary assertions. GREEN removes both leaf secret
+mounts and states that root declarations/metadata are not leaf wiring, token
+creation/provisioning and authenticated write acceptance require separate
+runtime approval, and source-only validation cannot prove authorization. No
+offline admin token file was added or enabled. Post-remediation target contracts
+pass 16/16, native replacement tests pass 3/3, leaf/core/all-profile Compose
+pass with 1/5/60 services, and hadolint passes. Quality re-review remains
+pending; no staging, commit, manifest-row, or duplicate-unit action occurred.
+
 ## Controlled Agent Pre-commit Evidence
 
 - Command: not_run; Task 6 only.
@@ -584,7 +638,7 @@ not run.
 | T-TSC-001 | recorded | PASS C0/I0/M0; `820e6188307ead1478de200f75a2d08e62ac137a..dd53a695e6893265a8d72c1810f334a6de5daa95` | APPROVED C0/I0/M0; `820e6188307ead1478de200f75a2d08e62ac137a..4cac2af5d7508abd2b9722ee2c6a2d4f01ba7899` | The final foundation reviews close the fail-closed and aggregate-oracle findings. The advisory manifest remains 483 pending rows, and no wave verdict is promoted. |
 | T-TSC-002 | recorded | PASS C0/I0/M0; `f037630ddeef4e7cc738dd9489b9218c452510ae..dd53a695e6893265a8d72c1810f334a6de5daa95` | APPROVED C0/I0/M0; `f037630ddeef4e7cc738dd9489b9218c452510ae..dd53a695e6893265a8d72c1810f334a6de5daa95` | The migrated typed target and fail-closed correction passed both independent Task 2 reviews. Seven rows remain `migrate`, 476 `preserve`, and all manifest verdicts remain pending. |
 | T-TSC-003 | recorded | PASS C0/I0/M0; `8076a1270023226bedd25721928f12870dc559f5..7315677e339f175cfdc4c53411fa881227ffb7a0` | APPROVED C0/I0/M0; `8076a1270023226bedd25721928f12870dc559f5..7315677e339f175cfdc4c53411fa881227ffb7a0` | Terminal reviews close the prior command-body findings and final exception. Implementation and reviews are complete; all 483 manifest review pairs remain pending and no wave verdict is promoted. |
-| T-TSC-004 | not_run | not_run | not_run | not_run |
+| T-TSC-004 | runtime remediation recorded | not_run; review-only Git object/package pending | CHANGES REQUIRED I-01; remediation ready for re-review | I-01 removed unused leaf secret mounts and authorization overclaims. Manifest row and duplicate unit remain untouched; no verdict is promoted. |
 | T-TSC-005 | not_run | not_run | not_run | not_run |
 | T-TSC-006 | not_run | not_run | not_run | not_run |
 | Whole branch | N/A | not_run | not_run | exact final range pending |

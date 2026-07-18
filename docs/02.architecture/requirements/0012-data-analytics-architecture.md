@@ -20,7 +20,7 @@ status: active
 
 - **Identifier**: `ARD-0012`
 - **Domain**: Data Architecture (Analytics)
-- **Primary Tech Stack**: InfluxDB 3.x Core primary with InfluxDB 2.x legacy compose, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
+- **Primary Tech Stack**: InfluxDB 3 Core, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
 - **Connectivity**: Private isolated `infra_net`.
 
 ## Boundaries
@@ -79,7 +79,7 @@ graph LR
 
 - **Ingestion**: 현재 compose는 ingestion endpoints and dependencies를 제공한다. Kafka CDC, OpenSearch indexing, InfluxDB writes, and StarRocks load jobs require separate producer/workflow evidence.
 - **Storage Strategy**:
-  - InfluxDB: 3.x Core primary data/plugin volumes; 2.x TSM path remains a legacy compose option.
+  - InfluxDB: 3 Core data/plugin volumes with database and HTTP line-protocol endpoint/schema contracts on port `8181`; token provisioning and authenticated access remain runtime-unverified.
   - OpenSearch: 루씬(Lucene) 인덱스 분산 저장.
   - StarRocks: MPP(Massively Parallel Processing) 아키텍처의 컬럼형 스토리지.
 - **Consistency**: 최종 일관성(Eventual Consistency) 모델을 기본으로 채택하여 처리량 극대화.

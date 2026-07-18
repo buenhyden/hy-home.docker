@@ -4150,7 +4150,7 @@ stale_literals = {
     "neo4j:5.26.23-community": "Neo4j is declared as neo4j:5.26.26-community",
     "v10.2.0": "Dozzle is declared as amir20/dozzle:v10.6.6",
     "PostgreSQL (v16+)": "PostgreSQL services are currently PostgreSQL 17/18 family images",
-    "InfluxDB 2.x 채택": "InfluxDB 3.x Core is the primary compose; InfluxDB 2.x is legacy compose only",
+    "InfluxDB 2.x 채택": "InfluxDB 3 Core is the sole current analytics time-series compose",
     "OpenSearch 2.x 채택": "OpenSearch 3.x is the current analytics implementation family",
     "StarRocks 3.x 채택": "StarRocks 4.x is the current analytics implementation family",
     "Primary Tech Stack: InfluxDB 2.x, ksqlDB 0.29+, OpenSearch 2.x, StarRocks 3.x": "analytics ARD must describe the current compose-backed version families",

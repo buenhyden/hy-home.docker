@@ -24,7 +24,7 @@ status: active
 
 ## Decision
 
-- **TSDB**: InfluxDB 3.x Core를 primary deployment로 채택하고, InfluxDB 2.x는 `docker-compose.v2.yml` 기반 legacy Flux 호환 경로로 유지한다.
+- **TSDB**: InfluxDB 3 Core를 단일 deployment로 채택한다. Current source integration은 database 이름과 port `8181`의 `/api/v3/write_lp` endpoint/schema contract를 정의하며 token provisioning과 authenticated write acceptance는 runtime-unverified 상태다.
 - **Stream Processing**: Confluent ksqlDB 계열을 채택하여 Kafka Topic에 대한 SQL 기반 실시간 처리 및 변환을 담당한다.
 - **Log Engine**: OpenSearch 3.x 계열을 채택하여 분산 루씬 기반 고속 전문 검색 및 시각화를 담당한다.
 - **OLAP Warehouse**: StarRocks 4.x 계열을 채택하여 MPP 기반 실시간 조인 및 고속 데이터웨어하우스 구축을 담당한다.
