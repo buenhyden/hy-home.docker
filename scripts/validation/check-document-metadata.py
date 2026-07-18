@@ -343,6 +343,16 @@ EXPECTED_MANIFEST_SCHEMA_V2 = {
     },
 }
 TARGET_SURFACE_BASELINE = "32c40e11747bc0bd03789c24861d2e5d60c0e999"
+TARGET_SURFACE_COMPLETION_PATH = (
+    "docs/03.specs/133-target-surface-contract-convergence/spec.md"
+)
+TARGET_SURFACE_COMPLETION_ARTIFACT_ID = (
+    "spec:133-target-surface-contract-convergence"
+)
+TARGET_SURFACE_COMPLETION_ARTIFACT_TYPE = "spec"
+TARGET_SURFACE_COMPLETION_PARENT_IDS = (
+    "spec:131-document-corpus-lifecycle-migration-foundation",
+)
 TARGET_SURFACE_PROMOTION_EVIDENCE = {
     "review_base_commit": TARGET_SURFACE_BASELINE,
     "review_head_commit": "c1e086a1159da3490297adeb4e0972d29b976fe0",
@@ -913,6 +923,26 @@ class TransitionOverride:
     evidence_task: str
     approval: str
     reason: str
+
+
+@dataclasses.dataclass(frozen=True)
+class PromotedTransitionWitness:
+    """Immutable promotion-time identity and first-hop lifecycle attestation."""
+
+    wave: str
+    baseline_commit: str
+    promotion_evidence_valid: bool
+    enforcement: str
+    path: str
+    target_path: str | None
+    artifact_id: str | None
+    artifact_type: str | None
+    parent_ids: tuple[str, ...]
+    status_before: str | None
+    status_after: str | None
+    disposition: str
+    specification_review: str
+    quality_review: str
 
 
 @dataclasses.dataclass(frozen=True)
@@ -2313,6 +2343,7 @@ def validate_record(
     profiles: dict[str, object],
     manifest: dict[str, pathlib.Path],
     transition_overrides: Mapping[tuple[str, str, str], TransitionOverride] | None = None,
+    promoted_transition_witnesses: Mapping[str, PromotedTransitionWitness] | None = None,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
 
@@ -2469,11 +2500,36 @@ def validate_record(
                 _finding(record, "archived-outside-stage-98", "archived status is reserved for archive tombstones")
             )
     previous_status = record.previous_status
-    if isinstance(status, str) and previous_status and status != previous_status:
+    promoted_witness = (promoted_transition_witnesses or {}).get(
+        record.path.as_posix()
+    )
+    promoted_context_valid = (
+        promoted_witness is not None
+        and _promoted_transition_witness_context_valid(promoted_witness, record)
+    )
+    promoted_reversion = (
+        promoted_context_valid
+        and status == previous_status == promoted_witness.status_before
+    )
+    if isinstance(status, str) and previous_status and (
+        status != previous_status or promoted_reversion
+    ):
         transitions = common.get("transitions", {})
         allowed_next = transitions.get(previous_status, []) if isinstance(transitions, dict) else []
         override_key = (record.path.as_posix(), previous_status, status)
-        if status not in allowed_next and override_key not in (transition_overrides or {}):
+        promoted_hop_valid = (
+            promoted_witness is not None
+            and promoted_single_hop_transition_valid(
+                promoted_witness,
+                record,
+                profiles,
+            )
+        )
+        if (
+            (status not in allowed_next or promoted_reversion)
+            and override_key not in (transition_overrides or {})
+            and not promoted_hop_valid
+        ):
             findings.append(
                 _finding(
                     record,
@@ -3651,6 +3707,166 @@ def validate_static_exception_document(
 
     if ordering_keys != sorted(ordering_keys) or len(ordering_keys) != len(set(ordering_keys)):
         raise ProfileError("exceptions must be uniquely ordered by finding_code and scope_paths")
+
+
+def _promoted_transition_witness_context_valid(
+    witness: PromotedTransitionWitness,
+    record: Record,
+) -> bool:
+    """Bind the promoted witness to one exact canonical typed artifact."""
+
+    path = record.path.as_posix()
+    artifact_id = record.metadata.get("artifact_id")
+    artifact_type = record.metadata.get("artifact_type")
+    parent_ids = record.metadata.get("parent_ids")
+    return bool(
+        witness.wave == "target-surface-convergence"
+        and witness.baseline_commit == TARGET_SURFACE_BASELINE
+        and witness.promotion_evidence_valid
+        and witness.enforcement == "blocking"
+        and witness.path == TARGET_SURFACE_COMPLETION_PATH
+        and witness.target_path == witness.path
+        and path == witness.path
+        and witness.artifact_id == TARGET_SURFACE_COMPLETION_ARTIFACT_ID
+        and witness.artifact_type == TARGET_SURFACE_COMPLETION_ARTIFACT_TYPE
+        and witness.parent_ids == TARGET_SURFACE_COMPLETION_PARENT_IDS
+        and witness.disposition == "preserve"
+        and witness.specification_review == "pass"
+        and witness.quality_review == "pass"
+        and witness.status_before == "draft"
+        and witness.status_after == "active"
+        and record.previous_status == witness.status_before
+        and artifact_id == witness.artifact_id
+        and artifact_type == witness.artifact_type
+        and isinstance(parent_ids, list)
+        and all(isinstance(parent, str) for parent in parent_ids)
+        and tuple(sorted(parent_ids)) == witness.parent_ids
+    )
+
+
+def promoted_single_hop_transition_valid(
+    witness: PromotedTransitionWitness,
+    record: Record,
+    profiles: Mapping[str, object],
+) -> bool:
+    """Admit only Spec 133's evidenced draft->active->one-next-hop chain."""
+
+    current_status = record.metadata.get("status")
+    if not _promoted_transition_witness_context_valid(witness, record) or not isinstance(
+        current_status, str
+    ):
+        return False
+    common = profiles.get("common")
+    transitions = common.get("transitions") if isinstance(common, Mapping) else None
+    if not isinstance(transitions, Mapping):
+        return False
+    first_targets = transitions.get(witness.status_before)
+    next_targets = transitions.get(witness.status_after)
+    return (
+        isinstance(first_targets, list)
+        and first_targets == ["active"]
+        and isinstance(next_targets, list)
+        and "completed" in next_targets
+        and current_status == "completed"
+    )
+
+
+def load_promoted_transition_witnesses(
+    root: pathlib.Path,
+    profiles: Mapping[str, object],
+    comparison_base: str | None,
+) -> dict[str, PromotedTransitionWitness]:
+    """Load the exact promoted target witness only for its immutable baseline."""
+
+    if comparison_base != TARGET_SURFACE_BASELINE:
+        return {}
+    contract_path = root / "docs/99.templates/support/document-corpus-migration-contract.yaml"
+    if not contract_path.is_file():
+        return {}
+    contract = load_migration_contract(contract_path)
+    waves = contract.get("waves")
+    wave = (
+        waves.get("target-surface-convergence")
+        if isinstance(waves, Mapping)
+        else None
+    )
+    if not isinstance(wave, Mapping):
+        return {}
+    manifest_path = wave.get("manifest_path")
+    if not isinstance(manifest_path, str) or not _safe_contract_path(manifest_path):
+        return {}
+    absolute_manifest = root / manifest_path
+    if not absolute_manifest.is_file():
+        return {}
+    try:
+        document = _safe_load_unique(absolute_manifest.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as error:
+        raise ProfileError("cannot load promoted transition witness") from error
+    validate_static_migration_manifest(document, contract, profiles)
+    if not isinstance(document, Mapping):
+        return {}
+    if not (
+        document.get("wave") == "target-surface-convergence"
+        and document.get("baseline_commit") == TARGET_SURFACE_BASELINE
+        and document.get("enforcement") == "blocking"
+        and wave.get("baseline_commit") == TARGET_SURFACE_BASELINE
+        and wave.get("enforcement") == "blocking"
+        and wave.get("promotion_evidence") == TARGET_SURFACE_PROMOTION_EVIDENCE
+    ):
+        return {}
+    entries = document.get("entries")
+    if not isinstance(entries, list):
+        return {}
+    matching = [
+        row
+        for row in entries
+        if isinstance(row, Mapping)
+        and row.get("source_path") == TARGET_SURFACE_COMPLETION_PATH
+    ]
+    if len(matching) != 1:
+        return {}
+    row = matching[0]
+    review = row.get("review_verdict")
+    parents = row.get("parent_ids")
+    if not (
+        isinstance(review, Mapping)
+        and isinstance(parents, list)
+        and all(isinstance(parent, str) for parent in parents)
+    ):
+        return {}
+    witness = PromotedTransitionWitness(
+        wave="target-surface-convergence",
+        baseline_commit=TARGET_SURFACE_BASELINE,
+        promotion_evidence_valid=True,
+        enforcement="blocking",
+        path=TARGET_SURFACE_COMPLETION_PATH,
+        target_path=row.get("target_path")
+        if isinstance(row.get("target_path"), str)
+        else None,
+        artifact_id=row.get("artifact_id")
+        if isinstance(row.get("artifact_id"), str)
+        else None,
+        artifact_type=row.get("artifact_type_after")
+        if isinstance(row.get("artifact_type_after"), str)
+        else None,
+        parent_ids=tuple(sorted(parents)),
+        status_before=row.get("status_before")
+        if isinstance(row.get("status_before"), str)
+        else None,
+        status_after=row.get("status_after")
+        if isinstance(row.get("status_after"), str)
+        else None,
+        disposition=row.get("disposition")
+        if isinstance(row.get("disposition"), str)
+        else "",
+        specification_review=review.get("specification")
+        if isinstance(review.get("specification"), str)
+        else "",
+        quality_review=review.get("quality")
+        if isinstance(review.get("quality"), str)
+        else "",
+    )
+    return {witness.path: witness}
 
 
 def load_profiles(
@@ -5217,9 +5433,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("configuration-error: --transition-override-file requires --mode check-changed", file=sys.stderr)
         return 2
     base_records: list[Record] = []
+    promoted_transition_witnesses: dict[str, PromotedTransitionWitness] = {}
     if base.merge_base:
         try:
             base_records = collect_records_at_ref(root, profiles, base.merge_base)
+            if args.mode == "check-changed":
+                promoted_transition_witnesses = load_promoted_transition_witnesses(
+                    root,
+                    profiles,
+                    base.merge_base,
+                )
         except ProfileError as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
@@ -5248,6 +5471,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             profiles,
             manifest,
             transition_overrides=transition_overrides,
+            promoted_transition_witnesses=promoted_transition_witnesses,
         )
         for record in records
     }

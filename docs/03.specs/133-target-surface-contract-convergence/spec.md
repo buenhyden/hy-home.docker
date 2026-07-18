@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:133-target-surface-contract-convergence
 artifact_type: spec
 parent_ids:
@@ -10,7 +10,7 @@ parent_ids:
 
 **Date:** 2026-07-18 (Asia/Seoul)
 
-**Status:** Active
+**Status:** Completed
 
 ## Overview
 

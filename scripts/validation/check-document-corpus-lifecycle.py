@@ -2051,6 +2051,7 @@ def _surface_partition_plan_findings(
 def _surface_result_state_findings(
     root: pathlib.Path,
     profiles: dict[str, object],
+    contract: dict[str, object],
     document: MigrationManifestDocument,
     row: MigrationManifestRow,
 ) -> tuple[list[Finding], bool]:
@@ -2197,7 +2198,34 @@ def _surface_result_state_findings(
                 "result target identity differs from manifest truth",
             )
         )
-    if normalized_status != row.status_after:
+    waves = contract.get("waves")
+    wave = waves.get(document.wave) if isinstance(waves, dict) else None
+    promoted_witness = metadata.PromotedTransitionWitness(
+        wave=document.wave,
+        baseline_commit=document.baseline_commit,
+        promotion_evidence_valid=(
+            isinstance(wave, dict)
+            and wave.get("promotion_evidence")
+            == metadata.TARGET_SURFACE_PROMOTION_EVIDENCE
+        ),
+        enforcement=document.enforcement,
+        path=source,
+        target_path=target,
+        artifact_id=row.artifact_id,
+        artifact_type=row.artifact_type_after,
+        parent_ids=row.parent_ids,
+        status_before=row.status_before,
+        status_after=row.status_after,
+        disposition=row.disposition,
+        specification_review=row.review_verdict.specification,
+        quality_review=row.review_verdict.quality,
+    )
+    promoted_hop_valid = metadata.promoted_single_hop_transition_valid(
+        promoted_witness,
+        dataclasses.replace(target_record, previous_status=row.status_before),
+        profiles,
+    )
+    if normalized_status != row.status_after and not promoted_hop_valid:
         findings.append(
             _finding(
                 target,
@@ -2294,6 +2322,7 @@ def _surface_result_state_findings(
 def _validate_surface_manifest_semantics(
     root: pathlib.Path,
     profiles: dict[str, object],
+    contract: dict[str, object],
     document: MigrationManifestDocument,
 ) -> list[Finding]:
     """Apply v1-compatible semantic and safety gates to a schema-v2 wave."""
@@ -2304,7 +2333,7 @@ def _validate_surface_manifest_semantics(
     for row in document.entries:
         source = row.source_path.as_posix()
         result_findings, result_valid = _surface_result_state_findings(
-            root, profiles, document, row
+            root, profiles, contract, document, row
         )
         findings.extend(result_findings)
         transition_valid = row.status_before == row.status_after
@@ -2556,7 +2585,9 @@ def _validate_surface_manifest(
         findings.append(
             _finding("manifest", "manifest-order-invalid", "entries are not ordered by source_path")
         )
-    findings.extend(_validate_surface_manifest_semantics(root, profiles, document))
+    findings.extend(
+        _validate_surface_manifest_semantics(root, profiles, contract, document)
+    )
     return sorted(set(findings))
 
 

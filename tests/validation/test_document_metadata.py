@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import collections
 import copy
+import dataclasses
 import datetime as dt
 import hashlib
 import importlib.util
@@ -13,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -968,6 +970,147 @@ class ProfileSchemaTests(unittest.TestCase):
             "e61a21ba081c84c7a0bf4789e131ed8b0b8cc1bf18f22aec20d69fe9176348fd",
             target_promotion_invariant_digest(TARGET_SURFACE_MANIFEST),
         )
+
+    def test_promoted_witness_allows_only_the_exact_next_status_hop(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        witnesses = metadata.load_promoted_transition_witnesses(
+            ROOT,
+            profiles,
+            metadata.TARGET_SURFACE_BASELINE,
+        )
+        path = metadata.TARGET_SURFACE_COMPLETION_PATH
+        witness = witnesses[path]
+        record = metadata.Record(
+            pathlib.Path(path),
+            {
+                "status": "completed",
+                "artifact_id": witness.artifact_id,
+                "artifact_type": witness.artifact_type,
+                "parent_ids": list(witness.parent_ids),
+            },
+            "spec",
+            previous_status="draft",
+        )
+        findings = metadata.validate_record(
+            record,
+            profiles,
+            metadata.build_manifest((record,)),
+            promoted_transition_witnesses=witnesses,
+        )
+        self.assertNotIn("invalid-transition", {item.code for item in findings})
+
+        invalid_witnesses = {
+            "missing": {},
+            "advisory": {
+                path: dataclasses.replace(witness, enforcement="advisory")
+            },
+            "pending-review": {
+                path: dataclasses.replace(witness, specification_review="pending")
+            },
+            "wrong-path": {
+                path: dataclasses.replace(witness, path="docs/03.specs/other/spec.md")
+            },
+            "wrong-id": {
+                path: dataclasses.replace(witness, artifact_id="spec:other")
+            },
+            "wrong-type": {
+                path: dataclasses.replace(witness, artifact_type="reference")
+            },
+            "wrong-parents": {
+                path: dataclasses.replace(witness, parent_ids=())
+            },
+            "wrong-baseline": {
+                path: dataclasses.replace(witness, baseline_commit="0" * 40)
+            },
+            "skipped-first-hop": {
+                path: dataclasses.replace(witness, status_after="completed")
+            },
+        }
+        for name, candidate_witnesses in invalid_witnesses.items():
+            with self.subTest(case=name):
+                findings = metadata.validate_record(
+                    record,
+                    profiles,
+                    metadata.build_manifest((record,)),
+                    promoted_transition_witnesses=candidate_witnesses,
+                )
+                self.assertIn("invalid-transition", {item.code for item in findings})
+
+        coordinated_mutations = {
+            "id": (
+                dataclasses.replace(witness, artifact_id="spec:coordinated"),
+                {**record.metadata, "artifact_id": "spec:coordinated"},
+            ),
+            "type": (
+                dataclasses.replace(witness, artifact_type="reference"),
+                {**record.metadata, "artifact_type": "reference"},
+            ),
+            "parents": (
+                dataclasses.replace(witness, parent_ids=("spec:coordinated",)),
+                {**record.metadata, "parent_ids": ["spec:coordinated"]},
+            ),
+        }
+        for name, (candidate_witness, candidate_metadata) in coordinated_mutations.items():
+            with self.subTest(coordinated_mutation=name):
+                candidate = dataclasses.replace(record, metadata=candidate_metadata)
+                findings = metadata.validate_record(
+                    candidate,
+                    profiles,
+                    metadata.build_manifest((candidate,)),
+                    promoted_transition_witnesses={path: candidate_witness},
+                )
+                self.assertIn("invalid-transition", {item.code for item in findings})
+
+        for terminal_status in ("archived", "superseded"):
+            with self.subTest(terminal_status=terminal_status):
+                terminal = dataclasses.replace(
+                    record,
+                    metadata={**record.metadata, "status": terminal_status},
+                )
+                terminal_findings = metadata.validate_record(
+                    terminal,
+                    profiles,
+                    metadata.build_manifest((terminal,)),
+                    promoted_transition_witnesses=witnesses,
+                )
+                self.assertIn(
+                    "invalid-transition", {item.code for item in terminal_findings}
+                )
+
+        reverted = dataclasses.replace(
+            record,
+            metadata={**record.metadata, "status": "draft"},
+        )
+        reverted_findings = metadata.validate_record(
+            reverted,
+            profiles,
+            metadata.build_manifest((reverted,)),
+            promoted_transition_witnesses=witnesses,
+        )
+        self.assertIn(
+            "invalid-transition", {item.code for item in reverted_findings}
+        )
+
+    def test_promoted_witness_parse_diagnostic_is_value_free(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
+        sentinel = "TOKEN-DO-NOT-PRINT"
+        with (
+            mock.patch.object(metadata, "load_migration_contract", return_value=contract),
+            mock.patch.object(
+                metadata,
+                "_safe_load_unique",
+                side_effect=yaml.YAMLError(sentinel),
+            ),
+            self.assertRaises(metadata.ProfileError) as raised,
+        ):
+            metadata.load_promoted_transition_witnesses(
+                ROOT,
+                profiles,
+                metadata.TARGET_SURFACE_BASELINE,
+            )
+        self.assertEqual("cannot load promoted transition witness", str(raised.exception))
+        self.assertNotIn(sentinel, str(raised.exception))
 
     def test_migration_contract_declares_manifest_static_semantics(self) -> None:
         contract = metadata.load_migration_contract(MIGRATION_CONTRACT)

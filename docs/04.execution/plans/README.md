@@ -100,7 +100,7 @@ docs/04.execution/plans/
 ├── 2026-07-12-agentic-audit-harness-consolidation.md # Completed canonical audit lifecycle, freshness, security precision, and QA/CI plan
 ├── 2026-07-13-document-contract-canonicalization.md # Completed document-contract plan; post-closure findings resolved
 ├── 2026-07-15-agent-governance-harness-convergence.md # Completed agent-governance and provider-harness convergence plan
-├── 2026-07-18-target-surface-contract-convergence.md # Active; blocking promotion complete, final closure review pending
+├── 2026-07-18-target-surface-contract-convergence.md # Completed; blocking promotion and final closure reviews passed
 ├── 2026-07-11-compose-runtime-readiness-remediation.md # Draft Compose runtime evidence plan; later runtime approval required
 ├── 2026-07-11-infrastructure-operations-readiness-remediation.md # Draft stateful operations/recovery plan; later runtime approval required
 ├── 2026-07-11-security-supply-chain-remediation.md # Draft supply-chain evidence plan; later security/remote approval required

@@ -101,7 +101,7 @@ docs/03.specs/
 ├── 130-template-contract-system-canonicalization/ # Completed template-role, body, validator, and direct-consumer canonicalization
 ├── 131-document-corpus-lifecycle-migration-foundation/ # Completed corpus migration manifest, retention, archive, and validation foundation
 ├── 132-agent-governance-harness-convergence/ # Completed Stage 00 authority, native provider adapter, catalog, model, loop, and evidence convergence
-├── 133-target-surface-contract-convergence/ # Active; blocking promotion complete, final closure review in progress
+├── 133-target-surface-contract-convergence/ # Completed; blocking promotion and final closure reviews passed
 └── README.md                            # This file
 ```
 

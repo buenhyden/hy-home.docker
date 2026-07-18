@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: plan:2026-07-18-target-surface-contract-convergence
 artifact_type: plan
 parent_ids:
@@ -510,7 +510,7 @@ frontmatter inventory.
   only actual changed prefixes and record every required bounded path set.
 - [x] Validate any allowed formatter mutation; none occurred. Promote the
   manifest only after all gates and its exact-range independent reviews.
-- [ ] Commit `docs(execution): close target surface convergence`.
+- [x] Commit `docs(execution): close target surface convergence`.
 
 ```bash
 python3 -m unittest discover -s tests/validation -v
@@ -629,9 +629,9 @@ Use ordinary `git revert` in reverse dependency order. Do not use
 - [x] All direct service/tooling documents agree with final static source.
 - [x] Canonical research/audit and generated owners are current.
 - [x] Full verification and controlled wrapper pass in the clean worktree.
-- [ ] Fresh whole-branch reviews pass on the exact final range.
-- [ ] Spec/Plan/Task/indexes/memory close with runtime/remote limits explicit.
-- [ ] Worktree is clean and commits are logical Conventional Commits.
+- [x] Fresh whole-branch reviews pass on the exact final range.
+- [x] Spec/Plan/Task/indexes/memory close with runtime/remote limits explicit.
+- [x] Worktree is clean and commits are logical Conventional Commits.
 
 ## Related Documents
 

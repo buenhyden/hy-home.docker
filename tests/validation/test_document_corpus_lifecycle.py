@@ -780,6 +780,74 @@ class ManifestValidationTests(LifecycleTestCase):
             }.isdisjoint(self.target_codes(document))
         )
 
+    def test_promoted_status_witness_is_bounded_to_exact_blocking_chain(self) -> None:
+        document = self.target_manifest()
+        path = "docs/03.specs/133-target-surface-contract-convergence/spec.md"
+        row = self.target_row(document, path)
+        self.assertEqual(("draft", "active"), (row.status_before, row.status_after))
+        self.assertEqual(lifecycle.ReviewVerdict("pass", "pass"), row.review_verdict)
+        self.assertNotIn("manifest-target-status-mismatch", self.target_codes(document))
+
+        invalid_documents = {
+            "advisory": (
+                dataclasses.replace(document, enforcement="advisory"),
+                "manifest-target-status-mismatch",
+            ),
+            "pending-review": (
+                self.replace_target_row(
+                    document,
+                    dataclasses.replace(
+                        row,
+                        review_verdict=lifecycle.ReviewVerdict("pending", "pass"),
+                    ),
+                ),
+                "manifest-target-status-mismatch",
+            ),
+            "wrong-baseline": (
+                dataclasses.replace(document, baseline_commit="0" * 40),
+                "manifest-baseline-commit-invalid",
+            ),
+            "skipped-first-hop": (
+                self.replace_target_row(
+                    document,
+                    dataclasses.replace(row, status_after="completed"),
+                ),
+                "manifest-transition-invalid",
+            ),
+        }
+        for name, (candidate, expected_code) in invalid_documents.items():
+            with self.subTest(case=name):
+                self.assertIn(expected_code, self.target_codes(candidate))
+
+        for terminal_status in ("archived", "superseded"):
+            with self.subTest(terminal_status=terminal_status):
+                payload = (ROOT / path).read_text(encoding="utf-8").replace(
+                    "status: completed", f"status: {terminal_status}", 1
+                ).encode()
+                self.assertIn(
+                    "manifest-target-status-mismatch",
+                    self.target_codes_with_result_payload(document, path, payload),
+                )
+
+        coordinated_row = dataclasses.replace(
+            row,
+            parent_ids=("spec:coordinated",),
+        )
+        coordinated_document = self.replace_target_row(document, coordinated_row)
+        coordinated_payload = (ROOT / path).read_text(encoding="utf-8").replace(
+            "spec:131-document-corpus-lifecycle-migration-foundation",
+            "spec:coordinated",
+            1,
+        ).encode()
+        self.assertIn(
+            "manifest-target-status-mismatch",
+            self.target_codes_with_result_payload(
+                coordinated_document,
+                path,
+                coordinated_payload,
+            ),
+        )
+
     def test_v2_migrated_typed_target_rejects_false_current_metadata(self) -> None:
         document = self.target_manifest()
         row = self.target_row(
@@ -1239,7 +1307,7 @@ class ManifestValidationTests(LifecycleTestCase):
             codes = {
                 finding.code
                 for finding in lifecycle._validate_surface_manifest_semantics(
-                    ROOT, self.profiles, document
+                    ROOT, self.profiles, self.contract, document
                 )
             }
 
@@ -2413,7 +2481,7 @@ class ArchiveProvenanceTests(LifecycleTestCase):
             "active_consumers": (),
             "partition_plan": None,
             "preservation_class": "git-history",
-            "review_verdict": lifecycle.ReviewVerdict("pending", "pending"),
+            "review_verdict": lifecycle.ReviewVerdict("pass", "pass"),
         }
         for field, expected in expected_row.items():
             if getattr(row, field) != expected:
