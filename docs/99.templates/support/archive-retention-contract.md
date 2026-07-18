@@ -26,8 +26,27 @@ forbid SDLC parents, supersession, replacement, and snapshot fields. SDLC
 tombstones retain the existing conditional replacement and snapshot contract.
 Each path must match exactly one selector and use its registered template.
 
-The archive profile requires `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_on`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
-It permits `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason` only under the profile's conditions.
+### `content-archive`
+
+Required: `status`, `artifact_id`, `artifact_type`, `archived_from`, `archived_on`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
+
+Optional: none.
+
+Forbidden: `parent_ids`, `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`, `reviewed_at`, `review_cycle`, `type`, `document_type`, `template_type`, `owner`, `updated`, `links`, `generated_by`.
+
+### `sdlc-archive`
+
+Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_on`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
+
+Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
+
+Forbidden: `reviewed_at`, `review_cycle`, `type`, `document_type`, `template_type`, `owner`, `updated`, `links`, `generated_by`.
+
+Within the SDLC optional field set, `current_replacement` is required for
+`superseded`, `duplicate`, and `conflict`; forbidden for `withdrawn`; and
+optional for `evidence-preserve`. `snapshot_path`, `content_sha256`, and
+`snapshot_reason` are required for `immutable-snapshot` and forbidden for
+`git-history`. `layer` and `supersedes` remain unconditionally optional.
 
 The repository-local archive dispositions are `superseded`, `duplicate`, `conflict`, `withdrawn`, `evidence-preserve`.
 The preservation classes are `git-history`, `immutable-snapshot`.
@@ -37,20 +56,19 @@ The preservation classes are `git-history`, `immutable-snapshot`.
 resolve to that exact blob. The tombstone remains concise and never presents
 the removed body as current truth.
 
-`current_replacement` is required for superseded, duplicate, and conflict,
-forbidden for withdrawn, and optional for evidence-preserve. When a verified
-withdrawal has no replacement, the key and `## Current Replacement` section
-are absent. Sentinel text must not fabricate a replacement. The direction of
-`supersedes`, direct parents, identity, and status still comes from the shared
-metadata owner.
+For an SDLC tombstone, a verified withdrawal has no replacement, so the
+`current_replacement` key and `## Current Replacement` section are absent.
+Sentinel text must not fabricate a replacement. The direction of `supersedes`,
+direct parents, identity, and status still comes from the shared metadata
+owner.
 
 ## Snapshot Admission and Confidentiality
 
-Git history is the default preservation route and forbids `snapshot_path`,
-`content_sha256`, and `snapshot_reason`. An immutable snapshot is admitted only
-for an evidence-preserve disposition with explicit audit, legal, or approved
-evidence need. It requires all three fields and the `## Preserved Evidence`
-section.
+For `sdlc-archive`, Git history is the default preservation route. An immutable
+snapshot is admitted only for an evidence-preserve disposition with explicit
+audit, legal, or approved evidence need. It requires all three snapshot fields
+and the `## Preserved Evidence` section. `content-archive` never admits snapshot
+fields under either preservation class.
 
 The snapshot path is content-addressed beneath
 `docs/98.archive/evidence/` with suffix `.md.snapshot`. The content hash must

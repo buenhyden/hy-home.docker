@@ -634,19 +634,46 @@ class ProfileSchemaTests(unittest.TestCase):
             "canonical archive and retention human owner is missing",
         )
         text = ARCHIVE_RETENTION_HUMAN_CONTRACT.read_text(encoding="utf-8")
+        normalized = " ".join(text.split())
         contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
         profiles = metadata.load_profiles(PROFILES)
-        archive_profile = profiles["profiles"]["archive"]
+        archive_profiles = profiles["archive_profiles"]
 
         for values in (
             contract["archive"]["dispositions"],
             contract["archive"]["preservation_classes"],
-            archive_profile["required"],
-            archive_profile["optional"],
         ):
             literal = ", ".join(f"`{value}`" for value in values)
             with self.subTest(literal=literal):
                 self.assertIn(literal, text)
+        for profile_name, profile in archive_profiles.items():
+            section = text.split(f"### `{profile_name}`", 1)[1]
+            section = section.split("\n### `", 1)[0].split("\n## ", 1)[0]
+            for field_group in ("required", "forbidden"):
+                literal = ", ".join(f"`{value}`" for value in profile[field_group])
+                with self.subTest(profile=profile_name, field_group=field_group):
+                    self.assertIn(literal, section)
+            optional = profile["optional"]
+            optional_literal = (
+                ", ".join(f"`{value}`" for value in optional)
+                if optional
+                else "none"
+            )
+            with self.subTest(profile=profile_name, field_group="optional"):
+                self.assertIn(f"Optional: {optional_literal}.", section)
+        self.assertNotIn("The archive profile requires", text)
+        self.assertNotIn("It permits", text)
+        self.assertIn(
+            "`current_replacement` is required for `superseded`, `duplicate`, and "
+            "`conflict`; forbidden for `withdrawn`; and optional for "
+            "`evidence-preserve`.",
+            normalized,
+        )
+        self.assertIn(
+            "`snapshot_path`, `content_sha256`, and `snapshot_reason` are required "
+            "for `immutable-snapshot` and forbidden for `git-history`.",
+            normalized,
+        )
         for key, value in contract["directory_budgets"].items():
             self.assertIn(f"`{key}: {value}`", text)
         for key, value in contract["review_signals"].items():
