@@ -78,6 +78,13 @@ def commit_all(root: pathlib.Path, message: str = "fixture") -> str:
 def archive_command_body_findings(text: str) -> list[str]:
     for line in text.splitlines():
         stripped = line.lstrip()
+        parts = stripped.split(maxsplit=1)
+        if len(parts) == 2:
+            marker = parts[0]
+            if marker in {"-", "+", "*"} or (
+                marker[-1:] in {".", ")"} and marker[:-1].isdigit()
+            ):
+                stripped = parts[1].lstrip()
         if stripped and stripped.split(maxsplit=1)[0].casefold() == "netsh":
             return ["stale-command-body"]
     return []
@@ -2093,6 +2100,17 @@ class CandidateManifestCliTests(LifecycleTestCase):
 
 
 class ArchiveProvenanceTests(LifecycleTestCase):
+    def test_command_body_scan_rejects_markdown_list_commands(self) -> None:
+        synthetic_mutations = {
+            "unordered": "- NeTsH i i synthetic-static-address\n",
+            "ordered": "1. nEtSh wlan synthetic-profile\n",
+        }
+        for kind, mutation in synthetic_mutations.items():
+            with self.subTest(kind=kind):
+                self.assertEqual(
+                    ["stale-command-body"], archive_command_body_findings(mutation)
+                )
+
     def test_command_body_scan_rejects_abbreviated_case_varied_netsh_line(self) -> None:
         synthetic_mutation = "  NeTsH i i synthetic-static-address\n"
         self.assertEqual(
