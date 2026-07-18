@@ -18,7 +18,8 @@ Protocol for maintaining documentation consistency and governance traceability.
   Stage 99 registry and support contracts for every new or modified
   target-stage document under `docs/01.requirements/`,
   `docs/02.architecture/`, `docs/03.specs/`, `docs/04.execution/`,
-  `docs/05.operations/`, `docs/90.references/`, and `docs/98.archive/`.
+  `docs/05.operations/`, `docs/90.references/`, `docs/98.archive/`, and root
+  `archive/` content tombstones.
 - Use only relative links; never use absolute `file://` links.
 - Keep `docs/00.agent-governance/` English-only.
 - Keep root `README.md` and human-facing folder READMEs Korean by default,
@@ -56,7 +57,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Spec folders under `docs/03.specs/` use the canonical `NNN-feature-id/`
   directory form; parent specs live at `docs/03.specs/NNN-feature-id/spec.md`.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user approval.
-- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/05`, `docs/90`, `docs/99`). Archive tombstones live under `docs/98.archive` and are not active artifacts.
+- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/05`, `docs/90`, `docs/99`). SDLC archive tombstones live under `docs/98.archive`; content tombstones may live under root `archive/**`. Neither is an active artifact.
 - Non-stage `docs/*` paths such as `docs/superpowers/` must not contain active specs or plans.
 - `README.md` files and root instruction shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) are documentation surfaces for DOCS 3 unless a higher-priority runtime constraint explicitly exempts them.
 - Root instruction shims must remain thin; their `## Related Documents` sections should point to canonical governance and provider docs instead of duplicating policy.
@@ -78,7 +79,8 @@ Protocol for maintaining documentation consistency and governance traceability.
 - **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
   and `docs/90` MUST include YAML frontmatter with
   `status: draft | active | completed | superseded`.
-  Archive tombstones under `docs/98.archive` MUST use `status: archived`.
+  Archive tombstones under `docs/98.archive` and root `archive/**` MUST use
+  `status: archived` and the exact path-selected archive profile.
   Governance memory files (`docs/00.agent-governance/`) use `layer:`
   frontmatter. Markdown template source metadata follows the Stage 99 registry:
   Governance Memory and Progress sources use exactly `layer: agentic` and

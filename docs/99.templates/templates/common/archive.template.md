@@ -20,6 +20,9 @@ snapshot_reason: <snapshot-reason>
 
 ## Overview
 
+This SDLC archive tombstone preserves provenance without retaining stale
+current-use guidance.
+
 {{overview}}
 
 ## Archive Metadata

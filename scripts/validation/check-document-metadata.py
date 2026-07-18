@@ -261,6 +261,153 @@ EXPECTED_MANIFEST_SCHEMA = {
         "required_review": {"specification": "pass", "quality": "pass"},
     },
 }
+TARGET_SURFACE_CLASSES = (
+    "native-platform",
+    "generated-output",
+    "readme",
+    "typed-example",
+    "runtime",
+    "configuration",
+    "executable-script",
+    "test-fixture",
+    "secret-metadata",
+    "content-archive",
+    "unsupported-static",
+)
+EXPECTED_MANIFEST_SCHEMA_V2 = {
+    **EXPECTED_MANIFEST_SCHEMA,
+    "entry_fields": [
+        "source_path",
+        "target_path",
+        "artifact_id",
+        "artifact_type_before",
+        "artifact_type_after",
+        "surface_class",
+        "status_before",
+        "status_after",
+        "parent_ids",
+        "disposition",
+        "canonical_replacement",
+        "active_consumers",
+        "partition_plan",
+        "preservation_class",
+        "evidence",
+        "review_verdict",
+    ],
+    "field_contracts": {
+        **{
+            key: value
+            for key, value in EXPECTED_MANIFEST_SCHEMA["field_contracts"].items()
+            if key != "artifact_type"
+        },
+        "schema_version": {
+            "type": "integer",
+            "nullable": False,
+            "domain": "constant-2",
+        },
+        "artifact_type_before": {
+            "type": "string",
+            "nullable": True,
+            "domain": "registered-artifact-type",
+            "null_condition": "native-or-unsupported-surface",
+        },
+        "artifact_type_after": {
+            "type": "string",
+            "nullable": True,
+            "domain": "registered-artifact-type",
+            "null_condition": "native-or-unsupported-surface",
+        },
+        "surface_class": {
+            "type": "string",
+            "nullable": False,
+            "domain": "registered-surface-class",
+        },
+    },
+}
+TARGET_SURFACE_BASELINE = "32c40e11747bc0bd03789c24861d2e5d60c0e999"
+TARGET_SURFACE_SOURCE_ROOTS = (
+    ".github",
+    "archive",
+    "examples",
+    "infra",
+    "projects",
+    "scripts",
+    "secrets",
+    "tests",
+)
+TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
+    ".env.example",
+    ".pre-commit-config.yaml",
+    ".prettierignore",
+    "docs/00.agent-governance/memory/progress.md",
+    "docs/00.agent-governance/rules/documentation-protocol.md",
+    "docs/00.agent-governance/rules/stage-authoring-matrix.md",
+    "docs/00.agent-governance/rules/task-checklists.md",
+    "docs/01.requirements/005-data-analytics.md",
+    "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
+    "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
+    "docs/03.specs/005-data-analytics/README.md",
+    "docs/03.specs/005-data-analytics/spec.md",
+    "docs/03.specs/133-target-surface-contract-convergence/spec.md",
+    "docs/03.specs/README.md",
+    "docs/04.execution/plans/README.md",
+    "docs/04.execution/tasks/README.md",
+    "docs/05.operations/guides/04-data/analytics/README.md",
+    "docs/05.operations/guides/04-data/analytics/influxdb.md",
+    "docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md",
+    "docs/05.operations/guides/09-tooling/k6.md",
+    "docs/05.operations/guides/09-tooling/locust.md",
+    "docs/05.operations/guides/09-tooling/performance-testing.md",
+    "docs/05.operations/policies/04-data/analytics/influxdb.md",
+    "docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md",
+    "docs/05.operations/policies/09-tooling/k6.md",
+    "docs/05.operations/policies/09-tooling/locust.md",
+    "docs/05.operations/policies/09-tooling/performance-testing.md",
+    "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
+    "docs/05.operations/runbooks/09-tooling/k6.md",
+    "docs/05.operations/runbooks/09-tooling/locust.md",
+    "docs/05.operations/runbooks/09-tooling/performance-testing.md",
+    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md",
+    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md",
+    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md",
+    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md",
+    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md",
+    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md",
+    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md",
+    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md",
+    "docs/90.references/data/governance/document-corpus-lifecycle/README.md",
+    "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md",
+    "docs/90.references/llm-wiki/llm-wiki-index.md",
+    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md",
+    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md",
+    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md",
+    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md",
+    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md",
+    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md",
+    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md",
+    "docs/99.templates/support/README.md",
+    "docs/99.templates/support/archive-retention-contract.md",
+    "docs/99.templates/support/common-document-contract.md",
+    "docs/99.templates/support/corpus-migration-contract.md",
+    "docs/99.templates/support/document-corpus-migration-contract.yaml",
+    "docs/99.templates/support/document-metadata-profiles.yaml",
+    "docs/99.templates/support/frontmatter-contract.md",
+    "docs/99.templates/support/readme-profile-contract.md",
+    "docs/99.templates/templates/README.md",
+    "docs/99.templates/templates/common/README.md",
+    "docs/99.templates/templates/common/archive.template.md",
+)
+TARGET_SURFACE_DECLARED_OUTPUTS = (
+    "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
+    "docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md",
+    "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md",
+    "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml",
+    "docs/99.templates/templates/common/content-archive.template.md",
+    "scripts/validation/check-target-surface-contract.py",
+    "scripts/validation/target_surface_contract.py",
+    "tests/validation/test_target_surface_contracts.py",
+)
 EXPECTED_EXCEPTION_SCHEMA = {
     "top_level_fields": ["schema_version", "exceptions"],
     "entry_fields": [
@@ -470,12 +617,29 @@ TEMPLATE_ROLE_KEYS = frozenset(
         "forbidden_headings",
     }
 )
+ARCHIVE_PROFILE_KEYS = frozenset(
+    {
+        "path_globs",
+        "template",
+        "artifact_type",
+        "required",
+        "optional",
+        "forbidden",
+        "allowed_statuses",
+        "allowed_parent_types",
+        "allow_empty_parents",
+        "disposition",
+        "conditions",
+    }
+)
+EXPECTED_ARCHIVE_PROFILE_NAMES = ("content-archive", "sdlc-archive")
 EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
     {
         "adr",
         "agent-design",
         "api-spec",
         "archive",
+        "content-archive",
         "ard",
         "audit",
         "data-model",
@@ -499,6 +663,7 @@ EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
 )
 TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES: frozenset[str] = frozenset()
 TARGET_MARKDOWN_PREFIXES = (
+    "archive/",
     "docs/00.agent-governance/",
     "docs/01.requirements/",
     "docs/02.architecture/",
@@ -573,6 +738,7 @@ EXPECTED_TEMPLATE_PLACEHOLDER_KEYS = frozenset(
         "reviewed_at",
         "review_cycle",
         "archived_from",
+        "content_archived_from",
         "archived_on",
         "archive_reason",
         "archive_disposition",
@@ -853,6 +1019,8 @@ def infer_artifact_type(
         return "readme"
     if registered_generated_owner(pathlib.Path(normalized), profiles) is not None:
         return "generated"
+    if normalized.startswith("archive/"):
+        return "archive"
     if normalized.startswith("docs/99.templates/templates/") and name.endswith(".template.md"):
         return "template-source"
     if normalized.startswith("docs/00.agent-governance/"):
@@ -1262,6 +1430,42 @@ def classify_readme_profile(path: pathlib.Path, profiles: dict[str, object]) -> 
     return matches[0]
 
 
+def matching_archive_profiles(path: pathlib.Path, profiles: dict[str, object]) -> list[str]:
+    """Return every path-selected archive profile matching one archive path."""
+
+    normalized = pathlib.PurePosixPath(path.as_posix())
+    if normalized.is_absolute() or any(part in {"", ".", ".."} for part in normalized.parts):
+        return []
+    archive_profiles = profiles.get("archive_profiles", {})
+    if not isinstance(archive_profiles, dict):
+        return []
+    matches: list[str] = []
+    for name, raw_profile in archive_profiles.items():
+        if not isinstance(name, str) or not isinstance(raw_profile, dict):
+            continue
+        patterns = raw_profile.get("path_globs", [])
+        if isinstance(patterns, list) and any(
+            isinstance(pattern, str) and _target_glob_matches(normalized, pattern)
+            for pattern in patterns
+        ):
+            matches.append(name)
+    return matches
+
+
+def classify_archive_profile(path: pathlib.Path, profiles: dict[str, object]) -> str:
+    """Select exactly one semantic archive profile for a repository path."""
+
+    matches = matching_archive_profiles(path, profiles)
+    normalized = path.as_posix()
+    if not matches:
+        raise ProfileError(f"archive path is unclassified: {normalized}")
+    if len(matches) > 1:
+        raise ProfileError(
+            f"archive path is ambiguous: {normalized}; profiles={','.join(matches)}"
+        )
+    return matches[0]
+
+
 def readme_frontmatter_consumer(path: pathlib.Path, profiles: dict[str, object]) -> str | None:
     """Return the profile-declared consumer; metadata content never infers one."""
 
@@ -1376,6 +1580,13 @@ def _validate_template_source(
         )
     _, profile_map = _profile_mapping(profiles)
     target_profile = profile_map.get(target_type)
+    if target_type == "archive":
+        archive_profiles = profiles.get("archive_profiles", {})
+        selected_archive_profile = (
+            archive_profiles.get(role_name) if isinstance(archive_profiles, dict) else None
+        )
+        if isinstance(selected_archive_profile, dict):
+            target_profile = selected_archive_profile
     if not isinstance(target_profile, dict):
         return [_finding(record, "unknown-template-target", f"template target profile is unknown: {target_type}")]
     placeholders = _template_placeholder_values(profiles)
@@ -1398,14 +1609,24 @@ def _validate_template_source(
         )
     parents = _string_list(record.metadata.get("parent_ids"))
     parent_placeholder = placeholders.get("parent_id")
-    if parents is None:
+    if "parent_ids" in forbidden and "parent_ids" not in record.metadata:
+        pass
+    elif parents is None:
         findings.append(_finding(record, "invalid-template-placeholder", "parent_ids must be a placeholder list"))
     elif not parents and not target_profile.get("allow_empty_parents", False):
         findings.append(_finding(record, "missing-parent", f"{target_type} template requires a direct parent placeholder"))
     elif any(parent != parent_placeholder for parent in parents):
         findings.append(_finding(record, "invalid-template-placeholder", "parent_ids contains a noncanonical placeholder"))
-    for key, placeholder in placeholders.items():
-        if key == "parent_id" or key not in record.metadata:
+    for key in record.metadata:
+        if key == "parent_ids":
+            continue
+        placeholder_key = (
+            "content_archived_from"
+            if role_name == "content-archive" and key == "archived_from"
+            else key
+        )
+        placeholder = placeholders.get(placeholder_key)
+        if placeholder is None:
             continue
         if record.metadata.get(key) != placeholder:
             findings.append(_finding(record, "invalid-template-placeholder", f"{key} must use the Stage 99 placeholder"))
@@ -2072,6 +2293,18 @@ def validate_record(
 
     common, profile_map = _profile_mapping(profiles)
     raw_profile = profile_map.get(record.artifact_type)
+    profile_label = record.artifact_type
+    if record.artifact_type == "archive":
+        try:
+            profile_label = classify_archive_profile(record.path, profiles)
+        except ProfileError as error:
+            return [_finding(record, "archive-profile", str(error))]
+        archive_profiles = profiles.get("archive_profiles", {})
+        raw_profile = (
+            archive_profiles.get(profile_label)
+            if isinstance(archive_profiles, dict)
+            else None
+        )
     if not isinstance(raw_profile, dict):
         return [_finding(record, "unknown-profile", f"profile is not configured: {record.artifact_type}")]
     typed_manifest = manifest if isinstance(manifest, Manifest) else Manifest(dict(manifest), {}, {})
@@ -2197,14 +2430,14 @@ def validate_record(
         if key not in forbidden:
             continue
         code = "forbidden-key" if key in global_forbidden else "type-inappropriate-key"
-        findings.append(_finding(record, code, f"key is forbidden for {record.artifact_type}: {key}"))
+        findings.append(_finding(record, code, f"key is forbidden for {profile_label}: {key}"))
 
     status = record.metadata.get("status")
     allowed_statuses = raw_profile.get("allowed_statuses", [])
     if status is not None:
         if not isinstance(status, str) or status not in allowed_statuses:
             findings.append(
-                _finding(record, "invalid-status", f"status is not allowed for {record.artifact_type}")
+                _finding(record, "invalid-status", f"status is not allowed for {profile_label}")
             )
         if status == "archived" and record.artifact_type != "archive":
             findings.append(
@@ -2374,14 +2607,14 @@ def validate_record(
         )
 
     if record.artifact_type == "archive":
-        archive_path_fields = {
-            "archived_from": "invalid-archived-from",
-            "current_replacement": "invalid-current-replacement",
-        }
-        for key, code in archive_path_fields.items():
+        archive_path_fields = (
+            ("archived_from", "invalid-archived-from", "archive/" if profile_label == "content-archive" else "docs/"),
+            ("current_replacement", "invalid-current-replacement", "docs/"),
+        )
+        for key, code, prefix in archive_path_fields:
             value = record.metadata.get(key)
-            if value is not None and not _safe_repo_path(value, "docs/"):
-                findings.append(_finding(record, code, f"{key} must be a safe canonical docs/ repository path"))
+            if value is not None and not _safe_repo_path(value, prefix):
+                findings.append(_finding(record, code, f"{key} must be a safe canonical {prefix} repository path"))
         archived_on = record.metadata.get("archived_on")
         if archived_on is not None and not _valid_iso_date(archived_on):
             findings.append(_finding(record, "invalid-archived-on", "archived_on must be a strict ISO date"))
@@ -2551,7 +2784,7 @@ def validate_record(
         known = required | optional | forbidden | specialization_keys
         for key in sorted(set(record.metadata) - known):
             findings.append(
-                _finding(record, "type-inappropriate-key", f"key is not declared for {record.artifact_type}: {key}")
+                _finding(record, "type-inappropriate-key", f"key is not declared for {profile_label}: {key}")
             )
     return sorted(set(findings))
 
@@ -2596,6 +2829,7 @@ def load_migration_contract(
         "directory_budgets",
         "review_signals",
         "manifest_schema",
+        "manifest_schema_v2",
         "exception_schema",
         "disposition_conditions",
         "replacement_requirements",
@@ -2675,6 +2909,9 @@ def load_migration_contract(
     manifest_schema = loaded.get("manifest_schema")
     if manifest_schema != EXPECTED_MANIFEST_SCHEMA:
         raise ProfileError("manifest_schema must define the exact canonical manifest shape")
+    manifest_schema_v2 = loaded.get("manifest_schema_v2")
+    if manifest_schema_v2 != EXPECTED_MANIFEST_SCHEMA_V2:
+        raise ProfileError("manifest_schema_v2 must define the exact canonical surface manifest shape")
 
     exception_schema = loaded.get("exception_schema")
     if exception_schema != EXPECTED_EXCEPTION_SCHEMA:
@@ -2741,6 +2978,7 @@ def load_migration_contract(
     waves = loaded.get("waves")
     expected_wave_names = (
         "foundation",
+        "target-surface-convergence",
         "wave-a-active-sdlc",
         "wave-b-operations",
         "wave-c-historical-evidence",
@@ -2748,7 +2986,7 @@ def load_migration_contract(
         "wave-e-references-final-gates",
     )
     if not isinstance(waves, dict) or tuple(waves) != expected_wave_names:
-        raise ProfileError("waves must define the exact ordered Foundation lifecycle")
+        raise ProfileError("waves must define the exact ordered migration lifecycle")
     foundation_sources = (
         "docs/00.agent-governance/memory/progress.md",
         "docs/00.agent-governance/rules/documentation-protocol.md",
@@ -2824,7 +3062,56 @@ def load_migration_contract(
     for path_value in [*foundation_sources, *foundation_outputs]:
         if not _safe_contract_path(path_value):
             raise ProfileError("Foundation paths must be normalized traversal-free repository paths")
-    for wave_name in expected_wave_names[1:]:
+    target_wave = waves["target-surface-convergence"]
+    target_wave_keys = {
+        "baseline_commit",
+        "enforcement",
+        "manifest_path",
+        "summary_path",
+        "scope_state",
+        "source_roots",
+        "direct_source_paths",
+        "declared_outputs",
+    }
+    if not isinstance(target_wave, dict) or set(target_wave) != target_wave_keys:
+        raise ProfileError("target-surface-convergence must define the exact v2 wave fields")
+    if target_wave.get("baseline_commit") != TARGET_SURFACE_BASELINE:
+        raise ProfileError("target-surface-convergence must pin the approved baseline commit")
+    if target_wave.get("enforcement") != "advisory" or target_wave.get("scope_state") != "approved":
+        raise ProfileError("target-surface-convergence must remain an approved advisory wave")
+    if target_wave.get("manifest_path") != (
+        "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+    ):
+        raise ProfileError("target-surface-convergence manifest_path must be exact")
+    if target_wave.get("summary_path") != (
+        "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md"
+    ):
+        raise ProfileError("target-surface-convergence summary_path must be exact")
+    _exact_string_list(
+        target_wave.get("source_roots"),
+        TARGET_SURFACE_SOURCE_ROOTS,
+        "waves.target-surface-convergence.source_roots",
+    )
+    _exact_string_list(
+        target_wave.get("direct_source_paths"),
+        TARGET_SURFACE_DIRECT_SOURCE_PATHS,
+        "waves.target-surface-convergence.direct_source_paths",
+    )
+    _exact_string_list(
+        target_wave.get("declared_outputs"),
+        TARGET_SURFACE_DECLARED_OUTPUTS,
+        "waves.target-surface-convergence.declared_outputs",
+    )
+    for path_value in (
+        *TARGET_SURFACE_SOURCE_ROOTS,
+        *TARGET_SURFACE_DIRECT_SOURCE_PATHS,
+        *TARGET_SURFACE_DECLARED_OUTPUTS,
+        target_wave["manifest_path"],
+        target_wave["summary_path"],
+    ):
+        if not _safe_contract_path(path_value):
+            raise ProfileError("target-surface-convergence paths must be canonical repository paths")
+    for wave_name in expected_wave_names[2:]:
         wave = waves[wave_name]
         if not isinstance(wave, dict) or set(wave) != wave_keys:
             raise ProfileError(f"{wave_name} must define the exact wave fields")
@@ -2902,12 +3189,158 @@ def _profile_field_ownership(
     return owners[0]
 
 
+def _validate_static_migration_manifest_v2(
+    document: object,
+    contract: Mapping[str, object],
+    profiles: Mapping[str, object],
+) -> None:
+    """Validate v2 surface rows without assuming every source is UTF-8 Markdown."""
+
+    if contract.get("manifest_schema_v2") != EXPECTED_MANIFEST_SCHEMA_V2:
+        raise ProfileError("manifest contract must use the exact v2 static schema")
+    manifest = _require_exact_mapping(
+        document,
+        EXPECTED_MANIFEST_SCHEMA_V2["top_level_fields"],
+        "migration manifest",
+    )
+    if type(manifest.get("schema_version")) is not int or manifest.get("schema_version") != 2:
+        raise ProfileError("manifest schema_version must be the integer 2")
+    _non_empty_string(manifest.get("wave"), "manifest wave")
+    if not _valid_lowercase_object_id(manifest.get("baseline_commit")):
+        raise ProfileError("manifest baseline_commit must be a lowercase full object ID")
+    _non_empty_string(manifest.get("generated_by"), "manifest generated_by")
+    if manifest.get("enforcement") not in {"advisory", "blocking"}:
+        raise ProfileError("manifest enforcement must be advisory or blocking")
+
+    raw_profile_map = profiles.get("profiles")
+    raw_common = profiles.get("common")
+    if not isinstance(raw_profile_map, Mapping) or not isinstance(raw_common, Mapping):
+        raise ProfileError("manifest validation requires the typed profile registry")
+    artifact_types = set(raw_profile_map)
+    allowed_statuses = set(raw_common.get("allowed_statuses", []))
+    raw_manifest_contract = contract.get("manifest")
+    raw_archive_contract = contract.get("archive")
+    if not isinstance(raw_manifest_contract, Mapping) or not isinstance(raw_archive_contract, Mapping):
+        raise ProfileError("manifest validation requires disposition registries")
+    dispositions = set(raw_manifest_contract.get("dispositions", []))
+    preservation_classes = set(raw_archive_contract.get("preservation_classes", []))
+    replacement_requirements = contract.get("replacement_requirements")
+    if not isinstance(replacement_requirements, Mapping):
+        raise ProfileError("manifest validation requires replacement semantics")
+    replacement_required = set(replacement_requirements.get("required_for", []))
+    replacement_optional = set(replacement_requirements.get("optional_for", []))
+    replacement_forbidden = set(replacement_requirements.get("forbidden_for", []))
+    destructive = set(EXPECTED_MANIFEST_SCHEMA_V2["destructive_execution"]["dispositions"])
+    verdict_values = set(EXPECTED_MANIFEST_SCHEMA_V2["review_verdict_values"])
+
+    entries = manifest.get("entries")
+    if not isinstance(entries, list):
+        raise ProfileError("manifest entries must be a list")
+    source_paths: list[str] = []
+    for index, raw_entry in enumerate(entries):
+        label = f"manifest entry {index}"
+        entry = _require_exact_mapping(
+            raw_entry, EXPECTED_MANIFEST_SCHEMA_V2["entry_fields"], label
+        )
+        source_path = entry.get("source_path")
+        if not isinstance(source_path, str) or not _safe_contract_path(source_path):
+            raise ProfileError(f"{label} source_path must be a safe repository path")
+        source_paths.append(source_path)
+        disposition = entry.get("disposition")
+        if disposition not in dispositions:
+            raise ProfileError(f"{label} disposition must be registered")
+        target_path = entry.get("target_path")
+        if target_path is not None and not _safe_contract_path(target_path):
+            raise ProfileError(f"{label} target_path must be null or safe")
+        if disposition == "delete" and target_path is not None:
+            raise ProfileError(f"{label} delete target_path must be null")
+        if disposition in {"move", "merge", "archive"} and (
+            target_path is None or target_path == source_path
+        ):
+            raise ProfileError(f"{label} target_path must be distinct for its disposition")
+        if disposition in {"migrate", "preserve", "regenerate", "exempt"} and target_path != source_path:
+            raise ProfileError(f"{label} target_path must equal source_path")
+
+        surface_class = entry.get("surface_class")
+        if surface_class not in TARGET_SURFACE_CLASSES:
+            raise ProfileError(f"{label} surface_class must be registered")
+        before = entry.get("artifact_type_before")
+        after = entry.get("artifact_type_after")
+        for field, value in (("artifact_type_before", before), ("artifact_type_after", after)):
+            if value is not None and value not in artifact_types:
+                raise ProfileError(f"{label} {field} must be null or registered")
+        if surface_class == "content-archive" and after != "archive":
+            raise ProfileError(f"{label} content-archive must converge to semantic archive")
+        selected_type = after if isinstance(after, str) else before
+        artifact_id = entry.get("artifact_id")
+        if artifact_id is not None and not _valid_metadata_artifact_id(artifact_id):
+            raise ProfileError(f"{label} artifact_id must satisfy canonical validation")
+        if selected_type is None and artifact_id is not None:
+            raise ProfileError(f"{label} native row artifact_id must be null")
+        for status_field in ("status_before", "status_after"):
+            status = entry.get(status_field)
+            if status is not None and status not in allowed_statuses:
+                raise ProfileError(f"{label} {status_field} must be null or registered")
+        _deterministic_string_list(entry.get("parent_ids"), f"{label} parent_ids")
+        _deterministic_string_list(
+            entry.get("active_consumers"), f"{label} active_consumers", safe_paths=True
+        )
+
+        replacement = entry.get("canonical_replacement")
+        if replacement is not None:
+            _non_empty_string(replacement, f"{label} canonical_replacement")
+        if disposition in replacement_required and replacement is None:
+            raise ProfileError(f"{label} canonical_replacement is required")
+        if disposition in replacement_forbidden and replacement is not None:
+            raise ProfileError(f"{label} canonical_replacement must be null")
+        if disposition not in replacement_required | replacement_optional | replacement_forbidden:
+            raise ProfileError(f"{label} disposition lacks replacement semantics")
+        partition_plan = entry.get("partition_plan")
+        if partition_plan is not None and (
+            not isinstance(partition_plan, str)
+            or not _safe_contract_path(partition_plan)
+            or not partition_plan.startswith("docs/04.execution/plans/")
+            or not partition_plan.endswith(".md")
+        ):
+            raise ProfileError(f"{label} partition_plan must be a safe approved Plan path")
+        preservation_class = entry.get("preservation_class")
+        if preservation_class is not None and preservation_class not in preservation_classes:
+            raise ProfileError(f"{label} preservation_class must be registered")
+        evidence = _require_exact_mapping(
+            entry.get("evidence"), EXPECTED_MANIFEST_SCHEMA_V2["evidence_fields"], f"{label} evidence"
+        )
+        evidence_lists = {
+            field: _deterministic_string_list(evidence.get(field), f"{label} evidence.{field}")
+            for field in EXPECTED_MANIFEST_SCHEMA_V2["evidence_fields"]
+        }
+        review = _require_exact_mapping(
+            entry.get("review_verdict"),
+            EXPECTED_MANIFEST_SCHEMA_V2["review_verdict_fields"],
+            f"{label} review_verdict",
+        )
+        if any(review.get(field) not in verdict_values for field in EXPECTED_MANIFEST_SCHEMA_V2["review_verdict_fields"]):
+            raise ProfileError(f"{label} review_verdict values must be registered")
+        if disposition in destructive:
+            if preservation_class is None:
+                raise ProfileError(f"{label} destructive row requires preservation_class")
+            if any(not evidence_lists[field] for field in evidence_lists):
+                raise ProfileError(f"{label} destructive evidence lists must not be empty")
+            if review != {"specification": "pass", "quality": "pass"}:
+                raise ProfileError(f"{label} destructive row requires pass/pass review")
+    if source_paths != sorted(source_paths) or len(source_paths) != len(set(source_paths)):
+        raise ProfileError("manifest entries must be uniquely ordered by source_path")
+
+
 def validate_static_migration_manifest(
     document: object,
     contract: Mapping[str, object],
     profiles: Mapping[str, object],
 ) -> None:
     """Validate manifest semantics that require no repository or object access."""
+
+    if isinstance(document, Mapping) and document.get("schema_version") == 2:
+        _validate_static_migration_manifest_v2(document, contract, profiles)
+        return
 
     if contract.get("manifest_schema") != EXPECTED_MANIFEST_SCHEMA:
         raise ProfileError("manifest contract must use the exact static schema")
@@ -3360,6 +3793,63 @@ def load_profiles(
     if len(family_members) != len(set(family_members)):
         raise ProfileError("document_families members must be unique across families")
 
+    archive_profiles = loaded.get("archive_profiles")
+    if (
+        not isinstance(archive_profiles, dict)
+        or tuple(archive_profiles) != EXPECTED_ARCHIVE_PROFILE_NAMES
+    ):
+        raise ProfileError("archive_profiles must define the exact ordered semantic selectors")
+    declared_archive_globs: list[tuple[str, str]] = []
+    for profile_name, archive_profile in archive_profiles.items():
+        if not isinstance(archive_profile, dict) or set(archive_profile) != ARCHIVE_PROFILE_KEYS:
+            raise ProfileError(
+                f"archive profile {profile_name} must define the exact contract members"
+            )
+        path_globs = archive_profile.get("path_globs")
+        if not isinstance(path_globs, list) or not path_globs or not all(
+            _safe_target_glob(pattern) for pattern in path_globs
+        ):
+            raise ProfileError(
+                f"archive profile {profile_name} path_globs must be safe Markdown patterns"
+            )
+        if len(path_globs) != len(set(path_globs)):
+            raise ProfileError(f"archive profile {profile_name} path_globs must be unique")
+        for pattern in path_globs:
+            for other_name, other_pattern in declared_archive_globs:
+                witness = _target_glob_intersection_witness(other_pattern, pattern)
+                if witness is not None:
+                    raise ProfileError(
+                        "archive profile globs overlap: "
+                        f"{other_name}:{other_pattern} and {profile_name}:{pattern}"
+                    )
+            declared_archive_globs.append((profile_name, pattern))
+        template = archive_profile.get("template")
+        if (
+            not isinstance(template, str)
+            or not _safe_repo_path(template, "docs/99.templates/templates/common/")
+            or not template.endswith(".template.md")
+        ):
+            raise ProfileError(f"archive profile {profile_name} template must be canonical")
+        if archive_profile.get("artifact_type") != "archive":
+            raise ProfileError(f"archive profile {profile_name} must keep semantic archive type")
+        for group in ("required", "optional", "forbidden"):
+            values = archive_profile.get(group)
+            if not isinstance(values, list) or not all(
+                isinstance(value, str) and value for value in values
+            ) or len(values) != len(set(values)):
+                raise ProfileError(f"archive profile {profile_name} {group} must be a unique string list")
+        ownership = [set(archive_profile[group]) for group in ("required", "optional", "forbidden")]
+        if any(ownership[left] & ownership[right] for left, right in ((0, 1), (0, 2), (1, 2))):
+            raise ProfileError(f"archive profile {profile_name} field ownership must not overlap")
+        for inherited in ("allowed_statuses", "allow_empty_parents", "disposition"):
+            if archive_profile.get(inherited) != profile_map["archive"].get(inherited):
+                raise ProfileError(
+                    f"archive profile {profile_name} must preserve archive {inherited} semantics"
+                )
+        conditions = archive_profile.get("conditions")
+        if not isinstance(conditions, dict) or set(conditions) != {"replacement", "snapshot"}:
+            raise ProfileError(f"archive profile {profile_name} conditions are invalid")
+
     readme_profiles = loaded.get("readme_profiles")
     if not isinstance(readme_profiles, dict) or not readme_profiles:
         raise ProfileError("readme_profiles must be a non-empty mapping")
@@ -3431,7 +3921,7 @@ def load_profiles(
             raise ProfileError(f"README profile {profile_name} canonical_shared_rule_owner must be a safe path")
     template_roles = loaded.get("template_roles")
     if not isinstance(template_roles, dict) or set(template_roles) != EXPECTED_TEMPLATE_ROLE_NAMES:
-        raise ProfileError("template_roles must define the exact 23 canonical role names")
+        raise ProfileError("template_roles must define the exact canonical role names")
     declared_sources: dict[str, str] = {}
     declared_target_globs: dict[str, str] = {}
     declared_matchers: list[tuple[str, str, str]] = []
@@ -4009,7 +4499,7 @@ def collect_records_at_ref(
     excluded = set(common.get("inventory_excludes", []))
     result = _run_git(
         root,
-        ["ls-tree", "-r", "-z", "--name-only", base_ref, "--", "docs"],
+        ["ls-tree", "-r", "-z", "--name-only", base_ref, "--", "docs", "archive"],
         operation="base Markdown discovery",
     )
     if result.returncode != 0:

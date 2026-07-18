@@ -19,6 +19,13 @@ The metadata and lifecycle validators are their executable interpreters.
 
 ## Tombstone Profile and Provenance
 
+Archive path selection has two exact profiles under one semantic type. A
+`content-archive` tombstone owns root `archive/**`, while `sdlc-archive` owns
+`docs/98.archive/**`; both declare `artifact_type: archive`. Content tombstones
+forbid SDLC parents, supersession, replacement, and snapshot fields. SDLC
+tombstones retain the existing conditional replacement and snapshot contract.
+Each path must match exactly one selector and use its registered template.
+
 The archive profile requires `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_on`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
 It permits `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason` only under the profile's conditions.
 

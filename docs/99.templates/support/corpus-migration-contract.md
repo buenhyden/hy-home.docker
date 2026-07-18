@@ -41,6 +41,19 @@ Their target conditions are exact machine-contract values:
 
 The top-level fields are `schema_version`, `wave`, `baseline_commit`, `generated_by`, `enforcement`, `entries`.
 
+Foundation remains valid under schema version 1; schema version 2 keeps those
+top-level fields while replacing `artifact_type` in each row with nullable
+`artifact_type_before` and `artifact_type_after`, plus the required
+`surface_class`. This makes an unsupported/native baseline and its reviewed
+target classification explicit without pretending that a binary or
+platform-owned file is typed Markdown.
+
+A v2 wave may select complete source roots and exact direct source paths. The
+generator expands source roots from Git tree metadata at the pinned baseline,
+unions the direct source paths, and emits one sorted row per selected path.
+Native and binary surfaces are classified from safe path, mode, and blob
+metadata; only declared Markdown/profile surfaces are decoded as UTF-8.
+
 Each entry uses `source_path`, `target_path`, `artifact_id`, `artifact_type`, `status_before`, `status_after`, `parent_ids`, `disposition`, `canonical_replacement`, `active_consumers`, `partition_plan`, `preservation_class`, `evidence`, `review_verdict`.
 
 The evidence object uses `commands`, `sources`, `repository_paths`, `consumer_scan`, `rollback`.

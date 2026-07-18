@@ -11,6 +11,22 @@ This file follows `docs/99.templates/templates/governance/progress.template.md`.
 Its usage and preservation contract is maintained by
 [`memory/README.md`](./README.md) and the Stage 00 task checklists.
 
+## Target Surface Contract Convergence Task 1
+
+T-TSC-001 established the review-pending migration foundation without changing
+target runtime or current content. Stage 99 now selects `content-archive` for
+root `archive/**` and `sdlc-archive` for `docs/98.archive/**` while retaining
+semantic `artifact_type: archive`. Manifest schema v2 preserves Foundation v1,
+adds before/after artifact types and a surface class, and expands eight source
+roots from Git tree metadata without decoding native or binary bodies. The
+pinned advisory manifest contains 483 sorted unique pending rows: exactly 422
+baseline root paths plus 61 direct paths. The Windows row records the planned
+`null` to `archive` transition. Focused metadata 76/76 and lifecycle 38/38,
+contract, manifest, summary, explicit-base metadata, compile, exact-set, and
+diff gates pass. Independent specification and quality reviews remain not run;
+no migration, archive mutation, runtime, secret-value, remote, push, PR, merge,
+deployment, or all-files pre-commit action occurred.
+
 ## Agent Governance Harness Convergence Closure Candidate
 
 The completed T-AGHC-006 pass reconciled the canonical July 5 research and audit

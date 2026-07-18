@@ -33,6 +33,9 @@ ARCHIVE_RETENTION_HUMAN_CONTRACT = (
     ROOT / "docs/99.templates/support/archive-retention-contract.md"
 )
 ARCHIVE_TEMPLATE = ROOT / "docs/99.templates/templates/common/archive.template.md"
+CONTENT_ARCHIVE_TEMPLATE = (
+    ROOT / "docs/99.templates/templates/common/content-archive.template.md"
+)
 
 spec = importlib.util.spec_from_file_location("check_document_metadata", CHECKER)
 if spec is None or spec.loader is None:
@@ -380,6 +383,7 @@ class ProfileSchemaTests(unittest.TestCase):
                 "reviewed_at": "<reviewed-at>",
                 "review_cycle": "<review-cycle>",
                 "archived_from": "docs/<original-path>.md",
+                "content_archived_from": "archive/<original-path>.md",
                 "archived_on": "YYYY-MM-DD",
                 "archive_reason": "<archive-reason>",
                 "archive_disposition": "<archive-disposition>",
@@ -421,6 +425,8 @@ class ProfileSchemaTests(unittest.TestCase):
         self.assertEqual(
             {
                 "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md":
+                    "scripts/validation/check-document-corpus-lifecycle.py",
+                "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md":
                     "scripts/validation/check-document-corpus-lifecycle.py",
             },
             profiles["common"]["generated_outputs"],
@@ -514,6 +520,58 @@ class ProfileSchemaTests(unittest.TestCase):
                 },
             },
             archive["conditions"],
+        )
+
+    def test_archive_profiles_are_exactly_path_selected(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        archive_profiles = profiles["archive_profiles"]
+        self.assertEqual(["content-archive", "sdlc-archive"], list(archive_profiles))
+        self.assertEqual(
+            ["archive/**/*.md"],
+            archive_profiles["content-archive"]["path_globs"],
+        )
+        self.assertEqual(
+            ["docs/98.archive/**/*.md"],
+            archive_profiles["sdlc-archive"]["path_globs"],
+        )
+        self.assertEqual(
+            "docs/99.templates/templates/common/content-archive.template.md",
+            archive_profiles["content-archive"]["template"],
+        )
+        self.assertEqual(
+            "docs/99.templates/templates/common/archive.template.md",
+            archive_profiles["sdlc-archive"]["template"],
+        )
+        self.assertEqual(
+            "archive",
+            archive_profiles["content-archive"]["artifact_type"],
+        )
+        self.assertEqual(
+            "archive",
+            archive_profiles["sdlc-archive"]["artifact_type"],
+        )
+
+    def test_content_archive_template_uses_profile_key_order(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        content = profiles["archive_profiles"]["content-archive"]
+        values = metadata.parse_frontmatter(CONTENT_ARCHIVE_TEMPLATE)
+        self.assertEqual(content["required"] + content["optional"], list(values))
+        self.assertNotIn("parent_ids", values)
+        self.assertNotIn("current_replacement", values)
+        self.assertEqual(
+            [
+                "## Overview",
+                "## Current-use Warning",
+                "## Archive Metadata",
+                "## Archive Ledger",
+                "## Historical Retrieval",
+                "## Related Documents",
+            ],
+            [
+                line
+                for line in CONTENT_ARCHIVE_TEMPLATE.read_text(encoding="utf-8").splitlines()
+                if line.startswith("## ")
+            ],
         )
 
     def test_archive_profile_rejects_unknown_condition_fields(self) -> None:
@@ -678,6 +736,7 @@ class ProfileSchemaTests(unittest.TestCase):
                 "directory_budgets",
                 "review_signals",
                 "manifest_schema",
+                "manifest_schema_v2",
                 "exception_schema",
                 "disposition_conditions",
                 "replacement_requirements",
@@ -1167,7 +1226,7 @@ class ProfileSchemaTests(unittest.TestCase):
     def test_template_roles_require_exact_fields_and_unique_sources(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         roles = profiles["template_roles"]
-        self.assertEqual(23, len(roles))
+        self.assertEqual(24, len(roles))
         sources = [role["source"] for role in roles.values()]
         self.assertEqual(len(sources), len(set(sources)))
 
@@ -1215,6 +1274,7 @@ class ArtifactInferenceTests(unittest.TestCase):
             "docs/90.references/research/example.md": "reference",
             "docs/90.references/audits/example.md": "audit",
             "docs/98.archive/04.execution/example.md": "archive",
+            "archive/Windows-Network-IP.md": "archive",
             "docs/99.templates/templates/sdlc/spec.template.md": "template-source",
             "docs/00.agent-governance/rules/example.md": "governance",
             "README.md": "readme",
@@ -1223,6 +1283,23 @@ class ArtifactInferenceTests(unittest.TestCase):
         for path, expected in cases.items():
             with self.subTest(path=path):
                 self.assertEqual(expected, metadata.infer_artifact_type(pathlib.Path(path)))
+
+    def test_archive_paths_match_exactly_one_semantic_profile(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        cases = {
+            "archive/Windows-Network-IP.md": "content-archive",
+            "archive/nested/retired-note.md": "content-archive",
+            "docs/98.archive/04.execution/example.md": "sdlc-archive",
+        }
+        for path_text, expected in cases.items():
+            path = pathlib.Path(path_text)
+            with self.subTest(path=path_text):
+                self.assertEqual(
+                    [expected], metadata.matching_archive_profiles(path, profiles)
+                )
+                self.assertEqual(
+                    expected, metadata.classify_archive_profile(path, profiles)
+                )
 
     def test_registered_generated_output_overrides_only_its_exact_reference_path(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
@@ -1866,6 +1943,57 @@ class MetadataValidationTests(unittest.TestCase):
         self.assertIn("invalid-archived-on", codes)
         self.assertIn("invalid-archive-reason", codes)
         self.assertIn("invalid-current-replacement", codes)
+
+    def test_content_archive_forbids_sdlc_and_snapshot_fields(self) -> None:
+        values: dict[str, object] = {
+            "status": "archived",
+            "artifact_id": "archive:windows-network-ip",
+            "artifact_type": "archive",
+            "archived_from": "archive/Windows-Network-IP.md",
+            "archived_on": "2026-07-18",
+            "archive_reason": "Unowned operational note withdrawn from current use.",
+            "archive_disposition": "withdrawn",
+            "archived_commit": "a" * 40,
+            "archived_blob": "b" * 40,
+            "preservation_class": "git-history",
+            "parent_ids": [],
+            "supersedes": ["spec:legacy"],
+            "current_replacement": "docs/05.operations/guides/replacement.md",
+            "snapshot_path": "docs/98.archive/evidence/" + ("c" * 64) + ".md.snapshot",
+            "content_sha256": "c" * 64,
+            "snapshot_reason": "Not admitted for content tombstones.",
+        }
+        record = self.record("archive/Windows-Network-IP.md", values, "archive")
+        findings = metadata.validate_record(
+            record,
+            self.profiles,
+            metadata.build_manifest([record]),
+        )
+        inappropriate = {
+            finding.message
+            for finding in findings
+            if finding.code == "type-inappropriate-key"
+        }
+        for key in (
+            "parent_ids",
+            "supersedes",
+            "current_replacement",
+            "snapshot_path",
+            "content_sha256",
+            "snapshot_reason",
+        ):
+            with self.subTest(key=key):
+                self.assertIn(f"key is forbidden for content-archive: {key}", inappropriate)
+
+    def test_stage98_archive_keeps_sdlc_profile_behavior(self) -> None:
+        record = self.archive_record()
+        findings = metadata.validate_record(
+            record,
+            self.profiles,
+            metadata.build_manifest([record]),
+        )
+        self.assertNotIn("archive-profile", {finding.code for finding in findings})
+        self.assertNotIn("type-inappropriate-key", {finding.code for finding in findings})
 
     def test_archive_replacement_is_conditional(self) -> None:
         cases = (

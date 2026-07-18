@@ -123,6 +123,102 @@ manifest_schema:
       specification: pass
       quality: pass
 
+manifest_schema_v2:
+  top_level_fields:
+    - schema_version
+    - wave
+    - baseline_commit
+    - generated_by
+    - enforcement
+    - entries
+  entry_fields:
+    - source_path
+    - target_path
+    - artifact_id
+    - artifact_type_before
+    - artifact_type_after
+    - surface_class
+    - status_before
+    - status_after
+    - parent_ids
+    - disposition
+    - canonical_replacement
+    - active_consumers
+    - partition_plan
+    - preservation_class
+    - evidence
+    - review_verdict
+  evidence_fields:
+    - commands
+    - sources
+    - repository_paths
+    - consumer_scan
+    - rollback
+  review_verdict_fields:
+    - specification
+    - quality
+  review_verdict_values:
+    - pending
+    - pass
+    - changes-required
+  field_contracts:
+    schema_version: {type: integer, nullable: false, domain: constant-2}
+    wave: {type: string, nullable: false, domain: non-empty-string}
+    baseline_commit: {type: string, nullable: false, domain: lowercase-full-object-id}
+    generated_by: {type: string, nullable: false, domain: non-empty-string}
+    enforcement: {type: string, nullable: false, domain: advisory-or-blocking}
+    entries: {type: list, nullable: false, domain: migration-entry}
+    source_path: {type: string, nullable: false, domain: safe-baseline-tracked-path}
+    target_path: {type: string, nullable: true, domain: safe-repository-path, null_condition: disposition-delete}
+    artifact_id: {type: string, nullable: true, domain: canonical-metadata-artifact-id, null_condition: selected-profile-does-not-require-artifact-id}
+    status_before: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: selected-profile-does-not-require-status}
+    status_after: {type: string, nullable: true, domain: registered-lifecycle-status, null_condition: selected-profile-does-not-require-status}
+    parent_ids: {type: list, nullable: false, domain: deterministic-string-list}
+    disposition: {type: string, nullable: false, domain: registered-manifest-disposition}
+    canonical_replacement: {type: string, nullable: true, domain: non-empty-string, null_condition: replacement-requirements}
+    active_consumers: {type: list, nullable: false, domain: deterministic-safe-path-list}
+    partition_plan: {type: string, nullable: true, domain: safe-approved-plan-path}
+    preservation_class: {type: string, nullable: true, domain: registered-preservation-class, null_condition: non-destructive-row}
+    evidence: {type: mapping, nullable: false, domain: exact-evidence-mapping}
+    review_verdict: {type: mapping, nullable: false, domain: exact-review-verdict-mapping}
+    evidence.commands: {type: list, nullable: false, domain: deterministic-string-list}
+    evidence.sources: {type: list, nullable: false, domain: deterministic-string-list}
+    evidence.repository_paths: {type: list, nullable: false, domain: deterministic-string-list}
+    evidence.consumer_scan: {type: list, nullable: false, domain: deterministic-string-list}
+    evidence.rollback: {type: list, nullable: false, domain: deterministic-string-list}
+    review_verdict.specification: {type: string, nullable: false, domain: review-verdict-values}
+    review_verdict.quality: {type: string, nullable: false, domain: review-verdict-values}
+    artifact_type_before: {type: string, nullable: true, domain: registered-artifact-type, null_condition: native-or-unsupported-surface}
+    artifact_type_after: {type: string, nullable: true, domain: registered-artifact-type, null_condition: native-or-unsupported-surface}
+    surface_class: {type: string, nullable: false, domain: registered-surface-class}
+  deterministic_order:
+    entries: source_path
+    parent_ids: lexicographic
+    active_consumers: lexicographic
+    evidence.commands: lexicographic
+    evidence.sources: lexicographic
+    evidence.repository_paths: lexicographic
+    evidence.consumer_scan: lexicographic
+    evidence.rollback: lexicographic
+  destructive_execution:
+    dispositions:
+      - merge
+      - archive
+      - delete
+    active_consumers_required: true
+    empty_consumers_require: evidence.consumer_scan
+    non_empty_evidence:
+      - commands
+      - sources
+      - repository_paths
+      - consumer_scan
+      - rollback
+    preservation_class_required: true
+    replacement_semantics: replacement_requirements
+    required_review:
+      specification: pass
+      quality: pass
+
 exception_schema:
   top_level_fields:
     - schema_version
@@ -276,6 +372,92 @@ waves:
       - docs/99.templates/support/document-corpus-migration-contract.yaml
       - scripts/validation/check-document-corpus-lifecycle.py
       - tests/validation/test_document_corpus_lifecycle.py
+  target-surface-convergence:
+    baseline_commit: 32c40e11747bc0bd03789c24861d2e5d60c0e999
+    enforcement: advisory
+    manifest_path: docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml
+    summary_path: docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md
+    scope_state: approved
+    source_roots:
+      - .github
+      - archive
+      - examples
+      - infra
+      - projects
+      - scripts
+      - secrets
+      - tests
+    direct_source_paths:
+      - .env.example
+      - .pre-commit-config.yaml
+      - .prettierignore
+      - docs/00.agent-governance/memory/progress.md
+      - docs/00.agent-governance/rules/documentation-protocol.md
+      - docs/00.agent-governance/rules/stage-authoring-matrix.md
+      - docs/00.agent-governance/rules/task-checklists.md
+      - docs/01.requirements/005-data-analytics.md
+      - docs/02.architecture/decisions/0015-analytics-engine-selection.md
+      - docs/02.architecture/requirements/0012-data-analytics-architecture.md
+      - docs/03.specs/005-data-analytics/README.md
+      - docs/03.specs/005-data-analytics/spec.md
+      - docs/03.specs/133-target-surface-contract-convergence/spec.md
+      - docs/03.specs/README.md
+      - docs/04.execution/plans/README.md
+      - docs/04.execution/tasks/README.md
+      - docs/05.operations/guides/04-data/analytics/README.md
+      - docs/05.operations/guides/04-data/analytics/influxdb.md
+      - docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md
+      - docs/05.operations/guides/09-tooling/k6.md
+      - docs/05.operations/guides/09-tooling/locust.md
+      - docs/05.operations/guides/09-tooling/performance-testing.md
+      - docs/05.operations/policies/04-data/analytics/influxdb.md
+      - docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md
+      - docs/05.operations/policies/09-tooling/k6.md
+      - docs/05.operations/policies/09-tooling/locust.md
+      - docs/05.operations/policies/09-tooling/performance-testing.md
+      - docs/05.operations/runbooks/04-data/analytics/influxdb.md
+      - docs/05.operations/runbooks/09-tooling/k6.md
+      - docs/05.operations/runbooks/09-tooling/locust.md
+      - docs/05.operations/runbooks/09-tooling/performance-testing.md
+      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md
+      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md
+      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md
+      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
+      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md
+      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md
+      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md
+      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md
+      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md
+      - docs/90.references/data/governance/document-corpus-lifecycle/README.md
+      - docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+      - docs/90.references/llm-wiki/llm-wiki-index.md
+      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md
+      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md
+      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md
+      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md
+      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md
+      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md
+      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md
+      - docs/99.templates/support/README.md
+      - docs/99.templates/support/archive-retention-contract.md
+      - docs/99.templates/support/common-document-contract.md
+      - docs/99.templates/support/corpus-migration-contract.md
+      - docs/99.templates/support/document-corpus-migration-contract.yaml
+      - docs/99.templates/support/document-metadata-profiles.yaml
+      - docs/99.templates/support/frontmatter-contract.md
+      - docs/99.templates/support/readme-profile-contract.md
+      - docs/99.templates/templates/README.md
+      - docs/99.templates/templates/common/README.md
+      - docs/99.templates/templates/common/archive.template.md
+    declared_outputs:
+      - docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md
+      - docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md
+      - docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md
+      - docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml
+      - docs/99.templates/templates/common/content-archive.template.md
+      - scripts/validation/check-target-surface-contract.py
+      - scripts/validation/target_surface_contract.py
+      - tests/validation/test_target_surface_contracts.py
   wave-a-active-sdlc:
     enforcement: advisory
     manifest_path: null

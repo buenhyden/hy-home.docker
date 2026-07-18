@@ -27,6 +27,8 @@ PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 CORPUS_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/corpus-migration-contract.md"
 ARCHIVE_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/archive-retention-contract.md"
+TARGET_WAVE = "target-surface-convergence"
+TARGET_BASELINE = "32c40e11747bc0bd03789c24861d2e5d60c0e999"
 
 
 def load_script(path: pathlib.Path, name: str):
@@ -250,6 +252,25 @@ class PublicContractTests(LifecycleTestCase):
         self.assertEqual(rendered, rerendered)
         self.assertEqual(reloaded.entries[0].parent_ids, ("spec:a", "spec:z"))
 
+    def test_manifest_v2_loader_keeps_v1_and_exposes_surface_transition_fields(self) -> None:
+        loaded = yaml.safe_load(
+            lifecycle.render_migration_manifest(
+                self.document("a" * 40, entries=(self.valid_row(),))
+            )
+        )
+        loaded["schema_version"] = 2
+        row = loaded["entries"][0]
+        row["artifact_type_before"] = row.pop("artifact_type")
+        row["artifact_type_after"] = row["artifact_type_before"]
+        row["surface_class"] = "typed-example"
+        manifest = lifecycle.load_migration_manifest(
+            self.write_temp(yaml.safe_dump(loaded, sort_keys=False))
+        )
+        self.assertEqual(2, manifest.schema_version)
+        self.assertEqual("spec", manifest.entries[0].artifact_type_before)
+        self.assertEqual("spec", manifest.entries[0].artifact_type_after)
+        self.assertEqual("typed-example", manifest.entries[0].surface_class)
+
     def write_temp(self, text: str) -> pathlib.Path:
         directory = tempfile.mkdtemp()
         self.addCleanup(lambda: __import__("shutil").rmtree(directory))
@@ -460,6 +481,29 @@ class HumanContractRoutingTests(LifecycleTestCase):
         self.assertIn("repository-local decisions", rationale)
         self.assertIn("do not define repository approval authority", rationale)
 
+    def test_human_contracts_route_v2_surfaces_and_archive_split(self) -> None:
+        corpus = CORPUS_HUMAN_CONTRACT.read_text(encoding="utf-8")
+        archive = ARCHIVE_HUMAN_CONTRACT.read_text(encoding="utf-8")
+        for literal in (
+            "schema version 2",
+            "`artifact_type_before`",
+            "`artifact_type_after`",
+            "`surface_class`",
+            "source roots",
+            "direct source paths",
+        ):
+            with self.subTest(owner="corpus", literal=literal):
+                self.assertIn(literal, corpus)
+        for literal in (
+            "content-archive",
+            "sdlc-archive",
+            "root `archive/**`",
+            "`docs/98.archive/**`",
+            "`artifact_type: archive`",
+        ):
+            with self.subTest(owner="archive", literal=literal):
+                self.assertIn(literal, archive)
+
 
 class ManifestValidationTests(LifecycleTestCase):
     def make_repo(self) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path, str]:
@@ -516,6 +560,94 @@ class ManifestValidationTests(LifecycleTestCase):
         self.assertEqual(row.active_consumers, ())
         self.assertEqual(row.evidence, lifecycle.ManifestEvidence((), (), (), (), ()))
         self.assertIsNone(row.preservation_class)
+
+    def test_target_wave_expands_exact_roots_and_direct_paths(self) -> None:
+        document = lifecycle.generate_manifest_skeleton(
+            ROOT,
+            self.contract,
+            wave=TARGET_WAVE,
+            baseline_ref=TARGET_BASELINE,
+        )
+        wave = self.contract["waves"][TARGET_WAVE]
+        selected = [row.source_path.as_posix() for row in document.entries]
+        root_selected = [
+            path
+            for path in selected
+            if path.split("/", 1)[0] in set(wave["source_roots"])
+        ]
+        self.assertEqual(422, len(root_selected))
+        self.assertEqual(
+            len(selected),
+            422 + len(wave["direct_source_paths"]),
+        )
+        self.assertEqual(selected, sorted(set(selected)))
+        self.assertEqual(TARGET_BASELINE, document.baseline_commit)
+
+        windows = next(
+            row
+            for row in document.entries
+            if row.source_path.as_posix() == "archive/Windows-Network-IP.md"
+        )
+        self.assertEqual("content-archive", windows.surface_class)
+        self.assertIsNone(windows.artifact_type_before)
+        self.assertEqual("archive", windows.artifact_type_after)
+        self.assertEqual("pending", windows.review_verdict.specification)
+        self.assertEqual("pending", windows.review_verdict.quality)
+
+    def test_native_binary_generation_does_not_decode_blob_body(self) -> None:
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = pathlib.Path(temporary.name)
+        init_repo(root)
+        asset = root / "assets/native.bin"
+        asset.parent.mkdir(parents=True)
+        asset.write_bytes(b"\xff\xfe\x00\x80")
+        baseline = commit_all(root)
+        contract = copy.deepcopy(self.contract)
+        contract["waves"]["binary-fixture"] = {
+            "baseline_commit": baseline,
+            "enforcement": "advisory",
+            "manifest_path": "docs/manifest.yaml",
+            "summary_path": "docs/manifest-summary.md",
+            "scope_state": "approved",
+            "source_roots": ["assets"],
+            "direct_source_paths": [],
+            "declared_outputs": [],
+        }
+        document = lifecycle.generate_manifest_skeleton(
+            root,
+            contract,
+            wave="binary-fixture",
+            baseline_ref=baseline,
+        )
+        self.assertEqual(1, len(document.entries))
+        row = document.entries[0]
+        self.assertEqual("unsupported-static", row.surface_class)
+        self.assertIsNone(row.artifact_type_before)
+        self.assertIsNone(row.artifact_type_after)
+
+    def test_wave_archive_selection_is_focused_to_after_archive_rows(self) -> None:
+        selected = self.valid_row(
+            source_path=pathlib.PurePosixPath("archive/Windows-Network-IP.md"),
+            target_path=pathlib.PurePosixPath("archive/Windows-Network-IP.md"),
+            artifact_type=None,
+            artifact_type_before=None,
+            artifact_type_after="archive",
+            surface_class="content-archive",
+        )
+        document = dataclasses.replace(
+            self.document("a" * 40, entries=(selected,), wave=TARGET_WAVE),
+            schema_version=2,
+        )
+        records = (
+            metadata.Record(pathlib.Path("archive/Windows-Network-IP.md"), {}, "archive"),
+            metadata.Record(pathlib.Path("docs/98.archive/legacy.md"), {}, "archive"),
+        )
+        focused = lifecycle.archive_records_for_wave(records, document)
+        self.assertEqual(
+            ["archive/Windows-Network-IP.md"],
+            [record.path.as_posix() for record in focused],
+        )
 
     def test_template_source_placeholder_identity_is_null_but_real_identity_is_enforced(
         self,

@@ -104,7 +104,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 
 | Work unit | Responsibility | State |
 | --- | --- | --- |
-| T-TSC-001 | Archive, metadata, wave, and manifest foundation | not_run |
+| T-TSC-001 | Archive, metadata, wave, and manifest foundation | review_pending |
 | T-TSC-002 | README, typed example, and Storybook cleanup | not_run |
 | T-TSC-003 | Root content archive provenance migration | not_run |
 | T-TSC-004 | Deprecated runtime and duplicate disposition | not_run |
@@ -128,12 +128,13 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | 2026-07-18 | Planning terminal confirmation | Independent read-only reviewer | PASS and READY with C0/I0/M0. Both absence scans fail on matches, pass only on no-match code 1, propagate execution errors, and remain correct under `set -e`; workflow policy has one canonical owner. |
 | 2026-07-18 | Linked-worktree baseline repair | Controller | After planning commit `5c4e1d55`, the new Plan became a tracked consumer of the promoted frontmatter contract and exposed one stale Foundation consumer row plus three generated-owner freshness gaps that pre-commit index state had hidden. Added only the exact Plan consumer and regenerated the Foundation summary, LLM Wiki index/coverage, and metadata inventory before any implementation task. |
 | 2026-07-18 | SDD handoff compatibility | Controller | Renamed only the six Plan task headings to `Task N: T-TSC-NNN` so the required Superpowers `task-brief` extractor can produce bounded handoff files. Repository-specific ignored brief/report/progress artifacts use `_workspace/repo-support/`; no implementation contract changed. |
+| 2026-07-18 | T-TSC-001 implementation | Documentation Specialist | Added path-selected content/SDLC archive profiles and templates, schema-v2 wave and manifest contracts, binary-safe root/direct selection, wave-resolved read checks, and the pending advisory 483-row target manifest plus generated summary. No target migration, destructive disposition, review promotion, runtime, secret-value, or remote action occurred. Independent specification and quality reviews remain not run. |
 
 ## Verification Evidence
 
 | Work unit | RED evidence | GREEN/aggregate evidence | Result |
 | --- | --- | --- | --- |
-| T-TSC-001 | not_run | not_run | not_run |
+| T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors. Both preceded production changes. | Metadata 76/76; lifecycle 38/38; exact manifest 483=422+61, sorted/unique/exact union, all pending; contract, manifest, summary, explicit-base metadata, compile, and diff gates exit 0. | implementation_complete_review_pending |
 | T-TSC-002 | not_run | not_run | not_run |
 | T-TSC-003 | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run |
@@ -158,7 +159,7 @@ state, bounded result, and skip rationale here without raw logs or secret data.
 
 | Work unit | Self-review | Specification review | Quality review | Findings/disposition |
 | --- | --- | --- | --- | --- |
-| T-TSC-001 | not_run | not_run | not_run | not_run |
+| T-TSC-001 | recorded | not_run | not_run | Independent reviews pending; no review verdict promoted. |
 | T-TSC-002 | not_run | not_run | not_run | not_run |
 | T-TSC-003 | not_run | not_run | not_run | not_run |
 | T-TSC-004 | not_run | not_run | not_run | not_run |
@@ -176,7 +177,7 @@ independent verdicts and all finding dispositions are recorded.
 | Planning | `docs(plan): define target surface convergence execution` | `5c4e1d55` | metadata 10/0; traceability 46/0; alignment 656/5,251/141/0; aggregate 0 before the tracked-consumer baseline recheck |
 | Planning repair | `docs(plan): repair tracked planning consumers` | `f7563631` | promoted manifest 0; generated index 1,290; coverage 1,289; inventory 913/2,145; worktree aggregate failures 0 |
 | SDD compatibility | `docs(plan): align SDD task extraction` | pending | task-brief extraction and diff hygiene pending |
-| T-TSC-001 | `feat(docs): establish target corpus migration contracts` | pending | not_run |
+| T-TSC-001 | `feat(docs): establish target corpus migration contracts` | pending | Focused metadata 76/76; focused lifecycle 38/38; exact manifest and prescribed Task 1 gates pass. |
 | T-TSC-002 | `docs(examples): align sample and storybook contracts` | pending | not_run |
 | T-TSC-003 | `docs(archive): preserve Windows network note provenance` | pending | not_run |
 | T-TSC-004a | `refactor(infra): retire InfluxDB 2 compatibility` | pending | not_run |

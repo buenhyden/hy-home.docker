@@ -53,6 +53,9 @@ README files do not inherit leaf-document identity, parent, freshness, or
 lifecycle fields. Template-source metadata is removed when the README template
 is copied unless the selected profile independently permits a consumed field.
 Repo-support README files remain frontmatter-free under their explicit profile.
+An archive-root `README.md` remains a README routing surface selected by the
+README registry; non-README Markdown beneath root `archive/**` is classified
+through the separate `content-archive` selector.
 
 ## Local Content and Shared Rules
 

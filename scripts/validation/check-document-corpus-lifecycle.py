@@ -147,7 +147,7 @@ class MigrationManifestRow:
     source_path: pathlib.PurePosixPath
     target_path: pathlib.PurePosixPath | None
     artifact_id: str | None
-    artifact_type: str
+    artifact_type: str | None
     status_before: str | None
     status_after: str | None
     parent_ids: tuple[str, ...]
@@ -158,6 +158,9 @@ class MigrationManifestRow:
     preservation_class: str | None
     evidence: ManifestEvidence
     review_verdict: ReviewVerdict
+    artifact_type_before: str | None = None
+    artifact_type_after: str | None = None
+    surface_class: str | None = None
 
 
 @dataclasses.dataclass(frozen=True)
@@ -191,6 +194,24 @@ MANIFEST_ENTRY_FIELDS = (
     "target_path",
     "artifact_id",
     "artifact_type",
+    "status_before",
+    "status_after",
+    "parent_ids",
+    "disposition",
+    "canonical_replacement",
+    "active_consumers",
+    "partition_plan",
+    "preservation_class",
+    "evidence",
+    "review_verdict",
+)
+MANIFEST_ENTRY_FIELDS_V2 = (
+    "source_path",
+    "target_path",
+    "artifact_id",
+    "artifact_type_before",
+    "artifact_type_after",
+    "surface_class",
     "status_before",
     "status_after",
     "parent_ids",
@@ -740,15 +761,22 @@ def _load_migration_manifest_text(source: str) -> MigrationManifestDocument:
     except yaml.YAMLError as error:
         raise ProfileError("cannot load migration manifest safely") from error
     top = _as_exact_mapping(loaded, MANIFEST_TOP_LEVEL_FIELDS, "migration manifest")
-    if type(top["schema_version"]) is not int or top["schema_version"] != 1:
-        raise ProfileError("migration manifest schema_version must be the integer 1")
+    schema_version = top["schema_version"]
+    if type(schema_version) is not int or schema_version not in {1, 2}:
+        raise ProfileError("migration manifest schema_version must be the integer 1 or 2")
+    entry_fields = MANIFEST_ENTRY_FIELDS_V2 if schema_version == 2 else MANIFEST_ENTRY_FIELDS
     entries_value = top["entries"]
     if not isinstance(entries_value, list):
         raise ProfileError("migration manifest entries must be a list")
     entries: list[MigrationManifestRow] = []
     for index, raw_entry in enumerate(entries_value):
         label = f"migration manifest entry {index}"
-        entry = _as_exact_mapping(raw_entry, MANIFEST_ENTRY_FIELDS, label)
+        if schema_version == 2:
+            if not isinstance(raw_entry, dict) or set(raw_entry) != set(entry_fields):
+                raise ProfileError(f"{label} must define the exact canonical fields")
+            entry = {field: raw_entry[field] for field in entry_fields}
+        else:
+            entry = _as_exact_mapping(raw_entry, entry_fields, label)
         evidence_raw = _as_exact_mapping(
             entry["evidence"], EVIDENCE_FIELDS, f"{label} evidence"
         )
@@ -772,10 +800,11 @@ def _load_migration_manifest_text(source: str) -> MigrationManifestDocument:
                 artifact_id=_as_string(
                     entry["artifact_id"], f"{label} artifact_id", nullable=True
                 ),
-                artifact_type=_as_string(
-                    entry["artifact_type"], f"{label} artifact_type"
-                )
-                or "",
+                artifact_type=(
+                    _as_string(entry["artifact_type"], f"{label} artifact_type") or ""
+                    if schema_version == 1
+                    else None
+                ),
                 status_before=_as_string(
                     entry["status_before"], f"{label} status_before", nullable=True
                 ),
@@ -814,10 +843,33 @@ def _load_migration_manifest_text(source: str) -> MigrationManifestDocument:
                     _as_string_tuple(evidence_raw["rollback"], f"{label} rollback"),
                 ),
                 review_verdict=review,
+                artifact_type_before=(
+                    _as_string(
+                        entry["artifact_type_before"],
+                        f"{label} artifact_type_before",
+                        nullable=True,
+                    )
+                    if schema_version == 2
+                    else None
+                ),
+                artifact_type_after=(
+                    _as_string(
+                        entry["artifact_type_after"],
+                        f"{label} artifact_type_after",
+                        nullable=True,
+                    )
+                    if schema_version == 2
+                    else None
+                ),
+                surface_class=(
+                    _as_string(entry["surface_class"], f"{label} surface_class")
+                    if schema_version == 2
+                    else None
+                ),
             )
         )
     return MigrationManifestDocument(
-        schema_version=1,
+        schema_version=schema_version,
         wave=_as_string(top["wave"], "migration manifest wave") or "",
         baseline_commit=_as_string(
             top["baseline_commit"], "migration manifest baseline_commit"
@@ -908,6 +960,44 @@ def _candidate_manifest_matches(
 
 
 def _manifest_mapping(document: MigrationManifestDocument) -> dict[str, object]:
+    def row_mapping(row: MigrationManifestRow) -> dict[str, object]:
+        artifact_fields = (
+            {
+                "artifact_type_before": row.artifact_type_before,
+                "artifact_type_after": row.artifact_type_after,
+                "surface_class": row.surface_class,
+            }
+            if document.schema_version == 2
+            else {"artifact_type": row.artifact_type}
+        )
+        return {
+            "source_path": row.source_path.as_posix(),
+            "target_path": _safe_path_text(row.target_path),
+            "artifact_id": row.artifact_id,
+            **artifact_fields,
+            "status_before": row.status_before,
+            "status_after": row.status_after,
+            "parent_ids": sorted(row.parent_ids),
+            "disposition": row.disposition,
+            "canonical_replacement": row.canonical_replacement,
+            "active_consumers": sorted(path.as_posix() for path in row.active_consumers),
+            "partition_plan": _safe_path_text(row.partition_plan),
+            "preservation_class": row.preservation_class,
+            "evidence": {
+                "commands": sorted(row.evidence.commands),
+                "sources": sorted(row.evidence.sources),
+                "repository_paths": sorted(
+                    path.as_posix() for path in row.evidence.repository_paths
+                ),
+                "consumer_scan": sorted(row.evidence.consumer_scan),
+                "rollback": sorted(row.evidence.rollback),
+            },
+            "review_verdict": {
+                "specification": row.review_verdict.specification,
+                "quality": row.review_verdict.quality,
+            },
+        }
+
     return {
         "schema_version": document.schema_version,
         "wave": document.wave,
@@ -915,33 +1005,7 @@ def _manifest_mapping(document: MigrationManifestDocument) -> dict[str, object]:
         "generated_by": document.generated_by,
         "enforcement": document.enforcement,
         "entries": [
-            {
-                "source_path": row.source_path.as_posix(),
-                "target_path": _safe_path_text(row.target_path),
-                "artifact_id": row.artifact_id,
-                "artifact_type": row.artifact_type,
-                "status_before": row.status_before,
-                "status_after": row.status_after,
-                "parent_ids": sorted(row.parent_ids),
-                "disposition": row.disposition,
-                "canonical_replacement": row.canonical_replacement,
-                "active_consumers": sorted(path.as_posix() for path in row.active_consumers),
-                "partition_plan": _safe_path_text(row.partition_plan),
-                "preservation_class": row.preservation_class,
-                "evidence": {
-                    "commands": sorted(row.evidence.commands),
-                    "sources": sorted(row.evidence.sources),
-                    "repository_paths": sorted(
-                        path.as_posix() for path in row.evidence.repository_paths
-                    ),
-                    "consumer_scan": sorted(row.evidence.consumer_scan),
-                    "rollback": sorted(row.evidence.rollback),
-                },
-                "review_verdict": {
-                    "specification": row.review_verdict.specification,
-                    "quality": row.review_verdict.quality,
-                },
-            }
+            row_mapping(row)
             for row in sorted(document.entries, key=lambda item: item.source_path.as_posix())
         ],
     }
@@ -967,12 +1031,165 @@ def _wave_mapping(contract: dict[str, object], wave: str) -> dict[str, object]:
     return value
 
 
+def _registered_wave_path(
+    contract: dict[str, object], wave: str, field: str
+) -> pathlib.Path:
+    value = _wave_mapping(contract, wave).get(field)
+    if not isinstance(value, str) or not _safe_path(value):
+        raise ProfileError(f"wave {field} must be a safe registered path")
+    return pathlib.Path(value)
+
+
 def _manifest_artifact_id(artifact_type: str, value: object) -> str | None:
     """Project template placeholders to null without hiding concrete identities."""
 
     if artifact_type == "template-source" and value == "<artifact-id>":
         return None
     return value if isinstance(value, str) else None
+
+
+def _baseline_tree_entries(
+    root: pathlib.Path,
+    commit: str,
+    paths: collections.abc.Sequence[str],
+    *,
+    recursive: bool,
+) -> dict[str, str]:
+    """Return safe regular baseline paths and modes without reading blob bodies."""
+
+    if not paths:
+        return {}
+    if any(not _safe_path(path) for path in paths):
+        raise ProfileError("wave selection paths must be safe")
+    args = ["ls-tree", "-z"]
+    if recursive:
+        args.append("-r")
+    args.extend([commit, "--", *paths])
+    result = _run_git(root, args, text=False)
+    if result.returncode != 0:
+        raise ProfileError("wave baseline tree enumeration failed")
+    entries: dict[str, str] = {}
+    for raw_entry in result.stdout.split(b"\0"):
+        if not raw_entry:
+            continue
+        try:
+            raw_header, raw_path = raw_entry.split(b"\t", 1)
+            raw_mode, raw_type, raw_object = raw_header.split()
+            mode = raw_mode.decode("ascii")
+            object_type = raw_type.decode("ascii")
+            object_id = raw_object.decode("ascii")
+            path = raw_path.decode("utf-8")
+        except (ValueError, UnicodeDecodeError):
+            raise ProfileError("wave baseline tree metadata is malformed") from None
+        if (
+            mode not in {"100644", "100755"}
+            or object_type != "blob"
+            or not OBJECT_ID.fullmatch(object_id)
+            or not _safe_path(path)
+        ):
+            raise ProfileError("wave selection includes a non-regular or unsafe path")
+        if path in entries:
+            raise ProfileError("wave baseline tree contains duplicate paths")
+        entries[path] = mode
+    return entries
+
+
+def _surface_class(path: str, mode: str, profiles: dict[str, object]) -> str:
+    """Classify a baseline path from safe path/mode metadata only."""
+
+    pure = pathlib.PurePosixPath(path)
+    name = pure.name
+    suffix = pure.suffix.lower()
+    if path.startswith("archive/"):
+        return "content-archive"
+    if path.startswith(".github/"):
+        return "native-platform"
+    if name == "README.md":
+        return "readme"
+    if metadata.registered_generated_owner(pathlib.Path(path), profiles) is not None:
+        return "generated-output"
+    if path.startswith("secrets/"):
+        return "secret-metadata"
+    if path.startswith("tests/"):
+        return "test-fixture"
+    if name == "Dockerfile" or name.startswith(("docker-compose", "compose.")):
+        return "runtime"
+    if suffix in {".container", ".service", ".socket"}:
+        return "runtime"
+    if suffix == ".md" and (path.startswith("examples/") or path.startswith("docs/")):
+        return "typed-example"
+    if mode == "100755" or (
+        path.startswith("scripts/")
+        and suffix in {".sh", ".bash", ".zsh", ".py", ".js", ".mjs", ".ts"}
+    ):
+        return "executable-script"
+    if (
+        suffix
+        in {
+            ".yaml",
+            ".yml",
+            ".json",
+            ".jsonc",
+            ".toml",
+            ".ini",
+            ".conf",
+            ".config",
+            ".env",
+            ".example",
+            ".properties",
+        }
+        or name.startswith(".")
+    ):
+        return "configuration"
+    return "unsupported-static"
+
+
+def _typed_baseline_metadata(
+    root: pathlib.Path,
+    commit: str,
+    path: str,
+    surface_class: str,
+) -> dict[str, object]:
+    """Decode only declared Markdown/profile surfaces, never native/binary rows."""
+
+    if surface_class not in {
+        "content-archive",
+        "generated-output",
+        "readme",
+        "typed-example",
+    }:
+        return {}
+    shown = _run_git(root, ["show", f"{commit}:{path}"], text=False)
+    if shown.returncode != 0:
+        raise ProfileError("typed wave source is unavailable at the baseline")
+    try:
+        source_text = shown.stdout.decode("utf-8")
+        return metadata._parse_frontmatter_text(source_text)
+    except (UnicodeDecodeError, metadata.FrontmatterError) as error:
+        raise ProfileError("typed wave source frontmatter cannot be parsed") from error
+
+
+def _surface_artifact_types(
+    path: str,
+    surface_class: str,
+    frontmatter: dict[str, object],
+    profiles: dict[str, object],
+) -> tuple[str | None, str | None]:
+    profile_map = profiles.get("profiles")
+    registered = set(profile_map) if isinstance(profile_map, dict) else set()
+    declared = frontmatter.get("artifact_type")
+    declared_type = declared if isinstance(declared, str) and declared in registered else None
+    if surface_class == "content-archive":
+        return ("archive" if declared_type == "archive" else None), "archive"
+    if surface_class == "readme":
+        return declared_type or "readme", declared_type or "readme"
+    if surface_class == "generated-output":
+        return "generated", "generated"
+    if surface_class == "typed-example":
+        inferred = declared_type or metadata.infer_artifact_type(pathlib.Path(path), profiles)
+        inferred = inferred if inferred in registered and inferred != "unsupported" else None
+        return inferred, inferred
+    return None, None
 
 
 def _generate_manifest_skeleton(
@@ -989,6 +1206,83 @@ def _generate_manifest_skeleton(
     if baseline_commit is None:
         raise ProfileError("baseline_ref must resolve to a commit")
     wave_contract = _wave_mapping(contract, wave)
+    pinned_baseline = wave_contract.get("baseline_commit")
+    if pinned_baseline is not None and pinned_baseline != baseline_commit:
+        raise ProfileError("baseline_ref must resolve to the wave's pinned baseline_commit")
+    source_roots = wave_contract.get("source_roots")
+    direct_source_paths = wave_contract.get("direct_source_paths")
+    if source_roots is not None or direct_source_paths is not None:
+        if not isinstance(source_roots, list) or not all(isinstance(item, str) for item in source_roots):
+            raise ProfileError("wave source_roots must be a string list")
+        if not isinstance(direct_source_paths, list) or not all(
+            isinstance(item, str) for item in direct_source_paths
+        ):
+            raise ProfileError("wave direct_source_paths must be a string list")
+        selected = _baseline_tree_entries(
+            root, baseline_commit, source_roots, recursive=True
+        )
+        direct_entries = _baseline_tree_entries(
+            root, baseline_commit, direct_source_paths, recursive=False
+        )
+        if set(direct_entries) != set(direct_source_paths):
+            raise ProfileError("wave direct source path is not tracked at the baseline")
+        for path, mode in direct_entries.items():
+            existing = selected.get(path)
+            if existing is not None and existing != mode:
+                raise ProfileError("wave source metadata conflicts across selectors")
+            selected[path] = mode
+        active_profiles = profiles or metadata.load_profiles(
+            DEFAULT_PROFILES, DEFAULT_CONTRACT
+        )
+        rows: list[MigrationManifestRow] = []
+        for source_path, mode in sorted(selected.items()):
+            surface_class = _surface_class(source_path, mode, active_profiles)
+            frontmatter = _typed_baseline_metadata(
+                root, baseline_commit, source_path, surface_class
+            )
+            artifact_type_before, artifact_type_after = _surface_artifact_types(
+                source_path, surface_class, frontmatter, active_profiles
+            )
+            before_status = frontmatter.get("status")
+            status_before = before_status if isinstance(before_status, str) else None
+            status_after = "archived" if surface_class == "content-archive" else status_before
+            identity_type = artifact_type_after or artifact_type_before or "unsupported"
+            parent_ids = frontmatter.get("parent_ids")
+            rows.append(
+                MigrationManifestRow(
+                    source_path=pathlib.PurePosixPath(source_path),
+                    target_path=pathlib.PurePosixPath(source_path),
+                    artifact_id=_manifest_artifact_id(
+                        identity_type, frontmatter.get("artifact_id")
+                    ),
+                    artifact_type=None,
+                    status_before=status_before,
+                    status_after=status_after,
+                    parent_ids=tuple(sorted(parent_ids))
+                    if isinstance(parent_ids, list)
+                    and all(isinstance(item, str) for item in parent_ids)
+                    else (),
+                    disposition="preserve",
+                    canonical_replacement=None,
+                    active_consumers=(),
+                    partition_plan=None,
+                    preservation_class=None,
+                    evidence=ManifestEvidence((), (), (), (), ()),
+                    review_verdict=ReviewVerdict("pending", "pending"),
+                    artifact_type_before=artifact_type_before,
+                    artifact_type_after=artifact_type_after,
+                    surface_class=surface_class,
+                )
+            )
+        return MigrationManifestDocument(
+            schema_version=2,
+            wave=wave,
+            baseline_commit=baseline_commit,
+            generated_by="check-document-corpus-lifecycle.py",
+            enforcement=str(wave_contract.get("enforcement", "advisory")),
+            entries=tuple(rows),
+        )
+
     source_paths = wave_contract.get("source_paths")
     if not isinstance(source_paths, list) or not all(
         isinstance(item, str) for item in source_paths
@@ -1057,6 +1351,28 @@ def generate_manifest_skeleton(
         contract,
         wave=wave,
         baseline_ref=baseline_ref,
+    )
+
+
+def archive_records_for_wave(
+    records: collections.abc.Sequence[Record],
+    document: MigrationManifestDocument,
+) -> tuple[Record, ...]:
+    """Focus archive validation on rows whose resulting semantic type is archive."""
+
+    selected_paths = {
+        (row.target_path or row.source_path).as_posix()
+        for row in document.entries
+        if (
+            row.artifact_type_after == "archive"
+            if document.schema_version == 2
+            else row.artifact_type == "archive"
+        )
+    }
+    return tuple(
+        record
+        for record in records
+        if record.path.as_posix() in selected_paths and record.artifact_type == "archive"
     )
 
 
@@ -1369,6 +1685,131 @@ def _held_result_snapshot(
     )
 
 
+def _validate_surface_manifest(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    contract: dict[str, object],
+    document: MigrationManifestDocument,
+) -> list[Finding]:
+    """Validate v2 coverage and baseline truth without decoding native blobs."""
+
+    findings: list[Finding] = []
+    try:
+        metadata.validate_static_migration_manifest(
+            _manifest_mapping(document), contract, profiles
+        )
+    except ProfileError:
+        findings.append(
+            _finding(
+                "manifest",
+                "manifest-static-invalid",
+                "manifest violates the canonical static contract",
+            )
+        )
+    try:
+        wave = _wave_mapping(contract, document.wave)
+    except ProfileError:
+        return [_finding("manifest", "manifest-wave-invalid", "manifest wave is not declared")]
+    if document.schema_version != 2:
+        findings.append(_finding("manifest", "manifest-schema-invalid", "schema version must be 2"))
+    if document.enforcement not in {"advisory", "blocking"}:
+        findings.append(
+            _finding("manifest", "manifest-enforcement-invalid", "enforcement is not registered")
+        )
+    if document.enforcement != wave.get("enforcement"):
+        findings.append(
+            _finding(
+                "manifest",
+                "manifest-enforcement-mismatch",
+                "manifest enforcement differs from its wave registry",
+            )
+        )
+    if document.baseline_commit != wave.get("baseline_commit"):
+        findings.append(
+            _finding(
+                "manifest",
+                "manifest-baseline-commit-invalid",
+                "baseline_commit differs from the pinned wave baseline",
+            )
+        )
+        return sorted(set(findings))
+    try:
+        expected_document = _generate_manifest_skeleton(
+            root,
+            contract,
+            wave=document.wave,
+            baseline_ref=document.baseline_commit,
+            profiles=profiles,
+        )
+    except ProfileError:
+        findings.append(
+            _finding(
+                "manifest",
+                "manifest-baseline-commit-invalid",
+                "pinned baseline selection cannot be established",
+            )
+        )
+        return sorted(set(findings))
+    expected_by_path = {
+        row.source_path.as_posix(): row for row in expected_document.entries
+    }
+    counts = collections.Counter(row.source_path.as_posix() for row in document.entries)
+    for source in sorted(set(expected_by_path) - set(counts)):
+        findings.append(_finding(source, "manifest-source-missing", "selected source has no manifest row"))
+    for source, count in sorted(counts.items()):
+        display = source if _safe_path(source) else "manifest"
+        if count > 1:
+            findings.append(
+                _finding(display, "manifest-source-duplicate", "selected source has multiple rows")
+            )
+        if source not in expected_by_path:
+            findings.append(
+                _finding(display, "manifest-source-unexpected", "row is outside selected wave scope")
+            )
+    for row in document.entries:
+        source = row.source_path.as_posix()
+        expected = expected_by_path.get(source)
+        if expected is None:
+            continue
+        if row.surface_class != expected.surface_class:
+            findings.append(
+                _finding(source, "manifest-surface-class-mismatch", "surface class differs from baseline path/mode truth")
+            )
+        if row.artifact_type_before != expected.artifact_type_before:
+            findings.append(
+                _finding(source, "manifest-artifact-type-mismatch", "artifact_type_before differs from typed baseline truth")
+            )
+        expected_after = (
+            None
+            if row.disposition == "delete"
+            else "archive"
+            if row.surface_class == "content-archive"
+            else row.artifact_type_before
+        )
+        if row.artifact_type_after != expected_after:
+            findings.append(
+                _finding(source, "manifest-artifact-transition-invalid", "artifact type transition is not admitted")
+            )
+        if row.status_before != expected.status_before:
+            findings.append(
+                _finding(source, "manifest-baseline-status-mismatch", "status_before differs from baseline truth")
+            )
+        if not (
+            row.surface_class == "content-archive"
+            and expected.artifact_id is None
+            and isinstance(row.artifact_id, str)
+        ) and row.artifact_id != expected.artifact_id:
+            findings.append(
+                _finding(source, "manifest-baseline-artifact-id-mismatch", "artifact identity differs from baseline truth")
+            )
+    entry_order = [row.source_path.as_posix() for row in document.entries]
+    if entry_order != sorted(entry_order):
+        findings.append(
+            _finding("manifest", "manifest-order-invalid", "entries are not ordered by source_path")
+        )
+    return sorted(set(findings))
+
+
 def validate_migration_manifest(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -1376,6 +1817,9 @@ def validate_migration_manifest(
     document: MigrationManifestDocument,
 ) -> list[Finding]:
     """Return stable manifest findings without changing human dispositions."""
+
+    if document.schema_version == 2:
+        return _validate_surface_manifest(root, profiles, contract, document)
 
     findings: list[Finding] = []
     path = "manifest"
@@ -3455,13 +3899,18 @@ def _load_declared_manifests(
     contract: dict[str, object],
     *,
     promoted_only: bool,
+    selected_wave: str | None = None,
 ) -> tuple[tuple[MigrationManifestDocument, ...], list[Finding]]:
     documents: list[MigrationManifestDocument] = []
     findings: list[Finding] = []
     waves = contract.get("waves")
     if not isinstance(waves, dict):
         raise ProfileError("contract waves must be a mapping")
+    if selected_wave is not None and selected_wave not in waves:
+        raise ProfileError(f"unknown migration wave: {selected_wave}")
     for wave_name, raw_wave in waves.items():
+        if selected_wave is not None and wave_name != selected_wave:
+            continue
         if not isinstance(wave_name, str) or not isinstance(raw_wave, dict):
             raise ProfileError("contract wave entry is invalid")
         enforcement = raw_wave.get("enforcement")
@@ -3595,15 +4044,15 @@ def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespac
     requirements: dict[str, tuple[set[str], set[str]]] = {
         "check-contract": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
         "generate-manifest": ({"wave", "base_ref", "output"}, {"manifest", "exceptions"}),
-        "check-manifest": ({"wave", "manifest"}, {"base_ref", "exceptions", "output"}),
-        "check-promoted": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
-        "generate-summary": ({"manifest", "output"}, {"wave", "base_ref", "exceptions"}),
-        "check-summary": ({"manifest", "output"}, {"wave", "base_ref", "exceptions"}),
+        "check-manifest": ({"wave"}, {"base_ref", "exceptions", "output"}),
+        "check-promoted": (set(), {"base_ref", "manifest", "exceptions", "output"}),
+        "generate-summary": ({"output"}, {"base_ref", "exceptions"}),
+        "check-summary": (set(), {"base_ref", "exceptions"}),
         "check-impacted": ({"base_ref"}, {"wave", "manifest", "exceptions", "output"}),
         "report-duplicates": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
         "report-full": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
         "check-full": (set(), {"wave", "base_ref", "manifest", "output"}),
-        "check-archive": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
+        "check-archive": (set(), {"base_ref", "exceptions", "output"}),
         "check-directory-budget": (set(), {"wave", "base_ref", "manifest", "exceptions", "output"}),
         "generate-archive-ledger": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
         "check-archive-ledger": ({"output"}, {"wave", "base_ref", "manifest", "exceptions"}),
@@ -3617,6 +4066,12 @@ def _validate_cli_shape(parser: argparse.ArgumentParser, args: argparse.Namespac
     for name in sorted(forbidden):
         if getattr(args, name) is not None:
             parser.error(f"--{name.replace('_', '-')} is forbidden for --mode {args.mode}")
+    if args.mode in {"generate-summary", "check-summary"} and args.manifest is None and args.wave is None:
+        parser.error(f"--manifest or --wave is required for --mode {args.mode}")
+    if args.mode == "check-summary" and args.output is None and args.wave is None:
+        parser.error("--output or --wave is required for --mode check-summary")
+    if args.mode == "check-archive" and args.manifest is not None and args.wave is None:
+        parser.error("--manifest requires --wave for --mode check-archive")
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -3644,6 +4099,22 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
         profiles_path = _rooted(root, args.profiles).resolve()
         contract = load_migration_contract(contract_path)
         profiles = metadata.load_profiles(profiles_path, contract_path)
+        manifest_argument = args.manifest
+        output_argument = args.output
+        if args.wave is not None:
+            if args.mode in {
+                "check-manifest",
+                "generate-summary",
+                "check-summary",
+                "check-archive",
+            } and manifest_argument is None:
+                manifest_argument = _registered_wave_path(
+                    contract, args.wave, "manifest_path"
+                )
+            if args.mode == "check-summary" and output_argument is None:
+                output_argument = _registered_wave_path(
+                    contract, args.wave, "summary_path"
+                )
         if args.mode == "check-contract":
             print("document corpus lifecycle contract: violations=0")
             return 0
@@ -3659,12 +4130,12 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
             print(f"manifest generated: entries={len(document.entries)}")
             return 0
         if args.mode == "check-manifest":
-            manifest_relative = _repo_manifest_path(root, args.manifest)
+            manifest_relative = _repo_manifest_path(root, manifest_argument)
             document = _load_candidate_migration_manifest(root, manifest_relative)
             findings = validate_migration_manifest(root, profiles, contract, document)
             if document.wave != args.wave:
                 findings.append(
-                    _finding(args.manifest.as_posix(), "manifest-wave-mismatch", "--wave differs from manifest")
+                    _finding(manifest_argument.as_posix(), "manifest-wave-mismatch", "--wave differs from manifest")
                 )
             if not _candidate_manifest_matches(
                 root,
@@ -3672,19 +4143,23 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
                 render_migration_manifest(document),
             ):
                 findings.append(
-                    _finding(args.manifest.as_posix(), "manifest-serialization-stale", "manifest bytes are not canonical")
+                    _finding(manifest_argument.as_posix(), "manifest-serialization-stale", "manifest bytes are not canonical")
                 )
             _print_findings(findings)
             return 3 if any(_is_safety_finding(item) for item in findings) else (1 if findings else 0)
         if args.mode == "check-promoted":
             _, findings = _load_declared_manifests(
-                root, profiles, contract, promoted_only=True
+                root,
+                profiles,
+                contract,
+                promoted_only=True,
+                selected_wave=args.wave,
             )
             _print_findings(findings)
             print(f"promoted lifecycle manifests: violations={len(findings)}")
             return 3 if any(_is_safety_finding(item) for item in findings) else (1 if findings else 0)
         if args.mode in {"generate-summary", "check-summary"}:
-            manifest_relative = _repo_manifest_path(root, args.manifest)
+            manifest_relative = _repo_manifest_path(root, manifest_argument)
             document = _load_candidate_migration_manifest(root, manifest_relative)
             manifest_findings = validate_migration_manifest(root, profiles, contract, document)
             if not _candidate_manifest_matches(
@@ -3703,7 +4178,7 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
                 _print_findings(manifest_findings)
                 return 3 if any(_is_safety_finding(item) for item in manifest_findings) else 1
             rendered = _render_summary(document)
-            output_path = _rooted(root, args.output)
+            output_path = _rooted(root, output_argument)
             if args.mode == "generate-summary":
                 _write_output(output_path, rendered)
                 return 0
@@ -3816,11 +4291,28 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
                 return 0
             return 0 if _check_output(_rooted(root, args.output), rendered) else 1
         if args.mode == "check-archive":
+            archive_records = records
+            manifest_findings: list[Finding] = []
+            if args.wave is not None:
+                manifest_relative = _repo_manifest_path(root, manifest_argument)
+                wave_document = _load_candidate_migration_manifest(
+                    root, manifest_relative
+                )
+                if wave_document.wave != args.wave:
+                    manifest_findings.append(
+                        _finding(
+                            manifest_relative,
+                            "manifest-wave-mismatch",
+                            "--wave differs from manifest",
+                        )
+                    )
+                archive_records = archive_records_for_wave(records, wave_document)
             findings = [
                 finding
-                for record in records
+                for record in archive_records
                 for finding in validate_archive_provenance(root, record)
             ]
+            findings.extend(manifest_findings)
         elif args.mode == "check-directory-budget":
             budgets = contract.get("directory_budgets")
             if not isinstance(budgets, dict):

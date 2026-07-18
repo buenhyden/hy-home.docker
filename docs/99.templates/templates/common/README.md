@@ -28,7 +28,8 @@ layer: agentic
 | 경로별 탐색 README 작성 | [readme.template.md](./readme.template.md) |
 | 안정적인 사실과 출처 기록 | [reference.template.md](./reference.template.md) |
 | 기준, 증거, 발견사항과 처분 기록 | [audit.template.md](./audit.template.md) |
-| 검증된 provenance와 조건부 보존 정보를 갖는 tombstone 기록 | [archive.template.md](./archive.template.md) |
+| `docs/98.archive/**`에 검증된 provenance와 조건부 보존 정보를 갖는 SDLC tombstone 기록 | [archive.template.md](./archive.template.md) |
+| root `archive/**`에 current-use warning을 갖는 content tombstone 기록 | [content-archive.template.md](./content-archive.template.md) |
 
 ## How to Work in This Area
 

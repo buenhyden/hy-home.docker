@@ -52,7 +52,7 @@ follow.
 | [template-contract.md](./template-contract.md) | Defines copyable template shape and source requirements. |
 | [template-governance.md](./template-governance.md) | Owns only template-change workflow, protected surfaces, migration/archive approval boundaries, and commit boundaries; disposition semantics route to the sole human owners. |
 | [frontmatter-contract.md](./frontmatter-contract.md) | Interprets frontmatter, source metadata, and deterministic serialization without copying registry tables. |
-| [document-metadata-profiles.yaml](./document-metadata-profiles.yaml) | Sole machine owner for profiles, README profiles, 23 template roles, matchers, headings, lifecycle, parents, and exceptions. |
+| [document-metadata-profiles.yaml](./document-metadata-profiles.yaml) | Sole machine owner for profiles, archive selectors, README profiles, 24 template roles, matchers, headings, lifecycle, parents, and exceptions. |
 | [sdlc-document-contract.md](./sdlc-document-contract.md) | Owns human roles and iterative feedback from PRD through Release. |
 | [common-document-contract.md](./common-document-contract.md) | Explains Reference, Audit, Archive, governance, generated, template, repo-support, and native-surface roles. |
 | [readme-profile-contract.md](./readme-profile-contract.md) | Explains README profile selection, heading envelopes, consumers, and local-content ownership. |

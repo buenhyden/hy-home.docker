@@ -109,7 +109,11 @@ non-angle markers such as `YYYY-MM-DD` remain field-specific.
 Spec 123 is the sole approved cross-cutting root exception in this rollout; its
 empty `parent_ids` is explicit and does not authorize arbitrary root Specs.
 
-Archive tombstones use the archive lifecycle profile and the provenance fields
+Archive tombstones keep semantic `artifact_type: archive`, then select
+`content-archive` for root `archive/**` or `sdlc-archive` for
+`docs/98.archive/**`. Content tombstones omit SDLC relation, replacement, and
+snapshot keys; Stage 98 tombstones retain their existing conditional fields.
+Both use the archive lifecycle profile and the provenance fields
 required by the registry. Conditional replacement and snapshot fields are
 present only when the archive profile admits them; their human interpretation
 is owned by the

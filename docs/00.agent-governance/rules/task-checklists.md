@@ -79,6 +79,9 @@ Unified task execution checklists for all agent work.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` for material task progress.
 - [ ] For archive work, run safe provenance and confidentiality checks through
       the lifecycle validator; do not inspect or record prohibited payloads.
+- [ ] Select `content-archive` for root `archive/**` and `sdlc-archive` for
+      `docs/98.archive/**`; keep `artifact_type: archive` and use the mapped
+      template without borrowing fields across the two profiles.
 - [ ] Preserve independent specification and quality review as separate Task
       evidence before a destructive row or wave promotion can pass.
 - [ ] Refresh each derived output through its canonical generator and inspect

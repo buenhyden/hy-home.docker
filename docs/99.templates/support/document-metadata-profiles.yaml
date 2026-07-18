@@ -35,12 +35,14 @@ common:
     - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
   generated_outputs:
     docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md: scripts/validation/check-document-corpus-lifecycle.py
+    docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md: scripts/validation/check-document-corpus-lifecycle.py
   template_placeholders:
     artifact_id: <artifact-id>
     parent_id: <parent-artifact-id>
     reviewed_at: <reviewed-at>
     review_cycle: <review-cycle>
     archived_from: docs/<original-path>.md
+    content_archived_from: archive/<original-path>.md
     archived_on: YYYY-MM-DD
     archive_reason: <archive-reason>
     archive_disposition: <archive-disposition>
@@ -57,6 +59,51 @@ common:
 document_families:
   sdlc: [prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release]
   common: [reference, audit, archive, readme, governance, generated, template-source, repo-support, unsupported]
+
+archive_profiles:
+  content-archive:
+    path_globs: [archive/**/*.md]
+    template: docs/99.templates/templates/common/content-archive.template.md
+    artifact_type: archive
+    required: [status, artifact_id, artifact_type, archived_from, archived_on, archive_reason, archive_disposition, archived_commit, archived_blob, preservation_class]
+    optional: []
+    forbidden: [parent_ids, layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason, reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, generated_by]
+    allowed_statuses: [archived]
+    allowed_parent_types: []
+    allow_empty_parents: true
+    disposition: archive exception
+    conditions:
+      replacement:
+        field: current_replacement
+        required_for: []
+        forbidden_for: [superseded, duplicate, conflict, withdrawn, evidence-preserve]
+        optional_for: []
+      snapshot:
+        fields: [snapshot_path, content_sha256, snapshot_reason]
+        required_for: []
+        forbidden_for: [git-history, immutable-snapshot]
+
+  sdlc-archive:
+    path_globs: [docs/98.archive/**/*.md]
+    template: docs/99.templates/templates/common/archive.template.md
+    artifact_type: archive
+    required: [status, artifact_id, artifact_type, parent_ids, archived_from, archived_on, archive_reason, archive_disposition, archived_commit, archived_blob, preservation_class]
+    optional: [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
+    forbidden: [reviewed_at, review_cycle, type, document_type, template_type, owner, updated, links, generated_by]
+    allowed_statuses: [archived]
+    allowed_parent_types: [prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release, reference, audit]
+    allow_empty_parents: true
+    disposition: archive exception
+    conditions:
+      replacement:
+        field: current_replacement
+        required_for: [superseded, duplicate, conflict]
+        forbidden_for: [withdrawn]
+        optional_for: [evidence-preserve]
+      snapshot:
+        fields: [snapshot_path, content_sha256, snapshot_reason]
+        required_for: [immutable-snapshot]
+        forbidden_for: [git-history]
 
 readme_profiles:
   repository-root:
@@ -372,6 +419,13 @@ template_roles:
     target_globs: [docs/98.archive/**/*.md]
     required_headings: ["## Overview", "## Archive Metadata", "## Archive Ledger", "## Related Documents"]
     conditional_headings: ["## Current Replacement", "## Preserved Evidence"]
+    forbidden_headings: ["## Current Implementation"]
+  content-archive:
+    source: docs/99.templates/templates/common/content-archive.template.md
+    artifact_profile: archive
+    target_globs: [archive/**/*.md]
+    required_headings: ["## Overview", "## Current-use Warning", "## Archive Metadata", "## Archive Ledger", "## Related Documents"]
+    conditional_headings: ["## Historical Retrieval"]
     forbidden_headings: ["## Current Implementation"]
   readme:
     source: docs/99.templates/templates/common/readme.template.md
