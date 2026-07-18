@@ -496,11 +496,11 @@ Generated owner order is target corpus summary, Compose coverage, tech-stack
 provenance, security readiness, audit matrix, LLM Wiki index/coverage, then
 frontmatter inventory.
 
-- [ ] Revalidate official sources/dates and separate external fact, repository
+- [x] Revalidate official sources/dates and separate external fact, repository
   implementation, static verification, live runtime, and remote state.
-- [ ] Reconcile only current-truth changes; preserve historical observations
+- [x] Reconcile only current-truth changes; preserve historical observations
   and superseded-pack routing.
-- [ ] Regenerate each applicable owner in fixed order, run its freshness check,
+- [x] Regenerate each applicable owner in fixed order, run its freshness check,
   inspect exact fallout, and restore unrelated graph/generated noise.
 - [ ] Run the full verification ladder.
 - [ ] Obtain fresh Task 6 reviews and whole-branch reviews over the exact final

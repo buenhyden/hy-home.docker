@@ -118,9 +118,12 @@ that requires it. An adjacent file is not in scope merely because it is nearby.
 
 External sources inform the local implementation. They do not define this
 repository's path numbers, artifact IDs, lifecycle vocabulary, approval
-authority, or secret-handling exceptions. Rolling sources were revalidated on
-2026-07-18 KST and must carry a future review signal in the canonical research
-owner.
+authority, or secret-handling exceptions. The initial rolling-source review was
+performed on 2026-07-18 KST. On 2026-07-19, only the exact high-risk official
+URLs for GitHub workflow/security/deployment/rulesets, pre-commit, DORA, Docker
+Compose include/profiles/secrets/trust, SLSA v1.2, and NIST SP 800-61 Rev. 3
+were re-opened; no stale claim was confirmed. Lower-risk retrieval dates and
+the provider-model cutoff remain owned by the canonical research pack.
 
 | Official or primary source | Local design consequence |
 | --- | --- |
@@ -133,6 +136,21 @@ owner.
 | [InfluxDB 3 Core write API](https://docs.influxdata.com/influxdb3/core/api/write-data/) and [Python v3 client](https://docs.influxdata.com/influxdb3/core/reference/client-libraries/v3/python/) | Make database/token and the v3 line-protocol API the sole new-workload contract; remove the unused InfluxDB 2 server and client scaffolding rather than retain an unowned compatibility path. |
 | [NIST SP 800-53 Rev. 5.1 AU-11](https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final), [Git cat-file](https://git-scm.com/docs/git-cat-file), and [Library of Congress preservation glossary](https://www.loc.gov/programs/digital-collections-management/about-this-program/glossary/) | Base retention on explicit need, verify immutable commit/blob provenance, and use fixity only for approved evidence snapshots. |
 | [OWASP Secrets Management](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html) and [Logging](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html) | Record safe ownership and workflow metadata, never secret values or raw diagnostic payloads. |
+
+### Current Implementation Evidence Candidate
+
+At commit `49c4db893a4b53ac6b0e8a4dfe4e76d81c16ddc2`, Tasks 1 through 5 and
+the bounded SeaweedFS duplicate disposition are implemented and independently
+reviewed. The canonical manifest has 483 rows: 3 delete, 7 migrate, and 473
+preserve; exactly the InfluxDB 2, OpenSearch `.example`, and SeaweedFS
+`security.toml` rows are `pass/pass`, while 480 remain `pending/pending`.
+The retained SeaweedFS `.example` is unmounted and activation is a separate
+approved runtime/security chain. Task 6 authored research/audit and fixed-order
+generated evidence are complete; full verification, the controlled wrapper,
+and whole-branch reviews are not yet closed.
+Tracked workflow source names 15 local quality jobs; the dated remote
+12-context observation remains unverified and no remote or runtime claim is
+promoted by this candidate.
 
 ## Contracts
 
