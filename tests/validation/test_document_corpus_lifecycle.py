@@ -2085,6 +2085,95 @@ class CandidateManifestCliTests(LifecycleTestCase):
 
 
 class ArchiveProvenanceTests(LifecycleTestCase):
+    def test_windows_network_note_is_a_provenance_only_content_tombstone(self) -> None:
+        path = pathlib.Path("archive/Windows-Network-IP.md")
+        text = (ROOT / path).read_text(encoding="utf-8")
+        record = metadata._record_from_text(path, text, profiles=self.profiles)
+        manifest = metadata.build_manifest([record])
+        failures: list[str] = []
+
+        expected_metadata: dict[str, object] = {
+            "status": "archived",
+            "artifact_id": "archive:windows-network-ip",
+            "artifact_type": "archive",
+            "archived_from": path.as_posix(),
+            "archived_on": datetime.date(2026, 7, 18),
+            "archive_disposition": "withdrawn",
+            "archived_commit": TARGET_BASELINE,
+            "archived_blob": "b1faa418b9e0bb91bc93137e6e97236e75967f21",
+            "preservation_class": "git-history",
+        }
+        for key, expected in expected_metadata.items():
+            if record.metadata.get(key) != expected:
+                failures.append(f"metadata:{key}")
+        if not isinstance(record.metadata.get("archive_reason"), str):
+            failures.append("metadata:archive_reason")
+
+        for key in (
+            "parent_ids",
+            "supersedes",
+            "current_replacement",
+            "snapshot_path",
+            "content_sha256",
+            "snapshot_reason",
+        ):
+            if key in record.metadata:
+                failures.append(f"forbidden:{key}")
+
+        if any(token in text for token in ("netsh interface", "netsh wlan")):
+            failures.append("stale-command-body")
+        for heading in (
+            "## Overview",
+            "## Current-use Warning",
+            "## Archive Metadata",
+            "## Archive Ledger",
+            "## Historical Retrieval",
+            "## Related Documents",
+        ):
+            if heading not in text:
+                failures.append(f"heading:{heading}")
+
+        failures.extend(
+            f"metadata-finding:{finding.code}"
+            for finding in metadata.validate_record(record, self.profiles, manifest)
+            if finding.severity == "error"
+        )
+        failures.extend(
+            f"provenance-finding:{finding.code}"
+            for finding in lifecycle.validate_archive_provenance(ROOT, record)
+        )
+
+        document = lifecycle.load_migration_manifest(
+            ROOT
+            / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+        )
+        row = next(
+            item
+            for item in document.entries
+            if item.source_path.as_posix() == path.as_posix()
+        )
+        expected_row = {
+            "target_path": path,
+            "artifact_id": "archive:windows-network-ip",
+            "artifact_type_before": None,
+            "artifact_type_after": "archive",
+            "surface_class": "content-archive",
+            "status_before": None,
+            "status_after": "archived",
+            "parent_ids": (),
+            "disposition": "preserve",
+            "canonical_replacement": None,
+            "active_consumers": (),
+            "partition_plan": None,
+            "preservation_class": "git-history",
+            "review_verdict": lifecycle.ReviewVerdict("pending", "pending"),
+        }
+        for field, expected in expected_row.items():
+            if getattr(row, field) != expected:
+                failures.append(f"manifest:{field}")
+
+        self.assertEqual([], failures)
+
     def archive_fixture(
         self, preservation_class: str = "git-history"
     ) -> tuple[tempfile.TemporaryDirectory[str], pathlib.Path, metadata.Record, bytes]:

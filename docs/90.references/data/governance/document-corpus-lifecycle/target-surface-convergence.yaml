@@ -420,7 +420,7 @@ entries:
     quality: pending
 - source_path: archive/Windows-Network-IP.md
   target_path: archive/Windows-Network-IP.md
-  artifact_id: null
+  artifact_id: archive:windows-network-ip
   artifact_type_before: null
   artifact_type_after: archive
   surface_class: content-archive
@@ -431,7 +431,7 @@ entries:
   canonical_replacement: null
   active_consumers: []
   partition_plan: null
-  preservation_class: null
+  preservation_class: git-history
   evidence:
     commands: []
     sources: []

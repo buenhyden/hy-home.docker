@@ -106,7 +106,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | --- | --- | --- |
 | T-TSC-001 | Archive, metadata, wave, and manifest foundation | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-002 | README, typed example, and Storybook cleanup | implementation_and_reviews_complete_wave_verdicts_pending |
-| T-TSC-003 | Root content archive provenance migration | not_run |
+| T-TSC-003 | Root content archive provenance migration | implementation_complete_reviews_pending |
 | T-TSC-004 | Deprecated runtime and duplicate disposition | not_run |
 | T-TSC-005 | Validator, QA routing, and static CI enforcement | not_run |
 | T-TSC-006 | Research, audit, generated evidence, and closure | not_run |
@@ -153,6 +153,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | 2026-07-18 | T-TSC-001/T-TSC-002 correction reviews | Independent specification and quality reviewers | Full remediation commit `dd53a695e6893265a8d72c1810f334a6de5daa95`: foundation specification PASS C0/I0/M0; T-TSC-002 specification PASS C0/I0/M0; T-TSC-002 quality APPROVED C0/I0/M0; foundation quality CHANGES REQUIRED C0/I2/M0. Foundation quality I-01 identified the two stale aggregate `content-archive` test oracles, and I-02 required this immutable ledger/review/evidence synchronization. Foundation quality is not complete and requires re-review. |
 | 2026-07-18 | T-TSC-001 quality remediation | QA Engineer | Added the exact committed `content-archive` leaf/profile/heading/token expectations to both independent aggregate metadata oracles and renamed the stale 23-role assertion to 24 roles. RED was 0/2; GREEN was targeted 2/2 and full metadata 218/218. Evidence synchronization records only the already-immutable remediation commit; the current evidence commit identity is intentionally not self-recorded. Foundation quality re-review remains pending. |
 | 2026-07-18 | T-TSC-001/T-TSC-002 terminal closure reviews | Independent specification and quality reviewers | Reopened foundation specification PASS C0/I0/M0 over exact range `820e6188307ead1478de200f75a2d08e62ac137a..dd53a695e6893265a8d72c1810f334a6de5daa95`; reopened foundation quality APPROVED C0/I0/M0 over `820e6188307ead1478de200f75a2d08e62ac137a..4cac2af5d7508abd2b9722ee2c6a2d4f01ba7899`. T-TSC-002 specification PASS C0/I0/M0 and quality APPROVED C0/I0/M0 each cover `f037630ddeef4e7cc738dd9489b9218c452510ae..dd53a695e6893265a8d72c1810f334a6de5daa95`. Foundation correction and T-TSC-002 implementation/reviews are complete; all 483 manifest review pairs remain pending, and the expected Windows provenance gap remains owned by T-TSC-003. |
+| 2026-07-18 | T-TSC-003 implementation | Documentation Specialist | Replaced the unowned Windows network command note with a `content-archive` provenance tombstone, bound the pinned commit/path to the approved blob without printing the source body, removed both active command lines, and synchronized only the Windows manifest identity and `git-history` preservation. The pending advisory row remains `preserve`; all 483 review pairs remain pending. Independent reviews have not run. |
 
 ## Verification Evidence
 
@@ -160,7 +161,7 @@ values from `secrets/**`, expanded Compose values, or raw logs.
 | --- | --- | --- | --- |
 | T-TSC-001 | Metadata RED: 76 tests, 7 failures/5 errors; lifecycle RED: 38 tests, 11 failures/4 errors; first specification-fix mutation RED: 4/4 expected failures plus one human-contract test with four expected assertion failures; exceptional validator RED: two tests produced five expected subcase failures; archive-contract RED: one focused human-owner test exited 1 because the two exact profile sections were absent; final-review fixture RED: 11 tests with four failures across three methods; CLI-shape RED: full lifecycle 101/103; typed-target correction RED: three focused methods emitted six expected failures across missing human semantics, the truthful migrated target, and the null after-type mutation; fail-closed re-review RED: five focused methods failed 0/5 at the target parse/profile/read/native-body boundaries; foundation-quality aggregate RED: 0/2 with `content-archive` the sole missing role. All RED preceded the corresponding production, contract, or test-boundary change. | Fail-closed correction passed focused 5/5, full lifecycle 111/111, focused metadata 76/76, target 9/9, and all prescribed gates. Quality remediation passed aggregate 2/2 and full metadata 218/218. Final foundation specification PASS C0/I0/M0 covers `820e6188307ead1478de200f75a2d08e62ac137a..dd53a695e6893265a8d72c1810f334a6de5daa95`; final quality APPROVED C0/I0/M0 covers `820e6188307ead1478de200f75a2d08e62ac137a..4cac2af5d7508abd2b9722ee2c6a2d4f01ba7899`. All 483 row verdict pairs remain pending. | implementation_and_reviews_complete_wave_verdicts_pending |
 | T-TSC-002 | Initial target suite RED: 8 tests ran with eight expected failure records across stale Service metadata/sections/instruction text and five active phantom references. I-01 remediation RED: the focused manifest/document regression failed 1/1 with target `spec:sample-web-service`/`spec`/one parent versus manifest null/null/empty. Fail-closed re-review RED: five methods failed exactly five assertions. | README profiles 4/4, target suite 9/9, fail-closed focus 5/5, and full lifecycle 111/111. Final specification PASS C0/I0/M0 and quality APPROVED C0/I0/M0 each cover `f037630ddeef4e7cc738dd9489b9218c452510ae..dd53a695e6893265a8d72c1810f334a6de5daa95`. Seven rows remain `migrate`, 476 remain `preserve`, all 483 review pairs remain pending, and summary bytes remain deterministic. | implementation_and_reviews_complete_wave_verdicts_pending |
-| T-TSC-003 | not_run | not_run | not_run |
+| T-TSC-003 | One focused repository regression exited 1 before target mutation with the expected stale-body, missing provenance/metadata/headings, and exact-row gaps. The first post-mutation summary generation also rejected an inferred `migrate` disposition; canonical v2 transition evidence required the pending advisory content row to remain `preserve`, and the test/row were corrected without changing verdicts. | Focused repository regression 1/1, `ArchiveProvenanceTests` 6/6, and full lifecycle 112/112 pass. Commit/path resolves to the approved blob; archive, contract, manifest, summary, promoted, explicit-base metadata, fail-closed command absence, 656-document/5,251-link alignment, compile, Ruff, and diff gates pass. Manifest remains 483 rows: 7 `migrate`, 476 `preserve`, and 483 pending/pending review pairs. | implementation_complete_reviews_pending |
 | T-TSC-004 | not_run | not_run | not_run |
 | T-TSC-005 | not_run | not_run | not_run |
 | T-TSC-006 | not_run | not_run | not_run |
@@ -481,6 +482,39 @@ not rerun because these metadata-test/evidence-only edits cannot affect its
 production or fixture surfaces. No validator, contract, manifest, summary,
 target, or other test changed.
 
+### T-TSC-003 Exact Command Evidence
+
+The repository-backed tombstone regression preceded target and manifest
+mutation:
+
+```bash
+test "$(git rev-parse 32c40e11747bc0bd03789c24861d2e5d60c0e999:archive/Windows-Network-IP.md)" = b1faa418b9e0bb91bc93137e6e97236e75967f21
+python3 -m unittest tests.validation.test_document_corpus_lifecycle.ArchiveProvenanceTests.test_windows_network_note_is_a_provenance_only_content_tombstone -v
+```
+
+RED exited 1 with the expected stale command body, missing content-archive
+metadata/headings, unresolved commit/preservation findings, and Windows row
+identity/preservation gaps. The original body was not printed or decoded.
+After the minimal tombstone and row update, the focused test passed 1/1, the
+full `ArchiveProvenanceTests` class passed 6/6, and the full lifecycle module
+passed 112/112. The initial inferred `migrate`
+row was rejected by canonical summary generation with the value-safe
+`manifest-transition-invalid` code; the test and row were corrected to the
+contract-required pending advisory `preserve` state before aggregate GREEN.
+
+Aggregate commands were the Plan-prescribed provenance, archive, explicit-base
+metadata, and fail-closed `netsh` absence gates plus `check-contract`,
+`check-manifest`, `check-summary`, `check-promoted`, documentation alignment,
+test compile/Ruff, manifest counts/hash, and `git diff --check`. All passed.
+The manifest is 294,908 bytes with SHA-256
+`4b9506e1f1390f72431e23f5fdc0c8f214677c30336be62bd4d43212ba85297a`;
+the generator-owned summary is byte-unchanged and current with SHA-256
+`dfbe420f6dd608cdde8089874ac5280cfd536f6cca7a59cfa719de6608d537b4`.
+Rollback is one revert of the Task 3 logical commit followed by canonical
+summary regeneration. Independent reviews, controlled all-files pre-commit,
+runtime, service, secret-value, remote, deployment, and Task 4+ work did not
+run.
+
 ## Controlled Agent Pre-commit Evidence
 
 - Command: not_run; Task 6 only.
@@ -498,7 +532,7 @@ target, or other test changed.
 | --- | --- | --- | --- | --- |
 | T-TSC-001 | recorded | PASS C0/I0/M0; `820e6188307ead1478de200f75a2d08e62ac137a..dd53a695e6893265a8d72c1810f334a6de5daa95` | APPROVED C0/I0/M0; `820e6188307ead1478de200f75a2d08e62ac137a..4cac2af5d7508abd2b9722ee2c6a2d4f01ba7899` | The final foundation reviews close the fail-closed and aggregate-oracle findings. The advisory manifest remains 483 pending rows, and no wave verdict is promoted. |
 | T-TSC-002 | recorded | PASS C0/I0/M0; `f037630ddeef4e7cc738dd9489b9218c452510ae..dd53a695e6893265a8d72c1810f334a6de5daa95` | APPROVED C0/I0/M0; `f037630ddeef4e7cc738dd9489b9218c452510ae..dd53a695e6893265a8d72c1810f334a6de5daa95` | The migrated typed target and fail-closed correction passed both independent Task 2 reviews. Seven rows remain `migrate`, 476 `preserve`, and all manifest verdicts remain pending. |
-| T-TSC-003 | not_run | not_run | not_run | not_run |
+| T-TSC-003 | recorded | not_run | not_run | Implementation and bounded gates pass; independent specification and quality reviews remain required, and no manifest verdict is promoted. |
 | T-TSC-004 | not_run | not_run | not_run | not_run |
 | T-TSC-005 | not_run | not_run | not_run | not_run |
 | T-TSC-006 | not_run | not_run | not_run | not_run |
@@ -524,7 +558,7 @@ independent verdicts and all finding dispositions are recorded.
 | T-TSC-001/T-TSC-002 typed-target correction | `fix(docs): support typed target migration metadata` | `622666a7b082b26935f225979225993be7582355` | Row-only and foundation RED/GREEN; lifecycle 106/106; metadata 76/76; target 9/9; contract/manifest/summary pass. The subsequent review findings and fail-closed remediation are recorded above. |
 | T-TSC-001/T-TSC-002 fail-closed correction | `fix(docs): fail closed on typed target metadata` | `dd53a695e6893265a8d72c1810f334a6de5daa95` | Focused target-boundary 5/5, lifecycle 111/111, focused metadata 76/76, target 9/9, and prescribed wave/static gates passed. Foundation specification and both T-TSC-002 reviews passed. |
 | T-TSC-001 foundation oracle/evidence correction | `test(docs): align content archive aggregate oracles` | `4cac2af5d7508abd2b9722ee2c6a2d4f01ba7899` | Aggregate RED 0/2; targeted GREEN 2/2; full metadata 218/218. Final foundation quality re-review APPROVED C0/I0/M0 over `820e6188307ead1478de200f75a2d08e62ac137a..4cac2af5d7508abd2b9722ee2c6a2d4f01ba7899`. |
-| T-TSC-003 | `docs(archive): preserve Windows network note provenance` | pending | not_run |
+| T-TSC-003 | `docs(archive): preserve Windows network note provenance` | current logical commit; identity intentionally not self-recorded | Focused RED/GREEN, archive 6/6, lifecycle 112/112, provenance, wave, explicit-base metadata, command absence, alignment, compile, Ruff, count/hash, and diff gates passed; reviews remain pending. |
 | T-TSC-004a | `refactor(infra): retire InfluxDB 2 compatibility` | pending | not_run |
 | T-TSC-004b | `chore(infra): remove unconsumed duplicate scaffolds` | pending | not_run |
 | T-TSC-005 | `feat(qa): enforce target surface contracts` | pending | not_run |
