@@ -30,6 +30,19 @@ low-confidence, and visualization-limit output was corroborated against
 tracked Stage 00/03/04/90 and executable owners before generated graph files
 were restored. The controlled all-files wrapper remains `not_run` until the
 committed candidate and independent Task 6 reviews are ready.
+The residual workspace-rules specification finding is now remediated without
+status promotion: the existing `eval-engineer` with QA owns repository-semantic
+depth 4 through eight fixtures and ten synthetic regressions, while broader
+live/comparative and cross-task quality, latency, and cost evaluation remains
+unimplemented pending a separate approved privacy, entitlement, cost, and
+runtime scope. Semantic freshness 11/11, audit coverage 11 reports and 161
+unique rows with unchanged 77/60/13/2/9 distribution, metadata 3/0,
+traceability 46/0, alignment 653/5,206/141/0, the dependency-locked repository
+aggregate, and all affected generated-owner freshness checks pass. Graphify
+refreshed to 24,994 nodes, 28,771 edges, and 1,610 communities; its three
+cross-root inferred edges and unrelated advisory noise were source-corroborated
+with zero tracked-source contamination or meaningless god nodes before graph
+outputs were restored. Fresh re-review remains pending.
 
 ## Task 6 Foundation Closure
 

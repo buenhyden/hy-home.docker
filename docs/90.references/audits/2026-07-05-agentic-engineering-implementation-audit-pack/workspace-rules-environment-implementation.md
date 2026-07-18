@@ -83,8 +83,10 @@ and was never treated as implementation truth.
 - Name/model projection and skill projection are automated at depth 3.
 - Environment facts that live outside tracked scope remain `Needs Revalidation`;
   adding more policy text would not make them implemented.
-- Evidence is durable but not depth 4 because closure, drift, and semantic quality
-  are not measured as a single feedback system.
+- The existing `eval-engineer` with QA owns eight exact fixtures and ten
+  synthetic regressions, whose corrective loop reaches repository-semantic
+  depth 4. Live/comparative and cross-task quality, latency, and cost evaluation
+  remains unimplemented.
 - `_workspace` is covered without adding a new criterion or importing it into
   the docs metadata corpus: two README contracts are tracked, non-secret scratch
   is ignored, and prohibited sensitive artifacts remain outside the surface.
@@ -96,7 +98,7 @@ and was never treated as implementation truth.
 | Native provider schema/event acceptance | Retain tracked sync/parity; verify live acceptance only in separate approved scope. | Provider/runtime owner |
 | Evidence-ledger consistency and full audit-matrix coverage | Retain the eleven-report / 161-row generator contract and freshness checks. | Canonical audit generator owner |
 | Live/global environment facts | Retain unknown unless a task needs and is authorized to observe them. | Executing task owner |
-| Semantic behavior coverage | Improve through a separately designed eval contract. | QA/eval follow-up |
+| Live/comparative and cross-task quality, latency, and cost evaluation | Keep unimplemented unless a separate privacy, entitlement, cost, and runtime scope is approved. | Existing `eval-engineer` and QA |
 
 ## Automation Impact
 
