@@ -112,6 +112,17 @@ secrets, remote state, and all-files pre-commit remained unchanged. Fresh
 specification re-review and separate quality review remain pending, and no
 passing verdict is promoted.
 
+Terminal independent reviews of the exact range
+`e5d3d8c47da144e233bf45f1a6ada45b673136ff..1de1fefca8bbd743fa57ce1c5a4889b03a0de3d8`
+returned specification PASS C0/I0/M0 (`spec_complete: YES`) and quality
+APPROVED C0/I0/M0 (`QUALITY_COMPLETE: YES`). T-TSC-001 implementation and
+review evidence is complete: lifecycle is 103/103, metadata is 76/76, and the
+advisory manifest remains the exact 483-row set. This does not promote a target
+wave or any manifest row: all verdicts remain pending, with the expected
+Windows commit/preservation provenance gap still owned by T-TSC-003. The
+overall Task and Spec remain active, and T-TSC-002 through T-TSC-006 remain
+not_run.
+
 ## Agent Governance Harness Convergence Closure Candidate
 
 The completed T-AGHC-006 pass reconciled the canonical July 5 research and audit
