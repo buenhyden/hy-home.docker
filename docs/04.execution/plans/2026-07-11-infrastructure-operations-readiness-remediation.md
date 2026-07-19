@@ -1,8 +1,11 @@
 ---
-status: draft
+status: active
 artifact_id: plan:2026-07-11-infrastructure-operations-readiness-remediation
 artifact_type: plan
 parent_ids:
+  - prd:025-operational-readiness-closure
+  - ard:0028-operational-readiness-closure
+  - adr:0028-local-isolated-readiness-evidence
   - spec:125-infrastructure-operations-readiness-remediation
 ---
 
@@ -10,121 +13,134 @@ parent_ids:
 
 ## Overview
 
-This draft sequences the later implementation of Spec 125 for upgrade,
-migration, backup, restore, integrity, and recovery-objective evidence. It is
-not runtime/state/secret/remote authorization and creates no child task.
+This active plan turns Spec 125 into an executable local sequence for a
+representative PostgreSQL logical backup, restore, major-version upgrade, and
+integrity rehearsal on synthetic state. It is prospective; actual database
+runtime evidence belongs in the future sibling Task.
+
+The implementation proves local mechanics and evidence discipline. It does not
+claim production backup readiness, physical backup coverage, HA recovery,
+retention compliance, organization RTO/RPO, live data safety, or remote storage
+control.
 
 ## Context and Inputs
 
-Selected operations guidance exists, but no current program-level upgrade,
-representative migration, comprehensive backup inventory, or restore drill with
-integrity and RTO/RPO evidence was found. Recovery claims need approved state
-boundaries and execution evidence.
+Inputs:
 
-## Prerequisites and Approval State
+- [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
+- [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
+- PostgreSQL service reference:
+  [infra/04-data/relational/postgresql-cluster/docker-compose.yml](../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml)
+- Spec 124 readiness result, once available.
 
-| Gate | Current state | Required resolution |
-| --- | --- | --- |
-| Parent spec | Active | Spec 125 is traced to PRD 025, ARD 0028, ADR 0028, and Spec 124; this Plan remains draft. |
-| Architecture | Approved local design | PRD 025, ARD 0028, and ADR 0028 bound synthetic PostgreSQL logical upgrade/restore; this Plan must pin versions and integrity checks. |
-| Human | Unresolved | Data/service owners approve scope, representative state, objectives, disruption, and risk. |
-| Runtime | Unresolved | Exact services/targets/versions/commands/window/cleanup/recovery in a future task. |
-| Secret | Unresolved/not authorized | Exact IDs/paths and metadata boundary plus redaction/access approval. |
-| Remote | Unresolved/not authorized | Exact storage/registry/host/cloud target, permissions, actions, evidence, and rollback. |
-
-PRD 025, ARD 0028, and ADR 0028 approve the local-isolated design only.
-Runtime state commands still require this Plan to become active and a separate
-active Task with exact scope and rollback evidence.
+Planning implication: this lane should use a small repository-owned synthetic
+PostgreSQL fixture and logical tooling rather than production volumes or the HA
+cluster as the first runtime subject. Backup capture and restore must remain
+separate gates.
 
 ## Goals and Non-goals
 
-- **Goals**: Establish representative, integrity-checked upgrade/migration and
-  backup/restore evidence with observed recovery objectives.
-- **In Scope**: Representative service/data binding and approval resolution,
-  synthetic/sanitized fixtures, isolated rehearsals, negative paths, rollback,
-  evidence protection, review, and operations updates.
+Goals:
 
-## Non-Goals & Out-of-Scope
+- Prove `IOR-001` with an approved source/target version rehearsal and
+  rollback/stop decision.
+- Prove `IOR-002` with deterministic migration/integrity assertions on
+  synthetic state.
+- Prove `IOR-003` backup inventory/capture evidence for the representative
+  fixture.
+- Prove `IOR-004` restore integrity and observed local recovery timing.
 
-- **Non-goals**: Copy production data by default, set business objectives
-  without owners, or treat backup success as restore proof.
-- **Out of Scope now**: Any runtime/state/infra/secret/remote/architecture
-  mutation before separate approvals.
+Non-goals:
+
+- No production or shared database data.
+- No physical backup, PITR, HA, replication, encryption-at-rest, or retention
+  certification.
+- No remote storage, secret-value, registry, or cloud action.
+- No organization RTO/RPO commitment beyond observed local elapsed time.
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
-| `PLN-IOR-001` | Bind source/target PostgreSQL versions, synthetic fixture, logical formats, integrity oracle, and observed objectives to the approved architecture | Spec 125, this Plan, and future Task | `IOR-001`–`IOR-004` | Exact representative scope, targets, assertions, exclusions, and recovery exist. |
-| `PLN-IOR-002` | Create protected-surface task and representative-state/evidence contract | Future task path; no task exists now | `IOR-001`–`IOR-004` | Runtime/data/secret/remote approvals and redaction are bound. |
-| `PLN-IOR-003` | Rehearse smallest approved upgrade/migration with integrity/rollback | Approved service/test/ops surfaces | `IOR-001`, `IOR-002` | Compatibility, integrity, failure, and recovery evidence pass. |
-| `PLN-IOR-004` | Prove backup inventory/capture and isolated restore separately | Approved backup/restore surfaces | `IOR-003`, `IOR-004` | Capture, restore, integrity, elapsed time, objective, and cleanup evidence pass. |
-| `PLN-IOR-005` | Review exceptions/objectives and update operations handoffs | Future task/operations paths | `IOR-001`–`IOR-004` | Independent review approves scope, evidence, rollback/recovery, and residual risk. |
+| Unit | Purpose | Planned owned files | Requirements | RED/GREEN evidence | Commit boundary |
+| --- | --- | --- | --- | --- | --- |
+| `T-IOR-001` | Define synthetic PostgreSQL fixture, integrity oracle, and evidence schema. | `scripts/validation/postgres-recovery-readiness.*`, `scripts/validation/fixtures/postgres-recovery/**`, Task evidence file. | `IOR-001`–`IOR-004` | RED: fixture lacks expected schema/row/digest oracle or admits payloads in evidence. GREEN: dry-run shows source/target versions, fixture checksum, backup path class, cleanup plan. | `feat(ops): add postgres recovery rehearsal` |
+| `T-IOR-002` | Implement logical backup and isolated restore path. | Same harness and tests. | `IOR-003`, `IOR-004` | RED: backup success counted without restore or integrity. GREEN: dump, restore, schema/row/digest/query checks, elapsed time, cleanup result pass. | Same IOR commit unless split by review. |
+| `T-IOR-003` | Implement representative major-version logical upgrade rehearsal. | Harness tests and fixture SQL. | `IOR-001`, `IOR-002` | RED: partial migration or integrity mismatch recorded as success. GREEN: source dump, target restore/upgrade, compatibility/integrity checks, rollback/stop decision pass. | Same IOR commit unless split by review. |
+| `T-IOR-004` | Independent operations/data/security review and SDLC closure. | Task evidence and lifecycle updates only after evidence. | `VAL-IOR-001`–`004` | Spec review C0/I0/M0 and quality/security review C0/I0/M0. | `docs(evidence): record postgres recovery closure` if separate evidence-only commit is needed. |
 
-## Sequencing, Migration, and Rollout
+## Sequence
 
-1. Verify the active predecessor chain and bind the representative PostgreSQL state.
-2. Select synthetic/sanitized representative fixtures and protected evidence.
-3. Approve a future task with recovery and destructive-action boundaries.
-4. Rehearse one isolated service/data path before cross-service expansion.
-5. Prove backup capture and restore independently.
-6. Expand only after owner/security review and new explicit approval.
-
-## Rollback and Recovery Strategy
-
-- Require a verified restore point before destructive migration/upgrade.
-- Separate config/version rollback from data recovery and irreversible
-  transformation handling.
-- Preserve failed isolated state when cleanup could destroy evidence or
-  recoverability; escalate instead of auto-cleaning.
-- Revert tooling/config changes by reviewed commit and revoke access through an
-  approved secret procedure when applicable.
+1. Create the active Task with synthetic data approval, runtime boundary,
+   allowed PostgreSQL image/version set, redaction, cleanup, and rollback.
+2. Add fixture SQL containing schema, constraints, representative rows, and
+   deterministic expected integrity outputs.
+3. Implement dry-run/preflight. It must resolve worktree revision, image tags
+   or digests, source/target projects, ports, volumes, backup path class,
+   timeout, and cleanup labels before startup.
+4. Add negative fixtures for target ambiguity, missing cleanup, corrupted dump,
+   partial restore, integrity mismatch, and evidence payload leakage.
+5. Run logical backup and restore as separate acceptance gates. Do not count
+   capture success as recoverability.
+6. Run the representative source-to-target logical upgrade rehearsal and record
+   compatibility, integrity, elapsed time, and stop/rollback decision.
+7. Record concise Task evidence only: command class, image/version identity,
+   fixture checksum, dump checksum, integrity results, elapsed time, cleanup
+   result, and stable error class.
+8. Run independent specification review, then quality/security review. Fix and
+   re-review findings before lifecycle closure.
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| `VAL-PLN-IOR-001` | Documentation | Typed metadata/traceability/contracts | Explicit-base metadata checker plus doc gates | Zero new violations and no runtime claim. |
-| `VAL-PLN-IOR-002` | Fixture | Representative state and deterministic integrity checks | Future approved task | Fixture is approved, reproducible, non-sensitive, and has expected assertions. |
-| `VAL-PLN-IOR-003` | Runtime | Upgrade/migration rehearsal | Future approved task only | Compatibility, integrity, health, rollback/recovery pass. |
-| `VAL-PLN-IOR-004` | Recovery | Separate backup capture and restore drill | Future approved task only | Restore integrity and observed RTO/RPO/escalation pass. |
-| `VAL-PLN-IOR-005` | Review | Data/security/operations/QA review | Review future task report/evidence | No unresolved critical/important finding. |
+| Gate | Command / method | Expected pass evidence |
+| --- | --- | --- |
+| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref <safe-base>` | Changed Stage 04 docs remain valid. |
+| Traceability | `bash scripts/validation/check-doc-traceability.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` | `IOR-001`–`IOR-004` map to implemented files and Task evidence. |
+| Repository contract | `bash scripts/validation/check-repo-contracts.sh` | No new contract breakage. |
+| Fixture/unit tests | Future focused test command owned by `T-IOR-001` | Positive and negative recovery fixtures pass. |
+| Runtime rehearsal | Future Task-approved Docker/PostgreSQL command envelope | Backup, restore, integrity, upgrade, elapsed-time, and cleanup evidence pass. |
+| Review | Independent spec and quality/security review | C0/I0/M0 or all findings resolved and re-reviewed. |
 
 ## Risks and Rollback
 
-| Risk | Impact | Mitigation |
+| Risk | Impact | Mitigation / rollback |
 | --- | --- | --- |
-| Wrong target or sensitive data exposure | Critical | Exact identity/classification, synthetic/sanitized default, fail closed. |
-| Partial migration/data loss | Critical | Verified restore point, deterministic integrity, bounded stop/recovery. |
-| Backup-only false confidence | High | Independent restore acceptance. |
-| Objective invented without owner | High | Named human/data approval before execution. |
-| Remote storage/secret leakage | Critical | Separate remote/secret approvals and metadata-only evidence. |
+| Production/shared data selected | Critical | Synthetic fixture only; fail closed on external path or unapproved volume. |
+| Backup-only false confidence | High | Restore and integrity are mandatory separate gates. |
+| Partial migration/data loss | Critical | Fixture checksum/oracle, non-zero failure, preserve evidence when cleanup could hide loss. |
+| Secret or raw dump leakage | Critical | No raw dumps in tracked docs; checksum/metadata only. |
+| RTO/RPO overclaim | High | Record observed local elapsed time only and explicit non-goal. |
 
-## Agent Rollout & Evaluation Gates (If Applicable)
+Rollback is by removing task-owned harness files, reverting the logical commit,
+and cleaning only resources with the task project identity and labels. If
+database state is ambiguous, stop and escalate rather than deleting evidence.
 
-- **Offline Eval Gate**: Inventory, fixture, integrity, failure/recovery, and
-  redaction review.
-- **Sandbox / Canary Rollout**: Smallest isolated synthetic/sanitized service
-  state only after approvals.
-- **Human Approval Gate**: Data/service owner approval before each scope change.
-- **Rollback Trigger**: Integrity mismatch, objective breach, target drift,
-  partial migration, secret/data exposure, or recovery failure.
-- **Prompt / Model Promotion Criteria**: Not applicable.
+## Approval Gates
+
+- Human approval exists for this active Plan conversion.
+- The future Task must approve exact source/target images, fixture, command
+  envelope, cleanup, and evidence boundary before runtime.
+- Live data, production volumes, remote backup destinations, secret values, and
+  cloud/registry operations remain unapproved.
 
 ## Completion Criteria
 
-- [ ] Required PRD/ARD/ADRs exist and are approved.
-- [ ] This Plan is reviewed and activated while Spec 125 remains active.
-- [ ] A separate protected-surface Stage 04 task authorizes exact execution.
-- [ ] Human, runtime, secret, remote, and architecture gates are resolved.
-- [ ] Upgrade/migration and backup/restore evidence passes independently.
-- [ ] Rollback/recovery, objectives, exceptions, and operations handoff are reviewed.
+- [ ] Active Task maps `IOR-001`–`IOR-004` to exact files, commands, rollback,
+      redaction, and reviews.
+- [ ] Synthetic fixture and integrity oracle are deterministic and reviewed.
+- [ ] Backup capture and restore integrity pass as separate gates.
+- [ ] Representative major-version logical upgrade rehearsal passes or fails
+      closed with complete evidence.
+- [ ] Cleanup is owned and verified.
+- [ ] Independent specification and quality/security reviews pass.
+- [ ] Spec 125 lifecycle reflects only local representative evidence; remote,
+      production, HA, physical backup, and RTO/RPO exclusions remain explicit.
 
 ## Related Documents
 
-- **Spec**: [Infrastructure operations readiness](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
-- **Umbrella lineage**: [Spec 123](../../03.specs/123-agentic-engineering-audit-remediation/spec.md)
-- **Runtime dependency**: [Compose runtime plan](./2026-07-11-compose-runtime-readiness-remediation.md)
-- **Security dependency**: [Security supply-chain plan](./2026-07-11-security-supply-chain-remediation.md)
-- **Deployment dependency**: [Deployment/release plan](./2026-07-11-deployment-release-engineering-remediation.md)
-- **Operations**: [Operations index](../../05.operations/README.md)
+- **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **Spec**: [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
+- **Runtime dependency**: [Spec 124](../../03.specs/124-compose-runtime-readiness-remediation/spec.md)
+- **PostgreSQL reference compose file**: [postgresql-cluster/docker-compose.yml](../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml)

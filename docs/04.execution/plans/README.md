@@ -101,10 +101,10 @@ docs/04.execution/plans/
 ├── 2026-07-13-document-contract-canonicalization.md # Completed document-contract plan; post-closure findings resolved
 ├── 2026-07-15-agent-governance-harness-convergence.md # Completed agent-governance and provider-harness convergence plan
 ├── 2026-07-18-target-surface-contract-convergence.md # Completed; blocking promotion and final closure reviews passed
-├── 2026-07-11-compose-runtime-readiness-remediation.md # Draft Compose runtime evidence plan; later runtime approval required
-├── 2026-07-11-infrastructure-operations-readiness-remediation.md # Draft stateful operations/recovery plan; later runtime approval required
-├── 2026-07-11-security-supply-chain-remediation.md # Draft supply-chain evidence plan; later security/remote approval required
-├── 2026-07-11-deployment-release-engineering-remediation.md # Draft CD/release/rollback plan; later remote/runtime approval required
+├── 2026-07-11-compose-runtime-readiness-remediation.md # Active local Compose runtime evidence plan; future Task owns execution evidence
+├── 2026-07-11-infrastructure-operations-readiness-remediation.md # Active local PostgreSQL recovery plan; future Task owns execution evidence
+├── 2026-07-11-security-supply-chain-remediation.md # Active local supply-chain verification plan; future Task owns execution evidence
+├── 2026-07-11-deployment-release-engineering-remediation.md # Active local promotion/rollback plan; future Task owns execution evidence
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot plan
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot plan
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization plan
