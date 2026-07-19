@@ -11,12 +11,43 @@ parent_ids:
 
 # Infrastructure Operations Readiness Remediation Implementation Plan
 
+> **For agentic workers:** REQUIRED SUB-SKILL: Use
+> `superpowers:subagent-driven-development` (recommended) or
+> `superpowers:executing-plans` to implement this plan task-by-task. Sequence
+> steps become Task evidence only after execution.
+
+**Goal:** Prove a synthetic PostgreSQL 17-to-18 logical backup, restore,
+integrity, negative-path, and observed-recovery rehearsal without touching live
+workspace databases.
+
+**Architecture:** A repository-owned Compose fixture runs separate task-scoped
+source and target PostgreSQL services. A single wrapper seeds deterministic SQL,
+captures a custom-format dump, restores it into the newer major, compares a
+metadata-only integrity oracle, injects corruption/partial-state failures, and
+cleans only its projects and `/tmp` artifacts.
+
+**Tech Stack:** PostgreSQL `17.6-alpine` and `18.4-alpine`; Docker Compose; Bash;
+SQL; Python `unittest`; SHA-256 evidence.
+
+## Global Constraints
+
+- Source image:
+  `postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94`.
+- Target image:
+  `postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15`.
+- Use synthetic data, anonymous Compose volumes, and `/tmp` evidence only. Do
+  not mount `${DEFAULT_DATA_DIR}`, live Supabase/Spilo volumes, or remote backup
+  storage.
+- Store oracle outputs, dump checksum/size, timing, and verdict only; never
+  track the dump, row payloads, credentials, or raw logs.
+
 ## Overview
 
 This active plan turns Spec 125 into an executable local sequence for a
 representative PostgreSQL logical backup, restore, major-version upgrade, and
 integrity rehearsal on synthetic state. It is prospective; actual database
-runtime evidence belongs in the future sibling Task.
+runtime evidence belongs in
+`docs/04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md`.
 
 The implementation proves local mechanics and evidence discipline. It does not
 claim production backup readiness, physical backup coverage, HA recovery,
@@ -64,41 +95,130 @@ Non-goals:
 
 | Unit | Purpose | Planned owned files | Requirements | RED/GREEN evidence | Commit boundary |
 | --- | --- | --- | --- | --- | --- |
-| `T-IOR-001` | Define synthetic PostgreSQL fixture, integrity oracle, and evidence schema. | `scripts/validation/postgres-recovery-readiness.*`, `scripts/validation/fixtures/postgres-recovery/**`, Task evidence file. | `IOR-001`–`IOR-004` | RED: fixture lacks expected schema/row/digest oracle or admits payloads in evidence. GREEN: dry-run shows source/target versions, fixture checksum, backup path class, cleanup plan. | `feat(ops): add postgres recovery rehearsal` |
-| `T-IOR-002` | Implement logical backup and isolated restore path. | Same harness and tests. | `IOR-003`, `IOR-004` | RED: backup success counted without restore or integrity. GREEN: dump, restore, schema/row/digest/query checks, elapsed time, cleanup result pass. | Same IOR commit unless split by review. |
-| `T-IOR-003` | Implement representative major-version logical upgrade rehearsal. | Harness tests and fixture SQL. | `IOR-001`, `IOR-002` | RED: partial migration or integrity mismatch recorded as success. GREEN: source dump, target restore/upgrade, compatibility/integrity checks, rollback/stop decision pass. | Same IOR commit unless split by review. |
-| `T-IOR-004` | Independent operations/data/security review and SDLC closure. | Task evidence and lifecycle updates only after evidence. | `VAL-IOR-001`–`004` | Spec review C0/I0/M0 and quality/security review C0/I0/M0. | `docs(evidence): record postgres recovery closure` if separate evidence-only commit is needed. |
+| `T-IOR-001` | Define the fixture, integrity oracle, wrapper contract, and tests. | `scripts/validation/rehearse-postgres-logical-upgrade.sh`; `tests/fixtures/postgres-logical-upgrade/docker-compose.yml`; `tests/fixtures/postgres-logical-upgrade/sql/001_schema_and_seed.sql`; `tests/fixtures/postgres-logical-upgrade/sql/010_integrity_oracle.sql`; `tests/fixtures/postgres-logical-upgrade/sql/020_negative_partial_state.sql`; `tests/validation/test_postgres_logical_upgrade_rehearsal.py`; `docs/04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md`. | `IOR-001`–`IOR-004` | RED: missing version/digest, unsafe path, absent oracle, raw payload evidence, or unscoped cleanup. GREEN: `--check` emits the exact versions, fixture checksum, timeout, evidence class, and cleanup plan. | `feat(ops): add postgres recovery rehearsal` |
+| `T-IOR-002` | Implement logical backup and isolated restore. | The wrapper, Compose fixture, SQL, and focused tests. | `IOR-003`, `IOR-004` | RED: capture success counted without restore/integrity. GREEN: custom-format dump, restore, schema/row/digest/constraint/query checks, timing, and cleanup pass. | Same IOR commit. |
+| `T-IOR-003` | Add 17-to-18 upgrade and corrupted/partial-state negative paths. | The same wrapper/fixtures/tests and Task evidence. | `IOR-001`, `IOR-002` | RED: invalid target major, corruption, partial state, collision, or timeout is recorded as success. GREEN: each fails with a stable class and owned cleanup/preservation disposition. | Same IOR commit. |
+| `T-IOR-004` | Add the bounded rehearsal runbook and complete reviews. | `docs/05.operations/runbooks/04-data/relational/postgresql-logical-upgrade-restore-rehearsal.md`; relational runbook index; domain Task; lifecycle/index updates only when supported. | `VAL-IOR-001`–`004` | Specification and operations/security reviews finish C0/I0/M0. | Program closure evidence commit. |
+
+### Implementation contract
+
+The wrapper accepts `--check` and optional
+`--negative-case checksum-mismatch|partial-state|bad-target-major|timeout`.
+The normal run has no arguments. Defaults are source/target pins above,
+project prefix `hyhome-ior-20260719`, total timeout 420 seconds, evidence under
+`/tmp/hyhome-ior-evidence.` followed by the decimal process ID, and cleanup
+`always`. Exit classes are `0=pass`, `2=usage`, `10=preflight`, `20=readiness`,
+`30=backup`, `40=restore`, `50=integrity/negative case`, and `60=cleanup`.
+
+The Compose fixture defines only `source` and `target`, uses the two pinned
+images, anonymous `pgdata` volumes, no host ports, `POSTGRES_DB=rehearsal`,
+`POSTGRES_USER=rehearsal`, a process-local synthetic password, and
+`pg_isready -U rehearsal -d rehearsal` healthchecks. It contains no
+`container_name`, bind mount, external network, or restart policy.
+
+`001_schema_and_seed.sql` creates:
+
+- `rehearsal_schema_version(version integer primary key)` with row `1`;
+- `accounts(id bigint primary key, code text unique not null, balance numeric
+  not null check (balance >= 0))` with three deterministic rows;
+- `orders(id bigint primary key, account_id bigint not null references
+  accounts(id), amount numeric not null check (amount > 0), state text not null
+  check (state in ('open','paid')))` with four deterministic rows.
+
+`010_integrity_oracle.sql` returns a single JSON object containing
+`schema_version`, `server_version_num`, table count, account count, order count,
+sum of balances, sum of order amounts, sorted account/order MD5 digests,
+foreign-key orphan count, and constraint count. It never returns row payloads.
+`020_negative_partial_state.sql` creates a temporary target-only marker and
+then raises an error so the wrapper can prove partial-state detection.
+
+Required wrapper symbols and order:
+
+```bash
+parse_args
+assert_safe_images_paths_and_project
+start_source_and_wait
+apply_seed_sql
+capture_source_oracle
+dump_custom_format_with_pg18_client
+start_target_and_wait
+restore_without_owner_or_acl
+capture_target_oracle
+compare_oracles
+run_selected_negative_case
+write_recovery_verdict
+cleanup_owned_projects_and_tmp
+```
+
+The backup command contract is `pg_dump -Fc --no-owner --no-acl`; restore is
+`pg_restore --clean --if-exists --no-owner --no-acl`. The wrapper stores the
+dump only in its `/tmp` directory, computes SHA-256 and byte size, and deletes
+the dump on successful evidence capture.
+
+`recovery-verdict.json` has exactly these top-level keys:
+
+```json
+{
+  "schema_version": 1,
+  "producer_spec": "spec:125-infrastructure-operations-readiness-remediation",
+  "scope": "synthetic-local",
+  "source_image": "postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+  "target_image": "postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15",
+  "fixture_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "dump_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "integrity_status": "passed",
+  "backup_seconds": 0,
+  "restore_seconds": 0,
+  "cleanup_status": "passed",
+  "redaction_status": "passed"
+}
+```
+
+Tests expose `test_fixture_uses_only_pinned_source_and_target`,
+`test_rejects_unsafe_evidence_path`, `test_rejects_project_collision`,
+`test_oracle_contains_no_row_payload`, `test_bad_target_major_fails_preflight`,
+`test_checksum_mismatch_is_nonzero`, `test_partial_state_is_nonzero`,
+`test_timeout_still_cleans`, and `test_recovery_verdict_schema`.
 
 ## Sequence
 
-1. Create the active Task with synthetic data approval, runtime boundary,
-   allowed PostgreSQL image/version set, redaction, cleanup, and rollback.
-2. Add fixture SQL containing schema, constraints, representative rows, and
-   deterministic expected integrity outputs.
-3. Implement dry-run/preflight. It must resolve worktree revision, image tags
-   or digests, source/target projects, ports, volumes, backup path class,
-   timeout, and cleanup labels before startup.
-4. Add negative fixtures for target ambiguity, missing cleanup, corrupted dump,
-   partial restore, integrity mismatch, and evidence payload leakage.
-5. Run logical backup and restore as separate acceptance gates. Do not count
-   capture success as recoverability.
-6. Run the representative source-to-target logical upgrade rehearsal and record
-   compatibility, integrity, elapsed time, and stop/rollback decision.
-7. Record concise Task evidence only: command class, image/version identity,
-   fixture checksum, dump checksum, integrity results, elapsed time, cleanup
-   result, and stable error class.
-8. Run independent specification review, then quality/security review. Fix and
-   re-review findings before lifecycle closure.
+- [ ] Create the active Task with the exact image pins above, synthetic-data
+      approval, runtime boundary, redaction, cleanup, and rollback.
+- [ ] Write failing tests in
+      `tests/validation/test_postgres_logical_upgrade_rehearsal.py` for version
+      order, image pins, unsafe evidence path, project collision, missing
+      cleanup, timeout, corrupt dump, partial state, checksum mismatch, and raw
+      payload leakage.
+- [ ] Run
+      `python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v`
+      and confirm failure before the wrapper/fixtures exist.
+- [ ] Implement the Compose/SQL fixtures and wrapper `--check` mode; rerun the
+      focused tests until all static positive/negative cases pass.
+- [ ] Run `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --check`.
+- [ ] Run `bash scripts/validation/rehearse-postgres-logical-upgrade.sh` and
+      require independent backup capture, restore, oracle comparison, timing,
+      and cleanup verdicts.
+- [ ] Run
+      `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case checksum-mismatch`
+      and require a stable non-zero integrity failure with cleanup.
+- [ ] Run
+      `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case partial-state`
+      and require a stable non-zero partial-state failure with the documented
+      evidence-preservation/cleanup disposition.
+- [ ] Write the narrow local rehearsal runbook; do not broaden the existing
+      live cluster/Supabase destructive-recovery authority.
+- [ ] Record concise Task evidence and run independent specification review,
+      then operations/security review; fix and re-review all findings.
 
 ## Verification Plan
 
 | Gate | Command / method | Expected pass evidence |
 | --- | --- | --- |
-| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref <safe-base>` | Changed Stage 04 docs remain valid. |
+| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2` | Changed Stage 04 docs remain valid. |
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` | `IOR-001`–`IOR-004` map to implemented files and Task evidence. |
 | Repository contract | `bash scripts/validation/check-repo-contracts.sh` | No new contract breakage. |
-| Fixture/unit tests | Future focused test command owned by `T-IOR-001` | Positive and negative recovery fixtures pass. |
-| Runtime rehearsal | Future Task-approved Docker/PostgreSQL command envelope | Backup, restore, integrity, upgrade, elapsed-time, and cleanup evidence pass. |
+| Fixture/unit tests | `python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v` | Positive and negative recovery fixtures pass. |
+| Runtime rehearsal | the four exact wrapper commands in Sequence | Backup, restore, integrity, upgrade, negative-path, elapsed-time, and cleanup evidence pass. |
 | Review | Independent spec and quality/security review | C0/I0/M0 or all findings resolved and re-reviewed. |
 
 ## Risks and Rollback

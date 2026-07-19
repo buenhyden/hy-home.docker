@@ -11,6 +11,42 @@ parent_ids:
 
 # Security Supply-Chain Remediation Implementation Plan
 
+> **For agentic workers:** REQUIRED SUB-SKILL: Use
+> `superpowers:subagent-driven-development` (recommended) or
+> `superpowers:executing-plans` to implement this plan task-by-task. Sequence
+> steps become Task evidence only after execution.
+
+**Goal:** Produce digest-bound, locally verifiable supply-chain evidence for
+two task-local `examples/sample-web-service` variants and a deterministic
+fixture-only CI policy gate.
+
+**Architecture:** A versioned policy registry pins tool container manifests and
+artifact rules. One wrapper builds/exports the sample image, derives a declared
+local subject tuple, invokes pinned Syft/Grype/Cosign images, emits SLSA/in-toto
+provenance, and writes a concise verdict consumed by Spec 127. A Python checker
+owns network-independent CI decisions; live Scorecard remains read-only
+advisory.
+
+**Tech Stack:** Docker/OCI archive; CycloneDX JSON; SLSA provenance v1;
+Cosign blob signing; Syft v1.48.0; Grype v0.116.0; Cosign v3.0.6; OpenSSF
+Scorecard v5.5.0; Bash; Python `unittest`; GitHub Actions fixture-only gate.
+
+## Global Constraints
+
+- Invoke tools only through the pinned multi-platform image-manifest digests
+  listed in Context and Inputs; do not install global binaries.
+- Bind the local subject to both Docker image ID/config digest and OCI archive
+  SHA-256. Do not invent a registry `RepoDigest` for an unpushed image.
+- Build `baseline` and `candidate` variants from the same tracked sample-service
+  source and distinguish them only with the OCI label
+  `org.hyhome.delivery.rehearsal.role`. Produce and verify a separate verdict
+  for each digest so Spec 127 can prove previous-digest rollback.
+- Keep private keys under `/tmp` for one wrapper lifetime and delete them on
+  exit; never retain them under `_workspace` or tracked paths.
+- Local workflow-file changes may run the fixture-only policy checker, but no
+  remote GitHub mutation, live workflow dispatch, publication, or registry push
+  is authorized.
+
 ## Overview
 
 This active plan turns Spec 126 into an executable local sequence for
@@ -18,7 +54,7 @@ This active plan turns Spec 126 into an executable local sequence for
 vulnerability verdict, provenance statement, local blob signing/verification,
 and reviewed OpenSSF Scorecard advisory signals. It is prospective; actual tool
 versions, image digests, command output, review findings, and commits belong in
-the future sibling Task.
+`docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md`.
 
 The implementation is local and advisory-first. It does not publish artifacts,
 push images, create releases, use keyless OIDC signing, modify GitHub settings,
@@ -54,6 +90,22 @@ Official behavior anchors:
   advisory for this plan. Deterministic blocking decisions belong to local
   policy fixtures.
 
+Verified tool-image pins as of 2026-07-19 KST:
+
+| Tool | Image pin |
+| --- | --- |
+| Syft | `anchore/syft:v1.48.0@sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c` |
+| Grype | `anchore/grype:v0.116.0@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821` |
+| Cosign | `gcr.io/projectsigstore/cosign:v3.0.6@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00` |
+| Scorecard | `ghcr.io/ossf/scorecard:v5.5.0@sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795` |
+
+The sample build materials are also pinned in the Dockerfile:
+
+| Material | Image pin |
+| --- | --- |
+| Build stage | `alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d` |
+| Runtime stage | `nginxinc/nginx-unprivileged:1.27.3-alpine@sha256:9e7238f579a54582263a960d1b0094b4a3ecce641342eda3f8e2ff82b1703d2b` |
+
 ## Goals and Non-goals
 
 Goals:
@@ -71,8 +123,9 @@ Goals:
 
 Non-goals:
 
-- No registry push, remote attestation store, GitHub settings, Release, or
-  deployment.
+- No registry push, remote attestation store, remote GitHub mutation/dispatch,
+  Release, or deployment. A tracked fixture-only CI gate is in scope and must
+  remain network-independent.
 - No keyless/OIDC identity, transparency-log trust, or signed-release claim.
 - No raw vulnerability report, private key, token, OIDC token, or secret value
   in tracked docs.
@@ -82,43 +135,173 @@ Non-goals:
 
 | Unit | Purpose | Planned owned files | Requirements | RED/GREEN evidence | Commit boundary |
 | --- | --- | --- | --- | --- | --- |
-| `T-SSC-001` | Define tool registry, policy schema, evidence schema, and deterministic fixtures. | `scripts/validation/supply-chain-readiness.*`, `scripts/validation/fixtures/supply-chain/**`, `docs/90.references/data/security/**` if a stable policy reference is needed, Task evidence file. | `SSC-001`–`SSC-005` | RED: digestless artifact, unpinned tool, missing negative fixture, raw finding leakage. GREEN: dry-run resolves tool/image identities, artifact digest, policy, transient paths, redaction. | `feat(security): add local supply-chain verification` |
-| `T-SSC-002` | Build/sample artifact identity and generate digest-bound SBOM/scan verdict. | Sample-service harness/tests; no publication. | `SSC-001`, `SSC-002` | RED: SBOM subject mismatches digest or vulnerability policy ignores threshold/exception expiry. GREEN: SBOM and scan verdict bind to same digest and fixture decisions are deterministic. | Same SSC commit unless split by review. |
-| `T-SSC-003` | Produce and verify local provenance and signature bundles. | Provenance/signature fixture tests and wrappers. | `SSC-003`, `SSC-004` | RED: tampered/wrong-subject/wrong-identity accepted. GREEN: correct artifact verifies; negative fixtures reject. | Same SSC commit unless split by review. |
-| `T-SSC-004` | Add read-only Scorecard observation adapter and local policy fixture gate. | Scorecard wrapper/tests and Task evidence. | `SSC-005` | RED: remote Scorecard result treated as deterministic CI gate. GREEN: read-only result is advisory; local fixture controls decision. | Same SSC commit unless split by review. |
-| `T-SSC-005` | Independent security/spec reviews and SDLC closure. | Task evidence and lifecycle updates only after evidence. | `VAL-SSC-001`–`004` | Spec review C0/I0/M0 and quality/security review C0/I0/M0. | `docs(evidence): record supply-chain closure` if separate evidence-only commit is needed. |
+| `T-SSC-001` | Define tool registry, policy, exceptions, evidence schema, checker, and fixtures. | `infra/supply-chain.tool-images.json`; `infra/supply-chain.sample-service-policy.json`; `infra/supply-chain.vulnerability-exceptions.json`; `scripts/validation/check-supply-chain-policy.py`; the exact fixture manifest below; `tests/validation/test_supply_chain_policy.py`; `docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md`. | `SSC-001`–`SSC-005` | RED: digestless artifact, unpinned tool, expired/unowned exception, subject mismatch, raw finding leakage, or Scorecard blocking by score. GREEN: the fixture-only checker accepts/rejects each case deterministically. | `feat(security): add local supply-chain verification` |
+| `T-SSC-002` | Build/export baseline and candidate variants and generate digest-bound SBOM/scan verdicts. | `scripts/security/verify-sample-service-supply-chain.sh`; `examples/sample-web-service/Dockerfile`; `examples/sample-web-service/service.md`; ignored task runtime directory. | `SSC-001`, `SSC-002` | RED: either SBOM subject differs from its declared local subject tuple, the two digests are equal, or scan policy is bypassed. GREEN: each CycloneDX SBOM and Grype verdict binds to its distinct tuple. | Same SSC commit. |
+| `T-SSC-003` | Produce and verify provenance and local signature bundle. | The wrapper, policy checker, provenance/signature fixtures, and tests. | `SSC-003`, `SSC-004` | RED: tampered/wrong-subject material is accepted. GREEN: correct OCI archive verifies and negative fixtures reject. | Same SSC commit. |
+| `T-SSC-004` | Wire fixture-only CI/repo gates, generated summary freshness, and optional Scorecard advisory. | `.github/workflows/ci-quality.yml`; `scripts/validation/run-local-qa-gates.sh`; `scripts/validation/check-repo-contracts.sh`; `scripts/security/generate-supply-chain-sample-service-summary.sh`; `docs/90.references/data/security/supply-chain-sample-service.md`. | `SSC-005` | RED: network/live score controls CI or generated summary is stale. GREEN: fixture-only checks block deterministically; summary freshness passes; live Scorecard is advisory or explicitly skipped. | Same SSC commit. |
+| `T-SSC-005` | Complete independent specification and security/quality reviews. | Domain Task and lifecycle/index updates only when supported. | `VAL-SSC-001`–`004` | Reviews finish C0/I0/M0. | Program closure evidence commit. |
+
+Exact deterministic fixture manifest:
+
+- `tests/fixtures/supply-chain/sample-service-sbom.valid.cdx.json`
+- `tests/fixtures/supply-chain/sample-service-sbom.subject-mismatch.cdx.json`
+- `tests/fixtures/supply-chain/grype.clean.json`
+- `tests/fixtures/supply-chain/grype.high-without-exception.json`
+- `tests/fixtures/supply-chain/grype.high-with-valid-exception.json`
+- `tests/fixtures/supply-chain/grype.expired-exception.json`
+- `tests/fixtures/supply-chain/provenance.valid.intoto.json`
+- `tests/fixtures/supply-chain/provenance.subject-mismatch.intoto.json`
+- `tests/fixtures/supply-chain/cosign.verify.valid.json`
+- `tests/fixtures/supply-chain/cosign.verify.tampered.json`
+- `tests/fixtures/supply-chain/cosign.verify.wrong-subject.json`
+- `tests/fixtures/supply-chain/scorecard.advisory.json`
+
+### Implementation contract
+
+The wrapper accepts only `--fixture-only`, `--preflight`, `--advisory`, and
+`--scorecard-advisory`. Exit classes are `0=pass/accepted`, `2=usage`,
+`10=policy/preflight`, `20=build/export`, `30=SBOM`, `40=vulnerability verdict`,
+`50=provenance`, `60=signature verification`, and `70=Scorecard observation`.
+
+Required wrapper symbols and order:
+
+```bash
+load_tool_registry
+validate_policy_and_exceptions
+prepare_transient_directory
+build_role_image baseline
+build_role_image candidate
+export_oci_archive baseline
+export_oci_archive candidate
+derive_subject_tuple baseline
+derive_subject_tuple candidate
+generate_cyclonedx_and_grype_verdict baseline
+generate_cyclonedx_and_grype_verdict candidate
+generate_slsa_provenance baseline
+generate_slsa_provenance candidate
+sign_and_verify_archive baseline
+sign_and_verify_archive candidate
+write_verification_verdict baseline
+write_verification_verdict candidate
+delete_ephemeral_private_key
+```
+
+Both builds use the current source tree and the Dockerfile material pins above.
+The wrapper passes one of the two exact build labels
+`org.hyhome.delivery.rehearsal.role=baseline` or
+`org.hyhome.delivery.rehearsal.role=candidate`, rejects equal image/config or
+archive digests, and never interprets a local image as having a registry
+`RepoDigest`.
+
+`infra/supply-chain.tool-images.json` contains `schema_version`, `policy_id`,
+`effective_date`, `owner_role`, and four `tools` rows. Every row contains
+`name`, `image`, `digest`, `expected_version`, `command_contract`, and
+`network_mode`; the exact pins above are split into `image` and `digest` fields.
+
+`infra/supply-chain.sample-service-policy.json` contains:
+
+```json
+{
+  "schema_version": 1,
+  "policy_id": "sample-service-local-v1",
+  "subject": {
+    "service": "examples/sample-web-service",
+    "roles": ["baseline", "candidate"]
+  },
+  "sbom": {"format": "cyclonedx-json"},
+  "vulnerability": {
+    "blocking_severities": ["critical"],
+    "review_severities": ["high"],
+    "exception_registry": "infra/supply-chain.vulnerability-exceptions.json"
+  },
+  "provenance": {"predicate_type": "https://slsa.dev/provenance/v1"},
+  "signature": {"mode": "cosign-sign-blob", "key_lifetime": "process"},
+  "scorecard": {"mode": "read-only-advisory"},
+  "ci_enforcement": "fixture-policy-only"
+}
+```
+
+Each exception row contains `id`, `subject_digest`, `package`,
+`vulnerability_id`, `severity`, `owner_role`, `reason`, `expires_on`,
+`compensating_control`, and `approval_reference`. Empty, expired,
+wrong-subject, or unapproved rows fail closed.
+
+Each verification verdict has exactly this interface:
+
+```json
+{
+  "schema_version": 1,
+  "producer_spec": "spec:126-security-supply-chain-remediation",
+  "role": "candidate",
+  "source_revision": "0123456789abcdef0123456789abcdef01234567",
+  "image_config_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "oci_archive_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "policy_id": "sample-service-local-v1",
+  "verdict": "accepted",
+  "exception_id": null,
+  "verified_at": "2026-07-19T00:00:00Z",
+  "redaction_status": "passed"
+}
+```
+
+The Python checker exports `load_json`, `validate_tool_registry`,
+`validate_policy`, `validate_exceptions`, `evaluate_grype_fixture`,
+`validate_sbom_subject`, `validate_provenance_subject`,
+`validate_signature_fixture`, and `validate_scorecard_advisory`. Tests use one
+method per fixture plus `test_tool_manifest_pins_are_exact`,
+`test_roles_have_distinct_subjects`, and
+`test_live_score_cannot_be_a_blocking_decision`.
 
 ## Sequence
 
-1. Create the active Task with exact local tool images/tags/digests, artifact
-   subject, transient paths, redaction, private-key lifetime, read-only remote
-   observation boundary, and rollback.
-2. Implement dry-run/preflight. It must fail when tool identity, artifact
-   digest, policy, output path, or redaction boundary is missing.
-3. Add deterministic fixtures for clean, threshold-failing, exception-expired,
-   tampered SBOM/provenance, wrong-subject signature, and advisory Scorecard
-   result cases.
-4. Build or resolve the sample-service image digest locally. Do not publish it.
-5. Generate CycloneDX JSON SBOM and vulnerability verdict; store only concise
-   summaries and checksums in tracked evidence.
-6. Produce local SLSA/in-toto-style provenance and local blob signature bundle;
-   verify correct and negative cases.
-7. Optionally run read-only Scorecard observation only if the Task approves
-   network/remote read-only scope. Record it as advisory with timestamp and
-   limitations.
-8. Run independent specification review, then quality/security review. Fix and
-   re-review findings before lifecycle closure.
+- [ ] Create the active Task with the four exact image pins above, artifact
+      subject, transient paths, redaction, private-key lifetime, read-only
+      observation boundary, and rollback.
+- [ ] Write failing tests in `tests/validation/test_supply_chain_policy.py` for
+      missing pins, threshold failure, exception expiry/ownership/digest, SBOM
+      and provenance subject mismatch, signature tamper/wrong subject, and
+      Scorecard advisory-only semantics.
+- [ ] Run `python3 -m unittest tests.validation.test_supply_chain_policy -v` and
+      confirm failure before the checker and policy files exist.
+- [ ] Implement the three policy files and
+      `scripts/validation/check-supply-chain-policy.py`; rerun the focused tests
+      until all fixture-only positive and negative cases pass.
+- [ ] Implement
+      `bash scripts/security/verify-sample-service-supply-chain.sh --preflight`;
+      fail when tool identity, artifact subject, policy, output path, or
+      redaction boundary is missing.
+- [ ] Run
+      `bash scripts/security/verify-sample-service-supply-chain.sh --fixture-only`.
+- [ ] Run
+      `bash scripts/security/verify-sample-service-supply-chain.sh --advisory`
+      to build/export labelled baseline and candidate variants locally, create
+      CycloneDX and Grype results for each, produce SLSA/in-toto provenance,
+      sign each OCI archive, and verify success plus tampered/wrong-subject
+      rejection. Require two distinct subject tuples and write
+      `verification-verdict.baseline.json` plus
+      `verification-verdict.candidate.json`. Do not publish either artifact.
+- [ ] Run
+      `bash scripts/security/verify-sample-service-supply-chain.sh --scorecard-advisory`
+      only when the Task confirms network/read-only scope; otherwise record an
+      explicit advisory skip.
+- [ ] Wire `python3 scripts/validation/check-supply-chain-policy.py --check`
+      into local/repository contracts and a network-independent CI job; do not
+      dispatch it remotely.
+- [ ] Record only concise subject, tool-pin, policy, verdict, checksum, and
+      limitation fields in tracked evidence.
+- [ ] Run independent specification review, then quality/security review; fix
+      and re-review all findings before lifecycle closure.
 
 ## Verification Plan
 
 | Gate | Command / method | Expected pass evidence |
 | --- | --- | --- |
-| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref <safe-base>` | Changed Stage 04 docs remain valid. |
+| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2` | Changed Stage 04 docs remain valid. |
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` | `SSC-001`–`SSC-005` map to implemented files and Task evidence. |
 | Repository contract | `bash scripts/validation/check-repo-contracts.sh` | No new contract breakage. |
-| Fixture/unit tests | Future focused test command owned by `T-SSC-001` | Positive/negative policy, SBOM, provenance, signature, and Scorecard fixtures pass. |
-| Tool rehearsal | Future Task-approved containerized Syft/Grype/Cosign command envelope | SBOM, scan verdict, provenance, signature, and verifier evidence bind to one digest. |
-| Scorecard observation | Future approved read-only command or explicit skip | Advisory result or skip reason; no deterministic CI decision from remote score. |
+| Fixture/unit tests | `python3 -m unittest tests.validation.test_supply_chain_policy -v` and `python3 scripts/validation/check-supply-chain-policy.py --check` | Positive/negative policy, SBOM, provenance, signature, and Scorecard fixtures pass. |
+| Tool rehearsal | `bash scripts/security/verify-sample-service-supply-chain.sh --advisory` | Each baseline/candidate SBOM, scan verdict, provenance, signature, and verifier evidence binds to its distinct local subject tuple. |
+| Scorecard observation | `bash scripts/security/verify-sample-service-supply-chain.sh --scorecard-advisory` or explicit Task skip | Advisory result or skip reason; no deterministic CI decision from remote score. |
 | Review | Independent spec and quality/security review | C0/I0/M0 or all findings resolved and re-reviewed. |
 
 ## Risks and Rollback
@@ -141,8 +324,9 @@ published artifact or remote setting exists in this plan.
 - The future Task must approve exact tool image tags/digests, artifact subject,
   private-key lifetime, transient paths, redaction, and optional read-only
   Scorecard observation before execution.
-- Registry push, artifact publication, keyless/OIDC signing, GitHub settings,
-  Releases, deployments, and credential changes remain unapproved.
+- Registry push, artifact publication, keyless/OIDC signing, remote GitHub
+  mutation/dispatch, Releases, deployments, and credential changes remain
+  unapproved. The tracked fixture-only CI configuration is approved local code.
 
 ## Completion Criteria
 
@@ -164,8 +348,11 @@ published artifact or remote setting exists in this plan.
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Spec**: [Spec 126](../../03.specs/126-security-supply-chain-remediation/spec.md)
 - **Deployment consumer**: [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
-- **Syft**: <https://github.com/anchore/syft>
+- **Syft v1.48.0 release**: <https://github.com/anchore/syft/releases/tag/v1.48.0>
+- **Grype v0.116.0 release**: <https://github.com/anchore/grype/releases/tag/v0.116.0>
 - **Grype getting started / offline behavior**: <https://oss.anchore.com/docs/guides/vulnerability/getting-started/>
+- **Cosign v3.0.6 release**: <https://github.com/sigstore/cosign/releases/tag/v3.0.6>
 - **Cosign blob signing**: <https://docs.sigstore.dev/cosign/signing/signing_with_blobs/>
 - **SLSA provenance**: <https://slsa.dev/spec/v1.2/provenance>
+- **OpenSSF Scorecard v5.5.0 release**: <https://github.com/ossf/scorecard/releases/tag/v5.5.0>
 - **OpenSSF Scorecard Action**: <https://github.com/ossf/scorecard-action>

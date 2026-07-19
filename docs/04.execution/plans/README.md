@@ -101,6 +101,7 @@ docs/04.execution/plans/
 ├── 2026-07-13-document-contract-canonicalization.md # Completed document-contract plan; post-closure findings resolved
 ├── 2026-07-15-agent-governance-harness-convergence.md # Completed agent-governance and provider-harness convergence plan
 ├── 2026-07-18-target-surface-contract-convergence.md # Completed; blocking promotion and final closure reviews passed
+├── 2026-07-19-operational-readiness-closure-program.md # Active orchestration for Specs 124-127 local-isolated closure
 ├── 2026-07-11-compose-runtime-readiness-remediation.md # Active local Compose runtime evidence plan; future Task owns execution evidence
 ├── 2026-07-11-infrastructure-operations-readiness-remediation.md # Active local PostgreSQL recovery plan; future Task owns execution evidence
 ├── 2026-07-11-security-supply-chain-remediation.md # Active local supply-chain verification plan; future Task owns execution evidence
@@ -217,6 +218,7 @@ task evidence or progress log records the same item as unresolved.
 - **Document Corpus Lifecycle Migration Foundation Plan (completed)**: [2026-07-14-document-corpus-lifecycle-migration-foundation.md](./2026-07-14-document-corpus-lifecycle-migration-foundation.md)
 - **Agent Governance Harness Convergence Plan (completed; post-closure review pending)**: [2026-07-15-agent-governance-harness-convergence.md](./2026-07-15-agent-governance-harness-convergence.md)
 - **Target Surface Contract Convergence Plan**: [2026-07-18-target-surface-contract-convergence.md](./2026-07-18-target-surface-contract-convergence.md)
+- **Operational Readiness Closure Program Plan**: [2026-07-19-operational-readiness-closure-program.md](./2026-07-19-operational-readiness-closure-program.md)
 - **Compose Runtime Readiness Remediation Plan**: [2026-07-11-compose-runtime-readiness-remediation.md](./2026-07-11-compose-runtime-readiness-remediation.md)
 - **Infrastructure Operations Readiness Remediation Plan**: [2026-07-11-infrastructure-operations-readiness-remediation.md](./2026-07-11-infrastructure-operations-readiness-remediation.md)
 - **Security Supply-Chain Remediation Plan**: [2026-07-11-security-supply-chain-remediation.md](./2026-07-11-security-supply-chain-remediation.md)
