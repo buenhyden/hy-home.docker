@@ -95,15 +95,16 @@ commit identities after each logical unit lands.
 
 | Producer | Exact transient artifact | Required consumer fields | Consumer rule |
 | --- | --- | --- | --- |
-| Spec 124 / Task 2 | `_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json` | `schema_version`, `producer_spec`, `project_name`, exact five-service set, per-service state, endpoint verdicts, `overall_status`, timing, cleanup status, redaction status | Task 5 accepts only `overall_status=ready`, exact service set, and `cleanup_status=passed`; it never copies raw logs. |
+| Spec 124 / Task 2 | Ready handoff `_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json`; scenario evidence `readiness-verdict.<scenario>.json` in the same directory | Schema v2: producer Spec/Task, approval, scenario, target class, project, start/end, exact five-service states, endpoint verdicts, observed state, recovery/teardown, overall, elapsed, cleanup, redaction | Task 5 accepts only a ready canonical record with exact services, `scenario=vault-restart-recovery`, `recovery_status=passed`, and cleanup/redaction passed. Negative evidence remains scenario-specific and is never promoted as readiness. |
 | Spec 126 / Task 3 | `_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json` and `verification-verdict.candidate.json` | `schema_version`, `producer_spec`, `role`, `source_revision`, image config digest, OCI archive SHA-256, policy ID, `verdict`, exception ID, verification time, redaction status | Task 5 requires two distinct subjects, matching source revision, `verdict=accepted`, no exception, and successful redaction. |
 | Spec 125 / Task 4 | `_workspace/repo-support/task-2026-07-19-infrastructure-operations-readiness-remediation/postgres/recovery-verdict.json` | `schema_version`, `producer_spec`, source/target pins, fixture/dump checksums, integrity verdict, observed timings, cleanup status, `scope=synthetic-local` | Task 5 records this as a data-recovery boundary only; the stateless sample service must declare `data_impact=none` and must not claim database recovery. |
 | Spec 127 / Task 5 | `_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json` | both upstream artifact references, readiness reference, baseline/canary projects, promotion decision, rollback decision, post-rollback health, data impact, cleanup status | Task 6 copies only concise typed fields and checksums into Stage 04 Task evidence. |
 
-All four JSON artifacts use UTF-8, sorted-key serialization, integer
-`schema_version: 1`, RFC 3339 UTC timestamps, lowercase enum values, and
-SHA-256 strings prefixed with `sha256:`. Missing or unknown fields fail closed;
-producers and consumers share no raw evidence files.
+All JSON artifacts use UTF-8, sorted-key serialization, RFC 3339 UTC
+timestamps, and lowercase enum values. Task 2 uses its reviewed schema v2;
+Tasks 3–5 use their declared schema v1 until a reviewed successor is approved.
+Where checksums apply, SHA-256 strings are prefixed with `sha256:`. Missing or
+unknown fields fail closed; producers and consumers share no raw evidence files.
 
 ## Goals and Non-goals
 
@@ -140,30 +141,32 @@ Non-goals:
 - Create: `docs/04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md`
 - Modify: `docs/04.execution/tasks/README.md`
 
-- [ ] Copy the canonical Task template structure into all five files.
-- [ ] Set each domain Task parent to its Spec and domain Plan; set the program
+- [x] Copy the canonical Task template structure into all five files.
+- [x] Set each domain Task parent to its Spec and domain Plan; set the program
       Task parent to this Plan.
-- [ ] Record exact allowed paths, prohibited remote/secret surfaces, runtime
+- [x] Record exact allowed paths, prohibited remote/secret surfaces, runtime
       command classes, rollback/cleanup, redaction, review roles, and deferred
       destinations.
-- [ ] Run
+- [x] Run
       `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2`.
-- [ ] Run `bash scripts/validation/check-doc-traceability.sh` and
+- [x] Run `bash scripts/validation/check-doc-traceability.sh` and
       `bash scripts/validation/check-doc-implementation-alignment.sh`.
-- [ ] Commit as `docs(sdlc): activate operational readiness tasks`.
+- [x] Commit as `docs(sdlc): activate operational readiness tasks`.
 
 ### Task 2: Implement Compose runtime readiness
 
 **Plan:** [Compose runtime readiness Plan](./2026-07-11-compose-runtime-readiness-remediation.md)
 
-- [ ] Execute that Plan using a fresh implementation agent.
-- [ ] Require the exact `readiness-verdict.json` contract above with
+- [x] Execute that Plan using a fresh implementation agent.
+- [x] Require the exact `readiness-verdict.json` contract above with
       `overall_status=ready` and verified owned cleanup before Task 5 may use it.
-- [ ] Require a fresh specification reviewer, then a separate quality/security
-      reviewer; remediate and re-review all critical, important, and minor
-      findings.
-- [ ] Commit the verified implementation as
-      `feat(harness): add compose runtime acceptance`.
+- [x] Close the fresh specification and separate quality/security reviews after
+      remediation and re-review of all critical, important, and minor findings.
+      Terminal re-reviews returned specification and quality/security
+      `APPROVED C0/I0/M0` after the Program Plan/Task inconsistency was fixed.
+- [x] Amend and record the verified implementation as
+      `feat(harness): add compose runtime acceptance`; the logical commit
+      containing this checklist is the branch-history identity.
 
 ### Task 3: Implement local supply-chain verification
 

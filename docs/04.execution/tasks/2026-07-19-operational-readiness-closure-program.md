@@ -133,7 +133,7 @@ Redaction boundary:
 | Work unit | Responsibility | Evidence owner | State |
 | --- | --- | --- | --- |
 | `T-ORC-001` | Activate five Task contracts and the Task index. | This Task | Complete; documentation gates pass, runtime not run |
-| `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Not run |
+| `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Complete; terminal reviews C0/I0/M0 |
 | `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Not run |
 | `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Not run |
 | `T-ORC-005` | Verified-digest promotion and previous-digest rollback. | Delivery domain Task | Not run |
@@ -144,7 +144,8 @@ Redaction boundary:
 | Date | Work unit | Agent role | Result |
 | --- | --- | --- | --- |
 | 2026-07-19 | `T-ORC-001` activation | Documentation implementation agent | Five canonical Task records and their index routing were prepared from the approved Plans; focused metadata, template, traceability, alignment, Markdown, and diff-hygiene gates passed without domain runtime. |
-| 2026-07-19 | `T-ORC-002`–`T-ORC-006` | Assigned future implementers/reviewers | `not_run`; evidence must be appended only after each exact command and review executes. |
+| 2026-07-19 | `T-ORC-002` | Compose implementation and independent reviewers | Exact five-service startup, Vault recovery, expected timeout, typed scenario evidence, ready canonical handoff, and cleanup/redaction completed. Historical pre-routing reviews returned C0/I0/M0. The first routing reviews returned specification `C0/I3/M0` and quality `C0/I2/M0`; the second reviews returned specification `C0/I2/M0` and quality `C0/I1/M0`. After signal-cleanup and stale-evidence remediation with `35/35` focused tests, terminal specification and quality/security re-reviews each returned `APPROVED C0/I0/M0`. |
+| 2026-07-19 | `T-ORC-003`–`T-ORC-006` | Assigned future implementers/reviewers | `not_run`; evidence must be appended only after each exact command and review executes. |
 
 ## Verification Evidence
 
@@ -168,9 +169,16 @@ alignment checked 665 stage documents and 5,429 repository-local Markdown
 links with 0 failures; all 38 template body-contract tests passed; targeted
 Markdown lint passed; and `git diff --check` passed.
 
-Verification results: Task activation gates passed. Domain-focused and runtime
-verification remain `not_run` in the respective domain Tasks; whole-branch
-verification remains `not_run` in this Task.
+Verification results: Task activation gates passed. Task 2 final live Docker
+runs passed: startup project `hyhome-crr-20260719-2111142-y1noqxim` was ready in
+71 seconds; recovery project `hyhome-crr-20260719-2188421-vietv7qq` was ready
+with recovery passed in 104 seconds; and negative project
+`hyhome-crr-20260719-2281412-ho7cotsq` timed out with exit class `30` in 74
+seconds. The canonical handoff SHA-256
+`7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf` was
+preserved, and task-owned resources were empty after the runs. Fresh Task 2
+re-reviews remain pending. Tasks 3–5 and whole-branch verification remain
+`not_run`.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -198,11 +206,10 @@ the pre-wrapper evidence commit exists, and `git status --short` is empty.
 
 ## Review Evidence
 
-Implementation review verdict: Task-activation scaffolding is complete. The
-five active Task records and index passed targeted metadata, template,
-traceability, alignment, Markdown, and diff-hygiene checks. This verdict covers
-documentation scaffolding only; all four domain implementations remain
-`not_run`.
+Implementation review verdict: Task-activation scaffolding and Task 2 are
+complete. Task 2 has final runtime evidence, routing remediation, and terminal
+specification and quality/security reviews at C0/I0/M0. The remaining three
+domain implementations remain `not_run`.
 
 Task-activation specification review: the initial review returned C0/I1/M0.
 The Important finding was remediated by making the delivery baseline/canary
@@ -222,19 +229,34 @@ Whole-branch quality/security review: `not_run`; an independent reviewer must
 return C0/I0/M0 after all domain implementations and remediation complete.
 
 Findings and disposition: all Task-activation review findings are resolved.
+Task 2's historical pre-routing reviews remain `C0/I0/M0`. Its first routing
+reviews returned specification `CHANGES REQUIRED C0/I3/M0` and quality
+`CHANGES REQUIRED C0/I2/M0`; its second routing reviews returned specification
+`CHANGES REQUIRED C0/I2/M0` and quality `CHANGES REQUIRED C0/I1/M0`. Both
+terminal re-reviews returned specification and quality/security
+`APPROVED C0/I0/M0` after the Program Plan/Task inconsistency was remediated.
 Future domain or whole-branch findings must retain severity, owner, remediation
 commit, and re-review verdict without copying raw logs.
 
 ## Commit Ledger
 
-Commit identity: `not_committed` for Task activation.
+Commit identity: `ff988ece` for Task activation. Task 2's logical commit is
+`feat(harness): add compose runtime acceptance`; its initial
+pre-reconciliation identity was `83298464`, and its final amended identity is
+resolved from branch history after the bounded handoff re-review.
 
 Logical unit: `docs(sdlc): activate operational readiness tasks`.
 
-Commit validation: the activation verification commands passed before staging;
-the commit identity remains pending. Domain, pre-wrapper, and closure commits
-remain `not_run` and must be recorded after creation, never predicted as
-completed evidence.
+Commit validation: activation passed before its logical commit. Task 2 final
+live Docker evidence passed: startup
+`hyhome-crr-20260719-2111142-y1noqxim` was ready in 71 seconds; recovery
+`hyhome-crr-20260719-2188421-vietv7qq` was ready with recovery passed in 104
+seconds; and negative `hyhome-crr-20260719-2281412-ho7cotsq` timed out with
+exit class `30` in 74 seconds. The canonical SHA-256
+`7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf` was
+preserved and task-owned resources were empty. Terminal Task 2 reviews pass at
+C0/I0/M0. Task 3–5, pre-wrapper, and closure commits remain `not_run` and must
+be recorded after creation, never predicted as completed evidence.
 
 ## Deferred and Blocked Items
 
@@ -245,8 +267,8 @@ Deferred items:
   enforcement, GitHub Environment/Release, and production deployment;
 - production RTO/RPO, SLSA conformance, and production-readiness claims.
 
-Blocked items: `T-ORC-002`–`T-ORC-006` remain blocked on their documented
-sequence, upstream typed verdicts, exact local evidence, and independent review.
+Blocked items: `T-ORC-003`–`T-ORC-006` remain blocked on their documented sequence, upstream
+typed verdicts, exact local evidence, and independent review.
 
 Deferral destination: each remote, credential, production, publication, or
 live-data expansion requires a new Stage 01-04 design chain and explicit human

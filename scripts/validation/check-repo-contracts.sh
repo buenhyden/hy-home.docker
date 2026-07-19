@@ -3981,6 +3981,8 @@ lib_scripts = sorted(path for path in pathlib.Path("scripts/lib").glob("*.sh") i
 expected_implementations = {
     pathlib.Path("scripts/validation/validate-docker-compose.sh"),
     pathlib.Path("scripts/validation/validate-harness.sh"),
+    pathlib.Path("scripts/validation/compose-core-readiness.lib.sh"),
+    pathlib.Path("scripts/validation/run-compose-core-readiness.sh"),
     pathlib.Path("scripts/validation/check-repo-contracts.sh"),
     pathlib.Path("scripts/validation/check-doc-implementation-alignment.sh"),
     pathlib.Path("scripts/validation/check-storybook-contract.sh"),

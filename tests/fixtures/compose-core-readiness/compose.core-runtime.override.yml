@@ -1,0 +1,253 @@
+networks: !override
+  crr_net:
+    driver: bridge
+    internal: false
+    labels:
+      org.hyhome.readiness-owner: task-2026-07-19-compose-runtime-readiness-remediation
+
+volumes: !override
+  crr-keycloak-data:
+    labels:
+      org.hyhome.readiness-owner: task-2026-07-19-compose-runtime-readiness-remediation
+  crr-vault-data:
+    labels:
+      org.hyhome.readiness-owner: task-2026-07-19-compose-runtime-readiness-remediation
+  crr-vault-agent-out:
+    labels:
+      org.hyhome.readiness-owner: task-2026-07-19-compose-runtime-readiness-remediation
+
+secrets: !override
+  crr-keycloak-admin-password:
+    file: ${CRR_SECRET_DIR:?CRR_SECRET_DIR is required}/keycloak_admin_password
+  crr-oauth2-client-secret:
+    file: ${CRR_SECRET_DIR:?CRR_SECRET_DIR is required}/oauth2_proxy_client_secret
+  crr-oauth2-cookie-secret:
+    file: ${CRR_SECRET_DIR:?CRR_SECRET_DIR is required}/oauth2_proxy_cookie_secret
+  crr-vault-agent-role-id:
+    file: ${CRR_SECRET_DIR:?CRR_SECRET_DIR is required}/vault_agent_role_id
+  crr-vault-agent-secret-id:
+    file: ${CRR_SECRET_DIR:?CRR_SECRET_DIR is required}/vault_agent_secret_id
+  crr-vault-unseal-key:
+    file: ${CRR_SECRET_DIR:?CRR_SECRET_DIR is required}/vault_unseal_key
+  crr-vault-root-token:
+    file: ${CRR_SECRET_DIR:?CRR_SECRET_DIR is required}/vault_root_token
+
+services:
+  keycloak:
+    profiles: !override [core]
+    image: quay.io/keycloak/keycloak:26.6.4-1
+    container_name: !reset null
+    hostname: !reset null
+    restart: "no"
+    cpus: "1.00"
+    mem_limit: 768m
+    entrypoint: !override
+      - /bin/sh
+      - -ec
+      - |
+        KC_BOOTSTRAP_ADMIN_PASSWORD="$$(tr -d '\r\n' </run/secrets/crr-keycloak-admin-password)"
+        export KC_BOOTSTRAP_ADMIN_PASSWORD
+        exec /opt/keycloak/bin/kc.sh start-dev --hostname-strict=false
+    command: !reset []
+    environment: !override
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER:-readiness-admin}
+      KC_DB: dev-file
+      KC_HEALTH_ENABLED: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_METRICS_ENABLED: "false"
+    expose: !override
+      - "8080"
+      - "9000"
+    ports: !override
+      - "127.0.0.1:18083:9000"
+    volumes: !override
+      - crr-keycloak-data:/opt/keycloak/data
+    secrets: !override
+      - source: crr-keycloak-admin-password
+        target: crr-keycloak-admin-password
+    networks: !override
+      - crr_net
+    labels: !override
+      org.hyhome.readiness-owner: task-2026-07-19-compose-runtime-readiness-remediation
+      traefik.enable: "false"
+    healthcheck: !override
+      test:
+        - CMD-SHELL
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/9000;
+          printf 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3;
+          cat <&3 | grep -q '200 OK'
+      interval: 5s
+      timeout: 5s
+      retries: 36
+      start_period: 20s
+
+  oauth2-proxy:
+    profiles: !override [core]
+    build: !reset null
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.3
+    container_name: !reset null
+    restart: "no"
+    cpus: "0.50"
+    mem_limit: 256m
+    entrypoint: !override [/bin/oauth2-proxy]
+    command: !override
+      - --provider=oidc
+      - --skip-oidc-discovery=true
+      - --oidc-issuer-url=http://keycloak:8080/realms/master
+      - --login-url=http://keycloak:8080/realms/master/protocol/openid-connect/auth
+      - --redeem-url=http://keycloak:8080/realms/master/protocol/openid-connect/token
+      - --oidc-jwks-url=http://keycloak:8080/realms/master/protocol/openid-connect/certs
+      - --profile-url=http://keycloak:8080/realms/master/protocol/openid-connect/userinfo
+      - --client-id=synthetic-readiness
+      - --client-secret-file=/run/secrets/crr-oauth2-client-secret
+      - --cookie-secret-file=/run/secrets/crr-oauth2-cookie-secret
+      - --cookie-secure=false
+      - --email-domain=*
+      - --http-address=0.0.0.0:4180
+      - --upstream=static://202
+      - --silence-ping-logging=true
+    environment: !override {}
+    extra_hosts: !reset []
+    volumes: !reset []
+    secrets: !override
+      - source: crr-oauth2-client-secret
+        target: crr-oauth2-client-secret
+      - source: crr-oauth2-cookie-secret
+        target: crr-oauth2-cookie-secret
+    networks: !override
+      - crr_net
+    depends_on: !override
+      keycloak:
+        condition: service_healthy
+    labels: !override
+      org.hyhome.readiness-owner: task-2026-07-19-compose-runtime-readiness-remediation
+      traefik.enable: "true"
+      traefik.docker.network: ${CRR_NETWORK_NAME:?CRR_NETWORK_NAME is required}
+      traefik.http.routers.crr-oauth2.entrypoints: web
+      traefik.http.routers.crr-oauth2.rule: Path(`/ping`)
+      traefik.http.routers.crr-oauth2.service: crr-oauth2
+      traefik.http.services.crr-oauth2.loadbalancer.server.port: "4180"
+    healthcheck: !override
+      test: [CMD, /bin/oauth2-proxy, --version]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+
+  traefik:
+    profiles: !override [core]
+    image: traefik:v3.7.6
+    container_name: !reset null
+    hostname: !reset null
+    restart: "no"
+    cpus: "0.50"
+    mem_limit: 256m
+    command: !override
+      - --api.dashboard=false
+      - --entryPoints.web.address=:8000
+      - --entryPoints.websecure.address=:8443
+      - --entryPoints.ping.address=:8080
+      - --ping=true
+      - --ping.entryPoint=ping
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --providers.docker.network=${CRR_NETWORK_NAME:?CRR_NETWORK_NAME is required}
+    ports: !override
+      - "127.0.0.1:18000:8000"
+      - "127.0.0.1:18443:8443"
+      - "127.0.0.1:18082:8080"
+    volumes: !override
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    secrets: !reset []
+    networks: !override
+      - crr_net
+    labels: !override
+      org.hyhome.readiness-owner: task-2026-07-19-compose-runtime-readiness-remediation
+      traefik.enable: "false"
+    healthcheck: !override
+      test: [CMD, traefik, healthcheck, --ping]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+
+  vault:
+    profiles: !override [core]
+    image: hashicorp/vault:2.0.3
+    container_name: !reset null
+    restart: "no"
+    cpus: "0.50"
+    mem_limit: 256m
+    cap_add: !reset []
+    command: !override
+      - server
+    environment: !override
+      SKIP_CHOWN: "true"
+      SKIP_SETCAP: "true"
+      VAULT_ADDR: http://127.0.0.1:8200
+      VAULT_API_ADDR: http://vault:8200
+    expose: !override ["8200"]
+    ports: !override
+      - "127.0.0.1:18200:8200"
+    volumes: !override
+      - crr-vault-data:/vault/file
+      - ${CRR_CONFIG_DIR:?CRR_CONFIG_DIR is required}/vault-readiness.hcl:/vault/config/vault-readiness.hcl:ro
+    secrets: !override
+      - source: crr-vault-unseal-key
+        target: crr-vault-unseal-key
+      - source: crr-vault-root-token
+        target: crr-vault-root-token
+    networks: !override
+      - crr_net
+    labels: !override
+      org.hyhome.readiness-owner: task-2026-07-19-compose-runtime-readiness-remediation
+      traefik.enable: "false"
+    healthcheck: !override
+      test:
+        - CMD-SHELL
+        - >-
+          wget -q -O- 'http://127.0.0.1:8200/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200'
+          >/dev/null 2>&1
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 5s
+
+  vault-agent:
+    profiles: !override [core]
+    image: hashicorp/vault:2.0.3
+    container_name: !reset null
+    restart: "no"
+    cpus: "0.25"
+    mem_limit: 128m
+    cap_add: !reset []
+    depends_on: !override
+      vault:
+        condition: service_healthy
+    command: !override
+      - agent
+      - -config=/vault/config/vault-agent-readiness.hcl
+    environment: !override
+      SKIP_CHOWN: "true"
+      SKIP_SETCAP: "true"
+      VAULT_ADDR: http://vault:8200
+    volumes: !override
+      - ${CRR_CONFIG_DIR:?CRR_CONFIG_DIR is required}/vault-agent-readiness.hcl:/vault/config/vault-agent-readiness.hcl:ro
+      - crr-vault-agent-out:/vault/out
+    secrets: !override
+      - source: crr-vault-agent-role-id
+        target: vault_agent_role_id
+      - source: crr-vault-agent-secret-id
+        target: vault_agent_secret_id
+    networks: !override
+      - crr_net
+    labels: !override
+      org.hyhome.readiness-owner: task-2026-07-19-compose-runtime-readiness-remediation
+      traefik.enable: "false"
+    healthcheck: !override
+      test: [CMD-SHELL, test -s /vault/out/readiness.sentinel]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 5s
