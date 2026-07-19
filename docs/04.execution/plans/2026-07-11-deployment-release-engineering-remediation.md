@@ -34,9 +34,11 @@ typed JSON handoff/record fixtures; local HTTP and container-health probes.
 
 - Candidate and previous artifacts must be immutable digests; mutable tags are
   never promotion inputs.
-- Baseline and canary projects are
-  `hyhome-dre-20260719-baseline` and `hyhome-dre-20260719-canary`; their host
-  ports are `18080` and `18081` unless preflight proves a collision and fails.
+- Baseline and canary project names are constructed as
+  `hyhome-dre-20260719-<decimal-pid>-baseline` and
+  `hyhome-dre-20260719-<decimal-pid>-canary`. Preflight and cleanup accept only
+  `^hyhome-dre-20260719-[0-9]+-(baseline|canary)$`; their host ports are
+  `18080` and `18081` unless preflight proves a collision and fails.
 - The local rehearsal record ID is constructed as `local-rehearsal-20260719-`
   followed by the first 12 hexadecimal characters of the source revision; it
   is not a GitHub Release, registry tag, deployment record, or production
@@ -112,11 +114,16 @@ rehearse-sample-service-delivery.sh preflight --task-id 2026-07-19-dre --baselin
 rehearse-sample-service-delivery.sh rehearse --task-id 2026-07-19-dre --baseline-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json --candidate-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json --failure-mode none
 rehearse-sample-service-delivery.sh rehearse --task-id 2026-07-19-dre-negative --baseline-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json --candidate-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json --failure-mode canary-health-timeout
 rehearse-sample-service-delivery.sh cleanup --task-id 2026-07-19-dre
+rehearse-sample-service-delivery.sh cleanup --task-id 2026-07-19-dre-negative
 ```
 
 `--task-id` must match `^[a-z0-9-]+$`. The wrapper creates
 project names by combining `hyhome-dre-20260719-`, its decimal process ID, and
-`-baseline`/`-canary`; it records those exact resolved names before startup.
+`-baseline`/`-canary`; both resolved names must match
+`^hyhome-dre-20260719-[0-9]+-(baseline|canary)$` and are recorded before
+startup. Preflight rejects any resolved name outside that pattern. Cleanup
+accepts and removes only the exact baseline/canary pair recorded for the task
+run; a missing, additional, or nonmatching project fails closed.
 It automatically loads the program-contract readiness and recovery verdict
 paths from the orchestration Plan; missing or non-passing readiness fails
 preflight, while the synthetic recovery verdict is recorded only as a boundary.

@@ -1,0 +1,263 @@
+---
+status: active
+artifact_id: task:2026-07-19-operational-readiness-closure-program
+artifact_type: task
+parent_ids:
+  - plan:2026-07-19-operational-readiness-closure-program
+---
+
+# Task: Operational Readiness Closure Program
+
+## Overview
+
+This Task is the execution and closure ledger for the local-isolated operational
+readiness program. It coordinates four domain Tasks without replacing their
+evidence ownership. The Task is active and evidence-ready; no Compose service,
+database rehearsal, image build, signing operation, promotion, rollback,
+remote action, or controlled all-files QA result is claimed at activation.
+
+Execution is limited to the linked worktree on
+`codex/stage03-04-unimplemented-closure`. The comparison base for changed
+document metadata is `758aa0d2`.
+
+## Inputs
+
+- [Operational readiness closure Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
+- [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
+- [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- Specs [124](../../03.specs/124-compose-runtime-readiness-remediation/spec.md),
+  [125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md),
+  [126](../../03.specs/126-security-supply-chain-remediation/spec.md), and
+  [127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- Domain Tasks linked under Related Documents
+- Stage 00 task and controlled-QA contracts
+
+## Goals and Non-goals
+
+Goals:
+
+- keep Task activation, four domain implementations, review remediation,
+  evidence reconciliation, and final QA as independently reviewable units;
+- require concise typed handoffs between the domain Tasks;
+- preserve exact local runtime, cleanup, rollback, redaction, and review
+  boundaries before any command is executed;
+- reconcile Spec, Plan, Task, index, and generated-owner state only from actual
+  implementation and validation evidence.
+
+Non-goals:
+
+- production/shared runtime, production data, remote backup, registry push,
+  remote attestation, GitHub mutation, release publication, or deployment;
+- credential, OIDC, token, secret-value, private-key, raw-log, or shell-history
+  retention;
+- a production-readiness, SLSA-level, organization RTO/RPO, or real Release
+  claim from local evidence.
+
+## Scope and Change Boundaries
+
+Allowed paths are the exact paths declared by the four domain Plans, the five
+Tasks in this program, directly affected Stage 03/04 indexes and lifecycle
+documents, approved Stage 05 runbooks, canonical generated owners refreshed by
+their generators, and the controlled-wrapper Task evidence. Ignored runtime
+artifacts are confined to the four exact
+`_workspace/repo-support/task-2026-07-19-*/` directories named by the Plan.
+
+Forbidden paths and actions are the root `main` checkout, unrelated user work,
+user-global provider configuration, shared or production services, live data,
+remote GitHub/registry/deployment surfaces, credentials, raw authentication
+material, and direct `pre-commit run --all-files`.
+
+Compose impact: local task-scoped projects only. The program requires exact
+project identities and owned cleanup; it does not authorize broad Docker
+cleanup or default-profile expansion.
+
+Security impact: local digest, SBOM, vulnerability, provenance, and signature
+verification plus deterministic fixture policy. No publication, trust-level,
+identity, or remote enforcement claim is permitted.
+
+Operations impact: synthetic PostgreSQL recovery evidence and local delivery
+rehearsal only. No live runbook execution or production recovery change is
+authorized.
+
+Runtime impact: four local-isolated command envelopes owned by the domain
+Tasks. A domain command may run only after its Task contract is active and its
+upstream typed inputs are available.
+
+## Approval Evidence
+
+Approval source:
+
+- The user explicitly approved the operational-readiness design, Plans,
+  protected-surface changes, local implementation, logical commits, and
+  Subagent-Driven execution in this task thread.
+- The approved [program Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
+  binds execution to the isolated worktree and four local domain lanes.
+
+Protected surfaces:
+
+- Local Compose projects, task-owned Docker resources, synthetic PostgreSQL
+  state, pinned tool-container pulls, ephemeral local signing keys, the sample
+  service, local CI/QA definitions, validators, runbooks, and Stage 03/04
+  lifecycle evidence may change only within the domain Plans.
+- Production/shared runtime, live data, remote state, publication, credentials,
+  user-global config, push, PR, merge, and worktree deletion remain protected.
+
+Approval boundary:
+
+- Local authored changes, local runtime in the declared projects, read-only
+  registry image retrieval, task-owned transient artifacts, focused tests,
+  independent review, and logical local commits are authorized.
+- Any remote mutation, publication, live target, credential/OIDC use, paid
+  action, or scope expansion requires a new Task and separate explicit approval.
+
+Rollback or recovery:
+
+- Stop the failing lane, execute only its exact owned cleanup, and preserve
+  concise non-secret failure evidence when cleanup is ambiguous.
+- Revert logical commits in reverse dependency order; regenerate only outputs
+  owned by a reverted change. Never use broad Docker pruning, destructive Git
+  cleanup, or state deletion outside the task identity.
+
+Redaction boundary:
+
+- Tracked evidence may contain commands, exit classes, stable project/service
+  names, image and file checksums, durations, typed verdict fields, cleanup
+  status, commit identities, and review verdicts.
+- Raw logs, dumps, row payloads, response bodies, vulnerability reports,
+  credentials, tokens, `.env` values, private keys, authentication material,
+  and shell history remain in `/tmp` or process memory and are never tracked.
+
+## Work Breakdown
+
+| Work unit | Responsibility | Evidence owner | State |
+| --- | --- | --- | --- |
+| `T-ORC-001` | Activate five Task contracts and the Task index. | This Task | Complete; documentation gates pass, runtime not run |
+| `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Not run |
+| `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Not run |
+| `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Not run |
+| `T-ORC-005` | Verified-digest promotion and previous-digest rollback. | Delivery domain Task | Not run |
+| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Not run |
+
+## Work Log
+
+| Date | Work unit | Agent role | Result |
+| --- | --- | --- | --- |
+| 2026-07-19 | `T-ORC-001` activation | Documentation implementation agent | Five canonical Task records and their index routing were prepared from the approved Plans; focused metadata, template, traceability, alignment, Markdown, and diff-hygiene gates passed without domain runtime. |
+| 2026-07-19 | `T-ORC-002`–`T-ORC-006` | Assigned future implementers/reviewers | `not_run`; evidence must be appended only after each exact command and review executes. |
+
+## Verification Evidence
+
+Exact activation commands:
+
+```bash
+python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/validation/check-doc-implementation-alignment.sh
+python3 -m unittest tests.validation.test_document_metadata.TemplateBodyContractTests -v
+pre-commit run markdownlint-cli2 --files docs/04.execution/tasks/README.md docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md docs/04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md docs/04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md docs/04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md
+git diff --check
+```
+
+Expected evidence: zero metadata, traceability, alignment, Markdown, or diff
+hygiene violations for the activated Task set.
+
+Actual evidence: metadata selected 16 changed documents with 0 violations and
+0 legacy exceptions; traceability checked 46 catalog pairs with 0 failures;
+alignment checked 665 stage documents and 5,429 repository-local Markdown
+links with 0 failures; all 38 template body-contract tests passed; targeted
+Markdown lint passed; and `git diff --check` passed.
+
+Verification results: Task activation gates passed. Domain-focused and runtime
+verification remain `not_run` in the respective domain Tasks; whole-branch
+verification remains `not_run` in this Task.
+
+## Controlled Agent Pre-commit Evidence
+
+The only authorized all-files command is:
+
+```bash
+bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md --allow-prefix .github/workflows/ci-quality.yml --allow-prefix docs/00.agent-governance/memory/progress.md --allow-prefix docs/03.specs --allow-prefix docs/04.execution --allow-prefix docs/05.operations --allow-prefix docs/90.references/data --allow-prefix examples/sample-web-service --allow-prefix infra --allow-prefix scripts --allow-prefix tests
+```
+
+Allowed prefixes are exactly the repeated `--allow-prefix` values above. The
+command may run once only during `T-ORC-006`, from an initially clean linked
+worktree after pre-wrapper evidence is committed.
+
+Wrapper exit status: `not_run`.
+
+Snapshot result: `not_run`.
+
+Observation boundary: Git-visible, non-ignored repository paths only. The
+wrapper does not claim visibility into ignored or out-of-repository writes.
+
+Before, after, changed, and unexpected path sets: `not_run`.
+
+Disposition: blocked until all four domain Tasks and whole-branch reviews pass,
+the pre-wrapper evidence commit exists, and `git status --short` is empty.
+
+## Review Evidence
+
+Implementation review verdict: Task-activation scaffolding is complete. The
+five active Task records and index passed targeted metadata, template,
+traceability, alignment, Markdown, and diff-hygiene checks. This verdict covers
+documentation scaffolding only; all four domain implementations remain
+`not_run`.
+
+Task-activation specification review: the initial review returned C0/I1/M0.
+The Important finding was remediated by making the delivery baseline/canary
+project identity PID-scoped and fail-closed across the Plan and Task. Re-review
+returned PASS C0/I0/M0.
+
+Task-activation quality review: the initial review returned C0/I2/M0. The two
+Important findings were remediated by adding the exact
+`.github/workflows/ci-quality.yml` controlled-wrapper allow-prefix and the
+negative rehearsal cleanup command to the closed delivery subcommand set.
+Re-review returned APPROVED C0/I0/M0.
+
+Whole-branch specification review: `not_run`; a fresh reviewer must return
+C0/I0/M0 after all domain implementations and reviews complete.
+
+Whole-branch quality/security review: `not_run`; an independent reviewer must
+return C0/I0/M0 after all domain implementations and remediation complete.
+
+Findings and disposition: all Task-activation review findings are resolved.
+Future domain or whole-branch findings must retain severity, owner, remediation
+commit, and re-review verdict without copying raw logs.
+
+## Commit Ledger
+
+Commit identity: `not_committed` for Task activation.
+
+Logical unit: `docs(sdlc): activate operational readiness tasks`.
+
+Commit validation: the activation verification commands passed before staging;
+the commit identity remains pending. Domain, pre-wrapper, and closure commits
+remain `not_run` and must be recorded after creation, never predicted as
+completed evidence.
+
+## Deferred and Blocked Items
+
+Deferred items:
+
+- remote/live Compose validation, production database recovery, physical
+  backup/PITR/HA, registry publication, keyless/OIDC signing, remote Scorecard
+  enforcement, GitHub Environment/Release, and production deployment;
+- production RTO/RPO, SLSA conformance, and production-readiness claims.
+
+Blocked items: `T-ORC-002`–`T-ORC-006` remain blocked on their documented
+sequence, upstream typed verdicts, exact local evidence, and independent review.
+
+Deferral destination: each remote, credential, production, publication, or
+live-data expansion requires a new Stage 01-04 design chain and explicit human
+approval; state recovery remains Spec 125-owned and remote delivery remains
+Spec 127 follow-up scope.
+
+## Related Documents
+
+- [Program Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
+- [Compose Task](./2026-07-19-compose-runtime-readiness-remediation.md)
+- [Supply-chain Task](./2026-07-19-security-supply-chain-remediation.md)
+- [Infrastructure Task](./2026-07-19-infrastructure-operations-readiness-remediation.md)
+- [Delivery Task](./2026-07-19-deployment-release-engineering-remediation.md)
+- [Task contract](./README.md)

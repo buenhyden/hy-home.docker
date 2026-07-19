@@ -230,7 +230,7 @@ Non-goals:
       pre-wrapper state as `docs(evidence): prepare operational readiness closure`.
 - [ ] Confirm `git status --short` is empty before invoking the wrapper.
 - [ ] From a clean linked worktree, run
-      `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md --allow-prefix docs/00.agent-governance/memory/progress.md --allow-prefix docs/03.specs --allow-prefix docs/04.execution --allow-prefix docs/05.operations --allow-prefix docs/90.references/data --allow-prefix examples/sample-web-service --allow-prefix infra --allow-prefix scripts --allow-prefix tests`.
+      `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md --allow-prefix .github/workflows/ci-quality.yml --allow-prefix docs/00.agent-governance/memory/progress.md --allow-prefix docs/03.specs --allow-prefix docs/04.execution --allow-prefix docs/05.operations --allow-prefix docs/90.references/data --allow-prefix examples/sample-web-service --allow-prefix infra --allow-prefix scripts --allow-prefix tests`.
 - [ ] Record wrapper exit status, before/after snapshots, observed path sets,
       reviewer verdicts, and exact commit ledger in the program Task. Rerun
       metadata, traceability, alignment, and `git diff --check` after this

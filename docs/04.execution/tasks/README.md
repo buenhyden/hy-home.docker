@@ -160,6 +160,11 @@ docs/04.execution/tasks/
 ├── 2026-07-13-document-contract-canonicalization.md # Completed document-contract evidence; post-closure findings resolved
 ├── 2026-07-15-agent-governance-harness-convergence.md # Completed agent-governance and provider-harness execution evidence
 ├── 2026-07-18-target-surface-contract-convergence.md # Completed; 483-row blocking/pass promotion and closure reviews passed
+├── 2026-07-19-operational-readiness-closure-program.md # Active local-isolated operational-readiness program evidence
+├── 2026-07-19-compose-runtime-readiness-remediation.md # Active exact five-service Compose readiness evidence
+├── 2026-07-19-security-supply-chain-remediation.md # Active local sample-service supply-chain evidence
+├── 2026-07-19-infrastructure-operations-readiness-remediation.md # Active synthetic PostgreSQL recovery evidence
+├── 2026-07-19-deployment-release-engineering-remediation.md # Active local promotion and rollback evidence
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence
@@ -257,6 +262,11 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Document Corpus Lifecycle Migration Foundation Task (completed)**: [2026-07-14-document-corpus-lifecycle-migration-foundation.md](./2026-07-14-document-corpus-lifecycle-migration-foundation.md)
 - **Agent Governance Harness Convergence Task (completed; post-closure review pending)**: [2026-07-15-agent-governance-harness-convergence.md](./2026-07-15-agent-governance-harness-convergence.md)
 - **Target Surface Contract Convergence Task**: [2026-07-18-target-surface-contract-convergence.md](./2026-07-18-target-surface-contract-convergence.md)
+- **Operational Readiness Closure Program Task**: [2026-07-19-operational-readiness-closure-program.md](./2026-07-19-operational-readiness-closure-program.md)
+- **Compose Runtime Readiness Remediation Task**: [2026-07-19-compose-runtime-readiness-remediation.md](./2026-07-19-compose-runtime-readiness-remediation.md)
+- **Security Supply-Chain Remediation Task**: [2026-07-19-security-supply-chain-remediation.md](./2026-07-19-security-supply-chain-remediation.md)
+- **Infrastructure Operations Readiness Remediation Task**: [2026-07-19-infrastructure-operations-readiness-remediation.md](./2026-07-19-infrastructure-operations-readiness-remediation.md)
+- **Deployment and Release Engineering Remediation Task**: [2026-07-19-deployment-release-engineering-remediation.md](./2026-07-19-deployment-release-engineering-remediation.md)
 - **Audit Implementation Matrix Snapshot Task**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **SDLC Document Contract Corpus Normalization Task**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)

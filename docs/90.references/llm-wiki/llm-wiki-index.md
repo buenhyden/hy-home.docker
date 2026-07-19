@@ -653,6 +653,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md](../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-15-agent-governance-harness-convergence.md](../../04.execution/tasks/2026-07-15-agent-governance-harness-convergence.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md](../../04.execution/tasks/2026-07-18-target-surface-contract-convergence.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md](../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md](../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md](../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
