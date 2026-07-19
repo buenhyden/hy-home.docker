@@ -25,20 +25,22 @@ boundaries and execution evidence.
 
 | Gate | Current state | Required resolution |
 | --- | --- | --- |
-| Parent spec | Draft | Spec 125 reviewed and activated. |
-| Architecture | Unresolved | Approved PRD/ARD/ADRs for state, topology, formats, retention, integrity, and recovery. |
+| Parent spec | Active | Spec 125 is traced to PRD 025, ARD 0028, ADR 0028, and Spec 124; this Plan remains draft. |
+| Architecture | Approved local design | PRD 025, ARD 0028, and ADR 0028 bound synthetic PostgreSQL logical upgrade/restore; this Plan must pin versions and integrity checks. |
 | Human | Unresolved | Data/service owners approve scope, representative state, objectives, disruption, and risk. |
 | Runtime | Unresolved | Exact services/targets/versions/commands/window/cleanup/recovery in a future task. |
 | Secret | Unresolved/not authorized | Exact IDs/paths and metadata boundary plus redaction/access approval. |
 | Remote | Unresolved/not authorized | Exact storage/registry/host/cloud target, permissions, actions, evidence, and rollback. |
 
-Umbrella approval authorizes this documentation only.
+PRD 025, ARD 0028, and ADR 0028 approve the local-isolated design only.
+Runtime state commands still require this Plan to become active and a separate
+active Task with exact scope and rollback evidence.
 
 ## Goals and Non-goals
 
 - **Goals**: Establish representative, integrity-checked upgrade/migration and
   backup/restore evidence with observed recovery objectives.
-- **In Scope**: Service/data inventory, predecessor/approval resolution,
+- **In Scope**: Representative service/data binding and approval resolution,
   synthetic/sanitized fixtures, isolated rehearsals, negative paths, rollback,
   evidence protection, review, and operations updates.
 
@@ -53,7 +55,7 @@ Umbrella approval authorizes this documentation only.
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| `PLN-IOR-001` | Approve PRD/ARD/ADRs and inventory service/data classes/objectives | Unresolved Stage 01/02 and future operations paths | `IOR-001`–`IOR-004` | Owners, classification, targets, objectives, exclusions, and recovery exist. |
+| `PLN-IOR-001` | Bind source/target PostgreSQL versions, synthetic fixture, logical formats, integrity oracle, and observed objectives to the approved architecture | Spec 125, this Plan, and future Task | `IOR-001`–`IOR-004` | Exact representative scope, targets, assertions, exclusions, and recovery exist. |
 | `PLN-IOR-002` | Create protected-surface task and representative-state/evidence contract | Future task path; no task exists now | `IOR-001`–`IOR-004` | Runtime/data/secret/remote approvals and redaction are bound. |
 | `PLN-IOR-003` | Rehearse smallest approved upgrade/migration with integrity/rollback | Approved service/test/ops surfaces | `IOR-001`, `IOR-002` | Compatibility, integrity, failure, and recovery evidence pass. |
 | `PLN-IOR-004` | Prove backup inventory/capture and isolated restore separately | Approved backup/restore surfaces | `IOR-003`, `IOR-004` | Capture, restore, integrity, elapsed time, objective, and cleanup evidence pass. |
@@ -61,7 +63,7 @@ Umbrella approval authorizes this documentation only.
 
 ## Sequencing, Migration, and Rollout
 
-1. Classify services/state and resolve predecessor decisions.
+1. Verify the active predecessor chain and bind the representative PostgreSQL state.
 2. Select synthetic/sanitized representative fixtures and protected evidence.
 3. Approve a future task with recovery and destructive-action boundaries.
 4. Rehearse one isolated service/data path before cross-service expansion.
@@ -112,7 +114,7 @@ Umbrella approval authorizes this documentation only.
 ## Completion Criteria
 
 - [ ] Required PRD/ARD/ADRs exist and are approved.
-- [ ] Spec 125 and this plan are reviewed and activated.
+- [ ] This Plan is reviewed and activated while Spec 125 remains active.
 - [ ] A separate protected-surface Stage 04 task authorizes exact execution.
 - [ ] Human, runtime, secret, remote, and architecture gates are resolved.
 - [ ] Upgrade/migration and backup/restore evidence passes independently.

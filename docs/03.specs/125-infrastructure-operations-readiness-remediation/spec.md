@@ -1,23 +1,25 @@
 ---
-status: draft
+status: active
 artifact_id: spec:125-infrastructure-operations-readiness-remediation
 artifact_type: spec
 parent_ids:
+  - prd:025-operational-readiness-closure
+  - ard:0028-operational-readiness-closure
+  - adr:0028-local-isolated-readiness-evidence
   - spec:123-agentic-engineering-audit-remediation
+  - spec:124-compose-runtime-readiness-remediation
 ---
 
 # Infrastructure Operations Readiness Remediation Technical Specification (Spec)
 
 ## Overview
 
-This draft defines the future contract for rehearsing infrastructure upgrades,
-data/configuration migrations, backups, and restores on approved representative
-state. It owns four canonical audit gaps. It authorizes documentation only and
-does not authorize runtime access, state copying, backup capture, restore,
-secret access, or remote action.
-
-Spec 123 is typed audit lineage, not runtime authorization. Activation requires
-the unresolved predecessors and approval gates below.
+This active specification defines the contract for rehearsing a representative
+PostgreSQL logical major-version upgrade, backup, restore, and integrity check
+on synthetic state. It owns four canonical audit gaps. The approved architecture
+does not authorize production data, shared storage, secret access, or remote
+backup targets; exact state commands remain blocked until an approved Plan and
+active Task exist.
 
 ## Strategic Boundaries & Non-goals
 
@@ -28,25 +30,25 @@ the unresolved predecessors and approval gates below.
 - Do not own artifact trust or deployment promotion; Specs 126 and 127 do.
 - Do not infer recoverability from runbook presence, backup configuration, or
   successful backup capture alone.
-- Do not select production data, services, retention values, storage targets,
-  or RTO/RPO commitments in this draft.
+- Do not generalize representative PostgreSQL evidence into production data,
+  physical backup, HA, retention, or organization RTO/RPO commitments.
 
 ## Boundaries and Inputs
 
-- **PRD**: Unresolved prerequisite for service/data scope, business recovery
-  objectives, acceptable loss/disruption, retention, and owner acceptance.
-- **ARD**: Unresolved prerequisite for state classification, backup/restore
-  topology, isolation, encryption/secret boundary, dependency ordering, and
-  recovery evidence storage.
-- **Related ADRs**: Unresolved prerequisites for representative-data strategy,
-  backup format/location, restore verification, migration compatibility, and
-  config-versus-data rollback decisions.
+- **PRD**: [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
+  defines the representative local recovery value and non-production scope.
+- **ARD**: [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+  defines synthetic state, separate old/new projects, evidence, and cleanup.
+- **ADR**: [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+  selects logical PostgreSQL upgrade/restore as the bounded representative path.
 - **Audit lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
-  authorizes this draft only.
+  remains the canonical audit lineage.
+- **Runtime dependency**: [Spec 124](../124-compose-runtime-readiness-remediation/spec.md)
+  supplies startup/readiness and bounded failure-recovery semantics.
 
 Architecture-changing volume, persistence, retention, backup target, restore
-topology, or migration changes are blocked until required PRD/ARD/ADRs exist
-and are approved. This spec does not create or claim them.
+topology, or migration changes remain blocked until the Plan and active Task
+identify the exact test-only surface and approval evidence.
 
 ## Canonical Gap Ownership
 
@@ -76,7 +78,7 @@ Specs 124 and 127 so every canonical ID is classified once.
 - Future active work must name exact services/data classes, source/target
   versions, migration/backup formats, retention, isolated targets, and cleanup.
 - Production storage, retention, or encryption changes require explicit
-  architecture/security approval and cannot be inferred from this draft.
+  architecture/security approval and cannot be inferred from this specification.
 - Backup and restore are separate acceptance gates; capture success never
   satisfies restore readiness.
 
@@ -107,21 +109,25 @@ not proof of operational effectiveness.
 
 ## Core Design
 
-- **Component Boundary**: Future isolated state rehearsal and concise evidence
-  collection; no runtime mechanism is selected here.
-- **Key Dependencies**: Spec 124 for startup/readiness and bounded recovery;
-  Spec 126 for trusted input artifacts; Spec 127 for promotion/rollback context.
-- **Tech Stack**: Unresolved pending service/data inventory and architecture
-  decisions.
+- **Component Boundary**: Separate task-owned source and target PostgreSQL
+  projects with a synthetic schema/data fixture, logical dump, restore,
+  integrity oracle, failure injection, and owned cleanup.
+- **Key Dependencies and Consumers**: Spec 124 supplies startup/readiness and
+  bounded recovery. Spec 126 may supply verified input-image evidence. Spec 127
+  consumes the resulting recovery boundary and is not a prerequisite for this
+  representative rehearsal.
+- **Tech Stack**: Digest-pinned PostgreSQL source/target images, native logical
+  backup/restore clients, SQL integrity assertions, checksums, and repository
+  wrappers. Exact versions and commands belong in the Plan.
 
 ## Data Modeling & Storage Strategy
 
 - **Schema / Entity Strategy**: One redacted record per service/data class and
   scenario, including version, backup/migration identity, integrity assertions,
   timing, approval, and disposition.
-- **Migration / Transition Plan**: Inventory/classify -> approve predecessors ->
-  activate spec/plan -> create scoped task -> rehearse synthetic/sanitized state
-  -> review -> expand only by new approval.
+- **Migration / Transition Plan**: Pin source/target and fixture -> approve the
+  Plan/Task -> rehearse backup/restore/logical upgrade -> review integrity and
+  recovery evidence -> expand only through a new decision and approval.
 
 ## Interfaces and Data
 
@@ -151,8 +157,10 @@ Not applicable. No external API is introduced.
 
 ## Tools & Tool Contract (If Applicable)
 
-- **Tool List**: Unresolved; the future task names service-specific mechanisms.
-- **Permission Boundary**: No state read/write/copy under this draft.
+- **Tool List**: PostgreSQL logical backup/restore clients, SQL assertions,
+  hashing utilities, Docker Compose, and repository-owned wrappers.
+- **Permission Boundary**: Only Task-owned synthetic state is eligible. This
+  Spec does not permit production, user, shared, or remote state access.
 - **Failure Handling**: Stop on integrity mismatch, incomplete rollback,
   objective breach, target drift, or unauthorized data/secret access.
 
@@ -180,7 +188,7 @@ logs, credentials, and secret values remain outside documentation and memory.
 
 ## Approval Gates
 
-| Gate | Unresolved approval required before activation/execution | Evidence required |
+| Gate | Remaining approval required before execution | Evidence required |
 | --- | --- | --- |
 | Architecture | Approved PRD/ARD/ADRs for state, topology, formats, retention, integrity, and rollback/recovery | Canonical IDs/paths and approval state. |
 | Human | Data/service owner approves scope, representative state, objectives, disruption, and residual risk | Approval reference and named recovery owner. |
@@ -229,7 +237,9 @@ bash scripts/validation/check-doc-implementation-alignment.sh
 bash scripts/validation/check-repo-contracts.sh
 ```
 
-No upgrade, migration, backup, or restore command is authorized by this draft.
+No upgrade, migration, backup, or restore command is authorized until the Plan
+and active Task name the exact synthetic fixture, versions, projects, commands,
+capacity, integrity oracle, cleanup, and recovery path.
 
 ## Success Criteria & Verification Plan
 
@@ -244,6 +254,9 @@ No upgrade, migration, backup, or restore command is authorized by this draft.
 
 ## Related Documents
 
+- **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Plan**: [Infrastructure operations draft plan](../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
 - **Compose/operations audit**: [Canonical readiness audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)

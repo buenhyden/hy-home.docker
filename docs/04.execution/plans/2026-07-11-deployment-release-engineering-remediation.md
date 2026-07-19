@@ -25,23 +25,25 @@ release record. CI and build success must remain distinct from delivery.
 
 | Gate | Current state | Required resolution |
 | --- | --- | --- |
-| Parent spec | Draft | Spec 127 reviewed and activated. |
-| Architecture | Unresolved | Approved PRD/ARD/ADRs for environments, artifacts, identity, promotion, health, release record, rollback/recovery. |
+| Parent spec | Active | Spec 127 is traced to PRD 025, ARD 0028, ADR 0028, and Specs 124-126; this Plan remains draft. |
+| Architecture | Approved local design | PRD 025, ARD 0028, and ADR 0028 bind separate local baseline/canary projects, verified-digest promotion, and rollback. |
 | Human | Unresolved | Release/environment/change owners approve target, artifact, gates, window, rollback, and risk. |
 | Runtime | Unresolved | Exact targets/actions/canary/window/health/rollback/recovery in a future task. |
 | Secret | Unresolved/not authorized | Exact deployment/signing/OIDC/registry IDs/claims/paths and revocation/redaction. |
 | Remote | Unresolved/not authorized | Exact GitHub/workflow/environment/Release/registry/target operations, permissions, evidence, and rollback. |
 
-Umbrella approval is documentation lineage only.
+The approved architecture authorizes local design only. Commands still require
+this Plan to become active and a separate active Task with exact scope,
+promotion gates, cleanup, and rollback evidence.
 
 ## Goals and Non-goals
 
 - **Goals**: Establish immutable artifact-to-environment promotion with
   approvals, security/readiness gates, release/deployment records, and verified
   rollback/recovery.
-- **In Scope**: Predecessors, environment/artifact inventory, sandbox/canary,
-  exact remote/identity approvals, workflow and record implementation if later
-  approved, negative gates, rollback, evidence, and independent review.
+- **In Scope**: Local environment/artifact binding, baseline/canary projects,
+  verified-digest gates, rehearsal records, negative gates, rollback, evidence,
+  and independent review.
 
 ## Non-Goals & Out-of-Scope
 
@@ -54,17 +56,17 @@ Umbrella approval is documentation lineage only.
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| `PLN-DRE-001` | Approve environment/artifact/identity/release/rollback PRD/ARD/ADRs | Unresolved Stage 01/02 paths; update Spec 127 | `DRE-001`–`DRE-004` | Exact environments, artifacts, roles, gates, records, rollback/recovery are approved. |
-| `PLN-DRE-002` | Create protected-surface task and current remote/read-only baseline | Future task path; no task exists now | `DRE-001`–`DRE-004` | Remote/runtime/secret approvals, repository identity, before evidence, rollback are bound. |
-| `PLN-DRE-003` | Implement sandbox/canary promotion and release/deployment record | Approved workflow/remote/runtime/docs surfaces | `DRE-001`–`DRE-003` | Immutable artifact, approvals, gates, history/record, health, failure cases pass. |
+| `PLN-DRE-001` | Bind exact local baseline/canary projects, sample-service digest, upstream verdicts, health gates, rehearsal record, and rollback to the approved architecture | Spec 127, this Plan, and future Task | `DRE-001`–`DRE-004` | Exact local environments, artifact, gates, record, rollback, and recovery handoff are explicit. |
+| `PLN-DRE-002` | Create a protected-surface Task and deterministic local baseline/canary fixtures | Future task and fixture paths | `DRE-001`–`DRE-004` | Runtime scope, repository identity, before evidence, cleanup, and rollback are bound. |
+| `PLN-DRE-003` | Implement local sandbox/canary promotion and delivery rehearsal record | Approved local runtime, script, test, and docs surfaces | `DRE-001`–`DRE-003` | Immutable artifact, gates, history/record, health, and failure cases pass without claiming a real Release. |
 | `PLN-DRE-004` | Implement config/application rollback and data-recovery handoff | Approved workflow/runtime/ops surfaces | `DRE-004` | Prior artifact/config restoration, health, data classification/handoff pass. |
 | `PLN-DRE-005` | Review evidence and separately approve broader rollout | Future task/operations/release surfaces | `DRE-001`–`DRE-004` | Release/security/operations/QA review with no unresolved critical/important finding. |
 
 ## Sequencing, Migration, and Rollout
 
-1. Define environments, artifacts, identities, approval roles, records, and rollback.
-2. Capture separately approved current remote/read-only baseline.
-3. Approve exact future task/workflow/remote/secret/runtime mutations.
+1. Verify the active architecture chain and bind local projects, artifact, gates, record, and rollback.
+2. Create and approve the exact local Task, fixtures, runtime commands, and cleanup.
+3. Keep workflow, remote, secret, registry, Release, and deployment mutations deferred.
 4. Test immutable artifact and failure gates in sandbox/non-production.
 5. Run a separately approved canary and verify health/rollback/recovery.
 6. Approve broader promotion only after independent review.
@@ -114,7 +116,7 @@ Umbrella approval is documentation lineage only.
 ## Completion Criteria
 
 - [ ] Required PRD/ARD/ADRs exist and are approved.
-- [ ] Spec 127 and this plan are reviewed and activated.
+- [ ] This Plan is reviewed and activated while Spec 127 remains active.
 - [ ] A separate protected-surface Stage 04 task authorizes exact execution.
 - [ ] Human, runtime, secret, remote, and architecture gates are resolved.
 - [ ] Sandbox/canary, negative gates, release/deployment record, and rollback pass.

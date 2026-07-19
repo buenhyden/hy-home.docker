@@ -1,15 +1,13 @@
-<!-- Target: docs/03.specs/125-infrastructure-operations-readiness-remediation/README.md -->
-
 # Infrastructure Operations Readiness Remediation
 
-> Draft technical contract for upgrades, migrations, backups, restores, and state-aware recovery evidence.
+> Active technical contract for representative PostgreSQL upgrade, backup, restore, and state-aware recovery evidence.
 
 ## Overview
 
 This folder owns the infrastructure operations follow-up for representative
-upgrade, migration, backup, and restore rehearsals. It remains documentation
-only and does not authorize access to runtime state, backups, secrets, or
-production targets.
+upgrade, migration, backup, and restore rehearsals using synthetic PostgreSQL
+state. It does not authorize production state, shared backup storage, secrets,
+or remote targets; execution requires an approved Plan and active Task.
 
 ## Audience
 
@@ -30,7 +28,7 @@ production targets.
 
 ### Out of Scope
 
-- Starting any service or reading runtime state under this draft.
+- Starting any service or reading runtime state without an approved Plan and active Task.
 - Compose startup/readiness ownership, supply-chain tooling, or deployment/CD.
 - Production data, secret values, credentials, or remote mutations.
 
@@ -45,7 +43,8 @@ production targets.
 ## How to Work in This Area
 
 1. Read [spec.md](./spec.md) for the four owned audit gaps.
-2. Resolve the required Stage 01/02 data-protection and recovery predecessors.
+2. Use PRD 025, ARD 0028, ADR 0028, and Spec 124 as the approved predecessor
+   chain; do not generalize the representative path to production readiness.
 3. Treat sibling specs as dependency owners; do not copy their requirements.
 4. Create no runtime task until exact representative data, target, retention,
    rollback, redaction, and approval evidence is available.
@@ -53,6 +52,9 @@ production targets.
 ## Related Documents
 
 - [Technical specification](./spec.md)
+- [Operational readiness PRD](../../01.requirements/025-operational-readiness-closure.md)
+- [Operational readiness ARD](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- [Local-isolated evidence ADR](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - [Draft implementation plan](../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
 - [Umbrella audit specification](../123-agentic-engineering-audit-remediation/spec.md)
 - [Canonical Compose and operations audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)

@@ -1,22 +1,26 @@
 ---
-status: draft
+status: active
 artifact_id: spec:127-deployment-release-engineering-remediation
 artifact_type: spec
 parent_ids:
+  - prd:025-operational-readiness-closure
+  - ard:0028-operational-readiness-closure
+  - adr:0028-local-isolated-readiness-evidence
   - spec:123-agentic-engineering-audit-remediation
+  - spec:124-compose-runtime-readiness-remediation
+  - spec:125-infrastructure-operations-readiness-remediation
+  - spec:126-security-supply-chain-remediation
 ---
 
 # Deployment and Release Engineering Remediation Technical Specification (Spec)
 
 ## Overview
 
-This draft defines the future contract for explicit deployment environments,
-promotion, approvals, release records, health evidence, and rollback. It owns
-five canonical audit gaps. It does not authorize CI/CD workflow changes,
-GitHub Environments/Releases, artifact publication, deployment, secret access,
-runtime action, or remote mutation.
-
-Spec 123 is typed audit lineage only and is not deployment authorization.
+This active specification defines the bounded local contract for sample-service
+baseline/canary environments, verified-digest promotion, health evidence, and
+rollback. It owns five canonical audit gaps. The local design does not authorize
+CI/CD workflow mutation, GitHub Environments/Releases, artifact publication,
+remote deployment, secret access, or a real Release event.
 
 ## Strategic Boundaries & Non-goals
 
@@ -26,28 +30,27 @@ Spec 123 is typed audit lineage only and is not deployment authorization.
   and data recovery from Spec 125 without duplicating those requirements.
 - Do not claim a release from a tag-string changelog check or deployment from a
   successful build.
-- Do not select environments, targets, artifacts, workflow provider, identity,
-  approval authority, release format, promotion strategy, or rollback
-  mechanism in this draft.
+- Do not infer production deployment or release readiness from the local
+  baseline/canary rehearsal.
 
 ## Boundaries and Inputs
 
-- **PRD**: Unresolved prerequisite for release/deployment value, environment
-  scope, availability/change-risk expectations, approval roles, release record,
-  and rollback acceptance.
-- **ARD**: Unresolved prerequisite for environment topology, artifact flow,
-  deployment identity/trust, observability/health gates, state boundaries,
-  separation of duties, and rollback/recovery architecture.
-- **Related ADRs**: Unresolved prerequisites for promotion strategy,
-  environment protection, deployment mechanism, release record/artifact
-  publication, config/application rollback, data-recovery handoff, and OIDC or
-  secret identity.
+- **PRD**: [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
+  defines local promotion/rollback value and remote non-goals.
+- **ARD**: [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+  defines separate baseline/canary projects and upstream verdict boundaries.
+- **ADR**: [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+  selects verified-digest local canary, promotion, and previous-digest rollback.
 - **Audit lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
-  authorizes this draft only.
+  remains the canonical audit lineage.
+- **Direct dependencies**: [Spec 124](../124-compose-runtime-readiness-remediation/spec.md),
+  [Spec 125](../125-infrastructure-operations-readiness-remediation/spec.md), and
+  [Spec 126](../126-security-supply-chain-remediation/spec.md) own readiness,
+  recovery, and supply-chain verdicts.
 
 Architecture-changing workflow, environment, target, identity, artifact,
-network, promotion, or rollback work is blocked until PRD/ARD/ADRs exist and
-are approved. This spec does not create or claim them.
+network, promotion, or rollback work remains blocked until the approved Plan
+and active Task identify the exact local surface and rollback.
 
 ## Canonical Gap Ownership
 
@@ -120,12 +123,14 @@ rulesets, environments, and branch protection were not queried.
 
 ## Core Design
 
-- **Component Boundary**: Future artifact-to-environment promotion and release
-  evidence flow; provider and targets remain unresolved.
+- **Component Boundary**: Separate local baseline and canary Compose projects
+  for `examples/sample-web-service`, promoted only by immutable verified digest
+  with explicit health and previous-digest rollback.
 - **Key Dependencies**: Spec 126 verification verdict; Spec 124 readiness;
   Spec 125 data recovery and state-aware rollback.
-- **Tech Stack**: Unresolved until architecture, environment, identity, and
-  remote approvals are complete.
+- **Tech Stack**: Docker image/build, Docker Compose, repository-owned health
+  and promotion wrappers, and Spec 126 verification verdicts. No remote
+  environment, registry, Release, or workflow provider is selected.
 
 ## Data Modeling & Storage Strategy
 
@@ -167,10 +172,12 @@ until remote surface selection and approval.
 
 ## Tools & Tool Contract (If Applicable)
 
-- **Tool List**: Unresolved; no workflow, environment, registry, Release, or
-  deployment tool is approved here.
-- **Permission Boundary**: Documentation/static inspection only under this
-  draft.
+- **Tool List**: Local Docker build/image inspection, Docker Compose baseline
+  and canary projects, endpoint health probes, verified-digest promotion, and
+  rollback wrappers defined by the approved Plan.
+- **Permission Boundary**: Task-owned local resources only. Workflow, registry,
+  GitHub Environment/Release, identity, publication, and remote deployment
+  remain prohibited.
 - **Failure Handling**: Stop promotion/deployment on gate, approval, identity,
   target, health, or rollback ambiguity.
 
@@ -201,7 +208,7 @@ or environment dumps in tracked docs or memory.
 
 ## Approval Gates
 
-| Gate | Unresolved approval required before activation/execution | Evidence required |
+| Gate | Remaining approval required before execution | Evidence required |
 | --- | --- | --- |
 | Architecture | Approved PRD/ARD/ADRs for environments, artifact flow, identity, promotion, health, release record, and rollback/recovery | Canonical IDs/paths and approval state. |
 | Human | Release/environment/change owners approve target, artifact, gates, window, rollback, and residual risk | Approval reference and named decision/recovery owners. |
@@ -251,8 +258,9 @@ bash scripts/validation/check-doc-implementation-alignment.sh
 bash scripts/validation/check-repo-contracts.sh
 ```
 
-No workflow, environment, Release, registry, deployment, secret, runtime, or
-remote command is authorized by this draft.
+No local delivery command is authorized until the Plan and active Task name the
+exact artifact digest, projects, ports, gates, health criteria, failure
+injection, cleanup, and rollback. Remote delivery commands remain out of scope.
 
 ## Success Criteria & Verification Plan
 
@@ -266,6 +274,9 @@ remote command is authorized by this draft.
 
 ## Related Documents
 
+- **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Plan**: [Deployment/release draft plan](../../04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
 - **Quality audit**: [SDLC quality and formatting](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md)

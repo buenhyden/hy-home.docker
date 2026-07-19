@@ -26,8 +26,8 @@ surface approvals are attached to a future task.
 
 | Gate | Current state | Required resolution |
 | --- | --- | --- |
-| Parent spec | Draft | Spec 124 reviewed and activated. |
-| Architecture | Unresolved | Approved PRD, ARD, and ADRs named by Spec 124. |
+| Parent spec | Active | Spec 124 is traced to PRD 025, ARD 0028, and ADR 0028; this Plan remains draft. |
+| Architecture | Approved local design | PRD 025, ARD 0028, and ADR 0028 bound the `core` five-service isolated path; this Plan must pin exact test-only inputs. |
 | Human | Unresolved | Runtime owner approves service/profile scope, disruption, stop criteria, and risk. |
 | Runtime | Unresolved | Exact target, files/profiles/services, commands, timeout, teardown, and recovery in a future Stage 04 task. |
 | Secret | Unresolved/not authorized | Exact IDs/paths and metadata boundary plus redaction approval; no values. |
@@ -40,7 +40,7 @@ these gates.
 
 - **Goals**: Produce bounded startup, readiness, recovery, teardown, and
   escalation evidence that satisfies Spec 124.
-- **In Scope**: Predecessor resolution, scoped scenario design, isolated
+- **In Scope**: Exact scope and scenario binding, isolated
   harness/fixture implementation if approved, negative/stop paths, evidence,
   independent review, and operations handoff.
 
@@ -55,7 +55,7 @@ these gates.
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| `PLN-CRR-001` | Create and approve required PRD/ARD/ADRs; select bounded target/scenarios | Unresolved Stage 01/02 paths; update Spec 124 after approval | `CRR-001`–`CRR-003` | Canonical approved predecessors and exact scope exist. |
+| `PLN-CRR-001` | Bind exact Compose files, `core` services, synthetic inputs, scenarios, timeouts, and cleanup to the approved architecture | Spec 124, this Plan, and future Task | `CRR-001`–`CRR-003` | Canonical predecessors remain active and the exact local scope is explicit. |
 | `PLN-CRR-002` | Create a protected-surface Stage 04 task and redacted evidence schema | Future task path; no task exists now | `CRR-001`–`CRR-003` | Human/runtime/secret/remote approvals and recovery/teardown are bound. |
 | `PLN-CRR-003` | Implement the smallest approved isolated startup/readiness scenario | Paths selected only by approved architecture/task | `CRR-001`, `CRR-002` | Initialization and service criteria pass or stop safely; teardown verified. |
 | `PLN-CRR-004` | Add one approved bounded failure/recovery and negative stop-path scenario | Approved runtime/test/ops surfaces | `CRR-003` | Recovery time/state/escalation and failure behavior are recorded. |
@@ -63,7 +63,7 @@ these gates.
 
 ## Sequencing, Migration, and Rollout
 
-1. Resolve PRD/ARD/ADR and spec approval.
+1. Verify the active PRD/ARD/ADR/Spec chain and pin the exact local scope.
 2. Inventory exact target/profile/service/secret/remote boundaries.
 3. Approve a future task with before/after, teardown, recovery, and redaction.
 4. Run static preflight, then the smallest isolated startup/readiness scenario.
@@ -113,7 +113,7 @@ these gates.
 ## Completion Criteria
 
 - [ ] Required PRD/ARD/ADRs exist and are approved.
-- [ ] Spec 124 and this plan are reviewed and activated.
+- [ ] This Plan is reviewed and activated while Spec 124 remains active.
 - [ ] A separate protected-surface Stage 04 task authorizes exact execution.
 - [ ] Human, runtime, secret, remote, and architecture gates are resolved.
 - [ ] Startup, readiness, recovery/negative path, teardown, and redaction pass.

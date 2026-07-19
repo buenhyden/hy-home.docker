@@ -280,6 +280,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/01.requirements/022-laboratory-optimization-hardening.md](../../01.requirements/022-laboratory-optimization-hardening.md) | Markdown reference |
 | [docs/01.requirements/023-standardize-infra-net.md](../../01.requirements/023-standardize-infra-net.md) | Markdown reference |
 | [docs/01.requirements/024-agent-governance-standardization.md](../../01.requirements/024-agent-governance-standardization.md) | Markdown reference |
+| [docs/01.requirements/025-operational-readiness-closure.md](../../01.requirements/025-operational-readiness-closure.md) | Markdown reference |
 | [docs/01.requirements/README.md](../../01.requirements/README.md) | folder index |
 | [docs/02.architecture/README.md](../../02.architecture/README.md) | folder index |
 | [docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/0001-traefik-nginx-hybrid.md) | Markdown reference |
@@ -306,6 +307,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md) | Markdown reference |
 | [docs/02.architecture/decisions/0026-standardize-infra-net.md](../../02.architecture/decisions/0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md) | Markdown reference |
+| [docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md) | Markdown reference |
 | [docs/02.architecture/decisions/README.md](../../02.architecture/decisions/README.md) | folder index |
 | [docs/02.architecture/requirements/0001-gateway-architecture.md](../../02.architecture/requirements/0001-gateway-architecture.md) | Markdown reference |
 | [docs/02.architecture/requirements/0002-auth-architecture.md](../../02.architecture/requirements/0002-auth-architecture.md) | Markdown reference |
@@ -331,6 +333,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md) | Markdown reference |
 | [docs/02.architecture/requirements/0026-standardize-infra-net.md](../../02.architecture/requirements/0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/requirements/0027-agent-governance-canonical-adapter.md](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md) | Markdown reference |
+| [docs/02.architecture/requirements/0028-operational-readiness-closure.md](../../02.architecture/requirements/0028-operational-readiness-closure.md) | Markdown reference |
 | [docs/02.architecture/requirements/README.md](../../02.architecture/requirements/README.md) | folder index |
 | [docs/03.specs/001-gateway/README.md](../../03.specs/001-gateway/README.md) | folder index |
 | [docs/03.specs/001-gateway/spec.md](../../03.specs/001-gateway/spec.md) | Markdown reference |

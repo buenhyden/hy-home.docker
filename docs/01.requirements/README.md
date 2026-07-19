@@ -57,7 +57,8 @@ docs/01.requirements/
 ├── 추가 PRD
 │   ├── 013-ai-open-webui.md       # Open WebUI (AI sub-feature)
 │   ├── 023-standardize-infra-net.md  # infra_net 표준화
-│   └── 024-agent-governance-standardization.md # Agent governance 표준화
+│   ├── 024-agent-governance-standardization.md # Agent governance 표준화
+│   └── 025-operational-readiness-closure.md # Local-isolated operational readiness closure
 ├── 최적화/하드닝 PRD (2026-03-28)
 │   ├── 014-auth-optimization-hardening.md
 │   ├── 015-security-optimization-hardening.md
@@ -130,3 +131,4 @@ PRD는 문제와 요구사항의 SSoT입니다. 구현 방법, 실행 순서, �
 - [Spec README](../03.specs/README.md)
 - [Plan README](../04.execution/plans/README.md)
 - [Agent Governance Standardization PRD](./024-agent-governance-standardization.md)
+- [Operational Readiness Closure PRD](./025-operational-readiness-closure.md)

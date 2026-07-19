@@ -1,8 +1,11 @@
 ---
-status: draft
+status: active
 artifact_id: spec:126-security-supply-chain-remediation
 artifact_type: spec
 parent_ids:
+  - prd:025-operational-readiness-closure
+  - ard:0028-operational-readiness-closure
+  - adr:0028-local-isolated-readiness-evidence
   - spec:123-agentic-engineering-audit-remediation
 ---
 
@@ -10,14 +13,12 @@ parent_ids:
 
 ## Overview
 
-This draft defines the future contract for broader dependency/container
-scanning, artifact SBOMs, build provenance/attestations, signing/verification,
-and reviewed OpenSSF Scorecard signals. It owns six canonical audit gaps and
-does not authorize tool selection, workflow changes, scanning, artifact
-publication, signing, secret access, registry access, or remote action.
-
-Spec 123 is typed audit lineage only. Its approval does not authorize security
-runtime or supply-chain implementation.
+This active specification defines the contract for digest-bound container
+scanning, SBOM, provenance, local signing/verification, and reviewed OpenSSF
+Scorecard signals for `examples/sample-web-service`. It owns six canonical
+audit gaps. PRD 025, ARD 0028, and ADR 0028 approve the local-isolated design;
+the Plan and active Task must still approve exact tool image digests, policies,
+commands, generated-artifact boundaries, and read-only remote observation.
 
 ## Strategic Boundaries & Non-goals
 
@@ -28,26 +29,25 @@ runtime or supply-chain implementation.
 - Supply verification outputs to Spec 127; do not own deployment promotion.
 - Do not claim SLSA level, broad SCA coverage, signed releases, or artifact
   trust from version declarations, Dependabot, one npm audit, or workflow lint.
-- Do not choose scanner, SBOM format, signer, identity provider, registry,
-  retention, publication, or blocking mode in this draft.
+- Do not claim remote registry trust, keyless identity, transparency-log
+  integration, publication, signed release, or a SLSA conformance level from
+  the bounded local implementation.
 
 ## Boundaries and Inputs
 
-- **PRD**: Unresolved prerequisite for protected artifact/product scope,
-  compliance/risk objectives, vulnerability tolerance, release impact, and
-  stakeholder acceptance.
-- **ARD**: Unresolved prerequisite for artifact boundaries, build/registry
-  trust, identity/secret boundary, evidence storage/retention, producer-consumer
-  flow, and failure containment.
-- **Related ADRs**: Unresolved prerequisites for scanner and threshold policy,
-  SBOM format/association, provenance/attestation mechanism, signing identity,
-  verification policy, Scorecard mode, and exception lifecycle.
+- **PRD**: [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
+  defines the sample artifact, local trust outcome, and remote non-goals.
+- **ARD**: [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+  defines the digest-bound producer/consumer and transient-evidence boundaries.
+- **ADR**: [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+  selects pinned Syft, Grype, and Cosign containers plus advisory read-only
+  Scorecard observation and deterministic local policy fixtures.
 - **Audit lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
-  authorizes this draft only.
+  remains the canonical audit lineage.
 
 Architecture-changing build, identity, registry, artifact, workflow, or
-verification changes are blocked until the PRD/ARD/ADRs exist and are approved.
-This specification does not create or claim them.
+verification changes remain blocked until the approved Plan and active Task
+identify the exact protected surfaces and rollback.
 
 ## Canonical Gap Ownership
 
@@ -116,12 +116,16 @@ tracked. The version-provenance snapshot covers declarations only.
 
 ## Core Design
 
-- **Component Boundary**: Future artifact evidence producer and verifier chain;
-  tools and runtime surfaces remain unresolved.
-- **Key Dependencies**: Artifact-producing build/release boundary from Spec 127;
-  runtime/image consumers from Specs 124/125.
-- **Tech Stack**: Unresolved pending architecture/ADR decisions and approved
-  capability evaluation.
+- **Component Boundary**: Local sample-service image build plus digest-bound
+  SBOM, scan policy verdict, provenance statement, blob signature, verification,
+  and positive/negative fixtures.
+- **Key Dependencies and Consumers**: The tracked
+  `examples/sample-web-service` source and local fixture build produce the test
+  artifact identity. Spec 127 consumes the verification verdict; Specs 124/125
+  may consume image verdicts without owning this requirement.
+- **Tech Stack**: Digest-pinned Syft, Grype, and Cosign containers; CycloneDX
+  JSON SBOM; SLSA/in-toto-style provenance statement; local ephemeral signing
+  key; read-only OpenSSF Scorecard; versioned local policy fixtures.
 
 ## Data Modeling & Storage Strategy
 
@@ -139,7 +143,7 @@ tracked. The version-provenance snapshot covers declarations only.
 
 | Interface | Producer | Consumer | Contract |
 | --- | --- | --- | --- |
-| Artifact identity | Spec 127 build/release flow | SBOM/provenance/signing | Immutable subject digest plus source/build identity. |
+| Artifact identity | Spec 126 local sample-service fixture build | SBOM/provenance/signing | Immutable subject digest plus source/build identity. |
 | Verification verdict | Future supply-chain verifier | Spec 127 promotion gate | Policy/version, subject digest, accepted/rejected/exception status. |
 | Image/artifact verdict | Future scanner/verifier | Specs 124/125 | Exact digest, policy, freshness, and redacted result. |
 | Exception record | Human security owner | Build/release consumer | Scope, reason, owner, approval, expiry, compensating control, disposition. |
@@ -162,10 +166,13 @@ tool selection and remote approval.
 
 ## Tools & Tool Contract (If Applicable)
 
-- **Tool List**: Unresolved; no scanner, SBOM, attestation, signer, verifier, or
-  Scorecard tool is approved here.
-- **Permission Boundary**: Documentation/static inspection only under this
-  draft.
+- **Tool List**: Syft for SBOM, Grype for SBOM/image vulnerability evaluation,
+  Cosign `sign-blob`/`verify-blob` for local subject binding, and Scorecard for
+  read-only advisory observation. Exact releases and image digests belong in
+  the Plan after current official-release verification.
+- **Permission Boundary**: Local build and task-owned artifact execution only;
+  Scorecard may query the exact repository read-only. Registry, workflow,
+  identity, publication, and remote mutation remain prohibited.
 - **Failure Handling**: Fail closed for identity/digest/policy mismatch after a
   blocking mode is separately approved; advisory mode records disposition.
 
@@ -173,7 +180,7 @@ tool selection and remote approval.
 
 Future instructions must name exact artifact/digest, policy, tool/action pin,
 identity/secret scope, permissions, output/redaction, exception, and rollback.
-No agent may infer implementation approval from this draft or audit lineage.
+No agent may infer command approval from this specification or audit lineage.
 
 ## Memory & Context Strategy (If Applicable)
 
@@ -194,7 +201,7 @@ or secret-bearing logs in tracked evidence or memory.
 
 ## Approval Gates
 
-| Gate | Unresolved approval required before activation/execution | Evidence required |
+| Gate | Remaining approval required before execution | Evidence required |
 | --- | --- | --- |
 | Architecture | Approved PRD/ARD/ADRs for artifacts, trust, identity, retention, verification, and exceptions | Canonical IDs/paths and approval state. |
 | Human | Security/artifact owners approve scope, thresholds, blocking mode, exceptions, retention, and residual risk | Approval reference and named remediation owner. |
@@ -242,8 +249,10 @@ bash scripts/validation/check-doc-implementation-alignment.sh
 bash scripts/validation/check-repo-contracts.sh
 ```
 
-No scanner, SBOM, provenance, signing, verification, Scorecard, registry, or
-remote command is authorized by this draft.
+No tool command is authorized until the Plan and active Task pin exact images,
+targets, policies, exception schema, transient paths, redaction, cleanup, and
+the read-only repository identity. Registry and mutation commands remain out of
+scope.
 
 ## Success Criteria & Verification Plan
 
@@ -257,6 +266,9 @@ remote command is authorized by this draft.
 
 ## Related Documents
 
+- **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Plan**: [Security supply-chain draft plan](../../04.execution/plans/2026-07-11-security-supply-chain-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
 - **Security audit**: [Security framework maturity](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)

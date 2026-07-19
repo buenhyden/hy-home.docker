@@ -92,10 +92,10 @@ docs/03.specs/
 ├── 121-dependency-vulnerability-audit-gate/ # Completed Storybook Next.js dependency vulnerability audit gate
 ├── 122-agentic-research-pack-consolidation/ # Completed agentic research-pack consolidation; post-closure review PASS/APPROVED
 ├── 123-agentic-engineering-audit-remediation/ # Completed agentic audit remediation; I-01 through I-03-R1 resolved
-├── 124-compose-runtime-readiness-remediation/ # Draft Compose startup, readiness, recovery, and teardown contract
-├── 125-infrastructure-operations-readiness-remediation/ # Draft upgrade, migration, backup, restore, and recovery contract
-├── 126-security-supply-chain-remediation/ # Draft scanning, SBOM, provenance, signing, and verification contract
-├── 127-deployment-release-engineering-remediation/ # Draft environment, promotion, release, deployment, and rollback contract
+├── 124-compose-runtime-readiness-remediation/ # Active local-isolated Compose readiness contract
+├── 125-infrastructure-operations-readiness-remediation/ # Active representative PostgreSQL recovery contract
+├── 126-security-supply-chain-remediation/ # Active sample-service supply-chain contract
+├── 127-deployment-release-engineering-remediation/ # Active local promotion and rollback contract
 ├── 128-agentic-audit-harness-consolidation/ # Completed canonical audit lifecycle, current-state, semantic freshness, and QA/CI contract
 ├── 129-document-contract-canonicalization/ # Completed contract-first foundation; post-closure findings resolved
 ├── 130-template-contract-system-canonicalization/ # Completed template-role, body, validator, and direct-consumer canonicalization

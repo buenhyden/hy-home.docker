@@ -49,16 +49,18 @@ docs/02.architecture/decisions/
 ├── ...
 ├── 0026-standardize-infra-net.md        # Canonical infra_net ADR
 ├── 0027-stage-00-canonical-adapter-model.md # Canonical agent governance adapter ADR
+├── 0028-local-isolated-readiness-evidence.md # Local-isolated readiness evidence strategy
 └── README.md                            # This file
 ```
 
 ## Current Inventory
 
-- 24 ADR leaf documents are present.
+- 25 ADR leaf documents are present.
 - `0001` through `0011` cover base service and tier selection decisions.
 - `0015` through `0026` cover analytics, hardening/HA, and network decisions.
 - [`0026-standardize-infra-net.md`](./0026-standardize-infra-net.md) is the canonical `infra_net` ADR for this stage.
 - [`0027-stage-00-canonical-adapter-model.md`](./0027-stage-00-canonical-adapter-model.md) is the canonical Stage 00 adapter decision for this stage.
+- [`0028-local-isolated-readiness-evidence.md`](./0028-local-isolated-readiness-evidence.md) is the canonical local-isolated readiness evidence decision for Specs 124-127.
 
 ## How to Work in This Area
 
@@ -89,6 +91,7 @@ docs/02.architecture/decisions/
 - **PRD**: [Product requirements](../../01.requirements/README.md)
 - **ARD**: [Architecture reference documents](../requirements/README.md)
 - **Stage 00 Adapter ADR**: [0027-stage-00-canonical-adapter-model](./0027-stage-00-canonical-adapter-model.md)
+- **Operational Readiness ADR**: [0028-local-isolated-readiness-evidence](./0028-local-isolated-readiness-evidence.md)
 - **Spec**: [Technical specifications](../../03.specs/README.md)
 - **Plan**: [Execution plans](../../04.execution/plans/README.md)
 - **Template**: [ADR template](../../99.templates/templates/sdlc/adr.template.md)

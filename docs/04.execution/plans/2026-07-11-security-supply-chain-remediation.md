@@ -26,8 +26,8 @@ architecture before automating any producer or consumer.
 
 | Gate | Current state | Required resolution |
 | --- | --- | --- |
-| Parent spec | Draft | Spec 126 reviewed and activated. |
-| Architecture | Unresolved | Approved PRD/ARD/ADRs for artifacts, tools, trust, identities, evidence, exceptions, and retention. |
+| Parent spec | Active | Spec 126 is traced to PRD 025, ARD 0028, and ADR 0028; this Plan remains draft. |
+| Architecture | Approved local design | PRD 025, ARD 0028, and ADR 0028 bind the sample-service artifact and local trust flow; this Plan must pin exact tool images and policies. |
 | Human | Unresolved | Security/artifact owners approve scope, thresholds, blocking, exceptions, retention, and risk. |
 | Runtime | Unresolved | Exact targets/tools/commands/resources/failure/cleanup in a future task. |
 | Secret | Unresolved/not authorized | Exact signing/OIDC/registry IDs/claims/paths, revocation, and redaction; no values. |
@@ -39,7 +39,7 @@ Spec 123 approval does not satisfy any gate.
 
 - **Goals**: Build a digest-bound, policy/versioned, independently verified
   supply-chain evidence path with explicit advisory/blocking and exception rules.
-- **In Scope**: Architecture/tool evaluation, deterministic fixtures, advisory
+- **In Scope**: Current official tool-pin verification, deterministic fixtures, advisory
   rollout, failure cases, exception review, identity/secret/remote approvals,
   verifier integration, and independent review.
 
@@ -54,7 +54,7 @@ Spec 123 approval does not satisfy any gate.
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| `PLN-SSC-001` | Approve artifact/trust PRD/ARD/ADRs and exact capability/tool decisions | Unresolved Stage 01/02 paths; update Spec 126 | `SSC-001`–`SSC-005` | Artifact, identity, policy, retention, exception, producer, and consumer are approved. |
+| `PLN-SSC-001` | Pin sample-service build identity, tool container digests, SBOM/provenance formats, local signing policy, exceptions, and advisory Scorecard mode | Spec 126, this Plan, and future Task | `SSC-001`–`SSC-005` | Artifact, identity class, policy, retention, exception, producer, and consumers are explicit. |
 | `PLN-SSC-002` | Create protected-surface task and deterministic local fixtures | Future task/test paths; no task exists now | `SSC-001`–`SSC-005` | Exact surfaces/permissions/redaction/rollback and success/failure fixtures exist. |
 | `PLN-SSC-003` | Implement advisory scanning/SBOM/provenance with digest association | Approved build/CI/test surfaces | `SSC-001`–`SSC-003` | Reproducible outputs and subject/material/builder bindings pass. |
 | `PLN-SSC-004` | Implement signing/verification and Scorecard advisory review | Approved identity/CI/remote surfaces | `SSC-004`, `SSC-005` | Correct/tampered/wrong-identity cases and reviewed Scorecard disposition pass. |
@@ -62,8 +62,8 @@ Spec 123 approval does not satisfy any gate.
 
 ## Sequencing, Migration, and Rollout
 
-1. Define artifacts, producers/consumers, trust, identity, policies, and evidence.
-2. Approve tools/ADRs and future task boundaries.
+1. Verify the active architecture chain and bind artifact, consumers, trust, policies, and evidence.
+2. Pin current official tool containers and approve the future Task boundary.
 3. Validate deterministic local fixtures including failure/tampering.
 4. Introduce advisory CI/remote evidence only after permissions approval.
 5. Review findings, false positives, exceptions, retention, and identities.
@@ -113,7 +113,7 @@ Spec 123 approval does not satisfy any gate.
 ## Completion Criteria
 
 - [ ] Required PRD/ARD/ADRs exist and are approved.
-- [ ] Spec 126 and this plan are reviewed and activated.
+- [ ] This Plan is reviewed and activated while Spec 126 remains active.
 - [ ] A separate protected-surface Stage 04 task authorizes exact execution.
 - [ ] Human, runtime, secret, remote, and architecture gates are resolved.
 - [ ] Deterministic success/failure fixtures and advisory rollout pass.
