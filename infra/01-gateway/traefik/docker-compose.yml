@@ -9,7 +9,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med
-    image: traefik:v3.7.6
+    image: traefik:v3.7.7
     container_name: traefik
     hostname: traefik
     ports:

@@ -12,7 +12,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-studio
-    image: supabase/studio:2026.07.06-sha-66cf431
+    image: supabase/studio:2026.07.13-sha-b5ada96
     restart: unless-stopped
     depends_on:
       analytics:
@@ -90,7 +90,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-auth
-    image: supabase/gotrue:v2.192.0
+    image: supabase/gotrue:v2.193.0
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -126,7 +126,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-low
     container_name: supabase-rest
-    image: postgrest/postgrest:v14.14
+    image: postgrest/postgrest:v14.15
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -160,7 +160,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: realtime-dev.supabase-realtime
-    image: supabase/realtime:v2.112.6
+    image: supabase/realtime:v2.112.12
     restart: unless-stopped
     depends_on:
       db:
@@ -195,7 +195,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-storage
-    image: supabase/storage-api:v1.62.5
+    image: supabase/storage-api:v1.66.2
     restart: unless-stopped
     read_only: false
     volumes:
@@ -329,7 +329,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-analytics
-    image: supabase/logflare:1.46.0
+    image: supabase/logflare:1.47.1
     restart: unless-stopped
     ports:
       - ${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
@@ -361,7 +361,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-db
-    image: supabase/postgres:17.6.1.143
+    image: supabase/postgres:17.6.1.144
     restart: unless-stopped
     read_only: false
     volumes:

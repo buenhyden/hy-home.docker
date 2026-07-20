@@ -54,7 +54,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
-    image: prom/prometheus:v3.13.0
+    image: prom/prometheus:v3.13.1
     container_name: infra-prometheus
     tmpfs:
       - /tmp
@@ -401,7 +401,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/pyroscope:2.1.0
+    image: grafana/pyroscope:2.1.1
     container_name: infra-pyroscope
     command:
       - -config.file=/etc/pyroscope/pyroscope.yaml
