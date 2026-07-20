@@ -213,7 +213,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: prometheuscommunity/postgres-exporter:v0.20.0
+    image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: mng-pg-exporter
     environment:
       POSTGRES_HOSTNAME: mng-pg

@@ -22,7 +22,7 @@ services:
       service: template-stateful-med
     profiles:
       - data
-    image: influxdb:3.9.2-core
+    image: influxdb:3.10.0-core
     container_name: influxdb
     hostname: influxdb
     read_only: false
