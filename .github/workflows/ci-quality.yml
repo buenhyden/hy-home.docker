@@ -135,6 +135,23 @@ jobs:
           grep -Fxq 'fixtures_check=pass' <<<"$output"
           grep -Fxq 'regressions_check=pass' <<<"$output"
 
+  # ── Supply-chain Fixture Policy ────────────────────────────
+  supply-chain-fixture-policy:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - *checkout
+      - name: Set up Python for supply-chain fixture policy
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.12'
+      - name: Check deterministic supply-chain policy fixtures
+        run: python3 scripts/validation/check-supply-chain-policy.py --check
+      - name: Check supply-chain summary freshness
+        run: bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
+
   # ── Dependency Vulnerability Audit ─────────────────────────
   dependency-vulnerability-audit:
     permissions:

@@ -1,0 +1,33 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "predicate": {
+    "buildDefinition": {
+      "externalParameters": {
+        "role": "candidate",
+        "source_revision": "0123456789abcdef0123456789abcdef01234567"
+      },
+      "resolvedDependencies": [
+        {
+          "digest": {
+            "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          },
+          "uri": "git+local://examples/sample-web-service"
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "hyhome.local.supply-chain-wrapper"
+      }
+    }
+  },
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "subject": [
+    {
+      "digest": {
+        "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "name": "examples/sample-web-service"
+    }
+  ]
+}

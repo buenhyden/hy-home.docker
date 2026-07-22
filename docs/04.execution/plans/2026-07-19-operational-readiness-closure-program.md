@@ -172,12 +172,16 @@ Non-goals:
 
 **Plan:** [Security supply-chain Plan](./2026-07-11-security-supply-chain-remediation.md)
 
-- [ ] Execute that Plan using a fresh implementation agent after Task 2.
+- [x] Execute deterministic policy, preflight, fixture-only, CI/local/repository,
+      and generated-summary portions of that Plan using a fresh implementation
+      agent after Task 2. The optional live advisory rehearsal was attempted
+      with an authorized pinned Grype DB retrieval and truthfully rejected the
+      baseline at the critical-vulnerability policy gate.
 - [ ] Require distinct accepted baseline/candidate verdicts with the exact
       fields and paths above before Task 5 starts.
 - [ ] Require a fresh specification reviewer and a separate security/quality
       reviewer; remediate and re-review all findings.
-- [ ] Commit the verified implementation as
+- [x] Commit the deterministic implementation as
       `feat(security): add local supply-chain verification`.
 
 ### Task 4: Implement PostgreSQL logical recovery rehearsal

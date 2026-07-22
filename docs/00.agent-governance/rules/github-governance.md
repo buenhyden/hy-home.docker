@@ -169,6 +169,7 @@ job; it does not create or require another CI job.
 | `docs-implementation-alignment`   | `scripts/validation/check-doc-implementation-alignment.sh` |
 | `repo-contracts`                  | `scripts/validation/check-repo-contracts.sh`           |
 | `agent-output-eval-fixture-gate`  | `scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` |
+| `supply-chain-fixture-policy`     | `scripts/validation/check-supply-chain-policy.py --check` |
 | `dependency-vulnerability-audit`  | `npm audit --audit-level=high --prefix projects/storybook/nextjs` |
 | `git-flow-contract`               | inline PR title and source-branch shell check          |
 | `compose-validation`              | `scripts/validation/validate-docker-compose.sh`        |

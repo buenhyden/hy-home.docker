@@ -39,7 +39,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 925
+- **Tracked records**: 926
 - **Records with findings**: 558
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
@@ -52,7 +52,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `archive` | 21 |
 | `ard` | 25 |
 | `audit` | 33 |
-| `generated` | 8 |
+| `generated` | 9 |
 | `governance` | 112 |
 | `guide` | 66 |
 | `plan` | 99 |
@@ -909,6 +909,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/90.references/data/kubernetes/docker-compose-to-k3s-migration.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key | migration candidate |
 | `docs/90.references/data/security/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/90.references/data/security/security-automation-readiness.md` | `generated` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | generated profile; owner=scripts/validation/generate-security-automation-readiness.sh | none | generated exception |
+| `docs/90.references/data/security/supply-chain-sample-service.md` | `generated` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | generated profile; owner=scripts/security/generate-supply-chain-sample-service-summary.sh | none | generated exception |
 | `docs/90.references/learning/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/90.references/learning/roadmap-v1.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=superseded; allowed; signals=replacement-free-supersession | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key, replacement-free-supersession | migration candidate |
 | `docs/90.references/learning/roadmap.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key | migration candidate |

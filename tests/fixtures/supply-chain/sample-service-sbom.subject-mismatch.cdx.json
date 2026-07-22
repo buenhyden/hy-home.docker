@@ -1,0 +1,26 @@
+{
+  "bomFormat": "CycloneDX",
+  "components": [],
+  "metadata": {
+    "component": {
+      "name": "examples/sample-web-service",
+      "properties": [
+        {
+          "name": "org.hyhome.delivery.image_config_digest",
+          "value": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "name": "org.hyhome.delivery.oci_archive_sha256",
+          "value": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        },
+        {
+          "name": "org.hyhome.delivery.rehearsal.role",
+          "value": "candidate"
+        }
+      ],
+      "type": "container"
+    }
+  },
+  "specVersion": "1.6",
+  "version": 1
+}

@@ -91,6 +91,20 @@ if [[ -f "$target_surface_checker" && -f "$target_surface_library" ]]; then
   fi
 fi
 
+section "Supply-chain deterministic fixture policy"
+supply_chain_checker="scripts/validation/check-supply-chain-policy.py"
+supply_chain_summary="scripts/security/generate-supply-chain-sample-service-summary.sh"
+supply_chain_test="tests/validation/test_supply_chain_policy.py"
+for supply_chain_path in "$supply_chain_checker" "$supply_chain_summary" "$supply_chain_test"; do
+  [[ -f "$supply_chain_path" ]] || fail "missing supply-chain policy surface: $supply_chain_path"
+done
+if [[ -f "$supply_chain_checker" ]] && ! python3 "$supply_chain_checker" --check; then
+  failures=$((failures + 1))
+fi
+if [[ -f "$supply_chain_summary" ]] && ! bash "$supply_chain_summary" --check; then
+  failures=$((failures + 1))
+fi
+
 if [[ "$actual_docs_text" != "$expected_docs" ]]; then
   fail "docs top-level folders do not match the allowed taxonomy"
   echo "Expected:" >&2
@@ -1030,6 +1044,7 @@ required_jobs = {
     "docs-implementation-alignment",
     "repo-contracts",
     "agent-output-eval-fixture-gate",
+    "supply-chain-fixture-policy",
     "dependency-vulnerability-audit",
     "git-flow-contract",
     "compose-validation",
@@ -1069,6 +1084,7 @@ if ci_quality in workflow_documents:
         "docs-implementation-alignment": 5,
         "repo-contracts": 10,
         "agent-output-eval-fixture-gate": 5,
+        "supply-chain-fixture-policy": 5,
         "dependency-vulnerability-audit": 10,
         "git-flow-contract": 5,
         "compose-validation": 10,
@@ -3998,6 +4014,8 @@ expected_implementations = {
     pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"),
     pathlib.Path("scripts/validation/run-agent-precommit-all-files.sh"),
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
+    pathlib.Path("scripts/security/generate-supply-chain-sample-service-summary.sh"),
+    pathlib.Path("scripts/security/verify-sample-service-supply-chain.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
     pathlib.Path("scripts/hooks/patch-graphify-post-commit.sh"),
@@ -4014,7 +4032,7 @@ expected_implementations = {
 }
 implementation_scripts = sorted(
     path
-    for folder in ["validation", "hardening", "hooks", "knowledge", "operations"]
+    for folder in ["validation", "hardening", "hooks", "knowledge", "operations", "security"]
     for path in pathlib.Path("scripts", folder).glob("*.sh")
     if path.is_file()
 )

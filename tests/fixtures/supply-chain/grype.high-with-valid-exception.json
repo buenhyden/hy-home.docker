@@ -1,0 +1,16 @@
+{
+  "exception_id": "EXC-SSC-0001",
+  "matches": [
+    {
+      "artifact": {
+        "name": "openssl-libs"
+      },
+      "vulnerability": {
+        "id": "CVE-2099-0001",
+        "severity": "High"
+      }
+    }
+  ],
+  "schema_version": 1,
+  "subject_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+}

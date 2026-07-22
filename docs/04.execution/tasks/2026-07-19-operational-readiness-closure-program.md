@@ -134,7 +134,7 @@ Redaction boundary:
 | --- | --- | --- | --- |
 | `T-ORC-001` | Activate five Task contracts and the Task index. | This Task | Complete; documentation gates pass, runtime not run |
 | `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Complete; terminal reviews C0/I0/M0 |
-| `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Not run |
+| `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Deterministic implementation complete; advisory runtime correctly rejected the baseline at the critical-vulnerability policy gate and independent reviews are pending |
 | `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Not run |
 | `T-ORC-005` | Verified-digest promotion and previous-digest rollback. | Delivery domain Task | Not run |
 | `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Not run |
@@ -146,6 +146,9 @@ Redaction boundary:
 | 2026-07-19 | `T-ORC-001` activation | Documentation implementation agent | Five canonical Task records and their index routing were prepared from the approved Plans; focused metadata, template, traceability, alignment, Markdown, and diff-hygiene gates passed without domain runtime. |
 | 2026-07-19 | `T-ORC-002` | Compose implementation and independent reviewers | Exact five-service startup, Vault recovery, expected timeout, typed scenario evidence, ready canonical handoff, and cleanup/redaction completed. Historical pre-routing reviews returned C0/I0/M0. The first routing reviews returned specification `C0/I3/M0` and quality `C0/I2/M0`; the second reviews returned specification `C0/I2/M0` and quality `C0/I1/M0`. After signal-cleanup and stale-evidence remediation with `35/35` focused tests, terminal specification and quality/security re-reviews each returned `APPROVED C0/I0/M0`. |
 | 2026-07-19 | `T-ORC-003`–`T-ORC-006` | Assigned future implementers/reviewers | `not_run`; evidence must be appended only after each exact command and review executes. |
+| 2026-07-22 | `T-ORC-003` | Fresh security implementation agent | Deterministic tool/policy/fixture, wrapper, CI/local/repository, and generated-summary work completed. An authorized bounded local pull cached exact pins; a first SBOM-subject binding defect was fixed. A separately authorized read-only retrieval using only pinned Grype seeded the ignored cache (schema `v6.1.9`, built `2026-07-21T07:05:18Z`, package SHA-256 `724e5d99c799d7e9b98ae8eb11930cf8ae427c4218b1e4db9d70e711dce63ce9`). The final offline advisory built/exported distinct subjects and rejected the baseline at class `40` under the critical-vulnerability policy (14 critical matches, no exception). Raw/redacted runtime material and DB identity remain ignored; task-owned `/tmp` keys were removed. No registry push, publication, OIDC, Scorecard request, or accepted consumer verdict occurred. Independent reviews remain pending. |
+| 2026-07-22 | `T-ORC-003` combined-review remediation | Combined review `C3/I1/M1` found archive-config binding, stale-verdict, multi-match exception, cross-role, and Scorecard repository defects. Remediation derives config identity from each exact OCI archive's verified index/manifest/config relationship, invalidates stale verdict paths before any advisory failure point, publishes only a completed run-scoped pair, evaluates every Grype match, verifies the opposite role archive, and uses `github.com/buenhyden/hy-home.docker`. The offline rerun reached the same truthful class `40` baseline rejection (14 critical/no exception), with no accepted pair or `/tmp` key directory. Independent review closure remains pending. |
+| 2026-07-22 | `T-ORC-003` re-review C1 remediation | Two re-reviews found that an accepted Grype result carrying a non-null exception ID could reach Task 5 as a falsely unexceptioned consumer verdict. The wrapper now preserves that transient vulnerability exception record, fails at class `40` before provenance/signing/publication, and keeps both fixed consumer verdict paths absent. The new wrapper regression passes; independent review closure remains pending. |
 
 ## Verification Evidence
 
@@ -177,8 +180,17 @@ with recovery passed in 104 seconds; and negative project
 seconds. The canonical handoff SHA-256
 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf` was
 preserved, and task-owned resources were empty after the runs. Fresh Task 2
-re-reviews remain pending. Tasks 3–5 and whole-branch verification remain
+re-reviews remain pending. Task 3 deterministic implementation is complete
+with the documented critical-vulnerability policy rejection; Task 3 accepted consumer
+verdicts, Task 3 reviews, Tasks 4–5, and whole-branch verification remain
 `not_run`.
+
+Task 3's repository-contract supply-chain section and generated-owner checks
+pass. Its aggregate repository contract remains at `failures=5` for four
+pre-existing lifecycle manifest-consumer mismatches and the missing `html5lib`
+provider renderer; the full local QA runner stops at that same renderer. The
+root implementation owner separately recorded an exact targeted
+`hadolint-docker` pass for the sample-service Dockerfile.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -208,8 +220,9 @@ the pre-wrapper evidence commit exists, and `git status --short` is empty.
 
 Implementation review verdict: Task-activation scaffolding and Task 2 are
 complete. Task 2 has final runtime evidence, routing remediation, and terminal
-specification and quality/security reviews at C0/I0/M0. The remaining three
-domain implementations remain `not_run`.
+specification and quality/security reviews at C0/I0/M0. Task 3 deterministic
+implementation is complete with the critical-vulnerability advisory rejection; combined review remediation is complete at `C3/I1/M1`, while its independent
+reviews remain `not_run`. Tasks 4–5 remain `not_run`.
 
 Task-activation specification review: the initial review returned C0/I1/M0.
 The Important finding was remediated by making the delivery baseline/canary
@@ -255,8 +268,12 @@ seconds; and negative `hyhome-crr-20260719-2281412-ho7cotsq` timed out with
 exit class `30` in 74 seconds. The canonical SHA-256
 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf` was
 preserved and task-owned resources were empty. Terminal Task 2 reviews pass at
-C0/I0/M0. Task 3–5, pre-wrapper, and closure commits remain `not_run` and must
-be recorded after creation, never predicted as completed evidence.
+C0/I0/M0. Task 3's logical commit is
+`feat(security): add local supply-chain verification`; its combined-review
+remediation is pending the final amendment and must be resolved from branch
+history after creation. Task 3 independent reviews, Tasks 4–5, pre-wrapper,
+and closure commits remain `not_run` and must be recorded after creation, never
+predicted as completed evidence.
 
 ## Deferred and Blocked Items
 
@@ -267,8 +284,12 @@ Deferred items:
   enforcement, GitHub Environment/Release, and production deployment;
 - production RTO/RPO, SLSA conformance, and production-readiness claims.
 
-Blocked items: `T-ORC-003`–`T-ORC-006` remain blocked on their documented sequence, upstream
-typed verdicts, exact local evidence, and independent review.
+Blocked items: `T-ORC-003` has exact pinned images cached but cannot supply
+Task 5 because the baseline remains rejected by the critical-vulnerability
+policy (14 critical matches, no exception) and no accepted distinct verdict
+pair exists; its independent review closure remains pending. `T-ORC-004`–`T-ORC-006` remain blocked on
+their documented sequence, upstream typed verdicts, exact local evidence, and
+independent review.
 
 Deferral destination: each remote, credential, production, publication, or
 live-data expansion requires a new Stage 01-04 design chain and explicit human

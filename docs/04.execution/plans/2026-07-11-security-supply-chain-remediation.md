@@ -149,6 +149,7 @@ Exact deterministic fixture manifest:
 - `tests/fixtures/supply-chain/grype.high-without-exception.json`
 - `tests/fixtures/supply-chain/grype.high-with-valid-exception.json`
 - `tests/fixtures/supply-chain/grype.expired-exception.json`
+- `tests/fixtures/supply-chain/grype.valid-exception-then-critical.json`
 - `tests/fixtures/supply-chain/provenance.valid.intoto.json`
 - `tests/fixtures/supply-chain/provenance.subject-mismatch.intoto.json`
 - `tests/fixtures/supply-chain/cosign.verify.valid.json`
@@ -247,32 +248,33 @@ Each verification verdict has exactly this interface:
 The Python checker exports `load_json`, `validate_tool_registry`,
 `validate_policy`, `validate_exceptions`, `evaluate_grype_fixture`,
 `validate_sbom_subject`, `validate_provenance_subject`,
-`validate_signature_fixture`, and `validate_scorecard_advisory`. Tests use one
+`validate_signature_fixture`, `validate_scorecard_advisory`, and
+`inspect_oci_archive_config_digest`. Tests use one
 method per fixture plus `test_tool_manifest_pins_are_exact`,
 `test_roles_have_distinct_subjects`, and
 `test_live_score_cannot_be_a_blocking_decision`.
 
 ## Sequence
 
-- [ ] Create the active Task with the four exact image pins above, artifact
+- [x] Create the active Task with the four exact image pins above, artifact
       subject, transient paths, redaction, private-key lifetime, read-only
       observation boundary, and rollback.
-- [ ] Write failing tests in `tests/validation/test_supply_chain_policy.py` for
+- [x] Write failing tests in `tests/validation/test_supply_chain_policy.py` for
       missing pins, threshold failure, exception expiry/ownership/digest, SBOM
       and provenance subject mismatch, signature tamper/wrong subject, and
       Scorecard advisory-only semantics.
-- [ ] Run `python3 -m unittest tests.validation.test_supply_chain_policy -v` and
+- [x] Run `python3 -m unittest tests.validation.test_supply_chain_policy -v` and
       confirm failure before the checker and policy files exist.
-- [ ] Implement the three policy files and
+- [x] Implement the three policy files and
       `scripts/validation/check-supply-chain-policy.py`; rerun the focused tests
       until all fixture-only positive and negative cases pass.
-- [ ] Implement
+- [x] Implement
       `bash scripts/security/verify-sample-service-supply-chain.sh --preflight`;
       fail when tool identity, artifact subject, policy, output path, or
       redaction boundary is missing.
-- [ ] Run
+- [x] Run
       `bash scripts/security/verify-sample-service-supply-chain.sh --fixture-only`.
-- [ ] Run
+- [x] Attempt
       `bash scripts/security/verify-sample-service-supply-chain.sh --advisory`
       to build/export labelled baseline and candidate variants locally, create
       CycloneDX and Grype results for each, produce SLSA/in-toto provenance,
@@ -280,14 +282,14 @@ method per fixture plus `test_tool_manifest_pins_are_exact`,
       rejection. Require two distinct subject tuples and write
       `verification-verdict.baseline.json` plus
       `verification-verdict.candidate.json`. Do not publish either artifact.
-- [ ] Run
+- [x] Run
       `bash scripts/security/verify-sample-service-supply-chain.sh --scorecard-advisory`
       only when the Task confirms network/read-only scope; otherwise record an
       explicit advisory skip.
-- [ ] Wire `python3 scripts/validation/check-supply-chain-policy.py --check`
+- [x] Wire `python3 scripts/validation/check-supply-chain-policy.py --check`
       into local/repository contracts and a network-independent CI job; do not
       dispatch it remotely.
-- [ ] Record only concise subject, tool-pin, policy, verdict, checksum, and
+- [x] Record only concise subject, tool-pin, policy, verdict, checksum, and
       limitation fields in tracked evidence.
 - [ ] Run independent specification review, then quality/security review; fix
       and re-review all findings before lifecycle closure.

@@ -322,7 +322,7 @@ if not has_scoped_ecosystem_gate:
             "Stage 03 security spec + Stage 04 plan",
         )
     )
-spec_126_route = "[Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md)"
+spec_126_route = "[Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md)"
 if not has_sbom_generation:
     follow_up_rows.append(
         (
@@ -474,7 +474,8 @@ lines.extend(
         "  stores CODEOWNERS and last-recorded ruleset evidence, but this generator",
         "  does not query live remote GitHub settings.",
         "- The scoped Storybook Next.js npm audit gate does not close broad dependency",
-        "  SCA or container/image vulnerability scanning readiness.",
+        "  SCA. Local sample-service image scanning is a separate fixture-policy and",
+        "  advisory-rehearsal contract, not a live runtime or release claim.",
         residual_finding,
         "",
         "## Gap / Follow-up",

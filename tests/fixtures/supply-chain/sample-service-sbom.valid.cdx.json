@@ -1,0 +1,33 @@
+{
+  "bomFormat": "CycloneDX",
+  "components": [],
+  "metadata": {
+    "component": {
+      "name": "examples/sample-web-service",
+      "properties": [
+        {
+          "name": "org.hyhome.delivery.image_config_digest",
+          "value": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "org.hyhome.delivery.oci_archive_sha256",
+          "value": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        },
+        {
+          "name": "org.hyhome.delivery.rehearsal.role",
+          "value": "candidate"
+        }
+      ],
+      "type": "container"
+    },
+    "timestamp": "2026-07-19T00:00:00Z",
+    "tools": [
+      {
+        "name": "syft",
+        "version": "v1.48.0"
+      }
+    ]
+  },
+  "specVersion": "1.6",
+  "version": 1
+}

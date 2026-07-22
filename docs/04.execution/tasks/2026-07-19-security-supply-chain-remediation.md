@@ -127,10 +127,10 @@ Scorecard response bodies remain transient.
 
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-SSC-001` | Tool registry, policies, exceptions, checker, and fixtures | `SSC-001`–`SSC-005` | Deterministic fixture RED/GREEN suite | Fresh implementation agent | Not run |
-| `T-SSC-002` | Distinct builds, OCI export, SBOM, and scan verdict | `SSC-001`, `SSC-002` | Two subject tuples and verdicts | Fresh implementation agent | Not run |
-| `T-SSC-003` | Provenance and local signature verification | `SSC-003`, `SSC-004` | Success plus tamper/wrong-subject rejection | Fresh implementation agent | Not run |
-| `T-SSC-004` | Fixture-only CI/repo gate and advisory summary | `SSC-005` | Network-independent check and freshness | Fresh implementation agent | Not run |
+| `T-SSC-001` | Tool registry, policies, exceptions, checker, and fixtures | `SSC-001`–`SSC-005` | Deterministic fixture RED/GREEN suite | Fresh implementation agent | Complete; 27 focused tests and 13 fixtures pass |
+| `T-SSC-002` | Distinct builds, OCI export, SBOM, and scan verdict | `SSC-001`, `SSC-002` | Two subject tuples and verdicts | Fresh implementation agent | Advisory builds/exports distinct subjects and derives each config digest from the exact OCI archive index/manifest before the baseline class `40` policy rejection |
+| `T-SSC-003` | Provenance and local signature verification | `SSC-003`, `SSC-004` | Success plus tamper/wrong-subject rejection | Fresh implementation agent | Complete for deterministic positive/negative fixtures, including cross-role archive rejection; live provenance/signing correctly does not proceed after the baseline policy rejection |
+| `T-SSC-004` | Fixture-only CI/repo gate and advisory summary | `SSC-005` | Network-independent check and freshness | Fresh implementation agent | Complete; CI/local/repository wiring and generated summaries pass |
 | `T-SSC-005` | Independent specification and security/quality review | `VAL-SSC-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Not run |
 
 ## Work Log
@@ -139,6 +139,10 @@ Scorecard response bodies remain transient.
 | --- | --- | --- |
 | 2026-07-19 | Task activation | Contract recorded; no tool, image, key, network, workflow, or artifact action executed. |
 | 2026-07-19 | `T-SSC-001`–`T-SSC-005` | `not_run`; actual evidence is appended only after exact execution. |
+| 2026-07-22 | `T-SSC-001` | RED was the expected missing-checker error; the remediation RED added archive/index/manifest, stale-verdict, multi-match exception, cross-role signature, and exact Scorecard identity failures. GREEN is `27/27` focused tests and `13` deterministic fixtures. Tool pins, policy, exception, SBOM, provenance, signature, and Scorecard advisory-only semantics pass locally without network. |
+| 2026-07-22 | `T-SSC-002`–`T-SSC-004` | Preflight and fixture-only wrapper modes pass. An authorized bounded local pull cached exact pinned tool/material images. The first advisory run exposed and fixed a local SBOM-subject binding defect. A separately authorized read-only retrieval using only pinned Grype then seeded the ignored task cache; its status records schema `v6.1.9`, built `2026-07-21T07:05:18Z`, and package SHA-256 `724e5d99c799d7e9b98ae8eb11930cf8ae427c4218b1e4db9d70e711dce63ce9`. The final offline advisory built/exported distinct baseline/candidate subjects, bound the baseline SBOM, and rejected the baseline at class `40` with `grype-policy-rejected` (14 critical matches; no exception). Raw scan material, redacted result, and DB identity remain only under the ignored task directory; the task-owned `/tmp` key directory was removed and no consumer verdict remains. Scorecard was explicitly skipped because this Task has not confirmed read-only network approval. CI/local/repository fixture gates and generated-summary freshness pass. |
+| 2026-07-22 | Combined review remediation | Combined review findings `C3/I1/M1` were addressed without relaxing policy: config identity now comes from the exact scanned/signed OCI archive's verified index-to-manifest-to-config chain; both consumer verdict paths are invalidated before advisory work and published only as a completed pair from run-scoped outputs; every Grype match is evaluated; wrong-subject verification crosses roles; and Scorecard uses `github.com/buenhyden/hy-home.docker`. The rerun bound the baseline SBOM to archive config `sha256:6e7a5cc7b701219126e0442e5a49e3ba6a1b6cb79fe8c1a5c6ddc090ad77633d` and again stopped at the truthful baseline class `40` rejection. Review closure remains pending. |
+| 2026-07-22 | Re-review C1 remediation | Two re-reviews identified that an accepted Grype result with a non-null exception ID could have been reduced to a null consumer exception and published downstream. New wrapper RED/GREEN coverage preserves the internal `vulnerability-verdict.json` exception ID, exits class `40` with `grype-exception-requires-manual-review`, and proves both fixed consumer verdict paths remain absent. |
 
 ## Verification Evidence
 
@@ -163,12 +167,58 @@ execution emits distinct baseline/candidate accepted verdicts for the same
 40-hex source revision, different image/archive digests, policy
 `sample-service-local-v1`, no exception, and `redaction_status=passed`.
 
-Actual evidence: `not_run`.
+Actual evidence: the initial RED command produced the expected
+`FileNotFoundError` for the absent checker before any implementation existed.
+The focused GREEN command passed `27/27`; the deterministic checker printed
+`supply_chain_policy=pass fixtures=13`; wrapper `--preflight` and
+`--fixture-only` passed; and `--scorecard-advisory` printed an explicit skipped
+result because read-only network approval is not recorded. An authorized bounded
+local pull cached the exact pinned tool/material images. The first advisory run
+reached SBOM generation and exposed a subject-binding defect, which was fixed.
+A separately authorized read-only retrieval using only pinned Grype seeded the
+ignored task cache; the recorded database identity is schema `v6.1.9`, built
+`2026-07-21T07:05:18Z`, and package SHA-256
+`724e5d99c799d7e9b98ae8eb11930cf8ae427c4218b1e4db9d70e711dce63ce9`.
+The final offline `--advisory` built/exported distinct baseline/candidate
+subjects and bound the baseline SBOM, then exited class `40` with
+`grype-policy-rejected`: the redacted baseline summary has 14 critical matches
+and no exception. Raw scan material, redacted result, and database identity
+remain only under the ignored task directory; the task-owned `/tmp` key
+directory was removed and no consumer verdict remains. No registry push,
+publication, OIDC, Scorecard request, or other remote mutation occurred.
 
-Verification results: `not_run`. Exit classes are `0=pass/accepted`,
+Combined-review remediation reran the advisory with config identity derived
+from the exact OCI archive. The baseline archive index/manifest config digest
+and bound SBOM property both equal
+`sha256:6e7a5cc7b701219126e0442e5a49e3ba6a1b6cb79fe8c1a5c6ddc090ad77633d`;
+the archive SHA-256 is
+`sha256:76d1b253167529006cf55a588195720ae461904c3e5dd461a5f153778cf2ba36`.
+The rerun again exited class `40` at the baseline policy gate. Fixed verdict
+paths were absent after failure, and no task-owned `/tmp` key directory
+remained.
+
+The re-review C1 regression simulates an otherwise accepted baseline Grype
+result with `exception_id` `EXC-SSC-0001`. The wrapper preserves that ID in the
+transient `vulnerability-verdict.json`, exits class `40` with
+`grype-exception-requires-manual-review`, and leaves both fixed consumer paths
+absent; it therefore never converts an exception-approved scan into a Task 5
+consumer verdict.
+
+Verification results: deterministic implementation passes. The final live
+advisory is rejected, not accepted, at the baseline critical-vulnerability
+policy gate. Consequently the required baseline/candidate accepted consumer
+verdicts do not exist and Task 5 remains fail-closed. Exit classes are `0=pass/accepted`,
 `2=usage`, `10=policy/preflight`, `20=build/export`, `30=SBOM`,
 `40=vulnerability verdict`, `50=provenance`, `60=signature verification`, and
 `70=Scorecard observation`.
+
+Final local quality evidence: the repository-contract supply-chain section and
+all Task-owned generated checks pass, while the aggregate repository contract
+remains at `failures=5` for four pre-existing lifecycle manifest-consumer
+mismatches and the missing `html5lib` provider renderer; the full local QA
+runner stops at that same renderer. Targeted pre-commit passed all non-Docker
+hooks, and the root implementation owner separately recorded an exact
+`hadolint-docker` pass for `examples/sample-web-service/Dockerfile`.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -190,7 +240,17 @@ Disposition: defer to the
 
 ## Review Evidence
 
-Implementation review verdict: `not_run`.
+Implementation review verdict: `DONE_WITH_CONCERNS`; deterministic policy,
+preflight, fixture-only wiring, summary freshness, and key-cleanup path are
+implemented, while the live advisory rehearsal truthfully rejects the baseline
+at the critical-vulnerability policy gate.
+
+Combined review remediation: `C3/I1/M1` findings were remediated with new
+archive-binding, stale-verdict, multi-match, cross-role, and exact-repository
+regressions. Two re-reviews then returned the same C1 for accepted-by-exception
+consumer publication; its wrapper-level fail-closed regression is remediated.
+This is not an independent terminal re-review: fresh
+specification and quality/security closure remain pending.
 
 Specification review verdict: `not_run`; a fresh reviewer must verify Spec 126,
 the exact pins and subjects, fixture semantics, verdict schema, and downstream
@@ -205,12 +265,14 @@ remediated and re-reviewed to C0/I0/M0.
 
 ## Commit Ledger
 
-Commit identity: `not_committed`.
+Commit identity: the branch-history commit carrying the logical unit below is
+amended after the combined-review remediation and final prescribed local gates.
 
 Logical unit: `feat(security): add local supply-chain verification`.
 
-Commit validation: `not_run`; record fixture tests, local verification modes,
-summary freshness, cleanup/key deletion, and review verdicts after commit.
+Commit validation: focused fixture tests, deterministic checker, preflight,
+fixture-only, Scorecard skip, summary freshness, and the truthful blocked
+advisory result are recorded above. Independent reviews remain pending.
 
 ## Deferred and Blocked Items
 
@@ -218,10 +280,10 @@ Deferred items: registry push, remote attestation, keyless/OIDC, transparency
 log, publication, live Scorecard blocking, GitHub Release, deployment, and SLSA
 level claims.
 
-Blocked items: advisory build/verification is blocked until deterministic
-fixtures and preflight pass. `--scorecard-advisory` is blocked until read-only
-network scope is confirmed. Delivery consumption is blocked until both typed
-verdicts are accepted and distinct.
+Blocked items: delivery consumption is blocked until both typed verdicts are
+accepted and distinct; this run produced neither because the baseline is
+rejected by the critical-vulnerability policy. `--scorecard-advisory` remains
+skipped until read-only network scope is confirmed.
 
 Deferral destination: remote identity, publication, or enforcement needs a new
 approved Stage 01-04 chain; local accepted verdicts are consumed only by

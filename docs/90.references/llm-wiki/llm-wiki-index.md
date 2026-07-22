@@ -996,6 +996,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/kubernetes/docker-compose-to-k3s-migration.md](../data/kubernetes/docker-compose-to-k3s-migration.md) | Markdown reference |
 | [docs/90.references/data/security/README.md](../data/security/README.md) | folder index |
 | [docs/90.references/data/security/security-automation-readiness.md](../data/security/security-automation-readiness.md) | Markdown reference |
+| [docs/90.references/data/security/supply-chain-sample-service.md](../data/security/supply-chain-sample-service.md) | Markdown reference |
 | [docs/90.references/learning/README.md](../learning/README.md) | folder index |
 | [docs/90.references/learning/roadmap-v1.md](../learning/roadmap-v1.md) | Markdown reference |
 | [docs/90.references/learning/roadmap.md](../learning/roadmap.md) | Markdown reference |
@@ -1320,6 +1321,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json) | JSON registry |
 | [infra/common-optimizations.yml](../../../infra/common-optimizations.yml) | YAML config |
 | [infra/image-tag-policy.exceptions.json](../../../infra/image-tag-policy.exceptions.json) | JSON registry |
+| [infra/supply-chain.sample-service-policy.json](../../../infra/supply-chain.sample-service-policy.json) | JSON registry |
+| [infra/supply-chain.tool-images.json](../../../infra/supply-chain.tool-images.json) | JSON registry |
+| [infra/supply-chain.vulnerability-exceptions.json](../../../infra/supply-chain.vulnerability-exceptions.json) | JSON registry |
 | [infra/tech-stack.versions.json](../../../infra/tech-stack.versions.json) | JSON registry |
 
 ### Scripts and validators
@@ -1342,6 +1346,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/operations/sync-tech-stack-versions.sh](../../../scripts/operations/sync-tech-stack-versions.sh) | script |
 | [scripts/operations/use-qa-ci-tools.sh](../../../scripts/operations/use-qa-ci-tools.sh) | script |
 | [scripts/requirements.txt](../../../scripts/requirements.txt) | text entrypoint |
+| [scripts/security/generate-supply-chain-sample-service-summary.sh](../../../scripts/security/generate-supply-chain-sample-service-summary.sh) | script |
+| [scripts/security/verify-sample-service-supply-chain.sh](../../../scripts/security/verify-sample-service-supply-chain.sh) | script |
 | [scripts/validation/agentic-audit-semantic-contract.json](../../../scripts/validation/agentic-audit-semantic-contract.json) | JSON registry |
 | [scripts/validation/check-doc-implementation-alignment.sh](../../../scripts/validation/check-doc-implementation-alignment.sh) | script |
 | [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |
@@ -1349,6 +1355,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
 | [scripts/validation/check-storybook-contract.sh](../../../scripts/validation/check-storybook-contract.sh) | script |
 | [scripts/validation/check-template-security-baseline.sh](../../../scripts/validation/check-template-security-baseline.sh) | script |
+| [scripts/validation/compose-core-readiness.lib.sh](../../../scripts/validation/compose-core-readiness.lib.sh) | script |
 | [scripts/validation/generate-audit-implementation-matrix.sh](../../../scripts/validation/generate-audit-implementation-matrix.sh) | script |
 | [scripts/validation/generate-security-automation-readiness.sh](../../../scripts/validation/generate-security-automation-readiness.sh) | script |
 | [scripts/validation/recommend-gap-routing.sh](../../../scripts/validation/recommend-gap-routing.sh) | script |
@@ -1357,6 +1364,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/report-provider-hook-parity.sh](../../../scripts/validation/report-provider-hook-parity.sh) | script |
 | [scripts/validation/run-agent-output-eval-fixtures.sh](../../../scripts/validation/run-agent-output-eval-fixtures.sh) | script |
 | [scripts/validation/run-agent-precommit-all-files.sh](../../../scripts/validation/run-agent-precommit-all-files.sh) | script |
+| [scripts/validation/run-compose-core-readiness.sh](../../../scripts/validation/run-compose-core-readiness.sh) | script |
 | [scripts/validation/run-local-qa-gates.sh](../../../scripts/validation/run-local-qa-gates.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) | script |
 | [scripts/validation/validate-harness.sh](../../../scripts/validation/validate-harness.sh) | script |
