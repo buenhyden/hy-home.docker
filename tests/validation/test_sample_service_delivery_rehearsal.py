@@ -33,6 +33,7 @@ VERDICT_KEYS = {
     "producer_spec",
     "role",
     "source_revision",
+    "build_context_sha256",
     "image_config_digest",
     "oci_archive_sha256",
     "policy_id",
@@ -794,6 +795,23 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 ROLLBACK_DECISION=not_required
                 POST_ROLLBACK_HEALTH=not_applicable
                 CLEANUP_COMPLETE=true
+                BUILD_CONTEXT_SHA256=sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                POLICY_ID=sample-service-local-v1
+                POLICY_SHA256=sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+                VERDICT_IMAGE_CONFIG_DIGEST[baseline]=sha256:1111111111111111111111111111111111111111111111111111111111111111
+                VERDICT_IMAGE_CONFIG_DIGEST[candidate]=sha256:2222222222222222222222222222222222222222222222222222222222222222
+                VERDICT_OCI_ARCHIVE_SHA256[baseline]=sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                VERDICT_OCI_ARCHIVE_SHA256[candidate]=sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                BASELINE_VERDICT_SHA256=sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                CANDIDATE_VERDICT_SHA256=sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                READINESS_VERDICT_SHA256=sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                RECOVERY_BOUNDARY_SHA256=sha256:0000000000000000000000000000000000000000000000000000000000000000
+                DRE_APPROVAL_REF=task:2026-07-19-deployment-release-engineering-remediation#approval-2026-07-19
+                REHEARSAL_STARTED_AT=2026-07-22T12:00:00Z
+                REHEARSAL_COMPLETED_AT=2026-07-22T12:00:10Z
+                BASELINE_RESULT=passed
+                CANARY_RESULT=passed
+                REHEARSAL_RESULT=promoted
                 build_rehearsal_record_json
                 """
             )
@@ -801,7 +819,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual(RECORD_KEYS, set(payload))
-        self.assertEqual(1, payload["schema_version"])
+        self.assertEqual(2, payload["schema_version"])
         self.assertEqual(
             "spec:127-deployment-release-engineering-remediation",
             payload["producer_spec"],
@@ -820,6 +838,20 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         )
         self.assertEqual("readiness-verdict.json", payload["readiness_verdict_ref"])
         self.assertEqual("recovery-verdict.json", payload["recovery_boundary_ref"])
+        self.assertEqual("sha256:" + "1" * 64, payload["baseline_image_config_digest"])
+        self.assertEqual("sha256:" + "2" * 64, payload["candidate_image_config_digest"])
+        self.assertEqual("sha256:" + "a" * 64, payload["baseline_oci_archive_sha256"])
+        self.assertEqual("sha256:" + "b" * 64, payload["candidate_oci_archive_sha256"])
+        self.assertEqual("sha256:" + "c" * 64, payload["policy_sha256"])
+        self.assertEqual("sha256:" + "d" * 64, payload["baseline_verdict_sha256"])
+        self.assertEqual("sha256:" + "e" * 64, payload["candidate_verdict_sha256"])
+        self.assertEqual("sha256:" + "f" * 64, payload["readiness_verdict_sha256"])
+        self.assertEqual("sha256:" + "0" * 64, payload["recovery_boundary_sha256"])
+        self.assertEqual("2026-07-22T12:00:00Z", payload["started_at"])
+        self.assertEqual("2026-07-22T12:00:10Z", payload["completed_at"])
+        self.assertEqual("passed", payload["baseline_result"])
+        self.assertEqual("passed", payload["canary_result"])
+        self.assertEqual("promoted", payload["rehearsal_result"])
 
     def test_publication_is_atomic_mode_0600_and_only_after_cleanup(self) -> None:
         with tempfile.TemporaryDirectory(dir="/tmp") as raw:
