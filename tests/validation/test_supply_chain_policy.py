@@ -912,7 +912,10 @@ class SupplyChainSecureOutputTests(unittest.TestCase):
                 SOURCE_REVISION,
                 CANDIDATE_SUBJECT["build_context_sha256"],
             )
-            self.assertEqual(1, manifest["schema_version"])
+            self.assertEqual(2, manifest["schema_version"])
+            self.assertEqual(
+                "hyhome-verification-verdict-pair-v2", manifest["generation"]
+            )
             self.assertEqual(
                 {"baseline", "candidate"}, set(manifest["verdict_sha256"])
             )

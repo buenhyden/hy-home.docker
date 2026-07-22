@@ -17,6 +17,7 @@ SCRIPT = ROOT / "scripts/operations/rehearse-sample-service-delivery.sh"
 FIXTURES = ROOT / "tests/fixtures/sample-service-delivery"
 BASELINE = FIXTURES / "spec126-verdict.baseline.accepted.json"
 CANDIDATE = FIXTURES / "spec126-verdict.candidate.accepted.json"
+PAIR_MANIFEST = FIXTURES / "verification-verdict.pair.json"
 REJECTED = FIXTURES / "spec126-verdict.candidate.rejected.json"
 DIGEST_MISMATCH = FIXTURES / "spec126-verdict.candidate.digest-mismatch.json"
 COMPOSE = ROOT / "examples/sample-web-service/docker-compose.yml"
@@ -26,6 +27,7 @@ READINESS = ROOT / "_workspace/repo-support/task-2026-07-19-compose-runtime-read
 RECOVERY = ROOT / "_workspace/repo-support/task-2026-07-19-infrastructure-operations-readiness-remediation/postgres/recovery-verdict.json"
 REAL_BASELINE = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json"
 REAL_CANDIDATE = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json"
+REAL_PAIR_MANIFEST = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.pair.json"
 REAL_RECORD = ROOT / "_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json"
 
 VERDICT_KEYS = {
@@ -49,6 +51,7 @@ RECORD_KEYS = {
     "source_revision",
     "baseline_verdict_ref",
     "candidate_verdict_ref",
+    "verification_pair_manifest_ref",
     "readiness_verdict_ref",
     "baseline_project",
     "canary_project",
@@ -68,6 +71,8 @@ RECORD_KEYS = {
     "candidate_oci_archive_sha256",
     "baseline_verdict_sha256",
     "candidate_verdict_sha256",
+    "verification_pair_manifest_sha256",
+    "verification_pair_generation",
     "readiness_verdict_sha256",
     "recovery_boundary_sha256",
     "approval_ref",
@@ -280,6 +285,31 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             with self.subTest(path=path.name):
                 self.assertEqual(VERDICT_KEYS, set(json.loads(path.read_text())))
 
+    def test_pair_manifest_fixture_binds_exact_verdict_bytes(self) -> None:
+        manifest = json.loads(PAIR_MANIFEST.read_text(encoding="utf-8"))
+        self.assertEqual(
+            {
+                "build_context_sha256",
+                "generation",
+                "schema_version",
+                "source_revision",
+                "verdict_sha256",
+            },
+            set(manifest),
+        )
+        self.assertEqual(2, manifest["schema_version"])
+        self.assertEqual(
+            "hyhome-verification-verdict-pair-v2", manifest["generation"]
+        )
+        self.assertEqual(
+            "sha256:" + hashlib.sha256(BASELINE.read_bytes()).hexdigest(),
+            manifest["verdict_sha256"]["baseline"],
+        )
+        self.assertEqual(
+            "sha256:" + hashlib.sha256(CANDIDATE.read_bytes()).hexdigest(),
+            manifest["verdict_sha256"]["candidate"],
+        )
+
     def test_rejects_fixed_compose_identity(self) -> None:
         compose = COMPOSE.read_text(encoding="utf-8")
         self.assertNotRegex(compose, r"(?m)^name\s*:")
@@ -443,6 +473,78 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             f"{build_context}|sample-service-local-v1\n", result.stdout
         )
 
+    def test_missing_stale_or_mixed_pair_manifest_fails_class10_without_runtime(
+        self,
+    ) -> None:
+        cases = {
+            "missing": (None, "pair-manifest-missing"),
+            "generation": (
+                lambda value: value.update(generation="legacy-generation"),
+                "pair-manifest-generation-invalid",
+            ),
+            "revision": (
+                lambda value: value.update(source_revision="f" * 40),
+                "pair-manifest-source-revision-mismatch",
+            ),
+            "context": (
+                lambda value: value.update(
+                    build_context_sha256="sha256:" + "f" * 64
+                ),
+                "pair-manifest-build-context-mismatch",
+            ),
+            "mixed": (
+                lambda value: value["verdict_sha256"].update(
+                    candidate=value["verdict_sha256"]["baseline"]
+                ),
+                "pair-manifest-verdict-digest-mismatch",
+            ),
+        }
+        for name, (mutate, reason) in cases.items():
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                baseline = root / "verification-verdict.baseline.json"
+                candidate = root / "verification-verdict.candidate.json"
+                pair = root / "verification-verdict.pair.json"
+                runtime_marker = root / "runtime-called"
+                record = root / "rehearsal-record.json"
+                shutil.copy2(BASELINE, baseline)
+                shutil.copy2(CANDIDATE, candidate)
+                if mutate is not None:
+                    manifest = json.loads(PAIR_MANIFEST.read_text(encoding="utf-8"))
+                    mutate(manifest)
+                    pair.write_text(
+                        json.dumps(manifest, sort_keys=True) + "\n",
+                        encoding="utf-8",
+                    )
+                result = self.run_sourced(
+                    textwrap.dedent(
+                        f"""\
+                        BASELINE_VERDICT_PATH={baseline!s}
+                        CANDIDATE_VERDICT_PATH={candidate!s}
+                        PAIR_MANIFEST_PATH={pair!s}
+                        validate_and_snapshot_delivery_inputs || exit $?
+                        touch {runtime_marker!s}
+                        """
+                    )
+                )
+                self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+                self.assertIn(reason, result.stderr)
+                self.assertFalse(runtime_marker.exists())
+                self.assertFalse(record.exists())
+
+        script = SCRIPT.read_text(encoding="utf-8")
+        rehearsal = script.split("dre_rehearse() {", 1)[1].split(
+            "\ndre_cleanup_command()", 1
+        )[0]
+        self.assertLess(
+            rehearsal.index("prepare_canonical_record_path"),
+            rehearsal.index("validate_and_snapshot_delivery_inputs"),
+        )
+        self.assertLess(
+            rehearsal.index("validate_and_snapshot_delivery_inputs"),
+            rehearsal.index("validate_local_image_objects"),
+        )
+
     def test_snapshot_revalidation_rejects_content_and_identity_drift(self) -> None:
         for mutation, command, expected_code in (
             (
@@ -456,12 +558,18 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 'mv -- "$DRE_READINESS_PATH.replacement" "$DRE_READINESS_PATH"',
                 "input-snapshot-identity-drift",
             ),
+            (
+                "pair-manifest-content",
+                'printf "\\n" >>"$PAIR_MANIFEST_PATH"',
+                "input-snapshot-drift",
+            ),
         ):
             with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as raw:
                 root = Path(raw)
                 inputs = {
                     "baseline.json": BASELINE,
                     "candidate.json": CANDIDATE,
+                    "verification-verdict.pair.json": PAIR_MANIFEST,
                     "readiness.json": READINESS,
                     "recovery.json": RECOVERY,
                     "policy.json": POLICY,
@@ -475,6 +583,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                         f"""\
                         BASELINE_VERDICT_PATH={root / 'baseline.json'!s}
                         CANDIDATE_VERDICT_PATH={root / 'candidate.json'!s}
+                        PAIR_MANIFEST_PATH={root / 'verification-verdict.pair.json'!s}
                         DRE_READINESS_PATH={root / 'readiness.json'!s}
                         DRE_RECOVERY_PATH={root / 'recovery.json'!s}
                         DRE_POLICY_PATH={root / 'policy.json'!s}
@@ -506,14 +615,17 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             root = Path(raw)
             baseline_input = root / "verification-verdict.baseline.json"
             candidate_input = root / "verification-verdict.candidate.json"
+            pair_input = root / "verification-verdict.pair.json"
             record = root / "rehearsal-record.json"
             shutil.copy2(BASELINE, baseline_input)
             shutil.copy2(CANDIDATE, candidate_input)
+            shutil.copy2(PAIR_MANIFEST, pair_input)
             result = self.run_sourced(
                 textwrap.dedent(
                     f"""\
                     BASELINE_VERDICT_PATH={baseline_input!s}
                     CANDIDATE_VERDICT_PATH={candidate_input!s}
+                    PAIR_MANIFEST_PATH={pair_input!s}
                     validate_and_snapshot_delivery_inputs || exit $?
                     REHEARSAL_RECORD_PATH={record!s}
                     BASELINE_PROJECT=hyhome-dre-20260719-12345-baseline
@@ -825,6 +937,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 SOURCE_REVISION=0123456789abcdef0123456789abcdef01234567
                 BASELINE_VERDICT_PATH=/tmp/verification-verdict.baseline.json
                 CANDIDATE_VERDICT_PATH=/tmp/verification-verdict.candidate.json
+                PAIR_MANIFEST_PATH=/tmp/verification-verdict.pair.json
                 BASELINE_PROJECT=hyhome-dre-20260719-12345-baseline
                 CANARY_PROJECT=hyhome-dre-20260719-12345-canary
                 PROMOTION_DECISION=promoted
@@ -840,6 +953,8 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 VERDICT_OCI_ARCHIVE_SHA256[candidate]=sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
                 BASELINE_VERDICT_SHA256=sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
                 CANDIDATE_VERDICT_SHA256=sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                PAIR_MANIFEST_SHA256=sha256:9999999999999999999999999999999999999999999999999999999999999999
+                PAIR_MANIFEST_GENERATION=hyhome-verification-verdict-pair-v2
                 READINESS_VERDICT_SHA256=sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
                 RECOVERY_BOUNDARY_SHA256=sha256:0000000000000000000000000000000000000000000000000000000000000000
                 DRE_APPROVAL_REF=task:2026-07-19-deployment-release-engineering-remediation#approval-2026-07-19
@@ -855,7 +970,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual(RECORD_KEYS, set(payload))
-        self.assertEqual(2, payload["schema_version"])
+        self.assertEqual(3, payload["schema_version"])
         self.assertEqual(
             "spec:127-deployment-release-engineering-remediation",
             payload["producer_spec"],
@@ -872,6 +987,10 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertEqual(
             "verification-verdict.candidate.json", payload["candidate_verdict_ref"]
         )
+        self.assertEqual(
+            "verification-verdict.pair.json",
+            payload["verification_pair_manifest_ref"],
+        )
         self.assertEqual("readiness-verdict.json", payload["readiness_verdict_ref"])
         self.assertEqual("recovery-verdict.json", payload["recovery_boundary_ref"])
         self.assertEqual("sha256:" + "1" * 64, payload["baseline_image_config_digest"])
@@ -881,6 +1000,14 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertEqual("sha256:" + "c" * 64, payload["policy_sha256"])
         self.assertEqual("sha256:" + "d" * 64, payload["baseline_verdict_sha256"])
         self.assertEqual("sha256:" + "e" * 64, payload["candidate_verdict_sha256"])
+        self.assertEqual(
+            "sha256:" + "9" * 64,
+            payload["verification_pair_manifest_sha256"],
+        )
+        self.assertEqual(
+            "hyhome-verification-verdict-pair-v2",
+            payload["verification_pair_generation"],
+        )
         self.assertEqual("sha256:" + "f" * 64, payload["readiness_verdict_sha256"])
         self.assertEqual("sha256:" + "0" * 64, payload["recovery_boundary_sha256"])
         self.assertEqual("2026-07-22T12:00:00Z", payload["started_at"])
@@ -895,12 +1022,15 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             record = root / "rehearsal-record.json"
             baseline_input = root / "verification-verdict.baseline.json"
             candidate_input = root / "verification-verdict.candidate.json"
+            pair_input = root / "verification-verdict.pair.json"
             shutil.copy2(BASELINE, baseline_input)
             shutil.copy2(CANDIDATE, candidate_input)
+            shutil.copy2(PAIR_MANIFEST, pair_input)
             snapshot_body = textwrap.dedent(
                 f"""\
                 BASELINE_VERDICT_PATH={baseline_input!s}
                 CANDIDATE_VERDICT_PATH={candidate_input!s}
+                PAIR_MANIFEST_PATH={pair_input!s}
                 validate_and_snapshot_delivery_inputs || exit $?
                 """
             )
@@ -949,6 +1079,21 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertIn("dst_dir_fd=parent_fd", publication)
         self.assertIn("os.O_NOFOLLOW", publication)
         self.assertNotIn("os.replace(temporary, target)", publication)
+
+    def test_canonical_invalidation_uses_validated_parent_fd_relative_unlink(
+        self,
+    ) -> None:
+        script = SCRIPT.read_text(encoding="utf-8")
+        invalidation = script.split("prepare_canonical_record_path() {", 1)[1].split(
+            "\n}\n\npublish_rehearsal_record", 1
+        )[0]
+        self.assertIn(
+            "os.stat(target.name, dir_fd=fd, follow_symlinks=False)", invalidation
+        )
+        self.assertIn("os.unlink(target.name, dir_fd=fd)", invalidation)
+        self.assertIn("os.fsync(fd)", invalidation)
+        self.assertNotIn("target.lstat()", invalidation)
+        self.assertNotIn("target.unlink()", invalidation)
 
     def test_readiness_requires_exact_passing_schema_and_cleanup(self) -> None:
         canonical = ROOT / "_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json"
@@ -1044,6 +1189,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
     def test_canonical_absence_fails_class10_before_docker_or_evidence(self) -> None:
         self.assertFalse(REAL_BASELINE.exists())
         self.assertFalse(REAL_CANDIDATE.exists())
+        self.assertFalse(REAL_PAIR_MANIFEST.exists())
         directory_before = self.snapshot_path(REAL_RECORD.parent)
         record_before = self.snapshot_path(REAL_RECORD)
         with tempfile.TemporaryDirectory() as raw:
@@ -1069,6 +1215,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             )
             self.assertEqual(10, result.returncode, result.stdout + result.stderr)
             self.assertIn("class=10", result.stderr)
+            self.assertIn("code=pair-manifest-missing", result.stderr)
             self.assertFalse(call_log.exists())
         self.assertEqual(record_before, self.snapshot_path(REAL_RECORD))
         self.assertEqual(directory_before, self.snapshot_path(REAL_RECORD.parent))
