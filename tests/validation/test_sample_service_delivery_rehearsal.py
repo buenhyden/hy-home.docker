@@ -310,6 +310,75 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             manifest["verdict_sha256"]["candidate"],
         )
 
+    def test_rejects_legacy_verdict_and_pair_schemas(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            legacy_verdict = root / "legacy-verdict.json"
+            verdict = json.loads(BASELINE.read_text(encoding="utf-8"))
+            verdict["schema_version"] = 1
+            legacy_verdict.write_text(
+                json.dumps(verdict, sort_keys=True) + "\n", encoding="utf-8"
+            )
+            verdict_result = self.run_sourced(
+                f"load_and_validate_verdict baseline {legacy_verdict!s}"
+            )
+
+            legacy_pair = root / "legacy-pair.json"
+            pair = json.loads(PAIR_MANIFEST.read_text(encoding="utf-8"))
+            pair["schema_version"] = 2
+            pair["generation"] = "hyhome-verification-verdict-pair-v2"
+            legacy_pair.write_text(
+                json.dumps(pair, sort_keys=True) + "\n", encoding="utf-8"
+            )
+            pair_result = self.run_sourced(
+                textwrap.dedent(
+                    f"""\
+                    BASELINE_VERDICT_PATH={BASELINE!s}
+                    CANDIDATE_VERDICT_PATH={CANDIDATE!s}
+                    PAIR_MANIFEST_PATH={legacy_pair!s}
+                    load_and_validate_verdict baseline "$BASELINE_VERDICT_PATH" || exit $?
+                    load_and_validate_verdict candidate "$CANDIDATE_VERDICT_PATH" || exit $?
+                    assert_distinct_subjects_and_same_revision || exit $?
+                    load_and_validate_pair_manifest
+                    """
+                )
+            )
+        self.assertEqual(
+            10, verdict_result.returncode, verdict_result.stdout + verdict_result.stderr
+        )
+        self.assertEqual(
+            10, pair_result.returncode, pair_result.stdout + pair_result.stderr
+        )
+
+    def test_portable_identity_tuple_is_bound_by_verdict_and_pair(self) -> None:
+        baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
+        candidate = json.loads(CANDIDATE.read_text(encoding="utf-8"))
+        pair = json.loads(PAIR_MANIFEST.read_text(encoding="utf-8"))
+        identity_keys = {
+            "oci_manifest_digest",
+            "image_config_digest",
+            "oci_archive_sha256",
+            "docker_archive_sha256",
+            "local_image_ref",
+            "runtime_image_id",
+            "runtime_identity_kind",
+        }
+        self.assertEqual(2, baseline["schema_version"])
+        self.assertEqual(2, candidate["schema_version"])
+        self.assertTrue(identity_keys.issubset(baseline))
+        self.assertTrue(identity_keys.issubset(candidate))
+        self.assertEqual(3, pair["schema_version"])
+        self.assertEqual(
+            "hyhome-verification-verdict-pair-v3", pair["generation"]
+        )
+        self.assertEqual(identity_keys, set(pair["subjects"]["baseline"]))
+        self.assertEqual(identity_keys, set(pair["subjects"]["candidate"]))
+        for role, verdict in (("baseline", baseline), ("candidate", candidate)):
+            self.assertEqual(
+                {key: verdict[key] for key in identity_keys},
+                pair["subjects"][role],
+            )
+
     def test_rejects_fixed_compose_identity(self) -> None:
         compose = COMPOSE.read_text(encoding="utf-8")
         self.assertNotRegex(compose, r"(?m)^name\s*:")
@@ -702,6 +771,71 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             rehearsal.index("validate_local_image_objects"),
             rehearsal.index("start_baseline"),
         )
+
+    def test_local_reference_accepts_config_or_containerd_runtime_identity(
+        self,
+    ) -> None:
+        config = "sha256:" + "1" * 64
+        local_ref = "hyhome.local/sample-web-service:baseline-" + "1" * 64
+        cases = (
+            (config, "config-digest"),
+            ("sha256:" + "2" * 64, "docker-target-digest"),
+        )
+        for runtime_id, identity_kind in cases:
+            with self.subTest(identity_kind=identity_kind):
+                result = self.run_sourced(
+                    textwrap.dedent(
+                        f"""\
+                        VERDICT_IMAGE_CONFIG_DIGEST[baseline]={config}
+                        VERDICT_LOCAL_IMAGE_REF[baseline]={local_ref}
+                        VERDICT_RUNTIME_IMAGE_ID[baseline]={runtime_id}
+                        VERDICT_RUNTIME_IDENTITY_KIND[baseline]={identity_kind}
+                        DRE_OPERATION_DEADLINE=$((SECONDS + 30))
+                        dre_operation_bounded() {{ printf '%s|baseline\n' '{runtime_id}'; }}
+                        validate_local_image_object baseline
+                        """
+                    )
+                )
+                self.assertEqual(
+                    0, result.returncode, result.stdout + result.stderr
+                )
+
+    def test_tag_and_running_image_are_revalidated_at_each_start_boundary(
+        self,
+    ) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+        baseline = text.split("start_baseline() {", 1)[1].split(
+            "\n}\n\nwait_container_and_http_health", 1
+        )[0]
+        canary = text.split("start_canary() {", 1)[1].split(
+            "\n}\n\nrecord_promotion_decision", 1
+        )[0]
+        for role, body in (("baseline", baseline), ("candidate", canary)):
+            with self.subTest(role=role):
+                compose_index = body.index("dre_compose")
+                before = body.index(f"validate_local_image_object {role}")
+                after = body.index(
+                    f"validate_started_image_identity {role}", compose_index
+                )
+                self.assertLess(before, compose_index)
+                self.assertGreater(after, compose_index)
+        self.assertIn("docker inspect --format '{{.Image}}'", text)
+        self.assertIn("running-image-identity-mismatch", text)
+
+    def test_compose_uses_only_bound_local_reference_without_pull_or_build(
+        self,
+    ) -> None:
+        override = OVERRIDE.read_text(encoding="utf-8")
+        self.assertIn(
+            "image: ${DRE_IMAGE_REF:?verified local image reference required}",
+            override,
+        )
+        self.assertIn("pull_policy: never", override)
+        self.assertNotIn("DRE_IMAGE_CONFIG_DIGEST", override)
+        script = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('DRE_IMAGE_REF="${VERDICT_LOCAL_IMAGE_REF[baseline]}"', script)
+        self.assertIn('DRE_IMAGE_REF="${VERDICT_LOCAL_IMAGE_REF[candidate]}"', script)
+        self.assertIn("--pull never --no-build", script)
 
     def test_local_image_object_rejects_missing_mismatch_or_multiple_ids(self) -> None:
         digest = "sha256:" + "1" * 64

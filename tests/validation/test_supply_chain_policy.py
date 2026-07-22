@@ -202,6 +202,107 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 archive.addfile(entry, fileobj=io.BytesIO(content))
         return f"sha256:{config_digest}"
 
+    def _write_portable_oci_archive(
+        self,
+        path: pathlib.Path,
+        *,
+        mutation: str | None = None,
+    ) -> dict[str, str]:
+        config = json.dumps(
+            {
+                "architecture": "amd64",
+                "config": {
+                    "Labels": {
+                        "org.hyhome.delivery.rehearsal.role": "baseline"
+                    }
+                },
+                "os": "linux",
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+        layer = b"deterministic-layer\n"
+        config_digest = hashlib.sha256(config).hexdigest()
+        layer_digest = hashlib.sha256(layer).hexdigest()
+        manifest = json.dumps(
+            {
+                "config": {
+                    "digest": f"sha256:{config_digest}",
+                    "mediaType": "application/vnd.oci.image.config.v1+json",
+                    "size": len(config) + (1 if mutation == "config-size" else 0),
+                },
+                "layers": [
+                    {
+                        "digest": f"sha256:{layer_digest}",
+                        "mediaType": "application/vnd.oci.image.layer.v1.tar",
+                        "size": len(layer) + (1 if mutation == "layer-size" else 0),
+                    }
+                ],
+                "schemaVersion": 2,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+        manifest_digest = hashlib.sha256(manifest).hexdigest()
+        index = json.dumps(
+            {
+                "manifests": [
+                    {
+                        "digest": f"sha256:{manifest_digest}",
+                        "mediaType": "application/vnd.oci.image.manifest.v1+json",
+                        "size": len(manifest)
+                        + (1 if mutation == "manifest-size" else 0),
+                    }
+                ],
+                "schemaVersion": 2,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+        entries: list[tuple[tarfile.TarInfo, bytes | None]] = []
+        for name, content in (
+            ("oci-layout", b'{"imageLayoutVersion":"1.0.0"}'),
+            ("index.json", index),
+            (f"blobs/sha256/{manifest_digest}", manifest),
+            (f"blobs/sha256/{config_digest}", config),
+            (
+                f"blobs/sha256/{layer_digest}",
+                b"tampered-layer\n" if mutation == "layer-digest" else layer,
+            ),
+        ):
+            entry = tarfile.TarInfo(name)
+            entry.size = len(content)
+            entries.append((entry, content))
+        if mutation == "duplicate-index":
+            duplicate = tarfile.TarInfo("index.json")
+            duplicate.size = len(index)
+            entries.append((duplicate, index))
+        elif mutation == "path-traversal":
+            traversal = tarfile.TarInfo("../escape")
+            traversal.size = 1
+            entries.append((traversal, b"x"))
+        elif mutation == "symlink":
+            link = tarfile.TarInfo("unsafe-link")
+            link.type = tarfile.SYMTYPE
+            link.linkname = "index.json"
+            entries.append((link, None))
+        elif mutation == "special":
+            fifo = tarfile.TarInfo("unsafe-fifo")
+            fifo.type = tarfile.FIFOTYPE
+            entries.append((fifo, None))
+        with tarfile.open(path, "w", format=tarfile.USTAR_FORMAT) as archive:
+            for entry, content in entries:
+                archive.addfile(
+                    entry,
+                    fileobj=None if content is None else io.BytesIO(content),
+                )
+        path.chmod(0o600)
+        return {
+            "image_config_digest": f"sha256:{config_digest}",
+            "oci_manifest_digest": f"sha256:{manifest_digest}",
+            "layer_digest": f"sha256:{layer_digest}",
+        }
+
     def test_oci_archive_config_digest_is_bound_to_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             archive = pathlib.Path(temporary) / "image.oci.tar"
@@ -216,6 +317,93 @@ class SupplyChainPolicyTests(unittest.TestCase):
             self._write_oci_archive(archive, tamper_config=True)
             with self.assertRaisesRegex(ValueError, "config-blob-digest-mismatch"):
                 self.checker.inspect_oci_archive_config_digest(archive)
+
+    def test_portable_docker_load_archive_is_deterministic_and_minimal(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            root.chmod(0o700)
+            source = root / "image.oci.tar"
+            expected = self._write_portable_oci_archive(source)
+            first = root / "image.first.docker.tar"
+            second = root / "image.second.docker.tar"
+
+            first_result = self.checker.convert_oci_archive_to_docker_load_archive(
+                source, first, "baseline"
+            )
+            second_result = self.checker.convert_oci_archive_to_docker_load_archive(
+                source, second, "baseline"
+            )
+
+            self.assertEqual(first.read_bytes(), second.read_bytes())
+            self.assertEqual(0o600, stat.S_IMODE(first.stat().st_mode))
+            self.assertEqual(expected["image_config_digest"], first_result["image_config_digest"])
+            self.assertEqual(expected["oci_manifest_digest"], first_result["oci_manifest_digest"])
+            self.assertEqual(
+                "hyhome.local/sample-web-service:baseline-"
+                + expected["image_config_digest"].removeprefix("sha256:"),
+                first_result["local_image_ref"],
+            )
+            self.assertEqual(first_result, second_result)
+            self.assertEqual(
+                "sha256:" + hashlib.sha256(first.read_bytes()).hexdigest(),
+                first_result["docker_archive_sha256"],
+            )
+            with tarfile.open(first, "r:") as archive:
+                names = archive.getnames()
+                self.assertEqual(len(names), len(set(names)))
+                self.assertEqual(
+                    sorted(
+                        (
+                            expected["image_config_digest"].removeprefix("sha256:")
+                            + ".json",
+                            expected["layer_digest"].removeprefix("sha256:")
+                            + ".tar",
+                            "manifest.json",
+                        )
+                    ),
+                    names,
+                )
+                self.assertNotIn("index.json", names)
+                self.assertNotIn("oci-layout", names)
+                manifest = json.load(archive.extractfile("manifest.json"))
+            self.assertEqual(
+                [first_result["local_image_ref"]], manifest[0]["RepoTags"]
+            )
+
+    def test_portable_converter_rejects_unsafe_or_unbound_oci_members(self) -> None:
+        cases = {
+            "duplicate-index": "oci-archive-member-duplicate",
+            "path-traversal": "oci-archive-member-path-invalid",
+            "symlink": "oci-archive-member-type-invalid",
+            "special": "oci-archive-member-type-invalid",
+            "manifest-size": "oci-manifest-blob-size-mismatch",
+            "config-size": "oci-config-blob-size-mismatch",
+            "layer-size": "oci-layer-blob-size-mismatch",
+            "layer-digest": "oci-layer-blob-digest-mismatch",
+        }
+        for mutation, reason in cases.items():
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
+                root = pathlib.Path(temporary)
+                root.chmod(0o700)
+                source = root / "image.oci.tar"
+                target = root / "image.docker.tar"
+                self._write_portable_oci_archive(source, mutation=mutation)
+                with self.assertRaisesRegex(ValueError, reason):
+                    self.checker.convert_oci_archive_to_docker_load_archive(
+                        source, target, "baseline"
+                    )
+                self.assertFalse(target.exists())
+
+    def test_portable_converter_rejects_non_role_local_reference_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            root.chmod(0o700)
+            source = root / "image.oci.tar"
+            self._write_portable_oci_archive(source)
+            with self.assertRaisesRegex(ValueError, "local-image-role-invalid"):
+                self.checker.convert_oci_archive_to_docker_load_archive(
+                    source, root / "image.docker.tar", "canary"
+                )
 
     def test_grype_clean_json(self) -> None:
         result = self.checker.evaluate_grype_fixture(
@@ -988,6 +1176,47 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         self.assertIn('"${IMAGE_CONFIG_DIGEST[$role]}"', loader)
         self.assertIn("role-image-load-identity-mismatch", loader)
 
+    def test_advisory_converts_once_and_loads_only_portable_docker_archives(
+        self,
+    ) -> None:
+        text = WRAPPER.read_text(encoding="utf-8")
+        derive = text.split("derive_subject_tuple() {", maxsplit=1)[1].split(
+            "\n}\n\nload_role_image_object", maxsplit=1
+        )[0]
+        loader = text.split("load_role_image_object() {", maxsplit=1)[1].split(
+            "\n}\n\nvalidate_live_sbom", maxsplit=1
+        )[0]
+        self.assertIn("--convert-oci-to-docker-load", derive)
+        self.assertIn("image.docker.tar", derive)
+        self.assertIn("OCI_MANIFEST_DIGEST", derive)
+        self.assertIn("DOCKER_ARCHIVE_SHA256", derive)
+        self.assertIn("LOCAL_IMAGE_REF", derive)
+        self.assertIn('docker image load --input "$role_dir/image.docker.tar"', loader)
+        self.assertNotIn('docker image load --input "$role_dir/image.oci.tar"', loader)
+        self.assertIn('"${LOCAL_IMAGE_REF[$role]}"', loader)
+        self.assertIn("RUNTIME_IMAGE_ID", loader)
+        self.assertIn("RUNTIME_IDENTITY_KIND", loader)
+
+    def test_verdict_v2_and_pair_v3_bind_complete_runtime_identity(self) -> None:
+        text = WRAPPER.read_text(encoding="utf-8")
+        verdict = text.split("write_verification_verdict() {", maxsplit=1)[1].split(
+            "\n}\n\npublish_verification_verdicts", maxsplit=1
+        )[0]
+        for field in (
+            "oci_manifest_digest",
+            "image_config_digest",
+            "oci_archive_sha256",
+            "docker_archive_sha256",
+            "local_image_ref",
+            "runtime_image_id",
+            "runtime_identity_kind",
+        ):
+            self.assertIn(field, verdict)
+        self.assertIn('"schema_version": 2', verdict)
+        checker = CHECKER_PATH.read_text(encoding="utf-8")
+        self.assertIn('"hyhome-verification-verdict-pair-v3"', checker)
+        self.assertIn('"schema_version": 3', checker)
+
     def test_cosign_v3_offline_signing_uses_explicit_empty_service_config(self) -> None:
         config = json.loads(COSIGN_OFFLINE_SIGNING_CONFIG.read_text(encoding="utf-8"))
         self.assertEqual(
@@ -1160,6 +1389,89 @@ class SupplyChainSecureOutputTests(unittest.TestCase):
             ):
                 self.assertEqual(
                     0o600, stat.S_IMODE((output / name).stat().st_mode), name
+                )
+
+    def test_pair_v3_binds_complete_distinct_runtime_identity_tuple(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary) / "base"
+            base.mkdir(mode=0o700)
+            identity = self.checker.prepare_secure_output_directory(
+                base, HANDOFF_RELATIVE
+            )
+            private = pathlib.Path(temporary) / "private"
+            private.mkdir(mode=0o700)
+            paths: dict[str, pathlib.Path] = {}
+            for role, digit in (("baseline", "1"), ("candidate", "2")):
+                config = "sha256:" + digit * 64
+                payload = {
+                    "build_context_sha256": CANDIDATE_SUBJECT[
+                        "build_context_sha256"
+                    ],
+                    "docker_archive_sha256": "sha256:" + ("3" if role == "baseline" else "4") * 64,
+                    "exception_id": None,
+                    "image_config_digest": config,
+                    "local_image_ref": (
+                        f"hyhome.local/sample-web-service:{role}-"
+                        f"{config.removeprefix('sha256:')}"
+                    ),
+                    "oci_archive_sha256": "sha256:" + ("5" if role == "baseline" else "6") * 64,
+                    "oci_manifest_digest": "sha256:" + ("7" if role == "baseline" else "8") * 64,
+                    "policy_id": "sample-service-local-v1",
+                    "producer_spec": "spec:126-security-supply-chain-remediation",
+                    "redaction_status": "passed",
+                    "role": role,
+                    "runtime_identity_kind": (
+                        "config-digest" if role == "baseline" else "docker-target-digest"
+                    ),
+                    "runtime_image_id": "sha256:" + ("9" if role == "baseline" else "a") * 64,
+                    "schema_version": 2,
+                    "source_revision": SOURCE_REVISION,
+                    "verified_at": "2026-07-23T00:00:00Z",
+                    "verdict": "accepted",
+                }
+                paths[role] = private / f"{role}.json"
+                paths[role].write_text(
+                    json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8"
+                )
+                paths[role].chmod(0o600)
+
+            manifest = self.checker.publish_verdict_pair(
+                base,
+                HANDOFF_RELATIVE,
+                identity,
+                paths["baseline"],
+                paths["candidate"],
+                SOURCE_REVISION,
+                CANDIDATE_SUBJECT["build_context_sha256"],
+            )
+            self.assertEqual(3, manifest["schema_version"])
+            self.assertEqual(
+                "hyhome-verification-verdict-pair-v3", manifest["generation"]
+            )
+            self.assertEqual(
+                {
+                    "oci_manifest_digest",
+                    "image_config_digest",
+                    "oci_archive_sha256",
+                    "docker_archive_sha256",
+                    "local_image_ref",
+                    "runtime_image_id",
+                    "runtime_identity_kind",
+                },
+                set(manifest["subjects"]["baseline"]),
+            )
+            for field in (
+                "oci_manifest_digest",
+                "image_config_digest",
+                "oci_archive_sha256",
+                "docker_archive_sha256",
+                "local_image_ref",
+                "runtime_image_id",
+            ):
+                self.assertNotEqual(
+                    manifest["subjects"]["baseline"][field],
+                    manifest["subjects"]["candidate"][field],
+                    field,
                 )
 
     def test_secure_output_rejects_ancestor_and_final_symlinks_or_bad_mode(
