@@ -21,10 +21,10 @@ CRR_TARGET_CLASS="local-linked-worktree-docker-engine"
 CRR_EXPECTED_SERVICES=(keycloak oauth2-proxy traefik vault vault-agent)
 CRR_EXPECTED_PORTS=(18000 18443 18082 18083 18200)
 CRR_EXPECTED_IMAGE_IDENTITIES=(
-  "quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4|sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4"
-  "quay.io/oauth2-proxy/oauth2-proxy@sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561|sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561"
-  "traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2|sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2"
-  "hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54|sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54"
+  "quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4|quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4|sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4"
+  "quay.io/oauth2-proxy/oauth2-proxy@sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561|quay.io/oauth2-proxy/oauth2-proxy@sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561|sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561"
+  "traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2|traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2|sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2"
+  "hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54|hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54|sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54"
 )
 
 crr_error() {
@@ -149,24 +149,49 @@ assert_docker_daemon() {
 }
 
 assert_local_image_identity() {
-  local image_ref="$1" expected_id="$2" actual_id
-  if ! actual_id="$(docker image inspect --format '{{.Id}}' "$image_ref" 2>/dev/null)"; then
+  local image_ref="$1"
+  local expected_repo_digest="$2"
+  local expected_config_id="$3"
+  local observed repo_digests_json actual_config_id
+  if ! observed="$(
+    docker image inspect --format '{{json .RepoDigests}}|{{.Id}}' \
+      "$image_ref" 2>/dev/null
+  )"; then
     crr_fail "$CRR_EXIT_PREFLIGHT" \
       "local image identity is unavailable for ${image_ref}"
     return
   fi
-  if [ "$actual_id" != "$expected_id" ]; then
+  repo_digests_json="${observed%|*}"
+  actual_config_id="${observed##*|}"
+  if ! python3 - "$repo_digests_json" "$expected_repo_digest" <<'PY'
+import json
+import sys
+
+try:
+    repo_digests = json.loads(sys.argv[1])
+except (json.JSONDecodeError, TypeError):
+    raise SystemExit(1)
+if not isinstance(repo_digests, list) or sys.argv[2] not in repo_digests:
+    raise SystemExit(1)
+PY
+  then
     crr_fail "$CRR_EXIT_PREFLIGHT" \
-      "local image identity mismatch for ${image_ref}"
+      "local repository manifest mismatch for ${image_ref}"
+    return
+  fi
+  if [ "$actual_config_id" != "$expected_config_id" ]; then
+    crr_fail "$CRR_EXIT_PREFLIGHT" \
+      "local image configuration ID mismatch for ${image_ref}"
     return
   fi
 }
 
 assert_local_image_identities() {
-  local identity image_ref expected_id
+  local identity image_ref expected_repo_digest expected_config_id
   for identity in "${CRR_EXPECTED_IMAGE_IDENTITIES[@]}"; do
-    IFS='|' read -r image_ref expected_id <<<"$identity"
-    assert_local_image_identity "$image_ref" "$expected_id" || return
+    IFS='|' read -r image_ref expected_repo_digest expected_config_id <<<"$identity"
+    assert_local_image_identity \
+      "$image_ref" "$expected_repo_digest" "$expected_config_id" || return
   done
 }
 
