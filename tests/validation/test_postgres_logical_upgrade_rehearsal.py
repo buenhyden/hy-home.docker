@@ -32,6 +32,10 @@ TARGET_IMAGE = (
     "postgres:18.4-alpine@sha256:"
     "9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
 )
+CLIENT_IMAGE = TARGET_IMAGE
+SOURCE_IMAGE_ID = "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
+TARGET_IMAGE_ID = "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+CLIENT_IMAGE_ID = TARGET_IMAGE_ID
 EXPECTED_VERDICT_KEYS = {
     "schema_version",
     "producer_spec",
@@ -666,6 +670,110 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             1,
         )
         self.assertEqual(text.count("pg_isready -U rehearsal -d rehearsal"), 2)
+
+    def test_source_target_and_client_have_explicit_digest_and_local_id_pins(self) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+        expected_assignments = (
+            f"SOURCE_IMAGE='{SOURCE_IMAGE}'",
+            f"TARGET_IMAGE='{TARGET_IMAGE}'",
+            f"DUMP_CLIENT_IMAGE='{CLIENT_IMAGE}'",
+            f"SOURCE_IMAGE_ID='{SOURCE_IMAGE_ID}'",
+            f"TARGET_IMAGE_ID='{TARGET_IMAGE_ID}'",
+            f"DUMP_CLIENT_IMAGE_ID='{CLIENT_IMAGE_ID}'",
+        )
+        for assignment in expected_assignments:
+            self.assertIn(assignment, text)
+
+    def test_exact_local_image_ids_are_checked_before_compose_or_runtime(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="ior-image-ids-", dir="/tmp") as tmp:
+            calls = Path(tmp) / "calls"
+            result = self.run_sourced(
+                textwrap.dedent(
+                    f"""\
+                    OPERATION_DEADLINE=$((SECONDS + 30))
+                    run_bounded() {{
+                      local requested="$1"
+                      shift
+                      printf '%s\n' "$*" >> {calls!s}
+                      case "${{@: -1}}" in
+                        "$SOURCE_IMAGE") printf '%s\n' "$SOURCE_IMAGE_ID" ;;
+                        "$TARGET_IMAGE"|"$DUMP_CLIENT_IMAGE") printf '%s\n' "$TARGET_IMAGE_ID" ;;
+                        *) return 99 ;;
+                      esac
+                    }}
+                    assert_exact_local_image_identities
+                    """
+                )
+            )
+            observed = calls.read_text(encoding="utf-8").splitlines() if calls.exists() else []
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertEqual(
+            [
+                f"docker image inspect --format {{{{.Id}}}} {SOURCE_IMAGE}",
+                f"docker image inspect --format {{{{.Id}}}} {TARGET_IMAGE}",
+                f"docker image inspect --format {{{{.Id}}}} {CLIENT_IMAGE}",
+            ],
+            observed,
+        )
+
+        text = SCRIPT.read_text(encoding="utf-8")
+        preflight = text.split("assert_safe_images_paths_and_project() {", 1)[1].split(
+            "\n}\n\nservice_has_terminal_state", 1
+        )[0]
+        self.assertLess(
+            preflight.index("assert_exact_local_image_identities"),
+            preflight.index("docker compose version"),
+        )
+
+    def test_missing_or_replaced_local_image_fails_before_other_runtime_calls(self) -> None:
+        for name, response in (
+            ("missing", "return 1"),
+            ("replaced", "printf '%s\\n' sha256:" + "f" * 64),
+        ):
+            with self.subTest(name=name), tempfile.TemporaryDirectory(
+                prefix="ior-image-gate-", dir="/tmp"
+            ) as tmp:
+                calls = Path(tmp) / "calls"
+                result = self.run_sourced(
+                    textwrap.dedent(
+                        f"""\
+                        OPERATION_DEADLINE=$((SECONDS + 30))
+                        run_bounded() {{
+                          local requested="$1"
+                          shift
+                          printf '%s\n' "$*" >> {calls!s}
+                          {response}
+                        }}
+                        assert_exact_local_image_identities
+                        """
+                    )
+                )
+                observed = calls.read_text(encoding="utf-8").splitlines() if calls.exists() else []
+            self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+            self.assertEqual(1, len(observed))
+            self.assertTrue(observed[0].startswith("docker image inspect "))
+            self.assertNotIn("compose", observed[0])
+            self.assertNotIn("create", observed[0])
+            self.assertNotIn("run", observed[0])
+
+    def test_all_start_and_create_paths_disable_pull_and_build(self) -> None:
+        compose = COMPOSE.read_text(encoding="utf-8")
+        self.assertEqual(2, compose.count("pull_policy: never"))
+
+        text = SCRIPT.read_text(encoding="utf-8")
+        up_lines = [line.strip() for line in text.splitlines() if " compose " in line and " up " in line]
+        self.assertEqual(2, len(up_lines))
+        for command in up_lines:
+            self.assertIn("--pull never", command)
+            self.assertIn("--no-build", command)
+
+        client = text.split("create_owned_dump_client() {", 1)[1].split(
+            "\n}\n\ndump_custom_format_with_pg18_client", 1
+        )[0]
+        self.assertIn("run_bounded docker create", client)
+        self.assertIn("--pull=never", client)
+        self.assertIn('"$DUMP_CLIENT_IMAGE"', client)
+        self.assertNotRegex(text, r"run_bounded docker run(?:\s|$)")
 
     def test_seed_schema_is_deterministic(self) -> None:
         text = SEED_SQL.read_text(encoding="utf-8")
