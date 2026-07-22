@@ -327,5 +327,6 @@ approved Stage 01-04 chain; local accepted verdicts are consumed only by
 - [Spec 126](../../03.specs/126-security-supply-chain-remediation/spec.md)
 - [Supply-chain Plan](../plans/2026-07-11-security-supply-chain-remediation.md)
 - [Program Task](./2026-07-19-operational-readiness-closure-program.md)
+- [Approved-network runtime closure Task](./2026-07-23-security-supply-chain-runtime-closure.md)
 - [Delivery Task](./2026-07-19-deployment-release-engineering-remediation.md)
 - [Security audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)

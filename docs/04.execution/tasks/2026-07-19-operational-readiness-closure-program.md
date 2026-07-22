@@ -405,6 +405,7 @@ Spec 127 follow-up scope.
 - [Program Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
 - [Compose Task](./2026-07-19-compose-runtime-readiness-remediation.md)
 - [Supply-chain Task](./2026-07-19-security-supply-chain-remediation.md)
+- [Supply-chain runtime closure Task](./2026-07-23-security-supply-chain-runtime-closure.md)
 - [Infrastructure Task](./2026-07-19-infrastructure-operations-readiness-remediation.md)
 - [Delivery Task](./2026-07-19-deployment-release-engineering-remediation.md)
 - [Task contract](./README.md)

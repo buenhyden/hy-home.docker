@@ -165,6 +165,7 @@ docs/04.execution/tasks/
 ├── 2026-07-19-security-supply-chain-remediation.md # Active supply-chain Task evidence owner
 ├── 2026-07-19-infrastructure-operations-readiness-remediation.md # Active PostgreSQL recovery Task evidence owner
 ├── 2026-07-19-deployment-release-engineering-remediation.md # Active promotion and rollback Task evidence owner
+├── 2026-07-23-security-supply-chain-runtime-closure.md # Active approved-network Grype seed and Spec 126 runtime closure Task
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence
@@ -267,6 +268,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Security Supply-Chain Remediation Task (active evidence owner)**: [2026-07-19-security-supply-chain-remediation.md](./2026-07-19-security-supply-chain-remediation.md)
 - **Infrastructure Operations Readiness Remediation Task (active evidence owner)**: [2026-07-19-infrastructure-operations-readiness-remediation.md](./2026-07-19-infrastructure-operations-readiness-remediation.md)
 - **Deployment and Release Engineering Remediation Task (active evidence owner)**: [2026-07-19-deployment-release-engineering-remediation.md](./2026-07-19-deployment-release-engineering-remediation.md)
+- **Security Supply-Chain Runtime Closure Task (active approved-network evidence owner)**: [2026-07-23-security-supply-chain-runtime-closure.md](./2026-07-23-security-supply-chain-runtime-closure.md)
 - **Audit Implementation Matrix Snapshot Task**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **SDLC Document Contract Corpus Normalization Task**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)

@@ -1,0 +1,234 @@
+---
+status: active
+artifact_id: task:2026-07-23-security-supply-chain-runtime-closure
+artifact_type: task
+parent_ids:
+  - spec:126-security-supply-chain-remediation
+  - plan:2026-07-11-security-supply-chain-remediation
+---
+
+# Task: Security Supply-Chain Runtime Closure
+
+## Overview
+
+This Task owns the separately approved, read-only network step required to
+seed a current Grype vulnerability database and close the local runtime portion
+of Spec 126. It extends the existing supply-chain Task without weakening its
+offline advisory, no-exception policy, immutable subject binding, or atomic
+accepted-pair contract.
+
+The Task may retrieve only a Grype database through the exact pinned Grype
+image and, if a policy rejection proves remediation necessary, inspect and pull
+only official sample-service base images before committing their exact immutable
+digests. It does not authorize Task 5 execution, registry push, signing
+publication, release, deployment, credentials, remote repository mutation, or
+the controlled all-files wrapper.
+
+## Inputs
+
+- [Spec 126](../../03.specs/126-security-supply-chain-remediation/spec.md)
+- [Security supply-chain Plan](../plans/2026-07-11-security-supply-chain-remediation.md)
+- [Existing supply-chain Task](./2026-07-19-security-supply-chain-remediation.md)
+- [Operational-readiness Program Task](./2026-07-19-operational-readiness-closure-program.md)
+- `infra/supply-chain.tool-images.json`
+- `infra/supply-chain.sample-service-policy.json`
+- `examples/sample-web-service/`
+
+## Goals and Non-goals
+
+Goals:
+
+- replace the historical manual database handoff with a reproducible,
+  task-bound seed harness;
+- retrieve through the exact pinned Grype image with application update checks
+  disabled and a bounded database-update command;
+- publish a private mode-0700 cache generation and an atomic mode-0600
+  minimized identity handoff containing exact tool, schema, build time, package
+  checksum, and cache-tree identity;
+- preserve the last valid generation and pointer when retrieval, validation, or
+  publication fails;
+- run the unchanged offline `--advisory` consumer and obtain two distinct,
+  same-revision, no-exception accepted verdicts plus the schema-v2 pair manifest;
+- remediate only sample-service image materials if the current policy rejects.
+
+Non-goals:
+
+- changing the vulnerability threshold or creating an exception;
+- making `--advisory` download data or use a network;
+- executing delivery promotion/rollback, the controlled all-files wrapper, a
+  remote workflow, a release, or a deployment;
+- registry push, attestation publication, OIDC/keyless signing, credentials, or
+  shared/production runtime mutation;
+- retaining raw scanner/database logs in tracked or handoff surfaces.
+
+## Scope and Change Boundaries
+
+Allowed authored paths:
+
+- this Task, `docs/04.execution/tasks/README.md`, the existing supply-chain
+  Task, the Program Task, and the bounded progress entry;
+- `scripts/security/seed-grype-db-cache.sh`, its dedicated validation helper and
+  tests, and the existing supply-chain wrapper/checker/tests;
+- the exact Spec 126 policy/tool registry, generated supply-chain summary, and
+  sample-service Dockerfile/source documentation when directly required by a
+  current policy rejection;
+- directly affected lifecycle/generated owners only after their canonical
+  generators identify them.
+
+Allowed transient paths are exactly `/tmp/hyhome-grype-db-seed.*`,
+`/tmp/hyhome-supply-chain.*`, and
+`_workspace/repo-support/task-2026-07-23-security-supply-chain-runtime-closure/`.
+The accepted pair remains owned by the existing supply-chain Task under its
+existing ignored output directory.
+
+Forbidden paths and actions include Task 5 implementation/runtime, production
+or shared services, credentials, registry push, publication, GitHub mutation,
+remote dispatch, release, deployment, broad Docker cleanup, and direct or
+wrapped all-files pre-commit execution.
+
+Compose impact: none. Local Docker runs, image inspection/pull, Buildx export,
+and task-owned cleanup only.
+
+Security impact: one bounded read-only database retrieval and, only after an
+observed rejection, read-only official image metadata/pull. Every durable
+consumer remains offline and fail-closed.
+
+Operations impact: ignored private local evidence only; no shared service or
+operator state.
+
+Runtime impact: task-owned Docker containers/images and local OCI archives.
+No container may remain after each command and no named network or volume may
+be created.
+
+## Approval Evidence
+
+Approval source: on 2026-07-23 KST the user explicitly approved the proposed
+follow-up after the Program reported the missing Grype seed and accepted-pair
+blocker. The parent implementation brief narrows that approval to read-only
+retrieval of the pinned Grype database and official base images genuinely
+required for policy remediation.
+
+Protected surfaces: the Grype network boundary, official image registry reads,
+sample-service digest pins, ignored database cache, and accepted verdict pair
+are approved only within this Task. Task 5, CI enforcement, the controlled
+wrapper, publication, remote repository state, credentials, Releases, and
+deployments remain protected and unapproved here.
+
+Approval boundary:
+
+- Grype identity is exactly
+  `anchore/grype:v0.116.0@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821`;
+- the only networked Grype operation is its native `db update`, with
+  `GRYPE_CHECK_FOR_APP_UPDATE=false`, a private cache mount, and no source or
+  artifact input;
+- allowed database traffic is the Grype-configured Anchore database endpoint;
+- official image discovery is limited to `library/alpine` and
+  `nginxinc/nginx-unprivileged`; a chosen image is pulled only by exact digest
+  and committed only as `repository:version@sha256:...`;
+- allowed command classes are exact local tests/checks, `docker image inspect`,
+  pinned `docker run`, read-only `docker buildx imagetools inspect`, and
+  exact-digest `docker pull` for the two approved repositories;
+- no exception, mutable committed tag, registry write, or remote mutation is
+  allowed.
+
+Grype DB network approval: confirmed
+
+Rollback or recovery: a failed seed must leave the prior atomic current pointer
+and generation untouched. A successful but unused new generation may be
+removed only by its exact task-owned identity. Code/material remediation rolls
+back by reverting its logical commit; no Docker prune, shared cleanup, remote
+deletion, or artifact revocation is applicable.
+
+Redaction boundary: tracked evidence may contain public image references,
+digests, Grype database schema/build/status/package checksum, cache-tree
+checksum/counts, source revision, vulnerability severity counts, concise
+verdicts, handoff hashes/modes, cleanup, and review results. Raw database or
+scanner logs, raw findings, SBOM bodies, provenance bodies, signature bundles,
+keys, tokens, credentials, response bodies, and shell history are prohibited.
+
+## Work Breakdown
+
+| Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `T-SSC-006` | Activate the exact network, identity, output, rollback, and redaction contract | Governance | Spec 126 approval gates | Plan approval gates | Metadata, lifecycle, Markdown, and diff gates | Fresh implementation agent | In progress |
+| `T-SSC-007` | TDD the dedicated database seed and atomic private handoff | Implementation | `SSC-001` | `T-SSC-002` | Focused RED/GREEN tests, static checks, failed-seed preservation | Fresh implementation agent | Pending |
+| `T-SSC-008` | Seed the current database and execute the hardened offline advisory | Runtime | `SSC-001`–`SSC-004` | `T-SSC-002`–`T-SSC-003` | Exact DB identity, policy verdicts, pair manifest, cleanup inventory | Fresh implementation agent | Pending |
+| `T-SSC-009` | Remediate only rejected sample-service materials when necessary | Implementation | `SSC-001`–`SSC-004` | `T-SSC-002` | Digest/source TDD and repeated offline advisory | Fresh implementation agent | Conditional |
+| `T-SSC-010` | Independent specification and quality/security review | Review | `VAL-SSC-001`–`VAL-SSC-004` | `T-SSC-005` | Separate C0/I0/M0 reviews and remediation ledger | Separate reviewers | Pending |
+
+## Work Log
+
+| Date | Work unit | Result |
+| --- | --- | --- |
+| 2026-07-23 | `T-SSC-006` discovery | Confirmed the current hardened advisory blocks before Docker when no approved seed exists. The historical seed identity is evidence-only; there is no committed reproducible seed harness. No network, Docker runtime, image pull, Task 5, wrapper, or remote action ran during discovery. |
+
+## Verification Evidence
+
+Planned exact local gates:
+
+```bash
+python3 -m unittest tests.validation.test_grype_db_seed -v
+python3 -m unittest tests.validation.test_supply_chain_policy -v
+python3 scripts/validation/check-supply-chain-policy.py --check
+bash scripts/security/seed-grype-db-cache.sh --preflight
+bash scripts/security/verify-sample-service-supply-chain.sh --preflight
+bash scripts/security/verify-sample-service-supply-chain.sh --fixture-only
+python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 5f26b0048d450318b7dc6dbe6a6d9484a3e3f1b8
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/validation/check-doc-implementation-alignment.sh
+git diff --check
+```
+
+The approved networked commands are invoked only after the seed harness tests
+and preflight pass. Actual commands, exits, public identities, minimized
+checksums, verdicts, and cleanup results will be appended without raw logs.
+
+Current result: activation discovery only; implementation, network retrieval,
+advisory runtime, accepted pair, and reviews are `not_run`.
+
+## Controlled Agent Pre-commit Evidence
+
+Controlled wrapper command, allowed prefixes, exit status, snapshots, observed
+path sets, and disposition: `not_applicable`. Task 6 remains the sole owner and
+the wrapper is explicitly forbidden in this Task.
+
+## Review Evidence
+
+Implementation review verdict: `pending`.
+
+Specification review verdict: `pending`.
+
+Quality/security review verdict: `pending`.
+
+Findings and disposition: none yet. Historical Task 3 reviews do not approve
+this new network seed implementation or runtime evidence.
+
+## Commit Ledger
+
+Commit identity: `pending`.
+
+Logical units: Task contract; TDD RED; seed GREEN; conditional sample-material
+remediation; runtime/review evidence.
+
+Validation: recorded per logical unit after exact execution.
+
+## Deferred and Blocked Items
+
+Deferred items: Task 5 positive/rollback runtime and the controlled all-files
+wrapper remain owned by later separately bounded work.
+
+Blocked items: no current Task-local blocker before the approved seed attempt.
+If the official database or approved official image set cannot produce a
+no-exception policy pass, stop with the exact irreducible public identity and
+redacted counts; do not relax policy or create an exception.
+
+Deferral destination: the existing Program Task owns Task 5 and final wrapper
+sequencing after this Task reaches independent C0/I0/M0 review.
+
+## Related Documents
+
+- [Spec 126](../../03.specs/126-security-supply-chain-remediation/spec.md)
+- [Security supply-chain Plan](../plans/2026-07-11-security-supply-chain-remediation.md)
+- [Existing supply-chain Task](./2026-07-19-security-supply-chain-remediation.md)
+- [Operational-readiness Program Task](./2026-07-19-operational-readiness-closure-program.md)
+- [Task index](./README.md)
