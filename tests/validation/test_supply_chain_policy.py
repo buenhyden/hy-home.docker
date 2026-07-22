@@ -409,6 +409,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         expected_id = "sha256:" + ("a" * 64)
         valid = self.run_wrapper_library(
             f"source {shlex.quote(str(WRAPPER))}\n"
+            f"TEST_IMAGE_ID={expected_id}\n"
             "docker() { printf '%s\\n' \"$TEST_IMAGE_ID\"; }\n"
             f"assert_local_image_identity example.invalid/tool@{expected_id} {expected_id}\n"
         )
@@ -417,6 +418,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             with self.subTest(image_id=image_id or "missing"):
                 result = self.run_wrapper_library(
                     f"source {shlex.quote(str(WRAPPER))}\n"
+                    f"TEST_IMAGE_ID={shlex.quote(image_id)}\n"
                     "docker() { [ -n \"$TEST_IMAGE_ID\" ] || return 1; "
                     "printf '%s\\n' \"$TEST_IMAGE_ID\"; }\n"
                     f"assert_local_image_identity example.invalid/tool@{expected_id} {expected_id}\n"
@@ -474,6 +476,12 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 ],
                 check=True,
             )
+            source_revision = subprocess.run(
+                ["git", "-C", str(repo), "rev-parse", "HEAD"],
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
             runtime = pathlib.Path(temporary) / "runtime"
             runtime.mkdir(mode=0o700)
             snapshot = runtime / "context.json"
@@ -482,6 +490,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 f"BASE_DIR={shlex.quote(str(repo))}\n"
                 f"SERVICE_DIR={shlex.quote(str(service))}\n"
                 f"CHECKER={shlex.quote(str(CHECKER_PATH))}\n"
+                f"SOURCE_REVISION={source_revision}\n"
                 f"build_context_snapshot={shlex.quote(str(snapshot))}\n"
             )
 
@@ -489,6 +498,17 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             dirty = self.run_wrapper_library(common + "capture_build_context_snapshot\n")
             self.assertEqual(10, dirty.returncode, dirty.stderr)
             (service / "site/untracked.html").unlink()
+
+            (repo / ".git/info/exclude").write_text(
+                "examples/sample-web-service/site/ignored.html\n",
+                encoding="utf-8",
+            )
+            (service / "site/ignored.html").write_text("ignored but effective\n")
+            ignored = self.run_wrapper_library(
+                common + "capture_build_context_snapshot\n"
+            )
+            self.assertEqual(10, ignored.returncode, ignored.stderr)
+            (service / "site/ignored.html").unlink()
 
             clean = self.run_wrapper_library(common + "capture_build_context_snapshot\n")
             self.assertEqual(0, clean.returncode, clean.stderr)
@@ -552,7 +572,11 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 "  grype_db_dir=\"$OUTPUT_DIR/grype-db-cache\"\n"
                 "  run_verdict_dir=$(mktemp -d \"$OUTPUT_DIR/.verification-verdicts.XXXXXX\")\n"
                 "}\n"
+                "capture_build_context_snapshot() { BUILD_CONTEXT_SHA256=sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee; }\n"
                 "ensure_advisory_prerequisites() { :; }\n"
+                "assert_local_image_identities() { :; }\n"
+                "seed_private_grype_db_cache() { :; }\n"
+                "remove_legacy_runtime_artifacts() { :; }\n"
                 "record_grype_db_identity() { :; }\n"
                 "build_role_image() { mkdir -p \"$OUTPUT_DIR/$1\"; }\n"
                 "export_oci_archive() { :; }\n"
@@ -573,6 +597,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 "    printf '%s\\n' '{\"exception_id\":null,\"verdict\":\"accepted\"}' >\"$OUTPUT_DIR/$1/vulnerability-verdict.json\"\n"
                 "  fi\n"
                 "}\n"
+                "publish_role_advisory_summary() { :; }\n"
                 "generate_slsa_provenance() { :; }\n"
                 "sign_and_verify_archive() { :; }\n"
                 "run_advisory\n"
@@ -652,6 +677,7 @@ class SupplyChainSecureOutputTests(unittest.TestCase):
             "role": role,
             "schema_version": 1,
             "source_revision": SOURCE_REVISION,
+            "build_context_sha256": CANDIDATE_SUBJECT["build_context_sha256"],
             "verdict": "accepted",
         }
         path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")

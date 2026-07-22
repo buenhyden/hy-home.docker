@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+umask 077
 
-# Local-only supply-chain rehearsal. Runtime artifacts are ignored; no image,
-# attestation, signature, or report is published outside this worktree.
+# Local-only supply-chain rehearsal. Raw artifacts live in one private /tmp
+# tree; only redacted summaries and a committed accepted-verdict pair may be
+# handed off under the task-owned ignored output directory.
 
 BASE_DIR="$(git rev-parse --show-toplevel)"
 SERVICE_DIR="$BASE_DIR/examples/sample-web-service"
@@ -10,25 +12,37 @@ CHECKER="$BASE_DIR/scripts/validation/check-supply-chain-policy.py"
 TOOL_REGISTRY="$BASE_DIR/infra/supply-chain.tool-images.json"
 POLICY="$BASE_DIR/infra/supply-chain.sample-service-policy.json"
 TASK_DOC="$BASE_DIR/docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md"
-OUTPUT_DIR="$BASE_DIR/_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
+OUTPUT_RELATIVE="_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
+OUTPUT_DIR="$BASE_DIR/$OUTPUT_RELATIVE"
 SOURCE_REVISION="$(git -C "$BASE_DIR" rev-parse HEAD)"
 MODE="${1:-}"
 
 readonly EXIT_USAGE=2 EXIT_POLICY=10 EXIT_BUILD=20 EXIT_SBOM=30
 readonly EXIT_VULNERABILITY=40 EXIT_PROVENANCE=50 EXIT_SIGNATURE=60 EXIT_SCORECARD=70
+readonly BUILD_MATERIAL_REF="alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
+readonly BUILD_MATERIAL_ID="sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
+readonly RUNTIME_MATERIAL_REF="nginxinc/nginx-unprivileged:1.27.3-alpine@sha256:9e7238f579a54582263a960d1b0094b4a3ecce641342eda3f8e2ff82b1703d2b"
+readonly RUNTIME_MATERIAL_ID="sha256:9e7238f579a54582263a960d1b0094b4a3ecce641342eda3f8e2ff82b1703d2b"
 
 declare -A IMAGE_CONFIG_DIGEST=() OCI_ARCHIVE_SHA256=()
-private_key_dir=""
+runtime_dir=""
+artifact_root=""
 grype_db_dir=""
+grype_db_status=""
+grype_db_identity=""
+private_key_dir=""
 run_verdict_dir=""
+build_context_snapshot=""
+BUILD_CONTEXT_SHA256=""
+output_identity=""
 
 usage() {
   cat <<'EOF'
 Usage: bash scripts/security/verify-sample-service-supply-chain.sh --fixture-only|--preflight|--advisory|--scorecard-advisory
 
-`--fixture-only` is deterministic and network-independent. `--advisory` never
-pulls missing tool images or downloads a vulnerability database; unavailable
-prerequisites are reported as blocked.
+`--fixture-only` is deterministic and Docker-independent. `--preflight`
+checks the local daemon, default Buildx driver, and exact local image IDs.
+`--advisory` never pulls images or downloads a vulnerability database.
 EOF
 }
 
@@ -37,8 +51,8 @@ fail() {
   exit "$1"
 }
 
-tool_ref() {
-  python3 - "$TOOL_REGISTRY" "$1" <<'PY'
+tool_field() {
+  python3 - "$TOOL_REGISTRY" "$1" "$2" <<'PY'
 import json
 import pathlib
 import sys
@@ -46,10 +60,23 @@ import sys
 registry = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
 for tool in registry["tools"]:
     if tool["name"] == sys.argv[2]:
-        print(f'{tool["image"]}@{tool["digest"]}')
+        if sys.argv[3] == "ref":
+            print(f'{tool["image"]}@{tool["digest"]}')
+        elif sys.argv[3] == "digest":
+            print(tool["digest"])
+        else:
+            raise SystemExit(2)
         raise SystemExit(0)
 raise SystemExit(1)
 PY
+}
+
+tool_ref() {
+  tool_field "$1" ref
+}
+
+tool_digest() {
+  tool_field "$1" digest
 }
 
 load_tool_registry() {
@@ -66,47 +93,152 @@ validate_policy_and_exceptions() {
 }
 
 prepare_transient_directory() {
-  mkdir -p "$OUTPUT_DIR"
-  [[ -d "$OUTPUT_DIR" && "$OUTPUT_DIR" == "$BASE_DIR/_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain" ]] || fail "$EXIT_POLICY" "task-output-path-invalid"
-  grype_db_dir="$OUTPUT_DIR/grype-db-cache"
-  mkdir -p "$grype_db_dir"
-  run_verdict_dir="$(mktemp -d "$OUTPUT_DIR/.verification-verdicts.XXXXXX")"
-  private_key_dir="$(mktemp -d /tmp/hyhome-supply-chain.XXXXXX)"
-  chmod 700 "$private_key_dir"
+  [[ -z "$runtime_dir" ]] || fail "$EXIT_POLICY" "runtime-directory-already-prepared"
+  runtime_dir="$(mktemp -d /tmp/hyhome-supply-chain.XXXXXX)" || fail "$EXIT_POLICY" "runtime-directory-create-failed"
+  chmod 700 "$runtime_dir"
+  artifact_root="$runtime_dir/artifacts"
+  grype_db_dir="$runtime_dir/grype-db-cache"
+  grype_db_status="$runtime_dir/grype-db-status.txt"
+  grype_db_identity="$runtime_dir/grype-db-identity.json"
+  private_key_dir="$runtime_dir/keys"
+  run_verdict_dir="$runtime_dir/verdicts"
+  build_context_snapshot="$runtime_dir/build-context.json"
+  mkdir -m 700 "$artifact_root" "$grype_db_dir" "$private_key_dir" "$run_verdict_dir"
+  mkdir -m 700 "$artifact_root/baseline" "$artifact_root/candidate"
+}
+
+cleanup_transient_state() {
+  if [[ -n "$runtime_dir" && "$runtime_dir" == /tmp/hyhome-supply-chain.* ]]; then
+    rm -rf -- "$runtime_dir"
+  fi
+  runtime_dir=""
+  artifact_root=""
+  grype_db_dir=""
+  private_key_dir=""
+  run_verdict_dir=""
+  build_context_snapshot=""
+}
+
+prepare_secure_output() {
+  [[ "$OUTPUT_DIR" == "$BASE_DIR/$OUTPUT_RELATIVE" ]] || fail "$EXIT_POLICY" "task-output-path-invalid"
+  output_identity="$(python3 "$CHECKER" --prepare-secure-output "$BASE_DIR" "$OUTPUT_RELATIVE")" || fail "$EXIT_POLICY" "secure-output-invalid"
+  [[ "$output_identity" =~ ^[0-9]+:[0-9]+$ ]] || fail "$EXIT_POLICY" "secure-output-identity-invalid"
 }
 
 invalidate_consumer_verdicts() {
-  mkdir -p "$OUTPUT_DIR"
-  [[ -d "$OUTPUT_DIR" && "$OUTPUT_DIR" == "$BASE_DIR/_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain" ]] || fail "$EXIT_POLICY" "task-output-path-invalid"
-  rm -f -- "$OUTPUT_DIR/verification-verdict.baseline.json" "$OUTPUT_DIR/verification-verdict.candidate.json"
+  [[ "$OUTPUT_DIR" == "$BASE_DIR/$OUTPUT_RELATIVE" ]] || fail "$EXIT_POLICY" "task-output-path-invalid"
+  [[ -n "$output_identity" ]] || prepare_secure_output
+  python3 "$CHECKER" --invalidate-secure-handoffs "$BASE_DIR" "$OUTPUT_RELATIVE" "$output_identity" || fail "$EXIT_POLICY" "stale-handoff-invalidation-failed"
+}
+
+capture_build_context_snapshot() {
+  local snapshot_revision
+  [[ -n "$build_context_snapshot" ]] || fail "$EXIT_POLICY" "build-context-snapshot-path-missing"
+  BUILD_CONTEXT_SHA256="$(python3 "$CHECKER" --capture-build-context "$BASE_DIR" "examples/sample-web-service" "$build_context_snapshot")" || fail "$EXIT_POLICY" "build-context-not-clean"
+  [[ "$BUILD_CONTEXT_SHA256" =~ ^sha256:[0-9a-f]{64}$ ]] || fail "$EXIT_POLICY" "build-context-digest-invalid"
+  snapshot_revision="$(python3 - "$build_context_snapshot" <<'PY'
+import json
+import pathlib
+import sys
+
+print(json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))["source_revision"])
+PY
+)" || fail "$EXIT_POLICY" "build-context-source-revision-invalid"
+  [[ "$snapshot_revision" == "$SOURCE_REVISION" ]] || fail "$EXIT_POLICY" "build-context-source-revision-mismatch"
+}
+
+assert_build_context_unchanged() {
+  [[ -n "$build_context_snapshot" && -f "$build_context_snapshot" ]] || fail "$EXIT_PROVENANCE" "build-context-snapshot-missing"
+  python3 "$CHECKER" --verify-build-context "$BASE_DIR" "examples/sample-web-service" "$build_context_snapshot" >/dev/null || fail "$EXIT_PROVENANCE" "build-context-changed"
+}
+
+role_artifact_dir() {
+  local role="$1"
+  if [[ -n "$artifact_root" ]]; then
+    printf '%s\n' "$artifact_root/$role"
+  else
+    printf '%s\n' "$OUTPUT_DIR/$role"
+  fi
+}
+
+assert_local_image_identity() {
+  local reference="$1" expected_id="$2" actual_id
+  actual_id="$(docker image inspect --format '{{.Id}}' "$reference" 2>/dev/null)" || fail "$EXIT_POLICY" "pinned-image-missing"
+  [[ "$actual_id" == "$expected_id" ]] || fail "$EXIT_POLICY" "pinned-image-id-mismatch"
+}
+
+assert_local_image_identities() {
+  local tool reference digest
+  for tool in syft grype cosign scorecard; do
+    reference="$(tool_ref "$tool")" || fail "$EXIT_POLICY" "tool-reference-missing"
+    digest="$(tool_digest "$tool")" || fail "$EXIT_POLICY" "tool-digest-missing"
+    assert_local_image_identity "$reference" "$digest"
+  done
+  assert_local_image_identity "$BUILD_MATERIAL_REF" "$BUILD_MATERIAL_ID"
+  assert_local_image_identity "$RUNTIME_MATERIAL_REF" "$RUNTIME_MATERIAL_ID"
+}
+
+assert_default_buildx_offline_capable() {
+  local inspection
+  docker buildx version >/dev/null 2>&1 || fail "$EXIT_POLICY" "docker-buildx-unavailable-advisory-blocked"
+  inspection="$(docker buildx inspect default 2>/dev/null)" || fail "$EXIT_POLICY" "default-buildx-builder-unavailable"
+  grep -Eq '^Name:[[:space:]]+default$' <<<"$inspection" || fail "$EXIT_POLICY" "default-buildx-name-invalid"
+  grep -Eq '^Driver:[[:space:]]+docker$' <<<"$inspection" || fail "$EXIT_POLICY" "default-buildx-driver-invalid"
+  grep -Eq '^Status:[[:space:]]+running$' <<<"$inspection" || fail "$EXIT_POLICY" "default-buildx-status-invalid"
+}
+
+ensure_advisory_prerequisites() {
+  command -v docker >/dev/null || fail "$EXIT_POLICY" "docker-unavailable-advisory-blocked"
+  docker info >/dev/null 2>&1 || fail "$EXIT_POLICY" "docker-daemon-unavailable-advisory-blocked"
+  assert_default_buildx_offline_capable
+}
+
+seed_private_grype_db_cache() {
+  local seed_dir="${HYHOME_GRYPE_DB_CACHE_SOURCE:-$OUTPUT_DIR/grype-db-cache}"
+  [[ -d "$seed_dir" && ! -L "$seed_dir" ]] || fail "$EXIT_POLICY" "grype-db-seed-unavailable-advisory-blocked"
+  [[ -n "$(find "$seed_dir" -mindepth 1 -print -quit 2>/dev/null)" ]] || fail "$EXIT_POLICY" "grype-db-seed-empty-advisory-blocked"
+  docker run --pull=never --rm --network none --user 0:0 --env "TARGET_UID=$(id -u)" --env "TARGET_GID=$(id -g)" --mount "type=bind,source=$seed_dir,target=/seed,readonly" --mount "type=bind,source=$grype_db_dir,target=/cache" "$BUILD_MATERIAL_REF" sh -ceu 'cp -a /seed/. /cache/; chown -R "$TARGET_UID:$TARGET_GID" /cache; find /cache -type d -exec chmod 700 {} +; find /cache -type f -exec chmod 600 {} +' || fail "$EXIT_POLICY" "grype-db-private-seed-failed"
+}
+
+remove_legacy_runtime_artifacts() {
+  local name path
+  for name in baseline candidate grype-db-cache grype-db-status.txt grype-db-identity.json; do
+    path="$OUTPUT_DIR/$name"
+    [[ ! -L "$path" ]] || fail "$EXIT_POLICY" "legacy-runtime-artifact-symlink"
+  done
+  rm -rf -- "$OUTPUT_DIR/baseline" "$OUTPUT_DIR/candidate" "$OUTPUT_DIR/grype-db-cache"
+  rm -f -- "$OUTPUT_DIR/grype-db-status.txt" "$OUTPUT_DIR/grype-db-identity.json"
 }
 
 build_role_image() {
-  local role="$1"
-  local label="org.hyhome.delivery.rehearsal.role=${role}"
-  local role_dir="$OUTPUT_DIR/$role"
+  local role="$1" role_dir label
+  role_dir="$(role_artifact_dir "$role")"
+  label="org.hyhome.delivery.rehearsal.role=${role}"
   mkdir -p "$role_dir"
-  docker buildx build --output "type=oci,dest=$role_dir/image.oci.tar" --label "$label" --file "$SERVICE_DIR/Dockerfile" "$SERVICE_DIR" || fail "$EXIT_BUILD" "role-image-build-failed"
+  chmod 700 "$role_dir"
+  docker buildx build --builder default --network=none --pull=false --output "type=oci,dest=$role_dir/image.oci.tar" --label "$label" --file "$SERVICE_DIR/Dockerfile" "$SERVICE_DIR" || fail "$EXIT_BUILD" "role-image-build-failed"
+  chmod 600 "$role_dir/image.oci.tar"
 }
 
 export_oci_archive() {
-  local role="$1"
-  local role_dir="$OUTPUT_DIR/$role"
-  local archive="$role_dir/image.oci.tar"
-  [[ -s "$archive" ]] || fail "$EXIT_BUILD" "oci-archive-missing"
+  local role_dir
+  role_dir="$(role_artifact_dir "$1")"
+  [[ -s "$role_dir/image.oci.tar" && ! -L "$role_dir/image.oci.tar" ]] || fail "$EXIT_BUILD" "oci-archive-missing"
 }
 
 derive_subject_tuple() {
-  local role="$1"
-  IMAGE_CONFIG_DIGEST["$role"]="$(python3 "$CHECKER" --oci-archive-config-digest "$OUTPUT_DIR/$role/image.oci.tar")" || fail "$EXIT_BUILD" "oci-archive-config-binding-invalid"
+  local role="$1" role_dir
+  role_dir="$(role_artifact_dir "$role")"
+  IMAGE_CONFIG_DIGEST["$role"]="$(python3 "$CHECKER" --oci-archive-config-digest "$role_dir/image.oci.tar")" || fail "$EXIT_BUILD" "oci-archive-config-binding-invalid"
   [[ "${IMAGE_CONFIG_DIGEST[$role]}" =~ ^sha256:[0-9a-f]{64}$ ]] || fail "$EXIT_BUILD" "image-config-digest-invalid"
-  OCI_ARCHIVE_SHA256["$role"]="sha256:$(sha256sum "$OUTPUT_DIR/$role/image.oci.tar" | awk '{print $1}')"
+  OCI_ARCHIVE_SHA256["$role"]="sha256:$(sha256sum "$role_dir/image.oci.tar" | awk '{print $1}')"
   [[ "${OCI_ARCHIVE_SHA256[$role]}" =~ ^sha256:[0-9a-f]{64}$ ]] || fail "$EXIT_POLICY" "oci-archive-digest-invalid"
 }
 
 validate_live_sbom() {
-  local role="$1"
-  python3 - "$CHECKER" "$OUTPUT_DIR/$role/sbom.cdx.json" "$role" "$SOURCE_REVISION" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" <<'PY'
+  local role="$1" role_dir
+  role_dir="$(role_artifact_dir "$role")"
+  python3 - "$CHECKER" "$role_dir/sbom.cdx.json" "$role" "$SOURCE_REVISION" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" <<'PY'
 import importlib.util
 import json
 import pathlib
@@ -123,8 +255,9 @@ PY
 }
 
 bind_sbom_subject() {
-  local role="$1"
-  python3 - "$OUTPUT_DIR/$role/sbom.cdx.json" "$role" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" <<'PY'
+  local role="$1" role_dir
+  role_dir="$(role_artifact_dir "$role")"
+  python3 - "$role_dir/sbom.cdx.json" "$role" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" <<'PY'
 import json
 import pathlib
 import sys
@@ -135,32 +268,22 @@ metadata = document.setdefault("metadata", {})
 component = metadata.setdefault("component", {})
 component["name"] = "examples/sample-web-service"
 component["type"] = "container"
-properties = [
-    row
-    for row in component.get("properties", [])
-    if isinstance(row, dict)
-    and row.get("name")
-    not in {
-        "org.hyhome.delivery.image_config_digest",
-        "org.hyhome.delivery.oci_archive_sha256",
-        "org.hyhome.delivery.rehearsal.role",
-    }
-]
-properties.extend(
-    [
-        {"name": "org.hyhome.delivery.image_config_digest", "value": sys.argv[3]},
-        {"name": "org.hyhome.delivery.oci_archive_sha256", "value": sys.argv[4]},
-        {"name": "org.hyhome.delivery.rehearsal.role", "value": sys.argv[2]},
-    ]
-)
+properties = [row for row in component.get("properties", []) if isinstance(row, dict) and row.get("name") not in {"org.hyhome.delivery.image_config_digest", "org.hyhome.delivery.oci_archive_sha256", "org.hyhome.delivery.rehearsal.role"}]
+properties.extend([
+    {"name": "org.hyhome.delivery.image_config_digest", "value": sys.argv[3]},
+    {"name": "org.hyhome.delivery.oci_archive_sha256", "value": sys.argv[4]},
+    {"name": "org.hyhome.delivery.rehearsal.role", "value": sys.argv[2]},
+])
 component["properties"] = properties
 path.write_text(json.dumps(document, sort_keys=True) + "\n", encoding="utf-8")
+path.chmod(0o600)
 PY
 }
 
 write_redacted_grype_input() {
-  local role="$1"
-  python3 - "$OUTPUT_DIR/$role/grype.raw.json" "$OUTPUT_DIR/$role/grype.redacted.json" "${IMAGE_CONFIG_DIGEST[$role]}" <<'PY'
+  local role="$1" role_dir
+  role_dir="$(role_artifact_dir "$role")"
+  python3 - "$role_dir/grype.raw.json" "$role_dir/grype.redacted.json" "${IMAGE_CONFIG_DIGEST[$role]}" <<'PY'
 import json
 import pathlib
 import sys
@@ -172,13 +295,16 @@ for row in raw.get("matches", []):
     vulnerability = row.get("vulnerability") or {}
     matches.append({"artifact": {"name": artifact.get("name", "")}, "vulnerability": {"id": vulnerability.get("id", ""), "severity": vulnerability.get("severity", "")}})
 payload = {"matches": matches, "schema_version": 1, "subject_digest": sys.argv[3]}
-pathlib.Path(sys.argv[2]).write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+path = pathlib.Path(sys.argv[2])
+path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+path.chmod(0o600)
 PY
 }
 
 evaluate_live_grype() {
-  local role="$1"
-  python3 - "$CHECKER" "$OUTPUT_DIR/$role/grype.redacted.json" "$POLICY" "$BASE_DIR/infra/supply-chain.vulnerability-exceptions.json" "$role" "$SOURCE_REVISION" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" "$OUTPUT_DIR/$role/vulnerability-verdict.json" <<'PY'
+  local role="$1" role_dir
+  role_dir="$(role_artifact_dir "$role")"
+  python3 - "$CHECKER" "$role_dir/grype.redacted.json" "$POLICY" "$BASE_DIR/infra/supply-chain.vulnerability-exceptions.json" "$role" "$SOURCE_REVISION" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" "$role_dir/vulnerability-verdict.json" <<'PY'
 import importlib.util
 import json
 import pathlib
@@ -193,48 +319,110 @@ policy = json.loads(pathlib.Path(sys.argv[3]).read_text())
 exceptions = json.loads(pathlib.Path(sys.argv[4]).read_text())
 subject = {"role": sys.argv[5], "source_revision": sys.argv[6], "image_config_digest": sys.argv[7], "oci_archive_sha256": sys.argv[8]}
 result = module.evaluate_grype_fixture(fixture, policy, exceptions, subject)
-summary = {"exception_id": result["exception_id"], "policy_id": policy["policy_id"], "redaction_status": "passed", "role": subject["role"], "verdict": result["verdict"]}
-pathlib.Path(sys.argv[9]).write_text(json.dumps(summary, sort_keys=True) + "\n", encoding="utf-8")
+summary = {"exception_id": result["exception_id"], "policy_id": policy["policy_id"], "reason": result["reason"], "redaction_status": "passed", "role": subject["role"], "verdict": result["verdict"]}
+path = pathlib.Path(sys.argv[9])
+path.write_text(json.dumps(summary, sort_keys=True) + "\n", encoding="utf-8")
+path.chmod(0o600)
 raise SystemExit(0 if result["verdict"] == "accepted" else 1)
 PY
 }
 
 generate_cyclonedx_and_grype_verdict() {
-  local role="$1" role_dir="$OUTPUT_DIR/$1"
-  docker run --rm --network none --env SYFT_CHECK_FOR_APP_UPDATE=false --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$(tool_ref syft)" "oci-archive:/workspace/image.oci.tar" -o cyclonedx-json >"$role_dir/sbom.cdx.json" || fail "$EXIT_SBOM" "sbom-generation-failed"
+  local role="$1" role_dir
+  role_dir="$(role_artifact_dir "$role")"
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env SYFT_CHECK_FOR_APP_UPDATE=false --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$(tool_ref syft)" "oci-archive:/workspace/image.oci.tar" -o cyclonedx-json >"$role_dir/sbom.cdx.json" || fail "$EXIT_SBOM" "sbom-generation-failed"
+  chmod 600 "$role_dir/sbom.cdx.json"
   bind_sbom_subject "$role" || fail "$EXIT_SBOM" "sbom-subject-binding-failed"
   validate_live_sbom "$role" || fail "$EXIT_SBOM" "sbom-subject-mismatch"
-  docker run --rm --network none --env GRYPE_CHECK_FOR_APP_UPDATE=false --env GRYPE_DB_CACHE_DIR=/grype-db-cache --mount "type=bind,source=$grype_db_dir,target=/grype-db-cache,readonly" --mount "type=bind,source=$role_dir,target=/workspace" "$(tool_ref grype)" "sbom:/workspace/sbom.cdx.json" -o json >"$role_dir/grype.raw.json" || fail "$EXIT_VULNERABILITY" "grype-advisory-db-or-scan-unavailable"
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env GRYPE_CHECK_FOR_APP_UPDATE=false --env GRYPE_DB_CACHE_DIR=/grype-db-cache --mount "type=bind,source=$grype_db_dir,target=/grype-db-cache,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$(tool_ref grype)" "sbom:/workspace/sbom.cdx.json" -o json >"$role_dir/grype.raw.json" || fail "$EXIT_VULNERABILITY" "grype-advisory-db-or-scan-unavailable"
+  chmod 600 "$role_dir/grype.raw.json"
   write_redacted_grype_input "$role" || fail "$EXIT_VULNERABILITY" "grype-redaction-failed"
-  evaluate_live_grype "$role" || fail "$EXIT_VULNERABILITY" "grype-policy-rejected"
+  evaluate_live_grype "$role"
 }
 
 require_consumer_safe_vulnerability_verdict() {
-  local role="$1"
-  python3 - "$OUTPUT_DIR/$role/vulnerability-verdict.json" <<'PY'
+  local role_dir
+  role_dir="$(role_artifact_dir "$1")"
+  python3 - "$role_dir/vulnerability-verdict.json" <<'PY'
 import json
 import pathlib
 import sys
 
-path = pathlib.Path(sys.argv[1])
 try:
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
 except (OSError, json.JSONDecodeError):
     raise SystemExit(1)
-
-if not isinstance(payload, dict):
-    raise SystemExit(1)
-if payload.get("verdict") != "accepted" or "exception_id" not in payload:
-    raise SystemExit(1)
-if payload["exception_id"] is not None:
+if not isinstance(payload, dict) or payload.get("verdict") != "accepted" or "exception_id" not in payload or payload["exception_id"] is not None:
     raise SystemExit(1)
 PY
 }
 
+record_grype_db_identity() {
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env GRYPE_CHECK_FOR_APP_UPDATE=false --env GRYPE_DB_CACHE_DIR=/grype-db-cache --mount "type=bind,source=$grype_db_dir,target=/grype-db-cache,readonly" "$(tool_ref grype)" db status >"$grype_db_status" || fail "$EXIT_POLICY" "grype-db-identity-unavailable"
+  chmod 600 "$grype_db_status"
+  python3 - "$grype_db_status" "$grype_db_identity" <<'PY'
+import json
+import pathlib
+import re
+import sys
+
+status = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+fields = dict(re.findall(r"^(Schema|Built|Status):\s+(.+)$", status, flags=re.MULTILINE))
+checksum = re.search(r"checksum=sha256%3A([0-9a-f]{64})", status)
+payload = {"built": fields.get("Built"), "database_package_sha256": checksum.group(1) if checksum else None, "schema": fields.get("Schema"), "schema_version": 1, "status": fields.get("Status")}
+if not all(payload[key] for key in ("built", "database_package_sha256", "schema", "status")):
+    raise SystemExit("grype-db-identity-incomplete")
+path = pathlib.Path(sys.argv[2])
+path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+path.chmod(0o600)
+PY
+}
+
+write_minimized_advisory_summary() {
+  local role="$1" role_dir target
+  role_dir="$(role_artifact_dir "$role")"
+  target="$runtime_dir/advisory-summary.$role.json"
+  python3 - "$role_dir/grype.redacted.json" "$role_dir/vulnerability-verdict.json" "$grype_db_identity" "$target" "$role" "$SOURCE_REVISION" "$BUILD_CONTEXT_SHA256" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" <<'PY'
+import collections
+import json
+import pathlib
+import sys
+
+redacted = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+verdict = json.loads(pathlib.Path(sys.argv[2]).read_text(encoding="utf-8"))
+database = json.loads(pathlib.Path(sys.argv[3]).read_text(encoding="utf-8"))
+counts = collections.Counter(str(row.get("vulnerability", {}).get("severity", "unknown")).lower() for row in redacted.get("matches", []))
+payload = {
+    "build_context_sha256": sys.argv[7],
+    "database": database,
+    "exception_id": verdict.get("exception_id"),
+    "image_config_digest": sys.argv[8],
+    "oci_archive_sha256": sys.argv[9],
+    "policy_id": verdict.get("policy_id"),
+    "reason": verdict.get("reason"),
+    "redaction_status": "passed",
+    "role": sys.argv[5],
+    "schema_version": 1,
+    "source_revision": sys.argv[6],
+    "verdict": verdict.get("verdict"),
+    "vulnerability_counts": dict(sorted(counts.items())),
+}
+path = pathlib.Path(sys.argv[4])
+path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+path.chmod(0o600)
+PY
+}
+
+publish_role_advisory_summary() {
+  local role="$1" source="$runtime_dir/advisory-summary.$1.json"
+  write_minimized_advisory_summary "$role" || fail "$EXIT_VULNERABILITY" "advisory-summary-redaction-failed"
+  python3 "$CHECKER" --publish-minimized-handoff "$BASE_DIR" "$OUTPUT_RELATIVE" "$output_identity" "advisory-summary.$role.json" "$source" || fail "$EXIT_VULNERABILITY" "advisory-summary-publication-failed"
+}
+
 generate_slsa_provenance() {
-  local role="$1" dockerfile_digest
-  dockerfile_digest="$(sha256sum "$SERVICE_DIR/Dockerfile" | awk '{print $1}')"
-  python3 - "$OUTPUT_DIR/$role/provenance.intoto.json" "$role" "$SOURCE_REVISION" "${OCI_ARCHIVE_SHA256[$role]}" "$dockerfile_digest" <<'PY'
+  local role="$1" role_dir
+  role_dir="$(role_artifact_dir "$role")"
+  python3 - "$role_dir/provenance.intoto.json" "$role" "$SOURCE_REVISION" "${OCI_ARCHIVE_SHA256[$role]}" "$BUILD_CONTEXT_SHA256" <<'PY'
 import json
 import pathlib
 import sys
@@ -243,11 +431,13 @@ payload = {
     "_type": "https://in-toto.io/Statement/v1",
     "predicateType": "https://slsa.dev/provenance/v1",
     "subject": [{"name": "examples/sample-web-service", "digest": {"sha256": sys.argv[4].removeprefix("sha256:")}}],
-    "predicate": {"buildDefinition": {"externalParameters": {"role": sys.argv[2], "source_revision": sys.argv[3]}, "resolvedDependencies": [{"uri": "git+local://examples/sample-web-service/Dockerfile", "digest": {"sha256": sys.argv[5]}}]}, "runDetails": {"builder": {"id": "hyhome.local.supply-chain-wrapper"}}},
+    "predicate": {"buildDefinition": {"externalParameters": {"build_context_sha256": sys.argv[5], "role": sys.argv[2], "source_revision": sys.argv[3]}, "resolvedDependencies": [{"uri": "git+local://examples/sample-web-service", "digest": {"sha256": sys.argv[5].removeprefix("sha256:")}}]}, "runDetails": {"builder": {"id": "hyhome.local.supply-chain-wrapper"}}},
 }
-pathlib.Path(sys.argv[1]).write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+path = pathlib.Path(sys.argv[1])
+path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+path.chmod(0o600)
 PY
-  python3 - "$CHECKER" "$OUTPUT_DIR/$role/provenance.intoto.json" "$role" "$SOURCE_REVISION" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" <<'PY' || fail "$EXIT_PROVENANCE" "provenance-subject-mismatch"
+  python3 - "$CHECKER" "$role_dir/provenance.intoto.json" "$role" "$SOURCE_REVISION" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" "$BUILD_CONTEXT_SHA256" <<'PY' || fail "$EXIT_PROVENANCE" "provenance-subject-mismatch"
 import importlib.util
 import json
 import pathlib
@@ -257,27 +447,29 @@ spec = importlib.util.spec_from_file_location("supply_chain_policy", sys.argv[1]
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-subject = {"role": sys.argv[3], "source_revision": sys.argv[4], "image_config_digest": sys.argv[5], "oci_archive_sha256": sys.argv[6]}
+subject = {"role": sys.argv[3], "source_revision": sys.argv[4], "image_config_digest": sys.argv[5], "oci_archive_sha256": sys.argv[6], "build_context_sha256": sys.argv[7]}
 raise SystemExit(1 if module.validate_provenance_subject(json.loads(pathlib.Path(sys.argv[2]).read_text()), subject) else 0)
 PY
 }
 
 sign_and_verify_archive() {
-  local role="$1" other_role="candidate"
+  local role="$1" other_role="candidate" role_dir other_dir cosign
   [[ "$role" == "baseline" ]] || other_role="baseline"
-  local cosign
+  role_dir="$(role_artifact_dir "$role")"
+  other_dir="$(role_artifact_dir "$other_role")"
   cosign="$(tool_ref cosign)"
   if [[ ! -f "$private_key_dir/cosign.key" ]]; then
-    docker run --rm --network none --env COSIGN_PASSWORD= --mount "type=bind,source=$private_key_dir,target=/keys" "$cosign" generate-key-pair --output-key-prefix /keys/cosign || fail "$EXIT_SIGNATURE" "ephemeral-key-generation-failed"
+    docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env COSIGN_PASSWORD= --mount "type=bind,source=$private_key_dir,target=/keys" "$cosign" generate-key-pair --output-key-prefix /keys/cosign || fail "$EXIT_SIGNATURE" "ephemeral-key-generation-failed"
   fi
-  docker run --rm --network none --env COSIGN_PASSWORD= --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$OUTPUT_DIR/$role,target=/workspace" "$cosign" sign-blob --tlog-upload=false --key /keys/cosign.key --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signing-failed"
-  docker run --rm --network none --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$OUTPUT_DIR/$role,target=/workspace,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signature-verification-failed"
-  cp "$OUTPUT_DIR/$role/image.oci.tar" "$OUTPUT_DIR/$role/tampered.oci.tar"
-  printf 'tamper' >>"$OUTPUT_DIR/$role/tampered.oci.tar"
-  if docker run --rm --network none --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$OUTPUT_DIR/$role,target=/workspace,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /workspace/tampered.oci.tar; then
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env COSIGN_PASSWORD= --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace" "$cosign" sign-blob --tlog-upload=false --key /keys/cosign.key --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signing-failed"
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signature-verification-failed"
+  cp "$role_dir/image.oci.tar" "$role_dir/tampered.oci.tar"
+  chmod 600 "$role_dir/tampered.oci.tar"
+  printf 'tamper' >>"$role_dir/tampered.oci.tar"
+  if docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /workspace/tampered.oci.tar; then
     fail "$EXIT_SIGNATURE" "tampered-archive-accepted"
   fi
-  if docker run --rm --network none --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$OUTPUT_DIR/$role,target=/workspace,readonly" --mount "type=bind,source=$OUTPUT_DIR/$other_role,target=/other,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /other/image.oci.tar; then
+  if docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" --mount "type=bind,source=$other_dir,target=/other,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /other/image.oci.tar; then
     fail "$EXIT_SIGNATURE" "wrong-subject-archive-accepted"
   fi
 }
@@ -285,97 +477,42 @@ sign_and_verify_archive() {
 write_verification_verdict() {
   local role="$1"
   [[ -n "$run_verdict_dir" && -d "$run_verdict_dir" ]] || fail "$EXIT_POLICY" "run-verdict-directory-invalid"
-  python3 - "$run_verdict_dir/verification-verdict.$role.json" "$role" "$SOURCE_REVISION" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" <<'PY'
+  python3 - "$run_verdict_dir/verification-verdict.$role.json" "$role" "$SOURCE_REVISION" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" "$BUILD_CONTEXT_SHA256" <<'PY'
 import datetime as dt
 import json
 import pathlib
 import sys
 
-payload = {"exception_id": None, "image_config_digest": sys.argv[4], "oci_archive_sha256": sys.argv[5], "policy_id": "sample-service-local-v1", "producer_spec": "spec:126-security-supply-chain-remediation", "redaction_status": "passed", "role": sys.argv[2], "schema_version": 1, "source_revision": sys.argv[3], "verified_at": dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"), "verdict": "accepted"}
-pathlib.Path(sys.argv[1]).write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+payload = {"build_context_sha256": sys.argv[6], "exception_id": None, "image_config_digest": sys.argv[4], "oci_archive_sha256": sys.argv[5], "policy_id": "sample-service-local-v1", "producer_spec": "spec:126-security-supply-chain-remediation", "redaction_status": "passed", "role": sys.argv[2], "schema_version": 1, "source_revision": sys.argv[3], "verified_at": dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"), "verdict": "accepted"}
+path = pathlib.Path(sys.argv[1])
+path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+path.chmod(0o600)
 PY
 }
 
 publish_verification_verdicts() {
   [[ -n "$run_verdict_dir" && -d "$run_verdict_dir" ]] || fail "$EXIT_POLICY" "run-verdict-directory-invalid"
-  local role
-  for role in baseline candidate; do
-    [[ -f "$run_verdict_dir/verification-verdict.$role.json" ]] || fail "$EXIT_POLICY" "run-verdict-missing"
-  done
-  for role in baseline candidate; do
-    mv -f -- "$run_verdict_dir/verification-verdict.$role.json" "$OUTPUT_DIR/verification-verdict.$role.json"
-  done
-  rmdir -- "$run_verdict_dir"
-  run_verdict_dir=""
-}
-
-delete_ephemeral_private_key() {
-  if [[ -n "$private_key_dir" && "$private_key_dir" == /tmp/hyhome-supply-chain.* && -d "$private_key_dir" ]]; then
-    rm -rf -- "$private_key_dir"
-  fi
-  private_key_dir=""
-}
-
-delete_run_verdict_directory() {
-  if [[ -n "$run_verdict_dir" && "$run_verdict_dir" == "$OUTPUT_DIR/.verification-verdicts."* && -d "$run_verdict_dir" ]]; then
-    rm -rf -- "$run_verdict_dir"
-  fi
-  run_verdict_dir=""
-}
-
-cleanup_transient_state() {
-  delete_ephemeral_private_key
-  delete_run_verdict_directory
+  python3 "$CHECKER" --publish-verdict-pair "$BASE_DIR" "$OUTPUT_RELATIVE" "$output_identity" "$run_verdict_dir/verification-verdict.baseline.json" "$run_verdict_dir/verification-verdict.candidate.json" "$SOURCE_REVISION" "$BUILD_CONTEXT_SHA256" || fail "$EXIT_POLICY" "verdict-pair-publication-failed"
 }
 
 run_preflight() {
-  [[ -d "$SERVICE_DIR" && -f "$SERVICE_DIR/Dockerfile" ]] || fail "$EXIT_POLICY" "sample-service-material-missing"
-  grep -Fqx 'FROM alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d AS build' "$SERVICE_DIR/Dockerfile" || fail "$EXIT_POLICY" "build-material-pin-missing"
-  grep -Fqx 'FROM nginxinc/nginx-unprivileged:1.27.3-alpine@sha256:9e7238f579a54582263a960d1b0094b4a3ecce641342eda3f8e2ff82b1703d2b AS runtime' "$SERVICE_DIR/Dockerfile" || fail "$EXIT_POLICY" "runtime-material-pin-missing"
+  [[ -d "$SERVICE_DIR" && -f "$SERVICE_DIR/Dockerfile" && -f "$SERVICE_DIR/.dockerignore" ]] || fail "$EXIT_POLICY" "sample-service-material-missing"
+  grep -Fqx "FROM $BUILD_MATERIAL_REF AS build" "$SERVICE_DIR/Dockerfile" || fail "$EXIT_POLICY" "build-material-pin-missing"
+  grep -Fqx "FROM $RUNTIME_MATERIAL_REF AS runtime" "$SERVICE_DIR/Dockerfile" || fail "$EXIT_POLICY" "runtime-material-pin-missing"
   load_tool_registry
   validate_policy_and_exceptions
 }
 
-ensure_advisory_prerequisites() {
-  command -v docker >/dev/null || fail "$EXIT_POLICY" "docker-unavailable-advisory-blocked"
-  docker buildx version >/dev/null 2>&1 || fail "$EXIT_POLICY" "docker-buildx-unavailable-advisory-blocked"
-  local tool
-  for tool in syft grype cosign; do
-    docker image inspect "$(tool_ref "$tool")" >/dev/null 2>&1 || fail "$EXIT_POLICY" "pinned-tool-image-unavailable-advisory-blocked"
-  done
-  [[ -n "$grype_db_dir" && -d "$grype_db_dir" ]] || fail "$EXIT_POLICY" "grype-db-cache-path-invalid"
-  docker run --rm --network none --env GRYPE_CHECK_FOR_APP_UPDATE=false --env GRYPE_DB_CACHE_DIR=/grype-db-cache --mount "type=bind,source=$grype_db_dir,target=/grype-db-cache,readonly" "$(tool_ref grype)" db status >/dev/null 2>&1 || fail "$EXIT_POLICY" "grype-db-unavailable-advisory-blocked"
-}
-
-record_grype_db_identity() {
-  docker run --rm --network none --env GRYPE_CHECK_FOR_APP_UPDATE=false --env GRYPE_DB_CACHE_DIR=/grype-db-cache --mount "type=bind,source=$grype_db_dir,target=/grype-db-cache,readonly" "$(tool_ref grype)" db status >"$OUTPUT_DIR/grype-db-status.txt" || fail "$EXIT_POLICY" "grype-db-identity-unavailable"
-  python3 - "$OUTPUT_DIR/grype-db-status.txt" "$OUTPUT_DIR/grype-db-identity.json" <<'PY'
-import json
-import pathlib
-import re
-import sys
-
-status = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-fields = dict(re.findall(r"^(Schema|Built|Status):\s+(.+)$", status, flags=re.MULTILINE))
-checksum = re.search(r"checksum=sha256%3A([0-9a-f]{64})", status)
-payload = {
-    "built": fields.get("Built"),
-    "database_package_sha256": checksum.group(1) if checksum else None,
-    "schema": fields.get("Schema"),
-    "schema_version": 1,
-    "status": fields.get("Status"),
-}
-if not all(payload[key] for key in ("built", "database_package_sha256", "schema", "status")):
-    raise SystemExit("grype-db-identity-incomplete")
-pathlib.Path(sys.argv[2]).write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
-PY
-}
-
 run_advisory() {
+  prepare_secure_output
   invalidate_consumer_verdicts
   run_preflight
   prepare_transient_directory
+  capture_build_context_snapshot
   ensure_advisory_prerequisites
+  assert_local_image_identities
+  seed_private_grype_db_cache
+  remove_legacy_runtime_artifacts
   record_grype_db_identity
   build_role_image baseline
   build_role_image candidate
@@ -386,14 +523,24 @@ run_advisory() {
   if [[ "${IMAGE_CONFIG_DIGEST[baseline]}" == "${IMAGE_CONFIG_DIGEST[candidate]}" || "${OCI_ARCHIVE_SHA256[baseline]}" == "${OCI_ARCHIVE_SHA256[candidate]}" ]]; then
     fail "$EXIT_BUILD" "baseline-candidate-subjects-not-distinct"
   fi
-  generate_cyclonedx_and_grype_verdict baseline
+  if ! generate_cyclonedx_and_grype_verdict baseline; then
+    publish_role_advisory_summary baseline
+    fail "$EXIT_VULNERABILITY" "grype-policy-rejected"
+  fi
+  publish_role_advisory_summary baseline
   require_consumer_safe_vulnerability_verdict baseline || fail "$EXIT_VULNERABILITY" "grype-exception-requires-manual-review"
-  generate_cyclonedx_and_grype_verdict candidate
+  if ! generate_cyclonedx_and_grype_verdict candidate; then
+    publish_role_advisory_summary candidate
+    fail "$EXIT_VULNERABILITY" "grype-policy-rejected"
+  fi
+  publish_role_advisory_summary candidate
   require_consumer_safe_vulnerability_verdict candidate || fail "$EXIT_VULNERABILITY" "grype-exception-requires-manual-review"
+  assert_build_context_unchanged
   generate_slsa_provenance baseline
   generate_slsa_provenance candidate
   sign_and_verify_archive baseline
   sign_and_verify_archive candidate
+  assert_build_context_unchanged
   write_verification_verdict baseline
   write_verification_verdict candidate
   publish_verification_verdicts
@@ -407,8 +554,9 @@ run_scorecard_advisory() {
     return 0
   fi
   command -v docker >/dev/null || fail "$EXIT_SCORECARD" "docker-unavailable"
-  docker image inspect "$(tool_ref scorecard)" >/dev/null 2>&1 || fail "$EXIT_SCORECARD" "pinned-scorecard-image-unavailable"
-  docker run --rm "$(tool_ref scorecard)" --repo "github.com/buenhyden/hy-home.docker" >/dev/null || fail "$EXIT_SCORECARD" "scorecard-observation-failed"
+  docker info >/dev/null 2>&1 || fail "$EXIT_SCORECARD" "docker-daemon-unavailable"
+  assert_local_image_identity "$(tool_ref scorecard)" "$(tool_digest scorecard)"
+  docker run --pull=never --rm "$(tool_ref scorecard)" --repo "github.com/buenhyden/hy-home.docker" >/dev/null || fail "$EXIT_SCORECARD" "scorecard-observation-failed"
   printf 'scorecard_advisory=observed mode=read-only-advisory\n'
 }
 
@@ -424,6 +572,8 @@ fi
 case "$MODE" in
 --preflight)
   run_preflight
+  ensure_advisory_prerequisites
+  assert_local_image_identities
   printf 'supply_chain_preflight=pass\n'
   ;;
 --fixture-only)

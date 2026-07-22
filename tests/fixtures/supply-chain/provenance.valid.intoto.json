@@ -3,6 +3,7 @@
   "predicate": {
     "buildDefinition": {
       "externalParameters": {
+        "build_context_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "role": "candidate",
         "source_revision": "0123456789abcdef0123456789abcdef01234567"
       },

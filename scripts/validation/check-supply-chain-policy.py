@@ -5,10 +5,15 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import fnmatch
 import hashlib
 import json
+import os
 import pathlib
 import re
+import secrets
+import stat
+import subprocess
 import sys
 import tarfile
 from typing import Any
@@ -22,6 +27,14 @@ EXCEPTIONS_PATH = ROOT / "infra/supply-chain.vulnerability-exceptions.json"
 SHA256_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 SCORECARD_REPOSITORY = "github.com/buenhyden/hy-home.docker"
+SAMPLE_SERVICE_DOCKERIGNORE = (
+    "**",
+    "!Dockerfile",
+    "!.dockerignore",
+    "!nginx.conf",
+    "!site/",
+    "!site/**",
+)
 TOOL_PINS = {
     "syft": (
         "anchore/syft:v1.48.0",
@@ -44,6 +57,636 @@ TOOL_PINS = {
         "v5.5.0",
     ),
 }
+
+
+class BuildContextError(ValueError):
+    """The effective Docker build context is not clean or stable."""
+
+
+class SecureOutputError(ValueError):
+    """A repo-support handoff path violates the no-follow output contract."""
+
+
+def _dockerignore_rules(context_dir: pathlib.Path) -> list[tuple[bool, str, bool]]:
+    path = context_dir / ".dockerignore"
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError as exc:
+        raise BuildContextError("dockerignore-missing") from exc
+    if tuple(lines) != SAMPLE_SERVICE_DOCKERIGNORE:
+        raise BuildContextError("dockerignore-contract-invalid")
+    rules: list[tuple[bool, str, bool]] = []
+    for raw in lines:
+        line = raw.strip()
+        if not line or line.startswith("#") or line == ".":
+            continue
+        include = line.startswith("!")
+        if include:
+            line = line[1:]
+        line = line.replace("\\", "/").lstrip("/")
+        directory_only = line.endswith("/")
+        line = line.rstrip("/")
+        if line:
+            rules.append((include, line, directory_only))
+    if not rules:
+        raise BuildContextError("dockerignore-empty")
+    return rules
+
+
+def _dockerignore_rule_matches(
+    relative: str, is_directory: bool, pattern: str, directory_only: bool
+) -> bool:
+    if directory_only:
+        if relative == pattern:
+            return is_directory
+        return relative.startswith(pattern + "/")
+    if "/" not in pattern:
+        return any(fnmatch.fnmatchcase(part, pattern) for part in relative.split("/"))
+    return fnmatch.fnmatchcase(relative, pattern)
+
+
+def _is_effective_context_path(
+    relative: str,
+    *,
+    is_directory: bool,
+    rules: list[tuple[bool, str, bool]],
+) -> bool:
+    if relative in {"Dockerfile", ".dockerignore"}:
+        return True
+    included = True
+    for include, pattern, directory_only in rules:
+        if _dockerignore_rule_matches(relative, is_directory, pattern, directory_only):
+            included = include
+    return included
+
+
+def _git_lines(repo_root: pathlib.Path, arguments: list[str]) -> list[str]:
+    result = subprocess.run(
+        ["git", "-C", str(repo_root), *arguments],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise BuildContextError("git-context-inspection-failed")
+    return [line for line in result.stdout.splitlines() if line]
+
+
+def _git_paths(repo_root: pathlib.Path, arguments: list[str]) -> list[str]:
+    result = subprocess.run(
+        ["git", "-C", str(repo_root), *arguments],
+        check=False,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        raise BuildContextError("git-context-inspection-failed")
+    try:
+        return [
+            value.decode("utf-8")
+            for value in result.stdout.split(b"\0")
+            if value
+        ]
+    except UnicodeDecodeError as exc:
+        raise BuildContextError("git-context-path-encoding-invalid") from exc
+
+
+def capture_build_context_snapshot(
+    repo_root: pathlib.Path | str, context_relative: pathlib.Path | str
+) -> dict[str, Any]:
+    root = pathlib.Path(repo_root)
+    relative_root = pathlib.PurePosixPath(str(context_relative).replace("\\", "/"))
+    if relative_root.is_absolute() or ".." in relative_root.parts:
+        raise BuildContextError("build-context-path-invalid")
+    context_dir = root.joinpath(*relative_root.parts)
+    try:
+        context_stat = context_dir.lstat()
+    except OSError as exc:
+        raise BuildContextError("build-context-missing") from exc
+    if not stat.S_ISDIR(context_stat.st_mode) or context_dir.is_symlink():
+        raise BuildContextError("build-context-not-directory")
+    rules = _dockerignore_rules(context_dir)
+
+    materials: list[dict[str, Any]] = []
+    for current, directories, files in os.walk(context_dir, followlinks=False):
+        current_path = pathlib.Path(current)
+        for name in sorted([*directories, *files]):
+            path = current_path / name
+            relative = path.relative_to(context_dir).as_posix()
+            path_stat = path.lstat()
+            is_directory = stat.S_ISDIR(path_stat.st_mode)
+            if not _is_effective_context_path(
+                relative, is_directory=is_directory, rules=rules
+            ):
+                continue
+            if stat.S_ISLNK(path_stat.st_mode):
+                raise BuildContextError("effective-context-symlink-forbidden")
+            if is_directory:
+                continue
+            if not stat.S_ISREG(path_stat.st_mode):
+                raise BuildContextError("effective-context-special-file-forbidden")
+            body = path.read_bytes()
+            materials.append(
+                {
+                    "mode": stat.S_IMODE(path_stat.st_mode),
+                    "path": relative,
+                    "sha256": hashlib.sha256(body).hexdigest(),
+                    "size": len(body),
+                }
+            )
+    materials.sort(key=lambda row: row["path"].encode("utf-8"))
+    if not materials:
+        raise BuildContextError("effective-context-empty")
+
+    context_prefix = relative_root.as_posix().rstrip("/") + "/"
+
+    def to_context_path(repo_path: str) -> str | None:
+        normalized = repo_path.replace("\\", "/")
+        if not normalized.startswith(context_prefix):
+            return None
+        return normalized[len(context_prefix) :]
+
+    modified = _git_lines(
+        root, ["rev-parse", "HEAD"]
+    )
+    if len(modified) != 1 or not SHA1_RE.fullmatch(modified[0]):
+        raise BuildContextError("source-revision-invalid")
+    source_revision = modified[0]
+
+    modified_paths = _git_paths(
+        root,
+        ["diff", "--name-only", "-z", "--diff-filter=ACDMRTUXB", "HEAD", "--", relative_root.as_posix()],
+    )
+    for repo_path in modified_paths:
+        relative = to_context_path(repo_path)
+        if relative and _is_effective_context_path(
+            relative,
+            is_directory=False,
+            rules=rules,
+        ):
+            raise BuildContextError("tracked-effective-material-modified")
+
+    tracked = set(
+        _git_paths(
+            root,
+            ["ls-files", "-z", "--", relative_root.as_posix()],
+        )
+    )
+    for material in materials:
+        repo_path = f"{context_prefix}{material['path']}"
+        if repo_path not in tracked:
+            raise BuildContextError("untracked-effective-material")
+
+    untracked = _git_paths(
+        root,
+        [
+            "ls-files",
+            "--others",
+            "--ignored",
+            "--exclude-standard",
+            "-z",
+            "--",
+            relative_root.as_posix(),
+        ],
+    )
+    for repo_path in untracked:
+        relative = to_context_path(repo_path)
+        if relative and _is_effective_context_path(
+            relative,
+            is_directory=False,
+            rules=rules,
+        ):
+            raise BuildContextError("untracked-effective-material")
+
+    digest = hashlib.sha256()
+    digest.update(b"hyhome-docker-build-context-v1\0")
+    for material in materials:
+        digest.update(material["path"].encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(str(material["mode"]).encode("ascii"))
+        digest.update(b"\0")
+        digest.update(str(material["size"]).encode("ascii"))
+        digest.update(b"\0")
+        digest.update(material["sha256"].encode("ascii"))
+        digest.update(b"\n")
+    return {
+        "build_context_sha256": f"sha256:{digest.hexdigest()}",
+        "context": relative_root.as_posix(),
+        "materials": materials,
+        "schema_version": 1,
+        "source_revision": source_revision,
+    }
+
+
+def verify_build_context_snapshot(
+    repo_root: pathlib.Path | str,
+    context_relative: pathlib.Path | str,
+    snapshot_path: pathlib.Path | str,
+) -> dict[str, Any]:
+    try:
+        expected = load_json(snapshot_path)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise BuildContextError("build-context-snapshot-invalid") from exc
+    actual = capture_build_context_snapshot(repo_root, context_relative)
+    if actual != expected:
+        raise BuildContextError("build-context-snapshot-mismatch")
+    return actual
+
+
+def write_private_json(path: pathlib.Path | str, payload: Any) -> None:
+    target = pathlib.Path(path)
+    parent_stat = target.parent.lstat()
+    if (
+        not stat.S_ISDIR(parent_stat.st_mode)
+        or target.parent.is_symlink()
+        or parent_stat.st_uid != os.getuid()
+        or stat.S_IMODE(parent_stat.st_mode) != 0o700
+    ):
+        raise SecureOutputError("private-parent-invalid")
+    body = (json.dumps(payload, sort_keys=True) + "\n").encode("utf-8")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+    parent_fd = os.open(
+        target.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    )
+    try:
+        descriptor = os.open(target.name, flags, 0o600, dir_fd=parent_fd)
+        try:
+            view = memoryview(body)
+            while view:
+                view = view[os.write(descriptor, view) :]
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    finally:
+        os.close(parent_fd)
+
+
+def _validate_directory_stat(
+    path_stat: os.stat_result, *, final: bool
+) -> None:
+    if not stat.S_ISDIR(path_stat.st_mode):
+        raise SecureOutputError("output-ancestor-not-directory")
+    if path_stat.st_uid != os.getuid():
+        raise SecureOutputError("output-owner-invalid")
+    mode = stat.S_IMODE(path_stat.st_mode)
+    if final:
+        if mode != 0o700:
+            raise SecureOutputError("output-mode-invalid")
+    elif mode & 0o022:
+        raise SecureOutputError("output-ancestor-writable")
+
+
+def _open_secure_output_directory(
+    base: pathlib.Path | str,
+    relative: pathlib.Path | str,
+    *,
+    create: bool,
+) -> tuple[int, str]:
+    root = pathlib.Path(base)
+    relative_path = pathlib.PurePosixPath(str(relative).replace("\\", "/"))
+    if (
+        relative_path.is_absolute()
+        or not relative_path.parts
+        or any(part in {"", ".", ".."} for part in relative_path.parts)
+    ):
+        raise SecureOutputError("output-relative-path-invalid")
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    try:
+        current_fd = os.open(root, flags)
+    except OSError as exc:
+        raise SecureOutputError("output-base-invalid") from exc
+    try:
+        _validate_directory_stat(os.fstat(current_fd), final=False)
+        for index, component in enumerate(relative_path.parts):
+            is_final = index == len(relative_path.parts) - 1
+            try:
+                next_fd = os.open(component, flags, dir_fd=current_fd)
+            except FileNotFoundError:
+                if not create:
+                    raise SecureOutputError("output-directory-missing") from None
+                try:
+                    os.mkdir(component, 0o700, dir_fd=current_fd)
+                    next_fd = os.open(component, flags, dir_fd=current_fd)
+                    os.fchmod(next_fd, 0o700)
+                except OSError as exc:
+                    raise SecureOutputError("output-directory-create-failed") from exc
+            except OSError as exc:
+                raise SecureOutputError("output-ancestor-symlink-or-invalid") from exc
+            os.close(current_fd)
+            current_fd = next_fd
+            if create and is_final:
+                final_stat = os.fstat(current_fd)
+                if (
+                    stat.S_ISDIR(final_stat.st_mode)
+                    and final_stat.st_uid == os.getuid()
+                    and stat.S_IMODE(final_stat.st_mode) & 0o022 == 0
+                ):
+                    os.fchmod(current_fd, 0o700)
+            _validate_directory_stat(os.fstat(current_fd), final=is_final)
+        output_stat = os.fstat(current_fd)
+        return current_fd, f"{output_stat.st_dev}:{output_stat.st_ino}"
+    except Exception:
+        os.close(current_fd)
+        raise
+
+
+def prepare_secure_output_directory(
+    base: pathlib.Path | str, relative: pathlib.Path | str
+) -> str:
+    descriptor, identity = _open_secure_output_directory(
+        base, relative, create=True
+    )
+    os.close(descriptor)
+    return identity
+
+
+def _validate_output_identity(descriptor: int, expected_identity: str) -> None:
+    output_stat = os.fstat(descriptor)
+    actual = f"{output_stat.st_dev}:{output_stat.st_ino}"
+    if actual != expected_identity:
+        raise SecureOutputError("output-identity-mismatch")
+
+
+def _validate_existing_handoff(
+    descriptor: int, name: str, *, require_private_mode: bool = True
+) -> None:
+    try:
+        path_stat = os.stat(name, dir_fd=descriptor, follow_symlinks=False)
+    except FileNotFoundError:
+        return
+    if not stat.S_ISREG(path_stat.st_mode):
+        raise SecureOutputError("handoff-symlink-or-type-invalid")
+    if path_stat.st_uid != os.getuid():
+        raise SecureOutputError("handoff-owner-invalid")
+    if require_private_mode and stat.S_IMODE(path_stat.st_mode) != 0o600:
+        raise SecureOutputError("handoff-mode-invalid")
+
+
+PAIR_HANDOFF_NAMES = (
+    "verification-verdict.pair.json",
+    "verification-verdict.baseline.json",
+    "verification-verdict.candidate.json",
+)
+MINIMIZED_HANDOFF_NAMES = (
+    "advisory-summary.baseline.json",
+    "advisory-summary.candidate.json",
+)
+
+
+def invalidate_secure_handoffs(
+    base: pathlib.Path | str,
+    relative: pathlib.Path | str,
+    expected_identity: str,
+) -> None:
+    descriptor, _ = _open_secure_output_directory(base, relative, create=False)
+    names = (*PAIR_HANDOFF_NAMES, *MINIMIZED_HANDOFF_NAMES)
+    try:
+        _validate_output_identity(descriptor, expected_identity)
+        for name in names:
+            _validate_existing_handoff(
+                descriptor, name, require_private_mode=False
+            )
+        for name in names:
+            try:
+                os.unlink(name, dir_fd=descriptor)
+            except FileNotFoundError:
+                pass
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def _read_private_handoff(path: pathlib.Path | str) -> tuple[bytes, Any]:
+    source = pathlib.Path(path)
+    try:
+        parent_stat = source.parent.lstat()
+    except OSError as exc:
+        raise SecureOutputError("private-source-parent-invalid") from exc
+    if (
+        not stat.S_ISDIR(parent_stat.st_mode)
+        or source.parent.is_symlink()
+        or parent_stat.st_uid != os.getuid()
+        or stat.S_IMODE(parent_stat.st_mode) != 0o700
+    ):
+        raise SecureOutputError("private-source-parent-invalid")
+    parent_fd = os.open(
+        source.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    )
+    try:
+        descriptor = os.open(source.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent_fd)
+        try:
+            source_stat = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(source_stat.st_mode)
+                or source_stat.st_uid != os.getuid()
+                or stat.S_IMODE(source_stat.st_mode) != 0o600
+            ):
+                raise SecureOutputError("private-source-invalid")
+            chunks: list[bytes] = []
+            while True:
+                chunk = os.read(descriptor, 65536)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+        finally:
+            os.close(descriptor)
+    except OSError as exc:
+        raise SecureOutputError("private-source-invalid") from exc
+    finally:
+        os.close(parent_fd)
+    body = b"".join(chunks)
+    try:
+        payload = json.loads(body)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SecureOutputError("private-source-json-invalid") from exc
+    return body, payload
+
+
+def _atomic_write_at(descriptor: int, name: str, body: bytes) -> None:
+    temporary = f".{name}.{secrets.token_hex(8)}.tmp"
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+    temporary_fd = os.open(temporary, flags, 0o600, dir_fd=descriptor)
+    try:
+        os.fchmod(temporary_fd, 0o600)
+        view = memoryview(body)
+        while view:
+            view = view[os.write(temporary_fd, view) :]
+        os.fsync(temporary_fd)
+    except Exception:
+        try:
+            os.unlink(temporary, dir_fd=descriptor)
+        except FileNotFoundError:
+            pass
+        raise
+    finally:
+        os.close(temporary_fd)
+    try:
+        os.replace(
+            temporary,
+            name,
+            src_dir_fd=descriptor,
+            dst_dir_fd=descriptor,
+        )
+    except Exception:
+        try:
+            os.unlink(temporary, dir_fd=descriptor)
+        except FileNotFoundError:
+            pass
+        raise
+
+
+def publish_verdict_pair(
+    base: pathlib.Path | str,
+    relative: pathlib.Path | str,
+    expected_identity: str,
+    baseline_path: pathlib.Path | str,
+    candidate_path: pathlib.Path | str,
+    source_revision: str,
+    build_context_sha256: str,
+) -> dict[str, Any]:
+    if not SHA1_RE.fullmatch(source_revision):
+        raise SecureOutputError("pair-source-revision-invalid")
+    if not SHA256_RE.fullmatch(build_context_sha256):
+        raise SecureOutputError("pair-build-context-invalid")
+    sources = {
+        "baseline": _read_private_handoff(baseline_path),
+        "candidate": _read_private_handoff(candidate_path),
+    }
+    for role, (_, payload) in sources.items():
+        if (
+            not isinstance(payload, dict)
+            or payload.get("schema_version") != 1
+            or payload.get("role") != role
+            or payload.get("verdict") != "accepted"
+            or payload.get("exception_id") is not None
+            or payload.get("source_revision") != source_revision
+            or payload.get("build_context_sha256") != build_context_sha256
+            or payload.get("policy_id") != "sample-service-local-v1"
+            or payload.get("producer_spec")
+            != "spec:126-security-supply-chain-remediation"
+            or payload.get("redaction_status") != "passed"
+            or not SHA256_RE.fullmatch(str(payload.get("image_config_digest", "")))
+            or not SHA256_RE.fullmatch(str(payload.get("oci_archive_sha256", "")))
+        ):
+            raise SecureOutputError("pair-verdict-invalid")
+    if (
+        sources["baseline"][1]["image_config_digest"]
+        == sources["candidate"][1]["image_config_digest"]
+        or sources["baseline"][1]["oci_archive_sha256"]
+        == sources["candidate"][1]["oci_archive_sha256"]
+    ):
+        raise SecureOutputError("pair-subjects-not-distinct")
+    manifest = {
+        "build_context_sha256": build_context_sha256,
+        "schema_version": 1,
+        "source_revision": source_revision,
+        "verdict_sha256": {
+            role: f"sha256:{hashlib.sha256(body).hexdigest()}"
+            for role, (body, _) in sources.items()
+        },
+    }
+    manifest_body = (json.dumps(manifest, sort_keys=True) + "\n").encode("utf-8")
+    descriptor, _ = _open_secure_output_directory(base, relative, create=False)
+    try:
+        _validate_output_identity(descriptor, expected_identity)
+        for name in PAIR_HANDOFF_NAMES:
+            _validate_existing_handoff(descriptor, name)
+        try:
+            try:
+                os.unlink("verification-verdict.pair.json", dir_fd=descriptor)
+            except FileNotFoundError:
+                pass
+            os.fsync(descriptor)
+            for role in ("baseline", "candidate"):
+                _atomic_write_at(
+                    descriptor,
+                    f"verification-verdict.{role}.json",
+                    sources[role][0],
+                )
+            _atomic_write_at(
+                descriptor,
+                "verification-verdict.pair.json",
+                manifest_body,
+            )
+            os.fsync(descriptor)
+        except Exception:
+            for name in PAIR_HANDOFF_NAMES:
+                try:
+                    os.unlink(name, dir_fd=descriptor)
+                except FileNotFoundError:
+                    pass
+            os.fsync(descriptor)
+            raise
+    finally:
+        os.close(descriptor)
+    return manifest
+
+
+def publish_minimized_handoff(
+    base: pathlib.Path | str,
+    relative: pathlib.Path | str,
+    expected_identity: str,
+    name: str,
+    source_path: pathlib.Path | str,
+) -> None:
+    if name not in MINIMIZED_HANDOFF_NAMES:
+        raise SecureOutputError("minimized-handoff-name-invalid")
+    body, payload = _read_private_handoff(source_path)
+    expected_role = name.removeprefix("advisory-summary.").removesuffix(".json")
+    allowed_keys = {
+        "build_context_sha256",
+        "database",
+        "exception_id",
+        "image_config_digest",
+        "oci_archive_sha256",
+        "policy_id",
+        "reason",
+        "redaction_status",
+        "role",
+        "schema_version",
+        "source_revision",
+        "verdict",
+        "vulnerability_counts",
+    }
+    allowed_database_keys = {
+        "built",
+        "database_package_sha256",
+        "schema",
+        "schema_version",
+        "status",
+    }
+    database = payload.get("database") if isinstance(payload, dict) else None
+    counts = payload.get("vulnerability_counts") if isinstance(payload, dict) else None
+    if (
+        not isinstance(payload, dict)
+        or set(payload) != allowed_keys
+        or payload.get("schema_version") != 1
+        or payload.get("redaction_status") != "passed"
+        or payload.get("role") != expected_role
+        or payload.get("verdict") not in {"accepted", "rejected"}
+        or not SHA1_RE.fullmatch(str(payload.get("source_revision", "")))
+        or not SHA256_RE.fullmatch(str(payload.get("build_context_sha256", "")))
+        or not SHA256_RE.fullmatch(str(payload.get("image_config_digest", "")))
+        or not SHA256_RE.fullmatch(str(payload.get("oci_archive_sha256", "")))
+        or not isinstance(database, dict)
+        or set(database) != allowed_database_keys
+        or not isinstance(counts, dict)
+        or any(
+            severity not in {"negligible", "unknown", "low", "medium", "high", "critical"}
+            or isinstance(count, bool)
+            or not isinstance(count, int)
+            or count < 0
+            for severity, count in counts.items()
+        )
+    ):
+        raise SecureOutputError("minimized-handoff-invalid")
+    descriptor, _ = _open_secure_output_directory(base, relative, create=False)
+    try:
+        _validate_output_identity(descriptor, expected_identity)
+        _validate_existing_handoff(descriptor, name)
+        _atomic_write_at(descriptor, name, body)
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
 
 
 def load_json(path: pathlib.Path | str) -> Any:
@@ -445,7 +1088,20 @@ def validate_provenance_subject(provenance: Any, subject: Any) -> list[str]:
         errors.append("provenance-role-invalid")
     if not isinstance(params, dict) or params.get("source_revision") != subject.get("source_revision"):
         errors.append("provenance-source-revision-mismatch")
-    if not isinstance(dependencies, list) or not dependencies:
+    expected_context = subject.get("build_context_sha256")
+    if (
+        not isinstance(params, dict)
+        or params.get("build_context_sha256") != expected_context
+    ):
+        errors.append("provenance-build-context-mismatch")
+    expected_context_sha = str(expected_context or "").removeprefix("sha256:")
+    if not isinstance(dependencies, list) or not any(
+        isinstance(item, dict)
+        and item.get("uri") == "git+local://examples/sample-web-service"
+        and isinstance(item.get("digest"), dict)
+        and item["digest"].get("sha256") == expected_context_sha
+        for item in dependencies
+    ):
         errors.append("provenance-materials-invalid")
     if not isinstance(builder, dict) or not _is_text(builder.get("id")):
         errors.append("provenance-builder-invalid")
@@ -488,6 +1144,7 @@ def _fixture_subject() -> dict[str, str]:
         "source_revision": "0123456789abcdef0123456789abcdef01234567",
         "image_config_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
         "oci_archive_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "build_context_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     }
 
 
@@ -543,7 +1200,67 @@ def main(argv: list[str] | None = None) -> int:
         metavar="ARCHIVE",
         help="print the SHA-256 config digest cryptographically bound by an OCI archive",
     )
+    parser.add_argument(
+        "--capture-build-context",
+        nargs=3,
+        metavar=("REPO_ROOT", "CONTEXT", "OUTPUT"),
+        help="capture a clean, deterministic effective Docker context snapshot",
+    )
+    parser.add_argument(
+        "--verify-build-context",
+        nargs=3,
+        metavar=("REPO_ROOT", "CONTEXT", "SNAPSHOT"),
+        help="fail unless the effective Docker context still matches a snapshot",
+    )
+    parser.add_argument(
+        "--prepare-secure-output",
+        nargs=2,
+        metavar=("REPO_ROOT", "RELATIVE_OUTPUT"),
+        help="create and validate the private handoff directory, then print its identity",
+    )
+    parser.add_argument(
+        "--invalidate-secure-handoffs",
+        nargs=3,
+        metavar=("REPO_ROOT", "RELATIVE_OUTPUT", "IDENTITY"),
+        help="remove only the fixed consumer handoffs from a validated directory",
+    )
+    parser.add_argument(
+        "--publish-verdict-pair",
+        nargs=7,
+        metavar=(
+            "REPO_ROOT",
+            "RELATIVE_OUTPUT",
+            "IDENTITY",
+            "BASELINE",
+            "CANDIDATE",
+            "SOURCE_REVISION",
+            "BUILD_CONTEXT_SHA256",
+        ),
+        help="atomically publish the two accepted verdicts and commit manifest",
+    )
+    parser.add_argument(
+        "--publish-minimized-handoff",
+        nargs=5,
+        metavar=("REPO_ROOT", "RELATIVE_OUTPUT", "IDENTITY", "NAME", "SOURCE"),
+        help="atomically publish one allowlisted redacted advisory summary",
+    )
     args = parser.parse_args(argv)
+    operation_count = sum(
+        bool(value)
+        for value in (
+            args.check,
+            args.oci_archive_config_digest,
+            args.capture_build_context,
+            args.verify_build_context,
+            args.prepare_secure_output,
+            args.invalidate_secure_handoffs,
+            args.publish_verdict_pair,
+            args.publish_minimized_handoff,
+        )
+    )
+    if operation_count != 1:
+        parser.print_usage(sys.stderr)
+        return 2
     if args.oci_archive_config_digest:
         try:
             print(inspect_oci_archive_config_digest(args.oci_archive_config_digest))
@@ -551,9 +1268,33 @@ def main(argv: list[str] | None = None) -> int:
             print(f"oci_archive_config_digest=fail reason={exc}", file=sys.stderr)
             return 1
         return 0
-    if not args.check:
-        parser.print_usage(sys.stderr)
-        return 2
+    try:
+        if args.capture_build_context:
+            root, context, output = args.capture_build_context
+            snapshot = capture_build_context_snapshot(root, context)
+            write_private_json(output, snapshot)
+            print(snapshot["build_context_sha256"])
+            return 0
+        if args.verify_build_context:
+            root, context, snapshot = args.verify_build_context
+            verified = verify_build_context_snapshot(root, context, snapshot)
+            print(verified["build_context_sha256"])
+            return 0
+        if args.prepare_secure_output:
+            print(prepare_secure_output_directory(*args.prepare_secure_output))
+            return 0
+        if args.invalidate_secure_handoffs:
+            invalidate_secure_handoffs(*args.invalidate_secure_handoffs)
+            return 0
+        if args.publish_verdict_pair:
+            publish_verdict_pair(*args.publish_verdict_pair)
+            return 0
+        if args.publish_minimized_handoff:
+            publish_minimized_handoff(*args.publish_minimized_handoff)
+            return 0
+    except (BuildContextError, SecureOutputError, OSError, json.JSONDecodeError) as exc:
+        print(f"supply_chain_operation=fail reason={exc}", file=sys.stderr)
+        return 1
     try:
         errors = check()
     except (OSError, ValueError, json.JSONDecodeError) as exc:
