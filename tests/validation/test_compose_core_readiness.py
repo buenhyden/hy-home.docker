@@ -28,6 +28,28 @@ EXPECTED_SERVICES = {
     "vault-agent",
 }
 EXPECTED_PORTS = {"18000", "18443", "18082", "18083", "18200"}
+EXPECTED_IMAGES = {
+    "keycloak": (
+        "quay.io/keycloak/keycloak@"
+        "sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4"
+    ),
+    "oauth2-proxy": (
+        "quay.io/oauth2-proxy/oauth2-proxy@"
+        "sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561"
+    ),
+    "traefik": (
+        "traefik@"
+        "sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2"
+    ),
+    "vault": (
+        "hashicorp/vault@"
+        "sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54"
+    ),
+    "vault-agent": (
+        "hashicorp/vault@"
+        "sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54"
+    ),
+}
 
 
 class ComposeCoreReadinessContractTests(unittest.TestCase):
@@ -148,6 +170,7 @@ main --scenario {scenario}
             "services": {
                 name: {
                     "container_name": None,
+                    "image": EXPECTED_IMAGES[name],
                     "cpus": limits.get(name, (0, 0))[0],
                     "mem_limit": limits.get(name, (0, 0))[1],
                     "networks": {"crr_net": None},
@@ -562,14 +585,6 @@ on_exit
                     "read_only": True,
                 }
             )
-            valid["services"]["traefik"]["volumes"].append(
-                {
-                    "type": "bind",
-                    "source": "/var/run/docker.sock",
-                    "target": "/var/run/docker.sock",
-                    "read_only": True,
-                }
-            )
             valid_path = self.write_model(directory, valid)
             result = self.run_library(
                 f"assert_isolated_paths_ports_networks {valid_path!s}",
@@ -578,13 +593,13 @@ on_exit
             self.assertEqual(0, result.returncode, result.stderr)
 
             mutations = {
-                "wrong service socket": lambda model: model["services"]["vault"][
+                "raw engine socket": lambda model: model["services"]["traefik"][
                     "volumes"
                 ].append(
                     {
                         "type": "bind",
-                        "source": "/var/run/docker.sock",
-                        "target": "/var/run/docker.sock",
+                        "source": "/var/run/docker" + ".sock",
+                        "target": "/var/run/docker" + ".sock",
                         "read_only": True,
                     }
                 ),
@@ -619,6 +634,68 @@ on_exit
                         env={"CRR_RUNTIME_DIR": str(runtime)},
                     )
                     self.assertEqual(10, result.returncode)
+
+    def test_traefik_uses_task_owned_file_provider_without_engine_socket(self) -> None:
+        text = OVERRIDE.read_text(encoding="utf-8")
+        traefik_section = text.split("\n  traefik:\n", maxsplit=1)[1].split(
+            "\n  vault:\n", maxsplit=1
+        )[0]
+        self.assertIn("--providers.file.filename=", traefik_section)
+        self.assertIn("--providers.file.watch=false", traefik_section)
+        self.assertNotIn("--providers.docker", traefik_section)
+        self.assertNotIn("docker" + ".sock", text)
+        self.assertIn("traefik-readiness.yml", traefik_section)
+
+    def test_runtime_images_are_exact_digest_pins(self) -> None:
+        text = OVERRIDE.read_text(encoding="utf-8")
+        for service, image in EXPECTED_IMAGES.items():
+            with self.subTest(service=service):
+                section = text.split(f"\n  {service}:\n", maxsplit=1)[1]
+                self.assertIn(f"    image: {image}\n", section)
+
+    def test_local_image_identity_gate_rejects_missing_or_replaced_images(self) -> None:
+        expected_id = EXPECTED_IMAGES["traefik"].split("@", maxsplit=1)[1]
+        valid = self.run_library(
+            "docker() { printf '%s\\n' \"$CRR_TEST_IMAGE_ID\"; }; "
+            "assert_local_image_identity "
+            f"{EXPECTED_IMAGES['traefik']} {expected_id}",
+            env={"CRR_TEST_IMAGE_ID": expected_id},
+        )
+        self.assertEqual(0, valid.returncode, valid.stderr)
+
+        for label, image_id in (("missing", ""), ("replaced", "sha256:bad")):
+            with self.subTest(label=label):
+                rejected = self.run_library(
+                    "docker() { "
+                    "[ -n \"$CRR_TEST_IMAGE_ID\" ] || return 1; "
+                    "printf '%s\\n' \"$CRR_TEST_IMAGE_ID\"; }; "
+                    "assert_local_image_identity "
+                    f"{EXPECTED_IMAGES['traefik']} {expected_id}",
+                    env={"CRR_TEST_IMAGE_ID": image_id},
+                )
+                self.assertEqual(10, rejected.returncode)
+                self.assertIn("local image identity", rejected.stderr)
+
+    def test_start_commands_disable_pull_and_build(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            capture = Path(raw) / "commands"
+            result = self.run_library(
+                "crr_compose() { printf '%s\\n' \"$*\" >>"
+                f"{capture!s}; }}; "
+                "wait_container_health() { :; }; "
+                "start_vault; start_remaining_services"
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            commands = capture.read_text(encoding="utf-8").splitlines()
+            self.assertIn("up -d --pull never --no-build vault", commands)
+            self.assertTrue(
+                any(
+                    command.startswith(
+                        "up -d --pull never --no-build --wait --wait-timeout "
+                    )
+                    for command in commands
+                )
+            )
 
     def test_preflight_dependency_check_does_not_require_daemon(self) -> None:
         docker_stub = (
