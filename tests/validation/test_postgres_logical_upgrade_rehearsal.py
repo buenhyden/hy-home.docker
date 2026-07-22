@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import stat
 import subprocess
 import tempfile
@@ -126,18 +127,28 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
     def run_script(
         self, *args: str, extra_env: dict[str, str] | None = None
     ) -> subprocess.CompletedProcess[str]:
-        env = os.environ.copy()
-        if extra_env:
-            env.update(extra_env)
-        return subprocess.run(
-            ["bash", str(SCRIPT), *args],
-            cwd=ROOT,
-            env=env,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=False,
-        )
+        with tempfile.TemporaryDirectory(prefix="ior-direct-run-", dir="/tmp") as tmp:
+            root = Path(tmp) / "repo"
+            script = root / "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+            script.parent.mkdir(parents=True)
+            shutil.copy2(SCRIPT, script)
+            shutil.copytree(
+                FIXTURE,
+                root / "tests/fixtures/postgres-logical-upgrade",
+            )
+            (root / "_workspace/repo-support").mkdir(parents=True, mode=0o700)
+            env = os.environ.copy()
+            if extra_env:
+                env.update(extra_env)
+            return subprocess.run(
+                ["bash", str(script), *args],
+                cwd=root,
+                env=env,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
 
     def run_sourced(
         self, body: str, *, extra_env: dict[str, str] | None = None
@@ -400,28 +411,56 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 with tempfile.TemporaryDirectory(
                     prefix="ior-direct-control-", dir="/tmp"
                 ) as tmp:
-                    root = Path(tmp)
-                    fake_bin = root / "bin"
+                    root = Path(tmp) / "repo"
+                    isolated_script = (
+                        root
+                        / "scripts/validation/rehearse-postgres-logical-upgrade.sh"
+                    )
+                    isolated_script.parent.mkdir(parents=True)
+                    shutil.copy2(SCRIPT, isolated_script)
+                    handoff_dir = (
+                        root
+                        / "_workspace"
+                        / "repo-support"
+                        / "task-2026-07-19-infrastructure-operations-readiness-remediation"
+                        / "postgres"
+                    )
+                    handoff_dir.mkdir(parents=True, mode=0o700)
+                    handoff = handoff_dir / "recovery-verdict.json"
+                    handoff.write_text('{"stale":true}\n', encoding="utf-8")
+                    handoff.chmod(0o600)
+                    fake_bin = Path(tmp) / "bin"
                     fake_bin.mkdir()
-                    calls = root / "calls"
+                    calls = Path(tmp) / "calls"
                     docker = fake_bin / "docker"
                     docker.write_text(
                         "#!/bin/sh\nprintf '%s\\n' \"$*\" >> \"$IOR_TEST_DOCKER_CALLS\"\n",
                         encoding="utf-8",
                     )
                     docker.chmod(docker.stat().st_mode | stat.S_IXUSR)
-                    result = self.run_script(
-                        "--check",
-                        extra_env={
+                    env = os.environ.copy()
+                    env.update(
+                        {
                             "PATH": f"{fake_bin}:{os.environ['PATH']}",
                             "IOR_TEST_DOCKER_CALLS": str(calls),
                             variable: value,
-                        },
+                        }
+                    )
+                    result = subprocess.run(
+                        ["bash", str(isolated_script), "--check"],
+                        cwd=root,
+                        env=env,
+                        text=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        check=False,
                     )
                     self.assertEqual(
                         result.returncode, 10, result.stdout + result.stderr
                     )
                     self.assertIn("reason=test-control-forbidden", result.stdout)
+                    self.assertIn("cleanup_status=passed", result.stdout)
+                    self.assertFalse(handoff.exists())
                     self.assertFalse(calls.exists())
 
     def test_direct_control_failure_invalidates_isolated_stale_canonical(self) -> None:
