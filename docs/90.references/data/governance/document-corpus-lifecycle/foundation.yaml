@@ -632,6 +632,7 @@ entries:
   - docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md
   - docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md
   - docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md
+  - docs/04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md
   - docs/99.templates/support/document-corpus-migration-contract.yaml
   - scripts/validation/agent_output_eval.py
   - scripts/validation/check-doc-traceability.sh
