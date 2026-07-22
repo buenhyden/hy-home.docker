@@ -33,9 +33,23 @@ TARGET_IMAGE = (
     "9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
 )
 CLIENT_IMAGE = TARGET_IMAGE
-SOURCE_IMAGE_ID = "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
-TARGET_IMAGE_ID = "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
-CLIENT_IMAGE_ID = TARGET_IMAGE_ID
+SOURCE_REPO_DIGEST = (
+    "postgres@sha256:"
+    "ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
+)
+TARGET_REPO_DIGEST = (
+    "postgres@sha256:"
+    "9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+)
+CLIENT_REPO_DIGEST = (
+    "postgres@sha256:"
+    "9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+)
+SOURCE_CONFIG_ID = "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
+TARGET_CONFIG_ID = "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+CLIENT_CONFIG_ID = "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+SOURCE_INSPECT_OUTPUT = '["postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"]|sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
+TARGET_INSPECT_OUTPUT = '["postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"]|sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
 EXPECTED_VERDICT_KEYS = {
     "schema_version",
     "producer_spec",
@@ -596,11 +610,11 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     f"""\
                     #!/bin/sh
                     case "$*" in
-                      "image inspect --format {{{{.Id}}}} {SOURCE_IMAGE}")
-                        printf '%s\n' {SOURCE_IMAGE_ID!r}
+                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {SOURCE_IMAGE}")
+                        printf '%s\n' {SOURCE_INSPECT_OUTPUT!r}
                         ;;
-                      "image inspect --format {{{{.Id}}}} {TARGET_IMAGE}")
-                        printf '%s\n' {TARGET_IMAGE_ID!r}
+                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {TARGET_IMAGE}")
+                        printf '%s\n' {TARGET_INSPECT_OUTPUT!r}
                         ;;
                       "compose version") exit 0 ;;
                       *) exit 71 ;;
@@ -685,20 +699,27 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         )
         self.assertEqual(text.count("pg_isready -U rehearsal -d rehearsal"), 2)
 
-    def test_source_target_and_client_have_explicit_digest_and_local_id_pins(self) -> None:
+    def test_source_target_and_client_have_independent_manifest_and_config_pins(
+        self,
+    ) -> None:
         text = SCRIPT.read_text(encoding="utf-8")
         expected_assignments = (
             f"SOURCE_IMAGE='{SOURCE_IMAGE}'",
             f"TARGET_IMAGE='{TARGET_IMAGE}'",
             f"DUMP_CLIENT_IMAGE='{CLIENT_IMAGE}'",
-            f"SOURCE_IMAGE_ID='{SOURCE_IMAGE_ID}'",
-            f"TARGET_IMAGE_ID='{TARGET_IMAGE_ID}'",
-            f"DUMP_CLIENT_IMAGE_ID='{CLIENT_IMAGE_ID}'",
+            f"SOURCE_IMAGE_REPO_DIGEST='{SOURCE_REPO_DIGEST}'",
+            f"TARGET_IMAGE_REPO_DIGEST='{TARGET_REPO_DIGEST}'",
+            f"DUMP_CLIENT_IMAGE_REPO_DIGEST='{CLIENT_REPO_DIGEST}'",
+            f"SOURCE_IMAGE_CONFIG_ID='{SOURCE_CONFIG_ID}'",
+            f"TARGET_IMAGE_CONFIG_ID='{TARGET_CONFIG_ID}'",
+            f"DUMP_CLIENT_IMAGE_CONFIG_ID='{CLIENT_CONFIG_ID}'",
         )
         for assignment in expected_assignments:
             self.assertIn(assignment, text)
 
-    def test_exact_local_image_ids_are_checked_before_compose_or_runtime(self) -> None:
+    def test_exact_local_image_identities_are_checked_before_compose_or_runtime(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory(prefix="ior-image-ids-", dir="/tmp") as tmp:
             calls = Path(tmp) / "calls"
             result = self.run_sourced(
@@ -708,8 +729,8 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     run_bounded() {{
                       printf '%s\n' "$*" >> {calls!s}
                       case "${{@: -1}}" in
-                        "$SOURCE_IMAGE") printf '%s\n' "$SOURCE_IMAGE_ID" ;;
-                        "$TARGET_IMAGE"|"$DUMP_CLIENT_IMAGE") printf '%s\n' "$TARGET_IMAGE_ID" ;;
+                        "$SOURCE_IMAGE") printf '%s\n' {SOURCE_INSPECT_OUTPUT!r} ;;
+                        "$TARGET_IMAGE"|"$DUMP_CLIENT_IMAGE") printf '%s\n' {TARGET_INSPECT_OUTPUT!r} ;;
                         *) return 99 ;;
                       esac
                     }}
@@ -721,9 +742,9 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertEqual(
             [
-                f"docker image inspect --format {{{{.Id}}}} {SOURCE_IMAGE}",
-                f"docker image inspect --format {{{{.Id}}}} {TARGET_IMAGE}",
-                f"docker image inspect --format {{{{.Id}}}} {CLIENT_IMAGE}",
+                f"docker image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {SOURCE_IMAGE}",
+                f"docker image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {TARGET_IMAGE}",
+                f"docker image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {CLIENT_IMAGE}",
             ],
             observed,
         )
@@ -737,34 +758,79 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             preflight.index("docker compose version"),
         )
 
-    def test_missing_or_replaced_local_image_fails_before_other_runtime_calls(self) -> None:
-        for name, response in (
-            ("missing", "return 1"),
-            ("replaced", "printf '%s\\n' sha256:" + "f" * 64),
-        ):
-            with self.subTest(name=name), tempfile.TemporaryDirectory(
-                prefix="ior-image-gate-", dir="/tmp"
-            ) as tmp:
-                calls = Path(tmp) / "calls"
-                result = self.run_sourced(
-                    textwrap.dedent(
-                        f"""\
-                        OPERATION_DEADLINE=$((SECONDS + 30))
-                        run_bounded() {{
-                          printf '%s\n' "$*" >> {calls!s}
-                          {response}
-                        }}
-                        assert_exact_local_image_identities
-                        """
-                    )
+    def test_local_image_identity_accepts_distinct_manifest_and_config(self) -> None:
+        image = "example.invalid/postgres:fixture@sha256:" + "a" * 64
+        repo_digest = "example.invalid/postgres@sha256:" + "a" * 64
+        config_id = "sha256:" + "b" * 64
+        result = self.run_sourced(
+            textwrap.dedent(
+                f"""\
+                OPERATION_DEADLINE=$((SECONDS + 30))
+                run_bounded() {{ printf '%s\n' '["example.invalid/postgres@sha256:{'a' * 64}"]|sha256:{'b' * 64}'; }}
+                assert_exact_local_image_identity source {image} {repo_digest} {config_id}
+                """
+            )
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_local_image_identity_rejects_manifest_mismatch(self) -> None:
+        image = "example.invalid/postgres:fixture@sha256:" + "a" * 64
+        repo_digest = "example.invalid/postgres@sha256:" + "a" * 64
+        config_id = "sha256:" + "b" * 64
+        result = self.run_sourced(
+            textwrap.dedent(
+                f"""\
+                OPERATION_DEADLINE=$((SECONDS + 30))
+                run_bounded() {{ printf '%s\n' '["example.invalid/postgres@sha256:{'c' * 64}"]|sha256:{'b' * 64}'; }}
+                assert_exact_local_image_identity source {image} {repo_digest} {config_id}
+                """
+            )
+        )
+        self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+        self.assertIn("reason=source-image-manifest-drift", result.stdout)
+
+    def test_local_image_identity_rejects_config_id_mismatch(self) -> None:
+        image = "example.invalid/postgres:fixture@sha256:" + "a" * 64
+        repo_digest = "example.invalid/postgres@sha256:" + "a" * 64
+        config_id = "sha256:" + "b" * 64
+        result = self.run_sourced(
+            textwrap.dedent(
+                f"""\
+                OPERATION_DEADLINE=$((SECONDS + 30))
+                run_bounded() {{ printf '%s\n' '["example.invalid/postgres@sha256:{'a' * 64}"]|sha256:{'d' * 64}'; }}
+                assert_exact_local_image_identity source {image} {repo_digest} {config_id}
+                """
+            )
+        )
+        self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+        self.assertIn("reason=source-image-config-id-drift", result.stdout)
+
+    def test_missing_local_image_fails_before_other_runtime_calls(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="ior-image-gate-", dir="/tmp") as tmp:
+            calls = Path(tmp) / "calls"
+            result = self.run_sourced(
+                textwrap.dedent(
+                    f"""\
+                    OPERATION_DEADLINE=$((SECONDS + 30))
+                    run_bounded() {{
+                      printf '%s\n' "$*" >> {calls!s}
+                      return 1
+                    }}
+                    assert_exact_local_image_identities
+                    """
                 )
-                observed = calls.read_text(encoding="utf-8").splitlines() if calls.exists() else []
-            self.assertEqual(10, result.returncode, result.stdout + result.stderr)
-            self.assertEqual(1, len(observed))
-            self.assertTrue(observed[0].startswith("docker image inspect "))
-            self.assertNotIn("compose", observed[0])
-            self.assertNotIn("create", observed[0])
-            self.assertNotIn("run", observed[0])
+            )
+            observed = (
+                calls.read_text(encoding="utf-8").splitlines()
+                if calls.exists()
+                else []
+            )
+        self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+        self.assertEqual(1, len(observed))
+        self.assertTrue(observed[0].startswith("docker image inspect "))
+        self.assertNotIn("compose", observed[0])
+        self.assertNotIn("create", observed[0])
+        self.assertNotIn("run", observed[0])
 
     def test_all_start_and_create_paths_disable_pull_and_build(self) -> None:
         compose = COMPOSE.read_text(encoding="utf-8")
@@ -836,11 +902,11 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     f"""\
                     #!/bin/sh
                     case "$*" in
-                      "image inspect --format {{{{.Id}}}} {SOURCE_IMAGE}")
-                        printf '%s\n' {SOURCE_IMAGE_ID!r}
+                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {SOURCE_IMAGE}")
+                        printf '%s\n' {SOURCE_INSPECT_OUTPUT!r}
                         ;;
-                      "image inspect --format {{{{.Id}}}} {TARGET_IMAGE}")
-                        printf '%s\n' {TARGET_IMAGE_ID!r}
+                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {TARGET_IMAGE}")
+                        printf '%s\n' {TARGET_INSPECT_OUTPUT!r}
                         ;;
                       "compose version") exit 0 ;;
                       *"config --format json")
@@ -904,11 +970,11 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     f"""\
                     #!/bin/sh
                     case "$*" in
-                      "image inspect --format {{{{.Id}}}} {SOURCE_IMAGE}")
-                        printf '%s\n' {SOURCE_IMAGE_ID!r}
+                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {SOURCE_IMAGE}")
+                        printf '%s\n' {SOURCE_INSPECT_OUTPUT!r}
                         ;;
-                      "image inspect --format {{{{.Id}}}} {TARGET_IMAGE}")
-                        printf '%s\n' {TARGET_IMAGE_ID!r}
+                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {TARGET_IMAGE}")
+                        printf '%s\n' {TARGET_INSPECT_OUTPUT!r}
                         ;;
                       "compose version") exit 0 ;;
                       *"config --format json")
@@ -991,11 +1057,11 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     #!/bin/sh
                     printf '%s\\n' "$*" >> "$IOR_TEST_DOCKER_CALLS"
                     case "$*" in
-                      "image inspect --format {{{{.Id}}}} {SOURCE_IMAGE}")
-                        printf '%s\\n' {SOURCE_IMAGE_ID!r}
+                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {SOURCE_IMAGE}")
+                        printf '%s\\n' {SOURCE_INSPECT_OUTPUT!r}
                         ;;
-                      "image inspect --format {{{{.Id}}}} {TARGET_IMAGE}")
-                        printf '%s\\n' {TARGET_IMAGE_ID!r}
+                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {TARGET_IMAGE}")
+                        printf '%s\\n' {TARGET_INSPECT_OUTPUT!r}
                         ;;
                       "compose version") exit 0 ;;
                       *"config --format json") printf '%s\\n' {valid_rendered_topology_json()!r}; exit 0 ;;
