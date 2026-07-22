@@ -42,9 +42,17 @@ OCI_PORTABLE_LAYER_MEDIA_TYPES = {
 # at most 512 MiB compressed input, 512 MiB per expanded layer, and 1 GiB
 # expanded across all layers. Larger images require a separately reviewed path.
 OCI_ARCHIVE_MAX_BYTES = 512 * 1024 * 1024
+OCI_METADATA_MAX_BYTES = 16 * 1024 * 1024
 OCI_LAYER_MAX_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
 OCI_LAYERS_MAX_UNCOMPRESSED_BYTES = 1024 * 1024 * 1024
 OCI_DECOMPRESSION_CHUNK_BYTES = 64 * 1024
+OCI_OUTER_COMPRESSION_MAGICS = (
+    b"\x1f\x8b",  # gzip
+    b"BZh",  # bzip2
+    b"\xfd7zXZ\x00",  # xz
+    b"\x28\xb5\x2f\xfd",  # zstd
+    b"\x04\x22\x4d\x18",  # lz4
+)
 VERDICT_IDENTITY_KEYS = (
     "oci_manifest_digest",
     "image_config_digest",
@@ -1240,41 +1248,78 @@ def _verify_oci_gzip_layer_diff_id(
 def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
     if len(content) > OCI_ARCHIVE_MAX_BYTES:
         raise ValueError("oci-archive-size-limit-exceeded")
+    if any(content.startswith(magic) for magic in OCI_OUTER_COMPRESSION_MAGICS):
+        raise ValueError("oci-archive-outer-compression-invalid")
     try:
-        archive = tarfile.open(fileobj=io.BytesIO(content), mode="r:*")
+        archive = tarfile.open(fileobj=io.BytesIO(content), mode="r:")
     except (OSError, tarfile.TarError) as exc:
         raise ValueError("oci-archive-invalid") from exc
     with archive:
         members: dict[str, tarfile.TarInfo] = {}
-        for member in archive.getmembers():
-            name = member.name
-            path = pathlib.PurePosixPath(name)
-            if (
-                not name
-                or name.startswith("/")
-                or "\\" in name
-                or path.is_absolute()
-                or path.as_posix() != name.rstrip("/")
-                or any(part in {"", ".", ".."} for part in path.parts)
-            ):
-                raise ValueError("oci-archive-member-path-invalid")
-            if name in members:
-                raise ValueError("oci-archive-member-duplicate")
-            if not member.isfile() and not member.isdir():
-                raise ValueError("oci-archive-member-type-invalid")
-            members[name] = member
+        try:
+            for member in archive:
+                if member.size < 0 or member.size > OCI_ARCHIVE_MAX_BYTES:
+                    raise ValueError(
+                        "oci-archive-member-size-limit-exceeded"
+                    )
+                name = member.name
+                path = pathlib.PurePosixPath(name)
+                if (
+                    not name
+                    or name.startswith("/")
+                    or "\\" in name
+                    or path.is_absolute()
+                    or path.as_posix() != name.rstrip("/")
+                    or any(part in {"", ".", ".."} for part in path.parts)
+                ):
+                    raise ValueError("oci-archive-member-path-invalid")
+                if name in members:
+                    raise ValueError("oci-archive-member-duplicate")
+                if not member.isfile() and not member.isdir():
+                    raise ValueError("oci-archive-member-type-invalid")
+                members[name] = member
+        except ValueError:
+            raise
+        except (OSError, tarfile.TarError) as exc:
+            raise ValueError("oci-archive-invalid") from exc
 
-        def read_member(name: str, reason: str) -> bytes:
+        def read_member(
+            name: str,
+            reason: str,
+            *,
+            max_bytes: int = OCI_ARCHIVE_MAX_BYTES,
+        ) -> bytes:
             member = members.get(name)
             if member is None or not member.isfile():
                 raise ValueError(reason)
-            handle = archive.extractfile(member)
+            if member.size < 0 or member.size > max_bytes:
+                raise ValueError("oci-archive-member-size-limit-exceeded")
+            try:
+                handle = archive.extractfile(member)
+            except (OSError, tarfile.TarError) as exc:
+                raise ValueError(reason) from exc
             if handle is None:
                 raise ValueError(reason)
-            return handle.read()
+            chunks: list[bytes] = []
+            remaining = member.size
+            try:
+                while remaining:
+                    chunk = handle.read(min(remaining, 1024 * 1024))
+                    if not chunk:
+                        raise ValueError(reason)
+                    remaining -= len(chunk)
+                    chunks.append(chunk)
+            except (OSError, tarfile.TarError) as exc:
+                raise ValueError(reason) from exc
+            return b"".join(chunks)
 
         index = _parse_json_object(
-            read_member("index.json", "oci-index-missing"), "oci-index-invalid"
+            read_member(
+                "index.json",
+                "oci-index-missing",
+                max_bytes=OCI_METADATA_MAX_BYTES,
+            ),
+            "oci-index-invalid",
         )
         if (
             index.get("schemaVersion") != 2
@@ -1296,6 +1341,7 @@ def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
         manifest_blob = read_member(
             f"blobs/sha256/{manifest_digest.removeprefix('sha256:')}",
             "oci-manifest-blob-missing",
+            max_bytes=OCI_METADATA_MAX_BYTES,
         )
         if len(manifest_blob) != manifest_size:
             raise ValueError("oci-manifest-blob-size-mismatch")
@@ -1319,6 +1365,7 @@ def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
         config_blob = read_member(
             f"blobs/sha256/{config_digest.removeprefix('sha256:')}",
             "oci-config-blob-missing",
+            max_bytes=OCI_METADATA_MAX_BYTES,
         )
         if len(config_blob) != config_size:
             raise ValueError("oci-config-blob-size-mismatch")

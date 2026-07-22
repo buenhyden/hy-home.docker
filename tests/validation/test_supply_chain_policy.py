@@ -543,6 +543,39 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 )
             self.assertFalse(target.exists())
 
+    def test_portable_converter_accepts_uncompressed_pax_oci_archive(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            root.chmod(0o700)
+            ustar_source = root / "image.ustar.oci.tar"
+            pax_source = root / "image.pax.oci.tar"
+            target = root / "image.docker.tar"
+            expected = self._write_portable_oci_archive(ustar_source)
+            with tarfile.open(ustar_source, "r:") as source_archive:
+                with tarfile.open(
+                    pax_source, "w", format=tarfile.PAX_FORMAT
+                ) as pax_archive:
+                    for member in source_archive:
+                        copied = copy.copy(member)
+                        if copied.name == "index.json":
+                            copied.pax_headers = {
+                                "comment": "buildx-compatible-oci-layout"
+                            }
+                        handle = (
+                            source_archive.extractfile(member)
+                            if member.isfile()
+                            else None
+                        )
+                        pax_archive.addfile(copied, handle)
+            pax_source.chmod(0o600)
+            result = self.checker.convert_oci_archive_to_docker_load_archive(
+                pax_source, target, "baseline"
+            )
+            self.assertEqual(
+                expected["image_config_digest"], result["image_config_digest"]
+            )
+            self.assertTrue(target.is_file())
+
     def test_portable_converter_rejects_non_role_local_reference_identity(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = pathlib.Path(temporary)
