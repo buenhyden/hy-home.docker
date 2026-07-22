@@ -21,6 +21,9 @@ FIXTURES = ROOT / "tests/fixtures/supply-chain"
 TOOL_REGISTRY = ROOT / "infra/supply-chain.tool-images.json"
 POLICY = ROOT / "infra/supply-chain.sample-service-policy.json"
 EXCEPTIONS = ROOT / "infra/supply-chain.vulnerability-exceptions.json"
+COSIGN_OFFLINE_SIGNING_CONFIG = (
+    ROOT / "infra/supply-chain.cosign-offline-signing-config.json"
+)
 WRAPPER = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
 SEED_HELPER = ROOT / "scripts/validation/grype_db_seed.py"
 SAMPLE_DOCKERFILE = ROOT / "examples/sample-web-service/Dockerfile"
@@ -969,7 +972,19 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         )[0]
         self.assertNotIn("--tlog-upload", signing)
 
-    def test_cosign_v3_offline_signing_disables_tuf_service_config(self) -> None:
+    def test_cosign_v3_offline_signing_uses_explicit_empty_service_config(self) -> None:
+        config = json.loads(COSIGN_OFFLINE_SIGNING_CONFIG.read_text(encoding="utf-8"))
+        self.assertEqual(
+            {
+                "caUrls": [],
+                "mediaType": "application/vnd.dev.sigstore.signingconfig.v0.2+json",
+                "oidcUrls": [],
+                "rekorTlogUrls": [],
+                "tsaUrls": [],
+            },
+            config,
+        )
+
         text = WRAPPER.read_text(encoding="utf-8")
         signing = text.split("sign_and_verify_archive() {", maxsplit=1)[1].split(
             "\n}\n\nwrite_verification_verdict", maxsplit=1
@@ -981,7 +996,15 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         ]
         self.assertEqual(1, len(sign_commands))
         self.assertIn("--network none", sign_commands[0])
-        self.assertIn("--use-signing-config=false", sign_commands[0])
+        self.assertIn(
+            "--signing-config /policy/cosign-offline-signing-config.json",
+            sign_commands[0],
+        )
+        self.assertNotIn("--use-signing-config", sign_commands[0])
+        self.assertIn(
+            "target=/policy/cosign-offline-signing-config.json,readonly",
+            sign_commands[0],
+        )
 
     def test_cross_role_signature_acceptance_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
