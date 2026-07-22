@@ -24,7 +24,9 @@ workspace databases.
 source and target PostgreSQL services. A single wrapper seeds deterministic SQL,
 captures a custom-format dump, restores it into the newer major, compares a
 metadata-only integrity oracle, injects corruption/partial-state failures, and
-cleans only its projects and `/tmp` artifacts.
+cleans only its projects and exclusively owned `/tmp` artifacts. Before runtime
+it validates the complete machine-readable Compose render and reserves cleanup
+time inside one end-to-end deadline.
 
 **Tech Stack:** PostgreSQL `17.6-alpine` and `18.4-alpine`; Docker Compose; Bash;
 SQL; Python `unittest`; SHA-256 evidence.
@@ -40,6 +42,12 @@ SQL; Python `unittest`; SHA-256 evidence.
   storage.
 - Store oracle outputs, dump checksum/size, timing, and verdict only; never
   track the dump, row payloads, credentials, or raw logs.
+- Create the exact `/tmp/hyhome-ior-evidence.<decimal-run-id>` directory
+  exclusively and retain its current UID, private mode, device, and inode.
+  Never read or mutate a pre-existing, symlinked, or identity-changed path.
+- Initialize one 420-second deadline before the first Docker call. Normal and
+  preflight operations receive 360 seconds; the final 60 seconds are reserved
+  for accumulated cleanup and absence verification, never added afterward.
 
 ## Overview
 
@@ -109,12 +117,27 @@ project prefix `hyhome-ior-20260719`, total timeout 420 seconds, evidence under
 `/tmp/hyhome-ior-evidence.` followed by the decimal process ID, and cleanup
 `always`. Exit classes are `0=pass`, `2=usage`, `10=preflight`, `20=readiness`,
 `30=backup`, `40=restore`, `50=integrity/negative case`, and `60=cleanup`.
+Every Docker/Compose command, including version/render preflight, collision
+queries, client discovery, waits, cleanup, and absence verification, consumes
+that same deadline. The timeout negative uses a real failing readiness probe
+with a short 20-second total and an 8-second cleanup reserve.
 
 The Compose fixture defines only `source` and `target`, uses the two pinned
 images, anonymous `pgdata` volumes, no host ports, `POSTGRES_DB=rehearsal`,
 `POSTGRES_USER=rehearsal`, a process-local synthetic password, and
 `pg_isready -U rehearsal -d rehearsal` healthchecks. It contains no
 `container_name`, bind mount, external network, or restart policy.
+The wrapper does not treat that healthcheck alone as database readiness:
+source and target must each return the same authenticated
+`pg_postmaster_start_time()` twice, two seconds apart, and their exact
+container must still be running and healthy. Identity drift or terminal state
+stays in readiness class 20 and cannot advance to seed or restore.
+The wrapper validates the full `docker compose config --format json` render:
+exactly two services and the exact digest pins; only anonymous volumes at the
+approved PostgreSQL targets; and no host port, bind, `container_name`, restart,
+privileged mode, host PID/IPC/network namespace, external network, or undeclared
+service option. Render or Docker query errors fail closed rather than meaning
+"absent."
 
 `001_schema_and_seed.sql` creates:
 
@@ -155,6 +178,14 @@ The backup command contract is `pg_dump -Fc --no-owner --no-acl`; restore is
 dump only in its `/tmp` directory, computes SHA-256 and byte size, and deletes
 the dump on successful evidence capture.
 
+The verdict candidate remains in memory. Cleanup attempts the labeled client,
+target project, source project, networks, anonymous volumes, and each owned
+temporary artifact independently, accumulates failures, verifies absence, and
+removes the retained evidence directory. Only after `cleanup_complete` and
+`evidence_removed` are true may an exact 12-key canonical be atomically created
+in a validated non-symlink parent. Stale canonical invalidation and publication
+both reject symlinks, directories, unsafe parents, and command errors.
+
 `recovery-verdict.json` has exactly these top-level keys:
 
 ```json
@@ -182,33 +213,60 @@ Tests expose `test_fixture_uses_only_pinned_source_and_target`,
 
 ## Sequence
 
-- [ ] Create the active Task with the exact image pins above, synthetic-data
+- [x] Create the active Task with the exact image pins above, synthetic-data
       approval, runtime boundary, redaction, cleanup, and rollback.
-- [ ] Write failing tests in
+- [x] Write failing tests in
       `tests/validation/test_postgres_logical_upgrade_rehearsal.py` for version
       order, image pins, unsafe evidence path, project collision, missing
       cleanup, timeout, corrupt dump, partial state, checksum mismatch, and raw
       payload leakage.
-- [ ] Run
+- [x] Run
       `python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v`
       and confirm failure before the wrapper/fixtures exist.
-- [ ] Implement the Compose/SQL fixtures and wrapper `--check` mode; rerun the
+- [x] Implement the Compose/SQL fixtures and wrapper `--check` mode; rerun the
       focused tests until all static positive/negative cases pass.
-- [ ] Run `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --check`.
-- [ ] Run `bash scripts/validation/rehearse-postgres-logical-upgrade.sh` and
+- [x] Run `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --check`.
+- [x] Run `bash scripts/validation/rehearse-postgres-logical-upgrade.sh` and
       require independent backup capture, restore, oracle comparison, timing,
       and cleanup verdicts.
-- [ ] Run
+- [x] Run
       `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case checksum-mismatch`
       and require a stable non-zero integrity failure with cleanup.
-- [ ] Run
+- [x] Run
       `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case partial-state`
       and require a stable non-zero partial-state failure with the documented
       evidence-preservation/cleanup disposition.
-- [ ] Write the narrow local rehearsal runbook; do not broaden the existing
+- [x] Run
+      `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case bad-target-major`
+      through the rendered-topology validator and require class 10 with cleanup.
+- [x] Run
+      `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case timeout`
+      through the real bounded readiness loop and require class 20 with cleanup.
+- [x] Write the narrow local rehearsal runbook; do not broaden the existing
       live cluster/Supabase destructive-recovery authority.
-- [ ] Record concise Task evidence and run independent specification review,
-      then operations/security review; fix and re-review all findings.
+- [ ] Record concise Task evidence and complete re-reviews. Initial
+      specification review returned C1/I3/M1 and initial operations/quality
+      review returned C0/I5/M2. The second review wave returned specification
+      C0/I3/M1 and operations/quality C0/I2/M0. Both waves remain historical;
+      their deduplicated ownership, canonical, publication, cleanup, deadline,
+      topology, negative-path, runbook, evidence, authenticated-TCP readiness,
+      direct-control isolation, exact-render, and bounded-sleep findings are
+      remediated. The terminal code/quality review returned APPROVED C0/I0/M0.
+      The terminal specification review left one evidence-synchronization
+      Important finding (C0/I1/M0); this logical unit remediates it, and fresh
+      specification re-review remains pending. After the reviewer's
+      direct-control regression invalidated the canonical as designed, exactly
+      one approved normal rehearsal regenerated the final-state handoff for
+      project `hyhome-ior-20260719-229164-source/target`: fixture SHA-256
+      `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`,
+      dump SHA-256
+      `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`,
+      4,484 bytes, backup 1s, restore 0s, and exact 12-key mode-0600 canonical
+      SHA-256
+      `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`.
+      Schema 1, scope, integrity, cleanup, and redaction passed; owned resources
+      were empty, and no test, negative, direct-control, or `--check` command
+      followed regeneration.
 
 ## Verification Plan
 
@@ -245,13 +303,13 @@ database state is ambiguous, stop and escalate rather than deleting evidence.
 
 ## Completion Criteria
 
-- [ ] Active Task maps `IOR-001`–`IOR-004` to exact files, commands, rollback,
+- [x] Active Task maps `IOR-001`–`IOR-004` to exact files, commands, rollback,
       redaction, and reviews.
-- [ ] Synthetic fixture and integrity oracle are deterministic and reviewed.
-- [ ] Backup capture and restore integrity pass as separate gates.
-- [ ] Representative major-version logical upgrade rehearsal passes or fails
+- [x] Synthetic fixture and integrity oracle are deterministic and implementation-reviewed.
+- [x] Backup capture and restore integrity pass as separate gates.
+- [x] Representative major-version logical upgrade rehearsal passes or fails
       closed with complete evidence.
-- [ ] Cleanup is owned and verified.
+- [x] Cleanup is owned and verified.
 - [ ] Independent specification and quality/security reviews pass.
 - [ ] Spec 125 lifecycle reflects only local representative evidence; remote,
       production, HA, physical backup, and RTO/RPO exclusions remain explicit.

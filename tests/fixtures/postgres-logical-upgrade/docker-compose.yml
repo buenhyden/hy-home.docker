@@ -1,0 +1,28 @@
+services:
+  source:
+    image: postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    environment:
+      POSTGRES_DB: rehearsal
+      POSTGRES_USER: rehearsal
+      POSTGRES_PASSWORD: ${IOR_POSTGRES_PASSWORD:?process-local synthetic password required}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rehearsal -d rehearsal"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    volumes:
+      - /var/lib/postgresql/data
+
+  target:
+    image: postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
+    environment:
+      POSTGRES_DB: rehearsal
+      POSTGRES_USER: rehearsal
+      POSTGRES_PASSWORD: ${IOR_POSTGRES_PASSWORD:?process-local synthetic password required}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rehearsal -d rehearsal"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    volumes:
+      - /var/lib/postgresql

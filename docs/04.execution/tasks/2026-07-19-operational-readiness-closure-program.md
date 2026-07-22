@@ -135,7 +135,7 @@ Redaction boundary:
 | `T-ORC-001` | Activate five Task contracts and the Task index. | This Task | Complete; documentation gates pass, runtime not run |
 | `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Complete; terminal reviews C0/I0/M0 |
 | `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Deterministic implementation and terminal reviews complete; advisory runtime correctly rejected the baseline at the critical-vulnerability policy gate, so Task 5 remains blocked without an accepted pair |
-| `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Not run |
+| `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Code/quality approved C0/I0/M0; specification evidence-sync I1 remediated with fresh specification re-review pending |
 | `T-ORC-005` | Verified-digest promotion and previous-digest rollback. | Delivery domain Task | Not run |
 | `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Not run |
 
@@ -150,6 +150,11 @@ Redaction boundary:
 | 2026-07-22 | `T-ORC-003` combined-review remediation | Combined review | Combined review `C3/I1/M1` found archive-config binding, stale-verdict, multi-match exception, cross-role, and Scorecard repository defects. Remediation derives config identity from each exact OCI archive's verified index/manifest/config relationship, invalidates stale verdict paths before any advisory failure point, publishes only a completed run-scoped pair, evaluates every Grype match, verifies the opposite role archive, and uses `github.com/buenhyden/hy-home.docker`. The offline rerun reached the same truthful class `40` baseline rejection (14 critical/no exception), with no accepted pair or `/tmp` key directory. Independent review closure was then pending. |
 | 2026-07-22 | `T-ORC-003` re-review C1 remediation | Re-reviewers | Two re-reviews found that an accepted Grype result carrying a non-null exception ID could reach Task 5 as a falsely unexceptioned consumer verdict. The wrapper now preserves that transient vulnerability exception record, fails at class `40` before provenance/signing/publication, and keeps both fixed consumer verdict paths absent. The new wrapper regression passes; independent review closure was then pending. |
 | 2026-07-22 | `T-ORC-003` terminal review closure | Terminal specification and quality/security reviewers | The initial/combined `C3/I1/M1` findings and first re-review C1 are remediated. Terminal specification and quality/security reviews both returned `APPROVED C0/I0/M0` for implementation commit `72e584f51badfd194c0a1b6d32510a3bf3ab395c`. This does not produce the still-required accepted supply-chain pair. |
+| 2026-07-22 | `T-ORC-004` implementation | Fresh infrastructure implementation agent | Synthetic PostgreSQL 17.6-to-18.4 logical backup, restore, semantic integrity oracle, four negative cases, exact cleanup, and final canonical publication passed. The initial canonical handoff SHA-256 was `7c217a60c7dc15287148756596bedf2c338c23c5be62c740778f3bd012102708`; independent reviews then found C1/I3/M1 and C0/I5/M2. |
+| 2026-07-22 | `T-ORC-004` initial-review remediation | Fresh infrastructure implementation agent | Review-remediation RED was 7/31. A final-normal run then exposed a `pg_isready` initialization-server race; cleanup passed and canonical remained absent. The focused race regression was RED 1/1, and source/target readiness then required two equal authenticated postmaster identities plus running/healthy state. Exclusive evidence identity, canonical safety, post-cleanup publication, accumulated/idempotent cleanup, one reserved deadline, full rendered topology, real negative detectors, signal/window coverage, and runbook/evidence precision were implemented before the second review wave. |
+| 2026-07-22 | `T-ORC-004` second-review remediation (historical) | Fresh infrastructure implementation agent | The second review wave returned specification C0/I3/M1 and operations/quality C0/I2/M0. Its RED phase produced 13 expected assertion/subtest failures across 7 focused methods. Direct runs rejected all test controls before Docker and used PID-only identity; normal readiness used authenticated TCP `127.0.0.1:5432`; both exact project renders bound the generated password, mandatory healthchecks, isolated default network, and bounded sleeps. Historical second-review-wave GREEN was 40/40, `--check` and stable negative classes 50/50/10/20 passed, and consecutive normal projects `4088641` and `4092001` passed. That wave's exact 12-key canonical SHA-256 was `0d54b7ad5b88b30e369318997d8338f51d08d7d69778260d6d7325bd77ed4edf`; zero owned containers, networks, volumes, clients, dumps, or PID evidence remained. At that wave, fresh re-reviews remained pending. |
+| 2026-07-22 | `T-ORC-004` terminal-review remediation (historical) | Fresh infrastructure implementation agent | Terminal re-reviews remained CHANGES REQUIRED with exactly two Important items: a direct test-control failure could preserve a stale canonical success verdict, and the ignored Task 4 report was stale. The isolated state-machine regression was RED in all 8 control subcases. Main now installs safe traps, prepares/validates the fixed canonical parent, and invalidates stale regular canonical evidence before returning class 10, while Docker calls remain zero and unsafe paths fail closed. GREEN is 41/41. At that wave, project `hyhome-ior-20260719-140710-source/target` passed with dump SHA-256 `a391d9790dcc5c73c4f06a5f56f37bd889f38dc0f49ec2f41184966855121c80`, 4,484 bytes, backup 1s, restore 0s, and exact 12-key mode-0600 canonical SHA-256 `3c8f23653665ddcef224e2c9060a038f33585b53da0f9be1fcd7ae9adfc5a824`; scope was `synthetic-local`, integrity/cleanup/redaction passed, and owned resources were empty. Both findings were remediated. The subsequent terminal code/quality review returned APPROVED C0/I0/M0; the terminal specification review left one evidence-synchronization Important finding (C0/I1/M0), remediated by documentation synchronization with fresh specification re-review pending. |
+| 2026-07-22 | `T-ORC-004` final-state canonical reconciliation | Fresh infrastructure implementation agent | The specification reviewer's direct-control regression invalidated the canonical as designed. Exactly one approved normal rehearsal then passed for project `hyhome-ior-20260719-229164-source/target` with fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`, dump SHA-256 `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`, 4,484 bytes, backup 1s, and restore 0s. Direct verification found an exact 12-key mode-0600 canonical SHA-256 `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`, schema 1, `scope=synthetic-local`, passed integrity/cleanup/redaction, and empty owned containers, labeled clients, networks, volumes, dumps, and PID evidence. No test, negative, direct-control, or `--check` command followed regeneration. |
 
 ## Verification Evidence
 
@@ -182,8 +187,25 @@ seconds. The canonical handoff SHA-256
 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf` was
 preserved, and task-owned resources were empty after the runs. Fresh Task 2
 re-reviews remain pending. Task 3 deterministic implementation and terminal
-reviews are complete, while Task 3 accepted consumer verdicts remain absent and
-Tasks 4–5 plus whole-branch verification remain `not_run`.
+reviews are complete, while Task 3 accepted consumer verdicts remain absent.
+Task 4 implementation/runtime pass with 41/41 focused tests, stable negative
+classes 50/50/10/20, fixture SHA-256
+`b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`,
+retained dump SHA-256
+`090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`,
+and exact 12-key, mode-0600 canonical SHA-256
+`c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`.
+Final-state project `hyhome-ior-20260719-229164-source/target` observed backup
+and restore at 1s/0s. Schema 1, scope `synthetic-local`, and
+integrity/cleanup/redaction passed; owned runtime resources are empty. Initial
+reviews returned specification C1/I3/M1 and operations/quality
+C0/I5/M2; the second wave returned C0/I3/M1 and C0/I2/M0. Both waves are
+historical and remediated. The next terminal re-reviews left exactly two
+Important items, which are remediated. The subsequent terminal code/quality
+review returned APPROVED C0/I0/M0. The terminal specification review left one
+evidence-synchronization Important finding (C0/I1/M0); this logical unit
+remediates it, and fresh specification re-review remains pending.
+Task 5 and whole-branch verification remain `not_run`.
 
 Task 3's repository-contract supply-chain section and generated-owner checks
 pass. Its aggregate repository contract remains at `failures=5` for four
@@ -224,7 +246,14 @@ specification and quality/security reviews at C0/I0/M0. Task 3 deterministic
 implementation is complete with the critical-vulnerability advisory rejection.
 Its initial/combined `C3/I1/M1` findings and first re-review C1 are remediated;
 terminal specification and quality/security reviews are both APPROVED C0/I0/M0.
-Tasks 4–5 remain `not_run`.
+Task 4 implementation/runtime and initial-review remediation are complete;
+terminal code/quality review returned APPROVED C0/I0/M0. The terminal
+specification review's sole evidence-synchronization Important finding
+(C0/I1/M0) is remediated here, and fresh specification re-review remains
+pending. The direct-control review exercise invalidated the canonical as
+designed; one approved normal reconciliation regenerated the current handoff,
+which was directly verified before documentation-only gates. Task 5 remains
+`not_run`.
 
 Task-activation specification review: the initial review returned C0/I1/M0.
 The Important finding was remediated by making the delivery baseline/canary
@@ -236,6 +265,23 @@ Important findings were remediated by adding the exact
 `.github/workflows/ci-quality.yml` controlled-wrapper allow-prefix and the
 negative rehearsal cleanup command to the closed delivery subcommand set.
 Re-review returned APPROVED C0/I0/M0.
+
+Task 4 initial reviews: specification returned CHANGES REQUIRED C1/I3/M1 and
+operations/quality returned CHANGES REQUIRED C0/I5/M2 for `db2418c2`. The
+complete deduplicated ownership, canonical, publication, cleanup/deadline,
+rendered-topology, negative-detector, signal/window, runbook, and evidence
+findings are remediated. The second review wave returned CHANGES REQUIRED
+C0/I3/M1 and C0/I2/M0; its authenticated-TCP readiness, direct-control
+isolation, process identity/active budget, exact project/network render,
+generated-password/healthcheck, and bounded-sleep findings are also remediated.
+Fresh specification and operations/quality re-reviews of the newly amended
+logical unit then remained CHANGES REQUIRED with exactly two Important items:
+direct-control/canonical state-machine ordering and ignored report freshness.
+Both are remediated. The subsequent terminal code/quality review returned
+APPROVED C0/I0/M0. The terminal specification review returned CHANGES REQUIRED
+C0/I1/M0 solely for evidence synchronization. This logical unit remediates that
+finding; fresh specification re-review remains pending and is not
+self-certified.
 
 Whole-branch specification review: `not_run`; a fresh reviewer must return
 C0/I0/M0 after all domain implementations and reviews complete.
@@ -250,6 +296,11 @@ reviews returned specification `CHANGES REQUIRED C0/I3/M0` and quality
 `CHANGES REQUIRED C0/I2/M0` and quality `CHANGES REQUIRED C0/I1/M0`. Both
 terminal re-reviews returned specification and quality/security
 `APPROVED C0/I0/M0` after the Program Plan/Task inconsistency was remediated.
+Task 4's initial C1/I3/M1 and C0/I5/M2 and second-wave C0/I3/M1 and C0/I2/M0
+are preserved above. Its terminal CHANGES REQUIRED result with two Important
+items is also preserved with remediation. Terminal code/quality is now
+APPROVED C0/I0/M0; the specification evidence-sync I1 is remediated with fresh
+specification re-review pending.
 Future domain or whole-branch findings must retain severity, owner, remediation
 commit, and re-review verdict without copying raw logs.
 
@@ -274,7 +325,10 @@ C0/I0/M0. Task 3's implementation commit is
 `72e584f51badfd194c0a1b6d32510a3bf3ab395c`
 (`feat(security): add local supply-chain verification`); terminal Task 3
 specification and quality/security reviews are both APPROVED C0/I0/M0. Tasks
-4–5, pre-wrapper, and closure commits remain `not_run` and must be recorded
+Task 4's initial reviewed implementation identity is `db2418c2`. Its final
+amended identity is resolved from branch history by logical message after
+amendment rather than self-recorded in that commit.
+Task 5, pre-wrapper, and closure commits remain `not_run` and must be recorded
 after creation, never predicted as completed evidence.
 
 ## Deferred and Blocked Items
@@ -289,7 +343,8 @@ Deferred items:
 Blocked items: `T-ORC-003` has exact pinned images cached but cannot supply
 Task 5 because the baseline remains rejected by the critical-vulnerability
 policy (14 critical matches, no exception) and no accepted distinct verdict
-pair exists; its terminal review closure is complete. `T-ORC-004`–`T-ORC-006` remain blocked on
+pair exists; its terminal review closure is complete. `T-ORC-004` runtime is
+complete and remains review-pending. `T-ORC-005`–`T-ORC-006` remain blocked on
 their documented sequence, upstream typed verdicts, exact local evidence, and
 independent review.
 

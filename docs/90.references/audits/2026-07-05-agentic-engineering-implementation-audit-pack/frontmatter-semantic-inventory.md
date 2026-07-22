@@ -39,7 +39,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 926
+- **Tracked records**: 927
 - **Records with findings**: 558
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
@@ -60,7 +60,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `prd` | 25 |
 | `readme` | 149 |
 | `reference` | 30 |
-| `runbook` | 61 |
+| `runbook` | 62 |
 | `spec` | 58 |
 | `task` | 125 |
 | `template-source` | 24 |
@@ -797,6 +797,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/05.operations/runbooks/04-data/optimization/optimization-hardening.md` | `runbook` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed; signals=stale-active | unavailable-no-history | reviewed_at=required:missing; review_cycle=required:missing | not-applicable | missing-required-key, stale-active | migration candidate |
 | `docs/05.operations/runbooks/04-data/relational/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md` | `runbook` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed; signals=stale-active | unavailable-no-history | reviewed_at=required:missing; review_cycle=required:missing | not-applicable | missing-required-key, stale-active | migration candidate |
+| `docs/05.operations/runbooks/04-data/relational/postgresql-logical-upgrade-restore-rehearsal.md` | `runbook` | allowed-syntax | valid | parents=resolved:2; order=declared-list; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=required:present; review_cycle=required:present | not-applicable | none | migration candidate |
 | `docs/05.operations/runbooks/04-data/specialized/README.md` | `readme` | missing-fence | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/05.operations/runbooks/04-data/specialized/neo4j.md` | `runbook` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed; signals=stale-active | unavailable-no-history | reviewed_at=required:missing; review_cycle=required:missing | not-applicable | missing-required-key, stale-active | migration candidate |
 | `docs/05.operations/runbooks/04-data/specialized/qdrant.md` | `runbook` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=active; allowed; signals=stale-active | unavailable-no-history | reviewed_at=required:missing; review_cycle=required:missing | not-applicable | missing-required-key, stale-active | migration candidate |

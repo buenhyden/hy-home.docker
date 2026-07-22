@@ -11,7 +11,7 @@ parent_ids:
 
 ## Overview
 
-This active Task will record the synthetic local PostgreSQL 17-to-18 logical
+This active Task records the synthetic local PostgreSQL 17-to-18 logical
 backup, restore, integrity, upgrade, and negative-path rehearsal. At activation,
 no database container has started, no dump or row data has been produced, and
 no recovery or elapsed-time result is claimed.
@@ -76,9 +76,18 @@ Operations impact: representative logical backup/restore mechanics and a
 bounded runbook only. No live recovery authority, retention control, or RTO/RPO
 commitment changes.
 
+Implementation-alignment impact: the Plan-required runbook is a non-service
+procedure backed by `scripts/validation/rehearse-postgres-logical-upgrade.sh`
+and `tests/fixtures/postgres-logical-upgrade/`, not a new
+`infra/04-data/relational` service. The existing alignment validator therefore
+adds exactly this stem to `NON_SERVICE_STEMS`; focused regression coverage
+prevents broader exception drift.
+
 Runtime impact: task-scoped local PostgreSQL containers using only the pinned
-images and synthetic fixture. Cleanup removes only owned projects, anonymous
-volumes, and the task `/tmp` directory.
+images and synthetic fixture. One deadline begins before the first Docker call;
+normal/preflight work receives 360 seconds and accumulated cleanup reserves the
+last 60 seconds inside the 420-second total. Cleanup removes only verified
+owned projects, anonymous volumes, and the exclusive task `/tmp` directory.
 
 ## Approval Evidence
 
@@ -103,10 +112,12 @@ Commands are normal execution, `--check`, or one
 `--negative-case checksum-mismatch|partial-state|bad-target-major|timeout`.
 Changed image, data, storage, target, or cleanup requires stop and new approval.
 
-Rollback or recovery: the wrapper trap removes only project-prefix resources
-and its `/tmp` directory. Revert the single logical IOR commit to remove
-authored changes. On ambiguous state or cleanup ownership, stop and retain only
-concise non-secret evidence rather than deleting the database state.
+Rollback or recovery: the wrapper trap independently attempts every exact
+project-prefix resource and its retained `/tmp` identity without broad cleanup.
+Revert the single logical IOR commit to remove authored changes. On ambiguous
+ownership, stop without reading or mutating the foreign path; on cleanup
+failure, leave canonical absent and permit only an exact idempotent retry inside
+the remaining deadline.
 
 Redaction boundary: tracked evidence may contain image pins, fixture/dump
 checksums, dump size, aggregate oracle values/digests, observed timing, stable
@@ -117,10 +128,10 @@ dump, SQL row payloads, passwords, environment values, raw queries, or logs.
 
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-IOR-001` | Fixture, oracle, wrapper, verdict, and tests | `IOR-001`–`IOR-004` | Focused RED/GREEN suite and `--check` | Fresh implementation agent | Not run |
-| `T-IOR-002` | Logical backup and isolated restore | `IOR-003`, `IOR-004` | Dump, restore, oracle, timing, cleanup | Fresh implementation agent | Not run |
-| `T-IOR-003` | 17-to-18 and corrupted/partial negative paths | `IOR-001`, `IOR-002` | Stable failures and cleanup disposition | Fresh implementation agent | Not run |
-| `T-IOR-004` | Bounded runbook and independent reviews | `VAL-IOR-001`–`004` | Spec plus operations/security C0/I0/M0 | Separate reviewers | Not run |
+| `T-IOR-001` | Fixture, oracle, wrapper, verdict, and tests | `IOR-001`–`IOR-004` | Focused RED/GREEN suite and `--check` | Fresh implementation agent | Complete; historical RED 7/31 and 1/1, second-review RED 13 assertions across 7 methods, terminal-review RED 8 subcases, GREEN 41/41, and check pass |
+| `T-IOR-002` | Logical backup and isolated restore | `IOR-003`, `IOR-004` | Dump, restore, oracle, timing, cleanup | Fresh implementation agent | Complete; final normal pass |
+| `T-IOR-003` | 17-to-18 and corrupted/partial negative paths | `IOR-001`, `IOR-002` | Stable failures and cleanup disposition | Fresh implementation agent | Complete; classes 50/50/10/20 |
+| `T-IOR-004` | Bounded runbook and independent reviews | `VAL-IOR-001`–`004` | Spec plus operations/security C0/I0/M0 | Separate reviewers | Code/quality approved C0/I0/M0; specification evidence-sync I1 remediated with fresh specification re-review pending |
 
 ## Work Log
 
@@ -128,6 +139,14 @@ dump, SQL row payloads, passwords, environment values, raw queries, or logs.
 | --- | --- | --- |
 | 2026-07-19 | Task activation | Contract recorded; no database runtime, dump, restore, or destructive action executed. |
 | 2026-07-19 | `T-IOR-001`–`T-IOR-004` | `not_run`; actual evidence is appended only after exact execution. |
+| 2026-07-22 | `T-IOR-001` review-wave RED/GREEN (historical) | Initial 13-test suite failed/errored with the planned wrapper/fixtures absent. Initial-review remediation was RED 7/31, and the later initialization-server race regression was RED 1/1. The second review wave produced 13 expected assertion/subtest failures across 7 focused methods for socket-only readiness, direct test-control injection, PID/budget reporting, exact project/network render validation, generated-password/healthcheck drift, and unbounded sleeps. At that wave, direct execution derived identity only from `$$`, test controls required the explicit sourced-test boundary, and normal source/target readiness used authenticated TCP `127.0.0.1:5432` twice plus running/healthy state. Historical second-review-wave GREEN was 40/40. Shell syntax, ShellCheck, Python compile, and `--check` passed with fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`. |
+| 2026-07-22 | `T-IOR-002` second-review-wave normal rehearsals (historical) | Consecutive projects `hyhome-ior-20260719-4088641-source/target` and `hyhome-ior-20260719-4092001-source/target` passed detached PG18 custom backup, PG18 restore, semantic oracle comparison, accumulated cleanup, and post-cleanup publication during that review wave. Its then-current dump was 4,484 bytes, SHA-256 `7a3688e4d69f047dfb455ed646dafb28eb3bbb1c90e989a6afecdd7618cccd71`, backup 0s, restore 0s. |
+| 2026-07-22 | `T-IOR-003` negatives | Checksum mismatch and partial state returned class 50; bad target major returned class 10; timeout returned class 20. Every run reported cleanup passed and left canonical absent. |
+| 2026-07-22 | Implementation corrections | A sandbox Docker-socket denial created no resources. Two attached-client attempts were interrupted and exactly cleaned; the implementation moved to a bounded detached labeled PG18 client. PG18 target layout and oracle preamble/catalog differences then failed closed at classes 40/50 and were corrected without publishing canonical evidence. |
+| 2026-07-22 | Initial independent reviews and remediation (historical) | Specification returned C1/I3/M1 and operations/quality returned C0/I5/M2. The deduplicated findings are remediated with exclusive UID/mode/device/inode evidence ownership, safe canonical invalidation/atomic publication, memory-only candidate state, accumulated/idempotent cleanup, one reserved 420-second deadline, full rendered-topology validation, real bad-major/timeout detectors, signal/publication-window tests, and corrected runbook/evidence wording. At that wave, fresh re-reviews remained pending. |
+| 2026-07-22 | Second independent review wave and remediation (historical) | The amended candidate returned specification C0/I3/M1 and operations/quality C0/I2/M0. Those historical findings are remediated with mandatory TCP `127.0.0.1:5432` readiness, PID-only direct identity, pre-Docker rejection of every direct test control, exact active-budget reporting, exact per-project default-network render validation, generated-password and mandatory-healthcheck validation for both projects, topology mutations, and bounded readiness sleeps. At that wave, fresh re-reviews remained pending. |
+| 2026-07-22 | Terminal re-review remediation | Terminal re-reviews left exactly two Important items: direct test-control rejection could preserve a stale fixed-path success verdict, and the ignored implementation report remained stale. The new regression was RED in all 8 direct-control subcases. Main now installs traps, validates/prepares the canonical parent, and safely invalidates a stale regular canonical before returning class 10, while every variant still makes zero Docker calls; unsafe parents, symlinks, and directories remain fail-closed. GREEN is 41/41. Both items were remediated, and the ignored report was synchronized separately. The subsequent terminal code/quality review returned APPROVED C0/I0/M0. The terminal specification review left one evidence-synchronization Important finding (C0/I1/M0); this documentation synchronization remediates it, and fresh specification re-review remains pending. |
+| 2026-07-22 | Final-state canonical reconciliation | The specification reviewer's direct-control regression invalidated the canonical as designed. Exactly one approved normal rehearsal then passed for project `hyhome-ior-20260719-229164-source/target` with fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`, dump SHA-256 `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`, 4,484 bytes, backup 1s, and restore 0s. Direct verification found an exact 12-key mode-0600 canonical SHA-256 `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`, schema 1, `scope=synthetic-local`, passed integrity/cleanup/redaction, and empty owned containers, labeled clients, networks, volumes, dumps, and PID evidence. No test, negative, direct-control, or `--check` command followed regeneration. |
 
 ## Verification Evidence
 
@@ -139,11 +158,11 @@ bash scripts/validation/rehearse-postgres-logical-upgrade.sh --check
 bash scripts/validation/rehearse-postgres-logical-upgrade.sh
 bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case checksum-mismatch
 bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case partial-state
+bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case bad-target-major
+bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case timeout
+bash scripts/validation/rehearse-postgres-logical-upgrade.sh
+bash scripts/validation/rehearse-postgres-logical-upgrade.sh
 ```
-
-The implemented wrapper may also execute the planned negative cases
-`bad-target-major` and `timeout`; both must fail non-zero and still apply the
-owned cleanup rule.
 
 Expected evidence: focused positive/negative tests pass; the normal rehearsal
 uses `pg_dump -Fc --no-owner --no-acl` and
@@ -152,9 +171,38 @@ match on all integrity fields except declared server version; the verdict has
 `scope=synthetic-local`, `integrity_status=passed`,
 `cleanup_status=passed`, and `redaction_status=passed`.
 
-Actual evidence: `not_run`.
+Actual evidence: focused tests pass 41/41 after historical review-remediation
+RED 7/31, readiness-race RED 1/1, and second-review RED with 13 expected
+assertion/subtest failures across 7 focused methods. The terminal-review
+regression was RED in all 8 direct-control subcases before the ordering fix.
+`--check` passes with the exact pins, full rendered topology, exclusive retained
+evidence identity, 360-second operation budget, 60-second cleanup reserve, and
+fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`.
+The real timeout rerun remained class 20. After reviewer invalidation, the
+single approved final-state reconciliation passed for project
+`hyhome-ior-20260719-229164-source/target` with stable authenticated readiness,
+integrity, cleanup, and publication. The retained dump SHA-256 is
+`090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`,
+4,484 bytes, backup 1s, restore 0s, with no remaining task-owned resources.
+The exact 12-key, mode-0600 canonical handoff SHA-256 is
+`c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`;
+schema is 1, and scope, integrity, cleanup, and redaction are
+`synthetic-local`, `passed`, `passed`, and `passed`. Upstream Task 2 handoff
+SHA-256 remains
+`7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`.
+Explicit-base metadata selected 22 changed documents with zero violations;
+traceability passed 46 pairs; implementation alignment passed 666 documents
+and 5,443 links with zero failures; template contracts passed 38/38; Compose
+validation passed five core services; Markdown, LLM Wiki freshness, Bash
+syntax, ShellCheck, and diff hygiene pass. Repository contracts retain the
+known four lifecycle consumer mismatches, missing `html5lib` renderer, and
+future Task 5 delivery-script absence; no Task 4 contract failure remains.
 
-Verification results: `not_run`. Exit classes are `0=pass`, `2=usage`,
+Verification results: implementation/runtime PASS; all historical findings are
+remediated, and terminal code/quality review returned APPROVED C0/I0/M0. The
+terminal specification review's sole evidence-synchronization Important finding
+(C0/I1/M0) is remediated here; fresh specification re-review remains pending.
+Exit classes are `0=pass`, `2=usage`,
 `10=preflight`, `20=readiness`, `30=backup`, `40=restore`,
 `50=integrity/negative case`, and `60=cleanup`.
 
@@ -178,27 +226,48 @@ Disposition: defer to the
 
 ## Review Evidence
 
-Implementation review verdict: `not_run`.
+Implementation self-review verdict: PASS for exact Plan ownership, pins,
+full rendered synthetic-only topology, bounded clients, stable failures,
+post-cleanup atomic publication, accumulated cleanup, and redaction.
 
-Specification review verdict: `not_run`; a fresh reviewer must verify Spec 125,
-image pins, fixture/oracle schema, backup/restore separation, negative cases,
-verdict schema, and data/remote exclusions.
+Specification review verdict: CHANGES REQUIRED C1/I3/M1 on initial candidate
+`db2418c2`. Operations/quality review verdict: CHANGES REQUIRED C0/I5/M2 on the
+same candidate. The second review wave on the amended candidate returned
+CHANGES REQUIRED C0/I3/M1 and C0/I2/M0 respectively. Both waves remain
+historical, and their findings are remediated. The next terminal re-reviews left
+exactly two Important items: stale canonical invalidation on direct-control
+failure and ignored report synchronization. Both are remediated. The subsequent
+terminal code/quality review returned APPROVED C0/I0/M0; the terminal
+specification review returned CHANGES REQUIRED C0/I1/M0 solely for current
+evidence synchronization. That finding is remediated in this logical unit, and
+fresh specification re-review remains pending. The reviewer's direct-control
+exercise invalidated the canonical as designed; the single approved normal
+reconciliation regenerated and directly verified the current handoff without
+any later canonical-mutating command.
 
-Quality/security review verdict: `not_run`; a separate reviewer must check
-shell/SQL safety, path/project ownership, cleanup, redaction, error handling,
-tests, and runbook limits.
-
-Findings and disposition: none because review has not run. All findings must be
-remediated and re-reviewed to C0/I0/M0.
+Findings and disposition: the complete deduplicated review set is remediated.
+It covered exclusive evidence ownership and retained identity; unsafe canonical
+invalidation/publication; publication ordering; non-short-circuit cleanup and
+retry; one end-to-end deadline with cleanup reserve; full rendered topology;
+reachable bad-major/timeout/signal paths; Task 2 runbook semantics; exact
+evidence/commit wording; authenticated TCP readiness; direct-control isolation;
+process identity and active budgets; exact project/network rendering;
+generated-password and healthcheck binding; and bounded sleeps. No finding is
+self-closed before re-review. The terminal pair additionally covered the
+direct-control/canonical state-machine ordering and ignored report freshness.
+The remaining specification evidence-synchronization finding is remediated but
+awaits fresh independent specification re-review.
 
 ## Commit Ledger
 
-Commit identity: `not_committed`.
+Commit identity: initial reviewed candidate `db2418c2`; final amended identity
+is resolved from branch history by the logical message after amendment, which
+avoids a self-referential hash claim.
 
 Logical unit: `feat(ops): add postgres recovery rehearsal`.
 
-Commit validation: `not_run`; record focused tests, normal/negative rehearsal,
-checksums/timing, cleanup, runbook validation, and review after commit.
+Commit validation: focused/static/runtime remediation evidence passes as
+recorded above; re-review remains pending.
 
 ## Deferred and Blocked Items
 
@@ -206,7 +275,8 @@ Deferred items: live data, physical backup, PITR, HA/replication, remote
 storage, retention/encryption certification, production recovery, and
 organization RTO/RPO.
 
-Blocked items: runtime remains blocked until fixture/tests and `--check` pass.
+Blocked items: independent specification and quality/security reviews remain
+required before Task closure. Runtime implementation is no longer blocked.
 Delivery may reference this verdict only as a recovery boundary and must not
 claim database recovery for the stateless sample service.
 

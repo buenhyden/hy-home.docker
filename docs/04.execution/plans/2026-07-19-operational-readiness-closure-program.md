@@ -191,13 +191,36 @@ Non-goals:
 
 **Plan:** [Infrastructure operations Plan](./2026-07-11-infrastructure-operations-readiness-remediation.md)
 
-- [ ] Execute that Plan using a fresh implementation agent after Task 3.
-- [ ] Require the exact synthetic-local `recovery-verdict.json` contract above;
+- [x] Execute that Plan using a fresh implementation agent after Task 3.
+- [x] Require the exact synthetic-local `recovery-verdict.json` contract above;
       keep it a rollback-boundary input rather than a deployment gate.
 - [ ] Require a fresh specification reviewer and a separate operations/quality
-      reviewer; remediate and re-review all findings.
-- [ ] Commit the verified implementation as
-      `feat(ops): add postgres recovery rehearsal`.
+      reviewer. Initial reviews returned specification C1/I3/M1 and
+      operations/quality C0/I5/M2; the second review wave returned
+      specification C0/I3/M1 and operations/quality C0/I2/M0. Both historical
+      waves are remediated, including stable authenticated TCP postmaster
+      identity plus running/healthy state, direct-control isolation, exact
+      per-project rendering, and bounded sleeps. The terminal code/quality
+      review returned APPROVED C0/I0/M0. The terminal specification review left
+      one evidence-synchronization Important finding (C0/I1/M0); this logical
+      unit remediates it, and fresh specification re-review remains pending.
+      The reviewer's direct-control regression invalidated the canonical as
+      designed; exactly one approved normal rehearsal then regenerated the
+      final-state handoff for project
+      `hyhome-ior-20260719-229164-source/target`, fixture SHA-256
+      `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`,
+      dump SHA-256
+      `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`,
+      4,484 bytes, backup 1s, restore 0s, and exact 12-key mode-0600 canonical
+      SHA-256
+      `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`.
+      Schema 1, scope, integrity, cleanup, and redaction passed; owned resources
+      were empty, and no test, negative, direct-control, or `--check` command
+      followed regeneration.
+- [x] Keep the verified implementation in the logical unit
+      `feat(ops): add postgres recovery rehearsal`; the initial reviewed
+      identity was `db2418c2`, and the final amended identity is resolved from
+      branch history after amendment rather than self-recorded in that commit.
 
 ### Task 5: Implement local promotion and rollback
 

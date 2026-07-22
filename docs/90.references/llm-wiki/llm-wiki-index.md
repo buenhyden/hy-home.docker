@@ -876,6 +876,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/runbooks/04-data/optimization/optimization-hardening.md](../../05.operations/runbooks/04-data/optimization/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/relational/README.md](../../05.operations/runbooks/04-data/relational/README.md) | folder index |
 | [docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md](../../05.operations/runbooks/04-data/relational/postgresql-cluster.md) | Markdown reference |
+| [docs/05.operations/runbooks/04-data/relational/postgresql-logical-upgrade-restore-rehearsal.md](../../05.operations/runbooks/04-data/relational/postgresql-logical-upgrade-restore-rehearsal.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/specialized/README.md](../../05.operations/runbooks/04-data/specialized/README.md) | folder index |
 | [docs/05.operations/runbooks/04-data/specialized/neo4j.md](../../05.operations/runbooks/04-data/specialized/neo4j.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/specialized/qdrant.md](../../05.operations/runbooks/04-data/specialized/qdrant.md) | Markdown reference |
@@ -1360,6 +1361,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/generate-security-automation-readiness.sh](../../../scripts/validation/generate-security-automation-readiness.sh) | script |
 | [scripts/validation/recommend-gap-routing.sh](../../../scripts/validation/recommend-gap-routing.sh) | script |
 | [scripts/validation/recommend-qa-gates.sh](../../../scripts/validation/recommend-qa-gates.sh) | script |
+| [scripts/validation/rehearse-postgres-logical-upgrade.sh](../../../scripts/validation/rehearse-postgres-logical-upgrade.sh) | script |
 | [scripts/validation/report-audit-pack-coverage.sh](../../../scripts/validation/report-audit-pack-coverage.sh) | script |
 | [scripts/validation/report-provider-hook-parity.sh](../../../scripts/validation/report-provider-hook-parity.sh) | script |
 | [scripts/validation/run-agent-output-eval-fixtures.sh](../../../scripts/validation/run-agent-output-eval-fixtures.sh) | script |
