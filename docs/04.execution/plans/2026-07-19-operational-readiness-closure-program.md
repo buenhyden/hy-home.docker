@@ -194,16 +194,15 @@ Non-goals:
 - [x] Execute that Plan using a fresh implementation agent after Task 3.
 - [x] Require the exact synthetic-local `recovery-verdict.json` contract above;
       keep it a rollback-boundary input rather than a deployment gate.
-- [ ] Require a fresh specification reviewer and a separate operations/quality
+- [x] Require a fresh specification reviewer and a separate operations/quality
       reviewer. Initial reviews returned specification C1/I3/M1 and
       operations/quality C0/I5/M2; the second review wave returned
       specification C0/I3/M1 and operations/quality C0/I2/M0. Both historical
       waves are remediated, including stable authenticated TCP postmaster
       identity plus running/healthy state, direct-control isolation, exact
-      per-project rendering, and bounded sleeps. The terminal code/quality
-      review returned APPROVED C0/I0/M0. The terminal specification review left
-      one evidence-synchronization Important finding (C0/I1/M0); this logical
-      unit remediates it, and fresh specification re-review remains pending.
+      per-project rendering, and bounded sleeps. Terminal specification and
+      operations/quality reviews both returned APPROVED C0/I0/M0 after the
+      specification evidence-sync finding was remediated.
       The reviewer's direct-control regression invalidated the canonical as
       designed; exactly one approved normal rehearsal then regenerated the
       final-state handoff for project

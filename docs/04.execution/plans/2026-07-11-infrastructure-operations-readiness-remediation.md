@@ -244,17 +244,16 @@ Tests expose `test_fixture_uses_only_pinned_source_and_target`,
       through the real bounded readiness loop and require class 20 with cleanup.
 - [x] Write the narrow local rehearsal runbook; do not broaden the existing
       live cluster/Supabase destructive-recovery authority.
-- [ ] Record concise Task evidence and complete re-reviews. Initial
+- [x] Record concise Task evidence and complete re-reviews. Initial
       specification review returned C1/I3/M1 and initial operations/quality
       review returned C0/I5/M2. The second review wave returned specification
       C0/I3/M1 and operations/quality C0/I2/M0. Both waves remain historical;
       their deduplicated ownership, canonical, publication, cleanup, deadline,
       topology, negative-path, runbook, evidence, authenticated-TCP readiness,
       direct-control isolation, exact-render, and bounded-sleep findings are
-      remediated. The terminal code/quality review returned APPROVED C0/I0/M0.
-      The terminal specification review left one evidence-synchronization
-      Important finding (C0/I1/M0); this logical unit remediates it, and fresh
-      specification re-review remains pending. After the reviewer's
+      remediated. Terminal specification and operations/quality reviews both
+      returned APPROVED C0/I0/M0 after the specification evidence-sync finding
+      was remediated. After the reviewer's
       direct-control regression invalidated the canonical as designed, exactly
       one approved normal rehearsal regenerated the final-state handoff for
       project `hyhome-ior-20260719-229164-source/target`: fixture SHA-256
@@ -310,7 +309,7 @@ database state is ambiguous, stop and escalate rather than deleting evidence.
 - [x] Representative major-version logical upgrade rehearsal passes or fails
       closed with complete evidence.
 - [x] Cleanup is owned and verified.
-- [ ] Independent specification and quality/security reviews pass.
+- [x] Independent specification and quality/security reviews pass C0/I0/M0.
 - [ ] Spec 125 lifecycle reflects only local representative evidence; remote,
       production, HA, physical backup, and RTO/RPO exclusions remain explicit.
 

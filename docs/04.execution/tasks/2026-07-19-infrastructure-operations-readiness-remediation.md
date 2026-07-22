@@ -131,7 +131,7 @@ dump, SQL row payloads, passwords, environment values, raw queries, or logs.
 | `T-IOR-001` | Fixture, oracle, wrapper, verdict, and tests | `IOR-001`–`IOR-004` | Focused RED/GREEN suite and `--check` | Fresh implementation agent | Complete; historical RED 7/31 and 1/1, second-review RED 13 assertions across 7 methods, terminal-review RED 8 subcases, GREEN 41/41, and check pass |
 | `T-IOR-002` | Logical backup and isolated restore | `IOR-003`, `IOR-004` | Dump, restore, oracle, timing, cleanup | Fresh implementation agent | Complete; final normal pass |
 | `T-IOR-003` | 17-to-18 and corrupted/partial negative paths | `IOR-001`, `IOR-002` | Stable failures and cleanup disposition | Fresh implementation agent | Complete; classes 50/50/10/20 |
-| `T-IOR-004` | Bounded runbook and independent reviews | `VAL-IOR-001`–`004` | Spec plus operations/security C0/I0/M0 | Separate reviewers | Code/quality approved C0/I0/M0; specification evidence-sync I1 remediated with fresh specification re-review pending |
+| `T-IOR-004` | Bounded runbook and independent reviews | `VAL-IOR-001`–`004` | Spec plus operations/security C0/I0/M0 | Separate reviewers | Complete; terminal specification and operations/quality APPROVED C0/I0/M0 |
 
 ## Work Log
 
@@ -143,9 +143,9 @@ dump, SQL row payloads, passwords, environment values, raw queries, or logs.
 | 2026-07-22 | `T-IOR-002` second-review-wave normal rehearsals (historical) | Consecutive projects `hyhome-ior-20260719-4088641-source/target` and `hyhome-ior-20260719-4092001-source/target` passed detached PG18 custom backup, PG18 restore, semantic oracle comparison, accumulated cleanup, and post-cleanup publication during that review wave. Its then-current dump was 4,484 bytes, SHA-256 `7a3688e4d69f047dfb455ed646dafb28eb3bbb1c90e989a6afecdd7618cccd71`, backup 0s, restore 0s. |
 | 2026-07-22 | `T-IOR-003` negatives | Checksum mismatch and partial state returned class 50; bad target major returned class 10; timeout returned class 20. Every run reported cleanup passed and left canonical absent. |
 | 2026-07-22 | Implementation corrections | A sandbox Docker-socket denial created no resources. Two attached-client attempts were interrupted and exactly cleaned; the implementation moved to a bounded detached labeled PG18 client. PG18 target layout and oracle preamble/catalog differences then failed closed at classes 40/50 and were corrected without publishing canonical evidence. |
-| 2026-07-22 | Initial independent reviews and remediation (historical) | Specification returned C1/I3/M1 and operations/quality returned C0/I5/M2. The deduplicated findings are remediated with exclusive UID/mode/device/inode evidence ownership, safe canonical invalidation/atomic publication, memory-only candidate state, accumulated/idempotent cleanup, one reserved 420-second deadline, full rendered-topology validation, real bad-major/timeout detectors, signal/publication-window tests, and corrected runbook/evidence wording. At that wave, fresh re-reviews remained pending. |
-| 2026-07-22 | Second independent review wave and remediation (historical) | The amended candidate returned specification C0/I3/M1 and operations/quality C0/I2/M0. Those historical findings are remediated with mandatory TCP `127.0.0.1:5432` readiness, PID-only direct identity, pre-Docker rejection of every direct test control, exact active-budget reporting, exact per-project default-network render validation, generated-password and mandatory-healthcheck validation for both projects, topology mutations, and bounded readiness sleeps. At that wave, fresh re-reviews remained pending. |
-| 2026-07-22 | Terminal re-review remediation | Terminal re-reviews left exactly two Important items: direct test-control rejection could preserve a stale fixed-path success verdict, and the ignored implementation report remained stale. The new regression was RED in all 8 direct-control subcases. Main now installs traps, validates/prepares the canonical parent, and safely invalidates a stale regular canonical before returning class 10, while every variant still makes zero Docker calls; unsafe parents, symlinks, and directories remain fail-closed. GREEN is 41/41. Both items were remediated, and the ignored report was synchronized separately. The subsequent terminal code/quality review returned APPROVED C0/I0/M0. The terminal specification review left one evidence-synchronization Important finding (C0/I1/M0); this documentation synchronization remediates it, and fresh specification re-review remains pending. |
+| 2026-07-22 | Initial independent reviews and remediation (historical) | Specification returned C1/I3/M1 and operations/quality returned C0/I5/M2. The deduplicated findings are remediated with exclusive UID/mode/device/inode evidence ownership, safe canonical invalidation/atomic publication, memory-only candidate state, accumulated/idempotent cleanup, one reserved 420-second deadline, full rendered-topology validation, real bad-major/timeout detectors, signal/publication-window tests, and corrected runbook/evidence wording. |
+| 2026-07-22 | Second independent review wave and remediation (historical) | The amended candidate returned specification C0/I3/M1 and operations/quality C0/I2/M0. Those historical findings are remediated with mandatory TCP `127.0.0.1:5432` readiness, PID-only direct identity, pre-Docker rejection of every direct test control, exact active-budget reporting, exact per-project default-network render validation, generated-password and mandatory-healthcheck validation for both projects, topology mutations, and bounded readiness sleeps. |
+| 2026-07-22 | Terminal re-review remediation and closure | Terminal re-reviews left exactly two Important items: direct test-control rejection could preserve a stale fixed-path success verdict, and the ignored implementation report remained stale. The new regression was RED in all 8 direct-control subcases. Main now installs traps, validates/prepares the canonical parent, and safely invalidates a stale regular canonical before returning class 10, while every variant still makes zero Docker calls; unsafe parents, symlinks, and directories remain fail-closed. GREEN is 41/41. Both items were remediated, and the ignored report was synchronized separately. Terminal operations/quality returned APPROVED C0/I0/M0. Specification then left one evidence-synchronization Important finding (C0/I1/M0); after the documentation synchronization and final-state canonical reconciliation, terminal specification re-review returned APPROVED C0/I0/M0. |
 | 2026-07-22 | Final-state canonical reconciliation | The specification reviewer's direct-control regression invalidated the canonical as designed. Exactly one approved normal rehearsal then passed for project `hyhome-ior-20260719-229164-source/target` with fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`, dump SHA-256 `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`, 4,484 bytes, backup 1s, and restore 0s. Direct verification found an exact 12-key mode-0600 canonical SHA-256 `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`, schema 1, `scope=synthetic-local`, passed integrity/cleanup/redaction, and empty owned containers, labeled clients, networks, volumes, dumps, and PID evidence. No test, negative, direct-control, or `--check` command followed regeneration. |
 
 ## Verification Evidence
@@ -199,9 +199,8 @@ known four lifecycle consumer mismatches, missing `html5lib` renderer, and
 future Task 5 delivery-script absence; no Task 4 contract failure remains.
 
 Verification results: implementation/runtime PASS; all historical findings are
-remediated, and terminal code/quality review returned APPROVED C0/I0/M0. The
-terminal specification review's sole evidence-synchronization Important finding
-(C0/I1/M0) is remediated here; fresh specification re-review remains pending.
+remediated, and terminal specification plus operations/quality reviews both
+returned APPROVED C0/I0/M0.
 Exit classes are `0=pass`, `2=usage`,
 `10=preflight`, `20=readiness`, `30=backup`, `40=restore`,
 `50=integrity/negative case`, and `60=cleanup`.
@@ -226,7 +225,7 @@ Disposition: defer to the
 
 ## Review Evidence
 
-Implementation self-review verdict: PASS for exact Plan ownership, pins,
+Implementation review verdict: PASS for exact Plan ownership, pins,
 full rendered synthetic-only topology, bounded clients, stable failures,
 post-cleanup atomic publication, accumulated cleanup, and redaction.
 
@@ -237,13 +236,13 @@ CHANGES REQUIRED C0/I3/M1 and C0/I2/M0 respectively. Both waves remain
 historical, and their findings are remediated. The next terminal re-reviews left
 exactly two Important items: stale canonical invalidation on direct-control
 failure and ignored report synchronization. Both are remediated. The subsequent
-terminal code/quality review returned APPROVED C0/I0/M0; the terminal
+terminal operations/quality review returned APPROVED C0/I0/M0. The terminal
 specification review returned CHANGES REQUIRED C0/I1/M0 solely for current
-evidence synchronization. That finding is remediated in this logical unit, and
-fresh specification re-review remains pending. The reviewer's direct-control
-exercise invalidated the canonical as designed; the single approved normal
-reconciliation regenerated and directly verified the current handoff without
-any later canonical-mutating command.
+evidence synchronization; after that finding was remediated and the canonical
+was reconciled, terminal specification re-review returned APPROVED C0/I0/M0.
+The reviewer's direct-control exercise invalidated the canonical as designed;
+the single approved normal reconciliation regenerated and directly verified
+the current handoff without any later canonical-mutating command.
 
 Findings and disposition: the complete deduplicated review set is remediated.
 It covered exclusive evidence ownership and retained identity; unsafe canonical
@@ -252,22 +251,23 @@ retry; one end-to-end deadline with cleanup reserve; full rendered topology;
 reachable bad-major/timeout/signal paths; Task 2 runbook semantics; exact
 evidence/commit wording; authenticated TCP readiness; direct-control isolation;
 process identity and active budgets; exact project/network rendering;
-generated-password and healthcheck binding; and bounded sleeps. No finding is
-self-closed before re-review. The terminal pair additionally covered the
+generated-password and healthcheck binding; and bounded sleeps. Every finding
+was independently re-reviewed. The terminal pair additionally covered the
 direct-control/canonical state-machine ordering and ignored report freshness.
-The remaining specification evidence-synchronization finding is remediated but
-awaits fresh independent specification re-review.
+The specification evidence-synchronization finding is remediated and closed by
+terminal APPROVED C0/I0/M0 re-review.
 
 ## Commit Ledger
 
-Commit identity: initial reviewed candidate `db2418c2`; final amended identity
-is resolved from branch history by the logical message after amendment, which
-avoids a self-referential hash claim.
+Implementation identity: branch-history commit `db150a19`
+(`feat(ops): add postgres recovery rehearsal`). This evidence-only closure
+commit intentionally omits its own SHA.
 
 Logical unit: `feat(ops): add postgres recovery rehearsal`.
 
 Commit validation: focused/static/runtime remediation evidence passes as
-recorded above; re-review remains pending.
+recorded above; terminal specification and operations/quality reviews are
+APPROVED C0/I0/M0.
 
 ## Deferred and Blocked Items
 
@@ -275,10 +275,12 @@ Deferred items: live data, physical backup, PITR, HA/replication, remote
 storage, retention/encryption certification, production recovery, and
 organization RTO/RPO.
 
-Blocked items: independent specification and quality/security reviews remain
-required before Task closure. Runtime implementation is no longer blocked.
-Delivery may reference this verdict only as a recovery boundary and must not
-claim database recovery for the stateless sample service.
+Blocked items: Task 4 has no remaining implementation or independent-review
+blocker; terminal specification and operations/quality reviews are APPROVED
+C0/I0/M0. The broader Program and Spec 125 lifecycle remain open, and Tasks 5
+and 6 retain their own prerequisites. Delivery may reference this verdict only
+as a recovery boundary and must not claim database recovery for the stateless
+sample service.
 
 Deferral destination: broader/live recovery requires a new approved Stage
 01-04 chain and operations/security review. Stateful delivery impact routes to
