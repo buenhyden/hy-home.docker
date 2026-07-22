@@ -295,6 +295,15 @@ derive_subject_tuple() {
   [[ "${OCI_ARCHIVE_SHA256[$role]}" =~ ^sha256:[0-9a-f]{64}$ ]] || fail "$EXIT_POLICY" "oci-archive-digest-invalid"
 }
 
+load_role_image_object() {
+  local role="$1" role_dir observed
+  role_dir="$(role_artifact_dir "$role")"
+  [[ -s "$role_dir/image.oci.tar" && ! -L "$role_dir/image.oci.tar" ]] || fail "$EXIT_BUILD" "oci-archive-missing"
+  docker image load --input "$role_dir/image.oci.tar" >/dev/null || fail "$EXIT_BUILD" "role-image-load-failed"
+  observed="$(docker image inspect --format '{{.Id}}' "${IMAGE_CONFIG_DIGEST[$role]}")" || fail "$EXIT_BUILD" "role-image-load-identity-missing"
+  [[ -n "$observed" && "$observed" != *$'\n'* && "$observed" == "${IMAGE_CONFIG_DIGEST[$role]}" ]] || fail "$EXIT_BUILD" "role-image-load-identity-mismatch"
+}
+
 validate_live_sbom() {
   local role="$1" role_dir
   role_dir="$(role_artifact_dir "$role")"
@@ -617,6 +626,8 @@ run_advisory() {
   fi
   publish_role_advisory_summary candidate
   require_consumer_safe_vulnerability_verdict candidate || fail "$EXIT_VULNERABILITY" "grype-exception-requires-manual-review"
+  load_role_image_object baseline
+  load_role_image_object candidate
   assert_build_context_unchanged
   generate_slsa_provenance baseline
   generate_slsa_provenance candidate

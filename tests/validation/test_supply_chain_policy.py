@@ -975,6 +975,18 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         )[0]
         self.assertNotIn("--tlog-upload", signing)
 
+    def test_advisory_loads_verified_local_images_for_delivery_consumer(self) -> None:
+        text = WRAPPER.read_text(encoding="utf-8")
+        self.assertIn("load_role_image_object baseline", text)
+        self.assertIn("load_role_image_object candidate", text)
+        loader = text.split("load_role_image_object() {", maxsplit=1)[1].split(
+            "\n}\n\nvalidate_live_sbom", maxsplit=1
+        )[0]
+        self.assertIn("docker image load --input", loader)
+        self.assertIn("docker image inspect --format '{{.Id}}'", loader)
+        self.assertIn('"${IMAGE_CONFIG_DIGEST[$role]}"', loader)
+        self.assertIn("role-image-load-identity-mismatch", loader)
+
     def test_cosign_v3_offline_signing_uses_explicit_empty_service_config(self) -> None:
         config = json.loads(COSIGN_OFFLINE_SIGNING_CONFIG.read_text(encoding="utf-8"))
         self.assertEqual(
