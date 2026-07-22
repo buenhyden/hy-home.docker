@@ -751,7 +751,8 @@ def publish_verdict_pair(
         raise SecureOutputError("pair-subjects-not-distinct")
     manifest = {
         "build_context_sha256": build_context_sha256,
-        "schema_version": 1,
+        "generation": "hyhome-verification-verdict-pair-v2",
+        "schema_version": 2,
         "source_revision": source_revision,
         "verdict_sha256": {
             role: f"sha256:{hashlib.sha256(body).hexdigest()}"

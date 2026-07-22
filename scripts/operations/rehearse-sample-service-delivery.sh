@@ -14,8 +14,10 @@ DRE_COMPOSE_PATH="$DRE_ROOT/examples/sample-web-service/docker-compose.yml"
 DRE_OVERRIDE_PATH="$DRE_ROOT/tests/fixtures/sample-service-delivery/compose.delivery.override.yml"
 DRE_FIXTURE_BASELINE_PATH="$DRE_ROOT/tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json"
 DRE_FIXTURE_CANDIDATE_PATH="$DRE_ROOT/tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json"
+DRE_FIXTURE_PAIR_PATH="$DRE_ROOT/tests/fixtures/sample-service-delivery/verification-verdict.pair.json"
 DRE_REAL_BASELINE_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json"
 DRE_REAL_CANDIDATE_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json"
+DRE_REAL_PAIR_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.pair.json"
 DRE_READINESS_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json"
 DRE_RECOVERY_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-infrastructure-operations-readiness-remediation/postgres/recovery-verdict.json"
 DRE_POLICY_PATH="$DRE_ROOT/infra/supply-chain.sample-service-policy.json"
@@ -97,6 +99,7 @@ PY
 delivery_input_path() {
   case "${1:-}" in
     policy) printf '%s' "$DRE_POLICY_PATH" ;;
+    pair_manifest) printf '%s' "${PAIR_MANIFEST_PATH:-}" ;;
     baseline_verdict) printf '%s' "${BASELINE_VERDICT_PATH:-}" ;;
     candidate_verdict) printf '%s' "${CANDIDATE_VERDICT_PATH:-}" ;;
     readiness_verdict) printf '%s' "$DRE_READINESS_PATH" ;;
@@ -114,7 +117,7 @@ capture_delivery_input_snapshots() {
   INPUT_SNAPSHOT_SHA256=()
   INPUT_SNAPSHOT_IDENTITY=()
   for name in \
-    policy baseline_verdict candidate_verdict readiness_verdict \
+    policy pair_manifest baseline_verdict candidate_verdict readiness_verdict \
     recovery_boundary compose override; do
     path="$(delivery_input_path "$name")" || {
       dre_fail 10 input-snapshot-path-invalid
@@ -137,6 +140,7 @@ capture_delivery_input_snapshots() {
   POLICY_SHA256="${INPUT_SNAPSHOT_SHA256[policy]}"
   BASELINE_VERDICT_SHA256="${INPUT_SNAPSHOT_SHA256[baseline_verdict]}"
   CANDIDATE_VERDICT_SHA256="${INPUT_SNAPSHOT_SHA256[candidate_verdict]}"
+  PAIR_MANIFEST_SHA256="${INPUT_SNAPSHOT_SHA256[pair_manifest]}"
   READINESS_VERDICT_SHA256="${INPUT_SNAPSHOT_SHA256[readiness_verdict]}"
   RECOVERY_BOUNDARY_SHA256="${INPUT_SNAPSHOT_SHA256[recovery_boundary]}"
   [[ "$POLICY_SHA256" == "$DRE_APPROVED_POLICY_SHA256" ]] || {
@@ -151,7 +155,7 @@ revalidate_delivery_input_snapshots() {
 
   [[ "$failure_class" == 10 || "$failure_class" == 40 ]] || return 2
   for name in \
-    policy baseline_verdict candidate_verdict readiness_verdict \
+    policy pair_manifest baseline_verdict candidate_verdict readiness_verdict \
     recovery_boundary compose override; do
     [[ -n "${INPUT_SNAPSHOT_PATH[$name]:-}" && \
        -n "${INPUT_SNAPSHOT_SHA256[$name]:-}" && \
@@ -260,6 +264,128 @@ PY
     VERDICT_OCI_ARCHIVE_SHA256["$expected_role"] \
     VERDICT_BUILD_CONTEXT_SHA256["$expected_role"] \
     VERDICT_POLICY_ID["$expected_role"] <<<"$parsed"
+}
+
+require_pair_manifest() {
+  [[ -n "${PAIR_MANIFEST_PATH:-}" && -f "$PAIR_MANIFEST_PATH" && ! -L "$PAIR_MANIFEST_PATH" ]] || {
+    dre_fail 10 pair-manifest-missing
+    return
+  }
+}
+
+load_and_validate_pair_manifest() {
+  local parsed
+
+  require_pair_manifest || return
+  if ! parsed="$(dre_python_json \
+    "$PAIR_MANIFEST_PATH" \
+    "$BASELINE_VERDICT_PATH" \
+    "$CANDIDATE_VERDICT_PATH" \
+    "${SOURCE_REVISION:-}" \
+    "${BUILD_CONTEXT_SHA256:-}" <<'PY'
+import hashlib
+import json
+import os
+import re
+import stat
+import sys
+
+pair_path, baseline_path, candidate_path, expected_revision, expected_context = sys.argv[1:]
+
+def reject(reason):
+    print(reason)
+    raise SystemExit(1)
+
+def read_stable_regular(path):
+    if not hasattr(os, "O_NOFOLLOW"):
+        reject("pair-manifest-platform-unsafe")
+    flags = os.O_RDONLY | os.O_NOFOLLOW
+    if hasattr(os, "O_CLOEXEC"):
+        flags |= os.O_CLOEXEC
+    try:
+        descriptor = os.open(path, flags)
+    except OSError:
+        reject("pair-manifest-input-unavailable")
+    try:
+        before = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_uid != os.getuid()
+            or stat.S_IMODE(before.st_mode) & 0o022
+        ):
+            reject("pair-manifest-input-unsafe")
+        chunks = []
+        while True:
+            chunk = os.read(descriptor, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        after = os.fstat(descriptor)
+        fields = (
+            "st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns",
+            "st_mode", "st_uid",
+        )
+        if any(getattr(before, field) != getattr(after, field) for field in fields):
+            reject("pair-manifest-input-drift")
+        return b"".join(chunks)
+    finally:
+        os.close(descriptor)
+
+def unique_object(pairs):
+    result = {}
+    for key, item in pairs:
+        if key in result:
+            reject("pair-manifest-invalid")
+        result[key] = item
+    return result
+
+pair_body = read_stable_regular(pair_path)
+baseline_body = read_stable_regular(baseline_path)
+candidate_body = read_stable_regular(candidate_path)
+try:
+    value = json.loads(pair_body, object_pairs_hook=unique_object)
+except (UnicodeError, ValueError):
+    reject("pair-manifest-invalid")
+if not isinstance(value, dict) or set(value) != {
+    "build_context_sha256",
+    "generation",
+    "schema_version",
+    "source_revision",
+    "verdict_sha256",
+}:
+    reject("pair-manifest-invalid")
+if type(value["schema_version"]) is not int or value["schema_version"] != 2:
+    reject("pair-manifest-invalid")
+if value["generation"] != "hyhome-verification-verdict-pair-v2":
+    reject("pair-manifest-generation-invalid")
+if value["source_revision"] != expected_revision:
+    reject("pair-manifest-source-revision-mismatch")
+if value["build_context_sha256"] != expected_context:
+    reject("pair-manifest-build-context-mismatch")
+if not re.fullmatch(r"[0-9a-f]{40}", str(value["source_revision"])):
+    reject("pair-manifest-invalid")
+if not re.fullmatch(r"sha256:[0-9a-f]{64}", str(value["build_context_sha256"])):
+    reject("pair-manifest-invalid")
+verdict_sha256 = value["verdict_sha256"]
+if not isinstance(verdict_sha256, dict) or set(verdict_sha256) != {"baseline", "candidate"}:
+    reject("pair-manifest-invalid")
+expected_hashes = {
+    "baseline": f"sha256:{hashlib.sha256(baseline_body).hexdigest()}",
+    "candidate": f"sha256:{hashlib.sha256(candidate_body).hexdigest()}",
+}
+if verdict_sha256 != expected_hashes:
+    reject("pair-manifest-verdict-digest-mismatch")
+print(value["generation"])
+PY
+  )"; then
+    dre_fail 10 "${parsed:-pair-manifest-invalid}"
+    return
+  fi
+  [[ "$parsed" == hyhome-verification-verdict-pair-v2 ]] || {
+    dre_fail 10 pair-manifest-generation-invalid
+    return
+  }
+  PAIR_MANIFEST_GENERATION="$parsed"
 }
 
 assert_distinct_subjects_and_same_revision() {
@@ -656,6 +782,7 @@ build_rehearsal_record_json() {
     "${SOURCE_REVISION:-}" \
     "${BASELINE_VERDICT_PATH:-}" \
     "${CANDIDATE_VERDICT_PATH:-}" \
+    "${PAIR_MANIFEST_PATH:-}" \
     "${READINESS_VERDICT_PATH:-$DRE_READINESS_PATH}" \
     "${BASELINE_PROJECT:-}" \
     "${CANARY_PROJECT:-}" \
@@ -673,6 +800,8 @@ build_rehearsal_record_json() {
     "${VERDICT_OCI_ARCHIVE_SHA256[candidate]:-}" \
     "${BASELINE_VERDICT_SHA256:-}" \
     "${CANDIDATE_VERDICT_SHA256:-}" \
+    "${PAIR_MANIFEST_SHA256:-}" \
+    "${PAIR_MANIFEST_GENERATION:-}" \
     "${READINESS_VERDICT_SHA256:-}" \
     "${RECOVERY_BOUNDARY_SHA256:-}" \
     "${DRE_APPROVAL_REF:-}" \
@@ -684,21 +813,23 @@ build_rehearsal_record_json() {
 import json
 import sys
 
-(revision, baseline_ref, candidate_ref, readiness_ref,
+(revision, baseline_ref, candidate_ref, pair_manifest_ref, readiness_ref,
  baseline_project, canary_project, promotion, rollback, post_health,
  recovery_ref, cleanup, build_context, policy_id, policy_sha,
  baseline_image, candidate_image, baseline_oci, candidate_oci,
- baseline_verdict_sha, candidate_verdict_sha, readiness_sha, recovery_sha,
+ baseline_verdict_sha, candidate_verdict_sha, pair_manifest_sha,
+ pair_manifest_generation, readiness_sha, recovery_sha,
  approval_ref, started_at, completed_at, baseline_result, canary_result,
  rehearsal_result) = sys.argv[1:]
 rehearsal_id = f"local-rehearsal-20260719-{revision[:12]}"
 value = {
-    "schema_version": 2,
+    "schema_version": 3,
     "producer_spec": "spec:127-deployment-release-engineering-remediation",
     "release_rehearsal_id": rehearsal_id,
     "source_revision": revision,
     "baseline_verdict_ref": baseline_ref.rsplit("/", 1)[-1],
     "candidate_verdict_ref": candidate_ref.rsplit("/", 1)[-1],
+    "verification_pair_manifest_ref": pair_manifest_ref.rsplit("/", 1)[-1],
     "readiness_verdict_ref": readiness_ref.rsplit("/", 1)[-1],
     "baseline_project": baseline_project,
     "canary_project": canary_project,
@@ -718,6 +849,8 @@ value = {
     "candidate_oci_archive_sha256": candidate_oci,
     "baseline_verdict_sha256": baseline_verdict_sha,
     "candidate_verdict_sha256": candidate_verdict_sha,
+    "verification_pair_manifest_sha256": pair_manifest_sha,
+    "verification_pair_generation": pair_manifest_generation,
     "readiness_verdict_sha256": readiness_sha,
     "recovery_boundary_sha256": recovery_sha,
     "approval_ref": approval_ref,
@@ -732,7 +865,8 @@ PY
 }
 
 prepare_canonical_record_path() {
-  dre_python_json "$DRE_ROOT" "$DRE_RECORD_PATH_DEFAULT" <<'PY' || {
+  local create_missing="${1:-false}"
+  dre_python_json "$DRE_ROOT" "$DRE_RECORD_PATH_DEFAULT" "$create_missing" <<'PY' || {
 import os
 from pathlib import Path
 import stat
@@ -740,6 +874,7 @@ import sys
 
 root = Path(sys.argv[1])
 target = Path(sys.argv[2])
+create_missing = sys.argv[3] == "true"
 anchor = root / "_workspace" / "repo-support"
 expected = anchor / "task-2026-07-19-deployment-release-engineering-remediation" / "delivery" / "rehearsal-record.json"
 if target != expected:
@@ -765,10 +900,12 @@ try:
         "delivery",
     ):
         try:
+            next_fd = os.open(component, flags, dir_fd=fd)
+        except FileNotFoundError:
+            if not create_missing:
+                raise SystemExit(0)
             os.mkdir(component, 0o700, dir_fd=fd)
-        except FileExistsError:
-            pass
-        next_fd = os.open(component, flags, dir_fd=fd)
+            next_fd = os.open(component, flags, dir_fd=fd)
         info = os.fstat(next_fd)
         if not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid():
             os.close(next_fd)
@@ -778,17 +915,23 @@ try:
             raise SystemExit(1)
         os.close(fd)
         fd = next_fd
+    try:
+        info = os.stat(target.name, dir_fd=fd, follow_symlinks=False)
+    except FileNotFoundError:
+        pass
+    else:
+        if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid():
+            raise SystemExit(1)
+        os.unlink(target.name, dir_fd=fd)
+        os.fsync(fd)
+        try:
+            os.stat(target.name, dir_fd=fd, follow_symlinks=False)
+        except FileNotFoundError:
+            pass
+        else:
+            raise SystemExit(1)
 finally:
     os.close(fd)
-
-try:
-    info = target.lstat()
-except FileNotFoundError:
-    pass
-else:
-    if not stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode) or info.st_uid != os.getuid():
-        raise SystemExit(1)
-    target.unlink()
 PY
     dre_fail 10 canonical-record-path-unsafe
     return
@@ -815,6 +958,8 @@ publish_rehearsal_record() {
     "${VERDICT_OCI_ARCHIVE_SHA256[candidate]:-}" \
     "${INPUT_SNAPSHOT_SHA256[baseline_verdict]:-}" \
     "${INPUT_SNAPSHOT_SHA256[candidate_verdict]:-}" \
+    "${INPUT_SNAPSHOT_SHA256[pair_manifest]:-}" \
+    "${PAIR_MANIFEST_GENERATION:-}" \
     "${INPUT_SNAPSHOT_SHA256[readiness_verdict]:-}" \
     "${INPUT_SNAPSHOT_SHA256[recovery_boundary]:-}" \
     "${DRE_APPROVAL_REF:-}" \
@@ -835,26 +980,29 @@ import sys
 (raw_payload, expected_revision, expected_build_context, expected_policy_id,
  expected_policy_sha, expected_baseline_image, expected_candidate_image,
  expected_baseline_oci, expected_candidate_oci, expected_baseline_verdict_sha,
- expected_candidate_verdict_sha, expected_readiness_sha, expected_recovery_sha,
- expected_approval_ref, expected_baseline_project, expected_canary_project,
- expected_promotion, expected_rollback, expected_post_health,
- expected_started_at, expected_completed_at, expected_baseline_result,
- expected_canary_result, expected_rehearsal_result) = sys.argv[1:]
+ expected_candidate_verdict_sha, expected_pair_manifest_sha,
+ expected_pair_manifest_generation, expected_readiness_sha,
+ expected_recovery_sha, expected_approval_ref, expected_baseline_project,
+ expected_canary_project, expected_promotion, expected_rollback,
+ expected_post_health, expected_started_at, expected_completed_at,
+ expected_baseline_result, expected_canary_result,
+ expected_rehearsal_result) = sys.argv[1:]
 
 keys = {
     "schema_version", "producer_spec", "release_rehearsal_id",
     "source_revision", "baseline_verdict_ref", "candidate_verdict_ref",
-    "readiness_verdict_ref", "baseline_project", "canary_project",
+    "verification_pair_manifest_ref", "readiness_verdict_ref",
+    "baseline_project", "canary_project",
     "promotion_decision", "rollback_decision", "post_rollback_health",
     "data_impact", "recovery_boundary_ref", "cleanup_status",
     "remote_non_goals_confirmed", "build_context_sha256", "policy_id",
     "policy_sha256", "baseline_image_config_digest",
     "candidate_image_config_digest", "baseline_oci_archive_sha256",
     "candidate_oci_archive_sha256", "baseline_verdict_sha256",
-    "candidate_verdict_sha256", "readiness_verdict_sha256",
+    "candidate_verdict_sha256", "verification_pair_manifest_sha256",
+    "verification_pair_generation", "readiness_verdict_sha256",
     "recovery_boundary_sha256", "approval_ref", "started_at",
-    "completed_at", "baseline_result", "canary_result",
-    "rehearsal_result",
+    "completed_at", "baseline_result", "canary_result", "rehearsal_result",
 }
 def unique_object(pairs):
     result = {}
@@ -869,7 +1017,7 @@ except (UnicodeError, ValueError):
     raise SystemExit(1)
 if not isinstance(value, dict) or set(value) != keys:
     raise SystemExit(1)
-if type(value["schema_version"]) is not int or value["schema_version"] != 2:
+if type(value["schema_version"]) is not int or value["schema_version"] != 3:
     raise SystemExit(1)
 if value["producer_spec"] != "spec:127-deployment-release-engineering-remediation":
     raise SystemExit(1)
@@ -884,6 +1032,8 @@ expected_values = {
     "candidate_oci_archive_sha256": expected_candidate_oci,
     "baseline_verdict_sha256": expected_baseline_verdict_sha,
     "candidate_verdict_sha256": expected_candidate_verdict_sha,
+    "verification_pair_manifest_sha256": expected_pair_manifest_sha,
+    "verification_pair_generation": expected_pair_manifest_generation,
     "readiness_verdict_sha256": expected_readiness_sha,
     "recovery_boundary_sha256": expected_recovery_sha,
     "approval_ref": expected_approval_ref,
@@ -908,6 +1058,8 @@ if value["baseline_verdict_ref"] != "verification-verdict.baseline.json":
     raise SystemExit(1)
 if value["candidate_verdict_ref"] != "verification-verdict.candidate.json":
     raise SystemExit(1)
+if value["verification_pair_manifest_ref"] != "verification-verdict.pair.json":
+    raise SystemExit(1)
 if value["readiness_verdict_ref"] != "readiness-verdict.json":
     raise SystemExit(1)
 if value["recovery_boundary_ref"] != "recovery-verdict.json":
@@ -918,13 +1070,16 @@ digest_fields = {
     "baseline_image_config_digest", "candidate_image_config_digest",
     "baseline_oci_archive_sha256", "candidate_oci_archive_sha256",
     "baseline_verdict_sha256", "candidate_verdict_sha256",
-    "readiness_verdict_sha256", "recovery_boundary_sha256",
+    "verification_pair_manifest_sha256", "readiness_verdict_sha256",
+    "recovery_boundary_sha256",
 }
 if any(not isinstance(value[key], str) or not re.fullmatch(digest, value[key]) for key in digest_fields):
     raise SystemExit(1)
 if value["policy_id"] != "sample-service-local-v1":
     raise SystemExit(1)
 if value["policy_sha256"] != "sha256:18817282cfd8cbf9bc0202446493a5cdf0ae14fbc960dbfd6cb0932f3b752cae":
+    raise SystemExit(1)
+if value["verification_pair_generation"] != "hyhome-verification-verdict-pair-v2":
     raise SystemExit(1)
 if value["baseline_image_config_digest"] == value["candidate_image_config_digest"]:
     raise SystemExit(1)
@@ -1294,6 +1449,7 @@ dre_parse_options() {
   TASK_ID=""
   BASELINE_VERDICT_PATH=""
   CANDIDATE_VERDICT_PATH=""
+  PAIR_MANIFEST_PATH=""
   FAILURE_MODE=none
   case "$SUBCOMMAND" in
     preflight)
@@ -1302,12 +1458,14 @@ dre_parse_options() {
       BASELINE_VERDICT_PATH="$(dre_resolve_cli_path "$5")" || return 2
       CANDIDATE_VERDICT_PATH="$(dre_resolve_cli_path "$7")" || return 2
       [[ "$BASELINE_VERDICT_PATH" == "$DRE_FIXTURE_BASELINE_PATH" && "$CANDIDATE_VERDICT_PATH" == "$DRE_FIXTURE_CANDIDATE_PATH" ]] || return 2
+      PAIR_MANIFEST_PATH="$DRE_FIXTURE_PAIR_PATH"
       ;;
     rehearse)
       [[ "$#" -eq 9 && "$2" == --task-id && "$4" == --baseline-verdict && "$6" == --candidate-verdict && "$8" == --failure-mode ]] || return 2
       TASK_ID="$3"
       BASELINE_VERDICT_PATH="$(dre_resolve_cli_path "$5")" || return 2
       CANDIDATE_VERDICT_PATH="$(dre_resolve_cli_path "$7")" || return 2
+      PAIR_MANIFEST_PATH="$DRE_REAL_PAIR_PATH"
       FAILURE_MODE="$9"
       [[ "$BASELINE_VERDICT_PATH" == "$DRE_REAL_BASELINE_PATH" && "$CANDIDATE_VERDICT_PATH" == "$DRE_REAL_CANDIDATE_PATH" ]] || return 2
       [[ "$FAILURE_MODE" == none || "$FAILURE_MODE" == canary-health-timeout ]] || return 2
@@ -1355,9 +1513,11 @@ PY
 }
 
 validate_delivery_input_contracts() {
+  require_pair_manifest || return
   load_and_validate_verdict baseline "$BASELINE_VERDICT_PATH" || return
   load_and_validate_verdict candidate "$CANDIDATE_VERDICT_PATH" || return
   assert_distinct_subjects_and_same_revision || return
+  load_and_validate_pair_manifest || return
   validate_readiness_verdict "$DRE_READINESS_PATH" || return
   validate_recovery_boundary "$DRE_RECOVERY_PATH" || return
   validate_compose_contract "$DRE_COMPOSE_PATH" "$DRE_OVERRIDE_PATH"
@@ -1402,10 +1562,11 @@ dre_on_exit() {
 
 dre_rehearse() {
   local status
+  prepare_canonical_record_path || return
   validate_and_snapshot_delivery_inputs || return
+  prepare_canonical_record_path true || return
   dre_prepare_identity || return
   assert_loopback_ports_available || return
-  prepare_canonical_record_path || return
 
   DRE_RUN_DEADLINE=$(( SECONDS + DRE_TOTAL_TIMEOUT_SECONDS ))
   DRE_OPERATION_DEADLINE=$(( DRE_RUN_DEADLINE - DRE_CLEANUP_RESERVE_SECONDS ))
