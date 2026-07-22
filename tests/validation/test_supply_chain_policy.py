@@ -962,6 +962,27 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             )
             self.assertEqual(0, result.returncode, result.stderr)
 
+    def test_cosign_v3_offline_signing_drops_removed_tlog_upload_flag(self) -> None:
+        text = WRAPPER.read_text(encoding="utf-8")
+        signing = text.split("sign_and_verify_archive() {", maxsplit=1)[1].split(
+            "\n}\n\nwrite_verification_verdict", maxsplit=1
+        )[0]
+        self.assertNotIn("--tlog-upload", signing)
+
+    def test_cosign_v3_offline_signing_disables_tuf_service_config(self) -> None:
+        text = WRAPPER.read_text(encoding="utf-8")
+        signing = text.split("sign_and_verify_archive() {", maxsplit=1)[1].split(
+            "\n}\n\nwrite_verification_verdict", maxsplit=1
+        )[0]
+        sign_commands = [
+            line.strip()
+            for line in signing.splitlines()
+            if line.strip().startswith("docker run ") and " sign-blob " in line
+        ]
+        self.assertEqual(1, len(sign_commands))
+        self.assertIn("--network none", sign_commands[0])
+        self.assertIn("--use-signing-config=false", sign_commands[0])
+
     def test_cross_role_signature_acceptance_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             output = pathlib.Path(temporary) / "supply-chain"
