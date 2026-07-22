@@ -28,7 +28,7 @@ typed-example 범위와 [로컬 README](./README.md)의 copyable scaffold 역할
 - 빌드 단계는
   `alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d`,
   런타임 단계는
-  `nginxinc/nginx-unprivileged:1.27.3-alpine@sha256:9e7238f579a54582263a960d1b0094b4a3ecce641342eda3f8e2ff82b1703d2b`으로 고정한다.
+  `nginxinc/nginx-unprivileged:1.31.3-alpine3.24-slim@sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5`으로 고정한다.
 - multi-stage build를 사용하며 런타임 이미지에는 정적 자산과 Nginx 설정만
   포함한다.
 - build argument를 사용하지 않으며 build layer에 secret을 전달하지 않는다.

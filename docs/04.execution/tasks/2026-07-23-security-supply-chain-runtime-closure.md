@@ -150,10 +150,10 @@ keys, tokens, credentials, response bodies, and shell history are prohibited.
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `T-SSC-006` | Activate the exact network, identity, output, rollback, and redaction contract | Governance | Spec 126 approval gates | Plan approval gates | Metadata, lifecycle, Markdown, and diff gates | Fresh implementation agent | In progress |
-| `T-SSC-007` | TDD the dedicated database seed and atomic private handoff | Implementation | `SSC-001` | `T-SSC-002` | Focused RED/GREEN tests, static checks, failed-seed preservation | Fresh implementation agent | Pending |
-| `T-SSC-008` | Seed the current database and execute the hardened offline advisory | Runtime | `SSC-001`–`SSC-004` | `T-SSC-002`–`T-SSC-003` | Exact DB identity, policy verdicts, pair manifest, cleanup inventory | Fresh implementation agent | Pending |
-| `T-SSC-009` | Remediate only rejected sample-service materials when necessary | Implementation | `SSC-001`–`SSC-004` | `T-SSC-002` | Digest/source TDD and repeated offline advisory | Fresh implementation agent | Conditional |
+| `T-SSC-006` | Activate the exact network, identity, output, rollback, and redaction contract | Governance | Spec 126 approval gates | Plan approval gates | Metadata, lifecycle, Markdown, and diff gates | Fresh implementation agent | Complete |
+| `T-SSC-007` | TDD the dedicated database seed and atomic private handoff | Implementation | `SSC-001` | `T-SSC-002` | Focused RED/GREEN tests, static checks, failed-seed preservation | Fresh implementation agent | Complete |
+| `T-SSC-008` | Seed the current database and execute the hardened offline advisory | Runtime | `SSC-001`–`SSC-004` | `T-SSC-002`–`T-SSC-003` | Exact DB identity, policy verdicts, pair manifest, cleanup inventory | Fresh implementation agent | In progress; current seed and first rejected advisory recorded, committed-head rerun pending |
+| `T-SSC-009` | Remediate only rejected sample-service materials when necessary | Implementation | `SSC-001`–`SSC-004` | `T-SSC-002` | Digest/source TDD and repeated offline advisory | Fresh implementation agent | In progress; exact runtime pin and isolated policy pass implemented, committed-head rerun pending |
 | `T-SSC-010` | Independent specification and quality/security review | Review | `VAL-SSC-001`–`VAL-SSC-004` | `T-SSC-005` | Separate C0/I0/M0 reviews and remediation ledger | Separate reviewers | Pending |
 
 ## Work Log
@@ -161,6 +161,10 @@ keys, tokens, credentials, response bodies, and shell history are prohibited.
 | Date | Work unit | Result |
 | --- | --- | --- |
 | 2026-07-23 | `T-SSC-006` discovery | Confirmed the current hardened advisory blocks before Docker when no approved seed exists. The historical seed identity is evidence-only; there is no committed reproducible seed harness. No network, Docker runtime, image pull, Task 5, wrapper, or remote action ran during discovery. |
+| 2026-07-23 | `T-SSC-007` seed harness | RED reproduced the absent bounded seed interface. GREEN added a two-mode pinned-Grype harness, validated immutable mode-0700 generations, mode-0600 atomic pointer publication, exact cache-tree identity, and failed-seed preservation. The current focused seed suite passes 8/8. |
+| 2026-07-23 | `T-SSC-008` seed and first advisory | The one approved pinned-Grype update published schema `v6.1.9`, database build `2026-07-22T07:06:24Z`, package SHA-256 `8496f58655ba6b5d1ed133e8591629d729a53021e7f1b20063b0577ca7c0f02f`, and cache-tree SHA-256 `d4ddbc75da746cff08eb90e6ed998dd82a888dd242055114770bf2ed197aeb52`. The first hardened offline advisory then rejected the baseline at class 40 with 14 Critical, 73 High, 69 Medium, and 11 Low findings, no exception, and no candidate or pair publication. |
+| 2026-07-23 | `T-SSC-009` official runtime remediation | Read-only official registry inspection selected the versioned slim multi-architecture index `nginxinc/nginx-unprivileged:1.31.3-alpine3.24-slim@sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5`; linux/amd64 child is `sha256:bc38ccd3a649cce1062519734e1ad088bf0cc20d6cb5f2f3645f64466ab27c57`. One exact-digest pull resolved local RepoDigest and config ID to the approved index digest. A no-pull, network-none isolated build plus pinned Syft/Grype scan against the validated seed returned 0 Critical, 0 High, 3 Medium, 0 Low, and policy accepted. It did not publish advisory summaries or an accepted pair. The optional Alpine candidate was inspected but neither pulled nor changed. |
+| 2026-07-23 | Material source gates | Combined focused tests pass 54/54 and policy fixtures pass 13/13. Python compilation, Ruff, Bash syntax, ShellCheck, generated supply-chain summary freshness, seed preflight, exact-image preflight, fixture-only policy, Markdownlint, Hadolint, metadata 5/0, traceability 46/0, alignment 667 documents and 5,519 links with zero failures, Foundation manifest/summary/promoted checks, and impacted lifecycle pass. A mistakenly attempted nonexistent `check-task-template-compliance.py` command exited 2 without changing repository state; the canonical metadata contract checker passed instead. Advisory `shfmt -d` reported existing whole-wrapper formatting outside the three changed identity constants, so no unrelated reformat was applied; Bash syntax and ShellCheck remain clean. Task7's direct README-consumer drift was corrected separately through the canonical Foundation scan in commit `c7ebb9b2`; generated owners were refreshed in `8481df02`; the seed script inventory was reconciled in `96464337`. The final dependency-locked aggregate used `scripts/requirements.txt`, passed every section with `failures=0`, and reported only the configured task-directory budget warning. |
 
 ## Verification Evidence
 
@@ -183,8 +187,12 @@ The approved networked commands are invoked only after the seed harness tests
 and preflight pass. Actual commands, exits, public identities, minimized
 checksums, verdicts, and cleanup results will be appended without raw logs.
 
-Current result: activation discovery only; implementation, network retrieval,
-advisory runtime, accepted pair, and reviews are `not_run`.
+Current result: seed implementation and publication are complete; combined
+focused tests pass 54/54. The first current advisory truthfully rejected the
+stale runtime baseline. The exact official runtime remediation passes its
+isolated no-pull policy gate at 0 Critical and 0 High, while accepted-pair
+publication remains `not_run` until the material change is committed and all
+source/static gates pass. Independent reviews remain `pending`.
 
 ## Controlled Agent Pre-commit Evidence
 

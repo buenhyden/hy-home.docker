@@ -104,7 +104,7 @@ The sample build materials are also pinned in the Dockerfile:
 | Material | Image pin |
 | --- | --- |
 | Build stage | `alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d` |
-| Runtime stage | `nginxinc/nginx-unprivileged:1.27.3-alpine@sha256:9e7238f579a54582263a960d1b0094b4a3ecce641342eda3f8e2ff82b1703d2b` |
+| Runtime stage | `nginxinc/nginx-unprivileged:1.31.3-alpine3.24-slim@sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5` |
 
 ## Goals and Non-goals
 

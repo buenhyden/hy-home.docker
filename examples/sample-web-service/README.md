@@ -82,7 +82,7 @@ sample-web-service/
 
 | Control              | Status | Evidence                                                   |
 | -------------------- | ------ | ---------------------------------------------------------- |
-| Pinned image tag     | Ready  | `nginxinc/nginx-unprivileged:1.27.3-alpine`, `alpine:3.21` |
+| Pinned image tag     | Ready  | `nginxinc/nginx-unprivileged:1.31.3-alpine3.24-slim`, `alpine:3.21` |
 | Non-root runtime     | Ready  | unprivileged image (uid 101), no `privileged`              |
 | Read-only rootfs     | Ready  | `read_only: true` + `tmpfs` for writable paths             |
 | Dropped capabilities | Ready  | `cap_drop: [ALL]`, `no-new-privileges:true`                |
