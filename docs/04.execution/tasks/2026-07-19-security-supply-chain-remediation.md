@@ -131,18 +131,19 @@ Scorecard response bodies remain transient.
 | `T-SSC-002` | Distinct builds, OCI export, SBOM, and scan verdict | `SSC-001`, `SSC-002` | Two subject tuples and verdicts | Fresh implementation agent | Advisory builds/exports distinct subjects and derives each config digest from the exact OCI archive index/manifest before the baseline class `40` policy rejection |
 | `T-SSC-003` | Provenance and local signature verification | `SSC-003`, `SSC-004` | Success plus tamper/wrong-subject rejection | Fresh implementation agent | Complete for deterministic positive/negative fixtures, including cross-role archive rejection; live provenance/signing correctly does not proceed after the baseline policy rejection |
 | `T-SSC-004` | Fixture-only CI/repo gate and advisory summary | `SSC-005` | Network-independent check and freshness | Fresh implementation agent | Complete; CI/local/repository wiring and generated summaries pass |
-| `T-SSC-005` | Independent specification and security/quality review | `VAL-SSC-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Not run |
+| `T-SSC-005` | Independent specification and security/quality review | `VAL-SSC-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Complete; terminal specification and quality/security reviews APPROVED C0/I0/M0 |
 
 ## Work Log
 
 | Date | Work unit | Result |
 | --- | --- | --- |
 | 2026-07-19 | Task activation | Contract recorded; no tool, image, key, network, workflow, or artifact action executed. |
-| 2026-07-19 | `T-SSC-001`–`T-SSC-005` | `not_run`; actual evidence is appended only after exact execution. |
+| 2026-07-19 | `T-SSC-001`–`T-SSC-005` | Initially `not_run`; actual evidence is appended only after exact execution. |
 | 2026-07-22 | `T-SSC-001` | RED was the expected missing-checker error; the remediation RED added archive/index/manifest, stale-verdict, multi-match exception, cross-role signature, and exact Scorecard identity failures. GREEN is `27/27` focused tests and `13` deterministic fixtures. Tool pins, policy, exception, SBOM, provenance, signature, and Scorecard advisory-only semantics pass locally without network. |
 | 2026-07-22 | `T-SSC-002`–`T-SSC-004` | Preflight and fixture-only wrapper modes pass. An authorized bounded local pull cached exact pinned tool/material images. The first advisory run exposed and fixed a local SBOM-subject binding defect. A separately authorized read-only retrieval using only pinned Grype then seeded the ignored task cache; its status records schema `v6.1.9`, built `2026-07-21T07:05:18Z`, and package SHA-256 `724e5d99c799d7e9b98ae8eb11930cf8ae427c4218b1e4db9d70e711dce63ce9`. The final offline advisory built/exported distinct baseline/candidate subjects, bound the baseline SBOM, and rejected the baseline at class `40` with `grype-policy-rejected` (14 critical matches; no exception). Raw scan material, redacted result, and DB identity remain only under the ignored task directory; the task-owned `/tmp` key directory was removed and no consumer verdict remains. Scorecard was explicitly skipped because this Task has not confirmed read-only network approval. CI/local/repository fixture gates and generated-summary freshness pass. |
-| 2026-07-22 | Combined review remediation | Combined review findings `C3/I1/M1` were addressed without relaxing policy: config identity now comes from the exact scanned/signed OCI archive's verified index-to-manifest-to-config chain; both consumer verdict paths are invalidated before advisory work and published only as a completed pair from run-scoped outputs; every Grype match is evaluated; wrong-subject verification crosses roles; and Scorecard uses `github.com/buenhyden/hy-home.docker`. The rerun bound the baseline SBOM to archive config `sha256:6e7a5cc7b701219126e0442e5a49e3ba6a1b6cb79fe8c1a5c6ddc090ad77633d` and again stopped at the truthful baseline class `40` rejection. Review closure remains pending. |
+| 2026-07-22 | Combined review remediation | Combined review findings `C3/I1/M1` were addressed without relaxing policy: config identity now comes from the exact scanned/signed OCI archive's verified index-to-manifest-to-config chain; both consumer verdict paths are invalidated before advisory work and published only as a completed pair from run-scoped outputs; every Grype match is evaluated; wrong-subject verification crosses roles; and Scorecard uses `github.com/buenhyden/hy-home.docker`. The rerun bound the baseline SBOM to archive config `sha256:6e7a5cc7b701219126e0442e5a49e3ba6a1b6cb79fe8c1a5c6ddc090ad77633d` and again stopped at the truthful baseline class `40` rejection. Review closure was then pending. |
 | 2026-07-22 | Re-review C1 remediation | Two re-reviews identified that an accepted Grype result with a non-null exception ID could have been reduced to a null consumer exception and published downstream. New wrapper RED/GREEN coverage preserves the internal `vulnerability-verdict.json` exception ID, exits class `40` with `grype-exception-requires-manual-review`, and proves both fixed consumer verdict paths remain absent. |
+| 2026-07-22 | Terminal review closure | The initial/combined review findings `C3/I1/M1` and first re-review C1 were remediated. Terminal specification and quality/security reviews both returned `APPROVED C0/I0/M0`. This closes `T-SSC-005` only; the active Task and Task 5 accepted-pair prerequisite remain unchanged. |
 
 ## Verification Evidence
 
@@ -249,30 +250,30 @@ Combined review remediation: `C3/I1/M1` findings were remediated with new
 archive-binding, stale-verdict, multi-match, cross-role, and exact-repository
 regressions. Two re-reviews then returned the same C1 for accepted-by-exception
 consumer publication; its wrapper-level fail-closed regression is remediated.
-This is not an independent terminal re-review: fresh
-specification and quality/security closure remain pending.
+The terminal specification and quality/security reviews both returned
+`APPROVED C0/I0/M0`.
 
-Specification review verdict: `not_run`; a fresh reviewer must verify Spec 126,
-the exact pins and subjects, fixture semantics, verdict schema, and downstream
-handoff.
+Specification review verdict: `APPROVED C0/I0/M0`.
 
-Quality/security review verdict: `not_run`; a separate reviewer must inspect
-input parsing, image/tool identity, exception logic, key lifecycle, redaction,
-negative tests, and cleanup.
+Quality/security review verdict: `APPROVED C0/I0/M0`.
 
-Findings and disposition: none because review has not run. All findings must be
-remediated and re-reviewed to C0/I0/M0.
+Findings and disposition: the initial/combined `C3/I1/M1` findings and the
+first re-review C1 are remediated and closed. Terminal review closure does not
+create accepted runtime verdicts, change the active lifecycle, or satisfy Task
+5's separate accepted-pair prerequisite.
 
 ## Commit Ledger
 
-Commit identity: the branch-history commit carrying the logical unit below is
-amended after the combined-review remediation and final prescribed local gates.
+Implementation commit identity: `72e584f51badfd194c0a1b6d32510a3bf3ab395c`.
+The separate review-evidence commit records this closure without embedding its
+own SHA in the evidence it changes.
 
 Logical unit: `feat(security): add local supply-chain verification`.
 
 Commit validation: focused fixture tests, deterministic checker, preflight,
 fixture-only, Scorecard skip, summary freshness, and the truthful blocked
-advisory result are recorded above. Independent reviews remain pending.
+advisory result are recorded above. Terminal specification and quality/security
+reviews are APPROVED C0/I0/M0.
 
 ## Deferred and Blocked Items
 

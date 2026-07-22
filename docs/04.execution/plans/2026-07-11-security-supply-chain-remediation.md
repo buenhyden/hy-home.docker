@@ -139,7 +139,7 @@ Non-goals:
 | `T-SSC-002` | Build/export baseline and candidate variants and generate digest-bound SBOM/scan verdicts. | `scripts/security/verify-sample-service-supply-chain.sh`; `examples/sample-web-service/Dockerfile`; `examples/sample-web-service/service.md`; ignored task runtime directory. | `SSC-001`, `SSC-002` | RED: either SBOM subject differs from its declared local subject tuple, the two digests are equal, or scan policy is bypassed. GREEN: each CycloneDX SBOM and Grype verdict binds to its distinct tuple. | Same SSC commit. |
 | `T-SSC-003` | Produce and verify provenance and local signature bundle. | The wrapper, policy checker, provenance/signature fixtures, and tests. | `SSC-003`, `SSC-004` | RED: tampered/wrong-subject material is accepted. GREEN: correct OCI archive verifies and negative fixtures reject. | Same SSC commit. |
 | `T-SSC-004` | Wire fixture-only CI/repo gates, generated summary freshness, and optional Scorecard advisory. | `.github/workflows/ci-quality.yml`; `scripts/validation/run-local-qa-gates.sh`; `scripts/validation/check-repo-contracts.sh`; `scripts/security/generate-supply-chain-sample-service-summary.sh`; `docs/90.references/data/security/supply-chain-sample-service.md`. | `SSC-005` | RED: network/live score controls CI or generated summary is stale. GREEN: fixture-only checks block deterministically; summary freshness passes; live Scorecard is advisory or explicitly skipped. | Same SSC commit. |
-| `T-SSC-005` | Complete independent specification and security/quality reviews. | Domain Task and lifecycle/index updates only when supported. | `VAL-SSC-001`–`004` | Reviews finish C0/I0/M0. | Program closure evidence commit. |
+| `T-SSC-005` | Complete independent specification and security/quality reviews. | Domain Task and lifecycle/index updates only when supported. | `VAL-SSC-001`–`004` | Terminal specification and quality/security reviews APPROVED C0/I0/M0. | `docs(evidence): record supply-chain review closure`. |
 
 Exact deterministic fixture manifest:
 
@@ -291,8 +291,9 @@ method per fixture plus `test_tool_manifest_pins_are_exact`,
       dispatch it remotely.
 - [x] Record only concise subject, tool-pin, policy, verdict, checksum, and
       limitation fields in tracked evidence.
-- [ ] Run independent specification review, then quality/security review; fix
-      and re-review all findings before lifecycle closure.
+- [x] Run independent specification review, then quality/security review; the
+      initial/combined `C3/I1/M1` findings and first re-review C1 were
+      remediated, and both terminal reviews returned APPROVED C0/I0/M0.
 
 ## Verification Plan
 
@@ -339,7 +340,7 @@ published artifact or remote setting exists in this plan.
 - [ ] Provenance and signature verification pass success and negative cases.
 - [ ] Scorecard observation is either read-only advisory with limitations or
       explicitly skipped with rationale.
-- [ ] Independent specification and quality/security reviews pass.
+- [x] Independent specification and quality/security reviews pass.
 - [ ] Spec 126 lifecycle reflects only local supply-chain evidence; remote,
       publication, OIDC, and SLSA-level exclusions remain explicit.
 

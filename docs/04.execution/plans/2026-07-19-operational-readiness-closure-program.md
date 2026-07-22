@@ -179,10 +179,13 @@ Non-goals:
       baseline at the critical-vulnerability policy gate.
 - [ ] Require distinct accepted baseline/candidate verdicts with the exact
       fields and paths above before Task 5 starts.
-- [ ] Require a fresh specification reviewer and a separate security/quality
-      reviewer; remediate and re-review all findings.
-- [x] Commit the deterministic implementation as
-      `feat(security): add local supply-chain verification`.
+- [x] Require a fresh specification reviewer and a separate security/quality
+      reviewer; the initial/combined `C3/I1/M1` findings and first re-review C1
+      were remediated, and terminal specification and quality/security reviews
+      both returned APPROVED C0/I0/M0.
+- [x] Record the deterministic implementation as
+      `72e584f51badfd194c0a1b6d32510a3bf3ab395c`
+      (`feat(security): add local supply-chain verification`).
 
 ### Task 4: Implement PostgreSQL logical recovery rehearsal
 
