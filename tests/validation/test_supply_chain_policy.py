@@ -75,6 +75,13 @@ class SupplyChainPolicyTests(unittest.TestCase):
             self.checker.validate_tool_registry(digestless),
         )
 
+        configless = copy.deepcopy(registry)
+        configless["tools"][0]["config_id"] = ""
+        self.assertIn(
+            "tool-config-id-invalid",
+            self.checker.validate_tool_registry(configless),
+        )
+
     def test_policy_and_exception_registry_are_fail_closed(self) -> None:
         policy = self.checker.load_json(POLICY)
         exceptions = self.checker.load_json(EXCEPTIONS)
@@ -382,6 +389,8 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         self.assertIn("--builder default", build_command)
         self.assertIn("--network=none", build_command)
         self.assertIn("--pull=false", build_command)
+        self.assertIn('--file Dockerfile - <"$build_context_archive"', build_command)
+        self.assertNotIn('"$SERVICE_DIR"', build_command)
 
     def test_sample_context_has_closed_dockerignore_contract(self) -> None:
         dockerignore = ROOT / "examples/sample-web-service/.dockerignore"
@@ -406,24 +415,63 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             advisory.index("assert_local_image_identities"),
             advisory.index("build_role_image baseline"),
         )
-        expected_id = "sha256:" + ("a" * 64)
+
+    def test_local_image_identity_accepts_independent_manifest_and_config(self) -> None:
+        manifest_digest = "sha256:" + ("a" * 64)
+        config_id = "sha256:" + ("b" * 64)
+        reference = f"example.invalid/tool@{manifest_digest}"
         valid = self.run_wrapper_library(
             f"source {shlex.quote(str(WRAPPER))}\n"
-            f"TEST_IMAGE_ID={expected_id}\n"
-            "docker() { printf '%s\\n' \"$TEST_IMAGE_ID\"; }\n"
-            f"assert_local_image_identity example.invalid/tool@{expected_id} {expected_id}\n"
+            f"TEST_REPO_DIGESTS={shlex.quote(json.dumps([reference]))}\n"
+            f"TEST_CONFIG_ID={config_id}\n"
+            "docker() { printf '%s|%s\\n' \"$TEST_REPO_DIGESTS\" "
+            "\"$TEST_CONFIG_ID\"; }\n"
+            f"assert_local_image_identity {reference} {reference} {config_id}\n"
         )
         self.assertEqual(0, valid.returncode, valid.stderr)
-        for image_id in ("", "sha256:" + ("b" * 64)):
-            with self.subTest(image_id=image_id or "missing"):
-                result = self.run_wrapper_library(
-                    f"source {shlex.quote(str(WRAPPER))}\n"
-                    f"TEST_IMAGE_ID={shlex.quote(image_id)}\n"
-                    "docker() { [ -n \"$TEST_IMAGE_ID\" ] || return 1; "
-                    "printf '%s\\n' \"$TEST_IMAGE_ID\"; }\n"
-                    f"assert_local_image_identity example.invalid/tool@{expected_id} {expected_id}\n"
-                )
-                self.assertEqual(10, result.returncode)
+
+    def test_local_image_identity_rejects_manifest_mismatch(self) -> None:
+        manifest_digest = "sha256:" + ("a" * 64)
+        config_id = "sha256:" + ("b" * 64)
+        reference = f"example.invalid/tool@{manifest_digest}"
+        wrong_reference = "example.invalid/tool@sha256:" + ("c" * 64)
+        result = self.run_wrapper_library(
+            f"source {shlex.quote(str(WRAPPER))}\n"
+            f"TEST_REPO_DIGESTS={shlex.quote(json.dumps([wrong_reference]))}\n"
+            f"TEST_CONFIG_ID={config_id}\n"
+            "docker() { printf '%s|%s\\n' \"$TEST_REPO_DIGESTS\" "
+            "\"$TEST_CONFIG_ID\"; }\n"
+            f"assert_local_image_identity {reference} {reference} {config_id}\n"
+        )
+        self.assertEqual(10, result.returncode)
+        self.assertIn("pinned-image-manifest-mismatch", result.stderr)
+
+    def test_local_image_identity_rejects_config_id_mismatch(self) -> None:
+        manifest_digest = "sha256:" + ("a" * 64)
+        config_id = "sha256:" + ("b" * 64)
+        reference = f"example.invalid/tool@{manifest_digest}"
+        result = self.run_wrapper_library(
+            f"source {shlex.quote(str(WRAPPER))}\n"
+            f"TEST_REPO_DIGESTS={shlex.quote(json.dumps([reference]))}\n"
+            f"TEST_CONFIG_ID=sha256:{'d' * 64}\n"
+            "docker() { printf '%s|%s\\n' \"$TEST_REPO_DIGESTS\" "
+            "\"$TEST_CONFIG_ID\"; }\n"
+            f"assert_local_image_identity {reference} {reference} {config_id}\n"
+        )
+        self.assertEqual(10, result.returncode)
+        self.assertIn("pinned-image-config-id-mismatch", result.stderr)
+
+    def test_local_image_identity_rejects_missing_image(self) -> None:
+        manifest_digest = "sha256:" + ("a" * 64)
+        config_id = "sha256:" + ("b" * 64)
+        reference = f"example.invalid/tool@{manifest_digest}"
+        result = self.run_wrapper_library(
+            f"source {shlex.quote(str(WRAPPER))}\n"
+            "docker() { return 1; }\n"
+            f"assert_local_image_identity {reference} {reference} {config_id}\n"
+        )
+        self.assertEqual(10, result.returncode)
+        self.assertIn("pinned-image-missing", result.stderr)
 
     def test_runtime_artifacts_use_one_private_tmp_tree_and_cleanup(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -540,6 +588,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             runtime = pathlib.Path(temporary) / "runtime"
             runtime.mkdir(mode=0o700)
             snapshot = runtime / "context.json"
+            archive = runtime / "context.tar"
             common = (
                 f"source {shlex.quote(str(WRAPPER))}\n"
                 f"BASE_DIR={shlex.quote(str(repo))}\n"
@@ -547,6 +596,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 f"CHECKER={shlex.quote(str(CHECKER_PATH))}\n"
                 f"SOURCE_REVISION={source_revision}\n"
                 f"build_context_snapshot={shlex.quote(str(snapshot))}\n"
+                f"build_context_archive={shlex.quote(str(archive))}\n"
             )
 
             (service / "site/untracked.html").write_text("new\n", encoding="utf-8")
@@ -567,9 +617,102 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
 
             clean = self.run_wrapper_library(common + "capture_build_context_snapshot\n")
             self.assertEqual(0, clean.returncode, clean.stderr)
+            self.assertEqual(0o600, stat.S_IMODE(archive.stat().st_mode))
+            with tarfile.open(archive, "r:") as bundle:
+                names = {member.name.rstrip("/") for member in bundle.getmembers()}
+            self.assertEqual(
+                {".dockerignore", "Dockerfile", "nginx.conf", "site", "site/index.html"},
+                names,
+            )
+            snapshot_payload = json.loads(snapshot.read_text(encoding="utf-8"))
+            self.assertEqual(2, snapshot_payload["schema_version"])
+            for material in snapshot_payload["materials"]:
+                self.assertTrue(
+                    {
+                        "device",
+                        "inode",
+                        "size",
+                        "mtime_ns",
+                        "ctime_ns",
+                        "mode",
+                        "uid",
+                        "sha256",
+                    }.issubset(material)
+                )
             (service / "site/index.html").write_text("tampered\n", encoding="utf-8")
             tampered = self.run_wrapper_library(common + "assert_build_context_unchanged\n")
             self.assertEqual(50, tampered.returncode, tampered.stderr)
+
+    def test_mutate_and_restore_during_build_fails_class_50_without_pair(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = pathlib.Path(temporary) / "repo"
+            service = repo / "examples/sample-web-service"
+            (service / "site").mkdir(parents=True)
+            (service / ".dockerignore").write_text(
+                "**\n!Dockerfile\n!.dockerignore\n!nginx.conf\n!site/\n!site/**\n",
+                encoding="utf-8",
+            )
+            (service / "Dockerfile").write_text("FROM scratch\n", encoding="utf-8")
+            (service / "nginx.conf").write_text("server {}\n", encoding="utf-8")
+            material = service / "site/index.html"
+            material.write_text("original\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(repo),
+                    "-c",
+                    "user.name=Task Test",
+                    "-c",
+                    "user.email=task@example.invalid",
+                    "commit",
+                    "-qm",
+                    "fixture",
+                ],
+                check=True,
+            )
+            source_revision = subprocess.run(
+                ["git", "-C", str(repo), "rev-parse", "HEAD"],
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            runtime = pathlib.Path(temporary) / "runtime"
+            runtime.mkdir(mode=0o700)
+            output = pathlib.Path(temporary) / "output"
+            output.mkdir(mode=0o700)
+            result = self.run_wrapper_library(
+                f"source {shlex.quote(str(WRAPPER))}\n"
+                f"BASE_DIR={shlex.quote(str(repo))}\n"
+                f"SERVICE_DIR={shlex.quote(str(service))}\n"
+                f"CHECKER={shlex.quote(str(CHECKER_PATH))}\n"
+                f"SOURCE_REVISION={source_revision}\n"
+                f"build_context_snapshot={shlex.quote(str(runtime / 'context.json'))}\n"
+                f"build_context_archive={shlex.quote(str(runtime / 'context.tar'))}\n"
+                f"OUTPUT_DIR={shlex.quote(str(output))}\n"
+                "capture_build_context_snapshot\n"
+                "build_role_image() {\n"
+                f"  printf 'mutated\\n' > {shlex.quote(str(material))}\n"
+                f"  printf 'original\\n' > {shlex.quote(str(material))}\n"
+                "}\n"
+                "build_role_image baseline\n"
+                "assert_build_context_unchanged\n"
+            )
+            self.assertEqual(50, result.returncode, result.stderr)
+            self.assertIn("build-context-changed", result.stderr)
+            self.assertFalse((output / "verification-verdict.pair.json").exists())
+
+        text = WRAPPER.read_text(encoding="utf-8")
+        advisory = text.split("run_advisory() {", maxsplit=1)[1].split(
+            "\n}\n\nrun_scorecard_advisory", maxsplit=1
+        )[0]
+        self.assertIn(
+            "build_role_image baseline\n  assert_build_context_unchanged\n"
+            "  build_role_image candidate\n  assert_build_context_unchanged",
+            advisory,
+        )
 
     def test_invalidate_consumer_verdicts_removes_only_exact_paths(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
