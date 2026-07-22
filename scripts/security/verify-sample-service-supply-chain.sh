@@ -201,13 +201,20 @@ seed_private_grype_db_cache() {
 }
 
 remove_legacy_runtime_artifacts() {
-  local name path
+  local current_identity name path
+  current_identity="$(python3 "$CHECKER" --prepare-secure-output "$BASE_DIR" "$OUTPUT_RELATIVE")" || fail "$EXIT_POLICY" "secure-output-revalidation-failed"
+  [[ "$current_identity" == "$output_identity" ]] || fail "$EXIT_POLICY" "secure-output-identity-mismatch"
   for name in baseline candidate grype-db-cache grype-db-status.txt grype-db-identity.json; do
     path="$OUTPUT_DIR/$name"
     [[ ! -L "$path" ]] || fail "$EXIT_POLICY" "legacy-runtime-artifact-symlink"
   done
-  rm -rf -- "$OUTPUT_DIR/baseline" "$OUTPUT_DIR/candidate" "$OUTPUT_DIR/grype-db-cache"
-  rm -f -- "$OUTPUT_DIR/grype-db-status.txt" "$OUTPUT_DIR/grype-db-identity.json"
+  docker run --pull=never --rm --network none --user 0:0 --mount "type=bind,source=$OUTPUT_DIR,target=/handoff" "$BUILD_MATERIAL_REF" sh -ceu '
+    for path in /handoff/baseline /handoff/candidate /handoff/grype-db-cache /handoff/grype-db-status.txt /handoff/grype-db-identity.json; do
+      [ ! -L "$path" ] || exit 73
+    done
+    rm -rf -- /handoff/baseline /handoff/candidate /handoff/grype-db-cache
+    rm -f -- /handoff/grype-db-status.txt /handoff/grype-db-identity.json
+  ' || fail "$EXIT_POLICY" "legacy-runtime-artifact-cleanup-failed"
 }
 
 build_role_image() {
