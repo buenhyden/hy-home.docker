@@ -5,9 +5,12 @@ set -o pipefail
 SOURCE_IMAGE='postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
 TARGET_IMAGE='postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
 DUMP_CLIENT_IMAGE='postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
-SOURCE_IMAGE_ID='sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
-TARGET_IMAGE_ID='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
-DUMP_CLIENT_IMAGE_ID='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+SOURCE_IMAGE_REPO_DIGEST='postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
+TARGET_IMAGE_REPO_DIGEST='postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+DUMP_CLIENT_IMAGE_REPO_DIGEST='postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+SOURCE_IMAGE_CONFIG_ID='sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
+TARGET_IMAGE_CONFIG_ID='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+DUMP_CLIENT_IMAGE_CONFIG_ID='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
 PROJECT_PREFIX='hyhome-ior-20260719'
 TOTAL_TIMEOUT=420
 CLEANUP_RESERVE_SECONDS=60
@@ -705,25 +708,51 @@ assert_no_project_collisions() {
 assert_exact_local_image_identity() {
   local role="$1"
   local image="$2"
-  local expected_id="$3"
-  local observed_id
+  local expected_repo_digest="$3"
+  local expected_config_id="$4"
+  local observed
+  local repo_digests_json
+  local actual_config_id
 
-  observed_id="$(run_bounded docker image inspect --format '{{.Id}}' "$image" 2>/dev/null)" || {
+  observed="$(run_bounded docker image inspect --format '{{json .RepoDigests}}|{{.Id}}' "$image" 2>/dev/null)" || {
     print_failure preflight "${role}-image-not-local"
     return 10
   }
-  [ -n "$observed_id" ] && [[ "$observed_id" != *$'\n'* ]] && \
-    [ "$observed_id" = "$expected_id" ] || {
-    print_failure preflight "${role}-image-id-drift"
+  [ -n "$observed" ] && [[ "$observed" != *$'\n'* ]] && [[ "$observed" == *'|'* ]] || {
+    print_failure preflight "${role}-image-manifest-drift"
+    return 10
+  }
+  repo_digests_json="${observed%%|*}"
+  actual_config_id="${observed#*|}"
+  python3 - "$repo_digests_json" "$expected_repo_digest" <<'PY' || {
+import json
+import sys
+
+try:
+    repo_digests = json.loads(sys.argv[1])
+except json.JSONDecodeError:
+    raise SystemExit(1)
+raise SystemExit(
+    0 if isinstance(repo_digests, list) and sys.argv[2] in repo_digests else 1
+)
+PY
+    print_failure preflight "${role}-image-manifest-drift"
+    return 10
+  }
+  [ "$actual_config_id" = "$expected_config_id" ] || {
+    print_failure preflight "${role}-image-config-id-drift"
     return 10
   }
 }
 
 assert_exact_local_image_identities() {
-  assert_exact_local_image_identity source "$SOURCE_IMAGE" "$SOURCE_IMAGE_ID" || return $?
-  assert_exact_local_image_identity target "$TARGET_IMAGE" "$TARGET_IMAGE_ID" || return $?
   assert_exact_local_image_identity \
-    dump-client "$DUMP_CLIENT_IMAGE" "$DUMP_CLIENT_IMAGE_ID" || return $?
+    source "$SOURCE_IMAGE" "$SOURCE_IMAGE_REPO_DIGEST" "$SOURCE_IMAGE_CONFIG_ID" || return $?
+  assert_exact_local_image_identity \
+    target "$TARGET_IMAGE" "$TARGET_IMAGE_REPO_DIGEST" "$TARGET_IMAGE_CONFIG_ID" || return $?
+  assert_exact_local_image_identity \
+    dump-client "$DUMP_CLIENT_IMAGE" \
+    "$DUMP_CLIENT_IMAGE_REPO_DIGEST" "$DUMP_CLIENT_IMAGE_CONFIG_ID" || return $?
 }
 
 assert_safe_images_paths_and_project() {
@@ -742,16 +771,28 @@ assert_safe_images_paths_and_project() {
     print_failure preflight dump-client-image-drift
     return 10
   }
-  [ "$SOURCE_IMAGE_ID" = 'sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94' ] || {
-    print_failure preflight source-image-id-drift
+  [ "$SOURCE_IMAGE_REPO_DIGEST" = 'postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94' ] || {
+    print_failure preflight source-image-repo-digest-drift
     return 10
   }
-  [ "$TARGET_IMAGE_ID" = 'sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
-    print_failure preflight target-image-id-drift
+  [ "$TARGET_IMAGE_REPO_DIGEST" = 'postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+    print_failure preflight target-image-repo-digest-drift
     return 10
   }
-  [ "$DUMP_CLIENT_IMAGE_ID" = 'sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
-    print_failure preflight dump-client-image-id-drift
+  [ "$DUMP_CLIENT_IMAGE_REPO_DIGEST" = 'postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+    print_failure preflight dump-client-image-repo-digest-drift
+    return 10
+  }
+  [ "$SOURCE_IMAGE_CONFIG_ID" = 'sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94' ] || {
+    print_failure preflight source-image-config-id-drift
+    return 10
+  }
+  [ "$TARGET_IMAGE_CONFIG_ID" = 'sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+    print_failure preflight target-image-config-id-drift
+    return 10
+  }
+  [ "$DUMP_CLIENT_IMAGE_CONFIG_ID" = 'sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+    print_failure preflight dump-client-image-config-id-drift
     return 10
   }
   [ "${IOR_PROJECT_PREFIX:-$PROJECT_PREFIX}" = "$PROJECT_PREFIX" ] || {
