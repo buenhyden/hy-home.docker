@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tarfile
 from typing import Any
+import zlib
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -37,6 +38,13 @@ OCI_PORTABLE_LAYER_MEDIA_TYPES = {
     "application/vnd.oci.image.layer.v1.tar+gzip",
     "application/vnd.oci.image.layer.nondistributable.v1.tar+gzip",
 }
+# The local sample-service handoff is intentionally bounded before allocation:
+# at most 512 MiB compressed input, 512 MiB per expanded layer, and 1 GiB
+# expanded across all layers. Larger images require a separately reviewed path.
+OCI_ARCHIVE_MAX_BYTES = 512 * 1024 * 1024
+OCI_LAYER_MAX_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
+OCI_LAYERS_MAX_UNCOMPRESSED_BYTES = 1024 * 1024 * 1024
+OCI_DECOMPRESSION_CHUNK_BYTES = 64 * 1024
 VERDICT_IDENTITY_KEYS = (
     "oci_manifest_digest",
     "image_config_digest",
@@ -1176,7 +1184,62 @@ def _require_oci_descriptor(
     return digest, size, media_type
 
 
+def _verify_oci_gzip_layer_diff_id(
+    blob: bytes,
+    expected_diff_id: str,
+    *,
+    prior_uncompressed_bytes: int,
+) -> int:
+    """Stream one strict gzip member and verify its uncompressed DiffID."""
+
+    decompressor = zlib.decompressobj(16 + zlib.MAX_WBITS)
+    digest = hashlib.sha256()
+    uncompressed_bytes = 0
+
+    def consume(output: bytes) -> None:
+        nonlocal uncompressed_bytes
+        uncompressed_bytes += len(output)
+        if uncompressed_bytes > OCI_LAYER_MAX_UNCOMPRESSED_BYTES:
+            raise ValueError("oci-layer-uncompressed-size-limit-exceeded")
+        if (
+            prior_uncompressed_bytes + uncompressed_bytes
+            > OCI_LAYERS_MAX_UNCOMPRESSED_BYTES
+        ):
+            raise ValueError("oci-layers-uncompressed-size-limit-exceeded")
+        digest.update(output)
+
+    offset = 0
+    while offset < len(blob) and not decompressor.eof:
+        pending = blob[offset : offset + OCI_DECOMPRESSION_CHUNK_BYTES]
+        offset += len(pending)
+        while pending and not decompressor.eof:
+            previous_size = len(pending)
+            try:
+                output = decompressor.decompress(
+                    pending, OCI_DECOMPRESSION_CHUNK_BYTES
+                )
+            except zlib.error as exc:
+                raise ValueError("oci-layer-gzip-invalid") from exc
+            pending = decompressor.unconsumed_tail
+            consume(output)
+            if decompressor.eof:
+                if decompressor.unused_data or pending or offset < len(blob):
+                    raise ValueError("oci-layer-gzip-trailing-data")
+                break
+            if pending and len(pending) == previous_size and not output:
+                raise ValueError("oci-layer-gzip-invalid")
+
+    if not decompressor.eof:
+        raise ValueError("oci-layer-gzip-invalid")
+    actual_diff_id = f"sha256:{digest.hexdigest()}"
+    if actual_diff_id != expected_diff_id:
+        raise ValueError("oci-layer-diff-id-mismatch")
+    return uncompressed_bytes
+
+
 def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
+    if len(content) > OCI_ARCHIVE_MAX_BYTES:
+        raise ValueError("oci-archive-size-limit-exceeded")
     try:
         archive = tarfile.open(fileobj=io.BytesIO(content), mode="r:*")
     except (OSError, tarfile.TarError) as exc:
@@ -1288,7 +1351,8 @@ def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
         if len(raw_layers) != len(diff_ids):
             raise ValueError("oci-rootfs-layer-cardinality-mismatch")
         layers: list[dict[str, Any]] = []
-        for raw_layer in raw_layers:
+        total_uncompressed_bytes = 0
+        for index, raw_layer in enumerate(raw_layers):
             layer_digest, layer_size, media_type = _require_oci_descriptor(
                 raw_layer, prefix="oci-layer"
             )
@@ -1305,11 +1369,18 @@ def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
                 != layer_digest.removeprefix("sha256:")
             ):
                 raise ValueError("oci-layer-blob-digest-mismatch")
+            uncompressed_bytes = _verify_oci_gzip_layer_diff_id(
+                layer_blob,
+                diff_ids[index],
+                prior_uncompressed_bytes=total_uncompressed_bytes,
+            )
+            total_uncompressed_bytes += uncompressed_bytes
             layers.append(
                 {
                     "blob": layer_blob,
                     "digest": layer_digest,
                     "media_type": media_type,
+                    "uncompressed_size": uncompressed_bytes,
                 }
             )
     return {
@@ -1330,7 +1401,9 @@ def inspect_oci_archive_config_digest(archive_path: pathlib.Path | str) -> str:
     return str(_inspect_oci_archive_bytes(content)["image_config_digest"])
 
 
-def _read_stable_private_bytes(path: pathlib.Path) -> bytes:
+def _read_stable_private_bytes(
+    path: pathlib.Path, *, max_bytes: int | None = None
+) -> bytes:
     try:
         parent_stat = path.parent.lstat()
     except OSError as exc:
@@ -1363,11 +1436,19 @@ def _read_stable_private_bytes(path: pathlib.Path) -> bytes:
                 or stat.S_IMODE(before.st_mode) != 0o600
             ):
                 raise SecureOutputError("private-source-invalid")
+            if max_bytes is not None and before.st_size > max_bytes:
+                raise SecureOutputError("private-source-size-limit-exceeded")
             chunks: list[bytes] = []
+            bytes_read = 0
             while True:
                 chunk = os.read(descriptor, 1024 * 1024)
                 if not chunk:
                     break
+                bytes_read += len(chunk)
+                if max_bytes is not None and bytes_read > max_bytes:
+                    raise SecureOutputError(
+                        "private-source-size-limit-exceeded"
+                    )
                 chunks.append(chunk)
             after = os.fstat(descriptor)
             current = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
@@ -1497,8 +1578,12 @@ def convert_oci_archive_to_docker_load_archive(
     if source == destination or source.parent != destination.parent:
         raise ValueError("docker-archive-target-invalid")
     try:
-        content = _read_stable_private_bytes(source)
+        content = _read_stable_private_bytes(
+            source, max_bytes=OCI_ARCHIVE_MAX_BYTES
+        )
     except SecureOutputError as exc:
+        if str(exc) == "private-source-size-limit-exceeded":
+            raise ValueError("oci-archive-size-limit-exceeded") from exc
         raise ValueError("oci-archive-private-input-invalid") from exc
     inspected = _inspect_oci_archive_bytes(content)
     config_digest = str(inspected["image_config_digest"])
