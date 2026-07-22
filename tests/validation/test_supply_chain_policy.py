@@ -24,6 +24,7 @@ EXCEPTIONS = ROOT / "infra/supply-chain.vulnerability-exceptions.json"
 COSIGN_OFFLINE_SIGNING_CONFIG = (
     ROOT / "infra/supply-chain.cosign-offline-signing-config.json"
 )
+COSIGN_OFFLINE_TRUSTED_ROOT = ROOT / "infra/supply-chain.cosign-offline-trusted-root.json"
 WRAPPER = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
 SEED_HELPER = ROOT / "scripts/validation/grype_db_seed.py"
 SAMPLE_DOCKERFILE = ROOT / "examples/sample-web-service/Dockerfile"
@@ -1005,6 +1006,42 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             "target=/policy/cosign-offline-signing-config.json,readonly",
             sign_commands[0],
         )
+
+    def test_cosign_v3_offline_signing_uses_explicit_minimal_trusted_root(
+        self,
+    ) -> None:
+        trusted_root = json.loads(
+            COSIGN_OFFLINE_TRUSTED_ROOT.read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            {"mediaType": "application/vnd.dev.sigstore.trustedroot+json;version=0.1"},
+            trusted_root,
+        )
+
+        text = WRAPPER.read_text(encoding="utf-8")
+        signing = text.split("sign_and_verify_archive() {", maxsplit=1)[1].split(
+            "\n}\n\nwrite_verification_verdict", maxsplit=1
+        )[0]
+        sign_commands = [
+            line.strip()
+            for line in signing.splitlines()
+            if line.strip().startswith("docker run ") and " sign-blob " in line
+        ]
+        verify_commands = [
+            line.strip()
+            for line in signing.splitlines()
+            if line.strip().startswith(("docker run ", "if docker run "))
+            and " verify-blob " in line
+        ]
+        self.assertEqual(1, len(sign_commands))
+        self.assertEqual(3, len(verify_commands))
+        for command in sign_commands + verify_commands:
+            self.assertIn(
+                "--trusted-root /policy/cosign-offline-trusted-root.json", command
+            )
+            self.assertIn(
+                "target=/policy/cosign-offline-trusted-root.json,readonly", command
+            )
 
     def test_cross_role_signature_acceptance_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
