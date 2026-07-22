@@ -658,7 +658,9 @@ on_exit
                 section = text.split(f"\n  {service}:\n", maxsplit=1)[1]
                 self.assertIn(f"    image: {image}\n", section)
 
-    def test_local_image_identity_gate_rejects_missing_or_replaced_images(self) -> None:
+    def test_local_image_identity_gate_accepts_independent_manifest_and_config_id(
+        self,
+    ) -> None:
         runner = RUNNER.read_text(encoding="utf-8")
         runtime_body = runner.split("execute_runtime_scenario() {", maxsplit=1)[1].split(
             "\n}\n\nmain()", maxsplit=1
@@ -671,27 +673,71 @@ on_exit
             runtime_body.index("assert_local_image_identities"),
             runtime_body.index("start_vault"),
         )
-        expected_id = EXPECTED_IMAGES["traefik"].split("@", maxsplit=1)[1]
+        manifest_digest = "sha256:" + "1" * 64
+        config_id = "sha256:" + "2" * 64
+        image_ref = f"example.invalid/readiness@{manifest_digest}"
+        expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
         valid = self.run_library(
-            "docker() { printf '%s\\n' \"$CRR_TEST_IMAGE_ID\"; }; "
+            "docker() { printf '%s|%s\\n' \"$CRR_TEST_REPO_DIGESTS\" "
+            "\"$CRR_TEST_CONFIG_ID\"; }; "
             "assert_local_image_identity "
-            f"{EXPECTED_IMAGES['traefik']} {expected_id}",
-            env={"CRR_TEST_IMAGE_ID": expected_id},
+            f"{image_ref} {expected_repo_digest} {config_id}",
+            env={
+                "CRR_TEST_REPO_DIGESTS": json.dumps([expected_repo_digest]),
+                "CRR_TEST_CONFIG_ID": config_id,
+            },
         )
         self.assertEqual(0, valid.returncode, valid.stderr)
 
-        for label, image_id in (("missing", ""), ("replaced", "sha256:bad")):
-            with self.subTest(label=label):
-                rejected = self.run_library(
-                    "docker() { "
-                    "[ -n \"$CRR_TEST_IMAGE_ID\" ] || return 1; "
-                    "printf '%s\\n' \"$CRR_TEST_IMAGE_ID\"; }; "
-                    "assert_local_image_identity "
-                    f"{EXPECTED_IMAGES['traefik']} {expected_id}",
-                    env={"CRR_TEST_IMAGE_ID": image_id},
-                )
-                self.assertEqual(10, rejected.returncode)
-                self.assertIn("local image identity", rejected.stderr)
+    def test_local_image_identity_gate_rejects_manifest_mismatch(self) -> None:
+        manifest_digest = "sha256:" + "1" * 64
+        config_id = "sha256:" + "2" * 64
+        image_ref = f"example.invalid/readiness@{manifest_digest}"
+        expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
+        rejected = self.run_library(
+            "docker() { printf '%s|%s\\n' \"$CRR_TEST_REPO_DIGESTS\" "
+            "\"$CRR_TEST_CONFIG_ID\"; }; "
+            "assert_local_image_identity "
+            f"{image_ref} {expected_repo_digest} {config_id}",
+            env={
+                "CRR_TEST_REPO_DIGESTS": json.dumps(
+                    ["example.invalid/readiness@sha256:" + "3" * 64]
+                ),
+                "CRR_TEST_CONFIG_ID": config_id,
+            },
+        )
+        self.assertEqual(10, rejected.returncode)
+        self.assertIn("repository manifest", rejected.stderr)
+
+    def test_local_image_identity_gate_rejects_config_id_mismatch(self) -> None:
+        manifest_digest = "sha256:" + "1" * 64
+        config_id = "sha256:" + "2" * 64
+        image_ref = f"example.invalid/readiness@{manifest_digest}"
+        expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
+        rejected = self.run_library(
+            "docker() { printf '%s|%s\\n' \"$CRR_TEST_REPO_DIGESTS\" "
+            "\"$CRR_TEST_CONFIG_ID\"; }; "
+            "assert_local_image_identity "
+            f"{image_ref} {expected_repo_digest} {config_id}",
+            env={
+                "CRR_TEST_REPO_DIGESTS": json.dumps([expected_repo_digest]),
+                "CRR_TEST_CONFIG_ID": "sha256:" + "4" * 64,
+            },
+        )
+        self.assertEqual(10, rejected.returncode)
+        self.assertIn("configuration ID", rejected.stderr)
+
+    def test_local_image_identity_gate_rejects_missing_image(self) -> None:
+        manifest_digest = "sha256:" + "1" * 64
+        config_id = "sha256:" + "2" * 64
+        image_ref = f"example.invalid/readiness@{manifest_digest}"
+        expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
+        rejected = self.run_library(
+            "docker() { return 1; }; assert_local_image_identity "
+            f"{image_ref} {expected_repo_digest} {config_id}"
+        )
+        self.assertEqual(10, rejected.returncode)
+        self.assertIn("unavailable", rejected.stderr)
 
     def test_start_commands_disable_pull_and_build(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
