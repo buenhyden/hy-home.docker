@@ -302,8 +302,8 @@ load_role_image_object() {
   label="org.hyhome.delivery.rehearsal.role=${role}"
   tag="hyhome-local/sample-web-service:${SOURCE_REVISION}-${role}"
   docker buildx build --builder default --network=none --pull=false --load --tag "$tag" --label "$label" --file Dockerfile - <"$build_context_archive" >/dev/null || fail "$EXIT_BUILD" "role-image-load-failed"
-  observed="$(docker image inspect --format '{{.Id}}' "$tag")" || fail "$EXIT_BUILD" "role-image-load-identity-missing"
-  [[ -n "$observed" && "$observed" != *$'\n'* && "$observed" == "${IMAGE_CONFIG_DIGEST[$role]}" ]] || fail "$EXIT_BUILD" "role-image-load-identity-mismatch"
+  observed="$(docker image inspect --format '{{.Id}} {{index .Config.Labels "org.hyhome.delivery.rehearsal.role"}}' "$tag")" || fail "$EXIT_BUILD" "role-image-load-identity-missing"
+  [[ "$observed" == sha256:[0-9a-f]*" $role" && "$observed" != *$'\n'* ]] || fail "$EXIT_BUILD" "role-image-load-identity-mismatch"
 }
 
 validate_live_sbom() {

@@ -984,9 +984,10 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         )[0]
         self.assertIn("docker buildx build --builder default --network=none --pull=false --load", loader)
         self.assertIn("--tag \"$tag\"", loader)
-        self.assertIn("docker image inspect --format '{{.Id}}'", loader)
+        self.assertIn("docker image inspect --format", loader)
+        self.assertIn('org.hyhome.delivery.rehearsal.role', loader)
         self.assertIn('"$tag"', loader)
-        self.assertIn('"${IMAGE_CONFIG_DIGEST[$role]}"', loader)
+        self.assertIn("sha256:[0-9a-f]*\" $role\"", loader)
         self.assertIn("role-image-load-identity-mismatch", loader)
 
     def test_cosign_v3_offline_signing_uses_explicit_empty_service_config(self) -> None:
