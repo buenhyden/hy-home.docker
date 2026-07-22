@@ -8,6 +8,7 @@ import json
 import os
 import pathlib
 import shlex
+import stat
 import subprocess
 import tarfile
 import tempfile
@@ -34,7 +35,16 @@ CANDIDATE_SUBJECT = {
     "source_revision": SOURCE_REVISION,
     "image_config_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
     "oci_archive_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "build_context_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 }
+BASELINE_SUBJECT["build_context_sha256"] = CANDIDATE_SUBJECT[
+    "build_context_sha256"
+]
+
+HANDOFF_RELATIVE = pathlib.Path(
+    "_workspace/repo-support/"
+    "task-2026-07-19-security-supply-chain-remediation/supply-chain"
+)
 
 
 def load_checker():
@@ -282,6 +292,18 @@ class SupplyChainPolicyTests(unittest.TestCase):
             ),
         )
 
+    def test_provenance_binds_full_build_context_digest(self) -> None:
+        provenance = self.load_fixture("provenance.valid.intoto.json")
+        self.assertEqual(
+            [], self.checker.validate_provenance_subject(provenance, CANDIDATE_SUBJECT)
+        )
+        wrong_context = copy.deepcopy(CANDIDATE_SUBJECT)
+        wrong_context["build_context_sha256"] = "sha256:" + ("f" * 64)
+        self.assertIn(
+            "provenance-build-context-mismatch",
+            self.checker.validate_provenance_subject(provenance, wrong_context),
+        )
+
     def test_cosign_verify_valid_json(self) -> None:
         self.assertEqual(
             [],
@@ -341,6 +363,138 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             text=True,
             check=False,
         )
+
+    def test_all_runtime_invocations_are_offline_and_pull_disabled(self) -> None:
+        text = WRAPPER.read_text(encoding="utf-8")
+        docker_runs = [
+            line.strip()
+            for line in text.splitlines()
+            if line.strip().startswith("docker run ")
+        ]
+        self.assertGreaterEqual(len(docker_runs), 8)
+        for command in docker_runs:
+            self.assertIn("--pull=never", command)
+        build_command = next(
+            line.strip()
+            for line in text.splitlines()
+            if line.strip().startswith("docker buildx build ")
+        )
+        self.assertIn("--builder default", build_command)
+        self.assertIn("--network=none", build_command)
+        self.assertIn("--pull=false", build_command)
+
+    def test_sample_context_has_closed_dockerignore_contract(self) -> None:
+        dockerignore = ROOT / "examples/sample-web-service/.dockerignore"
+        self.assertEqual(
+            [
+                "**",
+                "!Dockerfile",
+                "!.dockerignore",
+                "!nginx.conf",
+                "!site/",
+                "!site/**",
+            ],
+            dockerignore.read_text(encoding="utf-8").splitlines(),
+        )
+
+    def test_exact_local_image_gate_precedes_build_or_tool_start(self) -> None:
+        text = WRAPPER.read_text(encoding="utf-8")
+        advisory = text.split("run_advisory() {", maxsplit=1)[1].split(
+            "\n}\n\nrun_scorecard_advisory", maxsplit=1
+        )[0]
+        self.assertLess(
+            advisory.index("assert_local_image_identities"),
+            advisory.index("build_role_image baseline"),
+        )
+        expected_id = "sha256:" + ("a" * 64)
+        valid = self.run_wrapper_library(
+            f"source {shlex.quote(str(WRAPPER))}\n"
+            "docker() { printf '%s\\n' \"$TEST_IMAGE_ID\"; }\n"
+            f"assert_local_image_identity example.invalid/tool@{expected_id} {expected_id}\n"
+        )
+        self.assertEqual(0, valid.returncode, valid.stderr)
+        for image_id in ("", "sha256:" + ("b" * 64)):
+            with self.subTest(image_id=image_id or "missing"):
+                result = self.run_wrapper_library(
+                    f"source {shlex.quote(str(WRAPPER))}\n"
+                    "docker() { [ -n \"$TEST_IMAGE_ID\" ] || return 1; "
+                    "printf '%s\\n' \"$TEST_IMAGE_ID\"; }\n"
+                    f"assert_local_image_identity example.invalid/tool@{expected_id} {expected_id}\n"
+                )
+                self.assertEqual(10, result.returncode)
+
+    def test_runtime_artifacts_use_one_private_tmp_tree_and_cleanup(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary) / "base"
+            output = base / HANDOFF_RELATIVE
+            output.mkdir(parents=True)
+            result = self.run_wrapper_library(
+                f"source {shlex.quote(str(WRAPPER))}\n"
+                f"BASE_DIR={shlex.quote(str(base))}\n"
+                f"OUTPUT_DIR={shlex.quote(str(output))}\n"
+                "prepare_transient_directory\n"
+                "case $runtime_dir in /tmp/hyhome-supply-chain.*) ;; *) exit 91 ;; esac\n"
+                "test \"$(stat -c %a \"$runtime_dir\")\" = 700\n"
+                "test \"$(stat -c %a \"$grype_db_dir\")\" = 700\n"
+                "test \"$(stat -c %a \"$private_key_dir\")\" = 700\n"
+                "touch \"$runtime_dir/raw-artifact\"\n"
+                "saved_runtime_dir=$runtime_dir\n"
+                "cleanup_transient_state\n"
+                "test ! -e \"$saved_runtime_dir\"\n"
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual([], list(output.iterdir()))
+
+    def test_git_context_rejection_maps_to_class_10_and_tamper_to_50(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = pathlib.Path(temporary) / "repo"
+            service = repo / "examples/sample-web-service"
+            (service / "site").mkdir(parents=True)
+            (service / ".dockerignore").write_text(
+                "**\n!Dockerfile\n!.dockerignore\n!nginx.conf\n!site/\n!site/**\n",
+                encoding="utf-8",
+            )
+            (service / "Dockerfile").write_text("FROM scratch\n", encoding="utf-8")
+            (service / "nginx.conf").write_text("server {}\n", encoding="utf-8")
+            (service / "site/index.html").write_text("ok\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(repo),
+                    "-c",
+                    "user.name=Task Test",
+                    "-c",
+                    "user.email=task@example.invalid",
+                    "commit",
+                    "-qm",
+                    "fixture",
+                ],
+                check=True,
+            )
+            runtime = pathlib.Path(temporary) / "runtime"
+            runtime.mkdir(mode=0o700)
+            snapshot = runtime / "context.json"
+            common = (
+                f"source {shlex.quote(str(WRAPPER))}\n"
+                f"BASE_DIR={shlex.quote(str(repo))}\n"
+                f"SERVICE_DIR={shlex.quote(str(service))}\n"
+                f"CHECKER={shlex.quote(str(CHECKER_PATH))}\n"
+                f"build_context_snapshot={shlex.quote(str(snapshot))}\n"
+            )
+
+            (service / "site/untracked.html").write_text("new\n", encoding="utf-8")
+            dirty = self.run_wrapper_library(common + "capture_build_context_snapshot\n")
+            self.assertEqual(10, dirty.returncode, dirty.stderr)
+            (service / "site/untracked.html").unlink()
+
+            clean = self.run_wrapper_library(common + "capture_build_context_snapshot\n")
+            self.assertEqual(0, clean.returncode, clean.stderr)
+            (service / "site/index.html").write_text("tampered\n", encoding="utf-8")
+            tampered = self.run_wrapper_library(common + "assert_build_context_unchanged\n")
+            self.assertEqual(50, tampered.returncode, tampered.stderr)
 
     def test_invalidate_consumer_verdicts_removes_only_exact_paths(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -479,6 +633,175 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             )
             self.assertEqual(60, result.returncode)
             self.assertIn("wrong-subject-archive-accepted", result.stderr)
+
+
+class SupplyChainSecureOutputTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.checker = load_checker()
+
+    @staticmethod
+    def write_verdict(path: pathlib.Path, role: str) -> None:
+        payload = {
+            "exception_id": None,
+            "image_config_digest": "sha256:" + (("a" if role == "baseline" else "c") * 64),
+            "oci_archive_sha256": "sha256:" + (("b" if role == "baseline" else "d") * 64),
+            "policy_id": "sample-service-local-v1",
+            "producer_spec": "spec:126-security-supply-chain-remediation",
+            "redaction_status": "passed",
+            "role": role,
+            "schema_version": 1,
+            "source_revision": SOURCE_REVISION,
+            "verdict": "accepted",
+        }
+        path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+        path.chmod(0o600)
+
+    def test_secure_pair_publication_is_manifest_committed_and_mode_0600(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary) / "base"
+            base.mkdir(mode=0o700)
+            identity = self.checker.prepare_secure_output_directory(
+                base, HANDOFF_RELATIVE
+            )
+            output = base / HANDOFF_RELATIVE
+            self.assertEqual(0o700, stat.S_IMODE(output.stat().st_mode))
+            private = pathlib.Path(temporary) / "private"
+            private.mkdir(mode=0o700)
+            baseline = private / "baseline.json"
+            candidate = private / "candidate.json"
+            self.write_verdict(baseline, "baseline")
+            self.write_verdict(candidate, "candidate")
+
+            manifest = self.checker.publish_verdict_pair(
+                base,
+                HANDOFF_RELATIVE,
+                identity,
+                baseline,
+                candidate,
+                SOURCE_REVISION,
+                CANDIDATE_SUBJECT["build_context_sha256"],
+            )
+            self.assertEqual(1, manifest["schema_version"])
+            self.assertEqual(
+                {"baseline", "candidate"}, set(manifest["verdict_sha256"])
+            )
+            for name in (
+                "verification-verdict.baseline.json",
+                "verification-verdict.candidate.json",
+                "verification-verdict.pair.json",
+            ):
+                self.assertEqual(
+                    0o600, stat.S_IMODE((output / name).stat().st_mode), name
+                )
+
+    def test_secure_output_rejects_ancestor_and_final_symlinks_or_bad_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary) / "base"
+            outside = pathlib.Path(temporary) / "outside"
+            base.mkdir(mode=0o700)
+            outside.mkdir(mode=0o700)
+            (base / "_workspace").symlink_to(outside, target_is_directory=True)
+            with self.assertRaises(self.checker.SecureOutputError):
+                self.checker.prepare_secure_output_directory(base, HANDOFF_RELATIVE)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary) / "base"
+            base.mkdir(mode=0o700)
+            identity = self.checker.prepare_secure_output_directory(
+                base, HANDOFF_RELATIVE
+            )
+            output = base / HANDOFF_RELATIVE
+            private = pathlib.Path(temporary) / "private"
+            private.mkdir(mode=0o700)
+            baseline = private / "baseline.json"
+            candidate = private / "candidate.json"
+            self.write_verdict(baseline, "baseline")
+            self.write_verdict(candidate, "candidate")
+
+            output.chmod(0o755)
+            with self.assertRaises(self.checker.SecureOutputError):
+                self.checker.publish_verdict_pair(
+                    base,
+                    HANDOFF_RELATIVE,
+                    identity,
+                    baseline,
+                    candidate,
+                    SOURCE_REVISION,
+                    CANDIDATE_SUBJECT["build_context_sha256"],
+                )
+            output.chmod(0o700)
+            outside = pathlib.Path(temporary) / "outside.json"
+            outside.write_text("preserve\n", encoding="utf-8")
+            (output / "verification-verdict.baseline.json").symlink_to(outside)
+            with self.assertRaises(self.checker.SecureOutputError):
+                self.checker.publish_verdict_pair(
+                    base,
+                    HANDOFF_RELATIVE,
+                    identity,
+                    baseline,
+                    candidate,
+                    SOURCE_REVISION,
+                    CANDIDATE_SUBJECT["build_context_sha256"],
+                )
+            self.assertEqual("preserve\n", outside.read_text(encoding="utf-8"))
+
+    def test_secure_output_rejects_path_swap_and_interrupted_pair(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary) / "base"
+            base.mkdir(mode=0o700)
+            identity = self.checker.prepare_secure_output_directory(
+                base, HANDOFF_RELATIVE
+            )
+            output = base / HANDOFF_RELATIVE
+            displaced = output.with_name("supply-chain.displaced")
+            output.rename(displaced)
+            output.mkdir(mode=0o700)
+            private = pathlib.Path(temporary) / "private"
+            private.mkdir(mode=0o700)
+            baseline = private / "baseline.json"
+            candidate = private / "candidate.json"
+            self.write_verdict(baseline, "baseline")
+            self.write_verdict(candidate, "candidate")
+            with self.assertRaises(self.checker.SecureOutputError):
+                self.checker.publish_verdict_pair(
+                    base,
+                    HANDOFF_RELATIVE,
+                    identity,
+                    baseline,
+                    candidate,
+                    SOURCE_REVISION,
+                    CANDIDATE_SUBJECT["build_context_sha256"],
+                )
+            self.assertEqual([], list(output.iterdir()))
+
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary) / "base"
+            base.mkdir(mode=0o700)
+            identity = self.checker.prepare_secure_output_directory(
+                base, HANDOFF_RELATIVE
+            )
+            output = base / HANDOFF_RELATIVE
+            private = pathlib.Path(temporary) / "private"
+            private.mkdir(mode=0o700)
+            baseline = private / "baseline.json"
+            candidate = private / "candidate.json"
+            self.write_verdict(baseline, "baseline")
+            self.write_verdict(candidate, "candidate")
+            candidate.chmod(0o644)
+            with self.assertRaises(self.checker.SecureOutputError):
+                self.checker.publish_verdict_pair(
+                    base,
+                    HANDOFF_RELATIVE,
+                    identity,
+                    baseline,
+                    candidate,
+                    SOURCE_REVISION,
+                    CANDIDATE_SUBJECT["build_context_sha256"],
+                )
+            self.assertFalse((output / "verification-verdict.pair.json").exists())
+            self.assertFalse((output / "verification-verdict.baseline.json").exists())
+            self.assertFalse((output / "verification-verdict.candidate.json").exists())
 
 
 if __name__ == "__main__":
