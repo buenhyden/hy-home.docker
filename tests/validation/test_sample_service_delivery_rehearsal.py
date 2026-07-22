@@ -501,6 +501,42 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertLess(revalidate, validate_schema)
         self.assertLess(revalidate, write_record)
 
+    def test_publication_rejects_snapshot_hash_substitution(self) -> None:
+        with tempfile.TemporaryDirectory(dir="/tmp") as raw:
+            root = Path(raw)
+            baseline_input = root / "verification-verdict.baseline.json"
+            candidate_input = root / "verification-verdict.candidate.json"
+            record = root / "rehearsal-record.json"
+            shutil.copy2(BASELINE, baseline_input)
+            shutil.copy2(CANDIDATE, candidate_input)
+            result = self.run_sourced(
+                textwrap.dedent(
+                    f"""\
+                    BASELINE_VERDICT_PATH={baseline_input!s}
+                    CANDIDATE_VERDICT_PATH={candidate_input!s}
+                    validate_and_snapshot_delivery_inputs || exit $?
+                    REHEARSAL_RECORD_PATH={record!s}
+                    BASELINE_PROJECT=hyhome-dre-20260719-12345-baseline
+                    CANARY_PROJECT=hyhome-dre-20260719-12345-canary
+                    PROMOTION_DECISION=promoted
+                    ROLLBACK_DECISION=not_required
+                    POST_ROLLBACK_HEALTH=not_applicable
+                    CLEANUP_COMPLETE=true
+                    REHEARSAL_STARTED_AT=2026-07-22T12:00:00Z
+                    REHEARSAL_COMPLETED_AT=2026-07-22T12:00:10Z
+                    BASELINE_RESULT=passed
+                    CANARY_RESULT=passed
+                    REHEARSAL_RESULT=promoted
+                    CANDIDATE_JSON="$(build_rehearsal_record_json)"
+                    CANDIDATE_JSON="${{CANDIDATE_JSON/$BASELINE_VERDICT_SHA256/sha256:{'9' * 64}}}"
+                    publish_rehearsal_record
+                    """
+                )
+            )
+            self.assertFalse(record.exists())
+        self.assertEqual(40, result.returncode, result.stdout + result.stderr)
+        self.assertIn("record-schema-invalid", result.stderr)
+
     def test_rejects_remote_image_reference(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             path = self.write_payload(
@@ -857,7 +893,18 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir="/tmp") as raw:
             root = Path(raw)
             record = root / "rehearsal-record.json"
-            invalid_body = textwrap.dedent(
+            baseline_input = root / "verification-verdict.baseline.json"
+            candidate_input = root / "verification-verdict.candidate.json"
+            shutil.copy2(BASELINE, baseline_input)
+            shutil.copy2(CANDIDATE, candidate_input)
+            snapshot_body = textwrap.dedent(
+                f"""\
+                BASELINE_VERDICT_PATH={baseline_input!s}
+                CANDIDATE_VERDICT_PATH={candidate_input!s}
+                validate_and_snapshot_delivery_inputs || exit $?
+                """
+            )
+            invalid_body = snapshot_body + textwrap.dedent(
                 f"""\
                 REHEARSAL_RECORD_PATH={record!s}
                 CANDIDATE_JSON='{{"schema_version":1}}'
@@ -868,18 +915,20 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             failed = self.run_sourced(invalid_body)
             self.assertEqual(40, failed.returncode, failed.stdout + failed.stderr)
             self.assertFalse(record.exists())
-            body = textwrap.dedent(
+            body = snapshot_body + textwrap.dedent(
                 f"""\
                 REHEARSAL_RECORD_PATH={record!s}
-                SOURCE_REVISION=0123456789abcdef0123456789abcdef01234567
-                BASELINE_VERDICT_PATH=/tmp/verification-verdict.baseline.json
-                CANDIDATE_VERDICT_PATH=/tmp/verification-verdict.candidate.json
                 BASELINE_PROJECT=hyhome-dre-20260719-12345-baseline
                 CANARY_PROJECT=hyhome-dre-20260719-12345-canary
                 PROMOTION_DECISION=promoted
                 ROLLBACK_DECISION=not_required
                 POST_ROLLBACK_HEALTH=not_applicable
                 CLEANUP_COMPLETE=true
+                REHEARSAL_STARTED_AT=2026-07-22T12:00:00Z
+                REHEARSAL_COMPLETED_AT=2026-07-22T12:00:10Z
+                BASELINE_RESULT=passed
+                CANARY_RESULT=passed
+                REHEARSAL_RESULT=promoted
                 CANDIDATE_JSON="$(build_rehearsal_record_json)"
                 publish_rehearsal_record
                 """
