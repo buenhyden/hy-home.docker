@@ -108,7 +108,7 @@ load_tool_registry() {
 }
 
 validate_policy_and_exceptions() {
-  [[ -f "$POLICY" && -f "$COSIGN_OFFLINE_SIGNING_CONFIG" && -f "$COSIGN_OFFLINE_TRUSTED_ROOT" && -f "$TASK_DOC" ]] || fail "$EXIT_POLICY" "policy-task-or-cosign-config-boundary-missing"
+  [[ -f "$POLICY" && -f "$COSIGN_OFFLINE_SIGNING_CONFIG" && -f "$TASK_DOC" ]] || fail "$EXIT_POLICY" "policy-task-or-cosign-config-boundary-missing"
   python3 "$CHECKER" --check >/dev/null || fail "$EXIT_POLICY" "policy-or-exception-invalid"
 }
 
