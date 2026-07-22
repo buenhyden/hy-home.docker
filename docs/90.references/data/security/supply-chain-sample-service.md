@@ -30,7 +30,7 @@ document does not replace security policy, CI configuration, or Task evidence.
 ### In Scope
 
 - Fixture-only validation for the local sample-service policy.
-- Digest-bound local subject tuples and redacted verification verdict schema.
+- Digest-bound portable local subject tuples and redacted verification verdict schema.
 - Local ephemeral Cosign key lifetime and advisory-only Scorecard boundary.
 
 ### Out of Scope
@@ -69,12 +69,24 @@ document does not replace security policy, CI configuration, or Task evidence.
 
 ## Evidence Boundary
 
-- The Task consumer contract is exactly two ignored local verdicts at
+- The Task consumer contract is exactly three ignored local handoff files:
   `_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json`
-  and `verification-verdict.candidate.json`.
-- Each published consumer verdict carries only source revision, image config
-  digest, OCI archive SHA-256, policy ID, role, verdict, a null exception ID,
+  `verification-verdict.candidate.json`, and `verification-verdict.pair.json`.
+- Each schema-v2 verdict binds source revision and build context to the full
+  portable identity tuple: OCI manifest digest, image config digest, OCI
+  archive SHA-256, deterministic Docker-load archive SHA-256, deterministic
+  local image reference, observed runtime image ID, and runtime identity kind.
+  It also carries policy ID, role, accepted verdict, a null exception ID,
   verification time, and redaction status.
+- The schema-v3 pair manifest uses generation
+  `hyhome-verification-verdict-pair-v3`; it binds the exact bytes of both
+  verdicts and repeats the full per-role identity tuple. Partial, legacy,
+  mixed-generation, or substituted handoffs fail closed.
+- The OCI-to-Docker handoff is a deterministic, uncompressed Docker load
+  archive derived from the validated OCI config and layers. Consumers use
+  only the bound local reference, require `pull_policy: never`, `--pull never`,
+  and `--no-build`, and compare both the local object's `.Id` and the running
+  container `.Image` with the recorded runtime image ID.
 - Fixture-only checks do not create consumer verdicts. Advisory execution must
   produce distinct accepted subjects without a vulnerability exception or
   report a truthful prerequisite block, exception-review rejection, or policy

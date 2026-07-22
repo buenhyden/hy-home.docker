@@ -40,7 +40,7 @@ remote deployment, secret access, or a real Release event.
 - **ARD**: [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
   defines separate baseline/canary projects and upstream verdict boundaries.
 - **ADR**: [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-  selects verified-digest local canary, promotion, and previous-digest rollback.
+  selects verified-artifact local canary, promotion, and previous-identity rollback.
 - **Audit lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
   remains the canonical audit lineage.
 - **Direct dependencies**: [Spec 124](../124-compose-runtime-readiness-remediation/spec.md),
@@ -102,6 +102,14 @@ identity, verifier verdicts, environment, approvals, timestamps, outcome, and
 rollback. Tracked evidence contains no credential, secret, OIDC token, raw log,
 private endpoint payload, or unrestricted artifact URL.
 
+For the bounded local rehearsal, Spec 127 consumes only Spec 126 verdict schema
+v2 and pair schema/generation v3. The consumer uses the pair-bound deterministic
+`local_image_ref`, proves its local `.Id` equals `runtime_image_id` before every
+start boundary, starts Compose with `pull_policy: never`, `--pull never`, and
+`--no-build`, and proves the running container `.Image` still equals that ID.
+The strict rehearsal record is schema v4 and carries both roles' full portable
+identity tuples together with exact upstream handoff hashes.
+
 ### Governance Contract
 
 - A future Stage 04 task must name exact workflow/runtime/remote/secret
@@ -121,10 +129,11 @@ and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-clo
 ## Core Design
 
 - **Component Boundary**: Separate local baseline and canary Compose projects
-  for `examples/sample-web-service`, promoted only by immutable verified digest
-  with explicit health and previous-digest rollback.
-- **Key Dependencies**: Spec 126 verification verdict; Spec 124 readiness;
-  Spec 125 data recovery and state-aware rollback.
+  for `examples/sample-web-service`, started only from pair-bound deterministic
+  local references and promoted only after exact runtime-ID, health, and
+  previous-artifact rollback checks.
+- **Key Dependencies**: Spec 126 verdict schema v2 and pair schema/generation
+  v3; Spec 124 readiness; Spec 125 data recovery and state-aware rollback.
 - **Tech Stack**: Docker image/build, Docker Compose, repository-owned health
   and promotion wrappers, and Spec 126 verification verdicts. No remote
   environment, registry, Release, or workflow provider is selected.
@@ -146,8 +155,8 @@ and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-clo
 
 | Interface | Producer | Consumer | Contract |
 | --- | --- | --- | --- |
-| Immutable artifact/config | Approved build/release flow | Promotion/deployment | Source revision plus digest/version and reproducible identity. |
-| Security verdict | Spec 126 implementation | Promotion gate | Subject digest, policy/version, accepted/rejected/exception status. |
+| Immutable artifact/config | Approved build/release flow | Promotion/deployment | Source revision plus OCI manifest/config/archive identity, deterministic Docker-load archive, local reference, and observed runtime image ID/kind. |
+| Security verdict pair | Spec 126 implementation | Promotion gate | Verdict schema v2 and pair schema/generation v3, exact verdict hashes and full role tuples, accepted/no-exception/redaction status. |
 | Runtime readiness | Spec 124 implementation | Deployment health gate | Scoped ready/degraded/failed result and teardown/recovery boundary. |
 | Data recovery handoff | Spec 125 implementation | Rollback decision | Approved restore point, integrity criteria, and recovery owner. |
 
@@ -216,6 +225,8 @@ or environment dumps in tracked docs or memory.
 ## Edge Cases & Error Handling
 
 - Build succeeds but verifier fails: do not promote.
+- The bound local reference is missing, retargeted, built, pulled, or resolves
+  to another runtime ID/role: fail before or during the affected start boundary.
 - Environment approval is stale or for another artifact: do not deploy.
 - Deployment health fails after partial rollout: stop expansion and use only
   approved rollback/recovery.

@@ -16,25 +16,28 @@ parent_ids:
 > `superpowers:executing-plans` to implement this plan task-by-task. Sequence
 > steps become Task evidence only after execution.
 
-**Goal:** Rehearse verified-digest baseline/canary delivery and previous-digest
+**Goal:** Rehearse pair-bound baseline/canary delivery and previous-runtime-ID
 rollback for `examples/sample-web-service` without creating a real release or
 remote deployment.
 
 **Architecture:** The sample Compose file becomes project-scopable by removing
 its fixed top-level/project container identity. A task-owned wrapper consumes
 the two concise accepted verdicts and their generation-bound pair manifest from
-Spec 126, runs independent baseline and
-canary Compose projects, checks container plus HTTP health, records a local
-promotion decision, injects bounded failure, restores the previous digest, and
-cleans only labelled task resources.
+Spec 126, resolves their full portable identity tuples, runs independent
+baseline and canary Compose projects without pull or build, checks container
+identity plus HTTP health, records a local promotion decision, injects bounded
+failure, restores the previous runtime image ID, and cleans only labelled task
+resources before publishing a record.
 
 **Tech Stack:** Docker Compose; Bash; Python `unittest`; sample web service;
 typed JSON handoff/record fixtures; local HTTP and container-health probes.
 
 ## Global Constraints
 
-- Candidate and previous artifacts must be immutable digests; mutable tags are
-  never promotion inputs.
+- Candidate and previous artifacts must be the schema-v2/schema-v3 pair-bound
+  portable identities. The deterministic local references are accepted only
+  when `.Id` equals the bound runtime image ID; arbitrary or unverified mutable
+  tags are never promotion inputs.
 - Baseline and canary project names are constructed as
   `hyhome-dre-20260719-<decimal-pid>-baseline` and
   `hyhome-dre-20260719-<decimal-pid>-canary`. Preflight and cleanup accept only
@@ -52,7 +55,7 @@ typed JSON handoff/record fixtures; local HTTP and container-health probes.
 This active plan turns Spec 127 into an executable local sequence for
 `examples/sample-web-service` baseline/canary environments, verified-digest
 promotion, health gates, release/deployment evidence records, and previous
-digest rollback. Observed execution and lifecycle evidence belongs only in the
+runtime-image-ID rollback. Observed execution and lifecycle evidence belongs only in the
 [domain Task](../tasks/2026-07-19-deployment-release-engineering-remediation.md).
 
 The implementation rehearses delivery mechanics only. It does not create a
@@ -73,8 +76,8 @@ Inputs:
 
 Planning implication: CI/build success, changelog text, and local image
 existence are inputs, not deployment evidence. The rehearsal must require an
-immutable verified digest, promote only after gates pass, and prove rollback to
-the previous verified digest.
+immutable verified identity tuple, promote only after gates pass, and prove
+rollback to the previous verified runtime image ID.
 
 ## Goals and Non-goals
 
@@ -87,7 +90,7 @@ Goals:
   verdict, outcome, and rollback disposition.
 - Prove `DRE-003` with a local promotion wrapper that fails closed on missing
   approval, security verdict, readiness, health, or rollback.
-- Prove `DRE-004` with previous verified digest rollback and post-rollback
+- Prove `DRE-004` with previous pair-bound runtime image ID rollback and post-rollback
   health; data recovery remains a Spec 125 handoff.
 
 Non-goals:
@@ -102,8 +105,8 @@ Non-goals:
 | Unit | Purpose | Planned owned files | Requirements | RED/GREEN evidence | Commit boundary |
 | --- | --- | --- | --- | --- | --- |
 | `T-DRE-001` | Define typed handoff/record fixtures, gate contract, wrapper CLI, and tests. | `scripts/operations/rehearse-sample-service-delivery.sh`; `tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json`; `tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json`; `tests/fixtures/sample-service-delivery/spec126-verdict.candidate.rejected.json`; `tests/fixtures/sample-service-delivery/spec126-verdict.candidate.digest-mismatch.json`; `tests/fixtures/sample-service-delivery/compose.delivery.override.yml`; `tests/validation/test_sample_service_delivery_rehearsal.py`; `docs/04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md`. | `DRE-001`–`DRE-004` | RED: mutable tag, missing/rejected/mismatched verifier verdict, equal baseline/candidate digests, remote target, or unscoped cleanup. GREEN: preflight resolves revision, two accepted distinct digests, projects, gates, ports, cleanup, and rollback. | `feat(release): add local promotion and rollback` |
-| `T-DRE-002` | Make the sample Compose service project-scopable and implement baseline/canary health. | `examples/sample-web-service/docker-compose.yml`; `README.md`; `service.md`; delivery override/wrapper/tests. | `DRE-001`, `DRE-003` | RED: fixed `name`/`container_name` prevents parallel projects or canary starts without an accepted Spec 126 verdict. GREEN: separate projects use the verified digest and pass container plus HTTP marker health before promotion. | Same DRE commit. |
-| `T-DRE-003` | Implement promotion record, failure injection, previous-digest rollback, and cleanup. | The wrapper, typed fixtures/tests, and ignored runtime evidence. | `DRE-002`, `DRE-004` | RED: promotion succeeds without complete gates/record or rollback cannot restore the previous digest. GREEN: local record is complete; injected failure rolls back and post-rollback health passes. | Same DRE commit. |
+| `T-DRE-002` | Make the sample Compose service project-scopable and implement baseline/canary health. | `examples/sample-web-service/docker-compose.yml`; `README.md`; `service.md`; delivery override/wrapper/tests. | `DRE-001`, `DRE-003` | RED: fixed `name`/`container_name` prevents parallel projects or canary starts without an accepted Spec 126 verdict. GREEN: separate projects use pair-bound local refs/runtime IDs and pass container plus HTTP marker health before promotion. | Same DRE commit. |
+| `T-DRE-003` | Implement promotion record, failure injection, previous-runtime-ID rollback, and cleanup. | The wrapper, typed fixtures/tests, and ignored runtime evidence. | `DRE-002`, `DRE-004` | RED: promotion succeeds without complete gates/record or rollback cannot restore the previous runtime image ID. GREEN: local record is complete; injected failure rolls back and post-rollback health passes. | Same DRE commit. |
 | `T-DRE-004` | Update the narrow release-management handoff and complete reviews. | `docs/05.operations/runbooks/00-workspace/release-management.md`; domain Task; lifecycle/index updates only when supported. | `VAL-DRE-001`–`004` | Every finding is resolved and independently re-reviewed before closure. | Evidence-only closure unit after approval. |
 
 ### Implementation contract
@@ -114,9 +117,16 @@ The wrapper accepts only these subcommands:
 rehearse-sample-service-delivery.sh preflight --task-id 2026-07-19-dre --baseline-verdict tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json --candidate-verdict tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json
 rehearse-sample-service-delivery.sh rehearse --task-id 2026-07-19-dre --baseline-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json --candidate-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json --failure-mode none
 rehearse-sample-service-delivery.sh rehearse --task-id 2026-07-19-dre-negative --baseline-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json --candidate-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json --failure-mode canary-health-timeout
-rehearse-sample-service-delivery.sh cleanup --task-id 2026-07-19-dre
-rehearse-sample-service-delivery.sh cleanup --task-id 2026-07-19-dre-negative
 ```
+
+The two `rehearse` commands run in the strict order shown: positive first, then
+injected rollback. Each performs its own owned cleanup before atomic record
+publication. Because the canonical record path is singular, Task evidence must
+capture the positive record hash and concise fields before the negative run
+replaces it. `cleanup --task-id ...` is a rescue-only subcommand for an
+interrupted or partial owned run; it is not an expected post-success command
+and intentionally returns class `60` when the exact owned project pair is
+absent.
 
 `--task-id` must match `^[a-z0-9-]+$`. The wrapper creates
 project names by combining `hyhome-dre-20260719-`, its decimal process ID, and
@@ -134,20 +144,26 @@ Exit classes are `0=pass`, `2=usage`, `10=verdict/preflight`, `20=baseline`,
 The sample Compose change deletes only top-level `name` and service
 `container_name`; build, hardening, healthcheck, resource, logging, and network
 semantics remain unchanged. The delivery override sets `image` from the
-verified local image config digest, disables `build`, adds task/role labels,
+pair-bound deterministic `local_image_ref`, disables `build`, adds task/role labels,
 sets `pull_policy: never`, and maps baseline/canary to loopback ports
 `18080`/`18081`. Before either start, the wrapper performs bounded local-only
-image inspection for both digests and requires exactly one object whose `.Id`
-equals the accepted config digest; starts also use `--pull never --no-build`.
+image inspection for both references and requires exactly one object whose
+role label and `.Id` equal the accepted verdict. Starts use `--pull never
+--no-build`; after each start the running container `.Image` must equal the
+same bound `runtime_image_id`.
 
 Both input verdicts use the exact Spec 126 schema. Preflight requires:
 
 - producer `spec:126-security-supply-chain-remediation`;
 - roles `baseline` and `candidate` respectively;
 - equal 40-hex source revisions;
-- two different image config and archive digests;
+- two different OCI manifests, image configs, OCI archives, Docker-load
+  archives, deterministic local refs, and runtime image IDs;
 - policy `sample-service-local-v1`;
 - `verdict=accepted`, `exception_id=null`, and `redaction_status=passed`.
+- verdict schema v2 and a schema-v3 pair manifest with generation
+  `hyhome-verification-verdict-pair-v3`, exact verdict hashes, and exact full
+  per-role identity tuples.
 
 Required wrapper symbols and order:
 
@@ -156,6 +172,7 @@ parse_subcommand
 load_and_validate_verdict baseline
 load_and_validate_verdict candidate
 assert_distinct_subjects_and_same_revision
+load_and_validate_pair_manifest
 validate_local_image_object
 validate_local_image_objects
 assert_ports_and_owned_project_names
@@ -167,8 +184,8 @@ record_promotion_decision
 inject_canary_timeout_when_requested
 rollback_to_baseline_digest
 verify_post_rollback_health
-write_rehearsal_record
 cleanup_owned_projects
+write_rehearsal_record
 ```
 
 In-process cleanup first proves exact all-versus-owned container/network IDs,
@@ -187,7 +204,7 @@ cleanup remains `passed`.
 
 ```json
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "producer_spec": "spec:127-deployment-release-engineering-remediation",
   "release_rehearsal_id": "local-rehearsal-20260719-0123456789ab",
   "source_revision": "0123456789abcdef0123456789abcdef01234567",
@@ -207,14 +224,24 @@ cleanup remains `passed`.
   "build_context_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "policy_id": "sample-service-local-v1",
   "policy_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "baseline_oci_manifest_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "candidate_oci_manifest_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
   "baseline_image_config_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
   "candidate_image_config_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
   "baseline_oci_archive_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
   "candidate_oci_archive_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-  "baseline_verdict_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
-  "candidate_verdict_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-  "verification_pair_manifest_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
-  "verification_pair_generation": "hyhome-verification-verdict-pair-v2",
+  "baseline_docker_archive_sha256": "sha256:1010101010101010101010101010101010101010101010101010101010101010",
+  "candidate_docker_archive_sha256": "sha256:2020202020202020202020202020202020202020202020202020202020202020",
+  "baseline_local_image_ref": "hyhome.local/sample-web-service:baseline-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "candidate_local_image_ref": "hyhome.local/sample-web-service:candidate-dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "baseline_runtime_image_id": "sha256:3030303030303030303030303030303030303030303030303030303030303030",
+  "candidate_runtime_image_id": "sha256:4040404040404040404040404040404040404040404040404040404040404040",
+  "baseline_runtime_identity_kind": "docker-target-digest",
+  "candidate_runtime_identity_kind": "docker-target-digest",
+  "baseline_verdict_sha256": "sha256:5050505050505050505050505050505050505050505050505050505050505050",
+  "candidate_verdict_sha256": "sha256:6060606060606060606060606060606060606060606060606060606060606060",
+  "verification_pair_manifest_sha256": "sha256:7070707070707070707070707070707070707070707070707070707070707070",
+  "verification_pair_generation": "hyhome-verification-verdict-pair-v3",
   "readiness_verdict_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
   "recovery_boundary_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
   "approval_ref": "task:2026-07-19-deployment-release-engineering-remediation#approval-2026-07-19",
@@ -227,9 +254,9 @@ cleanup remains `passed`.
 ```
 
 Before Docker, the consumer requires and snapshots both verdicts and their
-schema-v2 pair manifest, validates exact verdict byte hashes plus matching
-source revision, build context, and generation, and fails class 10 on a
-missing, stale, mixed, or substituted generation.
+schema-v3 pair manifest, validates exact verdict byte hashes, full role tuples,
+matching source revision, build context, and generation, and fails class 10 on
+a missing, legacy, stale, mixed, or substituted generation.
 
 Tests expose `test_rejects_fixed_compose_identity`,
 `test_rejects_missing_rejected_or_mismatched_verdict`,
@@ -261,13 +288,16 @@ Tests expose `test_rejects_fixed_compose_identity`,
       `bash scripts/operations/rehearse-sample-service-delivery.sh preflight --task-id 2026-07-19-dre --baseline-verdict tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json --candidate-verdict tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json`.
 - [ ] Run
       `bash scripts/operations/rehearse-sample-service-delivery.sh rehearse --task-id 2026-07-19-dre --baseline-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json --candidate-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json --failure-mode none`.
+- [ ] After its owned cleanup and record publication, capture the positive
+      record hash and concise schema-v4 fields before any later run replaces
+      the singular canonical record.
 - [ ] Run
       `bash scripts/operations/rehearse-sample-service-delivery.sh rehearse --task-id 2026-07-19-dre-negative --baseline-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json --candidate-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json --failure-mode canary-health-timeout`
-      and require rollback to the previous digest plus post-rollback health.
-- [ ] Run
-      `bash scripts/operations/rehearse-sample-service-delivery.sh cleanup --task-id 2026-07-19-dre`
-      and the matching `2026-07-19-dre-negative` cleanup; reject unowned
-      resources rather than deleting them.
+      and require rollback to the previous runtime image ID plus post-rollback health.
+- [ ] Use standalone `cleanup --task-id ...` only to recover an interrupted or
+      partial exact owned project pair. Do not invoke it after a successful
+      rehearsal; absence after in-process cleanup is the expected class-60
+      fail-closed result.
 - [ ] Record only concise digest, revision, gate, project, health,
       promotion/rollback, cleanup, and data-impact fields in the Task.
 - [ ] Run fresh independent specification review, then release/security review
@@ -292,20 +322,20 @@ this Plan does not own a concrete base identity.
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` | `DRE-001`–`DRE-004` map to implemented files and Task evidence. |
 | Repository contract | `bash scripts/validation/check-repo-contracts.sh` | No new contract breakage. |
 | Fixture/unit tests | `python3 -m unittest tests.validation.test_sample_service_delivery_rehearsal -v` | Gate, promotion, record, and rollback fixtures pass. |
-| Local runtime rehearsal | the four exact wrapper commands in Sequence | Canary, promotion, health, local rehearsal record, rollback, and cleanup pass. |
+| Local runtime rehearsal | positive then injected-rollback commands in Sequence | Canary, promotion, health, positive record capture, previous-ID rollback, replacement record, and in-process cleanup pass. |
 | Review | Independent spec and quality/security review | All findings are resolved and independently re-reviewed. |
 
 ## Risks and Rollback
 
 | Risk | Impact | Mitigation / rollback |
 | --- | --- | --- |
-| Mutable or unverified artifact promoted | Critical | Require Spec 126 digest/verifier verdict; reject tags without digest. |
+| Mutable or unverified artifact promoted | Critical | Require Spec 126 verdict v2/pair v3, exact tuple equality, and local/running runtime-ID revalidation; reject arbitrary tags. |
 | Local rehearsal confused with production release | High | Evidence labels local-only; no GitHub Release or environment mutation. |
-| Partial promotion without rollback | Critical | Previous digest is mandatory input; injected failure proves rollback. |
+| Partial promotion without rollback | Critical | The previous pair-bound runtime image ID is mandatory input; injected failure proves rollback. |
 | Health gate too shallow | High | Health probes are explicit and independent from build success. |
 | Data rollback overclaim | Critical | Config/application rollback only; data impact routes to Spec 125. |
 
-Rollback is by running the task-owned rollback wrapper to the previous digest,
+Rollback is by running the task-owned rollback wrapper to the previous runtime image ID,
 then reverting the logical commit if implementation files must be removed.
 Cleanup may remove only task-owned local projects, networks, and containers.
 
@@ -323,9 +353,9 @@ Cleanup may remove only task-owned local projects, networks, and containers.
       redaction, and reviews.
 - [ ] Dry-run/preflight and fixtures reject mutable artifact, missing verifier,
       failed health, missing record, and rollback failure.
-- [ ] Local canary starts only with a verified digest and health gate.
+- [ ] Local canary starts only with a pair-bound local reference/runtime ID and health gate.
 - [ ] Promotion produces a local release/deployment evidence record.
-- [ ] Injected failure rolls back to previous digest and post-rollback health
+- [ ] Injected failure rolls back to the previous runtime image ID and post-rollback health
       passes.
 - [ ] Independent specification and quality/security findings are remediated
       and re-reviewed; exact verdicts remain Task evidence.

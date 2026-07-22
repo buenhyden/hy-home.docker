@@ -97,6 +97,19 @@ association. Tracked evidence contains concise results and identifiers only,
 never raw vulnerability reports, token-bearing URLs, credentials, private keys,
 OIDC tokens, secret values, or unrestricted artifact contents.
 
+The local delivery handoff is versioned and fail-closed:
+
+- each role has one schema-v2 verification verdict binding source revision and
+  build context to `oci_manifest_digest`, `image_config_digest`,
+  `oci_archive_sha256`, `docker_archive_sha256`, `local_image_ref`,
+  `runtime_image_id`, and `runtime_identity_kind`, plus the policy result,
+  null exception, timestamp, and redaction status;
+- one schema-v3 `verification-verdict.pair.json` with generation
+  `hyhome-verification-verdict-pair-v3` binds the exact verdict bytes and the
+  full identity tuple for both roles; and
+- legacy, partial, stale, mixed-generation, equal-subject, or substituted
+  handoffs are rejected before a consumer reaches runtime.
+
 ### Governance Contract
 
 - A future Stage 04 task must name exact local/CI/runtime/remote surfaces,
@@ -116,14 +129,15 @@ and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-clo
 
 - **Component Boundary**: Local sample-service image build plus digest-bound
   SBOM, scan policy verdict, provenance statement, blob signature, verification,
-  and positive/negative fixtures.
+  portable Docker-load handoff, and positive/negative fixtures.
 - **Key Dependencies and Consumers**: The tracked
   `examples/sample-web-service` source and local fixture build produce the test
   artifact identity. Spec 127 consumes the verification verdict; Specs 124/125
   may consume image verdicts without owning this requirement.
 - **Tech Stack**: Digest-pinned Syft, Grype, and Cosign containers; CycloneDX
   JSON SBOM; SLSA/in-toto-style provenance statement; local ephemeral signing
-  key; read-only OpenSSF Scorecard; versioned local policy fixtures.
+  key; deterministic OCI-to-Docker archive conversion; read-only OpenSSF
+  Scorecard; versioned local policy fixtures.
 
 ## Data Modeling & Storage Strategy
 
@@ -141,8 +155,9 @@ and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-clo
 
 | Interface | Producer | Consumer | Contract |
 | --- | --- | --- | --- |
-| Artifact identity | Spec 126 local sample-service fixture build | SBOM/provenance/signing | Immutable subject digest plus source/build identity. |
-| Verification verdict | Future supply-chain verifier | Spec 127 promotion gate | Policy/version, subject digest, accepted/rejected/exception status. |
+| Artifact identity | Spec 126 local sample-service fixture build | SBOM/provenance/signing | OCI manifest and image-config digests plus source/build identity and OCI archive hash. |
+| Portable image handoff | Spec 126 verifier | Spec 127 local runtime gate | Deterministic Docker-load archive hash, deterministic local reference, observed runtime image ID/kind, and the originating OCI identity. |
+| Verification verdict pair | Spec 126 verifier | Spec 127 promotion gate | Verdict schema v2 plus pair schema/generation v3, exact verdict-byte hashes, full per-role identity tuples, policy result, and no-exception/redaction status. |
 | Image/artifact verdict | Future scanner/verifier | Specs 124/125 | Exact digest, policy, freshness, and redacted result. |
 | Exception record | Human security owner | Build/release consumer | Scope, reason, owner, approval, expiry, compensating control, disposition. |
 
@@ -165,9 +180,10 @@ tool selection and remote approval.
 ## Tools & Tool Contract (If Applicable)
 
 - **Tool List**: Syft for SBOM, Grype for SBOM/image vulnerability evaluation,
-  Cosign `sign-blob`/`verify-blob` for local subject binding, and Scorecard for
-  read-only advisory observation. Exact releases and image digests belong in
-  the Plan after current official-release verification.
+  Cosign `sign-blob`/`verify-blob` for local subject binding, a bounded standard-
+  library OCI-to-Docker archive converter for portable local loading, and
+  Scorecard for read-only advisory observation. Exact releases and image
+  digests belong in the Plan after current official-release verification.
 - **Permission Boundary**: Local build and task-owned artifact execution only;
   Scorecard may query the exact repository read-only. Registry, workflow,
   identity, publication, and remote mutation remain prohibited.
@@ -212,6 +228,8 @@ or secret-bearing logs in tracked evidence or memory.
 - Scanner ecosystems overlap or disagree: preserve tool/policy-specific results
   and require human disposition; do not average away a failure.
 - SBOM subject digest differs from artifact: reject association.
+- OCI descriptor, layer digest/DiffID, archive bounds, local reference, loaded
+  image ID, or role label differs from the pair: reject the handoff.
 - Provenance is produced but not verified: mark unverified, never trusted.
 - Signature verifies cryptographically but identity/policy is wrong: reject.
 - Scorecard produces a score: treat checks as advisory findings, not maturity.

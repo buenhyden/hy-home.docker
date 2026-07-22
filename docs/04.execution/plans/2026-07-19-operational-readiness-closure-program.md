@@ -102,14 +102,14 @@ Commands below parameterize that Task-owned identity as
 | Producer | Exact transient artifact | Required consumer fields | Consumer rule |
 | --- | --- | --- | --- |
 | Spec 124 / Task 2 | Ready handoff `_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json`; scenario evidence `readiness-verdict.<scenario>.json` in the same directory | Schema v2: producer Spec/Task, approval, scenario, target class, project, start/end, exact five-service states, endpoint verdicts, observed state, recovery/teardown, overall, elapsed, cleanup, redaction | Task 5 accepts only a ready canonical record with exact services, `scenario=vault-restart-recovery`, `recovery_status=passed`, and cleanup/redaction passed. Negative evidence remains scenario-specific and is never promoted as readiness. |
-| Spec 126 / Task 3 | `_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json`, `verification-verdict.candidate.json`, and `verification-verdict.pair.json` | Verdict schema v1 fields plus pair-manifest schema v2 generation, source revision, build-context digest, and exact baseline/candidate verdict-byte hashes | Task 5 requires two distinct accepted/no-exception/redaction-passed subjects plus one matching `hyhome-verification-verdict-pair-v2` manifest; missing, stale, or mixed generations fail before Docker. |
+| Spec 126 / Task 3 | `_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json`, `verification-verdict.candidate.json`, and `verification-verdict.pair.json` | Verdict schema v2 binds source/build context, OCI manifest/config/archive, deterministic Docker-load archive, local ref, runtime image ID/kind, policy, result, exception, timestamp, and redaction; pair schema v3/generation v3 binds exact verdict hashes and the full role tuples | Task 5 requires two distinct accepted/no-exception/redaction-passed subjects plus one matching `hyhome-verification-verdict-pair-v3` manifest; missing, legacy, stale, substituted, or mixed generations fail before Docker. |
 | Spec 125 / Task 4 | `_workspace/repo-support/task-2026-07-19-infrastructure-operations-readiness-remediation/postgres/recovery-verdict.json` | `schema_version`, `producer_spec`, source/target pins, fixture/dump checksums, integrity verdict, observed timings, cleanup status, `scope=synthetic-local` | Task 5 records this as a data-recovery boundary only; the stateless sample service must declare `data_impact=none` and must not claim database recovery. |
-| Spec 127 / Task 5 | `_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json` | Schema v3: upstream references and exact hashes including pair manifest/generation, baseline/canary projects, promotion/rollback/post-health results, approval/timestamps, data impact, and cleanup | Task 6 copies only concise typed fields and checksums into Stage 04 Task evidence. |
+| Spec 127 / Task 5 | `_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json` | Schema v4: upstream references and exact hashes including pair manifest/generation, both full portable identity tuples, baseline/canary projects, promotion/rollback/post-health results, approval/timestamps, data impact, and cleanup | Task 6 captures the positive record hash/concise fields before the strict negative run replaces the singular canonical, then copies only concise typed fields and checksums into Stage 04 Task evidence. |
 
 All JSON artifacts use UTF-8, sorted-key serialization, RFC 3339 UTC
 timestamps, and lowercase enum values. Task 2 uses readiness schema v2; Task 3
-uses verdict schema v1 plus pair-manifest schema v2; Task 4 uses recovery
-schema v1; Task 5 uses rehearsal-record schema v3.
+uses verdict schema v2 plus pair-manifest schema/generation v3; Task 4 uses
+recovery schema v1; Task 5 uses rehearsal-record schema v4.
 Where checksums apply, SHA-256 strings are prefixed with `sha256:`. Missing or
 unknown fields fail closed; producers and consumers share no raw evidence files.
 
@@ -217,6 +217,11 @@ Non-goals:
       findings. Observed review evidence belongs only in the domain Task.
 - [ ] Keep the verified implementation as independently reviewable logical
       units.
+- [ ] Run positive promotion before injected rollback. Capture the positive
+      schema-v4 record hash and concise fields after its in-process cleanup and
+      before the negative run replaces the singular canonical record.
+- [ ] Treat standalone `cleanup --task-id ...` as rescue-only for interrupted
+      or partial owned project pairs, not as an expected post-success step.
 
 Task 5's implementation/static gate is distinct from positive promotion and
 injected rollback runtime. The runtime gate may run only after the accepted

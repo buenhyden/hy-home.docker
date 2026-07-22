@@ -22,10 +22,11 @@ fixture-only CI policy gate.
 
 **Architecture:** A versioned policy registry pins tool container manifests and
 artifact rules. One wrapper builds/exports the sample image, derives a declared
-local subject tuple, invokes pinned Syft/Grype/Cosign images, emits SLSA/in-toto
-provenance, and writes a concise verdict consumed by Spec 127. A Python checker
-owns network-independent CI decisions; live Scorecard remains read-only
-advisory.
+portable subject tuple, deterministically converts the validated OCI artifact
+into a Docker-load archive, invokes pinned Syft/Grype/Cosign images, emits
+SLSA/in-toto provenance, and writes a concise verdict pair consumed by Spec
+127. A Python checker owns network-independent CI decisions; live Scorecard
+remains read-only advisory.
 
 **Tech Stack:** Docker/OCI archive; CycloneDX JSON; SLSA provenance v1;
 Cosign blob signing; Syft v1.48.0; Grype v0.116.0; Cosign v3.0.6; OpenSSF
@@ -35,12 +36,14 @@ Scorecard v5.5.0; Bash; Python `unittest`; GitHub Actions fixture-only gate.
 
 - Invoke tools only through the pinned multi-platform image-manifest digests
   listed in Context and Inputs; do not install global binaries.
-- Bind the local subject to both Docker image ID/config digest and OCI archive
-  SHA-256. Do not invent a registry `RepoDigest` for an unpushed image.
+- Bind the local subject to the OCI manifest digest, image config digest, OCI
+  archive SHA-256, deterministic Docker-load archive SHA-256, deterministic
+  local reference, and observed runtime image ID/kind. Do not invent a registry
+  `RepoDigest` for an unpushed image.
 - Build `baseline` and `candidate` variants from the same tracked sample-service
   source and distinguish them only with the OCI label
   `org.hyhome.delivery.rehearsal.role`. Produce and verify a separate verdict
-  for each digest so Spec 127 can prove previous-digest rollback.
+for each digest so Spec 127 can prove previous-runtime-ID rollback.
 - Keep private keys under `/tmp` for one wrapper lifetime and delete them on
   exit; never retain them under `_workspace` or tracked paths.
 - Local workflow-file changes may run the fixture-only policy checker, but no
@@ -113,7 +116,7 @@ Goals:
 - Prove `SSC-001` with a versioned vulnerability policy, scan result summary,
   exception format, and deterministic pass/fail fixtures.
 - Prove `SSC-002` with a CycloneDX JSON SBOM bound to the exact sample image
-  digest.
+  identity and a portable, deterministic local image handoff.
 - Prove `SSC-003` with a local provenance statement whose subject digest,
   source revision, builder class, and materials are verifiable.
 - Prove `SSC-004` with local signing and verification success plus tampered and
@@ -136,7 +139,7 @@ Non-goals:
 | Unit | Purpose | Planned owned files | Requirements | RED/GREEN evidence | Commit boundary |
 | --- | --- | --- | --- | --- | --- |
 | `T-SSC-001` | Define tool registry, policy, exceptions, evidence schema, checker, and fixtures. | `infra/supply-chain.tool-images.json`; `infra/supply-chain.sample-service-policy.json`; `infra/supply-chain.vulnerability-exceptions.json`; `scripts/validation/check-supply-chain-policy.py`; the exact fixture manifest below; `tests/validation/test_supply_chain_policy.py`; `docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md`. | `SSC-001`–`SSC-005` | RED: digestless artifact, unpinned tool, expired/unowned exception, subject mismatch, raw finding leakage, or Scorecard blocking by score. GREEN: the fixture-only checker accepts/rejects each case deterministically. | `feat(security): add local supply-chain verification` |
-| `T-SSC-002` | Build/export baseline and candidate variants and generate digest-bound SBOM/scan verdicts. | `scripts/security/verify-sample-service-supply-chain.sh`; `examples/sample-web-service/Dockerfile`; `examples/sample-web-service/service.md`; ignored task runtime directory. | `SSC-001`, `SSC-002` | RED: either SBOM subject differs from its declared local subject tuple, the two digests are equal, or scan policy is bypassed. GREEN: each CycloneDX SBOM and Grype verdict binds to its distinct tuple. | Same SSC commit. |
+| `T-SSC-002` | Build/export baseline and candidate variants, derive portable OCI/Docker identities, and generate digest-bound SBOM/scan verdicts. | `scripts/security/verify-sample-service-supply-chain.sh`; `scripts/validation/check-supply-chain-policy.py`; `examples/sample-web-service/Dockerfile`; `examples/sample-web-service/service.md`; ignored task runtime directory. | `SSC-001`, `SSC-002` | RED: an OCI descriptor/layer/DiffID is invalid, the Docker-load archive is nondeterministic, either SBOM subject differs from its declared tuple, the role identities are equal, or scan policy is bypassed. GREEN: each CycloneDX SBOM and Grype verdict binds to its distinct full tuple and loaded local image. | Same SSC commit. |
 | `T-SSC-003` | Produce and verify provenance and local signature bundle. | The wrapper, policy checker, provenance/signature fixtures, and tests. | `SSC-003`, `SSC-004` | RED: tampered/wrong-subject material is accepted. GREEN: correct OCI archive verifies and negative fixtures reject. | Same SSC commit. |
 | `T-SSC-004` | Wire fixture-only CI/repo gates, generated summary freshness, and optional Scorecard advisory. | `.github/workflows/ci-quality.yml`; `scripts/validation/run-local-qa-gates.sh`; `scripts/validation/check-repo-contracts.sh`; `scripts/security/generate-supply-chain-sample-service-summary.sh`; `docs/90.references/data/security/supply-chain-sample-service.md`. | `SSC-005` | RED: network/live score controls CI or generated summary is stale. GREEN: fixture-only checks block deterministically; summary freshness passes; live Scorecard is advisory or explicitly skipped. | Same SSC commit. |
 | `T-SSC-005` | Complete independent specification and security/quality reviews. | Domain Task and lifecycle/index updates only when supported. | `VAL-SSC-001`–`004` | All findings are remediated and independently re-reviewed before closure. | Evidence-only closure unit after approval. |
@@ -178,6 +181,8 @@ derive_subject_tuple baseline
 derive_subject_tuple candidate
 generate_cyclonedx_and_grype_verdict baseline
 generate_cyclonedx_and_grype_verdict candidate
+load_role_image_object baseline
+load_role_image_object candidate
 generate_slsa_provenance baseline
 generate_slsa_provenance candidate
 sign_and_verify_archive baseline
@@ -196,6 +201,15 @@ The wrapper passes one of the two exact build labels
 archive digests. For every pinned material/tool image, the wrapper independently
 requires the configured repository manifest digest in `.RepoDigests` and the
 configured image configuration digest in `.Id`.
+
+The checker validates one bounded, uncompressed OCI layout with secure
+USTAR/PAX handling, exact descriptor sizes and SHA-256 values, supported gzip
+layers, and config `rootfs.diff_ids`. It emits one deterministic uncompressed
+Docker-load archive from the same config and layer blobs with fixed metadata
+and one role/config-derived `local_image_ref`; it neither rebuilds nor pulls the
+subject. The wrapper loads that archive, verifies the role label, and records
+the observed `.Id` as `runtime_image_id` with `runtime_identity_kind` equal to
+`config-digest` or `docker-target-digest`.
 
 `infra/supply-chain.tool-images.json` uses schema v2 and contains
 `schema_version`, `policy_id`,
@@ -236,12 +250,18 @@ Each verification verdict has exactly this interface:
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "producer_spec": "spec:126-security-supply-chain-remediation",
   "role": "candidate",
   "source_revision": "0123456789abcdef0123456789abcdef01234567",
+  "build_context_sha256": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+  "oci_manifest_digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
   "image_config_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "oci_archive_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "docker_archive_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "local_image_ref": "hyhome.local/sample-web-service:candidate-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "runtime_image_id": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "runtime_identity_kind": "docker-target-digest",
   "policy_id": "sample-service-local-v1",
   "verdict": "accepted",
   "exception_id": null,
@@ -251,16 +271,18 @@ Each verification verdict has exactly this interface:
 ```
 
 The two accepted verdicts are committed only with
-`verification-verdict.pair.json`, which uses schema v2 and generation
-`hyhome-verification-verdict-pair-v2`. It binds their exact byte hashes to the
-same 40-hex `source_revision` and `build_context_sha256`; partial or mixed
-generations are never published.
+`verification-verdict.pair.json`, which uses schema v3 and generation
+`hyhome-verification-verdict-pair-v3`. It binds their exact byte hashes to the
+same 40-hex `source_revision` and `build_context_sha256` and repeats the seven-
+field portable identity tuple for each role; partial, legacy, substituted, or
+mixed generations are never published.
 
 The Python checker exports `load_json`, `validate_tool_registry`,
 `validate_policy`, `validate_exceptions`, `evaluate_grype_fixture`,
 `validate_sbom_subject`, `validate_provenance_subject`,
 `validate_signature_fixture`, `validate_scorecard_advisory`, and
-`inspect_oci_archive_config_digest`. Tests use one
+`inspect_oci_archive_config_digest`, plus the bounded OCI-to-Docker conversion
+and atomic pair-publication interfaces. Tests use one
 method per fixture plus `test_tool_manifest_pins_are_exact`,
 `test_roles_have_distinct_subjects`, and
 `test_live_score_cannot_be_a_blocking_decision`.
@@ -293,7 +315,8 @@ method per fixture plus `test_tool_manifest_pins_are_exact`,
       rejection. Require two distinct subject tuples and write
       `verification-verdict.baseline.json` plus
       `verification-verdict.candidate.json` plus the exact pair manifest. Do
-      not publish any partial generation.
+      not publish any partial generation. Require exact loaded role labels and
+      distinct runtime IDs before publication.
 - [ ] Run
       `bash scripts/security/verify-sample-service-supply-chain.sh --scorecard-advisory`
       only when the Task confirms network/read-only scope; otherwise record an
@@ -319,7 +342,7 @@ this Plan does not own a concrete base identity.
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` | `SSC-001`–`SSC-005` map to implemented files and Task evidence. |
 | Repository contract | `bash scripts/validation/check-repo-contracts.sh` | No new contract breakage. |
 | Fixture/unit tests | `python3 -m unittest tests.validation.test_supply_chain_policy -v` and `python3 scripts/validation/check-supply-chain-policy.py --check` | Positive/negative policy, SBOM, provenance, signature, and Scorecard fixtures pass. |
-| Tool rehearsal | `bash scripts/security/verify-sample-service-supply-chain.sh --advisory` | Each baseline/candidate SBOM, scan verdict, provenance, signature, and verifier evidence binds to its distinct local subject tuple. |
+| Tool rehearsal | `bash scripts/security/verify-sample-service-supply-chain.sh --advisory` | Each baseline/candidate SBOM, scan verdict, provenance, signature, deterministic Docker-load archive, loaded role/runtime ID, and verifier evidence binds to its distinct portable subject tuple. |
 | Scorecard observation | `bash scripts/security/verify-sample-service-supply-chain.sh --scorecard-advisory` or explicit Task skip | Advisory result or skip reason; no deterministic CI decision from remote score. |
 | Review | Independent spec and quality/security review | All findings are resolved and independently re-reviewed. |
 
@@ -328,6 +351,7 @@ this Plan does not own a concrete base identity.
 | Risk | Impact | Mitigation / rollback |
 | --- | --- | --- |
 | Digest/SBOM/provenance mismatch | Critical | Key all records by immutable digest and reject mismatches. |
+| OCI-to-Docker or loaded-image identity mismatch | Critical | Validate descriptor/digest/DiffID and archive bounds, derive deterministic local refs, bind both archives and observed runtime IDs in verdict/pair schemas, and reject substitution. |
 | Raw vulnerability or key leakage | Critical | Store raw outputs only in ignored/transient paths; tracked docs get summaries/checksums. |
 | Network freshness makes CI flaky | High | Deterministic fixtures own blocking decisions; live DB/Scorecard evidence is advisory/freshness-stamped. |
 | Keyless/OIDC claim without trust evidence | Critical | Use local ephemeral test keys unless a later Task approves OIDC and identity verification. |

@@ -101,27 +101,39 @@ status: active
    `recovery_boundary=passed`, `compose=passed`, `ports=18080,18081`이 모두
    있어야 한다. Fixture verdict는 실제 실행 승인이 아니다.
 
-9. 실제 local rehearsal은 다음 canonical Spec 126 파일 두 개가 모두 존재하고,
-   accepted/distinct/same-revision/no-exception/redaction-passed일 때만 실행한다.
+9. 실제 local rehearsal은 다음 canonical Spec 126 파일 세 개가 모두 존재하고,
+   verdict schema v2와 pair schema/generation v3 계약을 통과할 때만 실행한다.
 
    ```text
    _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json
    _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json
+   _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.pair.json
    ```
 
-   둘 중 하나라도 없으면 class `10`에서 중단하며 Docker/Compose 호출, project,
-   record를 만들지 않는다. 현재 Spec 126 결과는 critical vulnerability 14건과
-   승인된 exception 부재로 accepted pair를 만들지 않았으므로 positive promotion과
-   injected rollback runtime은 `blocked/not_run`이다.
+   Verdict v2는 OCI manifest/config/archive, deterministic Docker-load archive,
+   deterministic local image reference, runtime image ID/kind의 전체 tuple을
+   포함한다. Pair v3 (`hyhome-verification-verdict-pair-v3`)는 두 verdict의
+   exact byte hash와 role별 전체 tuple을 고정한다. 하나라도 없거나 legacy,
+   stale, mixed, substituted이면 class `10`에서 중단하며 Docker/Compose 호출,
+   project, record를 만들지 않는다. 현재 Spec 126 accepted pair는 존재하지만
+   Task 5 positive promotion 및 injected rollback runtime은 별도 승인 순서에서
+   아직 `not_run`이다. 과거 14-Critical 결과와 missing-seed 결과는 superseded
+   history이며 현재 blocker가 아니다.
 
-10. 향후 canonical pair가 생긴 뒤 별도 승인 범위에서 실행할 때도 wrapper의
-    `rehearse`/`cleanup` 형식만 사용한다. Baseline/canary는
+10. 별도 승인 범위의 Task 5 runtime은 positive `rehearse` 후 injected-rollback
+    `rehearse` 순서로만 실행한다. Baseline/canary는
     `hyhome-dre-20260719-<decimal-pid>-baseline|canary`, loopback
     `18080`/`18081`, exact ownership labels로 제한된다. Canary 실패 시 previous
-    digest와 baseline health를 확인한 뒤 cleanup한다. 시작 전 두 accepted
-    digest는 bounded local image inspect에서 exact `.Id`로 확인되어야 하며,
-    merged topology에는 build path가 없고 pull/build가 모두 금지된다. Stateful
-    impact는 즉시 Spec 125로 handoff한다.
+    runtime image ID와 baseline health를 확인한 뒤 in-process cleanup한다.
+    시작 전 deterministic local ref의 `.Id`와 role label을 verdict의 값과
+    비교하고, 시작 후 container `.Image`를 같은 runtime ID와 비교한다. Merged
+    topology에는 build path가 없고 `pull_policy: never`, `--pull never`,
+    `--no-build`가 필수다. 각 run은 cleanup 후 schema-v4 record를 publish한다.
+    Canonical record가 하나이므로 positive record hash/요약 필드를 먼저 Task에
+    기록한 다음 negative run이 이를 교체한다. Standalone `cleanup --task-id`는
+    interrupted/partial exact owned pair를 위한 rescue-only 명령이며 성공 run
+    후에는 실행하지 않는다. 이미 cleanup된 상태에서는 의도대로 class `60`을
+    반환한다. Stateful impact는 즉시 Spec 125로 handoff한다.
 
 ### Steps
 
@@ -162,7 +174,8 @@ status: active
 - Backup or N/A rationale, affected rollback/recovery links, incident path, and remote gate verification evidence when a release/deploy claim depends on those controls.
 - Explicit statement that no runtime deployment, secret value mutation, `.env` sync, port, permission, or remote branch-protection change was performed unless separately approved.
 - Local delivery evidence에는 revision, digest/verdict reference, project,
-  marker presence, decision, `data_impact=none`, cleanup만 기록한다. HTTP body,
+  full portable identity tuple의 concise fields, marker presence, decision,
+  `data_impact=none`, cleanup, schema-v4 record hash만 기록한다. HTTP body,
   runtime log, secret, credential, token은 기록하지 않는다.
 
 ## Rollback or Recovery
